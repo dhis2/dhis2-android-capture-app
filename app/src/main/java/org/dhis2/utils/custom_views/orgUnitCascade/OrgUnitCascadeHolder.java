@@ -63,8 +63,8 @@ class OrgUnitCascadeHolder extends RecyclerView.ViewHolder {
                     getAdapterPosition() + 1,
                     selectedOrgUnit,
                     selectionType == OrgUnitCascadeDialog.OUSelectionType.SEARCH ?
-                            ouRepository.uid(selectedOrgUnit).exists():
-                            ouRepository.byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE).uid(selectedOrgUnit).exists()
+                            ouRepository.uid(selectedOrgUnit).blockingExists():
+                            ouRepository.byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE).uid(selectedOrgUnit).blockingExists()
                     );
             return false;
         });

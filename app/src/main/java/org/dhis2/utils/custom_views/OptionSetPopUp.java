@@ -31,6 +31,7 @@ public class OptionSetPopUp extends PopupMenu {
     private final CompositeDisposable disposable;
     private final List<String> optionsToHide;
     private final List<String> optionGroupsToHide;
+    private final List<String> optionGroupsToShow;
     private HashMap<String, Option> optionsMap;
 
     public OptionSetPopUp(Context context, View anchor, SpinnerViewModel model,
@@ -39,6 +40,7 @@ public class OptionSetPopUp extends PopupMenu {
         d2 = ((App) context.getApplicationContext()).serverComponent().userManager().getD2();
         this.optionsToHide = model.getOptionsToHide() != null ? model.getOptionsToHide() : new ArrayList<>();
         this.optionGroupsToHide = model.getOptionGroupsToHide() != null ? model.getOptionGroupsToHide() : new ArrayList<>();
+        this.optionGroupsToShow = model.getOptionGroupsToShow() != null ? model.getOptionGroupsToShow() : new ArrayList<>();
         setOnDismissListener(menu -> dismiss());
         setOnMenuItemClickListener(item -> {
             Option selectedOption = optionsMap.get(item.getTitle().toString());
@@ -52,21 +54,35 @@ public class OptionSetPopUp extends PopupMenu {
                         .byOptionSetUid().eq(model.optionSet()))
                         .map(optionRepository -> {
                             List<String> finalOptionsToHide = new ArrayList<>();
+                            List<String> finalOptionsToShow = new ArrayList<>();
                             if (!optionsToHide.isEmpty())
                                 finalOptionsToHide.addAll(optionsToHide);
+
+                            if (!optionGroupsToShow.isEmpty()) {
+                                for (String groupUid : optionGroupsToShow) {
+                                    finalOptionsToShow.addAll(
+                                            UidsHelper.getUidsList(d2.optionModule().optionGroups.withOptions().uid(groupUid).blockingGet().options())
+                                    );
+                                }
+                            }
 
                             if (!optionGroupsToHide.isEmpty()) {
                                 for (String groupUid : optionGroupsToHide) {
                                     finalOptionsToHide.addAll(
-                                            UidsHelper.getUidsList(d2.optionModule().optionGroups.withOptions().uid(groupUid).get().options())
+                                            UidsHelper.getUidsList(d2.optionModule().optionGroups.withOptions().uid(groupUid).blockingGet().options())
                                     );
                                 }
                             }
+
+                            if (!finalOptionsToShow.isEmpty())
+                                optionRepository = optionRepository
+                                        .byUid().in(finalOptionsToShow);
+
                             if (!finalOptionsToHide.isEmpty())
                                 optionRepository = optionRepository
                                         .byUid().notIn(finalOptionsToHide);
 
-                            return optionRepository.get();
+                            return optionRepository.blockingGet();
                         })
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())

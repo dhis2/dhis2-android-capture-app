@@ -49,6 +49,7 @@
             android:layout_marginEnd="10dp"
             android:fontFamily="@font/rubik_light"
             android:maxLines="2"
+            android:ellipsize="end"
             android:text="@{teiName}"
             android:textColor="#444444"
             android:textSize="14sp"
@@ -56,8 +57,7 @@
             app:layout_constraintEnd_toStartOf="@id/tei_relationship_link"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/relationshipName"
-            tools:text="James
-            \nJohnson" />
+            tools:text="This is a super long text that is going to junp to the next line in just a momnet let me check on that" />
 
         <ImageView
             android:id="@+id/clear_relationship_button"

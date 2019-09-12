@@ -22,6 +22,7 @@ import androidx.core.content.ContextCompat;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentStatePagerAdapter;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.viewpager.widget.ViewPager;
 
@@ -40,6 +41,7 @@ import org.dhis2.usescases.teiDashboard.teiProgramList.TeiProgramListActivity;
 import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.HelpManager;
+import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.jetbrains.annotations.NotNull;
 
@@ -197,7 +199,8 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
     public void setData(DashboardProgramModel program) {
 
         dashboardViewModel.updateDashboard(program);
-        setProgramColor(program.getObjectStyleForProgram(program.getCurrentProgram().uid()).color());
+        ObjectStyle style = program.getObjectStyleForProgram(program.getCurrentProgram().uid());
+        setProgramColor(style == null ? "" : style.color());
 
 
         binding.setDashboardModel(program);
@@ -221,7 +224,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
                     .replace(R.id.tei_main_view, new TEIDataFragment())
                     .commitAllowingStateLoss();
 
-        Boolean enrollmentStatus = program.getCurrentEnrollment() != null && program.getCurrentEnrollment().enrollmentStatus() == EnrollmentStatus.ACTIVE;
+        Boolean enrollmentStatus = program.getCurrentEnrollment() != null && program.getCurrentEnrollment().status() == EnrollmentStatus.ACTIVE;
         if (getIntent().getStringExtra(Constants.EVENT_UID) != null && enrollmentStatus)
             dashboardViewModel.updateEventUid(getIntent().getStringExtra(Constants.EVENT_UID));
     }
@@ -281,11 +284,6 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
         Intent intent = new Intent(this, TeiProgramListActivity.class);
         intent.putExtras(extras);
         startActivityForResult(intent, Constants.RQ_ENROLLMENTS);
-    }
-
-    @Override
-    public String getToolbarTitle() {
-        return binding.toolbarTitle.getText().toString();
     }
 
     public TeiDashboardContracts.Presenter getPresenter() {
@@ -430,7 +428,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
                     showTutorial(true);
                     break;
                 case R.id.deleteTei:
-                    presenter.deteleteTei();
+                    presenter.deleteTei();
                     break;
                 case R.id.deleteEnrollment:
                     presenter.deleteEnrollment();

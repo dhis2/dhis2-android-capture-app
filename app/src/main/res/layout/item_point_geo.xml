@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="viewModel"
+            type="org.dhis2.usescases.map.point.PointViewModel" />
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/lat"
+            app:layout_constraintTop_toTopOf="parent"
+            android:padding="12dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/lng"
+            android:layout_width="0dp"
+            android:hint="Lat"
+            android:layout_height="wrap_content">
+
+            <EditText
+                android:maxLength="12"
+                android:textSize="12sp"
+                android:scrollHorizontally="true"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:text="@{viewModel.lat}"
+                android:padding="12dp"
+                tools:text="lat"
+                android:focusable="false"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/lng"
+            app:layout_constraintTop_toTopOf="parent"
+            android:padding="12dp"
+            app:layout_constraintStart_toEndOf="@id/lat"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_width="0dp"
+            android:hint="Lng"
+            android:layout_height="wrap_content">
+
+            <EditText
+                android:maxLength="12"
+                android:textSize="12sp"
+                android:scrollHorizontally="true"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:text="@{viewModel.lng}"
+                android:padding="12dp"
+                tools:text="lat"
+                android:focusable="false"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>

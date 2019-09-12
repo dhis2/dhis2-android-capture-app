@@ -194,14 +194,16 @@ public class AgeView extends FieldLayout implements View.OnClickListener, View.O
                 Timber.e(e);
             }
 
-        String result = dateFormat.format(initialDate);
+        if(initialDate != null) {
+            String result = dateFormat.format(initialDate);
 
-        int[] dateDifference = DateUtils.getDifference(initialDate, Calendar.getInstance().getTime());
-        day.setText(String.valueOf(dateDifference[2]));
-        month.setText(String.valueOf(dateDifference[1]));
-        year.setText(String.valueOf(dateDifference[0]));
+            int[] dateDifference = DateUtils.getDifference(initialDate, Calendar.getInstance().getTime());
+            day.setText(String.valueOf(dateDifference[2]));
+            month.setText(String.valueOf(dateDifference[1]));
+            year.setText(String.valueOf(dateDifference[0]));
 
-        date.setText(result);
+            date.setText(result);
+        }
     }
 
 

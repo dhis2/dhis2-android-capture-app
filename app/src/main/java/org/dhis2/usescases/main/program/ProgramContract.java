@@ -47,6 +47,12 @@ public class ProgramContract {
         void orgUnitProgress(boolean showProgress);
 
         Consumer<Pair<TreeNode, List<TreeNode>>> addNodeToTree();
+
+        void openOrgUnitTreeSelector();
+
+        void showHideFilter();
+
+        void clearFilters();
     }
 
     public interface Presenter {
@@ -77,5 +83,9 @@ public class ProgramContract {
         void onSyncStatusClick(ProgramViewModel program);
 
         boolean areFiltersApplied();
+
+        void showHideFilterClick();
+
+        void clearFilterClick();
     }
 }

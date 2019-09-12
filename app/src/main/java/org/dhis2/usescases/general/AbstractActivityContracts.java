@@ -8,6 +8,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityOptionsCompat;
+import io.reactivex.processors.FlowableProcessor;
 
 import org.dhis2.usescases.main.program.SyncStatusDialog;
 import org.dhis2.utils.OnDialogClickListener;
@@ -55,7 +56,9 @@ public class AbstractActivityContracts {
 
         SharedPreferences getSharedPreferences();
 
-        void showSyncDialog(String programUid, SyncStatusDialog.ConflictType conflictType);
+        void showSyncDialog(String programUid, SyncStatusDialog.ConflictType conflictType, FlowableProcessor processor);
+
+        void showSyncDialog(String orgUnit, String attributeCombo, String periodId, SyncStatusDialog.ConflictType conflictType, FlowableProcessor processor);
     }
 
     public interface Presenter {

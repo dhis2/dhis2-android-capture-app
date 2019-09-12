@@ -1,7 +1,5 @@
 package org.dhis2.data.forms;
 
-import android.text.TextUtils;
-
 import androidx.annotation.NonNull;
 
 import com.squareup.sqlbrite2.BriteDatabase;
@@ -15,10 +13,10 @@ import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.utils.Result;
 import org.hisp.dhis.android.core.D2;
-import org.hisp.dhis.android.core.category.CategoryComboModel;
-import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
+import org.hisp.dhis.android.core.category.CategoryCombo;
+import org.hisp.dhis.android.core.category.CategoryOptionCombo;
+import org.hisp.dhis.android.core.common.FeatureType;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
-import org.hisp.dhis.android.core.period.FeatureType;
 import org.hisp.dhis.android.core.program.ProgramStage;
 import org.hisp.dhis.rules.models.RuleAction;
 import org.hisp.dhis.rules.models.RuleActionErrorOnCompletion;
@@ -97,8 +95,8 @@ class FormPresenterImpl implements FormPresenter {
 
     @Override
     public String getEnrollmentOu(String enrollmentUid) {
-        if (d2.enrollmentModule().enrollments.uid(enrollmentUid).exists())
-            return d2.enrollmentModule().enrollments.uid(enrollmentUid).get().organisationUnit();
+        if (d2.enrollmentModule().enrollments.uid(enrollmentUid).blockingExists())
+            return d2.enrollmentModule().enrollments.uid(enrollmentUid).blockingGet().organisationUnit();
         else
             return null;
     }
@@ -117,13 +115,13 @@ class FormPresenterImpl implements FormPresenter {
             compositeDisposable.add(formRepository.reportDate()
                     .subscribeOn(schedulerProvider.io())
                     .observeOn(schedulerProvider.ui())
-                    .filter(programModelAndDate -> !isEmpty(programModelAndDate.val1()))
+                    .filter(programAndDate -> !isEmpty(programAndDate.val1()))
                     .subscribe(view.renderReportDate(), Timber::e));
 
             compositeDisposable.add(formRepository.incidentDate()
                     .subscribeOn(schedulerProvider.io())
                     .observeOn(schedulerProvider.ui())
-                    .filter(programModelAndDate -> programModelAndDate.val0().displayIncidentDate())
+                    .filter(programAndDate -> programAndDate.val0().displayIncidentDate())
                     .subscribe(view.renderIncidentDate(), Timber::e)
             );
 
@@ -133,12 +131,20 @@ class FormPresenterImpl implements FormPresenter {
                     .subscribe(view.renderCaptureCoordinates(), Timber::e)
             );
 
+            compositeDisposable.add(formRepository.captureTeiCoordinates()
+                    .subscribeOn(schedulerProvider.io())
+                    .observeOn(schedulerProvider.ui())
+                    .subscribe(view.renderTeiCoordinates(), Timber::e)
+            );
+
             compositeDisposable.add(formRepository.getAllowDatesInFuture()
                     .subscribeOn(schedulerProvider.io())
                     .observeOn(schedulerProvider.ui())
                     .subscribe(program -> view.initReportDatePicker(program.selectEnrollmentDatesInFuture(), program.selectIncidentDatesInFuture()),
                             Timber::e)
             );
+
+
         } else {
             view.hideDates();
             compositeDisposable.add(formRepository.getProgramCategoryCombo(null)
@@ -187,10 +193,16 @@ class FormPresenterImpl implements FormPresenter {
                 .subscribe(saved -> Timber.d("incidentDate saved"), Timber::e));
 
         compositeDisposable.add(view.reportCoordinatesChanged()
-                .filter(latLng -> latLng != null)
+                .filter(geometry -> geometry != null)
                 .subscribeOn(schedulerProvider.ui())
                 .observeOn(schedulerProvider.io())
                 .subscribe(formRepository.storeCoordinates(), Timber::e));
+
+        compositeDisposable.add(view.teiCoordinatesChanged()
+                .filter(geometry -> geometry != null)
+                .subscribeOn(schedulerProvider.ui())
+                .observeOn(schedulerProvider.io())
+                .subscribe(formRepository.storeTeiCoordinates(), Timber::e));
 
         ConnectableObservable<ReportStatus> statusChangeObservable = view.eventStatusChanged()
                 .publish();
@@ -428,7 +440,7 @@ class FormPresenterImpl implements FormPresenter {
     }
 
     @Override
-    public void saveCategoryOption(CategoryOptionComboModel selectedOption) {
+    public void saveCategoryOption(CategoryOptionCombo selectedOption) {
         formRepository.saveCategoryOption(selectedOption);
     }
 
@@ -444,7 +456,7 @@ class FormPresenterImpl implements FormPresenter {
                         .subscribe(
                                 pair -> {
                                     ProgramStage programStage = pair.val0();
-                                    Trio<Boolean, CategoryComboModel, List<CategoryOptionComboModel>> trio = pair.val1();
+                                    Trio<Boolean, CategoryCombo, List<CategoryOptionCombo>> trio = pair.val1();
                                     view.setNeedInitial(programStage.featureType().equals(FeatureType.POINT) || !trio.val1().isDefault(), programStage.uid());
                                 },
                                 Timber::e

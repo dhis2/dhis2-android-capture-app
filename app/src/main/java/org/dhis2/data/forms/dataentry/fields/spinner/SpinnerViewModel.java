@@ -5,7 +5,7 @@ import androidx.annotation.NonNull;
 import com.google.auto.value.AutoValue;
 
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
-import org.hisp.dhis.android.core.common.ObjectStyleModel;
+import org.hisp.dhis.android.core.common.ObjectStyle;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,6 +21,7 @@ public abstract class SpinnerViewModel extends FieldViewModel {
 
     private List<String> optionsToHide;
     private List<String> optionGroupsToHide;
+    private List<String> optionGroupsToShow = new ArrayList<>();
 
     @NonNull
     public abstract String hint();
@@ -32,7 +33,7 @@ public abstract class SpinnerViewModel extends FieldViewModel {
     public abstract Integer numberOfOptions();
 
     public static SpinnerViewModel create(String id, String label, String hintFilterOptions, Boolean mandatory,
-                                          String optionSet, String value, String section, Boolean editable, String description, Integer numberOfOptions, ObjectStyleModel objectStyle) {
+                                          String optionSet, String value, String section, Boolean editable, String description, Integer numberOfOptions, ObjectStyle objectStyle) {
         return new AutoValue_SpinnerViewModel(id, label, mandatory, value, section, null, editable, null, null, description, objectStyle, hintFilterOptions, optionSet, numberOfOptions == null ? 0 : numberOfOptions);
     }
 
@@ -72,6 +73,10 @@ public abstract class SpinnerViewModel extends FieldViewModel {
         this.optionGroupsToHide.addAll(optionsGroupsToHide);
     }
 
+    public void setOptionGroupsToShow(List<String> optionGroupsToShow){
+        this.optionGroupsToShow.addAll(optionGroupsToShow);
+    }
+
     public List<String> getOptionsToHide() {
         return optionsToHide;
     }
@@ -79,4 +84,6 @@ public abstract class SpinnerViewModel extends FieldViewModel {
     public List<String> getOptionGroupsToHide() {
         return optionGroupsToHide;
     }
+
+    public List<String> getOptionGroupsToShow() { return optionGroupsToShow; }
 }

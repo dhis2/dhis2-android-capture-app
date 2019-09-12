@@ -1,33 +1,32 @@
 package org.dhis2.utils;
 
 import android.content.Context;
-import androidx.databinding.DataBindingUtil;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.databinding.DataBindingUtil;
+
 import org.dhis2.R;
 import org.dhis2.databinding.SpinnerLayoutBinding;
 import org.dhis2.databinding.SpinnerTitleLayoutBinding;
-
-import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
+import org.hisp.dhis.android.core.category.CategoryOptionCombo;
 
 import java.util.List;
 
 /**
  * Created by ppajuelo on 12/02/2018.
- *
  */
 
-public class CatComboAdapter2 extends ArrayAdapter<CategoryOptionComboModel> {
+public class CatComboAdapter2 extends ArrayAdapter<CategoryOptionCombo> {
 
-    private List<CategoryOptionComboModel> options;
+    private List<CategoryOptionCombo> options;
     private String catComboName;
 
-    public CatComboAdapter2(@NonNull Context context, int resource, int textViewResourceId, @NonNull List<CategoryOptionComboModel> objects, String categoryOptionName) {
+    public CatComboAdapter2(@NonNull Context context, int resource, int textViewResourceId, @NonNull List<CategoryOptionCombo> objects, String categoryOptionName) {
         super(context, resource, textViewResourceId, objects);
         this.options = objects;
         this.catComboName = categoryOptionName;

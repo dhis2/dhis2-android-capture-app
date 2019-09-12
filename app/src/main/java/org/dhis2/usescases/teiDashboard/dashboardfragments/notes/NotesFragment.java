@@ -17,7 +17,7 @@ import org.dhis2.R;
 import org.dhis2.databinding.FragmentNotesBinding;
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity;
-import org.hisp.dhis.android.core.enrollment.note.NoteModel;
+import org.hisp.dhis.android.core.enrollment.note.Note;
 
 import java.util.List;
 
@@ -104,7 +104,7 @@ public class NotesFragment extends FragmentGlobalAbstract implements NotesContra
     }
 
     @Override
-    public Consumer<List<NoteModel>> swapNotes() {
+    public Consumer<List<Note>> swapNotes() {
         return noteModels -> noteAdapter.setItems(noteModels);
     }
 }

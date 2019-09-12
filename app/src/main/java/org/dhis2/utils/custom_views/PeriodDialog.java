@@ -109,6 +109,7 @@ public class PeriodDialog extends DialogFragment {
         binding.periodBefore.setOnClickListener(view -> {
             previousPeriod();
             checkConstraintDates();
+
         });
         binding.periodNext.setOnClickListener(view -> {
             nextPeriod();
@@ -128,17 +129,23 @@ public class PeriodDialog extends DialogFragment {
         binding.selectedPeriod.setText(DateUtils.getInstance().getPeriodUIString(period, currentDate, Locale.getDefault()));
     }
 
-    private void checkConstraintDates() {
+    protected void checkConstraintDates() {
 
-        if (minDate != null && minDate.equals(currentDate))
+        if (minDate != null && minDate.equals(currentDate)) {
             binding.periodBefore.setEnabled(false);
-        else
+            binding.periodBefore.setVisibility(View.INVISIBLE);
+        }else {
             binding.periodBefore.setEnabled(true);
+            binding.periodBefore.setVisibility(View.VISIBLE);
+        }
 
-        if (maxDate != null && maxDate.equals(currentDate))
+        if (maxDate != null && maxDate.equals(currentDate)) {
             binding.periodNext.setEnabled(false);
-        else
+            binding.periodNext.setVisibility(View.INVISIBLE);
+        }else {
             binding.periodNext.setEnabled(true);
+            binding.periodNext.setVisibility(View.VISIBLE);
+        }
     }
 
     public PeriodDialog setMinDate(Date minDate) {
@@ -153,5 +160,61 @@ public class PeriodDialog extends DialogFragment {
 
     public interface OnDateSet {
         void onDateSet(Date selectedDate);
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public Date getCurrentDate() {
+        return currentDate;
+    }
+
+    public void setDateWithOpenFuturePeriod(Integer openFuture){
+        currentDate = DateUtils.getInstance().getNextPeriod(period, DateUtils.getInstance().getToday(), -1);
+        if(openFuture != null && openFuture != 0) {
+            for (int i = 0; i < openFuture; i++) {
+                currentDate = DateUtils.getInstance().getNextPeriod(period, currentDate, 1);
+            }
+        }
+        maxDate = currentDate;
+    }
+
+    public PeriodType getPeriod() {
+        return period;
+    }
+
+    public Date getMinDate() {
+        return minDate;
+    }
+
+    public Date getMaxDate() {
+        return maxDate;
+    }
+
+    public DialogPeriodBinding getBinding() {
+        return binding;
+    }
+
+    public OnDateSet getPossitiveListener() {
+        return possitiveListener;
+    }
+
+    public View.OnClickListener getNegativeListener() {
+        return negativeListener;
+    }
+
+    protected void setCurrentDate(Date currentDate) {
+        this.currentDate = DateUtils.getInstance().getNextPeriod(period, currentDate, -1);
+    }
+
+    protected void setRealCurrentDate(Date currentDate){
+        this.currentDate = currentDate;
+    }
+
+    @Nullable
+    @Override
+    public Context getContext() {
+        return context;
     }
 }

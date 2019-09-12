@@ -1,17 +1,19 @@
 package org.dhis2.data.forms;
 
-import com.mapbox.mapboxsdk.geometry.LatLng;
-
 import androidx.annotation.NonNull;
+
+import com.mapbox.mapboxsdk.geometry.LatLng;
 
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Trio;
-
-import org.hisp.dhis.android.core.category.CategoryComboModel;
-import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
+import org.hisp.dhis.android.core.category.CategoryCombo;
+import org.hisp.dhis.android.core.category.CategoryOptionCombo;
+import org.hisp.dhis.android.core.common.FeatureType;
+import org.hisp.dhis.android.core.common.Geometry;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
-import org.hisp.dhis.android.core.program.ProgramModel;
+import org.hisp.dhis.android.core.program.Program;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityType;
 import org.hisp.dhis.rules.models.RuleActionErrorOnCompletion;
 import org.hisp.dhis.rules.models.RuleActionShowError;
 import org.hisp.dhis.rules.models.RuleActionWarningOnCompletion;
@@ -31,16 +33,19 @@ interface FormView {
     Observable<String> reportDateChanged();
 
     @NonNull
+    Observable<Geometry> teiCoordinatesChanged();
+
+    @NonNull
     Observable<String> incidentDateChanged();
 
     @NonNull
-    Observable<LatLng> reportCoordinatesChanged();
+    Observable<Geometry> reportCoordinatesChanged();
 
     @NonNull
     Consumer<List<FormSectionViewModel>> renderSectionViewModels();
 
     @NonNull
-    Consumer<Pair<ProgramModel, String>> renderReportDate();
+    Consumer<Pair<Program, String>> renderReportDate();
 
     @NonNull
     Consumer<String> renderTitle();
@@ -54,7 +59,7 @@ interface FormView {
     void renderStatusChangeSnackBar(@NonNull ReportStatus eventStatus);
 
     @NonNull
-    Consumer<Pair<ProgramModel, String>> renderIncidentDate();
+    Consumer<Pair<Program, String>> renderIncidentDate();
 
     void initReportDatePicker(boolean reportAllowFutureDates, boolean incidentAllowFutureDates);
 
@@ -78,13 +83,15 @@ interface FormView {
 
     void setShowError(RuleActionShowError showError);
 
-    void showCatComboDialog(CategoryComboModel categoryComboModel, List<CategoryOptionComboModel> categoryOptionComboModels);
+    void showCatComboDialog(CategoryCombo categoryCombo, List<CategoryOptionCombo> categoryOptionCombo);
 
-    Consumer<Boolean> renderCaptureCoordinates();
+    Consumer<FeatureType> renderCaptureCoordinates();
 
     void setMinMaxDates(Date openingDate, Date closingDate);
 
     Observable<EnrollmentStatus> onObservableBackPressed();
 
     void setNeedInitial(boolean need, String programStage);
+
+    Consumer<TrackedEntityType> renderTeiCoordinates();
 }

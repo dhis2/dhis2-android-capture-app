@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
+<layout  xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
 
 <LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -14,10 +16,11 @@
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="?android:attr/actionBarSize"
-        android:background="?colorPrimary"
+        android:background="@color/white"
         android:gravity="center_vertical">
 
         <ImageView
+            android:tint="@color/blue_4fa"
             android:id="@+id/back"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
@@ -33,7 +36,6 @@
             android:gravity="center_vertical"
             app:layout_constraintStart_toEndOf="@id/back"
             android:text="@string/select_location"
-            android:textColor="@android:color/white"
             android:textSize="20sp" />
 
         <androidx.constraintlayout.widget.Guideline
@@ -55,55 +57,51 @@
             tools:visibility="visible" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <RelativeLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
         <com.mapbox.mapboxsdk.maps.MapView
             android:id="@+id/map_view"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/guide"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
+            android:layout_height="0dp"/>
 
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/fab"
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guide"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.65"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentEnd="true"
-            android:layout_marginEnd="16dp"
-            android:layout_marginBottom="16dp"
-            app:backgroundTint="?colorPrimary"
-            app:srcCompat="@drawable/ic_place_white" />
+            android:layout_height="wrap_content" />
 
-        <TextView
-            android:id="@+id/latlon"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            app:layout_constraintTop_toBottomOf="@id/guide"
+            app:layout_constraintBottom_toBottomOf="parent"
             android:layout_width="match_parent"
-            android:layout_height="56dp"
-            android:lines="1"
-            android:textColor="@color/text_black_333"
-            android:textSize="14sp"
-            android:background="#33ffffff"
-            android:layout_alignParentTop="true"
-            android:layout_centerHorizontal="true"
-            android:gravity="center_horizontal"/>
+            android:layout_height="0dp">
 
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_centerInParent="true">
-
-            <ImageView
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:layout_gravity="center_horizontal"
-                app:srcCompat="@drawable/ic_place"
-                tools:ignore="ContentDescription" />
-
-            <View
-                android:id="@+id/empty_view"
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recycler"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toTopOf="@id/saveButton"
                 android:layout_width="match_parent"
-                android:layout_height="20dp"/>
-        </LinearLayout>
-    </RelativeLayout>
+                android:layout_height="0dp" />
+
+            <Button
+                android:textColor="@color/blue_fab"
+                android:background="@color/white"
+                android:id="@+id/saveButton"
+                android:layout_margin="4dp"
+                android:text="@string/action_accept"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </LinearLayout>
+</layout>

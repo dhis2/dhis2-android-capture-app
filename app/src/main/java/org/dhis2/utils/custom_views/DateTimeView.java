@@ -6,6 +6,7 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.DatePicker;
+import android.widget.ImageView;
 
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
@@ -32,6 +33,7 @@ public class DateTimeView extends FieldLayout implements View.OnClickListener, V
     private TextInputEditText editText;
     private TextInputLayout inputLayout;
     private DateTimeViewBinding binding;
+    private ImageView icon;
 
     private Calendar selectedCalendar;
     private DateFormat dateFormat;
@@ -57,12 +59,10 @@ public class DateTimeView extends FieldLayout implements View.OnClickListener, V
 
     public void setLabel(String label) {
         binding.setLabel(label);
-        binding.executePendingBindings();
     }
 
     public void setDescription(String description) {
         binding.setDescription(description);
-        binding.executePendingBindings();
     }
 
     public void initData(String data) {
@@ -115,7 +115,9 @@ public class DateTimeView extends FieldLayout implements View.OnClickListener, V
     private void setLayout() {
         binding = DateTimeViewBinding.inflate(inflater, this, true);
         inputLayout = findViewById(R.id.inputLayout);
+        icon = findViewById(R.id.descIcon);
         editText = findViewById(R.id.inputEditText);
+        icon.setImageResource(R.drawable.ic_form_date_time);
         selectedCalendar = Calendar.getInstance();
         dateFormat = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
         editText.setFocusable(false); //Makes editText not editable

@@ -4,8 +4,6 @@ import androidx.annotation.NonNull;
 
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
-import org.dhis2.data.tuples.Trio;
-import org.hisp.dhis.android.core.option.OptionModel;
 
 import java.util.List;
 

@@ -3,7 +3,7 @@ package org.dhis2.data.forms.dataentry.fields.age;
 import com.google.auto.value.AutoValue;
 
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
-import org.hisp.dhis.android.core.common.ObjectStyleModel;
+import org.hisp.dhis.android.core.common.ObjectStyle;
 
 import javax.annotation.Nonnull;
 
@@ -23,7 +23,7 @@ public abstract class AgeViewModel extends FieldViewModel {
     @Nullable
     public abstract String value();
 
-    public static FieldViewModel create(String id, String label, Boolean mandatory, String value, String section, Boolean editable, String description, ObjectStyleModel objectStyle) {
+    public static FieldViewModel create(String id, String label, Boolean mandatory, String value, String section, Boolean editable, String description, ObjectStyle objectStyle) {
         return new AutoValue_AgeViewModel(id, label, section, null, editable, null, null, null, description, objectStyle, mandatory, value);
     }
 

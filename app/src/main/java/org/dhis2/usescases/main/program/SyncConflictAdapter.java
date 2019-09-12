@@ -15,9 +15,9 @@ import java.util.List;
 
 public class SyncConflictAdapter extends RecyclerView.Adapter<SyncConflictHolder> {
 
-    private final List<TrackerImportConflict> conflicts;
+    private final List<StatusLogItem> conflicts;
 
-    public SyncConflictAdapter(List<TrackerImportConflict> conflictList) {
+    public SyncConflictAdapter(List<StatusLogItem> conflictList) {
         this.conflicts = conflictList;
     }
 
@@ -38,8 +38,18 @@ public class SyncConflictAdapter extends RecyclerView.Adapter<SyncConflictHolder
         return conflicts.size();
     }
 
-    public void addItems(List<TrackerImportConflict> conflicts) {
+    public void addItems(List<StatusLogItem> conflicts) {
         this.conflicts.clear();
+        this.conflicts.addAll(conflicts);
+        notifyDataSetChanged();
+    }
+
+    public void addItem(StatusLogItem item){
+        this.conflicts.add(item);
+        notifyDataSetChanged();
+    }
+
+    public void addAllItems(List<StatusLogItem> conflicts){
         this.conflicts.addAll(conflicts);
         notifyDataSetChanged();
     }

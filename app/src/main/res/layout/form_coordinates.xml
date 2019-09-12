@@ -38,19 +38,39 @@
         <TextView
             android:id="@+id/formLabel"
             android:layout_width="match_parent"
-            android:textSize="@dimen/textSize_12"
             android:layout_height="wrap_content"
             android:layout_below="@id/renderImage"
             android:paddingStart="4dp"
             android:text="@{label}"
+            android:textSize="@dimen/textSize_12"
             tools:text="Form Name" />
 
         <LinearLayout
             android:id="@+id/fieldLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:layout_below="@id/formLabel">
+            android:layout_below="@id/formLabel"
+            android:gravity="center_vertical">
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/polygonInputLayuout"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:hint="@string/polygon"
+                android:textColorHint="@color/text_black_808"
+                android:theme="@style/loginInputText"
+                android:visibility="gone">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/polygonEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:imeOptions="actionNext"
+                    android:textColor="@color/text_black_333"
+                    android:textSize="15sp" />
+
+            </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/latitudeInputLayout"
@@ -65,8 +85,8 @@
                     android:id="@+id/latitude"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="numberDecimal|numberSigned"
                     android:imeOptions="actionNext"
+                    android:inputType="numberDecimal|numberSigned"
                     android:textColor="@color/text_black_333"
                     android:textSize="15sp" />
 
@@ -85,16 +105,16 @@
                     android:id="@+id/longitude"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:imeOptions="actionDone"
                     android:inputType="numberDecimal|numberSigned"
                     android:textColor="@color/text_black_333"
-                    android:imeOptions="actionDone"
                     android:textSize="15sp" />
 
             </com.google.android.material.textfield.TextInputLayout>
 
             <ImageButton
-                style="@style/ActionIcon"
                 android:id="@+id/location1"
+                style="@style/ActionIcon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:padding="6dp"
@@ -102,8 +122,8 @@
                 tools:ignore="ContentDescription" />
 
             <ImageButton
-                style="@style/ActionIcon"
                 android:id="@+id/location2"
+                style="@style/ActionIcon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:padding="6dp"
@@ -111,13 +131,13 @@
                 tools:ignore="ContentDescription" />
 
             <ImageButton
-                style="@style/ActionIcon"
                 android:id="@+id/clearButton"
+                style="@style/ActionIcon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:padding="6dp"
-                app:srcCompat="@drawable/ic_clear"
                 android:tint="@color/colorGreyDefault"
+                app:srcCompat="@drawable/ic_clear"
                 tools:ignore="ContentDescription" />
 
             <ImageView
@@ -132,13 +152,13 @@
         <TextView
             android:id="@+id/errorMessage"
             android:layout_width="match_parent"
-            android:textSize="@dimen/textSize_12"
             android:layout_height="wrap_content"
             android:layout_below="@id/fieldLayout"
             android:padding="4dp"
+            android:textSize="@dimen/textSize_12"
             android:visibility="gone"
-            tools:textAppearance="@style/error_appearance"
             tools:text="This is a error warning"
-            tools:visibility="visible"/>
+            tools:textAppearance="@style/error_appearance"
+            tools:visibility="visible" />
     </RelativeLayout>
 </layout>

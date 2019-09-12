@@ -12,6 +12,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityOptionsCompat;
 import androidx.fragment.app.Fragment;
+import io.reactivex.processors.FlowableProcessor;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -128,7 +129,13 @@ public abstract class FragmentGlobalAbstract extends Fragment implements Abstrac
     }
 
     @Override
-    public void showSyncDialog(String programUid, SyncStatusDialog.ConflictType conflictType) {
-        getAbstractActivity().showSyncDialog(programUid,conflictType);
+    public void showSyncDialog(String programUid, SyncStatusDialog.ConflictType conflictType, FlowableProcessor processor) {
+        getAbstractActivity().showSyncDialog(programUid, conflictType, processor);
+    }
+
+    @Override
+    public void showSyncDialog(String orgUnit, String attributeCombo, String periodId,
+                               SyncStatusDialog.ConflictType conflictType, FlowableProcessor processor) {
+        getAbstractActivity().showSyncDialog(orgUnit,attributeCombo,periodId ,conflictType, processor);
     }
 }

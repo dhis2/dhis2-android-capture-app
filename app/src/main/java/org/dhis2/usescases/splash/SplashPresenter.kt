@@ -5,12 +5,12 @@ import android.content.Context
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
+import org.dhis2.data.prefs.Preference
 import org.dhis2.data.server.UserManager
 import org.dhis2.usescases.login.LoginActivity
 import org.dhis2.usescases.main.MainActivity
 import org.dhis2.usescases.sync.SyncActivity
 import org.dhis2.utils.Constants
-import org.dhis2.utils.SyncUtils
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
 
@@ -28,16 +28,9 @@ class SplashPresenter internal constructor(private val userManager: UserManager?
     }
 
     override fun isUserLoggedIn() {
-        if (userManager == null) {
+        if (userManager == null)
             navigateTo(LoginActivity::class.java)
-            return
-        }
-
-        if (SyncUtils.isSyncRunning()) {
-            view!!.startActivity(SyncActivity::class.java, null, true, true, null)
-
-        } else {
-
+        else
             compositeDisposable.add(userManager.isUserLoggedIn
                     .delay(2000, TimeUnit.MILLISECONDS, Schedulers.io())
                     .subscribeOn(Schedulers.io())
@@ -46,16 +39,19 @@ class SplashPresenter internal constructor(private val userManager: UserManager?
                             {
                                 val prefs = view!!.abstracContext.getSharedPreferences(
                                         Constants.SHARE_PREFS, Context.MODE_PRIVATE)
-                                if (it!! && !prefs.getBoolean("SessionLocked", false)) {
+                                val sessionLocked = prefs.getBoolean("SessionLocked", false)
+                                val initialSyncDone = prefs.getBoolean(Preference.INITIAL_SYNC_DONE.name, false)
+
+                                if (it!! && initialSyncDone && !sessionLocked) {
                                     navigateTo(MainActivity::class.java)
+                                } else if (it && !initialSyncDone) {
+                                    navigateTo(SyncActivity::class.java)
                                 } else {
                                     navigateTo(LoginActivity::class.java)
                                 }
                             },
                             { Timber.d(it) }
                     ))
-
-        }
     }
 
 

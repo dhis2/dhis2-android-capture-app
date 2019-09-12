@@ -46,6 +46,11 @@ public class Constants {
     public static final int TIME_15M = 15 * 60;
     public static final int TIME_HOURLY = 60 * 60;
 
+    //PICTURE PICKER
+    public static final int CAMERA_REQUEST = 108;
+    public static final int GALLERY_REQUEST = 143;
+
+
     // LOGIN
     public static final String ACCOUNT_RECOVERY = "/dhis-web-commons/security/recovery.action";
 
@@ -58,14 +63,17 @@ public class Constants {
     public static final String SERVER = "SERVER";
     public static final String THEME = "THEME";
     public static final String DATA_SET_UID = "DATA_SET_UID";
+    public static final String DATA_SET_NAME = "DATA_SET_NAME";
     public static final int DESCRIPTION_DIALOG = 111;
     public static final String PERIOD_TYPE = "PERIOD_TYPE";
+    public static final String PERIOD_ID = "PERIOD_ID";
     public static final String PERIOD_TYPE_DATE = "PERIOD_TYPE_DATE";
     public static final String CAT_COMB = "CAT_COMB";
     public static final String DEFAULT_CAT_COMBO = "DEFAULT_CAT_COMB";
     public static final String DATA_SET_SECTION = "DATA_SET_SECTION";
     public static final String PROGRAM_STAGE_UID = "PROGRAM_STAGE_UID";
     public static final String EXTRA_FROM_LOGIN = "EXTRA_FROM_LOGIN";
+    public static final String PREF_DEFAULT_CAT_OPTION_COMBO = "PREF_DEFAULT_CAT_OPTION_COMBO";
     public static final int RQ_MANDATORY_EVENTS = 2001;
     public static final String OPTION_SET_DIALOG_THRESHOLD = "optionSetDialogThredshold";
     public static final String URL_TEST_229 = "https://play.dhis2.org/android-previous1";
@@ -96,6 +104,7 @@ public class Constants {
     public static final String SCHEDULENEW = "SCHEDULENEW";
     public static final String PROGRAM_UID = "PROGRAM_UID";
     public static final String ORG_UNIT = "ORG_UNIT";
+    public static final String ORG_UNIT_NAME = "ORG_UNIT_NAME";
     public static final String ONE_TIME = "ONE_TIME";
     public static final String PERMANENT = "PERMANENT";
     public static final String ENROLLMENT_UID = "ENROLLMENT_UID";
@@ -106,14 +115,23 @@ public class Constants {
     public static final String ENROLLMENT_DATE = "enrollmentDate";
     public static final String INCIDENT_DATE = "incidentDate";
 
+    public static final String INITIAL_SYNC = "INITIAL_SYNC";
     public static final String META = "METADATA";
     public static final String META_NOW = "METADATA_NOW";
     public static final String DATA = "DATA";
     public static final String DATA_NOW = "DATA_NOW";
+    public static final String EVENT_NOW = "EVENT_NOW";
     public static final String TIME_META = "timeMeta";
     public static final String TIME_DATA = "timeData";
     public static final String JIRA_AUTH = "JIRA_AUTH";
     public static final String JIRA_USER = "JIRA_USER";
+
+    public static final String ACCESS_DATA = "access_data";
+
+    //Granular sync
+    public final static String UID = "UID";
+    public final static String CONFLICT_TYPE = "CONFLICT_TYPE";
+    public final static String ATTRIBUTE_OPTION_COMBO = "ATTRIBUTE_OPTION_COMBO";
 
     private Constants() {
         // hide public constructor

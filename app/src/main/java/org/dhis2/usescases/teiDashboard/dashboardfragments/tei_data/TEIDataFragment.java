@@ -14,9 +14,13 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
 import androidx.databinding.ObservableBoolean;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
+
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.bitmap.CircleCrop;
 
 import org.dhis2.App;
 import org.dhis2.R;
@@ -30,14 +34,16 @@ import org.dhis2.utils.Constants;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.DialogClickListener;
 import org.dhis2.utils.EventCreationType;
+import org.dhis2.utils.FileResourcesUtil;
 import org.dhis2.utils.custom_views.CategoryComboDialog;
 import org.dhis2.utils.custom_views.CustomDialog;
 import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
-import org.hisp.dhis.android.core.event.EventModel;
-import org.hisp.dhis.android.core.program.ProgramStageModel;
+import org.hisp.dhis.android.core.event.Event;
+import org.hisp.dhis.android.core.program.ProgramStage;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -47,6 +53,7 @@ import io.reactivex.Single;
 import io.reactivex.functions.Consumer;
 
 import static android.app.Activity.RESULT_OK;
+import static com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade;
 import static org.dhis2.utils.Constants.ENROLLMENT_UID;
 import static org.dhis2.utils.Constants.EVENT_CREATION_TYPE;
 import static org.dhis2.utils.Constants.EVENT_SCHEDULE_INTERVAL;
@@ -75,11 +82,11 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
     private EventAdapter adapter;
     private CustomDialog dialog;
     private String lastModifiedEventUid;
-    private ProgramStageModel programStageFromEvent;
+    private ProgramStage programStageFromEvent;
     private ObservableBoolean followUp = new ObservableBoolean(false);
 
     private boolean hasCatComb;
-    private ArrayList<EventModel> catComboShowed = new ArrayList<>();
+    private ArrayList<Event> catComboShowed = new ArrayList<>();
     private Context context;
     private DashboardViewModel dashboardViewModel;
     private DashboardProgramModel dashboardModel;
@@ -100,7 +107,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
     @Override
     public void onStart() {
         super.onStart();
-        dashboardViewModel = ViewModelProviders.of(getActivity()).get(DashboardViewModel.class);
+        dashboardViewModel =ViewModelProviders.of(activity).get(DashboardViewModel.class);
 
     }
 
@@ -151,9 +158,8 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
         if (nprogram != null && nprogram.getCurrentEnrollment() != null) {
             presenter.setDashboardProgram(this.dashboardModel);
             SharedPreferences prefs = context.getSharedPreferences(Constants.SHARE_PREFS, Context.MODE_PRIVATE);
-            hasCatComb = nprogram.getCurrentProgram() != null && !nprogram.getCurrentProgram().categoryCombo().equals(prefs.getString(Constants.DEFAULT_CAT_COMBO, ""));
-            List<EventModel> events = new ArrayList<>();
-            adapter = new EventAdapter(presenter, nprogram.getProgramStages(), events, nprogram.getCurrentEnrollment(), nprogram.getCurrentProgram());
+            hasCatComb = nprogram.getCurrentProgram() != null && !nprogram.getCurrentProgram().categoryComboUid().equals(prefs.getString(Constants.DEFAULT_CAT_COMBO, ""));
+            adapter = new EventAdapter(presenter, nprogram.getProgramStages(),  new ArrayList<>(), nprogram.getCurrentEnrollment(), nprogram.getCurrentProgram());
             binding.teiRecycler.setLayoutManager(new LinearLayoutManager(getAbstracContext()));
             binding.teiRecycler.setAdapter(adapter);
             binding.setTrackEntity(nprogram.getTei());
@@ -219,7 +225,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
     }
 
     @Override
-    public Consumer<List<EventModel>> setEvents() {
+    public Consumer<List<Event>> setEvents() {
         return events -> {
             if (events.isEmpty()) {
                 binding.emptyTeis.setVisibility(View.VISIBLE);
@@ -231,7 +237,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
             } else {
                 binding.emptyTeis.setVisibility(View.GONE);
                 adapter.swapItems(events);
-                for (EventModel event : events) {
+                for (Event event : events) {
                     if (event.eventDate() != null) {
                         if (event.eventDate().after(DateUtils.getInstance().getToday()))
                             binding.teiRecycler.scrollToPosition(events.indexOf(event));
@@ -247,7 +253,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
     }
 
     @Override
-    public Consumer<ProgramStageModel> displayGenerateEvent() {
+    public Consumer<ProgramStage> displayGenerateEvent() {
         return programStageModel -> {
             this.programStageFromEvent = programStageModel;
             if (programStageModel.displayGenerateEventBox() || programStageModel.allowGenerateNextVisit()) {
@@ -399,5 +405,17 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
     @Override
     public void openEventCapture(Intent intent) {
         this.startActivityForResult(intent, REQ_EVENT, null);
+    }
+
+    @Override
+    public void showTeiImage(String fileName) {
+        File file = FileResourcesUtil.getFileForAttribute(context, fileName);
+        Glide.with(this)
+                .load(file)
+                .placeholder(R.drawable.photo_temp_gray)
+                .error(R.drawable.photo_temp_gray)
+                .transition(withCrossFade())
+                .transform(new CircleCrop())
+                .into(binding.cardFront.teiImage);
     }
 }

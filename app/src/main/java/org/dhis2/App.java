@@ -4,7 +4,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Looper;
-import android.util.Log;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatDelegate;
+import androidx.multidex.MultiDex;
+import androidx.multidex.MultiDexApplication;
 
 import com.crashlytics.android.Crashlytics;
 import com.facebook.stetho.Stetho;
@@ -17,8 +22,6 @@ import org.dhis2.data.dagger.PerUser;
 import org.dhis2.data.database.DbModule;
 import org.dhis2.data.forms.FormComponent;
 import org.dhis2.data.forms.FormModule;
-import org.dhis2.data.metadata.MetadataModule;
-import org.dhis2.data.qr.QRModule;
 import org.dhis2.data.schedulers.SchedulerModule;
 import org.dhis2.data.schedulers.SchedulersProviderImpl;
 import org.dhis2.data.server.ServerComponent;
@@ -28,27 +31,19 @@ import org.dhis2.data.user.UserComponent;
 import org.dhis2.data.user.UserModule;
 import org.dhis2.usescases.login.LoginComponent;
 import org.dhis2.usescases.login.LoginModule;
-import org.dhis2.usescases.sync.SyncComponent;
-import org.dhis2.usescases.sync.SyncModule;
 import org.dhis2.usescases.teiDashboard.TeiDashboardComponent;
 import org.dhis2.usescases.teiDashboard.TeiDashboardModule;
 import org.dhis2.utils.UtilsModule;
 import org.dhis2.utils.timber.DebugTree;
 import org.dhis2.utils.timber.ReleaseTree;
-import org.hisp.dhis.android.core.configuration.Configuration;
-import org.hisp.dhis.android.core.configuration.ConfigurationManager;
+import org.hisp.dhis.android.core.d2manager.D2Manager;
 
-import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatDelegate;
-import androidx.multidex.MultiDex;
-import androidx.multidex.MultiDexApplication;
 import io.fabric.sdk.android.Fabric;
 import io.ona.kujaku.KujakuLibrary;
 import io.reactivex.Scheduler;
+import io.reactivex.Single;
 import io.reactivex.android.plugins.RxAndroidPlugins;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import timber.log.Timber;
@@ -63,11 +58,6 @@ public class App extends MultiDexApplication implements Components {
     }
 
     private static final String DATABASE_NAME = "dhis.db";
-
-    private static App instance;
-
-    @Inject
-    ConfigurationManager configurationManager;
 
     @NonNull
     @Singleton
@@ -91,10 +81,6 @@ public class App extends MultiDexApplication implements Components {
 
     @Nullable
     @PerActivity
-    SyncComponent syncComponent;
-
-    @Nullable
-    @PerActivity
     private TeiDashboardComponent dashboardComponent;
 
     @Override
@@ -102,35 +88,26 @@ public class App extends MultiDexApplication implements Components {
         super.onCreate();
         Timber.plant(BuildConfig.DEBUG ? new DebugTree() : new ReleaseTree());
         long startTime = System.currentTimeMillis();
-        Timber.d("APPLICATION INITIALIZATION");
-        if (BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG)
             Stetho.initializeWithDefaults(this);
-            Timber.d("STETHO INITIALIZATION END AT %s", System.currentTimeMillis() - startTime);
-        }
+
+        Mapbox.getInstance(this, BuildConfig.MAPBOX_ACCESS_TOKEN);
 
         KujakuLibrary.setEnableMapDownloadResume(false);
         KujakuLibrary.init(this);
 
         Fabric.with(this, new Crashlytics());
-        Timber.d("FABRIC INITIALIZATION END AT %s", System.currentTimeMillis() - startTime);
-
-        this.instance = this;
 
         setUpAppComponent();
         setUpServerComponent();
-        setUpUserComponent();
+//        setUpUserComponent();
 
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP)
             upgradeSecurityProvider();
-            Timber.d("SECURITY INITIALIZATION END AT %s", System.currentTimeMillis() - startTime);
-        }
+
 
         Scheduler asyncMainThreadScheduler = AndroidSchedulers.from(Looper.getMainLooper(), true);
         RxAndroidPlugins.setInitMainThreadSchedulerHandler(schedulerCallable -> asyncMainThreadScheduler);
-        Timber.d("RXJAVAPLUGIN INITIALIZATION END AT %s", System.currentTimeMillis() - startTime);
-
-        Timber.d("APPLICATION INITIALIZATION END AT %s", System.currentTimeMillis() - startTime);
-        Timber.d("APPLICATION INITIALIZATION END AT %s", System.currentTimeMillis());
     }
 
     private void upgradeSecurityProvider() {
@@ -166,10 +143,21 @@ public class App extends MultiDexApplication implements Components {
     }
 
     private void setUpServerComponent() {
-        Configuration configuration = configurationManager.get();
-        if (configuration != null) {
-            serverComponent = appComponent.plus(new ServerModule(configuration));
-        }
+        boolean isLogged = D2Manager.setUp(ServerModule.getD2Configuration(this))
+                .andThen(
+                        Single.defer(() -> {
+                            if (D2Manager.isServerUrlSet())
+                                return D2Manager.instantiateD2().flatMap(d2 -> d2.userModule().isLogged());
+                            else
+                                return Single.just(false);
+
+                        })
+                ).blockingGet();
+        if (D2Manager.isServerUrlSet())
+            serverComponent = appComponent.plus(new ServerModule(), new DbModule(DATABASE_NAME));
+
+        if (isLogged)
+            setUpUserComponent();
     }
 
 
@@ -187,10 +175,9 @@ public class App extends MultiDexApplication implements Components {
     @NonNull
     protected AppComponent.Builder prepareAppComponent() {
         return DaggerAppComponent.builder()
-                .dbModule(new DbModule(DATABASE_NAME))
+//                .dbModule(new DbModule(DATABASE_NAME))
                 .appModule(new AppModule(this))
                 .schedulerModule(new SchedulerModule(new SchedulersProviderImpl()))
-                .metadataModule(new MetadataModule())
                 .utilModule(new UtilsModule());
     }
 
@@ -226,29 +213,13 @@ public class App extends MultiDexApplication implements Components {
         loginComponent = null;
     }
 
-    @NonNull
-    @Override
-    public SyncComponent createSyncComponent() {
-        return (syncComponent = appComponent.plus(new SyncModule()));
-    }
-
-    @Nullable
-    @Override
-    public SyncComponent syncComponent() {
-        return syncComponent;
-    }
-
-    @Override
-    public void releaseSyncComponent() {
-        syncComponent = null;
-    }
-
     ////////////////////////////////////////////////////////////////////////
     // Server component
     ////////////////////////////////////////////////////////////////////////
+
     @Override
-    public ServerComponent createServerComponent(@NonNull Configuration configuration) {
-        serverComponent = appComponent.plus(new ServerModule(configuration));
+    public ServerComponent createServerComponent() {
+        serverComponent = appComponent.plus(new ServerModule(), new DbModule(DATABASE_NAME));
         return serverComponent;
 
     }
@@ -325,10 +296,6 @@ public class App extends MultiDexApplication implements Components {
     // AndroidInjector
     ////////////////////////////////////////////////////////////////////////
 
-
-    public static App getInstance() {
-        return instance;
-    }
 
     /**
      * Visible only for testing purposes.

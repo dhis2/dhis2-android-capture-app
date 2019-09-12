@@ -6,7 +6,7 @@ import androidx.annotation.NonNull;
 import com.google.auto.value.AutoValue;
 
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
-import org.hisp.dhis.android.core.common.ObjectStyleModel;
+import org.hisp.dhis.android.core.common.ObjectStyle;
 
 import javax.annotation.Nonnull;
 
@@ -14,7 +14,7 @@ import javax.annotation.Nonnull;
 public abstract class DisplayViewModel extends FieldViewModel {
 
     public static DisplayViewModel create(String id, String label, String value, String description) {
-        return new AutoValue_DisplayViewModel(id, label, false, value, null, null, false, null, null, null,  description,ObjectStyleModel.builder().build());
+        return new AutoValue_DisplayViewModel(id, label, false, value, null, null, false, null, null, null,  description, ObjectStyle.builder().build());
     }
 
     @Override

@@ -10,10 +10,6 @@
             type="org.dhis2.usescases.teiDashboard.TeiDashboardContracts.Presenter" />
 
         <variable
-            name="trackEntity"
-            type="org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel" />
-
-        <variable
             name="dashboardModel"
             type="org.dhis2.usescases.teiDashboard.DashboardProgramModel" />
     </data>

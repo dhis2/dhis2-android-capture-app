@@ -33,45 +33,26 @@
                 app:srcCompat="@drawable/ic_arrow_back" />
 
             <ImageView
-                android:id="@+id/buttonMoreOptions"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="16dp"
-                android:layout_marginBottom="16dp"
+                android:id="@+id/moreOptions"
+                style="@style/ActionIcon"
                 android:onClick="showMoreOptions"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:srcCompat="@drawable/ic_more" />
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/ic_more"
+                tools:ignore="ContentDescription" />
 
 
-            <RelativeLayout
-                android:id="@+id/buttonPercentage"
+            <org.dhis2.utils.custom_views.CircularCompletionView
+                android:id="@+id/completion"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="12dp"
-                android:padding="3dp"
-                app:layout_constraintEnd_toStartOf="@id/buttonMoreOptions">
-
-                <ProgressBar
-                    android:id="@+id/progressGains"
-                    style="?android:attr/progressBarStyleHorizontal"
-                    android:layout_width="56dp"
-                    android:layout_height="56dp"
-                    android:background="@drawable/circle_shape"
-                    android:indeterminate="false"
-                    android:max="100"
-                    android:progress="0"
-                    android:progressDrawable="@drawable/progress_circle" />
-
-                <TextView
-                    android:id="@+id/progress"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerInParent="true"
-                    android:textColor="@color/text_black_333"
-                    android:textSize="14sp"
-                    tools:text="100%" />
-            </RelativeLayout>
+                android:layout_height="0dp"
+                app:layout_constraintBottom_toBottomOf="@+id/moreOptions"
+                app:layout_constraintEnd_toStartOf="@id/moreOptions"
+                app:layout_constraintTop_toTopOf="@+id/moreOptions"
+                app:percentageColor="@color/bg_white_f9f"
+                app:percentageSize="13sp"
+                app:strokeSize="3dp"/>
 
             <TextView
                 android:id="@+id/programStageName"
@@ -81,7 +62,7 @@
                 android:layout_marginStart="12dp"
                 android:maxLines="1"
                 android:textColor="?colorAccent"
-                app:layout_constraintEnd_toStartOf="@id/buttonPercentage"
+                app:layout_constraintEnd_toStartOf="@id/completion"
                 app:layout_constraintStart_toEndOf="@id/buttonBack"
                 app:layout_constraintTop_toTopOf="@id/buttonBack"
                 tools:text="Program Stage Name" />
@@ -96,7 +77,7 @@
                 android:maxLines="1"
                 android:textColor="?colorAccent"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/buttonPercentage"
+                app:layout_constraintEnd_toStartOf="@id/completion"
                 app:layout_constraintStart_toEndOf="@id/buttonBack"
                 tools:text="2018-01-07|Org Unit|Cat Option" />
         </androidx.constraintlayout.widget.ConstraintLayout>

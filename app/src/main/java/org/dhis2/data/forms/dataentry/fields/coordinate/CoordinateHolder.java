@@ -30,15 +30,15 @@ public class CoordinateHolder extends FormViewHolder {
         this.binding = binding;
         this.currentUid = currentSelection;
 
-        binding.formCoordinates.setCurrentLocationListener((latitude, longitude) -> {
+        binding.formCoordinates.setCurrentLocationListener((geometry) -> {
                     closeKeyboard(binding.formCoordinates);
-                    if (latitude == null || longitude == null) {
+                    if (geometry == null) {
                         processor.onNext(
                                 RowAction.create(model.uid(), null, getAdapterPosition()));
                     } else
                         processor.onNext(
                                 RowAction.create(model.uid(),
-                                        String.format(Locale.US, "[%.5f,%.5f]", longitude, latitude),
+                                        geometry.coordinates(),
                                         getAdapterPosition()));
                     clearBackground(isSearchMode);
                 }

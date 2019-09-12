@@ -4,10 +4,15 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.AppCompatTextView;
 import androidx.appcompat.widget.PopupMenu;
+import androidx.databinding.DataBindingUtil;
+import androidx.databinding.ObservableField;
 import androidx.databinding.ViewDataBinding;
 
 import com.google.android.material.textfield.TextInputEditText;
@@ -15,12 +20,13 @@ import com.google.android.material.textfield.TextInputLayout;
 
 import org.dhis2.Bindings.Bindings;
 import org.dhis2.R;
+import org.dhis2.databinding.CustomCellViewBinding;
 import org.dhis2.databinding.FormSpinnerAccentBinding;
 import org.dhis2.databinding.FormSpinnerBinding;
+import org.dhis2.usescases.datasets.dataSetTable.dataSetSection.DataSetTableAdapter;
 import org.dhis2.utils.Constants;
-import org.hisp.dhis.android.core.common.ObjectStyleModel;
+import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.option.Option;
-import org.hisp.dhis.android.core.option.OptionModel;
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
 
 import static android.text.TextUtils.isEmpty;
@@ -29,7 +35,7 @@ public class OptionSetView extends FieldLayout implements OptionSetOnClickListen
     private ViewDataBinding binding;
 
     private ImageView iconView;
-    private TextInputEditText editText;
+    private TextView editText;
     private TextInputLayout inputLayout;
     private View descriptionLabel;
     private View delete;
@@ -77,6 +83,19 @@ public class OptionSetView extends FieldLayout implements OptionSetOnClickListen
         });
 
     }
+    public void setCellLayout(ObservableField<DataSetTableAdapter.TableScale> tableScale){
+        binding = DataBindingUtil.inflate(inflater, R.layout.custom_cell_view, this, true);
+        ((CustomCellViewBinding)binding).setTableScale(tableScale);
+        editText = findViewById(R.id.inputEditText);
+        editText.setFocusable(false); //Makes editText not editable
+        editText.setClickable(true);//  but clickable
+
+        editText.setOnFocusChangeListener((v, hasFocus) -> {
+            if (hasFocus)
+                editText.performClick();
+        });
+    }
+
 
     @Override
     public void setOnClickListener(@Nullable OnClickListener l) {
@@ -89,7 +108,8 @@ public class OptionSetView extends FieldLayout implements OptionSetOnClickListen
 
     public void deleteSelectedOption() {
         setValueOption(null, null);
-        delete.setVisibility(View.GONE);
+        if(delete!=null)
+            delete.setVisibility(View.GONE);
     }
 
     public void setOnSelectedOptionListener(OnSelectedOption listener) {
@@ -105,19 +125,20 @@ public class OptionSetView extends FieldLayout implements OptionSetOnClickListen
 
         editText.setText(optionDisplayName);
 
-        if (optionDisplayName != null && !optionDisplayName.isEmpty()) {
-            delete.setVisibility(View.VISIBLE);
-        } else {
-            delete.setVisibility(View.GONE);
+        if(delete!=null) {
+            if (optionDisplayName != null && !optionDisplayName.isEmpty()) {
+                delete.setVisibility(View.VISIBLE);
+            } else {
+                delete.setVisibility(View.GONE);
+            }
         }
 
         listener.onSelectedOption(optionDisplayName, optionCode);
 
     }
 
-    public void setObjectStyle(ObjectStyleModel objectStyle) {
+    public void setObjectStyle(ObjectStyle objectStyle) {
         Bindings.setObjectStyle(iconView, this, objectStyle);
-
     }
 
     public void updateEditable(boolean isEditable) {
@@ -132,7 +153,7 @@ public class OptionSetView extends FieldLayout implements OptionSetOnClickListen
 
         editText.setText(value);
 
-        if (editText.getText() != null && !editText.getText().toString().isEmpty()) {
+        if (delete!=null && editText.getText() != null && !editText.getText().toString().isEmpty()) {
             delete.setVisibility(View.VISIBLE);
         }
     }

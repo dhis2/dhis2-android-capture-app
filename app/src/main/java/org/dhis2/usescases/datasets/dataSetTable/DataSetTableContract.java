@@ -1,28 +1,54 @@
 package org.dhis2.usescases.datasets.dataSetTable;
 
 import org.dhis2.usescases.general.AbstractActivityContracts;
-import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
-import org.hisp.dhis.android.core.dataelement.DataElementModel;
-import org.hisp.dhis.android.core.dataset.DataSetModel;
+import org.hisp.dhis.android.core.dataset.DataSet;
 
 import java.util.List;
-import java.util.Map;
 
 public class DataSetTableContract {
 
     public interface View extends AbstractActivityContracts.View {
 
-        void setDataElements(Map<String, List<DataElementModel>> data, Map<String, List<CategoryOptionComboModel>> stringListMap);
+        void setSections(List<String> sections);
 
-        void setDataSet(DataSetModel data);
+        void setDataValue(List<DataSetTableModel> data);
+
+        Boolean accessDataWrite();
+
+        void showOptions(boolean open);
+
+        String getDataSetUid();
+
+        String getOrgUnitName();
+
+        void goToTable(int numTable);
+
+        void renderDetails(DataSet dataSet, String catcomboName);
+
+        void isDataSetOpen(boolean dataSetIsOpen);
+
+        void isDataSetSynced(boolean dataSetIsSynced);
+
+        void runSmsSubmission();
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter {
+
         void onBackClick();
-        void init(View view, String orgUnitUid, String periodTypeName, String periodInitialDate, String catCombo);
+        void onSyncClick();
 
-        List<DataElementModel> getDataElements(String string);
+        void init(View view, String orgUnitUid, String periodTypeName, String catCombo, String periodFinalDate, String periodId);
 
-        List<CategoryOptionComboModel> getCatOptionCombos(String string);
+        String getOrgUnitUid();
+        String getPeriodTypeName();
+        String getPeriodFinalDate();
+        String getCatCombo();
+        String getPeriodId();
+        void optionsClick();
+
+        void onClickSelectTable(int numTable);
+
+        String getCatOptComboFromOptionList(List<String> catOpts);
     }
+
 }

@@ -2,6 +2,8 @@ package org.dhis2.usescases.main.program;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
@@ -28,11 +30,16 @@ import org.dhis2.R;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.databinding.FragmentProgramBinding;
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
+import org.dhis2.usescases.main.MainActivity;
+import org.dhis2.usescases.main.MainContracts;
+import org.dhis2.usescases.org_unit_selector.OUTreeActivity;
+import org.dhis2.utils.Constants;
 import org.dhis2.utils.DatePickerUtils;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.HelpManager;
 import org.dhis2.utils.Period;
 import org.dhis2.utils.custom_views.RxDateDialog;
+import org.dhis2.utils.filters.FilterManager;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.jetbrains.annotations.NotNull;
 
@@ -143,28 +150,28 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
 
             if (currentPeriod != DAILY && currentPeriod != NONE) {
                 new RxDateDialog(getAbstractActivity(), currentPeriod).create().show().subscribe(selectedDates -> {
-                    if (!selectedDates.isEmpty()) {
+                    if (!selectedDates.val1().isEmpty()) {
                         String textToShow;
                         if (currentPeriod == WEEKLY) {
-                            textToShow = weeklyFormat.format(selectedDates.get(0)) + ", " + yearFormat.format(selectedDates.get(0));
-                            chosenDateWeek = (ArrayList<Date>) selectedDates;
-                            if (selectedDates.size() > 1)
+                            textToShow = weeklyFormat.format(selectedDates.val1().get(0)) + ", " + yearFormat.format(selectedDates.val1().get(0));
+                            chosenDateWeek = (ArrayList<Date>) selectedDates.val1();
+                            if (selectedDates.val1().size() > 1)
                                 textToShow += "... " /*+ weeklyFormat.format(selectedDates.get(1))*/;
                         } else if (currentPeriod == MONTHLY) {
-                            String dateFormatted = monthFormat.format(selectedDates.get(0));
+                            String dateFormatted = monthFormat.format(selectedDates.val1().get(0));
                             textToShow = dateFormatted.substring(0, 1).toUpperCase() + dateFormatted.substring(1);
-                            chosenDateMonth = (ArrayList<Date>) selectedDates;
-                            if (selectedDates.size() > 1)
+                            chosenDateMonth = (ArrayList<Date>) selectedDates.val1();
+                            if (selectedDates.val1().size() > 1)
                                 textToShow += "... " /*+ monthFormat.format(selectedDates.get(1))*/;
                         } else {
-                            textToShow = yearFormat.format(selectedDates.get(0));
-                            chosenDateYear = (ArrayList<Date>) selectedDates;
-                            if (selectedDates.size() > 1)
+                            textToShow = yearFormat.format(selectedDates.val1().get(0));
+                            chosenDateYear = (ArrayList<Date>) selectedDates.val1();
+                            if (selectedDates.val1().size() > 1)
                                 textToShow += "... " /*+ yearFormat.format(selectedDates.get(1))*/;
 
                         }
                         binding.buttonPeriodText.setText(textToShow);
-                        presenter.updateDateFilter(DateUtils.getInstance().getDatePeriodListFor(selectedDates, currentPeriod));
+                        presenter.updateDateFilter(DateUtils.getInstance().getDatePeriodListFor(selectedDates.val1(), currentPeriod));
 
                     } else {
                         ArrayList<Date> date = new ArrayList<>();
@@ -188,7 +195,7 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
                                 break;
                         }
                         binding.buttonPeriodText.setText(text);
-                        presenter.updateDateFilter(DateUtils.getInstance().getDatePeriodListFor(selectedDates, currentPeriod));
+                        presenter.updateDateFilter(DateUtils.getInstance().getDatePeriodListFor(selectedDates.val1(), currentPeriod));
                     }
                 }, Timber::d);
             } else if (currentPeriod == DAILY) {
@@ -304,7 +311,6 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
             binding.buttonPeriodText.setText(textToShow);
         }
     }
-
 
     @Override
     public Consumer<List<ProgramViewModel>> swapProgramModelData() {
@@ -422,6 +428,12 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
         };
     }
 
+    @Override
+    public void openOrgUnitTreeSelector() {
+        Intent ouTreeIntent = new Intent(context, OUTreeActivity.class);
+        ((MainActivity)context).startActivityForResult(ouTreeIntent, FilterManager.OU_TREE);
+    }
+
 
     @Override
     public void apply() {
@@ -463,5 +475,19 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
         } catch (Exception e) {
             Timber.e(e);
         }
+    }
+
+    public void openFilter(boolean open) {
+        binding.filter.setVisibility(open ? View.VISIBLE : View.GONE);
+    }
+
+    @Override
+    public void showHideFilter(){
+        ((MainActivity)getActivity()).showHideFilter();
+    }
+
+    @Override
+    public void clearFilters() {
+        ((MainActivity)getActivity()).getAdapter().notifyDataSetChanged();
     }
 }

@@ -4,7 +4,7 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 
-import com.unnamed.b.atv.model.TreeNode;
+import com.mapbox.mapboxsdk.geometry.LatLng;
 
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Trio;
@@ -12,19 +12,14 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureAc
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity;
 import org.dhis2.usescases.main.program.SyncStatusDialog;
 import org.dhis2.utils.Constants;
-import org.dhis2.utils.OrgUnitUtils;
-import org.dhis2.utils.Period;
-import org.hisp.dhis.android.core.category.CategoryOption;
+import org.dhis2.utils.filters.FilterManager;
 import org.hisp.dhis.android.core.category.CategoryOptionCombo;
-import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
-import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
+import org.hisp.dhis.android.core.common.Unit;
 import org.hisp.dhis.android.core.period.DatePeriod;
-import org.hisp.dhis.android.core.program.ProgramModel;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import io.reactivex.BackpressureStrategy;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
@@ -45,33 +40,45 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
 
     private final ProgramEventDetailRepository eventRepository;
     private ProgramEventDetailContract.View view;
-    protected ProgramModel program;
     protected String programId;
     private CompositeDisposable compositeDisposable;
-    private List<OrganisationUnitModel> orgUnits = new ArrayList<>();
-    private FlowableProcessor<Pair<TreeNode, String>> parentOrgUnit;
     private FlowableProcessor<Trio<List<DatePeriod>, List<String>, List<CategoryOptionCombo>>> programQueries;
 
     //Search fields
     private List<DatePeriod> currentDateFilter;
     private List<String> currentOrgUnitFilter;
     private List<CategoryOptionCombo> currentCatOptionCombo;
+    private FlowableProcessor<Boolean> processorDismissDialog;
+    private FlowableProcessor<Pair<String, LatLng>> eventInfoProcessor;
+    private FlowableProcessor<Unit> mapProcessor;
 
     ProgramEventDetailPresenter(
             @NonNull String programUid, @NonNull ProgramEventDetailRepository programEventDetailRepository) {
         this.eventRepository = programEventDetailRepository;
         this.programId = programUid;
         this.currentCatOptionCombo = new ArrayList<>();
+        eventInfoProcessor = PublishProcessor.create();
+        mapProcessor = PublishProcessor.create();
     }
 
     @Override
-    public void init(ProgramEventDetailContract.View view, Period period) {
+    public void init(ProgramEventDetailContract.View view) {
         this.view = view;
         compositeDisposable = new CompositeDisposable();
         this.currentOrgUnitFilter = new ArrayList<>();
         this.currentDateFilter = new ArrayList<>();
         programQueries = PublishProcessor.create();
-        parentOrgUnit = PublishProcessor.create();
+
+        this.processorDismissDialog = PublishProcessor.create();
+
+        compositeDisposable.add(eventRepository.featureType()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        view.setFeatureType(),
+                        Timber.tag("EVENTLIST")::e
+                )
+        );
 
         compositeDisposable.add(Observable.just(eventRepository.getAccessDataWrite())
                 .subscribeOn(Schedulers.computation())
@@ -79,6 +86,17 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
                 .subscribe(
                         view::setWritePermission,
                         Timber::e)
+        );
+
+
+        compositeDisposable.add(
+                eventRepository.hasAccessToAllCatOptions()
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                view::setOptionComboAccess,
+                                Timber::e
+                        )
         );
 
         compositeDisposable.add(
@@ -92,19 +110,24 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
         );
 
         compositeDisposable.add(
-                eventRepository.catCombo()
+                eventRepository.catOptionCombos()
+                        .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
-                        .subscribeOn(Schedulers.computation())
-                        .subscribe(
-                                view::setCatComboOptions,
+                        .subscribe(view::setCatOptionComboFilter,
                                 Timber::e
                         )
         );
 
         compositeDisposable.add(
-                programQueries
-                        .startWith(Trio.create(new ArrayList<>(), new ArrayList<>(), new ArrayList<>()))
-                        .map(dates_ou_coc -> eventRepository.filteredProgramEvents(dates_ou_coc.val0(), dates_ou_coc.val1(), dates_ou_coc.val2()))
+                FilterManager.getInstance().asFlowable()
+                        .startWith(FilterManager.getInstance())
+                        .map(filterManager -> eventRepository.filteredProgramEvents(
+                                filterManager.getPeriodFilters(),
+                                filterManager.getOrgUnitUidsFilters(),
+                                filterManager.getCatOptComboFilters(),
+                                filterManager.getEventStatusFilters(),
+                                filterManager.getStateFilters()
+                        ))
                         .subscribeOn(Schedulers.computation())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
@@ -113,14 +136,68 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
                         ));
 
         compositeDisposable.add(
-                parentOrgUnit
-                        .flatMap(orgUnit -> eventRepository.orgUnits(orgUnit.val1()).toFlowable(BackpressureStrategy.LATEST)
-                                .map(orgUnits1 -> OrgUnitUtils.createNode(view.getContext(), orgUnits, true))
-                                .map(nodeList -> Pair.create(orgUnit.val0(), nodeList)))
+                mapProcessor
+                        .flatMap(unit ->
+                                FilterManager.getInstance().asFlowable()
+                                        .startWith(FilterManager.getInstance())
+                                        .flatMap(filterManager -> eventRepository.filteredEventsForMap(
+                                                filterManager.getPeriodFilters(),
+                                                filterManager.getOrgUnitUidsFilters(),
+                                                filterManager.getCatOptComboFilters(),
+                                                filterManager.getEventStatusFilters(),
+                                                filterManager.getStateFilters()
+                                        )))
+                        .subscribeOn(Schedulers.computation())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                view.setMap(),
+                                throwable -> view.renderError(throwable.getMessage())
+                        ));
+
+        compositeDisposable.add(
+                eventInfoProcessor
+                        .flatMap(eventInfo -> eventRepository.getInfoForEvent(eventInfo.val0())
+                                .map(eventData -> Pair.create(eventData, eventInfo.val1())))
+                        .subscribeOn(Schedulers.computation())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                view::setEventInfo,
+                                throwable -> view.renderError(throwable.getMessage())
+                        ));
+
+        compositeDisposable.add(
+                FilterManager.getInstance().ouTreeFlowable()
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
-                                view.addNodeToTree(),
+                                open -> view.openOrgUnitTreeSelector(),
+                                Timber::e
+                        )
+        );
+
+        compositeDisposable.add(processorDismissDialog
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        bool -> init(view),
+                        Timber::d));
+
+        compositeDisposable.add(
+                FilterManager.getInstance().asFlowable()
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                filterManager -> view.updateFilters(filterManager.getTotalFilters()),
+                                Timber::e
+                        )
+        );
+
+        compositeDisposable.add(
+                FilterManager.getInstance().getPeriodRequest()
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                periodRequest -> view.showPeriodRequest(periodRequest),
                                 Timber::e
                         ));
     }
@@ -132,76 +209,18 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
     }
 
     @Override
-    public void updateOrgUnitFilter(List<String> orgUnitList) {
-        this.currentOrgUnitFilter = orgUnitList;
-        programQueries.onNext(Trio.create(currentDateFilter, currentOrgUnitFilter, currentCatOptionCombo));
-    }
-
-    @Override
-    public void updateCatOptCombFilter(List<CategoryOption> categoryOptionComboMap) {
-        this.currentCatOptionCombo = eventRepository.catOptionCombo(categoryOptionComboMap);
-        programQueries.onNext(Trio.create(currentDateFilter, currentOrgUnitFilter, currentCatOptionCombo));
-    }
-
-    @Override
-    public void onTimeButtonClick() {
-        view.showTimeUnitPicker();
-    }
-
-    @Override
-    public void onDateRangeButtonClick() {
-        view.showRageDatePicker();
-    }
-
-    @Override
-    public void onOrgUnitButtonClick() {
-        view.openDrawer();
-        if (orgUnits.isEmpty()) {
-            view.orgUnitProgress(true);
-            compositeDisposable.add(
-                    eventRepository.orgUnits()
-                            .subscribeOn(Schedulers.computation())
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe(
-                                    data -> {
-                                        this.orgUnits = data;
-                                        view.orgUnitProgress(false);
-                                        view.addTree(OrgUnitUtils.renderTree(view.getContext(), orgUnits, true));
-                                    },
-                                    throwable -> view.renderError(throwable.getMessage())));
-        }
-    }
-
-    @Override
-    public void setProgram(ProgramModel program) {
-
-        this.program = program;
-    }
-
-    @Override
-    public List<OrganisationUnitModel> getOrgUnits() {
-        return this.orgUnits;
-    }
-
-    @Override
-    public void onExpandOrgUnitNode(TreeNode treeNode, String parentUid) {
-        parentOrgUnit.onNext(Pair.create(treeNode, parentUid));
-
-    }
-
-    @Override
     public void onSyncIconClick(String uid) {
-        view.showSyncDialog(uid, SyncStatusDialog.ConflictType.EVENT);
+        view.showSyncDialog(uid, SyncStatusDialog.ConflictType.EVENT, processorDismissDialog);
     }
 
     @Override
-    public void onCatComboSelected(CategoryOptionComboModel categoryOptionComboModel) {
-
+    public void getEventInfo(String eventUid, LatLng latLng) {
+        eventInfoProcessor.onNext(Pair.create(eventUid, latLng));
     }
 
     @Override
-    public void clearCatComboFilters() {
-
+    public void getMapData() {
+        mapProcessor.onNext(new Unit());
     }
 
     @Override
@@ -217,13 +236,12 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
     }
 
     public void addEvent() {
-        Bundle bundle = new Bundle();
-        bundle.putString(PROGRAM_UID, programId);
-        view.startActivity(EventInitialActivity.class, bundle, false, false, null);
+        view.startNewEvent();
     }
 
     @Override
     public void onBackClick() {
+
         view.back();
     }
 
@@ -241,4 +259,11 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
     public void showFilter() {
         view.showHideFilter();
     }
+
+    @Override
+    public void clearFilterClick() {
+        FilterManager.getInstance().clearAllFilters();
+        view.clearFilters();
+    }
+
 }

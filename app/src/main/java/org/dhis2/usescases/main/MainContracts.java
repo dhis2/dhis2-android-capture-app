@@ -5,6 +5,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.UiThread;
 
 import org.dhis2.usescases.general.AbstractActivityContracts;
+import org.dhis2.utils.filters.FilterManager;
 import org.hisp.dhis.android.core.imports.TrackerImportConflict;
 import org.hisp.dhis.android.core.maintenance.D2Error;
 
@@ -29,6 +30,10 @@ public final class MainContracts {
         void changeFragment(int id);
 
         void showSyncErrors(List<TrackerImportConflict> data);
+
+        void updateFilters(int totalFilters);
+
+        void showPeriodRequest(FilterManager.PeriodRequest periodRequest);
     }
 
     public interface Presenter {

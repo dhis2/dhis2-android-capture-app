@@ -7,7 +7,7 @@
 
         <variable
             name="presenter"
-            type="org.dhis2.usescases.syncManager.SyncManagerContracts.Presenter" />
+            type="org.dhis2.usescases.settings.SyncManagerContracts.Presenter" />
 
     </data>
 
@@ -78,6 +78,10 @@
                 android:layout_marginTop="10dp"
                 android:onClick='@{()->presenter.syncMeta()}'
                 android:text="@string/SYNC_META" />
+
+            <include
+                android:id="@+id/settings_sms"
+                layout="@layout/settings_sms" />
 
             <TextView
                 android:layout_width="match_parent"

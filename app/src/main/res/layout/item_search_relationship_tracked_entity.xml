@@ -7,8 +7,6 @@
 
         <import type="android.view.View" />
 
-        <import type="java.lang.String" />
-
         <variable
             name="presenter"
             type="org.dhis2.usescases.searchTrackEntity.SearchTEContractsModule.Presenter" />
@@ -19,7 +17,7 @@
 
         <variable
             name="attribute"
-            type="java.util.List&lt;org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel&gt;" />
+            type="java.util.List&lt;org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue&gt;" />
 
         <variable
             name="relationship"

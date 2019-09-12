@@ -3,7 +3,7 @@ package org.dhis2.data.forms.dataentry.fields.file;
 import androidx.annotation.NonNull;
 
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
-import org.hisp.dhis.android.core.common.ObjectStyleModel;
+import org.hisp.dhis.android.core.common.ObjectStyle;
 
 import com.google.auto.value.AutoValue;
 
@@ -15,7 +15,7 @@ import javax.annotation.Nonnull;
 
 @AutoValue
 public abstract class FileViewModel extends FieldViewModel {
-    public static FieldViewModel create(String id, String label, Boolean mandatory, String value, String section, String description, ObjectStyleModel objectStyle) {
+    public static FieldViewModel create(String id, String label, Boolean mandatory, String value, String section, String description, ObjectStyle objectStyle) {
         return new AutoValue_FileViewModel(id, label, mandatory, value, section, null,
                 true, null, null, null,description,objectStyle);
     }
