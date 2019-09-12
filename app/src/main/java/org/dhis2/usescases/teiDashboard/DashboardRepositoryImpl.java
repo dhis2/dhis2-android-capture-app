@@ -33,6 +33,8 @@ import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.event.EventTableInfo;
 import org.hisp.dhis.android.core.event.internal.EventFields;
+import org.hisp.dhis.android.core.legendset.Legend;
+import org.hisp.dhis.android.core.legendset.LegendSet;
 import org.hisp.dhis.android.core.maintenance.D2Error;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.Program;
@@ -47,6 +49,7 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -56,6 +59,7 @@ import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.functions.Consumer;
+import io.reactivex.functions.Predicate;
 import timber.log.Timber;
 
 import static org.hisp.dhis.android.core.arch.db.stores.internal.StoreUtils.sqLiteBind;
@@ -70,20 +74,8 @@ public class DashboardRepositoryImpl implements DashboardRepository {
             "uid, enrollment, value, storedBy, storedDate, state" +
             ") VALUES (?, ?, ?, ?, ?,?);";
 
-    private static final String SELECT_NOTES = "SELECT " +
-            "Note.* FROM Note\n" +
-            "JOIN Enrollment ON Enrollment.uid = Note.enrollment\n" +
-            "WHERE Enrollment.trackedEntityInstance = ? AND Enrollment.program = ?\n" +
-            "ORDER BY Note.storedDate DESC";
 
-    private final String PROGRAM_STAGE_FROM_EVENT = String.format(
-            "SELECT %s.* FROM %s JOIN %s " +
-                    "ON %s.%s = %s.%s " +
-                    "WHERE %s.%s = ? " +
-                    "LIMIT 1",
-            "ProgramStage", "ProgramStage", "TABLE",
-            "ProgramStage", "uid", "Event", "programStage",
-            "Event", "uid");
+
 
 
     private final String EVENTS_QUERY = String.format(
@@ -160,24 +152,11 @@ public class DashboardRepositoryImpl implements DashboardRepository {
     private String teiUid;
     private String programUid;
 
-    private static final String SELECT_USERNAME = "SELECT " +
-            "UserCredentials.displayName FROM UserCredentials";
+
     private static final String SELECT_ENROLLMENT = "SELECT " +
             "Enrollment.uid FROM Enrollment JOIN Program ON Program.uid = Enrollment.program\n" +
             "WHERE Program.uid = ? AND Enrollment.status = ? AND Enrollment.trackedEntityInstance = ?";
 
-    private static final String SELECT_LEGEND = String.format("SELECT %s.%s FROM %s\n" +
-                    "JOIN %s ON %s.%s = %s.%s\n" +
-                    "JOIN %s ON %s.%s = %s.%s\n" +
-                    "WHERE %s.%s = ?\n" +
-                    "AND %s.%s <= ?\n" +
-                    "AND %s.%s > ?",
-            "Legend", "color", "Legend",
-            "ProgramIndicatorLegendSetLink", "ProgramIndicatorLegendSetLink", "legendSet", "Legend", "LegendSet",
-            "ProgramIndicator", "ProgramIndicator", "uid", "ProgramIndicatorLegendSetLink", "programIndicator",
-            "ProgramIndicator", "uid",
-            "Legend", "startValue",
-            "Legend", "endValue");
 
     public DashboardRepositoryImpl(CodeGenerator codeGenerator, BriteDatabase briteDatabase, D2 d2) {
         this.briteDatabase = briteDatabase;
@@ -247,24 +226,37 @@ public class DashboardRepositoryImpl implements DashboardRepository {
                 .mapToList(Event::create);
     }
 
+
     @Override
     public Observable<ProgramStage> displayGenerateEvent(String eventUid) {
         String id = eventUid == null ? "" : eventUid;
-        return briteDatabase.createQuery("ProgramStage", PROGRAM_STAGE_FROM_EVENT, id)
-                .mapToOne(ProgramStage::create);
+        return d2.eventModule().events.uid(id).get()
+                .flatMap(event -> d2.programModule().programStages.uid(event.programStage()).get())
+                .toObservable();
     }
 
 
+    // TODO @var value must be double
     @Override
     public Observable<Trio<ProgramIndicator, String, String>> getLegendColorForIndicator(ProgramIndicator indicator, String value) {
         String piId = indicator != null && indicator.uid() != null ? indicator.uid() : "";
-        String color = "";
-        try (Cursor cursor = briteDatabase.query(SELECT_LEGEND, piId, value == null ? "" : value, value == null ? "" : value)) {
-            if (cursor != null && cursor.moveToFirst() && cursor.getCount() > 0) {
-                color = cursor.getString(0);
-            }
-        }
-        return Observable.just(Trio.create(indicator, value, color));
+        return d2.programModule().programIndicators.withLegendSets().uid(piId).get().toObservable()
+                .map(programIndicator -> {
+                    String color = "";
+                    if (programIndicator != null && programIndicator.legendSets() != null)
+                    for(LegendSet legendSet: programIndicator.legendSets()){
+                        if (legendSet != null && legendSet.legends() != null)
+                        for(Legend legend :legendSet.legends()){
+                            Double valueDouble = 0.0;
+                            try {
+                                valueDouble = Double.parseDouble(value);
+                            } catch (Exception e) { }
+                            if(legend.startValue() > valueDouble && legend.endValue() < valueDouble)
+                            color = legend.color();
+                        }
+                    }
+                    return Trio.create(indicator, value, color);
+                });
     }
 
     @Override
@@ -384,9 +376,23 @@ public class DashboardRepositoryImpl implements DashboardRepository {
 
     @Override
     public Flowable<List<Note>> getNotes(String programUid, String teUid) {
-        return briteDatabase.createQuery("Note", SELECT_NOTES, teUid == null ? "" : teUid, programUid == null ? "" : programUid)
-                .mapToList(Note::create).toFlowable(BackpressureStrategy.LATEST);
+        //TODO set order by note.storeDate DESC. Does not have the order into the module
+        return d2.enrollmentModule().enrollments.withNotes()
+                .byProgram().eq(programUid)
+                .byTrackedEntityInstance().eq(teUid)
+                .get()
+                .map(programs -> {
+                    List<Note> notes = new ArrayList<>();
+                    for (Enrollment enrollment: programs) {
+                        if (enrollment.notes() != null)
+                            notes.addAll(enrollment.notes());
+                    }
+                    return notes;
+                }).toFlowable();
     }
+
+    private static final String SELECT_USERNAME = "SELECT " +
+            "UserCredentials.displayName FROM UserCredentials";
 
     @Override
     public Consumer<Pair<String, Boolean>> handleNote() {
