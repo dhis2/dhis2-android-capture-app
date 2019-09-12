@@ -564,5 +564,6 @@
     <string name="value_required_but_not_provided">%s is mandatory but has not been provided.</string>
     <string name="polygon_captured">Polygon captured</string>
     <string name="polygon">Polygon</string>
+    <string name="map_layers">Map layers</string>
     <!--endregion-->
 </resources>

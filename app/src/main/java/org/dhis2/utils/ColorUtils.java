@@ -24,14 +24,6 @@ import static android.text.TextUtils.isEmpty;
 
 public class ColorUtils {
 
-    public static RippleDrawable getRippleDrawable(int pressedColor, Drawable bgDrawable) {
-        return new RippleDrawable(getPressedState(pressedColor), bgDrawable, null);
-    }
-
-    public static ColorStateList getPressedState(int pressedColor) {
-        return new ColorStateList(new int[][]{new int[]{}}, new int[]{pressedColor});
-    }
-
     public static int parseColor(@NonNull String hexColor) {
         if (hexColor.length() == 4) {//Color is formatted as #fff
             char r = hexColor.charAt(1);
@@ -45,6 +37,10 @@ public class ColorUtils {
     public static int getPrimaryColorWithAlpha(Context context, ColorType primaryLight, float alpha) {
         int primayColor = getPrimaryColor(context, primaryLight);
         return androidx.core.graphics.ColorUtils.setAlphaComponent(primayColor, 155);
+    }
+
+    public static int withAlpha(int color) {
+        return androidx.core.graphics.ColorUtils.setAlphaComponent(color, 155);
     }
 
     public enum ColorType {

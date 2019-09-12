@@ -1,6 +1,7 @@
 package org.dhis2.utils.maps
 
 import com.mapbox.geojson.*
+import io.ona.kujaku.utils.CoordinateUtils
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel
 import org.hisp.dhis.android.core.arch.helpers.GeometryHelper
 import org.hisp.dhis.android.core.common.FeatureType
@@ -16,14 +17,16 @@ object GeometryUtils {
     private var westBound: Double = 0.0
     private var boundsInt = false
 
-    fun getSourceFromTeis(teiList: List<SearchTeiModel>): Pair<FeatureCollection, BoundingBox> {
+    fun getSourceFromTeis(teiList: List<SearchTeiModel>): Pair<HashMap<String,FeatureCollection>, BoundingBox> {
         boundsInt = false
         northBound = 0.0
         southBound = 0.0
         eastBound = 0.0
         westBound = 0.0
 
-        val features: ArrayList<Feature> = ArrayList()
+        val featureMap : HashMap<String,ArrayList<Feature>> = HashMap()
+        featureMap["TEI"] = ArrayList()
+        featureMap["ENROLLMENT"] = ArrayList()
 
         teiList.forEach {
             if (it.tei.geometry() != null) {
@@ -33,18 +36,42 @@ object GeometryUtils {
                     val point = getPointFeature(geometry)
                     if (point != null) {
                         point.addStringProperty("teiUid", it.tei.uid())
-                        features.add(point)
+                        featureMap["TEI"]!!.add(point)
                     }
                 } else if (geometry.type() == FeatureType.POLYGON) {
                     val polygon = getPolygonFeature(geometry)
+                    (polygon.geometry() as Polygon).coordinates()[0]
                     polygon.addStringProperty("teiUid", it.tei.uid())
-                    features.add(polygon)
+                    featureMap["TEI"]!!.add(polygon)
+                }
+            }
+
+            if(it.selectedEnrollment.geometry()!=null){
+                val geometry = it.selectedEnrollment.geometry()!!
+                if (geometry.type() == FeatureType.POINT) {
+                    val point = getPointFeature(geometry)
+                    if (point != null) {
+                        point.addStringProperty("enrollmentUid", it.selectedEnrollment.uid())
+                        point.addStringProperty("teiUid", it.tei.uid())
+                        featureMap["ENROLLMENT"]!!.add(point)
+                    }
+                } else if (geometry.type() == FeatureType.POLYGON) {
+                    val polygon = getPolygonFeature(geometry)
+                    polygon.addStringProperty("enrollmentUid", it.selectedEnrollment.uid())
+                    polygon.addStringProperty("teiUid", it.tei.uid())
+                    featureMap["ENROLLMENT"]!!.add(polygon)
                 }
             }
         }
 
+        val teiFeatureCollection = FeatureCollection.fromFeatures(featureMap["TEI"] as ArrayList)
+        val enrollmentFeatureCollection = FeatureCollection.fromFeatures(featureMap["ENROLLMENT"] as ArrayList)
 
-        return Pair<FeatureCollection, BoundingBox>(FeatureCollection.fromFeatures(features),
+        val featureCollectionMap = HashMap<String,FeatureCollection>()
+        featureCollectionMap["TEI"] = teiFeatureCollection
+        featureCollectionMap["ENROLLMENT"] = enrollmentFeatureCollection
+
+        return Pair<HashMap<String,FeatureCollection>, BoundingBox>(featureCollectionMap,
                 BoundingBox.fromLngLats(westBound, southBound, eastBound, northBound))
 
     }
