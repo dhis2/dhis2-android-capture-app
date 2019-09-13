@@ -58,4 +58,7 @@ public abstract class FieldViewModel {
 
     @NonNull
     public abstract ObjectStyle objectStyle();
+
+    @Nullable
+    public abstract String fieldMask();
 }

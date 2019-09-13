@@ -576,7 +576,7 @@ public class EnrollmentFormRepository implements FormRepository {
         }
 
         return fieldFactory.create(uid, label, valueType, mandatory, optionSetUid, dataValue, null,
-                allowFutureDates, status == EnrollmentStatus.ACTIVE, null, description, null, optionCount, objectStyle);
+                allowFutureDates, status == EnrollmentStatus.ACTIVE, null, description, null, optionCount, objectStyle, tea.fieldMask());
     }
 
     @NonNull

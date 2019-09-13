@@ -51,7 +51,8 @@ final class EnrollmentRepository implements DataEntryRepository {
             "  Field.displayDescription,\n" +
             "  Field.pattern, \n" +
             "  Field.formName, \n" +
-            "  Field.formOrder \n" +
+            "  Field.formOrder, \n" +
+            "  Field.fieldMask \n" +
             "FROM (Enrollment INNER JOIN Program ON Program.uid = Enrollment.program)\n" +
             "  LEFT OUTER JOIN (\n" +
             "      SELECT\n" +
@@ -66,7 +67,8 @@ final class EnrollmentRepository implements DataEntryRepository {
             "        ProgramTrackedEntityAttribute.allowFutureDate AS allowFutureDate,\n" +
             "        TrackedEntityAttribute.generated AS generated,\n" +
             "        TrackedEntityAttribute.displayDescription AS displayDescription, \n" +
-            "        TrackedEntityAttribute.formName AS formName \n" +
+            "        TrackedEntityAttribute.formName AS formName, \n" +
+            "        TrackedEntityAttribute.fieldMask AS fieldMask \n" +
             "      FROM ProgramTrackedEntityAttribute INNER JOIN TrackedEntityAttribute\n" +
             "          ON TrackedEntityAttribute.uid = ProgramTrackedEntityAttribute.trackedEntityAttribute\n" +
             "    ) AS Field ON Field.program = Program.uid\n" +
@@ -155,6 +157,7 @@ final class EnrollmentRepository implements DataEntryRepository {
         String description = cursor.getString(11);
         String pattern = cursor.getString(12);
         String formName = cursor.getString(13); //TODO: WE NEED THE DISPLAY FORM NAME WHEN AVAILABLE IN THE SDK
+        String fieldMask = cursor.getString(15);
 
         if (!isEmpty(optionCodeName)) {
             dataValue = optionCodeName;
@@ -250,12 +253,12 @@ final class EnrollmentRepository implements DataEntryRepository {
         if (warning != null) {
             return fieldFactory.create(uid,
                     label, valueType, mandatory, optionSet, dataValue, null, allowFutureDates,
-                    false, null, description, fieldRendering, optionCount, objectStyle)
+                    false, null, description, fieldRendering, optionCount, objectStyle, fieldMask)
                     .withWarning(warning);
         } else {
             return fieldFactory.create(uid,
                     label, valueType, mandatory, optionSet, dataValue, null, allowFutureDates,
-                    !generated, null, description, fieldRendering, optionCount, objectStyle);
+                    !generated, null, description, fieldRendering, optionCount, objectStyle, fieldMask);
         }
     }
 
