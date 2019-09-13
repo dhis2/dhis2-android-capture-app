@@ -555,6 +555,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                             view ->
                                     CategoryOptionPopUp.getInstance()
                                             .setCategory(category)
+                                            .setDate(selectedDate)
                                             .setOnClick(item -> {
                                                 if (item != null)
                                                     selectedCatOption.put(category.uid(), item);
@@ -892,6 +893,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                     .setTitle(!binding.orgUnit.getText().toString().isEmpty() ? binding.orgUnit.getText().toString() : getString(R.string.org_unit))
                     .setMultiSelection(false)
                     .setOrgUnits(orgUnits)
+                    .setProgram(programUid)
                     .setPossitiveListener(data -> {
                         setOrgUnit(orgUnitDialog.getSelectedOrgUnit(), orgUnitDialog.getSelectedOrgUnitName());
                         orgUnitDialog.dismiss();

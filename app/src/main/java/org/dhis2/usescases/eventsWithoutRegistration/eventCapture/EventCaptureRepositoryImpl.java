@@ -323,12 +323,17 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                     .withAllChildren().blockingGet().categoryOptions());
             List<CategoryOption> options = d2.categoryModule().categoryOptions.byUid().in(optionUid).blockingGet();
             boolean access = true;
-            for (CategoryOption option : options)
+            Date eventDate = event.eventDate();
+            for (CategoryOption option : options) {
                 if (!option.access().data().write())
                     access = false;
-
+                if (eventDate != null && option.startDate() != null && eventDate.before(option.startDate()))
+                    access = false;
+                if (eventDate != null && option.endDate() != null && eventDate.after(option.endDate()))
+                    access = false;
+            }
             return access;
-        }else
+        } else
             return true;
     }
 
