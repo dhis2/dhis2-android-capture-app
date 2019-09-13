@@ -118,7 +118,8 @@ public class EventRepository implements FormRepository {
             "  Field.formLabel,\n" +
             "  Field.displayDescription,\n" +
             "  Field.formOrder,\n" +
-            "  Field.sectionOrder\n" +
+            "  Field.sectionOrder,\n" +
+            "  Field.fieldMask\n" +
             "FROM Event\n" +
             "  LEFT OUTER JOIN (\n" +
             "      SELECT\n" +
@@ -133,7 +134,8 @@ public class EventRepository implements FormRepository {
             "        ProgramStageSectionDataElementLink.programStageSection AS section,\n" +
             "        ProgramStageDataElement.allowFutureDate AS allowFutureDate,\n" +
             "        DataElement.displayDescription AS displayDescription,\n" +
-            "        ProgramStageSectionDataElementLink.sortOrder AS sectionOrder\n" +
+            "        ProgramStageSectionDataElementLink.sortOrder AS sectionOrder,\n" +
+            "        DataElement.fieldMask AS fieldMask\n" +
             "      FROM ProgramStageDataElement\n" +
             "        INNER JOIN DataElement ON DataElement.uid = ProgramStageDataElement.dataElement\n" +
             "        LEFT JOIN ProgramStageSection ON ProgramStageSection.programStage = ProgramStageDataElement.programStage\n" +
@@ -490,6 +492,7 @@ public class EventRepository implements FormRepository {
         EventStatus status = EventStatus.valueOf(cursor.getString(9));
         String formLabel = cursor.getString(10);
         String description = cursor.getString(11);
+        String fieldMask = cursor.getString(14);
         if (!isEmpty(optionCodeName)) {
             dataValue = optionCodeName;
         }
@@ -531,7 +534,7 @@ public class EventRepository implements FormRepository {
 
         return fieldFactory.create(uid, isEmpty(formLabel) ? label : formLabel, valueType,
                 mandatory, optionSetUid, dataValue, section, allowFutureDates,
-                status == EventStatus.ACTIVE, null, description, fieldRendering, optionCount, objectStyle);
+                status == EventStatus.ACTIVE, null, description, fieldRendering, optionCount, objectStyle, fieldMask);
     }
 
     @NonNull

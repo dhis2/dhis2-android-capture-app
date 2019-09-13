@@ -566,4 +566,6 @@
     <string name="polygon">Polygon</string>
     <string name="map_layers">Map layers</string>
     <!--endregion-->
+
+    <string name="wrong_pattern">It is not a correct format.</string>
 </resources>

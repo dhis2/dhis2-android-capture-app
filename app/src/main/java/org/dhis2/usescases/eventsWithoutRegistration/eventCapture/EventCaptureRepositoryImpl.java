@@ -497,7 +497,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                             fieldViewModel.uid() + "." + option.uid(), //fist
                             option.displayName() + "-" + option.code(), ValueType.TEXT, false,
                             fieldViewModel.optionSet(), fieldViewModel.value(), fieldViewModel.programStageSection(),
-                            fieldViewModel.allowFutureDate(), fieldViewModel.editable() == null ? false : fieldViewModel.editable(), renderingType, fieldViewModel.description(), fieldRendering, optionSets.options().size(), objectStyle));
+                            fieldViewModel.allowFutureDate(), fieldViewModel.editable() == null ? false : fieldViewModel.editable(), renderingType, fieldViewModel.description(), fieldRendering, optionSets.options().size(), objectStyle, fieldViewModel.fieldMask()));
 
                 }
             } else
@@ -580,7 +580,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                 ValueType.valueOf(valueTypeName), mandatory, optionSet, dataValue,
                 programStageSection, allowFurureDates,
                 !isEventEditable,
-                renderingType, description, fieldRendering, optionCount, objectStyle);
+                renderingType, description, fieldRendering, optionCount, objectStyle, dataElement.fieldMask());
     }
 
     @NonNull
