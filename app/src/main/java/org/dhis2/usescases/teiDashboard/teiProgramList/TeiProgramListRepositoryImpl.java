@@ -192,7 +192,7 @@ public class TeiProgramListRepositoryImpl implements TeiProgramListRepository {
                     } while (ouCursor.moveToNext());
                 }
                 return ouUids;
-            }).flatMap(ouUids -> d2.organisationUnitModule().organisationUnits.byUid().in(ouUids).get().toObservable());
+            }).flatMap(ouUids -> d2.organisationUnitModule().organisationUnits.byUid().in(ouUids).withPrograms().get().toObservable());
         } else
             return Observable.just(d2.organisationUnitModule().organisationUnits.byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE).blockingGet());
     }

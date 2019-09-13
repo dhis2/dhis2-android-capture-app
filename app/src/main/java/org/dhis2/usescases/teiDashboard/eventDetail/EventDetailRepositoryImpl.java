@@ -109,7 +109,7 @@ public class EventDetailRepositoryImpl implements EventDetailRepository {
                 } while (ouCursor.moveToNext());
             }
             return ouUids;
-        }).flatMap(ouUids -> d2.organisationUnitModule().organisationUnits.byUid().in(ouUids).get().toObservable());
+        }).flatMap(ouUids -> d2.organisationUnitModule().organisationUnits.byUid().in(ouUids).withPrograms().get().toObservable());
     }
 
     @Override

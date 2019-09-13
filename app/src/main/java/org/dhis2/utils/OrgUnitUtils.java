@@ -27,7 +27,7 @@ import timber.log.Timber;
 
 public class OrgUnitUtils {
 
-    public static TreeNode renderTree_2(Context context, @NonNull List<OrganisationUnit> myOrgs, Boolean isMultiSelection) {
+    public static TreeNode renderTree_2(Context context, @NonNull List<OrganisationUnit> myOrgs, Boolean isMultiSelection, String programId) {
 
         HashMap<Integer, ArrayList<TreeNode>> subLists = new HashMap<>();
         Map<String, OrganisationUnit> myOrgUnitMap = new HashMap<>();
@@ -38,8 +38,10 @@ public class OrgUnitUtils {
         ArrayList<String> myOrgUnitUids = new ArrayList<>();
 
         for (OrganisationUnit myorg : myOrgs) {
-            myOrgUnitUids.add(myorg.uid());
-            String[] pathName = myorg.displayNamePath().split("/");
+            if (myorg.programs() != null && UidsHelper.getUids(myorg.programs()).contains(programId))
+                myOrgUnitUids.add(myorg.uid());
+            else if (myorg.dataSets() != null && UidsHelper.getUids(myorg.dataSets()).contains(programId))
+                myOrgUnitUids.add(myorg.uid());            String[] pathName = myorg.displayNamePath().split("/");
             String[] pathUid = myorg.path().split("/");
             int count = 0;
             for (int i = 0; i < myorg.displayName().length(); i++) {
