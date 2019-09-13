@@ -56,7 +56,8 @@ final class ProgramStageRepository implements DataEntryRepository {
             "  Field.formLabel,\n" +
             "  Field.displayDescription,\n" +
             "  Field.formOrder,\n" +
-            "  Field.sectionOrder\n" +
+            "  Field.sectionOrder,\n" +
+            "  Field.fieldMask\n" +
             "FROM Event\n" +
             "  LEFT OUTER JOIN (\n" +
             "      SELECT\n" +
@@ -71,6 +72,7 @@ final class ProgramStageRepository implements DataEntryRepository {
             "        ProgramStageSectionDataElementLink.programStageSection AS section,\n" +
             "        ProgramStageDataElement.allowFutureDate AS allowFutureDate,\n" +
             "        DataElement.displayDescription AS displayDescription,\n" +
+            "        DataElement.fieldMask as fieldMask,\n" +
             "        ProgramStageSectionDataElementLink.sortOrder AS sectionOrder\n" + //This should override dataElement formOrder
             "      FROM ProgramStageDataElement\n" +
             "        INNER JOIN DataElement ON DataElement.uid = ProgramStageDataElement.dataElement\n" +
@@ -192,7 +194,7 @@ final class ProgramStageRepository implements DataEntryRepository {
                                         fieldViewModel.uid() + "." + uid, //fist
                                         displayName + "-" + optionCode, ValueType.TEXT, false,
                                         fieldViewModel.optionSet(), fieldViewModel.value(), fieldViewModel.programStageSection(),
-                                        fieldViewModel.allowFutureDate(), fieldViewModel.editable() == null ? false : fieldViewModel.editable(), renderingType, fieldViewModel.description(), null, optionCount, objectStyle));
+                                        fieldViewModel.allowFutureDate(), fieldViewModel.editable() == null ? false : fieldViewModel.editable(), renderingType, fieldViewModel.description(), null, optionCount, objectStyle, fieldViewModel.fieldMask()));
 
                                 cursor.moveToNext();
                             }
@@ -246,6 +248,8 @@ final class ProgramStageRepository implements DataEntryRepository {
         EventStatus eventStatus = EventStatus.valueOf(cursor.getString(9));
         String formLabel = cursor.getString(10);
         String description = cursor.getString(11);
+        String fieldMask = cursor.getString(14);
+
         if (!isEmpty(optionCodeName)) {
             dataValue = optionCodeName;
         }
@@ -297,7 +301,7 @@ final class ProgramStageRepository implements DataEntryRepository {
         }
 
         return fieldFactory.create(uid, isEmpty(formLabel) ? label : formLabel, valueType, mandatory, optionSetUid, dataValue, section,
-                allowFutureDates, accessDataWrite && eventStatus == EventStatus.ACTIVE && !hasExpired, renderingType, description, fieldRendering, optionCount, objectStyle);
+                allowFutureDates, accessDataWrite && eventStatus == EventStatus.ACTIVE && !hasExpired, renderingType, description, fieldRendering, optionCount, objectStyle, fieldMask);
     }
 
     @NonNull

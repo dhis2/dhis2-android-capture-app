@@ -24,35 +24,35 @@ public abstract class AgeViewModel extends FieldViewModel {
     public abstract String value();
 
     public static FieldViewModel create(String id, String label, Boolean mandatory, String value, String section, Boolean editable, String description, ObjectStyle objectStyle) {
-        return new AutoValue_AgeViewModel(id, label, section, null, editable, null, null, null, description, objectStyle, mandatory, value);
+        return new AutoValue_AgeViewModel(id, label, section, null, editable, null, null, null, description, objectStyle, null, mandatory, value);
     }
 
     @Override
     public FieldViewModel setMandatory() {
-        return new AutoValue_AgeViewModel(uid(), label(), programStageSection(), allowFutureDate(), editable(), optionSet(), warning(), error(), description(), objectStyle(), true, value());
+        return new AutoValue_AgeViewModel(uid(), label(), programStageSection(), allowFutureDate(), editable(), optionSet(), warning(), error(), description(), objectStyle(), null, true, value());
     }
 
     @NonNull
     @Override
     public FieldViewModel withError(@NonNull String error) {
-        return new AutoValue_AgeViewModel(uid(), label(), programStageSection(), allowFutureDate(), editable(), optionSet(), warning(), error, description(), objectStyle(), mandatory(), value());
+        return new AutoValue_AgeViewModel(uid(), label(), programStageSection(), allowFutureDate(), editable(), optionSet(), warning(), error, description(), objectStyle(), null, mandatory(), value());
     }
 
     @NonNull
     @Override
     public FieldViewModel withWarning(@NonNull String warning) {
-        return new AutoValue_AgeViewModel(uid(), label(), programStageSection(), allowFutureDate(), editable(), optionSet(), warning, error(), description(), objectStyle(), mandatory(), value());
+        return new AutoValue_AgeViewModel(uid(), label(), programStageSection(), allowFutureDate(), editable(), optionSet(), warning, error(), description(), objectStyle(), null, mandatory(), value());
     }
 
     @Nonnull
     @Override
     public FieldViewModel withValue(String data) {
-        return new AutoValue_AgeViewModel(uid(), label(), programStageSection(), allowFutureDate(), false, optionSet(), warning(), error(), description(), objectStyle(), mandatory(), data);
+        return new AutoValue_AgeViewModel(uid(), label(), programStageSection(), allowFutureDate(), false, optionSet(), warning(), error(), description(), objectStyle(), null, mandatory(), data);
     }
 
     @NonNull
     @Override
     public FieldViewModel withEditMode(boolean isEditable) {
-        return new AutoValue_AgeViewModel(uid(), label(), programStageSection(), allowFutureDate(), isEditable, optionSet(), warning(), error(), description(), objectStyle(), mandatory(), value());
+        return new AutoValue_AgeViewModel(uid(), label(), programStageSection(), allowFutureDate(), isEditable, optionSet(), warning(), error(), description(), objectStyle(), null, mandatory(), value());
     }
 }

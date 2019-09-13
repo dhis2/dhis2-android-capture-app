@@ -66,11 +66,13 @@ final class EditTextCustomHolder extends FormViewHolder {
             if (isSearchMode || (!hasFocus && editTextModel != null && editTextModel.editable() && valueHasChanged())) {
                 sendAction();
             }
+            validateRegex();
         });
         binding.customEdittext.setOnEditorActionListener((v, actionId, event) -> {
             sendAction();
             closeKeyboard(binding.customEdittext.getEditText());
             sendAction();
+            validateRegex();
             return true;
         });
 
@@ -114,6 +116,10 @@ final class EditTextCustomHolder extends FormViewHolder {
 
         binding.customEdittext.setWarning(model.warning(), model.error());
 
+        if(model.value() != null && !model.value().isEmpty()
+                && editTextModel.fieldMask() != null && !model.value().matches(editTextModel.fieldMask()))
+            binding.customEdittext.setWarning(binding.getRoot().getContext().getString(R.string.wrong_pattern), "");
+
         binding.customEdittext.setEditable(model.editable());
 
         setRenderingType(editTextModel.fieldRendering());
@@ -130,6 +136,14 @@ final class EditTextCustomHolder extends FormViewHolder {
             autoCompleteValues.add(binding.customEdittext.getEditText().getText().toString());
             saveListToPreference(editTextModel.uid(), autoCompleteValues);
         }
+    }
+
+    private void validateRegex(){
+        if(editTextModel.fieldMask() != null &&
+                !binding.customEdittext.getEditText().getText().toString().matches(editTextModel.fieldMask()))
+            binding.customEdittext.setWarning(binding.getRoot().getContext().getString(R.string.wrong_pattern), "");
+        else
+            binding.customEdittext.setWarning("", "");
     }
 
     @NonNull

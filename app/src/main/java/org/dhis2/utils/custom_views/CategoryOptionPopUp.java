@@ -8,6 +8,7 @@ import org.hisp.dhis.android.core.category.Category;
 import org.hisp.dhis.android.core.category.CategoryOption;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import androidx.appcompat.widget.PopupMenu;
@@ -21,6 +22,7 @@ public class CategoryOptionPopUp {
     private OnCatOptionClick listener;
     private Category category;
     private List<CategoryOption> options;
+    private Date date;
 
     public static CategoryOptionPopUp getInstance() {
         if (instance == null)
@@ -41,6 +43,10 @@ public class CategoryOptionPopUp {
         return this;
     }
 
+    public CategoryOptionPopUp setDate(Date date){
+        this.date = date;
+        return this;
+    }
 
     public void show(Context context, View anchor) {
         PopupMenu menu = new PopupMenu(context, anchor);
@@ -54,7 +60,8 @@ public class CategoryOptionPopUp {
         });
         menu.getMenu().add(Menu.NONE, Menu.NONE, 0, category.displayName());
         for (CategoryOption option : options) {
-            menu.getMenu().add(Menu.NONE, Menu.NONE, options.indexOf(option) + 1, option.displayName());
+            if(date == null || ((option.startDate() == null || date.after(option.startDate())) && (option.endDate() == null || date.before(option.endDate()))))
+                menu.getMenu().add(Menu.NONE, Menu.NONE, options.indexOf(option) + 1, option.displayName());
         }
         menu.show();
     }
