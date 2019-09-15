@@ -154,20 +154,6 @@ final class ProgramStageRepository implements DataEntryRepository {
                 .toFlowable(BackpressureStrategy.BUFFER);
     }
 
-    @Override
-    public List<FieldViewModel> fieldList() {
-        List<FieldViewModel> list = new ArrayList<>();
-        try (Cursor listCursor = briteDatabase.query(prepareStatement())) {
-            listCursor.moveToFirst();
-            do {
-                list.add(transform(listCursor));
-            } while (listCursor.moveToNext());
-
-        }
-
-        return list;
-    }
-
     private List<FieldViewModel> checkRenderType(List<FieldViewModel> fieldViewModels) {
 
         ArrayList<FieldViewModel> renderList = new ArrayList<>();
@@ -217,21 +203,6 @@ final class ProgramStageRepository implements DataEntryRepository {
     public Observable<List<OrganisationUnit>> getOrgUnits() {
         return briteDatabase.createQuery(OrganisationUnitTableInfo.TABLE_INFO.name(), "SELECT * FROM " + OrganisationUnitTableInfo.TABLE_INFO.name())
                 .mapToList(OrganisationUnit::create);
-    }
-
-    @Override
-    public void assign(String field, String content) {
-        try (Cursor dataValueCursor = briteDatabase.query("SELECT * FROM TrackedEntityDataValue WHERE dataElement = ?", field == null ? "" : field)) {
-            if (dataValueCursor != null && dataValueCursor.moveToFirst()) {
-                TrackedEntityDataValue dataValue = TrackedEntityDataValue.create(dataValueCursor);
-                ContentValues contentValues = dataValue.toContentValues();
-                contentValues.put("value", content);
-                int row = briteDatabase.update(TrackedEntityDataValueTableInfo.TABLE_INFO.name(), contentValues, "dataElement = ?", field == null ? "" : field);
-                if (row == -1)
-                    Timber.d("Error updating field %s", field == null ? "" : field);
-            }
-        }
-
     }
 
     @NonNull

@@ -194,7 +194,7 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
         location1.setVisibility(featureType == FeatureType.POINT ? View.VISIBLE : View.GONE);
     }
 
-    public FeatureType getFeatureType(){
+    public FeatureType getFeatureType() {
         return featureType;
     }
 
@@ -332,7 +332,8 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
             this.clearButton.setVisibility(VISIBLE);
         }
         this.currentGeometry = geometry;
-        listener2.onCurrentLocationClick(geometry);
+        if (listener2 != null)
+            listener2.onCurrentLocationClick(geometry);
         invalidate();
     }
 

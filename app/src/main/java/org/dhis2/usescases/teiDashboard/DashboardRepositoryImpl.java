@@ -226,9 +226,22 @@ public class DashboardRepositoryImpl implements DashboardRepository {
 
     @Override
     public Observable<List<Event>> getTEIEnrollmentEvents(String programUid, String teiUid) {
-        String progId = programUid == null ? "" : programUid;
-        String teiId = teiUid == null ? "" : teiUid;
-        return briteDatabase.createQuery(EVENTS_TABLE, EVENTS_QUERY, progId, teiId, progId)
+
+        return d2.enrollmentModule().enrollments.byProgram().eq(programUid).byTrackedEntityInstance().eq(teiUid)
+                .byStatus().eq(EnrollmentStatus.ACTIVE).one().get()
+                .flatMap(enrollment ->
+                        d2.eventModule().events.byEnrollmentUid().eq(enrollment.uid()).get()
+                ).toFlowable()
+                .flatMapIterable(events -> events)
+                .map(event -> {
+                            if (Boolean.FALSE.equals(d2.programModule().programs.uid(programUid).blockingGet().ignoreOverdueEvents()))
+                                if (event.status() == EventStatus.SCHEDULE && event.dueDate().before(DateUtils.getInstance().getToday()))
+                                    event = updateState(event, EventStatus.OVERDUE);
+
+                            return event;
+                        }
+                ).toList().toObservable();
+      /*  return briteDatabase.createQuery(EVENTS_TABLE, EVENTS_QUERY, progId, teiId, progId)
                 .mapToList(cursor -> {
                     Event eventModel = Event.create(cursor);
                     if (Boolean.FALSE.equals(d2.programModule().programs.uid(programUid).blockingGet().ignoreOverdueEvents()))
@@ -236,7 +249,7 @@ public class DashboardRepositoryImpl implements DashboardRepository {
                             eventModel = updateState(eventModel, EventStatus.OVERDUE);
 
                     return eventModel;
-                });
+                });*/
     }
 
     @Override

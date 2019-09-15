@@ -1,6 +1,7 @@
 package org.dhis2.usescases.sync;
 
 import androidx.work.Constraints;
+import androidx.work.Data;
 import androidx.work.ExistingPeriodicWorkPolicy;
 import androidx.work.ExistingWorkPolicy;
 import androidx.work.NetworkType;
@@ -11,6 +12,7 @@ import androidx.work.WorkManager;
 import org.dhis2.R;
 import org.dhis2.data.service.ReservedValuesWorker;
 import org.dhis2.data.service.SyncDataWorker;
+import org.dhis2.data.service.SyncInitWorker;
 import org.dhis2.data.service.SyncMetadataWorker;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.utils.Constants;
@@ -68,7 +70,21 @@ public class SyncPresenter implements SyncContracts.Presenter {
 
     @Override
     public void scheduleSync(int metaTime, int dataTime) {
-        if (metaTime != 0) {
+
+        OneTimeWorkRequest.Builder initBuilder = new OneTimeWorkRequest.Builder(SyncInitWorker.class);
+        initBuilder.addTag(Constants.INIT);
+        initBuilder.setConstraints(new Constraints.Builder()
+                .setRequiredNetworkType(NetworkType.CONNECTED)
+                .build());
+        Data data = new Data.Builder()
+                .putBoolean(SyncInitWorker.INIT_META, metaTime != 0)
+                .putBoolean(SyncInitWorker.INIT_DATA,dataTime != 0)
+                .build();
+        initBuilder.setInputData(data);
+        WorkManager.getInstance(view.getContext().getApplicationContext())
+                .enqueueUniqueWork(Constants.INIT, ExistingWorkPolicy.REPLACE, initBuilder.build());
+
+        /*if (metaTime != 0) {
             PeriodicWorkRequest.Builder metaBuilder = new PeriodicWorkRequest.Builder(SyncMetadataWorker.class, metaTime, TimeUnit.SECONDS);
             metaBuilder.addTag(Constants.META);
             metaBuilder.setInitialDelay(metaTime, TimeUnit.SECONDS); //TODO: CAN BE SET TO A SPECIFIC TIME
@@ -88,7 +104,7 @@ public class SyncPresenter implements SyncContracts.Presenter {
                     .build());
             PeriodicWorkRequest dataRequest = dataBuilder.build();
             WorkManager.getInstance(view.getContext().getApplicationContext()).enqueueUniquePeriodicWork(Constants.DATA, ExistingPeriodicWorkPolicy.REPLACE, dataRequest);
-        }
+        }*/
     }
 
     public void getTheme() {

@@ -74,11 +74,11 @@ public class SearchTEViewHolder extends RecyclerView.ViewHolder {
         binding.executePendingBindings();
 
         itemView.setOnClickListener(view -> {
-            if ((searchTeiModel.getTei().deleted() != null && searchTeiModel.getTei().deleted()) ||
+          /*  if ((searchTeiModel.getTei().deleted() != null && searchTeiModel.getTei().deleted()) ||
                     (searchTeiModel.getSelectedEnrollment() != null &&
                             (searchTeiModel.getSelectedEnrollment().deleted() && searchTeiModel.getSelectedEnrollment().deleted())))
                 Toast.makeText(itemView.getContext(), itemView.getContext().getString(R.string.record_marked_for_deletion), Toast.LENGTH_SHORT).show();
-            else
+            else*///TODO: DELETED RECORDS DO NOT APPEAR IN THE LIST
                 presenter.onTEIClick(searchTeiModel.getTei().uid(), searchTeiModel.isOnline());
         });
 

@@ -71,7 +71,6 @@ final class EditTextCustomHolder extends FormViewHolder {
         binding.customEdittext.setOnEditorActionListener((v, actionId, event) -> {
             sendAction();
             closeKeyboard(binding.customEdittext.getEditText());
-            sendAction();
             validateRegex();
             return true;
         });

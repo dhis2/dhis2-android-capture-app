@@ -19,6 +19,7 @@ import org.dhis2.data.forms.FormActivity;
 import org.dhis2.data.forms.FormViewArguments;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.databinding.WidgetDatepickerBinding;
+import org.dhis2.usescases.enrollment.EnrollmentActivity;
 import org.dhis2.usescases.main.program.SyncStatusDialog;
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel;
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity;
@@ -634,8 +635,10 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(enrollmentAndTEI -> {
                                     if (view.fromRelationshipTEI() == null) {
-                                        FormViewArguments formViewArguments = FormViewArguments.createForEnrollment(enrollmentAndTEI.val0());
-                                        this.view.getContext().startActivity(FormActivity.create(this.view.getContext(), formViewArguments, true));
+                                        Intent intent = EnrollmentActivity.Companion.getIntent(view.getContext(),enrollmentAndTEI.val0(),selectedProgram.uid(), EnrollmentActivity.EnrollmentMode.NEW);
+                                        view.getContext().startActivity(intent);
+                                        /*FormViewArguments formViewArguments = FormViewArguments.createForEnrollment(enrollmentAndTEI.val0());
+                                        this.view.getContext().startActivity(FormActivity.create(this.view.getContext(), formViewArguments, true));*/
                                     } else {
                                         addRelationship(enrollmentAndTEI.val1(), false);
                                     }

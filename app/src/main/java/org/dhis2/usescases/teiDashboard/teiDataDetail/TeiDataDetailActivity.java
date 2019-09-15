@@ -9,7 +9,6 @@ import android.widget.DatePicker;
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.PopupMenu;
 import androidx.databinding.DataBindingUtil;
-import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -22,7 +21,6 @@ import org.dhis2.App;
 import org.dhis2.Bindings.Bindings;
 import org.dhis2.R;
 import org.dhis2.data.forms.FormFragment;
-import org.dhis2.data.forms.FormViewArguments;
 import org.dhis2.databinding.ActivityTeidataDetailBinding;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.usescases.map.MapSelectorActivity;
@@ -178,13 +176,13 @@ public class TeiDataDetailActivity extends ActivityGlobalAbstract implements Tei
     }
 
     private void initForm() {
-        Fragment fragment = FormFragment.newInstance(
+     /*   Fragment fragment = FormFragment.newInstance(
                 FormViewArguments.createForEnrollment(dashboardProgramModel.getCurrentEnrollment().uid()), true,
                 false);
         ((FormFragment) fragment).setSaveButtonTEIDetail(binding.next);
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.dataFragment, fragment)
-                .commit();
+                .commit();*/
     }
 
     @NonNull
@@ -373,4 +371,6 @@ public class TeiDataDetailActivity extends ActivityGlobalAbstract implements Tei
         } else if (geometry == null)
             onTeiCoordinatesCleared.onNext(new Unit());
     }
+
+
 }

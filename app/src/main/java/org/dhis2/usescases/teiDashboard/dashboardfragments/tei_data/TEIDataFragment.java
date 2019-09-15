@@ -192,23 +192,15 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
 
     }
 
-    public static int getDetailsRequestCode() {
-        return REQ_DETAILS;
-    }
-
-    public static int getEventRequestCode() {
-        return REQ_EVENT;
-    }
-
     @SuppressLint("CheckResult")
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == REQ_DETAILS) {
+       /* if (requestCode == REQ_DETAILS) {
             if (resultCode == RESULT_OK) {
                 activity.getPresenter().getData();
             }
-        }
+        }*/
         if (requestCode == REQ_EVENT && resultCode == RESULT_OK) {
             presenter.getTEIEvents();
             if (data != null) {
@@ -383,8 +375,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
 
     @Override
     public void seeDetails(Intent intent, Bundle bundle) {
-        this.startActivityForResult(intent, REQ_DETAILS, bundle);
-
+        this.startActivity(intent,bundle);
     }
 
     @Override
