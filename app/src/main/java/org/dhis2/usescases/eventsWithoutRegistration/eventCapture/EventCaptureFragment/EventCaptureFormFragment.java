@@ -185,9 +185,7 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract {
     }
 
     public void setSectionSelector(List<EventSectionModel> data) {
-        Timber.d("UPDATING DATA");
         sectionSelectorAdapter.swapData(currentSection, data);
-        Timber.d("UPDATING DATA FINISHED");
     }
 
     public FlowableProcessor<RowAction> dataEntryFlowable() {

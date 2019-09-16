@@ -25,12 +25,14 @@ import org.hisp.dhis.android.core.common.ObjectWithUid;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.common.ValueTypeDeviceRenderingModel;
+import org.hisp.dhis.android.core.dataelement.DataElement;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
+import org.hisp.dhis.android.core.option.Option;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitLevel;
 import org.hisp.dhis.android.core.program.Program;
@@ -191,6 +193,8 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                 context.getString(R.string.choose_date));
 
         isEventEditable = isEventExpired(eventUid);
+
+        loadDataElementRules(currentEvent);
     }
 
     private void loadDataElementRules(Event event) {
@@ -595,11 +599,21 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
     @NonNull
     @Override
     public Flowable<Result<RuleEffect>> calculate() {
-        return loadRules().flatMap(loadRules -> queryDataValues(eventUid))
-                .map(dataValues -> eventBuilder.dataValues(dataValues).build())
+        return queryDataValues(eventUid)
+                .switchMap(dataValues ->
+                        formRepository.ruleEngine()
+                                .flatMap(ruleEngine ->
+                                        Flowable.fromCallable(ruleEngine.evaluate(eventBuilder.dataValues(dataValues).build()))
+                                )
+                                .map(Result::success)
+                )
+                .doOnNext(data -> Timber.tag("PROGRAMRULES").d("NEW EFFECTS"))
+                .doOnError(error -> Result.failure(new Exception(error)));
+                /*.map(dataValues -> eventBuilder.dataValues(dataValues).build())
                 .switchMap(
                         event -> formRepository.ruleEngine()
-                                .map(ruleEngine -> {
+                                .flatMap(ruleEngine -> Flowable.fromCallable(ruleEngine.evaluate(event)))
+                                *//*.map(ruleEngine -> {
                                     if (isEmpty(lastUpdatedUid))
                                         return ruleEngine.evaluate(event, trasformToRule(rules)).call();
                                     else {
@@ -607,12 +621,28 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                                         List<Rule> finalRules = updatedRules.isEmpty() ? trasformToRule(rules) : updatedRules;
                                         return ruleEngine.evaluate(event, finalRules).call();
                                     }
-                                })
+                                })*//*
                                 .map(Result::success)
                                 .onErrorReturn(error -> Result.failure(new Exception(error)))
+                                .doOnNext(data -> Timber.tag("PROGRAMRULES").d("NEW EFFECTS"))
 
-                );
+                );*/
     }
+
+    @NonNull
+    @Override
+    public Flowable<Result<RuleEffect>> calculate(String section) {
+        return queryDataValues(eventUid)
+                .switchMap(dataValues ->
+                        formRepository.ruleEngine()
+                                .flatMap(ruleEngine ->
+                                        Flowable.fromCallable(ruleEngine.evaluate(eventBuilder.dataValues(dataValues).build()))
+                                )
+                                .map(Result::success)
+                )
+                .doOnError(error -> Result.failure(new Exception(error)));
+    }
+
 
     @NonNull
     @Override
@@ -782,6 +812,33 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
 
     @NonNull
     private Flowable<List<RuleDataValue>> queryDataValues(String eventUid) {
+
+        return d2.eventModule().events.uid(eventUid).getAsync()
+                .flatMap(event -> d2.trackedEntityModule().trackedEntityDataValues.byEvent().eq(eventUid).byValue().isNotNull().getAsync()
+                        .toFlowable()
+                        .flatMapIterable(values -> values)
+                        .map(trackedEntityDataValue -> {
+                            DataElement de = d2.dataElementModule().dataElements.uid(trackedEntityDataValue.dataElement()).get();
+                            String value = trackedEntityDataValue.value();
+                            if (de.optionSetUid() != null) {
+                                ProgramRuleVariable variable = d2.programModule().programRuleVariables
+                                        .byDataElementUid().eq(de.uid())
+                                        .byProgramUid().eq(event.program())
+                                        .one().get();
+                                Option option = d2.optionModule().options.byOptionSetUid().eq(de.optionSetUid())
+                                        .byCode().eq(value).one().get();
+                                if (variable == null || variable.useCodeForOptionSet() != null && variable.useCodeForOptionSet())
+                                    value = option.code();
+                                else
+                                    value = option.name();
+
+                                if (de.valueType() == ValueType.AGE)
+                                    value = value.split("T")[0];
+                            }
+
+                            return RuleDataValue.create(event.eventDate(), event.programStage(), de.uid(), value);
+                        }).toList()).toFlowable();
+/*
         return briteDatabase.createQuery(Arrays.asList(EventModel.TABLE,
                 TrackedEntityDataValueModel.TABLE), QUERY_VALUES, eventUid == null ? "" : eventUid)
                 .mapToList(cursor -> {
@@ -798,7 +855,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                         value = value.split("T")[0];
                     return RuleDataValue.create(eventDate, programStage,
                             dataElement, value);
-                }).toFlowable(BackpressureStrategy.LATEST);
+                }).toFlowable(BackpressureStrategy.LATEST);*/
     }
 
     @NonNull
