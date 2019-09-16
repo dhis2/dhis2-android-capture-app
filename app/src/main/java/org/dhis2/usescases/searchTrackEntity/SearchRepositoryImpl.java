@@ -186,12 +186,14 @@ public class SearchRepositoryImpl implements SearchRepository {
         if (isOnline && states.isEmpty()) {
             //TODO: SEARCH OFFLINEFIRST
             dataSource = d2.trackedEntityModule().trackedEntityInstanceQuery.offlineFirst().query(query).getDataSource()
+                    .mapByPage(this::filterDeleted)
                     .map(tei -> transform(tei, selectedProgram, true));
         } else {
             //TODO: OFFLINE
             dataSource = d2.trackedEntityModule().trackedEntityInstanceQuery.offlineOnly().query(query).getDataSource() //TODO: ASK SDK TO FILTER BY BOTH ENROLLMENT DATE AND EVENT DATES
                     .mapByPage(list -> filterByState(list, states))
                     .mapByPage(list -> filterByPeriod(list, periods))
+                    .mapByPage(this::filterDeleted)
                     .map(tei -> transform(tei, selectedProgram, true));
         }
 
@@ -244,6 +246,7 @@ public class SearchRepositoryImpl implements SearchRepository {
 
         if (isOnline && states.isEmpty())
             return d2.trackedEntityModule().trackedEntityInstanceQuery.offlineFirst().query(query).get().toFlowable()
+                    .map(this::filterDeleted)
                     .flatMapIterable(list -> list)
                     .map(tei -> transform(tei, selectedProgram, true))
                     .toList().toFlowable();
@@ -251,6 +254,7 @@ public class SearchRepositoryImpl implements SearchRepository {
             return d2.trackedEntityModule().trackedEntityInstanceQuery.offlineOnly().query(query).get().toFlowable()
                     .map(list -> filterByState(list, states))
                     .map(list -> filterByPeriod(list, periods))
+                    .map(this::filterDeleted)
                     .flatMapIterable(list -> list)
                     .map(tei -> transform(tei, selectedProgram, true))
                     .toList().toFlowable();
@@ -533,6 +537,16 @@ public class SearchRepositoryImpl implements SearchRepository {
         Iterator<TrackedEntityInstance> iterator = teis.iterator();
         while (iterator.hasNext()) {
             if (!states.contains(iterator.next().state()))
+                iterator.remove();
+        }
+        return teis;
+    }
+
+    private List<TrackedEntityInstance> filterDeleted(List<TrackedEntityInstance> teis){
+        Iterator<TrackedEntityInstance> iterator = teis.iterator();
+        while (iterator.hasNext()) {
+            TrackedEntityInstance tei = iterator.next();
+            if (tei.deleted() != null && tei.deleted())
                 iterator.remove();
         }
         return teis;
