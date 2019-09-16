@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.squareup.sqlbrite2.BriteDatabase;
 
@@ -49,6 +50,7 @@ import org.hisp.dhis.android.core.program.ProgramStageSectionModel;
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
 import org.hisp.dhis.android.core.program.ProgramType;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueModel;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueObjectRepository;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
 import org.hisp.dhis.rules.models.Rule;
@@ -61,6 +63,7 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -224,12 +227,10 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                         if (!mandatoryRules.contains(rule))
                             mandatoryRules.add(rule);
         }
-        Timber.d("LOAD MANDATORY RULES  AT %s", System.currentTimeMillis() - init);
 
         List<ProgramRuleVariable> variables = d2.programModule().programRuleVariables
                 .byProgramUid().eq(event.program())
                 .withAllChildren().get();
-        Timber.d("LOAD VARIABLES RULES  AT %s", System.currentTimeMillis() - init);
 
         Iterator<ProgramRuleVariable> variableIterator = variables.iterator();
         while (variableIterator.hasNext()) {
@@ -239,7 +240,6 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
             else if (variable.dataElement() == null)
                 variableIterator.remove();
         }
-        Timber.d("FINISHED REMOVING VARIABLES RULES  AT %s", System.currentTimeMillis() - init);
 
         List<Rule> finalMandatoryRules = trasformToRule(mandatoryRules);
         for (ProgramRuleVariable variable : variables) {
@@ -491,11 +491,76 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
     @NonNull
     @Override
     public Flowable<List<FieldViewModel>> list() {
+
+        return d2.eventModule().events.uid(eventUid).getAsync()
+                .flatMap(event ->
+                        d2.programModule().programStages.uid(event.programStage()).withAllChildren().getAsync()
+                                .map(ProgramStage::programStageDataElements).toFlowable()
+                                .flatMapIterable(list -> list)
+                                .map(programStageDataElement -> {
+                                    DataElement de = d2.dataElementModule().dataElements.uid(programStageDataElement.dataElement().uid()).withAllChildren().get();
+                                    TrackedEntityDataValueObjectRepository valueRepository = d2.trackedEntityModule().trackedEntityDataValues.value(eventUid, de.uid());
+
+                                    ProgramStageSection programStageSection = null;
+                                    List<ProgramStageSection> sections = d2.programModule().programStageSections.withDataElements().byProgramStageUid().eq(event.programStage()).get();
+                                    for (ProgramStageSection section : sections)
+                                        if (UidsHelper.getUidsList(section.dataElements()).contains(de.uid())) {
+                                            programStageSection = section;
+                                            break;
+                                        }
+
+
+                                    String uid = de.uid();
+                                    String displayName = de.displayName();
+                                    ValueType valueType = de.valueType();
+                                    boolean mandatory = programStageDataElement.compulsory() != null ? programStageDataElement.compulsory() : false;
+                                    String optionSet = de.optionSetUid();
+                                    String dataValue = valueRepository.exists() ? valueRepository.get().value() : null;
+                                    boolean allowFurureDates = programStageDataElement.allowFutureDate() != null ? programStageDataElement.allowFutureDate() : false;
+                                    String formName = de.displayFormName();
+                                    String description = de.displayDescription();
+
+                                    int optionCount = 0;
+                                    if (!isEmpty(optionSet)) {
+                                        if (!isEmpty(dataValue)) {
+                                            dataValue = d2.optionModule().options.byOptionSetUid().eq(optionSet).byCode().eq(dataValue).one().get().displayName();
+                                        }
+                                        optionCount = d2.optionModule().options.byOptionSetUid().eq(optionSet).count();
+                                    }
+
+                                    ValueTypeDeviceRenderingModel fieldRendering = null;
+                                    //TODO: CHANGE
+
+                                    ObjectStyleModel objectStyle = ObjectStyleModel.builder().build();
+                                    if (de.style() != null) {
+                                        objectStyle = ObjectStyleModel.builder()
+                                                .objectTable(de.style().objectTable())
+                                                .color(de.style().color())
+                                                .icon(de.style().icon())
+                                                .uid(de.style().uid())
+                                                .build();
+                                    }
+
+                                    if (valueType == ValueType.ORGANISATION_UNIT && !isEmpty(dataValue)) {
+                                        dataValue = dataValue + "_ou_" + d2.organisationUnitModule().organisationUnits.uid(dataValue).get().displayName();
+                                    }
+
+                                    ProgramStageSectionRenderingType renderingType = programStageSection != null ? programStageSection.renderType().mobile().type() : null;
+
+                                    return fieldFactory.create(uid, formName == null ? displayName : formName,
+                                            valueType, mandatory, optionSet, dataValue,
+                                            programStageSection.uid(), allowFurureDates,
+                                            !isEventEditable,
+                                            renderingType, description, fieldRendering, optionCount, objectStyle);
+                                }).toList()).toFlowable()
+                .map(this::checkRenderType);
+
+/*
         return briteDatabase
                 .createQuery(TrackedEntityDataValueModel.TABLE, prepareStatement(eventUid))
                 .mapToList(this::transform)
                 .map(fieldViewModels -> checkRenderType(fieldViewModels))
-                .toFlowable(BackpressureStrategy.LATEST);
+                .toFlowable(BackpressureStrategy.LATEST);*/
     }
 
 
@@ -609,24 +674,6 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                 )
                 .doOnNext(data -> Timber.tag("PROGRAMRULES").d("NEW EFFECTS"))
                 .doOnError(error -> Result.failure(new Exception(error)));
-                /*.map(dataValues -> eventBuilder.dataValues(dataValues).build())
-                .switchMap(
-                        event -> formRepository.ruleEngine()
-                                .flatMap(ruleEngine -> Flowable.fromCallable(ruleEngine.evaluate(event)))
-                                *//*.map(ruleEngine -> {
-                                    if (isEmpty(lastUpdatedUid))
-                                        return ruleEngine.evaluate(event, trasformToRule(rules)).call();
-                                    else {
-                                        List<Rule> updatedRules = dataElementRules.get(lastUpdatedUid) != null ? dataElementRules.get(lastUpdatedUid) : new ArrayList<Rule>();
-                                        List<Rule> finalRules = updatedRules.isEmpty() ? trasformToRule(rules) : updatedRules;
-                                        return ruleEngine.evaluate(event, finalRules).call();
-                                    }
-                                })*//*
-                                .map(Result::success)
-                                .onErrorReturn(error -> Result.failure(new Exception(error)))
-                                .doOnNext(data -> Timber.tag("PROGRAMRULES").d("NEW EFFECTS"))
-
-                );*/
     }
 
     @NonNull
@@ -641,29 +688,6 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                                 .map(Result::success)
                 )
                 .doOnError(error -> Result.failure(new Exception(error)));
-    }
-
-
-    @NonNull
-    @Override
-    public Flowable<Result<RuleEffect>> fullCalculate() {
-        return loadRules()
-                .switchMap(loadRules -> queryDataValues(eventUid))
-                .map(dataValues -> eventBuilder.dataValues(dataValues).build())
-                .switchMap(
-                        event -> formRepository.ruleEngine()
-                                .switchMap(ruleEngine -> {
-                                    if (isEmpty(lastUpdatedUid))
-                                        return Flowable.fromCallable(ruleEngine.evaluate(event, trasformToRule(rules)));
-                                    else {
-                                        List<Rule> updatedRules = dataElementRules.get(lastUpdatedUid) != null ? dataElementRules.get(lastUpdatedUid) : new ArrayList<Rule>();
-                                        List<Rule> finalRules = updatedRules.isEmpty() ? trasformToRule(rules) : updatedRules;
-                                        return Flowable.fromCallable(ruleEngine.evaluate(event, finalRules));
-                                    }
-                                })
-                                .map(Result::success)
-                                .onErrorReturn(error -> Result.failure(new Exception(error)))
-                );
     }
 
     private Flowable<Boolean> loadRules() {
