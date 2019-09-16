@@ -9,12 +9,12 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
-import android.graphics.Color;
 import android.graphics.PointF;
 import android.graphics.RectF;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.StrictMode;
 import android.transition.ChangeBounds;
 import android.transition.Transition;
 import android.transition.TransitionManager;
@@ -53,8 +53,8 @@ import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.mapboxsdk.maps.Style;
 import com.mapbox.mapboxsdk.plugins.annotation.SymbolManager;
 import com.mapbox.mapboxsdk.plugins.markerview.MarkerViewManager;
-import com.mapbox.mapboxsdk.style.expressions.Expression;
 import com.mapbox.mapboxsdk.style.layers.FillLayer;
+import com.mapbox.mapboxsdk.style.layers.LineLayer;
 import com.mapbox.mapboxsdk.style.layers.PropertyFactory;
 import com.mapbox.mapboxsdk.style.layers.SymbolLayer;
 import com.mapbox.mapboxsdk.style.sources.GeoJsonOptions;
@@ -97,20 +97,13 @@ import io.reactivex.functions.Consumer;
 import kotlin.Pair;
 import timber.log.Timber;
 
-import static com.mapbox.mapboxsdk.style.expressions.Expression.all;
-import static com.mapbox.mapboxsdk.style.expressions.Expression.get;
-import static com.mapbox.mapboxsdk.style.expressions.Expression.gte;
-import static com.mapbox.mapboxsdk.style.expressions.Expression.has;
+import static com.mapbox.mapboxsdk.style.expressions.Expression.eq;
 import static com.mapbox.mapboxsdk.style.expressions.Expression.literal;
-import static com.mapbox.mapboxsdk.style.expressions.Expression.toNumber;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.fillColor;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconAllowOverlap;
+import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.lineColor;
+import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.lineWidth;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.textAllowOverlap;
-import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.textColor;
-import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.textField;
-import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.textIgnorePlacement;
-import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.textOffset;
-import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.textSize;
 
 /**
  * QUADRAM. Created by ppajuelo on 02/11/2017 .
@@ -166,6 +159,12 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
+
+        StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
+                .detectAll()
+                .penaltyLog()
+//                    .penaltyDeath()
+                .build());
 
         tEType = getIntent().getStringExtra("TRACKED_ENTITY_UID");
 
@@ -646,6 +645,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                                     MapLayerManager.Companion.init(style, "teis", featureType);
                                     MapLayerManager.Companion.instance().setEnrollmentLayerData(
                                             ColorUtils.getColorFrom(presenter.getProgram().style() != null ? presenter.getProgram().style().color() : null, ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.PRIMARY)),
+                                            ColorUtils.getPrimaryColor(this, ColorUtils.ColorType.PRIMARY_DARK),
                                             presenter.getProgram().featureType() != null ? presenter.getProgram().featureType() : FeatureType.NONE
                                     );
                                     MapLayerManager.Companion.instance().showEnrollmentLayer().observe(this, show -> {
@@ -716,18 +716,32 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
         SymbolLayer symbolLayer = new SymbolLayer("POINT_LAYER", "teis").withProperties(
                 PropertyFactory.iconImage("ICON_ID"),
-                iconAllowOverlap(true)
+                iconAllowOverlap(true),
+                textAllowOverlap(true)
         );
+
+        symbolLayer.setFilter(eq(literal("$type"), literal("Point")));
 
         style.addLayer(symbolLayer);
 
-        if (featureType != FeatureType.POINT)
-            style.addLayerBelow(new FillLayer("POLYGON_LAYER", "teis").withProperties(
-                    fillColor(
-                            ColorUtils.getPrimaryColorWithAlpha(this, ColorUtils.ColorType.PRIMARY_LIGHT, 150f)
-                    )
-                    ), "POINT_LAYER"
+        if (featureType != FeatureType.POINT) {
+            style.addLayer(new FillLayer("POLYGON_LAYER", "teis")
+                    .withProperties(
+                            fillColor(
+                                    ColorUtils.getPrimaryColorWithAlpha(this, ColorUtils.ColorType.PRIMARY_LIGHT, 150f)
+                            ))
+                    .withFilter(eq(literal("$type"), literal("Polygon")))
             );
+            style.addLayer(new LineLayer("POLYGON_BORDER_LAYER", "teis")
+                    .withProperties(
+                            lineColor(
+                                    ColorUtils.getPrimaryColor(this, ColorUtils.ColorType.PRIMARY_DARK)
+                            ),
+                            lineWidth(2f))
+                    .withFilter(eq(literal("$type"), literal("Polygon")))
+
+            );
+        }
 
         /*SymbolLayer countLayer = new SymbolLayer("count", "teis").withProperties(
                 textField(Expression.toString(get("point_count"))),

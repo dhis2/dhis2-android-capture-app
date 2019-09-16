@@ -9,9 +9,6 @@ import com.mapbox.mapboxsdk.style.layers.PropertyFactory.*
 import io.reactivex.disposables.CompositeDisposable
 import org.dhis2.utils.ColorUtils
 import org.hisp.dhis.android.core.common.FeatureType
-import org.hisp.dhis.android.core.d2manager.D2Manager
-import org.hisp.dhis.android.core.relationship.RelationshipConstraintType
-import org.hisp.dhis.android.core.relationship.RelationshipItem
 
 class MapLayerManager private constructor(
         val style: Style,
@@ -22,13 +19,15 @@ class MapLayerManager private constructor(
     private var showEnrollment: MutableLiveData<Boolean> = MutableLiveData(false)
     private var showHeatMap: MutableLiveData<Boolean> = MutableLiveData(false)
     private var enrollmentColor: Int = -1
+    private var enrollmentDarkColor: Int = -1
     private var enrollmentFeatureType: FeatureType? = FeatureType.NONE
-    private var disposable : CompositeDisposable = CompositeDisposable()
+    private var disposable: CompositeDisposable = CompositeDisposable()
 
     companion object {
 
         const val ENROLLMENT_POINT_LAYER_ID: String = "ENROLLMENT_POINT_LAYER"
         const val ENROLLMENT_POLYGON_LAYER_ID: String = "ENROLLMENT_POLYGON_LAYER"
+        const val ENROLLMENT_POLYGON_BORDER_LAYER_ID: String = "ENROLLMENT_POLYGON_BORDER_LAYER"
         const val HEATMAP_LAYER_ID: String = "HEATMAP_LAYER"
         const val POLYGON_LAYER_ID: String = "POLYGON_LAYER"
         const val POINT_LAYER_ID: String = "POINT_LAYER"
@@ -64,8 +63,9 @@ class MapLayerManager private constructor(
         disposable.clear()
     }
 
-    fun setEnrollmentLayerData(color: Int, enrollmentFeatureType: FeatureType) {
+    fun setEnrollmentLayerData(color: Int, colorDark: Int, enrollmentFeatureType: FeatureType) {
         this.enrollmentColor = color
+        this.enrollmentDarkColor = colorDark
         this.enrollmentFeatureType = enrollmentFeatureType
     }
 
@@ -81,7 +81,7 @@ class MapLayerManager private constructor(
         return showHeatMap
     }
 
-    fun setTeiLayer(check:Boolean){
+    fun setTeiLayer(check: Boolean) {
         showTei.value = check
         handleTeiLayer(check)
     }
@@ -99,12 +99,19 @@ class MapLayerManager private constructor(
     private fun handleTeiLayer(showLayer: Boolean) {
         val pointLayer = style.getLayer("POINT_LAYER")
         val polygonLayer = style.getLayer("POLYGON_LAYER")
-        if(pointLayer!=null){
-            if (showLayer) {
+        val polygonBorderLayer = style.getLayer("POLYGON_BORDER_LAYER")
+        if (pointLayer != null)
+            if (showLayer)
                 pointLayer.setProperties(visibility(Property.VISIBLE))
+            else
+                pointLayer.setProperties(visibility(Property.NONE))
+
+        if (polygonBorderLayer != null) {
+            if (showLayer) {
+                polygonBorderLayer.setProperties(visibility(Property.VISIBLE))
                 polygonLayer?.setProperties(visibility(Property.VISIBLE))
             } else {
-                pointLayer.setProperties(visibility(Property.NONE))
+                polygonBorderLayer.setProperties(visibility(Property.NONE))
                 polygonLayer?.setProperties(visibility(Property.NONE))
             }
         }
@@ -149,26 +156,40 @@ class MapLayerManager private constructor(
 
             val pointLayer = style.getLayer(ENROLLMENT_POINT_LAYER_ID)
             val polygonLayer = style.getLayer(ENROLLMENT_POLYGON_LAYER_ID)
+            val polygonBorderLayer = style.getLayer(ENROLLMENT_POLYGON_BORDER_LAYER_ID)
             if (pointLayer != null) {
                 if (showLayer) {
                     pointLayer.setProperties(visibility(Property.VISIBLE))
                     polygonLayer?.setProperties(visibility(Property.VISIBLE))
+                    polygonBorderLayer?.setProperties(visibility(Property.VISIBLE))
                 } else {
                     pointLayer.setProperties(visibility(Property.NONE))
                     polygonLayer?.setProperties(visibility(Property.NONE))
+                    polygonBorderLayer?.setProperties(visibility(Property.NONE))
                 }
             } else {
                 val symbolLayer = SymbolLayer(ENROLLMENT_POINT_LAYER_ID, "enrollments").withProperties(
                         PropertyFactory.iconImage("ICON_ENROLLMENT_ID"),
                         iconAllowOverlap(true)
                 )
+                symbolLayer.setFilter(eq(literal("\$type"), literal("Point")))
+
                 style.addLayerBelow(symbolLayer, "POINT_LAYER")
 
                 if (enrollmentFeatureType != FeatureType.POINT)
-                    style.addLayerBelow(FillLayer(ENROLLMENT_POLYGON_LAYER_ID, "enrollments").withProperties(
-                            fillColor(ColorUtils.withAlpha(enrollmentColor))
-                    ), ENROLLMENT_POINT_LAYER_ID
+                    style.addLayerBelow(FillLayer(ENROLLMENT_POLYGON_LAYER_ID, "enrollments")
+                            .withProperties(
+                                    fillColor(ColorUtils.withAlpha(enrollmentColor)))
+                            .withFilter(eq(literal("\$type"), literal("Polygon")))
+                            , ENROLLMENT_POINT_LAYER_ID
                     )
+                style.addLayer(LineLayer(ENROLLMENT_POLYGON_BORDER_LAYER_ID, "enrollments")
+                        .withProperties(
+                                lineColor(enrollmentDarkColor),
+                                lineWidth(2f))
+                        .withFilter(eq(literal("\$type"), literal("Polygon")))
+
+                )
             }
         }
     }

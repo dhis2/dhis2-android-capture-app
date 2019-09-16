@@ -10,6 +10,7 @@ import androidx.appcompat.widget.PopupMenu;
 import androidx.core.app.ActivityOptionsCompat;
 
 import org.dhis2.R;
+import org.dhis2.usescases.enrollment.EnrollmentActivity;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity;
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity;
 import org.dhis2.usescases.qrCodes.QrActivity;
@@ -84,7 +85,7 @@ class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
                     if (attributeValue != null)
                         return attributeValue;
                     else
-                       throw new NullPointerException("No image attribute found");
+                        throw new NullPointerException("No image attribute found");
                 }).map(attrValue -> teiUid + "_" + attrValue.trackedEntityAttribute() + ".png")
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
@@ -268,7 +269,12 @@ class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
             extras.putString("ENROLLMENT_UID", dashboardProgramModel.getCurrentEnrollment().uid());
         intent.putExtras(extras);
         ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(view.getAbstractActivity(), sharedView, "user_info");
-        view.seeDetails(intent, options.toBundle());
+//        view.seeDetails(intent, options.toBundle());
+
+        view.seeDetails(EnrollmentActivity.Companion.getIntent(view.getContext(),
+                dashboardProgramModel.getCurrentEnrollment().uid(),
+                dashboardProgramModel.getCurrentProgram().uid(),
+                EnrollmentActivity.EnrollmentMode.CHECK), options.toBundle());
     }
 
     @Override
