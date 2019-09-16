@@ -116,7 +116,7 @@ final class EditTextCustomHolder extends FormViewHolder {
 
         binding.customEdittext.setWarning(model.warning(), model.error());
 
-        if(model.value() != null && !model.value().isEmpty()
+        if(!isSearchMode && model.value() != null && !model.value().isEmpty()
                 && editTextModel.fieldMask() != null && !model.value().matches(editTextModel.fieldMask()))
             binding.customEdittext.setWarning(binding.getRoot().getContext().getString(R.string.wrong_pattern), "");
 
@@ -139,11 +139,12 @@ final class EditTextCustomHolder extends FormViewHolder {
     }
 
     private void validateRegex(){
-        if(editTextModel.fieldMask() != null &&
-                !binding.customEdittext.getEditText().getText().toString().matches(editTextModel.fieldMask()))
-            binding.customEdittext.setWarning(binding.getRoot().getContext().getString(R.string.wrong_pattern), "");
-        else
-            binding.customEdittext.setWarning("", "");
+        if(!isSearchMode)
+            if(editTextModel.fieldMask() != null && !binding.customEdittext.getEditText().getText().toString().isEmpty() &&
+                    !binding.customEdittext.getEditText().getText().toString().matches(editTextModel.fieldMask()))
+                binding.customEdittext.setWarning(binding.getRoot().getContext().getString(R.string.wrong_pattern), "");
+            else
+                binding.customEdittext.setWarning("", "");
     }
 
     @NonNull
