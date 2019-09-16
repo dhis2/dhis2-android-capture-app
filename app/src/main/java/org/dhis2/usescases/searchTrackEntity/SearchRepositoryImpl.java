@@ -546,8 +546,7 @@ public class SearchRepositoryImpl implements SearchRepository {
         Iterator<TrackedEntityInstance> iterator = teis.iterator();
         while (iterator.hasNext()) {
             TrackedEntityInstance tei = iterator.next();
-            boolean deleted = tei.deleted() != null && tei.deleted();
-            if (deleted)
+            if (tei.deleted() != null && tei.deleted())
                 iterator.remove();
         }
         return teis;
