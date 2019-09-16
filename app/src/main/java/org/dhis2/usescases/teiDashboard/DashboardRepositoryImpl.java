@@ -32,7 +32,6 @@ import org.hisp.dhis.android.core.enrollment.note.Note;
 import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.event.EventTableInfo;
-import org.hisp.dhis.android.core.event.internal.EventFields;
 import org.hisp.dhis.android.core.maintenance.D2Error;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.Program;
@@ -519,8 +518,8 @@ public class DashboardRepositoryImpl implements DashboardRepository {
     public void saveCatOption(String eventUid, String catOptionComboUid) {
         // TODO: we need to use the sdk, when the setAttributeOptionCombo() method on the EventObjectRepository is available
         ContentValues event = new ContentValues();
-        event.put(EventFields.ATTRIBUTE_OPTION_COMBO, catOptionComboUid);
-        briteDatabase.update(EventTableInfo.TABLE_INFO.name(), event, EventFields.UID + " = ?", eventUid == null ? "" : eventUid);
+        event.put(EventTableInfo.Columns.ATTRIBUTE_OPTION_COMBO, catOptionComboUid);
+        briteDatabase.update(EventTableInfo.TABLE_INFO.name(), event, EventTableInfo.Columns.UID + " = ?", eventUid == null ? "" : eventUid);
     }
 
     private void updateEnrollmentState(String enrollmentUid) {

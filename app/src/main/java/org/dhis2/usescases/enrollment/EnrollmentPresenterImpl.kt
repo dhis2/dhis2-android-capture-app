@@ -168,7 +168,7 @@ class EnrollmentPresenterImpl(
                             var blockIncidentDate = false
                             stages.forEach {
                                 if (it.reportDateToUse() != null &&
-                                        it.reportDateToUse().equals(EnrollmentFields.ENROLLMENT_DATE) ||
+                                        it.reportDateToUse().equals("enrollmentDate") ||
                                         it.generatedByEnrollmentDate() == true)
                                     blockEnrollmentDate = true
                                 else
