@@ -57,7 +57,7 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
     @NonNull
     @Override
     public Observable<Event> event(String eventId) {
-        return Observable.fromCallable(() -> d2.eventModule().events.uid(eventId).blockingGet()).filter(event -> !event.deleted());
+        return d2.eventModule().events.uid(eventId).get().toObservable();
     }
 
     @NonNull
@@ -73,7 +73,6 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
             }
             return ouUids;
         }).flatMap(ouUids -> d2.organisationUnitModule().organisationUnits.byUid().in(ouUids).withPrograms().get().toObservable());
-
     }
 
     @NonNull

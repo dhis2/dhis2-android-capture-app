@@ -4,6 +4,7 @@ package org.dhis2.data.forms.dataentry.fields.edittext;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
@@ -69,7 +70,7 @@ final class EditTextCustomHolder extends FormViewHolder {
             validateRegex();
         });
         binding.customEdittext.setOnEditorActionListener((v, actionId, event) -> {
-            sendAction();
+            binding.customEdittext.getEditText().clearFocus();
             closeKeyboard(binding.customEdittext.getEditText());
             validateRegex();
             return true;
