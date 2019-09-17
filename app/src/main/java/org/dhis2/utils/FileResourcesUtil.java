@@ -2,9 +2,12 @@ package org.dhis2.utils;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.util.TypedValue;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -132,6 +135,23 @@ public class FileResourcesUtil {
         File fromDownload = new File(FileResourcesUtil.getDownloadDirectory(context), fileName);
 
         return fromUpload.exists() ? fromUpload : fromDownload;
+    }
+
+    public static Bitmap getSmallImage(Context context, String fileName) {
+        File file = getFileForAttribute(context, fileName);
+
+        Bitmap bitmap = BitmapFactory.decodeFile(file.getPath());
+
+        int desired = (int)TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,24,context.getResources().getDisplayMetrics());
+
+        Bitmap dstBitmap;
+        if (bitmap.getWidth() >= bitmap.getHeight()) {
+            dstBitmap = Bitmap.createBitmap(bitmap, bitmap.getWidth() / 2 - bitmap.getHeight() / 2, 0, bitmap.getHeight(), bitmap.getHeight());
+        } else {
+            dstBitmap = Bitmap.createBitmap(bitmap, 0, bitmap.getHeight() / 2 - bitmap.getWidth() / 2, bitmap.getWidth(), bitmap.getWidth());
+        }
+        return Bitmap.createScaledBitmap(dstBitmap, desired, desired, false);
+
     }
 
     public static String generateFileName(String primaryUid, String secundaryUid) {
