@@ -7,9 +7,11 @@ import android.os.Bundle
 import android.text.TextUtils.isEmpty
 import android.view.LayoutInflater
 import android.view.View
+import android.view.inputmethod.InputMethodManager
 import android.widget.DatePicker
 import android.widget.PopupMenu
 import androidx.databinding.DataBindingUtil
+import androidx.recyclerview.widget.RecyclerView
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import io.reactivex.Flowable
@@ -52,6 +54,7 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentContract.View {
     lateinit var presenter: EnrollmentContract.Presenter
 
     lateinit var binding: EnrollmentActivityBinding
+    lateinit var mode: EnrollmentMode
 
     companion object {
         const val ENROLLMENT_UID_EXTRA = "ENROLLMENT_UID_EXTRA"
@@ -85,6 +88,10 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentContract.View {
         binding = DataBindingUtil.setContentView(this, R.layout.enrollment_activity)
         binding.view = this
 
+        mode = EnrollmentMode.valueOf(intent.getStringExtra(MODE_EXTRA))
+
+        binding.programLockLayout.visibility = if (mode == EnrollmentMode.NEW) View.GONE else View.VISIBLE
+
         binding.coordinatesView.setIsBgTransparent(true)
         binding.teiCoordinatesView.setIsBgTransparent(true)
 
@@ -98,8 +105,20 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentContract.View {
             else if (adapter.hasError())
                 showInfoDialog(getString(R.string.unable_to_complete), getString(R.string.field_errors))
             else
-                presenter.finish(EnrollmentMode.valueOf(intent.getStringExtra(MODE_EXTRA)))
+                presenter.finish(mode)
         }
+
+        binding.fieldRecycler.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                if (newState == RecyclerView.SCROLL_STATE_DRAGGING) {
+                    adapter.setLastFocusItem(null)
+                    val imm = context!!.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+                    imm.hideSoftInputFromWindow(recyclerView.windowToken, 0)
+                    binding.root.requestFocus()
+                    presenter.clearLastFocusItem()
+                }
+            }
+        })
     }
 
     override fun onResume() {
@@ -187,7 +206,7 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentContract.View {
     }
 
     override fun goBack() {
-        if (EnrollmentMode.valueOf(intent.getStringExtra(MODE_EXTRA)) == EnrollmentMode.CHECK)
+        if (mode == EnrollmentMode.CHECK)
             onBackPressed()
         else {
 
@@ -216,7 +235,11 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentContract.View {
 
     /*region TEI*/
     override fun displayTeiInfo(it: List<TrackedEntityAttributeValue>) {
-        binding.title.text = it.map { it.value() }.joinToString(separator = " ", limit = 3)
+        binding.title.text =
+                if (mode != EnrollmentMode.NEW)
+                    it.map { it.value() }.joinToString(separator = " ", limit = 3)
+                else
+                    String.format(getString(R.string.enroll_in), presenter.getProgram().displayName())
     }
     /*endregion*/
     /*region ACCESS*/
@@ -285,7 +308,7 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentContract.View {
     }
 
     override fun blockDates(blockEnrollmentDate: Boolean, blockIncidentDate: Boolean) {
-        if(intent.getStringExtra(MODE_EXTRA) != EnrollmentMode.NEW.name) {
+        if (mode != EnrollmentMode.NEW) {
             binding.reportDate.isEnabled = !blockEnrollmentDate
             binding.incidentDateText.isEnabled = !blockIncidentDate
         }
