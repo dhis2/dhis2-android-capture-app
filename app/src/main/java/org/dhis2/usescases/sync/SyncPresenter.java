@@ -2,11 +2,9 @@ package org.dhis2.usescases.sync;
 
 import androidx.work.Constraints;
 import androidx.work.Data;
-import androidx.work.ExistingPeriodicWorkPolicy;
 import androidx.work.ExistingWorkPolicy;
 import androidx.work.NetworkType;
 import androidx.work.OneTimeWorkRequest;
-import androidx.work.PeriodicWorkRequest;
 import androidx.work.WorkManager;
 
 import org.dhis2.R;
@@ -71,40 +69,35 @@ public class SyncPresenter implements SyncContracts.Presenter {
     @Override
     public void scheduleSync(int metaTime, int dataTime) {
 
-        OneTimeWorkRequest.Builder initBuilder = new OneTimeWorkRequest.Builder(SyncInitWorker.class);
-        initBuilder.addTag(Constants.INIT);
-        initBuilder.setConstraints(new Constraints.Builder()
+        //METADATA
+        OneTimeWorkRequest.Builder initMetaBuilder = new OneTimeWorkRequest.Builder(SyncInitWorker.class);
+        initMetaBuilder.addTag(Constants.INIT_META);
+        initMetaBuilder.setInitialDelay(metaTime, TimeUnit.SECONDS);
+        initMetaBuilder.setConstraints(new Constraints.Builder()
+                .setRequiredNetworkType(NetworkType.CONNECTED)
+                .build());
+        Data dataMeta = new Data.Builder()
+                .putBoolean(SyncInitWorker.INIT_META, metaTime != 0)
+                .putBoolean(SyncInitWorker.INIT_DATA, false)
+                .build();
+        initMetaBuilder.setInputData(dataMeta);
+        WorkManager.getInstance(view.getContext().getApplicationContext())
+                .enqueueUniqueWork(Constants.INIT_META, ExistingWorkPolicy.REPLACE, initMetaBuilder.build());
+
+        //DATA
+        OneTimeWorkRequest.Builder initDataBuilder = new OneTimeWorkRequest.Builder(SyncInitWorker.class);
+        initDataBuilder.addTag(Constants.INIT_DATA);
+        initDataBuilder.setInitialDelay(dataTime, TimeUnit.SECONDS);
+        initDataBuilder.setConstraints(new Constraints.Builder()
                 .setRequiredNetworkType(NetworkType.CONNECTED)
                 .build());
         Data data = new Data.Builder()
-                .putBoolean(SyncInitWorker.INIT_META, metaTime != 0)
-                .putBoolean(SyncInitWorker.INIT_DATA,dataTime != 0)
+                .putBoolean(SyncInitWorker.INIT_DATA, false)
+                .putBoolean(SyncInitWorker.INIT_DATA, dataTime != 0)
                 .build();
-        initBuilder.setInputData(data);
+        initDataBuilder.setInputData(data);
         WorkManager.getInstance(view.getContext().getApplicationContext())
-                .enqueueUniqueWork(Constants.INIT, ExistingWorkPolicy.REPLACE, initBuilder.build());
-
-        /*if (metaTime != 0) {
-            PeriodicWorkRequest.Builder metaBuilder = new PeriodicWorkRequest.Builder(SyncMetadataWorker.class, metaTime, TimeUnit.SECONDS);
-            metaBuilder.addTag(Constants.META);
-            metaBuilder.setInitialDelay(metaTime, TimeUnit.SECONDS); //TODO: CAN BE SET TO A SPECIFIC TIME
-            metaBuilder.setConstraints(new Constraints.Builder()
-                    .setRequiredNetworkType(NetworkType.CONNECTED)
-                    .build());
-            PeriodicWorkRequest metaRequest = metaBuilder.build();
-            WorkManager.getInstance(view.getContext().getApplicationContext()).enqueueUniquePeriodicWork(Constants.META, ExistingPeriodicWorkPolicy.REPLACE, metaRequest);
-        }
-
-        if (dataTime != 0) {
-            PeriodicWorkRequest.Builder dataBuilder = new PeriodicWorkRequest.Builder(SyncDataWorker.class, dataTime, TimeUnit.SECONDS);
-            dataBuilder.addTag(Constants.DATA);
-            dataBuilder.setInitialDelay(dataTime, TimeUnit.SECONDS);//TODO: CAN BE SET TO A SPECIFIC TIME
-            dataBuilder.setConstraints(new Constraints.Builder()
-                    .setRequiredNetworkType(NetworkType.CONNECTED)
-                    .build());
-            PeriodicWorkRequest dataRequest = dataBuilder.build();
-            WorkManager.getInstance(view.getContext().getApplicationContext()).enqueueUniquePeriodicWork(Constants.DATA, ExistingPeriodicWorkPolicy.REPLACE, dataRequest);
-        }*/
+                .enqueueUniqueWork(Constants.INIT_DATA, ExistingWorkPolicy.REPLACE, initDataBuilder.build());
     }
 
     public void getTheme() {

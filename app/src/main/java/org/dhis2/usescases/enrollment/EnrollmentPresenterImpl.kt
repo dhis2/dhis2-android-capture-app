@@ -374,6 +374,10 @@ class EnrollmentPresenterImpl(
         return lastFocusItem
     }
 
+    override fun clearLastFocusItem(){
+        lastFocusItem = null
+    }
+
     private fun checkUniqueFilter(uid: String, value: String?): Boolean {
         return if (value != null && valueIsAttribute(uid)) {
             val isUnique = d2.trackedEntityModule().trackedEntityAttributes.uid(uid).blockingGet()!!.unique()
