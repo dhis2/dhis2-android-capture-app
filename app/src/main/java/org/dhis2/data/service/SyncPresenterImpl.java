@@ -71,11 +71,13 @@ final class SyncPresenterImpl implements SyncPresenter {
 
     @Override
     public void syncAndDownloadDataValues() {
-        Completable.fromObservable(d2.dataValueModule().dataValues.upload())
-                .andThen(
-                        Completable.fromObservable(d2.dataSetModule().dataSetCompleteRegistrations.upload()))
-                .andThen(
-                        Completable.fromObservable(d2.aggregatedModule().data().download())).blockingAwait();
+        if(!d2.dataSetModule().dataSets.blockingIsEmpty()) {
+            Completable.fromObservable(d2.dataValueModule().dataValues.upload())
+                    .andThen(
+                            Completable.fromObservable(d2.dataSetModule().dataSetCompleteRegistrations.upload()))
+                    .andThen(
+                            Completable.fromObservable(d2.aggregatedModule().data().download())).blockingAwait();
+        }
     }
 
     @Override
