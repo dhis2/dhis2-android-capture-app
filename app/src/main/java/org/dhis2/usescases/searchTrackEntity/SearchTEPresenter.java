@@ -700,6 +700,12 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     }
 
     @Override
+    public String nameOUByUid(String uid){
+        OrganisationUnit organisationUnit = d2.organisationUnitModule().organisationUnits.uid(uid).blockingGet();
+        return organisationUnit != null ? organisationUnit.name() : null;
+    }
+
+    @Override
     public void downloadTeiForRelationship(String TEIuid, @Nullable String relationshipTypeUid) {
         List<String> teiUids = new ArrayList<>();
         teiUids.add(TEIuid);

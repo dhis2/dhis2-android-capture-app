@@ -139,5 +139,7 @@ public class SearchTEContractsModule {
         void getEnrollmentMapData();
 
         Drawable getEnrollmentSymbolIcon();
+
+        String nameOUByUid(String uid);
     }
 }
