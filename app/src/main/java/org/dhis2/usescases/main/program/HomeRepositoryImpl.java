@@ -138,7 +138,6 @@ class HomeRepositoryImpl implements HomeRepository {
                                             .byProgramUid().eq(program.uid())
                                             .byEventDate().inDatePeriods(dateFilter)
                                             .byOrganisationUnitUid().in(orgUnitFilter)
-                                            .byDeleted().isFalse()
                                             .byState().in(statesFilter)
                                             .blockingCount();
                                 }
@@ -147,21 +146,18 @@ class HomeRepositoryImpl implements HomeRepository {
                                             .byProgramUid().eq(program.uid())
                                             .byEventDate().inDatePeriods(dateFilter)
                                             .byOrganisationUnitUid().in(orgUnitFilter)
-                                            .byDeleted().isFalse()
                                             .blockingCount();
                             } else {
                                 if(!statesFilter.isEmpty())
                                     count = d2.eventModule().events
                                             .byProgramUid().eq(program.uid())
                                             .byEventDate().inDatePeriods(dateFilter)
-                                            .byDeleted().isFalse()
                                             .byState().in(statesFilter)
                                             .blockingCount();
                                 else
                                     count = d2.eventModule().events
                                             .byProgramUid().eq(program.uid())
                                             .byEventDate().inDatePeriods(dateFilter)
-                                            .byDeleted().isFalse()
                                             .blockingCount();
                             }
                         } else if (!orgUnitFilter.isEmpty()) {
@@ -169,14 +165,12 @@ class HomeRepositoryImpl implements HomeRepository {
                                 count = d2.eventModule().events
                                         .byProgramUid().eq(program.uid())
                                         .byOrganisationUnitUid().in(orgUnitFilter)
-                                        .byDeleted().isFalse()
                                         .byState().in(statesFilter)
                                         .blockingCount();
                             else
                                 count = d2.eventModule().events
                                         .byProgramUid().eq(program.uid())
                                         .byOrganisationUnitUid().in(orgUnitFilter)
-                                        .byDeleted().isFalse()
                                         .blockingCount();
                         } else {
                             if(!statesFilter.isEmpty())
