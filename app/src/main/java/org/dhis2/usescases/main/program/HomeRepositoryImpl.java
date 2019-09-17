@@ -182,13 +182,11 @@ class HomeRepositoryImpl implements HomeRepository {
                             if(!statesFilter.isEmpty())
                                 count = d2.eventModule().events
                                         .byProgramUid().eq(program.uid())
-                                        .byDeleted().isFalse()
                                         .byState().in(statesFilter)
                                         .blockingCount();
                             else
                                 count = d2.eventModule().events
                                         .byProgramUid().eq(program.uid())
-                                        .byDeleted().isFalse()
                                         .blockingCount();
                         }
 

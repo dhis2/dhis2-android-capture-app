@@ -672,23 +672,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
 
     @Override
     public Observable<Boolean> deleteEvent() {
-        Event event = currentEvent;
-        long status;
-        if (event.state() == State.TO_POST) {
-            String DELETE_WHERE = String.format(
-                    "%s.%s = ?",
-                    EventTableInfo.TABLE_INFO.name(), EventTableInfo.Columns.UID
-            );
-            status = briteDatabase.delete(EventTableInfo.TABLE_INFO.name(), DELETE_WHERE, eventUid);
-        } else {
-            ContentValues contentValues = event.toContentValues();
-            contentValues.put(EventTableInfo.Columns.DELETED, true);
-            status = briteDatabase.update(EventTableInfo.TABLE_INFO.name(), contentValues, EventTableInfo.Columns.UID + " = ?", eventUid);
-        }
-        if (status == 1 && event.enrollment() != null)
-            updateEnrollment(event.enrollment());
-
-        return Observable.just(status == 1);
+        return d2.eventModule().events.uid(eventUid).delete().toObservable();
     }
 
     private void updateEnrollment(String enrollmentUid) {
