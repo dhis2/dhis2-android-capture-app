@@ -196,7 +196,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
         binding.scrollView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
 
-        binding.formRecycler.setAdapter(new FormAdapter(getSupportFragmentManager(), this));
+        binding.formRecycler.setAdapter(new FormAdapter(getSupportFragmentManager(), this, presenter));
 
         binding.enrollmentButton.setOnTouchListener((v, event) -> {
             if (event.getAction() == MotionEvent.ACTION_DOWN) {
