@@ -126,9 +126,8 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
 
         compositeDisposable.add(
                 showCalculationProcessor
-                        .startWith(true).doOnNext(next->Timber.tag("SHOWTAG").d("EMMIT is %s",next))
+                        .startWith(true)
                         .switchMap(shouldShow -> Flowable.just(shouldShow).delay(shouldShow ? 1 : 0, TimeUnit.SECONDS, Schedulers.io()))
-                        .doOnNext(next->Timber.tag("SHOWTAG").d("WAIT is %s",next))
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
@@ -284,9 +283,9 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                         .subscribeOn(Schedulers.computation())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(data -> {
+                                    sectionAdjustProcessor.onNext(new Unit());
                                     subscribeToSection();
                                     EventCaptureFormFragment.getInstance().setSectionSelector(data);
-                                    sectionAdjustProcessor.onNext(new Unit());
                                 }
                                 ,
                                 Timber::e
@@ -351,7 +350,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
             } else {
                 return Flowable.zip(
                         eventCaptureRepository.list(sectionUid).subscribeOn(Schedulers.computation()),
-                        eventCaptureRepository.calculate(sectionUid).subscribeOn(Schedulers.computation()),
+                        eventCaptureRepository.calculate().subscribeOn(Schedulers.computation()),
                         this::applyEffects)
                         .map(fields -> {
                             //Clear all sections fields from map
@@ -525,17 +524,6 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
             }
 
         return new ArrayList<>(fieldViewModels.values());
-    }
-
-    private void checkProgress() {
-
-        if (getFinalSections().size() > 1)
-            for (FormSectionViewModel formSectionViewModel : getFinalSections())
-                if (formSectionViewModel.sectionUid().equals(currentSection.get()))
-                    EventCaptureFormFragment.getInstance().setSectionProgress(
-                            getFinalSections().indexOf(formSectionViewModel),
-                            getFinalSections().size());
-
     }
 
     @NonNull

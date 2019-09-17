@@ -38,7 +38,6 @@ import java.util.List;
 
 import io.reactivex.processors.FlowableProcessor;
 import io.reactivex.processors.PublishProcessor;
-import timber.log.Timber;
 
 import static android.text.TextUtils.isEmpty;
 
