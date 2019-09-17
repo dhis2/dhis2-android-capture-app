@@ -75,7 +75,8 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
             eventRepo = eventRepo.byStatus().in(eventStatus);
         if (!states.isEmpty())
             eventRepo = eventRepo.byState().in(states);
-        DataSource dataSource = eventRepo.byDeleted().isFalse().orderByEventDate(RepositoryScope.OrderByDirection.DESC).withAllChildren().getDataSource().map(event -> transformToProgramEventModel(event));
+        DataSource dataSource = eventRepo.orderByEventDate(RepositoryScope.OrderByDirection.DESC).withAllChildren().getDataSource().map(event -> transformToProgramEventModel(event));
+
         return new LivePagedListBuilder(new DataSource.Factory() {
             @Override
             public DataSource create() {
