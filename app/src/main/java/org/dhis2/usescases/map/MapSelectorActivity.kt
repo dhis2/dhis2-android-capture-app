@@ -56,7 +56,7 @@ class MapSelectorActivity : ActivityGlobalAbstract(), MapActivityLocationCallbac
     override fun onLocationChanged(latLng: LatLng) {
         Timber.d("NEW LOCATION %s, %s", latLng.latitude, latLng.longitude)
 
-        if (!init) {
+        if (!init && initial_coordinates == null) {
             init = true
             map.animateCamera(CameraUpdateFactory.newLatLngZoom(LatLng(latLng.latitude, latLng.longitude), 13.0))
 
@@ -160,8 +160,16 @@ class MapSelectorActivity : ActivityGlobalAbstract(), MapActivityLocationCallbac
             GeometryHelper.getPoint(initGeometry).let { sdkPoint ->
                 val point = Point.fromLngLat(sdkPoint[0], sdkPoint[1])
                 setPointToViewModel(point, viewModel)
+                map.animateCamera(CameraUpdateFactory.newLatLngZoom(LatLng(point.latitude(), point.longitude()), 13.0))
+
+                val cameraPosition = CameraPosition.Builder()
+                        .target(LatLng(point.latitude(), point.longitude()))      // Sets the center of the map to location user
+                        .zoom(15.0)                   // Sets the zoom
+                        .build()                   // Creates a CameraPosition from the builder
+                map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition))
             }
         }
+
     }
 
     private fun setPointToViewModel(point: Point, viewModel: PointViewModel) {
@@ -238,7 +246,9 @@ class MapSelectorActivity : ActivityGlobalAbstract(), MapActivityLocationCallbac
         }
         if (initial_coordinates != null) {
             val initGeometry = Geometry.builder().coordinates(initial_coordinates).type(location_type).build()
-            GeometryHelper.getPolygon(initGeometry).forEach {
+
+            val array = GeometryHelper.getPolygon(initGeometry)
+            array.forEach {
                 it.forEach { sdkPoint ->
                     val point = Point.fromLngLat(sdkPoint[0], sdkPoint[1])
                     val polygonPoint = viewModel.createPolygonPoint()
@@ -247,6 +257,16 @@ class MapSelectorActivity : ActivityGlobalAbstract(), MapActivityLocationCallbac
                     polygonPoint.source = createSource(polygonPoint.uuid, point)
                     viewModel.add(polygonPoint)
                 }
+            }
+            if (array.size > 0 && array[0].size > 0) {
+                val point = array[0][0]
+                map.animateCamera(CameraUpdateFactory.newLatLngZoom(LatLng(point[0], point[1]), 13.0))
+
+                val cameraPosition = CameraPosition.Builder()
+                        .target(LatLng(point[0], point[1]))      // Sets the center of the map to location user
+                        .zoom(15.0)                   // Sets the zoom
+                        .build()                   // Creates a CameraPosition from the builder
+                map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition))
             }
         }
     }
