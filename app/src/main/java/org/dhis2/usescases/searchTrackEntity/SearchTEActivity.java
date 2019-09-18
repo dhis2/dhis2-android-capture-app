@@ -86,6 +86,7 @@ import org.hisp.dhis.android.core.common.FeatureType;
 import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute;
 
+import java.io.File;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.HashMap;
@@ -681,16 +682,17 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                                 }
                         );
 
-                        binding.mapView.addOnStyleImageMissingListener(fileName -> {
-                            if (FileResourcesUtil.getFileForAttribute(this, fileName).exists()) {
+                        binding.mapView.addOnStyleImageMissingListener(filePath -> {
+                            File file = new File(filePath);
+                            if (file.exists()) {
                                 Style style = mapboxMap.getStyle();
                                 if (style != null) {
-                                    style.addImageAsync(fileName, FileResourcesUtil.getSmallImage(this, fileName));
+                                    style.addImageAsync(filePath, FileResourcesUtil.getSmallImage(this, filePath));
                                 }
                             } else {
                                 Style style = mapboxMap.getStyle();
                                 if (style != null) {
-                                    style.addImageAsync(fileName, presenter.getSymbolIcon());
+                                    style.addImageAsync(filePath, presenter.getSymbolIcon());
                                 }
                             }
                         });

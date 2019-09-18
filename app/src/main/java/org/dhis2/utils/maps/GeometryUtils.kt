@@ -35,17 +35,17 @@ object GeometryUtils {
                     val point = getPointFeature(geometry)
                     if (point != null) {
                         point.addStringProperty("teiUid", it.tei.uid())
-                        point.addStringProperty("teiImage", it.tei.uid() + "_" + it.profilePictureUid + ".png")
+                        point.addStringProperty("teiImage",it.profilePicturePath)
                         featureMap["TEI"]!!.add(point)
                     }
                 } else if (geometry.type() == FeatureType.POLYGON) {
                     val polygon = getPolygonFeature(geometry)
                     polygon.addStringProperty("teiUid", it.tei.uid())
-                    polygon.addStringProperty("teiImage", it.tei.uid() + "_" + it.profilePictureUid + ".png")
+                    polygon.addStringProperty("teiImage", it.profilePicturePath)
                     featureMap["TEI"]!!.add(polygon)
                     val polygonPoint = getPolygonPointFeature(geometry)
                     polygonPoint.addStringProperty("teiUid", it.tei.uid())
-                    polygonPoint.addStringProperty("teiImage", it.tei.uid() + "_" + it.profilePictureUid + ".png")
+                    polygonPoint.addStringProperty("teiImage", it.profilePicturePath)
                     featureMap["TEI"]!!.add(polygonPoint)
                 }
             }

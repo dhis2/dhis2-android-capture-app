@@ -87,13 +87,17 @@ public class FilesWorker extends Worker {
 
     private void uploadBulkResources() {
         triggerNotification("File processor", "Uploading files...", file_upload_channel);
-        File[] filesToUpload = FileResourcesUtil.getUploadDirectory(getApplicationContext()).listFiles();
+        Completable.fromObservable(
+                d2.fileResourceModule().fileResources.upload()
+                /*.doOnNext(d2Progress -> triggerNotification("File processor", String.format("Uploading file %s/%s", d2Progress.doneCalls(), d2Progress.totalCalls()), file_upload_channel))*/
+        ).blockingAwait();
+       /* File[] filesToUpload = FileResourcesUtil.getUploadDirectory(getApplicationContext()).listFiles();
         int count = 1;
         for (File file : filesToUpload) {
             triggerNotification("File processor", String.format("Uploading file %s/%s", count++, filesToUpload.length), file_upload_channel);
             String[] fileName = file.getName().split("_"); //tei/event, attr/de, extension
             upload(file, fileName[0], fileName[1].split("\\.")[0]);
-        }
+        }*/
     }
 
     private void uploadFileResources(String teiUid, String attrUid) {
@@ -134,6 +138,10 @@ public class FilesWorker extends Worker {
 
         triggerNotification("File processor", "Downloading files...", file_download_channel);
 
+        Completable.fromObservable(d2.fileResourceModule().download()
+                .doOnNext(d2Progress -> triggerNotification("File processor", String.format("Downloading file %s/%s", d2Progress.doneCalls(), d2Progress.totalCalls()), file_download_channel))
+        ).blockingAwait();
+/*
         List<TrackedEntityAttribute> imageAttr = d2.trackedEntityModule().trackedEntityAttributes
                 .byValueType().eq(ValueType.IMAGE).blockingGet();
 
@@ -156,7 +164,7 @@ public class FilesWorker extends Worker {
                     return false;
             }).blockingAwait();
 
-        }
+        }*/
     }
 
     private boolean writeResponseBodyToDisk(ResponseBody body, String generatedFileName) {
