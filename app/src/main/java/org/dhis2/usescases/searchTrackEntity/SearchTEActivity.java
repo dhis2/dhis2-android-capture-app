@@ -81,6 +81,7 @@ import org.dhis2.utils.filters.FilterManager;
 import org.dhis2.utils.filters.FiltersAdapter;
 import org.dhis2.utils.maps.MapLayerDialog;
 import org.dhis2.utils.maps.MapLayerManager;
+import org.dhis2.utils.maps.MarkerUtils;
 import org.hisp.dhis.android.core.arch.call.D2Progress;
 import org.hisp.dhis.android.core.common.FeatureType;
 import org.hisp.dhis.android.core.program.Program;
@@ -104,6 +105,7 @@ import static com.mapbox.mapboxsdk.style.expressions.Expression.get;
 import static com.mapbox.mapboxsdk.style.expressions.Expression.literal;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.fillColor;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconAllowOverlap;
+import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconOffset;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.lineColor;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.lineWidth;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.textAllowOverlap;
@@ -687,7 +689,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                             if (file.exists()) {
                                 Style style = mapboxMap.getStyle();
                                 if (style != null) {
-                                    style.addImageAsync(filePath, FileResourcesUtil.getSmallImage(this, filePath));
+                                    style.addImageAsync(filePath, MarkerUtils.INSTANCE.getMarker(this, FileResourcesUtil.getSmallImage(this, filePath)));
                                 }
                             } else {
                                 Style style = mapboxMap.getStyle();
@@ -735,6 +737,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
         SymbolLayer symbolLayer = new SymbolLayer("POINT_LAYER", "teis").withProperties(
                 PropertyFactory.iconImage(get("teiImage")),
+                iconOffset(new Float[]{0f,-25f}),
                 iconAllowOverlap(true),
                 textAllowOverlap(true)
         );
