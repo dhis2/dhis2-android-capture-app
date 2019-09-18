@@ -91,7 +91,7 @@ public class SearchTeiModel {
     }
 
     public String getProfilePicturePath() {
-        return profilePicturePath;
+        return profilePicturePath != null ? profilePicturePath : "";
     }
 
     public void setDefaultTypeIcon(String defaultTypeIcon) {
@@ -106,7 +106,7 @@ public class SearchTeiModel {
         this.selectedEnrollment = enrollment;
     }
 
-    public Enrollment getSelectedEnrollment(){
+    public Enrollment getSelectedEnrollment() {
         return this.selectedEnrollment;
     }
 
