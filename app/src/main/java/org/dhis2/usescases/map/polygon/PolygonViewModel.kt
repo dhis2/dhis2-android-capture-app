@@ -21,12 +21,30 @@ class PolygonViewModel(val app: Application): AndroidViewModel(app) {
         _response.value = mutableListOf()
     }
 
+    fun add(position: Int?, polygonPoint: PolygonPoint) {
+        position?.let {
+            if (polygonPoint.point != null) {
+                val list = _response.value
+                list!![it] = polygonPoint
+                _response.value = list
+            }
+            return
+        }
+        if (polygonPoint.point != null) {
+            val list = _response.value
+            list?.add(polygonPoint)
+            _response.value = list
+        }
+
+    }
+
     fun add(polygonPoint: PolygonPoint) {
         if (polygonPoint.point != null) {
             val list = _response.value
             list?.add(polygonPoint)
             _response.value = list
         }
+
     }
 
 

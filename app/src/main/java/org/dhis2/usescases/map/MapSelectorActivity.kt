@@ -236,7 +236,7 @@ class MapSelectorActivity : ActivityGlobalAbstract(), MapActivityLocationCallbac
             polygonPoint.point = point
             polygonPoint.layer = createLayer(polygonPoint.uuid)
             polygonPoint.source = createSource(polygonPoint.uuid, point)
-            viewModel.add(polygonPoint)
+            viewModel.add((binding.recycler.adapter as PolygonAdapter).addTo(), polygonPoint)
             true
         }
         binding.saveButton.setOnClickListener {
@@ -413,27 +413,23 @@ class MapSelectorActivity : ActivityGlobalAbstract(), MapActivityLocationCallbac
 
         fun create(activity: Activity, locationType: FeatureType?): Intent {
             val intent = Intent(activity, MapSelectorActivity::class.java)
-            intent.putExtra(LOCATION_TYPE_EXTRA, FeatureType.POLYGON.toString())
-            /*
             if (locationType == null) {
                 intent.putExtra(LOCATION_TYPE_EXTRA, FeatureType.POINT.toString())
             } else {
                 intent.putExtra(LOCATION_TYPE_EXTRA, locationType.toString())
             }
-            */
+
             return intent
         }
 
         fun create(activity: Activity, locationType: FeatureType?, initialData: String?): Intent {
             val intent = Intent(activity, MapSelectorActivity::class.java)
-            intent.putExtra(LOCATION_TYPE_EXTRA, FeatureType.POLYGON.toString())
-            /*
             if (locationType == null) {
                 intent.putExtra(LOCATION_TYPE_EXTRA, FeatureType.POINT.toString())
             } else {
                 intent.putExtra(LOCATION_TYPE_EXTRA, locationType.toString())
             }
-            */
+
             if (initialData != null)
                 intent.putExtra(INITIAL_GEOMETRY_COORDINATES, initialData)
             return intent

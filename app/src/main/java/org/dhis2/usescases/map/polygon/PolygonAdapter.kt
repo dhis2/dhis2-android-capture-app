@@ -12,10 +12,16 @@ class PolygonAdapter(
         val viewModel: PolygonViewModel
 ): RecyclerView.Adapter<PolygonAdapter.Holder>() {
 
+    private var selected: Int? = null
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Holder {
         val binding: ItemPolygonFullBinding = DataBindingUtil.inflate(LayoutInflater.from(parent.context),
                 R.layout.item_polygon_full, parent, false)
         return Holder(binding)
+    }
+
+    fun addTo(): Int? {
+        return selected
     }
 
     override fun getItemCount(): Int {
@@ -37,6 +43,12 @@ class PolygonAdapter(
                 it.isLast = adapterPosition == list.size
                 it.viewModel = viewModel
                 it.point = polygonPoint
+            }
+            binding.text.setOnClickListener {
+                selected = if (adapterPosition == list.size) null else adapterPosition
+                binding.layout.setBackgroundResource(
+                     if (adapterPosition == list.size) 0 else R.drawable.edittext_border
+                )
             }
         }
     }
