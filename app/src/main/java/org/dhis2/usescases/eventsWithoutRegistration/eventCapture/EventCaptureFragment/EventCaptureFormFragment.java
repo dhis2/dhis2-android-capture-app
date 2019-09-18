@@ -38,7 +38,6 @@ import java.util.List;
 
 import io.reactivex.processors.FlowableProcessor;
 import io.reactivex.processors.PublishProcessor;
-import timber.log.Timber;
 
 import static android.text.TextUtils.isEmpty;
 
@@ -185,9 +184,7 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract {
     }
 
     public void setSectionSelector(List<EventSectionModel> data) {
-        Timber.d("UPDATING DATA");
         sectionSelectorAdapter.swapData(currentSection, data);
-        Timber.d("UPDATING DATA FINISHED");
     }
 
     public FlowableProcessor<RowAction> dataEntryFlowable() {

@@ -3,7 +3,6 @@ package org.dhis2.data.forms.dataentry;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.DiffUtil;
 
-
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 
 import java.util.List;
@@ -17,7 +16,7 @@ final class DataEntryDiffCallback extends DiffUtil.Callback {
     private final List<FieldViewModel> newFields;
 
     DataEntryDiffCallback(@NonNull List<FieldViewModel> oldFields,
-            @NonNull List<FieldViewModel> newFields) {
+                          @NonNull List<FieldViewModel> newFields) {
         this.oldFields = oldFields;
         this.newFields = newFields;
     }
@@ -40,7 +39,6 @@ final class DataEntryDiffCallback extends DiffUtil.Callback {
 
     @Override
     public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
-        return oldFields.get(oldItemPosition)
-                .equals(newFields.get(newItemPosition));
+        return oldFields == newFields;
     }
 }
