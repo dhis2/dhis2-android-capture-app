@@ -3,7 +3,6 @@ package org.dhis2.data.service.files;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
-import android.database.sqlite.SQLiteStatement;
 import android.os.Build;
 import android.webkit.MimeTypeMap;
 
@@ -115,12 +114,15 @@ public class FilesWorker extends Worker {
                 String jsonResponse = response.body().string();
                 FileResourceResponse fileResourceResponse = new Gson().fromJson(jsonResponse, FileResourceResponse.class);
 
-                String updateAttr = String.format("UPDATE TrackedEntityAttributeValue SET value = '%s' " +
-                                "WHERE trackedEntityInstance = '%s' AND trackedEntityAttribute = '%s'",
-                        fileResourceResponse.getResponse().getFileResource().getId(), teiOrEvent, attrUid);
-                SQLiteStatement update = d2.databaseAdapter().compileStatement(updateAttr);
-                int updated = d2.databaseAdapter().executeUpdateDelete("TrackedEntityAttributeValue", update);
-                return updated > -1;
+                if (d2.trackedEntityModule().trackedEntityAttributes.uid(attrUid).blockingExists())
+                    d2.trackedEntityModule().trackedEntityAttributeValues.value(attrUid, teiOrEvent).set(
+                            fileResourceResponse.getResponse().getFileResource().getId()
+                    );
+                else
+                    d2.trackedEntityModule().trackedEntityDataValues.value(teiOrEvent, attrUid).set(
+                            fileResourceResponse.getResponse().getFileResource().getId()
+                    );
+                return file.delete();
 
             } else
                 return false;
@@ -209,7 +211,7 @@ public class FilesWorker extends Worker {
     private MultipartBody.Part getFilePart(File file) {
         String extension = MimeTypeMap.getFileExtensionFromUrl(file.getPath());
         String type = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
-        if(type == null)
+        if (type == null)
             type = "image/*";
         return MultipartBody.Part.createFormData("file", file.getName(), RequestBody.create(MediaType.parse(type), file));
     }
