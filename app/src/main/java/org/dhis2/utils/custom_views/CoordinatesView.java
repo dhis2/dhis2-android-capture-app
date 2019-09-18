@@ -200,7 +200,7 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
 
     public void setInitialValue(String initialValue) {
         if (featureType == null)
-            throw new NullPointerException("use setFeatureType before setting an initial value");
+            featureType = FeatureType.POINT;
         updateLocation(
                 Geometry.builder()
                         .coordinates(initialValue)

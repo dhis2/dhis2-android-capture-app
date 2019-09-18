@@ -5,6 +5,7 @@ import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.BitmapFactory
+import android.graphics.Color
 import android.os.Bundle
 import androidx.core.app.ActivityCompat
 import androidx.databinding.DataBindingUtil
@@ -27,10 +28,9 @@ import com.mapbox.mapboxsdk.location.modes.RenderMode
 import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.Style
-import com.mapbox.mapboxsdk.style.layers.FillLayer
-import com.mapbox.mapboxsdk.style.layers.PropertyFactory
-import com.mapbox.mapboxsdk.style.layers.PropertyFactory.fillColor
-import com.mapbox.mapboxsdk.style.layers.SymbolLayer
+import com.mapbox.mapboxsdk.style.layers.*
+import com.mapbox.mapboxsdk.style.layers.Property.*
+import com.mapbox.mapboxsdk.style.layers.PropertyFactory.*
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource
 import org.dhis2.BuildConfig
 import org.dhis2.R
@@ -41,6 +41,7 @@ import org.dhis2.usescases.map.point.PointAdapter
 import org.dhis2.usescases.map.point.PointViewModel
 import org.dhis2.usescases.map.polygon.PolygonAdapter
 import org.dhis2.usescases.map.polygon.PolygonViewModel
+import org.dhis2.utils.ColorUtils
 import org.hisp.dhis.android.core.arch.helpers.GeometryHelper
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.Geometry
@@ -280,13 +281,14 @@ class MapSelectorActivity : ActivityGlobalAbstract(), MapActivityLocationCallbac
         style?.let { style ->
             val sourceName = "polygon_source"
             style.removeLayer(sourceName)
+            style.removeLayer("${sourceName}_below")
             style.removeSource(sourceName)
             arrayOfIds.forEach {
                 style.getLayer(it)?.let { layer ->
                     style.removeLayer(layer)
                 }
-                style.getSource(it)?.let {
-                    style.removeSource(it)
+                style.getSource(it)?.let {source ->
+                    style.removeSource(source)
                 }
             }
             arrayOfIds.clear()
@@ -302,9 +304,23 @@ class MapSelectorActivity : ActivityGlobalAbstract(), MapActivityLocationCallbac
             if (points[0].size > 2) {
                 if (style.getSource(sourceName) == null) {
                     style.addSource(GeoJsonSource(sourceName, Polygon.fromLngLats(points)))
-                    style.addLayerBelow(FillLayer(sourceName, sourceName).withProperties(
-                            fillColor(resources.getColor(R.color.green_7ed))), "settlement-label"
+
+                    val routeLineLayer = LineLayer(sourceName, sourceName)
+                    routeLineLayer.setProperties(
+                            lineWidth(1f),
+                            lineColor(ColorUtils.getPrimaryColor(this, ColorUtils.ColorType.PRIMARY_DARK)),
+                            lineCap(LINE_CAP_ROUND),
+                            lineJoin(LINE_JOIN_ROUND)
                     )
+                    style.addLayer(routeLineLayer)
+
+                    // Add the background LineLayer that will act as the highlighting effect
+                    val backgroundLineLayer = FillLayer("${sourceName}_below", sourceName)
+                    backgroundLineLayer.setProperties(
+                            fillColor(ColorUtils.getPrimaryColorWithAlpha(this, ColorUtils.ColorType.PRIMARY_LIGHT, 150f))
+                    )
+                    style.addLayerBelow(backgroundLineLayer, sourceName)
+
                 } else {
                     (style.getSource(sourceName) as GeoJsonSource).setGeoJson(Polygon.fromLngLats(points))
                 }
@@ -395,15 +411,29 @@ class MapSelectorActivity : ActivityGlobalAbstract(), MapActivityLocationCallbac
         val LOCATION_TYPE_EXTRA = "LOCATION_TYPE_EXTRA"
         val INITIAL_GEOMETRY_COORDINATES = "INITIAL_DATA"
 
-        fun create(activity: Activity, locationType: FeatureType): Intent {
+        fun create(activity: Activity, locationType: FeatureType?): Intent {
             val intent = Intent(activity, MapSelectorActivity::class.java)
-            intent.putExtra(LOCATION_TYPE_EXTRA, locationType.toString())
+            intent.putExtra(LOCATION_TYPE_EXTRA, FeatureType.POLYGON.toString())
+            /*
+            if (locationType == null) {
+                intent.putExtra(LOCATION_TYPE_EXTRA, FeatureType.POINT.toString())
+            } else {
+                intent.putExtra(LOCATION_TYPE_EXTRA, locationType.toString())
+            }
+            */
             return intent
         }
 
-        fun create(activity: Activity, locationType: FeatureType, initialData: String?): Intent {
+        fun create(activity: Activity, locationType: FeatureType?, initialData: String?): Intent {
             val intent = Intent(activity, MapSelectorActivity::class.java)
-            intent.putExtra(LOCATION_TYPE_EXTRA, locationType.toString())
+            intent.putExtra(LOCATION_TYPE_EXTRA, FeatureType.POLYGON.toString())
+            /*
+            if (locationType == null) {
+                intent.putExtra(LOCATION_TYPE_EXTRA, FeatureType.POINT.toString())
+            } else {
+                intent.putExtra(LOCATION_TYPE_EXTRA, locationType.toString())
+            }
+            */
             if (initialData != null)
                 intent.putExtra(INITIAL_GEOMETRY_COORDINATES, initialData)
             return intent
