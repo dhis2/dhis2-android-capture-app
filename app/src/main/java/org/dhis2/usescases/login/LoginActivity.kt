@@ -309,7 +309,7 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
             }
         }
 
-        if (false && presenter.canHandleBiometrics() ?: false && //TODO: Remove false when green light
+        if (presenter.canHandleBiometrics() == true &&
                 !BiometricStorage.areCredentialsSet() && !BiometricStorage.areSameCredentials(
                         binding.serverUrlEdit.text?.toString(),
                         binding.userNameEdit.text?.toString(),

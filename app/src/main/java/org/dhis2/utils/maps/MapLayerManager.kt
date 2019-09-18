@@ -170,26 +170,28 @@ class MapLayerManager private constructor(
             } else {
                 val symbolLayer = SymbolLayer(ENROLLMENT_POINT_LAYER_ID, "enrollments").withProperties(
                         PropertyFactory.iconImage("ICON_ENROLLMENT_ID"),
+                        iconOffset(arrayOf(0f, -25f)),
                         iconAllowOverlap(true)
                 )
                 symbolLayer.setFilter(eq(literal("\$type"), literal("Point")))
 
                 style.addLayerBelow(symbolLayer, "POINT_LAYER")
 
-                if (enrollmentFeatureType != FeatureType.POINT)
+                if (enrollmentFeatureType != FeatureType.POINT) {
                     style.addLayerBelow(FillLayer(ENROLLMENT_POLYGON_LAYER_ID, "enrollments")
                             .withProperties(
                                     fillColor(ColorUtils.withAlpha(enrollmentColor)))
                             .withFilter(eq(literal("\$type"), literal("Polygon")))
                             , ENROLLMENT_POINT_LAYER_ID
                     )
-                style.addLayer(LineLayer(ENROLLMENT_POLYGON_BORDER_LAYER_ID, "enrollments")
-                        .withProperties(
-                                lineColor(enrollmentDarkColor),
-                                lineWidth(2f))
-                        .withFilter(eq(literal("\$type"), literal("Polygon")))
+                    style.addLayer(LineLayer(ENROLLMENT_POLYGON_BORDER_LAYER_ID, "enrollments")
+                            .withProperties(
+                                    lineColor(enrollmentDarkColor),
+                                    lineWidth(2f))
+                            .withFilter(eq(literal("\$type"), literal("Polygon")))
 
-                )
+                    )
+                }
             }
         }
     }

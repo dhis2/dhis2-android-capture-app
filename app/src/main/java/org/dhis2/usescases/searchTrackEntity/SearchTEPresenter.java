@@ -15,14 +15,13 @@ import androidx.appcompat.content.res.AppCompatResources;
 import androidx.paging.PagedList;
 
 import org.dhis2.R;
-import org.dhis2.data.forms.FormActivity;
-import org.dhis2.data.forms.FormViewArguments;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.databinding.WidgetDatepickerBinding;
 import org.dhis2.usescases.enrollment.EnrollmentActivity;
 import org.dhis2.usescases.main.program.SyncStatusDialog;
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel;
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity;
+import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.NetworkUtils;
 import org.dhis2.utils.ObjectStyleUtils;
@@ -635,7 +634,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(enrollmentAndTEI -> {
                                     if (view.fromRelationshipTEI() == null) {
-                                        Intent intent = EnrollmentActivity.Companion.getIntent(view.getContext(),enrollmentAndTEI.val0(),selectedProgram.uid(), EnrollmentActivity.EnrollmentMode.NEW);
+                                        Intent intent = EnrollmentActivity.Companion.getIntent(view.getContext(), enrollmentAndTEI.val0(), selectedProgram.uid(), EnrollmentActivity.EnrollmentMode.NEW);
                                         view.getContext().startActivity(intent);
                                         /*FormViewArguments formViewArguments = FormViewArguments.createForEnrollment(enrollmentAndTEI.val0());
                                         this.view.getContext().startActivity(FormActivity.create(this.view.getContext(), formViewArguments, true));*/
@@ -700,7 +699,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     }
 
     @Override
-    public String nameOUByUid(String uid){
+    public String nameOUByUid(String uid) {
         OrganisationUnit organisationUnit = d2.organisationUnitModule().organisationUnits.uid(uid).blockingGet();
         return organisationUnit != null ? organisationUnit.name() : null;
     }
@@ -778,6 +777,11 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     }
 
     @Override
+    public void getEnrollmentMapData() {
+        enrollmentMapProcessor.onNext(new Unit());
+    }
+
+    @Override
     public Drawable getSymbolIcon() {
         TrackedEntityType teiType = d2.trackedEntityModule().trackedEntityTypes.uid(trackedEntityType).withAllChildren().blockingGet();
 
@@ -789,20 +793,32 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     }
 
     @Override
-    public void getEnrollmentMapData() {
-        enrollmentMapProcessor.onNext(new Unit());
-    }
-
-    @Override
     public Drawable getEnrollmentSymbolIcon() {
         if (selectedProgram != null) {
             if (selectedProgram.style() != null && selectedProgram.style().icon() != null) {
-                return
-                        ObjectStyleUtils.getIconResource(view.getContext(), selectedProgram.style().icon(), R.drawable.ic_program_default);
+                return ObjectStyleUtils.getIconResource(view.getContext(), selectedProgram.style().icon(), R.drawable.ic_program_default);
             } else
                 return AppCompatResources.getDrawable(view.getContext(), R.drawable.ic_program_default);
         }
 
         return null;
+    }
+
+    @Override
+    public int getTEIColor() {
+        TrackedEntityType teiType = d2.trackedEntityModule().trackedEntityTypes.uid(trackedEntityType).withAllChildren().blockingGet();
+
+        if (teiType.style() != null && teiType.style().color() != null) {
+            return ColorUtils.parseColor(teiType.style().color());
+        } else
+            return -1;
+    }
+
+    @Override
+    public int getEnrollmentColor() {
+        if (selectedProgram != null && selectedProgram.style() != null && selectedProgram.style().color() != null)
+            return ColorUtils.parseColor(selectedProgram.style().color());
+        else
+            return -1;
     }
 }
