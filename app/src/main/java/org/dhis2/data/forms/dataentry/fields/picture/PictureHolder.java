@@ -26,7 +26,7 @@ public class PictureHolder extends FormViewHolder {
             if (value != null)
                 this.binding.formPictures.setTextSelected(binding.getRoot().getContext().getString(R.string.image_selected));
             processor.onNext(
-                    RowAction.create(uid, value, getAdapterPosition()));
+                    RowAction.create(uid, file.getPath(), getAdapterPosition()));
         });
     }
 

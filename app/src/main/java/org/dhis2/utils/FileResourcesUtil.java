@@ -20,6 +20,7 @@ import androidx.work.WorkContinuation;
 import androidx.work.WorkManager;
 
 import org.dhis2.data.service.files.FilesWorker;
+import org.hisp.dhis.android.core.fileresource.FileResource;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -41,6 +42,13 @@ public class FileResourcesUtil {
         if (!uploadDirectory.exists())
             uploadDirectory.mkdirs();
         return uploadDirectory;
+    }
+
+    public static File getCacheDirectory(Context context) {
+        File cacheDirectory = new File(context.getCacheDir(), "cache");
+        if(!cacheDirectory.exists())
+            cacheDirectory.mkdirs();
+        return cacheDirectory;
     }
 
     public static File getDownloadDirectory(Context context) {
@@ -137,12 +145,26 @@ public class FileResourcesUtil {
         return fromUpload.exists() ? fromUpload : fromDownload;
     }
 
-    public static Bitmap getSmallImage(Context context, String fileName) {
-        File file = getFileForAttribute(context, fileName);
+    public static File saveBitmapToUpload(Context context, Bitmap bitmap, String fileName) {
+        File destDirectory = new File(getUploadDirectory(context), fileName + ".png");
+        OutputStream os;
+        try {
+            os = new FileOutputStream(destDirectory);
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, os);
+            os.close();
+        } catch (Exception e) {
+            Timber.e(e);
+        }
+
+        return destDirectory;
+    }
+
+    public static Bitmap getSmallImage(Context context, String filePath) {
+        File file = new File(filePath);
 
         Bitmap bitmap = BitmapFactory.decodeFile(file.getPath());
 
-        int desired = (int)TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,24,context.getResources().getDisplayMetrics());
+        int desired = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 24, context.getResources().getDisplayMetrics());
 
         Bitmap dstBitmap;
         if (bitmap.getWidth() >= bitmap.getHeight()) {
@@ -156,6 +178,17 @@ public class FileResourcesUtil {
 
     public static String generateFileName(String primaryUid, String secundaryUid) {
         return String.format("%s_%s.png", primaryUid, secundaryUid);
+    }
+
+    public static String generateFileName(String name) {
+        return String.format("%s.png", name);
+    }
+
+    public static File getCacheFile(Context context, String fileName) {
+        File tempFile = new File(context.getCacheDir(), fileName);
+        if(!tempFile.exists())
+            tempFile.mkdirs();
+        return tempFile;
     }
 
     public static boolean writeToFile(@NonNull String content, @Nullable String secretToEncode) {
@@ -210,5 +243,9 @@ public class FileResourcesUtil {
         }
         reader.close();
         return sb.toString();
+    }
+
+    public static String getFileResourceFullPath(FileResource fileResource) {
+        return String.format("%s/%s.%s", fileResource.path(), fileResource.uid(), fileResource.contentType().replace("image/", ""));
     }
 }

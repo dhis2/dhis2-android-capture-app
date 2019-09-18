@@ -19,6 +19,7 @@ import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel;
 import org.dhis2.utils.CodeGenerator;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.DateUtils;
+import org.dhis2.utils.FileResourcesUtil;
 import org.dhis2.utils.ValueUtils;
 import org.dhis2.utils.filters.FilterManager;
 import org.hisp.dhis.android.core.D2;
@@ -32,6 +33,7 @@ import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.enrollment.EnrollmentTableInfo;
 import org.hisp.dhis.android.core.event.EventCollectionRepository;
 import org.hisp.dhis.android.core.event.EventStatus;
+import org.hisp.dhis.android.core.fileresource.FileResource;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitMode;
 import org.hisp.dhis.android.core.period.DatePeriod;
@@ -50,7 +52,6 @@ import org.hisp.dhis.android.core.trackedentity.search.TrackedEntityInstanceQuer
 
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
@@ -542,7 +543,7 @@ public class SearchRepositoryImpl implements SearchRepository {
         return teis;
     }
 
-    private List<TrackedEntityInstance> filterDeleted(List<TrackedEntityInstance> teis){
+    private List<TrackedEntityInstance> filterDeleted(List<TrackedEntityInstance> teis) {
         Iterator<TrackedEntityInstance> iterator = teis.iterator();
         while (iterator.hasNext()) {
             TrackedEntityInstance tei = iterator.next();
@@ -586,7 +587,7 @@ public class SearchRepositoryImpl implements SearchRepository {
             setAttributesInfo(searchTei, selectedProgram);
             setOverdueEvents(searchTei, selectedProgram);
 
-            searchTei.setProfilePicture(profilePictureUid(tei));
+            searchTei.setProfilePicture(profilePicturePath(tei));
             ObjectStyle os = null;
             if (d2.trackedEntityModule().trackedEntityTypes.withStyle().uid(tei.trackedEntityType()).blockingExists())
                 os = d2.trackedEntityModule().trackedEntityTypes.withStyle().uid(tei.trackedEntityType()).blockingGet().style();
@@ -618,7 +619,8 @@ public class SearchRepositoryImpl implements SearchRepository {
         }
     }
 
-    private String profilePictureUid(TrackedEntityInstance tei) {
+    private String profilePicturePath(TrackedEntityInstance tei) {
+        String path = "";
         List<TrackedEntityAttribute> imageAttributes = d2.trackedEntityModule().trackedEntityAttributes.byValueType().eq(ValueType.IMAGE).blockingGet();
         List<String> imageAttributesUids = new ArrayList<>();
         for (TrackedEntityAttribute attr : imageAttributes)
@@ -635,9 +637,16 @@ public class SearchRepositoryImpl implements SearchRepository {
 
             attributeValue = d2.trackedEntityModule().trackedEntityAttributeValues.byTrackedEntityInstance().eq(tei.uid())
                     .byTrackedEntityAttribute().eq(attrUid).one().blockingGet();
+
+            if (attributeValue != null && !isEmpty(attributeValue.value())) {
+                FileResource fileResource = d2.fileResourceModule().fileResources.uid(attributeValue.value()).blockingGet();
+                if (fileResource != null) {
+                    path = FileResourcesUtil.getFileResourceFullPath(fileResource);
+                }
+            }
         }
 
-        return attributeValue != null ? attributeValue.trackedEntityAttribute() : null;
+        return path;
     }
 
     private boolean attrIsProfileImage(String attrUid) {

@@ -22,10 +22,10 @@ import org.hisp.dhis.android.core.arch.repositories.`object`.ReadOnlyOneObjectRe
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.Geometry
+import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.enrollment.EnrollmentObjectRepository
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
-import org.hisp.dhis.android.core.enrollment.internal.EnrollmentFields
 import org.hisp.dhis.android.core.event.EventStatus
 import org.hisp.dhis.android.core.maintenance.D2Error
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
@@ -34,6 +34,7 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceObjectRepos
 import org.hisp.dhis.rules.models.RuleActionShowError
 import org.hisp.dhis.rules.models.RuleEffect
 import timber.log.Timber
+import java.io.File
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
@@ -374,7 +375,7 @@ class EnrollmentPresenterImpl(
         return lastFocusItem
     }
 
-    override fun clearLastFocusItem(){
+    override fun clearLastFocusItem() {
         lastFocusItem = null
     }
 
@@ -393,7 +394,8 @@ class EnrollmentPresenterImpl(
             true
     }
 
-    private fun saveValue(uid: String, value: String?): Boolean {
+
+    override fun saveValue(uid: String, value: String?): Boolean {
         return if (valueIsAttribute(uid))
             saveAttribute(uid, value)
         else
@@ -403,11 +405,17 @@ class EnrollmentPresenterImpl(
     private fun saveAttribute(uid: String, value: String?): Boolean {
         val valueRepository = d2.trackedEntityModule().trackedEntityAttributeValues
                 .value(uid, teiRepository.blockingGet().uid())
+        var newValue = value
+        if (d2.trackedEntityModule().trackedEntityAttributes.uid(uid).blockingGet().valueType() == ValueType.IMAGE
+                && value != null) {
+            newValue = getFileResource(value)
+        }
+
         val currentValue = if (valueRepository.blockingExists())
             valueRepository.blockingGet().value() else null
-        return if (currentValue != value) {
+        return if (currentValue != newValue) {
             if (!isEmpty(value))
-                valueRepository.blockingSet(value)
+                valueRepository.blockingSet(newValue)
             else
                 valueRepository.blockingDelete()
             true
@@ -417,14 +425,21 @@ class EnrollmentPresenterImpl(
 
     private fun saveDataElement(uid: String, value: String?): Boolean {
         val eventUid = getEventUid(uid)
+        var newValue = value
         return if (eventUid != null) {
             val valueRepository = d2.trackedEntityModule().trackedEntityDataValues
                     .value(eventUid, uid)
+
+            if (d2.trackedEntityModule().trackedEntityAttributes.uid(uid).blockingGet().valueType() == ValueType.IMAGE
+                    && value != null) {
+                newValue = getFileResource(value)
+            }
+
             val currentValue = if (valueRepository.blockingExists())
                 valueRepository.blockingGet().value() else null
-            if (currentValue != null) {
+            if (currentValue != newValue) {
                 if (!isEmpty(value))
-                    valueRepository.blockingSet(value)
+                    valueRepository.blockingSet(newValue)
                 else
                     valueRepository.blockingDelete()
                 true
@@ -432,6 +447,11 @@ class EnrollmentPresenterImpl(
                 false
         } else
             false
+    }
+
+    private fun getFileResource(path: String): String {
+        val file = File(path)
+        return d2.fileResourceModule().fileResources.blockingAdd(file)
     }
 
     private fun getEventUid(dataElement: String): String? {
