@@ -164,7 +164,7 @@ public class FileResourcesUtil {
 
         Bitmap bitmap = BitmapFactory.decodeFile(file.getPath());
 
-        int desired = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 24, context.getResources().getDisplayMetrics());
+        int desired = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 36, context.getResources().getDisplayMetrics());
 
         Bitmap dstBitmap;
         if (bitmap.getWidth() >= bitmap.getHeight()) {
