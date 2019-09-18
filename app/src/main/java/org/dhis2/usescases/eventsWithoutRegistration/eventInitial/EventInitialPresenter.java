@@ -189,6 +189,20 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
                         )
 
         );
+
+        visibleUpdateButton();
+    }
+
+    @Override
+    public void visibleUpdateButton(){
+        compositeDisposable.add(eventInitialRepository.catComboAccessDataWrite(programId)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(
+                            view::checkActionButtonVisibility,
+                            Timber::e
+                    )
+        );
     }
 
     @Override

@@ -159,6 +159,26 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
     }
 
     @Override
+    public Observable<Boolean> catComboAccessDataWrite(String programUid){
+        return d2.programModule().programs.withCategoryCombo().uid(programUid).getAsync().toObservable()
+                    .flatMap(program -> d2.categoryModule().categoryOptionCombos.withCategoryOptions()
+                                                .byCategoryComboUid().eq(program.categoryCombo().uid()).getAsync()
+                                        .map(categoryOptionCombos -> {
+                                            boolean canWrite = false;
+                                            for(CategoryOptionCombo categoryOptionCombo: categoryOptionCombos){
+                                                for(CategoryOption catOption: categoryOptionCombo.categoryOptions()){
+                                                    if(catOption.access().data().write()){
+                                                        canWrite = true;
+                                                    }
+                                                }
+                                            }
+
+                                            return canWrite;
+                                        }).toObservable()
+                    );
+    }
+
+    @Override
     public Flowable<Map<String, CategoryOption>> getOptionsFromCatOptionCombo(String eventId) {
         return Flowable.just(d2.eventModule().events.uid(eventUid).get())
                 .flatMap(event -> catCombo(event.program()).toFlowable(BackpressureStrategy.LATEST)

@@ -67,4 +67,6 @@ public interface EventInitialRepository {
 
     Observable<OrganisationUnit> getOrganisationUnit(String orgUnitUid);
 
+    Observable<Boolean> catComboAccessDataWrite(String programUid);
+
 }

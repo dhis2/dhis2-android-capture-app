@@ -296,6 +296,7 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
     public void onResume() {
         super.onResume();
         formPresenter.onAttach(this);
+        progressBar.setVisibility(View.GONE);
         if (saveButton != null)
             formPresenter.initializeSaveObservable();
     }

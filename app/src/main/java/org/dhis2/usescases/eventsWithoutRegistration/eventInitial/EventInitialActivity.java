@@ -136,6 +136,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     private String savedLon;
     private ArrayList<String> sectionsToHide;
     private Boolean accessData;
+    private boolean accessDataCatCombo;
 
     public static Bundle getBundle(String programUid, String eventUid, String eventCreationType,
                                    String teiUid, PeriodType eventPeriodType, String orgUnit, String stageUid,
@@ -302,19 +303,28 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
     @Override
     public void checkActionButtonVisibility() {
-        if (eventUid == null) {
-            if (isFormCompleted())
-                binding.actionButton.setVisibility(View.VISIBLE); //If creating a new event, show only if minimun data is completed
-            else
-                binding.actionButton.setVisibility(View.GONE);
-
-        } else {
-            if (eventModel != null) {
-                if (eventModel.status() == EventStatus.OVERDUE && enrollmentStatus == EnrollmentStatus.CANCELLED)
+        if(accessDataCatCombo)
+            if (eventUid == null) {
+                if (isFormCompleted())
+                    binding.actionButton.setVisibility(View.VISIBLE); //If creating a new event, show only if minimun data is completed
+                else
                     binding.actionButton.setVisibility(View.GONE);
-            } else
-                binding.actionButton.setVisibility(View.VISIBLE); //Show actionButton always for already created events
-        }
+
+            } else {
+                if (eventModel != null) {
+                    if (eventModel.status() == EventStatus.OVERDUE && enrollmentStatus == EnrollmentStatus.CANCELLED)
+                        binding.actionButton.setVisibility(View.GONE);
+                } else
+                    binding.actionButton.setVisibility(View.VISIBLE); //Show actionButton always for already created events
+            }
+    }
+
+    @Override
+    public void checkActionButtonVisibility(boolean canWriteCatCombo){
+        accessDataCatCombo = canWriteCatCombo;
+
+        if(canWriteCatCombo) binding.actionButton.setVisibility(View.VISIBLE);
+        else binding.actionButton.setVisibility(View.GONE);
     }
 
     private boolean isFormCompleted() {
@@ -594,6 +604,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                             view ->
                                     CategoryOptionPopUp.getInstance()
                                             .setCategory(category)
+                                            .haveAnyCatOption(this)
                                             .setOnClick(item -> {
                                                 if (item != null)
                                                     selectedCatOption.put(category.uid(), item);

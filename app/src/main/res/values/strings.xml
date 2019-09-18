@@ -132,6 +132,8 @@
     <string name="fake_program_stage_description" translatable="false">Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.</string>
     <string name="one_time">One time</string>
     <string name="permanent">Permanent</string>
+    <string name="blank_category">No options available</string>
+    <string name="no_permission_category_options">You do not have any option to select.</string>
 
     <!--DataSet initial-->
     <string name="report_period">Report period</string>

@@ -89,6 +89,8 @@ public class EventInitialContract {
         void longitudeWarning(boolean showWarning);
 
         void setInitialOrgUnit(OrganisationUnit organisationUnit);
+
+        void checkActionButtonVisibility(boolean canWriteCatCombo);
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter {
@@ -155,6 +157,8 @@ public class EventInitialContract {
         void getEventOrgUnit(String ouUid);
 
         void initOrgunit(Date selectedDate);
+
+        void visibleUpdateButton();
     }
 
 }

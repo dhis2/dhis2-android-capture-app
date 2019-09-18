@@ -4,6 +4,8 @@ import android.content.Context;
 import android.view.Menu;
 import android.view.View;
 
+import org.dhis2.R;
+import org.dhis2.utils.DialogClickListener;
 import org.hisp.dhis.android.core.category.Category;
 import org.hisp.dhis.android.core.category.CategoryOption;
 
@@ -37,6 +39,30 @@ public class CategoryOptionPopUp {
             if (option.access().data().write())
                 options.add(option);
 
+        return this;
+    }
+
+    public CategoryOptionPopUp haveAnyCatOption(Context context){
+        if(options.size() == 0)
+            new CustomDialog(
+                    context,
+                    context.getString(R.string.blank_category),
+                    context.getString(R.string.no_permission_category_options),
+                    context.getString(R.string.action_accept),
+                    "",
+                    0,
+                    new DialogClickListener() {
+                        @Override
+                        public void onPositive() {
+                            dismiss();
+                        }
+
+                        @Override
+                        public void onNegative() {
+                            // dismiss
+                        }
+                    }
+            ).show();
 
         return this;
     }
