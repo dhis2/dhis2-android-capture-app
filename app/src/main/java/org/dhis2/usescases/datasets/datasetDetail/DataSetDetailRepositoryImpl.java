@@ -6,12 +6,15 @@ import org.dhis2.utils.DateUtils;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper;
 import org.hisp.dhis.android.core.category.CategoryCombo;
+import org.hisp.dhis.android.core.category.CategoryOption;
 import org.hisp.dhis.android.core.category.CategoryOptionCombo;
 import org.hisp.dhis.android.core.common.State;
+import org.hisp.dhis.android.core.dataset.DataSet;
 import org.hisp.dhis.android.core.dataset.DataSetCompleteRegistration;
 import org.hisp.dhis.android.core.dataset.DataSetElement;
 import org.hisp.dhis.android.core.dataset.DataSetInstanceCollectionRepository;
 import org.hisp.dhis.android.core.datavalue.DataValue;
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.period.DatePeriod;
 import org.hisp.dhis.android.core.period.Period;
 
@@ -104,5 +107,45 @@ public class DataSetDetailRepositoryImpl implements DataSetDetailRepository {
                 .filter(dataSetDetailModel -> stateFilters.isEmpty() || stateFilters.contains(dataSetDetailModel.state()))
                 .toList()
                 .toFlowable();
+    }
+
+    @Override
+    public Flowable<Boolean> canWriteAny(){
+        return d2.dataSetModule().dataSets.uid(dataSetUid).get().toFlowable()
+                .flatMap(dataSet -> {
+                    if(dataSet.access().data().write())
+                        return d2.categoryModule().categoryOptionCombos.withCategoryOptions()
+                                .byCategoryComboUid().eq(dataSet.categoryCombo().uid()).get().toFlowable()
+                                .map(categoryOptionCombos -> {
+                                    boolean canWriteCatOption = false;
+                                    for(CategoryOptionCombo categoryOptionCombo: categoryOptionCombos){
+                                        for(CategoryOption categoryOption: categoryOptionCombo.categoryOptions())
+                                            if (categoryOption.access().data().write()) {
+                                                canWriteCatOption = true;
+                                                break;
+                                            }
+                                    }
+                                    boolean canWriteOrgUnit = false;
+
+                                    if(canWriteCatOption){
+                                        List<OrganisationUnit> organisationUnits = d2.organisationUnitModule().organisationUnits.withDataSets()
+                                                .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE).blockingGet();
+
+                                        for(OrganisationUnit organisationUnit: organisationUnits)
+                                            for(DataSet dSet: organisationUnit.dataSets())
+                                                if(dSet.uid().equals(dataSetUid)) {
+                                                    canWriteOrgUnit = true;
+                                                    break;
+                                                }
+
+                                    }
+
+                                    return canWriteCatOption && canWriteOrgUnit;
+
+                                });
+                    else
+                        return Flowable.just(false);
+                });
+
     }
 }

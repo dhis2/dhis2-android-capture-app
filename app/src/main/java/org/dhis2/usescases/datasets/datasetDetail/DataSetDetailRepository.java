@@ -16,4 +16,6 @@ public interface DataSetDetailRepository {
     Single<Pair<CategoryCombo, List<CategoryOptionCombo>>> catOptionCombos();
 
     Flowable<List<DataSetDetailModel>> dataSetGroups(List<String> orgUnits, List<DatePeriod> periodFilter, List<State> stateFilters, List<CategoryOptionCombo> catOptComboFilters);
+
+    Flowable<Boolean> canWriteAny();
 }
