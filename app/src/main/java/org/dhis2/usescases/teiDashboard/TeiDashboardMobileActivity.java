@@ -29,8 +29,6 @@ import com.google.android.material.tabs.TabLayout;
 
 import org.dhis2.App;
 import org.dhis2.R;
-import org.dhis2.data.forms.FormActivity;
-import org.dhis2.data.forms.FormViewArguments;
 import org.dhis2.databinding.ActivityDashboardMobileBinding;
 import org.dhis2.usescases.enrollment.EnrollmentActivity;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;

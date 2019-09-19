@@ -7,9 +7,9 @@ import org.dhis2.databinding.ItemEventBinding;
 import org.dhis2.utils.DateUtils;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.android.core.event.Event;
-import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.program.ProgramStage;
+
 import java.util.Locale;
 
 /**
@@ -17,7 +17,7 @@ import java.util.Locale;
  */
 
 class EventViewHolder extends RecyclerView.ViewHolder {
-    ItemEventBinding binding;
+    private ItemEventBinding binding;
 
     EventViewHolder(ItemEventBinding binding) {
         super(binding.getRoot());
@@ -35,10 +35,19 @@ class EventViewHolder extends RecyclerView.ViewHolder {
         binding.eventDate.setText(date);
 
         itemView.setOnClickListener(view -> {
-            if (eventModel.status() == EventStatus.SCHEDULE || eventModel.status() == EventStatus.SKIPPED || eventModel.status() == EventStatus.OVERDUE) {
-                presenter.onScheduleSelected(eventModel.uid(), binding.sharedView);
-            } else
-                presenter.onEventSelected(eventModel.uid(), eventModel.status(), binding.sharedView);
+            switch (eventModel.status()) {
+                case SCHEDULE:
+                case OVERDUE:
+                case SKIPPED:
+                    presenter.onScheduleSelected(eventModel.uid(), binding.sharedView);
+                    break;
+                case VISITED:
+                    break;
+                case ACTIVE:
+                case COMPLETED:
+                    presenter.onEventSelected(eventModel.uid(), eventModel.status(), binding.sharedView);
+                    break;
+            }
         });
     }
 }

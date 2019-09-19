@@ -812,22 +812,6 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         startActivity(intent);
     }
 
-    @Override
-    public EventCreationType eventcreateionType() {
-        return eventCreationType;
-    }
-
-    @Override
-    public void latitudeWarning(boolean showWarning) {
-//        binding.lat.setError(showWarning ? getString(R.string.formatting_error) : null);
-    }
-
-    @Override
-    public void longitudeWarning(boolean showWarning) {
-//        binding.lon.setError(showWarning ? getString(R.string.formatting_error) : null);
-
-    }
-
     private int calculateCompletedFields(@NonNull List<FieldViewModel> updates) {
         int total = 0;
         for (FieldViewModel fieldViewModel : updates) {
