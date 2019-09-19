@@ -338,7 +338,8 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     private void showMap(boolean showMap) {
         binding.scrollView.setVisibility(showMap ? View.GONE : View.VISIBLE);
         binding.mapView.setVisibility(showMap ? View.VISIBLE : View.GONE);
-        binding.mapLayerButton.setVisibility(showMap ? View.VISIBLE : View.GONE);
+        if (!showMap)
+            binding.mapLayerButton.setVisibility(View.GONE);
 
         if (showMap)
             presenter.getMapData();
@@ -413,6 +414,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                     binding.progressLayout.setVisibility(View.GONE);
                     binding.messageContainer.setVisibility(View.VISIBLE);
                     binding.message.setText(data.val1());
+                    binding.scrollView.setVisibility(View.GONE);
                 }
                 if (!presenter.getQueryData().isEmpty() && data.val2())
                     setFabIcon(false);
@@ -647,6 +649,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                     map = mapboxMap;
                     if (map.getStyle() == null) {
                         map.setStyle(Style.MAPBOX_STREETS, style -> {
+                                    binding.mapLayerButton.setVisibility(View.VISIBLE);
                                     MapLayerManager.Companion.init(style, "teis", featureType);
                                     MapLayerManager.Companion.instance().setEnrollmentLayerData(
                                             ColorUtils.getColorFrom(presenter.getProgram().style() != null ? presenter.getProgram().style().color() : null, ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.PRIMARY)),
@@ -700,6 +703,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                         });
 
                     } else {
+                        binding.mapLayerButton.setVisibility(View.VISIBLE);
                         ((GeoJsonSource) mapboxMap.getStyle().getSource("teis")).setGeoJson(data.component1().get("TEI"));
                         ((GeoJsonSource) mapboxMap.getStyle().getSource("enrollments")).setGeoJson(data.component1().get("ENROLLMENT"));
                         LatLngBounds bounds = LatLngBounds.from(data.component2().north(),

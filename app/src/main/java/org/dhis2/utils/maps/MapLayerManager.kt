@@ -184,12 +184,12 @@ class MapLayerManager private constructor(
                             .withFilter(eq(literal("\$type"), literal("Polygon")))
                             , ENROLLMENT_POINT_LAYER_ID
                     )
-                    style.addLayer(LineLayer(ENROLLMENT_POLYGON_BORDER_LAYER_ID, "enrollments")
+                    style.addLayerAbove(LineLayer(ENROLLMENT_POLYGON_BORDER_LAYER_ID, "enrollments")
                             .withProperties(
                                     lineColor(enrollmentDarkColor),
                                     lineWidth(2f))
-                            .withFilter(eq(literal("\$type"), literal("Polygon")))
-
+                            .withFilter(eq(literal("\$type"), literal("Polygon"))),
+                            ENROLLMENT_POLYGON_LAYER_ID
                     )
                 }
             }
