@@ -32,6 +32,8 @@ import com.mapbox.mapboxsdk.style.layers.*
 import com.mapbox.mapboxsdk.style.layers.Property.*
 import com.mapbox.mapboxsdk.style.layers.PropertyFactory.*
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource
+import io.ona.kujaku.services.MapboxOfflineDownloaderService
+import io.ona.kujaku.utils.Constants
 import org.dhis2.BuildConfig
 import org.dhis2.R
 import org.dhis2.databinding.ActivityMapSelectorBinding
@@ -101,6 +103,21 @@ class MapSelectorActivity : ActivityGlobalAbstract(), MapActivityLocationCallbac
                 }
             }
         }
+        val topLeftLat = 37.7897
+        val topLeftLng = -119.5073
+        val bottomRightLat = 37.6744
+        val bottomRightLng = -119.6815
+
+        val mapDownloadIntent = Intent(this, MapboxOfflineDownloaderService::class.java)
+        mapDownloadIntent.putExtra(Constants.PARCELABLE_KEY_MAPBOX_ACCESS_TOKEN, BuildConfig.MAPBOX_ACCESS_TOKEN)
+        mapDownloadIntent.putExtra(Constants.PARCELABLE_KEY_SERVICE_ACTION, MapboxOfflineDownloaderService.SERVICE_ACTION.DOWNLOAD_MAP)
+        mapDownloadIntent.putExtra(Constants.PARCELABLE_KEY_STYLE_URL, "mapbox://styles/ona/u89ukjhyvbnm")
+        mapDownloadIntent.putExtra(Constants.PARCELABLE_KEY_MAP_UNIQUE_NAME, "kenya-malaria-spray-areas")
+        mapDownloadIntent.putExtra(Constants.PARCELABLE_KEY_MAX_ZOOM, 20.0)
+        mapDownloadIntent.putExtra(Constants.PARCELABLE_KEY_MIN_ZOOM, 0.0)
+        mapDownloadIntent.putExtra(Constants.PARCELABLE_KEY_TOP_LEFT_BOUND,  LatLng(topLeftLat, topLeftLng))
+        mapDownloadIntent.putExtra(Constants.PARCELABLE_KEY_BOTTOM_RIGHT_BOUND,  LatLng(bottomRightLat, bottomRightLng))
+        startService(mapDownloadIntent)
     }
 
     @SuppressWarnings("MissingPermission")
