@@ -1,293 +1,360 @@
-<?xml version='1.0' encoding='utf-8'?>
 <resources>
-  <string name="app_name">ឌីអេចអាយអេសធូ (DHIS 2)</string>
-  <string name="logo_text">ឌីអេចអាយអេសធូ (DHIS 2)</string>
-  <string name="logo_number">លេខពីរ</string>
-  <string name="error">មានកំហុសបច្ចេកទេស</string>
-  <string name="error_wrong_server_url">អាសយដ្ឋានម៉ាស៊ីនមេមិនត្រឹមត្រូវ</string>
-  <string name="error_wrong_credentials">អត្ដសញ្ញាណមិនត្រឹមត្រូវ</string>
-  <string name="error_unexpected_error">កំហុសបច្ចេកទេសមិនបានរំពឹងទុក</string>
-  <string name="error_internal_server_error">ម៉ាស៊ីនមេខាងក្នុងមានបញ្ហាបច្ចេកទេស</string>
-  <string name="yes">យល់ព្រម</string>
-  <string name="no">មិនព្រម</string>
-  <string name="no_value">មិនមានតំលៃ</string>
-  <string name="sync_now">បញ្ជូនទិន្នន័យឥឡូវនេះ</string>
-  <string name="sync_text">កំពុងបញ្ជូនទិន្នន័យទៅកាន់ម៉ាស៊ីនមេ</string>
-  <string name="sync_title">"បញ្ចូនទិន្នន័យឥឡូវនេះ "</string>
-  <string name="sync_metadata">ទិន្នន័យ</string>
-  <string name="sync_events">ព្រឹត្តិការណ៏</string>
-  <string name="sync_tei">ផ្នែកតាមដាន</string>
-  <string name="sync_complete_title">បានបញ្ចប់</string>
-  <string name="sync_complete_text">ការបញ្ចូនទិន្នន័យបានបញ្ចប់</string>
-  <string name="sync_error_title">ការបញ្ចូនទិន្នន័យមានបញ្ហាបច្ចេកទេស</string>
-  <string name="sync_error_text">មានបញ្ហាបច្ចេកទេសក្នុងកំឡុងពេលបញ្ជូនទិន្នន័យ, សូមព្យាយាម្ដងទៀត។</string>
-  <string name="search_result_text">%s លទ្ធផលដែលបានរកឃើញ</string>
-  <string name="add_new">បន្ថែមថ្មី</string>
-  <string name="schedule_new">កំណត់កាលវិភាគឥឡូវនេះ</string>
-  <string name="referral">ការបញ្ជូន</string>
-  <string name="url_hint">អាសយដ្ឋានរបស់ម៉ាស៊ីនមេ</string>
-  <string name="user_hint">ឈ្មោះអ្នកប្រើប្រាស់</string>
-  <string name="password_hint">លេខសំងាត់</string>
-  <string name="log_in_button">ចូលដំណើរការ</string>
-  <string name="unlock_button">ដោះសោ</string>
-  <string name="syncing_configuration">កំពុងបញ្ជូនការកំណត់​រចនាសម្ព័ន្ធរបស់អ្នក</string>
-  <string name="syncing_data_shortly">ទិន្នន័យរបស់អ្នកនឹងបញ្ជូនក្នុងពេលដ៏ខ្លីខាងមុខនេះ</string>
-  <string name="syncing_data">កំពុងបញ្ជូនទិន្នន័យរបស់អ្នក</string>
-  <string name="configuration_ready">ការកំណត់​រចនាសម្ព័ន្ធរបស់អ្នករួចរាល់</string>
-  <string name="data_ready">ទិន្នន័យរបស់អ្នករួចរាល់</string>
-  <string name="configuration_sync_failed">ការបញ្ជូនការកំណត់​រចនាសម្ព័ន្ធរបស់អ្នកបរាជ័យ</string>
-  <string name="data_sync_failed">ការបញ្ជូនទិន្នន័យបរាជ័យ</string>
-  <string name="DAILY">ប្រចាំថ្ងៃ</string>
-  <string name="WEEKLY">ប្រចាំសប្ដាហ៏</string>
-  <string name="MONTHLY">ប្រចាំខែ</string>
-  <string name="YEARLY">ប្រចាំឆ្នាំ</string>
-  <string name="clear_filters">លុបចោលការច្រោះមើលទិន្នន័យ</string>
-  <string name="action_accept">ទទួលយក</string>
-  <string name="search">ស្វែងរក</string>
-  <string name="enter_text">បញ្ជូលអក្សរ</string>
-  <string name="enter_long_text">បញ្ចូលអក្សរច្រើន</string>
-  <string name="enter_number">បញ្ជូលលេខ</string>
-  <string name="enter_integer">បញ្ជូលទិន្នន័យជាលេខ</string>
-  <string name="enter_negative_integer">បញ្ជូលទិន្នន័យជាលេខ (អវិជ្ជមាន)</string>
-  <string name="enter_positive_integer_or_zero">បញ្ជូលទិន្នន័យជាលេខ (វិជ្ជមាន រឺ លេខ ០)</string>
-  <string name="enter_positive_integer">បញ្ជូលទិន្នន័យជាលេខ (វិជ្ជមាន)</string>
-  <string name="filter_options">ជំរើសសម្រាប់ច្រោះមើលទិន្នន័យ</string>
-  <string name="choose_date">ជ្រើសរើសថ្ងៃខែឆ្នាំ</string>
-  <string name="program_completed">កម្មវិធីបានបញ្ចប់</string>
-  <string name="program_inactive">កម្មវិធីមិនដំណើរការ</string>
-  <string name="event_open">បើក</string>
-  <string name="event_completed">ព្រឹត្តិការណ៏បានបញ្ចប់</string>
-  <string name="event_skipped">ព្រឹត្តិការណ៏បានរំលង</string>
-  <string name="event_schedule">កំណត់កាលវិភាគទៅលើព្រឹត្តិការណ៏</string>
-  <string name="event_expired">ព្រឹត្តិការណ៏ផុតកាលកំណត់</string>
-  <string name="event_editing_expired">ការកែប្រែបានផុតពេលកំណត់</string>
-  <string name="event_accepted">បានទទួលយកព្រឹត្តិការណ៏</string>
-  <string name="event_approved">ព្រឹត្តិការណ៏បានអនុម័ត</string>
-  <string name="event_inactive">ព្រឹត្តិការណ៏មិនដំណើរការ</string>
-  <string name="read_only">បានត្រឹមតែអាន</string>
-  <string name="complete">បញ្ចប់</string>
-  <string name="completed">បានបញ្ចប់</string>
-  <string name="cancelled">បានលុបចោល</string>
-  <string name="re_open">បើកឡើងវិញ</string>
-  <string name="activate">បើកអោយដំណើរការ</string>
-  <string name="state_synced">បញ្ចូន</string>
-  <string name="state_to_post">ដើម្បីប្រកាស</string>
-  <string name="state_to_update">ដើម្បីធ្វើបច្ចុប្បន្នភាព</string>
-  <string name="state_to_delete">ដើម្បីលុប</string>
-  <string name="state_error">កំហុសបច្ចេកទេស</string>
-  <string name="action_sync">បញ្ជូន</string>
-  <string name="completion">ការបញ្ចប់</string>
-  <string name="create">បង្កើត</string>
-  <string name="update">បច្ចុប្បន្នភាព</string>
-  <string name="date">ថ្ងៃខែឆ្នាំ</string>
-  <string name="org_unit">អង្គភាព</string>
-  <string name="no_org_units">មិនមានអង្គភាពណាមួយត្រូវបានបើកតាមរយៈការជ្រើសរើសថ្ងៃខែឆ្នាំនេះទេ, សូមជ្រើសរើសថ្ងៃខែឆ្នាំផ្សេងទៀត​</string>
-  <string name="category_option">ជម្រើសប្រភេទ</string>
-  <string name="latitude">រយៈទទឹង</string>
-  <string name="longitude">រយៈបណ្តោយ</string>
-  <string name="new_event">ព្រឹត្តិការណ៏ថ្មី</string>
-  <string name="failed_insert_event">បរាជ័យក្នុងការបន្ថែមព្រឹត្តិការណ៏ថ្មី</string>
-  <string name="event_created">ព្រឹត្តិការណ៏ត្រូវបានបង្កើត</string>
-  <string name="event_updated">ព្រឹត្តិការណ៏ត្រូវបានធ្វើបច្ចុប្បន្នភាព</string>
-  <string name="one_time">មួយពេល</string>
-  <string name="permanent">អចិន្ត្រៃយ៍</string>
-  <string name="event_date">ថ្ងៃខែឆ្នាំរបស់ព្រឹត្តិការណ៏</string>
-  <string name="due_date">កាលបរិច្ឆេទកំណត់</string>
-  <string name="cat_combo">ប្រភេទបន្សំចូលគ្នា</string>
-  <string name="date_default">ថ្ងៃថ្ងៃ/ខែខែ/ឆ្នាំឆ្នាំឆ្នាំឆ្នាំ</string>
-  <string name="cancel">បោះបង់</string>
-  <string name="delete">លុបចោល</string>
-  <string name="delete_event">លុបចោលព្រឹត្តិការណ៏</string>
-  <string name="confirm_delete_event">តើអ្នកច្បាស់ទេថាចង់លុបចោលព្រឹត្តិការណ៏នេះ?</string>
-  <string name="event_was_deleted">ព្រឹត្តិការណ៏បានលុបជោគជ័យ</string>
-  <string name="enrollment_list">បញ្ជីចុះឈ្មោះ</string>
-  <string name="active_programs">កម្មវិធីដំណើរការ</string>
-  <string name="to_enroll_programs">កម្មវិធីចុះឈ្មោះ</string>
-  <string name="enroll">ចុះឈ្មោះ</string>
-  <string name="last_visit">ជួបចុងក្រោយ​</string>
-  <string name="apply">អនុវត្ត</string>
-  <string name="see_details">មើលលំអិត</string>
-  <string name="view_more">មើលច្រើនទៀត</string>
-  <string name="edit">កែប្រែ</string>
-  <string name="enrolling_ou">ចុះឈ្មោះអង្គភាព</string>
-  <string name="follow_up">តាមដាន</string>
-  <string name="follow_up_enabled">ការតាមដានដំណើរការ</string>
-  <string name="follow_up_disabled">ការតាមដានមិនដំណើរការ</string>
-  <string name="deactivate">ធ្វើអោយអសកម្ម</string>
-  <string name="program_not_allow_events">កម្មវិធីនេះមិនអនុញ្ញាតអោយមានព្រឹត្តិការណ៏ច្រើនទេ</string>
-  <string name="events">ព្រឹត្តិការណ៏</string>
-  <string name="done_task">ផ្ទាំងដើម</string>
-  <string name="app_info">ព័ត៌មានកម្មវិធី</string>
-  <string name="log_out">ចាកចេញ</string>
-  <string name="block_session">ការទប់ស្កាត់</string>
-  <string name="select_location">ជ្រើសរើសទីតាំង</string>
-  <string name="a_minute">១នាទី</string>
-  <string name="fifteen_minute">១៥នាទី</string>
-  <string name="a_hour">១ម៉ោង</string>
-  <string name="a_day">១ថ្ងៃ (លំនាំដើម)</string>
-  <string name="Automatic_Sync_Data">កំណត់ការបញ្ជូនទិន្នន័យដោយស្វ័យប្រវត្តិជារៀងរាល់</string>
-  <string name="Manual">ហត្ថកម្ម</string>
-  <string name="Automatic_Sync_Metadata">កំណត់​រចនាសម្ព័ន្ការដោយស្វ័យប្រវត្តិជារៀងរាល់</string>
-  <string name="a_week">១សប្តាហ៍</string>
-  <string name="sync_max_parameters">ប៉ារ៉ាម៉ែត្រដែលកំពុងធ្វើការបញ្ជូន</string>
-  <string name="sync_default_parameters">ធ្វើអោយទោលំនាំដើម</string>
-  <string name="wipe_data_meesage">ប្រព័ន្ធទិន្នន័យនឹងត្រូវលុបចោល\nអ្នកត្រូវចូលមកប្រើម្ដងទៀតដោយបញ្ចុលឈ្មោះ និង លេខសំងាត់​</string>
-  <string name="wipe_data_ok">ទទួលយក</string>
-  <string name="wipe_data_no">បោះបង់</string>
-  <string name="SYNC_DATA">បញ្ជូនទិន្នន័យឥឡូវនេះ</string>
-  <string name="SYNC_META">បញ្ជូនការកំណត់​រចនាសម្ព័ន្ធឥឡូវនេះ</string>
-  <string name="SYNC_MANAGER">ការកំណត់</string>
-  <string name="last_data_sync_date">បានបញ្ជូនចុងក្រោយ: %s</string>
-  <string name="last_metadata_sync_date">បានបញ្ជូនចុងក្រោយ: %s</string>
-  <string name="enrollmment_date">ថ្ងៃខែឆ្នាំចុះឈ្មោះ</string>
-  <string name="report_date">ថ្ងៃខែឆ្នាំរាយការណ៏</string>
-  <string name="add_file">បញ្ចូលឯកសារ</string>
-  <string name="write_new_note">កត់ចំណាំថ្មី</string>
-  <string name="clear">លុបចោល</string>
-  <string name="add_note">បន្ថែមការកត់ចំណាំ</string>
-  <string name="revert">ត្រលប់ក្រោយ</string>
-  <string name="activated">បានដាក់អោយដំណើរការ</string>
-  <string name="enroll_in">ចុះឈ្មោះក្នុង %s</string>
-  <string name="missing_mandatory_fields_title">ទិន្នន័យចាំបាច់មិនមាន</string>
-  <string name="missing_mandatory_fields_text">ឈ្មោះទិន្នន័យចាំបាច់ខ្លះមិនមាន, ប្រសិនបើអ្នកចង់ត្រឡប់ទៅវិញ រាល់ពត៏មាននិងត្រូវលុយចោល</string>
-  <string name="missing_mandatory_fields_events">ឈ្មោះទិន្នន័យចាំបាច់ខ្លះមិនមាន។ អ្នកអាចត្រឡប់ក្រោយបាន ប៉ុន្ដែព្រឹត្តិការណ៏នេះនិងមិនបានសំរេច</string>
-  <string name="missing_mandatory_fields_go_back">លុប ហើយត្រឡប់ទៅវិញ</string>
-  <string name="section_list">បញ្ជីតាមផ្នែក</string>
-  <string name="event_summary_header">%s សំនួរនៃ %s ដែលបានបញ្ចប់</string>
-  <string name="event_summary_sections_header">%s នៃ %s ដែលបានបញ្ចប់</string>
-  <string name="complete_and_close">បញ្ចប់ និង ចាកចេញ</string>
-  <string name="hint_day">ថ្ងៃ</string>
-  <string name="hint_month">ខែ</string>
-  <string name="hint_year">ឆ្នាំ</string>
-  <string name="week">សប្ដាហ៏</string>
-  <string name="incident_date">ថ្ងៃខែឆ្នាំ ធ្វើរោគវិនិច្ឆ័យ</string>
-  <string name="local_results">លទ្ធផលក្នុងតំបន់</string>
-  <string name="online_results">លទ្ធផលអនឡាញ</string>
-  <string name="past_programs">កម្មវិធីពីមុន</string>
-  <string name="permission_denied">អ្នកមិនមានសិទ្ធិគ្រប់គ្រាន់ដើម្បីដំណើរការផ្នែកនេះទេ</string>
-  <string name="add_relation_button">បន្ថែមថ្មីជា​</string>
-  <string name="date_dialog_clear">លុបចោល</string>
-  <string name="period">រយៈពេល</string>
-  <string name="org_unit_filter">(%d) អង្គភាព</string>
-  <string name="tuto_main_1">សូមស្វាគមន៏មកកាន់ប្រព័ន្ធ DHIS2</string>
-  <string name="tuto_main_2">នៅទីនេះអ្នកអាចឃើញសកម្មភាពរបស់អ្នក</string>
-  <string name="tuto_main_3">អ្នកអាចអនុវត្តការច្រោះទិន្នន័យ​</string>
-  <string name="tuto_main_4">ដោយធ្វើការផ្លាស់ប្ដូររយៈពេល និង ជ្រើសរើសថ្ងៃខែឆ្នាំ​</string>
-  <string name="tuto_main_5">រឺច្រោះមើលទិន្នន័យតាមរយៈអង្គភាព</string>
-  <string name="tuto_main_6">ពិនិត្យមើលសកម្មភាពផ្សេងទៀតនៅផ្ទាំងបញ្ជីដើម</string>
-  <string name="default_relationship_label">បង្កើតទំនាក់ទំនង</string>
-  <string name="next">បន្ទាប់</string>
-  <string name="search_min_num_attr">អ្នកត្រូវបញ្ចូលយ៉ាងហោចណាស់ %d នៃលក្ខណៈ (Attributes) ដើម្បីធ្វើការស្វែងរក</string>
-  <string name="search_max_tei_reached">មានលទ្ធផលច្រើនជាង %d សូមបញ្ចូលលក្ខខណ្ឌផ្សេងទៀតដើម្បីស្វែងរកបន្ថែម</string>
-  <string name="search_criteria_not_met">លក្ខខណ្ឌក្នុងការស្វែងរករបស់អ្នកមិនមានលទ្ធផល\nកំណត់លក្ខខណ្ឌម្ដងទៀត រឺ ចុះឈ្មោះថ្មី %s</string>
-  <string name="search_init">បញ្ចូលលក្ខខណ្ឌដើម្បីស្វែងរក</string>
-  <string name="QR_SCANNER">នាំចូលទិន្នន័យ QR</string>
-  <string name="SAVE">រក្សាទុក</string>
-  <string name="button_ok">យល់ព្រម</string>
-  <string name="qr_id">ការកំណត់អត្តសញ្ញាណ</string>
-  <string name="qr_attributes">លក្ខណៈ (Attributes)</string>
-  <string name="qr_enrollment">ការចុះឈ្មោះ</string>
-  <string name="qr_events">ព្រឹត្តិការណ៏</string>
-  <string name="qr_relationships">ទំនាក់ទំនង</string>
-  <string name="read_more_qr">អានទិន្នន័យ QR បន្ទាប់ដើម្បីទទួលបានព៌ត័មានបន្ថែម​</string>
-  <string name="save_qr">ឈប់អាន ហើយ រក្សាទុកទិន្នន័យ</string>
-  <string name="qr_no_data">មិនមានទិន្នន័យ</string>
-  <string name="qr_error_id">លេខកូដ QR មិនត្រឹមត្រូវ</string>
-  <string name="qr_error_attr">Attribute (លក្ខណៈនេះ) មិនអាចត្រូវបានបន្ថែមទេ</string>
-  <string name="qr_error_enrollment">ការចុះឈ្មោះនេះមិនអាចបន្ថែមបានឡើយ</string>
-  <string name="qr_error_event">ព្រឹត្តិការណ៏នេះមិនអាចបន្ថែមបានឡើយ</string>
-  <string name="jira_report">រាយការណ៏បញ្ហា Jira</string>
-  <string name="about">អំពី</string>
-  <string name="programs_to_enroll">កម្មវិធីចុះឈ្មោះ</string>
-  <string name="select_all">ជ្រើសរើសទាំងអស់</string>
-  <string name="empty_program_list">មិនមានព៌ត័មានដែលអ្នកបានច្រោះមើលនេះទេ, សូមប្ដូរចេញ​</string>
-  <string name="share">ចែករំលែក</string>
-  <string name="share_qr">ចែករំលែកលេខកូដ QR</string>
-  <string name="teiType_search_online">ការស្វែងរកតាមរយៈបញ្ចូលមិនដំណើរការតាមរយៈការស្វែងរកតាមអនឡានទេ\nសូមជ្រើសរើសកម្មវិធីពីក្នុងបញ្ជី​</string>
-  <string name="max">អតិប្បរមា</string>
-  <string name="current">បច្ចុប្បន្ន</string>
-  <string name="tei">TEI</string>
-  <string name="limit_by_organisation_unit">កំណត់ដោយអង្គភាព</string>
-  <string name="programs_list">បញ្ជីកម្មវិធី</string>
-  <string name="wipe_data">កំណត់កម្មវិធីឡើងវិញ</string>
-  <string name="add_relationship_error">មិនអាចទៅរួចទេក្នុងការបន្ថែមទំនាក់ទំនងនៅទីនេះ</string>
-  <string name="warning_error_on_complete_title">ពិនិត្យទីនេះ​</string>
-  <string name="save">រក្សាទុក</string>
-  <string name="downloaded_confirm">តើអ្នកចង់បន្ថែមទិន្នន័យពី QR ដែររឺទេ?</string>
-  <string name="about_app">កំណែកម្មវិធី %s</string>
-  <string name="about_sdk">កំណែរ SDK: %s</string>
-  <string name="about_connected">បានភ្ជាប់ទៅ %s</string>
-  <string name="about_user">ឈ្មោះអ្នកប្រើប្រាស់បច្ចុប្បន្ន %s</string>
-  <string name="about_more">"ព៌ត័មានបន្ថែមពីកម្មវិធីនេះសូមចូលទៅ "<a href="https://drive.google.com/open?id=1YHRBk6LSp6uROfs19-wCfQGc-rgl2f5iDrhCDasTR8M">​ទីនេះ</a>​ តើកម្មវិធីអាចធ្វើអ្វីបាន និង មិនអាចធ្វើអ្វីបាន</string>
-  <string name="about_git">កំណែនេះ និង កំណែមុននៃកម្មវិធីនេះ ក៏ដូចជាប្រភពកូដ អាចរកបាននៅ​<a href="https://github.com/dhis2/dhis2-android-capture-app">GitHub</a>"DHIS2 Android Capture is licensed under the terms of the GNU General Public License as published by the Free Software Foundation - see "<a href="http://www.gnu.org/licenses/gpl-3.0.html">http://www.gnu.org/licenses/gpl-3.0.html</a></string>
-  <string name="about_dev">"Developed and maintained by the "<a href="https://www.dhis2.org/">DHIS2</a>" project, part of University of Oslo, "<a href="https://www.mn.uio.no/ifi/english/">department of informatics</a></string>
-  <string name="about_contact">សម្រាប់ព៌ត័មានបន្ថែម រឺ ក៏មានសំនួរអំពីកម្មវិធីនេះ, សូមសរសេរមកកាន់<a href="mailto:android@dhis2.org">android\@dhis2.org</a></string>
-  <string name="login_error_null_pass">មិនមានលេខសំងាត់, សូមបំពេញ​</string>
-  <string name="login_error_null_username">មិនមានឈ្មោះអ្នកប្រើប្រាស់, សូមបំពេញ​</string>
-  <string name="login_error_dhis_version">ម៉ាស៊ីនមេនេះកំពុងដំណើរការខុសពី DHIS ២.២៩។ សូមធ្វើបច្ចុប្បន្នភាពលើម៉ាស៊ីនមេរបស់អ្នក​</string>
-  <string name="login_error_unsuccessful_response">មានអ្វីមួយមិនប្រក្រតី​ សូមមើលអាសយដ្ឋានម៉ាស៊ីនមេ ឈ្នោះ លេខសម្ងាត់ ហើយព្យាយាមម្តងទៀត</string>
-  <string name="login_error_error_response">ម៉ាស៊ីនមេមិនអាចបំពេញសំណើរនេះបានទេ​</string>
-  <string name="login_error_default">មានបញ្ហានៅពេលព្យាយាមចូលទៅក្នុងម៉ាស៊ីនមេ​</string>
-  <string name="login_error">ការចូលទៅប្រើប្រាស់មានបញ្ហា</string>
-  <string name="missing_mandatory_fields">ទិន្នន័យចាំបាច់មិនមាន</string>
-  <string name="online_search_unexpected">កំហុសដែលមិនបានរំពឹងទុកនៅពេលដែលកំពុងស្វែងរកនៅលើអនឡាញ</string>
-  <string name="online_search_parsing_error">កំហុសខណៈពេលញែកលទ្ធផល</string>
-  <string name="online_search_error">ការស្វែងរកតាមអនឡានមានបញ្ហាបច្ចេកទេស</string>
-  <string name="online_search_response_error">មានអ្វីមួយខុសបច្ចេកទេសនៅលើម៉ាស៊ីនមេ</string>
-  <string name="search_program_not_selected">ជ្រើសរើសកម្មវិធីដើម្បីដំណើរការចុះឈ្មោះ</string>
-  <string name="search_access_error">អ្នកមិនមានសិទ្ធិគ្រប់គ្រាន់</string>
-  <string name="feature_unavaible">មុខងារនេះមិនទាន់រួចរាល់នៅឡើយទេ​</string>
-  <string name="relationship_label_error">កំហុសក្នុងការធ្វើទំនាក់ទំនង</string>
-  <string name="all_tei_type">ទាំងអស់ %s</string>
-  <string name="invalid_phone_number">លេខទូរស័ព្ទមិនត្រឹមត្រូវ</string>
-  <string name="invalid_email">អាសយដ្ឋានអ៊ីមែលមិនត្រឹមត្រូវ</string>
-  <string name="invalid_negative_number">លេខអវិជ្ជមានតែមួយគត់ដែលត្រូវបានអនុញ្ញាត</string>
-  <string name="invalid_possitive_zero">លេខវិជ្ជមាន រឺ លេខ ០ តែមួយគត់ដែលត្រូវបានអនុញ្ញាត</string>
-  <string name="invalid_possitive">លេខវិជ្ជមានតែមួយគត់ដែលត្រូវបានអនុញ្ញាត</string>
-  <string name="invalid_interval">តំលៃចន្លោះពីលេខ ០ ដល់ ១ ត្រូវបានអនុញ្ញាត</string>
-  <string name="invalid_percentage">តំលៃចន្លោះពីលេខ ០ ដល់ ១០០ ត្រូវបានអនុញ្ញាត</string>
-  <string name="date_dialog_tigle">ជ្រើសរើសថ្ងៃខែឆ្នាំដើម្បីច្រោះទិន្នន័យ</string>
-  <string name="select_option">ជ្រើសរើសជម្រើស</string>
-  <string name="issue_reported">បានរាយការណ៏បញ្ហា</string>
-  <string name="jira_credential_error">ពិនិត្យមើលថាតើ ឈ្មោះ និង លេខសំងាត់របស់អ្នកត្រឹមត្រូវ</string>
-  <string name="jira_issue_error">កំហុសក្នុងការរាយការណ៍បញ្ហា</string>
-  <string name="jira_fields_error">គ្រប់ទិន្នន័យទាំងអស់ត្រូវបំពេញ</string>
-  <string name="dialog_generate_new_event">បង្កើតព្រឹត្តិការណ៏ថ្មី</string>
-  <string name="message_generate_new_event">តើអ្នកចង់បង្កើតព្រឹត្តិការណ៏ថ្មីមួយទៀតទេ?</string>
-  <string name="event_completed_title">ព្រឹត្តិការណ៏បានបញ្ចប់</string>
-  <string name="event_completed_message">គ្រប់ព្រឹត្តិការណ៏ទាំងអស់នៅក្នុងកម្មវិធីនេះបានបញ្ចប់។ តើអ្នកចង់បិទកម្មវិធីនេះទេ?</string>
-  <string name="check_event">ត្រួតពិនិត្យ</string>
-  <string name="menu_home">ផ្ទាំងដើម</string>
-  <string name="appwidget_text">ឧទាហរណ៏</string>
-  <string name="add_widget">បន្ថែម Widget</string>
-  <string name="showHelp">បង្ហាញជំនួយ</string>
-  <string name="tuto_settings_1">កំពុងបញ្ជូនទិន្នន័យរបស់អ្នក...</string>
-  <string name="tuto_settings_2">...ការកំណត់​រចនាសម្ព័ន្ធរបស់អ្នក...</string>
-  <string name="tuto_settings_3">...កំណត់ទំហំផ្ទុកក្នុងម៉ាស៊ីនរបស់អ្នក...</string>
-  <string name="tuto_settings_4">...រឺ លុបគ្រប់យ៉ាងដើម្បីចាប់ផ្ដើមឡើងវិញ</string>
-  <string name="tuto_search_2">អ្នកអាចផ្លាស់ប្ដូរទៅកម្មវិធីផ្សេងទៀត</string>
-  <string name="tuto_dashboard_1">នេះគឺជាផ្ទាំងបង្ហាញព៌ត័មានរបស់អង្គភាព</string>
-  <string name="tuto_dashboard_2">មើលព័ត៌មានប្រវត្តិរូបរបស់អង្គភាព...</string>
-  <string name="tuto_dashboard_3">...ចែករំលែកព៌ត័មានតាមរយៈ QR រឹ SMS...</string>
-  <string name="tuto_dashboard_4">...ឬសម្គាល់អង្គភាពសម្រាប់ការតាមដាន</string>
-  <string name="tuto_dashboard_5">ចុចដើម្បីបង្កើត រឺ ធ្វើកាលវិភាគលើព្រឹត្តិការណ៏មួយ រឺ បញ្ជូនទៅអង្គភាពផ្សេង</string>
-  <string name="tuto_dashboard_6">ទីនេះអ្នកនឹងឃើញគ្រប់ព្រឹត្តិការណ៏ទាំងអស់, ចុចដើម្បីពិនិត្យមើលលំអិតពីព្រឹត្តិការណ៏</string>
-  <string name="tuto_dashboard_7">ចុចលើផ្ទាំង Menu ដើម្បីបន្ថែមទំនាក់ទំនង, មើលសូចនាករ រឺ សរសេរកំណត់ត្រា</string>
-  <string name="tuto_dashboard_8">ចុចដើម្បីមើលបញ្ជីទាំងអស់នៃអង្គភាពរបស់អ្នក ឬ បង្កើតថ្មី</string>
-  <string name="tuto_tei_event_1">ចុចដើម្បីលុបព្រឹត្តិការណ៏នេះ,​ សកម្មភាពនេះមិនអាចត្រលប់មកវិញបានទេ</string>
-  <string name="tuto_tei_event_2">បញ្ចប់ព្រឹត្តិការណ៏</string>
-  <string name="tuto_program_event_1">គ្រប់ព្រឹត្តិការណ៏ទាំងអស់ដែលទាក់ទងនឹងកម្មវិធីនេះត្រូវបង្ហាញនៅទីនេះ</string>
-  <string name="tuto_program_event_2">ចុចដើម្បីបន្ថែមនូវព្រឹត្តិការណ៏ថ្មី</string>
-  <string name="tuto_event_initial_new_1">បញ្ចូលគ្រប់ទិន្នន័យទាំងអស់ដើម្បីបង្កើតព្រឹត្តិការណ៏ថ្មី</string>
-  <string name="tuto_event_initial_1">ចុចដើម្បីពិនិត្យពីស្ថានភាពនៃការបញ្ចប់របស់ព្រឹត្តិការណ៍</string>
-  <string name="tuto_event_summary">ចុចដើម្បីបញ្ចប់ រឺ បើកឡើងវិញនូវព្រឹត្តិការណ៏</string>
-  <string name="tuto_main_7">អាន និង ផ្ទុកព៌ត័មានពីឧបករណ៏ផ្សេងៗតាមរយៈ QR</string>
-  <string name="tuto_main_8">កំពុងបញ្ជូនទិន្នន័យរបស់អ្នកទៅកាន់ម៉ាស៊ីនមេ</string>
-  <string name="tuto_main_9">បិទកម្មវិធីដោយលេខកូដ ៤ ខ្ទង់។ កុំភ្លេចលេខកូដរបស់អ្នក!</string>
-  <string name="tuto_main_10">ចាកចេញដើម្បីប្ដូរឈ្មោះអ្នកប្រើប្រាស់ រឺ ដូរម៉ាស៊ីនមេ។ អ្នកនឹងអាចចូលមកប្រើបម្ដងទៀតទោះបីជាមិនភ្ជាប់អ៊ិនធើណែតក៏ដោយ</string>
-  <string name="relationships">ទំនាក់ទំនង</string>
-  <string name="dashboard_overview">ទិដ្ឋភាពទូទៅ</string>
-  <string name="dashboard_relationships">ទំនាក់ទំនង</string>
-  <string name="dashboard_indicators">ទិន្នន័យសរុប</string>
-  <string name="dashboard_notes">ចំណាំ</string>
+    <!--GENERAL-->
+    <string name="app_name">ឌីអេចអាយអេសធូ (DHIS 2)</string>
+    <string name="logo_text">ឌីអេចអាយអេសធូ (DHIS 2)</string>
+    <string name="logo_number">លេខពីរ</string>
+    <!-- Warnings and error messages -->
+    <string name="error">កំហុសបច្ចេកទេស</string>
+    <string name="error_wrong_server_url">អាសយដ្ឋានម៉ាស៊ីនមេមិនត្រឹមត្រូវ</string>
+    <string name="error_wrong_credentials">អត្ដសញ្ញាណមិនត្រឹមត្រូវ</string>
+    <string name="error_unexpected_error">កំហុសបច្ចេកទេសមិនបានរំពឹងទុក</string>
+    <string name="error_internal_server_error">ម៉ាស៊ីនមេខាងក្នុងមានបញ្ហាបច្ចេកទេស</string>
+    <string name="yes">យល់ព្រម</string>
+    <string name="no">មិនព្រម</string>
+    <string name="no_value">មិនមានតំលៃ</string>
+    <!-- SyncService strings: -->
+    <string name="sync_now">បញ្ជូនទិន្នន័យឥឡូវនេះ</string>
+    <string name="sync_text">កំពុងបញ្ជូនទិន្នន័យទៅកាន់ម៉ាស៊ីនមេ</string>
+    <string name="sync_title">បញ្ចូនទិន្នន័យឥឡូវនេះ </string>
+
+    <string name="sync_metadata">ទិន្នន័យ</string>
+    <string name="sync_events">ព្រឹត្តិការណ៏</string>
+    <string name="sync_tei">ផ្នែកតាមដាន</string>
+
+    <string name="sync_complete_title">បានបញ្ចប់</string>
+    <string name="sync_complete_text">ការបញ្ចូនទិន្នន័យបានបញ្ចប់</string>
+
+    <string name="sync_error_title">ការបញ្ចូនទិន្នន័យមានបញ្ហាបច្ចេកទេស</string>
+    <string name="sync_error_text">មានបញ្ហាបច្ចេកទេសក្នុងកំឡុងពេលបញ្ជូនទិន្នន័យ, សូមព្យាយាម្ដងទៀត។</string>
+    <string name="search_result_text">%s លទ្ធផលដែលបានរកឃើញ</string>
+    <string name="add_new">បន្ថែម​ថ្មី​</string>
+    <string name="add">បន្ថែម</string>
+    <string name="schedule_new">កំណត់កាលវិភាគឥឡូវនេះ</string>
+    <string name="referral">ការបញ្ជូន</string>
+
+    <!-- Login -->
+    <string name="url_hint">អាសយដ្ឋានរបស់ម៉ាស៊ីនមេ</string>
+    <string name="user_hint">ឈ្មោះ​គណនី</string>
+    <string name="password_hint">ពាក្យ​សម្ងាត់</string>
+    <string name="log_in_button">ចូលដំណើរការ</string>
+    <string name="unlock_button">ដោះសោ</string>
+    <string name="syncing_configuration">កំពុងបញ្ជូនការកំណត់​រចនាសម្ព័ន្ធរបស់អ្នក</string>
+    <string name="syncing_data_shortly">ទិន្នន័យរបស់អ្នកនឹងបញ្ជូនក្នុងពេលដ៏ខ្លីខាងមុខនេះ</string>
+    <string name="syncing_data">កំពុងបញ្ជូនទិន្នន័យរបស់អ្នក</string>
+    <string name="configuration_ready">ការកំណត់​រចនាសម្ព័ន្ធរបស់អ្នករួចរាល់</string>
+    <string name="data_ready">ទិន្នន័យរបស់អ្នករួចរាល់</string>
+    <string name="configuration_sync_failed">ការបញ្ជូនការកំណត់​រចនាសម្ព័ន្ធរបស់អ្នកបរាជ័យ</string>
+    <string name="data_sync_failed">ការបញ្ជូនទិន្នន័យបរាជ័យ</string>
+    <string name="account_recovery">ស្តារគណនីឡើងវិញ</string>
+
+    <!--PERIOD-->
+    <string name="DAILY">រាល់​ថ្ងៃ</string>
+    <string name="WEEKLY">រាល់​សប្ដាហ៍</string>
+    <string name="MONTHLY">Monthly</string>
+    <string name="YEARLY">Yearly</string>
+    <string name="clear_filters">លុបចោលការច្រោះមើលទិន្នន័យ</string>
+    <string name="action_accept">ទទួលយក</string>
+    <string name="action_share_zero_items">ចែករំលែក</string>
+    <!-- Input hints -->
+    <string name="search">ស្វែងរក</string>
+    <string name="enter_text">បញ្ជូលអក្សរ</string>
+    <string name="enter_long_text">បញ្ចូលអក្សរច្រើន</string>
+    <string name="enter_number">បញ្ជូលលេខ</string>
+    <string name="enter_integer">បញ្ជូលទិន្នន័យជាលេខ</string>
+    <string name="enter_negative_integer">បញ្ជូលទិន្នន័យជាលេខ (អវិជ្ជមាន)</string>
+    <string name="enter_positive_integer_or_zero">បញ្ជូលទិន្នន័យជាលេខ (វិជ្ជមាន រឺ លេខ ០)</string>
+    <string name="enter_positive_integer">បញ្ជូលទិន្នន័យជាលេខ (វិជ្ជមាន)</string>
+    <string name="filter_options">ជំរើសសម្រាប់ច្រោះមើលទិន្នន័យ</string>
+    <string name="choose_date">ជ្រើសរើសថ្ងៃខែឆ្នាំ</string>
+    <!-- Status -->
+    <string name="program_completed">កម្មវិធីបានបញ្ចប់</string>
+    <string name="program_inactive">កម្មវិធីមិនដំណើរការ</string>
+
+    <string name="event_open">បើក</string>
+    <string name="event_completed">ព្រឹត្តិការណ៏បានបញ្ចប់</string>
+    <string name="event_skipped">ព្រឹត្តិការណ៏បានរំលង</string>
+    <string name="event_schedule">កំណត់កាលវិភាគទៅលើព្រឹត្តិការណ៏</string>
+    <string name="event_expired">ព្រឹត្តិការណ៏ផុតកាលកំណត់</string>
+    <string name="event_editing_expired">ការកែប្រែបានផុតពេលកំណត់</string>
+    <string name="event_accepted">បានទទួលយកព្រឹត្តិការណ៏</string>
+    <string name="event_approved">ព្រឹត្តិការណ៏បានអនុម័ត</string>
+    <string name="event_inactive">ព្រឹត្តិការណ៏មិនដំណើរការ</string>
+    <string name="read_only">បានត្រឹមតែអាន</string>
+    <string name="complete">បញ្ចប់</string>
+    <string name="completed">បានបញ្ចប់</string>
+    <string name="cancelled">បានលុបចោល</string>
+    <string name="re_open">បើកឡើងវិញ</string>
+    <string name="activate">បើកអោយដំណើរការ</string>
+
+    <!-- State -->
+    <string name="state_synced">បញ្ចូន</string>
+    <string name="state_to_post">ដើម្បីប្រកាស</string>
+    <string name="state_to_update">ដើម្បីធ្វើបច្ចុប្បន្នភាព</string>
+    <string name="state_to_delete">ដើម្បីលុប</string>
+    <string name="state_error">កំហុសបច្ចេកទេស</string>
+    <string name="action_sync">បញ្ជូន</string>
+    <!--Completion-->
+    <string name="completion">ការបញ្ចប់</string>
+
+    <!--Event initial-->
+    <string name="create">Create</string>
+    <string name="update">ធ្វើ​បច្ចុប្បន្នភាព</string>
+    <string name="date">កាលបរិច្ឆេទ</string>
+    <string name="org_unit">អង្គភាព</string>
+    <string name="category_option">ជម្រើសប្រភេទ</string>
+    <string name="latitude">រយៈទទឹង</string>
+    <string name="longitude">រយៈបណ្តោយ</string>
+    <string name="new_event">ព្រឹត្តិការណ៏ថ្មី</string>
+    <string name="failed_insert_event">បរាជ័យក្នុងការបន្ថែមព្រឹត្តិការណ៏ថ្មី</string>
+    <string name="event_created">ព្រឹត្តិការណ៏ត្រូវបានបង្កើត</string>
+    <string name="event_updated">ព្រឹត្តិការណ៏ត្រូវបានធ្វើបច្ចុប្បន្នភាព</string>
+    <string name="one_time">មួយពេល</string>
+    <string name="permanent">អចិន្ត្រៃយ៍</string>
+
+    <!--DataSet initial-->
+    <string name="report_period">Report period</string>
+    <!--Event Detail-->
+    <string name="event_date">ថ្ងៃខែឆ្នាំរបស់ព្រឹត្តិការណ៏</string>
+    <string name="due_date">កាលបរិច្ឆេទកំណត់</string>
+    <string name="cat_combo">ប្រភេទបន្សំចូលគ្នា</string>
+    <string name="date_default">ថ្ងៃថ្ងៃ/ខែខែ/ឆ្នាំឆ្នាំឆ្នាំឆ្នាំ</string>
+    <string name="cancel">បោះបង់</string>
+    <string name="delete">​លុប​</string>
+    <string name="delete_event">លុបចោលព្រឹត្តិការណ៏</string>
+    <string name="confirm_delete_event">តើអ្នកច្បាស់ទេថាចង់លុបចោលព្រឹត្តិការណ៏នេះ?</string>
+    <string name="event_was_deleted">ព្រឹត្តិការណ៏បានលុបជោគជ័យ</string>
+    <!--TEI Enrollment list-->
+    <string name="enrollment_list">បញ្ជីចុះឈ្មោះ</string>
+    <string name="active_programs">កម្មវិធីដំណើរការ</string>
+    <string name="to_enroll_programs">កម្មវិធីចុះឈ្មោះ</string>
+    <string name="enroll">ចុះឈ្មោះ</string>
+    <string name="last_visit">ជួបចុងក្រោយ​</string>
+    <string name="apply">អនុវត្ត</string>
+
+    <!--TEI DASHBOARD-->
+    <string name="see_details">មើលលំអិត</string>
+    <string name="view_more">មើលច្រើនទៀត</string>
+    <string name="edit">កែប្រែ</string>
+    <string name="enrolling_ou">ចុះឈ្មោះអង្គភាព</string>
+    <string name="follow_up">តាមដាន</string>
+    <string name="follow_up_enabled">ការតាមដានដំណើរការ</string>
+    <string name="follow_up_disabled">ការតាមដានមិនដំណើរការ</string>
+    <string name="deactivate">ធ្វើអោយអសកម្ម</string>
+    <string name="program_not_allow_events">កម្មវិធីនេះមិនអនុញ្ញាតអោយមានព្រឹត្តិការណ៏ច្រើនទេ</string>
+
+    <!--DONE TASKS-->
+    <string name="events">ព្រឹត្តិការណ៏</string>
+    <string name="done_task">Home</string>
+    <string name="app_info">ព័ត៌មានកម្មវិធី</string>
+    <string name="log_out">ចាកចេញ</string>
+    <string name="block_session">ការទប់ស្កាត់</string>
+
+    <!--MAP SELECTION-->
+    <string name="select_location">ជ្រើសរើសទីតាំង</string>
+
+    <!-- SYNC -->
+    <string name="a_minute">១នាទី</string>
+    <string name="fifteen_minute">១៥នាទី</string>
+    <string name="a_hour">១ម៉ោង</string>
+    <string name="a_day">១ថ្ងៃ (លំនាំដើម)</string>
+    <string name="Automatic_Sync_Data">កំណត់ការបញ្ជូនទិន្នន័យដោយស្វ័យប្រវត្តិជារៀងរាល់</string>
+    <string name="Manual">ហត្ថកម្ម</string>
+    <string name="Automatic_Sync_Metadata">កំណត់​រចនាសម្ព័ន្ការដោយស្វ័យប្រវត្តិជារៀងរាល់</string>
+    <string name="a_week">១សប្តាហ៍</string>
+    <string name="sync_max_parameters">ប៉ារ៉ាម៉ែត្រដែលកំពុងធ្វើការបញ្ជូន</string>
+    <string name="sync_default_parameters">ធ្វើអោយទោលំនាំដើម</string>
+    <string name="wipe_data_meesage">ប្រព័ន្ធទិន្នន័យនឹងត្រូវលុបចោល\nអ្នកត្រូវចូលមកប្រើម្ដងទៀតដោយបញ្ចុលឈ្មោះ និង លេខសំងាត់​</string>
+    <string name="wipe_data_ok">ទទួលយក</string>
+    <string name="wipe_data_no">បោះបង់</string>
+    <string name="SYNC_DATA">បញ្ជូនទិន្នន័យឥឡូវនេះ</string>
+    <string name="SYNC_META">បញ្ជូនការកំណត់​រចនាសម្ព័ន្ធឥឡូវនេះ</string>
+    <string name="SYNC_MANAGER">ការ​កំណត់</string>
+    <string name="last_data_sync_date">បានបញ្ជូនចុងក្រោយ: %s</string>
+    <string name="last_metadata_sync_date">បានបញ្ជូនចុងក្រោយ: %s</string>
+    <string name="settingsReset">កំណត់កម្មវិធីឡើងវិញ</string>
+    <!--endregion-->
+
+    <string name="enrollmment_date">ថ្ងៃខែឆ្នាំចុះឈ្មោះ</string>
+
+    <!-- SEARCH OPTION SET -->
+    <string name="search_optionset">ស្វែងរក</string>
+    <!--FORM FRAGMENT-->
+    <string name="report_date">ថ្ងៃខែឆ្នាំរាយការណ៏</string>
+    <string name="add_file">បញ្ចូលឯកសារ</string>
+    <string name="write_new_note">កត់ចំណាំថ្មី</string>
+    <string name="clear">លុបចោល</string>
+    <string name="add_note">បន្ថែមការកត់ចំណាំ</string>
+    <string name="revert">ត្រលប់ក្រោយ</string>
+    <string name="activated">បានដាក់អោយដំណើរការ</string>
+    <string name="enroll_in">ចុះឈ្មោះក្នុង %s</string>
+    <string name="missing_mandatory_fields_title">ទិន្នន័យចាំបាច់មិនមាន</string>
+    <string name="missing_mandatory_fields_text">ឈ្មោះទិន្នន័យចាំបាច់ខ្លះមិនមាន, ប្រសិនបើអ្នកចង់ត្រឡប់ទៅវិញ រាល់ពត៏មាននិងត្រូវលុយចោល</string>
+    <string name="missing_mandatory_fields_events">ឈ្មោះទិន្នន័យចាំបាច់ខ្លះមិនមាន។ អ្នកអាចត្រឡប់ក្រោយបាន ប៉ុន្ដែព្រឹត្តិការណ៏នេះនិងមិនបានសំរេច</string>
+    <string name="missing_mandatory_fields_go_back">លុប ហើយត្រឡប់ទៅវិញ</string>
+    <!--EVENT SUMMARY-->
+    <string name="section_list">បញ្ជីតាមផ្នែក</string>
+    <string name="event_summary_header" formatted="false">%s សំនួរនៃ %s ដែលបានបញ្ចប់</string>
+    <string name="event_summary_sections_header" formatted="false">%s នៃ %s ដែលបានបញ្ចប់</string>
+    <string name="complete_and_close">បញ្ចប់ និង ចាកចេញ</string>
+
+    <!--AGE CUSTOM VIEW-->
+    <string name="hint_day">ថ្ងៃ</string>
+    <string name="hint_month">ខែ</string>
+    <string name="hint_year">ឆ្នាំ</string>
+    <string name="week">សប្ដាហ៏</string>
+    <string name="incident_date">ថ្ងៃខែឆ្នាំ ធ្វើរោគវិនិច្ឆ័យ</string>
+    <string name="local_results">លទ្ធផលក្នុងតំបន់</string>
+    <string name="online_results">លទ្ធផលអនឡាញ</string>
+    <string name="past_programs">កម្មវិធីពីមុន</string>
+
+    <!--PERMISSIONS-->
+    <string name="permission_denied">អ្នកមិនមានសិទ្ធិគ្រប់គ្រាន់ដើម្បីដំណើរការផ្នែកនេះទេ</string>
+    <string name="add_relation_button">បន្ថែមថ្មីជា​</string>
+
+    <string name="date_dialog_clear">លុបចោល</string>
+    <string name="period">កំឡុងពេល</string>
+    <string name="org_unit_filter">(%d) អង្គភាព</string>
+    <string name="tuto_main_1">សូមស្វាគមន៏មកកាន់ប្រព័ន្ធ DHIS2</string>
+    <string name="tuto_main_2">នៅទីនេះអ្នកអាចឃើញសកម្មភាពរបស់អ្នក</string>
+    <string name="tuto_main_3">អ្នកអាចអនុវត្តការច្រោះទិន្នន័យ​</string>
+    <string name="tuto_main_4">ដោយធ្វើការផ្លាស់ប្ដូររយៈពេល និង ជ្រើសរើសថ្ងៃខែឆ្នាំ​</string>
+    <string name="tuto_main_5">រឺច្រោះមើលទិន្នន័យតាមរយៈអង្គភាព</string>
+    <string name="tuto_main_6">ពិនិត្យមើលសកម្មភាពផ្សេងទៀតនៅផ្ទាំងបញ្ជីដើម</string>
+
+    <!-- RELATIONSHIPS -->
+    <string name="default_relationship_label">បង្កើតទំនាក់ទំនង</string>
+    <string name="next">បន្ទាប់</string>
+    <string name="search_min_num_attr">អ្នកត្រូវបញ្ចូលយ៉ាងហោចណាស់ %d នៃលក្ខណៈ (Attributes) ដើម្បីធ្វើការស្វែងរក</string>
+    <string name="search_max_tei_reached">មានលទ្ធផលច្រើនជាង %d សូមបញ្ចូលលក្ខខណ្ឌផ្សេងទៀតដើម្បីស្វែងរកបន្ថែម</string>
+    <string name="search_criteria_not_met">លក្ខខណ្ឌក្នុងការស្វែងរករបស់អ្នកមិនមានលទ្ធផល\nកំណត់លក្ខខណ្ឌម្ដងទៀត រឺ ចុះឈ្មោះថ្មី %s</string>
+    <string name="search_init">បញ្ចូលលក្ខខណ្ឌដើម្បីស្វែងរក</string>
+
+    <!-- QR -->
+    <string name="QR_SCANNER">នាំចូលទិន្នន័យ QR</string>
+    <string name="SAVE">រក្សាទុក​</string>
+    <string name="button_ok">យល់ព្រម</string>
+    <string name="qr_id">ការកំណត់អត្តសញ្ញាណ</string>
+    <string name="qr_attributes">លក្ខណៈ (Attributes)</string>
+    <string name="qr_enrollment">ការចុះឈ្មោះ</string>
+    <string name="qr_events">ព្រឹត្តិការណ៏</string>
+    <string name="qr_relationships">ទំនាក់ទំនង</string>
+    <string name="read_more_qr">អានទិន្នន័យ QR បន្ទាប់ដើម្បីទទួលបានព៌ត័មានបន្ថែម​</string>
+    <string name="save_qr">ឈប់អាន ហើយ រក្សាទុកទិន្នន័យ</string>
+    <string name="qr_no_data">មិនមានទិន្នន័យ</string>
+    <string name="qr_error_id">លេខកូដ QR មិនត្រឹមត្រូវ</string>
+    <string name="qr_error_attr">Attribute (លក្ខណៈនេះ) មិនអាចត្រូវបានបន្ថែមទេ</string>
+    <string name="qr_error_enrollment">ការចុះឈ្មោះនេះមិនអាចបន្ថែមបានឡើយ</string>
+    <string name="qr_error_event">ព្រឹត្តិការណ៏នេះមិនអាចបន្ថែមបានឡើយ</string>
+
+    <string name="jira_report">រាយការណ៏បញ្ហា Jira</string>
+    <string name="about">អំពី</string>
+    <string name="programs_to_enroll">កម្មវិធីចុះឈ្មោះ</string>
+    <string name="select_all">ជ្រើសរើសទាំងអស់</string>
+    <string name="empty_program_list">មិនមានព៌ត័មានដែលអ្នកបានច្រោះមើលនេះទេ, សូមប្ដូរចេញ​</string>
+    <string name="share">ចែករំលែក</string>
+    <string name="share_qr">ចែករំលែកលេខកូដ QR</string>
+    <string name="teiType_search_online">ការស្វែងរកតាមរយៈបញ្ចូលមិនដំណើរការតាមរយៈការស្វែងរកតាមអនឡានទេ\nសូមជ្រើសរើសកម្មវិធីពីក្នុងបញ្ជី​</string>
+    <string name="max">អតិបរមា</string>
+    <string name="current">បច្ចុប្បន្ន</string>
+    <string name="tei">TEI</string>
+    <string name="limit_by_organisation_unit">កំណត់ដោយអង្គភាព</string>
+    <string name="programs_list">បញ្ជីកម្មវិធី</string>
+    <string name="wipe_data">កំណត់កម្មវិធីឡើងវិញ</string>
+    <string name="add_relationship_error">មិនអាចទៅរួចទេក្នុងការបន្ថែមទំនាក់ទំនងនៅទីនេះ</string>
+    <string name="warning_error_on_complete_title">ពិនិត្យទីនេះ​</string>
+    <string name="error_on_complete_title">កំហុសបច្ចេកទេស</string>
+    <string name="save">រក្សាទុក​</string>
+    <string name="downloaded_confirm">តើអ្នកចង់បន្ថែមទិន្នន័យពី QR ដែររឺទេ?</string>
+
+    <!--ABOUT-->
+    <string name="about_app">កំណែកម្មវិធី %s</string>
+    <string name="about_sdk">កំណែរ SDK: %s</string>
+    <string name="about_connected">បានភ្ជាប់ទៅ %s</string>
+    <string name="about_user">ឈ្មោះអ្នកប្រើប្រាស់បច្ចុប្បន្ន %s</string>
+    <string name="about_more">\"ព៌ត័មានបន្ថែមពីកម្មវិធីនេះសូមចូលទៅ \"<a href="https://drive.google.com/open?id=1YHRBk6LSp6uROfs19-wCfQGc-rgl2f5iDrhCDasTR8M">​ទីនេះ</a>​ តើកម្មវិធីអាចធ្វើអ្វីបាន និង មិនអាចធ្វើអ្វីបាន</string>
+    <string name="about_git">កំណែនេះ និង កំណែមុននៃកម្មវិធីនេះ ក៏ដូចជាប្រភពកូដ អាចរកបាននៅ​<a href="https://github.com/dhis2/dhis2-android-capture-app">GitHub</a>\"DHIS2 Android Capture is licensed under the terms of the GNU General Public License as published by the Free Software Foundation - see \"<a href="http://www.gnu.org/licenses/gpl-3.0.html">http://www.gnu.org/licenses/gpl-3.0.html</a></string>
+    <string name="about_dev">\"Developed and maintained by the \"<a href="https://www.dhis2.org/">DHIS2</a>\" project, part of University of Oslo, \"<a href="https://www.mn.uio.no/ifi/english/">department of informatics</a></string>
+    <string name="about_contact">សម្រាប់ព៌ត័មានបន្ថែម រឺ ក៏មានសំនួរអំពីកម្មវិធីនេះ, សូមសរសេរមកកាន់<a href="mailto:android@dhis2.org">android\@dhis2.org</a></string>
+
+    <string name="login_error_null_pass">មិនមានលេខសំងាត់, សូមបំពេញ​</string>
+    <string name="login_error_null_username">មិនមានឈ្មោះអ្នកប្រើប្រាស់, សូមបំពេញ​</string>
+    <string name="login_error_dhis_version">ម៉ាស៊ីនមេនេះកំពុងដំណើរការខុសពី DHIS ២.២៩។ សូមធ្វើបច្ចុប្បន្នភាពលើម៉ាស៊ីនមេរបស់អ្នក​</string>
+    <string name="login_error_unsuccessful_response">មានអ្វីមួយមិនប្រក្រតី​ សូមមើលអាសយដ្ឋានម៉ាស៊ីនមេ ឈ្នោះ លេខសម្ងាត់ ហើយព្យាយាមម្តងទៀត</string>
+    <string name="login_error_error_response">ម៉ាស៊ីនមេមិនអាចបំពេញសំណើរនេះបានទេ​</string>
+    <string name="login_error_default">មានបញ្ហានៅពេលព្យាយាមចូលទៅក្នុងម៉ាស៊ីនមេ​</string>
+    <string name="login_error">ការចូលទៅប្រើប្រាស់មានបញ្ហា</string>
+    <string name="missing_mandatory_fields">ទិន្នន័យចាំបាច់មិនមាន</string>
+    <string name="online_search_unexpected">កំហុសដែលមិនបានរំពឹងទុកនៅពេលដែលកំពុងស្វែងរកនៅលើអនឡាញ</string>
+    <string name="online_search_parsing_error">កំហុសខណៈពេលញែកលទ្ធផល</string>
+    <string name="online_search_error">ការស្វែងរកតាមអនឡានមានបញ្ហាបច្ចេកទេស</string>
+    <string name="online_search_response_error">មានអ្វីមួយខុសបច្ចេកទេសនៅលើម៉ាស៊ីនមេ</string>
+    <string name="search_program_not_selected">ជ្រើសរើសកម្មវិធីដើម្បីដំណើរការចុះឈ្មោះ</string>
+    <string name="search_access_error">អ្នកមិនមានសិទ្ធិគ្រប់គ្រាន់</string>
+    <string name="feature_unavaible">មុខងារនេះមិនទាន់រួចរាល់នៅឡើយទេ​</string>
+    <string name="relationship_label_error">កំហុសក្នុងការធ្វើទំនាក់ទំនង</string>
+    <string name="all_tei_type">ទាំងអស់ %s</string>
+    <string name="invalid_phone_number">លេខទូរស័ព្ទមិនត្រឹមត្រូវ</string>
+    <string name="invalid_email">អាសយដ្ឋានអ៊ីមែលមិនត្រឹមត្រូវ</string>
+    <string name="invalid_negative_number">លេខអវិជ្ជមានតែមួយគត់ដែលត្រូវបានអនុញ្ញាត</string>
+    <string name="invalid_possitive_zero">លេខវិជ្ជមាន រឺ លេខ ០ តែមួយគត់ដែលត្រូវបានអនុញ្ញាត</string>
+    <string name="invalid_possitive">លេខវិជ្ជមានតែមួយគត់ដែលត្រូវបានអនុញ្ញាត</string>
+    <string name="invalid_interval">តំលៃចន្លោះពីលេខ ០ ដល់ ១ ត្រូវបានអនុញ្ញាត</string>
+    <string name="invalid_percentage">តំលៃចន្លោះពីលេខ ០ ដល់ ១០០ ត្រូវបានអនុញ្ញាត</string>
+    <string name="date_dialog_tigle">ជ្រើសរើសថ្ងៃខែឆ្នាំដើម្បីច្រោះទិន្នន័យ</string>
+    <string name="select_option">កំណត់​ជម្រើស</string>
+    <string name="issue_reported">បានរាយការណ៏បញ្ហា</string>
+    <string name="jira_credential_error">ពិនិត្យមើលថាតើ ឈ្មោះ និង លេខសំងាត់របស់អ្នកត្រឹមត្រូវ</string>
+    <string name="jira_issue_error">កំហុសក្នុងការរាយការណ៍បញ្ហា</string>
+    <string name="jira_fields_error">គ្រប់ទិន្នន័យទាំងអស់ត្រូវបំពេញ</string>
+    <string name="dialog_generate_new_event">បង្កើតព្រឹត្តិការណ៏ថ្មី</string>
+    <string name="message_generate_new_event">តើអ្នកចង់បង្កើតព្រឹត្តិការណ៏ថ្មីមួយទៀតទេ?</string>
+    <string name="event_completed_title">ព្រឹត្តិការណ៏បានបញ្ចប់</string>
+    <string name="event_completed_message">គ្រប់ព្រឹត្តិការណ៏ទាំងអស់នៅក្នុងកម្មវិធីនេះបានបញ្ចប់។ តើអ្នកចង់បិទកម្មវិធីនេះទេ?</string>
+    <string name="check_event">ត្រួតពិនិត្យ</string>
+
+    <string name="menu_home">Home</string>
+    <string name="appwidget_text">ឧទាហរណ៏</string>
+    <string name="add_widget">បន្ថែម Widget</string>
+    <string name="showHelp">បង្ហាញជំនួយ</string>
+    <string name="tuto_settings_1">កំពុងបញ្ជូនទិន្នន័យរបស់អ្នក...</string>
+    <string name="tuto_settings_2">...ការកំណត់​រចនាសម្ព័ន្ធរបស់អ្នក...</string>
+    <string name="tuto_settings_3">...កំណត់ទំហំផ្ទុកក្នុងម៉ាស៊ីនរបស់អ្នក...</string>
+    <string name="tuto_settings_4">...រឺ លុបគ្រប់យ៉ាងដើម្បីចាប់ផ្ដើមឡើងវិញ</string>
+    <string name="tuto_search_2">អ្នកអាចផ្លាស់ប្ដូរទៅកម្មវិធីផ្សេងទៀត</string>
+    <string name="tuto_dashboard_1">នេះគឺជាផ្ទាំងបង្ហាញព៌ត័មានរបស់អង្គភាព</string>
+    <string name="tuto_dashboard_2">មើលព័ត៌មានប្រវត្តិរូបរបស់អង្គភាព...</string>
+    <string name="tuto_dashboard_3">...ចែករំលែកព៌ត័មានតាមរយៈ QR រឹ SMS...</string>
+    <string name="tuto_dashboard_4">...ឬសម្គាល់អង្គភាពសម្រាប់ការតាមដាន</string>
+    <string name="tuto_dashboard_5">ចុចដើម្បីបង្កើត រឺ ធ្វើកាលវិភាគលើព្រឹត្តិការណ៏មួយ រឺ បញ្ជូនទៅអង្គភាពផ្សេង</string>
+    <string name="tuto_dashboard_6">ទីនេះអ្នកនឹងឃើញគ្រប់ព្រឹត្តិការណ៏ទាំងអស់, ចុចដើម្បីពិនិត្យមើលលំអិតពីព្រឹត្តិការណ៏</string>
+    <string name="tuto_dashboard_7">ចុចលើផ្ទាំង Menu ដើម្បីបន្ថែមទំនាក់ទំនង, មើលសូចនាករ រឺ សរសេរកំណត់ត្រា</string>
+    <string name="tuto_dashboard_8">ចុចដើម្បីមើលបញ្ជីទាំងអស់នៃអង្គភាពរបស់អ្នក ឬ បង្កើតថ្មី</string>
+    <string name="tuto_tei_event_1">ចុចដើម្បីលុបព្រឹត្តិការណ៏នេះ,​ សកម្មភាពនេះមិនអាចត្រលប់មកវិញបានទេ</string>
+    <string name="tuto_tei_event_2">បញ្ចប់ព្រឹត្តិការណ៏</string>
+    <string name="tuto_program_event_1">គ្រប់ព្រឹត្តិការណ៏ទាំងអស់ដែលទាក់ទងនឹងកម្មវិធីនេះត្រូវបង្ហាញនៅទីនេះ</string>
+    <string name="tuto_program_event_2">ចុចដើម្បីបន្ថែមនូវព្រឹត្តិការណ៏ថ្មី</string>
+    <string name="tuto_event_initial_new_1">បញ្ចូលគ្រប់ទិន្នន័យទាំងអស់ដើម្បីបង្កើតព្រឹត្តិការណ៏ថ្មី</string>
+    <string name="tuto_event_initial_1">ចុចដើម្បីពិនិត្យពីស្ថានភាពនៃការបញ្ចប់របស់ព្រឹត្តិការណ៍</string>
+    <string name="tuto_event_summary">ចុចដើម្បីបញ្ចប់ រឺ បើកឡើងវិញនូវព្រឹត្តិការណ៏</string>
+    <string name="tuto_main_7">អាន និង ផ្ទុកព៌ត័មានពីឧបករណ៏ផ្សេងៗតាមរយៈ QR</string>
+    <string name="tuto_main_8">កំពុងបញ្ជូនទិន្នន័យរបស់អ្នកទៅកាន់ម៉ាស៊ីនមេ</string>
+    <string name="tuto_main_9">បិទកម្មវិធីដោយលេខកូដ ៤ ខ្ទង់។ កុំភ្លេចលេខកូដរបស់អ្នក!</string>
+    <string name="tuto_main_10">ចាកចេញដើម្បីប្ដូរឈ្មោះអ្នកប្រើប្រាស់ រឺ ដូរម៉ាស៊ីនមេ។ អ្នកនឹងអាចចូលមកប្រើបម្ដងទៀតទោះបីជាមិនភ្ជាប់អ៊ិនធើណែតក៏ដោយ</string>
+    <string name="relationships">ទំនាក់ទំនង</string>
+    <string name="dashboard_overview">ទិដ្ឋភាពទូទៅ</string>
+    <string name="dashboard_relationships">ទំនាក់ទំនង</string>
+    <string name="dashboard_indicators">Indicators</string>
+    <string name="dashboard_notes">ចំណាំ</string>
+    <string name="event_overview">លម្អិត</string>
+    <string name="event_indicators">Indicators</string>
+    <string name="event_notes">ចំណាំ</string>
+    <string name="local_data_accept">ទទួលយក</string>
+    <string name="login_server_info_title">អាសយដ្ឋានរបស់ម៉ាស៊ីនមេ</string>
+    <string name="action_close">បិទ</string>
+    <string name="data_set_closed">បិទ</string>
+    <string name="data_set_open">បើក</string>
+    <string name="data_every_day">រាល់​ថ្ងៃ</string>
+    <string name="data_every_week">រាល់​សប្ដាហ៍</string>
+    <string name="sms_completed">បានបញ្ចប់</string>
+    <!--endregion-->
 </resources>
