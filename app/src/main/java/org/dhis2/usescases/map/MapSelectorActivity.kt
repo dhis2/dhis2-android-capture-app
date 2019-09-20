@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.mapbox.android.core.location.LocationEngineProvider
 import com.mapbox.android.core.permissions.PermissionsManager
+import com.mapbox.geojson.BoundingBox
 import com.mapbox.geojson.Feature
 import com.mapbox.geojson.Point
 import com.mapbox.geojson.Polygon
@@ -22,12 +23,14 @@ import com.mapbox.mapboxsdk.Mapbox
 import com.mapbox.mapboxsdk.camera.CameraPosition
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory
 import com.mapbox.mapboxsdk.geometry.LatLng
+import com.mapbox.mapboxsdk.geometry.LatLngBounds
 import com.mapbox.mapboxsdk.location.LocationComponentActivationOptions
 import com.mapbox.mapboxsdk.location.modes.CameraMode
 import com.mapbox.mapboxsdk.location.modes.RenderMode
 import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.Style
+import com.mapbox.mapboxsdk.plugins.markerview.MarkerViewManager
 import com.mapbox.mapboxsdk.style.layers.*
 import com.mapbox.mapboxsdk.style.layers.Property.*
 import com.mapbox.mapboxsdk.style.layers.PropertyFactory.*
@@ -42,6 +45,7 @@ import org.dhis2.usescases.map.point.PointViewModel
 import org.dhis2.usescases.map.polygon.PolygonAdapter
 import org.dhis2.usescases.map.polygon.PolygonViewModel
 import org.dhis2.utils.ColorUtils
+import org.dhis2.utils.maps.GeometryUtils
 import org.hisp.dhis.android.core.arch.helpers.GeometryHelper
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.Geometry
@@ -78,6 +82,7 @@ class MapSelectorActivity : ActivityGlobalAbstract(), MapActivityLocationCallbac
     var init: Boolean = false
 
     var initial_coordinates: String? = null
+    var markerViewManager : MarkerViewManager? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -259,15 +264,24 @@ class MapSelectorActivity : ActivityGlobalAbstract(), MapActivityLocationCallbac
                     viewModel.add(polygonPoint)
                 }
             }
+
+
             if (array.size > 0 && array[0].size > 0) {
-                val point = array[0][0]
-                map.animateCamera(CameraUpdateFactory.newLatLngZoom(LatLng(point[0], point[1]), 13.0))
+                val boundingBox = GeometryUtils.getBoundinBox(array)
+                val latLong = LatLngBounds.from(boundingBox.north(),
+                        boundingBox.east(),
+                        boundingBox.south(),
+                        boundingBox.west())
+
+                map.easeCamera(CameraUpdateFactory.newLatLngBounds(latLong, 0))
+                /*val point = Point.fromLngLat(array[0][0][0], array[0][0][1])
+                map.animateCamera(CameraUpdateFactory.newLatLngZoom(LatLng(point.latitude(), point.longitude()), 12.0))
 
                 val cameraPosition = CameraPosition.Builder()
-                        .target(LatLng(point[0], point[1]))      // Sets the center of the map to location user
-                        .zoom(15.0)                   // Sets the zoom
+                        .target(LatLng(point.latitude(), point.longitude()))      // Sets the center of the map to location user
+                        .zoom(13.0)                   // Sets the zoom
                         .build()                   // Creates a CameraPosition from the builder
-                map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition))
+                map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition))*/
             }
         }
     }
@@ -355,6 +369,8 @@ class MapSelectorActivity : ActivityGlobalAbstract(), MapActivityLocationCallbac
 
     override fun onDestroy() {
         super.onDestroy()
+        if (markerViewManager != null)
+            markerViewManager!!.onDestroy()
         mapView.onDestroy()
     }
 

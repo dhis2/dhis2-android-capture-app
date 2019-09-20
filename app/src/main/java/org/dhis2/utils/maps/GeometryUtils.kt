@@ -178,4 +178,19 @@ object GeometryUtils {
                 westBound = lon
         }
     }
+
+    fun getBoundinBox(coordenates: List<List<List<Double>>>): BoundingBox{
+        boundsInt = false
+        northBound = 0.0
+        southBound = 0.0
+        eastBound = 0.0
+        westBound = 0.0
+        coordenates.forEach {
+            it.forEach { sdkPoint ->
+                checkBounds(sdkPoint[0], sdkPoint[1])
+            }
+        }
+
+        return BoundingBox.fromLngLats(westBound, southBound, eastBound, northBound)
+    }
 }
