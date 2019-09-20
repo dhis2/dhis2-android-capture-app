@@ -1,0 +1,120 @@
+<resources>
+    <!--GENERAL-->
+    <string name="app_name">DHIS2</string>
+    <string name="logo_text">dhis</string>
+    <string name="logo_number">2</string>
+    <!-- Warnings and error messages -->
+    <string name="error">Error</string>
+    <string name="error_wrong_server_url">URL Server salah</string>
+    <string name="error_wrong_credentials">Kredensial salah</string>
+    <string name="error_unexpected_error">Kesalahan tak terduga</string>
+    <string name="error_internal_server_error">Kesalahan internal server</string>
+    <string name="yes">ya</string>
+    <string name="no">tidak</string>
+    <string name="no_value">tidak ada nilai</string>
+    <string name="no_reserved_values">Tidak ada nilai lainnya. Hubungi admin sistem Anda.</string>
+    <string name="no_reserved_values_connection">Tidak ada nilai lainnya. Sambungkan ke Internet untuk mengisi.</string>
+
+    <!-- SyncService strings: -->
+    <string name="sync_now">Sinkronkan sekarang</string>
+    <string name="sync_text">Mensinkronkan dengan server</string>
+    <string name="sync_title">Sedang mensinkronkan</string>
+
+    <string name="sync_metadata">Metadata</string>
+    <string name="sync_events">Event</string>
+    <string name="sync_complete_title">Selesai</string>
+    <string name="sync_complete_text">Sync lengkap</string>
+
+    <string name="sync_error_title">Sync error</string>
+    <string name="sync_error_text">Terjadi kesalahan saat sinkronisasi. Silakan coba kembali.</string>
+    <string name="metadata_sync_error">GAGAL: Terjadi kesalahan saat sinkronisasi. Jika Anda memiliki koneksi silakan coba kembali. Jika kesalahan tetap terjadi, hubungi administrator Anda.</string>
+    <string name="data_sync_warning">PERINGATAN: Sebagian besar data telah tersinkronisasi tapi terdapat beberapa konflik. Sinkronisasi konfigurasi Anda dan coba kembali. Periksa kembali status sinkronisasi: program, TEI, dan event yang berkonflik ditandai sebagai @.</string>
+    <string name="data_sync_warning_program">PERINGATAN: Sebagian besar data telah tersinkronisasi tapi terdapat beberapa konflik. Sinkronisasi konfigurasi Anda dan coba kembali. Jika status sinkronisasi: program, TEI, dan event yang berkonflik ditandai sebagai @.</string>
+    <string name="add_new">Tambahkan baru</string>
+    <string name="add">Tambah</string>
+    <string name="user_hint">User name</string>
+    <string name="password_hint">Password</string>
+    <!--PERIOD-->
+    <string name="DAILY">Harian</string>
+    <string name="WEEKLY">Mingguan</string>
+    <string name="MONTHLY">Bulanan</string>
+    <string name="YEARLY">Tahunan</string>
+    <string name="action_share_zero_items">Bagikan</string>
+    <!-- Input hints -->
+    <string name="search">Pencarian</string>
+    <string name="event_open">Buka</string>
+    <string name="complete">Lengkap</string>
+    <string name="completed">Selesai</string>
+    <string name="state_error">Error</string>
+    <!--Event initial-->
+    <string name="create">Buat</string>
+    <string name="update">perbarui</string>
+    <string name="date">Tanggal</string>
+    <string name="latitude">Latitude</string>
+    <string name="longitude">Longitude</string>
+    <string name="new_event">Event baru</string>
+    <!--Event Detail-->
+    <string name="event_date">Tanggal Event</string>
+    <string name="due_date">Tanggal jatuh tempo</string>
+    <string name="cancel">batal</string>
+    <string name="delete">hapus</string>
+    <string name="total">Total</string>
+
+    <string name="active_programs">Aktifkan program</string>
+    <string name="enroll">Daftar</string>
+    <string name="deactivate">Deaktivasi</string>
+    <string name="done_task">Beranda</string>
+    <string name="wipe_data_no">batal</string>
+    <string name="SYNC_MANAGER">Setting</string>
+    <!--endregion-->
+
+    <string name="enrollmment_date">Tanggal pendaftaran</string>
+
+    <!-- SEARCH OPTION SET -->
+    <string name="search_optionset">Pencarian</string>
+    <!--FORM FRAGMENT-->
+    <string name="report_date">Tanggal pelaporan</string>
+    <string name="add_note">Tambah catatan</string>
+    <!--AGE CUSTOM VIEW-->
+    <string name="hint_day">Hari</string>
+    <string name="hint_month">Bulan</string>
+    <string name="hint_year">Tahun</string>
+    <string name="week">Minggu</string>
+    <string name="incident_date">Tanggal insiden</string>
+    <string name="date_dialog_clear">Hapus</string>
+    <string name="period">Periode</string>
+    <string name="next">Se;lanjutnya</string>
+    <string name="SAVE">Simpan</string>
+    <string name="qr_attributes">Atribut</string>
+    <string name="qr_events">Event</string>
+    <string name="qr_relationships">Hubungan</string>
+    <string name="about">Tentang</string>
+    <string name="share">Bagikan</string>
+    <string name="max">Maks</string>
+    <string name="current">Saat ini</string>
+    <string name="warning_on_complete_title">Peringatan</string>
+    <string name="error_on_complete_title">Error</string>
+    <string name="save">Simpan</string>
+    <string name="menu_home">Beranda</string>
+    <string name="qr_data_values">Nilai data</string>
+    <string name="dashboard_relationships">Hubungan</string>
+    <string name="dashboard_indicators">Indikator</string>
+    <string name="dashboard_notes">Catatan</string>
+    <string name="event_overview">Rincian</string>
+    <string name="event_event">Kejadian</string>
+    <string name="event_indicators">Indikator</string>
+    <string name="event_notes">Catatan</string>
+    <string name="skip">Lewati</string>
+    <string name="reschedule">Jadwal ulang</string>
+    <string name="table">Tabel</string>
+    <string name="state_warning">Peringatan</string>
+    <string name="action_close">Tutup</string>
+    <string name="data_set_closed">Tutup</string>
+    <string name="data_set_open">Buka</string>
+    <string name="data_every_day">Harian</string>
+    <string name="data_every_week">Mingguan</string>
+    <string name="sms_completed">Selesai</string>
+    <string name="sms_bar_state_sending">Dalam proses</string>
+    <string name="polygon">Poligon</string>
+    <!--endregion-->
+</resources>
