@@ -7,9 +7,9 @@
     <string name="error">Erreur</string>
     <string name="error_wrong_server_url">URL incorrecte</string>
     <string name="error_wrong_credentials">références incorrectes</string>
-    <string name="error_unexpected_error">"Erreur inattendue "</string>
-    <string name="error_internal_server_error">"Erreur interne "</string>
-    <string name="yes">"oui "</string>
+    <string name="error_unexpected_error">Erreur inattendue </string>
+    <string name="error_internal_server_error">Erreur interne </string>
+    <string name="yes">oui </string>
     <string name="no">no</string>
     <string name="no_value">pas de valeur</string>
     <string name="no_reserved_values">Il n\'y a plus de valeurs réservées. Veuillez contacter votre administrateur système.</string>
@@ -22,7 +22,7 @@
 
     <string name="sync_metadata">Méta-données</string>
     <string name="sync_events">Événements</string>
-    <string name="sync_tei">"Entités suiviées "</string>
+    <string name="sync_tei">Entités suiviées </string>
 
     <string name="sync_complete_title">Fini</string>
     <string name="sync_complete_text">Synchronisation complète</string>
@@ -36,7 +36,7 @@
     <string name="data_sync_error_program">ERREUR: Certaines données n\'ont pas été syncrhonisées. Vérifiez le statut de synchronisation: les TEIs et évènements avec erreurs sont marqués avec $\".</string>
 
     <string name="search_result_text">%s résultats trouvé</string>
-    <string name="add_new">Ajouter un nouvel</string>
+    <string name="add_new">Nouveau</string>
     <string name="add">Ajouter</string>
     <string name="schedule_new">planifier nouveau</string>
     <string name="referral">référence</string>
@@ -54,15 +54,15 @@
     <string name="data_ready">vos données sont prêtes</string>
     <string name="configuration_sync_failed">La configuration a échoué</string>
     <string name="data_sync_failed">Synchronisation a échoue</string>
-    <string name="account_recovery">Recouvrement du compte</string>
+    <string name="account_recovery">Récupération de compte</string>
 
     <!--PERIOD-->
     <string name="DAILY">Quotidien</string>
-    <string name="WEEKLY">Chaque semaine</string>
+    <string name="WEEKLY">Hebdomadaire</string>
     <string name="MONTHLY">Mensuel</string>
     <string name="YEARLY">Annuel</string>
     <string name="clear_filters">Effacer les filtres</string>
-    <string name="action_accept">Accepter</string>
+    <string name="action_accept">Accept</string>
     <string name="action_share_zero_items">Partager</string>
     <string name="action_share_single_item">Partager %d élément</string>
     <string name="action_share_multiple_item">Partager %d éléments</string>
@@ -74,7 +74,7 @@
     <string name="enter_number">Saisir un nombre</string>
     <string name="enter_integer">Saisir un nombre entier</string>
     <string name="enter_negative_integer">Saisir un entier négatif</string>
-    <string name="enter_positive_integer_or_zero">"Saisir un entier ou zéro "</string>
+    <string name="enter_positive_integer_or_zero">Saisir un entier ou zéro </string>
     <string name="enter_positive_integer">Saisir un entier positif</string>
     <string name="filter_options">Options de filtre</string>
     <string name="choose_date">Choisissez une date</string>
@@ -84,7 +84,7 @@
     <string name="program_completed">Programme complété</string>
     <string name="program_inactive">Programme inactif</string>
 
-    <string name="event_open">"(l´événement est) Ouvert "</string>
+    <string name="event_open">Ouvrir</string>
     <string name="event_completed">L´événement est complétée</string>
     <string name="event_skipped">événement sauté</string>
     <string name="event_schedule">événement programmé</string>
@@ -93,8 +93,8 @@
     <string name="event_accepted">événement accepté</string>
     <string name="event_approved">événement approuvé</string>
     <string name="event_inactive">événement inactif</string>
-    <string name="read_only">En lecture seule</string>
-    <string name="complete">Achevée</string>
+    <string name="read_only">Lecture seule</string>
+    <string name="complete">Terminer</string>
     <string name="finish_and_complete">Terminer et Compléter</string>
     <string name="completed">Terminé</string>
     <string name="cancelled">Annulé</string>
@@ -114,12 +114,12 @@
     <string name="completion">Terminé</string>
 
     <!--Event initial-->
-    <string name="create">Créer (nouvel événement)</string>
-    <string name="update">mettre à jour</string>
+    <string name="create">Créer</string>
+    <string name="update">Mettre à jour</string>
     <string name="date">Date</string>
     <string name="org_unit">Unités d´Organisation</string>
-    <string name="no_org_units">Il n\'y a pas d\'unité d\'organisation ouverte pour la date sélectionnée. Veuillez sélectionner une autre date</string>
-    <string name="category_option">Option de catégorie</string>
+    <string name="no_org_units">Il n\'y a pas d\'Unité d\'organisation Ouvert pour la date sélectionnée. Merci de sélectionner une autre date ou une autre Unité d\'Organisation.</string>
+    <string name="category_option">Options de catégorie</string>
     <string name="latitude">Latitude</string>
     <string name="longitude">Longitude</string>
     <string name="new_event">Nouvel événement</string>
@@ -130,19 +130,19 @@
     <string name="permanent">Définitif</string>
 
     <!--DataSet initial-->
-    <string name="report_period">Période de rapport</string>
+    <string name="report_period">Période du rapport</string>
     <string name="cat_option">Option de catégorie</string>
-
     <!--Event Detail-->
     <string name="event_date">Datee d´événement</string>
-    <string name="due_date">Date limite</string>
+    <string name="due_date">Date d\'échéance</string>
     <string name="cat_combo">Cat combo</string>
     <string name="date_default">DD/MM/YYYY</string>
     <string name="cancel">Annuler</string>
-    <string name="delete">Effacer</string>
+    <string name="delete">Supprimer</string>
     <string name="delete_event">Effacer l´événement</string>
     <string name="confirm_delete_event">Êtes-vous sûr vouloir effacer l´événement?</string>
     <string name="event_was_deleted">événement supprimé avec succès</string>
+    <string name="total">Total</string>
 
     <!--TEI Enrollment list-->
     <string name="enrollment_list">Liste d\'admission</string>
@@ -185,13 +185,13 @@
     <string name="sync_max_parameters">Paramètres de synchronisation actuels</string>
     <string name="sync_default_parameters">Retour aux valeurs par défaut</string>
     <string name="wipe_data_meesage">La base de données sera supprimée.\nVous devez donc entrer de nouveau</string>
-    <string name="wipe_data_ok">Accepter</string>
+    <string name="wipe_data_ok">Accept</string>
     <string name="wipe_data_no">Annuler</string>
     <string name="SYNC_DATA">Synchroniser les données mainténant</string>
     <string name="SYNC_META">Synchroniser la configuration mainténant</string>
     <string name="SYNC_MANAGER">Paramètres</string>
     <string name="last_data_sync_date">Dernière synchronisation sur: %s</string>
-    <string name="last_metadata_sync_date">dernière synchronisation sur:%s</string>
+    <string name="last_metadata_sync_date">Dernière synchronisation sur: %s</string>
     <string name="refill_reserved_values">Remplir</string>
     <!-- SEARCH TRACK ENTITY -->
 
@@ -209,7 +209,7 @@
     <string name="settingsReset_descr">Votre configuration et les données de l\'application enregistrées sur l\'appareil seront supprimées. Vous devrez vous connecter de nouveau et les données non synchronisées avec le serveur seront perdues.</string>
     <!--endregion-->
 
-    <string name="enrollmment_date">Date de l´inscription</string>
+    <string name="enrollmment_date">Date d\'enrôlement</string>
 
     <!-- SEARCH OPTION SET -->
     <string name="search_optionset">Chercher</string>
@@ -232,7 +232,6 @@
     <string name="missing_mandatory_fields_go_back">Supprimer et retourner</string>
     <string name="error_fields">Certains champs ont des erreurs:\n%s\nVeuillez les vérifier.</string>
     <string name="missing_mandatory_fields_finish">Des champs obligatoires ne sont pas renseignés. Vous pouvez terminer la saisie et quitter, mais l\'évènement ne peut être complété.</string>
-
     <!--EVENT SUMMARY-->
     <string name="section_list">Liste des sections</string>
     <string name="event_summary_header" formatted="false">%s questions de %s complétées</string>
@@ -241,10 +240,10 @@
 
     <!--AGE CUSTOM VIEW-->
     <string name="hint_day">Jours</string>
-    <string name="hint_month">Mois</string>
-    <string name="hint_year">Annes</string>
+    <string name="hint_month">Months</string>
+    <string name="hint_year">Années</string>
     <string name="week">Semaines</string>
-    <string name="incident_date">Date de l´incident</string>
+    <string name="incident_date">Date d\'incident</string>
     <string name="local_results">Résultats locaux</string>
     <string name="online_results">Résultats en ligne</string>
     <string name="past_programs">Programmes antérieurs</string>
@@ -266,7 +265,7 @@
 
     <!-- RELATIONSHIPS -->
     <string name="default_relationship_label">Créer une relation</string>
-    <string name="next">Prochain</string>
+    <string name="next">Suivant</string>
     <string name="search_min_num_attr">Vous devez entrer au moins %d des attributs pour lancer une recherche</string>
     <string name="search_attr">Vous devez renseigner au moins un des attributs afin d\'effectuer la recherche</string>
     <string name="search_max_tei_reached">il y a plus de %d des résultats. Veuillez entrer les autres critères de recherche</string>
@@ -275,12 +274,12 @@
 
     <!-- QR -->
     <string name="QR_SCANNER">Importer des données QR</string>
-    <string name="SAVE">Sauvegarder</string>
-    <string name="button_ok">OK</string>
+    <string name="SAVE">Enregistrer</string>
+    <string name="button_ok">Ok</string>
     <string name="qr_id">Identification</string>
     <string name="qr_attributes">Attributs</string>
     <string name="qr_enrollment">Inscriptions</string>
-    <string name="qr_events">Evénéments</string>
+    <string name="qr_events">Événements</string>
     <string name="qr_relationships">Relations</string>
     <string name="read_more_qr">Lisez le QR suivant pour plus d\'informations</string>
     <string name="save_qr">Arrêtez de lire et faites une sauvegarde des données</string>
@@ -299,7 +298,7 @@
     <string name="share">Partager</string>
     <string name="share_qr">Partager le QR</string>
     <string name="teiType_search_online">La recherche par type n\'est pas disponible en ligne.\nVeuillez sélectionner un programme dans la liste</string>
-    <string name="max">MAX</string>
+    <string name="max">Max</string>
     <string name="current">Courant</string>
     <string name="tei">TEI</string>
     <string name="limit_by_organisation_unit">Limite par l´unité organizationnelle</string>
@@ -308,9 +307,9 @@
     <string name="wipe_data">Redémarrer l´application</string>
     <string name="add_relationship_error">Il n\'est pas possible d\'ajouter cette relation</string>
     <string name="warning_error_on_complete_title">Attention. Verifiez ça!</string>
-    <string name="warning_on_complete_title">Avertissement</string>
+    <string name="warning_on_complete_title">Attention</string>
     <string name="error_on_complete_title">Erreur</string>
-    <string name="save">Sauvegarder</string>
+    <string name="save">Enregistrer</string>
     <string name="reserved_value">Valeurs réservées</string>
 
     <string name="downloaded_confirm">Voulez-vous ajouter plus de données de QR</string>
@@ -320,10 +319,10 @@
     <string name="about_sdk">Version de SDK: %s</string>
     <string name="about_connected">Connectée à: %s</string>
     <string name="about_user">Utilisateur actuel: %s</string>
-    <string name="about_more">"Plus d\'informations sur l\'application: lisez "<a href="https://drive.google.com/open?id=1YHRBk6LSp6uROfs19-wCfQGc-rgl2f5iDrhCDasTR8M">ici</a>ce qui est supporté et ce qui n\'est pas supporté</string>
-    <string name="about_git">"Cette version et les versions précédentes de cette application sont disponibles sur "<a href="https://github.com/dhis2/dhis2-android-capture-app">GitHub</a>". DHIS2 Android Capture est sous licence de la GNU General Public License telle que publiée par la Free Software Foundation, voir "<a href="http://www.gnu.org/licenses/gpl-3.0.html">http://www.gnu.org/licenses/gpl-3.0.html</a>.</string>
-    <string name="about_dev">"Développé et entretenu par le "<a href="https://www.dhis2.org/">DHIS2</a>" projet, partie de l\'Université d\'Oslo, "<a href="https://www.mn.uio.no/ifi/english/">département d\'informatique</a>.</string>
-    <string name="about_contact">"Pour plus d\'informations ou des questions sur cette application, veuillez écrire à "<a href="mailto:android@dhis2.org">android\@dhis2.org</a></string>
+    <string name="about_more">\"Plus d\'informations sur l\'application: lisez \"<a href="https://drive.google.com/open?id=1YHRBk6LSp6uROfs19-wCfQGc-rgl2f5iDrhCDasTR8M">ici</a>ce qui est supporté et ce qui n\'est pas supporté</string>
+    <string name="about_git">\"Cette version et les versions précédentes de cette application sont disponibles sur \"<a href="https://github.com/dhis2/dhis2-android-capture-app">GitHub</a>\". DHIS2 Android Capture est sous licence de la GNU General Public License telle que publiée par la Free Software Foundation, voir \"<a href="http://www.gnu.org/licenses/gpl-3.0.html">http://www.gnu.org/licenses/gpl-3.0.html</a>.</string>
+    <string name="about_dev">\"Développé et entretenu par le \"<a href="https://www.dhis2.org/">DHIS2</a>\" projet, partie de l\'Université d\'Oslo, \"<a href="https://www.mn.uio.no/ifi/english/">département d\'informatique</a>.</string>
+    <string name="about_contact">\"Pour plus d\'informations ou des questions sur cette application, veuillez écrire à \"<a href="mailto:android@dhis2.org">android\@dhis2.org</a></string>
 
     <string name="login_error_null_pass">Le mot de passe est manquant. Veuillez compléter ce champ</string>
     <string name="login_error_null_username">Le nom d\'utilisateur est manquant. Veuillez compléter ce champ</string>
@@ -351,7 +350,7 @@
     <string name="invalid_interval">Seules les valeurs de 0 à 1 sont autorisés</string>
     <string name="invalid_percentage">Seules les valeurs de 0 à 100 sont autorisés</string>
     <string name="date_dialog_tigle">sélectionner des dates pour filtrer</string>
-    <string name="select_option">Sélectionnez l\'option</string>
+    <string name="select_option">Sélectionnez une option</string>
     <string name="issue_reported">Problème signalé</string>
     <string name="jira_credential_error">Vérifiez que votre nom d\'utilisateur et votre mot de passe à Jira sont corrects</string>
     <string name="jira_issue_error">Erreur du signalement du problème</string>
@@ -363,9 +362,9 @@
     <string name="complete_enrollment_message">Souhaitez-vous également compléter l\'enrôlement?</string>
     <string name="check_event">Vérifier</string>
 
-    <string name="menu_home">Page d´accueil</string>
+    <string name="menu_home">Accueil</string>
     <string name="appwidget_text">Exemple</string>
-    <string name="add_widget">"Ajouter un widget "</string>
+    <string name="add_widget">Ajouter un widget </string>
     <string name="showHelp">Montrer l´aide</string>
     <string name="tuto_settings_1">Synchronisation des données</string>
     <string name="tuto_settings_2">Synchroniser votre configuration</string>
@@ -402,7 +401,7 @@
     <string name="empty_relationships">Il n\'y a pas de relations, cliquez \"+\" pour en ajouter une nouvelle.</string>
     <string name="empty_tei_add">Aucun évènement n\'a été enregistré, cliquez \"+\" pour en ajouter un nouveau.</string>
     <string name="empty_tei_no_add">Aucun évènement enregistré.</string>
-    <string name="qr_data_values">Valeur de donnée</string>
+    <string name="qr_data_values">Valeurs de données</string>
     <string name="info">Info</string>
     <string name="qr_no_id_error">Impossible de lire cet Id</string>
     <string name="delete_local_data">Suprimmer les données</string>
@@ -447,9 +446,10 @@ Veuillez les vérifier. </string>
     <string name="biometrics_first_use_text">Afin d\'utiliser la connexion par le scanner d\'empreinte digitale vous devez d\'abord vous connecter normalement</string>
     <string name="biometrics_security_title">Sécurité biométrique</string>
     <string name="biometrics_security_text">Utiliser vos empreintes digitales pour se connecter avec cet utilisateur?</string>
+    <string name="table">Tableau</string>
     <string name="login_https">https://</string>
     <string name="delete_local_data_message">Les données non synchronisées seront perdues. Voulez-vous vraiment continuer? </string>
-    <string name="local_data_accept">Accepter</string>
+    <string name="local_data_accept">Accept</string>
     <string name="delete_local_data_error">Les données n\'ont pu être supprimées. Veuillez ressayer. </string>
     <string name="delete_local_data_done">Suppression des données locales terminée avec succès. </string>
     <string name="org_unit_selection_warning">Au moins une unité d\'organisation doit être sélectionnée</string>
@@ -466,7 +466,7 @@ Veuillez les vérifier. </string>
     <string name="resource_not_found">%s non trouvé</string>
     <string name="relationship_not_found_message">La donnée à laquelle vous essayez d\'accéder n\'est pas disponible. Voulez-vous la rechercher? </string>
     <string name="sync_by_sms">Synchronisé par SMS</string>
-    <string name="state_warning">Avertissement</string>
+    <string name="state_warning">Attention</string>
     <string name="no_conflicts_message">Il n\'y a pas de conflits pour ce programme</string>
     <string name="network_unavailable_sms">La connexion réseau non disponible, mais apparemment le réseau mobile fonctionne - vous pouvez utiliser le SMS.</string>
     <string name="network_unavailable">Connection réseau non disponible</string>
@@ -476,6 +476,9 @@ Veuillez les vérifier. </string>
     <string name="no_conflicts_synced_message">Vous êtes à jour! Toutes vos données ont été envoyées au serveur. </string>
     <string name="relationship_error_recursive">Vous ne pouvez pas établir de relation une donnée avec elle-même</string>
     <string name="unblock_session">Dévérouiller la session</string>
+    <string name="data_set_closed">Fermer</string>
+    <string name="data_set_open">Ouvrir</string>
+    <string name="unsupported_value_type">Type de valeur non supporté</string>
     <string name="change_calendar_view">Changer de vue calendrier</string>
     <string name="data_every_fifteen_minutes">15 minutes</string>
     <string name="data_every_hour">Toutes les heures</string>
@@ -490,6 +493,13 @@ Veuillez les vérifier. </string>
     <string name="record_marked_for_deletion">La donnée est marquée pour être supprimée. Vous ne pouvez pas y accéder</string>
     <string name="validation_url">Ceci n\'est pas un lien URL valide</string>
     <string name="uncomplete_authority_error">Vous n\'avez pas l\'autorité pour rouvrir cet évènement</string>
-    <string name="adjusting_form">Ajustement au formulaire…</string>
+    <string name="adjusting_form">Adapter le formulaire...</string>
 
+    <string name="sms_completed">Terminé</string>
+    <string name="sms_bar_state_sending">En cours</string>
+    <string name="sms_bar_state_sent">Envoyé</string>
+    <string name="sms_bar_state_failed">Echoué</string>
+
+    <string name="polygon">Polygone</string>
+    <!--endregion-->
 </resources>
