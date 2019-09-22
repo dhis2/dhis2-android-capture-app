@@ -10,6 +10,7 @@ import java.util.List;
 
 import io.reactivex.SingleEmitter;
 import io.reactivex.disposables.CompositeDisposable;
+import timber.log.Timber;
 
 /**
  * QUADRAM. Created by ppajuelo on 15/01/2018.
@@ -30,7 +31,7 @@ public class RxDateDialog {
                 compositeSubscription.add(actionTrigger.observe().subscribe(this::showDialog));
             else
                 compositeSubscription.clear();
-        });
+        }, Timber::e);
 
     }
 

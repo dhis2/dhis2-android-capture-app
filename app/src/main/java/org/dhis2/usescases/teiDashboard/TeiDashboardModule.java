@@ -45,9 +45,8 @@ public class TeiDashboardModule {
     @Provides
     @PerActivity
     TeiDashboardContracts.Presenter providePresenter(D2 d2, DashboardRepository dashboardRepository,
-                                                     MetadataRepository metadataRepository,
-                                                     RuleEngineRepository ruleRepository) {
-        return new TeiDashboardPresenter(d2, dashboardRepository, metadataRepository, ruleRepository);
+                                                     MetadataRepository metadataRepository) {
+        return new TeiDashboardPresenter(d2, dashboardRepository, metadataRepository);
     }
 
     @Provides
@@ -78,20 +77,4 @@ public class TeiDashboardModule {
 
         return new EnrollmentFormRepository(briteDatabase, evaluator, rulesRepository, codeGenerator, uid, d2);
     }
-
-    @Provides
-    @PerActivity
-    RuleEngineRepository ruleEngineRepository(@NonNull BriteDatabase briteDatabase,
-                                              @NonNull FormRepository formRepository,
-                                              D2 d2) {
-        EnrollmentCollectionRepository enrollmentRepository = d2.enrollmentModule().enrollments
-                .byTrackedEntityInstance().eq(teiUid);
-        if (!isEmpty(programUid))
-            enrollmentRepository = enrollmentRepository.byProgram().eq(programUid);
-
-        String uid = enrollmentRepository.one().get().uid();
-        return new EnrollmentRuleEngineRepository(briteDatabase, formRepository, uid, d2);
-
-    }
-
 }

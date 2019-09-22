@@ -25,6 +25,7 @@ import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.usescases.main.MainActivity;
 import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.Constants;
+import org.hisp.dhis.android.core.D2;
 
 import javax.inject.Inject;
 
@@ -38,6 +39,7 @@ public class SyncActivity extends ActivityGlobalAbstract implements SyncContract
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        D2 d2 = ((App) getApplicationContext()).serverComponent().userManager().getD2();
         SyncComponent syncComponent = ((App) getApplicationContext()).syncComponent();
         if (syncComponent == null) {
             // in case if we don't have cached presenter
@@ -48,7 +50,7 @@ public class SyncActivity extends ActivityGlobalAbstract implements SyncContract
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_synchronization);
         binding.setPresenter(presenter);
-        presenter.init(this);
+        presenter.init(this,d2);
         presenter.sync();
     }
 

@@ -50,8 +50,10 @@ import java.util.List;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
+import io.reactivex.Single;
 import io.reactivex.exceptions.OnErrorNotImplementedException;
 import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
 import static android.text.TextUtils.isEmpty;
@@ -228,12 +230,12 @@ public class EnrollmentFormRepository implements FormRepository {
         // We don't want to rebuild RuleEngine on each request, since metadata of
         // the event is not changing throughout lifecycle of FormComponent.
         this.cachedRuleEngineFlowable = enrollmentProgram()
-                .switchMap(program -> Flowable.zip(
-                        rulesRepository.rulesNew(program),
-                        rulesRepository.ruleVariables(program),
-                        rulesRepository.enrollmentEvents(enrollmentUid),
-                        rulesRepository.queryConstants(),
-                        rulesRepository.getSuplementaryData(d2),
+                .switchMap(program -> Single.zip(
+                        rulesRepository.rulesNew(program).subscribeOn(Schedulers.io()),
+                        rulesRepository.ruleVariables(program).subscribeOn(Schedulers.io()),
+                        rulesRepository.enrollmentEvents(enrollmentUid).subscribeOn(Schedulers.io()),
+                        rulesRepository.queryConstants().subscribeOn(Schedulers.io()),
+                        rulesRepository.getSuplementaryData().subscribeOn(Schedulers.io()),
                         (rules, variables, events, constants, supplementaryData) -> {
                             RuleEngine.Builder builder = RuleEngineContext.builder(expressionEvaluator)
                                     .rules(rules)
@@ -245,19 +247,19 @@ public class EnrollmentFormRepository implements FormRepository {
                             builder.triggerEnvironment(TriggerEnvironment.ANDROIDCLIENT);
                             builder.events(events);
                             return builder.build();
-                        }))
+                        }).toFlowable())
                 .cacheWithInitialCapacity(1);
     }
 
     @Override
     public Flowable<RuleEngine> restartRuleEngine() {
         return this.cachedRuleEngineFlowable = enrollmentProgram()
-                .switchMap(program -> Flowable.zip(
+                .switchMap(program -> Single.zip(
                         rulesRepository.rulesNew(program),
                         rulesRepository.ruleVariables(program),
                         rulesRepository.enrollmentEvents(enrollmentUid),
                         rulesRepository.queryConstants(),
-                        rulesRepository.getSuplementaryData(d2),
+                        rulesRepository.getSuplementaryData(),
                         (rules, variables, events, constants, supplementaryData) -> {
                             RuleEngine.Builder builder = RuleEngineContext.builder(expressionEvaluator)
                                     .rules(rules)
@@ -269,7 +271,7 @@ public class EnrollmentFormRepository implements FormRepository {
                             builder.triggerEnvironment(TriggerEnvironment.ANDROIDCLIENT);
                             builder.events(events);
                             return builder.build();
-                        }))
+                        }).toFlowable())
                 .cacheWithInitialCapacity(1);
     }
 

@@ -132,9 +132,6 @@ public class EventCaptureContract {
         @NonNull
         Flowable<Result<RuleEffect>> calculate();
 
-        @NonNull
-        Flowable<Result<RuleEffect>> calculate(String section);
-
         Observable<Boolean> completeEvent();
 
         Flowable<EventStatus> eventStatus();
@@ -166,6 +163,8 @@ public class EventCaptureContract {
         String getSectionFor(String field);
 
         Single<Boolean> canReOpenEvent();
+
+        void assign(String uid, String value);
     }
 
 }

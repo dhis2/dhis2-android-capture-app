@@ -15,6 +15,7 @@ import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.program.ProgramStage;
+import org.hisp.dhis.android.core.program.ProgramStageCollectionRepository;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValue;
 import org.hisp.dhis.rules.RuleEngine;
@@ -39,6 +40,7 @@ import javax.annotation.Nonnull;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
+import io.reactivex.Single;
 
 /**
  * QUADRAM. Created by ppajuelo on 02/11/2017.
@@ -80,60 +82,53 @@ public class ProgramStageSelectionRepositoryImpl implements ProgramStageSelectio
         this.eventCreationType = eventCreationType;
         this.d2 = d2;
         this.cachedRuleEngineFlowable =
-                Flowable.zip(
+                Single.zip(
                         rulesRepository.rulesNew(programUid),
                         rulesRepository.ruleVariablesProgramStages(programUid),
                         ruleEvents(enrollmentUid),
-                        rulesRepository.getSuplementaryData(d2),
-                        (rules, variables, ruleEvents,supplementaryData) -> {
+                        rulesRepository.getSuplementaryData(),
+                        rulesRepository.queryConstants(),
+                        (rules, variables, ruleEvents, supplementaryData, constants) -> {
                             RuleEngine.Builder builder = RuleEngineContext.builder(evaluator)
                                     .rules(rules)
                                     .ruleVariables(variables)
                                     .calculatedValueMap(new HashMap<>())
+                                    .constantsValue(constants)
                                     .supplementaryData(supplementaryData)
                                     .build().toEngineBuilder();
                             return builder.events(ruleEvents)
                                     .triggerEnvironment(TriggerEnvironment.ANDROIDCLIENT)
                                     .build();
-                        })
+                        }).toFlowable()
                         .cacheWithInitialCapacity(1);
     }
 
-    private Flowable<List<RuleEvent>> ruleEvents(String enrollmentUid) {
-        return Flowable.fromCallable(() -> {
-            List<Event> events = d2.eventModule().events
-                    .byEnrollmentUid().eq(enrollmentUid)
-                    .byStatus().in(EventStatus.ACTIVE, EventStatus.COMPLETED)
-                    .withTrackedEntityDataValues()
-                    .orderByEventDate(RepositoryScope.OrderByDirection.DESC).get();
+    private Single<List<RuleEvent>> ruleEvents(String enrollmentUid) {
+        return d2.eventModule().events
+                .byEnrollmentUid().eq(enrollmentUid)
+                .byStatus().in(EventStatus.ACTIVE, EventStatus.COMPLETED)
+                .withTrackedEntityDataValues()
+                .orderByEventDate(RepositoryScope.OrderByDirection.DESC).getAsync()
+                .toFlowable().flatMapIterable(events -> events)
+                .map(event -> {
+                    List<RuleDataValue> dataValues = new ArrayList<>();
+                    for (TrackedEntityDataValue dataValue : event.trackedEntityDataValues()) {
+                        dataValues.add(RuleDataValue.create(event.eventDate(), event.programStage(),
+                                dataValue.dataElement(), dataValue.value()));
+                    }
 
-            List<RuleEvent> ruleEvents = new ArrayList<>();
-
-            for (Event event : events) {
-                List<RuleDataValue> dataValues = new ArrayList<>();
-                for (TrackedEntityDataValue dataValue : event.trackedEntityDataValues()) {
-                    dataValues.add(RuleDataValue.create(event.eventDate(), event.programStage(),
-                            dataValue.dataElement(), dataValue.value()));
-                }
-
-
-                RuleEvent ruleEvent = RuleEvent.builder()
-                        .event(event.uid())
-                        .programStage(event.programStage())
-                        .programStageName(d2.programModule().programStages.uid(event.programStage()).get().displayName())
-                        .status(RuleEvent.Status.valueOf(event.status().name()))
-                        .eventDate(event.eventDate() == null ? event.dueDate():event.eventDate())
-                        .dueDate(event.dueDate() != null ? event.dueDate() : event.eventDate())
-                        .organisationUnit(event.organisationUnit())
-                        .organisationUnitCode(d2.organisationUnitModule().organisationUnits.uid(event.organisationUnit()).get().code())
-                        .dataValues(dataValues)
-                        .build();
-                ruleEvents.add(ruleEvent);
-            }
-
-            return ruleEvents;
-
-        });
+                    return RuleEvent.builder()
+                            .event(event.uid())
+                            .programStage(event.programStage())
+                            .programStageName(d2.programModule().programStages.uid(event.programStage()).get().displayName())
+                            .status(RuleEvent.Status.valueOf(event.status().name()))
+                            .eventDate(event.eventDate() == null ? event.dueDate() : event.eventDate())
+                            .dueDate(event.dueDate() != null ? event.dueDate() : event.eventDate())
+                            .organisationUnit(event.organisationUnit())
+                            .organisationUnitCode(d2.organisationUnitModule().organisationUnits.uid(event.organisationUnit()).get().code())
+                            .dataValues(dataValues)
+                            .build();
+                }).toList();
     }
 
     private Flowable<RuleEnrollment> ruleEnrollment(String enrollmentUid) {
@@ -172,6 +167,23 @@ public class ProgramStageSelectionRepositoryImpl implements ProgramStageSelectio
     @NonNull
     @Override
     public Flowable<List<ProgramStage>> enrollmentProgramStages(String programId, String enrollmentUid) {
+        return d2.eventModule().events.byEnrollmentUid().eq(enrollmentUid == null ? "" : enrollmentUid).byState().neq(State.TO_DELETE).getAsync()
+                .toFlowable().flatMapIterable(events -> events)
+                .map(event -> event.programStage())
+                .toList()
+                .flatMap(currentProgramStagesUids -> {
+                    ProgramStageCollectionRepository repository = d2.programModule().programStages.byProgramUid().eq(programId).withStyle();
+                    if (eventCreationType.equals(EventCreationType.SCHEDULE.name()))
+                        repository = repository.byHideDueDate().eq(false);
+
+                    return repository.getAsync().toFlowable().flatMapIterable(stages -> stages)
+                            .filter(programStage ->
+                                    !currentProgramStagesUids.contains(programStage.uid()) ||
+                                            programStage.repeatable())
+                            .toList();
+
+                }).toFlowable();
+/*
         List<String> currentProgramStages = new ArrayList<>();
         List<ProgramStage> selectableStages = new ArrayList<>();
         List<Event> events = d2.eventModule().events.byEnrollmentUid().eq(enrollmentUid == null ? "" : enrollmentUid).byState().neq(State.TO_DELETE).get();
@@ -193,7 +205,7 @@ public class ProgramStageSelectionRepositoryImpl implements ProgramStageSelectio
                     }
                     return selectableStages;
                 })
-                .toFlowable(BackpressureStrategy.LATEST);
+                .toFlowable(BackpressureStrategy.LATEST);*/
     }
 
     @Override
