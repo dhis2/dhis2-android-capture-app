@@ -68,9 +68,6 @@
         <activity android:name=".usescases.teiDashboard.teiDataDetail.TeiDataDetailActivity" />
         <activity android:name=".usescases.teiDashboard.eventDetail.EventDetailActivity" />
         <activity android:name=".usescases.qrScanner.QRActivity" />
-        <activity
-            android:name=".data.forms.FormActivity"
-            android:windowSoftInputMode="adjustResize" />
         <activity android:name=".data.forms.dataentry.DataEntryActivity" />
         <activity android:name=".usescases.teiDashboard.teiProgramList.TeiProgramListActivity" />
         <activity android:name=".usescases.map.MapSelectorActivity" />

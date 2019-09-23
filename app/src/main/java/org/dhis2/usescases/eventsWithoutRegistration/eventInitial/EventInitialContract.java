@@ -45,8 +45,6 @@ public class EventInitialContract {
 
         void setEvent(Event event);
 
-//        void setLocation(Geometry geometry);
-
         void onEventCreated(String eventUid);
 
         void onEventUpdated(String eventUid);
@@ -77,12 +75,6 @@ public class EventInitialContract {
         void renderObjectStyle(ObjectStyle objectStyle);
 
         void runSmsSubmission();
-
-        EventCreationType eventcreateionType();
-
-        void latitudeWarning(boolean showWarning);
-
-        void longitudeWarning(boolean showWarning);
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter {
@@ -113,12 +105,6 @@ public class EventInitialContract {
         void onOrgUnitButtonClick();
 
         void onLocationClick();
-
-        void onLocation2Click(FeatureType featureType);
-
-        void onLatChanged(CharSequence s, int start, int before, int count);
-
-        void onLonChanged(CharSequence s, int start, int before, int count);
 
         void onFieldChanged(CharSequence s, int start, int before, int count);
 

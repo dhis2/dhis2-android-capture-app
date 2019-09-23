@@ -367,6 +367,9 @@ dependencies {
 
     implementation 'com.github.prabhat1707:DbExporterHelper:v1.0'
 
+    /*region SECURITY*/
+    implementation 'com.scottyab:rootbeer-lib:0.0.7'
+
 }
 
 

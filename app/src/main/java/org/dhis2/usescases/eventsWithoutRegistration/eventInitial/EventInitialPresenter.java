@@ -79,8 +79,6 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
     private CategoryCombo catCombo;
     private String programStageId;
     private List<OrganisationUnit> orgUnits;
-    private FlowableProcessor<Pair<TreeNode, String>> parentOrgUnit;
-    private FlowableProcessor<String> onSearchListener;
 
 
     public EventInitialPresenter(@NonNull EventSummaryRepository eventSummaryRepository,
@@ -97,8 +95,6 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
         this.view = mview;
         this.eventId = eventId;
         this.programStageId = programStageId;
-        this.parentOrgUnit = PublishProcessor.create();
-        this.onSearchListener = PublishProcessor.create();
 
         compositeDisposable = new CompositeDisposable();
 
@@ -312,7 +308,7 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         (eventModel) -> view.onEventUpdated(eventModel.uid()),
-                        error -> displayMessage(error.getLocalizedMessage())
+                        error -> view.displayMessage(error.getLocalizedMessage())
 
                 ));
     }
@@ -347,40 +343,6 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
             /*if (location != null)
                 view.setLocation(GeometryHelper.createPointGeometry(location.getLatitude(), location.getLongitude()));*/
         });
-    }
-
-    @Override
-    public void onLocation2Click(FeatureType featureType) {
-        view.getAbstractActivity().startActivityForResult(
-                MapSelectorActivity.Companion.create((Activity) view.getContext(),
-                        featureType)
-                , Constants.RQ_MAP_LOCATION);
-    }
-
-    @Override
-    public void onLatChanged(CharSequence s, int start, int before, int count) {
-        String latLongRegex = "^(\\-?\\d+(\\.\\d+)?)";
-        Pattern latLongPattern = Pattern.compile(latLongRegex, Pattern.MULTILINE);
-        Matcher latLOngMatcher = latLongPattern.matcher(s);
-        if (!latLOngMatcher.matches()) {
-            view.latitudeWarning(true);
-        } else {
-            view.longitudeWarning(false);
-            view.checkActionButtonVisibility();
-        }
-    }
-
-    @Override
-    public void onLonChanged(CharSequence s, int start, int before, int count) {
-        String latLongRegex = "^(\\-?\\d+(\\.\\d+)?)";
-        Pattern latLongPattern = Pattern.compile(latLongRegex, Pattern.MULTILINE);
-        Matcher latLOngMatcher = latLongPattern.matcher(s);
-        if (!latLOngMatcher.matches()) {
-            view.longitudeWarning(true);
-        } else {
-            view.longitudeWarning(false);
-            view.checkActionButtonVisibility();
-        }
     }
 
     @Override
