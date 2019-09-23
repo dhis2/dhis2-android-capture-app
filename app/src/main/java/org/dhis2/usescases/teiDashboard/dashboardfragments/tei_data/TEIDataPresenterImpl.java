@@ -87,7 +87,8 @@ class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
                             .one().blockingGet();
                     if (attributeValue != null && !isEmpty(attributeValue.value())) {
                         FileResource fileResource = d2.fileResourceModule().fileResources.uid(attributeValue.value()).blockingGet();
-                        return fileResource!=null ? fileResource.path()+"/"+fileResource.name(): null;
+                        return fileResource!=null ? fileResource.path() : null;
+//                        return fileResource!=null ? fileResource.path()+"/"+fileResource.name(): null;
                     } else
                         throw new NullPointerException("No image attribute found");
                 })
