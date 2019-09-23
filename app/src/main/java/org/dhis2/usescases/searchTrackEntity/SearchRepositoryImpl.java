@@ -630,7 +630,7 @@ public class SearchRepositoryImpl implements SearchRepository {
             if (attributeValue != null && !isEmpty(attributeValue.value())) {
                 FileResource fileResource = d2.fileResourceModule().fileResources.uid(attributeValue.value()).blockingGet();
                 if (fileResource != null) {
-                    path = FileResourcesUtil.getFileResourceFullPath(fileResource);
+                    path = fileResource.path();
                 }
             }
         }

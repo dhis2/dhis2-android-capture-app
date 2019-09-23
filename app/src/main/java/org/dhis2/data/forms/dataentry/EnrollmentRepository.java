@@ -98,7 +98,7 @@ public final class EnrollmentRepository implements DataEntryRepository {
         if (valueType == ValueType.IMAGE && !isEmpty(dataValue)) {
             FileResource fileResource = d2.fileResourceModule().fileResources.uid(dataValue).blockingGet();
             if (fileResource != null)
-                dataValue = FileResourcesUtil.getFileResourceFullPath(fileResource);
+                dataValue = fileResource.path();
         }
 
         int optionCount = 0;

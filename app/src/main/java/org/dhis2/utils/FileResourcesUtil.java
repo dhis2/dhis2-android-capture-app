@@ -20,7 +20,6 @@ import androidx.work.WorkContinuation;
 import androidx.work.WorkManager;
 
 import org.dhis2.data.service.files.FilesWorker;
-import org.hisp.dhis.android.core.fileresource.FileResource;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -46,7 +45,7 @@ public class FileResourcesUtil {
 
     public static File getCacheDirectory(Context context) {
         File cacheDirectory = new File(context.getCacheDir(), "cache");
-        if(!cacheDirectory.exists())
+        if (!cacheDirectory.exists())
             cacheDirectory.mkdirs();
         return cacheDirectory;
     }
@@ -180,17 +179,6 @@ public class FileResourcesUtil {
         return String.format("%s_%s.png", primaryUid, secundaryUid);
     }
 
-    public static String generateFileName(String name) {
-        return String.format("%s.png", name);
-    }
-
-    public static File getCacheFile(Context context, String fileName) {
-        File tempFile = new File(context.getCacheDir(), fileName);
-        if(!tempFile.exists())
-            tempFile.mkdirs();
-        return tempFile;
-    }
-
     public static boolean writeToFile(@NonNull String content, @Nullable String secretToEncode) {
         // Get the directory for the user's public pictures directory.
         final File path = new File(Environment.getExternalStorageDirectory(), "DHIS2");
@@ -243,9 +231,5 @@ public class FileResourcesUtil {
         }
         reader.close();
         return sb.toString();
-    }
-
-    public static String getFileResourceFullPath(FileResource fileResource) {
-        return String.format("%s/%s.%s", fileResource.path(), fileResource.uid(), fileResource.contentType().replace("image/", ""));
     }
 }
