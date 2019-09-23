@@ -18,7 +18,7 @@ import org.dhis2.R;
 import org.dhis2.databinding.CustomTextViewAccentBinding;
 import org.dhis2.databinding.CustomTextViewBinding;
 import org.dhis2.utils.custom_views.orgUnitCascade.OrgUnitCascadeDialog;
-import org.hisp.dhis.android.core.common.ObjectStyleModel;
+import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
 
 import static android.text.TextUtils.isEmpty;
@@ -100,7 +100,7 @@ public class OrgUnitView extends FieldLayout implements OrgUnitCascadeDialog.Cas
         editText.setOnClickListener(l);
     }
 
-    public void setObjectStyle(ObjectStyleModel objectStyle) {
+    public void setObjectStyle(ObjectStyle objectStyle) {
         Bindings.setObjectStyle(iconView, this, objectStyle);
     }
 

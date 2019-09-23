@@ -32,5 +32,4 @@ public class SyncUtils {
     public static boolean isSyncRunning(Context context) {
         return isSyncRunning(Constants.META,context) || isSyncRunning(Constants.DATA,context);
     }
-
 }

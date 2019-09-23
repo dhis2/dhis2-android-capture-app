@@ -3,7 +3,6 @@ package org.dhis2.usescases.teiDashboard.teiDataDetail;
 import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.dhis2.data.dagger.PerActivity;
-import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.usescases.teiDashboard.DashboardRepository;
 import org.dhis2.usescases.teiDashboard.DashboardRepositoryImpl;
 import org.dhis2.utils.CodeGenerator;
@@ -35,8 +34,8 @@ public class TeiDataDetailModule {
 
     @Provides
     @PerActivity
-    TeiDataDetailContracts.Presenter providePresenter(DashboardRepository dashboardRepository, MetadataRepository metadataRepository, EnrollmentStatusStore enrollmentStatusStore) {
-        return new TeiDataDetailPresenter(dashboardRepository, metadataRepository, enrollmentStatusStore);
+    TeiDataDetailContracts.Presenter providePresenter(DashboardRepository dashboardRepository, EnrollmentStatusStore enrollmentStatusStore) {
+        return new TeiDataDetailPresenter(dashboardRepository, enrollmentStatusStore);
     }
 
     @Provides
@@ -47,7 +46,7 @@ public class TeiDataDetailModule {
 
     @Provides
     @PerActivity
-    EnrollmentStatusStore enrollmentStatusStore(@NonNull BriteDatabase briteDatabase) {
-        return new EnrollmentStatusStore(briteDatabase, enrollmentUid);
+    EnrollmentStatusStore enrollmentStatusStore(@NonNull BriteDatabase briteDatabase, D2 d2) {
+        return new EnrollmentStatusStore(briteDatabase, enrollmentUid, d2);
     }
 }

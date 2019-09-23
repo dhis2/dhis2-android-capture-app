@@ -7,8 +7,6 @@
 
         <import type="android.view.View" />
 
-        <import type="java.lang.String" />
-
         <variable
             name="presenter"
             type="org.dhis2.usescases.programEventDetail.ProgramEventDetailContract.Presenter" />
@@ -21,7 +19,6 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@android:color/white"
         android:padding="10dp"
         android:paddingStart="16dp"
         android:paddingTop="10dp"

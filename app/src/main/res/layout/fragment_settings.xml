@@ -26,6 +26,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:background="@color/white"
             android:orientation="vertical"
             android:paddingTop="8dp"
             android:paddingBottom="@dimen/default_top_margin">
@@ -497,6 +498,38 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/resetButton" />
             </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/smsSettings"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:onClick="@{()->presenter.onItemClick(7)}">
+
+                <include
+                    android:id="@+id/smsLayout"
+                    layout="@layout/fragment_settings_item"
+                    app:icon="@{R.drawable.ic_setting_sms}"
+                    app:message="@{@string/settingsSms_descr}"
+                    app:title="@{@string/settingsSms}" />
+
+                <FrameLayout
+                    android:id="@+id/smsContent"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="72dp"
+                    android:layout_marginEnd="16dp"
+                    android:visibility="gone"
+                    app:layout_constraintTop_toBottomOf="@id/smsLayout"
+                    tools:visibility="visible">
+
+                    <include
+                        android:id="@+id/settings_sms"
+                        layout="@layout/settings_sms" />
+                </FrameLayout>
+
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>

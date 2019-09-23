@@ -17,7 +17,6 @@ import org.dhis2.R;
 import org.dhis2.databinding.FragmentAboutBinding;
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
 import org.hisp.dhis.android.core.user.UserCredentials;
-import org.hisp.dhis.android.core.user.UserCredentialsModel;
 
 import javax.inject.Inject;
 

@@ -1,9 +1,16 @@
 package org.dhis2.utils;
 
+
+import android.icu.util.CopticCalendar;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import org.hisp.dhis.android.core.event.EventModel;
+import org.dhis2.data.forms.section.viewmodels.date.DatePickerDialogFragment;
+import org.dhis2.usescases.general.ActivityGlobalAbstract;
+import org.dhis2.utils.custom_views.RxDateDialog;
+import org.hisp.dhis.android.core.dataset.DataInputPeriod;
+import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.period.DatePeriod;
 import org.hisp.dhis.android.core.period.PeriodType;
@@ -12,12 +19,16 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Nonnull;
+
+import io.reactivex.disposables.Disposable;
+import timber.log.Timber;
 
 /**
  * QUADRAM. Created by ppajuelo on 16/01/2018.
@@ -240,7 +251,7 @@ public class DateUtils {
     /**********************
      COMPARE DATES REGION*/
     @Deprecated
-    public boolean hasExpired(@NonNull EventModel event, int expiryDays, int completeEventExpiryDays, @Nullable PeriodType expiryPeriodType) {
+    public boolean hasExpired(@NonNull Event event, int expiryDays, int completeEventExpiryDays, @Nullable PeriodType expiryPeriodType) {
         Calendar expiredDate = Calendar.getInstance();
 
         if (event.status() == EventStatus.COMPLETED && completeEventExpiryDays == 0) {
@@ -344,7 +355,7 @@ public class DateUtils {
         return new int[]{interval.getYears(), interval.getMonths(), interval.getDays()};
     }
 
-    public Date getNewDate(List<EventModel> events, PeriodType periodType) {
+    public Date getNewDate(List<Event> events, PeriodType periodType) {
         Calendar now = Calendar.getInstance();
         now.set(Calendar.HOUR_OF_DAY, 0);
         now.set(Calendar.MINUTE, 0);
@@ -355,7 +366,7 @@ public class DateUtils {
         Date newDate = new Date();
         boolean needNewDate = true;
 
-        for (EventModel event : events) {
+        for (Event event : events) {
             eventDates.add(event.eventDate());
         }
 
@@ -845,12 +856,12 @@ public class DateUtils {
                 calendar.set(Calendar.DAY_OF_MONTH, 1);
                 break;
             case Quarterly:
-                extra = 1 + 4 - (calendar.get(Calendar.MONTH) + 1) % 4;
+                extra = 3 - page * (calendar.get(Calendar.MONTH)) % 3;
                 calendar.add(Calendar.MONTH, page * extra);
                 calendar.set(Calendar.DAY_OF_MONTH, 1);
                 break;
             case SixMonthly:
-                extra = 1 + 6 - (calendar.get(Calendar.MONTH) + 1) % 6;
+                extra = 6 - page * (calendar.get(Calendar.MONTH)) % 6;
                 calendar.add(Calendar.MONTH, page * extra);
                 calendar.set(Calendar.DAY_OF_MONTH, 1);
                 break;
@@ -1185,6 +1196,47 @@ public class DateUtils {
 
     }
 
+
+    public Boolean isDataSetExpired(int expiredDays, Date periodInitialDate) {
+        return Calendar.getInstance().getTime().getTime() > periodInitialDate.getTime() + TimeUnit.DAYS.toMillis(expiredDays);
+    }
+
+    public Boolean isInsideInputPeriod(DataInputPeriod dataInputPeriodModel) {
+        if (dataInputPeriodModel.openingDate() == null && dataInputPeriodModel.closingDate() != null)
+            return Calendar.getInstance().getTime().getTime() < dataInputPeriodModel.closingDate().getTime();
+
+        if (dataInputPeriodModel.openingDate() != null && dataInputPeriodModel.closingDate() == null)
+            return dataInputPeriodModel.openingDate().getTime() < Calendar.getInstance().getTime().getTime();
+
+        if (dataInputPeriodModel.openingDate() == null && dataInputPeriodModel.closingDate() == null)
+            return true;
+
+        return dataInputPeriodModel.openingDate().getTime() < Calendar.getInstance().getTime().getTime()
+                && Calendar.getInstance().getTime().getTime() < dataInputPeriodModel.closingDate().getTime();
+    }
+
+    public String generateId(PeriodType periodType, Date date, Locale locale) {
+
+        String formattedDate;
+        Date initDate = getNextPeriod(periodType, date, 0);
+
+        switch (periodType) {
+            case Monthly:
+                formattedDate = new SimpleDateFormat("yyyyMM", locale).format(initDate);
+                break;
+            case Yearly:
+                formattedDate = new SimpleDateFormat("yyyy", locale).format(initDate);
+                break;
+            case Daily:
+                formattedDate = new SimpleDateFormat("yyyyMMdd", locale).format(initDate);
+                break;
+            default:
+                formattedDate = new SimpleDateFormat("yyyy", locale).format(initDate);
+                break;
+        }
+        return formattedDate;
+    }
+
     public List<DatePeriod> getDatePeriodListFor(List<Date> selectedDates, Period period) {
         List<DatePeriod> datePeriods = new ArrayList<>();
         for (Date date : selectedDates) {
@@ -1192,5 +1244,66 @@ public class DateUtils {
             datePeriods.add(DatePeriod.builder().startDate(startEndDates[0]).endDate(startEndDates[1]).build());
         }
         return datePeriods;
+    }
+
+    public void showFromToSelector(ActivityGlobalAbstract activity, OnFromToSelector fromToListener) {
+        DatePickerDialogFragment fromCalendar = DatePickerDialogFragment.create(true);
+        fromCalendar.setFormattedOnDateSetListener(new DatePickerDialogFragment.FormattedOnDateSetListener() {
+            @Override
+            public void onDateSet(@NonNull Date fromDate) {
+                DatePickerDialogFragment toCalendar = DatePickerDialogFragment.create(true);
+                toCalendar.setOpeningClosingDates(fromDate, null);
+                toCalendar.setFormattedOnDateSetListener(new DatePickerDialogFragment.FormattedOnDateSetListener() {
+                    @Override
+                    public void onDateSet(@NonNull Date toDate) {
+                        List<DatePeriod> list = new ArrayList<>();
+                        list.add(DatePeriod.builder().startDate(fromDate).endDate(toDate).build());
+                        fromToListener.onFromToSelected(list);
+                    }
+
+                    @Override
+                    public void onClearDate() {
+
+                    }
+                });
+                toCalendar.show(activity.getSupportFragmentManager(), "TO");
+
+            }
+
+            @Override
+            public void onClearDate() {
+
+            }
+        });
+
+        fromCalendar.show(activity.getSupportFragmentManager(), "FROM");
+    }
+
+    public void showPeriodDialog(ActivityGlobalAbstract activity, OnFromToSelector fromToListener, boolean fromOtherPeriod) {
+        DatePickerDialogFragment fromCalendar = DatePickerDialogFragment.create(true, "Daily", fromOtherPeriod);
+//        fromCalendar.setOpeningClosingDates(null, null); TODO: MAX 1 year in the future?
+        fromCalendar.setFormattedOnDateSetListener(new DatePickerDialogFragment.FormattedOnDateSetListener() {
+            @Override
+            public void onDateSet(@NonNull Date date) {
+                fromToListener.onFromToSelected(getDatePeriodListFor(Collections.singletonList(date), Period.DAILY));
+            }
+
+            @Override
+            public void onClearDate() {
+                Disposable disposable = new RxDateDialog(activity, Period.WEEKLY)
+                        .createForFilter().show()
+                        .subscribe(
+                                selectedDates -> fromToListener.onFromToSelected(getDatePeriodListFor(selectedDates.val1(),
+                                        selectedDates.val0())),
+                                Timber::e
+                        );
+            }
+        });
+        fromCalendar.show(activity.getSupportFragmentManager(), "DAILY");
+
+    }
+
+    public interface OnFromToSelector {
+        void onFromToSelected(List<DatePeriod> datePeriods);
     }
 }

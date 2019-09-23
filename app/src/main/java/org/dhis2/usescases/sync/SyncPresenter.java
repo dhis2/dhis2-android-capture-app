@@ -1,16 +1,16 @@
 package org.dhis2.usescases.sync;
 
 import androidx.work.Constraints;
-import androidx.work.ExistingPeriodicWorkPolicy;
+import androidx.work.Data;
 import androidx.work.ExistingWorkPolicy;
 import androidx.work.NetworkType;
 import androidx.work.OneTimeWorkRequest;
-import androidx.work.PeriodicWorkRequest;
 import androidx.work.WorkManager;
 
 import org.dhis2.R;
 import org.dhis2.data.service.ReservedValuesWorker;
 import org.dhis2.data.service.SyncDataWorker;
+import org.dhis2.data.service.SyncInitWorker;
 import org.dhis2.data.service.SyncMetadataWorker;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.utils.Constants;
@@ -26,20 +26,20 @@ import timber.log.Timber;
 
 public class SyncPresenter implements SyncContracts.Presenter {
 
+    private final D2 d2;
     private SyncContracts.View view;
 
     private CompositeDisposable disposable;
-    private D2 d2;
 
 
-    SyncPresenter() {
+    SyncPresenter(D2 d2) {
+        this.d2 = d2;
     }
 
     @Override
-    public void init(SyncContracts.View view, D2 d2) {
+    public void init(SyncContracts.View view) {
         this.view = view;
         this.disposable = new CompositeDisposable();
-        this.d2 = d2;
 
     }
 
@@ -68,33 +68,42 @@ public class SyncPresenter implements SyncContracts.Presenter {
 
     @Override
     public void scheduleSync(int metaTime, int dataTime) {
-        if (metaTime != 0) {
-            PeriodicWorkRequest.Builder metaBuilder = new PeriodicWorkRequest.Builder(SyncMetadataWorker.class, metaTime, TimeUnit.SECONDS);
-            metaBuilder.addTag(Constants.META);
-            metaBuilder.setInitialDelay(metaTime, TimeUnit.SECONDS); //TODO: CAN BE SET TO A SPECIFIC TIME
-            metaBuilder.setConstraints(new Constraints.Builder()
-                    .setRequiredNetworkType(NetworkType.CONNECTED)
-                    .build());
-            PeriodicWorkRequest metaRequest = metaBuilder.build();
-            WorkManager.getInstance(view.getContext().getApplicationContext()).enqueueUniquePeriodicWork(Constants.META, ExistingPeriodicWorkPolicy.REPLACE, metaRequest);
-        }
 
-        if (dataTime != 0) {
-            PeriodicWorkRequest.Builder dataBuilder = new PeriodicWorkRequest.Builder(SyncDataWorker.class, dataTime, TimeUnit.SECONDS);
-            dataBuilder.addTag(Constants.DATA);
-            dataBuilder.setInitialDelay(dataTime, TimeUnit.SECONDS);//TODO: CAN BE SET TO A SPECIFIC TIME
-            dataBuilder.setConstraints(new Constraints.Builder()
-                    .setRequiredNetworkType(NetworkType.CONNECTED)
-                    .build());
-            PeriodicWorkRequest dataRequest = dataBuilder.build();
-            WorkManager.getInstance(view.getContext().getApplicationContext()).enqueueUniquePeriodicWork(Constants.DATA, ExistingPeriodicWorkPolicy.REPLACE, dataRequest);
-        }
+        //METADATA
+        OneTimeWorkRequest.Builder initMetaBuilder = new OneTimeWorkRequest.Builder(SyncInitWorker.class);
+        initMetaBuilder.addTag(Constants.INIT_META);
+        initMetaBuilder.setInitialDelay(metaTime, TimeUnit.SECONDS);
+        initMetaBuilder.setConstraints(new Constraints.Builder()
+                .setRequiredNetworkType(NetworkType.CONNECTED)
+                .build());
+        Data dataMeta = new Data.Builder()
+                .putBoolean(SyncInitWorker.INIT_META, metaTime != 0)
+                .putBoolean(SyncInitWorker.INIT_DATA, false)
+                .build();
+        initMetaBuilder.setInputData(dataMeta);
+        WorkManager.getInstance(view.getContext().getApplicationContext())
+                .enqueueUniqueWork(Constants.INIT_META, ExistingWorkPolicy.REPLACE, initMetaBuilder.build());
+
+        //DATA
+        OneTimeWorkRequest.Builder initDataBuilder = new OneTimeWorkRequest.Builder(SyncInitWorker.class);
+        initDataBuilder.addTag(Constants.INIT_DATA);
+        initDataBuilder.setInitialDelay(dataTime, TimeUnit.SECONDS);
+        initDataBuilder.setConstraints(new Constraints.Builder()
+                .setRequiredNetworkType(NetworkType.CONNECTED)
+                .build());
+        Data data = new Data.Builder()
+                .putBoolean(SyncInitWorker.INIT_DATA, false)
+                .putBoolean(SyncInitWorker.INIT_DATA, dataTime != 0)
+                .build();
+        initDataBuilder.setInputData(data);
+        WorkManager.getInstance(view.getContext().getApplicationContext())
+                .enqueueUniqueWork(Constants.INIT_DATA, ExistingWorkPolicy.REPLACE, initDataBuilder.build());
     }
 
     @Override
     public void getTheme() {
         disposable.add(
-                d2.systemSettingModule().systemSetting.getAsync()
+                d2.systemSettingModule().systemSetting.get()
                         .map(systemSettings -> {
                             String style = "";
                             String flag = "";

@@ -1,20 +1,21 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventCapture;
 
+import androidx.annotation.NonNull;
+import androidx.databinding.ObservableField;
+
 import org.dhis2.data.forms.FormSectionViewModel;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
+import org.dhis2.data.tuples.Pair;
 import org.dhis2.usescases.general.AbstractActivityContracts;
 import org.dhis2.utils.Result;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitLevel;
-import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.rules.models.RuleEffect;
 
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import androidx.annotation.NonNull;
-import androidx.databinding.ObservableField;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
@@ -34,7 +35,7 @@ public class EventCaptureContract {
 
         void setUp();
 
-        Consumer<Float> updatePercentage();
+        Consumer<Pair<Float, Float>> updatePercentage();
 
         void attemptToFinish(boolean canComplete);
 
@@ -80,15 +81,13 @@ public class EventCaptureContract {
 
         void onPreviousSection();
 
-        Observable<List<OrganisationUnitModel>> getOrgUnits();
-
         ObservableField<String> getCurrentSection();
 
         boolean isEnrollmentOpen();
 
         void onSectionSelectorClick(boolean isCurrentSection, int position, String sectionUid);
 
-        void initCompletionPercentage(FlowableProcessor<Float> integerFlowableProcessor);
+        void initCompletionPercentage(FlowableProcessor<Pair<Float, Float>> integerFlowableProcessor);
 
         void goToSection(String sectionUid);
 
@@ -164,7 +163,9 @@ public class EventCaptureContract {
 
         Single<Boolean> canReOpenEvent();
 
+        Observable<Boolean> isCompletedEventExpired(String eventUid);
         void assign(String uid, String value);
+
     }
 
 }

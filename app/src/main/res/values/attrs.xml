@@ -19,4 +19,13 @@
     <attr name="period_button" format="reference"/>
     <attr name="period_time_button" format="reference"/>
     <attr name="toast_bg" format="reference"/>
+
+    <declare-styleable name="CircularCompletionView">
+        <attr name="percentageSize" format="dimension" />
+        <attr name="strokeSize" format="dimension" />
+        <attr name="completionColor" format="color" />
+        <attr name="secondaryColor" format="color" />
+        <attr name="percentageColor" format="color" />
+        <attr name="circleColor" format="color" />
+    </declare-styleable>
 </resources>

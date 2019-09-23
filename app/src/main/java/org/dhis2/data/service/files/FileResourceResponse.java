@@ -1,9 +1,9 @@
 package org.dhis2.data.service.files;
 
 public class FileResourceResponse {
-    private FileResource response;
+    private FileResourceType response;
 
-    public FileResource getResponse() {
+    public FileResourceType getResponse() {
         return response;
     }
 }

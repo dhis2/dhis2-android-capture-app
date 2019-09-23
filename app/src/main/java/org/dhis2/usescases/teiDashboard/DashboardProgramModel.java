@@ -2,89 +2,89 @@ package org.dhis2.usescases.teiDashboard;
 
 import androidx.databinding.BaseObservable;
 
-import org.hisp.dhis.android.core.common.ObjectStyleModel;
-import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
-import org.hisp.dhis.android.core.event.EventModel;
-import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
-import org.hisp.dhis.android.core.program.ProgramModel;
-import org.hisp.dhis.android.core.program.ProgramStageModel;
-import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttributeModel;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
+import org.hisp.dhis.android.core.common.ObjectStyle;
+import org.hisp.dhis.android.core.enrollment.Enrollment;
+import org.hisp.dhis.android.core.event.Event;
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
+import org.hisp.dhis.android.core.program.Program;
+import org.hisp.dhis.android.core.program.ProgramStage;
+import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttribute;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance;
 
+import java.util.Collections;
 import java.util.List;
-import java.util.Map;
+import java.util.Objects;
 
 /**
  * QUADRAM. Created by ppajuelo on 04/12/2017.
  */
 public class DashboardProgramModel extends BaseObservable {
 
-    private TrackedEntityInstanceModel tei;
-    private List<ProgramTrackedEntityAttributeModel> trackedEntityAttributesModel;
-    private List<TrackedEntityAttributeValueModel> trackedEntityAttributeValues;
-    private List<EventModel> eventModels;
-    private EnrollmentModel currentEnrollment;
-    private List<ProgramStageModel> programStages;
-    private List<ProgramModel> enrollmentProgramModels;
-    private List<OrganisationUnitModel> orgsUnits;
-    private List<EnrollmentModel> teiEnrollments;
-    private Map<String, ObjectStyleModel> programObjectStyles;
+    private TrackedEntityInstance tei;
+    private List<ProgramTrackedEntityAttribute> trackedEntityAttributes;
+    private List<TrackedEntityAttributeValue> trackedEntityAttributeValues;
+    private List<Event> eventModels;
+    private Enrollment currentEnrollment;
+    private List<ProgramStage> programStages;
+    private List<Program> enrollmentPrograms;
+    private List<OrganisationUnit> orgsUnits;
+    private List<Enrollment> teiEnrollments;
 
     public DashboardProgramModel(
-            TrackedEntityInstanceModel tei,
-            EnrollmentModel currentEnrollment,
-            List<ProgramStageModel> programStages,
-            List<EventModel> events,
-            List<ProgramTrackedEntityAttributeModel> trackedEntityAttributeModels,
-            List<TrackedEntityAttributeValueModel> trackedEntityAttributeValues,
-            List<OrganisationUnitModel> orgsUnits,
-            List<ProgramModel> enrollmentProgramModels) {
+            TrackedEntityInstance tei,
+            Enrollment currentEnrollment,
+            List<ProgramStage> programStages,
+            List<Event> events,
+            List<ProgramTrackedEntityAttribute> trackedEntityAttributes,
+            List<TrackedEntityAttributeValue> trackedEntityAttributeValues,
+            List<OrganisationUnit> orgsUnits,
+            List<Program> enrollmentPrograms) {
 
         this.currentEnrollment = currentEnrollment;
         this.programStages = programStages;
         this.orgsUnits = orgsUnits;
-        this.enrollmentProgramModels = enrollmentProgramModels;
+        this.enrollmentPrograms = enrollmentPrograms;
         this.tei = tei;
         this.eventModels = events;
-        this.trackedEntityAttributesModel = trackedEntityAttributeModels;
+        this.trackedEntityAttributes = trackedEntityAttributes;
         this.trackedEntityAttributeValues = trackedEntityAttributeValues;
     }
 
-    public DashboardProgramModel(TrackedEntityInstanceModel tei,
-                                 List<ProgramTrackedEntityAttributeModel> trackedEntityAttributeModels,
-                                 List<TrackedEntityAttributeValueModel> trackedEntityAttributeValues,
-                                 List<OrganisationUnitModel> orgsUnits,
-                                 List<ProgramModel> enrollmentProgramModels,
-                                 List<EnrollmentModel> teiEnrollments) {
+    public DashboardProgramModel(TrackedEntityInstance tei,
+                                 List<ProgramTrackedEntityAttribute> trackedEntityAttributes,
+                                 List<TrackedEntityAttributeValue> trackedEntityAttributeValues,
+                                 List<OrganisationUnit> orgsUnits,
+                                 List<Program> enrollmentPrograms,
+                                 List<Enrollment> teiEnrollments) {
         this.tei = tei;
-        this.trackedEntityAttributesModel = trackedEntityAttributeModels;
+        this.trackedEntityAttributes = trackedEntityAttributes;
         this.trackedEntityAttributeValues = trackedEntityAttributeValues;
         this.orgsUnits = orgsUnits;
-        this.enrollmentProgramModels = enrollmentProgramModels;
+        this.enrollmentPrograms = enrollmentPrograms;
         this.teiEnrollments = teiEnrollments;
     }
 
-    public TrackedEntityInstanceModel getTei() {
+    public TrackedEntityInstance getTei() {
         return tei;
     }
 
-    public EnrollmentModel getCurrentEnrollment() {
+    public Enrollment getCurrentEnrollment() {
         return currentEnrollment;
     }
 
-    public List<ProgramStageModel> getProgramStages() {
+    public List<ProgramStage> getProgramStages() {
         return programStages;
     }
 
-    public List<OrganisationUnitModel> getOrgUnits() {
+    public List<OrganisationUnit> getOrgUnits() {
         return orgsUnits;
     }
 
-    public OrganisationUnitModel getCurrentOrgUnit() {
-        OrganisationUnitModel currentOrgUnit = null;
+    public OrganisationUnit getCurrentOrgUnit() {
+        OrganisationUnit currentOrgUnit = null;
         if (currentEnrollment != null)
-            for (OrganisationUnitModel orgUnit : orgsUnits) {
+            for (OrganisationUnit orgUnit : orgsUnits) {
                 if (currentEnrollment.organisationUnit().equals(orgUnit.uid()))
                     currentOrgUnit = orgUnit;
             }
@@ -92,42 +92,43 @@ public class DashboardProgramModel extends BaseObservable {
     }
 
     public String getAttributeBySortOrder(int sortOrder) {
-        TrackedEntityAttributeValueModel attributeValue = null;
+        TrackedEntityAttributeValue attributeValue = null;
         sortOrder--;
-        if (sortOrder < trackedEntityAttributesModel.size())
-            for (TrackedEntityAttributeValueModel attribute : trackedEntityAttributeValues)
-                if (trackedEntityAttributesModel != null &&
-                        attribute.trackedEntityAttribute().equals(trackedEntityAttributesModel.get(sortOrder).trackedEntityAttribute()))
+        if (sortOrder < trackedEntityAttributes.size())
+            for (TrackedEntityAttributeValue attribute : trackedEntityAttributeValues)
+                if (trackedEntityAttributes != null &&
+                        Objects.equals(attribute.trackedEntityAttribute(), trackedEntityAttributes.get(sortOrder).trackedEntityAttribute().uid()))
                     attributeValue = attribute;
 
 
         return attributeValue != null ? attributeValue.value() : "";
     }
 
-    public List<ProgramModel> getEnrollmentProgramModels() {
-        return enrollmentProgramModels;
+    public List<Program> getEnrollmentPrograms() {
+        Collections.sort(enrollmentPrograms, (program1, program2) -> program1.displayName().compareToIgnoreCase(program2.displayName()));
+        return enrollmentPrograms;
     }
 
-    public List<EventModel> getEvents() {
+    public List<Event> getEvents() {
         return eventModels;
     }
 
-    public ProgramModel getCurrentProgram() {
-        ProgramModel selectedProgram = null;
+    public Program getCurrentProgram() {
+        Program selectedProgram = null;
         if (currentEnrollment != null)
-            for (ProgramModel programModel : enrollmentProgramModels)
-                if (programModel.uid().equals(currentEnrollment.program()))
-                    selectedProgram = programModel;
+            for (Program program : enrollmentPrograms)
+                if (program.uid().equals(currentEnrollment.program()))
+                    selectedProgram = program;
         return selectedProgram;
     }
 
-    public List<TrackedEntityAttributeValueModel> getTrackedEntityAttributeValues() {
+    public List<TrackedEntityAttributeValue> getTrackedEntityAttributeValues() {
         return trackedEntityAttributeValues;
     }
 
-    public EnrollmentModel getEnrollmentForProgram(String uid) {
-        for (EnrollmentModel enrollment : teiEnrollments)
-            if (enrollment.program().equals(uid))
+    public Enrollment getEnrollmentForProgram(String uid) {
+        for (Enrollment enrollment : teiEnrollments)
+            if (Objects.equals(enrollment.program(), uid))
                 return enrollment;
         return null;
     }
@@ -139,13 +140,15 @@ public class DashboardProgramModel extends BaseObservable {
         return "";
     }
 
-    public void setProgramsObjectStyles(Map<String, ObjectStyleModel> stringObjectStyleMap) {
-        this.programObjectStyles = stringObjectStyleMap;
-    }
 
-    public ObjectStyleModel getObjectStyleForProgram(String programUid) {
-        if (programObjectStyles.containsKey(programUid))
-            return programObjectStyles.get(programUid);
+    public ObjectStyle getObjectStyleForProgram(String programUid) {
+        Program foundProgram = null;
+        for (Program program : enrollmentPrograms) {
+            if (programUid.equals(program.uid()))
+                foundProgram = program;
+        }
+        if (foundProgram != null && foundProgram.style() != null)
+            return foundProgram.style();
         else return null;
     }
 }

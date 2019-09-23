@@ -8,8 +8,13 @@
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.SEND_SMS" />
+    <uses-permission android:name="android.permission.RECEIVE_SMS" />
+    <uses-permission android:name="android.permission.READ_SMS" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
-    <!--<uses-permission android:name="android.permission.USE_BIOMETRIC" />-->
+    <uses-permission android:name="android.permission.USE_BIOMETRIC" />
     <!--<uses-permission android:name="android.permission.NFC"/>-->
     <!--<uses-feature android:name="android.hardware.nfc" />-->
 
@@ -56,15 +61,13 @@
             android:windowSoftInputMode="adjustPan" />
         <activity android:name=".usescases.main.MainActivity" />
         <activity android:name=".usescases.programEventDetail.ProgramEventDetailActivity" />
-        <activity android:name=".usescases.searchTrackEntity.SearchTEActivity"
-            android:configChanges="keyboardHidden|orientation|screenSize"/>
+        <activity
+            android:name=".usescases.searchTrackEntity.SearchTEActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize" />
         <activity android:name=".usescases.teiDashboard.TeiDashboardMobileActivity" />
         <activity android:name=".usescases.teiDashboard.teiDataDetail.TeiDataDetailActivity" />
         <activity android:name=".usescases.teiDashboard.eventDetail.EventDetailActivity" />
         <activity android:name=".usescases.qrScanner.QRActivity" />
-        <activity
-            android:name=".data.forms.FormActivity"
-            android:windowSoftInputMode="adjustResize" />
         <activity android:name=".data.forms.dataentry.DataEntryActivity" />
         <activity android:name=".usescases.teiDashboard.teiProgramList.TeiProgramListActivity" />
         <activity android:name=".usescases.map.MapSelectorActivity" />
@@ -87,7 +90,8 @@
 
         <activity android:name=".usescases.datasets.datasetDetail.DataSetDetailActivity" />
         <activity android:name=".usescases.datasets.datasetInitial.DataSetInitialActivity" />
-        <activity android:name=".usescases.datasets.dataSetTable.DataSetTableActivity" />
+        <activity android:name=".usescases.datasets.dataSetTable.DataSetTableActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"/>
 
         <receiver android:name=".widgets.DhisCustomLauncher">
             <intent-filter>
@@ -103,9 +107,27 @@
         <activity android:name=".usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"/>
         <activity android:name=".usescases.sync.SyncActivity" />
-        <activity android:name=".usescases.enrollment.EnrollmentActivity" />
         <activity android:name=".usescases.development.DevelopmentActivity" />
+        <activity
+            android:name=".usescases.sms.SmsSubmitActivity"
+            android:theme="@style/Theme.AppCompat.Translucent" />
+
+        <service android:name=".usescases.sms.SmsSendingService" />
         <activity android:name=".usescases.teiDashboard.nfc_data.NfcDataWriteActivity" />
+
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="@string/content_provider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
+
+        <activity android:name=".usescases.org_unit_selector.OUTreeActivity" />
+        <activity android:name=".usescases.enrollment.EnrollmentActivity"
+            android:windowSoftInputMode="adjustPan"/>
     </application>
 
 </manifest>

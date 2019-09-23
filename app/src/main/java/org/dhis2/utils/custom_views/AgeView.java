@@ -3,11 +3,9 @@ package org.dhis2.utils.custom_views;
 import android.content.Context;
 import android.text.InputFilter;
 import android.util.AttributeSet;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.DatePicker;
 
-import androidx.appcompat.app.AlertDialog;
 import androidx.databinding.ViewDataBinding;
 import androidx.lifecycle.MutableLiveData;
 
@@ -21,7 +19,6 @@ import org.dhis2.utils.DatePickerUtils;
 import org.dhis2.utils.DateUtils;
 
 import java.text.DateFormat;
-import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -34,7 +31,7 @@ import static android.text.TextUtils.isEmpty;
  */
 
 
-public class AgeView extends FieldLayout implements View.OnClickListener {
+public class AgeView extends FieldLayout implements View.OnClickListener, View.OnFocusChangeListener {
 
     private TextInputEditText date;
     private TextInputEditText day;
@@ -96,30 +93,12 @@ public class AgeView extends FieldLayout implements View.OnClickListener {
     @Override
     public void onClick(View view) {
         activate();
-        switch (view.getId()) {
-            case R.id.date_picker:
-                showCustomCalendar(view);
-                break;
-            case R.id.input_days:
-            case R.id.input_month:
-            case R.id.input_year:
-                getYearsDialog().show();
-                break;
-        }
-
+        showCustomCalendar(view);
     }
 
     private void showCustomCalendar(View view) {
 
-        Date selectedDate = null;
-        if(date.getText() != null) {
-            try {
-                selectedDate = DateUtils.uiDateFormat().parse(date.getText().toString());
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-        }
-        DatePickerUtils.getDatePickerDialog(getContext(), label, selectedDate, true, new DatePickerUtils.OnDatePickerClickListener() {
+        DatePickerUtils.getDatePickerDialog(getContext(), label, null, true, new DatePickerUtils.OnDatePickerClickListener() {
             @Override
             public void onNegativeClick() {
                 listener.onAgeSet(null);
@@ -136,36 +115,32 @@ public class AgeView extends FieldLayout implements View.OnClickListener {
         }).show();
     }
 
-    private AlertDialog getYearsDialog() {
-        View view = LayoutInflater.from(getContext()).inflate(R.layout.dialog_age, null);
-        TextInputEditText yearPicker = view.findViewById(R.id.input_year);
-        TextInputEditText monthPicker = view.findViewById(R.id.input_month);
-        TextInputEditText dayPicker = view.findViewById(R.id.input_days);
-        yearPicker.setText(year.getText());
-        monthPicker.setText(month.getText());
-        dayPicker.setText(day.getText());
-
-        return new AlertDialog.Builder(getContext(), R.style.CustomDialog)
-                .setView(view)
-                .setPositiveButton(R.string.action_accept, (dialog, which) -> handleSingleInputs(
-                        isEmpty(yearPicker.getText().toString()) ? 0 : -Integer.valueOf(yearPicker.getText().toString()),
-                        isEmpty(monthPicker.getText().toString()) ? 0 : -Integer.valueOf(monthPicker.getText().toString()),
-                        isEmpty(dayPicker.getText().toString()) ? 0 : -Integer.valueOf(dayPicker.getText().toString())))
-                .setNegativeButton(R.string.clear, (dialog, which) -> listener.onAgeSet(null))
-                .create();
-    }
-
     public void setAgeChangedListener(OnAgeSet listener) {
         this.listener = listener;
     }
 
-    protected void handleSingleInputs(int year, int month, int day) {
+    @Override
+    public void onFocusChange(View v, boolean hasFocus) {
+        if (!hasFocus)
+            switch (v.getId()) {
+                case R.id.input_days:
+                    handleSingleInputs(true);
+                case R.id.input_month:
+                case R.id.input_year:
+                    handleSingleInputs(false);
+                    break;
+            }
+        else
+            activate();
+    }
+
+    protected void handleSingleInputs(boolean finish) {
 
         Calendar calendar = Calendar.getInstance();
 
-        calendar.add(Calendar.DAY_OF_MONTH, day);
-        calendar.add(Calendar.MONTH, month);
-        calendar.add(Calendar.YEAR, year);
+        calendar.add(Calendar.DAY_OF_MONTH, isEmpty(day.getText().toString()) ? 0 : -Integer.valueOf(day.getText().toString()));
+        calendar.add(Calendar.MONTH, isEmpty(month.getText().toString()) ? 0 : -Integer.valueOf(month.getText().toString()));
+        calendar.add(Calendar.YEAR, isEmpty(year.getText().toString()) ? 0 : -Integer.valueOf(year.getText().toString()));
         calendar.set(Calendar.HOUR_OF_DAY, 0);
         calendar.set(Calendar.MINUTE, 0);
         calendar.set(Calendar.SECOND, 0);
@@ -174,7 +149,8 @@ public class AgeView extends FieldLayout implements View.OnClickListener {
         String birthDate = DateUtils.uiDateFormat().format(calendar.getTime());
         if (!date.getText().toString().equals(birthDate)) {
             date.setText(birthDate);
-            listener.onAgeSet(calendar.getTime());
+            if (finish)
+                listener.onAgeSet(calendar.getTime());
         }
     }
 
@@ -218,14 +194,16 @@ public class AgeView extends FieldLayout implements View.OnClickListener {
                 Timber.e(e);
             }
 
-        String result = dateFormat.format(initialDate);
+        if(initialDate != null) {
+            String result = dateFormat.format(initialDate);
 
-        int[] dateDifference = DateUtils.getDifference(initialDate, Calendar.getInstance().getTime());
-        day.setText(String.valueOf(dateDifference[2]));
-        month.setText(String.valueOf(dateDifference[1]));
-        year.setText(String.valueOf(dateDifference[0]));
+            int[] dateDifference = DateUtils.getDifference(initialDate, Calendar.getInstance().getTime());
+            day.setText(String.valueOf(dateDifference[2]));
+            month.setText(String.valueOf(dateDifference[1]));
+            year.setText(String.valueOf(dateDifference[0]));
 
-        date.setText(result);
+            date.setText(result);
+        }
     }
 
 
@@ -249,11 +227,11 @@ public class AgeView extends FieldLayout implements View.OnClickListener {
         date.setOnFocusChangeListener(this::onFocusChanged);
         date.setOnClickListener(this);
 
-        day.setFocusable(false);
+        day.setFocusable(true);
         day.setClickable(true);
-        month.setFocusable(false);
+        month.setFocusable(true);
         month.setClickable(true);
-        year.setFocusable(false);
+        year.setFocusable(true);
         year.setClickable(true);
 
         day.setFilters(new InputFilter[]{new InputFilter.LengthFilter(2)});
@@ -274,9 +252,9 @@ public class AgeView extends FieldLayout implements View.OnClickListener {
             month.requestFocus();
             return true;
         });
-        day.setOnClickListener(this);
-        month.setOnClickListener(this);
-        year.setOnClickListener(this);
+        day.setOnFocusChangeListener(this);
+        month.setOnFocusChangeListener(this);
+        year.setOnFocusChangeListener(this);
     }
 
     public void setEditable(Boolean editable) {

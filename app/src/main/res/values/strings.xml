@@ -136,7 +136,10 @@
     <!--DataSet initial-->
     <string name="report_period">Report period</string>
     <string name="cat_option">Cat option</string>
-
+    <string name="field_required">If you set a value, the whole row needs all of values to complete the Data Set.</string>
+    <string name="field_mandatory">Some values required are missing. You need set mandatory values to complete the Data Set.</string>
+    <string name="datavalue_saved">Value is saved!</string>
+    <string name="there_is_no_available_period">There is no available periods to select.</string>
     <!--Event Detail-->
     <string name="event_date">Event date</string>
     <string name="due_date">Due date</string>
@@ -147,6 +150,7 @@
     <string name="delete_event">Delete event</string>
     <string name="confirm_delete_event">Are you sure that you want to delete this event?</string>
     <string name="event_was_deleted">Event deleted successfully</string>
+    <string name="total">Total</string>
 
     <!--TEI Enrollment list-->
     <string name="enrollment_list">Enrollment List</string>
@@ -197,6 +201,15 @@
     <string name="last_data_sync_date">Last sync on: %s</string>
     <string name="last_metadata_sync_date">Last sync on: %s</string>
     <string name="refill_reserved_values">Refill</string>
+    <string name="settings_sms_module_title">SMS module:</string>
+    <string name="settings_sms_receiver_number">SMS gateway</string>
+    <string name="settings_sms_result_sender_number">SMS result sender</string>
+    <string name="settings_sms_result_timeout">SMS result timeout</string>
+    <string name="settings_sms_result_timeout_hint">seconds</string>
+    <string name="settings_sms_result_sender_hint">number</string>
+    <string name="settings_sms_receiver_number_hint">number</string>
+    <string name="settings_sms_module_switch">Enable SMS submission</string>
+    <string name="settings_sms_response_wait_switch">Wait for SMS result response</string>
     <!-- SEARCH TRACK ENTITY -->
 
     <!--region SETTINCS-->
@@ -211,6 +224,8 @@
     <string name="settingsDeleteLocalData_descr">All Capture App data stored in your device will be deleted. Data which is not synced to the server will be lost.</string>
     <string name="settingsReset">Reset app data &amp; configuration</string>
     <string name="settingsReset_descr">Your configuration and App data stored in the device will be deleted. You will be asked to log in again and data which is not synced to the server will be lost.</string>
+    <string name="settingsSms">SMS Settings</string>
+    <string name="settingsSms_descr">Check and edit parameters related to the sms gateway</string>
     <!--endregion-->
 
     <string name="enrollmment_date">Enrollment date</string>
@@ -236,6 +251,8 @@
     <string name="missing_mandatory_fields_go_back">Delete and go back</string>
     <string name="error_fields">Some fields have errors:\n%s\nPlease, check them.</string>
     <string name="missing_mandatory_fields_finish">Some mandatory fields are missing. You can finish data entry and exit, but the event cannot be completed.</string>
+    <string name="enrollment_coordinates">Enrollment coordinates</string>
+    <string name="tei_coordinates">Coordinates for the</string>
 
     <!--EVENT SUMMARY-->
     <string name="section_list">Section list</string>
@@ -450,6 +467,8 @@
     <string name="biometrics_first_use_text">To be able to log in using the fingerprint scanner you first need to use the default way</string>
     <string name="biometrics_security_title">Biometric Security</string>
     <string name="biometrics_security_text">Use your fingerprint to log in with this user?</string>
+    <string name="tab_tables">Tables</string>
+    <string name="table">Table</string>
     <string name="login_https">https://</string>
     <string name="delete_local_data_message">Non synchronized data will be lost. Do you really want to continue?</string>
     <string name="local_data_accept">Accept</string>
@@ -479,6 +498,9 @@
     <string name="no_conflicts_synced_message">You are up to date! All your data is sent to the server.</string>
     <string name="relationship_error_recursive">You can\'t relate a record with itself</string>
     <string name="unblock_session">Unblock session</string>
+    <string name="data_set_closed">Close</string>
+    <string name="data_set_open">Open</string>
+    <string name="unsupported_value_type">Unsupported value type</string>
     <string name="change_calendar_view">Change calendar view</string>
     <string name="data_every_fifteen_minutes">15 minutes</string>
     <string name="data_every_hour">Every hour</string>
@@ -495,4 +517,55 @@
     <string name="uncomplete_authority_error">You do not have the authority to re-open this event</string>
     <string name="adjusting_form">Adjusting form…</string>
 
+    <string name="sms_receiver_number">Receiver number</string>
+    <string name="sms_amount_question">Do you accept to send %d messages?</string>
+    <string name="sms_sending">Sending %1$d/%2$d</string>
+    <string name="sms_waiting_amount_confirm">Waiting amount confirmation - %d</string>
+    <string name="sms_all_sent">All sent</string>
+    <string name="sms_submission_completed">Submission completed</string>
+    <string name="sms_waiting_confirmation">Waiting for confirmation SMS</string>
+    <string name="sms_waiting_timeout">Not received confirmation message</string>
+    <string name="sms_confirmed">Confirmation received</string>
+    <string name="sms_error">Error sending</string>
+    <string name="sms_error_item_not_ready">Data item not ready to be sent</string>
+    <string name="sms_error_no_network">No network</string>
+    <string name="sms_error_no_check_network_permission">No check network permission</string>
+    <string name="sms_error_no_receive_sms_permission">No receive sms permission</string>
+    <string name="sms_error_no_send_sms_permission">No send permission</string>
+    <string name="sms_error_no_gateway_set">No gateway set</string>
+    <string name="sms_error_no_user_login">User not logged in</string>
+    <string name="sms_error_module_disabled">SMS module is disabled</string>
+    <string name="sms_error_ongoing_sunmission">Another SMS submission ongoing</string>
+    <string name="sms_metadata_empty">SMS module not initiated, not found required metadata</string>
+    <string name="sms_completed">Completed</string>
+    <string name="sms_count_error">SMS count not accepted</string>
+    <string name="sms_state_started">Started sms submission</string>
+    <string name="sms_state_converted">Data read and converted. Submission id: %d</string>
+    <string name="sms_general_error">Error sending sms submission</string>
+    <string name="sms_title_enrollment">SMS TEI registration and enrollment</string>
+    <string name="sms_title_event">SMS event submission</string>
+    <string name="sms_title_data_set">SMS data set submission</string>
+    <string name="sms_bar_state_sending">In progress</string>
+    <string name="sms_bar_state_sent">Sent</string>
+    <string name="sms_bar_state_failed">Failed</string>
+
+    <string name="start_sync_granular">Starting synchronization.</string>
+    <string name="syncing">Synchronizing...</string>
+    <string name="end_sync_granular">Synchronization completed.</string>
+    <string name="error_sync">Error has happened during synchronization.</string>
+    <string name="cancel_sync">Cancelled synchronization.</string>
+
+    <string name="copied_text">Copied</string>
+    <string name="image_selected">Image selected</string>
+    <string name="show_in_map">Show in map</string>
+    <string name="show_list">Show list</string>
+    
+    <!--region TRACKER IMPORT CONFLICT MESSAGES-->
+    <string name="value_required_but_not_provided">%s is mandatory but has not been provided.</string>
+    <string name="polygon_captured">Polygon captured</string>
+    <string name="polygon">Polygon</string>
+    <string name="map_layers">Map layers</string>
+    <!--endregion-->
+
+    <string name="wrong_pattern">It is not a correct format.</string>
 </resources>

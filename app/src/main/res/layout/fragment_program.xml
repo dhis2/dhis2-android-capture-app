@@ -15,6 +15,7 @@
         android:id="@+id/drawer_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@drawable/ic_front_backdrop_bg"
         android:clipToPadding="false"
         tools:openDrawer="end">
 
@@ -45,8 +46,8 @@
                         android:background="?attr/period_button"
                         android:onClick="@{()->presenter.onTimeButtonClick()}"
                         android:padding="7dp"
-                        app:srcCompat="@drawable/ic_view_none"
                         android:tint="@color/colorGreyDefault"
+                        app:srcCompat="@drawable/ic_view_none"
                         tools:ignore="ContentDescription" />
 
                     <TextView
@@ -91,10 +92,55 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/filter"
+                    android:visibility="gone"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="8dp">
+
+
+                    <ImageView
+                        android:id="@+id/clear_filter"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_marginEnd="16dp"
+                        android:layout_marginBottom="8dp"
+                        android:onClick="@{()->presenter.clearFilterClick()}"
+                        app:layout_constraintBottom_toTopOf="@+id/view"
+                        app:layout_constraintEnd_toStartOf="@id/close_filter"
+                        app:layout_constraintTop_toTopOf="parent"
+                        android:tint="?colorPrimary"
+                        app:srcCompat="@drawable/ic_refresh" />
+
+                    <ImageView
+                        android:id="@+id/close_filter"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_marginEnd="26dp"
+                        android:layout_marginBottom="8dp"
+                        android:onClick="@{()->presenter.showHideFilterClick()}"
+                        app:layout_constraintBottom_toTopOf="@+id/view"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        android:tint="?colorPrimary"
+                        app:srcCompat="@drawable/ic_arrow_up" />
+
+                    <View
+                        android:id="@+id/view"
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@color/greyish"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"/>
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/program_recycler"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:layout_below="@+id/filter"
                     android:clipToPadding="false"
                     app:initGrid="@{false}"
                     app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
@@ -129,7 +175,8 @@
             android:layout_gravity="end"
             android:layout_marginStart="-50dp"
             android:background="@color/white_faf"
-            app:itemTextColor="?colorPrimary">
+            app:itemTextColor="?colorPrimary"
+            tools:visibility="gone">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"

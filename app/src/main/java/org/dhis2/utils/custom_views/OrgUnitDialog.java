@@ -2,25 +2,29 @@ package org.dhis2.utils.custom_views;
 
 import android.app.Dialog;
 import android.content.Context;
-import androidx.databinding.DataBindingUtil;
+import android.content.DialogInterface;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.DialogFragment;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.databinding.DataBindingUtil;
+import androidx.fragment.app.DialogFragment;
 
 import com.unnamed.b.atv.model.TreeNode;
 import com.unnamed.b.atv.view.AndroidTreeView;
 
 import org.dhis2.R;
 import org.dhis2.databinding.DialogOrgunitBinding;
-import org.dhis2.usescases.main.program.OrgUnitHolder;
 import org.dhis2.utils.OrgUnitUtils;
-import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -34,9 +38,12 @@ public class OrgUnitDialog extends DialogFragment {
     static OrgUnitDialog instace;
     private View.OnClickListener possitiveListener;
     private View.OnClickListener negativeListener;
+    private TreeNode.TreeNodeClickListener nodeClickListener;
     private String title;
-    private List<OrganisationUnitModel> myOrgs;
+    private List<OrganisationUnit> myOrgs;
     private Context context;
+    private TreeNode treeNode;
+    private String programUid;
 
     public static OrgUnitDialog getInstace() {
         if (instace == null) {
@@ -66,6 +73,11 @@ public class OrgUnitDialog extends DialogFragment {
         return this;
     }
 
+    public OrgUnitDialog setNodeClickListener(TreeNode.TreeNodeClickListener listener) {
+        this.nodeClickListener = listener;
+        return this;
+    }
+
     public OrgUnitDialog setMultiSelection(boolean multiSelection) {
         isMultiSelection = multiSelection;
         return this;
@@ -76,8 +88,18 @@ public class OrgUnitDialog extends DialogFragment {
         return this;
     }
 
-    public OrgUnitDialog setOrgUnits(List<OrganisationUnitModel> orgUnits) {
+    public OrgUnitDialog setOrgUnits(List<OrganisationUnit> orgUnits) {
         this.myOrgs = orgUnits;
+        return this;
+    }
+
+    public OrgUnitDialog setTreeNode(TreeNode treeNode) {
+        this.treeNode = treeNode;
+        return this;
+    }
+
+    public OrgUnitDialog setProgram(String programUid) {
+        this.programUid = programUid;
         return this;
     }
 
@@ -104,7 +126,30 @@ public class OrgUnitDialog extends DialogFragment {
         binding.title.setText(title);
         binding.acceptButton.setOnClickListener(possitiveListener);
         binding.clearButton.setOnClickListener(negativeListener);
-        renderTree(myOrgs);
+        binding.search.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                //empty
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                List<OrganisationUnit> searchOrgUnits = new ArrayList<>();
+                for (OrganisationUnit orgUnit : myOrgs)
+                    if (orgUnit.name().toLowerCase().contains(s.toString().toLowerCase()))
+                        searchOrgUnits.add(orgUnit);
+
+                renderTree(searchOrgUnits);
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                //empty
+            }
+        });
+
+        if (myOrgs != null)
+            renderTree(myOrgs);
         setRetainInstance(true);
         return binding.getRoot();
     }
@@ -113,41 +158,47 @@ public class OrgUnitDialog extends DialogFragment {
         return isMultiSelection;
     }
 
-    private void renderTree(@NonNull List<OrganisationUnitModel> myOrgs) {
+    private void renderTree(@NonNull List<OrganisationUnit> myOrgs) {
 
         binding.treeContainer.removeAllViews();
-        treeView = new AndroidTreeView(getContext(), OrgUnitUtils.renderTree(context, myOrgs, isMultiSelection));
+        treeView = new AndroidTreeView(getContext(), OrgUnitUtils.renderTree_2(context, myOrgs, isMultiSelection, programUid));
         treeView.deselectAll();
         treeView.setDefaultContainerStyle(R.style.TreeNodeStyle, false);
         treeView.setSelectionModeEnabled(true);
         binding.treeContainer.addView(treeView.getView());
-        if (myOrgs.size() < 30)
+        if (myOrgs.size() < 25)
             treeView.expandAll();
 
-        treeView.setDefaultNodeClickListener((node, value) -> {
-            for (TreeNode treeNode : node.getViewHolder().getTreeView().getSelected())
-                ((OrgUnitHolder) treeNode.getViewHolder()).update();
-            ((OrgUnitHolder) node.getViewHolder()).update();
-        });
+        treeView.setDefaultNodeClickListener(nodeClickListener);
     }
 
     public String getSelectedOrgUnit() {
-        return treeView.getSelected() != null && !treeView.getSelected().isEmpty() ? ((OrganisationUnitModel) treeView.getSelected().get(0).getValue()).uid() : "";
+        return treeView.getSelected() != null && !treeView.getSelected().isEmpty() ? ((OrganisationUnit) treeView.getSelected().get(0).getValue()).uid() : "";
     }
 
     public String getSelectedOrgUnitName() {
-        return treeView.getSelected() != null && !treeView.getSelected().isEmpty() ? ((OrganisationUnitModel) treeView.getSelected().get(0).getValue()).displayName() : "";
+        return treeView.getSelected() != null && !treeView.getSelected().isEmpty() ? ((OrganisationUnit) treeView.getSelected().get(0).getValue()).displayName() : "";
     }
 
-    public OrganisationUnitModel getSelectedOrgUnitModel() {
-        if(treeView.getSelected().size() == 0)
+    public OrganisationUnit getSelectedOrgUnitModel() {
+        if (treeView.getSelected().size() == 0)
             return null;
-        return ((OrganisationUnitModel) treeView.getSelected().get(0).getValue());
+        return ((OrganisationUnit) treeView.getSelected().get(0).getValue());
+    }
+
+    public AndroidTreeView getTreeView() {
+        return treeView;
     }
 
     @Override
     public void dismiss() {
         instace = null;
         super.dismiss();
+    }
+
+    @Override
+    public void onCancel(@NonNull DialogInterface dialog) {
+        instace = null;
+        super.onCancel(dialog);
     }
 }

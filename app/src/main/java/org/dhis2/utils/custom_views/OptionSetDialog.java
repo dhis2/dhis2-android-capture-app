@@ -14,7 +14,6 @@ import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 
 import com.jakewharton.rxbinding2.widget.RxTextView;
 
@@ -44,7 +43,7 @@ public class OptionSetDialog extends DialogFragment {
     public static final String TAG = OptionSetDialog.class.getName();
     private final List<String> optionsToHide;
     private final List<String> optionGroupsToHide;
-
+    private final List<String> optionGroupsToShow;
     private CompositeDisposable disposable;
     private OptionSetAdapter adapter;
     private SpinnerViewModel optionSet;
@@ -62,6 +61,7 @@ public class OptionSetDialog extends DialogFragment {
         this.clearListener = clearListener;
         this.optionsToHide = view.getOptionsToHide() != null ? view.getOptionsToHide() : new ArrayList<>();
         this.optionGroupsToHide = view.getOptionGroupsToHide() != null ? view.getOptionGroupsToHide() : new ArrayList<>();
+        this.optionGroupsToShow = view.getOptionGroupsToShow() != null ? view.getOptionGroupsToShow() : new ArrayList<>();
     }
 
     @Override
@@ -115,16 +115,31 @@ public class OptionSetDialog extends DialogFragment {
                             .byOptionSetUid().eq(optionSet.optionSet());
 
                     List<String> finalOptionsToHide = new ArrayList<>();
+                    List<String> finalOptionsToShow = new ArrayList<>();
+
                     if (!optionsToHide.isEmpty())
                         finalOptionsToHide.addAll(optionsToHide);
+
+                    if(!optionGroupsToShow.isEmpty()){
+                        for(String groupUid: optionGroupsToShow){
+                            finalOptionsToShow.addAll(
+                              UidsHelper.getUidsList(d2.optionModule().optionGroups.withOptions().uid(groupUid).blockingGet().options())
+                            );
+                        }
+                    }
 
                     if (!optionGroupsToHide.isEmpty()) {
                         for (String groupUid : optionGroupsToHide) {
                             finalOptionsToHide.addAll(
-                                    UidsHelper.getUidsList(d2.optionModule().optionGroups.withOptions().uid(groupUid).get().options())
+                                    UidsHelper.getUidsList(d2.optionModule().optionGroups.withOptions().uid(groupUid).blockingGet().options())
                             );
                         }
                     }
+
+                    if(!finalOptionsToShow.isEmpty())
+                        optionRepository = optionRepository
+                                .byUid().in(finalOptionsToShow);
+
                     if (!finalOptionsToHide.isEmpty())
                         optionRepository = optionRepository
                                 .byUid().notIn(finalOptionsToHide);

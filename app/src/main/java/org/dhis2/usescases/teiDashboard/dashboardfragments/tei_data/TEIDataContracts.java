@@ -7,10 +7,10 @@ import org.dhis2.usescases.general.AbstractActivityContracts;
 import org.dhis2.usescases.teiDashboard.DashboardProgramModel;
 import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
-import org.hisp.dhis.android.core.event.EventModel;
+import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.event.EventStatus;
-import org.hisp.dhis.android.core.program.ProgramModel;
-import org.hisp.dhis.android.core.program.ProgramStageModel;
+import org.hisp.dhis.android.core.program.Program;
+import org.hisp.dhis.android.core.program.ProgramStage;
 
 import java.util.List;
 
@@ -24,9 +24,9 @@ public class TEIDataContracts {
 
     public interface View extends AbstractActivityContracts.View {
 
-        Consumer<List<EventModel>> setEvents();
+        Consumer<List<Event>> setEvents();
 
-        Consumer<ProgramStageModel> displayGenerateEvent();
+        Consumer<ProgramStage> displayGenerateEvent();
 
         Consumer<Single<Boolean>> areEventsCompleted();
 
@@ -49,6 +49,8 @@ public class TEIDataContracts {
         void openEventInitial(Intent intent);
 
         void openEventCapture(Intent intent);
+
+        void showTeiImage(String fileName);
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter {
@@ -57,15 +59,13 @@ public class TEIDataContracts {
 
         void getTEIEvents();
 
-        void getCatComboOptions(EventModel event);
+        void getCatComboOptions(Event event);
 
         void setDefaultCatOptCombToEvent(String eventUid);
 
         void changeCatOption(String eventUid, String catOptionComboUid);
 
         void areEventsCompleted();
-
-//        void displayGenerateEvent(String eventUid);
 
         void displayGenerateEvent(String eventUid);
 
@@ -83,7 +83,7 @@ public class TEIDataContracts {
 
         void setDashboardProgram(DashboardProgramModel dashboardModel);
 
-        void setProgram(ProgramModel program);
+        void setProgram(Program program);
 
         void showDescription(String description);
     }

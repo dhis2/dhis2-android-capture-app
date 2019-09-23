@@ -257,8 +257,6 @@
   <string name="event_completed_title">ព្រឹត្តិការណ៏បានបញ្ចប់</string>
   <string name="event_completed_message">គ្រប់ព្រឹត្តិការណ៏ទាំងអស់នៅក្នុងកម្មវិធីនេះបានបញ្ចប់។ តើអ្នកចង់បិទកម្មវិធីនេះទេ?</string>
   <string name="check_event">ត្រួតពិនិត្យ</string>
-  <string name="burmesse_test">" "</string>
-  <string name="chinesse_test">" "</string>
   <string name="menu_home">ផ្ទាំងដើម</string>
   <string name="appwidget_text">ឧទាហរណ៏</string>
   <string name="add_widget">បន្ថែម Widget</string>
@@ -267,10 +265,7 @@
   <string name="tuto_settings_2">...ការកំណត់​រចនាសម្ព័ន្ធរបស់អ្នក...</string>
   <string name="tuto_settings_3">...កំណត់ទំហំផ្ទុកក្នុងម៉ាស៊ីនរបស់អ្នក...</string>
   <string name="tuto_settings_4">...រឺ លុបគ្រប់យ៉ាងដើម្បីចាប់ផ្ដើមឡើងវិញ</string>
-  <string name="tuto_search_1">ស្វែងរកអង្គភាពរបស់អ្នកបានទាំងនៅក្នុងអង្គចងចាំខាងក្នុង និង នៅលើម៉ាស៊ីនមេ</string>
   <string name="tuto_search_2">អ្នកអាចផ្លាស់ប្ដូរទៅកម្មវិធីផ្សេងទៀត</string>
-  <string name="tuto_search_3">បន្ថែមអង្គភាពថ្មី</string>
-  <string name="tuto_search_4">ចុចទីនេះដើម្បីចាប់ផ្ដើមឡើងវិញ</string>
   <string name="tuto_dashboard_1">នេះគឺជាផ្ទាំងបង្ហាញព៌ត័មានរបស់អង្គភាព</string>
   <string name="tuto_dashboard_2">មើលព័ត៌មានប្រវត្តិរូបរបស់អង្គភាព...</string>
   <string name="tuto_dashboard_3">...ចែករំលែកព៌ត័មានតាមរយៈ QR រឹ SMS...</string>

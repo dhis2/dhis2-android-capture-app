@@ -9,8 +9,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.databinding.DataBindingUtil;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.DividerItemDecoration;
+
 import com.google.gson.Gson;
 
+import org.dhis2.App;
 import org.dhis2.R;
 import org.dhis2.databinding.FragmentJiraBinding;
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
@@ -22,12 +30,6 @@ import org.dhis2.utils.jira.OnJiraIssueClick;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.databinding.DataBindingUtil;
-import androidx.lifecycle.ViewModelProviders;
-import androidx.recyclerview.widget.DividerItemDecoration;
 
 import static android.text.TextUtils.isEmpty;
 

@@ -6,37 +6,25 @@ import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel;
-import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.utils.Result;
 import org.dhis2.utils.RulesActionCallbacks;
 import org.dhis2.utils.RulesUtilsProvider;
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitLevel;
-import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
-import org.hisp.dhis.rules.models.RuleAction;
-import org.hisp.dhis.rules.models.RuleActionAssign;
-import org.hisp.dhis.rules.models.RuleActionCreateEvent;
-import org.hisp.dhis.rules.models.RuleActionErrorOnCompletion;
-import org.hisp.dhis.rules.models.RuleActionHideField;
-import org.hisp.dhis.rules.models.RuleActionHideOption;
-import org.hisp.dhis.rules.models.RuleActionHideOptionGroup;
-import org.hisp.dhis.rules.models.RuleActionHideSection;
-import org.hisp.dhis.rules.models.RuleActionSetMandatoryField;
 import org.hisp.dhis.rules.models.RuleActionShowError;
-import org.hisp.dhis.rules.models.RuleActionShowWarning;
-import org.hisp.dhis.rules.models.RuleActionWarningOnCompletion;
 import org.hisp.dhis.rules.models.RuleEffect;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
-import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.processors.FlowableProcessor;
 import io.reactivex.processors.PublishProcessor;
@@ -61,15 +49,13 @@ final class DataEntryPresenterImpl implements DataEntryPresenter, RulesActionCal
     private final SchedulerProvider schedulerProvider;
 
     @NonNull
-    private final MetadataRepository metadataRepository;
-    @NonNull
     private final CompositeDisposable disposable;
     private final RulesUtilsProvider ruleUtils;
     private DataEntryView dataEntryView;
     private List<String> optionsToHide = new ArrayList<>();
     private List<String> optionsGroupsToHide = new ArrayList<>();
     private FlowableProcessor<RowAction> assignProcessor;
-
+    private Map<String, List<String>> optionsGroupToShow = new HashMap<>();
     @Override
     public String getLastFocusItem() {
         return lastFocusItem;
@@ -85,14 +71,12 @@ final class DataEntryPresenterImpl implements DataEntryPresenter, RulesActionCal
     DataEntryPresenterImpl(@NonNull DataEntryStore dataEntryStore,
                            @NonNull DataEntryRepository dataEntryRepository,
                            @NonNull RuleEngineRepository ruleEngineRepository,
-                           @NonNull SchedulerProvider schedulerProvider,
-                           @NonNull MetadataRepository metadataRepository, RulesUtilsProvider ruleUtils) {
+                           @NonNull SchedulerProvider schedulerProvider, RulesUtilsProvider ruleUtils) {
         this.dataEntryStore = dataEntryStore;
         this.dataEntryRepository = dataEntryRepository;
         this.ruleEngineRepository = ruleEngineRepository;
         this.schedulerProvider = schedulerProvider;
         this.disposable = new CompositeDisposable();
-        this.metadataRepository = metadataRepository;
         this.assignProcessor = PublishProcessor.create();
         this.ruleUtils = ruleUtils;
 
@@ -115,12 +99,13 @@ final class DataEntryPresenterImpl implements DataEntryPresenter, RulesActionCal
         disposable.add(dataEntryView.rowActions().onBackpressureBuffer()
                 .switchMap(rowAction -> dataEntryStore.checkUnique(rowAction.id(), rowAction.value())
                         .filter(checkPass -> checkPass) //If not unique
-                        .map(checkPass->rowAction)) //save value
+                        .map(checkPass -> rowAction)) //save value
                 .switchMap(action -> {
                             if (action.lastFocusPosition() != null && action.lastFocusPosition() >= 0) { //Triggered by form field
                                 this.lastFocusItem = action.id();
                             }
                             ruleEngineRepository.updateRuleAttributeMap(action.id(), action.value());
+                            onAttach(dataEntryView);
                             return dataEntryStore.save(action.id(), action.value()).
                                     map(result -> Trio.create(result, action.id(), action.value()));
                         }
@@ -168,7 +153,7 @@ final class DataEntryPresenterImpl implements DataEntryPresenter, RulesActionCal
 
     @NonNull
     @Override
-    public Observable<List<OrganisationUnitModel>> getOrgUnits() {
+    public Observable<List<OrganisationUnit>> getOrgUnits() {
         return dataEntryRepository.getOrgUnits();
     }
 
@@ -188,13 +173,16 @@ final class DataEntryPresenterImpl implements DataEntryPresenter, RulesActionCal
 
         optionsToHide.clear();
         optionsGroupsToHide.clear();
-
+        optionsGroupToShow.clear();
         Map<String, FieldViewModel> fieldViewModels = toMap(viewModels);
         ruleUtils.applyRuleEffects(fieldViewModels, calcResult, this);
 
         for (FieldViewModel fieldViewModel : fieldViewModels.values())
-            if (fieldViewModel instanceof SpinnerViewModel)
+            if (fieldViewModel instanceof SpinnerViewModel) {
                 ((SpinnerViewModel) fieldViewModel).setOptionsToHide(optionsToHide, optionsGroupsToHide);
+                if(optionsGroupToShow.keySet().contains(fieldViewModel.uid()))
+                    ((SpinnerViewModel) fieldViewModel).setOptionGroupsToShow(optionsGroupToShow.get(fieldViewModel.uid()));
+            }
 
         return new ArrayList<>(fieldViewModels.values());
 
@@ -255,8 +243,14 @@ final class DataEntryPresenterImpl implements DataEntryPresenter, RulesActionCal
     }
 
     @Override
-    public void setOptionGroupToHide(String optionGroupUid) {
-        optionsGroupsToHide.add(optionGroupUid);
+    public void setOptionGroupToHide(String optionGroupUid, boolean toHide, String field) {
+        if (toHide)
+            optionsGroupsToHide.add(optionGroupUid);
+        else if(!optionsGroupsToHide.contains(optionGroupUid))//When combined with show option group the hide option group takes precedence.
+            if(optionsGroupToShow.get(field) != null)
+                optionsGroupToShow.get(field).add(optionGroupUid);
+            else
+                optionsGroupToShow.put(field, Collections.singletonList(optionGroupUid));
 
     }
 

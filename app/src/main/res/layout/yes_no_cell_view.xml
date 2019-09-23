@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <data>
+
+        <import type="android.view.View" />
+
+        <variable
+            name="label"
+            type="java.lang.String" />
+
+        <variable
+            name="description"
+            type="java.lang.String" />
+    </data>
+
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/default_cell_height"
+        android:gravity="center">
+
+        <RadioGroup
+            android:id="@+id/radiogroup"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:orientation="horizontal"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/clearSelection"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <RadioButton
+                android:id="@+id/yes"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="16dp"
+                android:checked="false"
+                android:text="@string/yes"
+                android:textColor="@color/text_black_333"
+                app:buttonTint="@color/text_black_333" />
+
+            <RadioButton
+                android:id="@+id/no"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="false"
+                android:text="@string/no"
+                android:textColor="@color/text_black_333"
+                app:buttonTint="@color/text_black_333" />
+
+        </RadioGroup>
+
+        <ImageView
+            android:id="@+id/clearSelection"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:tint="@color/icon_color"
+            app:layout_constraintBottom_toBottomOf="@+id/radiogroup"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/radiogroup"
+            app:layout_constraintTop_toTopOf="@+id/radiogroup"
+            app:srcCompat="@drawable/ic_clear" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

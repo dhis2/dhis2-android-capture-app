@@ -6,12 +6,13 @@
     <data>
 
         <import type="android.view.View" />
+        <import type="org.hisp.dhis.android.core.common.FeatureType" />
 
         <import type="org.hisp.dhis.android.core.enrollment.EnrollmentStatus" />
 
         <variable
             name="program"
-            type="org.hisp.dhis.android.core.program.ProgramModel" />
+            type="org.hisp.dhis.android.core.program.Program" />
 
         <variable
             name="dashboardModel"
@@ -24,6 +25,14 @@
         <variable
             name="enrollmentStatus"
             type="EnrollmentStatus" />
+
+        <variable
+            name="enrollmentDate"
+            type="java.util.Date" />
+
+        <variable
+            name="incidentDate"
+            type="java.util.Date" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -167,7 +176,7 @@
                                 android:id="@+id/program_lock"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                app:enrolmentIcon='@{dashboardModel.currentEnrollment.enrollmentStatus()}'
+                                app:enrolmentIcon='@{dashboardModel.currentEnrollment.status()}'
                                 app:layout_constraintEnd_toEndOf="parent"
                                 app:layout_constraintStart_toStartOf="parent"
                                 app:srcCompat="@drawable/ic_lock_open_green"
@@ -184,7 +193,7 @@
                                 android:textColor="#787878"
                                 android:textSize="14sp"
                                 android:textStyle="normal"
-                                app:enrolmentText='@{dashboardModel.currentEnrollment.enrollmentStatus()}'
+                                app:enrolmentText='@{dashboardModel.currentEnrollment.status()}'
                                 app:layout_constraintEnd_toEndOf="@id/program_lock"
                                 app:layout_constraintStart_toStartOf="@id/program_lock"
                                 app:layout_constraintTop_toBottomOf="@id/program_lock"
@@ -214,6 +223,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="10dp"
+                            android:layout_marginTop="10dp"
                             android:text='@{program.enrollmentDateLabel(),default="Enrolment date"}'
                             android:textColor="@color/icon_color"
                             android:textSize="14sp"
@@ -226,35 +236,39 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="10dp"
+                            android:layout_marginTop="10dp"
                             android:text="@string/enrolling_ou"
                             android:textColor="@color/icon_color"
                             android:textSize="14sp"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toBottomOf="@id/enrollment_date_label" />
 
-                        <TextView
+                        <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/incident_date"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:layout_marginStart="10dp"
+                            android:focusable="false"
                             android:gravity="end"
+                            android:onClick="@{() -> presenter.onIncidentDateClick(incidentDate)}"
+                            android:paddingTop="0dp"
                             android:textColor="@color/gray_444"
                             android:textSize="14sp"
-                            app:date="@{dashboardModel.currentEnrollment.incidentDate ()}"
+                            app:date="@{incidentDate}"
                             app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintStart_toEndOf="@id/incident_date_label"
                             app:layout_constraintTop_toTopOf="@id/incident_date_label"
                             tools:text="DD/MM/YYYY" />
 
-                        <TextView
+                        <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/enrollment_date"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:layout_marginStart="10dp"
                             android:gravity="end"
+                            android:focusable="false"
                             android:textColor="@color/gray_444"
                             android:textSize="14sp"
-                            app:date="@{dashboardModel.currentEnrollment.enrollmentDate()}"
+                            android:paddingTop="0dp"
+                            android:onClick="@{() -> presenter.onEnrollmentDateClick(enrollmentDate)}"
+                            app:date="@{enrollmentDate}"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintTop_toTopOf="@id/enrollment_date_label"
                             tools:text="DD/MM/YYYY" />
@@ -273,88 +287,17 @@
                     </androidx.constraintlayout.widget.ConstraintLayout>
                 </com.google.android.flexbox.FlexboxLayout>
 
-                <LinearLayout
-                    android:id="@+id/coordinates_layout"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="5dp"
-                    android:baselineAligned="false"
-                    android:orientation="horizontal"
-                    android:paddingStart="12dp"
-                    android:paddingEnd="12dp"
-                    android:visibility="@{program!=null &amp;&amp; program.captureCoordinates()?View.VISIBLE:View.GONE}">
+                <org.dhis2.utils.custom_views.CoordinatesView
+                    android:id="@+id/tei_coordinates_view"
+                    android:layout_width="wrap_content"
+                    android:visibility="gone"
+                    android:layout_height="wrap_content" />
 
-                    <com.google.android.material.textfield.TextInputLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="12dp"
-                        android:layout_weight="1"
-                        android:hint="@string/latitude"
-                        android:textColorHint="@color/text_black_808">
-
-                        <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/lat"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:enabled="@{dashboardModel.currentEnrollment.enrollmentStatus()==EnrollmentStatus.ACTIVE}"
-                            android:inputType="numberDecimal|numberSigned"
-                            android:text='@{dashboardModel.currentEnrollment!=null?dashboardModel.currentEnrollment.latitude():""}'
-                            android:textSize="15sp" />
-
-                    </com.google.android.material.textfield.TextInputLayout>
-
-
-                    <com.google.android.material.textfield.TextInputLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:hint="@string/longitude"
-                        android:textColorHint="@color/text_black_808">
-
-                        <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/lon"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:enabled="@{dashboardModel.currentEnrollment.enrollmentStatus()==EnrollmentStatus.ACTIVE}"
-                            android:inputType="numberDecimal|numberSigned"
-                            android:text='@{dashboardModel.currentEnrollment!=null?dashboardModel.currentEnrollment.longitude():""}'
-                            android:textSize="15sp" />
-
-                    </com.google.android.material.textfield.TextInputLayout>
-
-                    <RelativeLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:layout_marginStart="5dp"
-                        android:layout_marginEnd="12dp">
-
-                        <ImageButton
-                            android:id="@+id/location1"
-                            android:layout_width="32dp"
-                            android:layout_height="32dp"
-                            android:layout_centerInParent="true"
-                            android:background="@drawable/selector_gray_button_round_7"
-                            android:clickable="@{dashboardModel.currentEnrollment.enrollmentStatus()==EnrollmentStatus.ACTIVE}"
-                            android:padding="6dp"
-                            app:srcCompat="@drawable/ic_my_location" />
-                    </RelativeLayout>
-
-                    <RelativeLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:layout_marginEnd="5dp">
-
-                        <ImageButton
-                            android:id="@+id/location2"
-                            android:layout_width="32dp"
-                            android:layout_height="32dp"
-                            android:layout_centerInParent="true"
-                            android:background="@drawable/selector_gray_button_round_7"
-                            android:clickable="@{dashboardModel.currentEnrollment.enrollmentStatus()==EnrollmentStatus.ACTIVE}"
-                            android:padding="6dp"
-                            app:srcCompat="@drawable/ic_map" />
-                    </RelativeLayout>
-                </LinearLayout>
+                <org.dhis2.utils.custom_views.CoordinatesView
+                    android:id="@+id/coordinates_view"
+                    android:layout_width="wrap_content"
+                    android:visibility="gone"
+                    android:layout_height="wrap_content" />
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"

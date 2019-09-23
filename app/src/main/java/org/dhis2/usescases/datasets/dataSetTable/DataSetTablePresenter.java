@@ -1,13 +1,9 @@
 package org.dhis2.usescases.datasets.dataSetTable;
 
-import android.util.Log;
-
 import org.dhis2.data.tuples.Pair;
-import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
-import org.hisp.dhis.android.core.dataelement.DataElementModel;
+import org.hisp.dhis.android.core.common.State;
 
 import java.util.List;
-import java.util.Map;
 
 import io.reactivex.Flowable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -20,7 +16,13 @@ public class DataSetTablePresenter implements DataSetTableContract.Presenter {
     private final DataSetTableRepository tableRepository;
     DataSetTableContract.View view;
     private CompositeDisposable compositeDisposable;
-    private Pair<Map<String, List<DataElementModel>>, Map<String, List<CategoryOptionComboModel>>> tableData;
+
+    private String orgUnitUid;
+    private String periodTypeName;
+    private String periodFinalDate;
+    private String catCombo;
+    private boolean open = true;
+    private String periodId;
 
     public DataSetTablePresenter(DataSetTableRepository dataSetTableRepository) {
         this.tableRepository = dataSetTableRepository;
@@ -32,57 +34,59 @@ public class DataSetTablePresenter implements DataSetTableContract.Presenter {
     }
 
     @Override
-    public void init(DataSetTableContract.View view, String orgUnitUid, String periodTypeName, String periodInitialDate, String catCombo) {
+    public void onSyncClick() {
+        view.runSmsSubmission();
+    }
+
+    @Override
+    public void init(DataSetTableContract.View view, String orgUnitUid, String periodTypeName, String catCombo,
+                     String periodFinalDate, String periodId) {
         this.view = view;
         compositeDisposable = new CompositeDisposable();
+        this.orgUnitUid = orgUnitUid;
+        this.periodTypeName = periodTypeName;
+        this.periodFinalDate = periodFinalDate;
+        this.catCombo = catCombo;
+        this.periodId = periodId;
 
         compositeDisposable.add(
-                tableRepository.getDataValues(orgUnitUid, periodTypeName, periodInitialDate, catCombo)
+                tableRepository.getSections()
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(
-                                data -> Log.d("SATA_SETS", "VALUES LIST SIZE = " + data.size()),
-                                Timber::e
-                        )
-        );
-
-        compositeDisposable.add(
-                tableRepository.getDataSet()
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(
-                                view::setDataSet,
-                                Timber::e
-                        )
+                        .subscribe(view::setSections, Timber::e)
         );
 
         compositeDisposable.add(
                 Flowable.zip(
-                        tableRepository.getDataElements(),
-                        tableRepository.getCatOptions(),
+                        tableRepository.getDataSet(),
+                        tableRepository.getCatComboName(catCombo),
                         Pair::create
                 )
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
-                                data -> {
-                                    this.tableData = data;
-                                    view.setDataElements(data.val0(), data.val1());
-                                },
+                                data -> view.renderDetails(data.val0(), data.val1()),
                                 Timber::e
                         )
         );
 
-    }
+        compositeDisposable.add(
+                tableRepository.dataSetStatus()
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(view::isDataSetOpen,
+                                Timber::d
+                        )
+        );
 
-    @Override
-    public List<DataElementModel> getDataElements(String key) {
-        return tableData.val0().get(key);
-    }
-
-    @Override
-    public List<CategoryOptionComboModel> getCatOptionCombos(String key) {
-        return tableData.val1().get( tableData.val0().get(key).get(0).categoryCombo());
+        compositeDisposable.add(
+                tableRepository.dataSetState()
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(state -> view.isDataSetSynced(state == State.SYNCED),
+                                Timber::d
+                        )
+        );
     }
 
     @Override
@@ -95,5 +99,40 @@ public class DataSetTablePresenter implements DataSetTableContract.Presenter {
         view.displayMessage(message);
     }
 
+    public String getOrgUnitUid() {
+        return orgUnitUid;
+    }
+
+    public String getPeriodTypeName() {
+        return periodTypeName;
+    }
+
+    public String getPeriodFinalDate() {
+        return periodFinalDate;
+    }
+
+    public String getPeriodId() {
+        return periodId;
+    }
+
+    public String getCatCombo() {
+        return catCombo;
+    }
+
+    @Override
+    public void optionsClick() {
+        view.showOptions(open);
+        open = !open;
+    }
+
+    @Override
+    public void onClickSelectTable(int numTable) {
+        view.goToTable(numTable);
+    }
+
+    @Override
+    public String getCatOptComboFromOptionList(List<String> catOpts) {
+        return tableRepository.getCatOptComboFromOptionList(catOpts);
+    }
 
 }

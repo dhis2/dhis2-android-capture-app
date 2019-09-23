@@ -5,12 +5,10 @@ import androidx.annotation.Nullable;
 
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactoryImpl;
-import org.hisp.dhis.android.core.common.ObjectStyleModel;
+import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.common.ValueType;
-import org.hisp.dhis.rules.models.RuleActionDisplayKeyValuePair;
 import org.hisp.dhis.rules.models.RuleActionDisplayText;
 import org.hisp.dhis.rules.models.RuleActionHideField;
-import org.hisp.dhis.rules.models.RuleActionHideSection;
 import org.hisp.dhis.rules.models.RuleActionShowError;
 import org.hisp.dhis.rules.models.RuleActionShowWarning;
 import org.hisp.dhis.rules.models.RuleEffect;
@@ -95,15 +93,15 @@ public class RulesUtilsProviderImplTest {
         }
 
         @Override
-        public void setOptionGroupToHide(String optionGroupUid) {
+        public void setOptionGroupToHide(@NotNull String optionGroupUid, boolean toHide, @NotNull String field) {
 
         }
     };
 
-    private  void putFieldViewModel(){
+    private void putFieldViewModel() {
         testFieldViewModels.put(testUid, fieldFactory.create(testUid, "label",
                 ValueType.TEXT, false, "optionSet", "test", "section",
-                null, true, null, null, null,1, ObjectStyleModel.builder().build()));
+                null, true, null, null, null, 1, ObjectStyle.builder().build(),""));
     }
 
     @Test
@@ -113,8 +111,8 @@ public class RulesUtilsProviderImplTest {
         String testUid = "XXXXXX";
         testFieldViewModels.put(testUid, fieldFactory.create(testUid, "label",
                 ValueType.TEXT, false, "", "test", null,
-                null, true, null, null, null,null,null));
-      
+                null, true, null, null, null, null, null,""));
+
         putFieldViewModel();
 
         testRuleEffects.add(RuleEffect.create(
@@ -176,38 +174,4 @@ public class RulesUtilsProviderImplTest {
 
         assertThat(testFieldViewModels).containsKey("content");
     }
-
-    /*@Test
-    public void displayKeyValuePairRuleActionTest() {
-
-        putFieldViewModel();
-
-        testRuleEffects.add(RuleEffect.create(
-                RuleActionDisplayKeyValuePair.createForIndicators("content", "data"),
-                "data")
-        );
-        Result<RuleEffect> ruleEffect = Result.success(testRuleEffects);
-
-        ruleUtils.applyRuleEffects(testFieldViewModels, ruleEffect, actionCallbacks);
-
-    }
-
-    @Test
-    public void hideSectionRuleActionTest() {
-
-        putFieldViewModel();
-
-        testRuleEffects.add(RuleEffect.create(
-                RuleActionHideSection.create("section"),
-                "data")
-        );
-        Result<RuleEffect> ruleEffect = Result.success(testRuleEffects);
-
-        ruleUtils.applyRuleEffects(testFieldViewModels, ruleEffect, actionCallbacks);
-
-        assertThat(testFieldViewModels).doesNotContainKey(testUid);
-
-    }*/
-
-
 }

@@ -7,9 +7,9 @@ import android.view.Gravity;
 import androidx.annotation.NonNull;
 import androidx.work.WorkManager;
 
-import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.usescases.login.LoginActivity;
 import org.dhis2.utils.Constants;
+import org.dhis2.utils.filters.FilterManager;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.user.User;
 
@@ -23,16 +23,16 @@ import static android.text.TextUtils.isEmpty;
 
 final class MainPresenter implements MainContracts.Presenter {
 
-    private final MetadataRepository metadataRepository;
+    public static final String DEFAULT = "default";
+
     private MainContracts.View view;
     private CompositeDisposable compositeDisposable;
 
 
     private final D2 d2;
 
-    MainPresenter(@NonNull D2 d2, MetadataRepository metadataRepository) {
+    MainPresenter(@NonNull D2 d2) {
         this.d2 = d2;
-        this.metadataRepository = metadataRepository;
     }
 
     @Override
@@ -40,7 +40,7 @@ final class MainPresenter implements MainContracts.Presenter {
         this.view = view;
         this.compositeDisposable = new CompositeDisposable();
 
-        compositeDisposable.add(Observable.defer(() -> Observable.just(d2.userModule().user.get()))
+        compositeDisposable.add(Observable.defer(() -> Observable.just(d2.userModule().user.blockingGet()))
                 .map(this::username)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -50,20 +50,51 @@ final class MainPresenter implements MainContracts.Presenter {
                 )
         );
 
-
         compositeDisposable.add(
-                metadataRepository.getDefaultCategoryOptionId()
+                d2.categoryModule().categoryCombos.byIsDefault().eq(true).one().get().toObservable()
                         .subscribeOn(Schedulers.io())
                         .subscribe(
-                                id -> {
+                                categoryCombo -> {
                                     SharedPreferences prefs = view.getAbstracContext().getSharedPreferences(
                                             Constants.SHARE_PREFS, Context.MODE_PRIVATE);
-                                    prefs.edit().putString(Constants.DEFAULT_CAT_COMBO, id).apply();
+                                    prefs.edit().putString(Constants.DEFAULT_CAT_COMBO, categoryCombo.uid()).apply();
                                 },
                                 Timber::e
                         )
         );
 
+
+        compositeDisposable.add(
+                d2.categoryModule().categoryOptionCombos.byCode().eq(DEFAULT).one().get().toObservable()
+                        .subscribeOn(Schedulers.io())
+                        .subscribe(
+                                categoryOptionCombo -> {
+                                    SharedPreferences prefs = view.getAbstracContext().getSharedPreferences(
+                                            Constants.SHARE_PREFS, Context.MODE_PRIVATE);
+                                    prefs.edit().putString(Constants.PREF_DEFAULT_CAT_OPTION_COMBO, categoryOptionCombo.uid()).apply();
+                                },
+                                Timber::e
+                        )
+        );
+
+        compositeDisposable.add(
+                FilterManager.getInstance().asFlowable()
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                filterManager -> view.updateFilters(filterManager.getTotalFilters()),
+                                Timber::e
+                        )
+        );
+
+        compositeDisposable.add(
+                FilterManager.getInstance().getPeriodRequest()
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                periodRequest -> view.showPeriodRequest(periodRequest),
+                                Timber::e
+                        ));
     }
 
     @Override
@@ -103,7 +134,7 @@ final class MainPresenter implements MainContracts.Presenter {
 
     @Override
     public void getErrors() {
-        view.showSyncErrors(metadataRepository.getSyncErrors());
+        view.showSyncErrors(d2.importModule().trackerImportConflicts.blockingGet());
     }
 
     @Override

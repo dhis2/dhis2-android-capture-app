@@ -1,10 +1,17 @@
 package org.dhis2.utils
 
+import org.apache.commons.jexl2.JexlEngine
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel
 import org.dhis2.data.forms.dataentry.fields.display.DisplayViewModel
+import org.dhis2.utils.rules.RuleEffectResult
+import org.dhis2.utils.rules.RuleEngineUtils
+import org.hisp.dhis.android.core.arch.helpers.UidsHelper
+import org.hisp.dhis.android.core.d2manager.D2Manager
+import org.hisp.dhis.android.core.event.EventStatus
 import org.hisp.dhis.android.core.program.ProgramStage
+import org.hisp.dhis.rules.RuleEngineContext
 import org.hisp.dhis.rules.models.*
-import java.util.*
+import timber.log.Timber
 
 /**
  * QUADRAM. Created by ppajuelo on 13/06/2018.
@@ -35,6 +42,7 @@ class RulesUtilsProviderImpl(private val codeGenerator: CodeGenerator) : RulesUt
                 is RuleActionHideProgramStage -> hideProgramStage(it.ruleAction() as RuleActionHideProgramStage, rulesActionCallbacks)
                 is RuleActionHideOption -> hideOption(it.ruleAction() as RuleActionHideOption, rulesActionCallbacks)
                 is RuleActionHideOptionGroup -> hideOptionGroup(it.ruleAction() as RuleActionHideOptionGroup, rulesActionCallbacks)
+                is RuleActionShowOptionGroup -> showOptionGroup(it.ruleAction() as RuleActionShowOptionGroup, rulesActionCallbacks)
                 else -> rulesActionCallbacks.unsupportedRuleAction()
             }
         }
@@ -171,6 +179,215 @@ class RulesUtilsProviderImpl(private val codeGenerator: CodeGenerator) : RulesUt
 
     private fun hideOptionGroup(hideOptionGroup: RuleActionHideOptionGroup,
                                 rulesActionCallbacks: RulesActionCallbacks) {
-        rulesActionCallbacks.setOptionGroupToHide(hideOptionGroup.optionGroup())
+        rulesActionCallbacks.setOptionGroupToHide(hideOptionGroup.optionGroup(), true)
     }
+
+    private fun showOptionGroup(showOptionGroup: RuleActionShowOptionGroup,
+                                rulesActionCallbacks: RulesActionCallbacks) {
+        rulesActionCallbacks.setOptionGroupToHide(showOptionGroup.optionGroup(), false, showOptionGroup.field())
+    }
+
+    /*region NEW METHOD*/
+
+    var eventUid: String? = null
+    var teiUid: String? = null
+
+    /**
+     * */
+    fun evaluateEvent(eventUid: String, section: String?): RuleEffectResult {
+        val initTime = System.currentTimeMillis()
+        Timber.tag("RULE UTILS PROVIDER").d("INIT CALCULATIONS FOR EVENT %s", eventUid)
+
+        val d2 = D2Manager.getD2()
+        val event = d2.eventModule().events.uid(eventUid).blockingGet()
+        val enrollment = d2.enrollmentModule().enrollments.uid(event.enrollment()).blockingGet()
+
+        var ruleEngineContext = RuleEngineContext.builder(ExpressionEvaluatorImpl(JexlEngine()))
+                .ruleVariables(
+                        RuleEngineUtils.translateToRuleVariable(
+                                d2.programModule().programRuleVariables
+                                        .byProgramUid().eq(event.program())
+                                        .blockingGet(),
+                                d2
+                        )
+                )
+                .rules(
+                        RuleEngineUtils.translateToRules(
+                                d2.programModule().programRules
+                                        .byProgramUid().eq(event.program())
+                                        .withProgramRuleActions()
+                                        .blockingGet(),
+                                event.programStage()!!
+                        )
+                )
+                .calculatedValueMap(HashMap())
+                .supplementaryData(RuleEngineUtils.supplementaryData(d2))
+                .constantsValue(d2.constantModule().constants.blockingGet().associate { Pair(it.uid(), it.value().toString()) })
+                .build()
+
+        val ruleEngineBuilder = ruleEngineContext.toEngineBuilder()
+        if (event.enrollment() != null)
+            ruleEngineBuilder.enrollment(
+                    RuleEngineUtils.translateToRuleEnrollment(
+                            enrollment,
+                            d2.trackedEntityModule().trackedEntityAttributeValues
+                                    .byTrackedEntityInstance().eq(enrollment.trackedEntityInstance())
+                                    .blockingGet(),
+                            d2
+                    )
+            )
+                    .events(
+                            RuleEngineUtils.translateToRuleEvents(
+                                    d2.eventModule().events
+                                            .byEnrollmentUid().eq(event.enrollment())
+                                            .byUid().notIn(event.uid())
+                                            .byStatus().`in`(EventStatus.ACTIVE, EventStatus.COMPLETED, EventStatus.OVERDUE)
+                                            .byEventDate().isNotNull
+                                            .blockingGet(),
+                                    d2
+                            )
+                    )
+        else
+            ruleEngineBuilder.events(
+                    RuleEngineUtils.translateToRuleEvents(
+                            d2.eventModule().events
+                                    .byUid().notIn(event.uid()!!)
+                                    .byStatus().`in`(EventStatus.ACTIVE, EventStatus.COMPLETED, EventStatus.OVERDUE)
+                                    .byEventDate().isNotNull
+                                    .blockingGet(),
+                            d2
+                    )
+            )
+        ruleEngineBuilder.triggerEnvironment(TriggerEnvironment.ANDROIDCLIENT)
+        val result = Result.success(ruleEngineBuilder.build().evaluate(
+                RuleEngineUtils.translateToRuleEvents(
+                        arrayOf(event).toList(),
+                        d2
+                )[0]
+        ).call())
+
+        val dataElements = if (section == null)
+            d2.programModule().programStages.uid(event.programStage())
+                    .withAllChildren().blockingGet().programStageDataElements()!!
+                    .map {
+                        it.dataElement()!!.uid()
+                    }
+        else
+            d2.programModule().programStageSections
+                    .uid(section)
+                    .withAllChildren().blockingGet().dataElements()!!
+                    .map {
+                        it.uid()
+                    }
+
+
+        val effectResult = applyRuleEffects(dataElements, result)
+        Timber.tag("RULE UTILS PROVIDER").d("CALCULATIONS ENDED IN %s s", (System.currentTimeMillis() - initTime) / 1000L)
+        effectResult.fields.addAll(dataElements)
+        return effectResult
+    }
+
+    /**
+     *
+     * @param fields List of all uids
+     * @param calcResult All rule effects to apply for the given fields
+     * */
+    override fun applyRuleEffects(fields: List<String>, calcResult: Result<RuleEffect>): RuleEffectResult {
+        val ruleEffectResult = RuleEffectResult()
+
+        calcResult.items().forEach {
+            when (it.ruleAction()) {
+                is RuleActionShowWarning -> setShowWarning(it.ruleAction() as RuleActionShowWarning, it.data(), ruleEffectResult.warnings)
+                is RuleActionShowError -> setShowError(it.ruleAction() as RuleActionShowError, it.data(), ruleEffectResult.errors)
+                is RuleActionHideField -> setHideField(it.ruleAction() as RuleActionHideField, fields)
+                is RuleActionDisplayText -> setDisplayText(it.ruleAction() as RuleActionDisplayText, it.data(), ruleEffectResult.displayTextList)
+                is RuleActionDisplayKeyValuePair -> setDisplayKeyValue(it.ruleAction() as RuleActionDisplayKeyValuePair, it.data(), ruleEffectResult.displayKeyValue)
+                is RuleActionHideSection -> setHideSection(it.ruleAction() as RuleActionHideSection, fields, ruleEffectResult.sectionsToHide)
+                is RuleActionAssign -> setAssign(it.ruleAction() as RuleActionAssign)
+                is RuleActionSetMandatoryField -> setMandatoryField(it.ruleAction() as RuleActionSetMandatoryField, ruleEffectResult.mandatoryFields)
+                is RuleActionWarningOnCompletion -> setWarningOnCompletion(it.ruleAction() as RuleActionWarningOnCompletion, it.data(), ruleEffectResult.warningOnCompletions)
+                is RuleActionErrorOnCompletion -> setErrorOnCompletion(it.ruleAction() as RuleActionErrorOnCompletion, it.data(), ruleEffectResult.errorOnCompletions)
+                is RuleActionHideProgramStage -> ruleEffectResult.stagesToHide.add((it.ruleAction() as RuleActionHideProgramStage).programStage())
+                is RuleActionHideOption -> ruleEffectResult.optionsToHide.add((it.ruleAction() as RuleActionHideOption).option())
+                is RuleActionHideOptionGroup -> ruleEffectResult.optionGroupsToHide.add((it.ruleAction() as RuleActionHideOptionGroup).optionGroup())
+                is RuleActionShowOptionGroup -> ruleEffectResult.showOptionGroup.add((it.ruleAction() as RuleActionShowOptionGroup).optionGroup())
+                else -> ruleEffectResult.unsupportedRules.add("unsupported")
+            }
+        }
+        return ruleEffectResult
+    }
+
+    private fun setShowWarning(action: RuleActionShowWarning, data: String, warnings: HashMap<String, String>) {
+        warnings[action.field()] = action.content() + " " + data
+    }
+
+    private fun setShowError(action: RuleActionShowError, data: String, errors: HashMap<String, String>) {
+        errors[action.field()] = action.content() + " " + data
+    }
+
+    private fun setHideField(action: RuleActionHideField, fields: List<String>) { //TODO: CHECK IF ACTION FIELD IS DE OR ATTR
+        (fields as ArrayList).remove(action.field())
+
+        if (eventUid != null && D2Manager.getD2().trackedEntityModule().trackedEntityDataValues
+                        .value(eventUid, action.field()).blockingExists())
+            D2Manager.getD2().trackedEntityModule().trackedEntityDataValues
+                    .value(eventUid, action.field()).blockingDelete()
+        else if (teiUid != null && D2Manager.getD2().trackedEntityModule().trackedEntityAttributeValues
+                        .value(action.field(), teiUid).blockingExists())
+            D2Manager.getD2().trackedEntityModule().trackedEntityAttributeValues
+                    .value(action.field(), teiUid).blockingDelete()
+    }
+
+    private fun setDisplayText(action: RuleActionDisplayText, data: String, displayTextList: ArrayList<String>) {
+        displayTextList.add(action.content() + " " + data)
+    }
+
+    private fun setDisplayKeyValue(action: RuleActionDisplayKeyValuePair, data: String, displayKeyValues: HashMap<String, String>) {
+        displayKeyValues[action.content()] = data
+    }
+
+    private fun setHideSection(action: RuleActionHideSection, fields: List<String>, sectionsToHide: ArrayList<String>) {
+
+        sectionsToHide.add(action.programStageSection())
+        val sectionDataElements = UidsHelper.getUidsList(
+                D2Manager.getD2().programModule().programStageSections.uid(action.programStageSection())
+                        .withAllChildren().blockingGet().dataElements())
+        sectionDataElements.forEach {
+            if (fields.contains(it)) {
+                (fields as ArrayList).remove(it)
+                if (eventUid != null && D2Manager.getD2().trackedEntityModule().trackedEntityDataValues
+                                .value(eventUid, it).blockingExists())
+                    D2Manager.getD2().trackedEntityModule().trackedEntityDataValues
+                            .value(eventUid, it).blockingDelete()
+                else if (teiUid != null && D2Manager.getD2().trackedEntityModule().trackedEntityAttributeValues
+                                .value(it, teiUid).blockingExists())
+                    D2Manager.getD2().trackedEntityModule().trackedEntityAttributeValues
+                            .value(it, teiUid).blockingDelete()
+            }
+        }
+
+    }
+
+    private fun setAssign(action: RuleActionAssign) { //TODO: CHECK IF ACTION FIELD IS DE OR ATTR
+        if (eventUid != null)
+            D2Manager.getD2().trackedEntityModule().trackedEntityDataValues
+                    .value(eventUid, action.field()).blockingSet(action.content())
+        else if (teiUid != null)
+            D2Manager.getD2().trackedEntityModule().trackedEntityAttributeValues
+                    .value(action.field(), teiUid).blockingSet(action.content())
+    }
+
+    private fun setMandatoryField(action: RuleActionSetMandatoryField, mandatoryFields: ArrayList<String>) {
+        mandatoryFields.add(action.field())
+    }
+
+    private fun setWarningOnCompletion(action: RuleActionWarningOnCompletion, data: String, warningOnCompletions: HashMap<String, String>) {
+        warningOnCompletions[action.field()] = action.content() + " " + data
+    }
+
+    private fun setErrorOnCompletion(action: RuleActionErrorOnCompletion, data: String, errorOnCompletions: HashMap<String, String>) {
+        errorOnCompletions[action.field()] = action.content() + " " + data
+    }
+
+    /*endregion*/
 }

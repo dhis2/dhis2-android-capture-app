@@ -1,5 +1,7 @@
 package org.dhis2.data.user;
 
+import androidx.annotation.NonNull;
+
 import org.dhis2.data.dagger.PerUser;
 import org.dhis2.data.forms.FormComponent;
 import org.dhis2.data.forms.FormModule;
@@ -7,12 +9,18 @@ import org.dhis2.data.service.ReservedValuesWorkerComponent;
 import org.dhis2.data.service.ReservedValuesWorkerModule;
 import org.dhis2.data.service.SyncDataWorkerComponent;
 import org.dhis2.data.service.SyncDataWorkerModule;
+import org.dhis2.data.service.SyncGranularRxComponent;
+import org.dhis2.data.service.SyncGranularRxModule;
+import org.dhis2.data.service.SyncInitWorkerComponent;
+import org.dhis2.data.service.SyncInitWorkerModule;
 import org.dhis2.data.service.SyncMetadataWorkerComponent;
 import org.dhis2.data.service.SyncMetadataWorkerModule;
 import org.dhis2.usescases.about.AboutComponent;
 import org.dhis2.usescases.about.AboutModule;
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableComponent;
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableModule;
+import org.dhis2.usescases.datasets.dataSetTable.dataSetSection.DataValueComponent;
+import org.dhis2.usescases.datasets.dataSetTable.dataSetSection.DataValueModule;
 import org.dhis2.usescases.datasets.datasetDetail.DataSetDetailComponent;
 import org.dhis2.usescases.datasets.datasetDetail.DataSetDetailModule;
 import org.dhis2.usescases.datasets.datasetInitial.DataSetInitialComponent;
@@ -43,6 +51,10 @@ import org.dhis2.usescases.reservedValue.ReservedValueComponent;
 import org.dhis2.usescases.reservedValue.ReservedValueModule;
 import org.dhis2.usescases.searchTrackEntity.SearchTEComponent;
 import org.dhis2.usescases.searchTrackEntity.SearchTEModule;
+import org.dhis2.usescases.sms.SmsComponent;
+import org.dhis2.usescases.sms.SmsModule;
+import org.dhis2.usescases.sync.SyncComponent;
+import org.dhis2.usescases.sync.SyncModule;
 import org.dhis2.usescases.settings.SyncManagerComponent;
 import org.dhis2.usescases.settings.SyncManagerModule;
 import org.dhis2.usescases.teiDashboard.TeiDashboardComponent;
@@ -56,7 +68,6 @@ import org.dhis2.usescases.teiDashboard.teiDataDetail.TeiDataDetailModule;
 import org.dhis2.usescases.teiDashboard.teiProgramList.TeiProgramListComponent;
 import org.dhis2.usescases.teiDashboard.teiProgramList.TeiProgramListModule;
 
-import androidx.annotation.NonNull;
 import dagger.Subcomponent;
 
 @PerUser
@@ -126,6 +137,9 @@ public interface UserComponent {
     DataSetTableComponent plus(DataSetTableModule dataSetTableModule);
 
     @NonNull
+    DataValueComponent plus(DataValueModule dataValueModule);
+
+    @NonNull
     ReservedValueComponent plus(ReservedValueModule reservedValueModule);
 
     @NonNull
@@ -141,7 +155,19 @@ public interface UserComponent {
     EventCaptureComponent plus(EventCaptureModule eventCaptureModule);
 
     @NonNull
-    EnrollmentComponent plus(EnrollmentModule enrollmentModule);
+    SmsComponent plus(SmsModule smsModule);
 
     NfcDataWriteComponent plus(NfcDataWriteModule nfcModule);
+
+    @NonNull
+    SyncGranularRxComponent plus(SyncGranularRxModule syncGranularEventModule);
+
+    @NonNull
+    SyncComponent plus(SyncModule syncModule);
+
+    @NonNull
+    SyncInitWorkerComponent plus(SyncInitWorkerModule syncInitWorkerModule);
+
+    @NonNull
+    EnrollmentComponent plus(EnrollmentModule enrollmentModule);
 }

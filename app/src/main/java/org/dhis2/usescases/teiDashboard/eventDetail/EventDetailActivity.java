@@ -18,7 +18,6 @@ import org.dhis2.App;
 import org.dhis2.R;
 import org.dhis2.data.forms.FormFragment;
 import org.dhis2.data.forms.FormViewArguments;
-import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.databinding.ActivityEventDetailBinding;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
@@ -27,10 +26,10 @@ import org.dhis2.utils.DialogClickListener;
 import org.dhis2.utils.HelpManager;
 import org.dhis2.utils.custom_views.CategoryComboDialog;
 import org.dhis2.utils.custom_views.CustomDialog;
-import org.dhis2.utils.custom_views.OrgUnitDialog_2;
+import org.dhis2.utils.custom_views.OrgUnitDialog;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
-import org.hisp.dhis.android.core.program.ProgramModel;
+import org.hisp.dhis.android.core.program.Program;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -81,7 +80,7 @@ public class EventDetailActivity extends ActivityGlobalAbstract implements Event
     }
 
     @Override
-    public void setData(EventDetailModel eventDetailModel, MetadataRepository metadataRepository) {
+    public void setData(EventDetailModel eventDetailModel) {
         if (eventDetailModel.getEvent().status() != EventStatus.SCHEDULE && eventDetailModel.getEvent().eventDate() != null) {
             Intent intent2 = new Intent(this, EventCaptureActivity.class);
             intent2.putExtras(EventCaptureActivity.getActivityBundle(eventDetailModel.getEvent().uid(), eventDetailModel.getEvent().program()));
@@ -125,7 +124,7 @@ public class EventDetailActivity extends ActivityGlobalAbstract implements Event
     }
 
     @Override
-    public void isEventExpired(ProgramModel program) {
+    public void isEventExpired(Program program) {
         if (eventDetailModel.hasExpired()) {
             // TODO implement event expiration logic
         }
@@ -180,7 +179,7 @@ public class EventDetailActivity extends ActivityGlobalAbstract implements Event
     }
 
     @Override
-    public void showOrgUnitSelector(OrgUnitDialog_2 orgUnitDialog) {
+    public void showOrgUnitSelector(OrgUnitDialog orgUnitDialog) {
         if (!orgUnitDialog.isAdded())
             orgUnitDialog.show(getSupportFragmentManager(), "EVENT_ORG_UNITS");
     }

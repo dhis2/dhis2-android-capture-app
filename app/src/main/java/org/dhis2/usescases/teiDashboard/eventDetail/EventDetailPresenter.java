@@ -16,24 +16,18 @@ import androidx.fragment.app.Fragment;
 import org.dhis2.R;
 import org.dhis2.data.forms.FormFragment;
 import org.dhis2.data.forms.dataentry.DataEntryFragment;
-import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.databinding.WidgetDatepickerBinding;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.OnDialogClickListener;
 import org.dhis2.utils.custom_views.OrgUnitDialog;
-import org.dhis2.utils.custom_views.OrgUnitDialog_2;
 import org.dhis2.utils.custom_views.PeriodDialog;
 import org.hisp.dhis.android.core.category.CategoryOptionCombo;
-import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.event.Event;
-import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.period.PeriodType;
 import org.hisp.dhis.android.core.program.ProgramStage;
-import org.hisp.dhis.android.core.program.ProgramStageModel;
 
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -54,7 +48,6 @@ import static android.text.TextUtils.isEmpty;
 public class EventDetailPresenter implements EventDetailContracts.Presenter {
 
     private final EventDetailRepository eventDetailRepository;
-    private final MetadataRepository metadataRepository;
     private final DataEntryStore dataEntryStore;
     private EventDetailContracts.View view;
     private CompositeDisposable disposable;
@@ -62,8 +55,7 @@ public class EventDetailPresenter implements EventDetailContracts.Presenter {
 
     private boolean changedEventStatus = false;
 
-    EventDetailPresenter(EventDetailRepository eventDetailRepository, MetadataRepository metadataRepository, DataEntryStore dataEntryStore) {
-        this.metadataRepository = metadataRepository;
+    EventDetailPresenter(EventDetailRepository eventDetailRepository, DataEntryStore dataEntryStore) {
         this.eventDetailRepository = eventDetailRepository;
         this.dataEntryStore = dataEntryStore;
         disposable = new CompositeDisposable();
@@ -98,7 +90,7 @@ public class EventDetailPresenter implements EventDetailContracts.Presenter {
                         .subscribe(
                                 data -> {
                                     eventDetailModel = data;
-                                    view.setData(data, metadataRepository);
+                                    view.setData(data);
                                 },
                                 throwable -> Log.d("ERROR", throwable.getMessage()))
 
@@ -108,7 +100,7 @@ public class EventDetailPresenter implements EventDetailContracts.Presenter {
     @Override
     public void getExpiryDate(String eventUid) {
         disposable.add(
-                metadataRepository.getExpiryDateFromEvent(eventUid)
+                eventDetailRepository.getExpiryDateFromEvent(eventUid)
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
@@ -116,18 +108,6 @@ public class EventDetailPresenter implements EventDetailContracts.Presenter {
                                 Timber::d
                         )
         );
-    }
-
-    @Override
-    public void saveData(String uid, String value) {
-        disposable.add(dataEntryStore.save(uid, value)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        data -> {
-                        },
-                        Timber::d
-                ));
     }
 
     @Override
@@ -199,11 +179,6 @@ public class EventDetailPresenter implements EventDetailContracts.Presenter {
     }
 
     @Override
-    public void editData() {
-        view.setDataEditable();
-    }
-
-    @Override
     public void confirmDeleteEvent() {
         view.showConfirmDeleteEvent();
     }
@@ -223,7 +198,7 @@ public class EventDetailPresenter implements EventDetailContracts.Presenter {
     @Override
     public void onOrgUnitClick() {
 
-        OrgUnitDialog_2 orgUnitDialog = OrgUnitDialog_2.getInstace().setMultiSelection(false);
+        OrgUnitDialog orgUnitDialog = OrgUnitDialog.getInstace().setMultiSelection(false);
         orgUnitDialog.setTitle("Event Org Unit")
                 .setPossitiveListener(v -> {
                     if (orgUnitDialog.getSelectedOrgUnitModel() == null)
@@ -276,7 +251,7 @@ public class EventDetailPresenter implements EventDetailContracts.Presenter {
     }
 
     @Override
-    public void changeCatOption(CategoryOptionComboModel selectedOption) {
+    public void changeCatOption(CategoryOptionCombo selectedOption) {
         eventDetailRepository.saveCatOption(selectedOption);
     }
 
@@ -314,12 +289,11 @@ public class EventDetailPresenter implements EventDetailContracts.Presenter {
         if (futureOnly)
             dateDialog.getDatePicker().setMinDate(c.getTimeInMillis());
 
-        if (eventDetailModel.getProgram().expiryPeriodType() != null) {// eventDetailModel.orgUnitOpeningDate() != null) {
+        if (eventDetailModel.getProgram().expiryPeriodType() != null) {
             Date minDate = DateUtils.getInstance().expDate(null,
                     eventDetailModel.getProgram().expiryDays() != null ? eventDetailModel.getProgram().expiryDays() : 0,
                     eventDetailModel.getProgram().expiryPeriodType());
             dateDialog.getDatePicker().setMinDate(minDate.getTime());
-            //dateDialog.getDatePicker().setMinDate(eventDetailModel.orgUnitOpeningDate().getTime());
         }
 
         if (eventDetailModel.orgUnitClosingDate() != null)
@@ -341,7 +315,6 @@ public class EventDetailPresenter implements EventDetailContracts.Presenter {
 
     private void openDailySelector(boolean futureOnly) {
         LayoutInflater layoutInflater = LayoutInflater.from(view.getContext());
-        //        View datePickerView = layoutInflater.inflate(R.layout.widget_datepicker, null);
         WidgetDatepickerBinding widgetBinding = WidgetDatepickerBinding.inflate(layoutInflater);
         final DatePicker datePicker = widgetBinding.widgetDatepicker;
 
@@ -364,7 +337,7 @@ public class EventDetailPresenter implements EventDetailContracts.Presenter {
         if (futureOnly)
             datePicker.setMinDate(c.getTimeInMillis());
 
-        if (eventDetailModel.getProgram().expiryPeriodType() != null) {// eventDetailModel.orgUnitOpeningDate() != null) {
+        if (eventDetailModel.getProgram().expiryPeriodType() != null) {
             Date minDate = DateUtils.getInstance().expDate(null,
                     eventDetailModel.getProgram().expiryDays() != null ? eventDetailModel.getProgram().expiryDays() : 0,
                     eventDetailModel.getProgram().expiryPeriodType());

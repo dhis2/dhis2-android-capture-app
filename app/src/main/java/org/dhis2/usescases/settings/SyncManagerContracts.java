@@ -28,6 +28,9 @@ public class SyncManagerContracts {
 
         void showLocalDataDeleted(boolean error);
 
+        void showSmsSettings(boolean enabled, String number, boolean waitForResponse,
+                             String responseSender, int waitingForResponseTimeout);
+
         void syncData();
 
         void syncMeta();
@@ -72,5 +75,15 @@ public class SyncManagerContracts {
         boolean dataHasErrors();
 
         boolean dataHasWarnings();
+
+        void smsNumberSet(String number);
+
+        void smsSwitch(boolean isChecked);
+
+        void smsResponseSenderSet(String number);
+
+        void smsWaitForResponse(boolean waitForResponse);
+
+        void smsWaitForResponseTimeout(int timeout);
     }
 }

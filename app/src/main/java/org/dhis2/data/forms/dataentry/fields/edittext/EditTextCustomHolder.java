@@ -1,7 +1,11 @@
 package org.dhis2.data.forms.dataentry.fields.edittext;
 
 
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
 import android.widget.ArrayAdapter;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.MutableLiveData;
@@ -9,20 +13,24 @@ import androidx.lifecycle.MutableLiveData;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.FormViewHolder;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.databinding.FormEditTextCustomBinding;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.Preconditions;
+import org.dhis2.utils.ValidationUtils;
+import org.dhis2.utils.custom_views.TextInputAutoCompleteTextView;
 import org.hisp.dhis.android.core.common.ObjectStyle;
-import org.hisp.dhis.android.core.common.ValueTypeDeviceRenderingModel;
+import org.hisp.dhis.android.core.common.ValueTypeDeviceRendering;
 import org.hisp.dhis.android.core.common.ValueTypeRenderingType;
 
 import java.lang.reflect.Type;
 import java.util.List;
 
 import io.reactivex.processors.FlowableProcessor;
+import timber.log.Timber;
 
 import static android.content.Context.MODE_PRIVATE;
 import static android.text.TextUtils.isEmpty;
@@ -62,11 +70,12 @@ final class EditTextCustomHolder extends FormViewHolder {
             if (isSearchMode || (!hasFocus && editTextModel != null && editTextModel.editable() && valueHasChanged())) {
                 sendAction();
             }
+            validateRegex();
         });
         binding.customEdittext.setOnEditorActionListener((v, actionId, event) -> {
             sendAction();
             closeKeyboard(binding.customEdittext.getEditText());
-            sendAction();
+            validateRegex();
             return true;
         });
 
@@ -80,10 +89,11 @@ final class EditTextCustomHolder extends FormViewHolder {
     }
 
     private void sendAction() {
-        if (!isEmpty(binding.customEdittext.getEditText().getText())) {
+        if (!isEmpty(binding.customEdittext.getEditText().getText()) && editTextModel.error() == null) {
             checkAutocompleteRendering();
             editTextModel.withValue(binding.customEdittext.getEditText().getText().toString());
-            processor.onNext(RowAction.create(editTextModel.uid(), binding.customEdittext.getEditText().getText().toString(), getAdapterPosition()));
+            String value = ValidationUtils.validate(editTextModel.valueType(), binding.customEdittext.getEditText().getText().toString());
+            processor.onNext(RowAction.create(editTextModel.uid(), value, getAdapterPosition()));
 
         } else {
             processor.onNext(RowAction.create(editTextModel.uid(), null, getAdapterPosition()));
@@ -95,6 +105,8 @@ final class EditTextCustomHolder extends FormViewHolder {
     public void update(@NonNull FieldViewModel model) {
         this.editTextModel = (EditTextViewModel) model;
         fieldUid = model.uid();
+
+        binding.customEdittext.setValueType(editTextModel.valueType());
 
         binding.customEdittext.setObjectSyle(model.objectStyle());
         if (model.objectStyle() != null) {
@@ -114,13 +126,17 @@ final class EditTextCustomHolder extends FormViewHolder {
 
         binding.customEdittext.setWarning(model.warning(), model.error());
 
-        binding.customEdittext.setEditable(model.editable());
+        if (!isSearchMode && model.value() != null && !model.value().isEmpty()
+                && editTextModel.fieldMask() != null && !model.value().matches(editTextModel.fieldMask()))
+            binding.customEdittext.setWarning(binding.getRoot().getContext().getString(R.string.wrong_pattern), "");
 
-        binding.customEdittext.setValueType(editTextModel.valueType());
+        binding.customEdittext.setEditable(model.editable());
 
         setRenderingType(editTextModel.fieldRendering());
 
         initFieldFocus();
+
+        setLongClick();
     }
 
     private void checkAutocompleteRendering() {
@@ -132,13 +148,22 @@ final class EditTextCustomHolder extends FormViewHolder {
         }
     }
 
+    private void validateRegex() {
+        if (!isSearchMode)
+            if (editTextModel.fieldMask() != null && !binding.customEdittext.getEditText().getText().toString().isEmpty() &&
+                    !binding.customEdittext.getEditText().getText().toString().matches(editTextModel.fieldMask()))
+                binding.customEdittext.setWarning(binding.getRoot().getContext().getString(R.string.wrong_pattern), "");
+            else
+                binding.customEdittext.setWarning("", "");
+    }
+
     @NonNull
     private Boolean valueHasChanged() {
         return !Preconditions.equals(isEmpty(binding.customEdittext.getEditText().getText()) ? "" : binding.customEdittext.getEditText().getText().toString(),
-                editTextModel.value() == null ? "" : valueOf(editTextModel.value()));
+                editTextModel.value() == null ? "" : valueOf(editTextModel.value())) || editTextModel.error() != null;
     }
 
-    private void setRenderingType(ValueTypeDeviceRenderingModel renderingType) {
+    private void setRenderingType(ValueTypeDeviceRendering renderingType) {
         if (renderingType != null && renderingType.type() == ValueTypeRenderingType.AUTOCOMPLETE) {
             autoCompleteValues = getListFromPreference(editTextModel.uid());
             ArrayAdapter<String> autoCompleteAdapter = new ArrayAdapter<>(binding.customEdittext.getContext(), android.R.layout.simple_dropdown_item_1line, autoCompleteValues);
@@ -164,5 +189,23 @@ final class EditTextCustomHolder extends FormViewHolder {
 
     public void dispose() {
 
+    }
+
+    private void setLongClick() {
+        binding.customEdittext.setOnLongActionListener(view -> {
+            ClipboardManager clipboard = (ClipboardManager) binding.getRoot().getContext().getSystemService(Context.CLIPBOARD_SERVICE);
+            try {
+                if (!((TextInputAutoCompleteTextView) view).getText().toString().equals("")) {
+                    ClipData clip = ClipData.newPlainText("copy", ((TextInputAutoCompleteTextView) view).getText());
+                    clipboard.setPrimaryClip(clip);
+                    Toast.makeText(binding.getRoot().getContext(),
+                            binding.getRoot().getContext().getString(R.string.copied_text), Toast.LENGTH_LONG).show();
+                }
+                return true;
+            } catch (Exception e) {
+                Timber.e(e);
+                return false;
+            }
+        });
     }
 }

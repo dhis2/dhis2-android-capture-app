@@ -11,21 +11,28 @@ import androidx.work.OneTimeWorkRequest;
 import androidx.work.PeriodicWorkRequest;
 import androidx.work.WorkManager;
 
-import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.data.service.SyncDataWorker;
 import org.dhis2.data.service.SyncMetadataWorker;
+import org.dhis2.data.tuples.Pair;
 import org.dhis2.usescases.login.LoginActivity;
 import org.dhis2.usescases.reservedValue.ReservedValueActivity;
 import org.dhis2.utils.Constants;
+import org.dhis2.utils.FileResourcesUtil;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.common.State;
+import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.maintenance.D2Error;
+import org.hisp.dhis.android.core.sms.domain.interactor.ConfigCase;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.observers.DisposableCompletableObserver;
+import io.reactivex.observers.DisposableSingleObserver;
 import io.reactivex.processors.FlowableProcessor;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.Schedulers;
@@ -39,13 +46,16 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
 
     private final D2 d2;
 
-    private MetadataRepository metadataRepository;
+    private enum SettingType {
+        EVENT_MAX, TEI_MAX, LIMIT_BY_ORG_UNIT, LIMIT_BY_PROGRAM, TIME_DATA, TIME_META
+    }
+
     private CompositeDisposable compositeDisposable;
     private SyncManagerContracts.View view;
     private FlowableProcessor<Boolean> checkData;
+    private SharedPreferences prefs;
 
-    SyncManagerPresenter(MetadataRepository metadataRepository, D2 d2) {
-        this.metadataRepository = metadataRepository;
+    SyncManagerPresenter(D2 d2) {
         this.d2 = d2;
         checkData = PublishProcessor.create();
     }
@@ -59,12 +69,26 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
     public void init(SyncManagerContracts.View view) {
         this.view = view;
         this.compositeDisposable = new CompositeDisposable();
+        this.prefs = view.getAbstracContext().getSharedPreferences(
+                Constants.SHARE_PREFS, Context.MODE_PRIVATE);
 
         compositeDisposable.add(
                 checkData
                         .startWith(true)
-                        .flatMap(start ->
-                                metadataRepository.getDownloadedData())
+                        .map(start -> {
+                            int teiCount =
+                                    d2.trackedEntityModule().trackedEntityInstances.byState().neq(State.RELATIONSHIP).blockingCount();
+                            int eventCount = d2.eventModule().events.get().toObservable()
+                                    .map(events -> {
+                                        List<Event> eventsToCount = new ArrayList<>();
+                                        for (Event event : events) {
+                                            if (event.enrollment() == null)
+                                                eventsToCount.add(event);
+                                        }
+                                        return eventsToCount.size();
+                                    }).blockingLast();
+                            return Pair.create(teiCount, eventCount);
+                        })
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
@@ -72,6 +96,22 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
                                 Timber::e
                         )
         );
+
+        ConfigCase smsConfig = d2.smsModule().configCase();
+        compositeDisposable.add(smsConfig.getSmsModuleConfig().subscribeOn(Schedulers.io()
+        ).observeOn(AndroidSchedulers.mainThread()
+        ).subscribeWith(new DisposableSingleObserver<ConfigCase.SmsConfig>() {
+            @Override
+            public void onSuccess(ConfigCase.SmsConfig c) {
+                view.showSmsSettings(c.isModuleEnabled(), c.getGateway(), c.isWaitingForResult(),
+                        c.getResultSender(), c.getResultWaitingTimeout());
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                Timber.e(e);
+            }
+        }));
     }
 
     /**
@@ -126,7 +166,11 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
                 .setRequiredNetworkType(NetworkType.CONNECTED)
                 .build());
         OneTimeWorkRequest request = syncDataBuilder.build();
-        WorkManager.getInstance(view.getContext().getApplicationContext()).beginUniqueWork(Constants.DATA_NOW, ExistingWorkPolicy.REPLACE, request).enqueue();
+
+        FileResourcesUtil.initBulkFileUploadWork() //FIRST UPLOAD IMAGES
+                .then(request) //THEN UPLOAD AND SYNC DATA
+                .then(FileResourcesUtil.initDownloadRequest()) //FINALLY DOWNLOAD IMAGES
+                .enqueue();
     }
 
     /**
@@ -151,13 +195,93 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
     }
 
     @Override
+    public void smsNumberSet(String number) {
+        compositeDisposable.add(d2.smsModule().configCase().setGatewayNumber(number)
+                .subscribeWith(new DisposableCompletableObserver() {
+                    @Override
+                    public void onComplete() {
+                        Timber.d("SMS gateway set to %s", number);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Timber.e(e);
+                    }
+                }));
+    }
+
+    @Override
+    public void smsSwitch(boolean isChecked) {
+        compositeDisposable.add(d2.smsModule().configCase().setModuleEnabled(isChecked)
+                .subscribeWith(new DisposableCompletableObserver() {
+                    @Override
+                    public void onComplete() {
+                        Timber.d("SMS module enabled: %s", isChecked);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Timber.e(e);
+                    }
+                }));
+    }
+
+    @Override
+    public void smsResponseSenderSet(String number) {
+        compositeDisposable.add(d2.smsModule().configCase().setConfirmationSenderNumber(number)
+                .subscribeWith(new DisposableCompletableObserver() {
+                    @Override
+                    public void onComplete() {
+                        Timber.d("SMS response sender set to %s", number);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Timber.e(e);
+                    }
+                }));
+    }
+
+    @Override
+    public void smsWaitForResponse(boolean waitForResponse) {
+        compositeDisposable.add(d2.smsModule().configCase().setWaitingForResultEnabled(waitForResponse)
+                .subscribeWith(new DisposableCompletableObserver() {
+                    @Override
+                    public void onComplete() {
+                        Timber.d("SMS waiting for response: %b", waitForResponse);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Timber.e(e);
+                    }
+                }));
+    }
+
+    @Override
+    public void smsWaitForResponseTimeout(int timeout) {
+        compositeDisposable.add(d2.smsModule().configCase().setWaitingResultTimeout(timeout)
+                .subscribeWith(new DisposableCompletableObserver() {
+                    @Override
+                    public void onComplete() {
+                        Timber.d("SMS waiting for response timeout: %d", timeout);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Timber.e(e);
+                    }
+                }));
+    }
+
+    @Override
     public boolean dataHasErrors() {
-        return !d2.eventModule().events.byState().in(State.ERROR).get().isEmpty() || !d2.trackedEntityModule().trackedEntityInstances.byState().in(State.ERROR).get().isEmpty();
+        return !d2.eventModule().events.byState().in(State.ERROR).blockingGet().isEmpty() || !d2.trackedEntityModule().trackedEntityInstances.byState().in(State.ERROR).blockingGet().isEmpty();
     }
 
     @Override
     public boolean dataHasWarnings() {
-        return !d2.eventModule().events.byState().in(State.WARNING).get().isEmpty() || !d2.trackedEntityModule().trackedEntityInstances.byState().in(State.WARNING).get().isEmpty();
+        return !d2.eventModule().events.byState().in(State.WARNING).blockingGet().isEmpty() || !d2.trackedEntityModule().trackedEntityInstances.byState().in(State.WARNING).blockingGet().isEmpty();
     }
 
     @Override
@@ -167,8 +291,6 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
 
     @Override
     public void resetSyncParameters() {
-        SharedPreferences prefs = view.getAbstracContext().getSharedPreferences(
-                Constants.SHARE_PREFS, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = prefs.edit();
 
         editor.putInt(Constants.EVENT_MAX, Constants.EVENT_MAX_DEFAULT);
@@ -231,7 +353,7 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
 
     @Override
     public void checkSyncErrors() {
-        view.showSyncErrors(metadataRepository.getSyncErrors());
+        view.showSyncErrors(d2.importModule().trackerImportConflicts.blockingGet());
     }
 
     @Override

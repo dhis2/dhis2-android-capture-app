@@ -105,12 +105,15 @@ public class RadioButtonHolder extends FormViewHolder {
         clearButton.setOnClickListener(view -> {
             if (checkBoxViewModel.editable().booleanValue()) {
                 setSelectedBackground(isSearchMode);
-                radioGroup.clearCheck();
-                processor.onNext(RowAction.create(checkBoxViewModel.uid(), null, getAdapterPosition()));
+                sendAction(RowAction.create(checkBoxViewModel.uid(),null,getAdapterPosition()));
             }
         });
 
         initFieldFocus();
+    }
+
+    private void sendAction(RowAction rowAction){
+        processor.onNext(rowAction);
     }
 
     public void dispose() {

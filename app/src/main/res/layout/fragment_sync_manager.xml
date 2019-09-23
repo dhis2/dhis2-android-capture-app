@@ -79,6 +79,10 @@
                 android:onClick='@{()->presenter.syncMeta()}'
                 android:text="@string/SYNC_META" />
 
+            <include
+                android:id="@+id/settings_sms"
+                layout="@layout/settings_sms" />
+
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

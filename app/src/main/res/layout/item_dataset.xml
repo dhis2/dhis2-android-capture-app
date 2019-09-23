@@ -7,8 +7,6 @@
 
         <import type="android.view.View" />
 
-        <import type="java.lang.String" />
-
         <variable
             name="presenter"
             type="org.dhis2.usescases.datasets.datasetDetail.DataSetDetailContract.Presenter" />
@@ -21,7 +19,6 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@android:color/white"
         android:padding="10dp">
 
         <TextView
@@ -65,6 +62,8 @@
             android:layout_height="wrap_content"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
+            android:clickable="true"
+            android:focusable="true"
             app:stateIcon='@{dataset.state}'
             tools:ignore="ContentDescription"
             tools:src="@drawable/ic_sync" />

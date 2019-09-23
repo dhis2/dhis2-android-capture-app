@@ -49,7 +49,7 @@ public class IndicatorsModule {
         if (!isEmpty(programUid))
             enrollmentRepository = enrollmentRepository.byProgram().eq(programUid);
 
-        String uid = enrollmentRepository.one().get().uid();
+        String uid = enrollmentRepository.one().blockingGet().uid();
         return new EnrollmentRuleEngineRepository(briteDatabase, formRepository, uid, d2);
     }
 

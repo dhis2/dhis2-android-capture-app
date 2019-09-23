@@ -331,6 +331,7 @@
     <color name="gray_b2b">#b2b2b2</color>
     <color name="gray_dfe">#dfe0df</color>
     <color name="green_7ed">#7ed321</color>
+    <color name="green_transparent">#A47ED321</color>
     <color name="red_060">#e06060</color>
     <color name="red_a14">#a14545</color>
     <color name="gray_f6f">#f6f6f6</color>
@@ -367,6 +368,10 @@
     <color name="state_to_post">#26000000</color>
     <color name="state_warning">#26FF8A00</color>
     <color name="state_synced">#26168646</color>
+
+    <color name="sms_sync_last_event">#504eba</color>
+    <color name="sms_sync_title_bar">#dee7ee</color>
+    <color name="sms_sync_title_bar_error">#ffd9d9</color>
     <!--endregion-->
 
 </resources>

@@ -1,24 +1,37 @@
 package org.dhis2.usescases.main;
 
+import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
+import android.transition.ChangeBounds;
+import android.transition.Transition;
+import android.transition.TransitionManager;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.constraintlayout.widget.ConstraintSet;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.databinding.DataBindingUtil;
 import androidx.databinding.ObservableInt;
 
 import com.andrognito.pinlockview.PinLockListener;
+import com.android.dbexporterlibrary.ExporterListener;
 
 import org.dhis2.App;
 import org.dhis2.R;
 import org.dhis2.databinding.ActivityMainBinding;
 import org.dhis2.usescases.about.AboutFragment;
+import org.dhis2.usescases.development.DevelopmentActivity;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
 import org.dhis2.usescases.jira.JiraFragment;
@@ -28,8 +41,11 @@ import org.dhis2.usescases.settings.ErrorDialog;
 import org.dhis2.usescases.settings.SyncManagerFragment;
 import org.dhis2.usescases.teiDashboard.nfc_data.NfcDataWriteActivity;
 import org.dhis2.utils.Constants;
-import org.dhis2.utils.SharedPreferenceBooleanLiveData;
+import org.dhis2.utils.DateUtils;
+import org.dhis2.utils.filters.FilterManager;
+import org.dhis2.utils.filters.FiltersAdapter;
 import org.hisp.dhis.android.core.imports.TrackerImportConflict;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Objects;
@@ -39,8 +55,9 @@ import javax.inject.Inject;
 import io.reactivex.functions.Consumer;
 
 
-public class MainActivity extends ActivityGlobalAbstract implements MainContracts.View {
+public class MainActivity extends ActivityGlobalAbstract implements MainContracts.View, ExporterListener {
 
+    private static final int PERMISSION_REQUEST = 1987;
     public ActivityMainBinding binding;
     @Inject
     MainContracts.Presenter presenter;
@@ -53,6 +70,8 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
 
     private int fragId;
     private SharedPreferences prefs;
+    private boolean backDropActive = false;
+    private FiltersAdapter adapter;
 
     //-------------------------------------
     //region LIFECYCLE
@@ -99,9 +118,14 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
         prefs = getAbstracContext().getSharedPreferences(
                 Constants.SHARE_PREFS, Context.MODE_PRIVATE);
 
-        SharedPreferenceBooleanLiveData lastMetaSyncStatus = new SharedPreferenceBooleanLiveData(prefs, Constants.LAST_META_SYNC_STATUS, true);
-        SharedPreferenceBooleanLiveData lastMetaNoNetWork = new SharedPreferenceBooleanLiveData(prefs, Constants.LAST_META_SYNC_NO_NETWORK, false);
 
+        adapter = new FiltersAdapter();
+        binding.filterLayout.setAdapter(adapter);
+
+        binding.moreOptions.setOnLongClickListener(v -> {
+            startActivity(DevelopmentActivity.class, null, false, false, null);
+            return false;
+        });
     }
 
     @Override
@@ -114,6 +138,16 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
     protected void onResume() {
         super.onResume();
         presenter.init(this);
+
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
+                || ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA},
+                    PERMISSION_REQUEST);
+        }
+        binding.setTotalFilters(FilterManager.getInstance().getTotalFilters());
+        adapter.notifyDataSetChanged();
     }
 
     @Override
@@ -148,8 +182,18 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
 
     @Override
     public void showHideFilter() {
-        programFragment.getBinding().filterLayout.setVisibility(programFragment.getBinding().filterLayout.getVisibility() == View.VISIBLE ? View.GONE : View.VISIBLE);
-        checkFilterEnabled();
+        Transition transition = new ChangeBounds();
+        transition.setDuration(200);
+        TransitionManager.beginDelayedTransition(binding.backdropLayout, transition);
+        backDropActive = !backDropActive;
+        ConstraintSet initSet = new ConstraintSet();
+        initSet.clone(binding.backdropLayout);
+        if (backDropActive)
+            initSet.connect(R.id.fragment_container, ConstraintSet.TOP, R.id.filterLayout, ConstraintSet.BOTTOM, 50);
+        else
+            initSet.connect(R.id.fragment_container, ConstraintSet.TOP, R.id.toolbar, ConstraintSet.BOTTOM, 0);
+        initSet.applyTo(binding.backdropLayout);
+        programFragment.openFilter(backDropActive);
     }
 
     private void checkFilterEnabled() {
@@ -234,6 +278,9 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
         }
         binding.drawerLayout.closeDrawers();
 
+        if (backDropActive && !(activeFragment instanceof ProgramFragment))
+            showHideFilter();
+
     }
 
     @Override
@@ -241,8 +288,29 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
         new ErrorDialog().setData(data).show(getSupportFragmentManager().beginTransaction(), ErrorDialog.TAG);
     }
 
+    @Override
+    public void updateFilters(int totalFilters) {
+        binding.setTotalFilters(totalFilters);
+    }
+
+    @Override
+    public void showPeriodRequest(FilterManager.PeriodRequest periodRequest) {
+        if (periodRequest == FilterManager.PeriodRequest.FROM_TO) {
+            DateUtils.getInstance().showFromToSelector(this, FilterManager.getInstance()::addPeriod);
+        } else {
+            DateUtils.getInstance().showPeriodDialog(this, datePeriods -> {
+                        FilterManager.getInstance().addPeriod(datePeriods);
+                    },
+                    true);
+        }
+    }
+
     public void setTitle(String title) {
         binding.title.setText(title);
+    }
+
+    public FiltersAdapter getAdapter() {
+        return adapter;
     }
 
     @Override
@@ -254,14 +322,34 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
     public void showTutorial(boolean shaked) {
         switch (fragId) {
             case R.id.menu_home:
-                ((ProgramFragment)activeFragment).setTutorial();
+                ((ProgramFragment) activeFragment).setTutorial();
                 break;
             case R.id.sync_manager:
-                ((SyncManagerFragment)activeFragment).showTutorial();
+                ((SyncManagerFragment) activeFragment).showTutorial();
                 break;
             default:
                 showToast(getString(R.string.no_intructions));
                 break;
         }
+    }
+
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        if (requestCode == FilterManager.OU_TREE && resultCode == Activity.RESULT_OK) {
+            adapter.notifyDataSetChanged();
+            updateFilters(FilterManager.getInstance().getTotalFilters());
+        }
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    @Override
+    public void fail(@NotNull String message, @NotNull String exception) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void success(@NotNull String s) {
+        Toast.makeText(this, s, Toast.LENGTH_SHORT).show();
     }
 }

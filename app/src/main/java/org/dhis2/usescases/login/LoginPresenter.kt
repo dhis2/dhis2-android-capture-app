@@ -13,23 +13,21 @@ import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
-import okhttp3.HttpUrl
-import okhttp3.MediaType
-import okhttp3.ResponseBody
 import org.dhis2.App
 import org.dhis2.R
-import org.dhis2.data.server.ConfigurationRepository
+import org.dhis2.data.prefs.Preference
 import org.dhis2.data.server.UserManager
 import org.dhis2.usescases.main.MainActivity
 import org.dhis2.usescases.qrScanner.QRActivity
 import org.dhis2.utils.Constants
+import org.hisp.dhis.android.core.d2manager.D2Manager
 import org.hisp.dhis.android.core.maintenance.D2Error
 import org.hisp.dhis.android.core.maintenance.D2ErrorCode
 import org.hisp.dhis.android.core.systeminfo.SystemInfo
 import retrofit2.Response
 import timber.log.Timber
 
-class LoginPresenter internal constructor(private val configurationRepository: ConfigurationRepository) : LoginContracts.Presenter {
+class LoginPresenter : LoginContracts.Presenter {
 
     private lateinit var view: LoginContracts.View
     private var userManager: UserManager? = null
@@ -60,8 +58,8 @@ class LoginPresenter internal constructor(private val configurationRepository: C
                     }, { Timber.e(it) }))
 
             disposable.add(
-                    Observable.just(if (userManager.d2.systemInfoModule().systemInfo.get() != null)
-                        userManager.d2.systemInfoModule().systemInfo.get()
+                    Observable.just(if (userManager.d2.systemInfoModule().systemInfo.blockingGet() != null)
+                        userManager.d2.systemInfoModule().systemInfo.blockingGet()
                     else
                         SystemInfo.builder().build())
                             .subscribeOn(Schedulers.io())
@@ -79,8 +77,7 @@ class LoginPresenter internal constructor(private val configurationRepository: C
         } ?: view.setUrl(view.context.getString(R.string.login_https))
 
 
-        if (false && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
-        //TODO: REMOVE FALSE WHEN GREEN LIGHT
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
             disposable.add(RxPreconditions
                     .hasBiometricSupport(view.context)
                     .filter { canHandleBiometrics ->
@@ -92,7 +89,6 @@ class LoginPresenter internal constructor(private val configurationRepository: C
                     .subscribe(
                             { view.showBiometricButton() },
                             { Timber.e(it) }))
-
 
     }
 
@@ -107,36 +103,29 @@ class LoginPresenter internal constructor(private val configurationRepository: C
     }
 
     override fun logIn(serverUrl: String, userName: String, pass: String) {
-        val baseUrl = HttpUrl.parse(canonizeUrl(serverUrl + "/api")) ?: return
         disposable.add(
-                configurationRepository.configure(baseUrl)
-                        .map { config -> (view.abstractActivity.applicationContext as App).createServerComponent(config).userManager() }
-                        .switchMap { userManager ->
+                D2Manager.setServerUrl(serverUrl)
+                        .andThen(D2Manager.instantiateD2())
+                        .map { (view.abstracContext.applicationContext as App).createServerComponent().userManager() }
+                        .flatMapObservable { userManager ->
                             val prefs = view.abstractActivity.getSharedPreferences(Constants.SHARE_PREFS, Context.MODE_PRIVATE)
-                            prefs.edit().putString(Constants.SERVER, serverUrl).apply()
+                            prefs.edit().putString(Constants.SERVER, "$serverUrl/api").apply()
                             this.userManager = userManager
                             userManager.logIn(userName.trim { it <= ' ' }, pass).map<Response<Any>> { user ->
-                                if (user == null)
-                                    Response.error<Any>(404, ResponseBody.create(MediaType.parse("text"), "NOT FOUND"))
-                                else {
+                                run {
                                     prefs.edit().putString(Constants.USER, user.userCredentials()?.username()).apply()
                                     prefs.edit().putBoolean("SessionLocked", false).apply()
                                     prefs.edit().putString("pin", null).apply()
                                     Response.success<Any>(null)
                                 }
                             }
+
                         }
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
                                 { this.handleResponse(it) },
                                 { this.handleError(it) }))
-    }
-
-    private fun canonizeUrl(serverUrl: String): String {
-        var urlToCanonized = serverUrl.trim { it <= ' ' }
-        urlToCanonized = urlToCanonized.replace(" ", "")
-        return if (urlToCanonized.endsWith("/")) urlToCanonized else "$urlToCanonized/"
     }
 
     override fun onQRClick(v: View) {
@@ -157,7 +146,6 @@ class LoginPresenter internal constructor(private val configurationRepository: C
         disposable.clear()
     }
 
-
     override fun logOut() {
         userManager?.let {
             disposable.add(it.d2.userModule().logOut()
@@ -169,7 +157,7 @@ class LoginPresenter internal constructor(private val configurationRepository: C
                                 prefs.edit().putBoolean("SessionLocked", false).apply()
                                 view.handleLogout()
                             },
-                            { t -> view.handleLogout() }
+                            { view.handleLogout() }
                     )
             )
         }
@@ -178,6 +166,7 @@ class LoginPresenter internal constructor(private val configurationRepository: C
     override fun handleResponse(userResponse: Response<*>) {
         view.showLoginProgress(false)
         if (userResponse.isSuccessful) {
+            view.sharedPreferences.edit().putBoolean(Preference.INITIAL_SYNC_DONE.name, false).apply()
             (view.context.applicationContext as App).createUserComponent()
             view.saveUsersData()
         }
@@ -190,7 +179,6 @@ class LoginPresenter internal constructor(private val configurationRepository: C
             prefs.edit().putBoolean("SessionLocked", false).apply()
             prefs.edit().putString("pin", null).apply()
             view.alreadyAuthenticated()
-//            handleResponse(Response.success<Any>(null))
         } else
             view.renderError(throwable)
         view.showLoginProgress(false)
@@ -207,14 +195,14 @@ class LoginPresenter internal constructor(private val configurationRepository: C
                         .title("Title")
                         .description("description")
                         .negativeButtonText("Cancel")
-                        .negativeButtonListener(DialogInterface.OnClickListener { dialogInterface, i -> })
+                        .negativeButtonListener(DialogInterface.OnClickListener { _, _ -> })
                         .executor(ActivityCompat.getMainExecutor(view.abstractActivity))
                         .build()
                         .authenticate(view.abstractActivity)
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
                                 { view.checkSecuredCredentials() },
-                                { error -> view.displayMessage("AUTH ERROR") }))
+                                { view.displayMessage("AUTH ERROR") }))
     }
 
     override fun onAccountRecovery() {

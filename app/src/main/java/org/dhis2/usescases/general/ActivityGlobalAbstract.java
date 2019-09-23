@@ -2,10 +2,13 @@ package org.dhis2.usescases.general;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -27,6 +30,7 @@ import androidx.core.widget.ContentLoadingProgressBar;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.crashlytics.android.Crashlytics;
+import com.google.firebase.FirebaseApp;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -40,17 +44,24 @@ import org.dhis2.usescases.map.MapSelectorActivity;
 import org.dhis2.usescases.splash.SplashActivity;
 import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.Constants;
+import org.dhis2.utils.FileResourcesUtil;
 import org.dhis2.utils.HelpManager;
 import org.dhis2.utils.OnDialogClickListener;
 import org.dhis2.utils.SyncUtils;
 import org.dhis2.utils.custom_views.CoordinatesView;
 import org.dhis2.utils.custom_views.CustomDialog;
+import org.dhis2.utils.custom_views.PictureView;
+import org.hisp.dhis.android.core.arch.helpers.GeometryHelper;
+import org.hisp.dhis.android.core.common.FeatureType;
+import org.hisp.dhis.android.core.common.Geometry;
 
+import java.io.File;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.List;
 
+import io.reactivex.processors.FlowableProcessor;
 import rx.Observable;
 import rx.subjects.BehaviorSubject;
 import timber.log.Timber;
@@ -59,22 +70,12 @@ import timber.log.Timber;
  * QUADRAM. Created by Javi on 28/07/2017.
  */
 
-public abstract class ActivityGlobalAbstract extends AppCompatActivity implements AbstractActivityContracts.View, CoordinatesView.OnMapPositionClick {
+public abstract class ActivityGlobalAbstract extends AppCompatActivity implements AbstractActivityContracts.View, CoordinatesView.OnMapPositionClick, PictureView.OnIntentSelected {
 
     private BehaviorSubject<Status> lifeCycleObservable = BehaviorSubject.create();
     private CoordinatesView coordinatesView;
-    private ContentLoadingProgressBar progressBar;
-
-    private BroadcastReceiver syncReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            if (intent.getAction() != null && intent.getAction().equals("action_sync") && intent.getExtras() != null && progressBar != null)
-                if (SyncUtils.isSyncRunning(context) && progressBar.getVisibility() == View.GONE)
-                    progressBar.setVisibility(View.VISIBLE);
-                else if (!SyncUtils.isSyncRunning(context))
-                    progressBar.setVisibility(View.GONE);
-        }
-    };
+    private PictureView.OnPictureSelected onPictureSelected;
+    public String uuid;
 
     public enum Status {
         ON_PAUSE,
@@ -112,27 +113,22 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
         mFirebaseAnalytics.setUserId(prefs.getString(Constants.SERVER, null));
 
         super.onCreate(savedInstanceState);
-//        AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        LocalBroadcastManager.getInstance(this).registerReceiver(syncReceiver, new IntentFilter("action_sync"));
         lifeCycleObservable.onNext(Status.ON_RESUME);
-        setProgressBar(findViewById(R.id.toolbarProgress));
     }
 
     @Override
     protected void onPause() {
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(syncReceiver);
         super.onPause();
         lifeCycleObservable.onNext(Status.ON_PAUSE);
     }
 
     @Override
     protected void onDestroy() {
-        progressBar = null;
         super.onDestroy();
     }
 
@@ -347,16 +343,51 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
     @Override
     public void onMapPositionClick(CoordinatesView coordinatesView) {
         this.coordinatesView = coordinatesView;
-        startActivityForResult(MapSelectorActivity.create(this), Constants.RQ_MAP_LOCATION_VIEW);
+        startActivityForResult(MapSelectorActivity.Companion.create(this,coordinatesView.getFeatureType(), coordinatesView.currentCoordinates()), Constants.RQ_MAP_LOCATION_VIEW);
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == Constants.RQ_MAP_LOCATION_VIEW) {
-            if (coordinatesView != null && resultCode == RESULT_OK && data.getExtras() != null) {
-                coordinatesView.updateLocation(Double.valueOf(data.getStringExtra(MapSelectorActivity.LATITUDE)), Double.valueOf(data.getStringExtra(MapSelectorActivity.LONGITUDE)));
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK) {
+            switch (requestCode) {
+                case Constants.RQ_MAP_LOCATION_VIEW:
+                    if (coordinatesView != null && data.getExtras() != null) {
+                        FeatureType locationType = FeatureType.valueOf(data.getStringExtra(MapSelectorActivity.Companion.getLOCATION_TYPE_EXTRA()));
+                        String dataExtra = data.getStringExtra(MapSelectorActivity.Companion.getDATA_EXTRA());
+                        Geometry geometry;
+                        if (locationType == FeatureType.POINT) {
+                            Type type = new TypeToken<List<Double>>(){}.getType();
+                            geometry = GeometryHelper.createPointGeometry(new Gson().fromJson(dataExtra, type));
+                        } else if (locationType == FeatureType.POLYGON) {
+                            Type type = new TypeToken<List<List<List<Double>>>>(){}.getType();
+                            geometry = GeometryHelper.createPolygonGeometry(new Gson().fromJson(dataExtra, type));
+                        } else  {
+                            Type type = new TypeToken<List<List<List<List<Double>>>>>(){}.getType();
+                            geometry = GeometryHelper.createMultiPolygonGeometry(new Gson().fromJson(dataExtra, type));
+                        }
+                        coordinatesView.updateLocation(geometry);
+                    }
+                    this.coordinatesView = null;
+                    break;
+                /*case Constants.GALLERY_REQUEST:
+                    try {
+                        final Uri imageUri = data.getData();
+                        onPictureSelected.onSelected(FileResourcesUtil.getFileFromGallery(this, imageUri), imageUri.toString(), uuid);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        Toast.makeText(this, "Something went wrong", Toast.LENGTH_LONG).show();
+                    }
+                    break;
+                case Constants.CAMERA_REQUEST:
+                    if (data != null && data.hasExtra("data")) {
+                        Bitmap bitmap = (Bitmap) data.getExtras().get("data");
+                        if (bitmap != null)
+                            onPictureSelected.onSelected(null, new File(FileResourcesUtil.getUploadDirectory(this), "test").getAbsolutePath(), uuid);
+                    } else
+                        onPictureSelected.onSelected(null, null, uuid);
+                    break;*/
             }
-            this.coordinatesView = null;
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
@@ -382,19 +413,23 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
         return ColorUtils.getPrimaryColor(this, ColorUtils.ColorType.ACCENT);
     }
 
-
-    public void setProgressBar(ContentLoadingProgressBar progressBar) {
-        if (progressBar != null) {
-            this.progressBar = progressBar;
-            if (SyncUtils.isSyncRunning(this))
-                progressBar.setVisibility(View.VISIBLE);
-            else progressBar.setVisibility(View.GONE);
-        }
+    @Override
+    public void showSyncDialog(String programUid, SyncStatusDialog.ConflictType conflictType, FlowableProcessor processor) {
+        new SyncStatusDialog(programUid, conflictType, processor)
+                .show(getSupportFragmentManager(), programUid);
     }
 
     @Override
-    public void showSyncDialog(String programUid, SyncStatusDialog.ConflictType conflictType) {
-        new SyncStatusDialog(programUid, conflictType)
-                .show(getSupportFragmentManager(), programUid);
+    public void showSyncDialog(String orgUnit, String attributeCombo, String periodId,
+                               SyncStatusDialog.ConflictType conflictType, FlowableProcessor processor) {
+        new SyncStatusDialog(orgUnit,attributeCombo, periodId, conflictType, processor)
+                .show(getSupportFragmentManager(), attributeCombo);
+    }
+
+    @Override
+    public void intentSelected(String uuid, Intent intent, int request, PictureView.OnPictureSelected onPictureSelected) {
+        this.uuid = uuid;
+        this.onPictureSelected = onPictureSelected;
+        startActivityForResult(intent, request);
     }
 }

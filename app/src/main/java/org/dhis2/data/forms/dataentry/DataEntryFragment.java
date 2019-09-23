@@ -117,23 +117,25 @@ public final class DataEntryFragment extends FragmentGlobalAbstract implements D
             }
         });
         setUpRecyclerView();
+        dataEntryPresenter.onAttach(this);
+
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        dataEntryPresenter.onAttach(this);
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        dataEntryPresenter.onDetach();
     }
 
     @Override
     public void onDestroyView() {
+        dataEntryPresenter.onDetach();
         super.onDestroyView();
+
     }
 
     @NonNull

@@ -1,18 +1,26 @@
 package org.dhis2.usescases.programEventDetail;
 
-import org.hisp.dhis.android.core.category.Category;
-import org.hisp.dhis.android.core.category.CategoryOption;
+import androidx.annotation.NonNull;
+import androidx.lifecycle.LiveData;
+import androidx.paging.PagedList;
+
+import com.mapbox.geojson.BoundingBox;
+import com.mapbox.geojson.FeatureCollection;
+
+import org.dhis2.data.tuples.Pair;
+import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryOptionCombo;
-import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
+import org.hisp.dhis.android.core.common.FeatureType;
+import org.hisp.dhis.android.core.common.State;
+import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.period.DatePeriod;
 import org.hisp.dhis.android.core.program.Program;
 
 import java.util.List;
 
-import androidx.annotation.NonNull;
-import androidx.lifecycle.LiveData;
-import androidx.paging.PagedList;
+import io.reactivex.Flowable;
 import io.reactivex.Observable;
+import io.reactivex.Single;
 
 /**
  * Created by Cristian E. on 02/11/2017.
@@ -21,22 +29,21 @@ import io.reactivex.Observable;
 public interface ProgramEventDetailRepository {
 
     @NonNull
-    LiveData<PagedList<ProgramEventViewModel>> filteredProgramEvents(List<DatePeriod> dateFilter, List<String> orgUnitFilter, List<CategoryOptionCombo> catOptionComboUid);
+    LiveData<PagedList<ProgramEventViewModel>> filteredProgramEvents(List<DatePeriod> dateFilter, List<String> orgUnitFilter, List<CategoryOptionCombo> catOptionComboUid, List<EventStatus> eventStatus, List<State> states);
+
+    @NonNull
+    Flowable<kotlin.Pair<FeatureCollection, BoundingBox>> filteredEventsForMap(List<DatePeriod> dateFilter, List<String> orgUnitFilter, List<CategoryOptionCombo> catOptionComboUid, List<EventStatus> eventStatus, List<State> states);
 
     @NonNull
     Observable<Program> program();
 
-    @NonNull
-    Observable<List<Category>> catCombo();
-
-    @NonNull
-    Observable<List<OrganisationUnitModel>> orgUnits();
-
-    @NonNull
-    Observable<List<OrganisationUnitModel>> orgUnits(String parentUid);
-
-
     boolean getAccessDataWrite();
 
-    List<CategoryOptionCombo> catOptionCombo(List<CategoryOption> selectedOptions);
+    Single<Pair<CategoryCombo, List<CategoryOptionCombo>>> catOptionCombos();
+
+    Single<Boolean> hasAccessToAllCatOptions();
+
+    Flowable<ProgramEventViewModel> getInfoForEvent(String eventUid);
+
+    Single<FeatureType> featureType();
 }

@@ -183,8 +183,8 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract {
         }
     }
 
-    public void setSectionSelector(List<EventSectionModel> data) {
-        sectionSelectorAdapter.swapData(currentSection, data);
+    public void setSectionSelector(List<EventSectionModel> data, float unsupportedPercentage) {
+        sectionSelectorAdapter.swapData(data, unsupportedPercentage);
     }
 
     public FlowableProcessor<RowAction> dataEntryFlowable() {

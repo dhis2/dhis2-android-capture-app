@@ -22,6 +22,7 @@ import com.google.android.material.snackbar.Snackbar;
 
 import org.dhis2.App;
 import org.dhis2.R;
+import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.databinding.ActivityEventCaptureBinding;
 import org.dhis2.databinding.WidgetDatepickerBinding;
@@ -33,7 +34,6 @@ import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.DialogClickListener;
 import org.dhis2.utils.custom_views.CustomDialog;
 import org.dhis2.utils.custom_views.FormBottomDialog;
-import org.dhis2.utils.custom_views.ProgressBarAnimation;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -60,7 +60,6 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
     private ActivityEventCaptureBinding binding;
     @Inject
     EventCaptureContract.Presenter presenter;
-    private int completionPercentage = 0;
     private String programStageUid;
     private Boolean isEventCompleted = false;
 
@@ -120,20 +119,10 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
     }
 
     @Override
-    public Consumer<Float> updatePercentage() {
-        return percentage -> {
-            int newPercentage = (int) (percentage * 100);
-
-            ProgressBarAnimation gainAnim = new ProgressBarAnimation(binding.progressGains, completionPercentage, 0, newPercentage, false,
-                    (lost, value) -> {
-                        String text = (int) value + "%";
-                        binding.progress.setText(text);
-                    });
-            gainAnim.setDuration(500);
-            binding.progressGains.startAnimation(gainAnim);
-
-            this.completionPercentage = (int) (percentage * 100);
-
+    public Consumer<Pair<Float, Float>> updatePercentage() {
+        return pair -> {
+            binding.completion.setCompletionPercentage(pair.val0());
+            binding.completion.setSecondaryPercentage(pair.val1());
         };
     }
 
@@ -147,6 +136,7 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
                 .setCanComplete(canComplete)
                 .setListener(this::setAction)
                 .setMessageOnComplete(completeMessage)
+                .setEmptyMandatoryFields(emptyMandatoryFields)
                 .setFieldsWithErrors(!errors.isEmpty())
                 .setMandatoryFields(!emptyMandatoryFields.isEmpty())
                 .show(getSupportFragmentManager(), "SHOW_OPTIONS");
@@ -190,9 +180,6 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
 
     @Override
     public void showRuleCalculation(Boolean shouldShow) {
-
-        Timber.tag("ADJUSTING").d(shouldShow ? "SHOW" : "HIDE");
-
         binding.calculationIndicator.getRoot().setVisibility(shouldShow ? View.VISIBLE : View.GONE);
     }
 

@@ -33,11 +33,13 @@ import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerRow;
 import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel;
 import org.dhis2.data.forms.dataentry.fields.unsupported.UnsupportedRow;
 import org.dhis2.data.tuples.Trio;
+import org.dhis2.usescases.searchTrackEntity.SearchTEContractsModule;
 import org.dhis2.utils.Constants;
-import org.hisp.dhis.android.core.common.ObjectStyleModel;
+import org.hisp.dhis.android.core.common.FeatureType;
+import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.common.ValueType;
-import org.hisp.dhis.android.core.program.ProgramModel;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
+import org.hisp.dhis.android.core.program.Program;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -54,9 +56,6 @@ import static android.text.TextUtils.isEmpty;
 
 public class FormAdapter extends RecyclerView.Adapter {
 
-    private long ENROLLMENT_DATE_ID = 1;
-    private long INCIDENT_DATE_ID = 2;
-
     private final int EDITTEXT = 0;
     private final int BUTTON = 1;
     private final int CHECKBOX = 2;
@@ -71,24 +70,26 @@ public class FormAdapter extends RecyclerView.Adapter {
     private static final int IMAGE = 11;
     private static final int UNSUPPORTED = 12;
     private static final int LONG_TEXT = 13;
-    private int programData = 0;
-    private List<TrackedEntityAttributeModel> attributeList;
-    private ProgramModel programModel;
+    private List<TrackedEntityAttribute> attributeList;
+    private Program program;
     @NonNull
     private final FlowableProcessor<RowAction> processor;
     private final FlowableProcessor<Trio<String, String, Integer>> processorOptionSet;
 
     @NonNull
     private final List<Row> rows;
+    private SearchTEContractsModule.Presenter presenter;
 
     private Context context;
     private HashMap<String, String> queryData;
 
-    public FormAdapter(FragmentManager fm, Context context) {
+    public FormAdapter(FragmentManager fm, Context context, SearchTEContractsModule.Presenter presenter) {
         setHasStableIds(true);
         this.processor = PublishProcessor.create();
         this.processorOptionSet = PublishProcessor.create();
         this.context = context;
+        this.presenter = presenter;
+
         LayoutInflater layoutInflater = LayoutInflater.from(context);
         attributeList = new ArrayList<>();
         rows = new ArrayList<>();
@@ -97,7 +98,7 @@ public class FormAdapter extends RecyclerView.Adapter {
         rows.add(BUTTON, new FileRow(layoutInflater, processor, false));
         rows.add(CHECKBOX, new RadioButtonRow(layoutInflater, processor, false));
         rows.add(SPINNER, new SpinnerRow(layoutInflater, processor, processorOptionSet, false));
-        rows.add(COORDINATES, new CoordinateRow(layoutInflater, processor, false));
+        rows.add(COORDINATES, new CoordinateRow(layoutInflater, processor, false, FeatureType.POINT));
         rows.add(TIME, new DateTimeRow(layoutInflater, processor, TIME, false));
         rows.add(DATE, new DateTimeRow(layoutInflater, processor, DATE, false));
         rows.add(DATETIME, new DateTimeRow(layoutInflater, processor, DATETIME, false));
@@ -116,60 +117,51 @@ public class FormAdapter extends RecyclerView.Adapter {
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-        FieldViewModel viewModel;
-        if (position < programData) {
-            viewModel = DateTimeViewModel.create(
-                    position == 0 ? Constants.ENROLLMENT_DATE_UID : Constants.INCIDENT_DATE_UID,
-                    holder.getAdapterPosition() == 0 ?
-                            !isEmpty(programModel.enrollmentDateLabel()) ? programModel.enrollmentDateLabel() : context.getString(R.string.enrollmment_date) :
-                            !isEmpty(programModel.incidentDateLabel()) ? programModel.incidentDateLabel() : context.getString(R.string.incident_date),
-                    false,
-                    ValueType.DATE,
-                    null,
-                    null,
-                    holder.getAdapterPosition() == 0 ? programModel.selectEnrollmentDatesInFuture() : programModel.selectIncidentDatesInFuture(), true, null,
-                    ObjectStyleModel.builder().build());
 
-        } else {
-            TrackedEntityAttributeModel attr = attributeList.get(holder.getAdapterPosition() - programData);
-            //String label = attr.displayShortName() != null ? attr.displayShortName() : attr.displayName();
-            String label = attr.displayName();
-            switch (holder.getItemViewType()) {
-                case EDITTEXT:
-                    viewModel = EditTextViewModel.create(attr.uid(), label, false,
-                            queryData.get(attr.uid()), label, 1, attr.valueType(), null, true,
-                            attr.displayDescription(), null, ObjectStyleModel.builder().build());
-                    break;
-                case BUTTON:
-                    viewModel = FileViewModel.create(attr.uid(), label, false, queryData.get(attr.uid()), null, attr.displayDescription(), ObjectStyleModel.builder().build());
-                    break;
-                case CHECKBOX:
-                case YES_NO:
-                    viewModel = RadioButtonViewModel.fromRawValue(attr.uid(), label, attr.valueType(), false, queryData.get(attr.uid()), null, true, attr.displayDescription(), ObjectStyleModel.builder().build());
-                    break;
-                case SPINNER:
-                    viewModel = SpinnerViewModel.create(attr.uid(), label, "", false, attr.optionSet(), queryData.get(attr.uid()), null, true, attr.displayDescription(), 20, ObjectStyleModel.builder().build());
-                    break;
-                case COORDINATES:
-                    viewModel = CoordinateViewModel.create(attr.uid(), label, false, queryData.get(attr.uid()), null, true, attr.displayDescription(), ObjectStyleModel.builder().build());
-                    break;
-                case TIME:
-                case DATE:
-                case DATETIME:
-                    viewModel = DateTimeViewModel.create(attr.uid(), label, false, attr.valueType(), queryData.get(attr.uid()), null, true, true, attr.displayDescription(), ObjectStyleModel.builder().build());
-                    break;
-                case AGEVIEW:
-                    viewModel = AgeViewModel.create(attr.uid(), label, false, queryData.get(attr.uid()), null, true, attr.displayDescription(), ObjectStyleModel.builder().build());
-                    break;
-                case ORG_UNIT:
-                    viewModel = OrgUnitViewModel.create(attr.uid(), label, false, queryData.get(attr.uid()), null, true, attr.displayDescription(), ObjectStyleModel.builder().build());
-                    break;
-                default:
-                    Crashlytics.log("Unsupported viewType " +
-                            "source type: " + holder.getItemViewType());
-                    viewModel = EditTextViewModel.create(attr.uid(), "UNSUPORTED", false, null, "UNSUPPORTED", 1, attr.valueType(), null, false, attr.displayDescription(), null, ObjectStyleModel.builder().build());
-                    break;
-            }
+        FieldViewModel viewModel;
+        TrackedEntityAttribute attr = attributeList.get(holder.getAdapterPosition());
+        String label = attr.displayName();
+        switch (holder.getItemViewType()) {
+            case EDITTEXT:
+                viewModel = EditTextViewModel.create(attr.uid(), label, false,
+                        queryData.get(attr.uid()), label, 1, attr.valueType(), null, true,
+                        attr.displayDescription(), null, ObjectStyle.builder().build(), attr.fieldMask());
+                break;
+            case BUTTON:
+                viewModel = FileViewModel.create(attr.uid(), label, false, queryData.get(attr.uid()), null, attr.displayDescription(), ObjectStyle.builder().build());
+                break;
+            case CHECKBOX:
+            case YES_NO:
+                viewModel = RadioButtonViewModel.fromRawValue(attr.uid(), label, attr.valueType(), false, queryData.get(attr.uid()), null, true, attr.displayDescription(), ObjectStyle.builder().build());
+                break;
+            case SPINNER:
+                viewModel = SpinnerViewModel.create(attr.uid(), label, "", false, attr.optionSet().uid(), queryData.get(attr.uid()), null, true, attr.displayDescription(), 20, ObjectStyle.builder().build());
+                break;
+            case COORDINATES:
+                viewModel = CoordinateViewModel.create(attr.uid(), label, false, queryData.get(attr.uid()), null, true, attr.displayDescription(), ObjectStyle.builder().build());
+                break;
+            case TIME:
+            case DATE:
+            case DATETIME:
+                viewModel = DateTimeViewModel.create(attr.uid(), label, false, attr.valueType(), queryData.get(attr.uid()), null, true, true, attr.displayDescription(), ObjectStyle.builder().build());
+                break;
+            case AGEVIEW:
+                viewModel = AgeViewModel.create(attr.uid(), label, false, queryData.get(attr.uid()), null, true, attr.displayDescription(), ObjectStyle.builder().build());
+                break;
+            case ORG_UNIT:
+                String value = presenter.nameOUByUid(queryData.get(attr.uid()));
+                if(value != null)
+                    value = queryData.get(attr.uid()) + "_ou_" + value;
+                else
+                    value = queryData.get(attr.uid());
+
+                viewModel = OrgUnitViewModel.create(attr.uid(), label, false, value, null, true, attr.displayDescription(), ObjectStyle.builder().build());
+                break;
+            default:
+                Crashlytics.log("Unsupported viewType " +
+                        "source type: " + holder.getItemViewType());
+                viewModel = EditTextViewModel.create(attr.uid(), "UNSUPORTED", false, null, "UNSUPPORTED", 1, attr.valueType(), null, false, attr.displayDescription(), null, ObjectStyle.builder().build(), attr.fieldMask());
+                break;
         }
         rows.get(holder.getItemViewType()).onBind(holder, viewModel);
 
@@ -177,28 +169,21 @@ public class FormAdapter extends RecyclerView.Adapter {
 
     @Override
     public int getItemCount() {
-        return attributeList != null ? attributeList.size() + programData : programData;
+        return attributeList != null ? attributeList.size() : 0;
     }
 
     @Override
     public long getItemId(int position) {
-        if (position < programData) {
-            return position == 0 ? ENROLLMENT_DATE_ID : INCIDENT_DATE_ID;
-        } else {
-            return attributeList.get(position - programData).uid().hashCode();
-        }
+        return attributeList.get(position).uid().hashCode();
     }
 
     @Override
     public int getItemViewType(int position) {
 
-        if (position < programData)
-            return DATE;
-
-        if (attributeList.get(position - programData).optionSet() != null)
+        if (attributeList.get(position).optionSet() != null)
             return SPINNER;
         else {
-            switch (attributeList.get(position - programData).valueType()) {
+            switch (attributeList.get(position).valueType()) {
                 case AGE:
                     return AGEVIEW;
                 case TEXT:
@@ -240,16 +225,10 @@ public class FormAdapter extends RecyclerView.Adapter {
 
     }
 
-    public void setList(List<TrackedEntityAttributeModel> modelList, ProgramModel programModel, HashMap<String, String> queryData) {
+    public void setList(List<TrackedEntityAttribute> trackedEntityAttributes, Program program, HashMap<String, String> queryData) {
         this.queryData = queryData;
-        if (programModel != null) {
-            this.programModel = programModel;
-            programData = programModel.displayIncidentDate() ? 1 : 0;
-        } else {
-            programData = 0;
-        }
-
-        this.attributeList = modelList;
+        this.program = program;
+        this.attributeList = trackedEntityAttributes;
 
         notifyDataSetChanged();
 

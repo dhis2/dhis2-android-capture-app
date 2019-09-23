@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="@dimen/item_margin"
+    android:gravity="end"
+    android:orientation="vertical">
+
+    <androidx.appcompat.widget.SwitchCompat
+        android:id="@+id/settings_sms_switch"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_marginTop="5dp"
+        android:text="@string/settings_sms_module_switch"
+        android:textSize="12sp"
+        app:switchPadding="15dp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:orientation="horizontal">
+
+        <TextView
+            style="@style/TextPrimary"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:text="@string/settings_sms_receiver_number"
+            android:layout_gravity="center|start"
+            android:textColor="@color/black_de0"
+            android:textSize="12sp" />
+
+        <androidx.appcompat.widget.AppCompatEditText
+            android:id="@+id/settings_sms_receiver"
+            android:layout_width="104dp"
+            android:layout_height="wrap_content"
+            android:background="@drawable/gray_border_gray_solid_box"
+            android:layout_gravity="center|end"
+            android:hint="@string/settings_sms_receiver_number_hint"
+            android:paddingEnd="5dp"
+            android:gravity="end"
+            android:paddingStart="5dp"
+            android:inputType="phone"
+            android:maxLines="1"
+            android:textSize="14sp"
+            tools:text="+00000000000" />
+
+    </LinearLayout>
+
+
+    <androidx.appcompat.widget.SwitchCompat
+        android:id="@+id/settings_sms_response_wait_switch"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:text="@string/settings_sms_response_wait_switch"
+        android:textSize="12sp"
+        app:switchPadding="15dp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:gravity="center|end"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:text="@string/settings_sms_result_sender_number"
+            android:textColor="@color/black_de0"
+            android:textSize="12sp"/>
+
+        <androidx.appcompat.widget.AppCompatEditText
+            android:id="@+id/settings_sms_result_sender"
+            android:layout_width="104dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="42dp"
+            android:background="@drawable/gray_border_gray_solid_box"
+            android:gravity="end"
+            android:hint="@string/settings_sms_result_sender_hint"
+            android:paddingEnd="5dp"
+            android:paddingStart="5dp"
+            android:inputType="phone"
+            android:maxLines="1"
+            android:textSize="14sp"
+            tools:text="+00000000000" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_marginTop="5dp"
+        android:gravity="center|end"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:text="@string/settings_sms_result_timeout"
+            android:textSize="12sp"
+            android:textColor="@color/black_de0"/>
+
+        <androidx.appcompat.widget.AppCompatEditText
+            android:id="@+id/settings_sms_result_timeout"
+            android:layout_width="104dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="42dp"
+            android:background="@drawable/gray_border_gray_solid_box"
+            android:gravity="end"
+            android:hint="@string/settings_sms_result_timeout_hint"
+            android:paddingEnd="5dp"
+            android:paddingStart="5dp"
+            android:inputType="number"
+            android:maxLines="1"
+            android:textSize="14sp"
+            tools:text="120" />
+
+    </LinearLayout>
+</LinearLayout>

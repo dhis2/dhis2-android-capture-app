@@ -3,11 +3,8 @@ package org.dhis2.usescases.teiDashboard.eventDetail;
 import androidx.annotation.NonNull;
 
 import org.dhis2.data.tuples.Pair;
-
 import org.hisp.dhis.android.core.category.CategoryOptionCombo;
-import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.event.Event;
-import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.Program;
@@ -31,12 +28,6 @@ public interface EventDetailRepository {
     @NonNull
     Observable<List<ProgramStageSection>> programStageSection(String eventUid);
 
-    /*@NonNull
-    Observable<List<ProgramStageDataElementModel>> programStageDataElement(String eventUid);*/
-
-    /*@NonNull
-    Observable<List<TrackedEntityDataValueModel>> dataValueModelList(String eventUid);*/
-
     @NonNull
     Observable<ProgramStage> programStage(String eventUid);
 
@@ -52,14 +43,16 @@ public interface EventDetailRepository {
 
     Observable<List<OrganisationUnit>> getOrgUnits();
 
-    Observable<Pair<String,List<CategoryOptionComboModel>>> getCategoryOptionCombos();
+    Observable<Pair<String, List<CategoryOptionCombo>>> getCategoryOptionCombos();
 
     @NonNull
     Flowable<EventStatus> eventStatus(String eventUid);
 
     Observable<Program> getProgram(String eventUid);
 
-    void saveCatOption(CategoryOptionComboModel selectedOption);
+    void saveCatOption(CategoryOptionCombo selectedOption);
 
     Observable<Boolean> isEnrollmentActive(String eventUid);
+
+    Observable<Program> getExpiryDateFromEvent(String eventUid);
 }
