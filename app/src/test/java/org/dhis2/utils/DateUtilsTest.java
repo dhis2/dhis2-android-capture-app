@@ -3,6 +3,7 @@ package org.dhis2.utils;
 import org.dhis2.R;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.period.PeriodType;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -13,9 +14,35 @@ import java.util.Date;
 import java.util.Locale;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
 public class DateUtilsTest {
+
+    @Test
+    public void contentsAreTheSame() {
+        TrackedEntityAttributeValue attributeValue1 = TrackedEntityAttributeValue.builder()
+                .value("10")
+                .trackedEntityInstance("tei")
+                .trackedEntityAttribute("attribute")
+                .build();
+
+        TrackedEntityAttributeValue attributeValue3 = TrackedEntityAttributeValue.builder()
+                .value("10")
+                .trackedEntityInstance("tei")
+                .trackedEntityAttribute("attribute")
+                .build();
+
+        TrackedEntityAttributeValue attributeValue2 = TrackedEntityAttributeValue.builder()
+                .value("11")
+                .trackedEntityInstance("tei")
+                .trackedEntityAttribute("attribute")
+                .build();
+
+        assertTrue(!attributeValue1.equals(attributeValue2));
+        assertEquals(attributeValue1, attributeValue3);
+    }
 
     @Test
     public void moveWeekly() throws ParseException {

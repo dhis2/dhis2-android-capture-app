@@ -101,7 +101,7 @@ public class RulesUtilsProviderImplTest {
     private void putFieldViewModel() {
         testFieldViewModels.put(testUid, fieldFactory.create(testUid, "label",
                 ValueType.TEXT, false, "optionSet", "test", "section",
-                null, true, null, null, null, 1, ObjectStyle.builder().build()));
+                null, true, null, null, null, 1, ObjectStyle.builder().build(),""));
     }
 
     @Test
@@ -111,7 +111,7 @@ public class RulesUtilsProviderImplTest {
         String testUid = "XXXXXX";
         testFieldViewModels.put(testUid, fieldFactory.create(testUid, "label",
                 ValueType.TEXT, false, "", "test", null,
-                null, true, null, null, null, null, null));
+                null, true, null, null, null, null, null,""));
 
         putFieldViewModel();
 
