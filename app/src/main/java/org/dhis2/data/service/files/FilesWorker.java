@@ -3,7 +3,6 @@ package org.dhis2.data.service.files;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
-import android.database.sqlite.SQLiteStatement;
 import android.os.Build;
 import android.webkit.MimeTypeMap;
 
@@ -88,13 +87,17 @@ public class FilesWorker extends Worker {
 
     private void uploadBulkResources() {
         triggerNotification("File processor", "Uploading files...", file_upload_channel);
-        File[] filesToUpload = FileResourcesUtil.getUploadDirectory(getApplicationContext()).listFiles();
+        Completable.fromObservable(
+                d2.fileResourceModule().fileResources.upload()
+                /*.doOnNext(d2Progress -> triggerNotification("File processor", String.format("Uploading file %s/%s", d2Progress.doneCalls(), d2Progress.totalCalls()), file_upload_channel))*/
+        ).blockingAwait();
+       /* File[] filesToUpload = FileResourcesUtil.getUploadDirectory(getApplicationContext()).listFiles();
         int count = 1;
         for (File file : filesToUpload) {
             triggerNotification("File processor", String.format("Uploading file %s/%s", count++, filesToUpload.length), file_upload_channel);
             String[] fileName = file.getName().split("_"); //tei/event, attr/de, extension
             upload(file, fileName[0], fileName[1].split("\\.")[0]);
-        }
+        }*/
     }
 
     private void uploadFileResources(String teiUid, String attrUid) {
@@ -115,12 +118,15 @@ public class FilesWorker extends Worker {
                 String jsonResponse = response.body().string();
                 FileResourceResponse fileResourceResponse = new Gson().fromJson(jsonResponse, FileResourceResponse.class);
 
-                String updateAttr = String.format("UPDATE TrackedEntityAttributeValue SET value = '%s' " +
-                                "WHERE trackedEntityInstance = '%s' AND trackedEntityAttribute = '%s'",
-                        fileResourceResponse.getResponse().getFileResource().getId(), teiOrEvent, attrUid);
-                SQLiteStatement update = d2.databaseAdapter().compileStatement(updateAttr);
-                int updated = d2.databaseAdapter().executeUpdateDelete("TrackedEntityAttributeValue", update);
-                return updated > -1;
+                if (d2.trackedEntityModule().trackedEntityAttributes.uid(attrUid).blockingExists())
+                    d2.trackedEntityModule().trackedEntityAttributeValues.value(attrUid, teiOrEvent).set(
+                            fileResourceResponse.getResponse().getFileResource().getId()
+                    );
+                else
+                    d2.trackedEntityModule().trackedEntityDataValues.value(teiOrEvent, attrUid).set(
+                            fileResourceResponse.getResponse().getFileResource().getId()
+                    );
+                return file.delete();
 
             } else
                 return false;
@@ -132,6 +138,10 @@ public class FilesWorker extends Worker {
 
         triggerNotification("File processor", "Downloading files...", file_download_channel);
 
+        Completable.fromObservable(d2.fileResourceModule().download()
+                .doOnNext(d2Progress -> triggerNotification("File processor", String.format("Downloading file %s/%s", d2Progress.doneCalls(), d2Progress.totalCalls()), file_download_channel))
+        ).blockingAwait();
+/*
         List<TrackedEntityAttribute> imageAttr = d2.trackedEntityModule().trackedEntityAttributes
                 .byValueType().eq(ValueType.IMAGE).blockingGet();
 
@@ -154,7 +164,7 @@ public class FilesWorker extends Worker {
                     return false;
             }).blockingAwait();
 
-        }
+        }*/
     }
 
     private boolean writeResponseBodyToDisk(ResponseBody body, String generatedFileName) {
@@ -209,7 +219,7 @@ public class FilesWorker extends Worker {
     private MultipartBody.Part getFilePart(File file) {
         String extension = MimeTypeMap.getFileExtensionFromUrl(file.getPath());
         String type = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
-        if(type == null)
+        if (type == null)
             type = "image/*";
         return MultipartBody.Part.createFormData("file", file.getName(), RequestBody.create(MediaType.parse(type), file));
     }

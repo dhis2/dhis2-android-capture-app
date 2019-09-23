@@ -33,6 +33,7 @@ import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerRow;
 import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel;
 import org.dhis2.data.forms.dataentry.fields.unsupported.UnsupportedRow;
 import org.dhis2.data.tuples.Trio;
+import org.dhis2.usescases.searchTrackEntity.SearchTEContractsModule;
 import org.dhis2.utils.Constants;
 import org.hisp.dhis.android.core.common.FeatureType;
 import org.hisp.dhis.android.core.common.ObjectStyle;
@@ -77,15 +78,18 @@ public class FormAdapter extends RecyclerView.Adapter {
 
     @NonNull
     private final List<Row> rows;
+    private SearchTEContractsModule.Presenter presenter;
 
     private Context context;
     private HashMap<String, String> queryData;
 
-    public FormAdapter(FragmentManager fm, Context context) {
+    public FormAdapter(FragmentManager fm, Context context, SearchTEContractsModule.Presenter presenter) {
         setHasStableIds(true);
         this.processor = PublishProcessor.create();
         this.processorOptionSet = PublishProcessor.create();
         this.context = context;
+        this.presenter = presenter;
+
         LayoutInflater layoutInflater = LayoutInflater.from(context);
         attributeList = new ArrayList<>();
         rows = new ArrayList<>();
@@ -145,7 +149,13 @@ public class FormAdapter extends RecyclerView.Adapter {
                 viewModel = AgeViewModel.create(attr.uid(), label, false, queryData.get(attr.uid()), null, true, attr.displayDescription(), ObjectStyle.builder().build());
                 break;
             case ORG_UNIT:
-                viewModel = OrgUnitViewModel.create(attr.uid(), label, false, queryData.get(attr.uid()), null, true, attr.displayDescription(), ObjectStyle.builder().build());
+                String value = presenter.nameOUByUid(queryData.get(attr.uid()));
+                if(value != null)
+                    value = queryData.get(attr.uid()) + "_ou_" + value;
+                else
+                    value = queryData.get(attr.uid());
+
+                viewModel = OrgUnitViewModel.create(attr.uid(), label, false, value, null, true, attr.displayDescription(), ObjectStyle.builder().build());
                 break;
             default:
                 Crashlytics.log("Unsupported viewType " +

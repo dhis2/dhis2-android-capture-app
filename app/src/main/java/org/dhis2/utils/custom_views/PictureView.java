@@ -165,7 +165,8 @@ public class PictureView extends FieldLayout implements View.OnClickListener, Vi
             Glide.with(image).clear(image);
             clearButton.setVisibility(View.VISIBLE);
 
-            File file = FileResourcesUtil.getFileForAttribute(getContext(), primaryUid.concat("_").concat(uid).concat(".png"));
+//            File file = FileResourcesUtil.getFileForAttribute(getContext(), primaryUid.concat("_").concat(uid).concat(".png"));
+            File file = new File(value);
 
             if (file.exists()) {
                 setTextSelected(getContext().getString(R.string.image_selected));
@@ -197,7 +198,7 @@ public class PictureView extends FieldLayout implements View.OnClickListener, Vi
                         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                         Uri photoUri = FileProvider.getUriForFile(getContext(),
                                 BuildConfig.APPLICATION_ID + ".provider",
-                                new File(FileResourcesUtil.getUploadDirectory(getContext()), FileResourcesUtil.generateFileName(primaryUid, uid)));
+                                new File(FileResourcesUtil.getUploadDirectory(getContext()), "tempFile.png"));
                         intent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
                         intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
                         PictureView.this.onIntentSelected.intentSelected(this.uid, intent, Constants.CAMERA_REQUEST, (file, value, uuid) -> {

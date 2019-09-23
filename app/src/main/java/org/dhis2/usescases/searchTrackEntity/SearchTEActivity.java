@@ -75,16 +75,19 @@ import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel;
 import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.DateUtils;
+import org.dhis2.utils.FileResourcesUtil;
 import org.dhis2.utils.HelpManager;
 import org.dhis2.utils.filters.FilterManager;
 import org.dhis2.utils.filters.FiltersAdapter;
 import org.dhis2.utils.maps.MapLayerDialog;
 import org.dhis2.utils.maps.MapLayerManager;
+import org.dhis2.utils.maps.MarkerUtils;
 import org.hisp.dhis.android.core.arch.call.D2Progress;
 import org.hisp.dhis.android.core.common.FeatureType;
 import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute;
 
+import java.io.File;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.HashMap;
@@ -98,9 +101,11 @@ import kotlin.Pair;
 import timber.log.Timber;
 
 import static com.mapbox.mapboxsdk.style.expressions.Expression.eq;
+import static com.mapbox.mapboxsdk.style.expressions.Expression.get;
 import static com.mapbox.mapboxsdk.style.expressions.Expression.literal;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.fillColor;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconAllowOverlap;
+import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconOffset;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.lineColor;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.lineWidth;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.textAllowOverlap;
@@ -196,7 +201,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
         binding.scrollView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
 
-        binding.formRecycler.setAdapter(new FormAdapter(getSupportFragmentManager(), this));
+        binding.formRecycler.setAdapter(new FormAdapter(getSupportFragmentManager(), this, presenter));
 
         binding.enrollmentButton.setOnTouchListener((v, event) -> {
             if (event.getAction() == MotionEvent.ACTION_DOWN) {
@@ -640,7 +645,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             if (map == null)
                 binding.mapView.getMapAsync(mapboxMap -> {
                     map = mapboxMap;
-                    if (map.getStyle() == null)
+                    if (map.getStyle() == null) {
                         map.setStyle(Style.MAPBOX_STREETS, style -> {
                                     MapLayerManager.Companion.init(style, "teis", featureType);
                                     MapLayerManager.Companion.instance().setEnrollmentLayerData(
@@ -678,7 +683,23 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
                                 }
                         );
-                    else {
+
+                        binding.mapView.addOnStyleImageMissingListener(filePath -> {
+                            File file = new File(filePath);
+                            if (file.exists()) {
+                                Style style = mapboxMap.getStyle();
+                                if (style != null) {
+                                    style.addImageAsync(filePath, MarkerUtils.INSTANCE.getMarker(this, FileResourcesUtil.getSmallImage(this, filePath)));
+                                }
+                            } else {
+                                Style style = mapboxMap.getStyle();
+                                if (style != null) {
+                                    style.addImageAsync(filePath, presenter.getSymbolIcon());
+                                }
+                            }
+                        });
+
+                    } else {
                         ((GeoJsonSource) mapboxMap.getStyle().getSource("teis")).setGeoJson(data.component1().get("TEI"));
                         ((GeoJsonSource) mapboxMap.getStyle().getSource("enrollments")).setGeoJson(data.component1().get("ENROLLMENT"));
                         LatLngBounds bounds = LatLngBounds.from(data.component2().north(),
@@ -715,7 +736,8 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     private void setLayer(Style style) {
 
         SymbolLayer symbolLayer = new SymbolLayer("POINT_LAYER", "teis").withProperties(
-                PropertyFactory.iconImage("ICON_ID"),
+                PropertyFactory.iconImage(get("teiImage")),
+                iconOffset(new Float[]{0f,-25f}),
                 iconAllowOverlap(true),
                 textAllowOverlap(true)
         );

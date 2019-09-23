@@ -14,7 +14,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
 import androidx.databinding.ObservableBoolean;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -34,7 +33,6 @@ import org.dhis2.utils.Constants;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.DialogClickListener;
 import org.dhis2.utils.EventCreationType;
-import org.dhis2.utils.FileResourcesUtil;
 import org.dhis2.utils.custom_views.CategoryComboDialog;
 import org.dhis2.utils.custom_views.CustomDialog;
 import org.hisp.dhis.android.core.category.CategoryCombo;
@@ -107,7 +105,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
     @Override
     public void onStart() {
         super.onStart();
-        dashboardViewModel =ViewModelProviders.of(activity).get(DashboardViewModel.class);
+        dashboardViewModel = ViewModelProviders.of(activity).get(DashboardViewModel.class);
 
     }
 
@@ -159,7 +157,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
             presenter.setDashboardProgram(this.dashboardModel);
             SharedPreferences prefs = context.getSharedPreferences(Constants.SHARE_PREFS, Context.MODE_PRIVATE);
             hasCatComb = nprogram.getCurrentProgram() != null && !nprogram.getCurrentProgram().categoryComboUid().equals(prefs.getString(Constants.DEFAULT_CAT_COMBO, ""));
-            adapter = new EventAdapter(presenter, nprogram.getProgramStages(),  new ArrayList<>(), nprogram.getCurrentEnrollment(), nprogram.getCurrentProgram());
+            adapter = new EventAdapter(presenter, nprogram.getProgramStages(), new ArrayList<>(), nprogram.getCurrentEnrollment(), nprogram.getCurrentProgram());
             binding.teiRecycler.setLayoutManager(new LinearLayoutManager(getAbstracContext()));
             binding.teiRecycler.setAdapter(adapter);
             binding.setTrackEntity(nprogram.getTei());
@@ -375,7 +373,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
 
     @Override
     public void seeDetails(Intent intent, Bundle bundle) {
-        this.startActivity(intent,bundle);
+        this.startActivity(intent, bundle);
     }
 
     @Override
@@ -399,10 +397,9 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
     }
 
     @Override
-    public void showTeiImage(String fileName) {
-        File file = FileResourcesUtil.getFileForAttribute(context, fileName);
+    public void showTeiImage(String filePath) {
         Glide.with(this)
-                .load(file)
+                .load(new File(filePath))
                 .placeholder(R.drawable.photo_temp_gray)
                 .error(R.drawable.photo_temp_gray)
                 .transition(withCrossFade())

@@ -273,15 +273,9 @@ class MapSelectorActivity : ActivityGlobalAbstract(), MapActivityLocationCallbac
                         boundingBox.south(),
                         boundingBox.west())
 
-                map.easeCamera(CameraUpdateFactory.newLatLngBounds(latLong, 0))
-                /*val point = Point.fromLngLat(array[0][0][0], array[0][0][1])
-                map.animateCamera(CameraUpdateFactory.newLatLngZoom(LatLng(point.latitude(), point.longitude()), 12.0))
 
-                val cameraPosition = CameraPosition.Builder()
-                        .target(LatLng(point.latitude(), point.longitude()))      // Sets the center of the map to location user
-                        .zoom(13.0)                   // Sets the zoom
-                        .build()                   // Creates a CameraPosition from the builder
-                map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition))*/
+                map.easeCamera(CameraUpdateFactory.newLatLngBounds(latLong, 50),1200)
+
             }
         }
     }

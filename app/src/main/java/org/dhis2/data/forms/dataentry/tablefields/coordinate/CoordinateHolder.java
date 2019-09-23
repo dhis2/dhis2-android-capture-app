@@ -14,6 +14,7 @@ import org.dhis2.data.forms.dataentry.tablefields.FormViewHolder;
 import org.dhis2.data.forms.dataentry.tablefields.RowAction;
 import org.dhis2.databinding.CustomCellViewBinding;
 import org.dhis2.utils.custom_views.CoordinatesView;
+import org.hisp.dhis.android.core.common.FeatureType;
 
 import java.util.Locale;
 
@@ -85,8 +86,10 @@ public class CoordinateHolder extends FormViewHolder {
                         RowAction.create(model.uid(), null, model.dataElement(), model.categoryOptionCombo(), model.catCombo(), model.row(), model.column())))
                 .create();
 
-        if(model.value() != null && !model.value().isEmpty())
+        if(model.value() != null && !model.value().isEmpty()) {
+            coordinatesView.setFeatureType(FeatureType.POINT);
             coordinatesView.setInitialValue(model.value());
+        }
 
         coordinatesView.setLabel(model.label());
 

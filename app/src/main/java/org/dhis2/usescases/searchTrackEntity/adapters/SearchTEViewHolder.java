@@ -82,7 +82,7 @@ public class SearchTEViewHolder extends RecyclerView.ViewHolder {
                 presenter.onTEIClick(searchTeiModel.getTei().uid(), searchTeiModel.isOnline());
         });
 
-        File file = FileResourcesUtil.getFileForAttribute(itemView.getContext(), searchTeiModel.getTei().uid() + "_" + searchTeiModel.getProfilePictureUid() + ".png");
+        File file = new File(searchTeiModel.getProfilePicturePath());
         Drawable placeHolderId = ObjectStyleUtils.getIconResource(itemView.getContext(), searchTeiModel.getDefaultTypeIcon(), R.drawable.photo_temp_gray);
         if (file.exists())
             Glide.with(itemView.getContext())

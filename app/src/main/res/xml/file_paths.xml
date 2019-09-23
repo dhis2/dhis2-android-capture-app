@@ -6,4 +6,7 @@
     <files-path
         name="download"
         path="download/" />
+    <files-path
+        name="cache"
+        path="cache/"/>
 </paths>

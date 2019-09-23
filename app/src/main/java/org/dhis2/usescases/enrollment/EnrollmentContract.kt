@@ -59,5 +59,7 @@ class EnrollmentContract {
         fun openInitial(eventUid: String): Boolean
         fun deleteAllSavedData()
 
+        fun clearLastFocusItem()
+        fun saveValue(uid: String, value: String?): Boolean
     }
 }

@@ -7,9 +7,12 @@ import android.os.Bundle
 import android.text.TextUtils.isEmpty
 import android.view.LayoutInflater
 import android.view.View
+import android.view.inputmethod.InputMethodManager
 import android.widget.DatePicker
 import android.widget.PopupMenu
+import android.widget.Toast
 import androidx.databinding.DataBindingUtil
+import androidx.recyclerview.widget.RecyclerView
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import io.reactivex.Flowable
@@ -26,10 +29,7 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialAc
 import org.dhis2.usescases.general.ActivityGlobalAbstract
 import org.dhis2.usescases.map.MapSelectorActivity
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity
-import org.dhis2.utils.Constants
-import org.dhis2.utils.DatePickerUtils
-import org.dhis2.utils.DateUtils
-import org.dhis2.utils.DialogClickListener
+import org.dhis2.utils.*
 import org.dhis2.utils.custom_views.CustomDialog
 import org.hisp.dhis.android.core.arch.helpers.GeometryHelper
 import org.hisp.dhis.android.core.common.FeatureType
@@ -41,6 +41,7 @@ import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityType
+import java.io.File
 import java.util.*
 import javax.inject.Inject
 
@@ -52,6 +53,7 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentContract.View {
     lateinit var presenter: EnrollmentContract.Presenter
 
     lateinit var binding: EnrollmentActivityBinding
+    lateinit var mode: EnrollmentMode
 
     companion object {
         const val ENROLLMENT_UID_EXTRA = "ENROLLMENT_UID_EXTRA"
@@ -85,6 +87,10 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentContract.View {
         binding = DataBindingUtil.setContentView(this, R.layout.enrollment_activity)
         binding.view = this
 
+        mode = EnrollmentMode.valueOf(intent.getStringExtra(MODE_EXTRA))
+
+        binding.programLockLayout.visibility = if (mode == EnrollmentMode.NEW) View.GONE else View.VISIBLE
+
         binding.coordinatesView.setIsBgTransparent(true)
         binding.teiCoordinatesView.setIsBgTransparent(true)
 
@@ -98,8 +104,20 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentContract.View {
             else if (adapter.hasError())
                 showInfoDialog(getString(R.string.unable_to_complete), getString(R.string.field_errors))
             else
-                presenter.finish(EnrollmentMode.valueOf(intent.getStringExtra(MODE_EXTRA)))
+                presenter.finish(mode)
         }
+
+        binding.fieldRecycler.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                if (newState == RecyclerView.SCROLL_STATE_DRAGGING) {
+                    adapter.setLastFocusItem(null)
+                    val imm = context!!.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+                    imm.hideSoftInputFromWindow(recyclerView.windowToken, 0)
+                    binding.root.requestFocus()
+                    presenter.clearLastFocusItem()
+                }
+            }
+        })
     }
 
     override fun onResume() {
@@ -115,38 +133,35 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentContract.View {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
-        if ((requestCode == RQ_INCIDENT_GEOMETRY || requestCode == RQ_ENROLLMENT_GEOMETRY) &&
-                resultCode == Activity.RESULT_OK) {
-
-            val featureType = FeatureType.valueOfFeatureType(data!!.getStringExtra(MapSelectorActivity.LOCATION_TYPE_EXTRA))
-            val dataExtra = data.getStringExtra(MapSelectorActivity.DATA_EXTRA)
-
-            val geometry: Geometry? =
-                    when (featureType) {
-                        FeatureType.POINT -> {
-                            val type = object : TypeToken<List<Double>>() {}.type
-                            GeometryHelper.createPointGeometry(Gson().fromJson(dataExtra, type))
-                        }
-                        FeatureType.POLYGON -> {
-                            val type = object : TypeToken<List<List<List<Double>>>>() {}.type
-                            GeometryHelper.createPolygonGeometry(Gson().fromJson(dataExtra, type))
-                        }
-                        FeatureType.MULTI_POLYGON -> {
-                            val type = object : TypeToken<List<List<List<List<Double>>>>>() {}.type
-                            GeometryHelper.createMultiPolygonGeometry(Gson().fromJson(dataExtra, type))
-                        }
-                        else -> null
+        when (requestCode) {
+            RQ_INCIDENT_GEOMETRY, RQ_ENROLLMENT_GEOMETRY -> {
+                if (resultCode == Activity.RESULT_OK)
+                    handleGeometry(
+                            FeatureType.valueOfFeatureType(data!!.getStringExtra(MapSelectorActivity.LOCATION_TYPE_EXTRA)),
+                            data.getStringExtra(MapSelectorActivity.DATA_EXTRA), requestCode)
+            }
+            Constants.GALLERY_REQUEST -> {
+                if (resultCode == Activity.RESULT_OK) {
+                    try {
+                        val imageUri = data?.data
+                        presenter.saveValue(uuid, FileResourcesUtil.getFileFromGallery(this, imageUri).path)
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                        Toast.makeText(this, "Something went wrong", Toast.LENGTH_LONG).show()
                     }
-
-            if (geometry != null)
-                when (requestCode) {
-                    RQ_ENROLLMENT_GEOMETRY -> presenter.saveEnrollmentGeometry(geometry)
-                    RQ_INCIDENT_GEOMETRY -> presenter.saveTeiGeometry(geometry)
                 }
+            }
+            Constants.CAMERA_REQUEST -> {
+                if (resultCode == Activity.RESULT_OK) {
+                    val file = File(FileResourcesUtil.getUploadDirectory(this), "tempFile.png")
+                    if (file.exists()) {
+                        presenter.saveValue(uuid, file.path)
+                    } else
+                        presenter.saveValue(uuid, null)
+                }
+            }
+            RQ_EVENT -> openDashboard(presenter.getEnrollment().uid()!!)
         }
-
-        if (requestCode == RQ_EVENT)
-            openDashboard(presenter.getEnrollment().uid()!!)
     }
 
     override fun openEvent(eventUid: String) {
@@ -187,7 +202,7 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentContract.View {
     }
 
     override fun goBack() {
-        if (EnrollmentMode.valueOf(intent.getStringExtra(MODE_EXTRA)) == EnrollmentMode.CHECK)
+        if (mode == EnrollmentMode.CHECK)
             onBackPressed()
         else {
 
@@ -212,11 +227,41 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentContract.View {
         }
     }
 
+    private fun handleGeometry(featureType: FeatureType, dataExtra: String, requestCode: Int) {
+
+        val geometry: Geometry? =
+                when (featureType) {
+                    FeatureType.POINT -> {
+                        val type = object : TypeToken<List<Double>>() {}.type
+                        GeometryHelper.createPointGeometry(Gson().fromJson(dataExtra, type))
+                    }
+                    FeatureType.POLYGON -> {
+                        val type = object : TypeToken<List<List<List<Double>>>>() {}.type
+                        GeometryHelper.createPolygonGeometry(Gson().fromJson(dataExtra, type))
+                    }
+                    FeatureType.MULTI_POLYGON -> {
+                        val type = object : TypeToken<List<List<List<List<Double>>>>>() {}.type
+                        GeometryHelper.createMultiPolygonGeometry(Gson().fromJson(dataExtra, type))
+                    }
+                    else -> null
+                }
+
+        if (geometry != null)
+            when (requestCode) {
+                RQ_ENROLLMENT_GEOMETRY -> presenter.saveEnrollmentGeometry(geometry)
+                RQ_INCIDENT_GEOMETRY -> presenter.saveTeiGeometry(geometry)
+            }
+    }
+
     /*endregion*/
 
     /*region TEI*/
     override fun displayTeiInfo(it: List<TrackedEntityAttributeValue>) {
-        binding.title.text = it.map { it.value() }.joinToString(separator = " ", limit = 3)
+        binding.title.text =
+                if (mode != EnrollmentMode.NEW)
+                    it.map { it.value() }.joinToString(separator = " ", limit = 3)
+                else
+                    String.format(getString(R.string.enroll_in), presenter.getProgram().displayName())
     }
     /*endregion*/
     /*region ACCESS*/
@@ -285,7 +330,7 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentContract.View {
     }
 
     override fun blockDates(blockEnrollmentDate: Boolean, blockIncidentDate: Boolean) {
-        if(intent.getStringExtra(MODE_EXTRA) != EnrollmentMode.NEW.name) {
+        if (mode != EnrollmentMode.NEW) {
             binding.reportDate.isEnabled = !blockEnrollmentDate
             binding.incidentDateText.isEnabled = !blockIncidentDate
         }

@@ -35,14 +35,17 @@ object GeometryUtils {
                     val point = getPointFeature(geometry)
                     if (point != null) {
                         point.addStringProperty("teiUid", it.tei.uid())
+                        point.addStringProperty("teiImage",it.profilePicturePath)
                         featureMap["TEI"]!!.add(point)
                     }
                 } else if (geometry.type() == FeatureType.POLYGON) {
                     val polygon = getPolygonFeature(geometry)
                     polygon.addStringProperty("teiUid", it.tei.uid())
+                    polygon.addStringProperty("teiImage", it.profilePicturePath)
                     featureMap["TEI"]!!.add(polygon)
                     val polygonPoint = getPolygonPointFeature(geometry)
                     polygonPoint.addStringProperty("teiUid", it.tei.uid())
+                    polygonPoint.addStringProperty("teiImage", it.profilePicturePath)
                     featureMap["TEI"]!!.add(polygonPoint)
                 }
             }
@@ -187,7 +190,7 @@ object GeometryUtils {
         westBound = 0.0
         coordenates.forEach {
             it.forEach { sdkPoint ->
-                checkBounds(sdkPoint[0], sdkPoint[1])
+                checkBounds(sdkPoint[1], sdkPoint[0])
             }
         }
 

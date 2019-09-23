@@ -7,11 +7,13 @@ import androidx.annotation.NonNull;
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory;
+import org.dhis2.utils.FileResourcesUtil;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.common.ValueTypeDeviceRendering;
 import org.hisp.dhis.android.core.enrollment.EnrollmentObjectRepository;
+import org.hisp.dhis.android.core.fileresource.FileResource;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitLevel;
 import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttribute;
@@ -38,8 +40,8 @@ public final class EnrollmentRepository implements DataEntryRepository {
     private final EnrollmentObjectRepository enrollmentRepository;
 
     public EnrollmentRepository(@NonNull Context context,
-                         @NonNull FieldViewModelFactory fieldFactory,
-                         @NonNull String enrollmentUid, D2 d2) {
+                                @NonNull FieldViewModelFactory fieldFactory,
+                                @NonNull String enrollmentUid, D2 d2) {
         this.fieldFactory = fieldFactory;
         this.enrollmentUid = enrollmentUid;
         this.enrollmentRepository = d2.enrollmentModule().enrollments.uid(enrollmentUid);
@@ -81,7 +83,7 @@ public final class EnrollmentRepository implements DataEntryRepository {
         ValueType valueType = attribute.valueType();
         boolean mandatory = programTrackedEntityAttribute.mandatory();
         String optionSet = attribute.optionSet() != null ? attribute.optionSet().uid() : null;
-        boolean allowFutureDates = programTrackedEntityAttribute.allowFutureDate()!=null?programTrackedEntityAttribute.allowFutureDate():false;
+        boolean allowFutureDates = programTrackedEntityAttribute.allowFutureDate() != null ? programTrackedEntityAttribute.allowFutureDate() : false;
         boolean generated = attribute.generated();
 
         String orgUnitUid = enrollmentRepository.blockingGet().organisationUnit();
@@ -93,8 +95,11 @@ public final class EnrollmentRepository implements DataEntryRepository {
         String fieldMask = attribute.fieldMask();
 
 
-        if (valueType == ValueType.IMAGE)
-            uid = d2.enrollmentModule().enrollments.uid(enrollmentUid).blockingGet().trackedEntityInstance() + "_" + uid;
+        if (valueType == ValueType.IMAGE && !isEmpty(dataValue)) {
+            FileResource fileResource = d2.fileResourceModule().fileResources.uid(dataValue).blockingGet();
+            if (fileResource != null)
+                dataValue = FileResourcesUtil.getFileResourceFullPath(fileResource);
+        }
 
         int optionCount = 0;
         if (!isEmpty(optionSet)) {
