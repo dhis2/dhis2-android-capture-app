@@ -1,290 +1,378 @@
-<?xml version='1.0' encoding='utf-8'?>
 <resources>
-  <string name="app_name">Dhis2</string>
-  <string name="logo_text">dhis</string>
-  <string name="logo_number">2</string>
-  <string name="error">Lỗi</string>
-  <string name="error_wrong_server_url">Sai đường dẫn đến máy chủ</string>
-  <string name="error_wrong_credentials">"Sai thông tin đăng nhập "</string>
-  <string name="error_unexpected_error">Lỗi không mong muốn</string>
-  <string name="error_internal_server_error">Lỗi máy chủ nội bộ</string>
-  <string name="yes">có</string>
-  <string name="no">không</string>
-  <string name="no_value">không có giá trị</string>
-  <string name="sync_now">Đồng bộ ngay</string>
-  <string name="sync_text">Đang đồng bộ với máy chủ</string>
-  <string name="sync_title">Đang đồng bộ</string>
-  <string name="sync_metadata">Siêu dữ liệu</string>
-  <string name="sync_events">Sự kiện</string>
-  <string name="sync_tei">Các thực thể được theo dõi</string>
-  <string name="sync_complete_title">Hoàn thành</string>
-  <string name="sync_complete_text">Đồng bộ hoàn tất</string>
-  <string name="sync_error_title">Lỗi đồng bộ</string>
-  <string name="sync_error_text">Có lỗi xảy ra trong quá trình đồng bộ. Vui lòng thử lại.</string>
-  <string name="search_result_text">Tìm thấy %s kết quả</string>
-  <string name="add_new">Thêm mới</string>
-  <string name="schedule_new">Đặt lịch mới</string>
-  <string name="referral">Giới thiệu</string>
-  <string name="url_hint">Đường dẫn đến máy chủ</string>
-  <string name="user_hint">Tên tài khoản</string>
-  <string name="password_hint">Mật khẩu</string>
-  <string name="log_in_button">Đăng nhập</string>
-  <string name="unlock_button">Mở khóa phiên</string>
-  <string name="syncing_configuration">Đang đồng bộ cấu hình của bạn</string>
-  <string name="syncing_data_shortly">"Dự liệu của bạn sẽ được sớm đồng bộ "</string>
-  <string name="syncing_data">Đang đồng bộ dữ liệu của bạn</string>
-  <string name="configuration_ready">Cấu hình của bạn đã sẵn sàng</string>
-  <string name="data_ready">Dữ liệu đã sẵn sàng</string>
-  <string name="configuration_sync_failed">Đồng bộ cấu hình thất bại</string>
-  <string name="data_sync_failed">Đồng bộ dữ liệu thất bại</string>
-  <string name="DAILY">Hàng ngày</string>
-  <string name="WEEKLY">Hàng tuần</string>
-  <string name="MONTHLY">Hàng tháng</string>
-  <string name="YEARLY">Hàng năm</string>
-  <string name="clear_filters">Bỏ lọc</string>
-  <string name="action_accept">Chấp nhận</string>
-  <string name="search">Tìm kiếm</string>
-  <string name="enter_text">Nhập văn bản</string>
-  <string name="enter_long_text">Nhập văn bản dài</string>
-  <string name="enter_number">Nhập số</string>
-  <string name="enter_integer">Nhập số nguyên</string>
-  <string name="enter_negative_integer">Nhập số nguyên âm</string>
-  <string name="enter_positive_integer_or_zero">Nhập số nguyên dương hoặc số 0</string>
-  <string name="enter_positive_integer">Nhập số nguyên</string>
-  <string name="filter_options">Các lựa chọn lọc</string>
-  <string name="choose_date">Chọn ngày</string>
-  <string name="program_completed">Chương trình đã hoàn tất</string>
-  <string name="program_inactive">Chương trình không hoạt động</string>
-  <string name="event_open">Mở</string>
-  <string name="event_completed">Sự kiện hoàn tất</string>
-  <string name="event_skipped">Đã bỏ qua sự kiện</string>
-  <string name="event_schedule">Lịch trình sự kiện</string>
-  <string name="event_expired">Sự kiện quá hạn</string>
-  <string name="event_editing_expired">Chỉnh sửa đã hêt hạn</string>
-  <string name="event_accepted">Sự kiện được chấp nhận</string>
-  <string name="event_approved">Sự kiện được được duyệt</string>
-  <string name="event_inactive">Sự kiện không hoạt động</string>
-  <string name="read_only">Chỉ đọc</string>
-  <string name="complete">Hoàn thành</string>
-  <string name="completed">Đã hoàn thành</string>
-  <string name="cancelled">Đã hủy</string>
-  <string name="re_open">mở lại</string>
-  <string name="activate">kích hoạt</string>
-  <string name="state_synced">Đồng bộ</string>
-  <string name="state_to_post">Đăng</string>
-  <string name="state_to_update">Cập nhật</string>
-  <string name="state_to_delete">Xóa</string>
-  <string name="state_error">Lỗi</string>
-  <string name="action_sync">ĐỒNG BỘ</string>
-  <string name="completion">Hoàn thành</string>
-  <string name="create">Tạo</string>
-  <string name="update">Cập nhật</string>
-  <string name="date">Ngày</string>
-  <string name="org_unit">Đơn vị</string>
-  <string name="no_org_units">Không có đơn vị mở nào cho ngày đã chọn. Vui lòng chọn một ngày khác.</string>
-  <string name="category_option">Tùy chọn phân loại</string>
-  <string name="latitude">Vĩ độ</string>
-  <string name="longitude">Kinh độ</string>
-  <string name="new_event">Sự kiện mới</string>
-  <string name="failed_insert_event">Không chèn được sự kiện mới</string>
-  <string name="event_created">Sự kiện đã được tạo</string>
-  <string name="event_updated">Sự kiện đã được cập nhật</string>
-  <string name="one_time">Một lần</string>
-  <string name="permanent">Vĩnh viễn</string>
-  <string name="event_date">Ngày xảy ra sự kiện</string>
-  <string name="due_date">Ngày đến hạn</string>
-  <string name="cat_combo">Tổ hợp phân loại</string>
-  <string name="date_default">DD/MM/YYYY</string>
-  <string name="cancel">Hủy</string>
-  <string name="delete">Xóa</string>
-  <string name="delete_event">Xóa sự kiện</string>
-  <string name="confirm_delete_event">Bạn có chắc chắn muốn xóa sự kiện này?</string>
-  <string name="event_was_deleted">Xóa sự kiện thành công</string>
-  <string name="enrollment_list">Danh sách ghi danh</string>
-  <string name="active_programs">Các chương trình đang hoạt động</string>
-  <string name="to_enroll_programs">Chương trình để ghi danh</string>
-  <string name="enroll">Ghi danh</string>
-  <string name="last_visit">Ngày khám cuối cùng</string>
-  <string name="apply">áp dụng</string>
-  <string name="see_details">Xem chi tiết</string>
-  <string name="view_more">XEM THÊM</string>
-  <string name="edit">CHỈNH SỬA</string>
-  <string name="enrolling_ou">Đơn vị đang ghi danh</string>
-  <string name="follow_up">Theo dõi</string>
-  <string name="follow_up_enabled">Đã bật theo dõi</string>
-  <string name="follow_up_disabled">Đã tắt theo dõi</string>
-  <string name="deactivate">Hủy kích hoạt</string>
-  <string name="program_not_allow_events">Chương trình này không cho phép thêm sự kiện</string>
-  <string name="events">sự kiện</string>
-  <string name="done_task">Trang chủ</string>
-  <string name="app_info">Thông tin về ứng dụng</string>
-  <string name="log_out">Đăng xuất</string>
-  <string name="block_session">Khóa phiên</string>
-  <string name="select_location">Chọn địa điểm</string>
-  <string name="a_minute">1 Phút</string>
-  <string name="fifteen_minute">15 Phút</string>
-  <string name="a_hour">1 Giờ</string>
-  <string name="a_day">1 Ngày (Mặc định)</string>
-  <string name="Automatic_Sync_Data">Đồng bộ dữ liệu tự động mỗi:</string>
-  <string name="Manual">Thủ công</string>
-  <string name="Automatic_Sync_Metadata">Đồng bộ cấu hình tự động mỗi:</string>
-  <string name="a_week">1 Tuần</string>
-  <string name="sync_max_parameters">Các tham số đồng bộ hiện tại:</string>
-  <string name="sync_default_parameters">Đặt lại về mặc định</string>
-  <string name="wipe_data_meesage">Cơ sở dữ liệu sẽ được xóa.\nBạn sẽ được yêu cầu đăng nhập lại.</string>
-  <string name="wipe_data_ok">Chấp nhận</string>
-  <string name="wipe_data_no">Hủy</string>
-  <string name="SYNC_DATA">ĐỒNG BỘ Dữ liệu ngay</string>
-  <string name="SYNC_META">ĐỒNG BỘ Cấu hình ngay</string>
-  <string name="SYNC_MANAGER">Cài đặt</string>
-  <string name="last_data_sync_date">Đồng bộ lần cuối: %s</string>
-  <string name="last_metadata_sync_date">Đồng bộ lần cuối: %s</string>
-  <string name="enrollmment_date">Ngày đăng ký</string>
-  <string name="report_date">Ngày báo cáo</string>
-  <string name="add_file">Thêm tập tin</string>
-  <string name="write_new_note">Viết chú thích mới</string>
-  <string name="clear">xóa</string>
-  <string name="add_note">Thêm chú thích</string>
-  <string name="revert">Hoàn nguyên</string>
-  <string name="activated">Đã hoạt động</string>
-  <string name="enroll_in">Đăng ký vào %s</string>
-  <string name="missing_mandatory_fields_title">Thiếu trường bắt buộc</string>
-  <string name="missing_mandatory_fields_text">Một số trường bắt buộc bị thiếu. Nếu bạn muốn quay trở lại, tất cả các thông tin đã lưu sẽ bị xóa.</string>
-  <string name="missing_mandatory_fields_events">Một số trường bắt buộc bị thiếu. Bạn có thể quay lại bay giờ, nhưng sự kiện này sẽ không thể hoàn thành.</string>
-  <string name="missing_mandatory_fields_go_back">Xóa và quay lại</string>
-  <string name="section_list">Danh sách phần</string>
-  <string name="event_summary_header">%s câu hỏi của %s đã hoàn thành</string>
-  <string name="event_summary_sections_header">%s của %s đã hoàn thành</string>
-  <string name="complete_and_close">Hoàn thành và đóng</string>
-  <string name="hint_day">Ngày</string>
-  <string name="hint_month">Tháng</string>
-  <string name="hint_year">Năm</string>
-  <string name="week">Tuần</string>
-  <string name="incident_date">Ngày xảy ra</string>
-  <string name="local_results">Kết quả cục bộ</string>
-  <string name="online_results">Kết quả trực tuyến</string>
-  <string name="past_programs">Các chương trình cũ</string>
-  <string name="permission_denied">Bạn không có quyền thực hiện hành động này</string>
-  <string name="add_relation_button">Thêm làm</string>
-  <string name="date_dialog_clear">Xóa</string>
-  <string name="period">Thời gian</string>
-  <string name="org_unit_filter">(%d) Đơn vị</string>
-  <string name="tuto_main_1">Chào mừng đến với dhis2</string>
-  <string name="tuto_main_2">Bạn có thể xem các hoạt động của mình tại đây</string>
-  <string name="tuto_main_3">Bạn có thể áp dụng bộ lọc...</string>
-  <string name="tuto_main_4">...bằng cách thay đổi thời gian và ngày đang chọn</string>
-  <string name="tuto_main_5">...hoặc lọc theo Đơn vị</string>
-  <string name="tuto_main_6">Xem các hoạt động khác ở thực đơn chính</string>
-  <string name="default_relationship_label">Tạo mối quan hệ</string>
-  <string name="next">Tiếp</string>
-  <string name="search_min_num_attr">Bạn cần nhập ít nhất %d thuộc tính để thực hiện tìm kiếm</string>
-  <string name="search_max_tei_reached">Có nhiều hơn %d kết quả. Vui lòng nhập thêm thông số tìm kiếm khác nữa</string>
-  <string name="search_criteria_not_met">Không có kết quả nào phù hợp với thông số tìm kiếm của bạn.\nXem lại thông số tìm kiếm hoặc đăng ký mới %s</string>
-  <string name="search_init">Nhập thông số tìm kiếm của bạn</string>
-  <string name="QR_SCANNER">Nhập dữ liệu QR</string>
-  <string name="SAVE">Lưu</string>
-  <string name="button_ok">OK</string>
-  <string name="qr_id">Nhận dạng</string>
-  <string name="qr_attributes">Thuộc tính</string>
-  <string name="qr_enrollment">Đăng ký</string>
-  <string name="qr_events">Sự kiện</string>
-  <string name="qr_relationships">Mối quan hệ</string>
-  <string name="read_more_qr">Đọc QR tiếp theo để lấy thêm thông tin</string>
-  <string name="save_qr">Ngừng đọc và lưu dữ liệu</string>
-  <string name="qr_no_data">không có dữ liệu</string>
-  <string name="qr_error_id">Mã QR không hợp lệ</string>
-  <string name="qr_error_attr">Không thể thêm thuộc tính này</string>
-  <string name="qr_error_enrollment">Không thể thêm đăng ký này</string>
-  <string name="qr_error_event">Không thể thêm sự kiện này</string>
-  <string name="jira_report">Báo vấn đề lên Jira</string>
-  <string name="about">Về ứng dụng</string>
-  <string name="programs_to_enroll">Các chương trình để đăng ký</string>
-  <string name="select_all">chọn tất cả</string>
-  <string name="empty_program_list">Không có thông tin với các bộ lọc đã chọn. Vui lòng đổi bộ lọc.</string>
-  <string name="share">Chia sẻ</string>
-  <string name="share_qr">Chia sẻ QR</string>
-  <string name="teiType_search_online">Không thể tìm kiếm theo loại khi tìm kiếm trực tuyến.\nVui lòng chọn một chương trình trong danh sách.</string>
-  <string name="max">TỐI ĐA</string>
-  <string name="current">HIỆN TẠI</string>
-  <string name="tei">THỰC THỂ THEO DÕI</string>
-  <string name="limit_by_organisation_unit">GIới hạn bởi đơn vị</string>
-  <string name="programs_list">Danh sách chương trình</string>
-  <string name="wipe_data">Đặt lại ứng dụng</string>
-  <string name="add_relationship_error">Không thể thêm mối quan hệ này</string>
-  <string name="warning_error_on_complete_title">Kiểm tra lại!</string>
-  <string name="save">Lưu</string>
-  <string name="downloaded_confirm">Bạn có muốn thêm dữ liệu từ QR</string>
-  <string name="about_app">Phiên bản Ứng dụng: %s</string>
-  <string name="about_sdk">Phiên bản SDK: %s</string>
-  <string name="about_connected">Đã kết nối đến: %s</string>
-  <string name="about_user">Người dùng hiện tại: %s</string>
-  <string name="about_more">"Để tìm hiểu thêm về ứng dụng này: đọc "<a href="https://drive.google.com/open?id=1YHRBk6LSp6uROfs19-wCfQGc-rgl2f5iDrhCDasTR8M">đây</a>" để biết ứng dụng hỗ trợ và không hỗ trợ gì"</string>
-  <string name="about_git">"Phiên bản này và các phiên bản trước cùng với mã nguồn của ứng dụng có thể tìm được tại "<a href="https://github.com/dhis2/dhis2-android-capture-app">GitHub</a>". DHIS2 Nhập với Android được cấp giấy phép theo Giấy phép Công cộng GNU được xuất bản bởi Tổ chức Phần mềm tự do - xem "<a href="http://www.gnu.org/licenses/gpl-3.0.html">http://www.gnu.org/licenses/gpl-3.0.html</a>.</string>
-  <string name="about_dev">"Phát triển và duy trì bởi dự án "<a href="https://www.dhis2.org/">DHIS2</a>", thuộc trường Đại học Oslo, "<a href="https://www.mn.uio.no/ifi/english/">Bộ môn Tin học</a>.</string>
-  <string name="about_contact">"Để biết thêm thông tin hoặc hỏi về ứng dụng này, vui lòng gửi thư đến "<a href="mailto:android@dhis2.org">android\@dhis2.org</a></string>
-  <string name="login_error_null_pass">Chưa nhập mật khẩu. Vui lòng điền mật khẩu.</string>
-  <string name="login_error_null_username">Chưa nhập tên tài khoản. Vui lòng nhập tên tài khoản.</string>
-  <string name="login_error_dhis_version">Máy chủ không chạy dhis phiên bản 2.29. Nâng cấp phiên bản máy chủ hoặc sử dụng môi trường thử nghiệm để thực hiện.</string>
-  <string name="login_error_unsuccessful_response">Có lỗi. Vui lòng kiểm tra lại đường dẫn máy chủ, tên tài khoản và mật khẩu và thử lại.</string>
-  <string name="login_error_error_response">Máy chủ không thể hoàn thành yêu cầu này.</string>
-  <string name="login_error_default">Xảy ra vấn đề khi đăng nhập vào máy chủ</string>
-  <string name="login_error">Lỗi đăng nhập</string>
-  <string name="missing_mandatory_fields">Chưa nhập trường bắt buộc</string>
-  <string name="online_search_unexpected">Xảy ra lỗi không mong muốn khi tìm kiếm trực tuyến</string>
-  <string name="online_search_parsing_error">Xảy ra lỗi khi phân tích cú pháp kết quả</string>
-  <string name="online_search_error">Tìm kiếm trực tuyến trả về lỗi</string>
-  <string name="online_search_response_error">Máy chủ xảy ra lỗi</string>
-  <string name="search_program_not_selected">Chọn một chương trình để kích hoạt đăng ký</string>
-  <string name="search_access_error">Bạn không có quyền cần thiết</string>
-  <string name="feature_unavaible">Chức năng này chưa hoạt động.</string>
-  <string name="relationship_label_error">Có lỗi khi lấy nhãn mối quan hệ</string>
-  <string name="all_tei_type">Tất cả %s</string>
-  <string name="invalid_phone_number">Số điện thoại này không hợp lệ</string>
-  <string name="invalid_email">Địa chỉ thư điện tử này không hợp lệ</string>
-  <string name="invalid_negative_number">Chỉ cho phép số âm</string>
-  <string name="invalid_possitive_zero">Chỉ cho phép số nguyên hoặc số 0</string>
-  <string name="invalid_possitive">Chỉ cho phép số dương</string>
-  <string name="invalid_interval">Chỉ cho phép giá trị từ 0 đến 1</string>
-  <string name="invalid_percentage">Chỉ cho phép giá trị từ 0 đến 100</string>
-  <string name="date_dialog_tigle">Chọn ngày để lọc</string>
-  <string name="select_option">Chọn tùy chọn</string>
-  <string name="issue_reported">Vấn đề đã được báo</string>
-  <string name="jira_credential_error">"Kiểm tra lại tên tài khoản và mật khẩu Jira "</string>
-  <string name="jira_issue_error">Có lỗi khi báo cáo vấn đề</string>
-  <string name="jira_fields_error">Tất cả các trường là bắt buộc</string>
-  <string name="dialog_generate_new_event">Tạo sự kiện mới</string>
-  <string name="message_generate_new_event">Bạn có muốn tạo một sự kiện khác?</string>
-  <string name="event_completed_title">Sự kiện đã hoàn tất</string>
-  <string name="event_completed_message">Tất cả các sự kiện trong chương trình này đã hoàn tất. Bạn có muốn đóng chương trình không?</string>
-  <string name="check_event">Kiểm tra</string>
-  <string name="menu_home">Trang chủ</string>
-  <string name="appwidget_text">VÍ DỤ</string>
-  <string name="add_widget">Thêm tiện ích</string>
-  <string name="showHelp">Hiện trợ giúp</string>
-  <string name="tuto_settings_1">Đang đồng bộ dữ liệu...</string>
-  <string name="tuto_settings_2">...cấu hình...</string>
-  <string name="tuto_settings_3">...cài đặt dung lượng lưu trữ cục bộ...</string>
-  <string name="tuto_settings_4">...hoặc xóa tất cả để bắt đầu lại từ đầu.</string>
-  <string name="tuto_search_2">Bạn có thể đổi sang các chương trình khác.</string>
-  <string name="tuto_dashboard_1">Đây là bảng tin thực của thực thể</string>
-  <string name="tuto_dashboard_2">Xem thông tin hồ sơ của các thực thể...</string>
-  <string name="tuto_dashboard_3">...Chia sẻ thông tin qua QR hoặc SMS...</string>
-  <string name="tuto_dashboard_4">...Hoặc đánh dấu thực thể để theo dõi</string>
-  <string name="tuto_dashboard_5">Nhấn để tạo hoặc đặt lịch cho một sự kiện hoặc giới thiệu sang một đơn vị khác.</string>
-  <string name="tuto_dashboard_6">Tại đây bạn sẽ thấy tất cả các sự kiện. Nhấn để xem chi tiết một sự kiện.</string>
-  <string name="tuto_dashboard_7">Chuyển sang thực đơn để thêm mối quan hệ, xem chỉ số hoặc viết ghi chú.</string>
-  <string name="tuto_dashboard_8">Nhấn để xem tất cả các đăng ký của thực thể hoặc tạo một đăng ký mới.</string>
-  <string name="tuto_tei_event_1">Nhấn để xóa sự kiện này. Hành động này không thể hoàn tác.</string>
-  <string name="tuto_tei_event_2">Hoàn thành sự kiện.</string>
-  <string name="tuto_program_event_1">Tất cả các sự kiện liên quan tới chương trình này sẽ được liệt kê ở đây.</string>
-  <string name="tuto_program_event_2">Nhấn để thêm một sự kiện mới</string>
-  <string name="tuto_event_initial_new_1">Nhập tất cả dữ liệu để tạo sự kiện</string>
-  <string name="tuto_event_initial_1">Nhấn để kiểm tra tình trạng hoàn thành của sự kiện.</string>
-  <string name="tuto_event_summary">Nhấn để hoàn thành hoặc mở lại sự kiện</string>
-  <string name="tuto_main_7">Đọc và lưu thông tin từ thiết bị khác bằng QR</string>
-  <string name="tuto_main_8">Đồng bộ dữ liệu của bạn với máy chủ</string>
-  <string name="tuto_main_9">Khóa phiên với mã 4 chữ số. Đừng quên mã số của bạn!</string>
-  <string name="tuto_main_10">Đăng xuất để đổi tài khoản hoặc máy chủ. Bạn có thể đăng nhập lại ngay cả khi không có kết nối internet.</string>
-  <string name="relationships">mối quan hệ</string>
-  <string name="qr_no_id_error">Bạn cần quét QR nhận dạng trước khi lưu</string>
+    <!--GENERAL-->
+    <string name="app_name">Dhis2</string>
+    <string name="logo_text">dhis</string>
+    <string name="logo_number">2</string>
+    <!-- Warnings and error messages -->
+    <string name="error">Lỗi</string>
+    <string name="error_wrong_server_url">Sai đường dẫn đến máy chủ</string>
+    <string name="error_wrong_credentials">Sai thông tin đăng nhập </string>
+    <string name="error_unexpected_error">Lỗi không mong muốn</string>
+    <string name="error_internal_server_error">Lỗi máy chủ nội bộ</string>
+    <string name="yes">có</string>
+    <string name="no">không</string>
+    <string name="no_value">không có giá trị</string>
+    <!-- SyncService strings: -->
+    <string name="sync_now">Đồng bộ ngay</string>
+    <string name="sync_text">Đang đồng bộ với máy chủ</string>
+    <string name="sync_title">Đang đồng bộ</string>
+
+    <string name="sync_metadata">Siêu dữ liệu</string>
+    <string name="sync_events">Sự kiện</string>
+    <string name="sync_tei">Các thực thể được theo dõi</string>
+
+    <string name="sync_complete_title">Hoàn thành</string>
+    <string name="sync_complete_text">Đồng bộ hoàn tất</string>
+
+    <string name="sync_error_title">Lỗi đồng bộ</string>
+    <string name="sync_error_text">Có lỗi xảy ra trong quá trình đồng bộ. Vui lòng thử lại.</string>
+    <string name="search_result_text">Tìm thấy %s kết quả</string>
+    <string name="add_new">Thêm mới</string>
+    <string name="add">Thêm</string>
+    <string name="schedule_new">Đặt lịch mới</string>
+    <string name="referral">Giới thiệu</string>
+
+    <!-- Login -->
+    <string name="url_hint">Đường dẫn đến máy chủ</string>
+    <string name="user_hint">Tên đăng nhập</string>
+    <string name="password_hint">Mật khẩu</string>
+    <string name="log_in_button">Đăng nhập</string>
+    <string name="unlock_button">Mở khóa phiên</string>
+    <string name="syncing_configuration">Đang đồng bộ cấu hình của bạn</string>
+    <string name="syncing_data_shortly">Dự liệu của bạn sẽ được sớm đồng bộ </string>
+    <string name="syncing_data">Đang đồng bộ dữ liệu của bạn</string>
+    <string name="configuration_ready">Cấu hình của bạn đã sẵn sàng</string>
+    <string name="data_ready">Dữ liệu đã sẵn sàng</string>
+    <string name="configuration_sync_failed">Đồng bộ cấu hình thất bại</string>
+    <string name="data_sync_failed">Đồng bộ dữ liệu thất bại</string>
+    <string name="account_recovery">Phục hồi tài khoản</string>
+
+    <!--PERIOD-->
+    <string name="DAILY">Hàng ngày</string>
+    <string name="WEEKLY">Hàng tuần</string>
+    <string name="MONTHLY">Hàng tháng</string>
+    <string name="YEARLY">Một năm</string>
+    <string name="clear_filters">Bỏ lọc</string>
+    <string name="action_accept">Chấp nhận</string>
+    <string name="action_share_zero_items">Chia sẻ</string>
+    <!-- Input hints -->
+    <string name="search">Tìm kiếm</string>
+    <string name="enter_text">Nhập văn bản</string>
+    <string name="enter_long_text">Nhập văn bản dài</string>
+    <string name="enter_number">Nhập số</string>
+    <string name="enter_integer">Nhập số nguyên</string>
+    <string name="enter_negative_integer">Nhập số nguyên âm</string>
+    <string name="enter_positive_integer_or_zero">Nhập số nguyên dương hoặc số 0</string>
+    <string name="enter_positive_integer">Nhập số nguyên</string>
+    <string name="filter_options">Các lựa chọn lọc</string>
+    <string name="choose_date">Chọn ngày</string>
+    <!-- Status -->
+    <string name="program_completed">Chương trình đã hoàn tất</string>
+    <string name="program_inactive">Chương trình không hoạt động</string>
+
+    <string name="event_open">Mở</string>
+    <string name="event_completed">Sự kiện hoàn tất</string>
+    <string name="event_skipped">Đã bỏ qua sự kiện</string>
+    <string name="event_schedule">Lịch trình sự kiện</string>
+    <string name="event_expired">Sự kiện quá hạn</string>
+    <string name="event_editing_expired">Chỉnh sửa đã hêt hạn</string>
+    <string name="event_accepted">Sự kiện được chấp nhận</string>
+    <string name="event_approved">Sự kiện được được duyệt</string>
+    <string name="event_inactive">Sự kiện không hoạt động</string>
+    <string name="read_only">Chỉ đọc</string>
+    <string name="complete">Hoàn tất</string>
+    <string name="completed">Hoàn tất</string>
+    <string name="cancelled">Đã hủy</string>
+    <string name="re_open">mở lại</string>
+    <string name="activate">kích hoạt</string>
+
+    <!-- State -->
+    <string name="state_synced">Đồng bộ</string>
+    <string name="state_to_post">Đăng</string>
+    <string name="state_to_update">Cập nhật</string>
+    <string name="state_to_delete">Xóa</string>
+    <string name="state_error">Lỗi</string>
+    <string name="action_sync">ĐỒNG BỘ</string>
+    <!--Completion-->
+    <string name="completion">Hoàn thành</string>
+
+    <!--Event initial-->
+    <string name="create">Tạo mới</string>
+    <string name="update">Cập nhật</string>
+    <string name="date">Ngày</string>
+    <string name="org_unit">Đơn vị</string>
+    <string name="category_option">Phân loại tùy chọn</string>
+    <string name="latitude">Vĩ độ</string>
+    <string name="longitude">Kinh độ</string>
+    <string name="new_event">Sự kiện mới</string>
+    <string name="failed_insert_event">Không chèn được sự kiện mới</string>
+    <string name="event_created">Sự kiện đã được tạo</string>
+    <string name="event_updated">Sự kiện đã được cập nhật</string>
+    <string name="one_time">Một lần</string>
+    <string name="permanent">Vĩnh viễn</string>
+
+    <!--DataSet initial-->
+    <string name="report_period">Thời điểm báo cáo</string>
+    <!--Event Detail-->
+    <string name="event_date">Ngày xảy ra sự kiện</string>
+    <string name="due_date">Ngày đến hạn</string>
+    <string name="cat_combo">Tổ hợp phân loại</string>
+    <string name="date_default">DD/MM/YYYY</string>
+    <string name="cancel">Hủy</string>
+    <string name="delete">Xóa</string>
+    <string name="delete_event">Xóa sự kiện</string>
+    <string name="confirm_delete_event">Bạn có chắc chắn muốn xóa sự kiện này?</string>
+    <string name="event_was_deleted">Xóa sự kiện thành công</string>
+    <string name="total">Tổng số</string>
+
+    <!--TEI Enrollment list-->
+    <string name="enrollment_list">Danh sách ghi danh</string>
+    <string name="active_programs">Các chương trình đang hoạt động</string>
+    <string name="to_enroll_programs">Chương trình để ghi danh</string>
+    <string name="enroll">Ghi danh</string>
+    <string name="last_visit">Ngày khám cuối cùng</string>
+    <string name="apply">áp dụng</string>
+
+    <!--TEI DASHBOARD-->
+    <string name="see_details">Xem chi tiết</string>
+    <string name="view_more">XEM THÊM</string>
+    <string name="edit">CHỈNH SỬA</string>
+    <string name="enrolling_ou">Đơn vị đang ghi danh</string>
+    <string name="follow_up">Theo dõi</string>
+    <string name="follow_up_enabled">Đã bật theo dõi</string>
+    <string name="follow_up_disabled">Đã tắt theo dõi</string>
+    <string name="deactivate">Hủy kích hoạt</string>
+    <string name="program_not_allow_events">Chương trình này không cho phép thêm sự kiện</string>
+
+    <!--DONE TASKS-->
+    <string name="events">sự kiện</string>
+    <string name="done_task">Trang chủ</string>
+    <string name="app_info">Thông tin về ứng dụng</string>
+    <string name="log_out">Đăng xuất</string>
+    <string name="block_session">Khóa phiên</string>
+
+    <!--MAP SELECTION-->
+    <string name="select_location">Chọn địa điểm</string>
+
+    <!-- SYNC -->
+    <string name="a_minute">1 Phút</string>
+    <string name="fifteen_minute">15 Phút</string>
+    <string name="a_hour">1 Giờ</string>
+    <string name="a_day">1 Ngày (Mặc định)</string>
+    <string name="Automatic_Sync_Data">Đồng bộ dữ liệu tự động mỗi:</string>
+    <string name="Manual">Thủ công</string>
+    <string name="Automatic_Sync_Metadata">Đồng bộ cấu hình tự động mỗi:</string>
+    <string name="a_week">1 Tuần</string>
+    <string name="sync_max_parameters">Các tham số đồng bộ hiện tại:</string>
+    <string name="sync_default_parameters">Đặt lại về mặc định</string>
+    <string name="wipe_data_meesage">Cơ sở dữ liệu sẽ được xóa.\nBạn sẽ được yêu cầu đăng nhập lại.</string>
+    <string name="wipe_data_ok">Chấp nhận</string>
+    <string name="wipe_data_no">Hủy</string>
+    <string name="SYNC_DATA">ĐỒNG BỘ Dữ liệu ngay</string>
+    <string name="SYNC_META">ĐỒNG BỘ Cấu hình ngay</string>
+    <string name="SYNC_MANAGER">Cài đặt</string>
+    <string name="last_data_sync_date">Đồng bộ lần cuối: %s</string>
+    <string name="last_metadata_sync_date">Đồng bộ lần cuối: %s</string>
+    <string name="settingsReset">Đặt lại ứng dụng</string>
+    <!--endregion-->
+
+    <string name="enrollmment_date">Ngày ghi vào</string>
+
+    <!-- SEARCH OPTION SET -->
+    <string name="search_optionset">Tìm kiếm</string>
+    <!--FORM FRAGMENT-->
+    <string name="report_date">Ngày báo cáo</string>
+    <string name="add_file">Thêm tập tin</string>
+    <string name="write_new_note">Viết chú thích mới</string>
+    <string name="clear">xóa</string>
+    <string name="add_note">Thêm chú thích</string>
+    <string name="revert">Hoàn nguyên</string>
+    <string name="activated">Đã hoạt động</string>
+    <string name="enroll_in">Đăng ký vào %s</string>
+    <string name="missing_mandatory_fields_title">Thiếu trường bắt buộc</string>
+    <string name="missing_mandatory_fields_text">Một số trường bắt buộc bị thiếu. Nếu bạn muốn quay trở lại, tất cả các thông tin đã lưu sẽ bị xóa.</string>
+    <string name="missing_mandatory_fields_events">Một số trường bắt buộc bị thiếu. Bạn có thể quay lại bay giờ, nhưng sự kiện này sẽ không thể hoàn thành.</string>
+    <string name="missing_mandatory_fields_go_back">Xóa và quay lại</string>
+    <!--EVENT SUMMARY-->
+    <string name="section_list">Danh sách phần</string>
+    <string name="event_summary_header" formatted="false">%s câu hỏi của %s đã hoàn thành</string>
+    <string name="event_summary_sections_header" formatted="false">%s của %s đã hoàn thành</string>
+    <string name="complete_and_close">Hoàn thành và đóng</string>
+
+    <!--AGE CUSTOM VIEW-->
+    <string name="hint_day">Ngày</string>
+    <string name="hint_month">Tháng</string>
+    <string name="hint_year">Năm</string>
+    <string name="week">Tuần</string>
+    <string name="incident_date">Ngày đến</string>
+    <string name="local_results">Kết quả cục bộ</string>
+    <string name="online_results">Kết quả trực tuyến</string>
+    <string name="past_programs">Các chương trình cũ</string>
+
+    <!--PERMISSIONS-->
+    <string name="permission_denied">Bạn không có quyền thực hiện hành động này</string>
+    <string name="add_relation_button">Thêm làm</string>
+
+    <string name="date_dialog_clear">Xóa</string>
+    <string name="period">Thời điểm</string>
+    <string name="org_unit_filter">(%d) Đơn vị</string>
+    <string name="tuto_main_1">Chào mừng đến với dhis2</string>
+    <string name="tuto_main_2">Bạn có thể xem các hoạt động của mình tại đây</string>
+    <string name="tuto_main_3">Bạn có thể áp dụng bộ lọc...</string>
+    <string name="tuto_main_4">...bằng cách thay đổi thời gian và ngày đang chọn</string>
+    <string name="tuto_main_5">...hoặc lọc theo Đơn vị</string>
+    <string name="tuto_main_6">Xem các hoạt động khác ở thực đơn chính</string>
+
+    <!-- RELATIONSHIPS -->
+    <string name="default_relationship_label">Tạo mối quan hệ</string>
+    <string name="next">Sau</string>
+    <string name="search_min_num_attr">Bạn cần nhập ít nhất %d thuộc tính để thực hiện tìm kiếm</string>
+    <string name="search_max_tei_reached">Có nhiều hơn %d kết quả. Vui lòng nhập thêm thông số tìm kiếm khác nữa</string>
+    <string name="search_criteria_not_met">Không có kết quả nào phù hợp với thông số tìm kiếm của bạn.\nXem lại thông số tìm kiếm hoặc đăng ký mới %s</string>
+    <string name="search_init">Nhập thông số tìm kiếm của bạn</string>
+
+    <!-- QR -->
+    <string name="QR_SCANNER">Nhập dữ liệu QR</string>
+    <string name="SAVE">Lưu lại</string>
+    <string name="button_ok">Có</string>
+    <string name="qr_id">Nhận dạng</string>
+    <string name="qr_attributes">Thuộc Tính</string>
+    <string name="qr_enrollment">Đăng ký</string>
+    <string name="qr_events">Sự kiện</string>
+    <string name="qr_relationships">Mối quan hệ</string>
+    <string name="read_more_qr">Đọc QR tiếp theo để lấy thêm thông tin</string>
+    <string name="save_qr">Ngừng đọc và lưu dữ liệu</string>
+    <string name="qr_no_data">không có dữ liệu</string>
+    <string name="qr_error_id">Mã QR không hợp lệ</string>
+    <string name="qr_error_attr">Không thể thêm thuộc tính này</string>
+    <string name="qr_error_enrollment">Không thể thêm đăng ký này</string>
+    <string name="qr_error_event">Không thể thêm sự kiện này</string>
+
+    <string name="jira_report">Báo vấn đề lên Jira</string>
+    <string name="about">Giới thiệu</string>
+    <string name="programs_to_enroll">Chương trình để ghi danh</string>
+    <string name="select_all">chọn tất cả</string>
+    <string name="empty_program_list">Không có thông tin với các bộ lọc đã chọn. Vui lòng đổi bộ lọc.</string>
+    <string name="share">Chia sẻ</string>
+    <string name="share_qr">Chia sẻ QR</string>
+    <string name="teiType_search_online">Không thể tìm kiếm theo loại khi tìm kiếm trực tuyến.\nVui lòng chọn một chương trình trong danh sách.</string>
+    <string name="max">Lớn nhất</string>
+    <string name="current">Hiện tại</string>
+    <string name="tei">THỰC THỂ THEO DÕI</string>
+    <string name="limit_by_organisation_unit">GIới hạn bởi đơn vị</string>
+    <string name="programs_list">Danh sách chương trình</string>
+    <string name="wipe_data">Đặt lại ứng dụng</string>
+    <string name="add_relationship_error">Không thể thêm mối quan hệ này</string>
+    <string name="warning_error_on_complete_title">Kiểm tra lại!</string>
+    <string name="warning_on_complete_title">Cảnh báo</string>
+    <string name="error_on_complete_title">Lỗi</string>
+    <string name="save">Lưu lại</string>
+    <string name="downloaded_confirm">Bạn có muốn thêm dữ liệu từ QR</string>
+
+    <!--ABOUT-->
+    <string name="about_app">Phiên bản Ứng dụng: %s</string>
+    <string name="about_sdk">Phiên bản SDK: %s</string>
+    <string name="about_connected">Đã kết nối đến: %s</string>
+    <string name="about_user">Người dùng hiện tại: %s</string>
+    <string name="about_more">Để tìm hiểu thêm về ứng dụng này: đọc \"<a href="https://drive.google.com/open?id=1YHRBk6LSp6uROfs19-wCfQGc-rgl2f5iDrhCDasTR8M">đây</a>\" để biết ứng dụng hỗ trợ và không hỗ trợ gì</string>
+    <string name="about_git">\"Phiên bản này và các phiên bản trước cùng với mã nguồn của ứng dụng có thể tìm được tại \"<a href="https://github.com/dhis2/dhis2-android-capture-app">GitHub</a>\". DHIS2 Nhập với Android được cấp giấy phép theo Giấy phép Công cộng GNU được xuất bản bởi Tổ chức Phần mềm tự do - xem \"<a href="http://www.gnu.org/licenses/gpl-3.0.html">http://www.gnu.org/licenses/gpl-3.0.html</a>.</string>
+    <string name="about_dev">\"Phát triển và duy trì bởi dự án \"<a href="https://www.dhis2.org/">DHIS2</a>\", thuộc trường Đại học Oslo, \"<a href="https://www.mn.uio.no/ifi/english/">Bộ môn Tin học</a>.</string>
+    <string name="about_contact">\"Để biết thêm thông tin hoặc hỏi về ứng dụng này, vui lòng gửi thư đến \"<a href="mailto:android@dhis2.org">android\@dhis2.org</a></string>
+
+    <string name="login_error_null_pass">Chưa nhập mật khẩu. Vui lòng điền mật khẩu.</string>
+    <string name="login_error_null_username">Chưa nhập tên tài khoản. Vui lòng nhập tên tài khoản.</string>
+    <string name="login_error_dhis_version">Máy chủ không chạy dhis phiên bản 2.29. Nâng cấp phiên bản máy chủ hoặc sử dụng môi trường thử nghiệm để thực hiện.</string>
+    <string name="login_error_unsuccessful_response">Có lỗi. Vui lòng kiểm tra lại đường dẫn máy chủ, tên tài khoản và mật khẩu và thử lại.</string>
+    <string name="login_error_error_response">Máy chủ không thể hoàn thành yêu cầu này.</string>
+    <string name="login_error_default">Xảy ra vấn đề khi đăng nhập vào máy chủ</string>
+    <string name="login_error">Lỗi đăng nhập</string>
+    <string name="missing_mandatory_fields">Thiếu trường bắt buộc</string>
+    <string name="online_search_unexpected">Xảy ra lỗi không mong muốn khi tìm kiếm trực tuyến</string>
+    <string name="online_search_parsing_error">Xảy ra lỗi khi phân tích cú pháp kết quả</string>
+    <string name="online_search_error">Tìm kiếm trực tuyến trả về lỗi</string>
+    <string name="online_search_response_error">Máy chủ xảy ra lỗi</string>
+    <string name="search_program_not_selected">Chọn một chương trình để kích hoạt đăng ký</string>
+    <string name="search_access_error">Bạn không có quyền cần thiết</string>
+    <string name="feature_unavaible">Chức năng này chưa hoạt động.</string>
+    <string name="relationship_label_error">Có lỗi khi lấy nhãn mối quan hệ</string>
+    <string name="all_tei_type">Tất cả %s</string>
+    <string name="invalid_phone_number">Số điện thoại này không hợp lệ</string>
+    <string name="invalid_email">Địa chỉ thư điện tử này không hợp lệ</string>
+    <string name="invalid_negative_number">Chỉ cho phép số âm</string>
+    <string name="invalid_possitive_zero">Chỉ cho phép số nguyên hoặc số 0</string>
+    <string name="invalid_possitive">Chỉ cho phép số dương</string>
+    <string name="invalid_interval">Chỉ cho phép giá trị từ 0 đến 1</string>
+    <string name="invalid_percentage">Chỉ cho phép giá trị từ 0 đến 100</string>
+    <string name="date_dialog_tigle">Chọn ngày để lọc</string>
+    <string name="select_option">Tùy chọn</string>
+    <string name="issue_reported">Vấn đề đã được báo</string>
+    <string name="jira_credential_error">Kiểm tra lại tên tài khoản và mật khẩu Jira </string>
+    <string name="jira_issue_error">Có lỗi khi báo cáo vấn đề</string>
+    <string name="jira_fields_error">Tất cả các trường là bắt buộc</string>
+    <string name="dialog_generate_new_event">Tạo sự kiện mới</string>
+    <string name="message_generate_new_event">Bạn có muốn tạo một sự kiện khác?</string>
+    <string name="event_completed_title">Sự kiện đã hoàn tất</string>
+    <string name="event_completed_message">Tất cả các sự kiện trong chương trình này đã hoàn tất. Bạn có muốn đóng chương trình không?</string>
+    <string name="check_event">Kiểm tra</string>
+
+    <string name="menu_home">Trang chủ</string>
+    <string name="appwidget_text">VÍ DỤ</string>
+    <string name="add_widget">Thêm tiện ích</string>
+    <string name="showHelp">Hiện trợ giúp</string>
+    <string name="tuto_settings_1">Đang đồng bộ dữ liệu...</string>
+    <string name="tuto_settings_2">...cấu hình...</string>
+    <string name="tuto_settings_3">...cài đặt dung lượng lưu trữ cục bộ...</string>
+    <string name="tuto_settings_4">...hoặc xóa tất cả để bắt đầu lại từ đầu.</string>
+    <string name="tuto_search_2">Bạn có thể đổi sang các chương trình khác.</string>
+    <string name="tuto_dashboard_1">Đây là bảng tin thực của thực thể</string>
+    <string name="tuto_dashboard_2">Xem thông tin hồ sơ của các thực thể...</string>
+    <string name="tuto_dashboard_3">...Chia sẻ thông tin qua QR hoặc SMS...</string>
+    <string name="tuto_dashboard_4">...Hoặc đánh dấu thực thể để theo dõi</string>
+    <string name="tuto_dashboard_5">Nhấn để tạo hoặc đặt lịch cho một sự kiện hoặc giới thiệu sang một đơn vị khác.</string>
+    <string name="tuto_dashboard_6">Tại đây bạn sẽ thấy tất cả các sự kiện. Nhấn để xem chi tiết một sự kiện.</string>
+    <string name="tuto_dashboard_7">Chuyển sang thực đơn để thêm mối quan hệ, xem chỉ số hoặc viết ghi chú.</string>
+    <string name="tuto_dashboard_8">Nhấn để xem tất cả các đăng ký của thực thể hoặc tạo một đăng ký mới.</string>
+    <string name="tuto_tei_event_1">Nhấn để xóa sự kiện này. Hành động này không thể hoàn tác.</string>
+    <string name="tuto_tei_event_2">Hoàn thành sự kiện.</string>
+    <string name="tuto_program_event_1">Tất cả các sự kiện liên quan tới chương trình này sẽ được liệt kê ở đây.</string>
+    <string name="tuto_program_event_2">Nhấn để thêm một sự kiện mới</string>
+    <string name="tuto_event_initial_new_1">Nhập tất cả dữ liệu để tạo sự kiện</string>
+    <string name="tuto_event_initial_1">Nhấn để kiểm tra tình trạng hoàn thành của sự kiện.</string>
+    <string name="tuto_event_summary">Nhấn để hoàn thành hoặc mở lại sự kiện</string>
+    <string name="tuto_main_7">Đọc và lưu thông tin từ thiết bị khác bằng QR</string>
+    <string name="tuto_main_8">Đồng bộ dữ liệu của bạn với máy chủ</string>
+    <string name="tuto_main_9">Khóa phiên với mã 4 chữ số. Đừng quên mã số của bạn!</string>
+    <string name="tuto_main_10">Đăng xuất để đổi tài khoản hoặc máy chủ. Bạn có thể đăng nhập lại ngay cả khi không có kết nối internet.</string>
+    <string name="relationships">mối quan hệ</string>
+    <string name="qr_data_values">Giá trị dữ liệu</string>
+    <string name="qr_no_id_error">Bạn cần quét QR nhận dạng trước khi lưu</string>
+    <string name="dashboard_relationships">Mối quan hệ</string>
+    <string name="dashboard_indicators">Các chỉ số</string>
+    <string name="dashboard_notes">Ghi Chú</string>
+    <string name="event_overview">Chi tiết</string>
+    <string name="event_event">Sự Kiện</string>
+    <string name="event_indicators">Các chỉ số</string>
+    <string name="event_notes">Ghi Chú</string>
+    <string name="finish">Hoàn tất</string>
+    <string name="please_wait">Hãy đợi</string>
+    <string name="skip">Bỏ qua</string>
+    <string name="reschedule">Sửa lịch</string>
+    <string name="event_overdue">Quá hạn</string>
+    <string name="table">Bảng</string>
+    <string name="local_data_accept">Chấp nhận</string>
+    <string name="login_server_info_title">Đường dẫn đến máy chủ</string>
+    <string name="state_warning">Cảnh báo</string>
+    <string name="action_close">Đóng lại</string>
+    <string name="data_set_closed">Đóng lại</string>
+    <string name="data_set_open">Mở</string>
+    <string name="unsupported_value_type">Không hỗ trợ kiểu giá trị này</string>
+    <string name="data_every_day">Hàng ngày</string>
+    <string name="data_every_week">Hàng tuần</string>
+    <string name="sms_completed">Hoàn tất</string>
+    <string name="sms_bar_state_sending">Đang tiến hành</string>
+    <string name="sms_bar_state_failed">KHÔNG THÀNH CÔNG</string>
+
+    <string name="polygon_captured">Polygon captured</string>
+    <string name="polygon">Đa giác</string>
+    <!--endregion-->
 </resources>
