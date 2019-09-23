@@ -126,16 +126,13 @@ public class EventCaptureContract {
         Flowable<List<FieldViewModel>> list(String sectionUid);
 
         @NonNull
-        Flowable<List<FieldViewModel>> evaluateForSection(String sectionUid);
-
-        @NonNull
         Flowable<List<FieldViewModel>> list();
 
         @NonNull
         Flowable<Result<RuleEffect>> calculate();
 
         @NonNull
-        Flowable<Result<RuleEffect>> fullCalculate();
+        Flowable<Result<RuleEffect>> calculate(String section);
 
         Observable<Boolean> completeEvent();
 

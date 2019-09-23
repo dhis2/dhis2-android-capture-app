@@ -42,7 +42,11 @@ final class DataEntryDiffCallback extends DiffUtil.Callback {
 
     @Override
     public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
-        if(oldFields.get(oldItemPosition) instanceof SpinnerViewModel && newFields.get(newItemPosition) instanceof SpinnerViewModel){
+        if(oldFields.get(oldItemPosition) instanceof PictureViewModel && newFields.get(newItemPosition) instanceof PictureViewModel)
+            return false;
+
+        return oldFields.get(oldItemPosition) == newFields.get(newItemPosition);
+       /* if(oldFields.get(oldItemPosition) instanceof SpinnerViewModel && newFields.get(newItemPosition) instanceof SpinnerViewModel){
             if(!((SpinnerViewModel) oldFields.get(oldItemPosition)).getOptionGroupsToShow().containsAll(
                     ((SpinnerViewModel) newFields.get(newItemPosition)).getOptionGroupsToShow()) ||
                 !((SpinnerViewModel) newFields.get(oldItemPosition)).getOptionGroupsToShow().containsAll(
@@ -66,6 +70,6 @@ final class DataEntryDiffCallback extends DiffUtil.Callback {
             return false;
 
         return oldFields.get(oldItemPosition)
-                .equals(newFields.get(newItemPosition));
+                .equals(newFields.get(newItemPosition));*/
     }
 }

@@ -430,7 +430,7 @@ class EnrollmentPresenterImpl(
             val valueRepository = d2.trackedEntityModule().trackedEntityDataValues
                     .value(eventUid, uid)
 
-            if (d2.trackedEntityModule().trackedEntityAttributes.uid(uid).blockingGet().valueType() == ValueType.IMAGE
+            if (d2.dataElementModule().dataElements.uid(uid).blockingGet().valueType() == ValueType.IMAGE
                     && value != null) {
                 newValue = getFileResource(value)
             }

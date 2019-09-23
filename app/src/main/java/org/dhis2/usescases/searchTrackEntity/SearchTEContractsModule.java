@@ -141,5 +141,9 @@ public class SearchTEContractsModule {
         Drawable getEnrollmentSymbolIcon();
 
         String nameOUByUid(String uid);
+
+        int getTEIColor();
+
+        int getEnrollmentColor();
     }
 }

@@ -338,7 +338,8 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     private void showMap(boolean showMap) {
         binding.scrollView.setVisibility(showMap ? View.GONE : View.VISIBLE);
         binding.mapView.setVisibility(showMap ? View.VISIBLE : View.GONE);
-        binding.mapLayerButton.setVisibility(showMap ? View.VISIBLE : View.GONE);
+        if (!showMap)
+            binding.mapLayerButton.setVisibility(View.GONE);
 
         if (showMap)
             presenter.getMapData();
@@ -413,6 +414,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                     binding.progressLayout.setVisibility(View.GONE);
                     binding.messageContainer.setVisibility(View.VISIBLE);
                     binding.message.setText(data.val1());
+                    binding.scrollView.setVisibility(View.GONE);
                 }
                 if (!presenter.getQueryData().isEmpty() && data.val2())
                     setFabIcon(false);
@@ -647,6 +649,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                     map = mapboxMap;
                     if (map.getStyle() == null) {
                         map.setStyle(Style.MAPBOX_STREETS, style -> {
+                                    binding.mapLayerButton.setVisibility(View.VISIBLE);
                                     MapLayerManager.Companion.init(style, "teis", featureType);
                                     MapLayerManager.Companion.instance().setEnrollmentLayerData(
                                             ColorUtils.getColorFrom(presenter.getProgram().style() != null ? presenter.getProgram().style().color() : null, ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.PRIMARY)),
@@ -659,8 +662,8 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                                     });
                                     map.addOnMapClickListener(this);
 
-                                    style.addImage("ICON_ID", presenter.getSymbolIcon());
-                                    style.addImage("ICON_ENROLLMENT_ID", presenter.getEnrollmentSymbolIcon());
+                                    style.addImage("ICON_ID", MarkerUtils.INSTANCE.getMarker(this, presenter.getSymbolIcon(), presenter.getTEIColor()));
+                                    style.addImage("ICON_ENROLLMENT_ID", MarkerUtils.INSTANCE.getMarker(this, presenter.getEnrollmentSymbolIcon(), presenter.getEnrollmentColor()));
 
                                     setSource(style, data.component1());
 
@@ -689,17 +692,18 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                             if (file.exists()) {
                                 Style style = mapboxMap.getStyle();
                                 if (style != null) {
-                                    style.addImageAsync(filePath, MarkerUtils.INSTANCE.getMarker(this, FileResourcesUtil.getSmallImage(this, filePath)));
+                                    style.addImageAsync(filePath, MarkerUtils.INSTANCE.getMarker(this, FileResourcesUtil.getSmallImage(this, filePath), presenter.getTEIColor()));
                                 }
                             } else {
                                 Style style = mapboxMap.getStyle();
                                 if (style != null) {
-                                    style.addImageAsync(filePath, presenter.getSymbolIcon());
+                                    style.addImageAsync(filePath, MarkerUtils.INSTANCE.getMarker(this, presenter.getSymbolIcon(), presenter.getTEIColor()));
                                 }
                             }
                         });
 
                     } else {
+                        binding.mapLayerButton.setVisibility(View.VISIBLE);
                         ((GeoJsonSource) mapboxMap.getStyle().getSource("teis")).setGeoJson(data.component1().get("TEI"));
                         ((GeoJsonSource) mapboxMap.getStyle().getSource("enrollments")).setGeoJson(data.component1().get("ENROLLMENT"));
                         LatLngBounds bounds = LatLngBounds.from(data.component2().north(),
@@ -737,7 +741,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
         SymbolLayer symbolLayer = new SymbolLayer("POINT_LAYER", "teis").withProperties(
                 PropertyFactory.iconImage(get("teiImage")),
-                iconOffset(new Float[]{0f,-25f}),
+                iconOffset(new Float[]{0f, -25f}),
                 iconAllowOverlap(true),
                 textAllowOverlap(true)
         );
@@ -747,33 +751,25 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         style.addLayer(symbolLayer);
 
         if (featureType != FeatureType.POINT) {
-            style.addLayer(new FillLayer("POLYGON_LAYER", "teis")
-                    .withProperties(
-                            fillColor(
-                                    ColorUtils.getPrimaryColorWithAlpha(this, ColorUtils.ColorType.PRIMARY_LIGHT, 150f)
-                            ))
-                    .withFilter(eq(literal("$type"), literal("Polygon")))
+            style.addLayerBelow(new FillLayer("POLYGON_LAYER", "teis")
+                            .withProperties(
+                                    fillColor(
+                                            ColorUtils.getPrimaryColorWithAlpha(this, ColorUtils.ColorType.PRIMARY_LIGHT, 150f)
+                                    ))
+                            .withFilter(eq(literal("$type"), literal("Polygon"))),
+                    "POINT_LAYER"
             );
-            style.addLayer(new LineLayer("POLYGON_BORDER_LAYER", "teis")
-                    .withProperties(
-                            lineColor(
-                                    ColorUtils.getPrimaryColor(this, ColorUtils.ColorType.PRIMARY_DARK)
-                            ),
-                            lineWidth(2f))
-                    .withFilter(eq(literal("$type"), literal("Polygon")))
+            style.addLayerAbove(new LineLayer("POLYGON_BORDER_LAYER", "teis")
+                            .withProperties(
+                                    lineColor(
+                                            ColorUtils.getPrimaryColor(this, ColorUtils.ColorType.PRIMARY_DARK)
+                                    ),
+                                    lineWidth(2f))
+                            .withFilter(eq(literal("$type"), literal("Polygon"))),
+                    "POLYGON_LAYER"
 
             );
         }
-
-        /*SymbolLayer countLayer = new SymbolLayer("count", "teis").withProperties(
-                textField(Expression.toString(get("point_count"))),
-                textSize(12f),
-                textColor(Color.BLACK),
-                textIgnorePlacement(true),
-                textOffset(new Float[]{-1.5f,0f}),
-                textAllowOverlap(true)
-        );
-        style.addLayer(countLayer);*/
     }
 
     @Override

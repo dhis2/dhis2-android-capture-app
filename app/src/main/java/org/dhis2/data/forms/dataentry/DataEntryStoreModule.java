@@ -30,7 +30,7 @@ public final class DataEntryStoreModule {
     DataEntryStore dataEntryRepository(@NonNull BriteDatabase briteDatabase,
                                        @NonNull UserRepository userRepository, D2 d2) {
         if (!isEmpty(arguments.event())) { // NOPMD
-            return new DataValueStore(briteDatabase, userRepository, arguments.event());
+            return new DataValueStore(d2,briteDatabase, userRepository, arguments.event());
         } else if (!isEmpty(arguments.enrollment())) { //NOPMD
             return new AttributeValueStore(d2, arguments.enrollment());
         } else {
