@@ -35,6 +35,7 @@ import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
+import org.hisp.dhis.android.core.maintenance.D2Error;
 import org.hisp.dhis.android.core.option.Option;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitLevel;
@@ -50,6 +51,7 @@ import org.hisp.dhis.android.core.program.ProgramStageModel;
 import org.hisp.dhis.android.core.program.ProgramStageSection;
 import org.hisp.dhis.android.core.program.ProgramStageSectionDeviceRendering;
 import org.hisp.dhis.android.core.program.ProgramStageSectionModel;
+import org.hisp.dhis.android.core.program.ProgramStageSectionRendering;
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
 import org.hisp.dhis.android.core.program.ProgramType;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueObjectRepository;
@@ -520,7 +522,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                             dataValue = dataValue + "_ou_" + d2.organisationUnitModule().organisationUnits.uid(dataValue).get().displayName();
                         }
 
-                        ProgramStageSectionRenderingType renderingType = section != null ? section.renderType().mobile().type() : null;
+                        ProgramStageSectionRenderingType renderingType = getSectionRenderingType(section);
 
                         return fieldFactory.create(uid, formName == null ? displayName : formName,
                                 valueType, mandatory, optionSet, dataValue,
@@ -538,7 +540,8 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
     private ProgramStageSectionRenderingType renderingType(String sectionUid) {
         ProgramStageSectionRenderingType renderingType = ProgramStageSectionRenderingType.LISTING;
         if (sectionUid != null) {
-            ProgramStageSectionDeviceRendering stageSectionRendering = d2.programModule().programStageSections.uid(sectionUid).get().renderType().mobile();
+            ProgramStageSectionRendering sectionRendering = d2.programModule().programStageSections.uid(sectionUid).get().renderType();
+            ProgramStageSectionDeviceRendering stageSectionRendering = sectionRendering != null ? sectionRendering.mobile() : null;
             if (stageSectionRendering != null)
                 renderingType = stageSectionRendering.type();
         }
@@ -679,7 +682,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                                         dataValue = dataValue + "_ou_" + d2.organisationUnitModule().organisationUnits.uid(dataValue).get().displayName();
                                     }
 
-                                    ProgramStageSectionRenderingType renderingType = programStageSection != null ? programStageSection.renderType().mobile().type() : null;
+                                    ProgramStageSectionRenderingType renderingType = getSectionRenderingType(programStageSection);
 
                                     return fieldFactory.create(uid, formName == null ? displayName : formName,
                                             valueType, mandatory, optionSet, dataValue,
@@ -694,6 +697,13 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                 .map(this::checkRenderType);
     }
 
+    private ProgramStageSectionRenderingType getSectionRenderingType(ProgramStageSection stageSection) {
+        ProgramStageSectionRenderingType renderingType = ProgramStageSectionRenderingType.LISTING;
+        if (stageSection != null && stageSection.renderType() != null & stageSection.renderType().mobile() != null)
+            renderingType = stageSection.renderType().mobile().type();
+
+        return renderingType;
+    }
 
     @NonNull
     @SuppressFBWarnings("VA_FORMAT_STRING_USES_NEWLINE")
@@ -809,20 +819,6 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                                 .map(Result::success)
                 )
                 .doOnNext(data -> Timber.tag("PROGRAMRULES").d("NEW EFFECTS"))
-                .doOnError(error -> Result.failure(new Exception(error)));
-    }
-
-    @NonNull
-    @Override
-    public Flowable<Result<RuleEffect>> calculate(String section) {
-        return queryDataValues(eventUid)
-                .switchMap(dataValues ->
-                        formRepository.ruleEngine()
-                                .flatMap(ruleEngine ->
-                                        Flowable.fromCallable(ruleEngine.evaluate(eventBuilder.dataValues(dataValues).build()))
-                                )
-                                .map(Result::success)
-                )
                 .doOnError(error -> Result.failure(new Exception(error)));
     }
 
@@ -1068,5 +1064,25 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                     return hasAuthority;
                 }
         ));
+    }
+
+    @Override
+    public void assign(String uid, String value) {
+        try {
+            if (d2.dataElementModule().dataElements.uid(uid).exists()) {
+                if (!isEmpty(value))
+                    d2.trackedEntityModule().trackedEntityDataValues.value(eventUid, uid).set(value); //TODO: Should be assigned in all events?
+                else if( d2.trackedEntityModule().trackedEntityDataValues.value(eventUid, uid).exists())
+                    d2.trackedEntityModule().trackedEntityDataValues.value(eventUid, uid).delete();
+            } else if (d2.trackedEntityModule().trackedEntityAttributes.uid(uid).exists()) {
+                String tei = d2.enrollmentModule().enrollments.uid(currentEvent.enrollment()).get().trackedEntityInstance();
+                if (!isEmpty(value))
+                    d2.trackedEntityModule().trackedEntityAttributeValues.value(uid, tei).set(value);
+                else if( d2.trackedEntityModule().trackedEntityAttributeValues.value(eventUid, tei).exists())
+                    d2.trackedEntityModule().trackedEntityAttributeValues.value(eventUid, tei).delete();
+            }
+        } catch (D2Error d2Error) {
+            Timber.e(d2Error.originalException());
+        }
     }
 }

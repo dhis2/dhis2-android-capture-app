@@ -42,7 +42,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
 
     private MutableLiveData<DashboardProgramModel> dashboardProgramModelLiveData = new MutableLiveData<>();
 
-    TeiDashboardPresenter(D2 d2, DashboardRepository dashboardRepository, MetadataRepository metadataRepository, RuleEngineRepository formRepository) {
+    TeiDashboardPresenter(D2 d2, DashboardRepository dashboardRepository, MetadataRepository metadataRepository) {
         this.d2 = d2;
         this.dashboardRepository = dashboardRepository;
         this.metadataRepository = metadataRepository;

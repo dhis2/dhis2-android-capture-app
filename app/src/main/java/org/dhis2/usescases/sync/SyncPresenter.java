@@ -8,11 +8,14 @@ import androidx.work.OneTimeWorkRequest;
 import androidx.work.PeriodicWorkRequest;
 import androidx.work.WorkManager;
 
-import org.dhis2.data.metadata.MetadataRepository;
+import org.dhis2.R;
 import org.dhis2.data.service.ReservedValuesWorker;
 import org.dhis2.data.service.SyncDataWorker;
 import org.dhis2.data.service.SyncMetadataWorker;
+import org.dhis2.data.tuples.Pair;
 import org.dhis2.utils.Constants;
+import org.hisp.dhis.android.core.D2;
+import org.hisp.dhis.android.core.settings.SystemSetting;
 
 import java.util.concurrent.TimeUnit;
 
@@ -23,20 +26,20 @@ import timber.log.Timber;
 
 public class SyncPresenter implements SyncContracts.Presenter {
 
-    private final MetadataRepository metadataRepository;
     private SyncContracts.View view;
 
     private CompositeDisposable disposable;
+    private D2 d2;
 
 
-    SyncPresenter(MetadataRepository metadataRepository) {
-        this.metadataRepository = metadataRepository;
+    SyncPresenter() {
     }
 
     @Override
-    public void init(SyncContracts.View view) {
+    public void init(SyncContracts.View view, D2 d2) {
         this.view = view;
         this.disposable = new CompositeDisposable();
+        this.d2 = d2;
 
     }
 
@@ -88,16 +91,35 @@ public class SyncPresenter implements SyncContracts.Presenter {
         }
     }
 
+    @Override
     public void getTheme() {
-        disposable.add(metadataRepository.getTheme()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(flagTheme -> {
-                            view.saveFlag(flagTheme.val0());
-                            view.saveTheme(flagTheme.val1());
-                        }, Timber::e
-                ));
-
+        disposable.add(
+                d2.systemSettingModule().systemSetting.getAsync()
+                        .map(systemSettings -> {
+                            String style = "";
+                            String flag = "";
+                            for (SystemSetting setting : systemSettings) {
+                                if (setting.key() == SystemSetting.SystemSettingKey.STYLE)
+                                    style = setting.value();
+                                else
+                                    flag = setting.value();
+                            }
+                            if (style.contains("green"))
+                                return Pair.create(flag, R.style.GreenTheme);
+                            if (style.contains("india"))
+                                return Pair.create(flag, R.style.OrangeTheme);
+                            if (style.contains("myanmar"))
+                                return Pair.create(flag, R.style.RedTheme);
+                            else
+                                return Pair.create(flag, R.style.AppTheme);
+                        })
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(flagTheme -> {
+                                    view.saveFlag(flagTheme.val0());
+                                    view.saveTheme(flagTheme.val1());
+                                }, Timber::e
+                        ));
     }
 
     @Override

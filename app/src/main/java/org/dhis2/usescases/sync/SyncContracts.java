@@ -1,6 +1,7 @@
 package org.dhis2.usescases.sync;
 
 import org.dhis2.usescases.general.AbstractActivityContracts;
+import org.hisp.dhis.android.core.D2;
 
 public class SyncContracts {
 
@@ -13,7 +14,7 @@ public class SyncContracts {
 
     public interface Presenter extends AbstractActivityContracts.Presenter {
 
-        void init(View view);
+        void init(View view, D2 d2);
 
         void sync();
 
