@@ -405,19 +405,10 @@ public class SearchRepositoryImpl implements SearchRepository {
     @Override
     public Observable<List<OrganisationUnit>> getOrgUnits(@Nullable String selectedProgramUid) {
 
-        if (selectedProgramUid != null) {
-            return Observable.fromCallable(() -> {
-                List<String> ouUids = new ArrayList<>();
-                try (Cursor ouCursor = d2.databaseAdapter().query("SELECT organisationUnit FROM OrganisationUnitProgramLink WHERE program = ?", selectedProgramUid)) {
-                    ouCursor.moveToFirst();
-                    do {
-                        ouUids.add(ouCursor.getString(0));
-                    } while (ouCursor.moveToNext());
-                }
-                return ouUids;
-            }).flatMap(ouUids -> d2.organisationUnitModule().organisationUnits.byUid().in(ouUids).withPrograms().get().toObservable());
-        } else
-            return Observable.fromCallable(() -> d2.organisationUnitModule().organisationUnits.blockingGet());
+        if (selectedProgramUid != null)
+            return d2.organisationUnitModule().organisationUnits.byProgramUids(Collections.singletonList(selectedProgramUid)).withPrograms().get().toObservable();
+        else
+            return d2.organisationUnitModule().organisationUnits.get().toObservable();
     }
 
 

@@ -20,6 +20,7 @@ import org.hisp.dhis.android.core.program.ProgramStage;
 import org.hisp.dhis.android.core.program.ProgramStageSection;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import io.reactivex.Flowable;
@@ -100,16 +101,10 @@ public class EventDetailRepositoryImpl implements EventDetailRepository {
 
     @Override
     public Observable<List<OrganisationUnit>> getOrgUnits() {
-        return Observable.fromCallable(() -> {
-            List<String> ouUids = new ArrayList<>();
-            try (Cursor ouCursor = d2.databaseAdapter().query("SELECT organisationUnit FROM OrganisationUnitProgramLink WHERE program = ?", getProgram(eventUid).blockingFirst().uid())) {
-                ouCursor.moveToFirst();
-                do {
-                    ouUids.add(ouCursor.getString(0));
-                } while (ouCursor.moveToNext());
-            }
-            return ouUids;
-        }).flatMap(ouUids -> d2.organisationUnitModule().organisationUnits.byUid().in(ouUids).withPrograms().get().toObservable());
+        return d2.organisationUnitModule().organisationUnits
+                .byProgramUids(Collections.singletonList(getProgram(eventUid).blockingFirst().uid()))
+                .withPrograms().get().toObservable();
+
     }
 
     @Override
