@@ -1,0 +1,12 @@
+--- app/src/main/AndroidManifest.xml
++++ app/src/main/AndroidManifest.xml
+@@ -29,8 +28,7 @@
+             android:name="org.apache.http.legacy"
+             android:required="false" />
+ 
+-        <activity
+-            android:name=".usescases.splash.SplashActivity">
++        <activity android:name=".usescases.splash.SplashActivity">
+             <intent-filter>
+                 <action android:name="android.intent.action.MAIN" />
+ 

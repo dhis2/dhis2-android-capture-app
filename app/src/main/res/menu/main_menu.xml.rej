@@ -1,0 +1,71 @@
+--- app/src/main/res/menu/main_menu.xml
++++ app/src/main/res/menu/main_menu.xml
+@@ -1,6 +1,7 @@
+ <?xml version="1.0" encoding="utf-8"?>
+ <menu xmlns:android="http://schemas.android.com/apk/res/android">
+-    <group android:id="@+id/main_sections"
++    <group
++        android:id="@+id/main_sections"
+         android:checkableBehavior="single">
+         <item
+             android:id="@+id/menu_home"
+@@ -9,12 +10,12 @@
+         <item
+             android:id="@+id/qr_scan"
+             android:icon="@drawable/ic_qr"
+-            android:title="@string/QR_SCANNER"/>
++            android:title="@string/QR_SCANNER" />
+ 
+         <item
+             android:id="@+id/sync_manager"
+             android:icon="@drawable/ic_menu_settings"
+-            android:title="@string/SYNC_MANAGER"/>
++            android:title="@string/SYNC_MANAGER" />
+ 
+ 
+         <item
+@@ -24,22 +25,40 @@
+ 
+ 
+     </group>
++    <group
++        android:id="@+id/app_sections"
++        android:checkableBehavior="single">
++        <item
++            android:id="@+id/drawer_item_mHBSTraining"
++            android:icon="@drawable/common_full_open_on_phone"
++            android:title="@string/drawer_item_mHBSTraining" />
++        <item
++            android:id="@+id/drawer_item_eHBB"
++            android:icon="@drawable/common_full_open_on_phone"
++            android:title="@string/drawer_item_eHBB" />
++        <item
++            android:id="@+id/drawer_item_safeDelivery"
++            android:icon="@drawable/common_full_open_on_phone"
++            android:title="@string/drawer_item_safeDelivery" />
++    </group>
+ 
+-    <group android:id="@+id/close_section"
++    <group
++        android:id="@+id/close_section"
+         android:checkableBehavior="single">
+         <item
+             android:id="@+id/block_button"
+             android:icon="@drawable/ic_menu_lock"
+-            android:title="@string/block_session"/>
++            android:title="@string/block_session" />
+ 
+         <item
+             android:id="@+id/logout_button"
+             android:icon="@drawable/ic_menu_logout"
+-            android:title="@string/log_out"/>
++            android:title="@string/log_out" />
+ 
+     </group>
+ 
+-    <group android:id="@+id/extra_section"
++    <group
++        android:id="@+id/extra_section"
+         android:checkableBehavior="single">
+         <item
+             android:id="@+id/menu_jira"

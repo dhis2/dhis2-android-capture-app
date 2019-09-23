@@ -1,0 +1,11 @@
+--- app/src/main/res/values/strings.xml
++++ app/src/main/res/values/strings.xml
+@@ -1,6 +1,6 @@
+ <resources>
+-    <string name="app_name">Dhis2</string>
+-    <string name="logo_text">dhis</string>
++    <string name="app_name">mHBS</string>
++    <string name="logo_text">mHBS</string>
+     <string name="logo_number">2</string>
+     <string name="google_api" translatable="false">AIzaSyATNJAcNH6YB8ZzkJbzh1vWOgMAKi7KEnQ</string>
+ 

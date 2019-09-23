@@ -319,11 +319,6 @@
 
     <string name="downloaded_confirm">Do you want to add more data from QR?</string>
 
-    <!--Apps-->
-    <string name="drawer_item_mHBSTraining">mHBS Training App</string>
-    <string name="drawer_item_eHBB">eHBB VR App</string>
-    <string name="drawer_item_safeDelivery">Safe Delivery App</string>
-
     <!--ABOUT-->
     <string name="about_app">App Version: %s</string>
     <string name="about_sdk">SDK Version: %s</string>
