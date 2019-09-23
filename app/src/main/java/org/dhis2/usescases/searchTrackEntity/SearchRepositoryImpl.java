@@ -45,10 +45,7 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceTableInfo;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityType;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityTypeAttribute;
-import org.hisp.dhis.android.core.trackedentity.search.QueryFilter;
-import org.hisp.dhis.android.core.trackedentity.search.QueryItem;
-import org.hisp.dhis.android.core.trackedentity.search.QueryOperator;
-import org.hisp.dhis.android.core.trackedentity.search.TrackedEntityInstanceQuery;
+import org.hisp.dhis.android.core.trackedentity.search.TrackedEntityInstanceQueryCollectionRepository;
 
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -154,26 +151,43 @@ public class SearchRepositoryImpl implements SearchRepository {
                                                                      @Nullable HashMap<String, String> queryData,
                                                                      boolean isOnline) {
 
-        TrackedEntityInstanceQuery.Builder queryBuilder = setQueryBuilder(selectedProgram, trackedEntityType, orgUnits);
+        TrackedEntityInstanceQueryCollectionRepository trackedEntityInstanceQuery = d2.trackedEntityModule().trackedEntityInstanceQuery;
+        if (selectedProgram != null)
+            trackedEntityInstanceQuery = trackedEntityInstanceQuery.byProgram().eq(selectedProgram.uid());
+        else
+            trackedEntityInstanceQuery = trackedEntityInstanceQuery.byTrackedEntityType().eq(trackedEntityType);
+
+        OrganisationUnitMode ouMode;
+        if (orgUnits.isEmpty()) {
+            orgUnits.addAll(
+                    UidsHelper.getUidsList(d2.organisationUnitModule().organisationUnits
+                            .byRootOrganisationUnit(true)
+                            .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_TEI_SEARCH)
+                            .blockingGet()));
+            ouMode = OrganisationUnitMode.DESCENDANTS;
+        } else
+            ouMode = OrganisationUnitMode.SELECTED;
+
+        trackedEntityInstanceQuery = trackedEntityInstanceQuery
+                .byOrgUnits().in(orgUnits)
+                .byOrgUnitMode().eq(ouMode);
+
         if (!states.isEmpty())
-            queryBuilder.states(states);
-       /* else
-            queryBuilder.states(Arrays.asList(State.SYNCED, State.TO_POST, State.TO_UPDATE, State.WARNING, State.ERROR));*/
+            trackedEntityInstanceQuery = trackedEntityInstanceQuery
+                    .byStates().in(states);
 
         List<DatePeriod> periods = FilterManager.getInstance().getPeriodFilters();
 
         if (periods.size() > 0) {
             queryData.remove(Constants.ENROLLMENT_DATE_UID);
-            queryBuilder.programStartDate(periods.get(0).startDate());
-            queryBuilder.programEndDate(periods.get(0).endDate());
-
+            trackedEntityInstanceQuery = trackedEntityInstanceQuery.byProgramStartDate().eq(periods.get(0).startDate());
+            trackedEntityInstanceQuery = trackedEntityInstanceQuery.byProgramEndDate().eq(periods.get(0).endDate());
         } else if (queryData != null && !isEmpty(queryData.get(Constants.ENROLLMENT_DATE_UID))) {
             try {
                 Date enrollmentDate = DateUtils.uiDateFormat().parse(queryData.get(Constants.ENROLLMENT_DATE_UID));
                 queryData.remove(Constants.ENROLLMENT_DATE_UID);
-
-                queryBuilder.programStartDate(enrollmentDate);
-                queryBuilder.programEndDate(enrollmentDate);
+                trackedEntityInstanceQuery = trackedEntityInstanceQuery.byProgramStartDate().eq(enrollmentDate);
+                trackedEntityInstanceQuery = trackedEntityInstanceQuery.byProgramEndDate().eq(enrollmentDate);
                 periods.add(DatePeriod.create(enrollmentDate, enrollmentDate));
 
             } catch (ParseException ex) {
@@ -181,17 +195,24 @@ public class SearchRepositoryImpl implements SearchRepository {
             }
         }
         DataSource dataSource;
-        TrackedEntityInstanceQuery query = queryBuilder
-                .filter(formatQueryData(queryData))
-                .build();
+        for (int i = 0; i < queryData.keySet().size(); i++) {
+            String dataId = queryData.keySet().toArray()[i].toString();
+            String dataValue = queryData.get(dataId);
+            if (dataValue.contains("_os_")) {
+                dataValue = dataValue.split("_os_")[1];
+                trackedEntityInstanceQuery = trackedEntityInstanceQuery.byAttribute(dataId).eq(dataValue);
+            } else
+                trackedEntityInstanceQuery = trackedEntityInstanceQuery.byAttribute(dataId).like(dataValue);
+        }
+
         if (isOnline && states.isEmpty()) {
             //TODO: SEARCH OFFLINEFIRST
-            dataSource = d2.trackedEntityModule().trackedEntityInstanceQuery.offlineFirst().query(query).getDataSource()
+            dataSource = trackedEntityInstanceQuery.offlineFirst().getDataSource()
                     .mapByPage(this::filterDeleted)
                     .map(tei -> transform(tei, selectedProgram, true));
         } else {
             //TODO: OFFLINE
-            dataSource = d2.trackedEntityModule().trackedEntityInstanceQuery.offlineOnly().query(query).getDataSource() //TODO: ASK SDK TO FILTER BY BOTH ENROLLMENT DATE AND EVENT DATES
+            dataSource = trackedEntityInstanceQuery.offlineOnly().getDataSource() //TODO: ASK SDK TO FILTER BY BOTH ENROLLMENT DATE AND EVENT DATES
                     .mapByPage(list -> filterByState(list, states))
                     .mapByPage(list -> filterByPeriod(list, periods))
                     .mapByPage(this::filterDeleted)
@@ -216,22 +237,39 @@ public class SearchRepositoryImpl implements SearchRepository {
                                                           @Nullable HashMap<String, String> queryData,
                                                           boolean isOnline) {
 
-        TrackedEntityInstanceQuery.Builder queryBuilder = setQueryBuilder(selectedProgram, trackedEntityType, orgUnits);
+        TrackedEntityInstanceQueryCollectionRepository trackedEntityInstanceQuery = d2.trackedEntityModule().trackedEntityInstanceQuery;
+        if (selectedProgram != null)
+            trackedEntityInstanceQuery = trackedEntityInstanceQuery.byProgram().eq(selectedProgram.uid());
+        else
+            trackedEntityInstanceQuery = trackedEntityInstanceQuery.byTrackedEntityType().eq(trackedEntityType);
+
+        OrganisationUnitMode ouMode;
+        if (orgUnits.isEmpty()) {
+            orgUnits.addAll(
+                    UidsHelper.getUidsList(d2.organisationUnitModule().organisationUnits
+                            .byRootOrganisationUnit(true)
+                            .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_TEI_SEARCH)
+                            .blockingGet()));
+            ouMode = OrganisationUnitMode.DESCENDANTS;
+        } else
+            ouMode = OrganisationUnitMode.SELECTED;
+
+        trackedEntityInstanceQuery = trackedEntityInstanceQuery
+                .byOrgUnits().in(orgUnits)
+                .byOrgUnitMode().eq(ouMode);
 
         List<DatePeriod> periods = FilterManager.getInstance().getPeriodFilters();
 
         if (periods.size() > 0) {
             queryData.remove(Constants.ENROLLMENT_DATE_UID);
-            queryBuilder.programStartDate(periods.get(0).startDate());
-            queryBuilder.programEndDate(periods.get(0).endDate());
-
+            trackedEntityInstanceQuery = trackedEntityInstanceQuery.byProgramStartDate().eq(periods.get(0).startDate());
+            trackedEntityInstanceQuery = trackedEntityInstanceQuery.byProgramEndDate().eq(periods.get(0).endDate());
         } else if (queryData != null && !isEmpty(queryData.get(Constants.ENROLLMENT_DATE_UID))) {
             try {
                 Date enrollmentDate = DateUtils.uiDateFormat().parse(queryData.get(Constants.ENROLLMENT_DATE_UID));
                 queryData.remove(Constants.ENROLLMENT_DATE_UID);
-
-                queryBuilder.programStartDate(enrollmentDate);
-                queryBuilder.programEndDate(enrollmentDate);
+                trackedEntityInstanceQuery = trackedEntityInstanceQuery.byProgramStartDate().eq(enrollmentDate);
+                trackedEntityInstanceQuery = trackedEntityInstanceQuery.byProgramEndDate().eq(enrollmentDate);
                 periods.add(DatePeriod.create(enrollmentDate, enrollmentDate));
 
             } catch (ParseException ex) {
@@ -239,20 +277,24 @@ public class SearchRepositoryImpl implements SearchRepository {
             }
         }
 
-        TrackedEntityInstanceQuery query = queryBuilder
-                .page(2)
-                .pageSize(50)
-                .filter(formatQueryData(queryData))
-                .build();
+        for (int i = 0; i < queryData.keySet().size(); i++) {
+            String dataId = queryData.keySet().toArray()[i].toString();
+            String dataValue = queryData.get(dataId);
+            if (dataValue.contains("_os_")) {
+                dataValue = dataValue.split("_os_")[1];
+                trackedEntityInstanceQuery = trackedEntityInstanceQuery.byAttribute(dataId).eq(dataValue);
+            } else
+                trackedEntityInstanceQuery = trackedEntityInstanceQuery.byAttribute(dataId).like(dataValue);
+        }
 
         if (isOnline && states.isEmpty())
-            return d2.trackedEntityModule().trackedEntityInstanceQuery.offlineFirst().query(query).get().toFlowable()
+            return trackedEntityInstanceQuery.offlineFirst().get().toFlowable()
                     .map(this::filterDeleted)
                     .flatMapIterable(list -> list)
                     .map(tei -> transform(tei, selectedProgram, true))
                     .toList().toFlowable();
         else
-            return d2.trackedEntityModule().trackedEntityInstanceQuery.offlineOnly().query(query).get().toFlowable()
+            return trackedEntityInstanceQuery.offlineOnly().get().toFlowable()
                     .map(list -> filterByState(list, states))
                     .map(list -> filterByPeriod(list, periods))
                     .map(this::filterDeleted)
@@ -479,59 +521,6 @@ public class SearchRepositoryImpl implements SearchRepository {
     @Override
     public Observable<List<OrganisationUnit>> getOrganisationUnits() {
         return d2.organisationUnitModule().organisationUnits.get().toObservable();
-    }
-
-    // Private Region Start //
-    private TrackedEntityInstanceQuery.Builder setQueryBuilder(@Nullable Program selectedProgram, @NonNull String trackedEntityType, @NonNull List<String> orgUnits) {
-        TrackedEntityInstanceQuery.Builder builder = TrackedEntityInstanceQuery.builder();
-
-        OrganisationUnitMode ouMode;
-        if (orgUnits.isEmpty()) {
-            orgUnits.addAll(
-                    UidsHelper.getUidsList(d2.organisationUnitModule().organisationUnits
-                            .byRootOrganisationUnit(true)
-                            .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_TEI_SEARCH)
-                            .blockingGet()));
-            ouMode = OrganisationUnitMode.DESCENDANTS;
-        } else
-            ouMode = OrganisationUnitMode.SELECTED;
-
-        if (selectedProgram != null)
-            builder.program(selectedProgram.uid());
-        else
-            builder.trackedEntityType(trackedEntityType);
-        builder.orgUnits(orgUnits);
-        builder.orgUnitMode(ouMode);
-        builder.pageSize(50);
-        builder.page(1);
-        builder.paging(true);
-        return builder;
-    }
-
-    private List<QueryItem> formatQueryData(@Nullable HashMap<String, String> queryData) {
-        List<QueryItem> filterItems = new ArrayList<>();
-        for (int i = 0; i < queryData.keySet().size(); i++) {
-            String dataId = queryData.keySet().toArray()[i].toString();
-            String dataValue = queryData.get(dataId);
-
-            QueryItem queryItem;
-            if (dataValue.contains("_os_")) {
-                dataValue = dataValue.split("_os_")[1];
-                queryItem = QueryItem.create(dataId, QueryFilter.create(QueryOperator.EQ, dataValue));
-            } else
-                queryItem = QueryItem.create(dataId, QueryFilter.create(QueryOperator.LIKE, dataValue));
-            filterItems.add(queryItem);
-        }
-        return filterItems;
-    }
-
-    private List<String> filterTransform(List<TrackedEntityInstance> teis, List<State> states) {
-        List<String> filteredTeis = new ArrayList<>();
-        for (TrackedEntityInstance tei : teis)
-            if (states.isEmpty() || states.contains(tei.state()))
-                filteredTeis.add(tei.uid());
-
-        return filteredTeis;
     }
 
     private List<TrackedEntityInstance> filterByState(List<TrackedEntityInstance> teis, List<State> states) {
