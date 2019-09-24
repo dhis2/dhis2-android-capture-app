@@ -8,6 +8,7 @@ import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper;
+import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.constant.Constant;
 import org.hisp.dhis.android.core.dataelement.DataElement;
@@ -61,7 +62,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import io.reactivex.Flowable;
 import io.reactivex.Single;
 import timber.log.Timber;
 
@@ -93,9 +93,13 @@ public final class RulesRepository {
     private List<RuleVariable> translateToRuleVariable(List<ProgramRuleVariable> programRuleVariables) {
         List<RuleVariable> ruleVariables = new ArrayList<>();
         for (ProgramRuleVariable programRuleVariable : programRuleVariables) {
-            ruleVariables.add(
-                    translateToRuleVariable(programRuleVariable)
-            );
+            String attribute = programRuleVariable.trackedEntityAttribute() != null ? programRuleVariable.trackedEntityAttribute().uid() : null;
+            String de = programRuleVariable.dataElement() != null ? programRuleVariable.dataElement().uid() : null;
+            if ((de != null && d2.dataElementModule().dataElements.uid(de).exists()) ||
+                    (attribute != null && d2.trackedEntityModule().trackedEntityAttributes.uid(attribute).exists()))
+                ruleVariables.add(
+                        translateToRuleVariable(programRuleVariable)
+                );
         }
         Timber.tag("PROGRAMRULEREPOSITORY").d("FINISHED RULES VARIABLES");
 
@@ -501,12 +505,16 @@ public final class RulesRepository {
                     .byUid().notIn(eventToEvaluate.uid())
                     .byStatus().notIn(EventStatus.SCHEDULE, EventStatus.SKIPPED, EventStatus.OVERDUE)
                     .withTrackedEntityDataValues()
+                    .orderByEventDate(RepositoryScope.OrderByDirection.DESC)
                     .getAsync();
         else
             return d2.eventModule().events
                     .byUid().notIn(eventToEvaluate.uid())
+                    .byProgramUid().eq(eventToEvaluate.program())
+                    .byProgramStageUid().eq(eventToEvaluate.programStage())
                     .byStatus().notIn(EventStatus.SCHEDULE, EventStatus.SKIPPED, EventStatus.OVERDUE)
                     .withTrackedEntityDataValues()
+                    .orderByEventDate(RepositoryScope.OrderByDirection.DESC)
                     .getAsync().map(list -> {
                         if (list.size() > 10)
                             return list.subList(0, 10);
