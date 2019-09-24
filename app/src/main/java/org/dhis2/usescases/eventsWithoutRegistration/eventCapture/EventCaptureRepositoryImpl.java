@@ -67,6 +67,7 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -87,6 +88,8 @@ import static android.text.TextUtils.isEmpty;
  * QUADRAM. Created by ppajuelo on 19/11/2018.
  */
 public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCaptureRepository {
+
+    public static final String NO_SECTION = "NO_SECTION";
 
     private final FieldViewModelFactory fieldFactory;
 
@@ -632,7 +635,24 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
         else return d2.eventModule().events.uid(eventUid).getAsync()
                 .flatMap(event ->
                         d2.programModule().programStages.uid(event.programStage()).withAllChildren().getAsync()
-                                .map(ProgramStage::programStageDataElements).toFlowable()
+                                .map(stage -> {
+                                    List<ProgramStageDataElement> stageDataElements = stage.programStageDataElements();
+                                    if (stage.programStageSections() != null && !stage.programStageSections().isEmpty()) {
+                                        //REORDER PROGRAM STAGE DATA ELEMENTS
+                                        List<String> dataElementsOrder = new ArrayList<>();
+                                        for (ProgramStageSection section : stage.programStageSections()) {
+                                            dataElementsOrder.addAll(UidsHelper.getUidsList(
+                                                    d2.programModule().programStageSections.uid(section.uid()).withAllChildren().get().dataElements()
+                                            ));
+                                        }
+                                        Collections.sort(stageDataElements, (de1, de2) -> {
+                                            Integer pos1 = dataElementsOrder.indexOf(de1.dataElement().uid());
+                                            Integer pos2 = dataElementsOrder.indexOf(de2.dataElement().uid());
+                                            return pos1.compareTo(pos2);
+                                        });
+                                    }
+                                    return stageDataElements;
+                                }).toFlowable()
                                 .flatMapIterable(list -> list)
                                 .map(programStageDataElement -> {
                                     DataElement de = d2.dataElementModule().dataElements.uid(programStageDataElement.dataElement().uid()).withAllChildren().get();
@@ -1072,13 +1092,13 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
             if (d2.dataElementModule().dataElements.uid(uid).exists()) {
                 if (!isEmpty(value))
                     d2.trackedEntityModule().trackedEntityDataValues.value(eventUid, uid).set(value); //TODO: Should be assigned in all events?
-                else if( d2.trackedEntityModule().trackedEntityDataValues.value(eventUid, uid).exists())
+                else if (d2.trackedEntityModule().trackedEntityDataValues.value(eventUid, uid).exists())
                     d2.trackedEntityModule().trackedEntityDataValues.value(eventUid, uid).delete();
             } else if (d2.trackedEntityModule().trackedEntityAttributes.uid(uid).exists()) {
                 String tei = d2.enrollmentModule().enrollments.uid(currentEvent.enrollment()).get().trackedEntityInstance();
                 if (!isEmpty(value))
                     d2.trackedEntityModule().trackedEntityAttributeValues.value(uid, tei).set(value);
-                else if( d2.trackedEntityModule().trackedEntityAttributeValues.value(eventUid, tei).exists())
+                else if (d2.trackedEntityModule().trackedEntityAttributeValues.value(eventUid, tei).exists())
                     d2.trackedEntityModule().trackedEntityAttributeValues.value(eventUid, tei).delete();
             }
         } catch (D2Error d2Error) {
