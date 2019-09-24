@@ -40,7 +40,8 @@ class HomeRepositoryImpl implements HomeRepository {
     public Flowable<List<ProgramViewModel>> aggregatesModels(List<DatePeriod> dateFilter, final List<String> orgUnitFilter, List<State> statesFilter) {
 
         return Flowable.just(d2.dataSetModule().dataSets)
-                .flatMap(programRepo -> Flowable.fromIterable(programRepo.withAllChildren().blockingGet()))
+                .flatMap(programRepo -> Flowable.fromIterable(programRepo.withCompulsoryDataElementOperands()
+                        .withDataInputPeriods().withDataSetElements().withIndicators().withSections().withStyle().blockingGet()))
                 .map(dataSet -> {
                             DataSetInstanceCollectionRepository repo = d2.dataSetModule().dataSetInstances.byDataSetUid().eq(dataSet.uid());
                             if (!orgUnitFilter.isEmpty())
@@ -109,12 +110,15 @@ class HomeRepositoryImpl implements HomeRepository {
                     }
                     return captureOrgUnitUids;
                 })
-                .flatMap(orgUnits -> Flowable.just(d2.programModule().programs.byOrganisationUnitList(orgUnits)))
+                .flatMap(orgUnits -> Flowable.just(d2.programModule().programs.withStyle().withCategoryCombo()
+                        .withProgramIndicators().withProgramRules().withProgramRuleVariables().withProgramSections()
+                        .withProgramStages().withProgramTrackedEntityAttributes().withStyle()
+                        .withRelatedProgram().withTrackedEntityType().byOrganisationUnitList(orgUnits)))
                 .flatMap(programRepo -> {
                     if (orgUnitFilter != null && !orgUnitFilter.isEmpty())
-                        return Flowable.fromIterable(programRepo.byOrganisationUnitList(orgUnitFilter).withStyle().withAllChildren().blockingGet());
+                        return Flowable.fromIterable(programRepo.byOrganisationUnitList(orgUnitFilter).blockingGet());
                     else
-                        return Flowable.fromIterable(programRepo.withStyle().withAllChildren().blockingGet());
+                        return Flowable.fromIterable(programRepo.blockingGet());
                 })
                 .map(program -> {
 

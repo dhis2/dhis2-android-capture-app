@@ -90,7 +90,7 @@ public class DataValueRepositoryImpl implements DataValueRepository {
             return Flowable.fromCallable(() -> {
                 List<String> dataElementsUid = UidsHelper.getUidsList(d2.dataSetModule().sections.withDataElements().byDataSetUid().eq(dataSetUid).byName().eq(sectionName).one().blockingGet().dataElements());
                 List<DataElement> transformedDataElements = new ArrayList<>();
-                List<DataElement> dataElements = d2.dataElementModule().dataElements.withAllChildren().byUid().in(dataElementsUid).orderByName(RepositoryScope.OrderByDirection.ASC).blockingGet();
+                List<DataElement> dataElements = d2.dataElementModule().dataElements.withStyle().byUid().in(dataElementsUid).orderByName(RepositoryScope.OrderByDirection.ASC).blockingGet();
                 for (DataElement dataElement : dataElements) {
                     transformedDataElements.add(transformDataElement(dataElement, d2.dataSetModule().dataSets.withDataSetElements().byUid().eq(dataSetUid).one().blockingGet().dataSetElements()));
                 }
@@ -117,16 +117,16 @@ public class DataValueRepositoryImpl implements DataValueRepository {
         if (!sectionName.equals("NO_SECTION"))
             return Flowable.fromCallable(() -> {
                 List<String> dataElementUids = UidsHelper.getUidsList(d2.dataSetModule().sections.withDataElements().byDataSetUid().eq(dataSetUid).byName().eq(sectionName).one().blockingGet().dataElements());
-                List<DataElement> dataElements = d2.dataElementModule().dataElements.withAllChildren().byUid().in(dataElementUids).orderByName(RepositoryScope.OrderByDirection.ASC).blockingGet();
+                List<DataElement> dataElements = d2.dataElementModule().dataElements.withStyle().byUid().in(dataElementUids).orderByName(RepositoryScope.OrderByDirection.ASC).blockingGet();
                 List<DataSetElement> dataSetElements = d2.dataSetModule().dataSets.withDataSetElements().byUid().eq(dataSetUid).one().blockingGet().dataSetElements();
                 List<CategoryCombo> categoryCombos = new ArrayList<>();
 
                 for (DataElement dataElement : dataElements) {
                     for (DataSetElement dataSetElement : dataSetElements) {
                         if (dataSetElement.dataElement().uid().equals(dataElement.uid()) && dataSetElement.categoryCombo() != null)
-                            categoryCombos.add(d2.categoryModule().categoryCombos.byUid().eq(dataSetElement.categoryCombo().uid()).one().blockingGet());
+                            categoryCombos.add(d2.categoryModule().categoryCombos.byUid().eq(dataSetElement.categoryCombo().uid()).withCategories().withCategoryOptionCombos().one().blockingGet());
                         else
-                            categoryCombos.add(d2.categoryModule().categoryCombos.byUid().eq(dataElement.categoryCombo().uid()).one().withAllChildren().blockingGet());
+                            categoryCombos.add(d2.categoryModule().categoryCombos.byUid().eq(dataElement.categoryCombo().uid()).withCategories().withCategoryOptionCombos().one().blockingGet());
                     }
                 }
                 return categoryCombos;
@@ -137,10 +137,10 @@ public class DataValueRepositoryImpl implements DataValueRepository {
             List<CategoryCombo> categoryCombos = new ArrayList<>();
             for (DataSetElement dataSetElement : dataSetElements) {
                 if (dataSetElement.categoryCombo() != null)
-                    categoryCombos.add(d2.categoryModule().categoryCombos.byUid().eq(dataSetElement.categoryCombo().uid()).one().withAllChildren().blockingGet());
+                    categoryCombos.add(d2.categoryModule().categoryCombos.byUid().eq(dataSetElement.categoryCombo().uid()).withCategories().withCategoryOptionCombos().one().blockingGet());
                 else {
                     DataElement dataElement = d2.dataElementModule().dataElements.byUid().eq(dataSetElement.dataElement().uid()).one().blockingGet();
-                    categoryCombos.add(d2.categoryModule().categoryCombos.byUid().eq(dataElement.categoryCombo().uid()).one().withAllChildren().blockingGet());
+                    categoryCombos.add(d2.categoryModule().categoryCombos.byUid().eq(dataElement.categoryCombo().uid()).withCategories().withCategoryOptionCombos().one().blockingGet());
                 }
             }
             return categoryCombos;
@@ -219,7 +219,7 @@ public class DataValueRepositoryImpl implements DataValueRepository {
                     if(dataSetElement.categoryCombo() != null)
                         catCombos.add(dataSetElement.categoryCombo().uid());
                 }
-                dataElements = d2.dataElementModule().dataElements.withAllChildren().byUid().in(dataElementUids).orderByName(RepositoryScope.OrderByDirection.ASC).blockingGet();
+                dataElements = d2.dataElementModule().dataElements.withStyle().byUid().in(dataElementUids).orderByName(RepositoryScope.OrderByDirection.ASC).blockingGet();
                 return getMap(catCombos, dataElements);
             });
         return Flowable.fromCallable(() -> {
@@ -227,7 +227,7 @@ public class DataValueRepositoryImpl implements DataValueRepository {
             List<DataElement> dataElements = new ArrayList<>();
             List<String> dataElementsUid = UidsHelper.getUidsList(d2.dataSetModule().sections.withDataElements().byDataSetUid().eq(dataSetUid).byName().eq(sectionName).one().blockingGet().dataElements());
 
-            for (DataElement dataElement : d2.dataElementModule().dataElements.withAllChildren().byUid().in(dataElementsUid).orderByName(RepositoryScope.OrderByDirection.ASC).blockingGet()) {
+            for (DataElement dataElement : d2.dataElementModule().dataElements.withStyle().byUid().in(dataElementsUid).orderByName(RepositoryScope.OrderByDirection.ASC).blockingGet()) {
                 dataElements.add(transformDataElement(dataElement, dataSetElements));
             }
             return getMap(catCombos, dataElements);
@@ -241,7 +241,7 @@ public class DataValueRepositoryImpl implements DataValueRepository {
             catCombos.add(dataElement.categoryCombo().uid());
         }
         for (String catCombo : catCombos) {
-            List<Category> categories = d2.categoryModule().categoryCombos.withCategories().withAllChildren().byUid().eq(catCombo).one().blockingGet().categories();
+            List<Category> categories = d2.categoryModule().categoryCombos.withCategories().withCategoryOptionCombos().byUid().eq(catCombo).one().blockingGet().categories();
 
             if (map.get(catCombo) == null) {
                 map.put(catCombo, new ArrayList<>());
@@ -352,7 +352,7 @@ public class DataValueRepositoryImpl implements DataValueRepository {
         return Flowable.fromCallable(() -> {
             List<DataElementOperand> operands;
             if(!section.isEmpty() && !section.equals("NO_SECTION")) {
-                operands = d2.dataSetModule().sections.withAllChildren().byDataSetUid().eq(dataSetUid).byName().eq(section).one().blockingGet().greyedFields();
+                operands = d2.dataSetModule().sections.withGreyedFields().withDataElements().byDataSetUid().eq(dataSetUid).byName().eq(section).one().blockingGet().greyedFields();
 
                 for (DataElementOperand operand : operands) {
                     List<String> catOptions;

@@ -195,7 +195,7 @@ class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
 
     @Override
     public void completeEnrollment() {
-        if (d2.programModule().programs.uid(programUid).withAllChildren().blockingGet().access().data().write()) {
+        if (d2.programModule().programs.uid(programUid).blockingGet().access().data().write()) {
             Flowable<Long> flowable;
             EnrollmentStatus newStatus = EnrollmentStatus.COMPLETED;
 

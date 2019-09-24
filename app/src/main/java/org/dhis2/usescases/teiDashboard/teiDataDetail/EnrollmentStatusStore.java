@@ -99,7 +99,7 @@ public final class EnrollmentStatusStore implements EnrollmentStatusEntryStore {
     @Override
     public Single<TrackedEntityType> captureTeiCoordinates() {
         return d2.enrollmentModule().enrollments.uid(enrollment).get()
-                .flatMap(enrollment -> d2.programModule().programs.uid(enrollment.program()).withAllChildren().get())
+                .flatMap(enrollment -> d2.programModule().programs.withTrackedEntityType().uid(enrollment.program()).get())
                 .flatMap(program -> d2.trackedEntityModule().trackedEntityTypes.uid(program.trackedEntityType().uid()).get());
     }
 
