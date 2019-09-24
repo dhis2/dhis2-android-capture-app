@@ -324,22 +324,22 @@ public class DashboardRepositoryImpl implements DashboardRepository {
 
     @Override
     public Observable<CategoryCombo> catComboForProgram(String programUid) {
-        return Observable.defer(() -> Observable.just(d2.categoryModule().categoryCombos.uid(d2.programModule().programs.uid(programUid).blockingGet().categoryCombo().uid()).withAllChildren().blockingGet()))
+        return Observable.defer(() -> Observable.just(d2.categoryModule().categoryCombos.withCategories().withCategoryOptionCombos().uid(d2.programModule().programs.uid(programUid).blockingGet().categoryCombo().uid()).blockingGet()))
                 .map(categoryCombo -> {
                     List<Category> fullCategories = new ArrayList<>();
                     List<CategoryOptionCombo> fullOptionCombos = new ArrayList<>();
                     for (Category category : categoryCombo.categories()) {
-                        fullCategories.add(d2.categoryModule().categories.uid(category.uid()).withAllChildren().blockingGet());
+                        fullCategories.add(d2.categoryModule().categories.withCategoryOptions().uid(category.uid()).blockingGet());
                     }
                     for (CategoryOptionCombo categoryOptionCombo : categoryCombo.categoryOptionCombos())
-                        fullOptionCombos.add(d2.categoryModule().categoryOptionCombos.uid(categoryOptionCombo.uid()).withAllChildren().blockingGet());
+                        fullOptionCombos.add(d2.categoryModule().categoryOptionCombos.withCategoryOptions().uid(categoryOptionCombo.uid()).blockingGet());
                     return categoryCombo.toBuilder().categories(fullCategories).categoryOptionCombos(fullOptionCombos).build();
                 });
     }
 
     @Override
     public void setDefaultCatOptCombToEvent(String eventUid) {
-        List<CategoryCombo> categoryCombos = d2.categoryModule().categoryCombos.byIsDefault().isTrue().withAllChildren().blockingGet();
+        List<CategoryCombo> categoryCombos = d2.categoryModule().categoryCombos.byIsDefault().isTrue().withCategories().withCategoryOptionCombos().blockingGet();
         try {
             d2.eventModule().events.uid(eventUid).setAttributeOptionComboUid(categoryCombos.get(0).categoryOptionCombos().get(0).uid());
         } catch (D2Error d2Error) {
@@ -483,7 +483,7 @@ public class DashboardRepositoryImpl implements DashboardRepository {
 
     @Override
     public Observable<List<OrganisationUnit>> getTeiOrgUnits(@NonNull String teiUid, @Nullable String programUid) {
-        EnrollmentCollectionRepository enrollmentRepo = d2.enrollmentModule().enrollments.withAllChildren().byTrackedEntityInstance().eq(teiUid);
+        EnrollmentCollectionRepository enrollmentRepo = d2.enrollmentModule().enrollments.byTrackedEntityInstance().eq(teiUid);
         if (programUid != null) {
             enrollmentRepo = enrollmentRepo.byProgram().eq(programUid);
         }

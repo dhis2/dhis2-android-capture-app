@@ -91,7 +91,7 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
                 .map(eventSingle -> {
                     List<FormSectionViewModel> formSection = new ArrayList<>();
                     if (eventSingle.deleted() == null || !eventSingle.deleted()) {
-                        ProgramStage stage = d2.programModule().programStages.uid(eventSingle.programStage()).withAllChildren().blockingGet();
+                        ProgramStage stage = d2.programModule().programStages.withProgramStageSections().uid(eventSingle.programStage()).blockingGet();
                         if (stage.programStageSections().size() > 0) {
                             for (ProgramStageSection section : stage.programStageSections())
                                 formSection.add(FormSectionViewModel.createForSection(eventUid, section.uid(), section.displayName(),
@@ -117,10 +117,10 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
     @NonNull
     @Override
     public Flowable<List<FieldViewModel>> list(String section, String eventUid) {
-        return d2.eventModule().events.withAllChildren().uid(eventUid).get()
+        return d2.eventModule().events.withTrackedEntityDataValues().uid(eventUid).get()
                 .map(event -> {
                     List<FieldViewModel> fields = new ArrayList<>();
-                    ProgramStage stage = d2.programModule().programStages.withAllChildren().uid(event.programStage()).blockingGet();
+                    ProgramStage stage = d2.programModule().programStages.withProgramStageDataElements().withProgramStageSections().uid(event.programStage()).blockingGet();
                     if (section != null) {
 
                         ProgramStageSection stageSection = d2.programModule().programStageSections.withDataElements().uid(section).blockingGet();
@@ -273,6 +273,8 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
 
     @Override
     public Observable<Program> getProgramWithId(String programUid) {
-        return d2.programModule().programs.withAllChildren().byUid().eq(programUid).one().get().toObservable();
+        return d2.programModule().programs.withTrackedEntityType().withProgramTrackedEntityAttributes().withProgramIndicators().withProgramRules()
+                .withProgramRuleVariables().withProgramSections().withProgramStages().withRelatedProgram().withStyle().withCategoryCombo()
+                .uid(programUid).get().toObservable();
     }
 }

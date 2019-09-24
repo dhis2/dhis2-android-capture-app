@@ -54,7 +54,7 @@ public final class EnrollmentRepository implements DataEntryRepository {
     public Flowable<List<FieldViewModel>> list() {
 
         return d2.enrollmentModule().enrollments.uid(enrollmentUid).get()
-                .flatMap(enrollment -> d2.programModule().programs.uid(enrollment.program()).withAllChildren().get())
+                .flatMap(enrollment -> d2.programModule().programs.withProgramTrackedEntityAttributes().uid(enrollment.program()).get())
                 .map(program -> program.programTrackedEntityAttributes()).toFlowable()
                 .flatMapIterable(programTrackedEntityAttributes -> programTrackedEntityAttributes)
                 .map(this::transform).toList().toFlowable();
@@ -73,8 +73,8 @@ public final class EnrollmentRepository implements DataEntryRepository {
 
     @NonNull
     private FieldViewModel transform(@NonNull ProgramTrackedEntityAttribute programTrackedEntityAttribute) {
-        TrackedEntityAttribute attribute = d2.trackedEntityModule().trackedEntityAttributes.uid(programTrackedEntityAttribute.trackedEntityAttribute().uid())
-                .withAllChildren().blockingGet();
+        TrackedEntityAttribute attribute = d2.trackedEntityModule().trackedEntityAttributes.withObjectStyle().uid(programTrackedEntityAttribute.trackedEntityAttribute().uid())
+                .blockingGet();
         TrackedEntityAttributeValueObjectRepository attrValueRepository = d2.trackedEntityModule().trackedEntityAttributeValues
                 .value(attribute.uid(), enrollmentRepository.blockingGet().trackedEntityInstance());
 

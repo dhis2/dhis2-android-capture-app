@@ -115,9 +115,9 @@ public final class EnrollmentRuleEngineRepository implements RuleEngineRepositor
     }
 
     public void initData() {
-        Enrollment enrollment = d2.enrollmentModule().enrollments.uid(enrollmentUid).withAllChildren().blockingGet();
+        Enrollment enrollment = d2.enrollmentModule().enrollments.uid(enrollmentUid).blockingGet();
         OrganisationUnit ou = d2.organisationUnitModule().organisationUnits.uid(enrollment.organisationUnit()).blockingGet();
-        Program program = d2.programModule().programs.uid(enrollment.program()).withAllChildren().blockingGet();
+        Program program = d2.programModule().programs.withProgramRuleVariables().uid(enrollment.program()).blockingGet();
 
         attrRuleVariableMap = new HashMap<>();
         for (ProgramRuleVariable ruleVariable : program.programRuleVariables()) {
@@ -140,15 +140,15 @@ public final class EnrollmentRuleEngineRepository implements RuleEngineRepositor
     private Map<String, String> getAttributesValueMap(Enrollment enrollment, Program program) {
         List<TrackedEntityAttributeValue> attributeValueList = d2.trackedEntityModule().trackedEntityAttributeValues
                 .byTrackedEntityInstance().eq(enrollment.trackedEntityInstance())
-                .withAllChildren().blockingGet();
+                .blockingGet();
 
         Map<String, String> attrValueMap = new HashMap<>();
         for (TrackedEntityAttributeValue attributeValue : attributeValueList) {
             String uid = attributeValue.trackedEntityAttribute();
             String value = attributeValue.value();
-            TrackedEntityAttribute attr = d2.trackedEntityModule().trackedEntityAttributes.uid(attributeValue.trackedEntityAttribute()).withAllChildren().blockingGet();
+            TrackedEntityAttribute attr = d2.trackedEntityModule().trackedEntityAttributes.withObjectStyle().uid(attributeValue.trackedEntityAttribute()).blockingGet();
             if (attr != null && attr.optionSet() != null) {
-                List<Option> options = d2.optionModule().optionSets.uid(attr.optionSet().uid()).withAllChildren().blockingGet().options();
+                List<Option> options = d2.optionModule().optionSets.withOptions().uid(attr.optionSet().uid()).blockingGet().options();
                 ProgramRuleVariable ruleVariable = attrRuleVariableMap.get(attr.uid());
                 if (ruleVariable != null && (ruleVariable.useCodeForOptionSet() == null || !ruleVariable.useCodeForOptionSet())) {
                     for (Option option : options) {
@@ -169,7 +169,7 @@ public final class EnrollmentRuleEngineRepository implements RuleEngineRepositor
     }
 
     private void loadAttrRules(String programUid) {
-        List<ProgramRule> rules = d2.programModule().programRules.byProgramUid().eq(programUid).withAllChildren().blockingGet();
+        List<ProgramRule> rules = d2.programModule().programRules.byProgramUid().eq(programUid).withProgramRuleActions().blockingGet();
         mandatoryRules = new ArrayList<>();
         Iterator<ProgramRule> ruleIterator = rules.iterator();
         while (ruleIterator.hasNext()) {
@@ -194,7 +194,7 @@ public final class EnrollmentRuleEngineRepository implements RuleEngineRepositor
 
         List<ProgramRuleVariable> variables = d2.programModule().programRuleVariables
                 .byProgramUid().eq(programUid)
-                .withAllChildren().blockingGet();
+                .blockingGet();
         Iterator<ProgramRuleVariable> variableIterator = variables.iterator();
         while (variableIterator.hasNext()) {
             ProgramRuleVariable variable = variableIterator.next();
@@ -277,8 +277,8 @@ public final class EnrollmentRuleEngineRepository implements RuleEngineRepositor
     }
 
     private List<RuleAttributeValue> getRuleAttributeValueMap() {
-        Enrollment enrollment = d2.enrollmentModule().enrollments.uid(enrollmentUid).withAllChildren().blockingGet();
-        Program program = d2.programModule().programs.uid(enrollment.program()).withAllChildren().blockingGet();
+        Enrollment enrollment = d2.enrollmentModule().enrollments.uid(enrollmentUid).blockingGet();
+        Program program = d2.programModule().programs.uid(enrollment.program()).blockingGet();
         setRuleAttributeMap(getAttributesValueMap(enrollment, program));
         return new ArrayList<>(ruleAttributeValueMap.values());
     }
@@ -286,10 +286,10 @@ public final class EnrollmentRuleEngineRepository implements RuleEngineRepositor
     @Override
     public void updateRuleAttributeMap(String uid, String value) {
         lastUpdatedAttr = uid;
-        TrackedEntityAttribute attr = d2.trackedEntityModule().trackedEntityAttributes.uid(uid).withAllChildren().blockingGet();
+        TrackedEntityAttribute attr = d2.trackedEntityModule().trackedEntityAttributes.withObjectStyle().uid(uid).blockingGet();
         if (attr != null && attr.optionSet() != null) {
             ProgramRuleVariable ruleVariable = attrRuleVariableMap.get(attr.uid());
-            List<Option> options = d2.optionModule().optionSets.uid(attr.optionSet().uid()).withAllChildren().blockingGet().options();
+            List<Option> options = d2.optionModule().optionSets.uid(attr.optionSet().uid()).blockingGet().options();
             if ((ruleVariable != null && (ruleVariable.useCodeForOptionSet() == null || !ruleVariable.useCodeForOptionSet())) &&
                     options != null) {
                 for (Option option : options) {

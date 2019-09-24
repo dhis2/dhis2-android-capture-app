@@ -117,10 +117,10 @@ public class EventDetailRepositoryImpl implements EventDetailRepository {
         return d2.eventModule().events.uid(eventUid).get()
                 .flatMap(event -> d2.programModule().programs.uid(event.program()).get())
                 .map(Program::categoryComboUid)
-                .flatMap(catCombo -> d2.categoryModule().categoryCombos.uid(catCombo).withAllChildren().get()
+                .flatMap(catCombo -> d2.categoryModule().categoryCombos.uid(catCombo).get()
                         .map(categoryCombo -> Pair.create(
                                 categoryCombo.name(),
-                                d2.categoryModule().categoryOptionCombos.byCategoryComboUid().eq(categoryCombo.uid()).orderByDisplayName(RepositoryScope.OrderByDirection.ASC).blockingGet()))
+                                d2.categoryModule().categoryOptionCombos.withCategoryOptions().byCategoryComboUid().eq(categoryCombo.uid()).orderByDisplayName(RepositoryScope.OrderByDirection.ASC).blockingGet()))
                 ).toObservable();
     }
 
@@ -147,7 +147,7 @@ public class EventDetailRepositoryImpl implements EventDetailRepository {
 
     @Override
     public Observable<Boolean> isEnrollmentActive(String eventUid) {
-        Event event = d2.eventModule().events.uid(eventUid).withAllChildren().blockingGet();
+        Event event = d2.eventModule().events.uid(eventUid).blockingGet();
         return Observable.fromCallable(() -> event == null || event.enrollment() == null || d2.enrollmentModule().enrollments.uid(event.enrollment()).blockingGet().status() == EnrollmentStatus.ACTIVE);
     }
 

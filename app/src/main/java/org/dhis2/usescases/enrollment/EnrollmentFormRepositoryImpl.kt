@@ -119,7 +119,7 @@ class EnrollmentFormRepositoryImpl(
             Pair(enrollmentStagePair.first, eventCollectionRepository.one().blockingGet().uid()!!)
         else {
             Pair(enrollmentStagePair.first, generateEvent(DateUtils.getInstance().today,
-                    d2.programModule().programStages.uid(enrollmentStagePair.second).withAllChildren().blockingGet()))
+                    d2.programModule().programStages.uid(enrollmentStagePair.second).blockingGet()))
         }
     }
 
@@ -129,7 +129,6 @@ class EnrollmentFormRepositoryImpl(
                 .byProgramUid().eq(programUid)
                 .byAutoGenerateEvent().isTrue
                 .orderBySortOrder(RepositoryScope.OrderByDirection.ASC)
-                .withAllChildren()
                 .get()
                 .flatMap {
                     it.forEach { programStage ->
@@ -222,7 +221,7 @@ class EnrollmentFormRepositoryImpl(
                                 .value(it.trackedEntityAttribute()!!.uid(), enrollmentRepository.blockingGet().trackedEntityInstance())
                                 .blockingGet()
                         val attr = d2.trackedEntityModule().trackedEntityAttributes
-                                .uid(it.trackedEntityAttribute()!!.uid()).withAllChildren()
+                                .uid(it.trackedEntityAttribute()!!.uid())
                                 .blockingGet()
                         val variable = d2.programModule().programRuleVariables
                                 .byProgramUid().eq(programUid)

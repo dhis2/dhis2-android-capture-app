@@ -524,8 +524,9 @@ public class EnrollmentFormRepository implements FormRepository {
     @Override
     public Single<TrackedEntityType> captureTeiCoordinates() {
         return d2.enrollmentModule().enrollments.uid(enrollmentUid).get()
-                .flatMap(enrollment -> d2.programModule().programs.uid(enrollment.program()).withAllChildren().get())
-                .flatMap(program -> d2.trackedEntityModule().trackedEntityTypes.uid(program.trackedEntityType().uid()).get());
+                .flatMap(enrollment -> d2.programModule().programs.withTrackedEntityType().uid(enrollment.program()).get())
+                .flatMap(program -> d2.trackedEntityModule().trackedEntityTypes.withTrackedEntityTypeAttributes().withStyle()
+                                        .uid(program.trackedEntityType().uid()).get());
     }
 
     @Override

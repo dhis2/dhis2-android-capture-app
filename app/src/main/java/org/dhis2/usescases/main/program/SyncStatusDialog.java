@@ -183,7 +183,7 @@ public class SyncStatusDialog extends BottomSheetDialogFragment {
                         )
         );
         compositeDisposable.add(
-                Observable.fromCallable(()-> d2.dataSetModule().dataSets.uid(recordUid).withAllChildren().blockingGet().dataSetElements())
+                Observable.fromCallable(()-> d2.dataSetModule().dataSets.withDataSetElements().uid(recordUid).blockingGet().dataSetElements())
                         .map(dataSetElements -> {
                             State state = State.SYNCED;
                             for(DataSetElement dataSetElement: dataSetElements){
