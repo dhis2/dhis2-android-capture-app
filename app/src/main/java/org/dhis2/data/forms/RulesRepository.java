@@ -62,7 +62,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import io.reactivex.Flowable;
 import io.reactivex.Single;
 import timber.log.Timber;
 
@@ -556,7 +555,8 @@ public final class RulesRepository {
                                         new ArrayList<>(),
                                         programName));
                     else
-                        return d2.enrollmentModule().enrollments.uid(event.enrollment()).withAllChildren().get()
+                        return d2.enrollmentModule().enrollments
+                                .uid(event.enrollment()).get()
                                 .map(enrollment -> RuleEnrollment.create(enrollment.uid(),
                                         enrollment.enrollmentDate(),
                                         enrollment.incidentDate() != null ? enrollment.incidentDate() : new Date(),
