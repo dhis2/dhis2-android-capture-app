@@ -1,16 +1,16 @@
 package org.dhis2.usescases.sync;
 
 import androidx.work.Constraints;
-import androidx.work.ExistingPeriodicWorkPolicy;
+import androidx.work.Data;
 import androidx.work.ExistingWorkPolicy;
 import androidx.work.NetworkType;
 import androidx.work.OneTimeWorkRequest;
-import androidx.work.PeriodicWorkRequest;
 import androidx.work.WorkManager;
 
 import org.dhis2.R;
 import org.dhis2.data.service.ReservedValuesWorker;
 import org.dhis2.data.service.SyncDataWorker;
+import org.dhis2.data.service.SyncInitWorker;
 import org.dhis2.data.service.SyncMetadataWorker;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.utils.Constants;
@@ -68,57 +68,67 @@ public class SyncPresenter implements SyncContracts.Presenter {
 
     @Override
     public void scheduleSync(int metaTime, int dataTime) {
-        if (metaTime != 0) {
-            PeriodicWorkRequest.Builder metaBuilder = new PeriodicWorkRequest.Builder(SyncMetadataWorker.class, metaTime, TimeUnit.SECONDS);
-            metaBuilder.addTag(Constants.META);
-            metaBuilder.setInitialDelay(metaTime, TimeUnit.SECONDS); //TODO: CAN BE SET TO A SPECIFIC TIME
-            metaBuilder.setConstraints(new Constraints.Builder()
-                    .setRequiredNetworkType(NetworkType.CONNECTED)
-                    .build());
-            PeriodicWorkRequest metaRequest = metaBuilder.build();
-            WorkManager.getInstance(view.getContext().getApplicationContext()).enqueueUniquePeriodicWork(Constants.META, ExistingPeriodicWorkPolicy.REPLACE, metaRequest);
-        }
 
-        if (dataTime != 0) {
-            PeriodicWorkRequest.Builder dataBuilder = new PeriodicWorkRequest.Builder(SyncDataWorker.class, dataTime, TimeUnit.SECONDS);
-            dataBuilder.addTag(Constants.DATA);
-            dataBuilder.setInitialDelay(dataTime, TimeUnit.SECONDS);//TODO: CAN BE SET TO A SPECIFIC TIME
-            dataBuilder.setConstraints(new Constraints.Builder()
-                    .setRequiredNetworkType(NetworkType.CONNECTED)
-                    .build());
-            PeriodicWorkRequest dataRequest = dataBuilder.build();
-            WorkManager.getInstance(view.getContext().getApplicationContext()).enqueueUniquePeriodicWork(Constants.DATA, ExistingPeriodicWorkPolicy.REPLACE, dataRequest);
-        }
+        //METADATA
+        OneTimeWorkRequest.Builder initMetaBuilder = new OneTimeWorkRequest.Builder(SyncInitWorker.class);
+        initMetaBuilder.addTag(Constants.INIT_META);
+        initMetaBuilder.setInitialDelay(metaTime, TimeUnit.SECONDS);
+        initMetaBuilder.setConstraints(new Constraints.Builder()
+                .setRequiredNetworkType(NetworkType.CONNECTED)
+                .build());
+        Data dataMeta = new Data.Builder()
+                .putBoolean(SyncInitWorker.INIT_META, metaTime != 0)
+                .putBoolean(SyncInitWorker.INIT_DATA, false)
+                .build();
+        initMetaBuilder.setInputData(dataMeta);
+        WorkManager.getInstance(view.getContext().getApplicationContext())
+                .enqueueUniqueWork(Constants.INIT_META, ExistingWorkPolicy.REPLACE, initMetaBuilder.build());
+
+        //DATA
+        OneTimeWorkRequest.Builder initDataBuilder = new OneTimeWorkRequest.Builder(SyncInitWorker.class);
+        initDataBuilder.addTag(Constants.INIT_DATA);
+        initDataBuilder.setInitialDelay(dataTime, TimeUnit.SECONDS);
+        initDataBuilder.setConstraints(new Constraints.Builder()
+                .setRequiredNetworkType(NetworkType.CONNECTED)
+                .build());
+        Data data = new Data.Builder()
+                .putBoolean(SyncInitWorker.INIT_DATA, false)
+                .putBoolean(SyncInitWorker.INIT_DATA, dataTime != 0)
+                .build();
+        initDataBuilder.setInputData(data);
+        WorkManager.getInstance(view.getContext().getApplicationContext())
+                .enqueueUniqueWork(Constants.INIT_DATA, ExistingWorkPolicy.REPLACE, initDataBuilder.build());
     }
 
+    @Override
     public void getTheme() {
-        disposable.add(d2.systemSettingModule().systemSetting.get().toObservable()
-                .map(systemSettings -> {
-                    String flag = "";
-                    String style = "";
-                    for (SystemSetting settingModel : systemSettings)
-                        if (settingModel.key().equals("style"))
-                            style = settingModel.value();
-                        else
-                            flag = settingModel.value();
-
-                    if (style.contains("green"))
-                        return Pair.create(flag, R.style.GreenTheme);
-                    if (style.contains("india"))
-                        return Pair.create(flag, R.style.OrangeTheme);
-                    if (style.contains("myanmar"))
-                        return Pair.create(flag, R.style.RedTheme);
-                    else
-                        return Pair.create(flag, R.style.AppTheme);
-                })
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(flagTheme -> {
-                            view.saveFlag(flagTheme.val0());
-                            view.saveTheme(flagTheme.val1());
-                        }, Timber::e
-                ));
-
+        disposable.add(
+                d2.systemSettingModule().systemSetting.get()
+                        .map(systemSettings -> {
+                            String style = "";
+                            String flag = "";
+                            for (SystemSetting setting : systemSettings) {
+                                if (setting.key() == SystemSetting.SystemSettingKey.STYLE)
+                                    style = setting.value();
+                                else
+                                    flag = setting.value();
+                            }
+                            if (style.contains("green"))
+                                return Pair.create(flag, R.style.GreenTheme);
+                            if (style.contains("india"))
+                                return Pair.create(flag, R.style.OrangeTheme);
+                            if (style.contains("myanmar"))
+                                return Pair.create(flag, R.style.RedTheme);
+                            else
+                                return Pair.create(flag, R.style.AppTheme);
+                        })
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(flagTheme -> {
+                                    view.saveFlag(flagTheme.val0());
+                                    view.saveTheme(flagTheme.val1());
+                                }, Timber::e
+                        ));
     }
 
     @Override

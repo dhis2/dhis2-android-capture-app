@@ -84,7 +84,7 @@ public class DataEntryModule {
             return new ProgramStageRepository(briteDatabase, modelFactory,
                     arguments.event(), arguments.section(), d2);
         } else if (!isEmpty(arguments.enrollment())) { //NOPMD
-            return new EnrollmentRepository(context, briteDatabase, modelFactory, arguments.enrollment(), d2);
+            return new EnrollmentRepository(context, modelFactory, arguments.enrollment(), d2);
         } else {
             throw new IllegalArgumentException("Unsupported entity type");
         }

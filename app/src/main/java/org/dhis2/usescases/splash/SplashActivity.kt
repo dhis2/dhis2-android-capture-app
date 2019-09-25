@@ -4,7 +4,9 @@ import android.os.Bundle
 import android.text.TextUtils.isEmpty
 import android.view.View
 import androidx.databinding.DataBindingUtil
+import com.scottyab.rootbeer.RootBeer
 import org.dhis2.App
+import org.dhis2.BuildConfig
 import org.dhis2.R
 import org.dhis2.databinding.ActivitySplashBinding
 import org.dhis2.usescases.general.ActivityGlobalAbstract
@@ -33,12 +35,19 @@ class SplashActivity : ActivityGlobalAbstract(), SplashContracts.View {
         appComponent.plus(SplashModule(serverComponent)).inject(this)
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_splash)
+
         renderFlag(flag)
     }
 
     override fun onResume() {
         super.onResume()
-        presenter.init(this)
+
+        if (BuildConfig.DEBUG || !RootBeer(this).isRootedWithoutBusyBoxCheck)
+            presenter.init(this)
+        else
+            showInfoDialog("Security",
+                    "For security reasons, this version of the app is not allow to be used in " +
+                            "rooted devices. Please use the training version.")
     }
 
     override fun onPause() {

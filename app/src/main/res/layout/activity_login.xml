@@ -36,6 +36,7 @@
                 android:background="?colorPrimary">
 
                 <ImageView
+                    android:id="@+id/logo_banner"
                     android:layout_width="200dp"
                     android:layout_height="100dp"
                     android:layout_centerInParent="true"
@@ -54,17 +55,13 @@
                 android:paddingStart="40dp"
                 android:paddingEnd="40dp">
 
-
-                <!--  <ImageButton
-                      android:id="@+id/qr_button"
-                      style="@style/ActionIconNoPadding"
-                      android:onClick="@{presenter::onQRClick}"
-                      android:tint="#5C5C5C"
-                      app:layout_constraintBottom_toBottomOf="@id/server_url"
-                      app:layout_constraintEnd_toEndOf="parent"
-                      app:layout_constraintTop_toTopOf="@id/server_url"
-                      app:srcCompat="@drawable/ic_qr"
-                      tools:ignore="ContentDescription" />-->
+                <ImageView
+                    android:id="@+id/logo_front"
+                    android:layout_width="match_parent"
+                    android:alpha="0.3"
+                    android:layout_height="0dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
                 <ImageButton
                     android:id="@+id/urlInfo"

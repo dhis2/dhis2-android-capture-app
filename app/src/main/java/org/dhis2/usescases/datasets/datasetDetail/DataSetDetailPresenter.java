@@ -77,6 +77,15 @@ public class DataSetDetailPresenter implements DataSetDetailContract.Presenter {
                                 Timber::e
                         )
         );
+
+        compositeDisposable.add(
+                dataSetDetailRepository.canWriteAny()
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                view::setWritePermission,
+                                Timber::e
+                        ));
     }
 
     private void manageProcessorDismissDialog(){
@@ -104,7 +113,7 @@ public class DataSetDetailPresenter implements DataSetDetailContract.Presenter {
                                             mapPeriodAvailable.put(dataset.periodId(), dataset.namePeriod());
 
                                     view.setData(dataSetDetailModels);
-                                    view.setWritePermission(view.accessDataWrite());
+                                    //view.setWritePermission(view.accessDataWrite());
                                 },
                                 Timber::d
                         )

@@ -45,4 +45,8 @@ interface SyncPresenter {
     boolean checkSyncDataSetStatus(String uid);
 
     List<TrackerImportConflict> messageTrackerImportConflict(String uid);
+
+    void startPeriodicDataWork(Context context);
+
+    void startPeriodicMetaWork(Context context);
 }

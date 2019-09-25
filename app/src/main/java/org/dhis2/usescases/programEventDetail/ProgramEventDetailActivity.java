@@ -463,7 +463,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
         boolean mapVisible = binding.mapView.getVisibility() != View.GONE;
         boolean listVisible = binding.recycler.getVisibility() != View.GONE;
         boolean emptyVisible = !mapVisible && !listVisible;
-        popupMenu.getMenu().getItem(0).setVisible(!emptyVisible && mapVisible && featureType != FeatureType.NONE);
+        popupMenu.getMenu().getItem(0).setVisible(!emptyVisible && !mapVisible && featureType != FeatureType.NONE);
         popupMenu.getMenu().getItem(1).setVisible(!emptyVisible && binding.recycler.getVisibility() == View.GONE && featureType != FeatureType.NONE);
         popupMenu.show();
     }

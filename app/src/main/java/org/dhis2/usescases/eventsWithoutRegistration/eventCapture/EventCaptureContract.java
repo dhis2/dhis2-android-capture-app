@@ -126,16 +126,10 @@ public class EventCaptureContract {
         Flowable<List<FieldViewModel>> list(String sectionUid);
 
         @NonNull
-        Flowable<List<FieldViewModel>> evaluateForSection(String sectionUid);
-
-        @NonNull
         Flowable<List<FieldViewModel>> list();
 
         @NonNull
         Flowable<Result<RuleEffect>> calculate();
-
-        @NonNull
-        Flowable<Result<RuleEffect>> fullCalculate();
 
         Observable<Boolean> completeEvent();
 
@@ -170,6 +164,8 @@ public class EventCaptureContract {
         Single<Boolean> canReOpenEvent();
 
         Observable<Boolean> isCompletedEventExpired(String eventUid);
+        void assign(String uid, String value);
+
     }
 
 }

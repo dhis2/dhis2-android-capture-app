@@ -16,7 +16,6 @@ import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.utils.CodeGenerator;
 import org.dhis2.utils.DateUtils;
-import org.dhis2.utils.FileResourcesUtil;
 import org.dhis2.utils.ValueUtils;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper;
@@ -32,7 +31,7 @@ import org.hisp.dhis.android.core.enrollment.note.Note;
 import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.event.EventTableInfo;
-import org.hisp.dhis.android.core.event.internal.EventFields;
+import org.hisp.dhis.android.core.fileresource.FileResource;
 import org.hisp.dhis.android.core.maintenance.D2Error;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.Program;
@@ -50,6 +49,7 @@ import java.util.Calendar;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 import io.reactivex.BackpressureStrategy;
@@ -58,6 +58,7 @@ import io.reactivex.Observable;
 import io.reactivex.functions.Consumer;
 import timber.log.Timber;
 
+import static android.text.TextUtils.isEmpty;
 import static org.hisp.dhis.android.core.arch.db.stores.internal.StoreUtils.sqLiteBind;
 
 /**
@@ -226,9 +227,24 @@ public class DashboardRepositoryImpl implements DashboardRepository {
 
     @Override
     public Observable<List<Event>> getTEIEnrollmentEvents(String programUid, String teiUid) {
-        String progId = programUid == null ? "" : programUid;
-        String teiId = teiUid == null ? "" : teiUid;
-        return briteDatabase.createQuery(EVENTS_TABLE, EVENTS_QUERY, progId, teiId, progId)
+
+        return d2.enrollmentModule().enrollments.byProgram().eq(programUid).byTrackedEntityInstance().eq(teiUid)
+                .byStatus().eq(EnrollmentStatus.ACTIVE).one().get()
+                .flatMap(enrollment ->
+                        d2.eventModule().events.byEnrollmentUid().eq(enrollment.uid())
+                                .byDeleted().isFalse()
+                                .get()
+                ).toFlowable()
+                .flatMapIterable(events -> events)
+                .map(event -> {
+                            if (Boolean.FALSE.equals(d2.programModule().programs.uid(programUid).blockingGet().ignoreOverdueEvents()))
+                                if (event.status() == EventStatus.SCHEDULE && event.dueDate().before(DateUtils.getInstance().getToday()))
+                                    event = updateState(event, EventStatus.OVERDUE);
+
+                            return event;
+                        }
+                ).toList().toObservable();
+      /*  return briteDatabase.createQuery(EVENTS_TABLE, EVENTS_QUERY, progId, teiId, progId)
                 .mapToList(cursor -> {
                     Event eventModel = Event.create(cursor);
                     if (Boolean.FALSE.equals(d2.programModule().programs.uid(programUid).blockingGet().ignoreOverdueEvents()))
@@ -236,7 +252,7 @@ public class DashboardRepositoryImpl implements DashboardRepository {
                             eventModel = updateState(eventModel, EventStatus.OVERDUE);
 
                     return eventModel;
-                });
+                });*/
     }
 
     @Override
@@ -312,22 +328,22 @@ public class DashboardRepositoryImpl implements DashboardRepository {
 
     @Override
     public Observable<CategoryCombo> catComboForProgram(String programUid) {
-        return Observable.defer(() -> Observable.just(d2.categoryModule().categoryCombos.uid(d2.programModule().programs.uid(programUid).blockingGet().categoryCombo().uid()).withAllChildren().blockingGet()))
+        return Observable.defer(() -> Observable.just(d2.categoryModule().categoryCombos.withCategories().withCategoryOptionCombos().uid(d2.programModule().programs.uid(programUid).blockingGet().categoryCombo().uid()).blockingGet()))
                 .map(categoryCombo -> {
                     List<Category> fullCategories = new ArrayList<>();
                     List<CategoryOptionCombo> fullOptionCombos = new ArrayList<>();
                     for (Category category : categoryCombo.categories()) {
-                        fullCategories.add(d2.categoryModule().categories.uid(category.uid()).withAllChildren().blockingGet());
+                        fullCategories.add(d2.categoryModule().categories.withCategoryOptions().uid(category.uid()).blockingGet());
                     }
                     for (CategoryOptionCombo categoryOptionCombo : categoryCombo.categoryOptionCombos())
-                        fullOptionCombos.add(d2.categoryModule().categoryOptionCombos.uid(categoryOptionCombo.uid()).withAllChildren().blockingGet());
+                        fullOptionCombos.add(d2.categoryModule().categoryOptionCombos.withCategoryOptions().uid(categoryOptionCombo.uid()).blockingGet());
                     return categoryCombo.toBuilder().categories(fullCategories).categoryOptionCombos(fullOptionCombos).build();
                 });
     }
 
     @Override
     public void setDefaultCatOptCombToEvent(String eventUid) {
-        List<CategoryCombo> categoryCombos = d2.categoryModule().categoryCombos.byIsDefault().isTrue().withAllChildren().blockingGet();
+        List<CategoryCombo> categoryCombos = d2.categoryModule().categoryCombos.byIsDefault().isTrue().withCategories().withCategoryOptionCombos().blockingGet();
         try {
             d2.eventModule().events.uid(eventUid).setAttributeOptionComboUid(categoryCombos.get(0).categoryOptionCombos().get(0).uid());
         } catch (D2Error d2Error) {
@@ -337,21 +353,38 @@ public class DashboardRepositoryImpl implements DashboardRepository {
 
     @Override
     public Observable<String> getAttributeImage(String teiUid) {
-        return Observable.fromCallable(() -> {
-            Iterator<TrackedEntityAttribute> iterator = d2.trackedEntityModule().trackedEntityAttributes
-                    .byValueType().eq(ValueType.IMAGE)
-                    .blockingGet().iterator();
-            List<String> attrUids = new ArrayList<>();
-            while (iterator.hasNext())
-                attrUids.add(iterator.next().uid());
+        return d2.trackedEntityModule().trackedEntityInstances.uid(teiUid).get()
+                .map(tei -> {
+                    String path = "";
+                    Iterator<TrackedEntityAttribute> iterator = d2.trackedEntityModule().trackedEntityAttributes
+                            .byValueType().eq(ValueType.IMAGE)
+                            .blockingGet().iterator();
+                    List<String> imageAttributesUids = new ArrayList<>();
+                    while (iterator.hasNext())
+                        imageAttributesUids.add(iterator.next().uid());
 
-            String attrUid = d2.trackedEntityModule().trackedEntityAttributeValues
-                    .byTrackedEntityInstance().eq(teiUid)
-                    .byTrackedEntityAttribute().in(attrUids)
-                    .one().blockingGet().trackedEntityAttribute();
+                    TrackedEntityAttributeValue attributeValue;
+                    if (d2.trackedEntityModule().trackedEntityTypeAttributes
+                            .byTrackedEntityTypeUid().eq(tei.trackedEntityType())
+                            .byTrackedEntityAttributeUid().in(imageAttributesUids).one().blockingExists()) {
 
-            return FileResourcesUtil.generateFileName(teiUid, attrUid);
-        });
+                        String attrUid = Objects.requireNonNull(d2.trackedEntityModule().trackedEntityTypeAttributes
+                                .byTrackedEntityTypeUid().eq(tei.trackedEntityType())
+                                .byTrackedEntityAttributeUid().in(imageAttributesUids).one().blockingGet()).trackedEntityAttribute().uid();
+
+                        attributeValue = d2.trackedEntityModule().trackedEntityAttributeValues.byTrackedEntityInstance().eq(tei.uid())
+                                .byTrackedEntityAttribute().eq(attrUid).one().blockingGet();
+
+                        if (attributeValue != null && !isEmpty(attributeValue.value())) {
+                            FileResource fileResource = d2.fileResourceModule().fileResources.uid(attributeValue.value()).blockingGet();
+                            if (fileResource != null) {
+                                path = fileResource.path();
+                            }
+                        }
+                    }
+                    return path;
+
+                }).toObservable();
     }
 
     @Override
@@ -471,7 +504,7 @@ public class DashboardRepositoryImpl implements DashboardRepository {
 
     @Override
     public Observable<List<OrganisationUnit>> getTeiOrgUnits(@NonNull String teiUid, @Nullable String programUid) {
-        EnrollmentCollectionRepository enrollmentRepo = d2.enrollmentModule().enrollments.withAllChildren().byTrackedEntityInstance().eq(teiUid);
+        EnrollmentCollectionRepository enrollmentRepo = d2.enrollmentModule().enrollments.byTrackedEntityInstance().eq(teiUid);
         if (programUid != null) {
             enrollmentRepo = enrollmentRepo.byProgram().eq(programUid);
         }
@@ -506,8 +539,8 @@ public class DashboardRepositoryImpl implements DashboardRepository {
     public void saveCatOption(String eventUid, String catOptionComboUid) {
         // TODO: we need to use the sdk, when the setAttributeOptionCombo() method on the EventObjectRepository is available
         ContentValues event = new ContentValues();
-        event.put(EventFields.ATTRIBUTE_OPTION_COMBO, catOptionComboUid);
-        briteDatabase.update(EventTableInfo.TABLE_INFO.name(), event, EventFields.UID + " = ?", eventUid == null ? "" : eventUid);
+        event.put(EventTableInfo.Columns.ATTRIBUTE_OPTION_COMBO, catOptionComboUid);
+        briteDatabase.update(EventTableInfo.TABLE_INFO.name(), event, EventTableInfo.Columns.UID + " = ?", eventUid == null ? "" : eventUid);
     }
 
     private void updateEnrollmentState(String enrollmentUid) {

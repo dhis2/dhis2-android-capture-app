@@ -47,6 +47,11 @@ public class TeiProgramListActivity extends ActivityGlobalAbstract implements Te
         binding = DataBindingUtil.setContentView(this, R.layout.activity_tei_program_list);
         binding.setPresenter(presenter);
 
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
         presenter.init(this);
     }
 
@@ -85,6 +90,7 @@ public class TeiProgramListActivity extends ActivityGlobalAbstract implements Te
         SetProgramTheme(presenter.getProgramColor(programUid));
         Intent data = new Intent();
         data.putExtra("GO_TO_ENROLLMENT", enrollmentUid);
+        data.putExtra("GO_TO_ENROLLMENT_PROGRAM", programUid);
         setResult(RESULT_OK, data);
 
         finish();

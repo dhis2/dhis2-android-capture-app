@@ -10,6 +10,7 @@ import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryOptionCombo;
 import org.hisp.dhis.android.core.common.FeatureType;
 import org.hisp.dhis.android.core.common.Geometry;
+import org.hisp.dhis.android.core.common.Unit;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.program.ProgramStage;
@@ -97,4 +98,7 @@ public interface FormRepository {
     Single<TrackedEntityType> captureTeiCoordinates();
 
     Consumer<Geometry> storeTeiCoordinates();
+
+    Consumer<Unit> clearCoordinates();
+
 }

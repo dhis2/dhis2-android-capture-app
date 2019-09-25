@@ -40,7 +40,6 @@ public class SyncActivity extends ActivityGlobalAbstract implements SyncContract
     protected void onCreate(Bundle savedInstanceState) {
         ((App) getApplicationContext()).userComponent().plus(new SyncModule()).inject(this);
         super.onCreate(savedInstanceState);
-
         binding = DataBindingUtil.setContentView(this, R.layout.activity_synchronization);
         binding.setPresenter(presenter);
         presenter.init(this);
@@ -86,7 +85,7 @@ public class SyncActivity extends ActivityGlobalAbstract implements SyncContract
                 binding.eventsText.setText(getString(R.string.data_ready));
                 Bindings.setDrawableEnd(binding.eventsText, AppCompatResources.getDrawable(this, R.drawable.animator_done));
                 presenter.scheduleSync(getSharedPreferences().getInt(Constants.TIME_META, Constants.TIME_DAILY),
-                        getSharedPreferences().getInt(Constants.TIME_DATA, Constants.TIME_DAILY));
+                        getSharedPreferences().getInt(Constants.TIME_DATA, Constants.TIME_15M));
                 presenter.syncReservedValues();
                 startMain();
                 break;

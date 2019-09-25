@@ -27,6 +27,11 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventSummary.EventSummaryAc
 import org.dhis2.usescases.eventsWithoutRegistration.eventSummary.EventSummaryRepository;
 import org.dhis2.usescases.map.MapSelectorActivity;
 import org.dhis2.utils.Constants;
+import org.dhis2.utils.DateUtils;
+import org.dhis2.utils.EventCreationType;
+import org.dhis2.utils.OrgUnitUtils;
+import org.dhis2.utils.DateUtils;
+import org.dhis2.utils.EventCreationType;
 import org.dhis2.utils.Result;
 import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryOption;
@@ -79,8 +84,7 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
     private CategoryCombo catCombo;
     private String programStageId;
     private List<OrganisationUnit> orgUnits;
-    private FlowableProcessor<Pair<TreeNode, String>> parentOrgUnit;
-    private FlowableProcessor<String> onSearchListener;
+    private String programId;
 
 
     public EventInitialPresenter(@NonNull EventSummaryRepository eventSummaryRepository,
@@ -96,9 +100,8 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
     public void init(EventInitialContract.View mview, String programId, String eventId, String orgInitId, String programStageId) {
         this.view = mview;
         this.eventId = eventId;
+        this.programId = programId;
         this.programStageId = programStageId;
-        this.parentOrgUnit = PublishProcessor.create();
-        this.onSearchListener = PublishProcessor.create();
 
         compositeDisposable = new CompositeDisposable();
 
@@ -312,7 +315,7 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         (eventModel) -> view.onEventUpdated(eventModel.uid()),
-                        error -> displayMessage(error.getLocalizedMessage())
+                        error -> view.displayMessage(error.getLocalizedMessage())
 
                 ));
     }
@@ -347,40 +350,6 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
             /*if (location != null)
                 view.setLocation(GeometryHelper.createPointGeometry(location.getLatitude(), location.getLongitude()));*/
         });
-    }
-
-    @Override
-    public void onLocation2Click(FeatureType featureType) {
-        view.getAbstractActivity().startActivityForResult(
-                MapSelectorActivity.Companion.create((Activity) view.getContext(),
-                        featureType)
-                , Constants.RQ_MAP_LOCATION);
-    }
-
-    @Override
-    public void onLatChanged(CharSequence s, int start, int before, int count) {
-        String latLongRegex = "^(\\-?\\d+(\\.\\d+)?)";
-        Pattern latLongPattern = Pattern.compile(latLongRegex, Pattern.MULTILINE);
-        Matcher latLOngMatcher = latLongPattern.matcher(s);
-        if (!latLOngMatcher.matches()) {
-            view.latitudeWarning(true);
-        } else {
-            view.longitudeWarning(false);
-            view.checkActionButtonVisibility();
-        }
-    }
-
-    @Override
-    public void onLonChanged(CharSequence s, int start, int before, int count) {
-        String latLongRegex = "^(\\-?\\d+(\\.\\d+)?)";
-        Pattern latLongPattern = Pattern.compile(latLongRegex, Pattern.MULTILINE);
-        Matcher latLOngMatcher = latLongPattern.matcher(s);
-        if (!latLOngMatcher.matches()) {
-            view.longitudeWarning(true);
-        } else {
-            view.longitudeWarning(false);
-            view.checkActionButtonVisibility();
-        }
     }
 
     @Override
@@ -505,5 +474,21 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
                                 Timber::e
                         )
         );
+    }
+
+    @Override
+    public void initOrgunit(Date selectedDate) {
+        compositeDisposable.add(eventInitialRepository.filteredOrgUnits(DateUtils.databaseDateFormat().format(selectedDate), programId, null)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        orgUnits -> {
+                            if (orgUnits.size() == 1 && (view.eventcreateionType() == EventCreationType.ADDNEW || view.eventcreateionType() == EventCreationType.DEFAULT))
+                                view.setInitialOrgUnit(orgUnits.get(0));
+                            else
+                                view.setInitialOrgUnit(null);
+                        },
+                        throwable -> view.renderError(throwable.getMessage())
+                ));
     }
 }

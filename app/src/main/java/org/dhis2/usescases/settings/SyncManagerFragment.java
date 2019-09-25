@@ -53,6 +53,7 @@ import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
 import static org.dhis2.utils.Constants.DATA_NOW;
+import static org.dhis2.utils.Constants.META;
 import static org.dhis2.utils.Constants.META_NOW;
 import static org.dhis2.utils.Constants.TIME_15M;
 import static org.dhis2.utils.Constants.TIME_DAILY;
@@ -131,7 +132,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
         });
         presenter.init(this);
 
-        if (SyncUtils.isSyncRunning()) {
+        if (SyncUtils.isSyncRunning(context)) {
             binding.buttonSyncData.setEnabled(false);
             binding.buttonSyncMeta.setEnabled(false);
         }

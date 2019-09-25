@@ -18,7 +18,7 @@ public class SearchTeiModel {
     private boolean isOnline;
 
     private TrackedEntityInstance tei;
-    private String profilePictureUid;
+    private String profilePicturePath;
     private String defaultTypeIcon;
 
     private Enrollment selectedEnrollment;
@@ -86,12 +86,12 @@ public class SearchTeiModel {
         return tei;
     }
 
-    public void setProfilePicture(String profilePictureUid) {
-        this.profilePictureUid = profilePictureUid;
+    public void setProfilePicture(String profilePicturePath) {
+        this.profilePicturePath = profilePicturePath;
     }
 
-    public String getProfilePictureUid() {
-        return profilePictureUid;
+    public String getProfilePicturePath() {
+        return profilePicturePath != null ? profilePicturePath : "";
     }
 
     public void setDefaultTypeIcon(String defaultTypeIcon) {
@@ -106,7 +106,7 @@ public class SearchTeiModel {
         this.selectedEnrollment = enrollment;
     }
 
-    public Enrollment getSelectedEnrollment(){
+    public Enrollment getSelectedEnrollment() {
         return this.selectedEnrollment;
     }
 

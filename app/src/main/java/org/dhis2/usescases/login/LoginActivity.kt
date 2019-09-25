@@ -15,9 +15,11 @@ import android.widget.ArrayAdapter
 import androidx.appcompat.app.AlertDialog
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import com.andrognito.pinlockview.PinLockListener
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.bitmap.CenterCrop
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -86,6 +88,14 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
             binding.serverUrlEdit.setText(testingEnvironment.val0())
             binding.userNameEdit.setText(testingEnvironment.val1())
             binding.userPassEdit.setText(testingEnvironment.val2())
+        })
+        loginViewModel.serverUrl.observe(this, Observer<String> {
+            Glide.with(this).load(String.format("%s/api/staticContent/logo_front",it))
+                    .transition(withCrossFade())
+                    .into(binding.logoFront)
+            Glide.with(this).load(String.format("%s/api/staticContent/logo_banner",it))
+                    .placeholder(R.drawable.ic_dhis_white)
+                    .into(binding.logoBanner)
         })
 
         binding.serverUrlEdit.addTextChangedListener(object : TextWatcher {
@@ -178,7 +188,7 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
     }
 
     override fun showUnlockButton() {
-        binding.unlockLayout?.visibility = View.VISIBLE
+        binding.unlockLayout.visibility = View.VISIBLE
         onUnlockClick(binding.unlockLayout)
 
     }
@@ -309,7 +319,7 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
             }
         }
 
-        if (false && presenter.canHandleBiometrics() ?: false && //TODO: Remove false when green light
+        if (presenter.canHandleBiometrics() == true &&
                 !BiometricStorage.areCredentialsSet() && !BiometricStorage.areSameCredentials(
                         binding.serverUrlEdit.text?.toString(),
                         binding.userNameEdit.text?.toString(),

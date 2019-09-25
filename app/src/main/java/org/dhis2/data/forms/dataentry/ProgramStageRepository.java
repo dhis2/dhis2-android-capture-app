@@ -56,7 +56,8 @@ final class ProgramStageRepository implements DataEntryRepository {
             "  Field.formLabel,\n" +
             "  Field.displayDescription,\n" +
             "  Field.formOrder,\n" +
-            "  Field.sectionOrder\n" +
+            "  Field.sectionOrder,\n" +
+            "  Field.fieldMask\n" +
             "FROM Event\n" +
             "  LEFT OUTER JOIN (\n" +
             "      SELECT\n" +
@@ -71,6 +72,7 @@ final class ProgramStageRepository implements DataEntryRepository {
             "        ProgramStageSectionDataElementLink.programStageSection AS section,\n" +
             "        ProgramStageDataElement.allowFutureDate AS allowFutureDate,\n" +
             "        DataElement.displayDescription AS displayDescription,\n" +
+            "        DataElement.fieldMask as fieldMask,\n" +
             "        ProgramStageSectionDataElementLink.sortOrder AS sectionOrder\n" + //This should override dataElement formOrder
             "      FROM ProgramStageDataElement\n" +
             "        INNER JOIN DataElement ON DataElement.uid = ProgramStageDataElement.dataElement\n" +
@@ -152,20 +154,6 @@ final class ProgramStageRepository implements DataEntryRepository {
                 .toFlowable(BackpressureStrategy.BUFFER);
     }
 
-    @Override
-    public List<FieldViewModel> fieldList() {
-        List<FieldViewModel> list = new ArrayList<>();
-        try (Cursor listCursor = briteDatabase.query(prepareStatement())) {
-            listCursor.moveToFirst();
-            do {
-                list.add(transform(listCursor));
-            } while (listCursor.moveToNext());
-
-        }
-
-        return list;
-    }
-
     private List<FieldViewModel> checkRenderType(List<FieldViewModel> fieldViewModels) {
 
         ArrayList<FieldViewModel> renderList = new ArrayList<>();
@@ -192,7 +180,7 @@ final class ProgramStageRepository implements DataEntryRepository {
                                         fieldViewModel.uid() + "." + uid, //fist
                                         displayName + "-" + optionCode, ValueType.TEXT, false,
                                         fieldViewModel.optionSet(), fieldViewModel.value(), fieldViewModel.programStageSection(),
-                                        fieldViewModel.allowFutureDate(), fieldViewModel.editable() == null ? false : fieldViewModel.editable(), renderingType, fieldViewModel.description(), null, optionCount, objectStyle));
+                                        fieldViewModel.allowFutureDate(), fieldViewModel.editable() == null ? false : fieldViewModel.editable(), renderingType, fieldViewModel.description(), null, optionCount, objectStyle, fieldViewModel.fieldMask()));
 
                                 cursor.moveToNext();
                             }
@@ -217,21 +205,6 @@ final class ProgramStageRepository implements DataEntryRepository {
                 .mapToList(OrganisationUnit::create);
     }
 
-    @Override
-    public void assign(String field, String content) {
-        try (Cursor dataValueCursor = briteDatabase.query("SELECT * FROM TrackedEntityDataValue WHERE dataElement = ?", field == null ? "" : field)) {
-            if (dataValueCursor != null && dataValueCursor.moveToFirst()) {
-                TrackedEntityDataValue dataValue = TrackedEntityDataValue.create(dataValueCursor);
-                ContentValues contentValues = dataValue.toContentValues();
-                contentValues.put("value", content);
-                int row = briteDatabase.update(TrackedEntityDataValueTableInfo.TABLE_INFO.name(), contentValues, "dataElement = ?", field == null ? "" : field);
-                if (row == -1)
-                    Timber.d("Error updating field %s", field == null ? "" : field);
-            }
-        }
-
-    }
-
     @NonNull
     private FieldViewModel transform(@NonNull Cursor cursor) {
         String uid = cursor.getString(0);
@@ -246,6 +219,8 @@ final class ProgramStageRepository implements DataEntryRepository {
         EventStatus eventStatus = EventStatus.valueOf(cursor.getString(9));
         String formLabel = cursor.getString(10);
         String description = cursor.getString(11);
+        String fieldMask = cursor.getString(14);
+
         if (!isEmpty(optionCodeName)) {
             dataValue = optionCodeName;
         }
@@ -297,7 +272,7 @@ final class ProgramStageRepository implements DataEntryRepository {
         }
 
         return fieldFactory.create(uid, isEmpty(formLabel) ? label : formLabel, valueType, mandatory, optionSetUid, dataValue, section,
-                allowFutureDates, accessDataWrite && eventStatus == EventStatus.ACTIVE && !hasExpired, renderingType, description, fieldRendering, optionCount, objectStyle);
+                allowFutureDates, accessDataWrite && eventStatus == EventStatus.ACTIVE && !hasExpired, renderingType, description, fieldRendering, optionCount, objectStyle, fieldMask);
     }
 
     @NonNull

@@ -219,7 +219,6 @@ dependencies {
         }*/
 
     //implementation "org.hisp.dhis.rules:rule-engine:${libraries.ruleEngine}"
-
     //endregion
 
     //region UI LIBRARIES
@@ -366,6 +365,9 @@ dependencies {
     implementation 'com.google.firebase:firebase-perf:16.2.3'
 
     implementation 'com.github.prabhat1707:DbExporterHelper:v1.0'
+
+    /*region SECURITY*/
+    implementation 'com.scottyab:rootbeer-lib:0.0.7'
 
 }
 

@@ -10,6 +10,7 @@ import androidx.appcompat.widget.PopupMenu;
 import androidx.core.app.ActivityOptionsCompat;
 
 import org.dhis2.R;
+import org.dhis2.usescases.enrollment.EnrollmentActivity;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity;
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity;
 import org.dhis2.usescases.qrCodes.QrActivity;
@@ -27,6 +28,7 @@ import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.event.EventStatus;
+import org.hisp.dhis.android.core.fileresource.FileResource;
 import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.program.ProgramStage;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute;
@@ -35,6 +37,7 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
@@ -42,6 +45,8 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
+
+import static android.text.TextUtils.isEmpty;
 
 /**
  * QUADRAM. Created by ppajuelo on 09/04/2019.
@@ -70,22 +75,38 @@ class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
         this.compositeDisposable = new CompositeDisposable();
 
         compositeDisposable.add(
-                Observable.fromCallable(() -> {
+                d2.trackedEntityModule().trackedEntityInstances.uid(teiUid).get()
+                        .map(tei -> {
+                            String path = "";
+                            Iterator<TrackedEntityAttribute> iterator = d2.trackedEntityModule().trackedEntityAttributes
+                                    .byValueType().eq(ValueType.IMAGE)
+                                    .blockingGet().iterator();
+                            List<String> imageAttributesUids = new ArrayList<>();
+                            while (iterator.hasNext())
+                                imageAttributesUids.add(iterator.next().uid());
 
-                    Iterator<TrackedEntityAttribute> iterator = d2.trackedEntityModule().trackedEntityAttributes.byValueType().eq(ValueType.IMAGE).blockingGet().iterator();
-                    List<String> attrUids = new ArrayList<>();
-                    while (iterator.hasNext())
-                        attrUids.add(iterator.next().uid());
+                            TrackedEntityAttributeValue attributeValue;
+                            if (d2.trackedEntityModule().trackedEntityTypeAttributes
+                                    .byTrackedEntityTypeUid().eq(tei.trackedEntityType())
+                                    .byTrackedEntityAttributeUid().in(imageAttributesUids).one().blockingExists()) {
 
-                    TrackedEntityAttributeValue attributeValue = d2.trackedEntityModule().trackedEntityAttributeValues
-                            .byTrackedEntityInstance().eq(teiUid)
-                            .byTrackedEntityAttribute().in(attrUids)
-                            .one().blockingGet();
-                    if (attributeValue != null)
-                        return attributeValue;
-                    else
-                       throw new NullPointerException("No image attribute found");
-                }).map(attrValue -> teiUid + "_" + attrValue.trackedEntityAttribute() + ".png")
+                                String attrUid = Objects.requireNonNull(d2.trackedEntityModule().trackedEntityTypeAttributes
+                                        .byTrackedEntityTypeUid().eq(tei.trackedEntityType())
+                                        .byTrackedEntityAttributeUid().in(imageAttributesUids).one().blockingGet()).trackedEntityAttribute().uid();
+
+                                attributeValue = d2.trackedEntityModule().trackedEntityAttributeValues.byTrackedEntityInstance().eq(tei.uid())
+                                        .byTrackedEntityAttribute().eq(attrUid).one().blockingGet();
+
+                                if (attributeValue != null && !isEmpty(attributeValue.value())) {
+                                    FileResource fileResource = d2.fileResourceModule().fileResources.uid(attributeValue.value()).blockingGet();
+                                    if (fileResource != null) {
+                                        path = fileResource.path();
+                                    }
+                                }
+                            }
+                            return path;
+
+                        }).toObservable()
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
@@ -189,7 +210,7 @@ class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
 
     @Override
     public void completeEnrollment() {
-        if (d2.programModule().programs.uid(programUid).withAllChildren().blockingGet().access().data().write()) {
+        if (d2.programModule().programs.uid(programUid).blockingGet().access().data().write()) {
             Flowable<Long> flowable;
             EnrollmentStatus newStatus = EnrollmentStatus.COMPLETED;
 
@@ -268,7 +289,12 @@ class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
             extras.putString("ENROLLMENT_UID", dashboardProgramModel.getCurrentEnrollment().uid());
         intent.putExtras(extras);
         ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(view.getAbstractActivity(), sharedView, "user_info");
-        view.seeDetails(intent, options.toBundle());
+//        view.seeDetails(intent, options.toBundle());
+
+        view.seeDetails(EnrollmentActivity.Companion.getIntent(view.getContext(),
+                dashboardProgramModel.getCurrentEnrollment().uid(),
+                dashboardProgramModel.getCurrentProgram().uid(),
+                EnrollmentActivity.EnrollmentMode.CHECK), options.toBundle());
     }
 
     @Override

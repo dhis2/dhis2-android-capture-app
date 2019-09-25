@@ -2,9 +2,12 @@ package org.dhis2.utils;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.util.TypedValue;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -47,22 +50,6 @@ public class FileResourcesUtil {
         return downloadDirectory;
     }
 
-    public static void initFileUploadWork(String teiUid, String attrUid) {
-        OneTimeWorkRequest.Builder fileBuilder = new OneTimeWorkRequest.Builder(FilesWorker.class);
-        fileBuilder.addTag(teiUid.concat("_").concat(attrUid));
-        fileBuilder.setConstraints(new Constraints.Builder()
-                .setRequiredNetworkType(NetworkType.CONNECTED)
-                .build());
-        fileBuilder.setInputData(new Data.Builder()
-                .putString(FilesWorker.MODE, FilesWorker.FileMode.UPLOAD.name())
-                .putString(FilesWorker.TEIUID, teiUid)
-                .putString(FilesWorker.ATTRUID, attrUid)
-                .build());
-        OneTimeWorkRequest requestFile = fileBuilder.build();
-        WorkManager.getInstance().beginUniqueWork(teiUid.concat(".").concat(attrUid), ExistingWorkPolicy.REPLACE, requestFile).enqueue();
-    }
-
-
     public static WorkContinuation initBulkFileUploadWork() {
 
         return WorkManager.getInstance().beginUniqueWork(FilesWorker.TAG_UPLOAD, ExistingWorkPolicy.REPLACE, initBulkFileUploadRequest());
@@ -78,10 +65,6 @@ public class FileResourcesUtil {
                 .putString(FilesWorker.MODE, FilesWorker.FileMode.UPLOAD.name())
                 .build());
         return fileBuilder.build();
-    }
-
-    public static WorkContinuation initDownloadWork() {
-        return WorkManager.getInstance().beginUniqueWork(FilesWorker.TAG, ExistingWorkPolicy.REPLACE, initDownloadRequest());
     }
 
     public static OneTimeWorkRequest initDownloadRequest() {
@@ -132,6 +115,23 @@ public class FileResourcesUtil {
         File fromDownload = new File(FileResourcesUtil.getDownloadDirectory(context), fileName);
 
         return fromUpload.exists() ? fromUpload : fromDownload;
+    }
+
+    public static Bitmap getSmallImage(Context context, String filePath) {
+        File file = new File(filePath);
+
+        Bitmap bitmap = BitmapFactory.decodeFile(file.getPath());
+
+        int desired = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 36, context.getResources().getDisplayMetrics());
+
+        Bitmap dstBitmap;
+        if (bitmap.getWidth() >= bitmap.getHeight()) {
+            dstBitmap = Bitmap.createBitmap(bitmap, bitmap.getWidth() / 2 - bitmap.getHeight() / 2, 0, bitmap.getHeight(), bitmap.getHeight());
+        } else {
+            dstBitmap = Bitmap.createBitmap(bitmap, 0, bitmap.getHeight() / 2 - bitmap.getWidth() / 2, bitmap.getWidth(), bitmap.getWidth());
+        }
+        return Bitmap.createScaledBitmap(dstBitmap, desired, desired, false);
+
     }
 
     public static String generateFileName(String primaryUid, String secundaryUid) {

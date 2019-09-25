@@ -8,11 +8,11 @@ import androidx.annotation.Nullable;
 import org.dhis2.data.forms.FormSectionViewModel;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.usescases.general.AbstractActivityContracts;
+import org.dhis2.usescases.org_unit_selector.TreeNode;
 import org.dhis2.utils.EventCreationType;
 import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryOption;
 import org.hisp.dhis.android.core.category.CategoryOptionCombo;
-import org.hisp.dhis.android.core.common.FeatureType;
 import org.hisp.dhis.android.core.common.Geometry;
 import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.event.Event;
@@ -45,8 +45,6 @@ public class EventInitialContract {
 
         void setEvent(Event event);
 
-//        void setLocation(Geometry geometry);
-
         void onEventCreated(String eventUid);
 
         void onEventUpdated(String eventUid);
@@ -78,11 +76,11 @@ public class EventInitialContract {
 
         void runSmsSubmission();
 
+        void setInitialOrgUnit(OrganisationUnit organisationUnit);
+
         EventCreationType eventcreateionType();
 
-        void latitudeWarning(boolean showWarning);
 
-        void longitudeWarning(boolean showWarning);
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter {
@@ -114,12 +112,6 @@ public class EventInitialContract {
 
         void onLocationClick();
 
-        void onLocation2Click(FeatureType featureType);
-
-        void onLatChanged(CharSequence s, int start, int before, int count);
-
-        void onLonChanged(CharSequence s, int start, int before, int count);
-
         void onFieldChanged(CharSequence s, int start, int before, int count);
 
         void getSectionCompletion(@Nullable String sectionUid);
@@ -143,6 +135,8 @@ public class EventInitialContract {
         Date getStageLastDate(String programStageUid, String enrollmentUid);
 
         void getEventOrgUnit(String ouUid);
+
+        void initOrgunit(Date selectedDate);
     }
 
 }

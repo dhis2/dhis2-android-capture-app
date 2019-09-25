@@ -16,11 +16,7 @@ public interface DataEntryRepository {
     @NonNull
     Flowable<List<FieldViewModel>> list();
 
-    List<FieldViewModel> fieldList();
-
     Observable<List<OrganisationUnit>> getOrgUnits();
-
-    void assign(String field, String content);
 
     Observable<List<OrganisationUnitLevel>> getOrgUnitLevels();
 }

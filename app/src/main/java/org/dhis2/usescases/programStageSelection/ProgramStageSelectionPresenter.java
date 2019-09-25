@@ -46,12 +46,13 @@ public class ProgramStageSelectionPresenter implements ProgramStageSelectionCont
         this.view = view;
 
         Flowable<List<ProgramStage>> stagesFlowable = programStageSelectionRepository.enrollmentProgramStages(programId, uid);
-
-        Flowable<Result<RuleEffect>> ruleEffectFlowable = programStageSelectionRepository.calculate().subscribeOn(Schedulers.computation())
-                .onErrorReturn(throwable -> Result.failure(new Exception(throwable)));
+        Flowable<Result<RuleEffect>> ruleEffectFlowable = programStageSelectionRepository.calculate();
 
         // Combining results of two repositories into a single stream.
-        Flowable<List<ProgramStage>> stageModelsFlowable = Flowable.zip(stagesFlowable, ruleEffectFlowable, this::applyEffects);
+        Flowable<List<ProgramStage>> stageModelsFlowable = Flowable.zip(
+                stagesFlowable.subscribeOn(Schedulers.io()),
+                ruleEffectFlowable.subscribeOn(Schedulers.io()),
+                this::applyEffects);
 
         compositeDisposable.add(stageModelsFlowable
                 .subscribeOn(Schedulers.io())

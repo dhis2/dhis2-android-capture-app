@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout android:id="@+id/yearsLayout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:minWidth="300dp"
+    android:padding="16dp"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:hint="@string/hint_year"
+        android:textColorHint="@color/text_black_808"
+        android:theme="@style/loginInputText">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/input_year"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:imeOptions="actionNext"
+            android:inputType="number"
+            android:textColorHint="@color/text_black_333"
+            tools:text="yyyy" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:hint="@string/hint_month"
+        android:textColorHint="@color/text_black_808"
+        android:theme="@style/loginInputText">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/input_month"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:imeOptions="actionNext"
+            android:inputType="number"
+            android:textColorHint="@color/text_black_333" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:hint="@string/hint_day"
+        android:textColorHint="@color/text_black_808"
+        android:theme="@style/loginInputText">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/input_days"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:imeOptions="actionDone"
+            android:inputType="number"
+            android:textColorHint="@color/text_black_333" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+</LinearLayout>
+

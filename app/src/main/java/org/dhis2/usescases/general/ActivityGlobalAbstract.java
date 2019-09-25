@@ -30,6 +30,7 @@ import androidx.core.widget.ContentLoadingProgressBar;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.crashlytics.android.Crashlytics;
+import com.google.firebase.FirebaseApp;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -74,7 +75,7 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
     private BehaviorSubject<Status> lifeCycleObservable = BehaviorSubject.create();
     private CoordinatesView coordinatesView;
     private PictureView.OnPictureSelected onPictureSelected;
-    private String uuid;
+    public String uuid;
 
     public enum Status {
         ON_PAUSE,
@@ -369,7 +370,7 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
                     }
                     this.coordinatesView = null;
                     break;
-                case Constants.GALLERY_REQUEST:
+                /*case Constants.GALLERY_REQUEST:
                     try {
                         final Uri imageUri = data.getData();
                         onPictureSelected.onSelected(FileResourcesUtil.getFileFromGallery(this, imageUri), imageUri.toString(), uuid);
@@ -385,7 +386,7 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
                             onPictureSelected.onSelected(null, new File(FileResourcesUtil.getUploadDirectory(this), "test").getAbsolutePath(), uuid);
                     } else
                         onPictureSelected.onSelected(null, null, uuid);
-                    break;
+                    break;*/
             }
         }
         super.onActivityResult(requestCode, resultCode, data);

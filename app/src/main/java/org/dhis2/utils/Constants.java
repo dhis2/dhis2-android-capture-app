@@ -132,6 +132,8 @@ public class Constants {
     public final static String UID = "UID";
     public final static String CONFLICT_TYPE = "CONFLICT_TYPE";
     public final static String ATTRIBUTE_OPTION_COMBO = "ATTRIBUTE_OPTION_COMBO";
+    public static final String INIT_META = "SYNC_INIT_META";
+    public static final String INIT_DATA = "SYNC_INIT_DATA";
 
     private Constants() {
         // hide public constructor

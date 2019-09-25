@@ -19,7 +19,6 @@ import org.dhis2.utils.Result;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper;
 import org.hisp.dhis.android.core.common.ObjectStyle;
-import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.common.ValueTypeDeviceRendering;
 import org.hisp.dhis.android.core.dataelement.DataElement;
@@ -38,9 +37,9 @@ import org.hisp.dhis.rules.models.RuleEvent;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
-
 
 import static android.text.TextUtils.isEmpty;
 
@@ -91,12 +90,12 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
         return d2.eventModule().events.uid(eventUid).get()
                 .map(eventSingle -> {
                     List<FormSectionViewModel> formSection = new ArrayList<>();
-                    if(eventSingle.deleted() == null || !eventSingle.deleted()) {
-                        ProgramStage stage = d2.programModule().programStages.uid(eventSingle.programStage()).withAllChildren().blockingGet();
+                    if (eventSingle.deleted() == null || !eventSingle.deleted()) {
+                        ProgramStage stage = d2.programModule().programStages.withProgramStageSections().uid(eventSingle.programStage()).blockingGet();
                         if (stage.programStageSections().size() > 0) {
                             for (ProgramStageSection section : stage.programStageSections())
                                 formSection.add(FormSectionViewModel.createForSection(eventUid, section.uid(), section.displayName(),
-                                        section.renderType().mobile() != null ? section.renderType().mobile().type().name(): null));
+                                        section.renderType().mobile() != null ? section.renderType().mobile().type().name() : null));
                         } else
                             formSection.add(FormSectionViewModel.createForProgramStageWithLabel(eventUid, stage.displayName(), stage.uid()));
                     }
@@ -118,11 +117,11 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
     @NonNull
     @Override
     public Flowable<List<FieldViewModel>> list(String section, String eventUid) {
-            return d2.eventModule().events.withAllChildren().uid(eventUid).get()
+        return d2.eventModule().events.withTrackedEntityDataValues().uid(eventUid).get()
                 .map(event -> {
                     List<FieldViewModel> fields = new ArrayList<>();
-                    ProgramStage stage = d2.programModule().programStages.withAllChildren().uid(event.programStage()).blockingGet();
-                    if(section != null) {
+                    ProgramStage stage = d2.programModule().programStages.withProgramStageDataElements().withProgramStageSections().uid(event.programStage()).blockingGet();
+                    if (section != null) {
 
                         ProgramStageSection stageSection = d2.programModule().programStageSections.withDataElements().uid(section).blockingGet();
                         for (ProgramStageDataElement programStageDataElement : stage.programStageDataElements()) {
@@ -133,8 +132,8 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
                             }
                         }
 
-                    }else
-                        for(ProgramStageDataElement programStageDataElement: stage.programStageDataElements()){
+                    } else
+                        for (ProgramStageDataElement programStageDataElement : stage.programStageDataElements()) {
                             DataElement dataelement = d2.dataElementModule().dataElements.uid(programStageDataElement.dataElement().uid()).blockingGet();
                             fields.add(transform(programStageDataElement, dataelement,
                                     searchValueDataElement(programStageDataElement.dataElement().uid(), event.trackedEntityDataValues()), null, event.status()));
@@ -144,9 +143,9 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
                 }).toFlowable();
     }
 
-    private String searchValueDataElement(String dataElement, List<TrackedEntityDataValue> dataValues){
-        for(TrackedEntityDataValue dataValue: dataValues)
-            if(dataValue.dataElement().equals(dataElement)) {
+    private String searchValueDataElement(String dataElement, List<TrackedEntityDataValue> dataValues) {
+        for (TrackedEntityDataValue dataValue : dataValues)
+            if (dataValue.dataElement().equals(dataElement)) {
                 return dataValue.value();
             }
 
@@ -154,7 +153,7 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
     }
 
     @NonNull
-    private FieldViewModel transform(@NonNull ProgramStageDataElement stage, DataElement dataElement, String value, String programStageSection, EventStatus eventStatus ) {
+    private FieldViewModel transform(@NonNull ProgramStageDataElement stage, DataElement dataElement, String value, String programStageSection, EventStatus eventStatus) {
         String uid = dataElement.uid();
         String displayName = dataElement.displayName();
         String valueTypeName = dataElement.valueType().name();
@@ -187,7 +186,7 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
                 ValueType.valueOf(valueTypeName), mandatory, optionSet, dataValue,
                 programStageSection, allowFurureDates,
                 eventStatus == EventStatus.ACTIVE,
-                null, description, fieldRendering, optionCount, objectStyle);
+                null, description, fieldRendering, optionCount, objectStyle, dataElement.fieldMask());
     }
 
     @NonNull
@@ -251,7 +250,7 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
                                 .programStageName(d2.programModule().programStages.uid(event.programStage()).blockingGet().displayName())
                                 .status(RuleEvent.Status.valueOf(event.status().name()))
                                 .eventDate(event.eventDate())
-                                .dueDate(event.dueDate())
+                                .dueDate(event.dueDate() != null ? event.dueDate() : event.eventDate())
                                 .organisationUnit(event.organisationUnit())
                                 .organisationUnitCode(d2.organisationUnitModule().organisationUnits.uid(event.organisationUnit()).blockingGet().code())
                                 .dataValues(dataValues)
@@ -274,6 +273,8 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
 
     @Override
     public Observable<Program> getProgramWithId(String programUid) {
-        return d2.programModule().programs.withAllChildren().byUid().eq(programUid).one().get().toObservable();
+        return d2.programModule().programs.withTrackedEntityType().withProgramTrackedEntityAttributes().withProgramIndicators().withProgramRules()
+                .withProgramRuleVariables().withProgramSections().withProgramStages().withRelatedProgram().withStyle().withCategoryCombo()
+                .uid(programUid).get().toObservable();
     }
 }

@@ -11,6 +11,8 @@ import org.dhis2.data.service.SyncDataWorkerComponent;
 import org.dhis2.data.service.SyncDataWorkerModule;
 import org.dhis2.data.service.SyncGranularRxComponent;
 import org.dhis2.data.service.SyncGranularRxModule;
+import org.dhis2.data.service.SyncInitWorkerComponent;
+import org.dhis2.data.service.SyncInitWorkerModule;
 import org.dhis2.data.service.SyncMetadataWorkerComponent;
 import org.dhis2.data.service.SyncMetadataWorkerModule;
 import org.dhis2.usescases.about.AboutComponent;
@@ -23,6 +25,8 @@ import org.dhis2.usescases.datasets.datasetDetail.DataSetDetailComponent;
 import org.dhis2.usescases.datasets.datasetDetail.DataSetDetailModule;
 import org.dhis2.usescases.datasets.datasetInitial.DataSetInitialComponent;
 import org.dhis2.usescases.datasets.datasetInitial.DataSetInitialModule;
+import org.dhis2.usescases.enrollment.EnrollmentComponent;
+import org.dhis2.usescases.enrollment.EnrollmentModule;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureComponent;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureModule;
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialComponent;
@@ -160,4 +164,10 @@ public interface UserComponent {
 
     @NonNull
     SyncComponent plus(SyncModule syncModule);
+
+    @NonNull
+    SyncInitWorkerComponent plus(SyncInitWorkerModule syncInitWorkerModule);
+
+    @NonNull
+    EnrollmentComponent plus(EnrollmentModule enrollmentModule);
 }

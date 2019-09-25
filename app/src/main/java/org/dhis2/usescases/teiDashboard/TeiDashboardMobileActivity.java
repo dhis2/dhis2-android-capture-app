@@ -22,7 +22,6 @@ import androidx.core.content.ContextCompat;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentStatePagerAdapter;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.viewpager.widget.ViewPager;
 
@@ -30,9 +29,8 @@ import com.google.android.material.tabs.TabLayout;
 
 import org.dhis2.App;
 import org.dhis2.R;
-import org.dhis2.data.forms.FormActivity;
-import org.dhis2.data.forms.FormViewArguments;
 import org.dhis2.databinding.ActivityDashboardMobileBinding;
+import org.dhis2.usescases.enrollment.EnrollmentActivity;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.usescases.teiDashboard.adapters.DashboardPagerAdapter;
 import org.dhis2.usescases.teiDashboard.adapters.DashboardPagerTabletAdapter;
@@ -124,9 +122,9 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
 
     @Override
     protected void onPause() {
-        super.onPause();
-        ((App) getApplicationContext()).releaseDashboardComponent();
         presenter.onDettach();
+        ((App) getApplicationContext()).releaseDashboardComponent();
+        super.onPause();
     }
 
     @Override
@@ -294,8 +292,13 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == Constants.RQ_ENROLLMENTS && resultCode == RESULT_OK) {
             if (data.hasExtra("GO_TO_ENROLLMENT")) {
-                FormViewArguments formViewArguments = FormViewArguments.createForEnrollment(data.getStringExtra("GO_TO_ENROLLMENT"));
-                startActivity(FormActivity.create(this, formViewArguments, true));
+                Intent intent = EnrollmentActivity.Companion.getIntent(this,
+                        data.getStringExtra("GO_TO_ENROLLMENT"),
+                        data.getStringExtra("GO_TO_ENROLLMENT_PROGRAM"),
+                        EnrollmentActivity.EnrollmentMode.NEW);
+                startActivity(intent);
+               /* FormViewArguments formViewArguments = FormViewArguments.createForEnrollment(data.getStringExtra("GO_TO_ENROLLMENT"));
+                startActivity(FormActivity.create(this, formViewArguments, true));*/
                 finish();
             }
 

@@ -77,8 +77,7 @@ class LoginPresenter : LoginContracts.Presenter {
         } ?: view.setUrl(view.context.getString(R.string.login_https))
 
 
-        if (false && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
-        //TODO: REMOVE FALSE WHEN GREEN LIGHT
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
             disposable.add(RxPreconditions
                     .hasBiometricSupport(view.context)
                     .filter { canHandleBiometrics ->
@@ -90,7 +89,6 @@ class LoginPresenter : LoginContracts.Presenter {
                     .subscribe(
                             { view.showBiometricButton() },
                             { Timber.e(it) }))
-
 
     }
 
