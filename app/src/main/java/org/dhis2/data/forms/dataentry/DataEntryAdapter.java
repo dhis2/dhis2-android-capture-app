@@ -50,6 +50,7 @@ import java.util.List;
 
 import io.reactivex.processors.FlowableProcessor;
 import io.reactivex.processors.PublishProcessor;
+import timber.log.Timber;
 
 public final class DataEntryAdapter extends Adapter {
     private static final int EDITTEXT = 0;
@@ -87,7 +88,6 @@ public final class DataEntryAdapter extends Adapter {
     private MutableLiveData<String> currentFocusUid;
 
     private String lastFocusItem;
-    private String nextFocusUid;
     private int nextFocusPosition = -1;
 
     public DataEntryAdapter(@NonNull LayoutInflater layoutInflater,
@@ -100,6 +100,10 @@ public final class DataEntryAdapter extends Adapter {
         imageSelector = new ObservableField<>("");
         this.processorOptionSet = PublishProcessor.create();
         this.currentFocusUid = new MutableLiveData<>();
+
+        currentFocusUid.observeForever(newValue -> {
+            Timber.tag("UID").d("NEW UID %s", newValue);
+        });
 
         rows.add(EDITTEXT, new EditTextRow(layoutInflater, processor, true, dataEntryArguments.renderType(), false, currentFocusUid));
         rows.add(BUTTON, new FileRow(layoutInflater, processor, true, dataEntryArguments.renderType(), currentFocusUid));

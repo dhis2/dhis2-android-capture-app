@@ -229,7 +229,9 @@ public class DashboardRepositoryImpl implements DashboardRepository {
         return d2.enrollmentModule().enrollments.byProgram().eq(programUid).byTrackedEntityInstance().eq(teiUid)
                 .byStatus().eq(EnrollmentStatus.ACTIVE).one().get()
                 .flatMap(enrollment ->
-                        d2.eventModule().events.byEnrollmentUid().eq(enrollment.uid()).get()
+                        d2.eventModule().events.byEnrollmentUid().eq(enrollment.uid())
+                                .byDeleted().isFalse()
+                                .get()
                 ).toFlowable()
                 .flatMapIterable(events -> events)
                 .map(event -> {

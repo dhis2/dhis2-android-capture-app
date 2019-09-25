@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -62,6 +63,25 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
 
     @NonNull
     @Override
+    public Observable<List<OrganisationUnit>> filteredOrgUnits(String date, String programId, String parentId) {
+        if (date == null)
+            return parentId == null ? orgUnits(programId) : orgUnits(programId, parentId);
+        else
+            return (parentId == null ? orgUnits(programId) : orgUnits(programId, parentId))
+                    .map(organisationUnits -> {
+                        Iterator<OrganisationUnit> iterator = organisationUnits.iterator();
+                        while (iterator.hasNext()) {
+                            OrganisationUnit organisationUnit = iterator.next();
+                            if (organisationUnit.openingDate() != null && organisationUnit.openingDate().after(DateUtils.uiDateFormat().parse(date))
+                                    || organisationUnit.closedDate() != null && organisationUnit.closedDate().before(DateUtils.uiDateFormat().parse(date)))
+                                iterator.remove();
+                        }
+                        return organisationUnits;
+                    });
+    }
+
+    @NonNull
+    @Override
     public Observable<List<OrganisationUnit>> orgUnits(String programId) {
         return Observable.fromCallable(() -> {
             List<String> ouUids = new ArrayList<>();
@@ -73,6 +93,21 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
             }
             return ouUids;
         }).flatMap(ouUids -> d2.organisationUnitModule().organisationUnits.byUid().in(ouUids).withPrograms().get().toObservable());
+    }
+
+    public Observable<List<OrganisationUnit>> orgUnits(String programId, String parentUid) {
+        return d2.organisationUnitModule().organisationUnits
+                .byParentUid().eq(parentUid)
+                .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE)
+                .withPrograms().get()
+                .map(organisationUnits -> {
+                    List<OrganisationUnit> programOrganisationUnits = new ArrayList<>();
+                    for (OrganisationUnit organisationUnit : organisationUnits) {
+                        if (UidsHelper.getUids(organisationUnit.programs()).contains(programId))
+                            programOrganisationUnits.add(organisationUnit);
+                    }
+                    return programOrganisationUnits.isEmpty() ? organisationUnits : programOrganisationUnits;
+                }).toObservable();
     }
 
     @NonNull

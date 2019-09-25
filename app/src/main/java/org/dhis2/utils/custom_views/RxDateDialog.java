@@ -53,7 +53,7 @@ public class RxDateDialog {
                 compositeSubscription.add(actionTrigger.observe().subscribe(this::showDialog, Timber::d));
             else
                 compositeSubscription.clear();
-        });
+        }, Timber::e);
 
     }
 

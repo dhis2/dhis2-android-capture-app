@@ -109,6 +109,7 @@ public class SyncDataWorker extends Worker {
                 new NotificationCompat.Builder(getApplicationContext(), DATA_CHANNEL)
                         .setSmallIcon(R.drawable.ic_sync)
                         .setContentTitle(title)
+                        .setOngoing(true)
                         .setContentText(content)
                         .setAutoCancel(false)
                         .setPriority(NotificationCompat.PRIORITY_DEFAULT);

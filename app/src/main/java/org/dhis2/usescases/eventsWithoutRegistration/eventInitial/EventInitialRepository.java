@@ -36,6 +36,9 @@ public interface EventInitialRepository {
     @NonNull
     Observable<List<OrganisationUnit>> orgUnits(String programId);
 
+    @NonNull
+    Observable<List<OrganisationUnit>> filteredOrgUnits(String date, String programId, String parentId);
+
     Observable<String> createEvent(String enrollmentUid, @Nullable String trackedEntityInstanceUid,
                                    @NonNull Context context, @NonNull String program,
                                    @NonNull String programStage, @NonNull Date date,

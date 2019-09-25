@@ -3,7 +3,6 @@ package org.dhis2.data.forms.dataentry;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.DiffUtil;
 
-
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.picture.PictureViewModel;
 import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel;
@@ -19,7 +18,7 @@ final class DataEntryDiffCallback extends DiffUtil.Callback {
     private final List<FieldViewModel> newFields;
 
     DataEntryDiffCallback(@NonNull List<FieldViewModel> oldFields,
-            @NonNull List<FieldViewModel> newFields) {
+                          @NonNull List<FieldViewModel> newFields) {
         this.oldFields = oldFields;
         this.newFields = newFields;
     }

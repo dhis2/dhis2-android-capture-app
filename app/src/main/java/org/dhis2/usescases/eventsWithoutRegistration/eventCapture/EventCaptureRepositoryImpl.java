@@ -44,6 +44,7 @@ import org.hisp.dhis.android.core.program.ProgramStage;
 import org.hisp.dhis.android.core.program.ProgramStageDataElement;
 import org.hisp.dhis.android.core.program.ProgramStageSection;
 import org.hisp.dhis.android.core.program.ProgramStageSectionDeviceRendering;
+import org.hisp.dhis.android.core.program.ProgramStageSectionRendering;
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
 import org.hisp.dhis.android.core.program.ProgramType;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueObjectRepository;
@@ -482,7 +483,8 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
     private ProgramStageSectionRenderingType renderingType(String sectionUid) {
         ProgramStageSectionRenderingType renderingType = ProgramStageSectionRenderingType.LISTING;
         if (sectionUid != null) {
-            ProgramStageSectionDeviceRendering stageSectionRendering = d2.programModule().programStageSections.uid(sectionUid).blockingGet().renderType().mobile();
+            ProgramStageSectionRendering sectionRendering = d2.programModule().programStageSections.uid(sectionUid).blockingGet().renderType();
+            ProgramStageSectionDeviceRendering stageSectionRendering = sectionRendering != null ? sectionRendering.mobile() : null;
             if (stageSectionRendering != null)
                 renderingType = stageSectionRendering.type();
         }
@@ -520,6 +522,14 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                 renderList.add(fieldViewModel);
         }
         return renderList;
+    }
+
+    private ProgramStageSectionRenderingType getSectionRenderingType(ProgramStageSection stageSection) {
+        ProgramStageSectionRenderingType renderingType = ProgramStageSectionRenderingType.LISTING;
+        if (stageSection != null && stageSection.renderType() != null & stageSection.renderType().mobile() != null)
+            renderingType = stageSection.renderType().mobile().type();
+
+        return renderingType;
     }
 
     @NonNull
@@ -669,20 +679,6 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                                 .map(Result::success)
                 )
                 .doOnNext(data -> Timber.tag("PROGRAMRULES").d("NEW EFFECTS"))
-                .doOnError(error -> Result.failure(new Exception(error)));
-    }
-
-    @NonNull
-    @Override
-    public Flowable<Result<RuleEffect>> calculate(String section) {
-        return queryDataValues(eventUid)
-                .switchMap(dataValues ->
-                        formRepository.ruleEngine()
-                                .flatMap(ruleEngine ->
-                                        Flowable.fromCallable(ruleEngine.evaluate(eventBuilder.dataValues(dataValues).build()))
-                                )
-                                .map(Result::success)
-                )
                 .doOnError(error -> Result.failure(new Exception(error)));
     }
 
@@ -859,5 +855,25 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
         return Observable.zip(d2.eventModule().events.uid(eventUid).get().toObservable(),
                 getExpiryDateFromEvent(eventUid),
                 ((event, program) -> DateUtils.getInstance().isEventExpired(null, event.completedDate(), program.completeEventsExpiryDays())));
+    }
+
+    @Override
+    public void assign(String uid, String value) {
+        try {
+            if (d2.dataElementModule().dataElements.uid(uid).blockingExists()) {
+                if (!isEmpty(value))
+                    d2.trackedEntityModule().trackedEntityDataValues.value(eventUid, uid).blockingSet(value); //TODO: Should be assigned in all events?
+                else if( d2.trackedEntityModule().trackedEntityDataValues.value(eventUid, uid).blockingExists())
+                    d2.trackedEntityModule().trackedEntityDataValues.value(eventUid, uid).blockingDelete();
+            } else if (d2.trackedEntityModule().trackedEntityAttributes.uid(uid).blockingExists()) {
+                String tei = d2.enrollmentModule().enrollments.uid(currentEvent.enrollment()).blockingGet().trackedEntityInstance();
+                if (!isEmpty(value))
+                    d2.trackedEntityModule().trackedEntityAttributeValues.value(uid, tei).blockingSet(value);
+                else if( d2.trackedEntityModule().trackedEntityAttributeValues.value(eventUid, tei).blockingExists())
+                    d2.trackedEntityModule().trackedEntityAttributeValues.value(eventUid, tei).blockingDelete();
+            }
+        } catch (D2Error d2Error) {
+            Timber.e(d2Error.originalException());
+        }
     }
 }
