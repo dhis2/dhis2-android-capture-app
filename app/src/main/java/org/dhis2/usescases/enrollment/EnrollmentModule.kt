@@ -38,7 +38,10 @@ class EnrollmentModule(val enrollmentUid: String, val programUid: String) {
     @PerActivity
     fun provideProgramRepository(d2: D2):
             ReadOnlyOneObjectRepositoryFinalImpl<Program> {
-        return d2.programModule().programs.uid(programUid)
+        return d2.programModule().programs
+                .withProgramTrackedEntityAttributes()
+                .withCategoryCombo()
+                .uid(programUid)
     }
 
     @Provides

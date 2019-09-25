@@ -50,10 +50,7 @@ public class FilesWorker extends Worker {
     public static final String TAG = "FILE_DOWNLOADER";
     public static final String TAG_UPLOAD = "FILE_UPLOADER";
     public static final String MODE = "MODE";
-    public static final String TEIUID = "teiuid";
-    public static final String ATTRUID = "attruid";
     private D2 d2;
-    private FileService fileService;
     private final static String file_upload_channel = "upload_file_notification";
     private final static String file_download_channel = "upload_file_notification";
     private final static int FILE_ID = 26061987;
@@ -72,12 +69,9 @@ public class FilesWorker extends Worker {
     public Result doWork() {
 
         d2 = Objects.requireNonNull(((App) getApplicationContext()).serverComponent().userManager().getD2());
-        fileService = d2.retrofit().create(FileService.class);
 
         if (getInputData().getString(MODE) == null || FileMode.valueOf(getInputData().getString(MODE)) == FileMode.DOWNLOAD)
             downloadFileResources();
-        else if (getInputData().getString(TEIUID) != null)
-            uploadFileResources(getInputData().getString(TEIUID), getInputData().getString(ATTRUID));
         else
             uploadBulkResources();
 
@@ -89,49 +83,7 @@ public class FilesWorker extends Worker {
         triggerNotification("File processor", "Uploading files...", file_upload_channel);
         Completable.fromObservable(
                 d2.fileResourceModule().fileResources.upload()
-                /*.doOnNext(d2Progress -> triggerNotification("File processor", String.format("Uploading file %s/%s", d2Progress.doneCalls(), d2Progress.totalCalls()), file_upload_channel))*/
         ).blockingAwait();
-       /* File[] filesToUpload = FileResourcesUtil.getUploadDirectory(getApplicationContext()).listFiles();
-        int count = 1;
-        for (File file : filesToUpload) {
-            triggerNotification("File processor", String.format("Uploading file %s/%s", count++, filesToUpload.length), file_upload_channel);
-            String[] fileName = file.getName().split("_"); //tei/event, attr/de, extension
-            upload(file, fileName[0], fileName[1].split("\\.")[0]);
-        }*/
-    }
-
-    private void uploadFileResources(String teiUid, String attrUid) {
-        triggerNotification("File processor", "Uploading file...", file_upload_channel);
-
-        String fileName = d2.trackedEntityModule().trackedEntityAttributeValues
-                .byTrackedEntityAttribute().eq(attrUid)
-                .byTrackedEntityInstance().eq(teiUid).one().blockingGet().value();
-        File file = new File(FileResourcesUtil.getUploadDirectory(getApplicationContext()), fileName);
-        upload(file, teiUid, attrUid);
-    }
-
-    private void upload(File file, String teiOrEvent, String attrUid) {
-        Completable.fromCallable(() -> {
-            Response<ResponseBody> response = fileService.uploadFile(getFilePart(file)).execute();
-
-            if (response.isSuccessful()) {
-                String jsonResponse = response.body().string();
-                FileResourceResponse fileResourceResponse = new Gson().fromJson(jsonResponse, FileResourceResponse.class);
-
-                if (d2.trackedEntityModule().trackedEntityAttributes.uid(attrUid).blockingExists())
-                    d2.trackedEntityModule().trackedEntityAttributeValues.value(attrUid, teiOrEvent).set(
-                            fileResourceResponse.getResponse().getFileResource().getId()
-                    );
-                else
-                    d2.trackedEntityModule().trackedEntityDataValues.value(teiOrEvent, attrUid).set(
-                            fileResourceResponse.getResponse().getFileResource().getId()
-                    );
-                return file.delete();
-
-            } else
-                return false;
-
-        }).blockingAwait();
     }
 
     private void downloadFileResources() {
@@ -141,97 +93,6 @@ public class FilesWorker extends Worker {
         Completable.fromObservable(d2.fileResourceModule().download()
                 .doOnNext(d2Progress -> triggerNotification("File processor", String.format("Downloading file %s/%s", d2Progress.doneCalls(), d2Progress.totalCalls()), file_download_channel))
         ).blockingAwait();
-/*
-        List<TrackedEntityAttribute> imageAttr = d2.trackedEntityModule().trackedEntityAttributes
-                .byValueType().eq(ValueType.IMAGE).blockingGet();
-
-        List<String> attrUids = new ArrayList<>();
-        for (TrackedEntityAttribute attribute : imageAttr)
-            attrUids.add(attribute.uid());
-
-        List<TrackedEntityAttributeValue> imageValues = d2.trackedEntityModule().trackedEntityAttributeValues
-                .byTrackedEntityAttribute().in(attrUids).blockingGet();
-
-        int downloadCount = 1;
-        for (TrackedEntityAttributeValue attributeValue : imageValues) {
-            triggerNotification("File processor", String.format("Downloading file %s/%s", downloadCount++, imageValues.size()), file_download_channel);
-            Completable.fromCallable(() -> {
-                Response<ResponseBody> response = fileService.getFile(attributeValue.trackedEntityInstance(),
-                        attributeValue.trackedEntityAttribute()).execute();
-                if (response.isSuccessful()) {
-                    return writeResponseBodyToDisk(response.body(), FileResourcesUtil.generateFileName(attributeValue.trackedEntityInstance(), attributeValue.trackedEntityAttribute()));
-                } else
-                    return false;
-            }).blockingAwait();
-
-        }*/
-    }
-
-    private boolean writeResponseBodyToDisk(ResponseBody body, String generatedFileName) {
-        try {
-            File futureStudioIconFile = new File(FileResourcesUtil.getDownloadDirectory(getApplicationContext()), generatedFileName);
-
-            InputStream inputStream = null;
-            OutputStream outputStream = null;
-
-            try {
-                byte[] fileReader = new byte[4096];
-
-                long fileSize = body.contentLength();
-                long fileSizeDownloaded = 0;
-
-                inputStream = body.byteStream();
-                outputStream = new FileOutputStream(futureStudioIconFile);
-
-                while (true) {
-                    int read = inputStream.read(fileReader);
-
-                    if (read == -1) {
-                        break;
-                    }
-
-                    outputStream.write(fileReader, 0, read);
-
-                    fileSizeDownloaded += read;
-
-                    Timber.d("file download: " + fileSizeDownloaded + " of " + fileSize);
-                }
-
-                outputStream.flush();
-
-                return true;
-            } catch (IOException e) {
-                return false;
-            } finally {
-                if (inputStream != null) {
-                    inputStream.close();
-                }
-
-                if (outputStream != null) {
-                    outputStream.close();
-                }
-            }
-        } catch (IOException e) {
-            return false;
-        }
-    }
-
-    private MultipartBody.Part getFilePart(File file) {
-        String extension = MimeTypeMap.getFileExtensionFromUrl(file.getPath());
-        String type = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
-        if (type == null)
-            type = "image/*";
-        return MultipartBody.Part.createFormData("file", file.getName(), RequestBody.create(MediaType.parse(type), file));
-    }
-
-    private interface FileService {
-        @GET("trackedEntityInstances/{teiUid}/{attrUid}/image")
-        Call<ResponseBody> getFile(@Path("teiUid") String teiUid, @Path("attrUid") String attrUid);
-
-        @Multipart
-        @POST("fileResources")
-        Call<ResponseBody> uploadFile(@Part MultipartBody.Part filePart);
-
     }
 
     private void triggerNotification(String title, String content, String channel) {

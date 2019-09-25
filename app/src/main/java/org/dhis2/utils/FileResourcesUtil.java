@@ -43,35 +43,12 @@ public class FileResourcesUtil {
         return uploadDirectory;
     }
 
-    public static File getCacheDirectory(Context context) {
-        File cacheDirectory = new File(context.getCacheDir(), "cache");
-        if (!cacheDirectory.exists())
-            cacheDirectory.mkdirs();
-        return cacheDirectory;
-    }
-
     public static File getDownloadDirectory(Context context) {
         File downloadDirectory = new File(context.getFilesDir(), "download");
         if (!downloadDirectory.exists())
             downloadDirectory.mkdirs();
         return downloadDirectory;
     }
-
-    public static void initFileUploadWork(String teiUid, String attrUid) {
-        OneTimeWorkRequest.Builder fileBuilder = new OneTimeWorkRequest.Builder(FilesWorker.class);
-        fileBuilder.addTag(teiUid.concat("_").concat(attrUid));
-        fileBuilder.setConstraints(new Constraints.Builder()
-                .setRequiredNetworkType(NetworkType.CONNECTED)
-                .build());
-        fileBuilder.setInputData(new Data.Builder()
-                .putString(FilesWorker.MODE, FilesWorker.FileMode.UPLOAD.name())
-                .putString(FilesWorker.TEIUID, teiUid)
-                .putString(FilesWorker.ATTRUID, attrUid)
-                .build());
-        OneTimeWorkRequest requestFile = fileBuilder.build();
-        WorkManager.getInstance().beginUniqueWork(teiUid.concat(".").concat(attrUid), ExistingWorkPolicy.REPLACE, requestFile).enqueue();
-    }
-
 
     public static WorkContinuation initBulkFileUploadWork() {
 
@@ -88,10 +65,6 @@ public class FileResourcesUtil {
                 .putString(FilesWorker.MODE, FilesWorker.FileMode.UPLOAD.name())
                 .build());
         return fileBuilder.build();
-    }
-
-    public static WorkContinuation initDownloadWork() {
-        return WorkManager.getInstance().beginUniqueWork(FilesWorker.TAG, ExistingWorkPolicy.REPLACE, initDownloadRequest());
     }
 
     public static OneTimeWorkRequest initDownloadRequest() {
@@ -142,20 +115,6 @@ public class FileResourcesUtil {
         File fromDownload = new File(FileResourcesUtil.getDownloadDirectory(context), fileName);
 
         return fromUpload.exists() ? fromUpload : fromDownload;
-    }
-
-    public static File saveBitmapToUpload(Context context, Bitmap bitmap, String fileName) {
-        File destDirectory = new File(getUploadDirectory(context), fileName + ".png");
-        OutputStream os;
-        try {
-            os = new FileOutputStream(destDirectory);
-            bitmap.compress(Bitmap.CompressFormat.PNG, 100, os);
-            os.close();
-        } catch (Exception e) {
-            Timber.e(e);
-        }
-
-        return destDirectory;
     }
 
     public static Bitmap getSmallImage(Context context, String filePath) {
