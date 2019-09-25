@@ -60,6 +60,7 @@ import static org.dhis2.utils.Constants.TIME_DAILY;
 import static org.dhis2.utils.Constants.TIME_HOURLY;
 import static org.dhis2.utils.Constants.TIME_MANUAL;
 import static org.dhis2.utils.Constants.TIME_WEEKLY;
+import static org.dhis2.utils.analytics.AnalyticsConstants.SYNC_MANAGER_FRAGMENT;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -90,6 +91,8 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_settings, container, false);
+
+        getAbstractActivity().analyticsHelper.setCurrentScreen(getActivity(), SYNC_MANAGER_FRAGMENT, null);
 
         binding.setPresenter(presenter);
         prefs = getAbstracContext().getSharedPreferences(
