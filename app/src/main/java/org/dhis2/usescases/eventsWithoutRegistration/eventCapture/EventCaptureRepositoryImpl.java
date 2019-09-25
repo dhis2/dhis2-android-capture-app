@@ -27,7 +27,10 @@ import org.hisp.dhis.android.core.common.ObjectStyleModel;
 import org.hisp.dhis.android.core.common.ObjectWithUid;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.common.ValueType;
+import org.hisp.dhis.android.core.common.ValueTypeDeviceRendering;
 import org.hisp.dhis.android.core.common.ValueTypeDeviceRenderingModel;
+import org.hisp.dhis.android.core.common.ValueTypeRendering;
+import org.hisp.dhis.android.core.common.ValueTypeRenderingType;
 import org.hisp.dhis.android.core.dataelement.DataElement;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
@@ -509,7 +512,11 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                         }
 
                         ValueTypeDeviceRenderingModel fieldRendering = null;
-                        //TODO: CHANGE
+                        try (Cursor rendering = briteDatabase.query("SELECT * FROM ValueTypeDeviceRendering WHERE uid = ?", stageDataElement.uid())) {
+                            if (rendering != null && rendering.moveToFirst()) {
+                                fieldRendering = ValueTypeDeviceRenderingModel.create(rendering);
+                            }
+                        }
 
                         ObjectStyleModel objectStyle = ObjectStyleModel.builder().build();
                         if (de.style() != null) {
@@ -686,7 +693,11 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                                     }
 
                                     ValueTypeDeviceRenderingModel fieldRendering = null;
-                                    //TODO: CHANGE
+                                    try (Cursor rendering = briteDatabase.query("SELECT * FROM ValueTypeDeviceRendering WHERE uid = ?", programStageDataElement.uid())) {
+                                        if (rendering != null && rendering.moveToFirst()) {
+                                            fieldRendering = ValueTypeDeviceRenderingModel.create(rendering);
+                                        }
+                                    }
 
                                     ObjectStyleModel objectStyle = ObjectStyleModel.builder().build();
                                     if (de.style() != null) {
