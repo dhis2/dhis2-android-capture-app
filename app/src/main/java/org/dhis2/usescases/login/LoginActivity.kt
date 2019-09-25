@@ -16,6 +16,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import co.infinum.goldfinger.Goldfinger
 import com.andrognito.pinlockview.PinLockListener
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
@@ -359,6 +360,7 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
         if (requestCode == RQ_QR_SCANNER && resultCode == Activity.RESULT_OK) {
             qrUrl = data?.getStringExtra(Constants.EXTRA_DATA)
         }
+        super.onActivityResult(requestCode, resultCode, data)
     }
 
     //region FingerPrint
@@ -366,15 +368,17 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
         binding.biometricButton.visibility = View.VISIBLE
     }
 
-    override fun checkSecuredCredentials() {
-        if (SecurePreferences.contains(Constants.SECURE_SERVER_URL) &&
+    override fun checkSecuredCredentials(result: Goldfinger.Result) {
+        val type = result.type()
+        if (type == Goldfinger.Type.SUCCESS &&
+                SecurePreferences.contains(Constants.SECURE_SERVER_URL) &&
                 SecurePreferences.contains(Constants.SECURE_USER_NAME) &&
                 SecurePreferences.contains(Constants.SECURE_PASS)) {
             binding.serverUrlEdit.setText(SecurePreferences.getStringValue(Constants.SECURE_SERVER_URL, null))
             binding.userNameEdit.setText(SecurePreferences.getStringValue(Constants.SECURE_USER_NAME, null))
             binding.userPassEdit.setText(SecurePreferences.getStringValue(Constants.SECURE_PASS, null))
             showLoginProgress(true)
-        } else
+        } else if (type == Goldfinger.Type.ERROR)
             showInfoDialog(getString(R.string.biometrics_dialog_title), getString(R.string.biometrics_first_use_text))
     }
 //endregion

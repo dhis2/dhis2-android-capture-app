@@ -360,7 +360,8 @@ dependencies {
     implementation 'cat.ereza:customactivityoncrash:2.2.0'
 
     implementation "com.google.android.gms:play-services-analytics:${libraries.analytics}"
-    implementation 'com.github.pwittchen:rxbiometric:0.1.0'
+    //implementation 'com.github.pwittchen:rxbiometric:0.1.0'
+    implementation 'co.infinum:goldfinger-rx:1.2.1'
     implementation "de.adorsys.android:securestoragelibrary:${libraries.latestSecureStorageVersion}"
 
     implementation 'com.google.firebase:firebase-perf:16.2.3'

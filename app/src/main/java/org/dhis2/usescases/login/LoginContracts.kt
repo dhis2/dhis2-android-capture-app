@@ -3,6 +3,7 @@ package org.dhis2.usescases.login
 
 import android.view.View
 import androidx.annotation.UiThread
+import co.infinum.goldfinger.Goldfinger
 import org.dhis2.usescases.general.AbstractActivityContracts
 import retrofit2.Response
 
@@ -45,7 +46,7 @@ class LoginContracts {
 
         fun showBiometricButton()
 
-        fun checkSecuredCredentials()
+        fun checkSecuredCredentials(result: Goldfinger.Result)
 
         fun openAccountRecovery()
 
