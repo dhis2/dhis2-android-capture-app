@@ -4,9 +4,9 @@ import androidx.annotation.NonNull;
 
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.tablefields.FieldViewModel;
+import org.dhis2.data.forms.dataentry.tablefields.FieldViewModelFactoryImpl;
 import org.dhis2.data.forms.dataentry.tablefields.RowAction;
 import org.dhis2.data.tuples.Pair;
-import org.dhis2.data.tuples.Quintet;
 import org.dhis2.data.tuples.Sextet;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableModel;
@@ -14,16 +14,18 @@ import org.hisp.dhis.android.core.category.Category;
 import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryOption;
 import org.hisp.dhis.android.core.category.CategoryOptionCombo;
+import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.dataelement.DataElement;
+import org.hisp.dhis.android.core.dataelement.DataElementOperand;
 import org.hisp.dhis.android.core.dataset.DataInputPeriod;
+import org.hisp.dhis.android.core.dataset.DataSet;
+import org.hisp.dhis.android.core.dataset.Section;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-
-import javax.annotation.Nullable;
 
 import io.reactivex.Flowable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -37,7 +39,6 @@ public class DataValuePresenter implements DataValueContract.Presenter {
 
     private String orgUnitUid;
     private String periodTypeName;
-    private String periodFinalDate;
     private String attributeOptionCombo;
 
     private Trio<List<DataElement>, Map<String, List<List<Pair<CategoryOption, Category>>>>, List<CategoryCombo>> tableData;
@@ -57,13 +58,16 @@ public class DataValuePresenter implements DataValueContract.Presenter {
     private FlowableProcessor<RowAction> processor;
     private FlowableProcessor<Trio<String, String, Integer>> processorOptionSet;
     private Boolean isApproval;
+    private String sectionName;
+    private DataSet dataSet;
+    private Section section;
 
     public DataValuePresenter(DataValueRepository repository) {
         this.repository = repository;
     }
 
     @Override
-    public void init(DataValueContract.View view, String orgUnitUid, String periodTypeName, String periodFinalDate, String attributeOptionCombo, String section, String periodId) {
+    public void init(DataValueContract.View view, String orgUnitUid, String periodTypeName, String periodFinalDate, String attributeOptionCombo, String sectionName, String periodId) {
         compositeDisposable = new CompositeDisposable();
         this.view = view;
         processor = PublishProcessor.create();
@@ -72,10 +76,101 @@ public class DataValuePresenter implements DataValueContract.Presenter {
         this.tableCells = new ArrayList<>();
         this.orgUnitUid = orgUnitUid;
         this.periodTypeName = periodTypeName;
-        this.periodFinalDate = periodFinalDate;
         this.attributeOptionCombo = attributeOptionCombo;
         this.periodId = periodId;
+        this.sectionName = sectionName;
 
+        compositeDisposable.add(repository.getDataSet()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(dataSet -> {
+                    this.dataSet = dataSet;
+                    view.setDataSet(dataSet);
+                }, Timber::e)
+        );
+
+        compositeDisposable.add(repository.getSectionByDataSet(sectionName)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(section -> {
+                            this.section = section;
+                            view.setSectionName(section);
+                        }, Timber::e)
+        );
+
+        compositeDisposable.add(repository.getCatCombo(sectionName)
+                .flatMapIterable(categoryCombos -> categoryCombos)
+                .map(categoryCombo -> Flowable.zip(
+                        Flowable.just(categoryCombo),
+                        repository.getDataElements(categoryCombo),
+                        repository.getCategories(categoryCombo),
+                        repository.getDataValues(orgUnitUid, periodTypeName, periodId, attributeOptionCombo, sectionName),
+                        repository.getGreyFields(sectionName),
+                        repository.getCompulsoryDataElements(),
+                        Sextet::create
+                ).toObservable().blockingFirst())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        data -> {
+                            dataTableModel = DataTableModel.create(
+                                    data.val1(), data.val2(), data.val3(), data.val4(),
+                                    data.val5(), data.val0(), false);
+
+                            setTableData(dataTableModel);
+                        },
+                        Timber::e
+                )
+        );
+        /*Timber.tag("BREAKPOINT").d("start");
+        compositeDisposable.add(
+                Flowable.zip(
+                        repository.getDataElements(sectionName),
+                        repository.getCatOptions(sectionName),
+                        repository.getCatCombo(sectionName),
+                        repository.isApproval(orgUnitUid, periodId, attributeOptionCombo),
+                        Quartet::create
+                )
+                        .flatMap(data -> {
+                            Timber.tag("BREAKPOINT").d("data");
+                            tableData = Trio.create(data.val0(), data.val1(), new LinkedList<>(data.val2()));
+                            isApproval = data.val3();
+                            return Flowable.zip(
+                                    repository.getDataValues(orgUnitUid, periodTypeName, periodId, attributeOptionCombo, sectionName),
+                                    repository.getDataSet(),
+                                    repository.getGreyedFields(sectionName),
+                                    repository.getMandatoryDataElement(),
+                                    repository.getSectionByDataSet(sectionName),
+                                    Quintet::create
+                            );})
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                quintet -> {
+                                    if (tableData != null) {
+                                        *//*dataTableModel = DataTableModel
+                                                .create(quintet.val4().id() == null ? null : quintet.val4(), transformCategories(tableData.val1()),
+                                                        tableData.val0(), quintet.val0(), getCatOptionsByCatOptionComboDataElement(quintet.val2()),
+                                                        quintet.val3(), tableData.val1(), quintet.val1(), tableData.val2(), getCatOptions(), isApproval);
+
+                                        setTableData(dataTableModel);
+*//*
+                                        //view.createTable(dataTableModel);
+                                    }
+                                },
+                                Timber::e
+                        )
+        );
+*/
+        compositeDisposable.add(
+                repository.isCompleted(orgUnitUid, periodId, attributeOptionCombo)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                data -> view.setCompleteReopenText(data),
+                                Timber::e
+                        )
+        );
 
         compositeDisposable.add(
                 Flowable.zip(
@@ -95,12 +190,142 @@ public class DataValuePresenter implements DataValueContract.Presenter {
                                 Timber::e)
         );
     }
+    private void setTableData(DataTableModel dataTableModel) {
+
+
+        //List<List<CategoryOption>> columnHeaderItems = dataTableModel.catCombo().categories();
+        ArrayList<List<String>> cells = new ArrayList<>();
+        List<List<FieldViewModel>> listFields = new ArrayList<>();
+        boolean isNumber = false;
+        int row = 0, column = 0;
+        for (DataElement dataElement : dataTableModel.rows()) {
+
+            ArrayList<String> values = new ArrayList<>();
+            ArrayList<FieldViewModel> fields = new ArrayList<>();
+            int totalRow = 0;
+            FieldViewModelFactoryImpl fieldFactory = new FieldViewModelFactoryImpl("", "");
+
+            for(CategoryOptionCombo categoryOptionCombo : dataTableModel.catCombo().categoryOptionCombos()){
+                FieldViewModel fieldViewModel = null;
+                for (DataSetTableModel dataValue : dataTableModel.dataValues())
+                    if (dataValue.dataElement().equals(dataElement.uid()) && dataValue.categoryOptionCombo().equals(categoryOptionCombo.uid())) {
+
+                        fieldViewModel = fieldFactory.create(dataValue.id().toString(), "", dataElement.valueType(),
+                                false, dataElement.optionSetUid(), dataValue.value(), sectionName, true,
+                                true, //categoryOption.access().data().write(),
+                                null, null, dataElement.uid(), new ArrayList<>(), "android",
+                                row, column, dataValue.categoryOptionCombo(), dataValue.catCombo());
+                    }
+
+                if (fieldViewModel == null)
+                    fieldViewModel = fieldFactory.create("", "", dataElement.valueType(),
+                            false, dataElement.optionSetUid(), "", sectionName, true,
+                            true,//categoryOption.access().data().write(),
+                            null, null, dataElement.uid(), new ArrayList<>(),
+                            "android", row, column, categoryOptionCombo.uid(), dataTableModel.catCombo().uid());
+
+                fields.add(fieldViewModel);
+                values.add(fieldViewModel.value());
+                column++;
+            }
+            //}
+
+            for (FieldViewModel fieldViewModel : fields)
+                for (DataElementOperand compulsoryDataElement : dataTableModel.compulsoryCells())
+                    if (compulsoryDataElement.categoryOptionCombo().uid().equals(fieldViewModel.categoryOptionCombo()) &&
+                            compulsoryDataElement.dataElement().uid().equals(fieldViewModel.dataElement()))
+                        fields.set(fields.indexOf(fieldViewModel), fieldViewModel.setMandatory());
+
+
+            for (FieldViewModel fieldViewModel : fields)
+                for (DataElementOperand disabledDataElement : dataTableModel.dataElementDisabled())
+                    if (disabledDataElement.dataElement().uid().equals(fieldViewModel.dataElement())) {
+                    }
+            //fields.set(fields.indexOf(fieldViewModel), fieldViewModel.setEditable(false));
+
+
+            /*if (isNumber && dataTableModel.sectionName() != null && dataTableModel.sectionName().showRowTotals()) {
+                setTotalRow(totalRow, fields, values, row, column);
+            }*/
+            listFields.add(fields);
+            cells.add(values);
+            column = 0;
+            row++;
+
+        }
+
+        /*if (isNumber) {
+        if (dataTableModel.sectionName() != null && dataTableModel.sectionName().showColumnTotals())
+            setTotalColumn(listFields, cells, rows, row, column);
+        if (dataTableModel.sectionName() != null && dataTableModel.sectionName().showRowTotals())
+            for (int i = 0; i < columnHeaderItems.size(); i++) {
+                if (i == columnHeaderItems.size() - 1)
+                    columnHeaderItems.get(i).add(CategoryOption.builder().uid("").displayName("Total").build());
+                else
+                    columnHeaderItems.get(i).add(CategoryOption.builder().uid("").displayName("").build());
+            }*/
+        view.setTableData(dataTableModel, listFields, dataTableModel.catCombo().uid(), cells, dataTableModel.rows());
+    }
+
+    private void setTotalRow(int totalRow, ArrayList<FieldViewModel> fields, ArrayList<String> values, int row, int column) {
+        FieldViewModelFactoryImpl fieldFactory = new FieldViewModelFactoryImpl(
+                "",
+                "");
+        fields.add(fieldFactory.create("", "", ValueType.INTEGER,
+                false, "", String.valueOf(totalRow), sectionName, true,
+                false, null, null, "", new ArrayList<>(), "", row, column, "", ""));
+        values.add(String.valueOf(totalRow));
+
+    }
+
+    private void setTotalColumn(List<List<FieldViewModel>> listFields, ArrayList<List<String>> cells,
+                                List<DataElement> dataElements, int row, int columnPos) {
+        FieldViewModelFactoryImpl fieldFactory = new FieldViewModelFactoryImpl(
+                "",
+                "");
+
+        ArrayList<FieldViewModel> fields = new ArrayList<>();
+        ArrayList<String> values = new ArrayList<>();
+        boolean existTotal = false;
+        for (DataElement data : dataElements)
+            if (data.displayName().equals("Total"))
+                existTotal = true;
+
+        if (existTotal) {
+            listFields.remove(listFields.size() - 1);
+            cells.remove(listFields.size() - 1);
+        }
+
+
+        int[] totals = new int[cells.get(0).size()];
+        for (List<String> dataValues : cells) {
+            for (int i = 0; i < dataValues.size(); i++) {
+                if (!dataValues.get(i).isEmpty())
+                    totals[i] += Integer.parseInt(dataValues.get(i));
+            }
+        }
+
+        for (int column : totals) {
+            fields.add(fieldFactory.create("", "", ValueType.INTEGER,
+                    false, "", String.valueOf(column), sectionName, true,
+                    false, null, null, "", new ArrayList<>(), "", row, columnPos, "", ""));
+
+            values.add(String.valueOf(column));
+        }
+
+
+        listFields.add(fields);
+        cells.add(values);
+
+        if (!existTotal)
+            dataElements.add(DataElement.builder().uid("").displayName("Total").valueType(ValueType.INTEGER).build());
+    }
 
     @Override
     public void complete() {
         if (!isApproval) {
             if (view.isOpenOrReopen()) {
-                if (((!dataTableModel.dataSet().fieldCombinationRequired()) || checkAllFieldRequired() && dataTableModel.dataSet().fieldCombinationRequired())
+                if (((!dataSet.fieldCombinationRequired()) || checkAllFieldRequired() && dataSet.fieldCombinationRequired())
                         && checkMandatoryField())
                     compositeDisposable.add(
                             repository.completeDataSet(orgUnitUid, periodId, attributeOptionCombo)
@@ -201,58 +426,6 @@ public class DataValuePresenter implements DataValueContract.Presenter {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(o -> view.showSnackBar(), Timber::e));
-    }
-
-    @Override
-    public void getData(@NonNull DataSetSectionFragment dataSetSectionFragment, @Nullable String section) {
-        compositeDisposable.add(
-                repository.isCompleted(orgUnitUid, periodId, attributeOptionCombo)
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(
-                                data -> view.setCompleteReopenText(data),
-                                Timber::e
-                        )
-        );
-
-        compositeDisposable.add(
-                Flowable.zip(
-                        repository.getCatOptionCombo(),
-                        repository.getDataElements(section),
-                        repository.getCatOptions(section),
-                        repository.getCatCombo(section),
-                        repository.isApproval(orgUnitUid, periodId, attributeOptionCombo),
-                        Quintet::create
-                )
-                        .flatMap(data -> {
-                            tableData = Trio.create(data.val1(), data.val2(), new LinkedList<>(data.val3()));
-                            isApproval = data.val4();
-                            return Flowable.zip(
-                                    repository.getDataValues(orgUnitUid, periodTypeName, periodId, attributeOptionCombo, section),
-                                    repository.getDataSet(),
-                                    repository.getGreyedFields(getUidCatOptionsCombo(data.val0()), section),
-                                    repository.getMandatoryDataElement(getUidCatOptionsCombo(data.val0())),
-                                    repository.getSectionByDataSet(section),
-                                    repository.getCategoryOptionComboCatOption(),
-                                    Sextet::create
-                            );})
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(
-                                sextet -> {
-                                    if (tableData != null) {
-                                        dataTableModel = DataTableModel
-                                                .create(sextet.val4().id() == null ? null : sextet.val4(), transformCategories(tableData.val1()),
-                                                        tableData.val0(), sextet.val0(), getCatOptionsByCatOptionComboDataElement(sextet.val2()),
-                                                        sextet.val3(), sextet.val5(), tableData.val1(), sextet.val1(),
-                                                        getCatCombos(tableData.val0(), tableData.val2()), getCatOptions(), isApproval);
-
-                                        dataSetSectionFragment.createTable(dataTableModel);
-                                    }
-                                },
-                                Timber::e
-                        )
-        );
     }
 
     public Map<String, String> getCatCombos(List<DataElement> dataElements, List<CategoryCombo> catCombos) {

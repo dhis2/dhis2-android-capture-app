@@ -9,7 +9,10 @@ import org.dhis2.data.tuples.Trio;
 import org.dhis2.usescases.general.AbstractActivityContracts;
 import org.hisp.dhis.android.core.category.Category;
 import org.hisp.dhis.android.core.category.CategoryOption;
+import org.hisp.dhis.android.core.dataelement.DataElement;
 import org.hisp.dhis.android.core.dataset.DataInputPeriod;
+import org.hisp.dhis.android.core.dataset.DataSet;
+import org.hisp.dhis.android.core.dataset.Section;
 import org.hisp.dhis.android.core.period.Period;
 
 import java.util.List;
@@ -37,6 +40,14 @@ public class DataValueContract {
         void highligthHeaderRow(int table, int row, boolean mandatory);
 
         void update(boolean modified);
+
+        void setTableData(DataTableModel dataTableModel, List<List<FieldViewModel>> fields, String catCombo, List<List<String>> cells, List<DataElement> rows);
+
+        void createTable(DataTableModel dataTableModel);
+
+        void setDataSet(DataSet dataSet);
+
+        void setSectionName(Section sectionName);
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter{
@@ -44,8 +55,8 @@ public class DataValueContract {
 
         void complete();
 
-        void getData(@NonNull DataSetSectionFragment dataSetSectionFragment, @Nullable String section);
         void initializeProcessor(@NonNull DataSetSectionFragment dataSetSectionFragment);
+
         Map<String, List<List<CategoryOption>>> transformCategories(@NonNull Map<String, List<List<Pair<CategoryOption, Category>>>> map);
 
         List<List<String>> getCatOptionCombos(List<List<Pair<CategoryOption, Category>>> listCategories, int num ,List<List<String>> result, List<String> current);
