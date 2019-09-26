@@ -126,12 +126,11 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
         tableView.setHasFixedWidth(true);
 
 
-        List<List<CategoryOption>> columnHeaders = new ArrayList<>();
-        for(Category category : dataTableModel.categories()){
+        List<List<CategoryOption>> columnHeaders = dataTableModel.header();
+        /*for(Category category : dataTableModel.categories()){
             for(int i=0; i < dataTableModel.categories().size(); i++)
                 columnHeaders.add(category.categoryOptions());
-        }
-
+        }*/
         adapter.setCatCombo(catCombo);
         adapter.setTableView(tableView);
         adapter.initializeRows(true);

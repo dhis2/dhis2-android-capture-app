@@ -31,7 +31,7 @@ public interface DataValueRepository {
 
     Flowable<List<CategoryCombo>> getCatCombo(String section);
 
-    Flowable<Map<String, List<List<Pair<CategoryOption, Category>>>>> getCatOptions(String section);
+    Flowable<Map<String, List<List<Pair<CategoryOption, Category>>>>> getCatOptions(String section, String catCombo);
 
     Flowable<Map<String, List<CategoryOptionCombo>>> getCatOptionCombo();
 
@@ -60,5 +60,9 @@ public interface DataValueRepository {
     Flowable<Boolean> isApproval(String orgUnit, String period, String attributeOptionCombo);
 
     Flowable<List<DataElement>> getDataElements(CategoryCombo categoryCombo, String section);
+
+    CategoryOption getCatOptionFromUid(String catOption);
+
+    List<CategoryOption> getCatOptionFromCatOptionCombo(CategoryOptionCombo categoryOptionCombo);
 
 }
