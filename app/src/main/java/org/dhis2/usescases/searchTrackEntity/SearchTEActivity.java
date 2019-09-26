@@ -660,9 +660,11 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                                     binding.mapLayerButton.setVisibility(View.VISIBLE);
                                     MapLayerManager.Companion.init(style, "teis", featureType);
                                     MapLayerManager.Companion.instance().setEnrollmentLayerData(
-                                            ColorUtils.getColorFrom(presenter.getProgram().style() != null ? presenter.getProgram().style().color() : null, ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.PRIMARY)),
+                                            presenter.getProgram() != null ?
+                                                    ColorUtils.getColorFrom(presenter.getProgram().style() != null ? presenter.getProgram().style().color() : null, ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.PRIMARY)) :
+                                                    ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.PRIMARY),
                                             ColorUtils.getPrimaryColor(this, ColorUtils.ColorType.PRIMARY_DARK),
-                                            presenter.getProgram().featureType() != null ? presenter.getProgram().featureType() : FeatureType.NONE
+                                            presenter.getProgram() != null ? presenter.getProgram().featureType() != null ? presenter.getProgram().featureType() : FeatureType.NONE : FeatureType.NONE
                                     );
                                     MapLayerManager.Companion.instance().showEnrollmentLayer().observe(this, show -> {
                                         if (show)

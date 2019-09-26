@@ -50,7 +50,7 @@ object GeometryUtils {
                 }
             }
 
-            if (it.selectedEnrollment.geometry() != null) {
+            if (it.selectedEnrollment!=null && it.selectedEnrollment.geometry() != null) {
                 val geometry = it.selectedEnrollment.geometry()!!
                 if (geometry.type() == FeatureType.POINT) {
                     val point = getPointFeature(geometry)
