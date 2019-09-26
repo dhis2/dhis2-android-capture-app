@@ -325,9 +325,17 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             }
             return false;
         });
-        popupMenu.getMenu().getItem(0).setVisible(binding.mapView.getVisibility() == View.GONE && featureType != FeatureType.NONE);
-        popupMenu.getMenu().getItem(1).setVisible(binding.scrollView.getVisibility() == View.GONE && featureType != FeatureType.NONE);
-        popupMenu.show();
+
+        boolean messageIsVisible = binding.messageContainer.getVisibility() == View.VISIBLE;
+        boolean progressIsVisible = binding.progressLayout.getVisibility() == View.VISIBLE;
+        boolean mapIsVisible = binding.mapView.getVisibility() == View.VISIBLE;
+        boolean teiListIsVisible = binding.scrollView.getVisibility() == View.VISIBLE;
+
+
+        popupMenu.getMenu().getItem(0).setVisible(!messageIsVisible && !mapIsVisible && featureType != FeatureType.NONE);
+        popupMenu.getMenu().getItem(1).setVisible(!messageIsVisible && !teiListIsVisible && featureType != FeatureType.NONE);
+        if (!progressIsVisible)
+            popupMenu.show();
     }
 
     //endregion
