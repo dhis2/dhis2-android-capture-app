@@ -57,11 +57,15 @@ final class EditTextCustomHolder extends FormViewHolder {
         this.currentUid = currentSelection;
 
         binding.customEdittext.setFocusChangedListener((v, hasFocus) -> {
-            if (hasFocus) {
+           /* if (hasFocus) {
                 openKeyboard(binding.customEdittext.getEditText());
                 setSelectedBackground(isSearchMode);
             } else
-                clearBackground(isSearchMode);
+                clearBackground(isSearchMode);*/
+           if(!hasFocus){
+               clearBackground(isSearchMode);
+               binding.customEdittext.getEditText().setFocusable(false);
+           }
 
             if (isSearchMode || (!hasFocus && editTextModel != null && editTextModel.editable() && valueHasChanged())) {
                 sendAction();
@@ -69,12 +73,19 @@ final class EditTextCustomHolder extends FormViewHolder {
             validateRegex();
         });
         binding.customEdittext.setOnEditorActionListener((v, actionId, event) -> {
-            binding.customEdittext.getEditText().clearFocus();
+            sendAction();
             closeKeyboard(binding.customEdittext.getEditText());
             validateRegex();
             return true;
         });
 
+        binding.customEdittext.setActivationListener(() -> {
+            setSelectedBackground(isSearchMode);
+            binding.customEdittext.getEditText().setFocusable(true);
+            binding.customEdittext.getEditText().setFocusableInTouchMode(true);
+            openKeyboard(binding.customEdittext.getEditText());
+            binding.customEdittext.getEditText().requestFocus();
+        });
     }
 
     private void sendAction() {

@@ -198,6 +198,11 @@ class FormPresenterImpl implements FormPresenter {
                 .observeOn(schedulerProvider.io())
                 .subscribe(formRepository.storeCoordinates(), Timber::e));
 
+        compositeDisposable.add(view.reportCoordinatesCleared()
+                .subscribeOn(schedulerProvider.ui())
+                .observeOn(schedulerProvider.io())
+                .subscribe(formRepository.clearCoordinates(), Timber::e));
+
         compositeDisposable.add(view.teiCoordinatesChanged()
                 .filter(geometry -> geometry != null)
                 .subscribeOn(schedulerProvider.ui())

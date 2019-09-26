@@ -16,7 +16,6 @@ import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.utils.CodeGenerator;
 import org.dhis2.utils.DateUtils;
-import org.dhis2.utils.FileResourcesUtil;
 import org.dhis2.utils.ValueUtils;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper;
@@ -32,6 +31,7 @@ import org.hisp.dhis.android.core.enrollment.note.Note;
 import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.event.EventTableInfo;
+import org.hisp.dhis.android.core.fileresource.FileResource;
 import org.hisp.dhis.android.core.maintenance.D2Error;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.Program;
@@ -49,6 +49,7 @@ import java.util.Calendar;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 import io.reactivex.BackpressureStrategy;
@@ -57,6 +58,7 @@ import io.reactivex.Observable;
 import io.reactivex.functions.Consumer;
 import timber.log.Timber;
 
+import static android.text.TextUtils.isEmpty;
 import static org.hisp.dhis.android.core.arch.db.stores.internal.StoreUtils.sqLiteBind;
 
 /**
@@ -229,7 +231,9 @@ public class DashboardRepositoryImpl implements DashboardRepository {
         return d2.enrollmentModule().enrollments.byProgram().eq(programUid).byTrackedEntityInstance().eq(teiUid)
                 .byStatus().eq(EnrollmentStatus.ACTIVE).one().get()
                 .flatMap(enrollment ->
-                        d2.eventModule().events.byEnrollmentUid().eq(enrollment.uid()).get()
+                        d2.eventModule().events.byEnrollmentUid().eq(enrollment.uid())
+                                .byDeleted().isFalse()
+                                .get()
                 ).toFlowable()
                 .flatMapIterable(events -> events)
                 .map(event -> {
@@ -349,21 +353,38 @@ public class DashboardRepositoryImpl implements DashboardRepository {
 
     @Override
     public Observable<String> getAttributeImage(String teiUid) {
-        return Observable.fromCallable(() -> {
-            Iterator<TrackedEntityAttribute> iterator = d2.trackedEntityModule().trackedEntityAttributes
-                    .byValueType().eq(ValueType.IMAGE)
-                    .blockingGet().iterator();
-            List<String> attrUids = new ArrayList<>();
-            while (iterator.hasNext())
-                attrUids.add(iterator.next().uid());
+        return d2.trackedEntityModule().trackedEntityInstances.uid(teiUid).get()
+                .map(tei -> {
+                    String path = "";
+                    Iterator<TrackedEntityAttribute> iterator = d2.trackedEntityModule().trackedEntityAttributes
+                            .byValueType().eq(ValueType.IMAGE)
+                            .blockingGet().iterator();
+                    List<String> imageAttributesUids = new ArrayList<>();
+                    while (iterator.hasNext())
+                        imageAttributesUids.add(iterator.next().uid());
 
-            String attrUid = d2.trackedEntityModule().trackedEntityAttributeValues
-                    .byTrackedEntityInstance().eq(teiUid)
-                    .byTrackedEntityAttribute().in(attrUids)
-                    .one().blockingGet().trackedEntityAttribute();
+                    TrackedEntityAttributeValue attributeValue;
+                    if (d2.trackedEntityModule().trackedEntityTypeAttributes
+                            .byTrackedEntityTypeUid().eq(tei.trackedEntityType())
+                            .byTrackedEntityAttributeUid().in(imageAttributesUids).one().blockingExists()) {
 
-            return FileResourcesUtil.generateFileName(teiUid, attrUid);
-        });
+                        String attrUid = Objects.requireNonNull(d2.trackedEntityModule().trackedEntityTypeAttributes
+                                .byTrackedEntityTypeUid().eq(tei.trackedEntityType())
+                                .byTrackedEntityAttributeUid().in(imageAttributesUids).one().blockingGet()).trackedEntityAttribute().uid();
+
+                        attributeValue = d2.trackedEntityModule().trackedEntityAttributeValues.byTrackedEntityInstance().eq(tei.uid())
+                                .byTrackedEntityAttribute().eq(attrUid).one().blockingGet();
+
+                        if (attributeValue != null && !isEmpty(attributeValue.value())) {
+                            FileResource fileResource = d2.fileResourceModule().fileResources.uid(attributeValue.value()).blockingGet();
+                            if (fileResource != null) {
+                                path = fileResource.path();
+                            }
+                        }
+                    }
+                    return path;
+
+                }).toObservable();
     }
 
     @Override

@@ -37,6 +37,7 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
@@ -74,24 +75,38 @@ class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
         this.compositeDisposable = new CompositeDisposable();
 
         compositeDisposable.add(
-                Observable.fromCallable(() -> {
+                d2.trackedEntityModule().trackedEntityInstances.uid(teiUid).get()
+                        .map(tei -> {
+                            String path = "";
+                            Iterator<TrackedEntityAttribute> iterator = d2.trackedEntityModule().trackedEntityAttributes
+                                    .byValueType().eq(ValueType.IMAGE)
+                                    .blockingGet().iterator();
+                            List<String> imageAttributesUids = new ArrayList<>();
+                            while (iterator.hasNext())
+                                imageAttributesUids.add(iterator.next().uid());
 
-                    Iterator<TrackedEntityAttribute> iterator = d2.trackedEntityModule().trackedEntityAttributes.byValueType().eq(ValueType.IMAGE).blockingGet().iterator();
-                    List<String> attrUids = new ArrayList<>();
-                    while (iterator.hasNext())
-                        attrUids.add(iterator.next().uid());
+                            TrackedEntityAttributeValue attributeValue;
+                            if (d2.trackedEntityModule().trackedEntityTypeAttributes
+                                    .byTrackedEntityTypeUid().eq(tei.trackedEntityType())
+                                    .byTrackedEntityAttributeUid().in(imageAttributesUids).one().blockingExists()) {
 
-                    TrackedEntityAttributeValue attributeValue = d2.trackedEntityModule().trackedEntityAttributeValues
-                            .byTrackedEntityInstance().eq(teiUid)
-                            .byTrackedEntityAttribute().in(attrUids)
-                            .one().blockingGet();
-                    if (attributeValue != null && !isEmpty(attributeValue.value())) {
-                        FileResource fileResource = d2.fileResourceModule().fileResources.uid(attributeValue.value()).blockingGet();
-                        return fileResource!=null ? fileResource.path() : null;
-//                        return fileResource!=null ? fileResource.path()+"/"+fileResource.name(): null;
-                    } else
-                        throw new NullPointerException("No image attribute found");
-                })
+                                String attrUid = Objects.requireNonNull(d2.trackedEntityModule().trackedEntityTypeAttributes
+                                        .byTrackedEntityTypeUid().eq(tei.trackedEntityType())
+                                        .byTrackedEntityAttributeUid().in(imageAttributesUids).one().blockingGet()).trackedEntityAttribute().uid();
+
+                                attributeValue = d2.trackedEntityModule().trackedEntityAttributeValues.byTrackedEntityInstance().eq(tei.uid())
+                                        .byTrackedEntityAttribute().eq(attrUid).one().blockingGet();
+
+                                if (attributeValue != null && !isEmpty(attributeValue.value())) {
+                                    FileResource fileResource = d2.fileResourceModule().fileResources.uid(attributeValue.value()).blockingGet();
+                                    if (fileResource != null) {
+                                        path = fileResource.path();
+                                    }
+                                }
+                            }
+                            return path;
+
+                        }).toObservable()
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(

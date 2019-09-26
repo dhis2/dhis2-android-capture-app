@@ -42,7 +42,7 @@ import kotlin.collections.HashMap
 class EnrollmentPresenterImpl(
         val d2: D2,
         private val enrollmentObjectRepository: EnrollmentObjectRepository,
-        val dataEntryRepository: DataEntryRepository,
+        private val dataEntryRepository: DataEntryRepository,
         private val teiRepository: TrackedEntityInstanceObjectRepository,
         private val programRepository: ReadOnlyOneObjectRepositoryFinalImpl<Program>,
         val formRepository: EnrollmentFormRepository) : EnrollmentContract.Presenter, RulesActionCallbacks {

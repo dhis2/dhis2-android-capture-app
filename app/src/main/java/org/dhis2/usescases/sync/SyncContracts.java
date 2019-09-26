@@ -1,6 +1,7 @@
 package org.dhis2.usescases.sync;
 
 import org.dhis2.usescases.general.AbstractActivityContracts;
+import org.hisp.dhis.android.core.D2;
 
 public class SyncContracts {
 

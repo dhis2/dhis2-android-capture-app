@@ -23,6 +23,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
 import com.google.android.material.textfield.TextInputEditText;
+import com.mapbox.android.core.FileUtils;
 
 import org.dhis2.BuildConfig;
 import org.dhis2.R;
@@ -31,6 +32,7 @@ import org.dhis2.databinding.FormPictureAccentBinding;
 import org.dhis2.databinding.FormPictureBinding;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.FileResourcesUtil;
+import org.hisp.dhis.android.core.fileresource.internal.FileResourceUtil;
 
 import java.io.File;
 
@@ -198,7 +200,7 @@ public class PictureView extends FieldLayout implements View.OnClickListener, Vi
                         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                         Uri photoUri = FileProvider.getUriForFile(getContext(),
                                 BuildConfig.APPLICATION_ID + ".provider",
-                                new File(FileResourcesUtil.getUploadDirectory(getContext()), "tempFile.png"));
+                                new File(FileResourceUtil.getFileResourceDirectory(getContext()), "tempFile.png"));
                         intent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
                         intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
                         PictureView.this.onIntentSelected.intentSelected(this.uid, intent, Constants.CAMERA_REQUEST, (file, value, uuid) -> {

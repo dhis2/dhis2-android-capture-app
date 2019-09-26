@@ -27,6 +27,11 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventSummary.EventSummaryAc
 import org.dhis2.usescases.eventsWithoutRegistration.eventSummary.EventSummaryRepository;
 import org.dhis2.usescases.map.MapSelectorActivity;
 import org.dhis2.utils.Constants;
+import org.dhis2.utils.DateUtils;
+import org.dhis2.utils.EventCreationType;
+import org.dhis2.utils.OrgUnitUtils;
+import org.dhis2.utils.DateUtils;
+import org.dhis2.utils.EventCreationType;
 import org.dhis2.utils.Result;
 import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryOption;
@@ -79,6 +84,7 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
     private CategoryCombo catCombo;
     private String programStageId;
     private List<OrganisationUnit> orgUnits;
+    private String programId;
 
 
     public EventInitialPresenter(@NonNull EventSummaryRepository eventSummaryRepository,
@@ -94,6 +100,7 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
     public void init(EventInitialContract.View mview, String programId, String eventId, String orgInitId, String programStageId) {
         this.view = mview;
         this.eventId = eventId;
+        this.programId = programId;
         this.programStageId = programStageId;
 
         compositeDisposable = new CompositeDisposable();
@@ -467,5 +474,21 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
                                 Timber::e
                         )
         );
+    }
+
+    @Override
+    public void initOrgunit(Date selectedDate) {
+        compositeDisposable.add(eventInitialRepository.filteredOrgUnits(DateUtils.databaseDateFormat().format(selectedDate), programId, null)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        orgUnits -> {
+                            if (orgUnits.size() == 1 && (view.eventcreateionType() == EventCreationType.ADDNEW || view.eventcreateionType() == EventCreationType.DEFAULT))
+                                view.setInitialOrgUnit(orgUnits.get(0));
+                            else
+                                view.setInitialOrgUnit(null);
+                        },
+                        throwable -> view.renderError(throwable.getMessage())
+                ));
     }
 }

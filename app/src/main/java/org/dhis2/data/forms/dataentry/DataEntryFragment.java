@@ -23,6 +23,7 @@ import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.data.forms.dataentry.fields.display.DisplayViewModel;
+import org.dhis2.data.tuples.Trio;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
 import org.dhis2.utils.OnDialogClickListener;
@@ -37,6 +38,7 @@ import javax.inject.Inject;
 import io.reactivex.Flowable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.processors.FlowableProcessor;
+import io.reactivex.processors.PublishProcessor;
 
 import static android.text.TextUtils.isEmpty;
 
@@ -53,7 +55,8 @@ public final class DataEntryFragment extends FragmentGlobalAbstract implements D
     private ProgressBar progressBar;
     private View dummyFocusView;
     private boolean isEnrollment;
-
+    private FlowableProcessor<RowAction> flowableProcessor;
+    private FlowableProcessor<Trio<String, String, Integer>> flowableOptions;
     @NonNull
     public static DataEntryFragment create(@NonNull DataEntryArguments arguments) {
         Bundle bundle = new Bundle();
@@ -93,12 +96,26 @@ public final class DataEntryFragment extends FragmentGlobalAbstract implements D
         progressBar = view.findViewById(R.id.progress);
         dummyFocusView = view.findViewById(R.id.dummyFocusView);
         Bindings.setProgressColor(progressBar, R.color.colorPrimary);
+        this.flowableProcessor = PublishProcessor.create();
+        this.flowableOptions = PublishProcessor.create();
         return view;
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         recyclerView = view.findViewById(R.id.recyclerview_data_entry);
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+                if (newState == RecyclerView.SCROLL_STATE_DRAGGING) {
+                    dataEntryAdapter.setLastFocusItem(null);
+                    InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Activity.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(recyclerView.getWindowToken(), 0);
+                    dummyFocusView.requestFocus();
+                    dataEntryPresenter.clearLastFocusItem();
+                }
+            }
+        });
         setUpRecyclerView();
         dataEntryPresenter.onAttach(this);
 
@@ -167,7 +184,12 @@ public final class DataEntryFragment extends FragmentGlobalAbstract implements D
     private void setUpRecyclerView() {
         DataEntryArguments arguments = getArguments().getParcelable(ARGUMENTS);
         dataEntryAdapter = new DataEntryAdapter(LayoutInflater.from(getActivity()),
-                getChildFragmentManager(), arguments);
+                getChildFragmentManager(),
+                arguments,
+                flowableProcessor,
+                flowableOptions);
+       /* dataEntryAdapter = new DataEntryAdapter(LayoutInflater.from(getActivity()),
+                getChildFragmentManager(), arguments);*/
 
         RecyclerView.LayoutManager layoutManager;
         if (arguments.renderType() != null && arguments.renderType().equals(ProgramStageSectionRenderingType.MATRIX.name())) {

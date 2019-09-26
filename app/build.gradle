@@ -219,7 +219,6 @@ dependencies {
         }*/
 
     //implementation "org.hisp.dhis.rules:rule-engine:${libraries.ruleEngine}"
-
     //endregion
 
     //region UI LIBRARIES
