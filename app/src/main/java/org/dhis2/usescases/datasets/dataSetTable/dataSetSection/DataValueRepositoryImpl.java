@@ -120,12 +120,16 @@ public class DataValueRepositoryImpl implements DataValueRepository {
 
     public Flowable<List<CategoryCombo>> getCatCombo(String sectionName) {
         if (!sectionName.equals("NO_SECTION")) {
-            List<DataElement> dataElements = d2.dataSetModule().sections.withDataElements().byDataSetUid().eq(dataSetUid).byName().eq(sectionName).one().blockingGet().dataElements();
+            List<String> dataElements = UidsHelper.getUidsList(d2.dataSetModule().sections.withDataElements().byDataSetUid().eq(dataSetUid).byName().eq(sectionName).one().blockingGet().dataElements());
             List<String> categoryCombos = new ArrayList<>();
+            List<DataSetElement> dataSetElements = d2.dataSetModule().dataSets.withDataSetElements().byUid().eq(dataSetUid).one().blockingGet().dataSetElements();
 
-            for (DataElement dataElement : dataElements) {
-                if (dataElement.categoryCombo() != null && !categoryCombos.contains(dataElement.categoryComboUid()))
-                    categoryCombos.add(dataElement.categoryComboUid());
+            for (DataSetElement dataSetElement : dataSetElements){
+                if(dataElements.contains(dataSetElement.dataElement().uid()))
+                    if(dataSetElement.categoryCombo() != null)
+                        categoryCombos.add(dataSetElement.categoryCombo().uid());
+                    else
+                        categoryCombos.add(d2.dataElementModule().dataElements.uid(dataSetElement.dataElement().uid()).blockingGet().categoryComboUid());
             }
 
             Timber.tag("BREAKPOINT").d("getCatCombo()");
@@ -502,17 +506,18 @@ public class DataValueRepositoryImpl implements DataValueRepository {
     }
 
     @Override
-    public Flowable<List<DataElement>> getDataElements(CategoryCombo categoryCombo) {
-
-        List<DataSetElement> dataSetElements = d2.dataSetModule().dataSets.withDataSetElements()
-                .byUid().eq(dataSetUid).one().blockingGet().dataSetElements();
-
-        List<String> uids = new ArrayList<>();
-        for (DataSetElement dataSetElement : dataSetElements)
-            uids.add(dataSetElement.dataElement().uid());
-
+    public Flowable<List<DataElement>> getDataElements(CategoryCombo categoryCombo, String sectionName) {
+        List<String> dataElements = new ArrayList<>();
+        if (!sectionName.equals("NO_SECTION"))
+           dataElements = UidsHelper.getUidsList(d2.dataSetModule().sections.withDataElements().byDataSetUid().eq(dataSetUid).byName().eq(sectionName).one().blockingGet().dataElements());
+        else {
+            List<DataSetElement> dataSetElements = d2.dataSetModule().dataSets.withDataSetElements().byUid().eq(dataSetUid).one().blockingGet().dataSetElements();
+            for (DataSetElement dataSetElement : dataSetElements)
+                dataElements.add(dataSetElement.dataElement().uid());
+        }
         return d2.dataElementModule().dataElements
-                .byUid().in(uids).byCategoryComboUid().eq(categoryCombo.uid())
+                .byUid().in(dataElements)
+                .byCategoryComboUid().eq(categoryCombo.uid())
                 .orderByName(RepositoryScope.OrderByDirection.ASC)
                 .get().toFlowable();
     }

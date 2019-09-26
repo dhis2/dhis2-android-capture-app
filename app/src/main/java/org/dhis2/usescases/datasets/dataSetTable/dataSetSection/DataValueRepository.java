@@ -59,6 +59,6 @@ public interface DataValueRepository {
 
     Flowable<Boolean> isApproval(String orgUnit, String period, String attributeOptionCombo);
 
-    Flowable<List<DataElement>> getDataElements(CategoryCombo categoryCombo);
+    Flowable<List<DataElement>> getDataElements(CategoryCombo categoryCombo, String section);
 
 }

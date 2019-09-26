@@ -102,7 +102,7 @@ public class DataValuePresenter implements DataValueContract.Presenter {
                 .flatMapIterable(categoryCombos -> categoryCombos)
                 .map(categoryCombo -> Flowable.zip(
                         Flowable.just(categoryCombo),
-                        repository.getDataElements(categoryCombo),
+                        repository.getDataElements(categoryCombo, sectionName),
                         repository.getCategories(categoryCombo),
                         repository.getDataValues(orgUnitUid, periodTypeName, periodId, attributeOptionCombo, sectionName),
                         repository.getGreyFields(sectionName),
