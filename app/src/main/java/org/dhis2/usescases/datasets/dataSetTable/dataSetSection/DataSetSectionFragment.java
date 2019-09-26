@@ -5,10 +5,12 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.content.ContextCompat;
 import androidx.core.widget.NestedScrollView;
 import androidx.databinding.DataBindingUtil;
@@ -370,6 +372,18 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
                     if (binding.tableLayout.getChildAt(i) instanceof TableView) {
                         TableView table = (TableView) binding.tableLayout.getChildAt(i);
                         DataSetTableAdapter adapter = (DataSetTableAdapter) table.getAdapter();
+                        ImageView scaleImage = cornerView.findViewById(R.id.buttonScale);
+                        switch(adapter.getCurrentTableScale().get()){
+                            case DEFAULT:
+                                scaleImage.setImageDrawable(AppCompatResources.getDrawable(view.getContext(), R.drawable.ic_zoomx3));
+                                break;
+                            case LARGE:
+                                scaleImage.setImageDrawable(AppCompatResources.getDrawable(view.getContext(), R.drawable.ic_zoomx1));
+                                break;
+                            case SMALL:
+                                scaleImage.setImageDrawable(AppCompatResources.getDrawable(view.getContext(), R.drawable.ic_zoomx2));
+                                break;
+                        }
                         adapter.scale();
                     }
                 }

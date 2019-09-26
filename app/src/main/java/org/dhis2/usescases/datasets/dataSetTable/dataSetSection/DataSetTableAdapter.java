@@ -118,6 +118,10 @@ public class DataSetTableAdapter extends AbstractTableAdapter<CategoryOption, Da
         notifyDataSetChanged();
     }
 
+    public ObservableField<TableScale> getCurrentTableScale() {
+        return currentTableScale;
+    }
+
 
     public DataSetTableAdapter(Context context, @NotNull FlowableProcessor<RowAction> processor, FlowableProcessor<Trio<String, String, Integer>> processorOptionSet) {
         super(context);
