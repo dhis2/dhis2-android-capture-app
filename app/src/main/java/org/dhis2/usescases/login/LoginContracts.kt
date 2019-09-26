@@ -39,6 +39,10 @@ class LoginContracts {
 
         fun showCrashlyticsDialog()
 
+        fun showFingerprintDialog()
+
+        fun hideFingerprintDialog()
+
         @UiThread
         fun renderError(throwable: Throwable)
 
@@ -62,6 +66,8 @@ class LoginContracts {
         fun onQRClick(v: android.view.View)
 
         fun unlockSession(pin: String)
+
+        fun stopReadingFingerprint()
 
         fun logOut()
 

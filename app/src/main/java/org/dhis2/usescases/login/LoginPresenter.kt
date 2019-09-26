@@ -27,12 +27,16 @@ import timber.log.Timber
 
 class LoginPresenter : LoginContracts.Presenter {
 
+    override fun stopReadingFingerprint() {
+        goldfinger.cancel()
+    }
+
     private lateinit var view: LoginContracts.View
     private var userManager: UserManager? = null
     private lateinit var disposable: CompositeDisposable
 
     private var canHandleBiometrics: Boolean? = null
-    lateinit var goldfinger: RxGoldfinger
+    private lateinit var goldfinger: RxGoldfinger
 
     override fun init(view: LoginContracts.View) {
         this.view = view
@@ -190,13 +194,20 @@ class LoginPresenter : LoginContracts.Presenter {
     }
 
     override fun onFingerprintClick() {
+        view.showFingerprintDialog()
         disposable.add(
                 goldfinger
                         .authenticate()
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
-                                { credentials -> view.checkSecuredCredentials(credentials) },
-                                { view.displayMessage("AUTH ERROR") }))
+                                {
+                                    credentials ->
+                                        view.checkSecuredCredentials(credentials)
+                                },
+                                {
+                                    view.displayMessage("AUTH ERROR")
+                                    view.hideFingerprintDialog()
+                                }))
     }
 
     override fun onAccountRecovery() {

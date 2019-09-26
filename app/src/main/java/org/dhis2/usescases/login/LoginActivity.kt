@@ -2,6 +2,8 @@ package org.dhis2.usescases.login
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.app.Dialog
+import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
@@ -48,9 +50,19 @@ import javax.inject.Inject
 
 class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
 
+    override fun showFingerprintDialog() {
+        fingerPrintDialog.show()
+    }
+
+    override fun hideFingerprintDialog() {
+        fingerPrintDialog.hide()
+    }
+
     private lateinit var binding: ActivityLoginBinding
 
     private lateinit var loginViewModel: LoginViewModel
+
+    private lateinit var fingerPrintDialog: Dialog
 
     @Inject
     lateinit var presenter: LoginContracts.Presenter
@@ -124,6 +136,20 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
 
         setTestingCredentials()
         setAutocompleteAdapters()
+        setUpFingerPrintDialog()
+    }
+
+    private fun setUpFingerPrintDialog() {
+        fingerPrintDialog =  MaterialAlertDialogBuilder(this, R.style.DhisMaterialDialog)
+                .setTitle(R.string.fingerprint_title)
+                .setMessage(R.string.fingerprint_message)
+                .setCancelable(false)
+                .setNegativeButton(R.string.cancel) { dialog, _ ->
+                    presenter.stopReadingFingerprint()
+                    dialog.dismiss()
+                }
+                .create()
+
     }
 
     private fun checkUrl(urlString: String): Boolean {
@@ -370,16 +396,22 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
 
     override fun checkSecuredCredentials(result: Goldfinger.Result) {
         val type = result.type()
-        if (type == Goldfinger.Type.SUCCESS &&
-                SecurePreferences.contains(Constants.SECURE_SERVER_URL) &&
+        if (SecurePreferences.contains(Constants.SECURE_SERVER_URL) &&
                 SecurePreferences.contains(Constants.SECURE_USER_NAME) &&
                 SecurePreferences.contains(Constants.SECURE_PASS)) {
-            binding.serverUrlEdit.setText(SecurePreferences.getStringValue(Constants.SECURE_SERVER_URL, null))
-            binding.userNameEdit.setText(SecurePreferences.getStringValue(Constants.SECURE_USER_NAME, null))
-            binding.userPassEdit.setText(SecurePreferences.getStringValue(Constants.SECURE_PASS, null))
-            showLoginProgress(true)
-        } else if (type == Goldfinger.Type.ERROR)
+            if (type == Goldfinger.Type.SUCCESS) {
+                binding.serverUrlEdit.setText(SecurePreferences.getStringValue(Constants.SECURE_SERVER_URL, null))
+                binding.userNameEdit.setText(SecurePreferences.getStringValue(Constants.SECURE_USER_NAME, null))
+                binding.userPassEdit.setText(SecurePreferences.getStringValue(Constants.SECURE_PASS, null))
+                hideFingerprintDialog()
+                showLoginProgress(true)
+            } else if (type == Goldfinger.Type.ERROR) {
+                hideFingerprintDialog()
+                showInfoDialog(getString(R.string.biometrics_dialog_title), result.message())
+            }
+        } else {
             showInfoDialog(getString(R.string.biometrics_dialog_title), getString(R.string.biometrics_first_use_text))
+        }
     }
 //endregion
 
