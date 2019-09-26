@@ -308,20 +308,30 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                         .flatMap(section -> fieldFlowable
                                 .subscribeOn(Schedulers.io())
                                 .map(fields -> {
-                                    Timber.tag("THREAD").d("EVENT FIELDS CURRENT THREAD : %s", Thread.currentThread().getName());
-                                    HashMap<String, List<FieldViewModel>> fieldMap = new HashMap<>();
-                                    for (FieldViewModel fieldViewModel : fields) {
-                                        if (!fieldMap.containsKey(fieldViewModel.programStageSection()))
-                                            fieldMap.put(fieldViewModel.programStageSection(), new ArrayList<>());
-                                        fieldMap.get(fieldViewModel.programStageSection()).add(fieldViewModel);
+                                    List<FieldViewModel> finalFields = new ArrayList<>();
+                                    for(FieldViewModel fieldViewModel : fields){
+                                        if(section.equals("NO_SECTION") ||
+                                                section.equals(fieldViewModel.programStageSection()))
+                                            finalFields.add(fieldViewModel);
                                     }
-                                    if (fieldMap.containsKey(null) && fieldMap.containsKey(section))
-                                        for (FieldViewModel fieldViewModel : fieldMap.get(null))
-                                            fieldMap.get(section).add(fieldViewModel);
+                                    return finalFields;
+                                })
+                        )
+                        /*  .map(fields -> {
+                              Timber.tag("THREAD").d("EVENT FIELDS CURRENT THREAD : %s", Thread.currentThread().getName());
+                              HashMap<String, List<FieldViewModel>> fieldMap = new HashMap<>();
+                              for (FieldViewModel fieldViewModel : fields) {
+                                  if (!fieldMap.containsKey(fieldViewModel.programStageSection()))
+                                      fieldMap.put(fieldViewModel.programStageSection(), new ArrayList<>());
+                                  fieldMap.get(fieldViewModel.programStageSection()).add(fieldViewModel);
+                              }
+                              if (fieldMap.containsKey(null) && fieldMap.containsKey(section))
+                                  for (FieldViewModel fieldViewModel : fieldMap.get(null))
+                                      fieldMap.get(section).add(fieldViewModel);
 
-                                    List<FieldViewModel> fieldsToShow = fieldMap.get(section.equals("NO_SECTION") ? null : section);
-                                    return fieldsToShow != null ? fieldsToShow : new ArrayList<FieldViewModel>();
-                                }))
+                              List<FieldViewModel> fieldsToShow = fieldMap.get(section.equals("NO_SECTION") ? null : section);
+                              return fieldsToShow != null ? fieldsToShow : new ArrayList<FieldViewModel>();
+                          }))*/
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
                                 updates -> {
