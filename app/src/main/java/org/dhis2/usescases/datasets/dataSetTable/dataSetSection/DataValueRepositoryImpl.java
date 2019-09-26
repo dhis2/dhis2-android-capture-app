@@ -122,11 +122,20 @@ public class DataValueRepositoryImpl implements DataValueRepository {
         if (!sectionName.equals("NO_SECTION")) {
             List<DataElement> dataElements = d2.dataSetModule().sections.withDataElements().byDataSetUid().eq(dataSetUid).byName().eq(sectionName).one().blockingGet().dataElements();
             List<String> categoryCombos = new ArrayList<>();
+            List<DataSetElement> dataSetElements = d2.dataSetModule().dataSets.withDataSetElements().byUid().eq(dataSetUid).one().blockingGet().dataSetElements();
+            for(DataSetElement dataSetElement: dataSetElements){
+                for (DataElement dataElement : dataElements) {
 
-            for (DataElement dataElement : dataElements) {
-                if (dataElement.categoryCombo() != null && !categoryCombos.contains(dataElement.categoryComboUid()))
-                    categoryCombos.add(dataElement.categoryComboUid());
+                    if(dataSetElement.dataElement().uid().equals(dataElement.uid()))
+
+                        if(dataSetElement.categoryCombo() != null && !categoryCombos.contains(dataElement.categoryComboUid()))
+                            categoryCombos.add(dataSetElement.categoryCombo().uid());
+
+                        else if (dataElement.categoryCombo() != null && !categoryCombos.contains(dataElement.categoryComboUid()))
+                            categoryCombos.add(dataElement.categoryComboUid());
+                }
             }
+
 
             Timber.tag("BREAKPOINT").d("getCatCombo()");
             return d2.categoryModule().categoryCombos.byUid().in(categoryCombos).withCategories().withCategoryOptionCombos().get().toFlowable();
@@ -213,19 +222,22 @@ public class DataValueRepositoryImpl implements DataValueRepository {
     }
 
     @Override
-    public Flowable<Map<String, List<List<Pair<CategoryOption, Category>>>>> getCatOptions(String sectionName) {
-        List<String> catCombos = new ArrayList<>();
+    public Flowable<Map<String, List<List<Pair<CategoryOption, Category>>>>> getCatOptions(String sectionName, String catCombo) {
+        //List<String> catCombos = new ArrayList<>();
+        Map<String, List<List<Pair<CategoryOption, Category>>>> map = new HashMap<>();
         if (sectionName.equals("NO_SECTION"))
             return Flowable.fromCallable(() -> {
                 List<String> dataElementUids = new ArrayList<>();
                 List<DataElement> dataElements;
-                for (DataSetElement dataSetElement : d2.dataSetModule().dataSets.withDataSetElements().byUid().eq(dataSetUid).one().blockingGet().dataSetElements()) {
+                for (DataSetElement dataSetElement : d2.dataSetModule().dataSets.withDataSetElements()
+                        .byUid().eq(dataSetUid).byCategoryComboUid().eq(catCombo).one().blockingGet().dataSetElements()) {
                     dataElementUids.add(dataSetElement.dataElement().uid());
-                    if(dataSetElement.categoryCombo() != null)
-                        catCombos.add(dataSetElement.categoryCombo().uid());
+                    /*if(dataSetElement.categoryCombo() != null)
+                        catCombos.add(dataSetElement.categoryCombo().uid());*/
                 }
                 dataElements = d2.dataElementModule().dataElements.withAllChildren().byUid().in(dataElementUids).orderByName(RepositoryScope.OrderByDirection.ASC).blockingGet();
-                return getMap(catCombos, dataElements);
+                map.put(catCombo, getMap(catCombo, dataElements));
+                return map;
             });
         return Flowable.fromCallable(() -> {
             List<DataElement> dataElements = d2.dataSetModule().sections.withDataElements()
@@ -233,44 +245,44 @@ public class DataValueRepositoryImpl implements DataValueRepository {
                     .byName().eq(sectionName)
                     .one().blockingGet()
                     .dataElements();
-
-            return getMap(catCombos, dataElements);
+            map.put(catCombo, getMap(catCombo, dataElements));
+            return map;
         });
     }
 
 
-    private Map<String, List<List<Pair<CategoryOption, Category>>>> getMap(List<String> catCombos, List<DataElement> dataElements) {
-        Map<String, List<List<Pair<CategoryOption, Category>>>> map = new HashMap<>();
-        for (DataElement dataElement : dataElements) {
+    private List<List<Pair<CategoryOption, Category>>> getMap(String catCombo, List<DataElement> dataElements) {
+        List<List<Pair<CategoryOption, Category>>> finalList = new ArrayList<>();
+        /*for (DataElement dataElement : dataElements) {
             if(!catCombos.contains(dataElement.categoryCombo().uid()))
                 catCombos.add(dataElement.categoryCombo().uid());
-        }
-        for (String catCombo : catCombos) {
+        }*/
+        //for (String catCombo : catCombos) {
             List<Category> categories = d2.categoryModule().categoryCombos.withCategories().withAllChildren().byUid().eq(catCombo).one().blockingGet().categories();
 
             for (Category category : categories) {
                 List<CategoryOption> catOptions = d2.categoryModule().categories.withCategoryOptions().byUid().eq(category.uid()).one().blockingGet().categoryOptions();
                 for (CategoryOption catOption : catOptions) {
                     boolean add = true;
-                    for(List<Pair<CategoryOption, Category>> catComboList : map.get(catCombo)){
-                        if(catComboList.contains(Pair.create(catOption, category)))
+                    for(List<Pair<CategoryOption, Category>> catComboList : finalList){
+                        if(finalList.contains(Pair.create(catOption, category)))
                             add = false;
                     }
                     if(add){
 
-                    if (map.get(catCombo).size() != 0 && map.get(catCombo).get(map.get(catCombo).size() - 1).get(0).val1().uid().equals(category.uid())) {
-                        map.get(catCombo).get(map.get(catCombo).size() - 1).add(Pair.create(catOption, category));
-                    } else {
-                        List<Pair<CategoryOption, Category>> list = new ArrayList<>();
-                        list.add(Pair.create(catOption, category));
-                        map.get(catCombo).add(list);
-                    }
+                        if (finalList/*.get(catCombo)*/.size() != 0 && finalList./*get(catCombo).*/get(finalList/*.get(catCombo)*/.size() - 1).get(0).val1().uid().equals(category.uid())) {
+                            finalList/*.get(catCombo)*/.get(finalList/*.get(catCombo)*/.size() - 1).add(Pair.create(catOption, category));
+                        } else {
+                            List<Pair<CategoryOption, Category>> list = new ArrayList<>();
+                            list.add(Pair.create(catOption, category));
+                            finalList/*.get(catCombo)*/.add(list);
+                        }
                     }
                 }
             }
-        }
+        //}
         Timber.tag("BREAKPOINT").d("getCatOptions()");
-        return map;
+        return finalList;
     }
 
 
@@ -517,4 +529,14 @@ public class DataValueRepositoryImpl implements DataValueRepository {
                 .get().toFlowable();
     }
 
+    @Override
+    public List<CategoryOption> getCatOptionFromCatOptionCombo(CategoryOptionCombo categoryOptionCombo){
+        return d2.categoryModule().categoryOptionCombos.withCategoryOptions().uid(categoryOptionCombo.uid()).blockingGet().categoryOptions();
+    }
+
+
+    @Override
+    public CategoryOption getCatOptionFromUid(String catOption){
+        return d2.categoryModule().categoryOptions.uid(catOption).blockingGet();
+    }
 }

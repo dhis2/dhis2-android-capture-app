@@ -23,6 +23,7 @@ public abstract class DataTableModel {
 
     public static class Columns {
         public static final String ROWS = "rows";
+        public static final String HEADER = "header";
         public static final String DATA_VALUES = "dataValues";
         public static final String DATA_ELEMENTS_DISABLED = "dataElementDisabled";
         public static final String COMPULSORY_CELLS = "compulsoryCells";
@@ -32,8 +33,8 @@ public abstract class DataTableModel {
     }
 
     public static DataTableModel create(List<DataElement> rows, List<Category> categories, List<DataSetTableModel> dataValues, List<DataElementOperand> dataElementDisabled,
-                                        List<DataElementOperand> compulsoryCells, CategoryCombo catCombo, Boolean approval) {
-        return new AutoValue_DataTableModel(rows, categories, dataValues, dataElementDisabled, compulsoryCells, catCombo, approval);
+                                        List<DataElementOperand> compulsoryCells, CategoryCombo catCombo, Boolean approval, List<List<CategoryOption>> header) {
+        return new AutoValue_DataTableModel(rows, categories, dataValues, dataElementDisabled, compulsoryCells, catCombo, approval, header);
     }
 
 
@@ -64,5 +65,9 @@ public abstract class DataTableModel {
     @Nullable
     @ColumnName(Columns.APPROVAL)
     public abstract Boolean approval();
+
+    @Nullable
+    @ColumnName(Columns.HEADER)
+    public abstract List<List<CategoryOption>> header();
 
 }

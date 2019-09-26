@@ -10,6 +10,7 @@ import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Sextet;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableModel;
+import org.hisp.dhis.android.core.arch.helpers.UidsHelper;
 import org.hisp.dhis.android.core.category.Category;
 import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryOption;
@@ -61,6 +62,9 @@ public class DataValuePresenter implements DataValueContract.Presenter {
     private String sectionName;
     private DataSet dataSet;
     private Section section;
+    private List<List<CategoryOption>> catOptionOrder;
+    private List<List<CategoryOption>> transformCategories;
+
 
     public DataValuePresenter(DataValueRepository repository) {
         this.repository = repository;
@@ -100,22 +104,38 @@ public class DataValuePresenter implements DataValueContract.Presenter {
 
         compositeDisposable.add(repository.getCatCombo(sectionName)
                 .flatMapIterable(categoryCombos -> categoryCombos)
-                .map(categoryCombo -> Flowable.zip(
-                        Flowable.just(categoryCombo),
-                        repository.getDataElements(categoryCombo),
-                        repository.getCategories(categoryCombo),
-                        repository.getDataValues(orgUnitUid, periodTypeName, periodId, attributeOptionCombo, sectionName),
-                        repository.getGreyFields(sectionName),
-                        repository.getCompulsoryDataElements(),
-                        Sextet::create
-                ).toObservable().blockingFirst())
+                .flatMap(categoryCombo -> repository.getCatOptions(sectionName, categoryCombo.uid())
+                        .map(list -> {
+                            List<List<String>> options = new ArrayList<>();
+                            for(Map.Entry<String, List<List<Pair<CategoryOption, Category>>>> map: list.entrySet()){
+                                options = getCatOptionCombos(map.getValue(), 0, new ArrayList<>(), null);
+                            }
+                            return Pair.create(list,getCatOptionOrder(options));})
+                        .flatMap(pair -> {
+                                    transformCategories = new ArrayList<>();
+                                    catOptionOrder = pair.val1();
+                                    for(Map.Entry<String, List<List<CategoryOption>>> map: transformCategories(pair.val0()).entrySet()){
+                                        transformCategories.addAll(map.getValue());
+                                    }
+                                    return Flowable.zip(
+                                            Flowable.just(categoryCombo),
+                                            repository.getDataElements(categoryCombo),
+                                            repository.getCategories(categoryCombo),
+                                            repository.getDataValues(orgUnitUid, periodTypeName, periodId, attributeOptionCombo, sectionName),
+                                            repository.getGreyFields(sectionName),
+                                            repository.getCompulsoryDataElements(),
+                                            Sextet::create);
+                                }
+
+                        ))
+                .toObservable()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         data -> {
                             dataTableModel = DataTableModel.create(
                                     data.val1(), data.val2(), data.val3(), data.val4(),
-                                    data.val5(), data.val0(), false);
+                                    data.val5(), data.val0(), false, transformCategories);
 
                             setTableData(dataTableModel);
                         },
@@ -190,9 +210,33 @@ public class DataValuePresenter implements DataValueContract.Presenter {
                                 Timber::e)
         );
     }
+
+    private List<List<CategoryOption>> getCatOptionOrder(List<List<String>> options){
+        List<List<CategoryOption>> list = new ArrayList<>();
+        for(List<String> combo: options){
+            List<CategoryOption> categoryOptions = new ArrayList<>();
+            for(String option: combo) {
+                categoryOptions.add(repository.getCatOptionFromUid(option));
+            }
+            list.add(categoryOptions);
+        }
+        return list;
+    }
+
+    private List<CategoryOptionCombo> getCatOptionComboOrder(List<CategoryOptionCombo> catOptionCombos){
+        List<CategoryOptionCombo> categoryOptionCombosOrder = new ArrayList<>();
+        for(List<CategoryOption> catOptions: catOptionOrder){
+            for(CategoryOptionCombo categoryOptionCombo: catOptionCombos){
+                if(catOptions.containsAll(repository.getCatOptionFromCatOptionCombo(categoryOptionCombo))){
+                    categoryOptionCombosOrder.add(categoryOptionCombo);
+                }
+            }
+        }
+        return categoryOptionCombosOrder;
+    }
+
+
     private void setTableData(DataTableModel dataTableModel) {
-
-
         //List<List<CategoryOption>> columnHeaderItems = dataTableModel.catCombo().categories();
         ArrayList<List<String>> cells = new ArrayList<>();
         List<List<FieldViewModel>> listFields = new ArrayList<>();
@@ -205,7 +249,7 @@ public class DataValuePresenter implements DataValueContract.Presenter {
             int totalRow = 0;
             FieldViewModelFactoryImpl fieldFactory = new FieldViewModelFactoryImpl("", "");
 
-            for(CategoryOptionCombo categoryOptionCombo : dataTableModel.catCombo().categoryOptionCombos()){
+            for(CategoryOptionCombo categoryOptionCombo : getCatOptionComboOrder(dataTableModel.catCombo().categoryOptionCombos())){
                 FieldViewModel fieldViewModel = null;
                 for (DataSetTableModel dataValue : dataTableModel.dataValues())
                     if (dataValue.dataElement().equals(dataElement.uid()) && dataValue.categoryOptionCombo().equals(categoryOptionCombo.uid())) {
