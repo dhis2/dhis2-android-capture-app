@@ -211,7 +211,7 @@ class EnrollmentFormRepositoryImpl(
     }
 
     private fun queryAttributes(): Flowable<List<RuleAttributeValue>> {
-        return programRepository.get()
+        return d2.programModule().programs.withProgramTrackedEntityAttributes().uid(programUid).get()
                 .map { program ->
                     program.programTrackedEntityAttributes()!!.filter {
                         d2.trackedEntityModule().trackedEntityAttributeValues
