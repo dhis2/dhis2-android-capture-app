@@ -75,20 +75,4 @@ public class TeiDashboardModule {
 
         return new EnrollmentFormRepository(briteDatabase, evaluator, rulesRepository, codeGenerator, uid, d2);
     }
-
-    @Provides
-    @PerActivity
-    RuleEngineRepository ruleEngineRepository(@NonNull BriteDatabase briteDatabase,
-                                              @NonNull FormRepository formRepository,
-                                              D2 d2) {
-        EnrollmentCollectionRepository enrollmentRepository = d2.enrollmentModule().enrollments
-                .byTrackedEntityInstance().eq(teiUid);
-        if (!isEmpty(programUid))
-            enrollmentRepository = enrollmentRepository.byProgram().eq(programUid);
-
-        String uid = enrollmentRepository.one().blockingGet().uid();
-        return new EnrollmentRuleEngineRepository(briteDatabase, formRepository, uid, d2);
-
-    }
-
 }

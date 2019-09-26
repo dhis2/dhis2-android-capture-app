@@ -304,33 +304,25 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
 
     @SuppressLint("MissingPermission")
     public void updateLocation(Geometry geometry) {
-        if (latitude != null && longitude != null) {
-            if (uid != null) {
-                processor.onNext(
-                        RowAction.create(uid,
-                                geometry.coordinates())
-                );
-                nextFocus(this);
-            }
-            if (geometry != null && geometry.type() != null) {
-                if (geometry.type() == FeatureType.POINT) {
-                    try {
-                        List<Double> list = GeometryHelper.getPoint(geometry);
-                        this.latitude.setText(String.valueOf(list.get(1)));
-                        this.longitude.setText(String.valueOf(list.get(0)));
-                    } catch (D2Error d2Error) {
-                        d2Error.printStackTrace();
-                    }
 
-                } else if (geometry.type() == FeatureType.POLYGON) {
-                    this.polygon.setText(getContext().getString(R.string.polygon_captured));
-                } else if (geometry.type() == FeatureType.MULTI_POLYGON) {
-                    this.polygon.setText(getContext().getString(R.string.polygon_captured));
+        if (geometry != null && geometry.type() != null) {
+            if (geometry.type() == FeatureType.POINT) {
+                try {
+                    List<Double> list = GeometryHelper.getPoint(geometry);
+                    this.latitude.setText(String.valueOf(list.get(1)));
+                    this.longitude.setText(String.valueOf(list.get(0)));
+                } catch (D2Error d2Error) {
+                    d2Error.printStackTrace();
                 }
-            }
 
+            } else if (geometry.type() == FeatureType.POLYGON) {
+                this.polygon.setText(getContext().getString(R.string.polygon_captured));
+            } else if (geometry.type() == FeatureType.MULTI_POLYGON) {
+                this.polygon.setText(getContext().getString(R.string.polygon_captured));
+            }
             this.clearButton.setVisibility(VISIBLE);
         }
+
         this.currentGeometry = geometry;
         if (listener2 != null)
             listener2.onCurrentLocationClick(geometry);

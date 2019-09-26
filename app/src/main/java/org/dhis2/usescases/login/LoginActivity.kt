@@ -188,7 +188,7 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
     }
 
     override fun showUnlockButton() {
-        binding.unlockLayout?.visibility = View.VISIBLE
+        binding.unlockLayout.visibility = View.VISIBLE
         onUnlockClick(binding.unlockLayout)
 
     }

@@ -606,7 +606,7 @@ public class SearchRepositoryImpl implements SearchRepository {
         for (TrackedEntityAttribute attr : imageAttributes)
             imageAttributesUids.add(attr.uid());
 
-        TrackedEntityAttributeValue attributeValue = null;
+        TrackedEntityAttributeValue attributeValue;
         if (d2.trackedEntityModule().trackedEntityTypeAttributes
                 .byTrackedEntityTypeUid().eq(tei.trackedEntityType())
                 .byTrackedEntityAttributeUid().in(imageAttributesUids).one().blockingExists()) {

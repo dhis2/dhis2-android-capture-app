@@ -100,34 +100,35 @@ public class SyncPresenter implements SyncContracts.Presenter {
                 .enqueueUniqueWork(Constants.INIT_DATA, ExistingWorkPolicy.REPLACE, initDataBuilder.build());
     }
 
+    @Override
     public void getTheme() {
-        disposable.add(d2.systemSettingModule().systemSetting.get().toObservable()
-                .map(systemSettings -> {
-                    String flag = "";
-                    String style = "";
-                    for (SystemSetting settingModel : systemSettings)
-                        if (settingModel.key().equals("style"))
-                            style = settingModel.value();
-                        else
-                            flag = settingModel.value();
-
-                    if (style.contains("green"))
-                        return Pair.create(flag, R.style.GreenTheme);
-                    if (style.contains("india"))
-                        return Pair.create(flag, R.style.OrangeTheme);
-                    if (style.contains("myanmar"))
-                        return Pair.create(flag, R.style.RedTheme);
-                    else
-                        return Pair.create(flag, R.style.AppTheme);
-                })
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(flagTheme -> {
-                            view.saveFlag(flagTheme.val0());
-                            view.saveTheme(flagTheme.val1());
-                        }, Timber::e
-                ));
-
+        disposable.add(
+                d2.systemSettingModule().systemSetting.get()
+                        .map(systemSettings -> {
+                            String style = "";
+                            String flag = "";
+                            for (SystemSetting setting : systemSettings) {
+                                if (setting.key() == SystemSetting.SystemSettingKey.STYLE)
+                                    style = setting.value();
+                                else
+                                    flag = setting.value();
+                            }
+                            if (style.contains("green"))
+                                return Pair.create(flag, R.style.GreenTheme);
+                            if (style.contains("india"))
+                                return Pair.create(flag, R.style.OrangeTheme);
+                            if (style.contains("myanmar"))
+                                return Pair.create(flag, R.style.RedTheme);
+                            else
+                                return Pair.create(flag, R.style.AppTheme);
+                        })
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(flagTheme -> {
+                                    view.saveFlag(flagTheme.val0());
+                                    view.saveTheme(flagTheme.val1());
+                                }, Timber::e
+                        ));
     }
 
     @Override

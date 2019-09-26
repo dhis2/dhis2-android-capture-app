@@ -132,7 +132,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
         });
         presenter.init(this);
 
-        if (SyncUtils.isSyncRunning()) {
+        if (SyncUtils.isSyncRunning(context)) {
             binding.buttonSyncData.setEnabled(false);
             binding.buttonSyncMeta.setEnabled(false);
         }

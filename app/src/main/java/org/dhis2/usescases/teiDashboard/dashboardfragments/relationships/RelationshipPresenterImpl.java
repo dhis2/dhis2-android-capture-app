@@ -59,7 +59,7 @@ public class RelationshipPresenterImpl implements RelationshipContracts.Presente
         this.dashboardRepository = dashboardRepository;
         this.updateRelationships = PublishProcessor.create();
 
-        teiType = d2.trackedEntityModule().trackedEntityInstances.byUid().eq(teiUid).withAllChildren().one().blockingGet().trackedEntityType();
+        teiType = d2.trackedEntityModule().trackedEntityInstances.byUid().eq(teiUid).withEnrollments().withRelationships().withTrackedEntityAttributeValues().one().blockingGet().trackedEntityType();
     }
 
     @Override
@@ -119,7 +119,7 @@ public class RelationshipPresenterImpl implements RelationshipContracts.Presente
                                             List<TrackedEntityTypeAttribute> typeAttributes = d2.trackedEntityModule().trackedEntityTypeAttributes
                                                     .byTrackedEntityTypeUid().eq(tei.trackedEntityType())
                                                     .byDisplayInList().isTrue()
-                                                    .withAllChildren().blockingGet();
+                                                    .blockingGet();
                                             List<String> attributeUids = new ArrayList<>();
                                             for (TrackedEntityTypeAttribute typeAttribute : typeAttributes)
                                                 attributeUids.add(typeAttribute.trackedEntityAttribute().uid());
@@ -160,7 +160,7 @@ public class RelationshipPresenterImpl implements RelationshipContracts.Presente
 
     @Override
     public void goToAddRelationship(String teiTypeToAdd) {
-        if (d2.programModule().programs.uid(programUid).withAllChildren().blockingGet().access().data().write()) {
+        if (d2.programModule().programs.uid(programUid).blockingGet().access().data().write()) {
             Intent intent = new Intent(view.getContext(), SearchTEActivity.class);
             Bundle extras = new Bundle();
             extras.putBoolean("FROM_RELATIONSHIP", true);
@@ -176,7 +176,7 @@ public class RelationshipPresenterImpl implements RelationshipContracts.Presente
     @Override
     public void deleteRelationship(Relationship relationship) {
         try {
-            d2.relationshipModule().relationships.withAllChildren().uid(relationship.uid()).blockingDelete();
+            d2.relationshipModule().relationships.withItems().uid(relationship.uid()).blockingDelete();
         } catch (D2Error e) {
             Timber.d(e);
         } finally {

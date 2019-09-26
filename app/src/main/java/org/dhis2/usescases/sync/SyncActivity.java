@@ -40,7 +40,6 @@ public class SyncActivity extends ActivityGlobalAbstract implements SyncContract
     protected void onCreate(Bundle savedInstanceState) {
         ((App) getApplicationContext()).userComponent().plus(new SyncModule()).inject(this);
         super.onCreate(savedInstanceState);
-
         binding = DataBindingUtil.setContentView(this, R.layout.activity_synchronization);
         binding.setPresenter(presenter);
         presenter.init(this);

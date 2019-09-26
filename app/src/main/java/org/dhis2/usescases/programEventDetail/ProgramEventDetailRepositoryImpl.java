@@ -75,7 +75,7 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
             eventRepo = eventRepo.byStatus().in(eventStatus);
         if (!states.isEmpty())
             eventRepo = eventRepo.byState().in(states);
-        DataSource dataSource = eventRepo.orderByEventDate(RepositoryScope.OrderByDirection.DESC).withAllChildren().getDataSource().map(event -> transformToProgramEventModel(event));
+        DataSource dataSource = eventRepo.orderByEventDate(RepositoryScope.OrderByDirection.DESC).withTrackedEntityDataValues().getDataSource().map(event -> transformToProgramEventModel(event));
 
         return new LivePagedListBuilder(new DataSource.Factory() {
             @Override
@@ -101,7 +101,7 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
         if (!states.isEmpty())
             eventRepo = eventRepo.byState().in(states);
 
-        return eventRepo.byDeleted().isFalse().orderByEventDate(RepositoryScope.OrderByDirection.DESC).withAllChildren().get()
+        return eventRepo.byDeleted().isFalse().orderByEventDate(RepositoryScope.OrderByDirection.DESC).withTrackedEntityDataValues().get()
                 .map(GeometryUtils.INSTANCE::getSourceFromEvent)
                 .toFlowable();
     }
@@ -109,7 +109,7 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
 
     @Override
     public Flowable<ProgramEventViewModel> getInfoForEvent(String eventUid) {
-        return d2.eventModule().events.uid(eventUid).withAllChildren().get()
+        return d2.eventModule().events.byUid().eq(eventUid).withTrackedEntityDataValues().one().get()
                 .map(this::transformToProgramEventModel)
                 .toFlowable();
     }
@@ -129,7 +129,8 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
     private ProgramEventViewModel transformToProgramEventModel(Event event) {
         String orgUnitName = getOrgUnitName(event.organisationUnit());
         List<String> showInReportsDataElements = new ArrayList<>();
-        for (ProgramStageDataElement programStageDataElement : d2.programModule().programStages.uid(event.programStage()).withAllChildren().blockingGet().programStageDataElements()) {
+        for (ProgramStageDataElement programStageDataElement : d2.programModule().programStages.withProgramStageDataElements()
+                .withProgramStageSections().withStyle().uid(event.programStage()).blockingGet().programStageDataElements()) {
             if (programStageDataElement.displayInReports())
                 showInReportsDataElements.add(programStageDataElement.dataElement().uid());
         }
@@ -154,7 +155,10 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
     @NonNull
     @Override
     public Observable<Program> program() {
-        return Observable.just(d2.programModule().programs.uid(programUid).withAllChildren().blockingGet());
+        return Observable.just(d2.programModule().programs.withCategoryCombo().withProgramIndicators()
+                .withProgramRules().withProgramRuleVariables().withProgramSections().withProgramStages()
+                .withProgramTrackedEntityAttributes().withRelatedProgram().withStyle()
+                .withTrackedEntityType().uid(programUid).blockingGet());
     }
 
     private LiveData<PagedList<ProgramEventViewModel>> transform(PagedList<Event> events) {
@@ -246,9 +250,9 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
 
     @Override
     public Single<Boolean> hasAccessToAllCatOptions() {
-        return d2.programModule().programs.uid(programUid).get()
+        return d2.programModule().programs.withCategoryCombo().uid(programUid).get()
                 .filter(program -> program.categoryComboUid() != null)
-                .map(program -> d2.categoryModule().categoryCombos.uid(program.categoryComboUid()).withAllChildren().blockingGet())
+                .map(program -> d2.categoryModule().categoryCombos.withCategories().withCategoryOptionCombos().uid(program.categoryComboUid()).blockingGet())
                 .filter(catCombo -> !catCombo.isDefault())
                 .map(catCombo -> {
                     boolean hasAccess = true;

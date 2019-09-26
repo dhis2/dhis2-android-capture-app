@@ -268,14 +268,14 @@ class RulesUtilsProviderImpl(private val codeGenerator: CodeGenerator) : RulesUt
 
         val dataElements = if (section == null)
             d2.programModule().programStages.uid(event.programStage())
-                    .withAllChildren().blockingGet().programStageDataElements()!!
+                    .blockingGet().programStageDataElements()!!
                     .map {
                         it.dataElement()!!.uid()
                     }
         else
             d2.programModule().programStageSections
                     .uid(section)
-                    .withAllChildren().blockingGet().dataElements()!!
+                    .blockingGet().dataElements()!!
                     .map {
                         it.uid()
                     }
@@ -351,7 +351,7 @@ class RulesUtilsProviderImpl(private val codeGenerator: CodeGenerator) : RulesUt
         sectionsToHide.add(action.programStageSection())
         val sectionDataElements = UidsHelper.getUidsList(
                 D2Manager.getD2().programModule().programStageSections.uid(action.programStageSection())
-                        .withAllChildren().blockingGet().dataElements())
+                        .blockingGet().dataElements())
         sectionDataElements.forEach {
             if (fields.contains(it)) {
                 (fields as ArrayList).remove(it)

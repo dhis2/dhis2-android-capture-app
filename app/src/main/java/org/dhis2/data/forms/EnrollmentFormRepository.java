@@ -21,6 +21,7 @@ import org.hisp.dhis.android.core.common.FeatureType;
 import org.hisp.dhis.android.core.common.Geometry;
 import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.common.State;
+import org.hisp.dhis.android.core.common.Unit;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.android.core.enrollment.EnrollmentObjectRepository;
@@ -56,6 +57,7 @@ import io.reactivex.Observable;
 import io.reactivex.Single;
 import io.reactivex.exceptions.OnErrorNotImplementedException;
 import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
 
 import static android.text.TextUtils.isEmpty;
 
@@ -97,36 +99,12 @@ public class EnrollmentFormRepository implements FormRepository {
         // We don't want to rebuild RuleEngine on each request, since metadata of
         // the event is not changing throughout lifecycle of FormComponent.
         this.cachedRuleEngineFlowable = enrollmentProgram()
-                .switchMap(program -> Flowable.zip(
-                        rulesRepository.rulesNew(program),
-                        rulesRepository.ruleVariables(program),
-                        rulesRepository.enrollmentEvents(enrollmentUid),
-                        rulesRepository.queryConstants(),
-                        rulesRepository.getSuplementaryData(d2),
-                        (rules, variables, events, constants, supplData) -> {
-                            RuleEngine.Builder builder = RuleEngineContext.builder(expressionEvaluator)
-                                    .rules(rules)
-                                    .ruleVariables(variables)
-                                    .calculatedValueMap(new HashMap<>())
-                                    .supplementaryData(supplData)
-                                    .constantsValue(constants)
-                                    .build().toEngineBuilder();
-                            builder.triggerEnvironment(TriggerEnvironment.ANDROIDCLIENT);
-                            builder.events(events);
-                            return builder.build();
-                        }))
-                .cacheWithInitialCapacity(1);
-    }
-
-    @Override
-    public Flowable<RuleEngine> restartRuleEngine() {
-        return this.cachedRuleEngineFlowable = enrollmentProgram()
-                .switchMap(program -> Flowable.zip(
-                        rulesRepository.rulesNew(program),
-                        rulesRepository.ruleVariables(program),
-                        rulesRepository.enrollmentEvents(enrollmentUid),
-                        rulesRepository.queryConstants(),
-                        rulesRepository.getSuplementaryData(d2),
+                .switchMap(program -> Single.zip(
+                        rulesRepository.rulesNew(program).subscribeOn(Schedulers.io()),
+                        rulesRepository.ruleVariables(program).subscribeOn(Schedulers.io()),
+                        rulesRepository.enrollmentEvents(enrollmentUid).subscribeOn(Schedulers.io()),
+                        rulesRepository.queryConstants().subscribeOn(Schedulers.io()),
+                        rulesRepository.getSuplementaryData().subscribeOn(Schedulers.io()),
                         (rules, variables, events, constants, supplementaryData) -> {
                             RuleEngine.Builder builder = RuleEngineContext.builder(expressionEvaluator)
                                     .rules(rules)
@@ -138,7 +116,31 @@ public class EnrollmentFormRepository implements FormRepository {
                             builder.triggerEnvironment(TriggerEnvironment.ANDROIDCLIENT);
                             builder.events(events);
                             return builder.build();
-                        }))
+                        }).toFlowable())
+                .cacheWithInitialCapacity(1);
+    }
+
+    @Override
+    public Flowable<RuleEngine> restartRuleEngine() {
+        return this.cachedRuleEngineFlowable = enrollmentProgram()
+                .switchMap(program -> Single.zip(
+                        rulesRepository.rulesNew(program),
+                        rulesRepository.ruleVariables(program),
+                        rulesRepository.enrollmentEvents(enrollmentUid),
+                        rulesRepository.queryConstants(),
+                        rulesRepository.getSuplementaryData(),
+                        (rules, variables, events, constants, supplementaryData) -> {
+                            RuleEngine.Builder builder = RuleEngineContext.builder(expressionEvaluator)
+                                    .rules(rules)
+                                    .ruleVariables(variables)
+                                    .calculatedValueMap(new HashMap<>())
+                                    .supplementaryData(supplementaryData)
+                                    .constantsValue(constants)
+                                    .build().toEngineBuilder();
+                            builder.triggerEnvironment(TriggerEnvironment.ANDROIDCLIENT);
+                            builder.events(events);
+                            return builder.build();
+                        }).toFlowable())
                 .cacheWithInitialCapacity(1);
     }
 
@@ -299,6 +301,12 @@ public class EnrollmentFormRepository implements FormRepository {
             String teiUid = d2.enrollmentModule().enrollments.uid(enrollmentUid).blockingGet().trackedEntityInstance();
             d2.trackedEntityModule().trackedEntityInstances.uid(teiUid).setGeometry(geometry);
         };
+    }
+
+
+    @Override
+    public Consumer<Unit> clearCoordinates() {
+        return unit -> d2.enrollmentModule().enrollments.uid(enrollmentUid).setGeometry(null);
     }
 
     @NonNull
@@ -524,8 +532,9 @@ public class EnrollmentFormRepository implements FormRepository {
     @Override
     public Single<TrackedEntityType> captureTeiCoordinates() {
         return d2.enrollmentModule().enrollments.uid(enrollmentUid).get()
-                .flatMap(enrollment -> d2.programModule().programs.uid(enrollment.program()).withAllChildren().get())
-                .flatMap(program -> d2.trackedEntityModule().trackedEntityTypes.uid(program.trackedEntityType().uid()).get());
+                .flatMap(enrollment -> d2.programModule().programs.withTrackedEntityType().uid(enrollment.program()).get())
+                .flatMap(program -> d2.trackedEntityModule().trackedEntityTypes.withTrackedEntityTypeAttributes().withStyle()
+                                        .uid(program.trackedEntityType().uid()).get());
     }
 
     @Override

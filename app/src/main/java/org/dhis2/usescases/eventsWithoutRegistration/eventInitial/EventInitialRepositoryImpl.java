@@ -32,6 +32,7 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -63,22 +64,56 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
 
     @NonNull
     @Override
+    public Observable<List<OrganisationUnit>> filteredOrgUnits(String date, String programId, String parentId) {
+        if (date == null)
+            return parentId == null ? orgUnits(programId) : orgUnits(programId, parentId);
+        else
+            return (parentId == null ? orgUnits(programId) : orgUnits(programId, parentId))
+                    .map(organisationUnits -> {
+                        Iterator<OrganisationUnit> iterator = organisationUnits.iterator();
+                        while (iterator.hasNext()) {
+                            OrganisationUnit organisationUnit = iterator.next();
+                            if (organisationUnit.openingDate() != null && organisationUnit.openingDate().after(DateUtils.uiDateFormat().parse(date))
+                                    || organisationUnit.closedDate() != null && organisationUnit.closedDate().before(DateUtils.uiDateFormat().parse(date)))
+                                iterator.remove();
+                        }
+                        return organisationUnits;
+                    });
+    }
+
+    @NonNull
+    @Override
     public Observable<List<OrganisationUnit>> orgUnits(String programId) {
         return d2.organisationUnitModule().organisationUnits.byProgramUids(Collections.singletonList(programId)).withPrograms().get().toObservable();
+    }
+
+    public Observable<List<OrganisationUnit>> orgUnits(String programId, String parentUid) {
+        return d2.organisationUnitModule().organisationUnits
+                .byParentUid().eq(parentUid)
+                .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE)
+                .withPrograms().get()
+                .map(organisationUnits -> {
+                    List<OrganisationUnit> programOrganisationUnits = new ArrayList<>();
+                    for (OrganisationUnit organisationUnit : organisationUnits) {
+                        if (UidsHelper.getUids(organisationUnit.programs()).contains(programId))
+                            programOrganisationUnits.add(organisationUnit);
+                    }
+                    return programOrganisationUnits.isEmpty() ? organisationUnits : programOrganisationUnits;
+                }).toObservable();
     }
 
     @NonNull
     @Override
     public Observable<CategoryCombo> catCombo(String programUid) {
-        return Observable.defer(() -> Observable.just(d2.categoryModule().categoryCombos.uid(d2.programModule().programs.uid(programUid).blockingGet().categoryCombo().uid()).withAllChildren().blockingGet()))
+        return Observable.defer(() -> Observable.just(d2.categoryModule().categoryCombos.withCategories().withCategoryOptionCombos().uid(d2.programModule().programs.withCategoryCombo().uid(programUid).blockingGet().categoryCombo().uid()).blockingGet()))
                 .map(categoryCombo -> {
                     List<Category> fullCategories = new ArrayList<>();
                     List<CategoryOptionCombo> fullOptionCombos = new ArrayList<>();
                     for (Category category : categoryCombo.categories()) {
-                        fullCategories.add(d2.categoryModule().categories.uid(category.uid()).withAllChildren().blockingGet());
+                        fullCategories.add(d2.categoryModule().categories.withCategoryOptions().uid(category.uid()).blockingGet());
                     }
                     for (CategoryOptionCombo categoryOptionCombo : categoryCombo.categoryOptionCombos())
-                        fullOptionCombos.add(d2.categoryModule().categoryOptionCombos.uid(categoryOptionCombo.uid()).withAllChildren().blockingGet());
+                        fullOptionCombos.add(d2.categoryModule().categoryOptionCombos.withCategoryOptions().uid(categoryOptionCombo.uid()).blockingGet());
                     return categoryCombo.toBuilder().categories(fullCategories).categoryOptionCombos(fullOptionCombos).build();
                 });
     }
@@ -90,7 +125,7 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
                         .flatMap(categoryCombo -> {
                             Map<String, CategoryOption> map = new HashMap<>();
                             if (!categoryCombo.isDefault() && event.attributeOptionCombo() != null) {
-                                List<CategoryOption> selectedCatOptions = d2.categoryModule().categoryOptionCombos.uid(event.attributeOptionCombo()).withAllChildren().blockingGet().categoryOptions();
+                                List<CategoryOption> selectedCatOptions = d2.categoryModule().categoryOptionCombos.withCategoryOptions().uid(event.attributeOptionCombo()).blockingGet().categoryOptions();
                                 for (Category category : categoryCombo.categories()) {
                                     for (CategoryOption categoryOption : selectedCatOptions)
                                         if (category.categoryOptions().contains(categoryOption))
@@ -275,7 +310,7 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
     }
 
     private Observable<Boolean> accessWithCatOption(String programUid, String catOptionCombo) {
-        return d2.categoryModule().categoryOptionCombos.uid(catOptionCombo).withAllChildren().get()
+        return d2.categoryModule().categoryOptionCombos.withCategoryOptions().uid(catOptionCombo).get()
                 .map(data -> UidsHelper.getUidsList(data.categoryOptions()))
                 .flatMap(categoryOptionsUids -> d2.categoryModule().categoryOptions.byUid().in(categoryOptionsUids).get())
                 .toObservable()
@@ -313,14 +348,15 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
 
     @Override
     public boolean isEnrollmentOpen() {
-        Event event = d2.eventModule().events.uid(eventUid).withAllChildren().blockingGet();
+        Event event = d2.eventModule().events.uid(eventUid).blockingGet();
         return event == null || event.enrollment() == null || d2.enrollmentModule().enrollments.uid(event.enrollment()).blockingGet().status() == EnrollmentStatus.ACTIVE;
     }
 
 
     @Override
     public Observable<Program> getProgramWithId(String programUid) {
-        return d2.programModule().programs.withAllChildren().byUid().eq(programUid).one().get().toObservable();
+        return d2.programModule().programs.withCategoryCombo().withProgramIndicators().withProgramRules().withProgramRuleVariables().withProgramSections().withProgramStages()
+            .withProgramTrackedEntityAttributes().withRelatedProgram().withStyle().withTrackedEntityType().byUid().eq(programUid).one().get().toObservable();
     }
 
     @Override

@@ -4,6 +4,7 @@ import android.text.TextUtils.isEmpty
 import io.reactivex.Flowable
 import io.reactivex.Single
 import io.reactivex.functions.Function5
+import io.reactivex.schedulers.Schedulers
 import org.dhis2.data.forms.RulesRepository
 import org.dhis2.utils.Constants
 import org.dhis2.utils.DateUtils
@@ -36,12 +37,12 @@ class EnrollmentFormRepositoryImpl(
 
     init {
         this.cachedRuleEngineFlowable =
-                Flowable.zip<List<Rule>, List<RuleVariable>, List<RuleEvent>, Map<String, String>, Map<String, List<String>>, RuleEngine>(
-                        rulesRepository.rulesNew(programUid),
-                        rulesRepository.ruleVariables(programUid),
-                        rulesRepository.enrollmentEvents(enrollmentRepository.blockingGet().uid()),
-                        rulesRepository.queryConstants(),
-                        rulesRepository.getSuplementaryData(d2),
+                Single.zip<List<Rule>, List<RuleVariable>, List<RuleEvent>, Map<String, String>, Map<String, List<String>>, RuleEngine>(
+                        rulesRepository.rulesNew(programUid).subscribeOn(Schedulers.io()),
+                        rulesRepository.ruleVariables(programUid).subscribeOn(Schedulers.io()),
+                        rulesRepository.enrollmentEvents(enrollmentRepository.blockingGet().uid()).subscribeOn(Schedulers.io()),
+                        rulesRepository.queryConstants().subscribeOn(Schedulers.io()),
+                        rulesRepository.getSuplementaryData().subscribeOn(Schedulers.io()),
                         Function5 { rules, variables, events, constants, supplData ->
                             val builder = RuleEngineContext.builder(expressionEvaluator)
                                     .rules(rules)
@@ -53,7 +54,7 @@ class EnrollmentFormRepositoryImpl(
                             builder.triggerEnvironment(TriggerEnvironment.ANDROIDCLIENT)
                             builder.events(events)
                             builder.build()
-                        })
+                        }).toFlowable()
                         .cacheWithInitialCapacity(1)
 
         this.ruleEnrollmentBuilder = RuleEnrollment.builder()
@@ -119,7 +120,7 @@ class EnrollmentFormRepositoryImpl(
             Pair(enrollmentStagePair.first, eventCollectionRepository.one().blockingGet().uid()!!)
         else {
             Pair(enrollmentStagePair.first, generateEvent(DateUtils.getInstance().today,
-                    d2.programModule().programStages.uid(enrollmentStagePair.second).withAllChildren().blockingGet()))
+                    d2.programModule().programStages.uid(enrollmentStagePair.second).blockingGet()))
         }
     }
 
@@ -129,7 +130,6 @@ class EnrollmentFormRepositoryImpl(
                 .byProgramUid().eq(programUid)
                 .byAutoGenerateEvent().isTrue
                 .orderBySortOrder(RepositoryScope.OrderByDirection.ASC)
-                .withAllChildren()
                 .get()
                 .flatMap {
                     it.forEach { programStage ->
@@ -222,7 +222,7 @@ class EnrollmentFormRepositoryImpl(
                                 .value(it.trackedEntityAttribute()!!.uid(), enrollmentRepository.blockingGet().trackedEntityInstance())
                                 .blockingGet()
                         val attr = d2.trackedEntityModule().trackedEntityAttributes
-                                .uid(it.trackedEntityAttribute()!!.uid()).withAllChildren()
+                                .uid(it.trackedEntityAttribute()!!.uid())
                                 .blockingGet()
                         val variable = d2.programModule().programRuleVariables
                                 .byProgramUid().eq(programUid)

@@ -129,6 +129,7 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
             for(int i=0; i < dataTableModel.categories().size(); i++)
                 columnHeaders.add(category.categoryOptions());
         }
+
         adapter.setCatCombo(catCombo);
         adapter.setTableView(tableView);
         adapter.initializeRows(true);
