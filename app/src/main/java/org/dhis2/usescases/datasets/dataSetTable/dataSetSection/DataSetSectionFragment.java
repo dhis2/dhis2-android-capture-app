@@ -24,7 +24,6 @@ import com.google.android.material.snackbar.Snackbar;
 import org.dhis2.App;
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.tablefields.FieldViewModel;
-import org.dhis2.data.forms.dataentry.tablefields.FieldViewModelFactoryImpl;
 import org.dhis2.data.forms.dataentry.tablefields.RowAction;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.databinding.FragmentDatasetSectionBinding;
@@ -33,14 +32,9 @@ import org.dhis2.usescases.datasets.dataSetTable.DataSetTableContract;
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
 import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.Constants;
-import org.dhis2.utils.DateUtils;
-import org.hisp.dhis.android.core.category.Category;
 import org.hisp.dhis.android.core.category.CategoryOption;
-import org.hisp.dhis.android.core.common.ValueType;
-import org.hisp.dhis.android.core.dataelement.DataElement;
 import org.hisp.dhis.android.core.dataset.DataSet;
 import org.hisp.dhis.android.core.dataset.Section;
-import org.hisp.dhis.android.core.period.Period;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -49,7 +43,6 @@ import javax.inject.Inject;
 
 import io.reactivex.Flowable;
 import io.reactivex.processors.FlowableProcessor;
-import timber.log.Timber;
 
 import static com.evrencoskun.tableview.adapter.recyclerview.holder.AbstractViewHolder.SelectionState.UNSELECTED;
 
@@ -166,7 +159,6 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
             if (position != -1 && currentTablePosition.getValue() != position)
                 currentTablePosition.setValue(position);
         });
-        Timber.tag("BREAKPOINT").d("showtables");
         currentTablePosition.setValue(0);
     }
 

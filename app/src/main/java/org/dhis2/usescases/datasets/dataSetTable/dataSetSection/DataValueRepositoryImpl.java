@@ -34,7 +34,6 @@ import java.util.Map;
 
 import io.reactivex.Completable;
 import io.reactivex.Flowable;
-import timber.log.Timber;
 
 public class DataValueRepositoryImpl implements DataValueRepository {
 
@@ -146,8 +145,6 @@ public class DataValueRepositoryImpl implements DataValueRepository {
                 }
             }
         }
-        //}
-        Timber.tag("BREAKPOINT").d("getCatOptions()");
         return finalList;
     }
 
