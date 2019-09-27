@@ -66,7 +66,6 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
     private String sectionName;
     private String dataSetUid;
 
-    private Period periodModel;
     @Inject
     DataValueContract.Presenter presenterFragment;
 
@@ -114,29 +113,24 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
     }
 
     @Override
-    public void setTableData(DataTableModel dataTableModel, List<List<FieldViewModel>> fields, String catCombo, List<List<String>> cells, List<DataElement> rows){
+    public void setTableData(DataTableModel dataTableModel, List<List<FieldViewModel>> fields, List<List<String>> cells, Boolean accessDataWrite){
         binding.programProgress.setVisibility(View.GONE);
         activity.updateTabLayout(sectionName, fields.size());
 
         DataSetTableAdapter adapter = new DataSetTableAdapter(getAbstracContext(), presenterFragment.getProcessor(), presenterFragment.getProcessorOptionSet());
         adapters.add(adapter);
-        adapter.setShowColumnTotal(section == null ? false : section.showColumnTotals());
-        adapter.setShowRowTotal(section == null ? false : section.showRowTotals());
+        adapter.setShowColumnTotal(section.uid().isEmpty() ? false : section.showColumnTotals());
+        adapter.setShowRowTotal(section.uid().isEmpty() ? false : section.showRowTotals());
         TableView tableView = new TableView(getContext());
         tableView.setHasFixedWidth(true);
 
 
         List<List<CategoryOption>> columnHeaders = dataTableModel.header();
-        /*for(Category category : dataTableModel.categories()){
-            for(int i=0; i < dataTableModel.categories().size(); i++)
-                columnHeaders.add(category.categoryOptions());
-        }*/
-        adapter.setCatCombo(catCombo);
+        adapter.setCatCombo(dataTableModel.catCombo().uid());
         adapter.setTableView(tableView);
-        adapter.initializeRows(true);
+        adapter.initializeRows(accessDataWrite);
         adapter.setDataElementDecoration(dataSet.dataElementDecoration());
 
-        Timber.tag("BREAKPOINT").d(catCombo);
         binding.tableLayout.addView(tableView);
 
         View view = new View(getContext());
@@ -153,7 +147,7 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
 
         adapter.setAllItems(
                 columnHeaders,
-                rows,
+                dataTableModel.rows(),
                 cells,
                 adapter.getShowRowTotal());
 
@@ -177,179 +171,12 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
     }
 
     @Override
-    public void createTable(DataTableModel dataTableModel) {
-        /*binding.programProgress.setVisibility(View.GONE);
-        DataSet dataSet = dataTableModel.dataSet();
-        boolean isEditable = false;
-        if (dataSet.access().data().write() &&
-                !isExpired(dataTableModel.dataSet()) &&
-                (presenterFragment.getDataInputPeriodModel().size() == 0 || (presenterFragment.checkHasInputPeriod() != null &&
-                        DateUtils.getInstance().isInsideInputPeriod(presenterFragment.checkHasInputPeriod())))
-                && !dataTableModel.approval()) {
-            isEditable = true;
-        }
-
-        presenterFragment.setCurrentNumTables(new ArrayList<>(dataTableModel.catCombos().values()));
-        activity.updateTabLayout(sectionName, dataTableModel.catCombos().size());
-
-        int table = 0;
-        for (String catCombo : dataTableModel.catCombos().keySet()) {
-            DataSetTableAdapter adapter = new DataSetTableAdapter(getAbstracContext(), presenterFragment.getProcessor(), presenterFragment.getProcessorOptionSet());
-            adapters.add(adapter);
-            List<List<CategoryOption>> columnHeaderItems = dataTableModel.headers().get(catCombo);
-            ArrayList<List<String>> cells = new ArrayList<>();
-            List<List<FieldViewModel>> listFields = new ArrayList<>();
-            List<DataElement> rows = new ArrayList<>();
-            List<List<String>> listCatOptions = presenterFragment.getCatOptionCombos(dataTableModel.listCatOptionsCatComboOptions().get(catCombo), 0, new ArrayList<>(), null);
-            boolean isNumber = false;
-            int row = 0, column = 0;
-            adapter.setShowColumnTotal(dataTableModel.sectionName() == null ? false : dataTableModel.sectionName().showColumnTotals());
-            adapter.setShowRowTotal(dataTableModel.sectionName() == null ? false : dataTableModel.sectionName().showRowTotals());
-            TableView tableView = new TableView(getContext());
-            tableView.setHasFixedWidth(true);
-
-            adapter.setCatCombo(catCombo);
-            adapter.setTableView(tableView);
-            adapter.initializeRows(isEditable);
-            adapter.setDataElementDecoration(dataSet.dataElementDecoration());
-
-            Timber.tag("BREAKPOINT").d(catCombo);
-            binding.tableLayout.addView(tableView);
-
-            if (!new ArrayList<>(dataTableModel.catCombos().keySet()).get(dataTableModel.catCombos().keySet().size() - 1).equals(catCombo)) {
-                View view = new View(getContext());
-                view.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 15));
-                view.setBackgroundColor(tableView.getSeparatorColor());
-
-                binding.tableLayout.addView(view);
-            }
-            tableView.setAdapter(adapter);
-            tableView.setHeaderCount(columnHeaderItems.size());
-            tableView.setHeadersColor(ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.PRIMARY_LIGHT));
-            tableView.setShadowColor(ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.PRIMARY_DARK));
-            for (DataElement de : dataTableModel.rows()) {
-                if (de.categoryCombo().uid().equals(catCombo))
-                    rows.add(de);
-
-                ArrayList<String> values = new ArrayList<>();
-                ArrayList<FieldViewModel> fields = new ArrayList<>();
-                int totalRow = 0;
-                if (de.categoryCombo().uid().equals(catCombo)) {
-                    for (List<String> catOpts : listCatOptions) {
-                        boolean exitsValue = false;
-                        boolean compulsory = false;
-                        FieldViewModelFactoryImpl fieldFactory = createField();
-
-                        boolean editable = true;
-                        for (Pair<String, List<String>> listDisabled : dataTableModel.dataElementDisabled()) {
-                            if (listDisabled.val0().equals(de.uid()) && listDisabled.val1().containsAll(catOpts)) {
-                                editable = false;
-                            }
-                        }
-
-                        for (CategoryOption catOption : dataTableModel.catOptions()) {
-                            for (String option : catOpts) {
-                                if (catOption.uid().equals(option) && !catOption.access().data().write())
-                                    editable = false;
-                            }
-                        }
-
-                        if (dataTableModel.compulsoryCells().containsKey(de.uid()) && dataTableModel.compulsoryCells().get(de.uid()).containsAll(catOpts))
-                            compulsory = true;
-
-                        if (de.valueType() == ValueType.NUMBER || de.valueType() == ValueType.INTEGER) {
-                            isNumber = true;
-                        }
-
-                        for (DataSetTableModel dataValue : dataTableModel.dataValues()) {
-
-                            if (dataValue.listCategoryOption().containsAll(catOpts)
-                                    && Objects.equals(dataValue.dataElement(), de.uid()) && dataValue.catCombo().equals(catCombo)) {
-
-                                if (isNumber) {
-                                    if (adapter.getShowRowTotal())
-                                        totalRow = totalRow + Integer.parseInt(dataValue.value());
-                                }
-
-                                fields.add(fieldFactory.create(dataValue.id().toString(), "", de.valueType(),
-                                        compulsory, de.optionSetUid(), dataValue.value(), sectionName, true,
-                                        editable, null, null, de.uid(), catOpts, "android", row, column, dataValue.categoryOptionCombo(), dataValue.catCombo()));
-                                values.add(dataValue.value());
-                                exitsValue = true;
-                            }
-                        }
-
-                        if (!exitsValue) {
-                            //If value type is null, it is due to is dataElement for Total row/column
-                            fields.add(fieldFactory.create("", "", de.valueType(),
-                                    compulsory, de.optionSetUid(), "", sectionName, true,
-                                    editable, null, null, de.uid() == null ? "" : de.uid(), catOpts, "android", row, column, presenter.getCatOptComboFromOptionList(catOpts), catCombo));
-
-                            values.add("");
-                        }
-                        column++;
-                    }
-                    if (isNumber && adapter.getShowRowTotal()) {
-                        setTotalRow(totalRow, fields, values, row, column);
-                    }
-                    listFields.add(fields);
-                    cells.add(values);
-                    column = 0;
-                    row++;
-                }
-            }
-
-            if (isNumber) {
-                if (adapter.getShowColumnTotal())
-                    setTotalColumn(listFields, cells, rows, row, column);
-                if (adapter.getShowRowTotal())
-                    for (int i = 0; i < columnHeaderItems.size(); i++) {
-                        if (i == columnHeaderItems.size() - 1)
-                            columnHeaderItems.get(i).add(CategoryOption.builder().uid("").displayName(getString(R.string.total)).build());
-                        else
-                            columnHeaderItems.get(i).add(CategoryOption.builder().uid("").displayName("").build());
-                    }
-
-            }
-
-            adapter.swap(listFields);
-
-            adapter.setAllItems(
-                    dataTableModel.headers().get(catCombo),
-                    rows,
-                    cells, adapter.getShowRowTotal());
-
-            presenterFragment.addCells(table, listFields);
-            table++;
-
-        }
-
-        presenterFragment.initializeProcessor(this);
-
-        binding.scroll.scrollTo(0, 1000);
-
-        binding.scroll.setOnScrollChangeListener((NestedScrollView.OnScrollChangeListener) (v, scrollX, scrollY, oldScrollX, oldScrollY) -> {
-            int position = -1;
-            if (checkTableHeights())
-                for (int i = 0; i < heights.size(); i++) {
-                    if (scrollY < heights.get(i))
-                        position = position == -1 ? i : position;
-                }
-
-            if (position != -1 && currentTablePosition.getValue() != position)
-                currentTablePosition.setValue(position);
-        });
-        Timber.tag("BREAKPOINT").d("showtables");
-        currentTablePosition.setValue(0);*/
-    }
-
-    @Override
     public void setDataSet(DataSet dataSet) {
         this.dataSet = dataSet;
     }
 
     @Override
-    public void setSectionName(Section section) {
+    public void setSection(Section section) {
         this.section = section;
     }
 
@@ -411,62 +238,6 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
         return !heights.isEmpty();
     }
 
-    private void setTotalColumn(List<List<FieldViewModel>> listFields, ArrayList<List<String>> cells,
-                                List<DataElement> dataElements, int row, int columnPos) {
-        FieldViewModelFactoryImpl fieldFactory = createField();
-
-        ArrayList<FieldViewModel> fields = new ArrayList<>();
-        ArrayList<String> values = new ArrayList<>();
-        boolean existTotal = false;
-        for (DataElement data : dataElements)
-            if (data.displayName().equals(getContext().getString(R.string.total)))
-                existTotal = true;
-
-        if (existTotal) {
-            listFields.remove(listFields.size() - 1);
-            cells.remove(listFields.size() - 1);
-        }
-
-
-        int[] totals = new int[cells.get(0).size()];
-        for (List<String> dataValues : cells) {
-            for (int i = 0; i < dataValues.size(); i++) {
-                if (!dataValues.get(i).isEmpty())
-                    totals[i] += Integer.parseInt(dataValues.get(i));
-            }
-        }
-
-        for (int column : totals) {
-            fields.add(fieldFactory.create("", "", ValueType.INTEGER,
-                    false, "", String.valueOf(column), sectionName, true,
-                    false, null, null, "", new ArrayList<>(), "", row, columnPos, "", ""));
-
-            values.add(String.valueOf(column));
-        }
-
-
-        listFields.add(fields);
-        cells.add(values);
-
-        if (!existTotal)
-            dataElements.add(DataElement.builder().uid("").displayName(getString(R.string.total)).valueType(ValueType.INTEGER).build());
-    }
-
-    private void setTotalRow(int totalRow, ArrayList<FieldViewModel> fields, ArrayList<String> values, int row, int column) {
-        FieldViewModelFactoryImpl fieldFactory = createField();
-        fields.add(fieldFactory.create("", "", ValueType.INTEGER,
-                false, "", String.valueOf(totalRow), sectionName, true,
-                false, null, null, "", new ArrayList<>(), "", row, column, "", ""));
-        values.add(String.valueOf(totalRow));
-
-    }
-
-    private FieldViewModelFactoryImpl createField() {
-        return new FieldViewModelFactoryImpl(
-                "",
-                "");
-    }
-
     @NonNull
     public Flowable<RowAction> rowActions() {
         return adapters.get(0).asFlowable();
@@ -476,37 +247,10 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
         return adapters.get(0).asFlowableOptionSet();
     }
 
-    public void updateData(RowAction rowAction, String catCombo) {
-        for (DataSetTableAdapter adapter : adapters)
-            if (adapter.getCatCombo().equals(catCombo))
-                adapter.updateValue(rowAction);
-    }
-
     @Override
     public void showSnackBar() {
         Snackbar mySnackbar = Snackbar.make(binding.getRoot(), R.string.datavalue_saved, Snackbar.LENGTH_SHORT);
         mySnackbar.show();
-    }
-
-    @Override
-    public void setPeriod(Period periodModel) {
-        this.periodModel = periodModel;
-    }
-
-    private Boolean isExpired(DataSet dataSet) {
-
-        if (0 == dataSet.expiryDays()) {
-            return false;
-        }
-        /*if (presenter.getPeriodFinalDate() != null) {
-            try {
-                return DateUtils.getInstance().isDataSetExpired(dataSet.expiryDays(), DateUtils.databaseDateFormat().parse(presenter.getPeriodFinalDate()));
-            } catch (ParseException e) {
-                Timber.e(e);
-            }
-        }*/
-
-        return DateUtils.getInstance().isDataSetExpired(dataSet.expiryDays(), periodModel.endDate());
     }
 
     @Override

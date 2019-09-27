@@ -28,23 +28,17 @@ public abstract class DataTableModel {
         public static final String DATA_ELEMENTS_DISABLED = "dataElementDisabled";
         public static final String COMPULSORY_CELLS = "compulsoryCells";
         public static final String CAT_COMBOS = "catCombos";
-        public static final String APPROVAL = "approval";
-        public static final String CATEGORIES = "categories";
     }
 
-    public static DataTableModel create(List<DataElement> rows, List<Category> categories, List<DataSetTableModel> dataValues, List<DataElementOperand> dataElementDisabled,
-                                        List<DataElementOperand> compulsoryCells, CategoryCombo catCombo, Boolean approval, List<List<CategoryOption>> header) {
-        return new AutoValue_DataTableModel(rows, categories, dataValues, dataElementDisabled, compulsoryCells, catCombo, approval, header);
+    public static DataTableModel create(List<DataElement> rows, List<DataSetTableModel> dataValues, List<DataElementOperand> dataElementDisabled,
+                                        List<DataElementOperand> compulsoryCells, CategoryCombo catCombo, List<List<CategoryOption>> header) {
+        return new AutoValue_DataTableModel(rows,  dataValues, dataElementDisabled, compulsoryCells, catCombo, header);
     }
 
 
     @Nullable
     @ColumnName(Columns.ROWS)
     public abstract List<DataElement> rows();
-
-    @Nullable
-    @ColumnName(Columns.CATEGORIES)
-    public abstract List<Category> categories();
 
     @Nullable
     @ColumnName(Columns.DATA_VALUES)
@@ -61,10 +55,6 @@ public abstract class DataTableModel {
     @Nullable
     @ColumnName(Columns.CAT_COMBOS)
     public abstract CategoryCombo catCombo();
-
-    @Nullable
-    @ColumnName(Columns.APPROVAL)
-    public abstract Boolean approval();
 
     @Nullable
     @ColumnName(Columns.HEADER)

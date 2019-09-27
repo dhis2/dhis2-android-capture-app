@@ -27,8 +27,6 @@ public class DataValueContract {
     public interface View extends AbstractActivityContracts.View{
         void showSnackBar();
 
-        void setPeriod(Period periodModel);
-
         void goToTable(int numTable);
 
         void showAlertDialog(String title, String message);
@@ -41,13 +39,11 @@ public class DataValueContract {
 
         void update(boolean modified);
 
-        void setTableData(DataTableModel dataTableModel, List<List<FieldViewModel>> fields, String catCombo, List<List<String>> cells, List<DataElement> rows);
-
-        void createTable(DataTableModel dataTableModel);
+        void setTableData(DataTableModel dataTableModel, List<List<FieldViewModel>> fields, List<List<String>> cells, Boolean accessDataWrite);
 
         void setDataSet(DataSet dataSet);
 
-        void setSectionName(Section sectionName);
+        void setSection(Section section);
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter{
@@ -61,18 +57,12 @@ public class DataValueContract {
 
         List<List<String>> getCatOptionCombos(List<List<Pair<CategoryOption, Category>>> listCategories, int num ,List<List<String>> result, List<String> current);
 
-        void setCurrentNumTables(List<String> tablesNames);
-
         List<String> getCurrentNumTables();
 
         FlowableProcessor<RowAction> getProcessor();
 
         FlowableProcessor<Trio<String, String, Integer>> getProcessorOptionSet();
 
-        void addCells(int table, List<List<FieldViewModel>> cells);
-
         DataInputPeriod checkHasInputPeriod();
-
-        List<DataInputPeriod> getDataInputPeriodModel();
     }
 }

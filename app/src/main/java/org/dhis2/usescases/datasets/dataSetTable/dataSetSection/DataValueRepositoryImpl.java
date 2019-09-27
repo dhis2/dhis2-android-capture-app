@@ -28,14 +28,12 @@ import org.hisp.dhis.android.core.datavalue.DataValueObjectRepository;
 import org.hisp.dhis.android.core.period.Period;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import io.reactivex.Completable;
 import io.reactivex.Flowable;
-import io.reactivex.Single;
 import timber.log.Timber;
 
 public class DataValueRepositoryImpl implements DataValueRepository {
@@ -60,102 +58,38 @@ public class DataValueRepositoryImpl implements DataValueRepository {
         return Flowable.fromCallable(() -> d2.dataSetModule().dataSets.withDataInputPeriods().byUid().eq(dataSetUid).one().blockingGet().dataInputPeriods());
     }
 
-    /*@Override
-    public Flowable<Map<String, List<String>>> getCategoryOptionComboCatOption() {
-
-        Map<String, List<String>> map = new HashMap<>();
-        return Flowable.fromCallable(() ->{
-            List<DataElement> dataElements = d2.dataSetModule().sections.withDataElements().byDataSetUid().eq(dataSetUid).byName().eq(sectionName).one().blockingGet().dataElements();
-                //List<DataSetElement> override = d2.dataSetModule().dataSets.byUid().eq(dataSetUid).withDataSetElements().one().blockingGet().dataSetElements();
-
-                for(DataElement dataElement: dataElements){
-                    //DataElement dataElement = d2.dataElementModule().dataElements.byUid().eq(dataSetElement.dataElement().uid()).one().blockingGet();
-                    //DataElement dElement = transformDataElement(dataElement, override);
-                    List<String> catOptions = UidsHelper.getUidsList(d2.categoryModule().categoryOptionCombos.withCategoryOptions()
-                            .byCategoryComboUid().eq(dataElement.categoryComboUid()).one().blockingGet().categoryOptions());
-
-                    if (map.containsKey(dataElement.uid())) {
-                        map.get(dataElement.uid()).addAll(catOptions);
-                    } else {
-                        map.put(dataElement.uid(), catOptions);
-                    }
-                }
-                Timber.tag("BREAKPOINT").d("getCategoryOptionComboCatOption()");
-
-                return map;
-        } );
-
-    }*/
-
-    @Override
-    public Flowable<List<DataElement>> getDataElements(String sectionName) {
-        if (!sectionName.equals("NO_SECTION"))
-            return Flowable.fromCallable(() -> {
-                List<String> dataElementsUid = UidsHelper.getUidsList(d2.dataSetModule().sections.withDataElements().byDataSetUid().eq(dataSetUid).byName().eq(sectionName).one().blockingGet().dataElements());
-                List<DataElement> transformedDataElements = new ArrayList<>();
-                List<DataElement> dataElements = d2.dataElementModule().dataElements.withStyle().byUid().in(dataElementsUid).orderByName(RepositoryScope.OrderByDirection.ASC).blockingGet();
-                for (DataElement dataElement : dataElements) {
-                    transformedDataElements.add(transformDataElement(dataElement, d2.dataSetModule().dataSets.withDataSetElements().byUid().eq(dataSetUid).one().blockingGet().dataSetElements()));
-                }
-                Timber.tag("BREAKPOINT").d("getDataElements()");
-                return transformedDataElements;
-            });
-
-        return Flowable.fromCallable(() -> {
-            List<DataSetElement> dataSetElements = d2.dataSetModule().dataSets.withDataSetElements().byUid().eq(dataSetUid).one().blockingGet().dataSetElements();
-            List<DataElement> transformedDataElements = new ArrayList<>();
-            List<String> uids = new ArrayList<>();
-            for (DataSetElement dataSetElement : dataSetElements)
-                uids.add(dataSetElement.dataElement().uid());
-
-            List<DataElement> dataElements = d2.dataElementModule().dataElements.byUid().in(uids).orderByName(RepositoryScope.OrderByDirection.ASC).blockingGet();
-
-            for (DataElement dataElement : dataElements) {
-                transformedDataElements.add(transformDataElement(dataElement, dataSetElements));
-            }
-            Timber.tag("BREAKPOINT").d("getDataElements()");
-            return transformedDataElements;
-        });
-    }
-
     public Flowable<List<CategoryCombo>> getCatCombo(String sectionName) {
+
+        List<String> categoryCombos = new ArrayList<>();
+        List<DataSetElement> dataSetElements = d2.dataSetModule().dataSets.withDataSetElements().uid(dataSetUid).blockingGet().dataSetElements();
+
         if (!sectionName.equals("NO_SECTION")) {
             List<DataElement> dataElements = d2.dataSetModule().sections.withDataElements().byDataSetUid().eq(dataSetUid).byName().eq(sectionName).one().blockingGet().dataElements();
-            List<String> categoryCombos = new ArrayList<>();
-            List<DataSetElement> dataSetElements = d2.dataSetModule().dataSets.withDataSetElements().byUid().eq(dataSetUid).one().blockingGet().dataSetElements();
-            for(DataSetElement dataSetElement: dataSetElements){
+            for (DataSetElement dataSetElement : dataSetElements) {
                 for (DataElement dataElement : dataElements) {
 
-                    if(dataSetElement.dataElement().uid().equals(dataElement.uid()))
+                    if (dataSetElement.dataElement().uid().equals(dataElement.uid()))
 
-                        if(dataSetElement.categoryCombo() != null && !categoryCombos.contains(dataElement.categoryComboUid()))
+                        if (dataSetElement.categoryCombo() != null && !categoryCombos.contains(dataElement.categoryComboUid()))
                             categoryCombos.add(dataSetElement.categoryCombo().uid());
 
                         else if (dataElement.categoryCombo() != null && !categoryCombos.contains(dataElement.categoryComboUid()))
                             categoryCombos.add(dataElement.categoryComboUid());
                 }
             }
-            return d2.categoryModule().categoryCombos.byUid().in(categoryCombos).withCategories().withCategoryOptionCombos().orderByDisplayName(RepositoryScope.OrderByDirection.ASC).get().toFlowable();
-        }
-        return Flowable.fromCallable(() -> {
-            List<DataSetElement> dataSetElements = d2.dataSetModule().dataSets.byUid().eq(dataSetUid).withDataSetElements().one().blockingGet().dataSetElements();
-            List<CategoryCombo> categoryCombos = new ArrayList<>();
+        } else {
             for (DataSetElement dataSetElement : dataSetElements) {
                 if (dataSetElement.categoryCombo() != null)
-                    categoryCombos.add(d2.categoryModule().categoryCombos.byUid().eq(dataSetElement.categoryCombo().uid()).withCategories().withCategoryOptionCombos().one().blockingGet());
+                    categoryCombos.add(dataSetElement.categoryCombo().uid());
                 else {
-                    DataElement dataElement = d2.dataElementModule().dataElements.byUid().eq(dataSetElement.dataElement().uid()).one().blockingGet();
-                    categoryCombos.add(d2.categoryModule().categoryCombos.byUid().eq(dataElement.categoryCombo().uid()).withCategories().withCategoryOptionCombos().one().blockingGet());
+                    DataElement dataElement = d2.dataElementModule().dataElements.uid(dataSetElement.dataElement().uid()).blockingGet();
+                    categoryCombos.add(dataElement.categoryCombo().uid());
                 }
             }
-            return categoryCombos;
-        });
-    }
+        }
+        return d2.categoryModule().categoryCombos.byUid().in(categoryCombos).withCategories().withCategoryOptionCombos().orderByDisplayName(RepositoryScope.OrderByDirection.ASC).get().toFlowable();
 
-    @Override
-    public Flowable<List<Category>> getCategories(CategoryCombo categoryCombo){
-        return d2.categoryModule().categories.withCategoryOptions().byUid().in(UidsHelper.getUids(categoryCombo.categories())).get().toFlowable();
-    }
+}
 
     @Override
     public Flowable<DataSet> getDataSet() {
@@ -181,101 +115,37 @@ public class DataValueRepositoryImpl implements DataValueRepository {
     }
 
     @Override
-    public Flowable<Map<String, List<CategoryOptionCombo>>> getCatOptionCombo() {
-
-        return Flowable.fromCallable(() -> {
-            Map<String, List<CategoryOptionCombo>> map = new HashMap<>();
-            List<Section> sectionsList = d2.dataSetModule().sections.withDataElements().byDataSetUid().eq(dataSetUid).blockingGet();
-
-            for (Section section : sectionsList) {
-                List<DataElement> dataElements = section.dataElements();
-                List<DataElement> dataElementOverrides = new ArrayList<>();
-
-                List<DataSetElement> overrides = d2.dataSetModule().dataSets.withDataSetElements().byUid().eq(dataSetUid).one().blockingGet().dataSetElements();
-                for (DataElement dataElement : dataElements)
-                    dataElementOverrides.add(transformDataElement(dataElement, overrides));
-
-                if (map.get(section.name()) == null)
-                    map.put(section.name(), new ArrayList<>());
-
-                for (DataElement dataElement : dataElementOverrides) {
-                    boolean exist = false;
-                    List<CategoryOptionCombo> listCatOption = d2.categoryModule().categoryOptionCombos.byCategoryComboUid().eq(dataElement.categoryCombo().uid()).blockingGet();
-                    for (CategoryOptionCombo catOptionCombo : listCatOption) {
-                        for (CategoryOptionCombo catOptionComboMap : map.get(section.name())) {
-                            if (catOptionComboMap.uid().equals(catOptionCombo.uid()))
-                                exist = true;
-                        }
-
-                        if (!exist)
-                            map.get(section.name()).add(catOptionCombo);
-                    }
-                }
-            }
-            Timber.tag("BREAKPOINT").d("getCatOptionCombo()");
-            return map;
-        });
-    }
-
-    @Override
     public Flowable<Map<String, List<List<Pair<CategoryOption, Category>>>>> getCatOptions(String sectionName, String catCombo) {
-        //List<String> catCombos = new ArrayList<>();
         Map<String, List<List<Pair<CategoryOption, Category>>>> map = new HashMap<>();
-        if (sectionName.equals("NO_SECTION"))
-            return Flowable.fromCallable(() -> {
-                List<String> dataElementUids = new ArrayList<>();
-                List<DataElement> dataElements;
-                for (DataSetElement dataSetElement : d2.dataSetModule().dataSets.withDataSetElements()
-                        .byUid().eq(dataSetUid).byCategoryComboUid().eq(catCombo).one().blockingGet().dataSetElements()) {
-                    dataElementUids.add(dataSetElement.dataElement().uid());
-                    /*if(dataSetElement.categoryCombo() != null)
-                        catCombos.add(dataSetElement.categoryCombo().uid());*/
-                }
-                dataElements = d2.dataElementModule().dataElements.withStyle().byUid().in(dataElementUids).orderByName(RepositoryScope.OrderByDirection.ASC).blockingGet();
-                map.put(catCombo, getMap(catCombo, dataElements));
-                return map;
-            });
-        return Flowable.fromCallable(() -> {
-            List<DataElement> dataElements = d2.dataSetModule().sections.withDataElements()
-                    .byDataSetUid().eq(dataSetUid)
-                    .byName().eq(sectionName)
-                    .one().blockingGet()
-                    .dataElements();
-            map.put(catCombo, getMap(catCombo, dataElements));
-            return map;
-        });
+        map.put(catCombo, getMap(catCombo));
+        return Flowable.just(map);
     }
 
 
-    private List<List<Pair<CategoryOption, Category>>> getMap(String catCombo, List<DataElement> dataElements) {
+    private List<List<Pair<CategoryOption, Category>>> getMap(String catCombo) {
         List<List<Pair<CategoryOption, Category>>> finalList = new ArrayList<>();
-        /*for (DataElement dataElement : dataElements) {
-            if(!catCombos.contains(dataElement.categoryCombo().uid()))
-                catCombos.add(dataElement.categoryCombo().uid());
-        }*/
-        //for (String catCombo : catCombos) {
-            List<Category> categories = d2.categoryModule().categoryCombos.withCategories().withCategoryOptionCombos().byUid().eq(catCombo).one().blockingGet().categories();
+        List<Category> categories = d2.categoryModule().categoryCombos.withCategories().withCategoryOptionCombos().byUid().eq(catCombo).one().blockingGet().categories();
 
-            for (Category category : categories) {
-                List<CategoryOption> catOptions = d2.categoryModule().categories.withCategoryOptions().byUid().eq(category.uid()).one().blockingGet().categoryOptions();
-                for (CategoryOption catOption : catOptions) {
-                    boolean add = true;
-                    for(List<Pair<CategoryOption, Category>> catComboList : finalList){
-                        if(finalList.contains(Pair.create(catOption, category)))
-                            add = false;
-                    }
-                    if(add){
+        for (Category category : categories) {
+            List<CategoryOption> catOptions = d2.categoryModule().categories.withCategoryOptions().byUid().eq(category.uid()).one().blockingGet().categoryOptions();
+            for (CategoryOption catOption : catOptions) {
+                boolean add = true;
+                for (List<Pair<CategoryOption, Category>> catComboList : finalList) {
+                    if (finalList.contains(Pair.create(catOption, category)))
+                        add = false;
+                }
+                if (add) {
 
-                        if (finalList/*.get(catCombo)*/.size() != 0 && finalList./*get(catCombo).*/get(finalList/*.get(catCombo)*/.size() - 1).get(0).val1().uid().equals(category.uid())) {
-                            finalList/*.get(catCombo)*/.get(finalList/*.get(catCombo)*/.size() - 1).add(Pair.create(catOption, category));
-                        } else {
-                            List<Pair<CategoryOption, Category>> list = new ArrayList<>();
-                            list.add(Pair.create(catOption, category));
-                            finalList/*.get(catCombo)*/.add(list);
-                        }
+                    if (finalList.size() != 0 && finalList.get(finalList.size() - 1).get(0).val1().uid().equals(category.uid())) {
+                        finalList.get(finalList.size() - 1).add(Pair.create(catOption, category));
+                    } else {
+                        List<Pair<CategoryOption, Category>> list = new ArrayList<>();
+                        list.add(Pair.create(catOption, category));
+                        finalList.add(list);
                     }
                 }
             }
+        }
         //}
         Timber.tag("BREAKPOINT").d("getCatOptions()");
         return finalList;
@@ -355,86 +225,33 @@ public class DataValueRepositoryImpl implements DataValueRepository {
     }
 
     @Override
-    public Flowable<Map<String, Map<String, List<String>>>> getGreyedFields(String section) {
-
-        Map<String, Map<String, List<String>>> mapData = new HashMap<>();
-
-        return Flowable.fromCallable(() -> {
-            List<DataElementOperand> operands;
-            if(!section.isEmpty() && !section.equals("NO_SECTION")) {
-                operands = d2.dataSetModule().sections.withGreyedFields().withDataElements().byDataSetUid().eq(dataSetUid).byName().eq(section).one().blockingGet().greyedFields();
-
-                for (DataElementOperand operand : operands) {
-                    List<String> catOptions;
-                    if (operand.categoryOptionCombo() == null) {
-                        List<DataSetElement> override = d2.dataSetModule().dataSets.byUid().eq(dataSetUid).withDataSetElements().one().blockingGet().dataSetElements();
-                        DataElement dataElement = d2.dataElementModule().dataElements.byUid().eq(operand.dataElement().uid()).one().blockingGet();
-                        DataElement dataElementOverride = transformDataElement(dataElement, override);
-
-                        List<CategoryOptionCombo> catOptionCombos = d2.categoryModule().categoryOptionCombos.byCategoryComboUid().eq(dataElementOverride.categoryCombo().uid()).withCategoryOptions().blockingGet();
-                        HashMap<String, List<String>> mapCatOptions = new HashMap<>();
-
-                        for (CategoryOptionCombo catOptionCombo : catOptionCombos) {
-                            mapCatOptions.put(catOptionCombo.uid(), UidsHelper.getUidsList(catOptionCombo.categoryOptions()));
-                        }
-
-                        mapData.put(operand.dataElement().uid(), mapCatOptions);
-                    } else {
-
-                        if (mapData.containsKey(operand.dataElement().uid())) {
-                            catOptions = UidsHelper.getUidsList(d2.categoryModule().categoryOptionCombos.byUid().eq(operand.categoryOptionCombo().uid()).withCategoryOptions().one().blockingGet().categoryOptions());
-                            mapData.get(operand.dataElement().uid()).put(operand.categoryOptionCombo().uid(), catOptions);
-                        } else
-                            catOptions = UidsHelper.getUidsList(d2.categoryModule().categoryOptionCombos.byUid().eq(operand.categoryOptionCombo().uid()).withCategoryOptions().one().blockingGet().categoryOptions());
-                        HashMap<String, List<String>> mapCatOptions = new HashMap<>();
-                        mapCatOptions.put(operand.categoryOptionCombo().uid(), catOptions);
-                        mapData.put(operand.dataElement().uid(), mapCatOptions);
-                    }
-                }
-            }
-            Timber.tag("BREAKPOINT").d("getGreyedFields()");
-            return mapData;
-
-        });
-
-    }
-
-    @Override
-    public Flowable<Map<String, List<String>>> getMandatoryDataElement() {
-        Map<String, List<String>> mapData = new HashMap<>();
-        return Flowable.fromCallable(() -> {
-            DataSet dataSet = d2.dataSetModule().dataSets.withCompulsoryDataElementOperands().withDataSetElements().byUid().eq(dataSetUid).one().blockingGet();
-            for(DataElementOperand operand : dataSet.compulsoryDataElementOperands()){
-                List<String> catOptions = UidsHelper.getUidsList(d2.categoryModule().categoryOptionCombos.withCategoryOptions().byUid().eq(operand.categoryOptionCombo().uid()).one().blockingGet().categoryOptions());
-                if (mapData.containsKey(operand.dataElement().uid())) {
-                    mapData.get(operand.dataElement().uid()).addAll(catOptions);
-                } else {
-                    mapData.put(operand.dataElement().uid(), catOptions);
-                }
-            }
-
-            Timber.tag("BREAKPOINT").d("getMandatoryDataElement()");
-
-            return  mapData;
-        });
-
-    }
-
-    @Override
     public Flowable<List<DataElementOperand>> getCompulsoryDataElements() {
         return d2.dataSetModule().dataSets.withCompulsoryDataElementOperands().uid(dataSetUid).get()
                 .map(DataSet::compulsoryDataElementOperands).toFlowable();
     }
 
     @Override
-    public Flowable<List<DataElementOperand>> getGreyFields(String section) {
-        return d2.dataSetModule().sections.withGreyedFields().byDataSetUid().eq(dataSetUid).byName().eq(section).one().get()
-                .map(Section::greyedFields).toFlowable();
+    public Flowable<List<DataElementOperand>> getGreyFields(String sectionName) {
+        if (!sectionName.isEmpty() && !sectionName.equals("NO_SECTION"))
+            return d2.dataSetModule().sections.withGreyedFields().byDataSetUid().eq(dataSetUid).byName().eq(sectionName).one().get()
+                .map(section -> {
+                    List<DataElementOperand> greyFields = section.greyedFields();
+                    for(DataElementOperand dataElementOperand : greyFields)
+                        if (dataElementOperand.categoryOptionCombo() == null) {
+                            List<DataSetElement> override = d2.dataSetModule().dataSets.byUid().eq(dataSetUid).withDataSetElements().one().blockingGet().dataSetElements();
+                            DataElement dataElement = d2.dataElementModule().dataElements.byUid().eq(dataElementOperand.dataElement().uid()).one().blockingGet();
+                            DataElement dataElementOverride = transformDataElement(dataElement, override);
+                            greyFields.set(greyFields.indexOf(dataElementOperand), dataElementOperand.toBuilder().categoryOptionCombo(dataElementOverride.categoryCombo()).build());
+                        }
+                    return greyFields;
+                }).toFlowable();
+        else
+            return Flowable.just(new ArrayList<>());
     }
 
     @Override
     public Flowable<Section> getSectionByDataSet(String section) {
-        if(!section.isEmpty() && !section.equals("NO_SECTION"))
+        if (!section.isEmpty() && !section.equals("NO_SECTION"))
             return Flowable.just(d2.dataSetModule().sections.byDataSetUid().eq(dataSetUid).byName().eq(section).one().blockingGet());
         else
             return Flowable.just(Section.builder().uid("").build());
@@ -486,7 +303,7 @@ public class DataValueRepositoryImpl implements DataValueRepository {
     @Override
     public Flowable<Boolean> isCompleted(String orgUnitUid, String periodInitialDate, String catCombo) {
 
-        return Flowable.fromCallable(() ->{
+        return Flowable.fromCallable(() -> {
             DataSetCompleteRegistration completeRegistration = d2.dataSetModule().dataSetCompleteRegistrations
                     .byDataSetUid().eq(dataSetUid)
                     .byAttributeOptionComboUid().eq(catCombo)
@@ -498,7 +315,7 @@ public class DataValueRepositoryImpl implements DataValueRepository {
     }
 
     @Override
-    public Flowable<Boolean> isApproval(String orgUnit, String period, String attributeOptionCombo){
+    public Flowable<Boolean> isApproval(String orgUnit, String period, String attributeOptionCombo) {
         return Flowable.fromCallable(() -> {
             DataApproval dataApproval = d2.dataSetModule().dataApprovals
                     .byOrganisationUnitUid().eq(orgUnit)
@@ -513,11 +330,17 @@ public class DataValueRepositoryImpl implements DataValueRepository {
     public Flowable<List<DataElement>> getDataElements(CategoryCombo categoryCombo, String sectionName) {
         List<String> dataElements = new ArrayList<>();
         if (!sectionName.equals("NO_SECTION"))
-           dataElements = UidsHelper.getUidsList(d2.dataSetModule().sections.withDataElements().byDataSetUid().eq(dataSetUid).byName().eq(sectionName).one().blockingGet().dataElements());
+            dataElements = UidsHelper.getUidsList(d2.dataSetModule().sections.withDataElements().byDataSetUid().eq(dataSetUid).byName().eq(sectionName).one().blockingGet().dataElements());
         else {
             List<DataSetElement> dataSetElements = d2.dataSetModule().dataSets.withDataSetElements().byUid().eq(dataSetUid).one().blockingGet().dataSetElements();
             for (DataSetElement dataSetElement : dataSetElements)
                 dataElements.add(dataSetElement.dataElement().uid());
+
+            if(dataSetElements.get(0).categoryCombo() != null)
+                return d2.dataElementModule().dataElements
+                        .byUid().in(dataElements)
+                        .orderByName(RepositoryScope.OrderByDirection.ASC)
+                        .get().toFlowable();
         }
         return d2.dataElementModule().dataElements
                 .byUid().in(dataElements)
@@ -527,13 +350,13 @@ public class DataValueRepositoryImpl implements DataValueRepository {
     }
 
     @Override
-    public List<CategoryOption> getCatOptionFromCatOptionCombo(CategoryOptionCombo categoryOptionCombo){
+    public List<CategoryOption> getCatOptionFromCatOptionCombo(CategoryOptionCombo categoryOptionCombo) {
         return d2.categoryModule().categoryOptionCombos.withCategoryOptions().uid(categoryOptionCombo.uid()).blockingGet().categoryOptions();
     }
 
 
     @Override
-    public CategoryOption getCatOptionFromUid(String catOption){
+    public CategoryOption getCatOptionFromUid(String catOption) {
         return d2.categoryModule().categoryOptions.uid(catOption).blockingGet();
     }
 }

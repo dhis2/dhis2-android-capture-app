@@ -23,23 +23,13 @@ import io.reactivex.Single;
 public interface DataValueRepository {
     Completable updateValue(DataSetTableModel dataValue);
 
-    Flowable<List<Category>> getCategories(CategoryCombo categoryCombo);
-
     Flowable<DataSet> getDataSet();
-
-    Flowable<List<DataElement>> getDataElements(String section);
 
     Flowable<List<CategoryCombo>> getCatCombo(String section);
 
     Flowable<Map<String, List<List<Pair<CategoryOption, Category>>>>> getCatOptions(String section, String catCombo);
 
-    Flowable<Map<String, List<CategoryOptionCombo>>> getCatOptionCombo();
-
     Flowable<List<DataSetTableModel>> getDataValues(String orgUnitUid, String periodType, String initPeriodType, String catOptionComb, String section);
-
-    Flowable<Map<String, Map<String, List<String>>>> getGreyedFields(String section);
-
-    Flowable<Map<String, List<String>>> getMandatoryDataElement();
 
     Flowable<List<DataElementOperand>> getCompulsoryDataElements();
 
