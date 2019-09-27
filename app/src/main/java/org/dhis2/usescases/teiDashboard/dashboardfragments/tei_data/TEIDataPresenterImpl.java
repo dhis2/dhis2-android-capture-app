@@ -9,6 +9,7 @@ import android.view.View;
 import androidx.appcompat.widget.PopupMenu;
 import androidx.core.app.ActivityOptionsCompat;
 
+import org.dhis2.Bindings.ExtensionsKt;
 import org.dhis2.R;
 import org.dhis2.usescases.enrollment.EnrollmentActivity;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity;
@@ -24,20 +25,11 @@ import org.dhis2.usescases.teiDashboard.teiDataDetail.TeiDataDetailActivity;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.EventCreationType;
 import org.hisp.dhis.android.core.D2;
-import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.event.EventStatus;
-import org.hisp.dhis.android.core.fileresource.FileResource;
 import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.program.ProgramStage;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue;
-
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Objects;
 
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
@@ -45,8 +37,6 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
-
-import static android.text.TextUtils.isEmpty;
 
 /**
  * QUADRAM. Created by ppajuelo on 09/04/2019.
@@ -76,37 +66,7 @@ class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
 
         compositeDisposable.add(
                 d2.trackedEntityModule().trackedEntityInstances.uid(teiUid).get()
-                        .map(tei -> {
-                            String path = "";
-                            Iterator<TrackedEntityAttribute> iterator = d2.trackedEntityModule().trackedEntityAttributes
-                                    .byValueType().eq(ValueType.IMAGE)
-                                    .blockingGet().iterator();
-                            List<String> imageAttributesUids = new ArrayList<>();
-                            while (iterator.hasNext())
-                                imageAttributesUids.add(iterator.next().uid());
-
-                            TrackedEntityAttributeValue attributeValue;
-                            if (d2.trackedEntityModule().trackedEntityTypeAttributes
-                                    .byTrackedEntityTypeUid().eq(tei.trackedEntityType())
-                                    .byTrackedEntityAttributeUid().in(imageAttributesUids).one().blockingExists()) {
-
-                                String attrUid = Objects.requireNonNull(d2.trackedEntityModule().trackedEntityTypeAttributes
-                                        .byTrackedEntityTypeUid().eq(tei.trackedEntityType())
-                                        .byTrackedEntityAttributeUid().in(imageAttributesUids).one().blockingGet()).trackedEntityAttribute().uid();
-
-                                attributeValue = d2.trackedEntityModule().trackedEntityAttributeValues.byTrackedEntityInstance().eq(tei.uid())
-                                        .byTrackedEntityAttribute().eq(attrUid).one().blockingGet();
-
-                                if (attributeValue != null && !isEmpty(attributeValue.value())) {
-                                    FileResource fileResource = d2.fileResourceModule().fileResources.uid(attributeValue.value()).blockingGet();
-                                    if (fileResource != null) {
-                                        path = fileResource.path();
-                                    }
-                                }
-                            }
-                            return path;
-
-                        }).toObservable()
+                        .map(tei -> ExtensionsKt.profilePicturePath(tei, d2, programUid))
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
