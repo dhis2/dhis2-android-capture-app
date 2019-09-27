@@ -1,6 +1,5 @@
 package org.dhis2.usescases.searchTrackEntity;
 
-import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteConstraintException;
 
@@ -13,27 +12,25 @@ import androidx.paging.PagedList;
 
 import com.squareup.sqlbrite2.BriteDatabase;
 
+import org.dhis2.Bindings.ExtensionsKt;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel;
 import org.dhis2.utils.CodeGenerator;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.DateUtils;
-import org.dhis2.utils.FileResourcesUtil;
 import org.dhis2.utils.ValueUtils;
 import org.dhis2.utils.filters.FilterManager;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper;
-import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
 import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
+import org.hisp.dhis.android.core.enrollment.EnrollmentCreateProjection;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
-import org.hisp.dhis.android.core.enrollment.EnrollmentTableInfo;
 import org.hisp.dhis.android.core.event.EventCollectionRepository;
 import org.hisp.dhis.android.core.event.EventStatus;
-import org.hisp.dhis.android.core.fileresource.FileResource;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitMode;
 import org.hisp.dhis.android.core.period.DatePeriod;
@@ -42,26 +39,25 @@ import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttribute;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceTableInfo;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceCreateProjection;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityType;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityTypeAttribute;
 import org.hisp.dhis.android.core.trackedentity.search.TrackedEntityInstanceQueryCollectionRepository;
 
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
-import java.util.Objects;
 
 import javax.annotation.Nonnull;
 
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
+import io.reactivex.Single;
 import timber.log.Timber;
 
 import static android.text.TextUtils.isEmpty;
@@ -100,13 +96,11 @@ public class SearchRepositoryImpl implements SearchRepository {
             "TrackedEntityAttribute", "sortOrderInListNoProgram"
     );
 
-    private final CodeGenerator codeGenerator;
     private final String teiType;
     private final D2 d2;
 
 
     SearchRepositoryImpl(CodeGenerator codeGenerator, BriteDatabase briteDatabase, String teiType, D2 d2) {
-        this.codeGenerator = codeGenerator;
         this.briteDatabase = briteDatabase;
         this.teiType = teiType;
         this.d2 = d2;
@@ -306,7 +300,56 @@ public class SearchRepositoryImpl implements SearchRepository {
     @NonNull
     @Override
     public Observable<Pair<String, String>> saveToEnroll(@NonNull String teiType, @NonNull String orgUnit, @NonNull String programUid, @Nullable String teiUid, HashMap<String, String> queryData, Date enrollmentDate) {
-        Date currentDate = Calendar.getInstance().getTime();
+
+        Single<String> enrollmentInitial;
+        if (teiUid == null)
+            enrollmentInitial = d2.trackedEntityModule().trackedEntityInstances.add(
+                    TrackedEntityInstanceCreateProjection.builder()
+                            .organisationUnit(orgUnit)
+                            .trackedEntityType(teiType)
+                            .build()
+            );
+        else
+            enrollmentInitial = Single.just(teiUid);
+
+        return enrollmentInitial.flatMap(uid -> {
+                    if (uid == null) {
+                        String message = String.format(Locale.US, "Failed to insert new tracked entity " +
+                                        "instance for organisationUnit=[%s] and trackedEntity=[%s]",
+                                orgUnit, teiType);
+                        return Single.error(new SQLiteConstraintException(message));
+                    } else {
+                        if (queryData.containsKey(Constants.ENROLLMENT_DATE_UID))
+                            queryData.remove(Constants.ENROLLMENT_DATE_UID);
+                        for (String key : queryData.keySet()) {
+                            String dataValue = queryData.get(key);
+                            if (dataValue.contains("_os_"))
+                                dataValue = dataValue.split("_os_")[1];
+
+                            boolean isGenerated = d2.trackedEntityModule().trackedEntityAttributes.uid(key).blockingGet().generated();
+
+                            if (!isGenerated)
+                                d2.trackedEntityModule().trackedEntityAttributeValues.value(key, uid).blockingSet(dataValue);
+                        }
+                        return Single.just(uid);
+                    }
+                }
+        ).flatMap(uid ->
+                d2.enrollmentModule().enrollments.add(
+                        EnrollmentCreateProjection.builder()
+                                .trackedEntityInstance(uid)
+                                .program(programUid)
+                                .organisationUnit(orgUnit)
+                                .build())
+                        .map(enrollmentUid -> {
+                            boolean displayIncidentDate = d2.programModule().programs.uid(programUid).blockingGet().displayIncidentDate();
+                            d2.enrollmentModule().enrollments.uid(enrollmentUid).setEnrollmentDate(enrollmentDate);
+                            if (displayIncidentDate)
+                                d2.enrollmentModule().enrollments.uid(enrollmentUid).setIncidentDate(new Date());
+                            return Pair.create(enrollmentUid, uid);
+                        })
+        ).toObservable();
+/*
         return Observable.defer(() -> {
             TrackedEntityInstance trackedEntityInstance = null;
             if (teiUid == null) {
@@ -399,7 +442,7 @@ public class SearchRepositoryImpl implements SearchRepository {
 
 
             return Observable.just(Pair.create(enrollment.uid(), trackedEntityInstance.uid()));
-        });
+        });*/
     }
 
     @Override
@@ -567,7 +610,7 @@ public class SearchRepositoryImpl implements SearchRepository {
             setAttributesInfo(searchTei, selectedProgram);
             setOverdueEvents(searchTei, selectedProgram);
 
-            searchTei.setProfilePicture(profilePicturePath(tei));
+            searchTei.setProfilePicture(profilePicturePath(tei, selectedProgram));
             ObjectStyle os = null;
             if (d2.trackedEntityModule().trackedEntityTypes.withStyle().uid(tei.trackedEntityType()).blockingExists())
                 os = d2.trackedEntityModule().trackedEntityTypes.withStyle().uid(tei.trackedEntityType()).blockingGet().style();
@@ -599,34 +642,8 @@ public class SearchRepositoryImpl implements SearchRepository {
         }
     }
 
-    private String profilePicturePath(TrackedEntityInstance tei) {
-        String path = "";
-        List<TrackedEntityAttribute> imageAttributes = d2.trackedEntityModule().trackedEntityAttributes.byValueType().eq(ValueType.IMAGE).blockingGet();
-        List<String> imageAttributesUids = new ArrayList<>();
-        for (TrackedEntityAttribute attr : imageAttributes)
-            imageAttributesUids.add(attr.uid());
-
-        TrackedEntityAttributeValue attributeValue;
-        if (d2.trackedEntityModule().trackedEntityTypeAttributes
-                .byTrackedEntityTypeUid().eq(tei.trackedEntityType())
-                .byTrackedEntityAttributeUid().in(imageAttributesUids).one().blockingExists()) {
-
-            String attrUid = Objects.requireNonNull(d2.trackedEntityModule().trackedEntityTypeAttributes
-                    .byTrackedEntityTypeUid().eq(tei.trackedEntityType())
-                    .byTrackedEntityAttributeUid().in(imageAttributesUids).one().blockingGet()).trackedEntityAttribute().uid();
-
-            attributeValue = d2.trackedEntityModule().trackedEntityAttributeValues.byTrackedEntityInstance().eq(tei.uid())
-                    .byTrackedEntityAttribute().eq(attrUid).one().blockingGet();
-
-            if (attributeValue != null && !isEmpty(attributeValue.value())) {
-                FileResource fileResource = d2.fileResourceModule().fileResources.uid(attributeValue.value()).blockingGet();
-                if (fileResource != null) {
-                    path = fileResource.path();
-                }
-            }
-        }
-
-        return path;
+    private String profilePicturePath(TrackedEntityInstance tei, @Nullable Program selectedProgram) {
+        return ExtensionsKt.profilePicturePath(tei, d2, selectedProgram != null ? selectedProgram.uid() : null);
     }
 
     private boolean attrIsProfileImage(String attrUid) {
