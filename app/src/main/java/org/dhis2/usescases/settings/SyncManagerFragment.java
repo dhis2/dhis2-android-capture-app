@@ -60,7 +60,13 @@ import static org.dhis2.utils.Constants.TIME_DAILY;
 import static org.dhis2.utils.Constants.TIME_HOURLY;
 import static org.dhis2.utils.Constants.TIME_MANUAL;
 import static org.dhis2.utils.Constants.TIME_WEEKLY;
+import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
+import static org.dhis2.utils.analytics.AnalyticsConstants.CONFIRM_DELETE_LOCAL_DATA;
+import static org.dhis2.utils.analytics.AnalyticsConstants.CONFIRM_RESET;
+import static org.dhis2.utils.analytics.AnalyticsConstants.SYNC_DATA;
 import static org.dhis2.utils.analytics.AnalyticsConstants.SYNC_MANAGER_FRAGMENT;
+import static org.dhis2.utils.analytics.AnalyticsConstants.SYNC_METADATA;
+import static org.dhis2.utils.analytics.AnalyticsConstants.TYPE_SYNC;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -338,16 +344,20 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
 
         switch (checkedId) {
             case R.id.data_quarter:
+                analyticsHelper().setEvent(TYPE_SYNC, getString(R.string.data_every_fifteen_minutes), SYNC_DATA);
                 time = TIME_15M;
                 break;
             case R.id.data_hour:
+                analyticsHelper().setEvent(TYPE_SYNC, getString(R.string.data_every_hour), SYNC_DATA);
                 time = TIME_HOURLY;
                 break;
             case R.id.data_day:
+                analyticsHelper().setEvent(TYPE_SYNC, getString(R.string.data_every_day), SYNC_DATA);
                 time = TIME_DAILY;
                 break;
             case R.id.data_manual:
             default:
+                analyticsHelper().setEvent(TYPE_SYNC, getString(R.string.Manual), SYNC_DATA);
                 time = TIME_MANUAL;
                 break;
         }
@@ -366,13 +376,16 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
 
         switch (i) {
             case R.id.meta_weekly:
+                analyticsHelper().setEvent(TYPE_SYNC, getString(R.string.data_every_week), SYNC_METADATA);
                 time = TIME_WEEKLY;
                 break;
             case R.id.meta_manual:
+                analyticsHelper().setEvent(TYPE_SYNC, getString(R.string.Manual), SYNC_METADATA);
                 time = TIME_MANUAL;
                 break;
             case R.id.meta_day:
             default:
+                analyticsHelper().setEvent(TYPE_SYNC, getString(R.string.data_every_day), SYNC_METADATA);
                 time = TIME_DAILY;
                 break;
         }
@@ -393,7 +406,10 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
                 .setTitle(getString(R.string.wipe_data))
                 .setMessage(getString(R.string.wipe_data_meesage))
                 .setView(R.layout.warning_layout)
-                .setPositiveButton(getString(R.string.wipe_data_ok), (dialog, which) -> showDeleteProgress())
+                .setPositiveButton(getString(R.string.wipe_data_ok), (dialog, which) -> {
+                    analyticsHelper().setEvent(CONFIRM_RESET, CLICK, CONFIRM_RESET);
+                    showDeleteProgress();
+                })
                 .setNegativeButton(getString(R.string.wipe_data_no), (dialog, which) -> dialog.dismiss())
                 .show();
     }
@@ -404,7 +420,10 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
                 .setTitle(getString(R.string.delete_local_data))
                 .setMessage(getString(R.string.delete_local_data_message))
                 .setView(R.layout.warning_layout)
-                .setPositiveButton(getString(R.string.action_accept), (dialog, which) -> presenter.deleteLocalData())
+                .setPositiveButton(getString(R.string.action_accept), (dialog, which) -> {
+                    analyticsHelper().setEvent(CONFIRM_DELETE_LOCAL_DATA, CLICK, CONFIRM_DELETE_LOCAL_DATA);
+                    presenter.deleteLocalData();
+                })
                 .setNegativeButton(getString(R.string.cancel), (dialog, which) -> dialog.dismiss())
                 .show();
     }

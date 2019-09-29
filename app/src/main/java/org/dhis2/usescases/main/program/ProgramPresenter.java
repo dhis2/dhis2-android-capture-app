@@ -36,6 +36,8 @@ import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
 import static android.text.TextUtils.isEmpty;
+import static org.dhis2.utils.analytics.AnalyticsConstants.SELECT_PROGRAM;
+import static org.dhis2.utils.analytics.AnalyticsConstants.TYPE_PROGRAM_SELECTED;
 
 /**
  * Created by ppajuelo on 18/10/2017.f
@@ -200,6 +202,7 @@ public class ProgramPresenter implements ProgramContract.Presenter {
         else
             idTag = "PROGRAM_UID";
 
+        view.analyticsHelper().setEvent(TYPE_PROGRAM_SELECTED, idTag, SELECT_PROGRAM);
         bundle.putString(idTag, programModel.id());
         bundle.putString(Constants.DATA_SET_NAME, programModel.title());
         bundle.putString(Constants.ACCESS_DATA, programModel.accessDataWrite().toString());

@@ -20,6 +20,7 @@ import org.dhis2.data.server.UserManager
 import org.dhis2.usescases.main.MainActivity
 import org.dhis2.usescases.qrScanner.QRActivity
 import org.dhis2.utils.Constants
+import org.dhis2.utils.analytics.*
 import org.hisp.dhis.android.core.d2manager.D2Manager
 import org.hisp.dhis.android.core.maintenance.D2Error
 import org.hisp.dhis.android.core.maintenance.D2ErrorCode
@@ -94,6 +95,7 @@ class LoginPresenter : LoginContracts.Presenter {
 
     override fun onButtonClick() {
         view.hideKeyboard()
+        view.analyticsHelper().setEvent(LOGIN, CLICK, LOG_IN)
         val prefs = view.abstracContext.getSharedPreferences(
                 Constants.SHARE_PREFS, Context.MODE_PRIVATE)
         if (!prefs.getBoolean(Constants.USER_ASKED_CRASHLYTICS, false))
@@ -129,6 +131,7 @@ class LoginPresenter : LoginContracts.Presenter {
     }
 
     override fun onQRClick(v: View) {
+        view.analyticsHelper().setEvent(SERVER_QR_SCANNER, CLICK, QR_URL_SCANNER)
         val intent = Intent(view.context, QRActivity::class.java)
         view.abstractActivity.startActivityForResult(intent, Constants.RQ_QR_SCANNER)
     }
@@ -206,6 +209,7 @@ class LoginPresenter : LoginContracts.Presenter {
     }
 
     override fun onAccountRecovery() {
+        view.analyticsHelper().setEvent(ACCOUNT_RECOVERY, CLICK, ACCOUNT_RECOVERY)
         view.openAccountRecovery()
     }
 

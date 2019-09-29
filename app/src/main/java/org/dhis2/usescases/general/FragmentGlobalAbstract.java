@@ -20,6 +20,7 @@ import com.google.gson.reflect.TypeToken;
 import org.dhis2.usescases.main.program.SyncStatusDialog;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.OnDialogClickListener;
+import org.dhis2.utils.analytics.AnalyticsHelper;
 
 import java.lang.reflect.Type;
 import java.util.List;
@@ -137,5 +138,10 @@ public abstract class FragmentGlobalAbstract extends Fragment implements Abstrac
     public void showSyncDialog(String orgUnit, String attributeCombo, String periodId,
                                SyncStatusDialog.ConflictType conflictType, FlowableProcessor processor) {
         getAbstractActivity().showSyncDialog(orgUnit,attributeCombo,periodId ,conflictType, processor);
+    }
+
+    @Override
+    public AnalyticsHelper analyticsHelper() {
+        return getAbstractActivity().analyticsHelper();
     }
 }

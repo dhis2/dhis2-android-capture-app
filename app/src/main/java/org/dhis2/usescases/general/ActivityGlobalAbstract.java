@@ -59,6 +59,9 @@ import rx.Observable;
 import rx.subjects.BehaviorSubject;
 import timber.log.Timber;
 
+import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
+import static org.dhis2.utils.analytics.AnalyticsConstants.SHOW_HELP;
+
 /**
  * QUADRAM. Created by Javi on 28/07/2017.
  */
@@ -165,6 +168,7 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
         }
         popupMenu.getMenuInflater().inflate(R.menu.home_menu, popupMenu.getMenu());
         popupMenu.setOnMenuItemClickListener(item -> {
+            analyticsHelper.setEvent(SHOW_HELP, CLICK, SHOW_HELP);
             showTutorial(false);
             return false;
         });
@@ -431,5 +435,10 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
         this.uuid = uuid;
         this.onPictureSelected = onPictureSelected;
         startActivityForResult(intent, request);
+    }
+
+    @Override
+    public AnalyticsHelper analyticsHelper() {
+        return analyticsHelper;
     }
 }

@@ -54,6 +54,10 @@ import javax.inject.Inject;
 
 import io.reactivex.functions.Consumer;
 
+import static org.dhis2.utils.analytics.AnalyticsConstants.BLOCK_SESSION;
+import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
+import static org.dhis2.utils.analytics.AnalyticsConstants.CLOSE_SESSION;
+
 
 public class MainActivity extends ActivityGlobalAbstract implements MainContracts.View, ExporterListener {
 
@@ -87,6 +91,7 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
             changeFragment(item.getItemId());
             return false;
         });
+        analyticsHelper.setEvent("sale", "algo", "o que");
         binding.pinLayout.pinLockView.attachIndicatorDots(binding.pinLayout.indicatorDots);
         binding.pinLayout.pinLockView.setPinLockListener(new PinLockListener() {
             @Override
@@ -257,9 +262,11 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
                 binding.filter.setVisibility(View.GONE);
                 break;
             case R.id.block_button:
+                analyticsHelper.setEvent(BLOCK_SESSION, CLICK, BLOCK_SESSION);
                 onLockClick();
                 break;
             case R.id.logout_button:
+                analyticsHelper.setEvent(CLOSE_SESSION, CLICK, CLOSE_SESSION);
                 presenter.logOut();
                 break;
             case R.id.menu_home:
