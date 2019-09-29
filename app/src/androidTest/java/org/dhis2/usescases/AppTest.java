@@ -10,7 +10,7 @@ public class AppTest extends App {
     @Override
     protected void setUpServerComponent() {
         serverComponent = appComponent().plus(new FakeServerModule(), new DbModule(DATABASE_NAME));
-        setUpServerComponent();
+        setUpUserComponent();
     }
 
     @Override

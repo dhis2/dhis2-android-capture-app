@@ -11,15 +11,6 @@ import android.util.TypedValue;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.work.Constraints;
-import androidx.work.Data;
-import androidx.work.ExistingWorkPolicy;
-import androidx.work.NetworkType;
-import androidx.work.OneTimeWorkRequest;
-import androidx.work.WorkContinuation;
-import androidx.work.WorkManager;
-
-import org.dhis2.data.service.files.FilesWorker;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -48,35 +39,6 @@ public class FileResourcesUtil {
         if (!downloadDirectory.exists())
             downloadDirectory.mkdirs();
         return downloadDirectory;
-    }
-
-    public static WorkContinuation initBulkFileUploadWork() {
-
-        return WorkManager.getInstance().beginUniqueWork(FilesWorker.TAG_UPLOAD, ExistingWorkPolicy.REPLACE, initBulkFileUploadRequest());
-    }
-
-    public static OneTimeWorkRequest initBulkFileUploadRequest() {
-        OneTimeWorkRequest.Builder fileBuilder = new OneTimeWorkRequest.Builder(FilesWorker.class);
-        fileBuilder.addTag(FilesWorker.TAG_UPLOAD);
-        fileBuilder.setConstraints(new Constraints.Builder()
-                .setRequiredNetworkType(NetworkType.CONNECTED)
-                .build());
-        fileBuilder.setInputData(new Data.Builder()
-                .putString(FilesWorker.MODE, FilesWorker.FileMode.UPLOAD.name())
-                .build());
-        return fileBuilder.build();
-    }
-
-    public static OneTimeWorkRequest initDownloadRequest() {
-        OneTimeWorkRequest.Builder fileBuilder = new OneTimeWorkRequest.Builder(FilesWorker.class);
-        fileBuilder.addTag(FilesWorker.TAG);
-        fileBuilder.setConstraints(new Constraints.Builder()
-                .setRequiredNetworkType(NetworkType.CONNECTED)
-                .build());
-        fileBuilder.setInputData(new Data.Builder()
-                .putString(FilesWorker.MODE, FilesWorker.FileMode.DOWNLOAD.name())
-                .build());
-        return fileBuilder.build();
     }
 
     public static void saveImageToUpload(File src, File dst) {

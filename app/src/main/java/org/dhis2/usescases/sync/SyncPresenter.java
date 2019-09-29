@@ -14,6 +14,7 @@ import org.dhis2.data.service.SyncInitWorker;
 import org.dhis2.data.service.SyncMetadataWorker;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.utils.Constants;
+import org.dhis2.utils.FileResourcesUtil;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.settings.SystemSetting;
 
@@ -45,6 +46,7 @@ public class SyncPresenter implements SyncContracts.Presenter {
 
     @Override
     public void sync() {
+        //META WORK REQUEST
         OneTimeWorkRequest.Builder syncMetaBuilder = new OneTimeWorkRequest.Builder(SyncMetadataWorker.class);
         syncMetaBuilder.addTag(Constants.META_NOW);
         syncMetaBuilder.setConstraints(new Constraints.Builder()
@@ -52,6 +54,7 @@ public class SyncPresenter implements SyncContracts.Presenter {
                 .build());
         OneTimeWorkRequest metaRequest = syncMetaBuilder.build();
 
+        //DATA WORK REQUEST
         OneTimeWorkRequest.Builder syncDataBuilder = new OneTimeWorkRequest.Builder(SyncDataWorker.class);
         syncDataBuilder.addTag(Constants.DATA_NOW);
         syncDataBuilder.setConstraints(new Constraints.Builder()
@@ -59,6 +62,7 @@ public class SyncPresenter implements SyncContracts.Presenter {
                 .build());
         OneTimeWorkRequest dataRequest = syncDataBuilder.build();
 
+        //FULL REQUEST
         WorkManager.getInstance(view.getContext().getApplicationContext())
                 .beginUniqueWork(Constants.INITIAL_SYNC, ExistingWorkPolicy.KEEP, metaRequest)
                 .then(dataRequest)
