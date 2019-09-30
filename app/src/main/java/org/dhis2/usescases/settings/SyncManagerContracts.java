@@ -1,9 +1,8 @@
-package org.dhis2.usescases.syncManager;
+package org.dhis2.usescases.settings;
 
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.usescases.general.AbstractActivityContracts;
 import org.hisp.dhis.android.core.imports.TrackerImportConflict;
-import org.hisp.dhis.android.core.maintenance.D2Error;
 
 import java.util.List;
 

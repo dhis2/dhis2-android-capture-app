@@ -18,6 +18,7 @@ import org.dhis2.utils.Preconditions;
 import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.common.ValueTypeDeviceRenderingModel;
 import org.hisp.dhis.android.core.common.ValueTypeRenderingType;
+import org.hisp.dhis.android.core.d2manager.D2Manager;
 
 import java.lang.reflect.Type;
 import java.util.List;
@@ -49,11 +50,15 @@ final class EditTextCustomHolder extends FormViewHolder {
         this.currentUid = currentSelection;
 
         binding.customEdittext.setFocusChangedListener((v, hasFocus) -> {
-            if (hasFocus) {
+           /* if (hasFocus) {
                 openKeyboard(binding.customEdittext.getEditText());
                 setSelectedBackground(isSearchMode);
             } else
-                clearBackground(isSearchMode);
+                clearBackground(isSearchMode);*/
+           if(!hasFocus){
+               clearBackground(isSearchMode);
+               binding.customEdittext.getEditText().setFocusable(false);
+           }
 
             if (isSearchMode || (!hasFocus && editTextModel != null && editTextModel.editable() && valueHasChanged())) {
                 sendAction();
@@ -61,9 +66,16 @@ final class EditTextCustomHolder extends FormViewHolder {
         });
         binding.customEdittext.setOnEditorActionListener((v, actionId, event) -> {
             sendAction();
-            closeKeyboard(binding.customEdittext.getEditText());
-            sendAction();
+//            closeKeyboard(binding.customEdittext.getEditText());
             return true;
+        });
+
+        binding.customEdittext.setActivationListener(() -> {
+            setSelectedBackground(isSearchMode);
+            binding.customEdittext.getEditText().setFocusable(true);
+            binding.customEdittext.getEditText().setFocusableInTouchMode(true);
+            binding.customEdittext.getEditText().requestFocus();
+            openKeyboard(binding.customEdittext.getEditText());
         });
     }
 
@@ -78,6 +90,8 @@ final class EditTextCustomHolder extends FormViewHolder {
         }
 
         clearBackground(isSearchMode);
+        closeKeyboard(binding.customEdittext.getEditText());
+
     }
 
     public void update(@NonNull FieldViewModel model) {

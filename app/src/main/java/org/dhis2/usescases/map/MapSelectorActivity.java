@@ -11,12 +11,16 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationServices;
+import com.mapbox.android.core.location.LocationEngineProvider;
+import com.mapbox.android.core.permissions.PermissionsManager;
 import com.mapbox.mapboxsdk.Mapbox;
 import com.mapbox.mapboxsdk.camera.CameraPosition;
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
 import com.mapbox.mapboxsdk.geometry.LatLng;
+import com.mapbox.mapboxsdk.location.LocationComponent;
+import com.mapbox.mapboxsdk.location.LocationComponentActivationOptions;
+import com.mapbox.mapboxsdk.location.modes.CameraMode;
+import com.mapbox.mapboxsdk.location.modes.RenderMode;
 import com.mapbox.mapboxsdk.maps.MapView;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.mapboxsdk.maps.Style;
@@ -26,20 +30,23 @@ import org.dhis2.R;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.jetbrains.annotations.NotNull;
 
+import timber.log.Timber;
+
 
 /**
  * Created by Cristian on 15/03/2018.
  */
 
-public class MapSelectorActivity extends ActivityGlobalAbstract {
+public class MapSelectorActivity extends ActivityGlobalAbstract implements MapActivityLocationCallback.OnLocationChanged {
 
     private MapView mapView;
     private MapboxMap map;
     private static final int ACCESS_COARSE_LOCATION_PERMISSION_REQUEST = 102;
-    private FusedLocationProviderClient mFusedLocationClient;
     public static final String LATITUDE = "latitude";
     public static final String LONGITUDE = "longitude";
     private TextView latLon;
+    private boolean init = false;
+    private Style style;
 
     @NonNull
     public static Intent create(@NonNull Activity activity) {
@@ -51,7 +58,6 @@ public class MapSelectorActivity extends ActivityGlobalAbstract {
         super.onCreate(savedInstanceState);
         Mapbox.getInstance(this, BuildConfig.MAPBOX_ACCESS_TOKEN);
         setContentView(R.layout.activity_map_selector);
-        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         findViewById(R.id.back).setOnClickListener(v -> finish());
         findViewById(R.id.fab).setOnClickListener(v -> {
             if (map != null && map.getCameraPosition().target != null) {
@@ -73,6 +79,8 @@ public class MapSelectorActivity extends ActivityGlobalAbstract {
         mapView.getMapAsync(mapboxMap -> {
             map = mapboxMap;
             mapboxMap.setStyle(Style.MAPBOX_STREETS, style -> {
+                this.style = style;
+                enableLocationComponent();
                 centerMapOnCurrentLocation();
             });
             map.addOnCameraIdleListener(() -> {
@@ -82,6 +90,37 @@ public class MapSelectorActivity extends ActivityGlobalAbstract {
                 }
             });
         });
+    }
+    @SuppressWarnings("MissingPermission")
+    private void enableLocationComponent() {
+
+        // Check if permissions are enabled and if not request
+        if (PermissionsManager.areLocationPermissionsGranted(this)) {
+
+            // Get an instance of the component
+            LocationComponent locationComponent = map.getLocationComponent();
+
+            // Activate with a built LocationComponentActivationOptions object
+            locationComponent.activateLocationComponent(LocationComponentActivationOptions.builder(this, style).build());
+
+            // Enable to make component visible
+            locationComponent.setLocationComponentEnabled(true);
+
+            // Set the component's camera mode
+            locationComponent.setCameraMode(CameraMode.TRACKING);
+
+            // Set the component's render mode
+            locationComponent.setRenderMode(RenderMode.COMPASS);
+
+            locationComponent.zoomWhileTracking(13.0);
+
+            LocationEngineProvider.getBestLocationEngine(this).getLastLocation(new MapActivityLocationCallback(this));
+
+        } else {
+
+            /*  permissionsManager = PermissionsManager(this)
+              permissionsManager?.requestLocationPermissions(this)*/
+        }
     }
 
     // Add the mapView's own lifecycle methods to the activity's lifecycle methods
@@ -141,17 +180,6 @@ public class MapSelectorActivity extends ActivityGlobalAbstract {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, ACCESS_COARSE_LOCATION_PERMISSION_REQUEST);
             return;
         }
-        mFusedLocationClient.getLastLocation().addOnSuccessListener(location -> {
-            if (location != null) {
-                map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), 13));
-
-                CameraPosition cameraPosition = new CameraPosition.Builder()
-                        .target(new LatLng(location.getLatitude(), location.getLongitude()))      // Sets the center of the map to location user
-                        .zoom(15)                   // Sets the zoom
-                        .build();                   // Creates a CameraPosition from the builder
-                map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
-            }
-        });
     }
 
     @Override
@@ -166,6 +194,22 @@ public class MapSelectorActivity extends ActivityGlobalAbstract {
                     // TODO CRIS
                 }
             }
+        }
+    }
+
+    @Override
+    public void onLocationChanged(@NotNull LatLng latLng) {
+        Timber.d("NEW LOCATION %s, %s", latLng.getLatitude(), latLng.getLongitude());
+
+        if (!init) {
+            init = true;
+            map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(latLng.getLatitude(), latLng.getLongitude()), 13.0));
+
+            CameraPosition cameraPosition = new CameraPosition.Builder()
+                    .target(new LatLng(latLng.getLatitude(), latLng.getLongitude()))      // Sets the center of the map to location user
+                    .zoom(15.0)               // Sets the zoom
+                    .build();                // Creates a CameraPosition from the builder
+            map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
         }
     }
 }

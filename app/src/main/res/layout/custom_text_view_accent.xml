@@ -29,7 +29,12 @@
         android:focusableInTouchMode="true"
         android:padding="5dp"
         tools:background="?attr/colorPrimary">
-
+        <View
+            android:id="@+id/dummyFocusView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:focusable="true"
+            android:focusableInTouchMode="true" />
         <ImageView
             android:id="@+id/renderImage"
             android:layout_width="wrap_content"

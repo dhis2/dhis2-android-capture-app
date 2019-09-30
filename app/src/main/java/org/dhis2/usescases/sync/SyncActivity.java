@@ -19,15 +19,15 @@ import com.airbnb.lottie.LottieDrawable;
 import org.dhis2.App;
 import org.dhis2.Bindings.Bindings;
 import org.dhis2.R;
+import org.dhis2.data.prefs.Preference;
 import org.dhis2.databinding.ActivitySynchronizationBinding;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.usescases.main.MainActivity;
 import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.Constants;
+import org.hisp.dhis.android.core.D2;
 
 import javax.inject.Inject;
-
-import timber.log.Timber;
 
 
 public class SyncActivity extends ActivityGlobalAbstract implements SyncContracts.View {
@@ -36,13 +36,10 @@ public class SyncActivity extends ActivityGlobalAbstract implements SyncContract
 
     @Inject
     SyncContracts.Presenter presenter;
-    private boolean metadataRunning;
-    private boolean metadataDone;
-    private boolean dataRunning;
-    private boolean dataDone;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        D2 d2 = ((App) getApplicationContext()).serverComponent().userManager().getD2();
         SyncComponent syncComponent = ((App) getApplicationContext()).syncComponent();
         if (syncComponent == null) {
             // in case if we don't have cached presenter
@@ -51,39 +48,36 @@ public class SyncActivity extends ActivityGlobalAbstract implements SyncContract
         syncComponent.inject(this);
         super.onCreate(savedInstanceState);
 
-        WorkManager.getInstance().getWorkInfosByTagLiveData(Constants.META).observe(this, workInfoList -> {
-            if (workInfoList != null && !workInfoList.isEmpty()) {
-                Timber.d("WORK %s WITH STATUS %s", Constants.META, workInfoList.get(0).getState().name());
-                handleMetaState(workInfoList.get(0).getState());
-            }
-        });
-        WorkManager.getInstance().getWorkInfosByTagLiveData(Constants.DATA).observe(this, status -> {
-            if (status != null && !status.isEmpty()) {
-                Timber.d("WORK %s WITH STATUS %s", Constants.DATA, status.get(0).getState().name());
-                handleDataState(status.get(0).getState());
-            }
-        });
-
         binding = DataBindingUtil.setContentView(this, R.layout.activity_synchronization);
         binding.setPresenter(presenter);
-        presenter.init(this);
-        presenter.syncMeta(getSharedPreferences().getInt(Constants.TIME_META, Constants.TIME_DAILY), Constants.META);
+        presenter.init(this,d2);
+        presenter.sync();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        WorkManager.getInstance(getApplicationContext()).getWorkInfosForUniqueWorkLiveData(Constants.INITIAL_SYNC).observe(this, workInfoList -> {
+            for (WorkInfo wi : workInfoList) {
+                if (wi.getTags().contains(Constants.META_NOW))
+                    handleMetaState(wi.getState());
+                else if (wi.getTags().contains(Constants.DATA_NOW))
+                    handleDataState(wi.getState());
+            }
+        });
     }
 
     private void handleMetaState(WorkInfo.State metadataState) {
         switch (metadataState) {
             case RUNNING:
-                metadataRunning = true;
                 Bindings.setDrawableEnd(binding.metadataText, AppCompatResources.getDrawable(this, R.drawable.animator_sync));
                 break;
-            case ENQUEUED:
-                if (metadataRunning) {
-                    metadataDone = true;
-                    binding.metadataText.setText(getString(R.string.configuration_ready));
-                    Bindings.setDrawableEnd(binding.metadataText, AppCompatResources.getDrawable(this, R.drawable.animator_done));
-                    presenter.getTheme();
-                    presenter.syncData(getSharedPreferences().getInt(Constants.TIME_DATA, Constants.TIME_DAILY), Constants.DATA);
-                }
+            case SUCCEEDED:
+                binding.metadataText.setText(getString(R.string.configuration_ready));
+                Bindings.setDrawableEnd(binding.metadataText, AppCompatResources.getDrawable(this, R.drawable.animator_done));
+                presenter.getTheme();
+                break;
+            default:
                 break;
         }
     }
@@ -91,19 +85,19 @@ public class SyncActivity extends ActivityGlobalAbstract implements SyncContract
     private void handleDataState(WorkInfo.State dataState) {
         switch (dataState) {
             case RUNNING:
-                dataRunning = true;
                 binding.eventsText.setText(getString(R.string.syncing_data));
                 Bindings.setDrawableEnd(binding.eventsText, AppCompatResources.getDrawable(this, R.drawable.animator_sync));
                 binding.eventsText.setAlpha(1.0f);
                 break;
-            case ENQUEUED:
-                if (dataRunning && metadataDone) {
-                    dataDone = true;
-                    binding.eventsText.setText(getString(R.string.data_ready));
-                    Bindings.setDrawableEnd(binding.eventsText, AppCompatResources.getDrawable(this, R.drawable.animator_done));
-                    presenter.syncReservedValues();
-                    startMain();
-                }
+            case SUCCEEDED:
+                binding.eventsText.setText(getString(R.string.data_ready));
+                Bindings.setDrawableEnd(binding.eventsText, AppCompatResources.getDrawable(this, R.drawable.animator_done));
+                presenter.scheduleSync(getSharedPreferences().getInt(Constants.TIME_META, Constants.TIME_DAILY),
+                        getSharedPreferences().getInt(Constants.TIME_DATA, Constants.TIME_DAILY));
+                presenter.syncReservedValues();
+                startMain();
+                break;
+            default:
                 break;
         }
     }
@@ -169,6 +163,7 @@ public class SyncActivity extends ActivityGlobalAbstract implements SyncContract
 
 
     public void startMain() {
+        getSharedPreferences().edit().putBoolean(Preference.INITIAL_SYNC_DONE.name(), true).apply();
         Intent intent = new Intent(this, MainActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);

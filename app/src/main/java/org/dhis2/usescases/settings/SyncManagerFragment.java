@@ -1,4 +1,4 @@
-package org.dhis2.usescases.syncManager;
+package org.dhis2.usescases.settings;
 
 
 import android.app.NotificationChannel;
@@ -102,7 +102,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
     @Override
     public void onResume() {
         super.onResume();
-        WorkManager.getInstance().getWorkInfosByTagLiveData(META_NOW).observe(this, workStatuses -> {
+        WorkManager.getInstance(context.getApplicationContext()).getWorkInfosByTagLiveData(META_NOW).observe(this, workStatuses -> {
             if (!workStatuses.isEmpty() && workStatuses.get(0).getState() == WorkInfo.State.RUNNING) {
                 binding.syncMetaLayout.message.setTextColor(ContextCompat.getColor(context, R.color.text_black_333));
                 String metaText = metaSyncSettings().concat("\n").concat(context.getString(R.string.syncing_configuration));
@@ -114,7 +114,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
                 presenter.checkData();
             }
         });
-        WorkManager.getInstance().getWorkInfosByTagLiveData(DATA_NOW).observe(this, workStatuses -> {
+        WorkManager.getInstance(context.getApplicationContext()).getWorkInfosByTagLiveData(DATA_NOW).observe(this, workStatuses -> {
             if (!workStatuses.isEmpty() && workStatuses.get(0).getState() == WorkInfo.State.RUNNING) {
                 String dataText = dataSyncSetting().concat("\n").concat(context.getString(R.string.syncing_data));
                 binding.syncDataLayout.message.setTextColor(ContextCompat.getColor(context, R.color.text_black_333));
@@ -128,7 +128,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
         });
         presenter.init(this);
 
-        if (SyncUtils.isSyncRunning()) {
+        if (SyncUtils.isSyncRunning(context)) {
             binding.buttonSyncData.setEnabled(false);
             binding.buttonSyncMeta.setEnabled(false);
         }

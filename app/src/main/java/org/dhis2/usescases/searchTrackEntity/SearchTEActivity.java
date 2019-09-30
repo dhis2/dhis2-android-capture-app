@@ -245,7 +245,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                     binding.message.setText(data.val1());
                 }
                 if (!presenter.getQueryData().isEmpty() && data.val2())
-                    animSearchFab(false);
+                    setFabIcon(false);
             });
         }
     }

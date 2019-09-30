@@ -122,9 +122,9 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
 
     @Override
     protected void onPause() {
-        super.onPause();
-        ((App) getApplicationContext()).releaseDashboardComponent();
         presenter.onDettach();
+        ((App) getApplicationContext()).releaseDashboardComponent();
+        super.onPause();
     }
 
     @Override

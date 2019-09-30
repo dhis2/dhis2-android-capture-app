@@ -1,4 +1,4 @@
-package org.dhis2.usescases.syncManager;
+package org.dhis2.usescases.settings;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -17,7 +17,6 @@ import org.dhis2.data.service.SyncMetadataWorker;
 import org.dhis2.usescases.login.LoginActivity;
 import org.dhis2.usescases.reservedValue.ReservedValueActivity;
 import org.dhis2.utils.Constants;
-import org.dhis2.utils.FileResourcesUtil;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.maintenance.D2Error;
@@ -85,14 +84,14 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
      */
     @Override
     public void syncData(int seconds, String scheduleTag) {
-        WorkManager.getInstance().cancelUniqueWork(scheduleTag);
+        WorkManager.getInstance(view.getContext().getApplicationContext()).cancelUniqueWork(scheduleTag);
         PeriodicWorkRequest.Builder syncDataBuilder = new PeriodicWorkRequest.Builder(SyncDataWorker.class, seconds, TimeUnit.SECONDS);
         syncDataBuilder.addTag(scheduleTag);
         syncDataBuilder.setConstraints(new Constraints.Builder()
                 .setRequiredNetworkType(NetworkType.CONNECTED)
                 .build());
         PeriodicWorkRequest request = syncDataBuilder.build();
-        WorkManager.getInstance().enqueueUniquePeriodicWork(scheduleTag, ExistingPeriodicWorkPolicy.REPLACE, request);
+        WorkManager.getInstance(view.getContext().getApplicationContext()).enqueueUniquePeriodicWork(scheduleTag, ExistingPeriodicWorkPolicy.REPLACE, request);
     }
 
     /**
@@ -105,14 +104,14 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
      */
     @Override
     public void syncMeta(int seconds, String scheduleTag) {
-        WorkManager.getInstance().cancelUniqueWork(scheduleTag);
+        WorkManager.getInstance(view.getContext().getApplicationContext()).cancelUniqueWork(scheduleTag);
         PeriodicWorkRequest.Builder syncDataBuilder = new PeriodicWorkRequest.Builder(SyncMetadataWorker.class, seconds, TimeUnit.SECONDS);
         syncDataBuilder.addTag(scheduleTag);
         syncDataBuilder.setConstraints(new Constraints.Builder()
                 .setRequiredNetworkType(NetworkType.CONNECTED)
                 .build());
         PeriodicWorkRequest request = syncDataBuilder.build();
-        WorkManager.getInstance().enqueueUniquePeriodicWork(scheduleTag, ExistingPeriodicWorkPolicy.REPLACE, request);
+        WorkManager.getInstance(view.getContext().getApplicationContext()).enqueueUniquePeriodicWork(scheduleTag, ExistingPeriodicWorkPolicy.REPLACE, request);
     }
 
     /**
@@ -127,7 +126,7 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
                 .setRequiredNetworkType(NetworkType.CONNECTED)
                 .build());
         OneTimeWorkRequest request = syncDataBuilder.build();
-        WorkManager.getInstance().beginUniqueWork(Constants.DATA_NOW, ExistingWorkPolicy.REPLACE, request).enqueue();
+        WorkManager.getInstance(view.getContext().getApplicationContext()).beginUniqueWork(Constants.DATA_NOW, ExistingWorkPolicy.REPLACE, request).enqueue();
     }
 
     /**
@@ -142,13 +141,13 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
                 .setRequiredNetworkType(NetworkType.CONNECTED)
                 .build());
         OneTimeWorkRequest request = syncDataBuilder.build();
-        WorkManager.getInstance().beginUniqueWork(Constants.META_NOW, ExistingWorkPolicy.REPLACE, request).enqueue();
+        WorkManager.getInstance(view.getContext().getApplicationContext()).beginUniqueWork(Constants.META_NOW, ExistingWorkPolicy.REPLACE, request).enqueue();
     }
 
 
     @Override
     public void cancelPendingWork(String tag) {
-        WorkManager.getInstance().cancelUniqueWork(tag);
+        WorkManager.getInstance(view.getContext().getApplicationContext()).cancelUniqueWork(tag);
     }
 
     @Override
@@ -193,8 +192,8 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
     @Override
     public void wipeDb() {
         try {
-            WorkManager.getInstance().cancelAllWork();
-            WorkManager.getInstance().pruneWork();
+            WorkManager.getInstance(view.getContext().getApplicationContext()).cancelAllWork();
+            WorkManager.getInstance(view.getContext().getApplicationContext()).pruneWork();
             d2.wipeModule().wipeEverything();
             // clearing cache data
             deleteDir(view.getAbstracContext().getCacheDir());

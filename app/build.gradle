@@ -212,6 +212,10 @@ dependencies {
     implementation "com.github.akarnokd:rxjava2-interop:${libraries.rxjavainteroperop}"
     implementation 'io.reactivex.rxjava2:rxkotlin:2.3.0'
 
+
+    //region ViewModel
+    implementation "androidx.lifecycle:lifecycle-extensions:${libraries.lifecycle}"
+
     //rxbinding
     implementation "com.jakewharton.rxbinding2:rxbinding:${libraries.rxbindings}"
     implementation "com.jakewharton.rxbinding2:rxbinding-appcompat-v7:${libraries.rxbindings}"
@@ -248,7 +252,9 @@ dependencies {
     //endregion
 
     // Kujaku dependencies
-    implementation 'io.ona.kujaku:library:0.7.1'
+    implementation 'io.ona.kujaku:library:0.7.7'
+    implementation 'com.mapbox.mapboxsdk:mapbox-android-plugin-markerview-v8:0.3.0'
+
 
     // Jake Wharton libraries
     //timber
@@ -258,8 +264,8 @@ dependencies {
     implementation 'com.google.code.gson:gson:2.8.2'
 
     //JOB SCHEDULER
-    implementation "androidx.work:work-runtime:2.0.1"
-    implementation "androidx.work:work-rxjava2:2.0.1"
+    implementation "androidx.work:work-runtime:2.2.0"
+    implementation "androidx.work:work-rxjava2:2.2.0"
 /*
     implementation("android.arch.work:work-runtime:1.0.0-alpha10") {
         exclude group: 'com.google.guava', module: 'listenablefuture'

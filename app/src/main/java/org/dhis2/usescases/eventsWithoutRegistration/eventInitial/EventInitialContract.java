@@ -87,6 +87,8 @@ public class EventInitialContract {
         void latitudeWarning(boolean showWarning);
 
         void longitudeWarning(boolean showWarning);
+
+        void setInitialOrgUnit(OrganisationUnit organisationUnit);
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter {
@@ -149,6 +151,10 @@ public class EventInitialContract {
         Date getStageLastDate(String programStageUid, String enrollmentUid);
 
         void onExpandOrgUnitNode(TreeNode treeNode, String parentUid, String date);
+
+        void getEventOrgUnit(String ouUid);
+
+        void initOrgunit(Date selectedDate);
     }
 
 }

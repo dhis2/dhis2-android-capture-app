@@ -129,7 +129,7 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
                         String text = (int) value + "%";
                         binding.progress.setText(text);
                     });
-            gainAnim.setDuration(1000);
+            gainAnim.setDuration(500);
             binding.progressGains.startAnimation(gainAnim);
 
             this.completionPercentage = (int) (percentage * 100);
@@ -190,6 +190,9 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
 
     @Override
     public void showRuleCalculation(Boolean shouldShow) {
+
+        Timber.tag("ADJUSTING").d(shouldShow ? "SHOW" : "HIDE");
+
         binding.calculationIndicator.getRoot().setVisibility(shouldShow ? View.VISIBLE : View.GONE);
     }
 

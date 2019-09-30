@@ -95,7 +95,9 @@
         <item name="period_time_button">@drawable/period_time_button_orange</item>
         <item name="toast_bg">@drawable/toast_bg_orange</item>
 
-    </style><!--endregion--><!--region PALETTES-->
+    </style>
+
+    <!--endregion--><!--region PALETTES-->
     <style name="colorPrimary_Pink" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
         <item name="colorPrimary">@color/colorPrimary_Pink</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark_Pink</item>

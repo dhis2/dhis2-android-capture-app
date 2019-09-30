@@ -3,6 +3,7 @@ package org.dhis2.usescases.searchTrackEntity;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import org.dhis2.data.tuples.Pair;
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel;
 
 import org.hisp.dhis.android.core.option.OptionModel;
@@ -45,7 +46,7 @@ public interface SearchRepository {
                                                                  @Nullable HashMap<String, String> queryData);
 
     @NonNull
-    Observable<String> saveToEnroll(@NonNull String teiType, @NonNull String orgUnitUID, @NonNull String programUid, @Nullable String teiUid, HashMap<String, String> queryDatam,Date enrollmentDate);
+    Observable<Pair<String, String>> saveToEnroll(@NonNull String teiType, @NonNull String orgUnitUID, @NonNull String programUid, @Nullable String teiUid, HashMap<String, String> queryDatam,Date enrollmentDate);
 
     Observable<List<OrganisationUnitModel>> getOrgUnits(@Nullable String selectedProgramUid);
 

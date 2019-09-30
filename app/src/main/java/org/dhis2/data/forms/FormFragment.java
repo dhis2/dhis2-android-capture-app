@@ -47,6 +47,7 @@ import org.dhis2.utils.custom_views.CustomDialog;
 import org.hisp.dhis.android.core.category.CategoryComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
+import org.hisp.dhis.android.core.common.Unit;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.rules.models.RuleActionErrorOnCompletion;
@@ -87,6 +88,7 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
     private PublishSubject<String> onReportDateChanged;
     private PublishSubject<String> onIncidentDateChanged;
     private PublishSubject<LatLng> onCoordinatesChanged;
+    private PublishSubject<Unit> onCoordinatesCleared;
     private TextInputLayout reportDateLayout;
     private TextInputEditText reportDate;
     private PublishSubject<ReportStatus> undoObservable;
@@ -250,6 +252,13 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
     public Observable<LatLng> reportCoordinatesChanged() {
         onCoordinatesChanged = PublishSubject.create();
         return onCoordinatesChanged;
+    }
+
+    @NonNull
+    @Override
+    public Observable<Unit> reportCoordinatesCleared(){
+        onCoordinatesCleared = PublishSubject.create();
+        return onCoordinatesCleared;
     }
 
     @NonNull
@@ -547,7 +556,10 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
 
     private void publishCoordinatesChanged(Double lat, Double lon) {
         if (onCoordinatesChanged != null) {
-            onCoordinatesChanged.onNext(new LatLng(lat, lon));
+            if (lat != null || lon != null) {
+                onCoordinatesChanged.onNext(new LatLng(lat, lon));
+            } else
+                onCoordinatesCleared.onNext(new Unit());
         }
     }
 

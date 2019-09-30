@@ -47,6 +47,11 @@ public class TeiProgramListActivity extends ActivityGlobalAbstract implements Te
         binding = DataBindingUtil.setContentView(this, R.layout.activity_tei_program_list);
         binding.setPresenter(presenter);
 
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
         presenter.init(this);
     }
 
