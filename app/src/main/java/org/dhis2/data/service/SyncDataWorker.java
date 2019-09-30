@@ -59,6 +59,12 @@ public class SyncDataWorker extends Worker {
         boolean isEventOk = true;
         boolean isTeiOk = true;
         boolean isDataValue = true;
+
+        try {
+            presenter.uploadResources();
+        }catch (Exception e){
+            Timber.e(e);
+        }
         try {
             presenter.syncAndDownloadEvents(getApplicationContext());
         } catch (Exception e) {
@@ -77,6 +83,12 @@ public class SyncDataWorker extends Worker {
         } catch (Exception e) {
             Timber.e(e);
             isDataValue = false;
+        }
+
+        try {
+            presenter.downloadResources();
+        } catch (Exception e) {
+            Timber.e(e);
         }
 
         String lastDataSyncDate = DateUtils.dateTimeFormat().format(Calendar.getInstance().getTime());

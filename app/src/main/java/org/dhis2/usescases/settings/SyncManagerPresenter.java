@@ -17,7 +17,6 @@ import org.dhis2.data.tuples.Pair;
 import org.dhis2.usescases.login.LoginActivity;
 import org.dhis2.usescases.reservedValue.ReservedValueActivity;
 import org.dhis2.utils.Constants;
-import org.dhis2.utils.FileResourcesUtil;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.event.Event;
@@ -167,10 +166,7 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
                 .build());
         OneTimeWorkRequest request = syncDataBuilder.build();
 
-        FileResourcesUtil.initBulkFileUploadWork() //FIRST UPLOAD IMAGES
-                .then(request) //THEN UPLOAD AND SYNC DATA
-                .then(FileResourcesUtil.initDownloadRequest()) //FINALLY DOWNLOAD IMAGES
-                .enqueue();
+        WorkManager.getInstance(view.getContext().getApplicationContext()).enqueueUniqueWork(Constants.DATA_NOW, ExistingWorkPolicy.KEEP, request);
     }
 
     /**
@@ -185,7 +181,7 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
                 .setRequiredNetworkType(NetworkType.CONNECTED)
                 .build());
         OneTimeWorkRequest request = syncDataBuilder.build();
-        WorkManager.getInstance(view.getContext().getApplicationContext()).beginUniqueWork(Constants.META_NOW, ExistingWorkPolicy.REPLACE, request).enqueue();
+        WorkManager.getInstance(view.getContext().getApplicationContext()).beginUniqueWork(Constants.META_NOW, ExistingWorkPolicy.KEEP, request).enqueue();
     }
 
 

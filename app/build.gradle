@@ -43,7 +43,8 @@ android {
         targetSdkVersion versions.sdk
         versionCode versions.vCode
         versionName versions.vName
-        testInstrumentationRunner "androidx.test.ext.junit.runners.AndroidJUnit4"
+//        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "org.dhis2.usescases.MockRunner"
         vectorDrawables.useSupportLibrary = true
         multiDexEnabled true
 
@@ -316,6 +317,7 @@ dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
     androidTestImplementation "androidx.test:core:1.2.0"
+    androidTestImplementation 'androidx.test:rules:1.2.0'
     androidTestImplementation "androidx.test:core-ktx:1.2.0"
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation "androidx.test.ext:junit-ktx:1.1.1"
@@ -325,6 +327,7 @@ dependencies {
     testImplementation 'org.robolectric:robolectric:4.1'
     testImplementation "org.robolectric:shadows-multidex:4.0.1"
     androidTestImplementation 'org.mockito:mockito-android:2.28.2'
+    androidTestImplementation 'org.mockito:mockito-core:2.28.2'
     testImplementation 'org.mockito:mockito-core:2.28.2'
 
 

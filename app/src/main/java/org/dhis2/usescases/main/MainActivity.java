@@ -18,6 +18,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -63,7 +64,8 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
     MainContracts.Presenter presenter;
 
     private ProgramFragment programFragment;
-    private FragmentGlobalAbstract activeFragment;
+    @VisibleForTesting
+    protected FragmentGlobalAbstract activeFragment;
 
     ObservableInt currentFragment = new ObservableInt(R.id.menu_home);
     private boolean isPinLayoutVisible = false;
@@ -174,10 +176,10 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
 
     @Override
     public void openDrawer(int gravity) {
-        if (!binding.drawerLayout.isDrawerOpen(gravity))
-            binding.drawerLayout.openDrawer(gravity);
+        if (!binding.mainDrawerLayout.isDrawerOpen(gravity))
+            binding.mainDrawerLayout.openDrawer(gravity);
         else
-            binding.drawerLayout.closeDrawer(gravity);
+            binding.mainDrawerLayout.closeDrawer(gravity);
     }
 
     @Override
@@ -205,7 +207,7 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
     @Override
     public void onLockClick() {
         if (prefs.getString("pin", null) == null) {
-            binding.drawerLayout.closeDrawers();
+            binding.mainDrawerLayout.closeDrawers();
             binding.pinLayout.getRoot().setVisibility(View.VISIBLE);
             isPinLayoutVisible = true;
         } else
@@ -276,7 +278,7 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
             getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, activeFragment, tag).commitAllowingStateLoss();
             binding.title.setText(tag);
         }
-        binding.drawerLayout.closeDrawers();
+        binding.mainDrawerLayout.closeDrawers();
 
         if (backDropActive && !(activeFragment instanceof ProgramFragment))
             showHideFilter();
