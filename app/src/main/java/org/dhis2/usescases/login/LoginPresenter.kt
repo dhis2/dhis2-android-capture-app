@@ -95,7 +95,7 @@ class LoginPresenter : LoginContracts.Presenter {
 
     override fun onButtonClick() {
         view.hideKeyboard()
-        view.analyticsHelper().setEvent(LOGIN, CLICK, LOG_IN)
+        view.analyticsHelper().setEvent(LOGIN, CLICK, LOGIN)
         val prefs = view.abstracContext.getSharedPreferences(
                 Constants.SHARE_PREFS, Context.MODE_PRIVATE)
         if (!prefs.getBoolean(Constants.USER_ASKED_CRASHLYTICS, false))
@@ -131,7 +131,7 @@ class LoginPresenter : LoginContracts.Presenter {
     }
 
     override fun onQRClick(v: View) {
-        view.analyticsHelper().setEvent(SERVER_QR_SCANNER, CLICK, QR_URL_SCANNER)
+        view.analyticsHelper().setEvent(SERVER_QR_SCANNER, CLICK, SERVER_QR_SCANNER)
         val intent = Intent(view.context, QRActivity::class.java)
         view.abstractActivity.startActivityForResult(intent, Constants.RQ_QR_SCANNER)
     }

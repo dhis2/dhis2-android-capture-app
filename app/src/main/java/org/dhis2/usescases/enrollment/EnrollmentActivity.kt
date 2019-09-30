@@ -30,6 +30,10 @@ import org.dhis2.usescases.general.ActivityGlobalAbstract
 import org.dhis2.usescases.map.MapSelectorActivity
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity
 import org.dhis2.utils.*
+import org.dhis2.utils.analytics.CLICK
+import org.dhis2.utils.analytics.DELETE_AND_BACK
+import org.dhis2.utils.analytics.SAVE_ENROLL
+import org.dhis2.utils.analytics.STATUS_ENROLLMENT
 import org.dhis2.utils.custom_views.CustomDialog
 import org.hisp.dhis.android.core.arch.helpers.GeometryHelper
 import org.hisp.dhis.android.core.common.FeatureType
@@ -103,8 +107,10 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentContract.View {
                 showInfoDialog(getString(R.string.unable_to_complete), getString(R.string.missing_mandatory_fields))
             else if (adapter.hasError())
                 showInfoDialog(getString(R.string.unable_to_complete), getString(R.string.field_errors))
-            else
+            else {
+                analyticsHelper().setEvent(SAVE_ENROLL, CLICK, SAVE_ENROLL)
                 presenter.finish(mode)
+            }
         }
 
         binding.fieldRecycler.addOnScrollListener(object : RecyclerView.OnScrollListener() {
@@ -219,6 +225,7 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentContract.View {
                         }
 
                         override fun onNegative() {
+                            analyticsHelper().setEvent(DELETE_AND_BACK, CLICK, DELETE_AND_BACK)
                             presenter.deleteAllSavedData()
                             finish()
                         }
@@ -290,6 +297,7 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentContract.View {
                 R.id.reOpen -> EnrollmentStatus.ACTIVE
                 else -> throw IllegalArgumentException("Can't have other option")
             }
+            analyticsHelper().setEvent(STATUS_ENROLLMENT, newStatus.name, STATUS_ENROLLMENT)
             presenter.updateEnrollmentStatus(newStatus)
         }
 

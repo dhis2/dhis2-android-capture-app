@@ -77,14 +77,14 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
         super.onCreate(savedInstanceState)
         loginViewModel = ViewModelProviders.of(this).get(LoginViewModel::class.java)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_login)
-        analyticsHelper.setCurrentScreen(this, LOGIN_ACTIVITY, null)
+
         binding.presenter = presenter
         binding.loginModel = loginViewModel
         setLoginVisibility(false)
 
         binding.pinLayout.forgotCode.visibility = View.VISIBLE
         binding.pinLayout.forgotCode.setOnClickListener {
-            analyticsHelper.setEvent(FORGOT_CODE, CLICK, FORGOT_YOUR_CODE)
+            analyticsHelper.setEvent(FORGOT_CODE, CLICK, FORGOT_CODE)
             binding.pinLayout.root.visibility = View.GONE
         }
 
@@ -254,7 +254,7 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
         binding.pinLayout.pinLockView.attachIndicatorDots(binding.pinLayout.indicatorDots)
         binding.pinLayout.pinLockView.setPinLockListener(object : PinLockListener {
             override fun onComplete(pin: String) {
-                analyticsHelper.setEvent(UNLOCK_SESSION, CLICK, UNLOCKSESSION)
+                analyticsHelper.setEvent(UNLOCK_SESSION, CLICK, UNLOCK_SESSION)
                 presenter.unlockSession(pin)
             }
 

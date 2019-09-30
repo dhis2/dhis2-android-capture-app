@@ -92,9 +92,7 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
         FirebaseAnalytics mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
 
         if(((App)getApplicationContext()).serverComponent()!=null)
-            analyticsHelper.setD2(((App)getApplicationContext()).serverComponent().userManager().getD2());
-
-        analyticsHelper.setCurrentScreen(getActivity(), "ActivityGlobalAbstract", null);
+            analyticsHelper().setD2(((App)getApplicationContext()).serverComponent().userManager().getD2());
 
         if (!getResources().getBoolean(R.bool.is_tablet))
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT);

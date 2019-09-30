@@ -202,7 +202,7 @@ public class ProgramPresenter implements ProgramContract.Presenter {
         else
             idTag = "PROGRAM_UID";
 
-        view.analyticsHelper().setEvent(TYPE_PROGRAM_SELECTED, idTag, SELECT_PROGRAM);
+        view.analyticsHelper().setEvent(TYPE_PROGRAM_SELECTED, !programModel.programType().isEmpty()?programModel.programType() : programModel.typeName(), SELECT_PROGRAM);
         bundle.putString(idTag, programModel.id());
         bundle.putString(Constants.DATA_SET_NAME, programModel.title());
         bundle.putString(Constants.ACCESS_DATA, programModel.accessDataWrite().toString());

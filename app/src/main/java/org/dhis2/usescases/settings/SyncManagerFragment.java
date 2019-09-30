@@ -98,8 +98,6 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
                              Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_settings, container, false);
 
-        getAbstractActivity().analyticsHelper.setCurrentScreen(getActivity(), SYNC_MANAGER_FRAGMENT, null);
-
         binding.setPresenter(presenter);
         prefs = getAbstracContext().getSharedPreferences(
                 Constants.SHARE_PREFS, Context.MODE_PRIVATE);

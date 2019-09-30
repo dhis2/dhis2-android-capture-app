@@ -97,7 +97,7 @@ public class DataSetTableAdapter extends AbstractTableAdapter<CategoryOption, Da
 
     private ObservableField<TableScale> currentTableScale = new ObservableField<>();
 
-    public void scale() {
+    public TableScale scale() {
         if (currentWidth == 200) {
             currentWidth = 300;
             currentHeight = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 36, context.getResources().getDisplayMetrics());
@@ -116,6 +116,7 @@ public class DataSetTableAdapter extends AbstractTableAdapter<CategoryOption, Da
         onScaleListener.scaleTo(currentWidth, currentHeight);
 
         notifyDataSetChanged();
+        return currentTableScale.get();
     }
 
 

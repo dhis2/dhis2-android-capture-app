@@ -69,6 +69,7 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
+        ((App) getApplicationContext()).userComponent().plus(new DataSetTableModule(dataSetUid, periodId, orgUnitUid, catOptCombo)).inject(this);
         super.onCreate(savedInstanceState);
 
         //Orientation
@@ -82,7 +83,6 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
         catOptCombo = getIntent().getStringExtra(Constants.CAT_COMB);
         dataSetUid = getIntent().getStringExtra(Constants.DATA_SET_UID);
         accessDataWrite = getIntent().getBooleanExtra(Constants.ACCESS_DATA, true);
-        ((App) getApplicationContext()).userComponent().plus(new DataSetTableModule(dataSetUid, periodId, orgUnitUid, catOptCombo)).inject(this);
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_dataset_table);
         binding.setPresenter(presenter);

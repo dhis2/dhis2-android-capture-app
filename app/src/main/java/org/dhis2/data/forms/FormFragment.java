@@ -72,6 +72,8 @@ import io.reactivex.subjects.PublishSubject;
 import timber.log.Timber;
 
 import static android.text.TextUtils.isEmpty;
+import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
+import static org.dhis2.utils.analytics.AnalyticsConstants.DELETE_AND_BACK;
 
 
 public class FormFragment extends FragmentGlobalAbstract implements FormView, CoordinatesView.OnMapPositionClick, CoordinatesView.OnCurrentLocationClick {
@@ -774,6 +776,7 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
     }
 
     private void deleteAllSavedDataAndGoBack() {
+        analyticsHelper().setEvent(DELETE_AND_BACK, CLICK, DELETE_AND_BACK);
         formPresenter.deleteCascade();
     }
 

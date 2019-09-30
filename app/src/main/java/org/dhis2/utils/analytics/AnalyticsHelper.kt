@@ -15,8 +15,8 @@ import javax.inject.Inject
 
 class AnalyticsHelper @Inject constructor(context: Context) {
 
-    private lateinit var _d2: D2
-    private val d2: D2
+    private var _d2: D2? = null
+    private val d2: D2?
         get() = _d2
 
     fun setD2(d2: D2){
@@ -31,17 +31,10 @@ class AnalyticsHelper @Inject constructor(context: Context) {
 
     @SuppressLint("CheckResult")
     fun setEvent(param: String, value: String, event: String) {
-        if(d2 != null) {
-            val user = d2.userModule().userCredentials.blockingGet()
-            val info = d2.systemInfoModule().systemInfo.blockingGet()
+        if(_d2 != null) {
+            val user = d2!!.userModule().userCredentials.blockingGet()
+            val info = d2!!.systemInfoModule().systemInfo.blockingGet()
             setBundleEvent(param, value, event, user.username(), info.contextPath())
-            /*Flowable.just(d2.userModule().userCredentials.get()
-                    .map { user -> d2.systemInfoModule().systemInfo.get()
-                            .map { info ->
-                                setBundleEvent(param, value, event, user.username(), info.contextPath())
-                            }
-                    }
-            )*/
         }else setBundleEvent(param, value, event)
     }
 

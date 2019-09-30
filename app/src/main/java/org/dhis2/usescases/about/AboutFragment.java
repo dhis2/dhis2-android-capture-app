@@ -47,7 +47,7 @@ public class AboutFragment extends FragmentGlobalAbstract implements AboutContra
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         aboutBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_about, container, false);
         aboutBinding.setPresenter(presenter);
-        analyticsHelper().setCurrentScreen(getActivity(), ABOUT_FRAGMENT, null);
+
         aboutBinding.aboutMore.setMovementMethod(LinkMovementMethod.getInstance());
         aboutBinding.aboutGit.setMovementMethod(LinkMovementMethod.getInstance());
         aboutBinding.aboutDev.setMovementMethod(LinkMovementMethod.getInstance());

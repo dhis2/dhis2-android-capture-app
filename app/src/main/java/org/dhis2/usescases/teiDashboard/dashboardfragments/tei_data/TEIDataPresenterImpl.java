@@ -46,6 +46,13 @@ import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
 import static android.text.TextUtils.isEmpty;
+import static org.dhis2.utils.analytics.AnalyticsConstants.ACTIVE_FOLLOW_UP;
+import static org.dhis2.utils.analytics.AnalyticsConstants.FOLLOW_UP;
+import static org.dhis2.utils.analytics.AnalyticsConstants.SHARE_TEI;
+import static org.dhis2.utils.analytics.AnalyticsConstants.TYPE_NFC;
+import static org.dhis2.utils.analytics.AnalyticsConstants.TYPE_QR;
+import static org.dhis2.utils.analytics.AnalyticsConstants.TYPE_SHARE;
+import static org.dhis2.utils.analytics.AnalyticsConstants.TYPE_SMS;
 
 /**
  * QUADRAM. Created by ppajuelo on 09/04/2019.
@@ -216,8 +223,7 @@ class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
     @Override
     public void onFollowUp(DashboardProgramModel dashboardProgramModel) {
         boolean followup = dashboardRepository.setFollowUp(dashboardProgramModel.getCurrentEnrollment().uid());
-
-
+        view.analyticsHelper().setEvent(ACTIVE_FOLLOW_UP, Boolean.toString(followup), FOLLOW_UP);
         view.showToast(followup ?
                 view.getContext().getString(R.string.follow_up_enabled) :
                 view.getContext().getString(R.string.follow_up_disabled));
@@ -239,11 +245,13 @@ class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
         menu.setOnMenuItemClickListener(item -> {
             switch (item.getOrder()) {
                 case 0:
+                    view.analyticsHelper().setEvent(TYPE_SHARE, TYPE_QR, SHARE_TEI);
                     Intent intent = new Intent(view.getContext(), QrActivity.class);
                     intent.putExtra("TEI_UID", teiUid);
                     view.showQR(intent);
                     return true;
                 case 1:
+                    view.analyticsHelper().setEvent(TYPE_SHARE, TYPE_SMS, SHARE_TEI);
                     Activity activity = view.getAbstractActivity();
                     Intent i = new Intent(activity, SmsSubmitActivity.class);
                     Bundle args = new Bundle();
@@ -252,6 +260,7 @@ class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
                     activity.startActivity(i);
                     return true;
                 case 2:
+                    view.analyticsHelper().setEvent(TYPE_SHARE, TYPE_NFC, SHARE_TEI);
                     Intent intentNfc = new Intent(view.getContext(), NfcDataWriteActivity.class);
                     intentNfc.putExtra("TEI_UID", teiUid);
                     view.showQR(intentNfc);

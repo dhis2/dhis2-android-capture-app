@@ -56,6 +56,7 @@ import org.dhis2.usescases.org_unit_selector.OUTreeActivity;
 import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.HelpManager;
+import org.dhis2.utils.analytics.AnalyticsConstants;
 import org.dhis2.utils.filters.FilterManager;
 import org.dhis2.utils.filters.FiltersAdapter;
 import org.hisp.dhis.android.core.category.CategoryCombo;
@@ -79,6 +80,8 @@ import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconAllowOverlap
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconOffset;
 import static org.dhis2.R.layout.activity_program_event_detail;
 import static org.dhis2.utils.Constants.PROGRAM_UID;
+import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
+import static org.dhis2.utils.analytics.AnalyticsConstants.SHOW_HELP;
 
 /**
  * QUADRAM. Created by Cristian on 13/02/2018.
@@ -257,6 +260,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
 
     @Override
     public void startNewEvent() {
+        analyticsHelper().setEvent(AnalyticsConstants.CREATE_EVENT, AnalyticsConstants.DATA_CREATION, AnalyticsConstants.CREATE_EVENT);
         binding.addEventButton.setEnabled(false);
         Bundle bundle = new Bundle();
         bundle.putString(PROGRAM_UID, programUid);
@@ -447,6 +451,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
         popupMenu.setOnMenuItemClickListener(item -> {
             switch (item.getItemId()) {
                 case R.id.showHelp:
+                    analyticsHelper().setEvent(SHOW_HELP, CLICK, SHOW_HELP);
                     showTutorial(false);
                     break;
                 case R.id.menu_list:
