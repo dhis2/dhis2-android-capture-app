@@ -1,6 +1,7 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventCapture;
 
 import android.content.Context;
+import android.database.Cursor;
 
 import androidx.annotation.NonNull;
 
@@ -55,6 +56,8 @@ import org.hisp.dhis.rules.models.RuleEffect;
 import org.hisp.dhis.rules.models.RuleEvent;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -72,6 +75,8 @@ import static android.text.TextUtils.isEmpty;
  * QUADRAM. Created by ppajuelo on 19/11/2018.
  */
 public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCaptureRepository {
+
+    public static final String NO_SECTION = "NO_SECTION";
 
     private final FieldViewModelFactory fieldFactory;
     private final BriteDatabase briteDatabase;
@@ -567,8 +572,27 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                     .map(this::checkRenderType);
         else return d2.eventModule().events.uid(eventUid).get()
                 .flatMap(event ->
-                        d2.programModule().programStages.uid(event.programStage()).get()
-                                .map(ProgramStage::programStageDataElements).toFlowable()
+                        d2.programModule().programStages.withProgramStageSections()
+                                .withProgramStageDataElements()
+                                .withStyle().uid(event.programStage()).get()
+                                .map(stage -> {
+                                    List<ProgramStageDataElement> stageDataElements = stage.programStageDataElements();
+                                    if (stage.programStageSections() != null && !stage.programStageSections().isEmpty()) {
+                                        //REORDER PROGRAM STAGE DATA ELEMENTS
+                                        List<String> dataElementsOrder = new ArrayList<>();
+                                        for (ProgramStageSection section : stage.programStageSections()) {
+                                            dataElementsOrder.addAll(UidsHelper.getUidsList(
+                                                    d2.programModule().programStageSections.withDataElements().uid(section.uid()).blockingGet().dataElements()
+                                            ));
+                                        }
+                                        Collections.sort(stageDataElements, (de1, de2) -> {
+                                            Integer pos1 = dataElementsOrder.indexOf(de1.dataElement().uid());
+                                            Integer pos2 = dataElementsOrder.indexOf(de2.dataElement().uid());
+                                            return pos1.compareTo(pos2);
+                                        });
+                                    }
+                                    return stageDataElements;
+                                }).toFlowable()
                                 .flatMapIterable(list -> list)
                                 .map(programStageDataElement -> {
                                     DataElement de = d2.dataElementModule().dataElements.uid(programStageDataElement.dataElement().uid()).blockingGet();
@@ -603,6 +627,11 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
 
                                     ValueTypeDeviceRendering fieldRendering = null;
                                     //TODO: CHANGE
+                                    try (Cursor rendering = briteDatabase.query("SELECT * FROM ValueTypeDeviceRendering WHERE uid = ?", programStageDataElement.uid())) {
+                                        if (rendering != null && rendering.moveToFirst()) {
+                                            fieldRendering = ValueTypeDeviceRendering.create(rendering);
+                                        }
+                                    }
 
                                     ObjectStyle objectStyle = de.style() != null ? de.style() : ObjectStyle.builder().build();
 
