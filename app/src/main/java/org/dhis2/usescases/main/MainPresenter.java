@@ -7,7 +7,6 @@ import android.view.Gravity;
 import androidx.annotation.NonNull;
 import androidx.work.WorkManager;
 
-import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.data.sharedPreferences.SharePreferencesProvider;
 import org.dhis2.usescases.login.LoginActivity;
 import org.dhis2.utils.Constants;
@@ -25,7 +24,8 @@ import static android.text.TextUtils.isEmpty;
 
 final class MainPresenter implements MainContracts.Presenter {
 
-    private final MetadataRepository metadataRepository;
+    public static final String DEFAULT = "default";
+
     private MainContracts.View view;
     private CompositeDisposable compositeDisposable;
 
@@ -33,10 +33,9 @@ final class MainPresenter implements MainContracts.Presenter {
     private final D2 d2;
     private SharePreferencesProvider provider;
 
-    MainPresenter(SharePreferencesProvider provider, @NonNull D2 d2, MetadataRepository metadataRepository) {
+    MainPresenter(SharePreferencesProvider provider, @NonNull D2 d2) {
         this.d2 = d2;
         this.provider = provider;
-        this.metadataRepository = metadataRepository;
     }
 
     @Override
@@ -44,7 +43,8 @@ final class MainPresenter implements MainContracts.Presenter {
         this.view = view;
         this.compositeDisposable = new CompositeDisposable();
         view.setPreferences(provider);
-        compositeDisposable.add(Observable.defer(() -> Observable.just(d2.userModule().user.get()))
+
+        compositeDisposable.add(Observable.defer(() -> Observable.just(d2.userModule().user.blockingGet()))
                 .map(this::username)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -54,13 +54,12 @@ final class MainPresenter implements MainContracts.Presenter {
                 )
         );
 
-
         compositeDisposable.add(
-                metadataRepository.getDefaultCategoryOptionId()
+                d2.categoryModule().categoryCombos.byIsDefault().eq(true).one().get().toObservable()
                         .subscribeOn(Schedulers.io())
                         .subscribe(
-                                id -> {
-                                    provider.sharedPreferences().putString(Constants.DEFAULT_CAT_COMBO, id);
+                                categoryCombo -> {
+                                    provider.sharedPreferences().putString(Constants.DEFAULT_CAT_COMBO, categoryCombo.uid());
                                 },
                                 Timber::e
                         )
@@ -68,11 +67,11 @@ final class MainPresenter implements MainContracts.Presenter {
 
 
         compositeDisposable.add(
-                metadataRepository.getDefaultCategoryOptionComboId()
+                d2.categoryModule().categoryOptionCombos.byCode().eq(DEFAULT).one().get().toObservable()
                         .subscribeOn(Schedulers.io())
                         .subscribe(
-                                id -> {
-                                    provider.sharedPreferences().putString(Constants.PREF_DEFAULT_CAT_OPTION_COMBO, id);
+                                categoryOptionCombo -> {
+                                    provider.sharedPreferences().putString(Constants.PREF_DEFAULT_CAT_OPTION_COMBO, categoryOptionCombo.uid());
                                 },
                                 Timber::e
                         )
@@ -87,6 +86,15 @@ final class MainPresenter implements MainContracts.Presenter {
                                 Timber::e
                         )
         );
+
+        compositeDisposable.add(
+                FilterManager.getInstance().getPeriodRequest()
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                periodRequest -> view.showPeriodRequest(periodRequest),
+                                Timber::e
+                        ));
     }
 
     @Override
@@ -95,7 +103,7 @@ final class MainPresenter implements MainContracts.Presenter {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(() -> {
-                    WorkManager.getInstance().cancelAllWork();
+                    WorkManager.getInstance(view.getContext().getApplicationContext()).cancelAllWork();
                     view.startActivity(LoginActivity.class, null, true, true, null);
                 }, Timber::e)
         );
@@ -107,7 +115,7 @@ final class MainPresenter implements MainContracts.Presenter {
         if (pin != null) {
             provider.sharedPreferences().putString("pin", pin);
         }
-        WorkManager.getInstance().cancelAllWork();
+        WorkManager.getInstance(view.getContext().getApplicationContext()).cancelAllWork();
 //        view.startActivity(LoginActivity.class, null, true, true, null);
         view.back();
     }
@@ -124,7 +132,7 @@ final class MainPresenter implements MainContracts.Presenter {
 
     @Override
     public void getErrors() {
-        view.showSyncErrors(metadataRepository.getSyncErrors());
+        view.showSyncErrors(d2.importModule().trackerImportConflicts.blockingGet());
     }
 
     @Override

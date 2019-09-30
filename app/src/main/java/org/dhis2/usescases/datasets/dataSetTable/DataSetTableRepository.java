@@ -12,7 +12,9 @@ public interface DataSetTableRepository {
 
     Flowable<List<String>> getSections();
 
-    Flowable<State> dataSetStatus();
+    Flowable<Boolean> dataSetStatus();
+
+    Flowable<State> dataSetState();
 
     Flowable<String> getCatComboName(String catcomboUid);
 

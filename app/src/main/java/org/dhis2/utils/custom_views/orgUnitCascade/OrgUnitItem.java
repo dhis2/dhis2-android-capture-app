@@ -37,9 +37,9 @@ public class OrgUnitItem {
         if (!isEmpty(parentUid))
             captureRepo = captureRepo.byParentUid().eq(parentUid);
         if (ouScope == OrganisationUnit.Scope.SCOPE_TEI_SEARCH)
-            hasCaptureOrgUnits = !captureRepo.get().isEmpty(); //All search and capture, as capture ou implies it can be searched
+            hasCaptureOrgUnits = !captureRepo.blockingGet().isEmpty(); //All search and capture, as capture ou implies it can be searched
         else
-            hasCaptureOrgUnits = !captureRepo.byOrganisationUnitScope(ouScope).get().isEmpty();
+            hasCaptureOrgUnits = !captureRepo.byOrganisationUnitScope(ouScope).blockingGet().isEmpty();
 
 //        getLevelOrgUnits();
         return hasCaptureOrgUnits;
@@ -54,13 +54,13 @@ public class OrgUnitItem {
         else if (level > 1)
             return new ArrayList<>();
 
-        List<OrganisationUnit> orgUnitList = finalOuRepo.get();
+        List<OrganisationUnit> orgUnitList = finalOuRepo.blockingGet();
         int nextLevel = level + 1;
         while (orgUnitList.isEmpty() && nextLevel <= maxLevel)
-            orgUnitList = ouRepo.byLevel().eq(nextLevel++).get();
+            orgUnitList = ouRepo.byLevel().eq(nextLevel++).blockingGet();
 
         if (orgUnitList.isEmpty())//When parent is set and list is empty the ou has not been downloaded, we have to get it from the uidPath
-            orgUnitList = ouRepo.get();
+            orgUnitList = ouRepo.blockingGet();
 
         Map<String, Trio<String, String, Boolean>> menuOrgUnits = new HashMap<>();
         for (OrganisationUnit ou : orgUnitList) {
@@ -76,7 +76,7 @@ public class OrgUnitItem {
                 namePath[(namePath.length - 1) - count] = ou.displayName();
 
             if (uidPath.length >= level && !menuOrgUnits.containsKey(uidPath[level - 1]) && (isEmpty(parentUid) || (level > 1 && uidPath[level - 2].equals(parentUid)))) {
-                boolean canCapture = ouRepo.byOrganisationUnitScope(ouScope).uid(uidPath[level - 1]).exists();
+                boolean canCapture = ouRepo.byOrganisationUnitScope(ouScope).uid(uidPath[level - 1]).blockingExists();
                 menuOrgUnits.put(uidPath[level - 1],
                         Trio.create(
                                 uidPath[level - 1],

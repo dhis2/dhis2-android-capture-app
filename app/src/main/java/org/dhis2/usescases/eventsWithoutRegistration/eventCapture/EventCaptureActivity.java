@@ -23,10 +23,12 @@ import com.google.android.material.snackbar.Snackbar;
 import org.dhis2.App;
 import org.dhis2.R;
 import org.dhis2.data.tuples.Pair;
+import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.databinding.ActivityEventCaptureBinding;
 import org.dhis2.databinding.WidgetDatepickerBinding;
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
+import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.DialogClickListener;
@@ -80,9 +82,12 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
         binding.setPresenter(presenter);
         gestureScanner = new GestureDetector(this, this);
 
+        binding.calculationIndicator.text.setTextColor(ColorUtils.getContrastColor(ColorUtils.getPrimaryColor(this, ColorUtils.ColorType.PRIMARY_LIGHT)));
+
         presenter.init(this);
 
     }
+
 
     @Override
     protected void onResume() {
@@ -122,7 +127,7 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
     }
 
     @Override
-    public void showCompleteActions(boolean canComplete) {
+    public void showCompleteActions(boolean canComplete, String completeMessage, Map<String, String> errors, Map<String, FieldViewModel> emptyMandatoryFields) {
 
         FormBottomDialog.getInstance()
                 .setAccessDataWrite(presenter.canWrite())
@@ -130,6 +135,10 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
                 .setIsExpired(presenter.hasExpired())
                 .setCanComplete(canComplete)
                 .setListener(this::setAction)
+                .setMessageOnComplete(completeMessage)
+                .setEmptyMandatoryFields(emptyMandatoryFields)
+                .setFieldsWithErrors(!errors.isEmpty())
+                .setMandatoryFields(!emptyMandatoryFields.isEmpty())
                 .show(getSupportFragmentManager(), "SHOW_OPTIONS");
     }
 
@@ -169,6 +178,11 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
         this.programStageUid = programStageUid;
     }
 
+    @Override
+    public void showRuleCalculation(Boolean shouldShow) {
+        binding.calculationIndicator.getRoot().setVisibility(shouldShow ? View.VISIBLE : View.GONE);
+    }
+
     private void setAction(FormBottomDialog.ActionType actionType) {
         switch (actionType) {
             case COMPLETE:
@@ -189,6 +203,9 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
                 break;
             case RESCHEDULE:
                 reschedule();
+                break;
+            case CHECK_FIELDS:
+                presenter.goToSection();
                 break;
             case FINISH:
             default:
@@ -295,7 +312,7 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
                 new DialogClickListener() {
                     @Override
                     public void onPositive() {
-                        showCompleteActions(false);
+                        showCompleteActions(false, null, errors, null);
                     }
 
                     @Override

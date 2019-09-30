@@ -37,6 +37,15 @@
             android:layout_below="@id/renderImage"
             android:orientation="horizontal">
 
+            <ImageView
+                android:layout_gravity="center"
+                android:id="@+id/descIcon"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginEnd="8dp"
+                android:visibility="visible"
+                app:srcCompat="@drawable/ic_form_date_time" />
+
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/inputLayout"
                 android:layout_width="0dp"

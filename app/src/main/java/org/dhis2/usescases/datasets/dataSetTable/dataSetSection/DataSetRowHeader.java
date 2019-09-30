@@ -2,6 +2,8 @@ package org.dhis2.usescases.datasets.dataSetTable.dataSetSection;
 
 import android.view.View;
 
+import androidx.databinding.ObservableField;
+
 import com.evrencoskun.tableview.adapter.recyclerview.holder.AbstractViewHolder;
 
 import org.dhis2.R;
@@ -9,11 +11,6 @@ import org.dhis2.databinding.ItemDatasetRowBinding;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.custom_views.CustomDialog;
 import org.hisp.dhis.android.core.dataelement.DataElement;
-import org.hisp.dhis.android.core.dataelement.DataElementModel;
-
-import java.util.Objects;
-
-import androidx.databinding.ObservableField;
 
 import static android.text.TextUtils.isEmpty;
 

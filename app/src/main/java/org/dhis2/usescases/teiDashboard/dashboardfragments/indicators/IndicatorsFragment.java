@@ -12,7 +12,7 @@ import org.dhis2.data.tuples.Trio;
 import org.dhis2.databinding.FragmentIndicatorsBinding;
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity;
-import org.hisp.dhis.android.core.program.ProgramIndicatorModel;
+import org.hisp.dhis.android.core.program.ProgramIndicator;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -70,7 +70,7 @@ public class IndicatorsFragment extends FragmentGlobalAbstract implements Indica
     }
 
     @Override
-    public Consumer<List<Trio<ProgramIndicatorModel, String, String>>> swapIndicators() {
+    public Consumer<List<Trio<ProgramIndicator, String, String>>> swapIndicators() {
         return indicators -> {
             if (adapter != null) {
                 adapter.setIndicators(indicators);

@@ -30,6 +30,7 @@ import androidx.core.widget.ContentLoadingProgressBar;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.crashlytics.android.Crashlytics;
+import com.google.firebase.FirebaseApp;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -38,6 +39,7 @@ import org.dhis2.BuildConfig;
 import org.dhis2.R;
 import org.dhis2.data.sharedPreferences.SharePreferencesProvider;
 import org.dhis2.data.sharedPreferences.SharePreferencesProviderImpl;
+import org.dhis2.data.sharedPreferences.SharePreferencesProvider;
 import org.dhis2.usescases.login.LoginActivity;
 import org.dhis2.usescases.main.MainActivity;
 import org.dhis2.usescases.main.program.SyncStatusDialog;
@@ -52,6 +54,9 @@ import org.dhis2.utils.SyncUtils;
 import org.dhis2.utils.custom_views.CoordinatesView;
 import org.dhis2.utils.custom_views.CustomDialog;
 import org.dhis2.utils.custom_views.PictureView;
+import org.hisp.dhis.android.core.arch.helpers.GeometryHelper;
+import org.hisp.dhis.android.core.common.FeatureType;
+import org.hisp.dhis.android.core.common.Geometry;
 
 import java.io.File;
 import java.lang.reflect.Field;
@@ -73,24 +78,8 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
     private BehaviorSubject<Status> lifeCycleObservable = BehaviorSubject.create();
     private CoordinatesView coordinatesView;
     private PictureView.OnPictureSelected onPictureSelected;
-    private String uuid;
-    private ContentLoadingProgressBar progressBar;
+    public String uuid;
     private SharePreferencesProvider provider;
-
-    public ContentLoadingProgressBar getProgressBar() {
-        return progressBar;
-    }
-
-    private BroadcastReceiver syncReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            if (intent.getAction() != null && intent.getAction().equals("action_sync") && intent.getExtras() != null && progressBar != null)
-                if (SyncUtils.isSyncRunning() && progressBar.getVisibility() == View.GONE)
-                    progressBar.setVisibility(View.VISIBLE);
-                else if (!SyncUtils.isSyncRunning())
-                    progressBar.setVisibility(View.GONE);
-        }
-    };
 
     public enum Status {
         ON_PAUSE,
@@ -127,27 +116,22 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
         mFirebaseAnalytics.setUserId(provider.sharedPreferences().getString(Constants.SERVER, null));
 
         super.onCreate(savedInstanceState);
-//        AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        LocalBroadcastManager.getInstance(this).registerReceiver(syncReceiver, new IntentFilter("action_sync"));
         lifeCycleObservable.onNext(Status.ON_RESUME);
-        setProgressBar(findViewById(R.id.toolbarProgress));
     }
 
     @Override
     protected void onPause() {
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(syncReceiver);
         super.onPause();
         lifeCycleObservable.onNext(Status.ON_PAUSE);
     }
 
     @Override
     protected void onDestroy() {
-        progressBar = null;
         super.onDestroy();
     }
 
@@ -249,7 +233,7 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
         return gson.fromJson(json, type);
     }
 
-   
+
 
     public Observable<Status> observableLifeCycle() {
         return lifeCycleObservable;
@@ -358,7 +342,7 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
     @Override
     public void onMapPositionClick(CoordinatesView coordinatesView) {
         this.coordinatesView = coordinatesView;
-        startActivityForResult(MapSelectorActivity.create(this), Constants.RQ_MAP_LOCATION_VIEW);
+        startActivityForResult(MapSelectorActivity.Companion.create(this,coordinatesView.getFeatureType(), coordinatesView.currentCoordinates()), Constants.RQ_MAP_LOCATION_VIEW);
     }
 
     @Override
@@ -368,11 +352,24 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
             switch (requestCode) {
                 case Constants.RQ_MAP_LOCATION_VIEW:
                     if (coordinatesView != null && data.getExtras() != null) {
-                        coordinatesView.updateLocation(Double.valueOf(data.getStringExtra(MapSelectorActivity.LATITUDE)), Double.valueOf(data.getStringExtra(MapSelectorActivity.LONGITUDE)));
+                        FeatureType locationType = FeatureType.valueOf(data.getStringExtra(MapSelectorActivity.Companion.getLOCATION_TYPE_EXTRA()));
+                        String dataExtra = data.getStringExtra(MapSelectorActivity.Companion.getDATA_EXTRA());
+                        Geometry geometry;
+                        if (locationType == FeatureType.POINT) {
+                            Type type = new TypeToken<List<Double>>(){}.getType();
+                            geometry = GeometryHelper.createPointGeometry(new Gson().fromJson(dataExtra, type));
+                        } else if (locationType == FeatureType.POLYGON) {
+                            Type type = new TypeToken<List<List<List<Double>>>>(){}.getType();
+                            geometry = GeometryHelper.createPolygonGeometry(new Gson().fromJson(dataExtra, type));
+                        } else  {
+                            Type type = new TypeToken<List<List<List<List<Double>>>>>(){}.getType();
+                            geometry = GeometryHelper.createMultiPolygonGeometry(new Gson().fromJson(dataExtra, type));
+                        }
+                        coordinatesView.updateLocation(geometry);
                     }
                     this.coordinatesView = null;
                     break;
-                case Constants.GALLERY_REQUEST:
+                /*case Constants.GALLERY_REQUEST:
                     try {
                         final Uri imageUri = data.getData();
                         onPictureSelected.onSelected(FileResourcesUtil.getFileFromGallery(this, imageUri), imageUri.toString(), uuid);
@@ -388,7 +385,7 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
                             onPictureSelected.onSelected(null, new File(FileResourcesUtil.getUploadDirectory(this), "test").getAbsolutePath(), uuid);
                     } else
                         onPictureSelected.onSelected(null, null, uuid);
-                    break;
+                    break;*/
             }
         }
         super.onActivityResult(requestCode, resultCode, data);
@@ -413,16 +410,6 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
 
     protected int getAccentColor() {
         return ColorUtils.getPrimaryColor(this, ColorUtils.ColorType.ACCENT);
-    }
-
-
-    public void setProgressBar(ContentLoadingProgressBar progressBar) {
-        if (progressBar != null) {
-            this.progressBar = progressBar;
-            if (SyncUtils.isSyncRunning())
-                progressBar.setVisibility(View.VISIBLE);
-            else progressBar.setVisibility(View.GONE);
-        }
     }
 
     @Override

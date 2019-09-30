@@ -5,6 +5,7 @@ import android.text.TextUtils.isEmpty
 import android.util.Base64
 import android.view.View
 import androidx.databinding.DataBindingUtil
+import com.scottyab.rootbeer.RootBeer
 import com.google.android.gms.safetynet.SafetyNet
 import org.dhis2.App
 import org.dhis2.BuildConfig
@@ -76,6 +77,13 @@ class SplashActivity : ActivityGlobalAbstract(), SplashContracts.View {
 
     override fun onResume() {
         super.onResume()
+
+        if (BuildConfig.DEBUG || !RootBeer(this).isRootedWithoutBusyBoxCheck)
+            presenter.init(this)
+        else
+            showInfoDialog("Security",
+                    "For security reasons, this version of the app is not allow to be used in " +
+                            "rooted devices. Please use the training version.")
     }
 
     override fun onPause() {

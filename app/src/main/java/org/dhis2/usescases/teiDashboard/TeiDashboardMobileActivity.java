@@ -28,12 +28,10 @@ import androidx.viewpager.widget.ViewPager;
 import com.google.android.material.tabs.TabLayout;
 
 import org.dhis2.App;
-import org.dhis2.BuildConfig;
 import org.dhis2.R;
-import org.dhis2.data.forms.FormActivity;
-import org.dhis2.data.forms.FormViewArguments;
 import org.dhis2.data.sharedPreferences.SharePreferencesProvider;
 import org.dhis2.databinding.ActivityDashboardMobileBinding;
+import org.dhis2.usescases.enrollment.EnrollmentActivity;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.usescases.teiDashboard.adapters.DashboardPagerAdapter;
 import org.dhis2.usescases.teiDashboard.adapters.DashboardPagerTabletAdapter;
@@ -42,17 +40,15 @@ import org.dhis2.usescases.teiDashboard.teiProgramList.TeiProgramListActivity;
 import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.HelpManager;
+import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 
 import javax.inject.Inject;
 
-import me.toptas.fancyshowcase.FancyShowCaseView;
-import me.toptas.fancyshowcase.FocusShape;
 import timber.log.Timber;
 
 /**
@@ -78,7 +74,6 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
 
     private DashboardViewModel dashboardViewModel;
     private boolean fromRelationship;
-    private boolean showTutorial;
     private SharePreferencesProvider provider;
 
 
@@ -129,9 +124,9 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
 
     @Override
     protected void onPause() {
-        super.onPause();
-        ((App) getApplicationContext()).releaseDashboardComponent();
         presenter.onDettach();
+        ((App) getApplicationContext()).releaseDashboardComponent();
+        super.onPause();
     }
 
     @Override
@@ -204,7 +199,8 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
     public void setData(DashboardProgramModel program) {
 
         dashboardViewModel.updateDashboard(program);
-        setProgramColor(program.getObjectStyleForProgram(program.getCurrentProgram().uid()).color());
+        ObjectStyle style = program.getObjectStyleForProgram(program.getCurrentProgram().uid());
+        setProgramColor(style == null ? "" : style.color());
 
 
         binding.setDashboardModel(program);
@@ -228,13 +224,9 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
                     .replace(R.id.tei_main_view, new TEIDataFragment())
                     .commitAllowingStateLoss();
 
-        Boolean enrollmentStatus = program.getCurrentEnrollment() != null && program.getCurrentEnrollment().enrollmentStatus() == EnrollmentStatus.ACTIVE;
+        Boolean enrollmentStatus = program.getCurrentEnrollment() != null && program.getCurrentEnrollment().status() == EnrollmentStatus.ACTIVE;
         if (getIntent().getStringExtra(Constants.EVENT_UID) != null && enrollmentStatus)
             dashboardViewModel.updateEventUid(getIntent().getStringExtra(Constants.EVENT_UID));
-
-        if (!HelpManager.getInstance().isTutorialReadyForScreen(getClass().getName()) && !fromRelationship) {
-            setTutorial();
-        }
     }
 
     @Override
@@ -299,11 +291,6 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
         startActivityForResult(intent, Constants.RQ_ENROLLMENTS);
     }
 
-    @Override
-    public String getToolbarTitle() {
-        return binding.toolbarTitle.getText().toString();
-    }
-
     public TeiDashboardContracts.Presenter getPresenter() {
         return presenter;
     }
@@ -312,8 +299,13 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == Constants.RQ_ENROLLMENTS && resultCode == RESULT_OK) {
             if (data.hasExtra("GO_TO_ENROLLMENT")) {
-                FormViewArguments formViewArguments = FormViewArguments.createForEnrollment(data.getStringExtra("GO_TO_ENROLLMENT"));
-                startActivity(FormActivity.create(this, formViewArguments, true));
+                Intent intent = EnrollmentActivity.Companion.getIntent(this,
+                        data.getStringExtra("GO_TO_ENROLLMENT"),
+                        data.getStringExtra("GO_TO_ENROLLMENT_PROGRAM"),
+                        EnrollmentActivity.EnrollmentMode.NEW);
+                startActivity(intent);
+               /* FormViewArguments formViewArguments = FormViewArguments.createForEnrollment(data.getStringExtra("GO_TO_ENROLLMENT"));
+                startActivity(FormActivity.create(this, formViewArguments, true));*/
                 finish();
             }
 
@@ -331,93 +323,16 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
 
     @Override
     public void setTutorial() {
-        super.setTutorial();
-
         new Handler().postDelayed(() -> {
-            if (getAbstractActivity() != null) {
-                FancyShowCaseView tuto1 = new FancyShowCaseView.Builder(getAbstractActivity())
-                        .title(getString(R.string.tuto_dashboard_1))
-                        .enableAutoTextPosition()
-                        .closeOnTouch(true)
-                        .build();
-                FancyShowCaseView tuto2 = new FancyShowCaseView.Builder(getAbstractActivity())
-                        .title(getString(R.string.tuto_dashboard_2))
-                        .enableAutoTextPosition()
-                        .focusOn(getAbstractActivity().findViewById(R.id.viewMore))
-                        .focusShape(FocusShape.ROUNDED_RECTANGLE)
-                        .titleGravity(Gravity.BOTTOM)
-                        .closeOnTouch(true)
-                        .build();
-                FancyShowCaseView tuto3 = new FancyShowCaseView.Builder(getAbstractActivity())
-                        .title(getString(R.string.tuto_dashboard_3))
-                        .enableAutoTextPosition()
-                        .focusOn(getAbstractActivity().findViewById(R.id.shareContainer))
-                        .focusShape(FocusShape.ROUNDED_RECTANGLE)
-                        .titleGravity(Gravity.BOTTOM)
-                        .closeOnTouch(true)
-                        .build();
-                FancyShowCaseView tuto4 = new FancyShowCaseView.Builder(getAbstractActivity())
-                        .title(getString(R.string.tuto_dashboard_4))
-                        .enableAutoTextPosition()
-                        .focusOn(getAbstractActivity().findViewById(R.id.follow_up))
-                        .closeOnTouch(true)
-                        .build();
-                FancyShowCaseView tuto5 = new FancyShowCaseView.Builder(getAbstractActivity())
-                        .title(getString(R.string.tuto_dashboard_5))
-                        .enableAutoTextPosition()
-                        .focusOn(getAbstractActivity().findViewById(R.id.fab))
-                        .closeOnTouch(true)
-                        .build();
-                FancyShowCaseView tuto6 = new FancyShowCaseView.Builder(getAbstractActivity())
-                        .title(getString(R.string.tuto_dashboard_6))
-                        .enableAutoTextPosition()
-                        .focusOn(getAbstractActivity().findViewById(R.id.tei_recycler))
-                        .focusShape(FocusShape.ROUNDED_RECTANGLE)
-                        .titleGravity(Gravity.TOP)
-                        .closeOnTouch(true)
-                        .build();
-                FancyShowCaseView tuto7 = new FancyShowCaseView.Builder(getAbstractActivity())
-                        .title(getString(R.string.tuto_dashboard_7))
-                        .enableAutoTextPosition()
-                        .focusOn(getAbstractActivity().findViewById(R.id.tab_layout))
-                        .focusShape(FocusShape.ROUNDED_RECTANGLE)
-                        .closeOnTouch(true)
-                        .build();
-                FancyShowCaseView tuto8 = new FancyShowCaseView.Builder(getAbstractActivity())
-                        .title(getString(R.string.tuto_dashboard_8))
-                        .enableAutoTextPosition()
-                        .focusOn(getAbstractActivity().findViewById(R.id.program_selector_button))
-                        .closeOnTouch(true)
-                        .build();
-
-                ArrayList<FancyShowCaseView> steps = new ArrayList<>();
-                steps.add(tuto1);
-                steps.add(tuto2);
-                steps.add(tuto3);
-                steps.add(tuto4);
-                steps.add(tuto5);
-                steps.add(tuto6);
-                steps.add(tuto7);
-                steps.add(tuto8);
-
-                HelpManager.getInstance().setScreenHelp(getClass().getName(), steps);
-
-                if (!provider.sharedPreferences().getBoolean("TUTO_DASHBOARD_SHOWN", false) && !BuildConfig.DEBUG || showTutorial) {
-                    HelpManager.getInstance().showHelp();
-                    provider.sharedPreferences().putBoolean("TUTO_DASHBOARD_SHOWN", true);
-                    showTutorial = true;
-                }
-            }
-
+            if (getAbstractActivity() != null)
+                HelpManager.getInstance().show(getActivity(), HelpManager.TutorialName.TEI_DASHBOARD, null);
         }, 500);
-
-
     }
 
     @Override
     public void showTutorial(boolean shaked) {
         if (binding.tabLayout.getSelectedTabPosition() == 0 && !changingProgram)
-            super.showTutorial(shaked);
+            setTutorial();
         else
             showToast(getString(R.string.no_intructions));
 
@@ -518,11 +433,10 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
         popupMenu.setOnMenuItemClickListener(item -> {
             switch (item.getItemId()) {
                 case R.id.showHelp:
-                    this.showTutorial = true;
                     showTutorial(true);
                     break;
                 case R.id.deleteTei:
-                    presenter.deteleteTei();
+                    presenter.deleteTei();
                     break;
                 case R.id.deleteEnrollment:
                     presenter.deleteEnrollment();

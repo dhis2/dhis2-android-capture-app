@@ -8,6 +8,10 @@
         <variable
             name="ou"
             type="org.hisp.dhis.android.core.organisationunit.OrganisationUnit" />
+
+        <variable
+            name="item"
+            type="org.hisp.dhis.android.core.common.BaseIdentifiableObject" />
     </data>
 
     <LinearLayout
@@ -20,7 +24,7 @@
             android:layout_height="48dp"
             android:layout_marginStart="32dp"
             android:layout_weight="1"
-            android:text="@{ou.displayName()}"
+            android:text="@{item.displayName()}"
             android:gravity="center_vertical"
             android:textColor="@color/white"
             tools:text="Org Unit Name" />

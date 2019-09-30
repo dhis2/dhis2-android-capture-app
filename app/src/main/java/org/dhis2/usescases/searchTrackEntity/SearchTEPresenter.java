@@ -4,34 +4,38 @@ import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.DatePicker;
 
 import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.paging.PagedList;
 
 import org.dhis2.R;
-import org.dhis2.data.forms.FormActivity;
-import org.dhis2.data.forms.FormViewArguments;
-import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.data.sharedPreferences.SharePreferencesProvider;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.databinding.WidgetDatepickerBinding;
+import org.dhis2.usescases.enrollment.EnrollmentActivity;
 import org.dhis2.usescases.main.program.SyncStatusDialog;
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel;
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity;
+import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.NetworkUtils;
+import org.dhis2.utils.ObjectStyleUtils;
 import org.dhis2.utils.custom_views.OrgUnitDialog;
-import org.dhis2.utils.custom_views.OrgUnitDialog_2;
+import org.dhis2.utils.filters.FilterManager;
+import org.dhis2.utils.maps.GeometryUtils;
 import org.hisp.dhis.android.core.D2;
+import org.hisp.dhis.android.core.common.FeatureType;
+import org.hisp.dhis.android.core.common.Unit;
 import org.hisp.dhis.android.core.maintenance.D2Error;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
-import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.Program;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityTypeModel;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityType;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -43,7 +47,6 @@ import java.util.Map;
 
 import javax.annotation.Nullable;
 
-import io.reactivex.BackpressureStrategy;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
@@ -62,7 +65,6 @@ import static android.text.TextUtils.isEmpty;
 public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
     private static final int MAX_NO_SELECTED_PROGRAM_RESULTS = 5;
-    private final MetadataRepository metadataRepository;
     private final SearchRepository searchRepository;
     private final D2 d2;
     private SearchTEContractsModule.View view;
@@ -70,7 +72,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     private Program selectedProgram;
 
     private CompositeDisposable compositeDisposable;
-    private TrackedEntityTypeModel trackedEntity;
+    private TrackedEntityType trackedEntity;
     private HashMap<String, String> queryData;
     private Map<String, String> queryDataEQ;
 
@@ -81,10 +83,12 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     private FlowableProcessor<Boolean> processorDismissDialog;
     private String trackedEntityType;
     private String initialProgram;
+    private FlowableProcessor<Unit> mapProcessor;
+    private FlowableProcessor<Unit> enrollmentMapProcessor;
+    private Dialog dialogDisplayed;
     private SharePreferencesProvider provider;
 
-    public SearchTEPresenter(SharePreferencesProvider provider, SearchRepository searchRepository, MetadataRepository metadataRepository, D2 d2) {
-        this.metadataRepository = metadataRepository;
+    public SearchTEPresenter(D2 d2, SearchRepository searchRepository, SharePreferencesProvider provider) {
         this.searchRepository = searchRepository;
         this.d2 = d2;
         this.provider = provider;
@@ -92,6 +96,8 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         queryDataEQ = new HashMap<>();
         queryProcessor = PublishProcessor.create();
         processorDismissDialog = PublishProcessor.create();
+        mapProcessor = PublishProcessor.create();
+        enrollmentMapProcessor = PublishProcessor.create();
     }
 
     //-----------------------------------
@@ -105,7 +111,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         this.initialProgram = initialProgram;
         view.setShared(provider);
         compositeDisposable.add(
-                metadataRepository.getTrackedEntity(trackedEntityType)
+                searchRepository.getTrackedEntityType(trackedEntityType)
                         .subscribeOn(Schedulers.io())
                         .observeOn(Schedulers.io())
                         .flatMap(trackedEntity ->
@@ -125,7 +131,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                                             this.selectedProgram = program;
                                     }
                                     Collections.sort(programs, (program1, program2) -> program1.displayName().compareToIgnoreCase(program2.displayName()));
-                                    if(selectedProgram==null && programsWithTEType.size()==1) {
+                                    if (selectedProgram == null && programsWithTEType.size() == 1) {
                                         setProgram(programsWithTEType.get(0));
                                         view.setPrograms(programsWithTEType);
                                     } else if (selectedProgram != null) {
@@ -135,17 +141,29 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                                         setProgram(null);
                                         view.setPrograms(programs);
                                     }
+                                    startFilterManager();
 
                                 }, Timber::d
                         ));
 
         compositeDisposable.add(
-                metadataRepository.getOrganisationUnits()
+                searchRepository.getTrackedEntityType(trackedEntityType)
+                        .map(teiType -> teiType.featureType() != null ? teiType.featureType() : FeatureType.NONE)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                view.featureType(),
+                                Timber::d
+                        )
+        );
+
+        compositeDisposable.add(
+                searchRepository.getOrganisationUnits()
                         .subscribeOn(Schedulers.io())
                         .observeOn(Schedulers.io())
                         .subscribe(
                                 orgUnits -> {
-                                    for (OrganisationUnitModel orgUnit : orgUnits) {
+                                    for (OrganisationUnit orgUnit : orgUnits) {
                                         this.orgUnitsUid.add(orgUnit.uid());
                                     }
                                 },
@@ -153,10 +171,30 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                         )
         );
 
+        compositeDisposable.add(
+                mapProcessor
+                        .flatMap(unit ->
+                                queryProcessor.startWith(queryData)
+                                        .flatMap(query ->
+                                                searchRepository.searchTeiForMap(
+                                                        selectedProgram, trackedEntityType,
+                                                        FilterManager.getInstance().getOrgUnitUidsFilters(),
+                                                        FilterManager.getInstance().getStateFilters(),
+                                                        query, NetworkUtils.isOnline(view.getContext())))
+                                        .map(GeometryUtils.INSTANCE::getSourceFromTeis)
+                        )
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                view.setMap(),
+                                Timber::e,
+                                () -> Timber.d("COMPLETED")
+                        ));
+
         manageProcessorDismissDialog();
     }
 
-    private void manageProcessorDismissDialog(){
+    private void manageProcessorDismissDialog() {
         compositeDisposable.add(processorDismissDialog
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -197,25 +235,14 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         );
 
         compositeDisposable.add(
-                view.optionSetActions()
-                        .switchMap(
-                                data -> metadataRepository.searchOptions(data.val0(), data.val1(), data.val2(), new ArrayList<>(), new ArrayList<>()).toFlowable(BackpressureStrategy.LATEST)
-                        )
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(
-                                view::setListOptions,
-                                Timber::e
-                        ));
-
-        compositeDisposable.add(
                 queryProcessor
                         .map(map -> {
                             HashMap<String, String> data = new HashMap<>(map);
-                            if (!NetworkUtils.isOnline(view.getContext()) || selectedProgram == null || data.isEmpty())
-                                return searchRepository.searchTrackedEntitiesOffline(selectedProgram, orgUnitsUid, data);
-                            else
-                                return searchRepository.searchTrackedEntitiesAll(selectedProgram, orgUnitsUid, data);
+                            return searchRepository.searchTrackedEntities(
+                                    selectedProgram, trackedEntityType,
+                                    FilterManager.getInstance().getOrgUnitUidsFilters(),
+                                    FilterManager.getInstance().getStateFilters(),
+                                    data, NetworkUtils.isOnline(view.getContext()));
                         })
                         .doOnError(this::handleError)
                         .subscribeOn(Schedulers.io())
@@ -229,6 +256,35 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                         .subscribeOn(AndroidSchedulers.mainThread())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(data -> view.clearData(), Timber::d)
+        );
+
+        compositeDisposable.add(
+                FilterManager.getInstance().ouTreeFlowable()
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                open -> view.openOrgUnitTreeSelector(),
+                                Timber::e
+                        )
+        );
+
+        compositeDisposable.add(
+                FilterManager.getInstance().getPeriodRequest()
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                periodRequest -> view.showPeriodRequest(periodRequest),
+                                Timber::e
+                        ));
+
+        compositeDisposable.add(
+                FilterManager.getInstance().asFlowable()
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                filterManager -> view.updateFilters(filterManager.getTotalFilters()),
+                                Timber::e
+                        )
         );
 
     }
@@ -264,7 +320,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                 messageId = view.getContext().getString(R.string.search_init);
             }
         } else if (selectedProgram == null) {
-            if (queryData.isEmpty() && view.fromRelationshipTEI() == null)
+            if (size == 0 && queryData.isEmpty() && view.fromRelationshipTEI() == null)
                 messageId = view.getContext().getString(R.string.search_init);
             else if (size == 0) {
                 messageId = String.format(view.getContext().getString(R.string.search_criteria_not_met), getTrackedEntityName().displayName());
@@ -273,8 +329,9 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                 messageId = String.format(view.getContext().getString(R.string.search_max_tei_reached), MAX_NO_SELECTED_PROGRAM_RESULTS);
         } else {
             if (size == 0 && !queryData.isEmpty()) {
-                if (selectedProgram.minAttributesRequiredToSearch() > 0 && queryData.size() == 1 && queryData.containsKey(Constants.ENROLLMENT_DATE_UID))
-                    messageId = view.getContext().getString(R.string.search_attr);
+                int realQuerySize = queryData.containsKey(Constants.ENROLLMENT_DATE_UID) ? queryData.size() - 1 : queryData.size();
+                if (selectedProgram.minAttributesRequiredToSearch() > realQuerySize)
+                    messageId = String.format(view.getContext().getString(R.string.search_min_num_attr), selectedProgram.minAttributesRequiredToSearch());
                 else
                     messageId = String.format(view.getContext().getString(R.string.search_criteria_not_met), getTrackedEntityName().displayName());
                 canRegister = true;
@@ -330,8 +387,25 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         );
     }
 
+    private void startFilterManager() {
+        compositeDisposable.add(
+                FilterManager.getInstance().asFlowable()
+                        .startWith(FilterManager.getInstance())
+                        .map(filterManager -> searchRepository.searchTrackedEntities(
+                                selectedProgram, trackedEntityType,
+                                filterManager.getOrgUnitUidsFilters(),
+                                filterManager.getStateFilters(),
+                                queryData, NetworkUtils.isOnline(view.getContext())))
+                        .subscribeOn(Schedulers.computation())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                view::setLiveData,
+                                Timber::d)
+        );
+    }
+
     @Override
-    public TrackedEntityTypeModel getTrackedEntityName() {
+    public TrackedEntityType getTrackedEntityName() {
         return trackedEntity;
     }
 
@@ -362,7 +436,6 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
             queryProcessor.onNext(new HashMap<>());
         else
             queryProcessor.onNext(queryData);
-
     }
 
     @Override
@@ -386,6 +459,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         else {
             this.view.clearData();
             List<String> optionSetIds = new ArrayList<>();
+            this.view.updateFiltersSearch(queryData.entrySet().size());
             for (Map.Entry<String, String> entry : queryData.entrySet()) {
                 if (entry.getValue().equals("null_os_null"))
                     optionSetIds.add(entry.getKey());
@@ -399,21 +473,20 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
     @Override
     public void onEnrollClick(View view) {
-        if (selectedProgram != null && selectedProgram.access().data().write() != null && selectedProgram.access().data().write())
-            if (view.isEnabled()) {
+        if (selectedProgram != null)
+            if (selectedProgram.access().data().write() != null && selectedProgram.access().data().write())
                 enroll(selectedProgram.uid(), null);
-            } else
-                this.view.displayMessage(view.getContext().getString(R.string.search_program_not_selected));
-        else {
-            this.view.displayMessage(view.getContext().getString(R.string.search_access_error));
-        }
+            else
+                this.view.displayMessage(view.getContext().getString(R.string.search_access_error));
+        else
+            this.view.displayMessage(view.getContext().getString(R.string.search_program_not_selected));
     }
 
     @Override
     public void enroll(String programUid, String uid) {
         selectedEnrollmentDate = Calendar.getInstance().getTime();
 
-        OrgUnitDialog_2 orgUnitDialog = OrgUnitDialog_2.getInstace().setMultiSelection(false);
+        OrgUnitDialog orgUnitDialog = OrgUnitDialog.getInstace().setMultiSelection(false);
         orgUnitDialog.setTitle("Enrollment Org Unit")
                 .setPossitiveListener(v -> {
                     if (orgUnitDialog.getSelectedOrgUnit() != null && !orgUnitDialog.getSelectedOrgUnit().isEmpty())
@@ -429,6 +502,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                         allOrgUnits -> {
                             if (allOrgUnits.size() > 1) {
                                 orgUnitDialog.setOrgUnits(allOrgUnits);
+                                orgUnitDialog.setProgram(programUid);
                                 if (!orgUnitDialog.isAdded())
                                     orgUnitDialog.show(view.getAbstracContext().getSupportFragmentManager(), "OrgUnitEnrollment");
                             } else if (allOrgUnits.size() == 1)
@@ -496,74 +570,59 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
     private void showCustomCalendar(OrganisationUnit selectedOrgUnit, String programUid, String uid) {
 
-        LayoutInflater layoutInflater = LayoutInflater.from(view.getContext());
-//        View datePickerView = layoutInflater.inflate(R.layout.widget_datepicker, null);
-        WidgetDatepickerBinding binding = WidgetDatepickerBinding.inflate(layoutInflater);
-        final DatePicker datePicker = binding.widgetDatepicker;
+        if (dialogDisplayed == null || !dialogDisplayed.isShowing()) {
+            LayoutInflater layoutInflater = LayoutInflater.from(view.getContext());
+            WidgetDatepickerBinding binding = WidgetDatepickerBinding.inflate(layoutInflater);
+            final DatePicker datePicker = binding.widgetDatepicker;
 
-        Calendar c = Calendar.getInstance();
-        datePicker.updateDate(
-                c.get(Calendar.YEAR),
-                c.get(Calendar.MONTH),
-                c.get(Calendar.DAY_OF_MONTH));
+            Calendar c = Calendar.getInstance();
+            datePicker.updateDate(
+                    c.get(Calendar.YEAR),
+                    c.get(Calendar.MONTH),
+                    c.get(Calendar.DAY_OF_MONTH));
 
-        AlertDialog.Builder alertDialog = new AlertDialog.Builder(view.getContext(), R.style.DatePickerTheme)
-                .setTitle(selectedProgram.enrollmentDateLabel());
-               /* .setPositiveButton(R.string.action_accept, (dialog, which) -> {
-                    Calendar selectedCalendar = Calendar.getInstance();
-                    selectedCalendar.set(Calendar.YEAR, datePicker.getYear());
-                    selectedCalendar.set(Calendar.MONTH, datePicker.getMonth());
-                    selectedCalendar.set(Calendar.DAY_OF_MONTH, datePicker.getDayOfMonth());
-                    selectedCalendar.set(Calendar.HOUR_OF_DAY, 0);
-                    selectedCalendar.set(Calendar.MINUTE, 0);
-                    selectedCalendar.set(Calendar.SECOND, 0);
-                    selectedCalendar.set(Calendar.MILLISECOND, 0);
-                    selectedEnrollmentDate = selectedCalendar.getTime();
+            AlertDialog.Builder alertDialog = new AlertDialog.Builder(view.getContext(), R.style.DatePickerTheme)
+                    .setTitle(selectedProgram.enrollmentDateLabel());
 
-                    enrollInOrgUnit(selectedOrgUnitModel.uid(), programUid, uid, selectedEnrollmentDate);
-                })
-                .setNeutralButton(view.getContext().getResources().getString(R.string.change_calendar),
-                        (dialog, which) -> showNativeCalendar(selectedOrgUnitModel, programUid, uid))
-                .setNegativeButton(view.getContext().getString(R.string.date_dialog_clear), (dialog, which) -> dialog.dismiss());*/
+            if (selectedOrgUnit.openingDate() != null)
+                datePicker.setMinDate(selectedOrgUnit.openingDate().getTime());
 
-        if (selectedOrgUnit.openingDate() != null)
-            datePicker.setMinDate(selectedOrgUnit.openingDate().getTime());
-
-        if (selectedOrgUnit.closedDate() == null && !selectedProgram.selectEnrollmentDatesInFuture()) {
-            datePicker.setMaxDate(System.currentTimeMillis());
-        } else if (selectedOrgUnit.closedDate() != null && !selectedProgram.selectEnrollmentDatesInFuture()) {
-            if (selectedOrgUnit.closedDate().before(new Date(System.currentTimeMillis()))) {
-                datePicker.setMaxDate(selectedOrgUnit.closedDate().getTime());
-            } else {
+            if (selectedOrgUnit.closedDate() == null && !selectedProgram.selectEnrollmentDatesInFuture()) {
                 datePicker.setMaxDate(System.currentTimeMillis());
+            } else if (selectedOrgUnit.closedDate() != null && !selectedProgram.selectEnrollmentDatesInFuture()) {
+                if (selectedOrgUnit.closedDate().before(new Date(System.currentTimeMillis()))) {
+                    datePicker.setMaxDate(selectedOrgUnit.closedDate().getTime());
+                } else {
+                    datePicker.setMaxDate(System.currentTimeMillis());
+                }
+            } else if (selectedOrgUnit.closedDate() != null && selectedProgram.selectEnrollmentDatesInFuture()) {
+                datePicker.setMaxDate(selectedOrgUnit.closedDate().getTime());
             }
-        } else if (selectedOrgUnit.closedDate() != null && selectedProgram.selectEnrollmentDatesInFuture()) {
-            datePicker.setMaxDate(selectedOrgUnit.closedDate().getTime());
+
+            alertDialog.setView(binding.getRoot());
+            dialogDisplayed = alertDialog.create();
+
+            binding.changeCalendarButton.setOnClickListener(changeButton -> {
+                showNativeCalendar(selectedOrgUnit, programUid, uid);
+                dialogDisplayed.dismiss();
+            });
+            binding.clearButton.setOnClickListener(clearButton -> dialogDisplayed.dismiss());
+            binding.acceptButton.setOnClickListener(acceptButton -> {
+                Calendar selectedCalendar = Calendar.getInstance();
+                selectedCalendar.set(Calendar.YEAR, datePicker.getYear());
+                selectedCalendar.set(Calendar.MONTH, datePicker.getMonth());
+                selectedCalendar.set(Calendar.DAY_OF_MONTH, datePicker.getDayOfMonth());
+                selectedCalendar.set(Calendar.HOUR_OF_DAY, 0);
+                selectedCalendar.set(Calendar.MINUTE, 0);
+                selectedCalendar.set(Calendar.SECOND, 0);
+                selectedCalendar.set(Calendar.MILLISECOND, 0);
+                selectedEnrollmentDate = selectedCalendar.getTime();
+
+                enrollInOrgUnit(selectedOrgUnit.uid(), programUid, uid, selectedEnrollmentDate);
+                dialogDisplayed.dismiss();
+            });
+            dialogDisplayed.show();
         }
-
-        alertDialog.setView(binding.getRoot());
-        Dialog dialog = alertDialog.create();
-
-        binding.changeCalendarButton.setOnClickListener(changeButton -> {
-            showNativeCalendar(selectedOrgUnit, programUid, uid);
-            dialog.dismiss();
-        });
-        binding.clearButton.setOnClickListener(clearButton-> dialog.dismiss());
-        binding.acceptButton.setOnClickListener(acceptButton->{
-            Calendar selectedCalendar = Calendar.getInstance();
-            selectedCalendar.set(Calendar.YEAR, datePicker.getYear());
-            selectedCalendar.set(Calendar.MONTH, datePicker.getMonth());
-            selectedCalendar.set(Calendar.DAY_OF_MONTH, datePicker.getDayOfMonth());
-            selectedCalendar.set(Calendar.HOUR_OF_DAY, 0);
-            selectedCalendar.set(Calendar.MINUTE, 0);
-            selectedCalendar.set(Calendar.SECOND, 0);
-            selectedCalendar.set(Calendar.MILLISECOND, 0);
-            selectedEnrollmentDate = selectedCalendar.getTime();
-
-            enrollInOrgUnit(selectedOrgUnit.uid(), programUid, uid, selectedEnrollmentDate);
-            dialog.dismiss();
-        });
-        dialog.show();
     }
 
 
@@ -576,9 +635,15 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                 searchRepository.saveToEnroll(trackedEntity.uid(), orgUnitUid, programUid, uid, queryData, enrollmentDate)
                         .subscribeOn(Schedulers.computation())
                         .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(enrollmentUid -> {
-                                    FormViewArguments formViewArguments = FormViewArguments.createForEnrollment(enrollmentUid);
-                                    this.view.getContext().startActivity(FormActivity.create(this.view.getContext(), formViewArguments, true));
+                        .subscribe(enrollmentAndTEI -> {
+                                    if (view.fromRelationshipTEI() == null) {
+                                        Intent intent = EnrollmentActivity.Companion.getIntent(view.getContext(), enrollmentAndTEI.val0(), selectedProgram.uid(), EnrollmentActivity.EnrollmentMode.NEW);
+                                        view.getContext().startActivity(intent);
+                                        /*FormViewArguments formViewArguments = FormViewArguments.createForEnrollment(enrollmentAndTEI.val0());
+                                        this.view.getContext().startActivity(FormActivity.create(this.view.getContext(), formViewArguments, true));*/
+                                    } else {
+                                        addRelationship(enrollmentAndTEI.val1(), false);
+                                    }
                                 },
                                 Timber::d)
         );
@@ -596,15 +661,9 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     @Override
     public void addRelationship(String TEIuid, String relationshipTypeUid, boolean online) {
         if (!online) {
-            String relationshipType;
-            if (relationshipTypeUid == null)
-                relationshipType = selectedProgram.relationshipType().uid();
-            else
-                relationshipType = relationshipTypeUid;
-
             Intent intent = new Intent();
             intent.putExtra("TEI_A_UID", TEIuid);
-            intent.putExtra("RELATIONSHIP_TYPE_UID", relationshipType);
+            intent.putExtra("RELATIONSHIP_TYPE_UID", relationshipTypeUid);
             view.getAbstractActivity().setResult(RESULT_OK, intent);
             view.getAbstractActivity().finish();
         } else {
@@ -631,14 +690,21 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         List<String> teiUids = new ArrayList<>();
         teiUids.add(teiUid);
         compositeDisposable.add(
-                d2.trackedEntityModule().downloadTrackedEntityInstancesByUid(teiUids)
+                d2.trackedEntityModule().trackedEntityInstanceDownloader.byUid().in(teiUids).download()
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
-                                data -> openDashboard(data.get(0).uid()),
-                                Timber::d)
+                                view.downloadProgress(),
+                                Timber::d,
+                                () -> openDashboard(teiUid))
         );
 
+    }
+
+    @Override
+    public String nameOUByUid(String uid) {
+        OrganisationUnit organisationUnit = d2.organisationUnitModule().organisationUnits.uid(uid).blockingGet();
+        return organisationUnit != null ? organisationUnit.name() : null;
     }
 
     @Override
@@ -646,17 +712,18 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         List<String> teiUids = new ArrayList<>();
         teiUids.add(TEIuid);
         compositeDisposable.add(
-                d2.trackedEntityModule().downloadTrackedEntityInstancesByUid(teiUids)
+                d2.trackedEntityModule().trackedEntityInstanceDownloader.byUid().in(teiUids).download()
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
-                                data -> {
+                                data -> Timber.d("DOWNLOADING TEI %s : %s%", TEIuid, data.percentage()),
+                                Timber::d,
+                                () -> {
                                     if (relationshipTypeUid == null)
                                         addRelationship(TEIuid, false);
                                     else
                                         addRelationship(TEIuid, relationshipTypeUid, false);
-                                },
-                                Timber::d)
+                                })
         );
     }
 
@@ -685,5 +752,76 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     @Override
     public void onSyncIconClick(String teiUid) {
         view.showSyncDialog(teiUid, SyncStatusDialog.ConflictType.TEI, processorDismissDialog);
+    }
+
+    @Override
+    public void showFilter() {
+        view.showHideFilter();
+    }
+
+    @Override
+    public void showFilterGeneral() {
+        view.showHideFilterGeneral();
+    }
+
+    @Override
+    public void clearFilterClick() {
+        view.clearFilters();
+    }
+
+    @Override
+    public void closeFilterClick() {
+        view.closeFilters();
+    }
+
+    @Override
+    public void getMapData() {
+        mapProcessor.onNext(new Unit());
+    }
+
+    @Override
+    public void getEnrollmentMapData() {
+        enrollmentMapProcessor.onNext(new Unit());
+    }
+
+    @Override
+    public Drawable getSymbolIcon() {
+        TrackedEntityType teiType = d2.trackedEntityModule().trackedEntityTypes.withTrackedEntityTypeAttributes().withStyle().uid(trackedEntityType).blockingGet();
+
+        if (teiType.style() != null && teiType.style().icon() != null) {
+            return
+                    ObjectStyleUtils.getIconResource(view.getContext(), teiType.style().icon(), R.drawable.mapbox_marker_icon_default);
+        } else
+            return AppCompatResources.getDrawable(view.getContext(), R.drawable.mapbox_marker_icon_default);
+    }
+
+    @Override
+    public Drawable getEnrollmentSymbolIcon() {
+        if (selectedProgram != null) {
+            if (selectedProgram.style() != null && selectedProgram.style().icon() != null) {
+                return ObjectStyleUtils.getIconResource(view.getContext(), selectedProgram.style().icon(), R.drawable.ic_program_default);
+            } else
+                return AppCompatResources.getDrawable(view.getContext(), R.drawable.ic_program_default);
+        }
+
+        return null;
+    }
+
+    @Override
+    public int getTEIColor() {
+        TrackedEntityType teiType = d2.trackedEntityModule().trackedEntityTypes.withTrackedEntityTypeAttributes().withStyle().uid(trackedEntityType).blockingGet();
+
+        if (teiType.style() != null && teiType.style().color() != null) {
+            return ColorUtils.parseColor(teiType.style().color());
+        } else
+            return -1;
+    }
+
+    @Override
+    public int getEnrollmentColor() {
+        if (selectedProgram != null && selectedProgram.style() != null && selectedProgram.style().color() != null)
+            return ColorUtils.parseColor(selectedProgram.style().color());
+        else
+            return -1;
     }
 }

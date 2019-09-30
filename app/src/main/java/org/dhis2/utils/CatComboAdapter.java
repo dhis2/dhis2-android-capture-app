@@ -14,8 +14,7 @@ import android.widget.ArrayAdapter;
 import org.dhis2.R;
 import org.dhis2.databinding.SpinnerLayoutBinding;
 
-import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
-
+import org.hisp.dhis.android.core.category.CategoryOptionCombo;
 import java.util.List;
 
 /**
@@ -23,13 +22,16 @@ import java.util.List;
  *
  */
 
-public class CatComboAdapter extends ArrayAdapter<CategoryOptionComboModel> {
+public class CatComboAdapter extends ArrayAdapter<CategoryOptionCombo> {
 
-    private List<CategoryOptionComboModel> options;
+    private List<CategoryOptionCombo> options;
     private String catComboName;
     private @ColorRes int textColor;
 
-    public CatComboAdapter(@NonNull Context context, int resource, int textViewResourceId, @NonNull List<CategoryOptionComboModel> objects, String categoryOptionName, @ColorRes int textColor) {
+    public CatComboAdapter(@NonNull Context context, int resource, int textViewResourceId,
+                           @NonNull List<CategoryOptionCombo> objects,
+                           String categoryOptionName,
+                           @ColorRes int textColor) {
         super(context, resource, textViewResourceId, objects);
         this.options = objects;
         this.catComboName = categoryOptionName;
@@ -41,7 +43,7 @@ public class CatComboAdapter extends ArrayAdapter<CategoryOptionComboModel> {
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
 
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        SpinnerLayoutBinding binding = DataBindingUtil.inflate(inflater, R.layout.spinner_layout, parent, false);
+        SpinnerLayoutBinding binding = SpinnerLayoutBinding.inflate(inflater,parent,false);
         if (position != 0)
             binding.setOption(options.get(position - 1).displayName());
         binding.setOptionSetName(catComboName);

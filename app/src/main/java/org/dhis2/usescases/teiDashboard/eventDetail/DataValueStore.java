@@ -2,6 +2,9 @@ package org.dhis2.usescases.teiDashboard.eventDetail;
 
 import android.content.ContentValues;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.dhis2.data.user.UserRepository;
@@ -9,26 +12,18 @@ import org.dhis2.utils.DateUtils;
 import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.event.Event;
-import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueModel;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValue;
 import org.hisp.dhis.android.core.user.UserCredentials;
-import org.hisp.dhis.android.core.user.UserCredentialsModel;
 
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 
 final class DataValueStore implements DataEntryStore {
-    private static final String SELECT_EVENT = "SELECT * FROM " + EventModel.TABLE +
-            " WHERE " + EventModel.Columns.UID + " = ? " +
-            "AND " + EventModel.TABLE + "." + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "' LIMIT 1";
 
     @NonNull
     private final BriteDatabase briteDatabase;
@@ -74,28 +69,28 @@ final class DataValueStore implements DataEntryStore {
         else {
             ContentValues contentValues = new ContentValues();
             Date currentDate = Calendar.getInstance().getTime();
-            contentValues.put(EventModel.Columns.LAST_UPDATED, DateUtils.databaseDateFormat().format(currentDate));
+            contentValues.put("lastUpdated", DateUtils.databaseDateFormat().format(currentDate));
             String eventStatus = null;
             switch (eventModel.status()) {
                 case COMPLETED:
                     eventStatus = EventStatus.ACTIVE.name(); //TODO: should check if visited/skiped/overdue
-                    contentValues.putNull(EventModel.Columns.COMPLETE_DATE);
+                    contentValues.putNull("completeDate");
                     break;
                 case SCHEDULE:
                     eventStatus = EventStatus.ACTIVE.name();
-                    contentValues.putNull(EventModel.Columns.COMPLETE_DATE);
+                    contentValues.putNull("completeDate");
                     break;
                 default:
                     eventStatus = EventStatus.COMPLETED.name();
-                    contentValues.put(EventModel.Columns.COMPLETE_DATE, DateUtils.databaseDateFormat().format(currentDate));
+                    contentValues.put("completeDate", DateUtils.databaseDateFormat().format(currentDate));
                     break;
 
             }
-            contentValues.put(EventModel.Columns.STATUS, eventStatus);
-            contentValues.put(EventModel.Columns.STATE, eventModel.state() == State.TO_POST ? State.TO_POST.name() : State.TO_UPDATE.name());
+            contentValues.put("status", eventStatus);
+            contentValues.put("state", eventModel.state() == State.TO_POST ? State.TO_POST.name() : State.TO_UPDATE.name());
             updateProgramTable(currentDate, eventModel.program());
 
-            briteDatabase.update(EventModel.TABLE, contentValues, EventModel.Columns.UID + "= ?", eventModel.uid());
+            briteDatabase.update("Event", contentValues, "uid = ?", eventModel.uid());
             updateTEi();
         }
     }
@@ -104,13 +99,13 @@ final class DataValueStore implements DataEntryStore {
     public void skipEvent(Event eventModel) {
         ContentValues contentValues = new ContentValues();
         Date currentDate = Calendar.getInstance().getTime();
-        contentValues.put(EventModel.Columns.LAST_UPDATED, DateUtils.databaseDateFormat().format(currentDate));
-        contentValues.putNull(EventModel.Columns.COMPLETE_DATE);
-        contentValues.put(EventModel.Columns.STATUS, EventStatus.SKIPPED.name());
-        contentValues.put(EventModel.Columns.STATE, eventModel.state() == State.TO_POST ? State.TO_POST.name() : State.TO_UPDATE.name());
+        contentValues.put("lastUpdated", DateUtils.databaseDateFormat().format(currentDate));
+        contentValues.putNull("completeDate");
+        contentValues.put("status", EventStatus.SKIPPED.name());
+        contentValues.put("state", eventModel.state() == State.TO_POST ? State.TO_POST.name() : State.TO_UPDATE.name());
         updateProgramTable(currentDate, eventModel.program());
 
-        briteDatabase.update(EventModel.TABLE, contentValues, EventModel.Columns.UID + "= ?", eventModel.uid());
+        briteDatabase.update("Event", contentValues, "uid = ?", eventModel.uid());
         updateTEi();
     }
 
@@ -118,10 +113,10 @@ final class DataValueStore implements DataEntryStore {
     public void rescheduleEvent(Event eventModel, Date newDate) {
         ContentValues contentValues = new ContentValues();
         Date currentDate = Calendar.getInstance().getTime();
-        contentValues.put(EventModel.Columns.LAST_UPDATED, DateUtils.databaseDateFormat().format(currentDate));
-        contentValues.put(EventModel.Columns.DUE_DATE, DateUtils.databaseDateFormat().format(newDate));
-        contentValues.put(EventModel.Columns.STATUS, EventStatus.SCHEDULE.name());
-        briteDatabase.update(EventModel.TABLE, contentValues, EventModel.Columns.UID + "= ?", eventModel.uid());
+        contentValues.put("lastUpdated", DateUtils.databaseDateFormat().format(currentDate));
+        contentValues.put("dueDate", DateUtils.databaseDateFormat().format(newDate));
+        contentValues.put("status", EventStatus.SCHEDULE.name());
+        briteDatabase.update("Event", contentValues, "uid = ?", eventModel.uid());
         updateTEi();
     }
 
@@ -132,45 +127,44 @@ final class DataValueStore implements DataEntryStore {
         else {
             ContentValues contentValues = new ContentValues();
             Date currentDate = Calendar.getInstance().getTime();
-            contentValues.put(EventModel.Columns.LAST_UPDATED, DateUtils.databaseDateFormat().format(currentDate));
-            contentValues.put(EventModel.Columns.EVENT_DATE, DateUtils.databaseDateFormat().format(eventDate));
+            contentValues.put("lastUpdated", DateUtils.databaseDateFormat().format(currentDate));
+            contentValues.put("eventDate", DateUtils.databaseDateFormat().format(eventDate));
             if (eventDate.before(currentDate))
-                contentValues.put(EventModel.Columns.STATUS, EventStatus.ACTIVE.name());
-            briteDatabase.update(EventModel.TABLE, contentValues, EventModel.Columns.UID + "= ?", eventModel.uid());
+                contentValues.put("status", EventStatus.ACTIVE.name());
+            briteDatabase.update("Event", contentValues, "uid = ?", eventModel.uid());
             updateTEi();
         }
     }
 
     private void updateProgramTable(Date lastUpdated, String programUid) {
         /*ContentValues program = new ContentValues(); //TODO: Crash if active
-        program.put(EnrollmentModel.Columns.LAST_UPDATED, BaseIdentifiableObject.DATE_FORMAT.format(lastUpdated));
-        briteDatabase.update(ProgramModel.TABLE, program, ProgramModel.Columns.UID + " = ?", programUid);*/
+        program.put(EnrollmentModel."lastUpdated, BaseIdentifiableObject.DATE_FORMAT.format(lastUpdated));
+        briteDatabase.update(ProgramModel.TABLE, program, ProgramModel."uid  = ?", programUid);*/
     }
 
     private long update(@NonNull String uid, @Nullable String value) {
         ContentValues dataValue = new ContentValues();
 
         // renderSearchResults time stamp
-        dataValue.put(TrackedEntityDataValueModel.Columns.LAST_UPDATED,
+        dataValue.put("lastUpdated",
                 BaseIdentifiableObject.DATE_FORMAT.format(Calendar.getInstance().getTime()));
         if (value == null) {
-            dataValue.putNull(TrackedEntityDataValueModel.Columns.VALUE);
+            dataValue.putNull("value");
         } else {
-            dataValue.put(TrackedEntityDataValueModel.Columns.VALUE, value);
+            dataValue.put("value", value);
         }
 
         // ToDo: write test cases for different events
-        return (long) briteDatabase.update(TrackedEntityDataValueModel.TABLE, dataValue,
-                TrackedEntityDataValueModel.Columns.DATA_ELEMENT + " = ? AND " +
-                        TrackedEntityDataValueModel.Columns.EVENT + " = ?",
+        return (long) briteDatabase.update("TrackedEntityDataValue", dataValue,
+                "dataElement = ? AND event = ?",
                 uid,
                 eventUid);
     }
 
     private long insert(@NonNull String uid, @Nullable String value, @NonNull String storedBy) {
         Date created = Calendar.getInstance().getTime();
-        TrackedEntityDataValueModel dataValueModel =
-                TrackedEntityDataValueModel.builder()
+        TrackedEntityDataValue dataValueModel =
+                TrackedEntityDataValue.builder()
                         .created(created)
                         .lastUpdated(created)
                         .dataElement(uid)
@@ -178,22 +172,23 @@ final class DataValueStore implements DataEntryStore {
                         .value(value)
                         .storedBy(storedBy)
                         .build();
-        return briteDatabase.insert(TrackedEntityDataValueModel.TABLE,
+        return briteDatabase.insert("TrackedEntityDataValue",
                 dataValueModel.toContentValues());
     }
 
     private Flowable<Long> updateEvent(long status) {
-        return briteDatabase.createQuery(EventModel.TABLE, SELECT_EVENT, eventUid)
-                .mapToOne(EventModel::create).take(1).toFlowable(BackpressureStrategy.LATEST)
+        String SELECT_EVENT = "SELECT * FROM Event " +
+                "WHERE uid = ? " +
+                "AND Event.deleted != 1 LIMIT 1";
+        return briteDatabase.createQuery("Event", SELECT_EVENT, eventUid)
+                .mapToOne(Event::create).take(1).toFlowable(BackpressureStrategy.LATEST)
                 .switchMap(eventModel -> {
-                    if (State.SYNCED.equals(eventModel.state()) || State.TO_DELETE.equals(eventModel.state()) ||
-                            State.ERROR.equals(eventModel.state())) {
+                    if (State.SYNCED.equals(eventModel.state()) || State.ERROR.equals(eventModel.state())) {
 
                         ContentValues values = eventModel.toContentValues();
-                        values.put(EventModel.Columns.STATE, State.TO_UPDATE.toString());
+                        values.put("state", State.TO_UPDATE.toString());
 
-                        if (briteDatabase.update(EventModel.TABLE, values,
-                                EventModel.Columns.UID + " = ?", eventUid) <= 0) {
+                        if (briteDatabase.update("Event", values,"uid = ?", eventUid) <= 0) {
 
                             throw new IllegalStateException(String.format(Locale.US, "Event=[%s] " +
                                     "has not been successfully updated", eventUid));
@@ -210,9 +205,9 @@ final class DataValueStore implements DataEntryStore {
     private void updateTEi() {
 
         ContentValues tei = new ContentValues();
-        tei.put(TrackedEntityInstanceModel.Columns.LAST_UPDATED, DateUtils.databaseDateFormat().format(Calendar.getInstance().getTime()));
-        tei.put(TrackedEntityInstanceModel.Columns.STATE, State.TO_UPDATE.name());// TODO: Check if state is TO_POST
+        tei.put("lastUpdated", DateUtils.databaseDateFormat().format(Calendar.getInstance().getTime()));
+        tei.put("state", State.TO_UPDATE.name());// TODO: Check if state is TO_POST
         // TODO: and if so, keep the TO_POST state
-        briteDatabase.update(TrackedEntityInstanceModel.TABLE, tei, "uid = ?", teiUid);
+        briteDatabase.update("TrackedEntityInstance", tei, "uid = ?", teiUid);
     }
 }

@@ -36,6 +36,7 @@
                 android:background="?colorPrimary">
 
                 <ImageView
+                    android:id="@+id/logo_banner"
                     android:layout_width="200dp"
                     android:layout_height="100dp"
                     android:layout_marginStart="85dp"
@@ -52,6 +53,14 @@
                 android:layout_weight="1"
                 android:gravity="center">
 
+
+                <ImageView
+                    android:id="@+id/logo_front"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:alpha=".3"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
                 <ImageButton
                     android:id="@+id/urlInfo"

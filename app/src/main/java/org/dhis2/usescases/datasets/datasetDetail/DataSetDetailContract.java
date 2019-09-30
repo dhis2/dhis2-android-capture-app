@@ -1,49 +1,44 @@
 package org.dhis2.usescases.datasets.datasetDetail;
 
-import com.unnamed.b.atv.model.TreeNode;
 
+import org.dhis2.data.tuples.Pair;
 import org.dhis2.usescases.general.AbstractActivityContracts;
-import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
-import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
+import org.dhis2.utils.filters.FilterManager;
+import org.hisp.dhis.android.core.category.CategoryCombo;
+import org.hisp.dhis.android.core.category.CategoryOptionCombo;
 
-import java.util.Date;
 import java.util.List;
-import java.util.Map;
-
-import io.reactivex.Flowable;
 
 public class DataSetDetailContract {
 
     public interface View extends AbstractActivityContracts.View {
         void setData(List<DataSetDetailModel> dataSetDetailModels);
 
-        void addTree(TreeNode treeNode);
-
-        void openDrawer();
-
-        void showRageDatePicker();
-
         void renderError(String message);
 
         void showHideFilter();
 
-        void apply();
+        void clearFilters();
+
+        void updateFilters(int totalFilters);
+
+        void openOrgUnitTreeSelector();
+
+        void showPeriodRequest(FilterManager.PeriodRequest periodRequest);
+
+        void setCatOptionComboFilter(Pair<CategoryCombo, List<CategoryOptionCombo>> categoryOptionCombos);
 
         void setWritePermission(Boolean aBoolean);
-
-        Flowable<Integer> dataSetPage();
 
         String dataSetUid();
 
         Boolean accessDataWrite();
+
+        void startNewDataSet();
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter {
         void init(View view);
-
-        void onDateRangeButtonClick();
-
-        void onOrgUnitButtonClick();
 
         void addDataSet();
 
@@ -51,18 +46,10 @@ public class DataSetDetailContract {
 
         void onDataSetClick(String orgUnit, String orgUnitName, String perdiodId, String periodType, String initPeriodType, String catOptionComb);
 
-        List<OrganisationUnit> getOrgUnits();
-
         void showFilter();
 
-        void getOrgUnits(Date date);
-
-        void getDataSetWithDates(List<String> periodIds, List<String> orgUnitQuery);
-
-        Map<String, String> getPeriodAvailableForFilter();
-
-        String getFirstPeriodSelected();
-
         void onSyncIconClick(String orgUnit, String attributeCombo, String periodId);
+
+        void clearFilterClick();
     }
 }

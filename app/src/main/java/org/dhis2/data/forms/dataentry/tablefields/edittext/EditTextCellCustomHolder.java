@@ -196,59 +196,62 @@ final class EditTextCellCustomHolder extends FormViewHolder {
 
 
     private boolean validate() {
-        switch (editTextModel.valueType()) {
-            case PHONE_NUMBER:
-                if (Patterns.PHONE.matcher(editText.getText().toString()).matches())
+        if(!editText.getText().toString().isEmpty()) {
+            switch (editTextModel.valueType()) {
+                case PHONE_NUMBER:
+                    if (Patterns.PHONE.matcher(editText.getText().toString()).matches())
+                        return true;
+                    else {
+                        editText.setError(editText.getContext().getString(R.string.invalid_phone_number));
+                        return false;
+                    }
+                case EMAIL:
+                    if (Patterns.EMAIL_ADDRESS.matcher(editText.getText().toString()).matches())
+                        return true;
+                    else {
+                        editText.setError(editText.getContext().getString(R.string.invalid_email));
+                        return false;
+                    }
+                case INTEGER_NEGATIVE:
+                    if (Integer.valueOf(editText.getText().toString()) < 0)
+                        return true;
+                    else {
+                        editText.setError(editText.getContext().getString(R.string.invalid_negative_number));
+                        return false;
+                    }
+                case INTEGER_ZERO_OR_POSITIVE:
+                    if (Integer.valueOf(editText.getText().toString()) >= 0)
+                        return true;
+                    else {
+                        editText.setError(editText.getContext().getString(R.string.invalid_possitive_zero));
+                        return false;
+                    }
+                case INTEGER_POSITIVE:
+                    if (Integer.valueOf(editText.getText().toString()) > 0)
+                        return true;
+                    else {
+                        editText.setError(editText.getContext().getString(R.string.invalid_possitive));
+                        return false;
+                    }
+                case UNIT_INTERVAL:
+                    if (Float.valueOf(editText.getText().toString()) >= 0 && Float.valueOf(editText.getText().toString()) <= 1)
+                        return true;
+                    else {
+                        editText.setError(editText.getContext().getString(R.string.invalid_interval));
+                        return false;
+                    }
+                case PERCENTAGE:
+                    if (Float.valueOf(editText.getText().toString()) >= 0 && Float.valueOf(editText.getText().toString()) <= 100)
+                        return true;
+                    else {
+                        editText.setError(editText.getContext().getString(R.string.invalid_percentage));
+                        return false;
+                    }
+                default:
                     return true;
-                else {
-                    editText.setError(editText.getContext().getString(R.string.invalid_phone_number));
-                    return false;
-                }
-            case EMAIL:
-                if (Patterns.EMAIL_ADDRESS.matcher(editText.getText().toString()).matches())
-                    return true;
-                else {
-                    editText.setError(editText.getContext().getString(R.string.invalid_email));
-                    return false;
-                }
-            case INTEGER_NEGATIVE:
-                if (Integer.valueOf(editText.getText().toString()) < 0)
-                    return true;
-                else {
-                    editText.setError(editText.getContext().getString(R.string.invalid_negative_number));
-                    return false;
-                }
-            case INTEGER_ZERO_OR_POSITIVE:
-                if (Integer.valueOf(editText.getText().toString()) >= 0)
-                    return true;
-                else {
-                    editText.setError(editText.getContext().getString(R.string.invalid_possitive_zero));
-                    return false;
-                }
-            case INTEGER_POSITIVE:
-                if (Integer.valueOf(editText.getText().toString()) > 0)
-                    return true;
-                else {
-                    editText.setError(editText.getContext().getString(R.string.invalid_possitive));
-                    return false;
-                }
-            case UNIT_INTERVAL:
-                if (Float.valueOf(editText.getText().toString()) >= 0 && Float.valueOf(editText.getText().toString()) <= 1)
-                    return true;
-                else {
-                    editText.setError(editText.getContext().getString(R.string.invalid_interval));
-                    return false;
-                }
-            case PERCENTAGE:
-                if (Float.valueOf(editText.getText().toString()) >= 0 && Float.valueOf(editText.getText().toString()) <= 100)
-                    return true;
-                else {
-                    editText.setError(editText.getContext().getString(R.string.invalid_percentage));
-                    return false;
-                }
-            default:
-                return true;
-        }
+            }
+        }else
+            return true;
     }
 
     @Override

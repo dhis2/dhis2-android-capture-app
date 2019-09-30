@@ -1,5 +1,6 @@
 package org.dhis2.usescases.main.program;
 
+import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.period.DatePeriod;
 
@@ -12,7 +13,7 @@ import io.reactivex.Observable;
 interface HomeRepository {
 
     @NonNull
-    Flowable<List<ProgramViewModel>> programModels(List<DatePeriod> dateFilter, List<String> orgUnitFilter);
+    Flowable<List<ProgramViewModel>> programModels(List<DatePeriod> dateFilter, List<String> orgUnitFilter, List<State> statesFilter);
 
     @NonNull
     Observable<List<OrganisationUnit>> orgUnits(String parentUid);
@@ -21,5 +22,5 @@ interface HomeRepository {
     Observable<List<OrganisationUnit>> orgUnits();
 
     @NonNull
-    Flowable<List<ProgramViewModel>> aggregatesModels(List<DatePeriod> dateFilter, List<String> orgUnitFilter);
+    Flowable<List<ProgramViewModel>> aggregatesModels(List<DatePeriod> dateFilter, List<String> orgUnitFilter, List<State> statesFilter);
 }

@@ -70,12 +70,18 @@ public class ProgramPresenter implements ProgramContract.Presenter {
         programQueries = PublishProcessor.create();
         parentOrgUnit = PublishProcessor.create();
         this.processorDismissDialog = PublishProcessor.create();
+
+        if(FilterManager.getInstance().getPeriodFilters().size() != 0)
+            currentDateFilter = FilterManager.getInstance().getPeriodFilters();
+        if(FilterManager.getInstance().getOrgUnitFilters().size() != 0)
+            currentOrgUnitFilter = FilterManager.getInstance().getOrgUnitUidsFilters();
+
         view.setPreferences(provider);
         compositeDisposable.add(
                 programQueries
                         .startWith(Pair.create(currentDateFilter, currentOrgUnitFilter))
-                        .flatMap(datePeriodOrgs -> Flowable.zip(homeRepository.programModels(datePeriodOrgs.val0(), datePeriodOrgs.val1()),
-                                homeRepository.aggregatesModels(datePeriodOrgs.val0(), datePeriodOrgs.val1()), (programs, dataSets) -> {
+                        .flatMap(datePeriodOrgs -> Flowable.zip(homeRepository.programModels(datePeriodOrgs.val0(), datePeriodOrgs.val1(), FilterManager.getInstance().getStateFilters()),
+                                homeRepository.aggregatesModels(datePeriodOrgs.val0(), datePeriodOrgs.val1(), FilterManager.getInstance().getStateFilters()), (programs, dataSets) -> {
                                     programs.addAll(dataSets);
                                     Collections.sort(programs, (program1, program2) -> program1.title().compareToIgnoreCase(program2.title()));
                                     return programs;
@@ -103,24 +109,8 @@ public class ProgramPresenter implements ProgramContract.Presenter {
                 FilterManager.getInstance().asFlowable()
                         .subscribeOn(Schedulers.io())
                         .flatMap(filterManager ->
-                                homeRepository.programModels(filterManager.getPeriodFilters(), filterManager.getOrgUnitUidsFilters()).flatMapIterable(data -> data)
-                                        .mergeWith(homeRepository.aggregatesModels(filterManager.getPeriodFilters(), filterManager.getOrgUnitUidsFilters()).flatMapIterable(data -> data))
-                                        .sorted((p1, p2) -> p1.title().compareToIgnoreCase(p2.title())).toList().toFlowable()
-                                        .subscribeOn(Schedulers.io()))
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(
-                                view.swapProgramModelData(),
-                                throwable -> view.renderError(throwable.getMessage())
-                        )
-        );
-
-        compositeDisposable.add(
-                FilterManager.getInstance().asFlowable()
-                        .subscribeOn(Schedulers.io())
-                        .flatMap(filterManager ->
-                                homeRepository.programModels(filterManager.getPeriodFilters(), filterManager.getOrgUnitUidsFilters()).flatMapIterable(data -> data)
-                                        .mergeWith(homeRepository.aggregatesModels(filterManager.getPeriodFilters(), filterManager.getOrgUnitUidsFilters()).flatMapIterable(data -> data))
+                                homeRepository.programModels(filterManager.getPeriodFilters(), filterManager.getOrgUnitUidsFilters(),filterManager.getStateFilters()).flatMapIterable(data -> data)
+                                        .mergeWith(homeRepository.aggregatesModels(filterManager.getPeriodFilters(), filterManager.getOrgUnitUidsFilters(),filterManager.getStateFilters()).flatMapIterable(data -> data))
                                         .sorted((p1, p2) -> p1.title().compareToIgnoreCase(p2.title())).toList().toFlowable()
                                         .subscribeOn(Schedulers.io()))
                         .subscribeOn(Schedulers.io())
@@ -261,7 +251,7 @@ public class ProgramPresenter implements ProgramContract.Presenter {
                                     data -> {
                                         this.myOrgs = data;
                                         view.orgUnitProgress(false);
-                                        view.addTree(OrgUnitUtils.renderTree_2(view.getContext(), myOrgs, true));
+                                        view.addTree(OrgUnitUtils.renderTree_2(view.getContext(), myOrgs, true, ""));
                                     },
                                     throwable -> view.renderError(throwable.getMessage())));
         }
@@ -284,4 +274,14 @@ public class ProgramPresenter implements ProgramContract.Presenter {
             view.showDescription(description);
     }
 
+    @Override
+    public void showHideFilterClick(){
+        view.showHideFilter();
+    }
+
+    @Override
+    public void clearFilterClick() {
+        FilterManager.getInstance().clearAllFilters();
+        view.clearFilters();
+    }
 }

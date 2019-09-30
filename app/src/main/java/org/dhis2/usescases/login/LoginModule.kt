@@ -1,10 +1,8 @@
 package org.dhis2.usescases.login
 
-import org.dhis2.data.dagger.PerActivity
-import org.dhis2.data.server.ConfigurationRepository
-
 import dagger.Module
 import dagger.Provides
+import org.dhis2.data.dagger.PerActivity
 import org.dhis2.data.sharedPreferences.SharePreferencesProvider
 
 /**
@@ -17,9 +15,8 @@ class LoginModule {
 
     @Provides
     @PerActivity
-    internal fun providePresenter(configurationRepository: ConfigurationRepository,
-                                  sharePreferencesProvider: SharePreferencesProvider): LoginContracts.Presenter {
-        return LoginPresenter(configurationRepository,sharePreferencesProvider)
+    internal fun providePresenter(sharePreferencesProvider: SharePreferencesProvider): LoginContracts.Presenter {
+        return LoginPresenter(sharePreferencesProvider)
     }
 
 

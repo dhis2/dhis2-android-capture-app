@@ -1,48 +1,48 @@
 package org.dhis2.usescases.login
 
-import android.content.Context
-import android.content.DialogInterface
 import android.content.Intent
 import android.os.Build
 import android.view.View
-import androidx.core.app.ActivityCompat
-import com.github.pwittchen.rxbiometric.library.RxBiometric
-import com.github.pwittchen.rxbiometric.library.validation.RxPreconditions
+import co.infinum.goldfinger.rx.RxGoldfinger
 import de.adorsys.android.securestoragelibrary.SecurePreferences
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
-import okhttp3.HttpUrl
-import okhttp3.MediaType
-import okhttp3.ResponseBody
 import org.dhis2.App
+import org.dhis2.BuildConfig
 import org.dhis2.R
-import org.dhis2.data.server.ConfigurationRepository
+import org.dhis2.data.prefs.Preference
 import org.dhis2.data.server.UserManager
 import org.dhis2.data.sharedPreferences.SharePreferencesProvider
 import org.dhis2.usescases.main.MainActivity
 import org.dhis2.usescases.qrScanner.QRActivity
 import org.dhis2.utils.Constants
+import org.hisp.dhis.android.core.d2manager.D2Manager
 import org.hisp.dhis.android.core.maintenance.D2Error
 import org.hisp.dhis.android.core.maintenance.D2ErrorCode
 import org.hisp.dhis.android.core.systeminfo.SystemInfo
 import retrofit2.Response
 import timber.log.Timber
 
-class LoginPresenter internal constructor(private val configurationRepository: ConfigurationRepository, val sharePreferencesProvider: SharePreferencesProvider) : LoginContracts.Presenter {
+class LoginPresenter internal constructor(val sharePreferencesProvider: SharePreferencesProvider) : LoginContracts.Presenter {
+
+    override fun stopReadingFingerprint() {
+        goldfinger.cancel()
+    }
 
     private lateinit var view: LoginContracts.View
     private var userManager: UserManager? = null
     private lateinit var disposable: CompositeDisposable
 
     private var canHandleBiometrics: Boolean? = null
+    private lateinit var goldfinger: RxGoldfinger
 
     override fun init(view: LoginContracts.View) {
         this.view = view
         view.setPreference(sharePreferencesProvider)
         this.disposable = CompositeDisposable()
-
+        goldfinger = RxGoldfinger.Builder(view.context).setLogEnabled(BuildConfig.DEBUG).build()
         if ((view.context.applicationContext as App).serverComponent != null)
             userManager = (view.context.applicationContext as App).serverComponent.userManager()
 
@@ -60,8 +60,8 @@ class LoginPresenter internal constructor(private val configurationRepository: C
                     }, { Timber.e(it) }))
 
             disposable.add(
-                    Observable.just(if (userManager.d2.systemInfoModule().systemInfo.get() != null)
-                        userManager.d2.systemInfoModule().systemInfo.get()
+                    Observable.just(if (userManager.d2.systemInfoModule().systemInfo.blockingGet() != null)
+                        userManager.d2.systemInfoModule().systemInfo.blockingGet()
                     else
                         SystemInfo.builder().build())
                             .subscribeOn(Schedulers.io())
@@ -78,20 +78,19 @@ class LoginPresenter internal constructor(private val configurationRepository: C
         } ?: view.setUrl(view.context.getString(R.string.login_https))
 
 
-        if (false && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
-        //TODO: REMOVE FALSE WHEN GREEN LIGHT
-            disposable.add(RxPreconditions
-                    .hasBiometricSupport(view.context)
-                    .filter { canHandleBiometrics ->
-                        this.canHandleBiometrics = canHandleBiometrics
-                        canHandleBiometrics && SecurePreferences.contains(Constants.SECURE_SERVER_URL)
-                    }
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(
-                            { view.showBiometricButton() },
-                            { Timber.e(it) }))
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
 
+            disposable.add(
+                    Observable.just(goldfinger.hasEnrolledFingerprint())
+                            .filter { canHandleBiometrics ->
+                                this.canHandleBiometrics = canHandleBiometrics
+                                canHandleBiometrics && SecurePreferences.contains(Constants.SECURE_SERVER_URL)
+                            }
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(
+                                    { view.showBiometricButton() },
+                                    { Timber.e(it) }))
 
     }
 
@@ -104,35 +103,28 @@ class LoginPresenter internal constructor(private val configurationRepository: C
     }
 
     override fun logIn(serverUrl: String, userName: String, pass: String) {
-        val baseUrl = HttpUrl.parse(canonizeUrl(serverUrl + "/api")) ?: return
         disposable.add(
-                configurationRepository.configure(baseUrl)
-                        .map { config -> (view.abstractActivity.applicationContext as App).createServerComponent(config).userManager() }
-                        .switchMap { userManager ->
-                            sharePreferencesProvider.sharedPreferences().putString(Constants.SERVER, serverUrl+"/api")
+                D2Manager.setServerUrl(serverUrl)
+                        .andThen(D2Manager.instantiateD2())
+                        .map { (view.abstracContext.applicationContext as App).createServerComponent().userManager() }
+                        .flatMapObservable { userManager ->
+                            sharePreferencesProvider.sharedPreferences().putString(Constants.SERVER, serverUrl + "/api")
                             this.userManager = userManager
                             userManager.logIn(userName.trim { it <= ' ' }, pass).map<Response<Any>> { user ->
-                                if (user == null)
-                                    Response.error<Any>(404, ResponseBody.create(MediaType.parse("text"), "NOT FOUND"))
-                                else {
+                                run {
                                     sharePreferencesProvider.sharedPreferences().putString(Constants.USER, user.userCredentials()?.username())
                                     sharePreferencesProvider.sharedPreferences().putBoolean("SessionLocked", false)
                                     sharePreferencesProvider.sharedPreferences().putString("pin", null)
                                     Response.success<Any>(null)
                                 }
                             }
+
                         }
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
                                 { this.handleResponse(it) },
                                 { this.handleError(it) }))
-    }
-
-    private fun canonizeUrl(serverUrl: String): String {
-        var urlToCanonized = serverUrl.trim { it <= ' ' }
-        urlToCanonized = urlToCanonized.replace(" ", "")
-        return if (urlToCanonized.endsWith("/")) urlToCanonized else "$urlToCanonized/"
     }
 
     override fun onQRClick(v: View) {
@@ -150,7 +142,6 @@ class LoginPresenter internal constructor(private val configurationRepository: C
     override fun onDestroy() {
         disposable.clear()
     }
-
 
     override fun logOut() {
         userManager?.let {
@@ -171,6 +162,7 @@ class LoginPresenter internal constructor(private val configurationRepository: C
     override fun handleResponse(userResponse: Response<*>) {
         view.showLoginProgress(false)
         if (userResponse.isSuccessful) {
+            sharePreferencesProvider.sharedPreferences().putBoolean(Preference.INITIAL_SYNC_DONE.name, false)
             (view.context.applicationContext as App).createUserComponent()
             view.saveUsersData()
         }
@@ -182,7 +174,6 @@ class LoginPresenter internal constructor(private val configurationRepository: C
             sharePreferencesProvider.sharedPreferences().putBoolean("SessionLocked", false)
             sharePreferencesProvider.sharedPreferences().putString("pin", null)
             view.alreadyAuthenticated()
-//            handleResponse(Response.success<Any>(null))
         } else
             view.renderError(throwable)
         view.showLoginProgress(false)
@@ -194,19 +185,19 @@ class LoginPresenter internal constructor(private val configurationRepository: C
     }
 
     override fun onFingerprintClick() {
+        view.showFingerprintDialog()
         disposable.add(
-                RxBiometric
-                        .title("Title")
-                        .description("description")
-                        .negativeButtonText("Cancel")
-                        .negativeButtonListener(DialogInterface.OnClickListener { dialogInterface, i -> })
-                        .executor(ActivityCompat.getMainExecutor(view.abstractActivity))
-                        .build()
-                        .authenticate(view.abstractActivity)
+                goldfinger
+                        .authenticate()
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
-                                { view.checkSecuredCredentials() },
-                                { error -> view.displayMessage("AUTH ERROR") }))
+                                { credentials ->
+                                    view.checkSecuredCredentials(credentials)
+                                },
+                                {
+                                    view.displayMessage("AUTH ERROR")
+                                    view.hideFingerprintDialog()
+                                }))
     }
 
     override fun onAccountRecovery() {

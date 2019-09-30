@@ -2,11 +2,9 @@ package org.dhis2.usescases.main;
 
 
 import org.dhis2.data.dagger.PerActivity;
-import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.data.sharedPreferences.SharePreferencesProvider;
 import org.hisp.dhis.android.core.D2;
 
-import androidx.annotation.NonNull;
 import dagger.Module;
 import dagger.Provides;
 
@@ -22,8 +20,9 @@ public final class MainModule {
 
     @Provides
     @PerActivity
-    MainContracts.Presenter homePresenter(SharePreferencesProvider provider, D2 d2, @NonNull MetadataRepository metadataRepository) {
-        return new MainPresenter(provider, d2, metadataRepository);
+    MainContracts.Presenter homePresenter(D2 d2,
+                                          SharePreferencesProvider provider) {
+        return new MainPresenter(provider,d2);
     }
 
 }

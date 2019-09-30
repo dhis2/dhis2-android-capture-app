@@ -7,13 +7,6 @@
             name="presenter"
             type="org.dhis2.usescases.teiDashboard.teiProgramList.TeiProgramListContract.Presenter" />
 
-        <variable
-            name="enrollment"
-            type="org.hisp.dhis.android.core.enrollment.EnrollmentModel" />
-
-        <variable
-            name="program"
-            type="org.hisp.dhis.android.core.program.ProgramModel" />
     </data>
 
     <TextView
@@ -21,8 +14,8 @@
         android:layout_height="48dp"
         android:background="@color/bg_gray_f1f"
         android:gravity="center_vertical"
-        android:paddingEnd="18dp"
         android:paddingStart="18dp"
+        android:paddingEnd="18dp"
         android:text="@string/programs_to_enroll"
         android:textColor="@color/text_black_333"
         android:textSize="12sp"

@@ -10,6 +10,7 @@ import android.provider.MediaStore;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -21,6 +22,8 @@ import androidx.databinding.ViewDataBinding;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
+import com.google.android.material.textfield.TextInputEditText;
+import com.mapbox.android.core.FileUtils;
 
 import org.dhis2.BuildConfig;
 import org.dhis2.R;
@@ -29,6 +32,7 @@ import org.dhis2.databinding.FormPictureAccentBinding;
 import org.dhis2.databinding.FormPictureBinding;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.FileResourcesUtil;
+import org.hisp.dhis.android.core.fileresource.internal.FileResourceUtil;
 
 import java.io.File;
 
@@ -42,9 +46,13 @@ public class PictureView extends FieldLayout implements View.OnClickListener, Vi
     private String uid;
     private TextView errorView;
     private ImageView image;
+    private LinearLayout layout;
+    private TextInputEditText formLabel;
     private OnIntentSelected onIntentSelected;
     private String primaryUid;
     private OnPictureSelected imageListener;
+    private Boolean isEditable;
+    private View clearButton;
 
     public PictureView(Context context) {
         super(context);
@@ -63,7 +71,7 @@ public class PictureView extends FieldLayout implements View.OnClickListener, Vi
 
     @Override
     public void onClick(View v) {
-        if (v == image) {
+        if (isEditable && (v == image || v == layout || v == formLabel)) {
             selectImage();
         }
     }
@@ -82,6 +90,24 @@ public class PictureView extends FieldLayout implements View.OnClickListener, Vi
         errorView = findViewById(R.id.errorMessage);
         image = findViewById(R.id.image);
         image.setOnClickListener(this);
+        layout = findViewById(R.id.layout);
+        layout.setOnClickListener(this);
+        formLabel = findViewById(R.id.formLabel);
+        formLabel.setOnClickListener(this);
+        clearButton = findViewById(R.id.clear);
+        clearButton.setOnClickListener(view -> {
+                    if (removeFile()) {
+                        setTextSelected(null);
+                        image.setVisibility(View.GONE);
+                        Glide.with(this).clear(image);
+                        imageListener.onSelected(null, null, uid);
+                    }
+                }
+        );
+    }
+
+    private boolean removeFile() {
+        return FileResourcesUtil.getFileForAttribute(getContext(), primaryUid.concat("_").concat(uid).concat(".png")).delete();
     }
 
     public void setLabel(String label) {
@@ -90,6 +116,13 @@ public class PictureView extends FieldLayout implements View.OnClickListener, Vi
             ((FormPictureBinding) binding).setLabel(label);
         else
             ((FormPictureAccentBinding) binding).setLabel(label);
+    }
+
+    public void setTextSelected(String text) {
+        if (binding instanceof FormPictureBinding)
+            ((FormPictureBinding) binding).setSelected(text);
+        else
+            ((FormPictureAccentBinding) binding).setLabel(text);
     }
 
     public void setDescription(String description) {
@@ -128,18 +161,28 @@ public class PictureView extends FieldLayout implements View.OnClickListener, Vi
     }
 
     public void setInitialValue(String value) {
-        Glide.with(image).clear(image);
 
-        File file = FileResourcesUtil.getFileForAttribute(getContext(), primaryUid.concat("_").concat(uid).concat(".png"));
+        if (!isEmpty(value)) {
 
-        if (file.exists()) {
-            Glide.with(image)
-                    .load(file)
-                    .apply(new RequestOptions().centerCrop())
-                    .apply(RequestOptions.skipMemoryCacheOf(true))
-                    .apply(RequestOptions.diskCacheStrategyOf(DiskCacheStrategy.NONE))
-                    .into(image);
-        }
+            Glide.with(image).clear(image);
+            clearButton.setVisibility(View.VISIBLE);
+
+//            File file = FileResourcesUtil.getFileForAttribute(getContext(), primaryUid.concat("_").concat(uid).concat(".png"));
+            File file = new File(value);
+
+            if (file.exists()) {
+                setTextSelected(getContext().getString(R.string.image_selected));
+                image.setVisibility(View.VISIBLE);
+                Glide.with(image)
+                        .load(file)
+                        .apply(new RequestOptions().centerCrop())
+                        .apply(RequestOptions.skipMemoryCacheOf(true))
+                        .apply(RequestOptions.diskCacheStrategyOf(DiskCacheStrategy.NONE))
+                        .skipMemoryCache(true)
+                        .into(image);
+            }
+        } else
+            clearButton.setVisibility(View.GONE);
     }
 
 
@@ -157,7 +200,7 @@ public class PictureView extends FieldLayout implements View.OnClickListener, Vi
                         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                         Uri photoUri = FileProvider.getUriForFile(getContext(),
                                 BuildConfig.APPLICATION_ID + ".provider",
-                                new File(FileResourcesUtil.getUploadDirectory(getContext()), FileResourcesUtil.generateFileName(primaryUid, uid)));
+                                new File(FileResourceUtil.getFileResourceDirectory(getContext()), "tempFile.png"));
                         intent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
                         intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
                         PictureView.this.onIntentSelected.intentSelected(this.uid, intent, Constants.CAMERA_REQUEST, (file, value, uuid) -> {
@@ -193,6 +236,10 @@ public class PictureView extends FieldLayout implements View.OnClickListener, Vi
 
     public void setOnImageListener(OnPictureSelected onImageListener) {
         this.imageListener = onImageListener;
+    }
+
+    public void setEditable(Boolean editable) {
+        isEditable = editable;
     }
 
     public interface OnPictureSelected {

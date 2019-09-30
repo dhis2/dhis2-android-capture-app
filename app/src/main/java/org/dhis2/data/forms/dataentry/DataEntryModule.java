@@ -11,7 +11,6 @@ import org.dhis2.data.dagger.PerFragment;
 import org.dhis2.data.forms.FormRepository;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactoryImpl;
-import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.utils.RulesUtilsProvider;
 import org.hisp.dhis.android.core.D2;
@@ -73,10 +72,9 @@ public class DataEntryModule {
             @NonNull DataEntryStore dataEntryStore,
             @NonNull DataEntryRepository dataEntryRepository,
             @NonNull RuleEngineRepository ruleEngineRepository,
-            @NonNull MetadataRepository metadataRepository,
             @NonNull RulesUtilsProvider ruleUtils) {
         return new DataEntryPresenterImpl(dataEntryStore,
-                dataEntryRepository, ruleEngineRepository, schedulerProvider, metadataRepository, ruleUtils);
+                dataEntryRepository, ruleEngineRepository, schedulerProvider, ruleUtils);
     }
 
     @Provides
@@ -86,7 +84,7 @@ public class DataEntryModule {
             return new ProgramStageRepository(briteDatabase, modelFactory,
                     arguments.event(), arguments.section(), d2);
         } else if (!isEmpty(arguments.enrollment())) { //NOPMD
-            return new EnrollmentRepository(context, briteDatabase, modelFactory, arguments.enrollment(), d2);
+            return new EnrollmentRepository(context, modelFactory, arguments.enrollment(), d2);
         } else {
             throw new IllegalArgumentException("Unsupported entity type");
         }

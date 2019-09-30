@@ -34,13 +34,12 @@ import org.dhis2.utils.Constants;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.DialogClickListener;
 import org.dhis2.utils.EventCreationType;
-import org.dhis2.utils.FileResourcesUtil;
 import org.dhis2.utils.custom_views.CategoryComboDialog;
 import org.dhis2.utils.custom_views.CustomDialog;
 import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
-import org.hisp.dhis.android.core.event.EventModel;
-import org.hisp.dhis.android.core.program.ProgramStageModel;
+import org.hisp.dhis.android.core.event.Event;
+import org.hisp.dhis.android.core.program.ProgramStage;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -82,11 +81,11 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
     private EventAdapter adapter;
     private CustomDialog dialog;
     private String lastModifiedEventUid;
-    private ProgramStageModel programStageFromEvent;
+    private ProgramStage programStageFromEvent;
     private ObservableBoolean followUp = new ObservableBoolean(false);
 
     private boolean hasCatComb;
-    private ArrayList<EventModel> catComboShowed = new ArrayList<>();
+    private ArrayList<Event> catComboShowed = new ArrayList<>();
     private Context context;
     private DashboardViewModel dashboardViewModel;
     private DashboardProgramModel dashboardModel;
@@ -108,7 +107,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
     @Override
     public void onStart() {
         super.onStart();
-        dashboardViewModel = ViewModelProviders.of(getActivity()).get(DashboardViewModel.class);
+        dashboardViewModel = ViewModelProviders.of(activity).get(DashboardViewModel.class);
 
     }
 
@@ -158,9 +157,8 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
 
         if (nprogram != null && nprogram.getCurrentEnrollment() != null) {
             presenter.setDashboardProgram(this.dashboardModel);
-            hasCatComb = nprogram.getCurrentProgram() != null && !nprogram.getCurrentProgram().categoryCombo().equals(provider.sharedPreferences().getString(Constants.DEFAULT_CAT_COMBO, ""));
-            List<EventModel> events = new ArrayList<>();
-            adapter = new EventAdapter(presenter, nprogram.getProgramStages(), events, nprogram.getCurrentEnrollment(), nprogram.getCurrentProgram());
+            hasCatComb = nprogram.getCurrentProgram() != null && !nprogram.getCurrentProgram().categoryComboUid().equals(provider.sharedPreferences().getString(Constants.DEFAULT_CAT_COMBO, ""));
+            adapter = new EventAdapter(presenter, nprogram.getProgramStages(), new ArrayList<>(), nprogram.getCurrentEnrollment(), nprogram.getCurrentProgram());
             binding.teiRecycler.setLayoutManager(new LinearLayoutManager(getAbstracContext()));
             binding.teiRecycler.setAdapter(adapter);
             binding.setTrackEntity(nprogram.getTei());
@@ -193,23 +191,15 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
 
     }
 
-    public static int getDetailsRequestCode() {
-        return REQ_DETAILS;
-    }
-
-    public static int getEventRequestCode() {
-        return REQ_EVENT;
-    }
-
     @SuppressLint("CheckResult")
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == REQ_DETAILS) {
+       /* if (requestCode == REQ_DETAILS) {
             if (resultCode == RESULT_OK) {
                 activity.getPresenter().getData();
             }
-        }
+        }*/
         if (requestCode == REQ_EVENT && resultCode == RESULT_OK) {
             presenter.getTEIEvents();
             if (data != null) {
@@ -226,7 +216,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
     }
 
     @Override
-    public Consumer<List<EventModel>> setEvents() {
+    public Consumer<List<Event>> setEvents() {
         return events -> {
             if (events.isEmpty()) {
                 binding.emptyTeis.setVisibility(View.VISIBLE);
@@ -238,7 +228,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
             } else {
                 binding.emptyTeis.setVisibility(View.GONE);
                 adapter.swapItems(events);
-                for (EventModel event : events) {
+                for (Event event : events) {
                     if (event.eventDate() != null) {
                         if (event.eventDate().after(DateUtils.getInstance().getToday()))
                             binding.teiRecycler.scrollToPosition(events.indexOf(event));
@@ -254,7 +244,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
     }
 
     @Override
-    public Consumer<ProgramStageModel> displayGenerateEvent() {
+    public Consumer<ProgramStage> displayGenerateEvent() {
         return programStageModel -> {
             this.programStageFromEvent = programStageModel;
             if (programStageModel.displayGenerateEventBox() || programStageModel.allowGenerateNextVisit()) {
@@ -384,8 +374,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
 
     @Override
     public void seeDetails(Intent intent, Bundle bundle) {
-        this.startActivityForResult(intent, REQ_DETAILS, bundle);
-
+        this.startActivity(intent, bundle);
     }
 
     @Override
@@ -409,10 +398,9 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
     }
 
     @Override
-    public void showTeiImage(String fileName) {
-        File file = FileResourcesUtil.getFileForAttribute(context, fileName);
+    public void showTeiImage(String filePath) {
         Glide.with(this)
-                .load(file)
+                .load(new File(filePath))
                 .placeholder(R.drawable.photo_temp_gray)
                 .error(R.drawable.photo_temp_gray)
                 .transition(withCrossFade())
