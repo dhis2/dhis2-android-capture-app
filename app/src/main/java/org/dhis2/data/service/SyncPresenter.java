@@ -49,4 +49,8 @@ interface SyncPresenter {
     void startPeriodicDataWork(Context context);
 
     void startPeriodicMetaWork(Context context);
+
+    void downloadResources();
+
+    void uploadResources();
 }
