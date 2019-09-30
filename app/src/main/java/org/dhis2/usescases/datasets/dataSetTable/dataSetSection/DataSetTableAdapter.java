@@ -85,7 +85,7 @@ public class DataSetTableAdapter extends AbstractTableAdapter<CategoryOption, Da
     private Boolean showColumnTotal = false;
     private final FlowableProcessor<Trio<String, String, Integer>> processorOptionSet;
 
-    private int currentWidth = 400;
+    private int currentWidth = 200;
     private int currentHeight;
 
     private String catCombo;
@@ -118,11 +118,15 @@ public class DataSetTableAdapter extends AbstractTableAdapter<CategoryOption, Da
         notifyDataSetChanged();
     }
 
+    public ObservableField<TableScale> getCurrentTableScale() {
+        return currentTableScale;
+    }
+
 
     public DataSetTableAdapter(Context context, @NotNull FlowableProcessor<RowAction> processor, FlowableProcessor<Trio<String, String, Integer>> processorOptionSet) {
         super(context);
-        this.currentHeight = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 48, context.getResources().getDisplayMetrics());
-        this.currentTableScale.set(TableScale.LARGE);
+        this.currentHeight = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 36, context.getResources().getDisplayMetrics());
+        this.currentTableScale.set(TableScale.DEFAULT);
         this.context = context;
         rows = new ArrayList<>();
         this.processor = processor;

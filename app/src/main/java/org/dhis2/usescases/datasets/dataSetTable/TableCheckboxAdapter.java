@@ -1,5 +1,6 @@
 package org.dhis2.usescases.datasets.dataSetTable;
 
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
@@ -14,16 +15,19 @@ import androidx.recyclerview.widget.RecyclerView;
 
 public class TableCheckboxAdapter extends RecyclerView.Adapter<TableCheckboxViewHolder> {
 
-    private List<String> tables;
+    private final Context context;
+    private int tablesCount;
     private DataSetTableContract.Presenter presenter;
     private int selectedPosition;
-    public TableCheckboxAdapter(DataSetTableContract.Presenter presenter){
-        this.tables = new ArrayList<>();
+
+    public TableCheckboxAdapter(DataSetTableContract.Presenter presenter, Context context){
+        this.tablesCount = 0;
         this.presenter = presenter;
+        this.context = context;
     }
 
-    public void swapData(List<String> tables){
-        this.tables = new ArrayList<>(tables);
+    public void swapData(int count){
+        this.tablesCount = count;
         notifyDataSetChanged();
     }
 
@@ -38,12 +42,12 @@ public class TableCheckboxAdapter extends RecyclerView.Adapter<TableCheckboxView
 
     @Override
     public void onBindViewHolder(@NonNull TableCheckboxViewHolder holder, int position) {
-        holder.bind(tables.get(position), position, selectedPosition);
+        holder.bind(context.getString(R.string.table) + " " + (position + 1) , position, selectedPosition);
     }
 
     @Override
     public int getItemCount() {
-        return tables.size();
+        return tablesCount;
     }
 
     public void setSelectedPosition(int selectedPosition){

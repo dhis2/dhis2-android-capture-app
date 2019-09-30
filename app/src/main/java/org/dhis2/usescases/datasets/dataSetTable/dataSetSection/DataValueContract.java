@@ -9,7 +9,10 @@ import org.dhis2.data.tuples.Trio;
 import org.dhis2.usescases.general.AbstractActivityContracts;
 import org.hisp.dhis.android.core.category.Category;
 import org.hisp.dhis.android.core.category.CategoryOption;
+import org.hisp.dhis.android.core.dataelement.DataElement;
 import org.hisp.dhis.android.core.dataset.DataInputPeriod;
+import org.hisp.dhis.android.core.dataset.DataSet;
+import org.hisp.dhis.android.core.dataset.Section;
 import org.hisp.dhis.android.core.period.Period;
 
 import java.util.List;
@@ -24,8 +27,6 @@ public class DataValueContract {
     public interface View extends AbstractActivityContracts.View{
         void showSnackBar();
 
-        void setPeriod(Period periodModel);
-
         void goToTable(int numTable);
 
         void showAlertDialog(String title, String message);
@@ -37,6 +38,14 @@ public class DataValueContract {
         void highligthHeaderRow(int table, int row, boolean mandatory);
 
         void update(boolean modified);
+
+        void setTableData(DataTableModel dataTableModel, List<List<FieldViewModel>> fields, List<List<String>> cells, Boolean accessDataWrite);
+
+        void setDataSet(DataSet dataSet);
+
+        void setSection(Section section);
+
+        void updateTabLayout(int count);
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter{
@@ -44,24 +53,16 @@ public class DataValueContract {
 
         void complete();
 
-        void getData(@NonNull DataSetSectionFragment dataSetSectionFragment, @Nullable String section);
         void initializeProcessor(@NonNull DataSetSectionFragment dataSetSectionFragment);
+
         Map<String, List<List<CategoryOption>>> transformCategories(@NonNull Map<String, List<List<Pair<CategoryOption, Category>>>> map);
 
         List<List<String>> getCatOptionCombos(List<List<Pair<CategoryOption, Category>>> listCategories, int num ,List<List<String>> result, List<String> current);
-
-        void setCurrentNumTables(List<String> tablesNames);
-
-        List<String> getCurrentNumTables();
 
         FlowableProcessor<RowAction> getProcessor();
 
         FlowableProcessor<Trio<String, String, Integer>> getProcessorOptionSet();
 
-        void addCells(int table, List<List<FieldViewModel>> cells);
-
         DataInputPeriod checkHasInputPeriod();
-
-        List<DataInputPeriod> getDataInputPeriodModel();
     }
 }
