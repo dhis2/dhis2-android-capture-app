@@ -561,11 +561,6 @@ public class SearchRepositoryImpl implements SearchRepository {
         return d2.trackedEntityModule().trackedEntityTypes.byUid().eq(trackedEntityUid).one().get().toObservable();
     }
 
-    @Override
-    public Observable<List<OrganisationUnit>> getOrganisationUnits() {
-        return d2.organisationUnitModule().organisationUnits.get().toObservable();
-    }
-
     private List<TrackedEntityInstance> filterByState(List<TrackedEntityInstance> teis, List<State> states) {
         Iterator<TrackedEntityInstance> iterator = teis.iterator();
         while (iterator.hasNext()) {
