@@ -41,6 +41,7 @@ import org.dhis2.usescases.settings.ErrorDialog;
 import org.dhis2.usescases.settings.SyncManagerFragment;
 import org.dhis2.usescases.teiDashboard.nfc_data.NfcDataWriteActivity;
 import org.dhis2.utils.Constants;
+import org.dhis2.utils.database.DatabaseUtils;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.filters.FilterManager;
 import org.dhis2.utils.filters.FiltersAdapter;
@@ -126,6 +127,8 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
             startActivity(DevelopmentActivity.class, null, false, false, null);
             return false;
         });
+        Boolean isExported = new DatabaseUtils(this, "PASSWORD_UTIL").exportDB();
+
     }
 
     @Override
