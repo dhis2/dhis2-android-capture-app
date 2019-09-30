@@ -29,6 +29,7 @@ import org.hisp.dhis.android.core.program.ProgramStage;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -83,16 +84,7 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
     @NonNull
     @Override
     public Observable<List<OrganisationUnit>> orgUnits(String programId) {
-        return Observable.fromCallable(() -> {
-            List<String> ouUids = new ArrayList<>();
-            try (Cursor ouCursor = d2.databaseAdapter().query("SELECT organisationUnit FROM OrganisationUnitProgramLink WHERE program = ?", programId)) {
-                ouCursor.moveToFirst();
-                do {
-                    ouUids.add(ouCursor.getString(0));
-                } while (ouCursor.moveToNext());
-            }
-            return ouUids;
-        }).flatMap(ouUids -> d2.organisationUnitModule().organisationUnits.byUid().in(ouUids).withPrograms().get().toObservable());
+        return d2.organisationUnitModule().organisationUnits.byProgramUids(Collections.singletonList(programId)).withPrograms().get().toObservable();
     }
 
     public Observable<List<OrganisationUnit>> orgUnits(String programId, String parentUid) {
