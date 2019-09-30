@@ -44,6 +44,8 @@ public class DataValueContract {
         void setDataSet(DataSet dataSet);
 
         void setSection(Section section);
+
+        void updateTabLayout(int count);
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter{
@@ -56,8 +58,6 @@ public class DataValueContract {
         Map<String, List<List<CategoryOption>>> transformCategories(@NonNull Map<String, List<List<Pair<CategoryOption, Category>>>> map);
 
         List<List<String>> getCatOptionCombos(List<List<Pair<CategoryOption, Category>>> listCategories, int num ,List<List<String>> result, List<String> current);
-
-        List<String> getCurrentNumTables();
 
         FlowableProcessor<RowAction> getProcessor();
 

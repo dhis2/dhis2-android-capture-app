@@ -123,6 +123,12 @@ public class DataValuePresenter implements DataValueContract.Presenter {
                                 Timber::e)
         );
 
+        compositeDisposable.add(repository.getCatCombo(sectionName).map(List::size)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(view::updateTabLayout, Timber::e)
+        );
+
         compositeDisposable.add(repository.getCatCombo(sectionName)
                 .flatMapIterable(categoryCombos -> categoryCombos)
                 .map(categoryCombo -> Flowable.zip(
@@ -241,7 +247,7 @@ public class DataValuePresenter implements DataValueContract.Presenter {
                 fields.add(fieldViewModel);
                 values.add(fieldViewModel.value());
 
-                if (section != null && section.showRowTotals() && isNumber) {
+                if (!section.uid().isEmpty() && section.showRowTotals() && isNumber && !fieldViewModel.value().isEmpty()) {
                     totalRow += Integer.parseInt(fieldViewModel.value());
                 }
 
@@ -255,7 +261,7 @@ public class DataValuePresenter implements DataValueContract.Presenter {
                         fields.set(fields.indexOf(fieldViewModel), fieldViewModel.setMandatory());
 
 
-            if (section != null && section.showRowTotals() && isNumber) {
+            if (!section.uid().isEmpty() && section.showRowTotals() && isNumber) {
                 setTotalRow(totalRow, fields, values, row, column);
             }
 
@@ -267,9 +273,9 @@ public class DataValuePresenter implements DataValueContract.Presenter {
         }
 
         if (isNumber) {
-            if (section != null && section.showColumnTotals())
+            if (!section.uid().isEmpty() && section.showColumnTotals())
                 setTotalColumn(listFields, cells, dataTableModel.rows(), row, column);
-            if (section != null && section.showRowTotals())
+            if (!section.uid().isEmpty() && section.showRowTotals())
                 for (int i = 0; i < dataTableModel.header().size(); i++) {
                     if (i == dataTableModel.header().size() - 1)
                         dataTableModel.header().get(i).add(CategoryOption.builder().uid("").displayName("Total").build());
@@ -508,11 +514,6 @@ public class DataValuePresenter implements DataValueContract.Presenter {
                 inputPeriodModel = inputPeriod;
         }
         return inputPeriodModel;
-    }
-
-    @Override
-    public List<String> getCurrentNumTables() {
-        return tablesNames;
     }
 
     @Override

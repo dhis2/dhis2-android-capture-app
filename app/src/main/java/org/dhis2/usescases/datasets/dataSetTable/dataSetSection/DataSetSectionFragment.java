@@ -66,6 +66,7 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
     private MutableLiveData<Integer> currentTablePosition = new MutableLiveData<>();
     private DataSet dataSet;
     private Section section;
+    private int tablesCount;
 
     @NonNull
     public static DataSetSectionFragment create(@NonNull String sectionUid, boolean accessDataWrite, String dataSetUid) {
@@ -108,7 +109,6 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
     @Override
     public void setTableData(DataTableModel dataTableModel, List<List<FieldViewModel>> fields, List<List<String>> cells, Boolean accessDataWrite){
         binding.programProgress.setVisibility(View.GONE);
-        activity.updateTabLayout(sectionName, fields.size());
 
         DataSetTableAdapter adapter = new DataSetTableAdapter(getAbstracContext(), presenterFragment.getProcessor(), presenterFragment.getProcessorOptionSet());
         adapters.add(adapter);
@@ -170,6 +170,12 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
     @Override
     public void setSection(Section section) {
         this.section = section;
+    }
+
+    @Override
+    public void updateTabLayout(int count) {
+        this.tablesCount = count;
+        activity.updateTabLayout(sectionName, count);
     }
 
     private void loadHeader(int position) {
@@ -250,8 +256,8 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
         binding.scroll.scrollTo(0, binding.tableLayout.getChildAt(numTable * 2).getTop());
     }
 
-    public List<String> currentNumTables() {
-        return presenterFragment != null ? presenterFragment.getCurrentNumTables() : new ArrayList<>();
+    public int currentNumTables() {
+        return tablesCount;
     }
 
     @Override
