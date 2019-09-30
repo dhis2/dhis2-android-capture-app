@@ -34,6 +34,7 @@ import org.dhis2.usescases.login.LoginModule;
 import org.dhis2.usescases.teiDashboard.TeiDashboardComponent;
 import org.dhis2.usescases.teiDashboard.TeiDashboardModule;
 import org.dhis2.utils.UtilsModule;
+import org.dhis2.utils.analytics.AnalyticsModule;
 import org.dhis2.utils.timber.DebugTree;
 import org.dhis2.utils.timber.ReleaseTree;
 import org.hisp.dhis.android.core.d2manager.D2Manager;
@@ -178,6 +179,7 @@ public class App extends MultiDexApplication implements Components {
 //                .dbModule(new DbModule(DATABASE_NAME))
                 .appModule(new AppModule(this))
                 .schedulerModule(new SchedulerModule(new SchedulersProviderImpl()))
+                .analyticsModule(new AnalyticsModule())
                 .utilModule(new UtilsModule());
     }
 

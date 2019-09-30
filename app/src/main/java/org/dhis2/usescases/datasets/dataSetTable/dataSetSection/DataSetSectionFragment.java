@@ -45,6 +45,8 @@ import io.reactivex.Flowable;
 import io.reactivex.processors.FlowableProcessor;
 
 import static com.evrencoskun.tableview.adapter.recyclerview.holder.AbstractViewHolder.SelectionState.UNSELECTED;
+import static org.dhis2.utils.analytics.AnalyticsConstants.LEVEL_ZOOM;
+import static org.dhis2.utils.analytics.AnalyticsConstants.ZOOM_TABLE;
 
 /**
  * QUADRAM. Created by ppajuelo on 02/10/2018.
@@ -208,7 +210,8 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
                                 scaleImage.setImageDrawable(AppCompatResources.getDrawable(view.getContext(), R.drawable.ic_zoomx2));
                                 break;
                         }
-                        adapter.scale();
+                        DataSetTableAdapter.TableScale tableScale = adapter.scale();
+                        analyticsHelper().setEvent(LEVEL_ZOOM, tableScale.name(), ZOOM_TABLE);
                     }
                 }
             });

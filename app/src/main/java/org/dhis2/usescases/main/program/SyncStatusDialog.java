@@ -30,6 +30,7 @@ import org.dhis2.data.service.SyncGranularRxWorker;
 import org.dhis2.databinding.SyncBottomDialogBinding;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.NetworkUtils;
+import org.dhis2.utils.analytics.AnalyticsHelper;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.dataset.DataSetElement;
@@ -41,6 +42,8 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+
+import javax.inject.Inject;
 
 import androidx.work.Constraints;
 import androidx.work.Data;
@@ -55,7 +58,12 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.processors.FlowableProcessor;
 import io.reactivex.schedulers.Schedulers;
 
+import static com.mapbox.mapboxsdk.Mapbox.getApplicationContext;
 import static org.dhis2.utils.Constants.*;
+import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
+import static org.dhis2.utils.analytics.AnalyticsConstants.SYNC_GRANULAR;
+import static org.dhis2.utils.analytics.AnalyticsConstants.SYNC_GRANULAR_ONLINE;
+import static org.dhis2.utils.analytics.AnalyticsConstants.SYNC_GRANULAR_SMS;
 
 @SuppressLint("ValidFragment")
 public class SyncStatusDialog extends BottomSheetDialogFragment {
@@ -70,6 +78,8 @@ public class SyncStatusDialog extends BottomSheetDialogFragment {
     private String attributeComboDataValue;
     private String periodIdDataValue;
     private FlowableProcessor processor;
+    @Inject
+    public AnalyticsHelper analyticsHelper;
 
     public enum ConflictType {
         PROGRAM, TEI, EVENT, DATA_SET, DATA_VALUES
@@ -104,7 +114,8 @@ public class SyncStatusDialog extends BottomSheetDialogFragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.sync_bottom_dialog, container, false);
-
+        if(((App)getApplicationContext()).serverComponent()!=null)
+            analyticsHelper.setD2(((App)getApplicationContext()).serverComponent().userManager().getD2());
         adapter = new SyncConflictAdapter(new ArrayList<>());
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         binding.synsStatusRecycler.setLayoutManager(layoutManager);
@@ -421,6 +432,7 @@ public class SyncStatusDialog extends BottomSheetDialogFragment {
     private void setNetworkMessage() {
         if (!NetworkUtils.isOnline(getContext())) {
             if (/*Check SMS Services*/false) { //TODO: Add sms check
+                analyticsHelper.setEvent(SYNC_GRANULAR_SMS, CLICK, SYNC_GRANULAR);
                 binding.connectionMessage.setText(R.string.network_unavailable_sms);
                 binding.syncButton.setText(R.string.action_sync_sms);
                 binding.syncButton.setVisibility(View.VISIBLE);
@@ -429,6 +441,7 @@ public class SyncStatusDialog extends BottomSheetDialogFragment {
                 });
 
             } else {
+                analyticsHelper.setEvent(SYNC_GRANULAR_ONLINE, CLICK, SYNC_GRANULAR);
                 binding.connectionMessage.setText(R.string.network_unavailable);
                 binding.syncButton.setVisibility(View.INVISIBLE);
                 binding.syncButton.setOnClickListener(null);

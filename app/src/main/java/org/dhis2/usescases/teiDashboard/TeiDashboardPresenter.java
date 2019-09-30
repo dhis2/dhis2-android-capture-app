@@ -20,6 +20,10 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
+import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
+import static org.dhis2.utils.analytics.AnalyticsConstants.DELETE_ENROLL;
+import static org.dhis2.utils.analytics.AnalyticsConstants.DELETE_TEI;
+
 /**
  * QUADRAM. Created by ppajuelo on 30/11/2017.
  */
@@ -136,12 +140,14 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
         compositeDisposable.add(
                 canDeleteTEI()
                         .flatMap(canDelete -> {
-                            if (canDelete)
+                            if (canDelete) {
+                                view.analyticsHelper().setEvent(DELETE_TEI, CLICK, DELETE_TEI);
                                 return Single.fromCallable(() -> {
                                     d2.trackedEntityModule().trackedEntityInstances.uid(teUid)
                                             .blockingDelete();
                                     return true;
                                 });
+                            }
                             else
                                 return Single.error(new AuthorityException(view.getContext().getString(R.string.delete_authority_error)));
                         })
@@ -165,7 +171,8 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
                 canDeleteEnrollment()
                         .flatMap(canDelete ->
                         {
-                            if (canDelete)
+                            if (canDelete) {
+                                view.analyticsHelper().setEvent(DELETE_ENROLL, CLICK, DELETE_ENROLL);
                                 return Single.fromCallable(() -> {
                                     EnrollmentObjectRepository enrollmentObjectRepository = d2.enrollmentModule().enrollments.uid(dashboardProgramModel.getCurrentEnrollment().uid());
                                     enrollmentObjectRepository.setStatus(enrollmentObjectRepository.blockingGet().status());
@@ -174,6 +181,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
                                             .byDeleted().isFalse()
                                             .byStatus().eq(EnrollmentStatus.ACTIVE).blockingGet().isEmpty();
                                 });
+                            }
                             else
                                 return Single.error(new AuthorityException(view.getContext().getString(R.string.delete_authority_error)));
                         })

@@ -46,6 +46,9 @@ import io.reactivex.functions.Consumer;
 import timber.log.Timber;
 
 import static org.dhis2.utils.Constants.PROGRAM_UID;
+import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
+import static org.dhis2.utils.analytics.AnalyticsConstants.DELETE_EVENT;
+import static org.dhis2.utils.analytics.AnalyticsConstants.SHOW_HELP;
 
 /**
  * QUADRAM. Created by ppajuelo on 19/11/2018.
@@ -376,6 +379,7 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
         popupMenu.setOnMenuItemClickListener(item -> {
             switch (item.getItemId()) {
                 case R.id.showHelp:
+                    analyticsHelper().setEvent(SHOW_HELP, CLICK, SHOW_HELP);
                     showTutorial(false);
                     break;
                 case R.id.menu_delete:
@@ -418,6 +422,7 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
                 new DialogClickListener() {
                     @Override
                     public void onPositive() {
+                        analyticsHelper().setEvent(DELETE_EVENT, CLICK, DELETE_EVENT);
                         presenter.deleteEvent();
                     }
 

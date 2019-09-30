@@ -39,6 +39,10 @@ import javax.inject.Inject;
 import io.reactivex.functions.Consumer;
 import timber.log.Timber;
 
+import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
+import static org.dhis2.utils.analytics.AnalyticsConstants.DELETE_EVENT;
+import static org.dhis2.utils.analytics.AnalyticsConstants.SHOW_HELP;
+
 /**
  * QUADRAM. Created by Cristian E. on 18/12/2017.
  */
@@ -150,6 +154,7 @@ public class EventDetailActivity extends ActivityGlobalAbstract implements Event
                 new DialogClickListener() {
                     @Override
                     public void onPositive() {
+                        analyticsHelper().setEvent(DELETE_EVENT, CLICK, DELETE_EVENT);
                         presenter.deleteEvent();
                     }
 
@@ -266,6 +271,7 @@ public class EventDetailActivity extends ActivityGlobalAbstract implements Event
         popupMenu.setOnMenuItemClickListener(item -> {
             switch (item.getItemId()) {
                 case R.id.showHelp:
+                    analyticsHelper().setEvent(SHOW_HELP, CLICK, SHOW_HELP);
                     setTutorial();
                     break;
                 case R.id.menu_delete:
