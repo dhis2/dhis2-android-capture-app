@@ -14,7 +14,6 @@ import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 
 import com.jakewharton.rxbinding2.widget.RxTextView;
 
@@ -124,7 +123,7 @@ public class OptionSetDialog extends DialogFragment {
                     if(!optionGroupsToShow.isEmpty()){
                         for(String groupUid: optionGroupsToShow){
                             finalOptionsToShow.addAll(
-                              UidsHelper.getUidsList(d2.optionModule().optionGroups.withOptions().uid(groupUid).get().options())
+                              UidsHelper.getUidsList(d2.optionModule().optionGroups.withOptions().uid(groupUid).blockingGet().options())
                             );
                         }
                     }
@@ -132,7 +131,7 @@ public class OptionSetDialog extends DialogFragment {
                     if (!optionGroupsToHide.isEmpty()) {
                         for (String groupUid : optionGroupsToHide) {
                             finalOptionsToHide.addAll(
-                                    UidsHelper.getUidsList(d2.optionModule().optionGroups.withOptions().uid(groupUid).get().options())
+                                    UidsHelper.getUidsList(d2.optionModule().optionGroups.withOptions().uid(groupUid).blockingGet().options())
                             );
                         }
                     }

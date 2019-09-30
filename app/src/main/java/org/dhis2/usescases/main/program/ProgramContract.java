@@ -51,6 +51,10 @@ public class ProgramContract {
 
         void openOrgUnitTreeSelector();
 
+        void showHideFilter();
+
+        void clearFilters();
+
         void setPreferences(SharePreferencesProvider preferences);
     }
 
@@ -82,5 +86,9 @@ public class ProgramContract {
         void onSyncStatusClick(ProgramViewModel program);
 
         boolean areFiltersApplied();
+
+        void showHideFilterClick();
+
+        void clearFilterClick();
     }
 }

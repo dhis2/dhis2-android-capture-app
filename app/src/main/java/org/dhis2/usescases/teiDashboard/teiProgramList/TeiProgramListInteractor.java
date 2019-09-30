@@ -11,7 +11,7 @@ import androidx.appcompat.app.AlertDialog;
 import org.dhis2.R;
 import org.dhis2.databinding.WidgetDatepickerBinding;
 import org.dhis2.usescases.main.program.ProgramViewModel;
-import org.dhis2.utils.custom_views.OrgUnitDialog_2;
+import org.dhis2.utils.custom_views.OrgUnitDialog;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.Program;
 
@@ -54,7 +54,7 @@ public class TeiProgramListInteractor implements TeiProgramListContract.Interact
         getPrograms();
     }
 
-    private void showNativeCalendar(String programUid, String uid, OrgUnitDialog_2 orgUnitDialog) {
+    private void showNativeCalendar(String programUid, String uid, OrgUnitDialog orgUnitDialog) {
 
         Calendar c = Calendar.getInstance();
         int year = c.get(Calendar.YEAR);
@@ -126,7 +126,7 @@ public class TeiProgramListInteractor implements TeiProgramListContract.Interact
         dateDialog.show();
     }
 
-    private void showCustomCalendar(String programUid, String uid, OrgUnitDialog_2 orgUnitDialog) {
+    private void showCustomCalendar(String programUid, String uid, OrgUnitDialog orgUnitDialog) {
         LayoutInflater layoutInflater = LayoutInflater.from(view.getContext());
 //        View datePickerView = layoutInflater.inflate(R.layout.widget_datepicker, null);
         WidgetDatepickerBinding binding = WidgetDatepickerBinding.inflate(layoutInflater);
@@ -205,7 +205,8 @@ public class TeiProgramListInteractor implements TeiProgramListContract.Interact
     public void enroll(String programUid, String uid) {
         selectedEnrollmentDate = Calendar.getInstance().getTime();
 
-        OrgUnitDialog_2 orgUnitDialog = OrgUnitDialog_2.getInstace().setMultiSelection(false);
+        OrgUnitDialog orgUnitDialog = OrgUnitDialog.getInstace().setMultiSelection(false);
+        orgUnitDialog.setProgram(programUid);
         orgUnitDialog.setTitle("Enrollment Org Unit")
                 .setPossitiveListener(v -> {
                     if (orgUnitDialog.getSelectedOrgUnit() != null && !orgUnitDialog.getSelectedOrgUnit().isEmpty())

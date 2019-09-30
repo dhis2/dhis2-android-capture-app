@@ -7,6 +7,8 @@
 
         <import type="android.view.View" />
 
+        <import type="org.hisp.dhis.android.core.common.FeatureType" />
+
         <import type="org.hisp.dhis.android.core.event.EventStatus" />
 
         <variable
@@ -221,9 +223,9 @@
                                         android:layout_height="wrap_content"
                                         android:clickable="true"
                                         android:enabled="@{(enrollmentActive &amp;&amp; (event.status() == EventStatus.OVERDUE)) ? true : false}"
-                                        android:onClick="@{()->presenter.setDueDate()}"
                                         android:focusable="false"
                                         android:inputType="date"
+                                        android:onClick="@{()->presenter.setDueDate()}"
                                         app:date="@{event.dueDate()}"
                                         tools:text="2018-01-01" />
                                 </com.google.android.material.textfield.TextInputLayout>
@@ -273,7 +275,7 @@
                                     android:id="@+id/captureCoordinates"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:visibility="@{stage.captureCoordinates()?View.VISIBLE:View.GONE}"
+                                    android:visibility="@{stage.featureType()!=null &amp;&amp; stage.featureType() != FeatureType.NONE ?View.VISIBLE:View.GONE}"
                                     app:layout_flexBasisPercent="100%" />
                             </com.google.android.flexbox.FlexboxLayout>
 

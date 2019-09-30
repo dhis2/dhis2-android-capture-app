@@ -48,4 +48,9 @@ public class SyncConflictAdapter extends RecyclerView.Adapter<SyncConflictHolder
         this.conflicts.add(item);
         notifyDataSetChanged();
     }
+
+    public void addAllItems(List<StatusLogItem> conflicts){
+        this.conflicts.addAll(conflicts);
+        notifyDataSetChanged();
+    }
 }

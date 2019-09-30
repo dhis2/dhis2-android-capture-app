@@ -4,6 +4,9 @@ import android.content.Context;
 
 import org.dhis2.data.sharedPreferences.SharePreferencesProvider;
 import org.hisp.dhis.android.core.arch.call.D2Progress;
+import org.hisp.dhis.android.core.imports.TrackerImportConflict;
+
+import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.UiThread;
@@ -14,7 +17,7 @@ interface SyncPresenter {
 
     void syncAndDownloadTeis(Context context) throws Exception;
 
-    void syncMetadata(Context context) throws Exception;
+    void syncMetadata(Context context, SyncMetadataWorker.OnProgressUpdate progressUpdate) throws Exception;
 
     void syncAndDownloadDataValues() throws Exception;
 
@@ -33,4 +36,24 @@ interface SyncPresenter {
     Observable<D2Progress> syncGranularDataSet(String uid);
 
     Observable<D2Progress> syncGranularDataValues(String orgUnit, String attributeOptionCombo, String period);
+
+    boolean checkSyncEventStatus(String uid);
+
+    boolean checkSyncTEIStatus(String uid);
+
+    boolean checkSyncDataValueStatus(String orgUnit, String attributeOptionCombo, String period);
+
+    boolean checkSyncProgramStatus(String uid);
+
+    boolean checkSyncDataSetStatus(String uid);
+
+    List<TrackerImportConflict> messageTrackerImportConflict(String uid);
+
+    void startPeriodicDataWork(Context context);
+
+    void startPeriodicMetaWork(Context context);
+
+    void downloadResources();
+
+    void uploadResources();
 }

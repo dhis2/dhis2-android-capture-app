@@ -4,7 +4,10 @@ import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.dataset.DataSet;
 import org.hisp.dhis.android.core.dataset.DataSetCompleteRegistration;
+import org.hisp.dhis.android.core.dataset.DataSetElement;
+import org.hisp.dhis.android.core.dataset.DataSetInstance;
 import org.hisp.dhis.android.core.dataset.Section;
+import org.hisp.dhis.android.core.datavalue.DataValue;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,13 +33,13 @@ public class DataSetTableRepositoryImpl implements DataSetTableRepository {
 
     @Override
     public Flowable<DataSet> getDataSet() {
-        return Flowable.fromCallable(() -> d2.dataSetModule().dataSets.byUid().eq(dataSetUid).one().get());
+        return Flowable.fromCallable(() -> d2.dataSetModule().dataSets.byUid().eq(dataSetUid).one().blockingGet());
     }
 
     @Override
     public Flowable<List<String>> getSections() {
 
-        return Flowable.fromCallable(() -> d2.dataSetModule().sections.byDataSetUid().eq(dataSetUid).get())
+        return Flowable.fromCallable(() -> d2.dataSetModule().sections.byDataSetUid().eq(dataSetUid).blockingGet())
                 .switchMap(sections -> {
                     List<String> sectionUids = new ArrayList<>();
                     if (sections.isEmpty()) {
@@ -52,26 +55,54 @@ public class DataSetTableRepositoryImpl implements DataSetTableRepository {
 
 
     @Override
-    public Flowable<State> dataSetStatus() {
+    public Flowable<Boolean> dataSetStatus() {
         DataSetCompleteRegistration dscr = d2.dataSetModule().dataSetCompleteRegistrations
                 .byDataSetUid().eq(dataSetUid)
                 .byAttributeOptionComboUid().eq(catOptCombo)
                 .byOrganisationUnitUid().eq(orgUnitUid)
-                .byPeriod().eq(periodId).one().get();
-        return Flowable.defer(() -> dscr != null ? Flowable.just(dscr.state()) : Flowable.empty());
+                .byPeriod().eq(periodId).one().blockingGet();
+        return Flowable.just(dscr != null && (dscr.deleted() == null || !dscr.deleted()));
+    }
+
+    public Flowable<State> dataSetState(){
+        return Flowable.defer(() ->{
+            State state = null;
+            DataSetInstance dataSetInstance = d2.dataSetModule().dataSetInstances
+                    .byDataSetUid().eq(dataSetUid)
+                    .byAttributeOptionComboUid().eq(catOptCombo)
+                    .byOrganisationUnitUid().eq(orgUnitUid)
+                    .byPeriod().eq(periodId).one().blockingGet();
+
+            if(dataSetInstance != null ) {
+                state = dataSetInstance.state();
+                List<String> dataElementsUids = new ArrayList<>();
+                for(DataSetElement dataSetElement : d2.dataSetModule().dataSets.withDataSetElements().byUid().eq(dataSetUid).one().blockingGet().dataSetElements()){
+                    dataElementsUids.add(dataSetElement.dataElement().uid());
+                }
+                for (DataValue dataValue : d2.dataValueModule().dataValues
+                        .byDataElementUid().in(dataElementsUids)
+                        .byAttributeOptionComboUid().eq(catOptCombo)
+                        .byOrganisationUnitUid().eq(orgUnitUid)
+                        .byPeriod().eq(periodId).blockingGet()) {
+                    if (dataValue.state() != State.SYNCED)
+                        state = State.TO_UPDATE;
+                }
+            }
+            return state != null ? Flowable.just(state) : Flowable.empty();
+        });
     }
 
     @Override
     public Flowable<String> getCatComboName(String catcomboUid) {
-        return Flowable.fromCallable(() -> d2.categoryModule().categoryOptionCombos.uid(catcomboUid).get().displayName());
+        return Flowable.fromCallable(() -> d2.categoryModule().categoryOptionCombos.uid(catcomboUid).blockingGet().displayName());
     }
 
     @Override
     public String getCatOptComboFromOptionList(List<String> catOpts) {
         if(catOpts.isEmpty())
-            return d2.categoryModule().categoryOptionCombos.byDisplayName().like("default").one().get().uid();
+            return d2.categoryModule().categoryOptionCombos.byDisplayName().like("default").one().blockingGet().uid();
         else
-            return d2.categoryModule().categoryOptionCombos.byCategoryOptions(catOpts).one().get().uid();
+            return d2.categoryModule().categoryOptionCombos.byCategoryOptions(catOpts).one().blockingGet().uid();
     }
 
 

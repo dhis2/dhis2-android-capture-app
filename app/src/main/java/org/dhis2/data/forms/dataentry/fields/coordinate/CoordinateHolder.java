@@ -2,7 +2,6 @@ package org.dhis2.data.forms.dataentry.fields.coordinate;
 
 
 import android.annotation.SuppressLint;
-import android.graphics.Color;
 
 import androidx.lifecycle.MutableLiveData;
 
@@ -10,8 +9,7 @@ import org.dhis2.data.forms.dataentry.fields.FormViewHolder;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.databinding.CustomFormCoordinateBinding;
 import org.dhis2.utils.custom_views.CoordinatesView;
-
-import java.util.Locale;
+import org.hisp.dhis.android.core.common.FeatureType;
 
 import io.reactivex.processors.FlowableProcessor;
 
@@ -30,14 +28,17 @@ public class CoordinateHolder extends FormViewHolder {
         this.binding = binding;
         this.currentUid = currentSelection;
 
-        binding.formCoordinates.setCurrentLocationListener((latitude, longitude) -> {
+        binding.formCoordinates.setCurrentLocationListener((geometry) -> {
                     closeKeyboard(binding.formCoordinates);
-                    processor.onNext(
-                            RowAction.create(model.uid(),
-                                    String.format(Locale.US, "[%.5f,%.5f]", latitude, longitude),
-                                    getAdapterPosition()));
-                    if (!isSearchMode)
-                        itemView.setBackgroundColor(Color.WHITE);
+                    if (geometry == null) {
+                        processor.onNext(
+                                RowAction.create(model.uid(), null, getAdapterPosition()));
+                    } else
+                        processor.onNext(
+                                RowAction.create(model.uid(),
+                                        geometry.coordinates(),
+                                        getAdapterPosition()));
+                    clearBackground(isSearchMode);
                 }
         );
         binding.formCoordinates.setMapListener(
@@ -50,7 +51,7 @@ public class CoordinateHolder extends FormViewHolder {
 
     void update(CoordinateViewModel coordinateViewModel) {
         binding.formCoordinates.setProcessor(coordinateViewModel.uid(), processor);
-
+        binding.formCoordinates.setFeatureType(FeatureType.POINT);
         model = coordinateViewModel;
         fieldUid = coordinateViewModel.uid();
 

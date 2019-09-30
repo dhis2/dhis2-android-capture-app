@@ -3,7 +3,7 @@ package org.dhis2.data.database;
 
 import com.squareup.sqlbrite2.BriteDatabase;
 
-import org.hisp.dhis.android.core.data.database.Transaction;
+import org.hisp.dhis.android.core.arch.db.access.Transaction;
 
 public class SqlBriteTransaction implements Transaction {
 

@@ -11,7 +11,6 @@ import org.dhis2.data.user.UserComponent;
 import org.dhis2.usescases.login.LoginComponent;
 import org.dhis2.usescases.sync.SyncComponent;
 import org.hisp.dhis.android.core.configuration.Configuration;
-import org.hisp.dhis.android.core.configuration.ConfigurationModel;
 
 public interface Components {
 
@@ -32,26 +31,13 @@ public interface Components {
     void releaseLoginComponent();
 
 
-    ///////////////////////////////////////////////////////////////////
-    // Synchronization component
-    ///////////////////////////////////////////////////////////////////
-
-
-    @NonNull
-    SyncComponent createSyncComponent();
-
-    @Nullable
-    SyncComponent syncComponent();
-
-    void releaseSyncComponent();
-
 
     ////////////////////////////////////////////////////////////////////
     // Server component
     ////////////////////////////////////////////////////////////////////
 
     @NonNull
-    ServerComponent createServerComponent(@NonNull Configuration configuration);
+    ServerComponent createServerComponent();
 
     @Nullable
     ServerComponent serverComponent();

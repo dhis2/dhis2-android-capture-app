@@ -1,5 +1,7 @@
 package org.dhis2.data.user;
 
+import androidx.annotation.NonNull;
+
 import org.dhis2.data.dagger.PerUser;
 import org.dhis2.data.forms.FormComponent;
 import org.dhis2.data.forms.FormModule;
@@ -9,6 +11,8 @@ import org.dhis2.data.service.SyncDataWorkerComponent;
 import org.dhis2.data.service.SyncDataWorkerModule;
 import org.dhis2.data.service.SyncGranularRxComponent;
 import org.dhis2.data.service.SyncGranularRxModule;
+import org.dhis2.data.service.SyncInitWorkerComponent;
+import org.dhis2.data.service.SyncInitWorkerModule;
 import org.dhis2.data.service.SyncMetadataWorkerComponent;
 import org.dhis2.data.service.SyncMetadataWorkerModule;
 import org.dhis2.usescases.about.AboutComponent;
@@ -49,8 +53,10 @@ import org.dhis2.usescases.searchTrackEntity.SearchTEComponent;
 import org.dhis2.usescases.searchTrackEntity.SearchTEModule;
 import org.dhis2.usescases.sms.SmsComponent;
 import org.dhis2.usescases.sms.SmsModule;
-import org.dhis2.usescases.syncManager.SyncManagerComponent;
-import org.dhis2.usescases.syncManager.SyncManagerModule;
+import org.dhis2.usescases.sync.SyncComponent;
+import org.dhis2.usescases.sync.SyncModule;
+import org.dhis2.usescases.settings.SyncManagerComponent;
+import org.dhis2.usescases.settings.SyncManagerModule;
 import org.dhis2.usescases.teiDashboard.TeiDashboardComponent;
 import org.dhis2.usescases.teiDashboard.TeiDashboardModule;
 import org.dhis2.usescases.teiDashboard.eventDetail.EventDetailComponent;
@@ -61,8 +67,6 @@ import org.dhis2.usescases.teiDashboard.teiDataDetail.TeiDataDetailComponent;
 import org.dhis2.usescases.teiDashboard.teiDataDetail.TeiDataDetailModule;
 import org.dhis2.usescases.teiDashboard.teiProgramList.TeiProgramListComponent;
 import org.dhis2.usescases.teiDashboard.teiProgramList.TeiProgramListModule;
-
-import androidx.annotation.NonNull;
 
 import dagger.Subcomponent;
 
@@ -151,12 +155,19 @@ public interface UserComponent {
     EventCaptureComponent plus(EventCaptureModule eventCaptureModule);
 
     @NonNull
-    EnrollmentComponent plus(EnrollmentModule enrollmentModule);
-
-    @NonNull
     SmsComponent plus(SmsModule smsModule);
+
     NfcDataWriteComponent plus(NfcDataWriteModule nfcModule);
 
     @NonNull
     SyncGranularRxComponent plus(SyncGranularRxModule syncGranularEventModule);
+
+    @NonNull
+    SyncComponent plus(SyncModule syncModule);
+
+    @NonNull
+    SyncInitWorkerComponent plus(SyncInitWorkerModule syncInitWorkerModule);
+
+    @NonNull
+    EnrollmentComponent plus(EnrollmentModule enrollmentModule);
 }

@@ -45,9 +45,8 @@
 
             <org.dhis2.utils.custom_views.CircularCompletionView
                 android:id="@+id/completion"
-                android:layout_width="60dp"
+                android:layout_width="wrap_content"
                 android:layout_height="0dp"
-                android:layout_margin="3dp"
                 app:layout_constraintBottom_toBottomOf="@+id/moreOptions"
                 app:layout_constraintEnd_toStartOf="@id/moreOptions"
                 app:layout_constraintTop_toTopOf="@+id/moreOptions"
@@ -120,6 +119,16 @@
             android:layout_height="0dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toBottomOf="@id/eventTabLayout" />
+
+        <include
+            android:id="@+id/calculationIndicator"
+            layout="@layout/indicator_progress"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:visibility="gone"
+            app:layout_constraintTop_toTopOf="@id/eventViewPager" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

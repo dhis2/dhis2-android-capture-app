@@ -3,9 +3,15 @@ package org.dhis2.data.service;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
+
+import androidx.annotation.NonNull;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
+import androidx.work.Data;
+import androidx.work.Worker;
+import androidx.work.WorkerParameters;
 
 import com.google.firebase.perf.metrics.AddTrace;
 
@@ -20,12 +26,6 @@ import java.util.Objects;
 
 import javax.inject.Inject;
 
-import androidx.annotation.NonNull;
-import androidx.core.app.NotificationCompat;
-import androidx.core.app.NotificationManagerCompat;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-import androidx.work.Worker;
-import androidx.work.WorkerParameters;
 import timber.log.Timber;
 
 /**
@@ -34,8 +34,8 @@ import timber.log.Timber;
 
 public class SyncDataWorker extends Worker {
 
-    private final static String data_channel = "sync_data_notification";
-    private final static int SYNC_DATA_ID = 8071986;
+    private static final String DATA_CHANNEL = "sync_data_notification";
+    private static final int SYNC_DATA_ID = 8071986;
     private SharePreferencesProvider provider;
 
     @Inject
@@ -49,19 +49,25 @@ public class SyncDataWorker extends Worker {
 
     @NonNull
     @Override
-    @AddTrace(name = "MetadataSyncTrace")
+    @AddTrace(name = "DataSyncTrace")
     public Result doWork() {
+
         provider = presenter.getPreferences();
         Objects.requireNonNull(((App) getApplicationContext()).userComponent()).plus(new SyncDataWorkerModule()).inject(this);
 
         triggerNotification(
                 getApplicationContext().getString(R.string.app_name),
                 getApplicationContext().getString(R.string.syncing_data));
-        LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(new Intent("action_sync").putExtra("dataSyncInProgress", true));
 
         boolean isEventOk = true;
         boolean isTeiOk = true;
         boolean isDataValue = true;
+
+        try {
+            presenter.uploadResources();
+        }catch (Exception e){
+            Timber.e(e);
+        }
         try {
             presenter.syncAndDownloadEvents(getApplicationContext());
         } catch (Exception e) {
@@ -82,31 +88,42 @@ public class SyncDataWorker extends Worker {
             isDataValue = false;
         }
 
+        try {
+            presenter.downloadResources();
+        } catch (Exception e) {
+            Timber.e(e);
+        }
+
         String lastDataSyncDate = DateUtils.dateTimeFormat().format(Calendar.getInstance().getTime());
         boolean syncOk = presenter.checkSyncStatus();
 
         provider.sharedPreferences().putString(Constants.LAST_DATA_SYNC, lastDataSyncDate);
         provider.sharedPreferences().putBoolean(Constants.LAST_DATA_SYNC_STATUS, isEventOk && isTeiOk && isDataValue && syncOk);
 
-        LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(new Intent("action_sync").putExtra("dataSyncInProgress", false));
-
         cancelNotification();
 
-        return Result.success();
+        return Result.success(createOutputData(true));
+    }
+
+    private Data createOutputData(boolean state) {
+        return new Data.Builder()
+                .putBoolean("DATA_STATE", state)
+                .build();
     }
 
     private void triggerNotification(String title, String content) {
         NotificationManager notificationManager = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationChannel mChannel = new NotificationChannel(data_channel, "DataSync", NotificationManager.IMPORTANCE_HIGH);
+            NotificationChannel mChannel = new NotificationChannel(DATA_CHANNEL, "DataSync", NotificationManager.IMPORTANCE_HIGH);
             notificationManager.createNotificationChannel(mChannel);
         }
 
         NotificationCompat.Builder notificationBuilder =
-                new NotificationCompat.Builder(getApplicationContext(), data_channel)
+                new NotificationCompat.Builder(getApplicationContext(), DATA_CHANNEL)
                         .setSmallIcon(R.drawable.ic_sync)
                         .setContentTitle(title)
+                        .setOngoing(true)
                         .setContentText(content)
                         .setAutoCancel(false)
                         .setPriority(NotificationCompat.PRIORITY_DEFAULT);

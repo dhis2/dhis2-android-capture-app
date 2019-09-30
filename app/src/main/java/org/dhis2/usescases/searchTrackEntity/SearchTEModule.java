@@ -2,12 +2,11 @@ package org.dhis2.usescases.searchTrackEntity;
 
 import androidx.annotation.NonNull;
 
-import org.dhis2.data.dagger.PerActivity;
-import org.dhis2.data.metadata.MetadataRepository;
-import org.dhis2.data.sharedPreferences.SharePreferencesProvider;
-import org.dhis2.utils.CodeGenerator;
 import com.squareup.sqlbrite2.BriteDatabase;
 
+import org.dhis2.data.dagger.PerActivity;
+import org.dhis2.data.sharedPreferences.SharePreferencesProvider;
+import org.dhis2.utils.CodeGenerator;
 import org.hisp.dhis.android.core.D2;
 
 import dagger.Module;
@@ -35,8 +34,9 @@ public class SearchTEModule {
 
     @Provides
     @PerActivity
-    SearchTEContractsModule.Presenter providePresenter(SharePreferencesProvider sharePreferencesProvider, D2 d2, SearchRepository searchRepository, MetadataRepository metadataRepository) {
-        return new SearchTEPresenter(sharePreferencesProvider, searchRepository, metadataRepository,d2);
+    SearchTEContractsModule.Presenter providePresenter(D2 d2, SearchRepository searchRepository,
+                                                       SharePreferencesProvider sharePreferencesProvider) {
+        return new SearchTEPresenter(d2, searchRepository,sharePreferencesProvider);
     }
 
     @Provides

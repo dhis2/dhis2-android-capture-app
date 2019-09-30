@@ -6,20 +6,21 @@ import android.view.MenuInflater;
 import android.view.View;
 import android.widget.DatePicker;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.widget.PopupMenu;
 import androidx.databinding.DataBindingUtil;
-import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.resource.bitmap.CircleCrop;
 import com.bumptech.glide.request.RequestOptions;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import org.dhis2.App;
 import org.dhis2.Bindings.Bindings;
 import org.dhis2.R;
 import org.dhis2.data.forms.FormFragment;
-import org.dhis2.data.forms.FormViewArguments;
 import org.dhis2.databinding.ActivityTeidataDetailBinding;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.usescases.map.MapSelectorActivity;
@@ -27,22 +28,31 @@ import org.dhis2.usescases.teiDashboard.DashboardProgramModel;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.DatePickerUtils;
 import org.dhis2.utils.FileResourcesUtil;
+import org.dhis2.utils.custom_views.CoordinatesView;
+import org.hisp.dhis.android.core.arch.helpers.GeometryHelper;
+import org.hisp.dhis.android.core.common.FeatureType;
+import org.hisp.dhis.android.core.common.Geometry;
+import org.hisp.dhis.android.core.common.Unit;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.enrollment.internal.EnrollmentFields;
-import org.hisp.dhis.android.core.program.ProgramStageModel;
+import org.hisp.dhis.android.core.program.ProgramStage;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityType;
 
+import java.io.File;
+import java.lang.reflect.Type;
 import java.util.Calendar;
 import java.util.Date;
-import java.io.File;
-import java.util.Locale;
+import java.util.List;
 
 import javax.inject.Inject;
 
+import io.reactivex.Observable;
 import io.reactivex.functions.Consumer;
+import io.reactivex.subjects.PublishSubject;
 
 import static com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade;
 
-public class TeiDataDetailActivity extends ActivityGlobalAbstract implements TeiDataDetailContracts.View {
+public class TeiDataDetailActivity extends ActivityGlobalAbstract implements TeiDataDetailContracts.View, CoordinatesView.OnMapPositionClick {
     ActivityTeidataDetailBinding binding;
 
     @Inject
@@ -50,6 +60,13 @@ public class TeiDataDetailActivity extends ActivityGlobalAbstract implements Tei
 
     private DashboardProgramModel dashboardProgramModel;
     private EnrollmentStatus enrollmentStatus;
+    private PublishSubject<Geometry> onCoordinatesChanged;
+    private PublishSubject<Geometry> onTeiCoordinatesChanged;
+    private PublishSubject<Unit> onCoordinatesCleared;
+    private PublishSubject<Unit> onTeiCoordinatesCleared;
+    private CoordinatesView coordinatesViewToUpdate;
+    private FeatureType teFeatureType;
+    private FeatureType enrollmentFeatureType;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -116,47 +133,109 @@ public class TeiDataDetailActivity extends ActivityGlobalAbstract implements Tei
     @Override
     public void setData(DashboardProgramModel program) {
         this.dashboardProgramModel = program;
-        this.enrollmentStatus = program.getCurrentEnrollment().enrollmentStatus();
+        this.enrollmentStatus = program.getCurrentEnrollment().status();
         binding.setDashboardModel(program);
         binding.setProgram(program.getCurrentProgram());
-        binding.setEnrollmentStatus(program.getCurrentEnrollment().enrollmentStatus());
+        binding.setEnrollmentStatus(program.getCurrentEnrollment().status());
         binding.setEnrollmentDate(dashboardProgramModel.getCurrentEnrollment().enrollmentDate());
         binding.setIncidentDate(dashboardProgramModel.getCurrentEnrollment().incidentDate());
         binding.executePendingBindings();
 
-        if (program.getCurrentProgram().captureCoordinates()) {
-            binding.coordinatesLayout.setVisibility(View.VISIBLE);
-            binding.location1.setOnClickListener(v -> presenter.onLocationClick());
-            binding.location2.setOnClickListener(v -> presenter.onLocation2Click());
+
+        binding.coordinatesView.setIsBgTransparent(true);
+        binding.coordinatesView.setMapListener(this);
+        binding.coordinatesView.setCurrentLocationListener(this::publishCoordinatesChanged);
+        binding.coordinatesView.setLabel(getString(R.string.enrollment_coordinates));
+
+        enrollmentFeatureType = program.getCurrentProgram().featureType();
+        binding.coordinatesView.setVisibility(enrollmentFeatureType != FeatureType.NONE ? View.VISIBLE : View.GONE);
+        if (enrollmentFeatureType != FeatureType.NONE) {
+            binding.coordinatesView.setFeatureType(enrollmentFeatureType);
         }
 
-        for(ProgramStageModel programStage: program.getProgramStages())
-            if(programStage.autoGenerateEvent())
-                if(programStage.reportDateToUse() != null && programStage.reportDateToUse().equals(EnrollmentFields.ENROLLMENT_DATE) || programStage.generatedByEnrollmentDate()) {
+        if (program.getCurrentEnrollment().geometry() != null)
+            binding.coordinatesView.updateLocation(program.getCurrentEnrollment().geometry());
+
+
+        for (ProgramStage programStage : program.getProgramStages())
+            if (programStage.autoGenerateEvent())
+                if (programStage.reportDateToUse() != null && programStage.reportDateToUse().equals("enrollmentDate") || programStage.generatedByEnrollmentDate()) {
                     binding.enrollmentDate.setEnabled(false);
                     binding.enrollmentDate.setBackground(null);
-                }else {
+                } else {
                     binding.incidentDate.setEnabled(false);
                     binding.incidentDate.setBackground(null);
                 }
 
-        supportStartPostponedEnterTransition();
+        presenter.checkTeiCoordinates();
 
+        supportStartPostponedEnterTransition();
 
         initForm();
 
     }
 
     private void initForm() {
-        Fragment fragment = FormFragment.newInstance(
+     /*   Fragment fragment = FormFragment.newInstance(
                 FormViewArguments.createForEnrollment(dashboardProgramModel.getCurrentEnrollment().uid()), true,
                 false);
         ((FormFragment) fragment).setSaveButtonTEIDetail(binding.next);
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.dataFragment, fragment)
-                .commit();
+                .commit();*/
     }
 
+    @NonNull
+    @Override
+    public Observable<Geometry> reportCoordinatesChanged() {
+        onCoordinatesChanged = PublishSubject.create();
+        return onCoordinatesChanged;
+    }
+
+    @NonNull
+    @Override
+    public Observable<Geometry> teiCoordinatesChanged() {
+        onTeiCoordinatesChanged = PublishSubject.create();
+        return onTeiCoordinatesChanged;
+    }
+
+    @NonNull
+    @Override
+    public Observable<Unit> reportCoordinatesCleared() {
+        onCoordinatesCleared = PublishSubject.create();
+        return onCoordinatesCleared;
+    }
+
+    @NonNull
+    @Override
+    public Observable<Unit> teiCoordinatesCleared() {
+        onTeiCoordinatesCleared = PublishSubject.create();
+        return onTeiCoordinatesCleared;
+    }
+
+    @Override
+    public Consumer<TrackedEntityType> renderTeiCoordinates() {
+        return trackedEntityType -> {
+            if (trackedEntityType.featureType() != null) {
+
+                binding.teiCoordinatesView.setIsBgTransparent(true);
+                binding.teiCoordinatesView.setMapListener(this);
+                binding.teiCoordinatesView.setCurrentLocationListener(this::publishTeiCoodinatesChanged);
+
+                teFeatureType = trackedEntityType.featureType();
+                binding.teiCoordinatesView.setVisibility(teFeatureType != FeatureType.NONE ? View.VISIBLE : View.GONE);
+                binding.teiCoordinatesView.setLabel(String.format("%s %s", getString(R.string.tei_coordinates), trackedEntityType.name()));
+                if (teFeatureType != FeatureType.NONE) {
+                    binding.teiCoordinatesView.setFeatureType(teFeatureType);
+                }
+
+                if (binding.getDashboardModel().getTei().geometry() != null) {
+                    binding.teiCoordinatesView.updateLocation(binding.getDashboardModel().getTei().geometry());
+                }
+
+            }
+        };
+    }
 
     @Override
     public Consumer<EnrollmentStatus> handleStatus() {
@@ -168,12 +247,6 @@ public class TeiDataDetailActivity extends ActivityGlobalAbstract implements Tei
             binding.executePendingBindings();
             initForm();
         };
-    }
-
-    @Override
-    public void setLocation(double latitude, double longitude) {
-        binding.lat.setText(String.format(Locale.US, "%.5f", latitude));
-        binding.lon.setText(String.format(Locale.US, "%.5f", longitude));
     }
 
     @Override
@@ -201,14 +274,33 @@ public class TeiDataDetailActivity extends ActivityGlobalAbstract implements Tei
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == Constants.RQ_MAP_LOCATION && resultCode == RESULT_OK) {
-            String savedLat = data.getStringExtra(MapSelectorActivity.LATITUDE);
-            String savedLon = data.getStringExtra(MapSelectorActivity.LONGITUDE);
-            setLocation(Double.valueOf(savedLat), Double.valueOf(savedLon));
-            presenter.saveLocation(Double.valueOf(savedLat), Double.valueOf(savedLon));
+        if (requestCode == Constants.RQ_MAP_LOCATION_VIEW && resultCode == RESULT_OK) {
+            FeatureType locationType = FeatureType.valueOf(data.getStringExtra(MapSelectorActivity.Companion.getLOCATION_TYPE_EXTRA()));
+            String dataExtra = data.getStringExtra(MapSelectorActivity.Companion.getDATA_EXTRA());
+            Geometry geometry;
+            if (locationType == FeatureType.POINT) {
+                Type type = new TypeToken<List<Double>>() {
+                }.getType();
+                geometry = GeometryHelper.createPointGeometry(new Gson().fromJson(dataExtra, type));
+            } else if (locationType == FeatureType.POLYGON) {
+                Type type = new TypeToken<List<List<List<Double>>>>() {
+                }.getType();
+                geometry = GeometryHelper.createPolygonGeometry(new Gson().fromJson(dataExtra, type));
+            } else {
+                Type type = new TypeToken<List<List<List<List<Double>>>>>() {
+                }.getType();
+                geometry = GeometryHelper.createMultiPolygonGeometry(new Gson().fromJson(dataExtra, type));
+            }
+            coordinatesViewToUpdate.updateLocation(geometry);
+            if (coordinatesViewToUpdate.getId() == R.id.coordinates_view)
+                publishCoordinatesChanged(geometry);
+            else
+                publishTeiCoodinatesChanged(geometry);
+            this.coordinatesViewToUpdate = null;
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
+
     @Override
     public void showCustomIncidentCalendar(Date date) {
         DatePickerUtils.getDatePickerDialog(
@@ -258,5 +350,27 @@ public class TeiDataDetailActivity extends ActivityGlobalAbstract implements Tei
                     }
                 }).show();
     }
+
+    @Override
+    public void onMapPositionClick(CoordinatesView coordinatesView) {
+        this.coordinatesViewToUpdate = coordinatesView;
+        FeatureType featureType = coordinatesView.getId() == R.id.tei_coordinates_view ? teFeatureType : enrollmentFeatureType;
+        startActivityForResult(MapSelectorActivity.Companion.create(getActivity(), featureType, coordinatesView.currentCoordinates()), Constants.RQ_MAP_LOCATION_VIEW);
+    }
+
+    private void publishCoordinatesChanged(Geometry geometry) {
+        if (onCoordinatesChanged != null && geometry != null) {
+            onCoordinatesChanged.onNext(geometry);
+        } else if (geometry == null)
+            onCoordinatesCleared.onNext(new Unit());
+    }
+
+    private void publishTeiCoodinatesChanged(Geometry geometry) {
+        if (onTeiCoordinatesChanged != null && geometry != null) {
+            onTeiCoordinatesChanged.onNext(geometry);
+        } else if (geometry == null)
+            onTeiCoordinatesCleared.onNext(new Unit());
+    }
+
 
 }

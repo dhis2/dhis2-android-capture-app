@@ -4,8 +4,8 @@ package org.dhis2.data.forms.dataentry;
 import androidx.annotation.NonNull;
 import androidx.annotation.UiThread;
 
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitLevel;
-import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 
 import java.util.List;
 
@@ -23,7 +23,7 @@ interface DataEntryPresenter {
     void onDetach();
 
     @NonNull
-    Observable<List<OrganisationUnitModel>> getOrgUnits();
+    Observable<List<OrganisationUnit>> getOrgUnits();
 
     Observable<List<OrganisationUnitLevel>> getLevels();
 }

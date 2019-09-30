@@ -6,6 +6,7 @@ import androidx.annotation.UiThread;
 
 import org.dhis2.data.sharedPreferences.SharePreferencesProvider;
 import org.dhis2.usescases.general.AbstractActivityContracts;
+import org.dhis2.utils.filters.FilterManager;
 import org.hisp.dhis.android.core.imports.TrackerImportConflict;
 import org.hisp.dhis.android.core.maintenance.D2Error;
 
@@ -32,6 +33,8 @@ public final class MainContracts {
         void showSyncErrors(List<TrackerImportConflict> data);
 
         void updateFilters(int totalFilters);
+
+        void showPeriodRequest(FilterManager.PeriodRequest periodRequest);
 
         void setPreferences(SharePreferencesProvider provider);
     }

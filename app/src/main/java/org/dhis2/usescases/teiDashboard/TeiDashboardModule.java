@@ -10,7 +10,6 @@ import org.dhis2.data.forms.FormRepository;
 import org.dhis2.data.forms.RulesRepository;
 import org.dhis2.data.forms.dataentry.EnrollmentRuleEngineRepository;
 import org.dhis2.data.forms.dataentry.RuleEngineRepository;
-import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.data.sharedPreferences.SharePreferencesProvider;
 import org.dhis2.utils.CodeGenerator;
 import org.hisp.dhis.android.core.D2;
@@ -46,10 +45,8 @@ public class TeiDashboardModule {
     @Provides
     @PerActivity
     TeiDashboardContracts.Presenter providePresenter(D2 d2, DashboardRepository dashboardRepository,
-                                                     MetadataRepository metadataRepository,
-                                                     RuleEngineRepository ruleRepository,
                                                      SharePreferencesProvider provider) {
-        return new TeiDashboardPresenter(d2, dashboardRepository, metadataRepository, ruleRepository, provider);
+        return new TeiDashboardPresenter(d2, dashboardRepository, provider);
     }
 
     @Provides
@@ -76,24 +73,8 @@ public class TeiDashboardModule {
         if (!isEmpty(programUid))
             enrollmentRepository = enrollmentRepository.byProgram().eq(programUid);
 
-        String uid = enrollmentRepository.one().get().uid();
+        String uid = enrollmentRepository.one().blockingGet().uid();
 
         return new EnrollmentFormRepository(briteDatabase, evaluator, rulesRepository, codeGenerator, uid, d2);
     }
-
-    @Provides
-    @PerActivity
-    RuleEngineRepository ruleEngineRepository(@NonNull BriteDatabase briteDatabase,
-                                              @NonNull FormRepository formRepository,
-                                              D2 d2) {
-        EnrollmentCollectionRepository enrollmentRepository = d2.enrollmentModule().enrollments
-                .byTrackedEntityInstance().eq(teiUid);
-        if (!isEmpty(programUid))
-            enrollmentRepository = enrollmentRepository.byProgram().eq(programUid);
-
-        String uid = enrollmentRepository.one().get().uid();
-        return new EnrollmentRuleEngineRepository(briteDatabase, formRepository, uid, d2);
-
-    }
-
 }

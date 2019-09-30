@@ -6,7 +6,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import org.dhis2.databinding.ItemNotesBinding;
 import org.dhis2.utils.DateUtils;
-import org.hisp.dhis.android.core.enrollment.note.NoteModel;
+import org.hisp.dhis.android.core.enrollment.note.Note;
+
+import java.text.ParseException;
+import java.util.Date;
 
 /**
  * QUADRAM. Created by Administrador on 18/12/2017.
@@ -21,9 +24,18 @@ public class NotesViewholder extends RecyclerView.ViewHolder {
         this.binding = binding;
     }
 
-    public void bind(NoteModel note) {
+    public void bind(Note note) {
         if (note.storedDate() != null) {
-            binding.date.setText(DateUtils.uiDateFormat().format(note.storedDate()));
+            String formattedDate;
+            try {
+                Date date = DateUtils.databaseDateFormat().parse(note.storedDate());
+                formattedDate = DateUtils.uiDateFormat().format(date);
+            } catch (ParseException e) {
+                e.printStackTrace();
+                formattedDate = note.storedDate();
+            }
+
+            binding.date.setText(formattedDate);
         }
         binding.noteText.setText(note.value());
         binding.storeBy.setText(note.storedBy());

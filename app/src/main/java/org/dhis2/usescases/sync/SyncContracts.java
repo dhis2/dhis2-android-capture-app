@@ -1,8 +1,8 @@
 package org.dhis2.usescases.sync;
 
 import org.dhis2.data.sharedPreferences.SharePreferencesProvider;
-import org.dhis2.databinding.ActivitySynchronizationBinding;
 import org.dhis2.usescases.general.AbstractActivityContracts;
+import org.hisp.dhis.android.core.D2;
 
 public class SyncContracts {
 
@@ -19,12 +19,12 @@ public class SyncContracts {
 
         void init(View view);
 
-        void syncMeta(int seconds, String scheduleTag);
+        void sync();
 
         void syncReservedValues();
 
-        void syncData(int seconds, String scheduleTag);
-
         void getTheme();
+
+        void scheduleSync(int metaTime, int dataTime);
     }
 }

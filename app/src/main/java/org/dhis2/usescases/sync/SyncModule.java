@@ -1,7 +1,6 @@
 package org.dhis2.usescases.sync;
 
 import org.dhis2.data.dagger.PerActivity;
-import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.data.sharedPreferences.SharePreferencesProvider;
 import org.hisp.dhis.android.core.D2;
 
@@ -14,7 +13,7 @@ public class SyncModule {
 
     @Provides
     @PerActivity
-    SyncContracts.Presenter providePresenter(MetadataRepository metadataRepository, SharePreferencesProvider provider) {
-        return new SyncPresenter(metadataRepository, provider);
+    SyncContracts.Presenter providePresenter(D2 d2, SharePreferencesProvider provider) {
+        return new SyncPresenter(d2, provider);
     }
 }

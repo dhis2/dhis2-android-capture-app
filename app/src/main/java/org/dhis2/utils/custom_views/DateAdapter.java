@@ -1,16 +1,17 @@
 package org.dhis2.utils.custom_views;
 
-import androidx.databinding.DataBindingUtil;
-import androidx.core.content.ContextCompat;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
+import androidx.core.content.ContextCompat;
+import androidx.databinding.DataBindingUtil;
+import androidx.recyclerview.widget.RecyclerView;
+
 import org.dhis2.R;
+import org.dhis2.data.tuples.Pair;
 import org.dhis2.databinding.ItemDateBinding;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.Period;
-import org.hisp.dhis.android.core.period.PeriodType;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -27,11 +28,11 @@ import java.util.Map;
 
 public class DateAdapter extends RecyclerView.Adapter<DateViewHolder> {
 
+    private Period currentPeriod = null;
     private List<String> datesNames = new ArrayList<>();
     private List<String> seletedDatesName = new ArrayList<>();
     private List<Date> dates = new ArrayList<>();
-    private List<Date> selectedDates = new ArrayList<>();
-    private Period currentPeriod = Period.WEEKLY;
+    private Pair<Period, List<Date>> selectedDates;
     private SimpleDateFormat dayFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
     private SimpleDateFormat weeklyFormat = new SimpleDateFormat("'Week' w", Locale.getDefault());
     private String weeklyFormatWithDates = "%s, %s / %s";
@@ -40,11 +41,18 @@ public class DateAdapter extends RecyclerView.Adapter<DateViewHolder> {
     private Map<String, String> mapPeriod = new HashMap<>();
 
     public DateAdapter(Period period) {
-        currentPeriod = period;
+        //if (period != Period.DAILY)
+            initData(period);
+    }
+
+    private void initData(Period period) {
+        this.currentPeriod = period;
+        selectedDates = Pair.create(currentPeriod, new ArrayList<>());
         Calendar calendar = DateUtils.getInstance().getCalendar();
         calendar.add(Calendar.YEAR, 1); //let's the user select dates in the next year
         int year = calendar.get(Calendar.YEAR);
-
+        datesNames.clear();
+        dates.clear();
         do {
             String date = null;
 
@@ -82,14 +90,16 @@ public class DateAdapter extends RecyclerView.Adapter<DateViewHolder> {
 
         } while (calendar.get(Calendar.YEAR) > year - 11); //show last 10 years
 
+        notifyDataSetChanged();
     }
 
-    public DateAdapter(){
+    public DateAdapter() {
+        currentPeriod = Period.WEEKLY;
     }
 
-    public void swapMapPeriod(Map<String, String> mapPeriods){
+    public void swapMapPeriod(Map<String, String> mapPeriods) {
         this.mapPeriod = mapPeriods;
-        for(Map.Entry<String, String> entry: mapPeriods.entrySet())
+        for (Map.Entry<String, String> entry : mapPeriods.entrySet())
             datesNames.add(entry.getValue());
     }
 
@@ -103,55 +113,104 @@ public class DateAdapter extends RecyclerView.Adapter<DateViewHolder> {
     public void onBindViewHolder(DateViewHolder holder, int position) {
         holder.bind(datesNames.get(position));
 
-        if ((dates.size() > 0 && selectedDates.contains(dates.get(position))) || (datesNames.size() > 0 && seletedDatesName.contains(datesNames.get(position)))) {
-            holder.itemView.setBackgroundColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.white_dfd));
+        if ((dates.size() > 0 && selectedDates.val1().contains(dates.get(position))) || (datesNames.size() > 0 && seletedDatesName.contains(datesNames.get(position)))) {
+            holder.itemView.setBackgroundColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.colorPrimaryLight));
         } else {
-            holder.itemView.setBackgroundColor(ContextCompat.getColor(holder.itemView.getContext(), android.R.color.transparent));
+            holder.itemView.setBackgroundColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.white));
         }
 
         holder.itemView.setOnClickListener(view -> {
-            if(mapPeriod == null) {
-                if (!selectedDates.contains(dates.get(position))) {
-                    selectedDates.add(dates.get(position));
-                    holder.itemView.setBackgroundColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.white_dfd));
+            if (mapPeriod == null || mapPeriod.size() == 0) {
+                if (!selectedDates.val1().contains(dates.get(position))) {
+                    selectedDates.val1().add(dates.get(position));
+                    holder.itemView.setBackgroundColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.colorPrimaryLight));
                 } else {
-                    selectedDates.remove(dates.get(position));
-                    holder.itemView.setBackgroundColor(ContextCompat.getColor(holder.itemView.getContext(), android.R.color.transparent));
+                    selectedDates.val1().remove(dates.get(position));
+                    holder.itemView.setBackgroundColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.white));
                 }
-            }else{
+            } else {
                 if (!seletedDatesName.contains(datesNames.get(position))) {
                     seletedDatesName.add(datesNames.get(position));
-                    holder.itemView.setBackgroundColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.white_dfd));
+                    holder.itemView.setBackgroundColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.colorPrimaryLight));
                 } else {
                     seletedDatesName.remove(datesNames.get(position));
-                    holder.itemView.setBackgroundColor(ContextCompat.getColor(holder.itemView.getContext(), android.R.color.transparent));
+                    holder.itemView.setBackgroundColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.white));
                 }
             }
         });
+
     }
 
     @Override
     public int getItemCount() {
-        if(mapPeriod != null)
+        if (mapPeriod != null && mapPeriod.size() > 0)
             return mapPeriod.size();
         return datesNames != null ? datesNames.size() : 0;
     }
 
-    public List<Date> clearFilters() {
-        selectedDates.clear();
+    public Pair<Period, List<Date>> clearFilters() {
+        selectedDates.val1().clear();
         return selectedDates;
     }
 
-    public List<String> clearFiltersPeriod(){
+    public List<String> clearFiltersPeriod() {
         seletedDatesName.clear();
         return seletedDatesName;
     }
 
-    public List<Date> getSelectedDates() {
+    public Pair<Period, List<Date>> getSelectedDates() {
         return selectedDates;
     }
 
-    public List<String> getSeletedDatesName(){
+    public List<String> getSeletedDatesName() {
         return seletedDatesName;
+    }
+
+
+    public Period swapPeriod(boolean next) {
+        Period period = currentPeriod;
+        switch (currentPeriod) {
+            case DAILY:
+                if(next) {
+                    period = Period.WEEKLY;
+                    initData(period);
+                }
+                else {
+                    period = Period.YEARLY;
+                    initData(period);
+                }
+                break;
+            case WEEKLY:
+                if(next) {
+                    period = Period.MONTHLY;
+                    initData(period);
+                }
+                else{
+                    this.currentPeriod = Period.DAILY;
+                    return currentPeriod;
+                }
+                break;
+            case MONTHLY:
+                if(next) {
+                    period = Period.YEARLY;
+                    initData(period);
+                }
+                else {
+                    period = Period.WEEKLY;
+                    initData(period);
+                }
+                break;
+            case YEARLY:
+                if(next) {
+                    this.currentPeriod = Period.DAILY;
+                    return currentPeriod;
+                }
+                else {
+                    period = Period.MONTHLY;
+                    initData(period);
+                }
+                break;
+        }
+        return period;
     }
 }

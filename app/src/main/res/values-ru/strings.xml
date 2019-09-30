@@ -1,0 +1,105 @@
+<resources>
+    <!-- Warnings and error messages -->
+    <string name="error">Ошибка</string>
+    <string name="sync_metadata">Метаданные</string>
+    <string name="sync_events">Events</string>
+    <string name="add_new">Добавить новое</string>
+    <string name="add">Добавить</string>
+    <string name="schedule_new">Распланировать новое</string>
+    <string name="referral">Направление</string>
+
+    <string name="user_hint">Имя пользователя</string>
+    <string name="password_hint">Пароль</string>
+    <string name="account_recovery">Восстановить учетную запись</string>
+
+    <!--PERIOD-->
+    <string name="DAILY">Ежедневно</string>
+    <string name="WEEKLY">Еженедельно</string>
+    <string name="MONTHLY">Ежемесячно</string>
+    <string name="YEARLY">Ежегодно</string>
+    <string name="action_accept">Принять</string>
+    <string name="action_share_zero_items">Поделиться</string>
+    <!-- Input hints -->
+    <string name="search">Поиск</string>
+    <string name="event_open">Открыть</string>
+    <string name="read_only">Только читать</string>
+    <string name="complete">Завершенный</string>
+    <string name="completed">Завершенный</string>
+    <string name="cancelled">Отмененный</string>
+    <string name="state_error">Ошибка</string>
+    <!--Completion-->
+    <string name="completion">Завершение</string>
+
+    <!--Event initial-->
+    <string name="create">Создать</string>
+    <string name="update">Обновить</string>
+    <string name="date">Дата</string>
+    <string name="category_option">Category option</string>
+    <string name="latitude">Широта</string>
+    <string name="longitude">Долгота</string>
+    <string name="new_event">Новое событие</string>
+    <!--DataSet initial-->
+    <string name="report_period">Отчет за период</string>
+    <!--Event Detail-->
+    <string name="event_date">Дата события</string>
+    <string name="due_date">Дата выполнения</string>
+    <string name="cancel">Отмена</string>
+    <string name="delete">Удалить</string>
+    <string name="active_programs">Действующие программы</string>
+    <string name="enroll">Регистрировать</string>
+    <string name="deactivate">Деактивировать</string>
+    <string name="done_task">Главная</string>
+    <string name="sync_default_parameters">Возвратить в исходное положение по умолчанию</string>
+    <string name="wipe_data_ok">Принять</string>
+    <string name="wipe_data_no">Отмена</string>
+    <string name="SYNC_MANAGER">Настройки</string>
+    <!--endregion-->
+
+    <string name="enrollmment_date">Дата зачисления</string>
+
+    <!-- SEARCH OPTION SET -->
+    <string name="search_optionset">Поиск</string>
+    <!--FORM FRAGMENT-->
+    <string name="report_date">Дата отчета</string>
+    <string name="add_note">Добавить заметку</string>
+    <!--AGE CUSTOM VIEW-->
+    <string name="hint_day">Дни</string>
+    <string name="hint_month">Месяцы</string>
+    <string name="hint_year">Годы</string>
+    <string name="week">Недели</string>
+    <string name="incident_date">Дата происшествия</string>
+    <string name="date_dialog_clear">Очистить</string>
+    <string name="period">Период</string>
+    <string name="next">Следующая</string>
+    <string name="SAVE">Сохранить</string>
+    <string name="button_ok">ОК</string>
+    <string name="qr_attributes">Атрибуты</string>
+    <string name="qr_events">Events</string>
+    <string name="qr_relationships">Зависимости</string>
+    <string name="about">Об</string>
+    <string name="share">Поделиться</string>
+    <string name="max">Макс</string>
+    <string name="current">Текущий</string>
+    <string name="warning_on_complete_title">Предупреждение</string>
+    <string name="error_on_complete_title">Ошибка</string>
+    <string name="save">Сохранить</string>
+    <string name="select_option">Выберите опцию</string>
+    <string name="menu_home">Главная</string>
+    <string name="qr_data_values">Значение данных</string>
+    <string name="dashboard_relationships">Зависимости</string>
+    <string name="dashboard_indicators">Индикаторы</string>
+    <string name="dashboard_notes">Заметки</string>
+    <string name="event_overview">Детали</string>
+    <string name="event_event">Событие</string>
+    <string name="event_indicators">Индикаторы</string>
+    <string name="event_notes">Заметки</string>
+    <string name="please_wait">Пожалуйста, подождите</string>
+    <string name="skip">Пропустить</string>
+    <string name="reschedule">Перепланировать</string>
+    <string name="event_overdue">Просроченный</string>
+    <string name="local_data_accept">Принять</string>
+    <string name="state_warning">Предупреждение</string>
+    <string name="action_close">Закрыть</string>
+    <string name="data_every_day">Ежедневно</string>
+    <string name="data_every_week">Еженедельно</string>
+    </resources>

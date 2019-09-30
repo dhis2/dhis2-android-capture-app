@@ -16,7 +16,7 @@ import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 
 class OrgUnitFilterHolder extends FilterHolder {
 
-    OrganisationUnit currentOrgUnit;
+    private OrganisationUnit currentOrgUnit;
 
     OrgUnitFilterHolder(@NonNull ItemFilterOrgUnitBinding binding, ObservableField<Filters> openedFilter) {
         super(binding, openedFilter);
@@ -28,14 +28,15 @@ class OrgUnitFilterHolder extends FilterHolder {
         super.bind();
         filterIcon.setImageDrawable(AppCompatResources.getDrawable(itemView.getContext(), R.drawable.ic_filter_ou));
         filterTitle.setText("Org Unit");
-
+        filterValues.setText(
+                FilterManager.getInstance().getOrgUnitFilters().isEmpty()?"No filters applied" : "Filters applying"
+        );
         setUpAdapter();
 
     }
 
     private void setUpAdapter() {
         D2 d2 = ((App) itemView.getContext().getApplicationContext()).serverComponent().userManager().getD2();
-
 
         ItemFilterOrgUnitBinding localBinding = (ItemFilterOrgUnitBinding) binding;
 
@@ -52,7 +53,7 @@ class OrgUnitFilterHolder extends FilterHolder {
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 if (charSequence.length() > 3) {
                     currentOrgUnit = d2.organisationUnitModule().organisationUnits
-                            .byDisplayName().like("%" + charSequence + "%").one().get();
+                            .byDisplayName().like("%" + charSequence + "%").one().blockingGet();
                     if (currentOrgUnit != null)
                         localBinding.filterOrgUnit.orgUnitHint.setText(currentOrgUnit.displayName());
                     else

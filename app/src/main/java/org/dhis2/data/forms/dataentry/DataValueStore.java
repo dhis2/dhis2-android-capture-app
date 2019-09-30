@@ -1,59 +1,49 @@
 package org.dhis2.data.forms.dataentry;
 
-import android.content.ContentValues;
-import android.database.Cursor;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.dhis2.data.user.UserRepository;
-import org.dhis2.utils.DateUtils;
-import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
-import org.hisp.dhis.android.core.common.State;
-import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
-import org.hisp.dhis.android.core.event.EventModel;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueModel;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
-import org.hisp.dhis.android.core.user.UserCredentials;
+import org.hisp.dhis.android.core.D2;
+import org.hisp.dhis.android.core.enrollment.EnrollmentObjectRepository;
+import org.hisp.dhis.android.core.event.EventObjectRepository;
+import org.hisp.dhis.android.core.maintenance.D2Error;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueObjectRepository;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueObjectRepository;
 
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Locale;
 import java.util.Objects;
 
 import javax.annotation.Nonnull;
 
-import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
+import timber.log.Timber;
 
 import static android.text.TextUtils.isEmpty;
 import static org.dhis2.data.forms.dataentry.DataEntryStore.valueType.ATTR;
 import static org.dhis2.data.forms.dataentry.DataEntryStore.valueType.DATA_ELEMENT;
 
 public final class DataValueStore implements DataEntryStore {
-    private static final String SELECT_EVENT = "SELECT * FROM " + EventModel.TABLE +
-            " WHERE " + EventModel.Columns.UID + " = ? AND " + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "' LIMIT 1";
-
-    @NonNull
-    private final BriteDatabase briteDatabase;
-    @NonNull
-    private final Flowable<UserCredentials> userCredentials;
 
     @NonNull
     private final String eventUid;
+    private final D2 d2;
+    private final EventObjectRepository eventRepository;
+    private final EnrollmentObjectRepository enrollmentRepository;
 
-    public DataValueStore(@NonNull BriteDatabase briteDatabase,
+    public DataValueStore(@NonNull D2 d2,
+                          @NonNull BriteDatabase briteDatabase,
                           @NonNull UserRepository userRepository,
                           @NonNull String eventUid) {
-        this.briteDatabase = briteDatabase;
+        this.d2 = d2;
         this.eventUid = eventUid;
+        this.eventRepository = d2.eventModule().events.uid(eventUid);
+        if (eventRepository.blockingGet().enrollment() != null)
+            this.enrollmentRepository = d2.enrollmentModule().enrollments.uid(eventRepository.blockingGet().enrollment());
+        else
+            this.enrollmentRepository = null;
 
-        // we want to re-use results of the user credentials query
-        this.userCredentials = userRepository.credentials()
-                .cacheWithInitialCapacity(1);
     }
 
     @NonNull
@@ -69,209 +59,118 @@ public final class DataValueStore implements DataEntryStore {
                         if (updated > 0)
                             return Flowable.just(updated);
                         else
-                            return userCredentials
-                                    .map(userCredentialsModel -> insert(uid, value, userCredentialsModel.username(), valueType));
+                            return Flowable.just(insert(uid, value, valueType));
                     }
-                })
-                .flatMap(this::updateEvent);
+                });
     }
 
     @NonNull
     @Override
     public Flowable<Boolean> checkUnique(@NonNull String uid, @Nullable String value) {
-        return Flowable.just(true);
+        if (value != null && getValueType(uid) == ATTR) {
+            boolean isUnique = Boolean.TRUE.equals(d2.trackedEntityModule().trackedEntityAttributes.uid(uid).blockingGet().unique());
+            if (isUnique && !d2.trackedEntityModule().trackedEntityAttributeValues
+                    .byTrackedEntityAttribute().eq(uid)
+                    .byValue().eq(value).blockingGet().isEmpty()) {
+                delete(uid, ATTR);
+                return Flowable.just(false);
+            } else
+                return Flowable.just(true);
+        } else
+            return Flowable.just(true);
     }
 
 
     private long update(@NonNull String uid, @Nullable String value, valueType valueType) {
-        ContentValues dataValue = new ContentValues();
-        if (valueType == DATA_ELEMENT) {
-            // renderSearchResults time stamp
-            dataValue.put(TrackedEntityDataValueModel.Columns.LAST_UPDATED,
-                    BaseIdentifiableObject.DATE_FORMAT.format(Calendar.getInstance().getTime()));
-            if (value == null) {
-                dataValue.putNull(TrackedEntityDataValueModel.Columns.VALUE);
-            } else {
-                dataValue.put(TrackedEntityDataValueModel.Columns.VALUE, value);
+        if (valueType == ATTR) {
+            try {
+                d2.trackedEntityModule().trackedEntityAttributeValues.value(uid,
+                        enrollmentRepository.blockingGet().trackedEntityInstance()).blockingSet(value);
+                return 1;
+            } catch (D2Error d2Error) {
+                Timber.e(d2Error);
+                return -1;
             }
 
-            // ToDo: write test cases for different events
-            return (long) briteDatabase.update(TrackedEntityDataValueModel.TABLE, dataValue,
-                    TrackedEntityDataValueModel.Columns.DATA_ELEMENT + " = ? AND " +
-                            TrackedEntityDataValueModel.Columns.EVENT + " = ?", uid, eventUid);
         } else {
-            dataValue.put(TrackedEntityAttributeValueModel.Columns.LAST_UPDATED,
-                    BaseIdentifiableObject.DATE_FORMAT.format(Calendar.getInstance().getTime()));
-            if (value == null) {
-                dataValue.putNull(TrackedEntityAttributeValueModel.Columns.VALUE);
-            } else {
-                dataValue.put(TrackedEntityAttributeValueModel.Columns.VALUE, value);
+            try {
+                d2.trackedEntityModule().trackedEntityDataValues.value(eventUid, uid).blockingSet(value);
+                return 1;
+            } catch (D2Error d2Error) {
+                Timber.e(d2Error);
+                return -1;
             }
-
-            String teiUid = "";
-            try (Cursor enrollmentCursor = briteDatabase.query(
-                    "SELECT Enrollment.trackedEntityInstance FROM TrackedEntityAttributeValue " +
-                            "JOIN Enrollment ON Enrollment.trackedEntityInstance = TrackedEntityAttributeValue.trackedEntityInstance " +
-                            "WHERE TrackedEntityAttributeValue.trackedEntityAttribute = ?", uid)) {
-                if (enrollmentCursor.moveToFirst()) {
-                    teiUid = enrollmentCursor.getString(0);
-                }
-            }
-
-            return (long) briteDatabase.update(TrackedEntityAttributeValueModel.TABLE, dataValue,
-                    TrackedEntityAttributeValueModel.Columns.TRACKED_ENTITY_ATTRIBUTE + " = ? AND " +
-                            TrackedEntityAttributeValueModel.Columns.TRACKED_ENTITY_INSTANCE + " = ? ",
-                    uid, teiUid);
         }
     }
 
     private valueType getValueType(@Nonnull String uid) {
-        String attrUid = null;
-        try (Cursor attrCursor = briteDatabase.query("SELECT TrackedEntityAttribute.uid FROM TrackedEntityAttribute " +
-                "WHERE TrackedEntityAttribute.uid = ?", uid)) {
-            if (attrCursor.moveToFirst()) {
-                attrUid = attrCursor.getString(0);
-            }
-        }
-
-        return attrUid != null ? ATTR : valueType.DATA_ELEMENT;
+        return d2.trackedEntityModule().trackedEntityAttributes.uid(uid).blockingExists() ? ATTR : DATA_ELEMENT;
     }
 
     private boolean currentValue(@NonNull String uid, valueType valueType, String currentValue) {
-        String value = null;
+        String value;
         if (currentValue != null && (currentValue.equals("0.0") || currentValue.isEmpty()))
             currentValue = null;
 
-        if (valueType == DATA_ELEMENT) {
-            try (Cursor cursor = briteDatabase.query("SELECT TrackedEntityDataValue.value FROM TrackedEntityDataValue " +
-                    "WHERE dataElement = ? AND event = ?", uid, eventUid)) {
-                if (cursor.moveToFirst())
-                    value = cursor.getString(0);
-            }
+        if (valueType == ATTR) {
+            TrackedEntityAttributeValueObjectRepository attrValueRepository =
+                    d2.trackedEntityModule().trackedEntityAttributeValues.value(uid,
+                            enrollmentRepository.blockingGet().trackedEntityInstance());
+            value = attrValueRepository.blockingExists() ? attrValueRepository.blockingGet().value() : null;
+
         } else {
-            try (Cursor cursor = briteDatabase.query("SELECT TrackedEntityAttributeValue.value FROM TrackedEntityAttributeValue " +
-                    "JOIN Enrollment ON Enrollment.trackedEntityInstance = TrackedEntityAttributeValue.trackedEntityInstance " +
-                    "JOIN Event ON Event.enrollment = Enrollment.uid " +
-                    "WHERE TrackedEntityAttributeValue.trackedEntityAttribute = ? " +
-                    "AND Event.uid = ?", uid, eventUid)) {
-                if (cursor.moveToFirst())
-                    value = cursor.getString(0);
-            }
+            TrackedEntityDataValueObjectRepository dataValueRepository =
+                    d2.trackedEntityModule().trackedEntityDataValues.value(eventUid, uid);
+            value = dataValueRepository.blockingExists() ? dataValueRepository.blockingGet().value() : null;
         }
+
         return !Objects.equals(value, currentValue);
     }
 
-    private long insert(@NonNull String uid, @Nullable String value, @NonNull String storedBy, valueType valueType) {
-        Date created = Calendar.getInstance().getTime();
-        if (valueType == DATA_ELEMENT) {
-            TrackedEntityDataValueModel dataValueModel =
-                    TrackedEntityDataValueModel.builder()
-                            .created(created)
-                            .lastUpdated(created)
-                            .dataElement(uid)
-                            .event(eventUid)
-                            .value(value)
-                            .storedBy(storedBy)
-                            .build();
-            return briteDatabase.insert(TrackedEntityDataValueModel.TABLE,
-                    dataValueModel.toContentValues());
-        } else {
-            String teiUid = null;
-            try (Cursor enrollmentCursor = briteDatabase.query(
-                    "SELECT Enrollment.trackedEntityInstance FROM TrackedEntityAttributeValue " +
-                            "JOIN Enrollment ON Enrollment.trackedEntityInstance = TrackedEntityAttributeValue.trackedEntityInstance " +
-                            "WHERE TrackedEntityAttributeValue.trackedEntityAttribute = ?", uid)) {
-                if (enrollmentCursor.moveToFirst()) {
-                    teiUid = enrollmentCursor.getString(0);
-                }
+    private long insert(@NonNull String uid, @Nullable String value, valueType valueType) {
+        if (valueType == ATTR) {
+            String teiUid = enrollmentRepository.blockingGet().trackedEntityInstance();
+            try {
+                d2.trackedEntityModule().trackedEntityAttributeValues.value(uid, teiUid)
+                        .blockingSet(value);
+                return 1;
+            } catch (D2Error d2Error) {
+                Timber.e(d2Error);
+                return -1;
             }
-
-            TrackedEntityAttributeValueModel attributeValueModel =
-                    TrackedEntityAttributeValueModel.builder()
-                            .created(created)
-                            .lastUpdated(created)
-                            .trackedEntityAttribute(uid)
-                            .trackedEntityInstance(teiUid)
-                            .build();
-            return briteDatabase.insert(TrackedEntityAttributeValueModel.TABLE,
-                    attributeValueModel.toContentValues());
+        } else {
+            try {
+                d2.trackedEntityModule().trackedEntityDataValues.value(eventUid, eventUid)
+                        .blockingSet(value);
+                return 1;
+            } catch (D2Error d2Error) {
+                Timber.e(d2Error);
+                return -1;
+            }
         }
     }
 
     private long delete(@NonNull String uid, valueType valueType) {
-        if (valueType == DATA_ELEMENT)
-            return (long) briteDatabase.delete(TrackedEntityDataValueModel.TABLE,
-                    TrackedEntityDataValueModel.Columns.DATA_ELEMENT + " = ? AND " +
-                            TrackedEntityDataValueModel.Columns.EVENT + " = ?",
-                    uid, eventUid);
-        else {
-            String teiUid = "";
-            try (Cursor enrollmentCursor = briteDatabase.query(
-                    "SELECT Enrollment.trackedEntityInstance FROM TrackedEntityAttributeValue " +
-                            "JOIN Enrollment ON Enrollment.trackedEntityInstance = TrackedEntityAttributeValue.trackedEntityInstance " +
-                            "WHERE TrackedEntityAttributeValue.trackedEntityAttribute = ?", uid)) {
-                if (enrollmentCursor.moveToFirst()) {
-                    teiUid = enrollmentCursor.getString(0);
-                }
+        if (valueType == ATTR) {
+            try {
+                d2.trackedEntityModule().trackedEntityAttributeValues.value(uid,
+                        enrollmentRepository.blockingGet().trackedEntityInstance()).blockingSet(null);
+                d2.trackedEntityModule().trackedEntityAttributeValues.value(uid,
+                        enrollmentRepository.blockingGet().trackedEntityInstance()).blockingDelete();
+                return 1;
+            } catch (D2Error d2Error) {
+                d2Error.printStackTrace();
+                return -1;
             }
-
-            return (long) briteDatabase.delete(TrackedEntityAttributeValueModel.TABLE,
-                    TrackedEntityAttributeValueModel.Columns.TRACKED_ENTITY_ATTRIBUTE + " = ? AND " +
-                            TrackedEntityAttributeValueModel.Columns.TRACKED_ENTITY_INSTANCE + " = ? ",
-                    uid, teiUid);
+        } else {
+            try {
+                d2.trackedEntityModule().trackedEntityDataValues.value(eventUid, uid).blockingSet(null);
+                d2.trackedEntityModule().trackedEntityDataValues.value(eventUid, uid).blockingDelete();
+                return 1;
+            } catch (D2Error d2Error) {
+                d2Error.printStackTrace();
+                return -1;
+            }
         }
     }
-
-    private Flowable<Long> updateEvent(long status) {
-        return briteDatabase.createQuery(EventModel.TABLE, SELECT_EVENT, eventUid)
-                .mapToOne(EventModel::create).take(1).toFlowable(BackpressureStrategy.LATEST)
-                .switchMap(eventModel -> {
-                    if (State.SYNCED.equals(eventModel.state()) || State.TO_DELETE.equals(eventModel.state()) ||
-                            State.ERROR.equals(eventModel.state())) {
-
-                        ContentValues values = eventModel.toContentValues();
-                        values.put(EventModel.Columns.STATE, State.TO_UPDATE.toString());
-
-                        if (briteDatabase.update(EventModel.TABLE, values,
-                                EventModel.Columns.UID + " = ?", eventUid) <= 0) {
-
-                            throw new IllegalStateException(String.format(Locale.US, "Event=[%s] " +
-                                    "has not been successfully updated", eventUid));
-                        }
-                    }
-
-                    if (eventModel.enrollment() != null) {
-                        EnrollmentModel enrollment = null;
-
-                        try (Cursor enrollmentCursor = briteDatabase.query("SELECT Enrollment.* FROM Enrollment " +
-                                "WHERE Enrollment.uid = ?", eventModel.enrollment())) {
-                            if (enrollmentCursor.moveToFirst())
-                                enrollment = EnrollmentModel.create(enrollmentCursor);
-                        } finally {
-                            if (enrollment != null) {
-                                ContentValues cv = enrollment.toContentValues();
-                                cv.put(TrackedEntityInstanceModel.Columns.STATE, enrollment.state() == State.TO_POST ? State.TO_POST.name() : State.TO_UPDATE.name());
-                                cv.put(TrackedEntityInstanceModel.Columns.LAST_UPDATED, DateUtils.databaseDateFormat().format(Calendar.getInstance().getTime()));
-                                briteDatabase.update(EnrollmentModel.TABLE, cv, "uid = ?", eventModel.enrollment());
-                            }
-                        }
-                        TrackedEntityInstanceModel tei = null;
-                        try (Cursor teiCursor = briteDatabase.query("SELECT TrackedEntityInstance .* FROM TrackedEntityInstance " +
-                                "JOIN Enrollment ON Enrollment.trackedEntityInstance = TrackedEntityInstance.uid WHERE Enrollment.uid = ?", eventModel.enrollment())) {
-                            if (teiCursor.moveToFirst())
-                                tei = TrackedEntityInstanceModel.create(teiCursor);
-                        } finally {
-                            if (tei != null) {
-                                ContentValues cv = tei.toContentValues();
-                                cv.put(TrackedEntityInstanceModel.Columns.STATE, tei.state() == State.TO_POST ? State.TO_POST.name() : State.TO_UPDATE.name());
-                                cv.put(TrackedEntityInstanceModel.Columns.LAST_UPDATED, DateUtils.databaseDateFormat().format(Calendar.getInstance().getTime()));
-                                briteDatabase.update(TrackedEntityInstanceModel.TABLE, cv, "uid = ?", tei.uid());
-                            }
-                        }
-                    }
-
-                    return Flowable.just(status);
-                });
-    }
-
 }

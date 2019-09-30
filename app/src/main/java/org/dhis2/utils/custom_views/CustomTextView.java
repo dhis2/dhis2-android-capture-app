@@ -2,6 +2,8 @@ package org.dhis2.utils.custom_views;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.text.InputFilter;
 import android.text.InputType;
 import android.text.TextUtils;
@@ -24,7 +26,7 @@ import com.google.android.material.textfield.TextInputLayout;
 import org.dhis2.BR;
 import org.dhis2.Bindings.Bindings;
 import org.dhis2.R;
-import org.hisp.dhis.android.core.common.ObjectStyleModel;
+import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
 
@@ -44,6 +46,7 @@ public class CustomTextView extends FieldLayout implements View.OnFocusChangeLis
     private boolean isBgTransparent;
     private TextInputAutoCompleteTextView editText;
     private ImageView icon;
+    private ImageView descIcon;
     private String label;
     private ValueType valueType;
     private ViewDataBinding binding;
@@ -54,6 +57,7 @@ public class CustomTextView extends FieldLayout implements View.OnFocusChangeLis
     private TextInputLayout inputLayout;
     private boolean isLongText;
     private View descriptionLabel;
+    private View dummy;
 
     public CustomTextView(Context context) {
         super(context);
@@ -88,9 +92,14 @@ public class CustomTextView extends FieldLayout implements View.OnFocusChangeLis
         editText = findViewById(R.id.input_editText);
         icon = findViewById(R.id.renderImage);
         descriptionLabel = binding.getRoot().findViewById(R.id.descriptionLabel);
+        dummy = findViewById(R.id.dummyFocusView);
+
+        editText.setOnClickListener(v -> {
+            activate();
+        });
+        descIcon = findViewById(R.id.descIcon);
 
         editText.setOnFocusChangeListener(this);
-
     }
 
     public void setDescription(String description) {
@@ -111,16 +120,21 @@ public class CustomTextView extends FieldLayout implements View.OnFocusChangeLis
             switch (valueType) {
                 case PHONE_NUMBER:
                     editText.setInputType(InputType.TYPE_CLASS_PHONE);
+                    descIcon.setVisibility(VISIBLE);
+                    descIcon.setImageResource(R.drawable.ic_form_number);
                     break;
                 case EMAIL:
                     editText.setInputType(InputType.TYPE_CLASS_TEXT |
                             InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
+                    descIcon.setVisibility(GONE);
                     break;
                 case TEXT:
                     editText.setInputType(InputType.TYPE_CLASS_TEXT);
                     editText.setFilters(new InputFilter[]{new InputFilter.LengthFilter(50000)});
                     editText.setLines(1);
                     editText.setEllipsize(TextUtils.TruncateAt.END);
+                    descIcon.setVisibility(VISIBLE);
+                    descIcon.setImageResource(R.drawable.ic_form_text);
                     break;
                 case LONG_TEXT:
                     editText.getLayoutParams().height = ViewGroup.LayoutParams.WRAP_CONTENT;
@@ -132,6 +146,7 @@ public class CustomTextView extends FieldLayout implements View.OnFocusChangeLis
                     editText.setOverScrollMode(View.OVER_SCROLL_ALWAYS);
                     editText.setSingleLine(false);
                     editText.setImeOptions(EditorInfo.IME_FLAG_NO_ENTER_ACTION);
+                    descIcon.setVisibility(GONE);
                     break;
                 case LETTER:
                     editText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS);
@@ -144,18 +159,26 @@ public class CustomTextView extends FieldLayout implements View.OnFocusChangeLis
                                     return source;
                                 return "";
                             }});
+                    descIcon.setVisibility(VISIBLE);
+                    descIcon.setImageResource(R.drawable.ic_form_letter);
                     break;
                 case NUMBER:
                     editText.setInputType(InputType.TYPE_CLASS_NUMBER |
                             InputType.TYPE_NUMBER_FLAG_DECIMAL |
                             InputType.TYPE_NUMBER_FLAG_SIGNED);
+                    descIcon.setVisibility(VISIBLE);
+                    descIcon.setImageResource(R.drawable.ic_form_number);
                     break;
                 case INTEGER_NEGATIVE:
                 case INTEGER:
+                    descIcon.setVisibility(VISIBLE);
+                    descIcon.setImageResource(R.drawable.ic_form_number);
                     editText.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_SIGNED);
                     break;
                 case INTEGER_ZERO_OR_POSITIVE:
                 case INTEGER_POSITIVE:
+                    descIcon.setVisibility(VISIBLE);
+                    descIcon.setImageResource(R.drawable.ic_form_number);
                     editText.setInputType(InputType.TYPE_CLASS_NUMBER);
                     editText.setKeyListener(DigitsKeyListener.getInstance(false, false));
                     break;
@@ -163,14 +186,19 @@ public class CustomTextView extends FieldLayout implements View.OnFocusChangeLis
                     editText.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
                     break;
                 case PERCENTAGE:
+                    descIcon.setVisibility(VISIBLE);
+                    descIcon.setImageResource(R.drawable.ic_form_percentage);
                     editText.setInputType(InputType.TYPE_CLASS_NUMBER);
                     break;
                 case URL:
+                    descIcon.setVisibility(VISIBLE);
+                    descIcon.setImageResource(R.drawable.ic_i_url);
                     editText.setInputType(InputType.TYPE_TEXT_VARIATION_WEB_EDIT_TEXT);
                     break;
                 default:
                     break;
             }
+        editText.setCompoundDrawablePadding(24);
         binding.executePendingBindings();
     }
 
@@ -186,9 +214,10 @@ public class CustomTextView extends FieldLayout implements View.OnFocusChangeLis
     }
 
     public void setEditable(Boolean editable) {
-        editText.setFocusable(editable);
-        editText.setFocusableInTouchMode(editable);
-        editText.setEnabled(true);//Set true always cause if is disabled it loses the clickListener
+        editText.setFocusable(false);
+        editText.setFocusableInTouchMode(false);
+        editText.setClickable(editable);
+        editText.setEnabled(editable);
     }
 
     public void setWarning(String warning, String error) {
@@ -196,7 +225,6 @@ public class CustomTextView extends FieldLayout implements View.OnFocusChangeLis
             inputLayout.setErrorTextAppearance(R.style.error_appearance);
             inputLayout.setError(error);
             inputLayout.setErrorTextColor(ColorStateList.valueOf(ResourcesCompat.getColor(getResources(), R.color.error_color, null)));
-            editText.setText(null);
             editText.requestFocus();
         } else if (!isEmpty(warning)) {
             inputLayout.setErrorTextAppearance(R.style.warning_appearance);
@@ -237,8 +265,11 @@ public class CustomTextView extends FieldLayout implements View.OnFocusChangeLis
 
     @Override
     public void onFocusChange(View v, boolean hasFocus) {
-        if (listener != null && validate())
+        if (listener != null && validate()) {
+            if(!hasFocus)
+                dummy.requestFocus();
             listener.onFocusChange(v, hasFocus);
+        }
     }
 
     private boolean validate() {
@@ -323,7 +354,7 @@ public class CustomTextView extends FieldLayout implements View.OnFocusChangeLis
     }
 
 
-    public void setObjectSyle(ObjectStyleModel objectStyle) {
+    public void setObjectSyle(ObjectStyle objectStyle) {
         Bindings.setObjectStyle(icon, this, objectStyle);
     }
 

@@ -1,7 +1,5 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventSummary;
 
-import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.LayoutInflater;
@@ -10,8 +8,11 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.databinding.DataBindingUtil;
+
 import org.dhis2.App;
-import org.dhis2.BuildConfig;
 import org.dhis2.R;
 import org.dhis2.data.forms.FormSectionViewModel;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
@@ -19,31 +20,21 @@ import org.dhis2.data.forms.dataentry.fields.unsupported.UnsupportedViewModel;
 import org.dhis2.data.sharedPreferences.SharePreferencesProvider;
 import org.dhis2.databinding.ActivityEventSummaryBinding;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
-import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.DialogClickListener;
 import org.dhis2.utils.HelpManager;
-import org.dhis2.utils.custom_views.CircularCompletionView;
 import org.dhis2.utils.custom_views.CustomDialog;
-import org.dhis2.utils.custom_views.ProgressBarAnimation;
-import org.hisp.dhis.android.core.event.EventModel;
-import org.hisp.dhis.android.core.event.EventStatus;
-import org.hisp.dhis.android.core.program.ProgramModel;
+import org.hisp.dhis.android.core.event.Event;
+import org.hisp.dhis.android.core.program.Program;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 
 import javax.inject.Inject;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.databinding.DataBindingUtil;
 import io.reactivex.functions.Consumer;
-import me.toptas.fancyshowcase.FancyShowCaseView;
-import me.toptas.fancyshowcase.FocusShape;
 
 import static android.text.TextUtils.isEmpty;
 
@@ -51,7 +42,7 @@ import static android.text.TextUtils.isEmpty;
  * QUADRAM. Created by Cristian on 01/03/2018.
  */
 
-public class EventSummaryActivity extends ActivityGlobalAbstract implements EventSummaryContract.View, ProgressBarAnimation.OnUpdate {
+public class EventSummaryActivity extends ActivityGlobalAbstract implements EventSummaryContract.View {
 
     private static final int PROGRESS_TIME = 2000;
 
@@ -63,7 +54,6 @@ public class EventSummaryActivity extends ActivityGlobalAbstract implements Even
     @Inject
     EventSummaryContract.Presenter presenter;
     private ActivityEventSummaryBinding binding;
-    private int completionPercent;
     private int totalFields;
     private int totalCompletedFields;
     private int unsupportedFields;
@@ -74,8 +64,8 @@ public class EventSummaryActivity extends ActivityGlobalAbstract implements Even
     private boolean canComplete = true;
     private CustomDialog dialog;
     private boolean fieldsWithErrors;
-    private EventModel eventModel;
-    private ProgramModel programModel;
+    private Event eventModel;
+    private Program program;
     private ArrayList<String> sectionsToHide;
     private SharePreferencesProvider provider;
 
@@ -111,15 +101,9 @@ public class EventSummaryActivity extends ActivityGlobalAbstract implements Even
     }
 
     @Override
-    public void setProgram(@NonNull ProgramModel program) {
+    public void setProgram(@NonNull Program program) {
         binding.setName(program.displayName());
-        programModel = program;
-    }
-
-    @Override
-    public void onUpdate(boolean lost, float value) {
-        /*String text = String.valueOf((int) value) + "%";
-        binding.progress.setText(text);*/
+        this.program = program;
     }
 
     @Override
@@ -156,13 +140,13 @@ public class EventSummaryActivity extends ActivityGlobalAbstract implements Even
     }
 
     @Override
-    public void onStatusChanged(EventModel event) {
+    public void onStatusChanged(Event event) {
         Toast.makeText(this, getString(R.string.event_updated), Toast.LENGTH_SHORT).show();
         new Handler().postDelayed(this::finish, 1000);
     }
 
     @Override
-    public void setActionButton(EventModel eventModel) {
+    public void setActionButton(Event eventModel) {
         this.eventModel = eventModel;
 
     }
@@ -204,10 +188,9 @@ public class EventSummaryActivity extends ActivityGlobalAbstract implements Even
     @Override
     public void accessDataWrite(Boolean canWrite) {
 
-        if (DateUtils.getInstance().isEventExpired(null, eventModel.completedDate(), programModel.completeEventsExpiryDays())){
+        if (DateUtils.getInstance().isEventExpired(null, eventModel.completedDate(), program.completeEventsExpiryDays())) {
             binding.actionButton.setVisibility(View.GONE);
-        }
-        else {
+        } else {
             switch (eventModel.status()) {
                 case ACTIVE:
                     binding.actionButton.setText(getString(R.string.complete_and_close));
@@ -228,9 +211,6 @@ public class EventSummaryActivity extends ActivityGlobalAbstract implements Even
                     break;
             }
         }
-
-        if (!HelpManager.getInstance().isTutorialReadyForScreen(getClass().getName()))
-            setTutorial();
     }
 
     @Override
@@ -331,29 +311,15 @@ public class EventSummaryActivity extends ActivityGlobalAbstract implements Even
 
     @Override
     public void setTutorial() {
-        super.setTutorial();
-
-
         new Handler().postDelayed(() -> {
-            ArrayList<FancyShowCaseView> steps = new ArrayList<>();
-
-
-            FancyShowCaseView tuto1 = new FancyShowCaseView.Builder(getAbstractActivity())
-                    .title(getString(R.string.tuto_event_summary))
-                    .enableAutoTextPosition()
-                    .focusOn(binding.actionButton)
-                    .closeOnTouch(true)
-                    .focusShape(FocusShape.ROUNDED_RECTANGLE)
-                    .build();
-            steps.add(tuto1);
-
-            HelpManager.getInstance().setScreenHelp(getClass().getName(), steps);
-
-            if (!provider.sharedPreferences().getBoolean("TUTO_EVENT_SUMMARY", false) && !BuildConfig.DEBUG) {
-                HelpManager.getInstance().showHelp();
-                provider.sharedPreferences().putBoolean("TUTO_EVENT_SUMMARY", true);
+            if (binding.actionButton.getVisibility() == View.VISIBLE) {
+                HelpManager.getInstance().show(getActivity(), HelpManager.TutorialName.EVENT_SUMMARY, null);
             }
-
         }, 500);
+    }
+
+    @Override
+    public void showTutorial(boolean shaked) {
+        setTutorial();
     }
 }

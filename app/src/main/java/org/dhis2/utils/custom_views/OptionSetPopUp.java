@@ -61,7 +61,7 @@ public class OptionSetPopUp extends PopupMenu {
                             if (!optionGroupsToShow.isEmpty()) {
                                 for (String groupUid : optionGroupsToShow) {
                                     finalOptionsToShow.addAll(
-                                            UidsHelper.getUidsList(d2.optionModule().optionGroups.withOptions().uid(groupUid).get().options())
+                                            UidsHelper.getUidsList(d2.optionModule().optionGroups.withOptions().uid(groupUid).blockingGet().options())
                                     );
                                 }
                             }
@@ -69,7 +69,7 @@ public class OptionSetPopUp extends PopupMenu {
                             if (!optionGroupsToHide.isEmpty()) {
                                 for (String groupUid : optionGroupsToHide) {
                                     finalOptionsToHide.addAll(
-                                            UidsHelper.getUidsList(d2.optionModule().optionGroups.withOptions().uid(groupUid).get().options())
+                                            UidsHelper.getUidsList(d2.optionModule().optionGroups.withOptions().uid(groupUid).blockingGet().options())
                                     );
                                 }
                             }
@@ -82,7 +82,7 @@ public class OptionSetPopUp extends PopupMenu {
                                 optionRepository = optionRepository
                                         .byUid().notIn(finalOptionsToHide);
 
-                            return optionRepository.get();
+                            return optionRepository.blockingGet();
                         })
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
