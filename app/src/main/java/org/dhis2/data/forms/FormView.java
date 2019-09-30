@@ -17,6 +17,7 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityType;
 import org.hisp.dhis.rules.models.RuleActionErrorOnCompletion;
 import org.hisp.dhis.rules.models.RuleActionShowError;
 import org.hisp.dhis.rules.models.RuleActionWarningOnCompletion;
+import org.hisp.dhis.android.core.common.Unit;
 
 import java.util.Date;
 import java.util.List;
@@ -34,6 +35,9 @@ interface FormView {
 
     @NonNull
     Observable<Geometry> teiCoordinatesChanged();
+
+    @NonNull
+    Observable<Unit> reportCoordinatesCleared();
 
     @NonNull
     Observable<String> incidentDateChanged();

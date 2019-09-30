@@ -9,6 +9,7 @@ import android.view.View;
 import androidx.appcompat.widget.PopupMenu;
 import androidx.core.app.ActivityOptionsCompat;
 
+import org.dhis2.Bindings.ExtensionsKt;
 import org.dhis2.R;
 import org.dhis2.usescases.enrollment.EnrollmentActivity;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity;
@@ -24,19 +25,11 @@ import org.dhis2.usescases.teiDashboard.teiDataDetail.TeiDataDetailActivity;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.EventCreationType;
 import org.hisp.dhis.android.core.D2;
-import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.event.EventStatus;
-import org.hisp.dhis.android.core.fileresource.FileResource;
 import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.program.ProgramStage;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue;
-
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
@@ -81,24 +74,8 @@ class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
         this.compositeDisposable = new CompositeDisposable();
 
         compositeDisposable.add(
-                Observable.fromCallable(() -> {
-
-                    Iterator<TrackedEntityAttribute> iterator = d2.trackedEntityModule().trackedEntityAttributes.byValueType().eq(ValueType.IMAGE).blockingGet().iterator();
-                    List<String> attrUids = new ArrayList<>();
-                    while (iterator.hasNext())
-                        attrUids.add(iterator.next().uid());
-
-                    TrackedEntityAttributeValue attributeValue = d2.trackedEntityModule().trackedEntityAttributeValues
-                            .byTrackedEntityInstance().eq(teiUid)
-                            .byTrackedEntityAttribute().in(attrUids)
-                            .one().blockingGet();
-                    if (attributeValue != null && !isEmpty(attributeValue.value())) {
-                        FileResource fileResource = d2.fileResourceModule().fileResources.uid(attributeValue.value()).blockingGet();
-                        return fileResource!=null ? fileResource.path() : null;
-//                        return fileResource!=null ? fileResource.path()+"/"+fileResource.name(): null;
-                    } else
-                        throw new NullPointerException("No image attribute found");
-                })
+                d2.trackedEntityModule().trackedEntityInstances.uid(teiUid).get()
+                        .map(tei -> ExtensionsKt.profilePicturePath(tei, d2, programUid))
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(

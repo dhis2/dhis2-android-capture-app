@@ -329,9 +329,17 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             }
             return false;
         });
-        popupMenu.getMenu().getItem(0).setVisible(binding.mapView.getVisibility() == View.GONE && featureType != FeatureType.NONE);
-        popupMenu.getMenu().getItem(1).setVisible(binding.scrollView.getVisibility() == View.GONE && featureType != FeatureType.NONE);
-        popupMenu.show();
+
+        boolean messageIsVisible = binding.messageContainer.getVisibility() == View.VISIBLE;
+        boolean progressIsVisible = binding.progressLayout.getVisibility() == View.VISIBLE;
+        boolean mapIsVisible = binding.mapView.getVisibility() == View.VISIBLE;
+        boolean teiListIsVisible = binding.scrollView.getVisibility() == View.VISIBLE;
+
+
+        popupMenu.getMenu().getItem(0).setVisible(!messageIsVisible && !mapIsVisible && featureType != FeatureType.NONE);
+        popupMenu.getMenu().getItem(1).setVisible(!messageIsVisible && !teiListIsVisible && featureType != FeatureType.NONE);
+        if (!progressIsVisible)
+            popupMenu.show();
     }
 
     //endregion
@@ -657,9 +665,11 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                                     binding.mapLayerButton.setVisibility(View.VISIBLE);
                                     MapLayerManager.Companion.init(style, "teis", featureType);
                                     MapLayerManager.Companion.instance().setEnrollmentLayerData(
-                                            ColorUtils.getColorFrom(presenter.getProgram().style() != null ? presenter.getProgram().style().color() : null, ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.PRIMARY)),
+                                            presenter.getProgram() != null ?
+                                                    ColorUtils.getColorFrom(presenter.getProgram().style() != null ? presenter.getProgram().style().color() : null, ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.PRIMARY)) :
+                                                    ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.PRIMARY),
                                             ColorUtils.getPrimaryColor(this, ColorUtils.ColorType.PRIMARY_DARK),
-                                            presenter.getProgram().featureType() != null ? presenter.getProgram().featureType() : FeatureType.NONE
+                                            presenter.getProgram() != null ? presenter.getProgram().featureType() != null ? presenter.getProgram().featureType() : FeatureType.NONE : FeatureType.NONE
                                     );
                                     MapLayerManager.Companion.instance().showEnrollmentLayer().observe(this, show -> {
                                         if (show)

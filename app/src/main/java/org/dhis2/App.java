@@ -58,7 +58,7 @@ public class App extends MultiDexApplication implements Components {
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
     }
 
-    private static final String DATABASE_NAME = "dhis.db";
+    protected static final String DATABASE_NAME = "dhis.db";
 
     @NonNull
     @Singleton
@@ -66,11 +66,11 @@ public class App extends MultiDexApplication implements Components {
 
     @Nullable
     @PerServer
-    ServerComponent serverComponent;
+    protected ServerComponent serverComponent;
 
     @Nullable
     @PerUser
-    UserComponent userComponent;
+    protected UserComponent userComponent;
 
     @Nullable
     @PerActivity
@@ -143,7 +143,7 @@ public class App extends MultiDexApplication implements Components {
 
     }
 
-    private void setUpServerComponent() {
+    protected void setUpServerComponent() {
         boolean isLogged = D2Manager.setUp(ServerModule.getD2Configuration(this))
                 .andThen(
                         Single.defer(() -> {
@@ -162,7 +162,7 @@ public class App extends MultiDexApplication implements Components {
     }
 
 
-    private void setUpUserComponent() {
+    protected void setUpUserComponent() {
         UserManager userManager = serverComponent == null
                 ? null : serverComponent.userManager();
         if (userManager != null && userManager.isUserLoggedIn().blockingFirst()) {

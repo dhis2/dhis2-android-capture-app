@@ -19,7 +19,7 @@ import dagger.Provides;
  * QUADRAM. Created by ppajuelo on 10/10/2017.
  */
 @Module
-public final class AppModule {
+public class AppModule {
 
     private final App application;
 

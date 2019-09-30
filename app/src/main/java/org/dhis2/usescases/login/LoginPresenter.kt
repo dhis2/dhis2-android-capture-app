@@ -1,19 +1,17 @@
 package org.dhis2.usescases.login
 
 import android.content.Context
-import android.content.DialogInterface
 import android.content.Intent
 import android.os.Build
 import android.view.View
-import androidx.core.app.ActivityCompat
-import com.github.pwittchen.rxbiometric.library.RxBiometric
-import com.github.pwittchen.rxbiometric.library.validation.RxPreconditions
+import co.infinum.goldfinger.rx.RxGoldfinger
 import de.adorsys.android.securestoragelibrary.SecurePreferences
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import org.dhis2.App
+import org.dhis2.BuildConfig
 import org.dhis2.R
 import org.dhis2.data.prefs.Preference
 import org.dhis2.data.server.UserManager
@@ -30,16 +28,21 @@ import timber.log.Timber
 
 class LoginPresenter : LoginContracts.Presenter {
 
+    override fun stopReadingFingerprint() {
+        goldfinger.cancel()
+    }
+
     private lateinit var view: LoginContracts.View
     private var userManager: UserManager? = null
     private lateinit var disposable: CompositeDisposable
 
     private var canHandleBiometrics: Boolean? = null
+    private lateinit var goldfinger: RxGoldfinger
 
     override fun init(view: LoginContracts.View) {
         this.view = view
         this.disposable = CompositeDisposable()
-
+        goldfinger = RxGoldfinger.Builder(view.context).setLogEnabled(BuildConfig.DEBUG).build()
         if ((view.context.applicationContext as App).serverComponent != null)
             userManager = (view.context.applicationContext as App).serverComponent.userManager()
 
@@ -79,8 +82,9 @@ class LoginPresenter : LoginContracts.Presenter {
 
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
-            disposable.add(RxPreconditions
-                    .hasBiometricSupport(view.context)
+
+            disposable.add(
+                    Observable.just(goldfinger.hasEnrolledFingerprint())
                     .filter { canHandleBiometrics ->
                         this.canHandleBiometrics = canHandleBiometrics
                         canHandleBiometrics && SecurePreferences.contains(Constants.SECURE_SERVER_URL)
@@ -193,19 +197,20 @@ class LoginPresenter : LoginContracts.Presenter {
     }
 
     override fun onFingerprintClick() {
+        view.showFingerprintDialog()
         disposable.add(
-                RxBiometric
-                        .title("Title")
-                        .description("description")
-                        .negativeButtonText("Cancel")
-                        .negativeButtonListener(DialogInterface.OnClickListener { _, _ -> })
-                        .executor(ActivityCompat.getMainExecutor(view.abstractActivity))
-                        .build()
-                        .authenticate(view.abstractActivity)
+                goldfinger
+                        .authenticate()
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
-                                { view.checkSecuredCredentials() },
-                                { view.displayMessage("AUTH ERROR") }))
+                                {
+                                    credentials ->
+                                        view.checkSecuredCredentials(credentials)
+                                },
+                                {
+                                    view.displayMessage("AUTH ERROR")
+                                    view.hideFingerprintDialog()
+                                }))
     }
 
     override fun onAccountRecovery() {

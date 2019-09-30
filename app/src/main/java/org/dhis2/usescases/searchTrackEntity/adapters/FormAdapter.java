@@ -201,7 +201,7 @@ public class FormAdapter extends RecyclerView.Adapter {
                 case URL:
                     return EDITTEXT;
                 case LONG_TEXT:
-                    return LONG_TEXT;
+                    return EDITTEXT;
                 case TIME:
                     return TIME;
                 case DATE:

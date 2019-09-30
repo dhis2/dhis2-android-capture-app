@@ -40,6 +40,7 @@ import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.Geometry
 import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
+import org.hisp.dhis.android.core.fileresource.internal.FileResourceUtil
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue
@@ -159,7 +160,7 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentContract.View {
             }
             Constants.CAMERA_REQUEST -> {
                 if (resultCode == Activity.RESULT_OK) {
-                    val file = File(FileResourcesUtil.getUploadDirectory(this), "tempFile.png")
+                    val file = File(FileResourceUtil.getFileResourceDirectory(this), "tempFile.png")
                     if (file.exists()) {
                         presenter.saveValue(uuid, file.path)
                     } else

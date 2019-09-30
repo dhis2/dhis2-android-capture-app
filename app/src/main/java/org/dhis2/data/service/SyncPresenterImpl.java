@@ -71,7 +71,7 @@ final class SyncPresenterImpl implements SyncPresenter {
 
     @Override
     public void syncAndDownloadDataValues() {
-        if(!d2.dataSetModule().dataSets.blockingIsEmpty()) {
+        if (!d2.dataSetModule().dataSets.blockingIsEmpty()) {
             Completable.fromObservable(d2.dataValueModule().dataValues.upload())
                     .andThen(
                             Completable.fromObservable(d2.dataSetModule().dataSetCompleteRegistrations.upload()))
@@ -85,6 +85,17 @@ final class SyncPresenterImpl implements SyncPresenter {
         Completable.fromObservable(d2.metadataModule().download()
                 .doOnNext(data -> progressUpdate.onProgressUpdate((int) Math.ceil(data.percentage()))))
                 .blockingAwait();
+    }
+
+    @Override
+    public void uploadResources() {
+        Completable.fromObservable(d2.fileResourceModule().download())
+                .blockingAwait();
+    }
+
+    @Override
+    public void downloadResources() {
+        d2.fileResourceModule().blockingDownload();
     }
 
     @Override
