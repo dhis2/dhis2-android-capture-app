@@ -12,6 +12,7 @@ import androidx.core.app.ActivityOptionsCompat;
 import org.dhis2.Bindings.ExtensionsKt;
 import org.dhis2.R;
 import org.dhis2.usescases.enrollment.EnrollmentActivity;
+import org.dhis2.usescases.events.ScheduledEventActivity;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity;
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity;
 import org.dhis2.usescases.qrCodes.QrActivity;
@@ -275,13 +276,13 @@ class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
                 dashboardModel.getTrackedEntityAttributeValueBySortOrder(2) != null ? dashboardModel.getTrackedEntityAttributeValueBySortOrder(2) : "",
                 dashboardModel.getCurrentProgram() != null ? dashboardModel.getCurrentProgram().displayName() : view.getContext().getString(R.string.dashboard_overview)
         );
-
-        Intent intent = new Intent(view.getContext(), EventDetailActivity.class);
+        Intent intent = ScheduledEventActivity.Companion.getIntent(view.getContext(),uid);
+        /*Intent intent = new Intent(view.getContext(), EventDetailActivity.class);
         Bundle extras = new Bundle();
         extras.putString("EVENT_UID", uid);
         extras.putString("TOOLBAR_TITLE", title);
         extras.putString("TEI_UID", teiUid);
-        intent.putExtras(extras);
+        intent.putExtras(extras);*/
         ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(view.getAbstractActivity(), sharedView, "shared_view");
         view.openEventDetails(intent, options.toBundle());
     }

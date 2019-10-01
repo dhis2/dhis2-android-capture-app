@@ -128,6 +128,7 @@
         <activity android:name=".usescases.org_unit_selector.OUTreeActivity" />
         <activity android:name=".usescases.enrollment.EnrollmentActivity"
             android:windowSoftInputMode="adjustPan"/>
+        <activity android:name=".usescases.events.ScheduledEventActivity" />
     </application>
 
 </manifest>
