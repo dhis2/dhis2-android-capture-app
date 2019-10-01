@@ -54,8 +54,8 @@ public class SmsSendingService extends Service {
 
     @Override
     public void onCreate() {
-        super.onCreate();
         ((App) getApplicationContext()).userComponent().plus(new SmsModule()).inject(this);
+        super.onCreate();
         disposables = new CompositeDisposable();
     }
 

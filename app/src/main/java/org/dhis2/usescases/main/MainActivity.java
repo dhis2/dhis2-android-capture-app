@@ -93,7 +93,7 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
             changeFragment(item.getItemId());
             return false;
         });
-        analyticsHelper.setEvent("sale", "algo", "o que");
+
         binding.pinLayout.pinLockView.attachIndicatorDots(binding.pinLayout.indicatorDots);
         binding.pinLayout.pinLockView.setPinLockListener(new PinLockListener() {
             @Override

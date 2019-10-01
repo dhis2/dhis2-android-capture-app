@@ -78,7 +78,7 @@ public class SyncStatusDialog extends BottomSheetDialogFragment {
     private String attributeComboDataValue;
     private String periodIdDataValue;
     private FlowableProcessor processor;
-    @Inject
+
     public AnalyticsHelper analyticsHelper;
 
     public enum ConflictType {
@@ -86,22 +86,24 @@ public class SyncStatusDialog extends BottomSheetDialogFragment {
     }
 
     @SuppressLint("ValidFragment")
-    public SyncStatusDialog(String recordUid, ConflictType conflictType, FlowableProcessor processor) {
+    public SyncStatusDialog(String recordUid, ConflictType conflictType, FlowableProcessor processor, AnalyticsHelper analyticsHelper) {
         this.recordUid = recordUid;
         this.conflictType = conflictType;
         this.compositeDisposable = new CompositeDisposable();
         this.processor = processor;
+        this.analyticsHelper = analyticsHelper;
     }
 
     @SuppressLint("ValidFragment")
     public SyncStatusDialog(String orgUnitDataValue, String attributeComboDataValue, String periodIdDataValue,
-                            ConflictType conflictType, FlowableProcessor processor) {
+                            ConflictType conflictType, FlowableProcessor processor, AnalyticsHelper analyticsHelper) {
         this.orgUnitDataValue = orgUnitDataValue;
         this.attributeComboDataValue = attributeComboDataValue;
         this.periodIdDataValue = periodIdDataValue;
         this.conflictType = conflictType;
         this.compositeDisposable = new CompositeDisposable();
         this.processor = processor;
+        this.analyticsHelper = analyticsHelper;
     }
 
     @Override
@@ -114,8 +116,6 @@ public class SyncStatusDialog extends BottomSheetDialogFragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.sync_bottom_dialog, container, false);
-        if(((App)getApplicationContext()).serverComponent()!=null)
-            analyticsHelper.setD2(((App)getApplicationContext()).serverComponent().userManager().getD2());
         adapter = new SyncConflictAdapter(new ArrayList<>());
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         binding.synsStatusRecycler.setLayoutManager(layoutManager);

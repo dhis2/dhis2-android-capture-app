@@ -3,8 +3,11 @@ package org.dhis2.usescases.main.program;
 import androidx.annotation.NonNull;
 
 import org.hisp.dhis.android.core.D2;
+import org.hisp.dhis.android.core.arch.helpers.UidsHelper;
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope;
+import org.hisp.dhis.android.core.category.CategoryOptionCombo;
 import org.hisp.dhis.android.core.common.State;
+import org.hisp.dhis.android.core.dataelement.DataElement;
 import org.hisp.dhis.android.core.dataset.DataSetCompleteRegistration;
 import org.hisp.dhis.android.core.dataset.DataSetInstance;
 import org.hisp.dhis.android.core.dataset.DataSetInstanceCollectionRepository;
@@ -60,7 +63,20 @@ class HomeRepositoryImpl implements HomeRepository {
                             State state = State.SYNCED;
 
                             for (DataSetElement dataSetElement : dataSet.dataSetElements()) {
-                                for (DataValue dataValue : d2.dataValueModule().dataValues.byDataElementUid().eq(dataSetElement.dataElement().uid()).blockingGet()) {
+                                DataElement dataElement = d2.dataElementModule().dataElements.uid(dataSetElement.dataElement().uid()).blockingGet();
+                                List<String> categoryOptionCombos;
+                                if(dataSetElement.categoryCombo() != null)
+                                    categoryOptionCombos = UidsHelper.getUidsList(
+                                            d2.categoryModule().categoryCombos.withCategoryOptionCombos().uid(dataSetElement.categoryCombo().uid()).blockingGet().categoryOptionCombos());
+                                else
+                                    categoryOptionCombos = UidsHelper.getUidsList(
+                                            d2.categoryModule().categoryCombos.withCategoryOptionCombos().uid(dataElement.categoryComboUid()).blockingGet().categoryOptionCombos());
+                                List<String> attributeOptionCombos = UidsHelper.getUidsList(
+                                        d2.categoryModule().categoryCombos.withCategoryOptionCombos().uid(dataSet.categoryCombo().uid()).blockingGet().categoryOptionCombos()
+                                );
+                                for (DataValue dataValue : d2.dataValueModule().dataValues.byAttributeOptionComboUid().in(attributeOptionCombos)
+                                        .byCategoryOptionComboUid().in(categoryOptionCombos)
+                                        .byDataElementUid().eq(dataSetElement.dataElement().uid()).blockingGet()) {
                                     if (dataValue.state() != State.SYNCED)
                                         state = State.TO_UPDATE;
                                 }
