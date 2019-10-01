@@ -92,7 +92,7 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         FirebaseAnalytics mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
 
-        if(((App)getApplicationContext()).serverComponent()!=null)
+        if(((App)getApplicationContext()).serverComponent()!=null && analyticsHelper() != null)
             analyticsHelper().setD2(((App)getApplicationContext()).serverComponent().userManager().getD2());
 
         if (!getResources().getBoolean(R.bool.is_tablet))
@@ -418,14 +418,14 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
 
     @Override
     public void showSyncDialog(String programUid, SyncStatusDialog.ConflictType conflictType, FlowableProcessor processor) {
-        new SyncStatusDialog(programUid, conflictType, processor)
+        new SyncStatusDialog(programUid, conflictType, processor, analyticsHelper)
                 .show(getSupportFragmentManager(), programUid);
     }
 
     @Override
     public void showSyncDialog(String orgUnit, String attributeCombo, String periodId,
                                SyncStatusDialog.ConflictType conflictType, FlowableProcessor processor) {
-        new SyncStatusDialog(orgUnit,attributeCombo, periodId, conflictType, processor)
+        new SyncStatusDialog(orgUnit,attributeCombo, periodId, conflictType, processor, analyticsHelper)
                 .show(getSupportFragmentManager(), attributeCombo);
     }
 
