@@ -49,9 +49,9 @@ public class DataSetInitialActivity extends ActivityGlobalAbstract implements Da
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
         dataSetUid = getIntent().getStringExtra(Constants.DATA_SET_UID);
         ((App) getApplicationContext()).userComponent().plus(new DataSetInitialModule(dataSetUid)).inject(this);
+        super.onCreate(savedInstanceState);
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_dataset_initial);
         binding.setPresenter(presenter);

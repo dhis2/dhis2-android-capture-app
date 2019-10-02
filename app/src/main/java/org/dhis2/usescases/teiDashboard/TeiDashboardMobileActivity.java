@@ -50,6 +50,9 @@ import javax.inject.Inject;
 
 import timber.log.Timber;
 
+import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
+import static org.dhis2.utils.analytics.AnalyticsConstants.SHOW_HELP;
+
 /**
  * QUADRAM. Created by ppajuelo on 29/11/2017.
  */
@@ -297,8 +300,6 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
                         data.getStringExtra("GO_TO_ENROLLMENT_PROGRAM"),
                         EnrollmentActivity.EnrollmentMode.NEW);
                 startActivity(intent);
-               /* FormViewArguments formViewArguments = FormViewArguments.createForEnrollment(data.getStringExtra("GO_TO_ENROLLMENT"));
-                startActivity(FormActivity.create(this, formViewArguments, true));*/
                 finish();
             }
 
@@ -428,6 +429,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
         popupMenu.setOnMenuItemClickListener(item -> {
             switch (item.getItemId()) {
                 case R.id.showHelp:
+                    analyticsHelper().setEvent(SHOW_HELP, CLICK, SHOW_HELP);
                     showTutorial(true);
                     break;
                 case R.id.deleteTei:

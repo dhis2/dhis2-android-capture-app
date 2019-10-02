@@ -40,6 +40,7 @@ import org.dhis2.utils.*
 import org.dhis2.utils.Constants.ACCOUNT_RECOVERY
 import org.dhis2.utils.Constants.RQ_QR_SCANNER
 import org.dhis2.utils.WebViewActivity.Companion.WEB_VIEW_URL
+import org.dhis2.utils.analytics.*
 import timber.log.Timber
 import java.io.BufferedReader
 import java.io.InputStreamReader
@@ -89,12 +90,16 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
         super.onCreate(savedInstanceState)
         loginViewModel = ViewModelProviders.of(this).get(LoginViewModel::class.java)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_login)
+
         binding.presenter = presenter
         binding.loginModel = loginViewModel
         setLoginVisibility(false)
 
         binding.pinLayout.forgotCode.visibility = View.VISIBLE
-        binding.pinLayout.forgotCode.setOnClickListener { binding.pinLayout.root.visibility = View.GONE }
+        binding.pinLayout.forgotCode.setOnClickListener {
+            analyticsHelper.setEvent(FORGOT_CODE, CLICK, FORGOT_CODE)
+            binding.pinLayout.root.visibility = View.GONE
+        }
 
         loginViewModel.isDataComplete.observe(this, Observer<Boolean> { this.setLoginVisibility(it) })
         loginViewModel.isTestingEnvironment.observe(this, Observer<Trio<String, String, String>> { testingEnvironment ->
@@ -276,6 +281,7 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
         binding.pinLayout.pinLockView.attachIndicatorDots(binding.pinLayout.indicatorDots)
         binding.pinLayout.pinLockView.setPinLockListener(object : PinLockListener {
             override fun onComplete(pin: String) {
+                analyticsHelper.setEvent(UNLOCK_SESSION, CLICK, UNLOCK_SESSION)
                 presenter.unlockSession(pin)
             }
 

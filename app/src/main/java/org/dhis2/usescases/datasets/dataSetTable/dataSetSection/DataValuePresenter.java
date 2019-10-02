@@ -36,6 +36,9 @@ import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
+import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
+import static org.dhis2.utils.analytics.AnalyticsConstants.COMPLETE_REOPEN;
+
 public class DataValuePresenter implements DataValueContract.Presenter {
 
     private String orgUnitUid;
@@ -358,6 +361,7 @@ public class DataValuePresenter implements DataValueContract.Presenter {
     @Override
     public void complete() {
         if (!isApproval) {
+            view.analyticsHelper().setEvent(COMPLETE_REOPEN, CLICK, COMPLETE_REOPEN);
             if (view.isOpenOrReopen()) {
                 if (((!dataSet.fieldCombinationRequired()) || checkAllFieldRequired() && dataSet.fieldCombinationRequired())
                         && checkMandatoryField())

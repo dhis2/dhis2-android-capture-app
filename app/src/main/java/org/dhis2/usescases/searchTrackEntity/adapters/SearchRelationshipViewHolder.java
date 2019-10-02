@@ -37,7 +37,7 @@ public class SearchRelationshipViewHolder extends RecyclerView.ViewHolder {
 
         setTEIData(teiModel.getAttributeValues());
         binding.executePendingBindings();
-        itemView.setOnClickListener(view -> presenter.addRelationship(teiModel.getTei().uid(), teiModel.isOnline()));
+        itemView.setOnClickListener(view -> presenter.addRelationship(teiModel.getTei().uid(), null, teiModel.isOnline()));
 
         binding.trackedEntityImage.setBackground(AppCompatResources.getDrawable(itemView.getContext(), R.drawable.photo_temp_gray));
         File file = new File(teiModel.getProfilePicturePath());

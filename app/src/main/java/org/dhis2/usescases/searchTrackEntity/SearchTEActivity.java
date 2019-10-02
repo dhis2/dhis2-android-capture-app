@@ -109,6 +109,9 @@ import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconOffset;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.lineColor;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.lineWidth;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.textAllowOverlap;
+import static org.dhis2.utils.analytics.AnalyticsConstants.CHANGE_PROGRAM;
+import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
+import static org.dhis2.utils.analytics.AnalyticsConstants.SHOW_HELP;
 
 /**
  * QUADRAM. Created by ppajuelo on 02/11/2017 .
@@ -312,6 +315,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         popupMenu.setOnMenuItemClickListener(item -> {
             switch (item.getItemId()) {
                 case R.id.showHelp:
+                    analyticsHelper().setEvent(SHOW_HELP, CLICK, SHOW_HELP);
                     showTutorial(false);
                     break;
                 case R.id.menu_list:
@@ -462,6 +466,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int pos, long id) {
                 if (pos > 0) {
+                    analyticsHelper().setEvent(CHANGE_PROGRAM, CLICK , CHANGE_PROGRAM);
                     Program selectedProgram = (Program) adapterView.getItemAtPosition(pos - 1);
                     setProgramColor(presenter.getProgramColor(selectedProgram.uid()));
                     presenter.setProgram((Program) adapterView.getItemAtPosition(pos - 1));
@@ -739,7 +744,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
     @Override
     public Consumer<D2Progress> downloadProgress() {
-        return progress -> Snackbar.make(binding.getRoot(), String.format("Downloading %s", String.valueOf(progress.percentage())) + "%", Snackbar.LENGTH_SHORT);
+        return progress -> Snackbar.make(binding.getRoot(), String.format("Downloading %s", String.valueOf(progress.percentage())) + "%", Snackbar.LENGTH_SHORT).show();
     }
 
     private void setSource(Style style, HashMap<String, FeatureCollection> featCollectionMap) {

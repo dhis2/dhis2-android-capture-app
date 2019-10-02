@@ -65,6 +65,10 @@ import io.reactivex.schedulers.Schedulers;
 import rx.exceptions.OnErrorNotImplementedException;
 import timber.log.Timber;
 
+import static org.dhis2.utils.analytics.AnalyticsConstants.BACK_EVENT;
+import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
+import static org.dhis2.utils.analytics.AnalyticsConstants.CREATE_EVENT;
+
 /**
  * QUADRAM. Created by Cristian on 01/03/2018.
  */
@@ -251,6 +255,8 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
 
     @Override
     public void onBackClick() {
+        if(eventId != null)
+            view.analyticsHelper().setEvent(BACK_EVENT, CLICK, CREATE_EVENT);
         view.back();
     }
 

@@ -37,6 +37,10 @@ import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
+import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
+import static org.dhis2.utils.analytics.AnalyticsConstants.SYNC_DATA_NOW;
+import static org.dhis2.utils.analytics.AnalyticsConstants.SYNC_METADATA_NOW;
+
 /**
  * QUADRAM. Created by lmartin on 21/03/2018.
  */
@@ -159,6 +163,7 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
     @Override
     public void syncData() {
         view.syncData();
+        view.analyticsHelper().setEvent(SYNC_DATA_NOW, CLICK, SYNC_DATA_NOW);
         OneTimeWorkRequest.Builder syncDataBuilder = new OneTimeWorkRequest.Builder(SyncDataWorker.class);
         syncDataBuilder.addTag(Constants.DATA_NOW);
         syncDataBuilder.setConstraints(new Constraints.Builder()
@@ -175,6 +180,7 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
     @Override
     public void syncMeta() {
         view.syncMeta();
+        view.analyticsHelper().setEvent(SYNC_METADATA_NOW, CLICK, SYNC_METADATA_NOW);
         OneTimeWorkRequest.Builder syncDataBuilder = new OneTimeWorkRequest.Builder(SyncMetadataWorker.class);
         syncDataBuilder.addTag(Constants.META_NOW);
         syncDataBuilder.setConstraints(new Constraints.Builder()

@@ -233,6 +233,7 @@
                     android:layout_height="40dp"
                     android:paddingTop="8dp"
                     android:visibility="gone"
+                    tools:visibility="visible"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent">

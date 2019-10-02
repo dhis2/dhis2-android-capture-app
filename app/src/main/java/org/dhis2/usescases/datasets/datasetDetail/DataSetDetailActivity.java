@@ -55,8 +55,8 @@ public class DataSetDetailActivity extends ActivityGlobalAbstract implements Dat
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
         ((App) getApplicationContext()).userComponent().plus(new DataSetDetailModule(getIntent().getStringExtra("DATASET_UID"))).inject(this);
+        super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_dataset_detail);
 
         chosenDateWeek.add(new Date());
