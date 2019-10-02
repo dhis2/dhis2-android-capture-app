@@ -744,7 +744,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
     @Override
     public Consumer<D2Progress> downloadProgress() {
-        return progress -> Snackbar.make(binding.getRoot(), String.format("Downloading %s", String.valueOf(progress.percentage())) + "%", Snackbar.LENGTH_SHORT);
+        return progress -> Snackbar.make(binding.getRoot(), String.format("Downloading %s", String.valueOf(progress.percentage())) + "%", Snackbar.LENGTH_SHORT).show();
     }
 
     private void setSource(Style style, HashMap<String, FeatureCollection> featCollectionMap) {

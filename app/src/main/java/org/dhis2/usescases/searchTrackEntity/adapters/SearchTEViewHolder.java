@@ -21,9 +21,7 @@ import org.dhis2.data.tuples.Trio;
 import org.dhis2.databinding.ItemSearchTrackedEntityBinding;
 import org.dhis2.usescases.searchTrackEntity.SearchTEContractsModule;
 import org.dhis2.utils.ColorUtils;
-import org.dhis2.utils.FileResourcesUtil;
 import org.dhis2.utils.ObjectStyleUtils;
-import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue;
 
@@ -73,14 +71,7 @@ public class SearchTEViewHolder extends RecyclerView.ViewHolder {
 
         binding.executePendingBindings();
 
-        itemView.setOnClickListener(view -> {
-          /*  if ((searchTeiModel.getTei().deleted() != null && searchTeiModel.getTei().deleted()) ||
-                    (searchTeiModel.getSelectedEnrollment() != null &&
-                            (searchTeiModel.getSelectedEnrollment().deleted() && searchTeiModel.getSelectedEnrollment().deleted())))
-                Toast.makeText(itemView.getContext(), itemView.getContext().getString(R.string.record_marked_for_deletion), Toast.LENGTH_SHORT).show();
-            else*///TODO: DELETED RECORDS DO NOT APPEAR IN THE LIST
-                presenter.onTEIClick(searchTeiModel.getTei().uid(), searchTeiModel.isOnline());
-        });
+        itemView.setOnClickListener(view -> presenter.onTEIClick(searchTeiModel.getTei().uid(), searchTeiModel.isOnline()));
 
         File file = new File(searchTeiModel.getProfilePicturePath());
         Drawable placeHolderId = ObjectStyleUtils.getIconResource(itemView.getContext(), searchTeiModel.getDefaultTypeIcon(), R.drawable.photo_temp_gray);
@@ -104,7 +95,6 @@ public class SearchTEViewHolder extends RecyclerView.ViewHolder {
     }
 
     private void setEnrollment(List<Enrollment> enrollments) {
-//        binding.linearLayout.removeAllViews();
         boolean isFollowUp = false;
         for (Enrollment enrollment : enrollments) {
             if (enrollment.followUp() != null && enrollment.followUp())
@@ -120,8 +110,7 @@ public class SearchTEViewHolder extends RecyclerView.ViewHolder {
 
         Context parentContext = binding.chipContainer.getContext();
         for (Trio<String, String, String> enrollmentInfo : enrollmentsInfo) {
-            if (/*binding.chipContainer.getChildCount() < 2 &&*/
-                    (binding.getPresenter().getProgram() == null || !binding.getPresenter().getProgram().displayName().equals(enrollmentInfo.val0()))) {
+            if (binding.getPresenter().getProgram() == null || !binding.getPresenter().getProgram().displayName().equals(enrollmentInfo.val0())) {
 
                 Chip chip = new Chip(parentContext);
                 chip.setText(enrollmentInfo.val0());

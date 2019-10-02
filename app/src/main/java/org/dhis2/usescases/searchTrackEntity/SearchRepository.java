@@ -43,11 +43,11 @@ public interface SearchRepository {
 
     @NonNull
     Flowable<List<SearchTeiModel>> searchTeiForMap(@Nullable Program selectedProgram,
-                                                        @NonNull String trackedEntityType,
-                                                        @NonNull List<String> orgUnits,
-                                                        @Nonnull List<State> states,
-                                                        @Nullable HashMap<String, String> queryData,
-                                                        boolean isOnline);
+                                                   @NonNull String trackedEntityType,
+                                                   @NonNull List<String> orgUnits,
+                                                   @Nonnull List<State> states,
+                                                   @Nullable HashMap<String, String> queryData,
+                                                   boolean isOnline);
 
     @NonNull
     Observable<Pair<String, String>> saveToEnroll(@NonNull String teiType, @NonNull String orgUnitUID, @NonNull String programUid, @Nullable String teiUid, HashMap<String, String> queryDatam, Date enrollmentDate);
@@ -59,6 +59,4 @@ public interface SearchRepository {
     Observable<List<TrackedEntityAttribute>> trackedEntityTypeAttributes();
 
     Observable<TrackedEntityType> getTrackedEntityType(String trackedEntityUid);
-
-    Observable<List<OrganisationUnit>> getOrganisationUnits();
 }
