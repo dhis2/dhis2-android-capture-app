@@ -136,22 +136,25 @@ public class AgeView extends FieldLayout implements View.OnClickListener, View.O
 
     protected void handleSingleInputs(boolean finish) {
 
-        Calendar calendar = Calendar.getInstance();
+        if (!isEmpty(day.getText()) && !isEmpty(month.getText()) && !isEmpty(year.getText())) {
+            Calendar calendar = Calendar.getInstance();
 
-        calendar.add(Calendar.DAY_OF_MONTH, isEmpty(day.getText().toString()) ? 0 : -Integer.valueOf(day.getText().toString()));
-        calendar.add(Calendar.MONTH, isEmpty(month.getText().toString()) ? 0 : -Integer.valueOf(month.getText().toString()));
-        calendar.add(Calendar.YEAR, isEmpty(year.getText().toString()) ? 0 : -Integer.valueOf(year.getText().toString()));
-        calendar.set(Calendar.HOUR_OF_DAY, 0);
-        calendar.set(Calendar.MINUTE, 0);
-        calendar.set(Calendar.SECOND, 0);
-        calendar.set(Calendar.MILLISECOND, 0);
+            calendar.add(Calendar.DAY_OF_MONTH, isEmpty(day.getText().toString()) ? 0 : -Integer.valueOf(day.getText().toString()));
+            calendar.add(Calendar.MONTH, isEmpty(month.getText().toString()) ? 0 : -Integer.valueOf(month.getText().toString()));
+            calendar.add(Calendar.YEAR, isEmpty(year.getText().toString()) ? 0 : -Integer.valueOf(year.getText().toString()));
+            calendar.set(Calendar.HOUR_OF_DAY, 0);
+            calendar.set(Calendar.MINUTE, 0);
+            calendar.set(Calendar.SECOND, 0);
+            calendar.set(Calendar.MILLISECOND, 0);
 
-        String birthDate = DateUtils.uiDateFormat().format(calendar.getTime());
-        if (!date.getText().toString().equals(birthDate)) {
-            date.setText(birthDate);
-            if (finish)
-                listener.onAgeSet(calendar.getTime());
-        }
+            String birthDate = DateUtils.uiDateFormat().format(calendar.getTime());
+            if (!date.getText().toString().equals(birthDate)) {
+                date.setText(birthDate);
+                if (finish)
+                    listener.onAgeSet(calendar.getTime());
+            }
+        } else if (finish)
+            listener.onAgeSet(null);
     }
 
     protected void handleDateInput(View view, int year1, int month1, int day1) {
@@ -194,7 +197,7 @@ public class AgeView extends FieldLayout implements View.OnClickListener, View.O
                 Timber.e(e);
             }
 
-        if(initialDate != null) {
+        if (initialDate != null) {
             String result = dateFormat.format(initialDate);
 
             int[] dateDifference = DateUtils.getDifference(initialDate, Calendar.getInstance().getTime());

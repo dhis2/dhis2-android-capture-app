@@ -232,16 +232,17 @@ public class DataValuePresenter implements DataValueContract.Presenter {
                 for (DataSetTableModel dataValue : dataTableModel.dataValues())
                     if (dataValue.dataElement().equals(dataElement.uid()) && dataValue.categoryOptionCombo().equals(categoryOptionCombo.uid())) {
 
-                        fieldViewModel = fieldFactory.create(dataValue.id().toString(), "", dataElement.valueType(),
+                        fieldViewModel = fieldFactory.create(dataValue.id().toString(), dataElement.displayFormName(), dataElement.valueType(),
                                 false, dataElement.optionSetUid(), dataValue.value(), sectionName, true,
-                                editable, null, null, dataElement.uid(), new ArrayList<>(), "android",
+                                editable, null, categoryOptionCombo.displayName(), dataElement.uid(), new ArrayList<>(), "android",
                                 row, column, dataValue.categoryOptionCombo(), dataValue.catCombo());
                     }
 
+
                 if (fieldViewModel == null)
-                    fieldViewModel = fieldFactory.create("", "", dataElement.valueType(),
+                    fieldViewModel = fieldFactory.create("", dataElement.displayFormName(), dataElement.valueType(),
                             false, dataElement.optionSetUid(), "", sectionName, true,
-                            editable, null, null, dataElement.uid(), new ArrayList<>(),
+                            editable, null, categoryOptionCombo.displayName(), dataElement.uid(), new ArrayList<>(),
                             "android", row, column, categoryOptionCombo.uid(), dataTableModel.catCombo().uid());
 
                 fields.add(fieldViewModel);
@@ -454,6 +455,7 @@ public class DataValuePresenter implements DataValueContract.Presenter {
                         dataTableModel.dataValues().add(dataSetTableModel);
                     }
 
+                    dataSetSectionFragment.updateData(rowAction, dataSetTableModel.catCombo());
                     return repository.updateValue(dataSetTableModel).toFlowable();
                 })
                 .subscribeOn(Schedulers.io())

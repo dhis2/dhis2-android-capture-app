@@ -133,8 +133,8 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
 
         tableView.setAdapter(adapter);
         tableView.setHeaderCount(columnHeaders.size());
-        tableView.setHeadersColor(ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.PRIMARY_LIGHT));
-        tableView.setShadowColor(ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.PRIMARY_DARK));
+        /*tableView.setHeadersColor(ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.PRIMARY_LIGHT));
+        tableView.setShadowColor(ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.PRIMARY_DARK));*/
 
         adapter.swap(fields);
 
@@ -243,6 +243,12 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
 
     public FlowableProcessor<Trio<String, String, Integer>> optionSetActions() {
         return adapters.get(0).asFlowableOptionSet();
+    }
+
+    public void updateData(RowAction rowAction, String catCombo) {
+        for (DataSetTableAdapter adapter : adapters)
+            if (adapter.getCatCombo().equals(catCombo))
+                adapter.updateValue(rowAction);
     }
 
     @Override

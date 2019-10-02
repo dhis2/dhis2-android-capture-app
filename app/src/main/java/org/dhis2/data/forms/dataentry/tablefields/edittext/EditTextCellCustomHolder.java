@@ -10,6 +10,9 @@ import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 
+import androidx.annotation.NonNull;
+import androidx.databinding.ObservableBoolean;
+
 import com.evrencoskun.tableview.TableView;
 
 import org.dhis2.R;
@@ -17,17 +20,13 @@ import org.dhis2.data.forms.dataentry.tablefields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.tablefields.FormViewHolder;
 import org.dhis2.data.forms.dataentry.tablefields.RowAction;
 import org.dhis2.databinding.CustomTextViewCellBinding;
+import org.dhis2.utils.DialogClickListener;
+import org.dhis2.utils.custom_views.TableFieldDialog;
 import org.hisp.dhis.android.core.common.ValueType;
-
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
-import androidx.databinding.ObservableBoolean;
 
 import java.util.ArrayList;
 
 import io.reactivex.processors.FlowableProcessor;
-
-import static android.text.TextUtils.isEmpty;
 
 
 /**
@@ -72,7 +71,7 @@ final class EditTextCellCustomHolder extends FormViewHolder {
         this.editTextModel = (EditTextModel) model;
         setInputType(editTextModel.valueType());
 
-        customBinding.inputEditText.setText(value);
+        customBinding.inputEditText.setText(model.value());
 
         if (editTextModel.mandatory())
             customBinding.icMandatory.setVisibility(View.VISIBLE);
@@ -85,13 +84,13 @@ final class EditTextCellCustomHolder extends FormViewHolder {
             } else {
                 customBinding.inputEditText.setEnabled(false);
             }
-        }else {
+        } else {
             customBinding.inputEditText.setEnabled(false);
-            if(editTextModel.dataElement().isEmpty())
+            if (editTextModel.dataElement().isEmpty())
                 customBinding.inputEditText.setActivated(true);
         }
 
-        if(editTextModel.column()!=((ArrayList) tableView.getAdapter().getCellRecyclerViewAdapter().getItems().get(0)).size() - (tableView.getAdapter().hasTotal() ? 2:1))
+        if (editTextModel.column() != ((ArrayList) tableView.getAdapter().getCellRecyclerViewAdapter().getItems().get(0)).size() - (tableView.getAdapter().hasTotal() ? 2 : 1))
             customBinding.inputEditText.setImeOptions(EditorInfo.IME_ACTION_NEXT);
 
         customBinding.executePendingBindings();
@@ -112,12 +111,6 @@ final class EditTextCellCustomHolder extends FormViewHolder {
                             InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
                     break;
                 case TEXT:
-                    editText.setKeyListener(null);
-                    editText.setFocusable(false);
-                    editText.setOnClickListener(v -> {
-                        showEditDialog();
-                    });
-                    break;
                 case LONG_TEXT:
                     editText.setKeyListener(null);
                     editText.setFocusable(false);
@@ -170,33 +163,37 @@ final class EditTextCellCustomHolder extends FormViewHolder {
 
     private void showEditDialog() {
 
-        AlertDialog alertDialog = new AlertDialog.Builder(editText.getContext()).create();
-        final View msgView = LayoutInflater.from(editText.getContext()).inflate(R.layout.dialog_edittext, null);
+        View msgView = LayoutInflater.from(editText.getContext()).inflate(R.layout.dialog_edittext, null);
         EditText editDialog = msgView.findViewById(R.id.dialogBody);
         editDialog.setText(editText.getText().toString());
-        editDialog.setSelection(editDialog.getText() == null ?
-                0 : editDialog.getText().length());
-        msgView.findViewById(R.id.dialogAccept).setOnClickListener(view -> {
-            alertDialog.dismiss();
-            editText.setText(editDialog.getText().toString());
+        editDialog.setSelection(editDialog.getText() == null ? 0 : editDialog.getText().length());
 
-            tableView.setSelectedCell(editTextModel.column(), editTextModel.row());
+        new TableFieldDialog(
+                editText.getContext(),
+                editTextModel.label(),
+                editTextModel.description(),
+                msgView,
+                new DialogClickListener() {
+                    @Override
+                    public void onPositive() {
+                        if (editTextModel != null && editTextModel.editable() && !editDialog.getText().toString().equals(editTextModel.value()) && validate()) {
+                            processor.onNext(RowAction.create(editTextModel.uid(), editDialog.getText().toString(),
+                                    editTextModel.dataElement(), editTextModel.categoryOptionCombo(),
+                                    editTextModel.catCombo(), editTextModel.row(), editTextModel.column()));
+                        }
+                    }
 
-            if (editTextModel != null && editTextModel.editable() && !editText.getText().toString().equals(editTextModel.value())) {
-                if (!isEmpty(editText.getText()) && validate())
-                    processor.onNext(RowAction.create(editTextModel.uid(), editText.getText().toString(), editTextModel.dataElement(), editTextModel.categoryOptionCombo(), editTextModel.catCombo(), editTextModel.row(), editTextModel.column()));
-
-            }
-        });
-        msgView.findViewById(R.id.dialogCancel).setOnClickListener(view -> alertDialog.dismiss());
-        alertDialog.setView(msgView);
-
-        alertDialog.show();
+                    @Override
+                    public void onNegative() {
+                    }
+                },
+                v -> editDialog.setText(null)
+        ).show();
     }
 
 
     private boolean validate() {
-        if(!editText.getText().toString().isEmpty()) {
+        if (!editText.getText().toString().isEmpty()) {
             switch (editTextModel.valueType()) {
                 case PHONE_NUMBER:
                     if (Patterns.PHONE.matcher(editText.getText().toString()).matches())
@@ -250,7 +247,7 @@ final class EditTextCellCustomHolder extends FormViewHolder {
                 default:
                     return true;
             }
-        }else
+        } else
             return true;
     }
 

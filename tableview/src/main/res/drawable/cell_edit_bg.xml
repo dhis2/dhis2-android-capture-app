@@ -3,9 +3,9 @@
     <item>
         <selector>
             <item android:state_enabled="true"  android:state_focused="false" android:drawable="@color/table_view_default_unselected_background_color"/>
-            <item android:state_enabled="false" android:state_activated="false" android:drawable="@color/table_view_default_disabled_background_color"/>
-            <item android:state_enabled="false" android:state_activated="true" android:drawable="@color/table_view_default_deactivated_background_color"/>
-            <item android:state_enabled="true"  android:state_focused="true" android:drawable="@color/table_view_default_selected_background_color"/>
+            <item android:state_enabled="false" android:state_activated="false" android:drawable="@color/table_view_default_deactivated_background_color"/>
+            <item android:state_enabled="false" android:state_activated="true" android:drawable="@color/table_view_default_disabled_background_color"/>
+            <item android:state_enabled="true"  android:state_focused="true" android:drawable="@drawable/outline_cell_bg"/>
         </selector>
     </item>
     <item>
