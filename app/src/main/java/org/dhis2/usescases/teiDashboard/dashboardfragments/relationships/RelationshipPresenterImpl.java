@@ -36,6 +36,10 @@ import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
+import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
+import static org.dhis2.utils.analytics.AnalyticsConstants.DELETE_RELATIONSHIP;
+import static org.dhis2.utils.analytics.AnalyticsConstants.NEW_RELATIONSHIP;
+
 /**
  * QUADRAM. Created by ppajuelo on 09/04/2019.
  */
@@ -161,6 +165,7 @@ public class RelationshipPresenterImpl implements RelationshipContracts.Presente
     @Override
     public void goToAddRelationship(String teiTypeToAdd) {
         if (d2.programModule().programs.uid(programUid).blockingGet().access().data().write()) {
+            view.analyticsHelper().setEvent(NEW_RELATIONSHIP, CLICK, NEW_RELATIONSHIP);
             Intent intent = new Intent(view.getContext(), SearchTEActivity.class);
             Bundle extras = new Bundle();
             extras.putBoolean("FROM_RELATIONSHIP", true);
@@ -180,6 +185,7 @@ public class RelationshipPresenterImpl implements RelationshipContracts.Presente
         } catch (D2Error e) {
             Timber.d(e);
         } finally {
+            view.analyticsHelper().setEvent(DELETE_RELATIONSHIP, CLICK, DELETE_RELATIONSHIP);
             updateRelationships.onNext(true);
         }
     }

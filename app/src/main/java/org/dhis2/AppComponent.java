@@ -9,6 +9,7 @@ import org.dhis2.usescases.login.LoginModule;
 import org.dhis2.usescases.splash.SplashComponent;
 import org.dhis2.usescases.splash.SplashModule;
 import org.dhis2.utils.UtilsModule;
+import org.dhis2.utils.analytics.AnalyticsModule;
 
 import javax.inject.Singleton;
 
@@ -19,7 +20,7 @@ import dagger.Component;
  */
 @Singleton
 @Component(modules = {
-        AppModule.class, SchedulerModule.class, UtilsModule.class
+        AppModule.class, SchedulerModule.class, UtilsModule.class, AnalyticsModule.class
 })
 public interface AppComponent {
 
@@ -30,6 +31,8 @@ public interface AppComponent {
         Builder schedulerModule(SchedulerModule schedulerModule);
 
         Builder utilModule(UtilsModule utilsModule);
+
+        Builder analyticsModule(AnalyticsModule module);
 
         AppComponent build();
     }

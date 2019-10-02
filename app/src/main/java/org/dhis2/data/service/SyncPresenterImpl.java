@@ -137,7 +137,7 @@ final class SyncPresenterImpl implements SyncPresenter {
                 .flatMapIterable(dataSets -> dataSets)
                 .flatMap(dataSetReport ->
                         d2.dataValueModule().dataValues
-                                .byOrganisationUnitUid().eq(dataSetReport.attributeOptionComboUid())
+                                .byOrganisationUnitUid().eq(dataSetReport.organisationUnitUid())
                                 .byPeriod().eq(dataSetReport.period())
                                 .byAttributeOptionComboUid().eq(dataSetReport.attributeOptionComboUid())
                                 .upload()
@@ -199,7 +199,7 @@ final class SyncPresenterImpl implements SyncPresenter {
         DataSetInstance dataSetReport = d2.dataSetModule().dataSetInstances.byDataSetUid().eq(uid).one().blockingGet();
 
         return d2.dataValueModule().dataValues
-                .byOrganisationUnitUid().eq(dataSetReport.attributeOptionComboUid())
+                .byOrganisationUnitUid().eq(dataSetReport.organisationUnitUid())
                 .byPeriod().eq(dataSetReport.period())
                 .byAttributeOptionComboUid().eq(dataSetReport.attributeOptionComboUid())
                 .byState().notIn(State.SYNCED)

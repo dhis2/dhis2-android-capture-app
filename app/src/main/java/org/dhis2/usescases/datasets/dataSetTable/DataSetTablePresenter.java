@@ -11,6 +11,9 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
+import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
+import static org.dhis2.utils.analytics.AnalyticsConstants.INFO_DATASET_TABLE;
+
 public class DataSetTablePresenter implements DataSetTableContract.Presenter {
 
     private final DataSetTableRepository tableRepository;
@@ -121,6 +124,7 @@ public class DataSetTablePresenter implements DataSetTableContract.Presenter {
 
     @Override
     public void optionsClick() {
+        view.analyticsHelper().setEvent(INFO_DATASET_TABLE, CLICK, INFO_DATASET_TABLE);
         view.showOptions(open);
         open = !open;
     }

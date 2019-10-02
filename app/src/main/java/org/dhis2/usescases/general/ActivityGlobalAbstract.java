@@ -1,14 +1,9 @@
 package org.dhis2.usescases.general;
 
-import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
-import android.graphics.Bitmap;
-import android.net.Uri;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -26,8 +21,6 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityOptionsCompat;
 import androidx.core.content.ContextCompat;
-import androidx.core.widget.ContentLoadingProgressBar;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.crashlytics.android.Crashlytics;
 import com.google.firebase.FirebaseApp;
@@ -35,6 +28,7 @@ import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+import org.dhis2.App;
 import org.dhis2.BuildConfig;
 import org.dhis2.R;
 import org.dhis2.usescases.login.LoginActivity;
@@ -44,10 +38,9 @@ import org.dhis2.usescases.map.MapSelectorActivity;
 import org.dhis2.usescases.splash.SplashActivity;
 import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.Constants;
-import org.dhis2.utils.FileResourcesUtil;
 import org.dhis2.utils.HelpManager;
 import org.dhis2.utils.OnDialogClickListener;
-import org.dhis2.utils.SyncUtils;
+import org.dhis2.utils.analytics.AnalyticsHelper;
 import org.dhis2.utils.custom_views.CoordinatesView;
 import org.dhis2.utils.custom_views.CustomDialog;
 import org.dhis2.utils.custom_views.PictureView;
@@ -55,16 +48,20 @@ import org.hisp.dhis.android.core.arch.helpers.GeometryHelper;
 import org.hisp.dhis.android.core.common.FeatureType;
 import org.hisp.dhis.android.core.common.Geometry;
 
-import java.io.File;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import io.reactivex.processors.FlowableProcessor;
 import rx.Observable;
 import rx.subjects.BehaviorSubject;
 import timber.log.Timber;
+
+import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
+import static org.dhis2.utils.analytics.AnalyticsConstants.SHOW_HELP;
 
 /**
  * QUADRAM. Created by Javi on 28/07/2017.
@@ -76,6 +73,8 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
     private CoordinatesView coordinatesView;
     private PictureView.OnPictureSelected onPictureSelected;
     public String uuid;
+    @Inject
+    public AnalyticsHelper analyticsHelper;
 
     public enum Status {
         ON_PAUSE,
@@ -92,6 +91,9 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         FirebaseAnalytics mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
+
+        if(((App)getApplicationContext()).serverComponent()!=null && analyticsHelper() != null)
+            analyticsHelper().setD2(((App)getApplicationContext()).serverComponent().userManager().getD2());
 
         if (!getResources().getBoolean(R.bool.is_tablet))
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT);
@@ -165,6 +167,7 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
         }
         popupMenu.getMenuInflater().inflate(R.menu.home_menu, popupMenu.getMenu());
         popupMenu.setOnMenuItemClickListener(item -> {
+            analyticsHelper.setEvent(SHOW_HELP, CLICK, SHOW_HELP);
             showTutorial(false);
             return false;
         });
@@ -415,14 +418,14 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
 
     @Override
     public void showSyncDialog(String programUid, SyncStatusDialog.ConflictType conflictType, FlowableProcessor processor) {
-        new SyncStatusDialog(programUid, conflictType, processor)
+        new SyncStatusDialog(programUid, conflictType, processor, analyticsHelper)
                 .show(getSupportFragmentManager(), programUid);
     }
 
     @Override
     public void showSyncDialog(String orgUnit, String attributeCombo, String periodId,
                                SyncStatusDialog.ConflictType conflictType, FlowableProcessor processor) {
-        new SyncStatusDialog(orgUnit,attributeCombo, periodId, conflictType, processor)
+        new SyncStatusDialog(orgUnit,attributeCombo, periodId, conflictType, processor, analyticsHelper)
                 .show(getSupportFragmentManager(), attributeCombo);
     }
 
@@ -431,5 +434,10 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
         this.uuid = uuid;
         this.onPictureSelected = onPictureSelected;
         startActivityForResult(intent, request);
+    }
+
+    @Override
+    public AnalyticsHelper analyticsHelper() {
+        return analyticsHelper;
     }
 }

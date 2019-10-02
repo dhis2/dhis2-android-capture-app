@@ -1,7 +1,5 @@
 package org.dhis2.usescases.datasets.datasetInitial;
 
-import android.database.Cursor;
-
 import androidx.annotation.NonNull;
 
 import org.hisp.dhis.android.core.D2;
@@ -9,17 +7,18 @@ import org.hisp.dhis.android.core.category.Category;
 import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryOption;
 import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
-import org.hisp.dhis.android.core.dataset.DataSet;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
+import org.hisp.dhis.android.core.period.Period;
 import org.hisp.dhis.android.core.period.PeriodType;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
+import io.reactivex.Single;
 
 public class DataSetInitialRepositoryImpl implements DataSetInitialRepository {
 
@@ -36,7 +35,7 @@ public class DataSetInitialRepositoryImpl implements DataSetInitialRepository {
         return Flowable.just(d2.dataSetModule().dataSets.withDataInputPeriods().byUid().eq(dataSetUid).one().blockingGet())
                 .flatMapIterable(dataSet -> dataSet.dataInputPeriods())
                 .flatMap(dataInputPeriod ->
-                        Flowable.just(d2.periodModule().periods.byPeriodId().eq(dataInputPeriod.period().uid()).blockingGet())
+                                d2.periodModule().periodHelper.getPeriodsForDataSet(dataSetUid).toFlowable()
                                 .flatMapIterable(periods -> periods)
                                 .map(period -> {
                                     Date periodStartDate = period.startDate();
@@ -72,17 +71,7 @@ public class DataSetInitialRepositoryImpl implements DataSetInitialRepository {
     @NonNull
     @Override
     public Observable<List<OrganisationUnit>> orgUnits() {
-        return Observable.fromCallable(() -> {
-            List<String> ouUids = new ArrayList<>();
-            try (Cursor ouCursor = d2.databaseAdapter().query("SELECT organisationUnit FROM DataSetOrganisationUnitLink WHERE dataSet = ?", dataSetUid)){
-                ouCursor.moveToFirst();
-                do {
-                    ouUids.add(ouCursor.getString(0));
-                } while (ouCursor.moveToNext());
-            }
-            return ouUids;
-        }).flatMap(ouUids -> d2.organisationUnitModule().organisationUnits.byUid().in(ouUids).withDataSets().get().toObservable());
-
+        return d2.organisationUnitModule().organisationUnits.byDataSetUids(Collections.singletonList(dataSetUid)).withDataSets().get().toObservable();
     }
 
     @NonNull

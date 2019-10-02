@@ -12,6 +12,7 @@ import androidx.core.app.ActivityOptionsCompat;
 import org.dhis2.Bindings.ExtensionsKt;
 import org.dhis2.R;
 import org.dhis2.usescases.enrollment.EnrollmentActivity;
+import org.dhis2.usescases.events.ScheduledEventActivity;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity;
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity;
 import org.dhis2.usescases.qrCodes.QrActivity;
@@ -37,6 +38,15 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
+
+import static android.text.TextUtils.isEmpty;
+import static org.dhis2.utils.analytics.AnalyticsConstants.ACTIVE_FOLLOW_UP;
+import static org.dhis2.utils.analytics.AnalyticsConstants.FOLLOW_UP;
+import static org.dhis2.utils.analytics.AnalyticsConstants.SHARE_TEI;
+import static org.dhis2.utils.analytics.AnalyticsConstants.TYPE_NFC;
+import static org.dhis2.utils.analytics.AnalyticsConstants.TYPE_QR;
+import static org.dhis2.utils.analytics.AnalyticsConstants.TYPE_SHARE;
+import static org.dhis2.utils.analytics.AnalyticsConstants.TYPE_SMS;
 
 /**
  * QUADRAM. Created by ppajuelo on 09/04/2019.
@@ -191,8 +201,7 @@ class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
     @Override
     public void onFollowUp(DashboardProgramModel dashboardProgramModel) {
         boolean followup = dashboardRepository.setFollowUp(dashboardProgramModel.getCurrentEnrollment().uid());
-
-
+        view.analyticsHelper().setEvent(ACTIVE_FOLLOW_UP, Boolean.toString(followup), FOLLOW_UP);
         view.showToast(followup ?
                 view.getContext().getString(R.string.follow_up_enabled) :
                 view.getContext().getString(R.string.follow_up_disabled));
@@ -214,11 +223,13 @@ class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
         menu.setOnMenuItemClickListener(item -> {
             switch (item.getOrder()) {
                 case 0:
+                    view.analyticsHelper().setEvent(TYPE_SHARE, TYPE_QR, SHARE_TEI);
                     Intent intent = new Intent(view.getContext(), QrActivity.class);
                     intent.putExtra("TEI_UID", teiUid);
                     view.showQR(intent);
                     return true;
                 case 1:
+                    view.analyticsHelper().setEvent(TYPE_SHARE, TYPE_SMS, SHARE_TEI);
                     Activity activity = view.getAbstractActivity();
                     Intent i = new Intent(activity, SmsSubmitActivity.class);
                     Bundle args = new Bundle();
@@ -227,6 +238,7 @@ class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
                     activity.startActivity(i);
                     return true;
                 case 2:
+                    view.analyticsHelper().setEvent(TYPE_SHARE, TYPE_NFC, SHARE_TEI);
                     Intent intentNfc = new Intent(view.getContext(), NfcDataWriteActivity.class);
                     intentNfc.putExtra("TEI_UID", teiUid);
                     view.showQR(intentNfc);
@@ -264,13 +276,13 @@ class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
                 dashboardModel.getTrackedEntityAttributeValueBySortOrder(2) != null ? dashboardModel.getTrackedEntityAttributeValueBySortOrder(2) : "",
                 dashboardModel.getCurrentProgram() != null ? dashboardModel.getCurrentProgram().displayName() : view.getContext().getString(R.string.dashboard_overview)
         );
-
-        Intent intent = new Intent(view.getContext(), EventDetailActivity.class);
+        Intent intent = ScheduledEventActivity.Companion.getIntent(view.getContext(),uid);
+        /*Intent intent = new Intent(view.getContext(), EventDetailActivity.class);
         Bundle extras = new Bundle();
         extras.putString("EVENT_UID", uid);
         extras.putString("TOOLBAR_TITLE", title);
         extras.putString("TEI_UID", teiUid);
-        intent.putExtras(extras);
+        intent.putExtras(extras);*/
         ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(view.getAbstractActivity(), sharedView, "shared_view");
         view.openEventDetails(intent, options.toBundle());
     }
