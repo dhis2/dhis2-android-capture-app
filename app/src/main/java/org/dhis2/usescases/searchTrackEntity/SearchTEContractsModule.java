@@ -1,8 +1,8 @@
 package org.dhis2.usescases.searchTrackEntity;
 
-import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
 import androidx.paging.PagedList;
@@ -75,7 +75,7 @@ public class SearchTEContractsModule {
 
         Consumer<FeatureType> featureType();
 
-        Consumer<Pair<HashMap<String,FeatureCollection>, BoundingBox>> setMap();
+        Consumer<Pair<HashMap<String, FeatureCollection>, BoundingBox>> setMap();
 
         Consumer<D2Progress> downloadProgress();
     }
@@ -96,17 +96,13 @@ public class SearchTEContractsModule {
 
         void onEnrollClick(android.view.View view);
 
-        void enroll(String programUid, String uid);
-
         void onTEIClick(String TEIuid, boolean isOnline);
 
         TrackedEntityType getTrackedEntityName();
 
         Program getProgram();
 
-        void addRelationship(String TEIuid, String relationshipTypeUid, boolean online);
-
-        void addRelationship(String TEIuid, boolean online);
+        void addRelationship(@NonNull String teiUid, @Nullable String relationshipTypeUid, boolean online);
 
         void downloadTei(String teiUid);
 

@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.DatePicker;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.paging.PagedList;
@@ -77,9 +78,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     private CompositeDisposable compositeDisposable;
     private TrackedEntityType trackedEntity;
     private HashMap<String, String> queryData;
-    private Map<String, String> queryDataEQ;
 
-    private List<String> orgUnitsUid = new ArrayList<>();
     private Date selectedEnrollmentDate;
 
     private FlowableProcessor<HashMap<String, String>> queryProcessor;
@@ -94,7 +93,6 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         this.searchRepository = searchRepository;
         this.d2 = d2;
         queryData = new HashMap<>();
-        queryDataEQ = new HashMap<>();
         queryProcessor = PublishProcessor.create();
         processorDismissDialog = PublishProcessor.create();
         mapProcessor = PublishProcessor.create();
@@ -159,20 +157,6 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         );
 
         compositeDisposable.add(
-                searchRepository.getOrganisationUnits()
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(Schedulers.io())
-                        .subscribe(
-                                orgUnits -> {
-                                    for (OrganisationUnit orgUnit : orgUnits) {
-                                        this.orgUnitsUid.add(orgUnit.uid());
-                                    }
-                                },
-                                Timber::d
-                        )
-        );
-
-        compositeDisposable.add(
                 mapProcessor
                         .flatMap(unit ->
                                 queryProcessor.startWith(queryData)
@@ -215,14 +199,10 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                             if (!isEmpty(data.value())) {
                                 queryData.put(data.id(), data.value());
                                 if (data.requiresExactMatch())
-                                    if (data.value().equals("null_os_null")) {
+                                    if (data.value().equals("null_os_null"))
                                         queryData.remove(data.id());
-                                        queryDataEQ.remove(data.id());
-                                    } else
-                                        queryDataEQ.put(data.id(), data.value());
                             } else {
                                 queryData.remove(data.id());
-                                queryDataEQ.remove(data.id());
                             }
 
                             if (!queryData.equals(queryDataBU)) { //Only when queryData has changed
@@ -456,7 +436,6 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     @Override
     public void onFabClick(View view, boolean needsSearch) {
         if (!needsSearch)
-
             onEnrollClick(view);
         else {
             this.view.analyticsHelper().setEvent(SEARCH_TEI, CLICK, SEARCH_TEI);
@@ -485,8 +464,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
             this.view.displayMessage(view.getContext().getString(R.string.search_program_not_selected));
     }
 
-    @Override
-    public void enroll(String programUid, String uid) {
+    private void enroll(String programUid, String uid) {
         selectedEnrollmentDate = Calendar.getInstance().getTime();
 
         OrgUnitDialog orgUnitDialog = OrgUnitDialog.getInstace().setMultiSelection(false);
@@ -643,10 +621,8 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                                         this.view.analyticsHelper().setEvent(CREATE_ENROLL, CLICK, CREATE_ENROLL);
                                         Intent intent = EnrollmentActivity.Companion.getIntent(view.getContext(), enrollmentAndTEI.val0(), selectedProgram.uid(), EnrollmentActivity.EnrollmentMode.NEW);
                                         view.getContext().startActivity(intent);
-                                        /*FormViewArguments formViewArguments = FormViewArguments.createForEnrollment(enrollmentAndTEI.val0());
-                                        this.view.getContext().startActivity(FormActivity.create(this.view.getContext(), formViewArguments, true));*/
                                     } else {
-                                        addRelationship(enrollmentAndTEI.val1(), false);
+                                        addRelationship(enrollmentAndTEI.val1(), null, false);
                                     }
                                 },
                                 Timber::d)
@@ -663,40 +639,27 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     }
 
     @Override
-    public void addRelationship(String TEIuid, String relationshipTypeUid, boolean online) {
-        if (!online) {
-            Intent intent = new Intent();
-            intent.putExtra("TEI_A_UID", TEIuid);
-            intent.putExtra("RELATIONSHIP_TYPE_UID", relationshipTypeUid);
-            view.getAbstractActivity().setResult(RESULT_OK, intent);
-            view.getAbstractActivity().finish();
-        } else {
-            downloadTeiForRelationship(TEIuid, relationshipTypeUid);
-        }
-    }
-
-    @Override
-    public void addRelationship(String TEIuid, boolean online) {
-        if (TEIuid.equals(view.fromRelationshipTEI())) {
+    public void addRelationship(@NonNull String teiUid, @Nullable String relationshipTypeUid, boolean online) {
+        if (teiUid.equals(view.fromRelationshipTEI())) {
             view.displayMessage(view.getContext().getString(R.string.relationship_error_recursive));
         } else if (!online) {
             view.analyticsHelper().setEvent(ADD_RELATIONSHIP, CLICK, ADD_RELATIONSHIP);
             Intent intent = new Intent();
-            intent.putExtra("TEI_A_UID", TEIuid);
+            intent.putExtra("TEI_A_UID", teiUid);
+            if (relationshipTypeUid != null)
+                intent.putExtra("RELATIONSHIP_TYPE_UID", relationshipTypeUid);
             view.getAbstractActivity().setResult(RESULT_OK, intent);
             view.getAbstractActivity().finish();
         } else {
             view.analyticsHelper().setEvent(ADD_RELATIONSHIP, CLICK, ADD_RELATIONSHIP);
-            downloadTeiForRelationship(TEIuid, null);
+            downloadTeiForRelationship(teiUid, relationshipTypeUid);
         }
     }
 
     @Override
     public void downloadTei(String teiUid) {
-        List<String> teiUids = new ArrayList<>();
-        teiUids.add(teiUid);
         compositeDisposable.add(
-                d2.trackedEntityModule().trackedEntityInstanceDownloader.byUid().in(teiUids).download()
+                d2.trackedEntityModule().trackedEntityInstanceDownloader.byUid().in(Collections.singletonList(teiUid)).download()
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
@@ -704,7 +667,6 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                                 Timber::d,
                                 () -> openDashboard(teiUid))
         );
-
     }
 
     @Override
@@ -724,12 +686,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                         .subscribe(
                                 data -> Timber.d("DOWNLOADING TEI %s : %s%", TEIuid, data.percentage()),
                                 Timber::d,
-                                () -> {
-                                    if (relationshipTypeUid == null)
-                                        addRelationship(TEIuid, false);
-                                    else
-                                        addRelationship(TEIuid, relationshipTypeUid, false);
-                                })
+                                () -> addRelationship(TEIuid, relationshipTypeUid, false))
         );
     }
 
