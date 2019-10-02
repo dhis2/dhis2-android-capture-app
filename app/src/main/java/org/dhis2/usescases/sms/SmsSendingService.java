@@ -20,8 +20,11 @@ import org.hisp.dhis.android.core.sms.domain.repository.SmsRepository;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.inject.Inject;
 
@@ -275,7 +278,7 @@ public class SmsSendingService extends Service {
         public final int total;
         public final Throwable error;
 
-        SendingStatus(Integer submissionId, State state, Throwable error, int sent, int total) {
+        public SendingStatus(Integer submissionId, State state, Throwable error, int sent, int total) {
             this.submissionId = submissionId;
             this.state = state;
             this.sent = sent;
@@ -287,7 +290,23 @@ public class SmsSendingService extends Service {
     public enum State implements Serializable {
         STARTED, CONVERTED, ITEM_NOT_READY, WAITING_COUNT_CONFIRMATION,
         COUNT_NOT_ACCEPTED, SENDING, SENT, WAITING_RESULT, RESULT_CONFIRMED,
-        WAITING_RESULT_TIMEOUT, COMPLETED, ERROR
+        WAITING_RESULT_TIMEOUT, COMPLETED, ERROR;
+
+        private static final Set<State> ERROR_TYPES = new HashSet<>(Arrays.asList(STARTED,CONVERTED,SENDING,WAITING_RESULT,RESULT_CONFIRMED,SENT));
+        private static final Set<State> SENDING_TYPES = new HashSet<>(Arrays.asList(ITEM_NOT_READY,COUNT_NOT_ACCEPTED,WAITING_RESULT_TIMEOUT,ERROR));
+        private static final Set<State> COMPLETED_TYPES = new HashSet<>(Arrays.asList(COMPLETED));
+        public boolean isError(){
+            return ERROR_TYPES.contains(this);
+        }
+
+        public boolean isSending(){
+            return SENDING_TYPES.contains(this);
+        }
+
+        public boolean isCompleted(){
+            return COMPLETED_TYPES.contains(this);
+        }
+
     }
 
     class LocalBinder extends Binder {

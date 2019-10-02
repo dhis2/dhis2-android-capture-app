@@ -35,6 +35,7 @@ import org.dhis2.utils.analytics.DELETE_AND_BACK
 import org.dhis2.utils.analytics.SAVE_ENROLL
 import org.dhis2.utils.analytics.STATUS_ENROLLMENT
 import org.dhis2.utils.custom_views.CustomDialog
+import org.hisp.dhis.android.core.arch.helpers.FileResourceDirectoryHelper
 import org.hisp.dhis.android.core.arch.helpers.GeometryHelper
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.Geometry
@@ -160,7 +161,7 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentContract.View {
             }
             Constants.CAMERA_REQUEST -> {
                 if (resultCode == Activity.RESULT_OK) {
-                    val file = File(FileResourceUtil.getFileResourceDirectory(this), "tempFile.png")
+                    val file = File(FileResourceDirectoryHelper.getFileResourceDirectory(this), "tempFile.png")
                     if (file.exists()) {
                         presenter.saveValue(uuid, file.path)
                     } else
