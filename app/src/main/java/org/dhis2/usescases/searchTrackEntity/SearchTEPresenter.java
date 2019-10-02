@@ -643,8 +643,6 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                                         this.view.analyticsHelper().setEvent(CREATE_ENROLL, CLICK, CREATE_ENROLL);
                                         Intent intent = EnrollmentActivity.Companion.getIntent(view.getContext(), enrollmentAndTEI.val0(), selectedProgram.uid(), EnrollmentActivity.EnrollmentMode.NEW);
                                         view.getContext().startActivity(intent);
-                                        /*FormViewArguments formViewArguments = FormViewArguments.createForEnrollment(enrollmentAndTEI.val0());
-                                        this.view.getContext().startActivity(FormActivity.create(this.view.getContext(), formViewArguments, true));*/
                                     } else {
                                         addRelationship(enrollmentAndTEI.val1(), false);
                                     }

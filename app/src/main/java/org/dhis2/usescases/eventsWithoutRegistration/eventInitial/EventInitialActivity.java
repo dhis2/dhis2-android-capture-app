@@ -436,7 +436,6 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                             binding.date.clearFocus();
                             if (!fixedOrgUnit) {
                                 presenter.initOrgunit(selectedDate);
-//                                binding.orgUnit.setText("");
                             }
                         })
                         .show(getSupportFragmentManager(), PeriodDialog.class.getSimpleName());

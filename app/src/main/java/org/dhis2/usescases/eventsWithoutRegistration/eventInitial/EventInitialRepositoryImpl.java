@@ -120,7 +120,7 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
 
     @Override
     public Flowable<Map<String, CategoryOption>> getOptionsFromCatOptionCombo(String eventId) {
-        return Flowable.just(d2.eventModule().events.uid(eventUid).blockingGet())
+        return d2.eventModule().events.uid(eventUid).get().toFlowable()
                 .flatMap(event -> catCombo(event.program()).toFlowable(BackpressureStrategy.LATEST)
                         .flatMap(categoryCombo -> {
                             Map<String, CategoryOption> map = new HashMap<>();

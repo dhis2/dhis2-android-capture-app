@@ -300,8 +300,6 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
                         data.getStringExtra("GO_TO_ENROLLMENT_PROGRAM"),
                         EnrollmentActivity.EnrollmentMode.NEW);
                 startActivity(intent);
-               /* FormViewArguments formViewArguments = FormViewArguments.createForEnrollment(data.getStringExtra("GO_TO_ENROLLMENT"));
-                startActivity(FormActivity.create(this, formViewArguments, true));*/
                 finish();
             }
 
