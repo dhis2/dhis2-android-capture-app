@@ -66,7 +66,7 @@ final class EditTextCellCustomHolder extends FormViewHolder {
     }
 
 
-    public void update(@NonNull FieldViewModel model, String value) {
+    public void update(@NonNull FieldViewModel model) {
 
         this.editTextModel = (EditTextModel) model;
         setInputType(editTextModel.valueType());
@@ -260,7 +260,9 @@ final class EditTextCellCustomHolder extends FormViewHolder {
     public void setSelected(SelectionState selectionState) {
         super.setSelected(selectionState);
         if (selectionState == SelectionState.SELECTED) {
-            customBinding.inputEditText.requestFocus();
+            editText.performClick();
+            editText.requestFocus();
+            editText.setSelection(editText.getText().length());
             if (editTextModel.editable())
                 openKeyboard(editText);
         }
