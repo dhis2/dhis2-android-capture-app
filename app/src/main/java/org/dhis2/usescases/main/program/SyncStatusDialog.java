@@ -32,7 +32,9 @@ import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.NetworkUtils;
 import org.dhis2.utils.analytics.AnalyticsHelper;
 import org.hisp.dhis.android.core.D2;
+import org.hisp.dhis.android.core.arch.helpers.UidsHelper;
 import org.hisp.dhis.android.core.common.State;
+import org.hisp.dhis.android.core.dataset.DataSet;
 import org.hisp.dhis.android.core.dataset.DataSetElement;
 import org.hisp.dhis.android.core.datavalue.DataValue;
 import org.hisp.dhis.android.core.imports.TrackerImportConflict;
@@ -58,7 +60,6 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.processors.FlowableProcessor;
 import io.reactivex.schedulers.Schedulers;
 
-import static com.mapbox.mapboxsdk.Mapbox.getApplicationContext;
 import static org.dhis2.utils.Constants.*;
 import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
 import static org.dhis2.utils.analytics.AnalyticsConstants.SYNC_GRANULAR;
@@ -77,6 +78,7 @@ public class SyncStatusDialog extends BottomSheetDialogFragment {
     private String orgUnitDataValue;
     private String attributeComboDataValue;
     private String periodIdDataValue;
+    private String[] catOptionCombos;
     private FlowableProcessor processor;
 
     public AnalyticsHelper analyticsHelper;
@@ -96,7 +98,8 @@ public class SyncStatusDialog extends BottomSheetDialogFragment {
 
     @SuppressLint("ValidFragment")
     public SyncStatusDialog(String orgUnitDataValue, String attributeComboDataValue, String periodIdDataValue,
-                            ConflictType conflictType, FlowableProcessor processor, AnalyticsHelper analyticsHelper) {
+                            ConflictType conflictType, FlowableProcessor processor, AnalyticsHelper analyticsHelper,
+                            String dataSetUid) {
         this.orgUnitDataValue = orgUnitDataValue;
         this.attributeComboDataValue = attributeComboDataValue;
         this.periodIdDataValue = periodIdDataValue;
@@ -104,6 +107,7 @@ public class SyncStatusDialog extends BottomSheetDialogFragment {
         this.compositeDisposable = new CompositeDisposable();
         this.processor = processor;
         this.analyticsHelper = analyticsHelper;
+        this.recordUid = dataSetUid;
     }
 
     @Override
@@ -135,6 +139,7 @@ public class SyncStatusDialog extends BottomSheetDialogFragment {
                 configureForDataSet();
                 break;
             case DATA_VALUES:
+                getCatOptionComboFromDataSet();
                 configureForDataValue();
         }
         setRetainInstance(true);
@@ -148,7 +153,8 @@ public class SyncStatusDialog extends BottomSheetDialogFragment {
         compositeDisposable.add(
                 Observable.fromCallable(()-> d2.dataValueModule().dataValues.byOrganisationUnitUid().eq(orgUnitDataValue)
                         .byAttributeOptionComboUid().eq(attributeComboDataValue)
-                        .byPeriod().eq(periodIdDataValue).blockingGet())
+                        .byPeriod().eq(periodIdDataValue)
+                        .byCategoryOptionComboUid().in(catOptionCombos).blockingGet())
                         .map(dataSetElements -> {
                             State state = State.SYNCED;
                             for(DataValue dataValue: dataSetElements){
@@ -181,6 +187,21 @@ public class SyncStatusDialog extends BottomSheetDialogFragment {
                         },
                         error -> dismiss()
                 ));
+    }
+
+    private void getCatOptionComboFromDataSet() {
+        List<String> catCombos = new ArrayList<>();
+        DataSet dataSet = d2.dataSetModule().dataSets.withDataSetElements().uid(recordUid).blockingGet();
+        for(DataSetElement dataSetElement: dataSet.dataSetElements()){
+            if(dataSetElement.categoryCombo() != null && !catCombos.contains(dataSetElement.categoryCombo().uid()))
+                catCombos.add(dataSetElement.categoryCombo().uid());
+            else
+                catCombos.add(d2.dataElementModule().dataElements.uid(dataSetElement.dataElement().uid()).blockingGet().categoryComboUid());
+
+        }
+        List<String> catOptionComboList = UidsHelper.getUidsList(d2.categoryModule().categoryOptionCombos.byCategoryComboUid().in(catCombos).blockingGet());
+        catOptionCombos = new String[catOptionComboList.size()];
+        catOptionComboList.toArray(catOptionCombos);
     }
 
     private void configureForDataSet() {
@@ -583,6 +604,7 @@ public class SyncStatusDialog extends BottomSheetDialogFragment {
                         .putString(ORG_UNIT, orgUnitDataValue)
                         .putString(PERIOD_ID, periodIdDataValue)
                         .putString(ATTRIBUTE_OPTION_COMBO, attributeComboDataValue)
+                        .putStringArray(CATEGORY_OPTION_COMBO, catOptionCombos)
                         .build();
         }
         String uid = recordUid;

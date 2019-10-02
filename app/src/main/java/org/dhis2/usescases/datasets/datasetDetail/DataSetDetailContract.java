@@ -38,7 +38,7 @@ public class DataSetDetailContract {
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter {
-        void init(View view);
+        void init(DataSetDetailContract.View view, String dataSetUid);
 
         void addDataSet();
 

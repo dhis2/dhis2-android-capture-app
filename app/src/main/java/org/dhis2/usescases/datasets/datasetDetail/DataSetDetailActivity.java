@@ -80,7 +80,7 @@ public class DataSetDetailActivity extends ActivityGlobalAbstract implements Dat
     @Override
     protected void onResume() {
         super.onResume();
-        presenter.init(this);
+        presenter.init(this, dataSetUid);
         binding.addDatasetButton.setEnabled(true);
         binding.setTotalFilters(FilterManager.getInstance().getTotalFilters());
         filtersAdapter.notifyDataSetChanged();
