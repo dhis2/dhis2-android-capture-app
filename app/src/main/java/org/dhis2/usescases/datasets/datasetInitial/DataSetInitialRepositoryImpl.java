@@ -8,7 +8,6 @@ import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryOption;
 import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
-import org.hisp.dhis.android.core.period.Period;
 import org.hisp.dhis.android.core.period.PeriodType;
 
 import java.util.Collections;
@@ -18,7 +17,6 @@ import java.util.List;
 
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
-import io.reactivex.Single;
 
 public class DataSetInitialRepositoryImpl implements DataSetInitialRepository {
 
@@ -35,7 +33,7 @@ public class DataSetInitialRepositoryImpl implements DataSetInitialRepository {
         return Flowable.just(d2.dataSetModule().dataSets.withDataInputPeriods().byUid().eq(dataSetUid).one().blockingGet())
                 .flatMapIterable(dataSet -> dataSet.dataInputPeriods())
                 .flatMap(dataInputPeriod ->
-                                d2.periodModule().periodHelper.getPeriodsForDataSet(dataSetUid).toFlowable()
+                        Flowable.just(d2.periodModule().periods.byPeriodId().eq(dataInputPeriod.period().uid()).blockingGet())
                                 .flatMapIterable(periods -> periods)
                                 .map(period -> {
                                     Date periodStartDate = period.startDate();
@@ -81,8 +79,8 @@ public class DataSetInitialRepositoryImpl implements DataSetInitialRepository {
                 .map(Category::categoryOptions)
                 .map(list -> {
                     Iterator<CategoryOption> iterator = list.iterator();
-                    while(iterator.hasNext())
-                        if(!iterator.next().access().data().write())
+                    while (iterator.hasNext())
+                        if (!iterator.next().access().data().write())
                             iterator.remove();
 
                     return list;
@@ -99,6 +97,11 @@ public class DataSetInitialRepositoryImpl implements DataSetInitialRepository {
     @NonNull
     @Override
     public Flowable<String> getPeriodId(PeriodType periodType, Date date) {
-        return Flowable.fromCallable(() -> d2.periodModule().periodHelper.getPeriod(periodType, date).periodId());
+        return Flowable.fromCallable(() -> {
+            if (d2.periodModule().periodHelper.getPeriod(periodType, date) == null)
+                d2.periodModule().periodHelper.blockingGetPeriodsForDataSet(dataSetUid);
+
+            return d2.periodModule().periodHelper.getPeriod(periodType, date).periodId();
+        });
     }
 }

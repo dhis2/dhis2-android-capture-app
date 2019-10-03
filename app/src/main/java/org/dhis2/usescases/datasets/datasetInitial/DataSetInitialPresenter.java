@@ -6,8 +6,10 @@ import org.dhis2.data.tuples.Pair;
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableActivity;
 import org.dhis2.utils.DateUtils;
 import org.hisp.dhis.android.core.D2;
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.period.PeriodType;
 
+import java.util.List;
 import java.util.Locale;
 
 import io.reactivex.BackpressureStrategy;
@@ -25,6 +27,7 @@ public class DataSetInitialPresenter implements DataSetInitialContract.Presenter
     private String catCombo;
     private D2 d2;
     private Integer openFuturePeriods = 0;
+    private List<OrganisationUnit> orgUnits;
 
     public DataSetInitialPresenter(DataSetInitialRepository dataSetInitialRepository, D2 d2) {
         this.dataSetInitialRepository = dataSetInitialRepository;
@@ -36,6 +39,21 @@ public class DataSetInitialPresenter implements DataSetInitialContract.Presenter
     public void init(DataSetInitialContract.View view) {
         this.view = view;
         compositeDisposable = new CompositeDisposable();
+
+        compositeDisposable.add(
+                dataSetInitialRepository.orgUnits()
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                data -> {
+                                    this.orgUnits = data;
+                                    if(data.size() == 1)
+                                        view.setOrgUnit(data.get(0));
+                                },
+                                Timber::d
+                        )
+        );
+
         compositeDisposable.add(
                 dataSetInitialRepository.dataSet()
                         .subscribeOn(Schedulers.io())
@@ -57,15 +75,8 @@ public class DataSetInitialPresenter implements DataSetInitialContract.Presenter
 
     @Override
     public void onOrgUnitSelectorClick() {
-        compositeDisposable.add(
-                dataSetInitialRepository.orgUnits()
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(
-                                data -> view.showOrgUnitDialog(data),
-                                Timber::d
-                        )
-        );
+        view.showOrgUnitDialog(orgUnits);
+
     }
 
     @Override

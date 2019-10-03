@@ -192,6 +192,13 @@ public class DataSetInitialActivity extends ActivityGlobalAbstract implements Da
         return binding.getDataSetModel().periodType().name();
     }
 
+    @Override
+    public void setOrgUnit(OrganisationUnit organisationUnit) {
+        selectedOrgUnit = organisationUnit;
+        binding.dataSetOrgUnitEditText.setText(selectedOrgUnit.displayName());
+        binding.dataSetOrgUnitEditText.setEnabled(false);
+    }
+
     private void checkActionVisivbility() {
         boolean visible = true;
         if (selectedOrgUnit == null)
