@@ -233,17 +233,18 @@ public class DashboardRepositoryImpl implements DashboardRepository {
                 .flatMap(enrollment ->
                         d2.eventModule().events.byEnrollmentUid().eq(enrollment.uid())
                                 .byDeleted().isFalse()
-                                .get()
-                ).toFlowable()
-                .flatMapIterable(events -> events)
-                .map(event -> {
-                            if (Boolean.FALSE.equals(d2.programModule().programs.uid(programUid).blockingGet().ignoreOverdueEvents()))
-                                if (event.status() == EventStatus.SCHEDULE && event.dueDate().before(DateUtils.getInstance().getToday()))
-                                    event = updateState(event, EventStatus.OVERDUE);
+                                .get().toFlowable()
+                                .flatMapIterable(events -> events)
+                                .map(event -> {
+                                            if (Boolean.FALSE.equals(d2.programModule().programs.uid(programUid).blockingGet().ignoreOverdueEvents()))
+                                                if (event.status() == EventStatus.SCHEDULE && event.dueDate().before(DateUtils.getInstance().getToday()))
+                                                    event = updateState(event, EventStatus.OVERDUE);
 
-                            return event;
-                        }
-                ).toList().toObservable();
+                                            return event;
+                                        }
+                                ).toList()
+
+                ).toObservable();
       /*  return briteDatabase.createQuery(EVENTS_TABLE, EVENTS_QUERY, progId, teiId, progId)
                 .mapToList(cursor -> {
                     Event eventModel = Event.create(cursor);

@@ -177,6 +177,12 @@
 
     <style name="colorPrimary_e1b" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
         <item name="colorPrimary">@color/colorPrimary_elb</item>
+        <item name="colorPrimaryVariant">@color/colorPrimaryDark_elb</item>
+        <item name="colorOnPrimary">#502858</item>
+        <item name="colorSecondary">@color/colorAccent</item>
+        <item name="colorSecondaryVariant">#BEBEBE</item>
+        <item name="colorOnSecondary">@color/black_de0</item>
+
         <item name="colorPrimaryDark">@color/colorPrimaryDark_elb</item>
         <item name="colorPrimaryLight">@color/colorPrimaryLight_elb</item>
         <item name="colorAccent">@color/colorAccent</item>

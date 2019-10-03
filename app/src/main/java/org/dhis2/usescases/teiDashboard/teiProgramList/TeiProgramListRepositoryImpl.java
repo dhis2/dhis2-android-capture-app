@@ -60,7 +60,7 @@ public class TeiProgramListRepositoryImpl implements TeiProgramListRepository {
                             program.style() != null ? program.style().icon() : null,
                             program.displayName(),
                             orgUnit.displayName(),
-                            enrollment.followUp(),
+                            enrollment.followUp()!=null?enrollment.followUp():false,
                             program.uid()
                     );
                 })
@@ -83,7 +83,7 @@ public class TeiProgramListRepositoryImpl implements TeiProgramListRepository {
                             program.style() != null ? program.style().icon() : null,
                             program.displayName(),
                             orgUnit.displayName(),
-                            enrollment.followUp(),
+                            enrollment.followUp()!=null?enrollment.followUp():false,
                             program.uid()
                     );
                 })
