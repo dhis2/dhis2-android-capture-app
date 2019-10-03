@@ -326,25 +326,35 @@ public class DataValueRepositoryImpl implements DataValueRepository {
 
     @Override
     public Flowable<List<DataElement>> getDataElements(CategoryCombo categoryCombo, String sectionName) {
-        List<String> dataElements = new ArrayList<>();
-        if (!sectionName.equals("NO_SECTION"))
-            dataElements = UidsHelper.getUidsList(d2.dataSetModule().sections.withDataElements().byDataSetUid().eq(dataSetUid).byName().eq(sectionName).one().blockingGet().dataElements());
-        else {
+        List<String> dataElementUids = new ArrayList<>();
+        List<DataElement> listDataElements;
+        if (!sectionName.equals("NO_SECTION")) {
+            listDataElements = d2.dataSetModule().sections.withDataElements().byDataSetUid().eq(dataSetUid).byName().eq(sectionName).one().blockingGet().dataElements();
+        }else {
             List<DataSetElement> dataSetElements = d2.dataSetModule().dataSets.withDataSetElements().byUid().eq(dataSetUid).one().blockingGet().dataSetElements();
-            for (DataSetElement dataSetElement : dataSetElements)
-                dataElements.add(dataSetElement.dataElement().uid());
-
-            if(dataSetElements.get(0).categoryCombo() != null)
-                return d2.dataElementModule().dataElements
-                        .byUid().in(dataElements)
+            for (DataSetElement dataSetElement : dataSetElements) {
+                if(dataSetElement.categoryCombo() != null && categoryCombo.uid().equals(dataSetElement.categoryCombo().uid()))
+                    dataElementUids.add(dataSetElement.dataElement().uid());
+                else{
+                    String uid = d2.dataElementModule().dataElements.uid(dataSetElement.dataElement().uid()).blockingGet().categoryComboUid();
+                    if(categoryCombo.uid().equals(uid))
+                        dataElementUids.add(dataSetElement.dataElement().uid());
+                }
+            }
+            return d2.dataElementModule().dataElements
+                        .byUid().in(dataElementUids)
                         .orderByName(RepositoryScope.OrderByDirection.ASC)
                         .get().toFlowable();
         }
-        return d2.dataElementModule().dataElements
-                .byUid().in(dataElements)
-                .byCategoryComboUid().eq(categoryCombo.uid())
-                .orderByName(RepositoryScope.OrderByDirection.ASC)
-                .get().toFlowable();
+
+        List<DataElement> dataElements = new ArrayList<>();
+        for(DataElement de: listDataElements) {
+            if (de.categoryComboUid().equals(categoryCombo.uid())) {
+                dataElements.add(de);
+            }
+        }
+
+        return Flowable.just(dataElements);
     }
 
     @Override
