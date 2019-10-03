@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import io.reactivex.Completable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.observers.DisposableCompletableObserver;
@@ -214,7 +215,15 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
 
     @Override
     public void smsSwitch(boolean isChecked) {
-        compositeDisposable.add(d2.smsModule().configCase().setModuleEnabled(isChecked)
+        Completable completable;
+        if (isChecked)
+            completable = d2.smsModule().configCase().setModuleEnabled(true)
+                    .andThen(d2.smsModule().configCase().refreshMetadataIds());
+        else
+            completable = d2.smsModule().configCase().setModuleEnabled(false);
+
+        compositeDisposable.add(completable
+                .subscribeOn(Schedulers.io())
                 .subscribeWith(new DisposableCompletableObserver() {
                     @Override
                     public void onComplete() {

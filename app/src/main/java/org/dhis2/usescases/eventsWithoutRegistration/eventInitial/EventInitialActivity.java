@@ -174,10 +174,6 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
-        setScreenName(this.getLocalClassName());
-        ((App) getApplicationContext()).userComponent().plus(new EventInitialModule(eventUid)).inject(this);
-        super.onCreate(savedInstanceState);
-
         programUid = getIntent().getStringExtra(PROGRAM_UID);
         eventUid = getIntent().getStringExtra(Constants.EVENT_UID);
         eventCreationType = getIntent().getStringExtra(EVENT_CREATION_TYPE) != null ?
@@ -190,6 +186,10 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         programStageUid = getIntent().getStringExtra(Constants.PROGRAM_STAGE_UID);
         enrollmentStatus = (EnrollmentStatus) getIntent().getSerializableExtra(Constants.ENROLLMENT_STATUS);
         eventScheduleInterval = getIntent().getIntExtra(Constants.EVENT_SCHEDULE_INTERVAL, 0);
+        setScreenName(this.getLocalClassName());
+        ((App) getApplicationContext()).userComponent().plus(new EventInitialModule(eventUid)).inject(this);
+        super.onCreate(savedInstanceState);
+
         disposable = new CompositeDisposable();
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_event_initial);
