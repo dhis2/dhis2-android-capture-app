@@ -69,7 +69,6 @@
                 android:layout_width="60dp"
                 android:layout_height="0dp"
                 android:layout_margin="3dp"
-                android:onClick="@{()->presenter.goToSummary()}"
                 app:layout_constraintBottom_toBottomOf="@id/moreOptions"
                 app:layout_constraintEnd_toStartOf="@id/moreOptions"
                 app:layout_constraintTop_toTopOf="@+id/moreOptions"

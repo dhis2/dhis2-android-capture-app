@@ -17,15 +17,12 @@
             name="program"
             type="org.dhis2.usescases.main.program.ProgramViewModel" />
 
-        <variable
-            name="currentPeriod"
-            type="org.dhis2.utils.Period" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:onClick="@{()->presenter.onItemClick(program,currentPeriod)}"
+        android:onClick="@{()->presenter.onItemClick(program)}"
         android:paddingStart="16dp"
         android:paddingTop="8dp"
         android:paddingEnd="16dp"

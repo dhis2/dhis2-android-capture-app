@@ -5,25 +5,28 @@ import androidx.annotation.NonNull;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper;
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope;
-import org.hisp.dhis.android.core.category.CategoryOptionCombo;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.dataelement.DataElement;
+import org.hisp.dhis.android.core.dataset.DataSetCollectionRepository;
 import org.hisp.dhis.android.core.dataset.DataSetCompleteRegistration;
+import org.hisp.dhis.android.core.dataset.DataSetElement;
 import org.hisp.dhis.android.core.dataset.DataSetInstance;
 import org.hisp.dhis.android.core.dataset.DataSetInstanceCollectionRepository;
+import org.hisp.dhis.android.core.datavalue.DataValue;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
-import org.hisp.dhis.android.core.dataset.DataSetElement;
-import org.hisp.dhis.android.core.datavalue.DataValue;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.period.DatePeriod;
+import org.hisp.dhis.android.core.program.ProgramCollectionRepository;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
+import io.reactivex.parallel.ParallelFlowable;
+import io.reactivex.schedulers.Schedulers;
+import timber.log.Timber;
 
 import static org.hisp.dhis.android.core.program.ProgramType.WITHOUT_REGISTRATION;
 import static org.hisp.dhis.android.core.program.ProgramType.WITH_REGISTRATION;
@@ -32,20 +35,31 @@ class HomeRepositoryImpl implements HomeRepository {
 
     private final D2 d2;
     private final String eventLabel;
+    private final DataSetCollectionRepository dataSetRepository;
+    private final ProgramCollectionRepository programRepository;
 
-    HomeRepositoryImpl(D2 d2,String eventLabel) {
+    HomeRepositoryImpl(D2 d2, String eventLabel) {
         this.d2 = d2;
         this.eventLabel = eventLabel;
+        this.dataSetRepository = d2.dataSetModule().dataSets.withCompulsoryDataElementOperands()
+                .withDataInputPeriods()
+                .withDataSetElements()
+                .withIndicators()
+                .withSections()
+                .withStyle();
+
+        this.programRepository = d2.programModule().programs.withStyle().withCategoryCombo()
+                .withProgramIndicators().withProgramRules().withProgramRuleVariables().withProgramSections()
+                .withProgramStages().withProgramTrackedEntityAttributes().withStyle()
+                .withRelatedProgram().withTrackedEntityType();
     }
 
     @NonNull
     @Override
     public Flowable<List<ProgramViewModel>> aggregatesModels(List<DatePeriod> dateFilter, final List<String> orgUnitFilter, List<State> statesFilter) {
-
-        return Flowable.just(d2.dataSetModule().dataSets)
-                .flatMap(programRepo -> Flowable.fromIterable(programRepo.withCompulsoryDataElementOperands()
-                        .withDataInputPeriods().withDataSetElements().withIndicators().withSections().withStyle().blockingGet()))
+        return ParallelFlowable.from(Flowable.fromIterable(dataSetRepository.blockingGet())).runOn(Schedulers.io())
                 .map(dataSet -> {
+                    Timber.tag("AGGREGATES").d("%s Running in %s", dataSet.displayName(),Thread.currentThread().getName());
                             DataSetInstanceCollectionRepository repo = d2.dataSetModule().dataSetInstances.byDataSetUid().eq(dataSet.uid());
                             if (!orgUnitFilter.isEmpty())
                                 repo = repo.byOrganisationUnitUid().in(orgUnitFilter);
@@ -53,11 +67,11 @@ class HomeRepositoryImpl implements HomeRepository {
                                 repo = repo.byPeriodStartDate().inDatePeriods(dateFilter);
 
                             int count = 0;
-                            if(!statesFilter.isEmpty()) {
+                            if (!statesFilter.isEmpty()) {
                                 for (DataSetInstance instance : repo.blockingGet())
                                     if (statesFilter.contains(instance.state()))
                                         count++;
-                            }else
+                            } else
                                 count = repo.blockingCount();
 
                             State state = State.SYNCED;
@@ -65,7 +79,7 @@ class HomeRepositoryImpl implements HomeRepository {
                             for (DataSetElement dataSetElement : dataSet.dataSetElements()) {
                                 DataElement dataElement = d2.dataElementModule().dataElements.uid(dataSetElement.dataElement().uid()).blockingGet();
                                 List<String> categoryOptionCombos;
-                                if(dataSetElement.categoryCombo() != null)
+                                if (dataSetElement.categoryCombo() != null)
                                     categoryOptionCombos = UidsHelper.getUidsList(
                                             d2.categoryModule().categoryCombos.withCategoryOptionCombos().uid(dataSetElement.categoryCombo().uid()).blockingGet().categoryOptionCombos());
                                 else
@@ -85,8 +99,8 @@ class HomeRepositoryImpl implements HomeRepository {
                             List<DataSetCompleteRegistration> dscr = d2.dataSetModule().dataSetCompleteRegistrations
                                     .byDataSetUid().eq(dataSet.uid()).blockingGet();
 
-                            for(DataSetCompleteRegistration completeRegistration: dscr){
-                                if(completeRegistration.state() != State.SYNCED) {
+                            for (DataSetCompleteRegistration completeRegistration : dscr) {
+                                if (completeRegistration.state() != State.SYNCED) {
                                     if (completeRegistration.deleted() != null && completeRegistration.deleted())
                                         state = State.TO_UPDATE;
                                     else
@@ -109,7 +123,7 @@ class HomeRepositoryImpl implements HomeRepository {
                                     dataSet.access().data().write(),
                                     state.name());
                         }
-                ).toList().toFlowable();
+                ).sequential().toList().toFlowable();
     }
 
     @NonNull
@@ -117,26 +131,19 @@ class HomeRepositoryImpl implements HomeRepository {
     public Flowable<List<ProgramViewModel>> programModels(List<DatePeriod> dateFilter, List<String> orgUnitFilter, List<State> statesFilter) {
 
         return Flowable.just(d2.organisationUnitModule().organisationUnits.byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE).blockingGet())
+                .map(UidsHelper::getUidsList)
                 .map(captureOrgUnits -> {
-                    Iterator<OrganisationUnit> it = captureOrgUnits.iterator();
-                    List<String> captureOrgUnitUids = new ArrayList();
-                    while (it.hasNext()) {
-                        OrganisationUnit ou = it.next();
-                        captureOrgUnitUids.add(ou.uid());
-                    }
-                    return captureOrgUnitUids;
-                })
-                .flatMap(orgUnits -> Flowable.just(d2.programModule().programs.withStyle().withCategoryCombo()
-                        .withProgramIndicators().withProgramRules().withProgramRuleVariables().withProgramSections()
-                        .withProgramStages().withProgramTrackedEntityAttributes().withStyle()
-                        .withRelatedProgram().withTrackedEntityType().byOrganisationUnitList(orgUnits)))
-                .flatMap(programRepo -> {
                     if (orgUnitFilter != null && !orgUnitFilter.isEmpty())
-                        return Flowable.fromIterable(programRepo.byOrganisationUnitList(orgUnitFilter).blockingGet());
+                        return programRepository.byOrganisationUnitList(orgUnitFilter);
                     else
-                        return Flowable.fromIterable(programRepo.blockingGet());
+                        return programRepository.byOrganisationUnitList(captureOrgUnits);
                 })
+                .flatMap(programRepo ->
+                        ParallelFlowable.from(Flowable.fromIterable(programRepo.blockingGet())).runOn(Schedulers.io())
+                        .sequential()
+                )
                 .map(program -> {
+                    Timber.tag("PROGRAMS").d("%s Running in %s",program.displayName(), Thread.currentThread().getName());
 
                     String typeName;
                     if (program.programType() == WITH_REGISTRATION) {
@@ -153,22 +160,21 @@ class HomeRepositoryImpl implements HomeRepository {
                     if (program.programType() == WITHOUT_REGISTRATION) {
                         if (!dateFilter.isEmpty()) {
                             if (!orgUnitFilter.isEmpty()) {
-                                if(!statesFilter.isEmpty()) {
+                                if (!statesFilter.isEmpty()) {
                                     count = d2.eventModule().events
                                             .byProgramUid().eq(program.uid())
                                             .byEventDate().inDatePeriods(dateFilter)
                                             .byOrganisationUnitUid().in(orgUnitFilter)
                                             .byState().in(statesFilter)
                                             .blockingCount();
-                                }
-                                else
+                                } else
                                     count = d2.eventModule().events
                                             .byProgramUid().eq(program.uid())
                                             .byEventDate().inDatePeriods(dateFilter)
                                             .byOrganisationUnitUid().in(orgUnitFilter)
                                             .blockingCount();
                             } else {
-                                if(!statesFilter.isEmpty())
+                                if (!statesFilter.isEmpty())
                                     count = d2.eventModule().events
                                             .byProgramUid().eq(program.uid())
                                             .byEventDate().inDatePeriods(dateFilter)
@@ -181,7 +187,7 @@ class HomeRepositoryImpl implements HomeRepository {
                                             .blockingCount();
                             }
                         } else if (!orgUnitFilter.isEmpty()) {
-                            if(!statesFilter.isEmpty())
+                            if (!statesFilter.isEmpty())
                                 count = d2.eventModule().events
                                         .byProgramUid().eq(program.uid())
                                         .byOrganisationUnitUid().in(orgUnitFilter)
@@ -193,7 +199,7 @@ class HomeRepositoryImpl implements HomeRepository {
                                         .byOrganisationUnitUid().in(orgUnitFilter)
                                         .blockingCount();
                         } else {
-                            if(!statesFilter.isEmpty())
+                            if (!statesFilter.isEmpty())
                                 count = d2.eventModule().events
                                         .byProgramUid().eq(program.uid())
                                         .byState().in(statesFilter)
@@ -218,7 +224,7 @@ class HomeRepositoryImpl implements HomeRepository {
                         if (!dateFilter.isEmpty()) {
                             List<Enrollment> enrollments;
                             if (!orgUnitFilter.isEmpty()) {
-                                if(!statesFilter.isEmpty())
+                                if (!statesFilter.isEmpty())
                                     enrollments = d2.enrollmentModule().enrollments
                                             .byProgram().in(programUids)
                                             .byEnrollmentDate().inDatePeriods(dateFilter)
@@ -236,7 +242,7 @@ class HomeRepositoryImpl implements HomeRepository {
                                             .byDeleted().isFalse()
                                             .blockingGet();
                             } else {
-                                if(!statesFilter.isEmpty())
+                                if (!statesFilter.isEmpty())
                                     enrollments = d2.enrollmentModule().enrollments
                                             .byProgram().in(programUids)
                                             .byEnrollmentDate().inDatePeriods(dateFilter)
@@ -255,7 +261,7 @@ class HomeRepositoryImpl implements HomeRepository {
                             count = countEnrollment(enrollments);
                         } else if (!orgUnitFilter.isEmpty()) {
                             List<Enrollment> enrollments;
-                            if(!statesFilter.isEmpty())
+                            if (!statesFilter.isEmpty())
                                 enrollments = d2.enrollmentModule().enrollments
                                         .byProgram().in(programUids)
                                         .byOrganisationUnit().in(orgUnitFilter)
@@ -274,7 +280,7 @@ class HomeRepositoryImpl implements HomeRepository {
                             count = countEnrollment(enrollments);
                         } else {
                             List<Enrollment> enrollments;
-                            if(!statesFilter.isEmpty())
+                            if (!statesFilter.isEmpty())
                                 enrollments = d2.enrollmentModule().enrollments
                                         .byProgram().in(programUids)
                                         .byStatus().eq(EnrollmentStatus.ACTIVE)

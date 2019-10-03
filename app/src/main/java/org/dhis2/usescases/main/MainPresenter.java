@@ -40,7 +40,7 @@ final class MainPresenter implements MainContracts.Presenter {
         this.view = view;
         this.compositeDisposable = new CompositeDisposable();
 
-        compositeDisposable.add(Observable.defer(() -> Observable.just(d2.userModule().user.blockingGet()))
+        compositeDisposable.add(d2.userModule().user.get()
                 .map(this::username)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -118,23 +118,12 @@ final class MainPresenter implements MainContracts.Presenter {
             prefs.edit().putString("pin", pin).apply();
         }
         WorkManager.getInstance(view.getContext().getApplicationContext()).cancelAllWork();
-//        view.startActivity(LoginActivity.class, null, true, true, null);
         view.back();
     }
 
     @Override
     public void showFilter() {
         view.showHideFilter();
-    }
-
-    @Override
-    public void changeFragment(int id) {
-        view.changeFragment(id);
-    }
-
-    @Override
-    public void getErrors() {
-        view.showSyncErrors(d2.importModule().trackerImportConflicts.blockingGet());
     }
 
     @Override
@@ -147,7 +136,6 @@ final class MainPresenter implements MainContracts.Presenter {
         view.openDrawer(Gravity.START);
     }
 
-    //    @SuppressWarnings("PMD.UseStringBufferForStringAppends")
     private String username(@NonNull User user) {
         return String.format("%s %s",
                 isEmpty(user.firstName()) ? "" : user.firstName(),
