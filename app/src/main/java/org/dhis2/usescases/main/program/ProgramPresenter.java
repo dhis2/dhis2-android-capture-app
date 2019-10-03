@@ -4,15 +4,12 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
-import com.unnamed.b.atv.model.TreeNode;
-
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.usescases.datasets.datasetDetail.DataSetDetailActivity;
 import org.dhis2.usescases.programEventDetail.ProgramEventDetailActivity;
 import org.dhis2.usescases.searchTrackEntity.SearchTEActivity;
 import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.Constants;
-import org.dhis2.utils.OrgUnitUtils;
 import org.dhis2.utils.Period;
 import org.dhis2.utils.filters.FilterManager;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
@@ -21,12 +18,8 @@ import org.hisp.dhis.android.core.program.ProgramType;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
-import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
@@ -52,7 +45,6 @@ public class ProgramPresenter implements ProgramContract.Presenter {
     private List<OrganisationUnit> myOrgs = new ArrayList<>();
     private FlowableProcessor<Pair<List<DatePeriod>, List<String>>> programQueries;
 
-    private FlowableProcessor<Pair<TreeNode, String>> parentOrgUnit;
     private List<DatePeriod> currentDateFilter;
     private List<String> currentOrgUnitFilter;
     private FlowableProcessor<Boolean> processorDismissDialog;
@@ -67,26 +59,27 @@ public class ProgramPresenter implements ProgramContract.Presenter {
         this.currentOrgUnitFilter = new ArrayList<>();
         this.currentDateFilter = new ArrayList<>();
         this.compositeDisposable = new CompositeDisposable();
-        ExecutorService executorService = Executors.newFixedThreadPool(2);
         programQueries = PublishProcessor.create();
-        parentOrgUnit = PublishProcessor.create();
         this.processorDismissDialog = PublishProcessor.create();
 
-        if(FilterManager.getInstance().getPeriodFilters().size() != 0)
+        if (FilterManager.getInstance().getPeriodFilters().size() != 0)
             currentDateFilter = FilterManager.getInstance().getPeriodFilters();
-        if(FilterManager.getInstance().getOrgUnitFilters().size() != 0)
+        if (FilterManager.getInstance().getOrgUnitFilters().size() != 0)
             currentOrgUnitFilter = FilterManager.getInstance().getOrgUnitUidsFilters();
 
         compositeDisposable.add(
                 programQueries
                         .startWith(Pair.create(currentDateFilter, currentOrgUnitFilter))
-                        .flatMap(datePeriodOrgs -> Flowable.zip(homeRepository.programModels(datePeriodOrgs.val0(), datePeriodOrgs.val1(), FilterManager.getInstance().getStateFilters()),
-                                homeRepository.aggregatesModels(datePeriodOrgs.val0(), datePeriodOrgs.val1(), FilterManager.getInstance().getStateFilters()), (programs, dataSets) -> {
-                                    programs.addAll(dataSets);
-                                    Collections.sort(programs, (program1, program2) -> program1.title().compareToIgnoreCase(program2.title()));
-                                    return programs;
-                                }))
-                        .subscribeOn(Schedulers.from(executorService))
+                        .flatMap(datePeriodOrgs ->
+                                Flowable.zip(
+                                        homeRepository.programModels(datePeriodOrgs.val0(), datePeriodOrgs.val1(), FilterManager.getInstance().getStateFilters()).subscribeOn(Schedulers.io()),
+                                        homeRepository.aggregatesModels(datePeriodOrgs.val0(), datePeriodOrgs.val1(), FilterManager.getInstance().getStateFilters()).subscribeOn(Schedulers.io()),
+                                        (programs, dataSets) -> {
+                                            programs.addAll(dataSets);
+                                            Collections.sort(programs, (program1, program2) -> program1.title().compareToIgnoreCase(program2.title()));
+                                            return programs;
+                                        }))
+                        .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
                                 view.swapProgramModelData(),
@@ -94,23 +87,11 @@ public class ProgramPresenter implements ProgramContract.Presenter {
                         ));
 
         compositeDisposable.add(
-                parentOrgUnit
-                        .flatMap(orgUnit -> homeRepository.orgUnits(orgUnit.val1()).toFlowable(BackpressureStrategy.LATEST)
-                                .map(this::transformToNode)
-                                .map(nodeList -> Pair.create(orgUnit.val0(), nodeList)))
-                        .subscribeOn(Schedulers.from(executorService))
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(
-                                view.addNodeToTree(),
-                                Timber::e
-                        ));
-
-        compositeDisposable.add(
                 FilterManager.getInstance().asFlowable()
                         .subscribeOn(Schedulers.io())
                         .flatMap(filterManager ->
-                                homeRepository.programModels(filterManager.getPeriodFilters(), filterManager.getOrgUnitUidsFilters(),filterManager.getStateFilters()).flatMapIterable(data -> data)
-                                        .mergeWith(homeRepository.aggregatesModels(filterManager.getPeriodFilters(), filterManager.getOrgUnitUidsFilters(),filterManager.getStateFilters()).flatMapIterable(data -> data))
+                                homeRepository.programModels(filterManager.getPeriodFilters(), filterManager.getOrgUnitUidsFilters(), filterManager.getStateFilters()).flatMapIterable(data -> data)
+                                        .mergeWith(homeRepository.aggregatesModels(filterManager.getPeriodFilters(), filterManager.getOrgUnitUidsFilters(), filterManager.getStateFilters()).flatMapIterable(data -> data))
                                         .sorted((p1, p2) -> p1.title().compareToIgnoreCase(p2.title())).toList().toFlowable()
                                         .subscribeOn(Schedulers.io()))
                         .subscribeOn(Schedulers.io())
@@ -134,21 +115,11 @@ public class ProgramPresenter implements ProgramContract.Presenter {
         manageProcessorDismissDialog();
     }
 
-    private void manageProcessorDismissDialog(){
+    private void manageProcessorDismissDialog() {
         compositeDisposable.add(processorDismissDialog
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(bool -> init(view), Timber::d));
-    }
-
-    @Override
-    public void onExpandOrgUnitNode(TreeNode treeNode, String parentUid) {
-        parentOrgUnit.onNext(Pair.create(treeNode, parentUid));
-    }
-
-    @Override
-    public List<TreeNode> transformToNode(List<OrganisationUnit> orgUnits) {
-        return OrgUnitUtils.createNode_2(view.getContext(), orgUnits, true);
     }
 
     @Override
@@ -164,20 +135,8 @@ public class ProgramPresenter implements ProgramContract.Presenter {
     }
 
     @Override
-    public void updateDateFilter(List<DatePeriod> datePeriodList) {
-        this.currentDateFilter = datePeriodList;
-        programQueries.onNext(Pair.create(currentDateFilter, currentOrgUnitFilter));
-    }
-
-    @Override
-    public void updateOrgUnitFilter(List<String> orgUnitList) {
-        this.currentOrgUnitFilter = orgUnitList;
-        programQueries.onNext(Pair.create(currentDateFilter, currentOrgUnitFilter));
-    }
-
-    @Override
     public void onSyncStatusClick(ProgramViewModel program) {
-        if(!program.typeName().equals("DataSets"))
+        if (!program.typeName().equals("DataSets"))
             view.showSyncDialog(program.id(), SyncStatusDialog.ConflictType.PROGRAM, processorDismissDialog);
         else
             view.showSyncDialog(program.id(), SyncStatusDialog.ConflictType.DATA_SET, processorDismissDialog);
@@ -189,7 +148,7 @@ public class ProgramPresenter implements ProgramContract.Presenter {
     }
 
     @Override
-    public void onItemClick(ProgramViewModel programModel, Period currentPeriod) {
+    public void onItemClick(ProgramViewModel programModel) {
 
         Bundle bundle = new Bundle();
         String idTag;
@@ -202,7 +161,7 @@ public class ProgramPresenter implements ProgramContract.Presenter {
         else
             idTag = "PROGRAM_UID";
 
-        view.analyticsHelper().setEvent(TYPE_PROGRAM_SELECTED, !programModel.programType().isEmpty()?programModel.programType() : programModel.typeName(), SELECT_PROGRAM);
+        view.analyticsHelper().setEvent(TYPE_PROGRAM_SELECTED, !programModel.programType().isEmpty() ? programModel.programType() : programModel.typeName(), SELECT_PROGRAM);
         bundle.putString(idTag, programModel.id());
         bundle.putString(Constants.DATA_SET_NAME, programModel.title());
         bundle.putString(Constants.ACCESS_DATA, programModel.accessDataWrite().toString());
@@ -217,58 +176,12 @@ public class ProgramPresenter implements ProgramContract.Presenter {
         if (programModel.programType().equals(ProgramType.WITH_REGISTRATION.name())) {
             view.startActivity(SearchTEActivity.class, bundle, false, false, null);
         } else if (programModel.programType().equals(ProgramType.WITHOUT_REGISTRATION.name())) {
-            ArrayList<Date> dates = new ArrayList<>();
-            switch (currentPeriod) {
-                case DAILY:
-                    dates.add(view.getChosenDateDay());
-                    break;
-                case WEEKLY:
-                    dates.addAll(view.getChosenDateWeek());
-                    break;
-                case MONTHLY:
-                    dates.addAll(view.getChosenDateMonth());
-                    break;
-                case YEARLY:
-                    dates.addAll(view.getChosenDateYear());
-                    break;
-            }
-
             view.startActivity(ProgramEventDetailActivity.class,
-                    ProgramEventDetailActivity.getBundle(programModel.id(), currentPeriod.name(), dates),
+                    ProgramEventDetailActivity.getBundle(programModel.id()),
                     false, false, null);
         } else {
             view.startActivity(DataSetDetailActivity.class, bundle, false, false, null);
         }
-    }
-
-    @Override
-    public void onOrgUnitButtonClick() {
-        view.openDrawer();
-        if (myOrgs.isEmpty()) {
-            view.orgUnitProgress(true);
-            compositeDisposable.add(
-                    homeRepository.orgUnits()
-                            .subscribeOn(Schedulers.computation())
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe(
-                                    data -> {
-                                        this.myOrgs = data;
-                                        view.orgUnitProgress(false);
-                                        view.addTree(OrgUnitUtils.renderTree_2(view.getContext(), myOrgs, true, ""));
-                                    },
-                                    throwable -> view.renderError(throwable.getMessage())));
-        }
-    }
-
-    @Override
-    public void onDateRangeButtonClick() {
-        view.showRageDatePicker();
-    }
-
-
-    @Override
-    public void onTimeButtonClick() {
-        view.showTimeUnitPicker();
     }
 
     @Override
@@ -278,7 +191,7 @@ public class ProgramPresenter implements ProgramContract.Presenter {
     }
 
     @Override
-    public void showHideFilterClick(){
+    public void showHideFilterClick() {
         view.showHideFilter();
     }
 

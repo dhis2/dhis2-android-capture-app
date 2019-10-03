@@ -48,9 +48,5 @@ public final class MainContracts {
         void blockSession(String pin);
 
         void showFilter();
-
-        void changeFragment(int id);
-
-        void getErrors();
     }
 }

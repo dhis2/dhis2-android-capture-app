@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.transition.ChangeBounds;
 import android.transition.Transition;
@@ -103,12 +102,12 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
 
             @Override
             public void onEmpty() {
-
+                //DO NOTHING
             }
 
             @Override
             public void onPinChange(int pinLength, String intermediatePin) {
-
+                //DO NOTHING
             }
         });
 
@@ -136,7 +135,7 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
     }
 
     @Override
-    protected void onSaveInstanceState(Bundle outState) {
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putInt("Fragment", fragId);
     }
@@ -201,12 +200,6 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
             initSet.connect(R.id.fragment_container, ConstraintSet.TOP, R.id.toolbar, ConstraintSet.BOTTOM, 0);
         initSet.applyTo(binding.backdropLayout);
         programFragment.openFilter(backDropActive);
-    }
-
-    private void checkFilterEnabled() {
-        binding.filter.setBackgroundColor(programFragment.areFiltersApplied() ? getAccentColor() : getPrimaryColor());
-        binding.filter.setColorFilter(programFragment.areFiltersApplied() ? getPrimaryColor() : getAccentColor(), PorterDuff.Mode.SRC_IN);
-        binding.filter.setBackgroundResource(programFragment.areFiltersApplied() ? R.drawable.white_circle : 0);
     }
 
     @Override
@@ -304,14 +297,14 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
 
     @Override
     public void showPeriodRequest(FilterManager.PeriodRequest periodRequest) {
-        if (periodRequest == FilterManager.PeriodRequest.FROM_TO) {
+        if (periodRequest == FilterManager.PeriodRequest.FROM_TO)
             DateUtils.getInstance().showFromToSelector(this, FilterManager.getInstance()::addPeriod);
-        } else {
-            DateUtils.getInstance().showPeriodDialog(this, datePeriods -> {
-                        FilterManager.getInstance().addPeriod(datePeriods);
-                    },
-                    true);
-        }
+        else
+            DateUtils.getInstance()
+                    .showPeriodDialog(
+                            this,
+                            datePeriods -> FilterManager.getInstance().addPeriod(datePeriods),
+                            true);
     }
 
     public void setTitle(String title) {

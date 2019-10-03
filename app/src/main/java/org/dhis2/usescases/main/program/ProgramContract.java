@@ -1,18 +1,12 @@
 package org.dhis2.usescases.main.program;
 
-import com.unnamed.b.atv.model.TreeNode;
+import androidx.annotation.UiThread;
 
-import org.dhis2.data.tuples.Pair;
 import org.dhis2.usescases.general.AbstractActivityContracts;
-import org.dhis2.utils.Period;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
-import org.hisp.dhis.android.core.period.DatePeriod;
 
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
-import androidx.annotation.UiThread;
 import io.reactivex.functions.Consumer;
 
 /**
@@ -22,31 +16,10 @@ public class ProgramContract {
 
     interface View extends AbstractActivityContracts.View {
 
-        void showRageDatePicker();
-
-        void showTimeUnitPicker();
-
         Consumer<List<ProgramViewModel>> swapProgramModelData();
 
         @UiThread
         void renderError(String message);
-
-        @UiThread
-        void addTree(TreeNode treeNode);
-
-        void openDrawer();
-
-        ArrayList<Date> getChosenDateWeek();
-
-        ArrayList<Date> getChosenDateMonth();
-
-        ArrayList<Date> getChosenDateYear();
-
-        Date getChosenDateDay();
-
-        void orgUnitProgress(boolean showProgress);
-
-        Consumer<Pair<TreeNode, List<TreeNode>>> addNodeToTree();
 
         void openOrgUnitTreeSelector();
 
@@ -58,27 +31,13 @@ public class ProgramContract {
     public interface Presenter {
         void init(View view);
 
-        void onItemClick(ProgramViewModel programModel, Period currentPeriod);
-
-        void onOrgUnitButtonClick();
-
-        void onDateRangeButtonClick();
-
-        void onTimeButtonClick();
+        void onItemClick(ProgramViewModel programModel);
 
         void showDescription(String description);
-
-        void onExpandOrgUnitNode(TreeNode treeNode, String parentUid);
-
-        List<TreeNode> transformToNode(List<OrganisationUnit> orgUnits);
 
         List<OrganisationUnit> getOrgUnits();
 
         void dispose();
-
-        void updateDateFilter(List<DatePeriod> datePeriodList);
-
-        void updateOrgUnitFilter(List<String> orgUnitList);
 
         void onSyncStatusClick(ProgramViewModel program);
 

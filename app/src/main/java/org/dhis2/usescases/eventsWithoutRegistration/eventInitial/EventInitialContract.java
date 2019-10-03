@@ -116,8 +116,6 @@ public class EventInitialContract {
 
         void getSectionCompletion(@Nullable String sectionUid);
 
-        void goToSummary();
-
         void getEventSections(@NonNull String eventId);
 
         List<OrganisationUnit> getOrgUnits();

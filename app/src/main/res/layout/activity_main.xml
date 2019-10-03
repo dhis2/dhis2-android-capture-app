@@ -126,24 +126,6 @@
                         app:srcCompat="@drawable/ic_more"
                         tools:ignore="ContentDescription" />
 
-                    <androidx.constraintlayout.widget.Guideline
-                        android:id="@+id/guideline"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        app:layout_constraintGuide_end="10dp" />
-
-                    <androidx.core.widget.ContentLoadingProgressBar
-                        android:id="@+id/toolbarProgress"
-                        style="?android:attr/progressBarStyleHorizontal"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:indeterminate="true"
-                        android:padding="0dp"
-                        android:visibility="gone"
-                        app:layout_constraintTop_toBottomOf="@id/guideline"
-                        tools:visibility="visible" />
-
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <androidx.recyclerview.widget.RecyclerView
@@ -167,6 +149,7 @@
                 <FrameLayout
                     android:id="@+id/fragment_container"
                     android:layout_width="0dp"
+                    tools:layout="@layout/fragment_program"
                     android:layout_height="0dp"
                     android:clipToPadding="false"
                     android:elevation="1dp"
