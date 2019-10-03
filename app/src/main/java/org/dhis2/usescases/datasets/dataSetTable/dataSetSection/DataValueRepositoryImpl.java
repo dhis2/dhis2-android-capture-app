@@ -28,6 +28,7 @@ import org.hisp.dhis.android.core.datavalue.DataValueObjectRepository;
 import org.hisp.dhis.android.core.period.Period;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -204,6 +205,7 @@ public class DataValueRepositoryImpl implements DataValueRepository {
                                     .byAttributeOptionComboUid().eq(catOptionComb)
                                     .byPeriod().eq(initPeriodType)
                                     .byOrganisationUnitUid().eq(orgUnitUid)
+                                    .byDeleted().isFalse()
                                     .blockingGet();
                         }
                 ).map(dataValue -> {
@@ -262,7 +264,7 @@ public class DataValueRepositoryImpl implements DataValueRepository {
 
         ContentValues contentValues = new ContentValues();
         contentValues.put(DataSetCompleteRegistration.Columns.STATE, State.TO_UPDATE.name());
-        String completeDate = DateUtils.databaseDateFormat().format(DateUtils.getInstance().getToday());
+        String completeDate = DateUtils.databaseDateFormat().format(Calendar.getInstance().getTime());
         contentValues.put("date", completeDate);
         String[] values = {periodInitialDate, dataSetUid, catCombo};
 
@@ -274,7 +276,7 @@ public class DataValueRepositoryImpl implements DataValueRepository {
                             .period(periodInitialDate)
                             .organisationUnit(orgUnitUid)
                             .attributeOptionCombo(catCombo)
-                            .date(DateUtils.getInstance().getToday())
+                            .date(Calendar.getInstance().getTime())
                             .state(State.TO_POST).build();
 
             updateOrInserted = briteDatabase.insert(DataSetCompleteRegistration.class.getSimpleName(), dataSetCompleteRegistration.toContentValues()) > 0;
@@ -325,25 +327,35 @@ public class DataValueRepositoryImpl implements DataValueRepository {
 
     @Override
     public Flowable<List<DataElement>> getDataElements(CategoryCombo categoryCombo, String sectionName) {
-        List<String> dataElements = new ArrayList<>();
-        if (!sectionName.equals("NO_SECTION"))
-            dataElements = UidsHelper.getUidsList(d2.dataSetModule().sections.withDataElements().byDataSetUid().eq(dataSetUid).byName().eq(sectionName).one().blockingGet().dataElements());
-        else {
+        List<String> dataElementUids = new ArrayList<>();
+        List<DataElement> listDataElements;
+        if (!sectionName.equals("NO_SECTION")) {
+            listDataElements = d2.dataSetModule().sections.withDataElements().byDataSetUid().eq(dataSetUid).byName().eq(sectionName).one().blockingGet().dataElements();
+        }else {
             List<DataSetElement> dataSetElements = d2.dataSetModule().dataSets.withDataSetElements().byUid().eq(dataSetUid).one().blockingGet().dataSetElements();
-            for (DataSetElement dataSetElement : dataSetElements)
-                dataElements.add(dataSetElement.dataElement().uid());
-
-            if(dataSetElements.get(0).categoryCombo() != null)
-                return d2.dataElementModule().dataElements
-                        .byUid().in(dataElements)
+            for (DataSetElement dataSetElement : dataSetElements) {
+                if(dataSetElement.categoryCombo() != null && categoryCombo.uid().equals(dataSetElement.categoryCombo().uid()))
+                    dataElementUids.add(dataSetElement.dataElement().uid());
+                else{
+                    String uid = d2.dataElementModule().dataElements.uid(dataSetElement.dataElement().uid()).blockingGet().categoryComboUid();
+                    if(categoryCombo.uid().equals(uid))
+                        dataElementUids.add(dataSetElement.dataElement().uid());
+                }
+            }
+            return d2.dataElementModule().dataElements
+                        .byUid().in(dataElementUids)
                         .orderByName(RepositoryScope.OrderByDirection.ASC)
                         .get().toFlowable();
         }
-        return d2.dataElementModule().dataElements
-                .byUid().in(dataElements)
-                .byCategoryComboUid().eq(categoryCombo.uid())
-                .orderByName(RepositoryScope.OrderByDirection.ASC)
-                .get().toFlowable();
+
+        List<DataElement> dataElements = new ArrayList<>();
+        for(DataElement de: listDataElements) {
+            if (de.categoryComboUid().equals(categoryCombo.uid())) {
+                dataElements.add(de);
+            }
+        }
+
+        return Flowable.just(dataElements);
     }
 
     @Override

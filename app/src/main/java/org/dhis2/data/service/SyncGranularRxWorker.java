@@ -86,7 +86,7 @@ public class SyncGranularRxWorker extends RxWorker {
                         .onErrorReturn(error -> Result.failure());
             case DATA_VALUES:
                 return Single.fromObservable(presenter.syncGranularDataValues(getInputData().getString(ORG_UNIT),
-                        getInputData().getString(ATTRIBUTE_OPTION_COMBO), getInputData().getString(PERIOD_ID)))
+                        getInputData().getString(ATTRIBUTE_OPTION_COMBO), getInputData().getString(PERIOD_ID), getInputData().getStringArray(CATEGORY_OPTION_COMBO)))
                         .map(d2Progress -> {
                             if(!presenter.checkSyncDataValueStatus(getInputData().getString(ORG_UNIT),
                                     getInputData().getString(ATTRIBUTE_OPTION_COMBO), getInputData().getString(PERIOD_ID) ))

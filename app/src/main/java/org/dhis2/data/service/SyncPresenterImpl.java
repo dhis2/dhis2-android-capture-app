@@ -145,11 +145,12 @@ final class SyncPresenterImpl implements SyncPresenter {
     }
 
     @Override
-    public Observable<D2Progress> syncGranularDataValues(String orgUnit, String attributeOptionCombo, String period) {
+    public Observable<D2Progress> syncGranularDataValues(String orgUnit, String attributeOptionCombo, String period, String[] catOptionCombos) {
         return d2.dataValueModule().dataValues
                 .byAttributeOptionComboUid().eq(attributeOptionCombo)
                 .byOrganisationUnitUid().eq(orgUnit)
                 .byPeriod().eq(period)
+                .byCategoryOptionComboUid().in(catOptionCombos)
                 .upload();
     }
 
