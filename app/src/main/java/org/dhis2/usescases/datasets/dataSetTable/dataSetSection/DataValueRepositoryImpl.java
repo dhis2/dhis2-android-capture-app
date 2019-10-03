@@ -28,6 +28,7 @@ import org.hisp.dhis.android.core.datavalue.DataValueObjectRepository;
 import org.hisp.dhis.android.core.period.Period;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -263,7 +264,7 @@ public class DataValueRepositoryImpl implements DataValueRepository {
 
         ContentValues contentValues = new ContentValues();
         contentValues.put(DataSetCompleteRegistration.Columns.STATE, State.TO_UPDATE.name());
-        String completeDate = DateUtils.databaseDateFormat().format(DateUtils.getInstance().getToday());
+        String completeDate = DateUtils.databaseDateFormat().format(Calendar.getInstance().getTime());
         contentValues.put("date", completeDate);
         String[] values = {periodInitialDate, dataSetUid, catCombo};
 
@@ -275,7 +276,7 @@ public class DataValueRepositoryImpl implements DataValueRepository {
                             .period(periodInitialDate)
                             .organisationUnit(orgUnitUid)
                             .attributeOptionCombo(catCombo)
-                            .date(DateUtils.getInstance().getToday())
+                            .date(Calendar.getInstance().getTime())
                             .state(State.TO_POST).build();
 
             updateOrInserted = briteDatabase.insert(DataSetCompleteRegistration.class.getSimpleName(), dataSetCompleteRegistration.toContentValues()) > 0;
