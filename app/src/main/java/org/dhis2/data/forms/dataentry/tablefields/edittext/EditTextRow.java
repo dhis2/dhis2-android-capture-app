@@ -55,7 +55,7 @@ public class EditTextRow implements Row<EditTextCellCustomHolder, EditTextModel>
 
     @Override
     public void onBind(@NonNull EditTextCellCustomHolder viewHolder, @NonNull EditTextModel viewModel, String value) {
-        viewHolder.update(viewModel, value);
+        viewHolder.update(viewModel);
     }
 
     @Override

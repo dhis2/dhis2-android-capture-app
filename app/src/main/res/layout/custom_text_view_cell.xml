@@ -38,7 +38,7 @@
             android:scrollHorizontally="true"
             android:singleLine="true"
             android:textAlignment="textEnd"
-            android:textColor="@color/text_black_333"
+            android:textColor="@drawable/cell_text_color"
             android:textCursorDrawable="@null"
             android:textSize="14sp"
             app:tableScaleTextSize="@{tableScale}"

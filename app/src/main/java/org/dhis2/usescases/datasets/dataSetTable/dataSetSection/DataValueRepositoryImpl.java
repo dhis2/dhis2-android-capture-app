@@ -204,6 +204,7 @@ public class DataValueRepositoryImpl implements DataValueRepository {
                                     .byAttributeOptionComboUid().eq(catOptionComb)
                                     .byPeriod().eq(initPeriodType)
                                     .byOrganisationUnitUid().eq(orgUnitUid)
+                                    .byDeleted().isFalse()
                                     .blockingGet();
                         }
                 ).map(dataValue -> {
