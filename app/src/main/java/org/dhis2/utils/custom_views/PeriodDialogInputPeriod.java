@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import org.dhis2.R;
 import org.dhis2.usescases.datasets.datasetInitial.DateRangeInputPeriodModel;
 import org.dhis2.utils.DateUtils;
+import org.hisp.dhis.android.core.period.PeriodType;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -78,7 +79,12 @@ public class PeriodDialogInputPeriod extends PeriodDialog {
             binding.acceptButton.setVisibility(View.GONE);
             binding.periodBefore.setVisibility(View.INVISIBLE);
         }else {
-            binding.selectedPeriod.setText(DateUtils.getInstance().getPeriodUIString(getPeriod(), getCurrentDate(), Locale.getDefault()));
+            String text = DateUtils.getInstance().getPeriodUIString(getPeriod(), getCurrentDate(), Locale.getDefault());
+            if(getPeriod() == PeriodType.Weekly || getPeriod() == PeriodType.WeeklySaturday || getPeriod() == PeriodType.WeeklySunday ||
+                getPeriod() == PeriodType.WeeklyThursday || getPeriod() == PeriodType.WeeklyWednesday)
+                text = getString(R.string.period_week) + text;
+
+            binding.selectedPeriod.setText(text);
 
             binding.periodBefore.setOnClickListener(view -> {
 
@@ -109,7 +115,12 @@ public class PeriodDialogInputPeriod extends PeriodDialog {
 
                 if (inputPeriod.size() != 0 && !isPreviousAllowed) {
                     setRealCurrentDate(currentDate);
-                    binding.selectedPeriod.setText(DateUtils.getInstance().getPeriodUIString(getPeriod(), currentDate, Locale.getDefault()));
+                    String textBefore = DateUtils.getInstance().getPeriodUIString(getPeriod(), currentDate, Locale.getDefault());
+                    if(getPeriod() == PeriodType.Weekly && getPeriod() == PeriodType.WeeklySaturday && getPeriod() == PeriodType.WeeklySunday &&
+                            getPeriod() == PeriodType.WeeklyThursday && getPeriod() == PeriodType.WeeklyWednesday)
+                        textBefore = getString(R.string.week) + textBefore;
+
+                    binding.selectedPeriod.setText(textBefore);
                     binding.periodBefore.setEnabled(false);
                 }
             });
@@ -144,7 +155,12 @@ public class PeriodDialogInputPeriod extends PeriodDialog {
 
                 if (inputPeriod.size() != 0 && !isNextAllowed) {
                     setRealCurrentDate(currentDate);
-                    binding.selectedPeriod.setText(DateUtils.getInstance().getPeriodUIString(getPeriod(), currentDate, Locale.getDefault()));
+                    String textNext = DateUtils.getInstance().getPeriodUIString(getPeriod(), currentDate, Locale.getDefault());
+                    if(getPeriod() == PeriodType.Weekly && getPeriod() == PeriodType.WeeklySaturday && getPeriod() == PeriodType.WeeklySunday &&
+                            getPeriod() == PeriodType.WeeklyThursday && getPeriod() == PeriodType.WeeklyWednesday)
+                        textNext = getString(R.string.week) + textNext;
+
+                    binding.selectedPeriod.setText(textNext);
                     binding.periodNext.setEnabled(false);
                 }
             });
