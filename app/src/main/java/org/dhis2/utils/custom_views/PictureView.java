@@ -32,6 +32,7 @@ import org.dhis2.databinding.FormPictureAccentBinding;
 import org.dhis2.databinding.FormPictureBinding;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.FileResourcesUtil;
+import org.hisp.dhis.android.core.arch.helpers.FileResourceDirectoryHelper;
 import org.hisp.dhis.android.core.fileresource.internal.FileResourceUtil;
 
 import java.io.File;
@@ -200,7 +201,7 @@ public class PictureView extends FieldLayout implements View.OnClickListener, Vi
                         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                         Uri photoUri = FileProvider.getUriForFile(getContext(),
                                 BuildConfig.APPLICATION_ID + ".provider",
-                                new File(FileResourceUtil.getFileResourceDirectory(getContext()), "tempFile.png"));
+                                new File(FileResourceDirectoryHelper.getFileResourceDirectory(getContext()), "tempFile.png"));
                         intent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
                         intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
                         PictureView.this.onIntentSelected.intentSelected(this.uid, intent, Constants.CAMERA_REQUEST, (file, value, uuid) -> {

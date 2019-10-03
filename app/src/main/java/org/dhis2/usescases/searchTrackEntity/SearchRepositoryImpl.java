@@ -156,7 +156,7 @@ public class SearchRepositoryImpl implements SearchRepository {
             orgUnits.addAll(
                     UidsHelper.getUidsList(d2.organisationUnitModule().organisationUnits
                             .byRootOrganisationUnit(true)
-                            .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_TEI_SEARCH)
+//                            .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_TEI_SEARCH)TODO: SHOULD WE USE THE SCOPE??
                             .blockingGet()));
             ouMode = OrganisationUnitMode.DESCENDANTS;
         } else
@@ -346,6 +346,7 @@ public class SearchRepositoryImpl implements SearchRepository {
                             d2.enrollmentModule().enrollments.uid(enrollmentUid).setEnrollmentDate(enrollmentDate);
                             if (displayIncidentDate)
                                 d2.enrollmentModule().enrollments.uid(enrollmentUid).setIncidentDate(new Date());
+                            d2.enrollmentModule().enrollments.uid(enrollmentUid).setFollowUp(false);
                             return Pair.create(enrollmentUid, uid);
                         })
         ).toObservable();

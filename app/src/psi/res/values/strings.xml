@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string name="app_name">PSI dhis2</string>
-    <string name="login_https">https://data.psi-mis.org</string>
-
-</resources>
