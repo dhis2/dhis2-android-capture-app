@@ -424,8 +424,8 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
 
     @Override
     public void showSyncDialog(String orgUnit, String attributeCombo, String periodId,
-                               SyncStatusDialog.ConflictType conflictType, FlowableProcessor processor) {
-        new SyncStatusDialog(orgUnit,attributeCombo, periodId, conflictType, processor, analyticsHelper)
+                               SyncStatusDialog.ConflictType conflictType, FlowableProcessor processor, String dataSetUid) {
+        new SyncStatusDialog(orgUnit,attributeCombo, periodId, conflictType, processor, analyticsHelper, dataSetUid)
                 .show(getSupportFragmentManager(), attributeCombo);
     }
 
