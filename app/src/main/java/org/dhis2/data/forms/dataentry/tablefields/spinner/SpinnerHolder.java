@@ -18,7 +18,7 @@ import io.reactivex.processors.FlowableProcessor;
  * QUADRAM. Created by ppajuelo on 07/11/2017.
  */
 
-public class SpinnerHolder extends FormViewHolder implements View.OnClickListener {
+public class SpinnerHolder extends FormViewHolder {
 
     FormOptionSetBinding binding;
     private final FlowableProcessor<RowAction> processor;
@@ -45,23 +45,25 @@ public class SpinnerHolder extends FormViewHolder implements View.OnClickListene
         this.viewModel = viewModel;
         binding.optionSetView.updateEditable(viewModel.editable() && accessDataWrite);
         binding.optionSetView.setValue(viewModel.value());
-        binding.optionSetView.setOnClickListener(this);
     }
 
     public void dispose() {
     }
 
     @Override
-    public void onClick(View v) {
-        closeKeyboard(v);
-        if (binding.optionSetView.openOptionDialog()) {
-            OptionSetCellDialog dialog = new OptionSetCellDialog(viewModel,
-                    binding.optionSetView,
-                    (view) -> binding.optionSetView.deleteSelectedOption()
-            );
-            dialog.show(((FragmentActivity) binding.getRoot().getContext()).getSupportFragmentManager(), OptionSetDialog.TAG);
-        } else
-            new OptionSetCellPopUp(itemView.getContext(), v, viewModel,
-                    binding.optionSetView);
+    public void setSelected(SelectionState selectionState) {
+        super.setSelected(selectionState);
+        if (selectionState == SelectionState.SELECTED) {
+            closeKeyboard(binding.optionSetView);
+            if (binding.optionSetView.openOptionDialog()) {
+                OptionSetCellDialog dialog = new OptionSetCellDialog(viewModel,
+                        binding.optionSetView,
+                        (view) -> binding.optionSetView.deleteSelectedOption()
+                );
+                dialog.show(((FragmentActivity) binding.getRoot().getContext()).getSupportFragmentManager(), OptionSetDialog.TAG);
+            } else
+                new OptionSetCellPopUp(itemView.getContext(), binding.optionSetView, viewModel,
+                        binding.optionSetView);
+        }
     }
 }
