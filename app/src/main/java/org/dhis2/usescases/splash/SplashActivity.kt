@@ -2,7 +2,11 @@ package org.dhis2.usescases.splash
 
 import android.os.Bundle
 import android.text.TextUtils.isEmpty
+import android.view.LayoutInflater
 import android.view.View
+import android.widget.Button
+import android.widget.TextView
+import androidx.appcompat.app.AlertDialog
 import androidx.databinding.DataBindingUtil
 import com.scottyab.rootbeer.RootBeer
 import org.dhis2.App
@@ -27,6 +31,8 @@ class SplashActivity : ActivityGlobalAbstract(), SplashContracts.View {
     @field:Named(FLAG)
     lateinit var flag: String
 
+    private lateinit var alertDialog: AlertDialog
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.SplashTheme)
@@ -45,9 +51,8 @@ class SplashActivity : ActivityGlobalAbstract(), SplashContracts.View {
         if (BuildConfig.DEBUG || !RootBeer(this).isRootedWithoutBusyBoxCheck)
             presenter.init(this)
         else
-            showInfoDialog("Security",
-                    "For security reasons, this version of the app is not allow to be used in " +
-                            "rooted devices. Please use the training version.")
+            showRootedDialog(getString(R.string.security_title),
+                    getString(R.string.security_rooted_message))
     }
 
     override fun onPause() {
@@ -67,5 +72,28 @@ class SplashActivity : ActivityGlobalAbstract(), SplashContracts.View {
         }
     }
 
+    private fun showRootedDialog(title: String, message: String) {
+        alertDialog = AlertDialog.Builder(activity).create()
+        if (!alertDialog.isShowing) {
+
+            //TITLE
+            val titleView = LayoutInflater.from(activity).inflate(R.layout.dialog_rooted_title, null)
+            titleView.findViewById<TextView>(R.id.dialogTitle).text = title
+            alertDialog.setCustomTitle(titleView)
+
+            //BODY
+            val msgView = LayoutInflater.from(activity).inflate(R.layout.dialog_rooted_body, null)
+            msgView.findViewById<TextView>(R.id.dialogBody).text = message
+
+            msgView.findViewById<Button>(R.id.dialogOk).setOnClickListener {
+                alertDialog.dismiss()
+                finish()
+            }
+            alertDialog.setView(msgView)
+            alertDialog.setCanceledOnTouchOutside(false)
+            alertDialog.setCancelable(false)
+            alertDialog.show()
+        }
+    }
 
 }
