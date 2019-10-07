@@ -14,6 +14,7 @@ import org.hisp.dhis.android.core.category.Category;
 import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryOption;
 import org.hisp.dhis.android.core.category.CategoryOptionCombo;
+import org.hisp.dhis.android.core.common.BaseDeletableDataModel;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.dataapproval.DataApproval;
 import org.hisp.dhis.android.core.dataapproval.DataApprovalState;
@@ -260,13 +261,19 @@ public class DataValueRepositoryImpl implements DataValueRepository {
     @Override
     public Flowable<Boolean> completeDataSet(String orgUnitUid, String periodInitialDate, String catCombo) {
         boolean updateOrInserted;
-        String where = "period = ? AND dataSet = ? AND attributeOptionCombo = ?";
+        DataSetCompleteRegistration completeRegistration = d2.dataSetModule().dataSetCompleteRegistrations
+                .byAttributeOptionComboUid().eq(catCombo).byOrganisationUnitUid().eq(orgUnitUid)
+                .byPeriod().eq(periodInitialDate).byDataSetUid().eq(dataSetUid).one().blockingGet();
+
+        String where = "period = ? AND dataSet = ? AND attributeOptionCombo = ? AND organisationUnit = ?";
 
         ContentValues contentValues = new ContentValues();
-        contentValues.put(DataSetCompleteRegistration.Columns.STATE, State.TO_UPDATE.name());
+        contentValues.put(DataSetCompleteRegistration.Columns.STATE,
+                completeRegistration!= null? State.TO_UPDATE.name(): State.TO_POST.name());
+        contentValues.put(DataSetCompleteRegistration.Columns.DELETED, false);
         String completeDate = DateUtils.databaseDateFormat().format(Calendar.getInstance().getTime());
         contentValues.put("date", completeDate);
-        String[] values = {periodInitialDate, dataSetUid, catCombo};
+        String[] values = {periodInitialDate, dataSetUid, catCombo, orgUnitUid};
 
         updateOrInserted = briteDatabase.update(DataSetCompleteRegistration.class.getSimpleName(), contentValues, where, values) > 0;
 
@@ -288,15 +295,31 @@ public class DataValueRepositoryImpl implements DataValueRepository {
 
     @Override
     public Flowable<Boolean> reopenDataSet(String orgUnitUid, String periodInitialDate, String catCombo) {
-        String where = "period = ? AND dataSet = ? AND attributeOptionCombo = ? and organisationUnit = ? ";
-        String[] values = {periodInitialDate, dataSetUid, catCombo, orgUnitUid};
+        DataSetCompleteRegistration completeRegistration = d2.dataSetModule().dataSetCompleteRegistrations
+                .byAttributeOptionComboUid().eq(catCombo)
+                .byPeriod().eq(periodInitialDate)
+                .byOrganisationUnitUid().eq(orgUnitUid)
+                .byDataSetUid().eq(dataSetUid)
+                .one().blockingGet();
 
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(DataSetCompleteRegistration.Columns.DELETED, true);
-        String completeDate = DateUtils.databaseDateFormat().format(DateUtils.getInstance().getToday());
-        contentValues.put("date", completeDate);
+        if(completeRegistration != null && (completeRegistration.state().equals(State.SYNCED) ||
+                completeRegistration.state().equals(State.TO_UPDATE))) {
+            String where = "period = ? AND dataSet = ? AND attributeOptionCombo = ? and organisationUnit = ? ";
+            String[] values = {periodInitialDate, dataSetUid, catCombo, orgUnitUid};
 
-        return Flowable.just(briteDatabase.update(DataSetCompleteRegistration.class.getSimpleName(), contentValues, where, values) > 0);
+            ContentValues contentValues = new ContentValues();
+            contentValues.put(DataSetCompleteRegistration.Columns.DELETED, true);
+            contentValues.put(DataSetCompleteRegistration.Columns.STATE, State.TO_UPDATE.name());
+            String completeDate = DateUtils.databaseDateFormat().format(DateUtils.getInstance().getToday());
+            contentValues.put("date", completeDate);
+
+            return Flowable.just(briteDatabase.update(DataSetCompleteRegistration.class.getSimpleName(), contentValues, where, values) > 0);
+        }else {
+            String where = "period = ? AND dataSet = ? AND attributeOptionCombo = ? and organisationUnit = ? ";
+            String[] values = {periodInitialDate, dataSetUid, catCombo, orgUnitUid};
+
+            return Flowable.just(briteDatabase.delete(DataSetCompleteRegistration.class.getSimpleName(), where, values) > 0);
+        }
     }
 
     @Override
