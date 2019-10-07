@@ -78,6 +78,8 @@ public class SearchTEContractsModule {
         Consumer<Pair<HashMap<String, FeatureCollection>, BoundingBox>> setMap();
 
         Consumer<D2Progress> downloadProgress();
+
+        boolean isMapVisible();
     }
 
     public interface Presenter {

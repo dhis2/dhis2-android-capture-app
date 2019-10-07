@@ -490,5 +490,7 @@
     <string name="validation_url">La URL no es válida</string>
     <string name="uncomplete_authority_error">No tiene permisos para abrir este evento</string>
     <string name="adjusting_form">Adaptando el formulario...</string>
+    <string name="security_title">Seguridad</string>
+    <string name="security_rooted_message">Por motivos de seguridad, esta versión de la aplicación no podra ser utilizada en dispositivos rooteados. Por favor, utilizar la versión de training.</string>
 
 </resources>

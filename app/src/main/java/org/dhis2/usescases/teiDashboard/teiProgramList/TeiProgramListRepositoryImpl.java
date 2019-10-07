@@ -184,7 +184,8 @@ public class TeiProgramListRepositoryImpl implements TeiProgramListRepository {
     @Override
     public Observable<List<OrganisationUnit>> getOrgUnits(String programUid) {
         if (programUid != null)
-            return d2.organisationUnitModule().organisationUnits.byProgramUids(Collections.singletonList(programUid)).withPrograms().get().toObservable();
+            return d2.organisationUnitModule().organisationUnits.byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE)
+                    .byProgramUids(Collections.singletonList(programUid)).withPrograms().get().toObservable();
         else
             return d2.organisationUnitModule().organisationUnits.byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE).get().toObservable();
     }

@@ -571,4 +571,6 @@
     <string name="wrong_pattern">It is not a correct format.</string>
     <string name="fingerprint_title">Fingerprint</string>
     <string name="fingerprint_message">Please, put your finger in your fingerprint reader.</string>
+    <string name="security_title">Security</string>
+    <string name="security_rooted_message">For security reasons, this version of the app is not allow to be used in rooted devices. Please use the training version.</string>
 </resources>

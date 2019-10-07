@@ -1067,7 +1067,7 @@ public class DateUtils {
                 Calendar endWeek = Calendar.getInstance();
                 endWeek.setTime(initDate);
                 endWeek.add(Calendar.DAY_OF_MONTH, 6);
-                String DATE_LABEL_FORMAT = " %s to %s";
+                String DATE_LABEL_FORMAT = "Week %s to %s";
                 formattedDate = String.format(DATE_LABEL_FORMAT, new SimpleDateFormat("w yyyy-MM-dd", locale).format(initDate),
                         new SimpleDateFormat(" yyyy-MM-dd", locale).format(endWeek.getTime()));
                 break;

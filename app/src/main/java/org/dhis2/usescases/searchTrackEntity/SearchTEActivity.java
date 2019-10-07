@@ -747,6 +747,11 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         return progress -> Snackbar.make(binding.getRoot(), String.format("Downloading %s", String.valueOf(progress.percentage())) + "%", Snackbar.LENGTH_SHORT).show();
     }
 
+    @Override
+    public boolean isMapVisible() {
+        return binding.mapView.getVisibility() == View.VISIBLE;
+    }
+
     private void setSource(Style style, HashMap<String, FeatureCollection> featCollectionMap) {
         style.addSource(new GeoJsonSource("teis", featCollectionMap.get("TEI")/*,new GeoJsonOptions().withCluster(true).withClusterMaxZoom(14).withClusterRadius(30)*/));
         style.addSource(new GeoJsonSource("enrollments", featCollectionMap.get("ENROLLMENT")));
