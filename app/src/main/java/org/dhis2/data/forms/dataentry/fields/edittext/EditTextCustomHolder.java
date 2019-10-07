@@ -87,7 +87,7 @@ final class EditTextCustomHolder extends FormViewHolder {
     }
 
     private void sendAction() {
-        if (!isEmpty(binding.customEdittext.getEditText().getText()) && editTextModel.error() == null) {
+        if (!isEmpty(binding.customEdittext.getEditText().getText())) {
             checkAutocompleteRendering();
             editTextModel.withValue(binding.customEdittext.getEditText().getText().toString());
             String value = ValidationUtils.validate(editTextModel.valueType(), binding.customEdittext.getEditText().getText().toString());
@@ -154,7 +154,7 @@ final class EditTextCustomHolder extends FormViewHolder {
                     !binding.customEdittext.getEditText().getText().toString().matches(editTextModel.fieldMask()))
                 binding.customEdittext.setWarning(binding.getRoot().getContext().getString(R.string.wrong_pattern), "");
             else
-                binding.customEdittext.setWarning("", "");
+                binding.customEdittext.setWarning(editTextModel.warning(), editTextModel.error());
     }
 
     @NonNull
