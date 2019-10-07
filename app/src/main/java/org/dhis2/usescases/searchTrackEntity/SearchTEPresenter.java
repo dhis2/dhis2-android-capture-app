@@ -217,6 +217,10 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
         compositeDisposable.add(
                 queryProcessor
+                        .doOnNext(queryData -> {
+                            if (view.isMapVisible())
+                                mapProcessor.onNext(new Unit());
+                        })
                         .map(map -> {
                             HashMap<String, String> data = new HashMap<>(map);
                             return searchRepository.searchTrackedEntities(

@@ -67,7 +67,7 @@ public final class EnrollmentRepository implements DataEntryRepository {
 
     @Override
     public Observable<List<OrganisationUnit>> getOrgUnits() {
-        return d2.organisationUnitModule().organisationUnits.get().toObservable();
+        return d2.organisationUnitModule().organisationUnits.byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE).get().toObservable();
     }
 
 
