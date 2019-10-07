@@ -392,26 +392,11 @@ public class HelpManager {
                 .enableAutoTextPosition()
                 .focusOn(activity.getAbstractActivity().findViewById(R.id.filter))
                 .closeOnTouch(true)
-                .dismissListener(new DismissListener() {
-                    @Override
-                    public void onDismiss(String id) {
-                        if (activity != null &&
-                                activity.findViewById(R.id.filter_layout) != null &&
-                                activity.findViewById(R.id.filter_layout).getVisibility() == View.GONE)
-                            activity.findViewById(R.id.filter).performClick();
-                    }
-
-                    @Override
-                    public void onSkipped(String id) {
-                        // do nothing
-                    }
-                })
                 .build();
 
         FancyShowCaseView tuto4 = new FancyShowCaseView.Builder(activity)
                 .title(activity.getString(R.string.tuto_main_4))
                 .enableAutoTextPosition()
-                .focusOn(activity.findViewById(R.id.periodLayout))
                 .focusShape(FocusShape.ROUNDED_RECTANGLE)
                 .closeOnTouch(true)
                 .build();
@@ -419,7 +404,6 @@ public class HelpManager {
         FancyShowCaseView tuto5 = new FancyShowCaseView.Builder(activity)
                 .title(activity.getString(R.string.tuto_main_5))
                 .enableAutoTextPosition()
-                .focusOn(activity.findViewById(R.id.button_org_unit))
                 .focusShape(FocusShape.ROUNDED_RECTANGLE)
                 .closeOnTouch(true)
                 .build();

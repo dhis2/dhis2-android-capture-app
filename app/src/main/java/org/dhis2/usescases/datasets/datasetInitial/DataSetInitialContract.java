@@ -37,6 +37,8 @@ public class DataSetInitialContract {
         List<String> getSelectedCatOptions();
 
         String getPeriodType();
+
+        void setOrgUnit(OrganisationUnit organisationUnit);
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter {

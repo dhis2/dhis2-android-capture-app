@@ -203,12 +203,6 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
     }
 
     @Override
-    public void updateDateFilter(List<DatePeriod> datePeriodList) {
-        this.currentDateFilter = datePeriodList;
-        programQueries.onNext(Trio.create(currentDateFilter, currentOrgUnitFilter, currentCatOptionCombo));
-    }
-
-    @Override
     public void onSyncIconClick(String uid) {
         view.showSyncDialog(uid, SyncStatusDialog.ConflictType.EVENT, processorDismissDialog);
     }

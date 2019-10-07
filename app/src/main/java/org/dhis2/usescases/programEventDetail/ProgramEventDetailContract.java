@@ -62,8 +62,6 @@ public class ProgramEventDetailContract {
     public interface Presenter extends AbstractActivityContracts.Presenter {
         void init(View view);
 
-        void updateDateFilter(List<DatePeriod> datePeriodList);
-
         void addEvent();
 
         void onBackClick();

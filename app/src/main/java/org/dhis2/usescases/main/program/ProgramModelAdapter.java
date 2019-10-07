@@ -20,13 +20,11 @@ import java.util.List;
 
 public class ProgramModelAdapter extends RecyclerView.Adapter<ProgramModelHolder> {
     private final ProgramContract.Presenter presenter;
-    private Period currentPeriod;
     private final List<ProgramViewModel> programList;
 
-    ProgramModelAdapter(ProgramContract.Presenter presenter, Period currentPeriod) {
+    ProgramModelAdapter(ProgramContract.Presenter presenter) {
         this.presenter = presenter;
         this.programList = new ArrayList<>();
-        this.currentPeriod = currentPeriod;
         setHasStableIds(true);
     }
 
@@ -40,7 +38,7 @@ public class ProgramModelAdapter extends RecyclerView.Adapter<ProgramModelHolder
     @Override
     public void onBindViewHolder(@NonNull ProgramModelHolder holder, int position) {
 
-        holder.bind(presenter, programList.get(holder.getAdapterPosition()), currentPeriod);
+        holder.bind(presenter, programList.get(holder.getAdapterPosition()));
     }
 
 
@@ -59,10 +57,4 @@ public class ProgramModelAdapter extends RecyclerView.Adapter<ProgramModelHolder
         this.programList.addAll(data);
         notifyDataSetChanged();
     }
-
-    public void setCurrentPeriod(Period currentPeriod) {
-        this.currentPeriod = currentPeriod;
-    }
-
-
 }

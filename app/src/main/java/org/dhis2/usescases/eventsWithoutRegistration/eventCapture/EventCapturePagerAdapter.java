@@ -28,6 +28,6 @@ public class EventCapturePagerAdapter extends FragmentStatePagerAdapter {
 
     @Override
     public int getCount() {
-        return 2; //TODO: ADD OVERVIEW, INDICATORS, NOTES
+        return 1; //TODO: ADD OVERVIEW, INDICATORS, NOTES
     }
 }

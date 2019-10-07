@@ -105,11 +105,11 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
     private MarkerView currentMarker;
     private FeatureType featureType;
 
-    public static Bundle getBundle(String programUid, String period, List<Date> dates) {
+    public static final String EXTRA_PROGRAM_UID = "PROGRAM_UID";
+
+    public static Bundle getBundle(String programUid) {
         Bundle bundle = new Bundle();
-        bundle.putString("PROGRAM_UID", programUid);
-        bundle.putString("CURRENT_PERIOD", period);
-        bundle.putSerializable("DATES", (ArrayList) dates);
+        bundle.putString(EXTRA_PROGRAM_UID, programUid);
         return bundle;
     }
 
@@ -121,13 +121,14 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
-        ((App) getApplicationContext()).userComponent().plus(new ProgramEventDetailModule(getIntent().getStringExtra("PROGRAM_UID"))).inject(this);
+        this.programUid = getIntent().getStringExtra(EXTRA_PROGRAM_UID);
+
+        ((App) getApplicationContext()).userComponent().plus(new ProgramEventDetailModule(programUid)).inject(this);
         super.onCreate(savedInstanceState);
 
         FilterManager.getInstance().clearCatOptCombo();
         FilterManager.getInstance().clearEventStatus();
 
-        this.programUid = getIntent().getStringExtra("PROGRAM_UID");
         binding = DataBindingUtil.setContentView(this, activity_program_event_detail);
 
         binding.setPresenter(presenter);

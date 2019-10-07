@@ -35,8 +35,8 @@ public abstract class FormViewHolder extends AbstractViewHolder {
                     new CustomDialog(
                             itemView.getContext(),
                             label.toString(),
-                            descriptionText != null ? descriptionText : "No info for this field",
-                            itemView.getContext().getString(R.string.action_accept),
+                            descriptionText != null ? descriptionText : itemView.getContext().getString(R.string.empty_description),
+                            itemView.getContext().getString(R.string.action_close),
                             null,
                             Constants.DESCRIPTION_DIALOG,
                             null

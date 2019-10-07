@@ -111,7 +111,6 @@ import static org.dhis2.utils.analytics.AnalyticsConstants.SHOW_HELP;
 
 public class EventInitialActivity extends ActivityGlobalAbstract implements EventInitialContract.View, DatePickerDialog.OnDateSetListener {
 
-    private static final int PROGRESS_TIME = 2000;
     @Inject
     EventInitialContract.Presenter presenter;
 
@@ -699,7 +698,6 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         binding.date.clearFocus();
         if (!fixedOrgUnit) {
             presenter.initOrgunit(selectedDate);
-//            binding.orgUnit.setText("");
         }
     }
 

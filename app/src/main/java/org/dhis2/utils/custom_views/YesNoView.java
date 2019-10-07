@@ -95,15 +95,6 @@ public class YesNoView extends FieldLayout implements RadioGroup.OnCheckedChange
 
     }
 
-    public void setCellLayout() {
-        binding = DataBindingUtil.inflate(inflater, R.layout.yes_no_cell_view, this, true);
-        radioGroup = findViewById(R.id.radiogroup);
-        clearButton = findViewById(R.id.clearSelection);
-        yes = findViewById(R.id.yes);
-        no = findViewById(R.id.no);
-        radioGroup.setOnCheckedChangeListener(this);
-    }
-
     public String getLabel() {
         if (labelView != null)
             return labelView.getText().toString();

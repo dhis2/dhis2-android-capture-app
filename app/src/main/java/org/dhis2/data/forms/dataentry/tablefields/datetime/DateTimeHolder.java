@@ -169,15 +169,15 @@ public class DateTimeHolder extends FormViewHolder implements OnDateSelected {
         super.setSelected(selectionState);
         if (selectionState == SelectionState.SELECTED && dateTimeViewModel.editable()) {
             if (binding instanceof TableTimeTextBinding) {
-                ((TableTimeTextBinding) binding).timeView.performClick();
+                ((TableTimeTextBinding) binding).timeView.getEditText().performClick();
             }
 
             if (binding instanceof TableDateTextBinding) {
-                ((TableDateTextBinding) binding).dateView.performClick();
+                ((TableDateTextBinding) binding).dateView.getEditText().performClick();
             }
 
             if (binding instanceof TableDateTimeTextBinding) {
-                ((TableDateTimeTextBinding) binding).dateTimeView.performClick();
+                ((TableDateTimeTextBinding) binding).dateTimeView.getEditText().performClick();
             }
         }
     }

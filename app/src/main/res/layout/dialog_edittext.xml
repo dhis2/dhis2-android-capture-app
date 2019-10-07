@@ -2,43 +2,15 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:minHeight="100dp"
-    android:padding="10dp">
+    android:layout_height="wrap_content">
 
     <androidx.appcompat.widget.AppCompatEditText
         android:id="@+id/dialogBody"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="10dp"
-        android:textSize="16sp"
         android:textCursorDrawable="@null"
+        android:textSize="16sp"
         app:backgroundTint="@color/greyish"
-        app:layout_constraintBottom_toTopOf="@id/dialogAccept"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
-
-    <Button
-        android:id="@+id/dialogAccept"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@android:color/transparent"
-        android:text="@string/button_ok"
-        android:textAllCaps="true"
-        android:textColor="?colorPrimary"
-        android:textSize="12sp"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
-
-    <Button
-        android:id="@+id/dialogCancel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@android:color/transparent"
-        android:text="@string/cancel"
-        android:textColor="?colorPrimary"
-        android:textSize="12sp"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/dialogAccept" />
 </androidx.constraintlayout.widget.ConstraintLayout>
