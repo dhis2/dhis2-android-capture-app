@@ -102,6 +102,7 @@ public class EventDetailRepositoryImpl implements EventDetailRepository {
     @Override
     public Observable<List<OrganisationUnit>> getOrgUnits() {
         return d2.organisationUnitModule().organisationUnits
+                .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE)
                 .byProgramUids(Collections.singletonList(getProgram(eventUid).blockingFirst().uid()))
                 .withPrograms().get().toObservable();
 

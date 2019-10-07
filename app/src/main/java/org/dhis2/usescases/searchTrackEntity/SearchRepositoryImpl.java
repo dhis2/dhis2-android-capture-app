@@ -450,9 +450,10 @@ public class SearchRepositoryImpl implements SearchRepository {
     public Observable<List<OrganisationUnit>> getOrgUnits(@Nullable String selectedProgramUid) {
 
         if (selectedProgramUid != null)
-            return d2.organisationUnitModule().organisationUnits.byProgramUids(Collections.singletonList(selectedProgramUid)).withPrograms().get().toObservable();
+            return d2.organisationUnitModule().organisationUnits.byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE)
+                    .byProgramUids(Collections.singletonList(selectedProgramUid)).withPrograms().get().toObservable();
         else
-            return d2.organisationUnitModule().organisationUnits.get().toObservable();
+            return d2.organisationUnitModule().organisationUnits.byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE).get().toObservable();
     }
 
 
