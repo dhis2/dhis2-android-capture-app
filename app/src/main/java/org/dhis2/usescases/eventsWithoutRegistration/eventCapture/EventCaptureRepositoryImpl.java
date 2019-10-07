@@ -56,7 +56,6 @@ import org.hisp.dhis.rules.models.RuleEffect;
 import org.hisp.dhis.rules.models.RuleEvent;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -890,19 +889,44 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
     public void assign(String uid, String value) {
         try {
             if (d2.dataElementModule().dataElements.uid(uid).blockingExists()) {
-                if (!isEmpty(value))
-                    d2.trackedEntityModule().trackedEntityDataValues.value(eventUid, uid).blockingSet(value); //TODO: Should be assigned in all events?
-                else if( d2.trackedEntityModule().trackedEntityDataValues.value(eventUid, uid).blockingExists())
-                    d2.trackedEntityModule().trackedEntityDataValues.value(eventUid, uid).blockingDelete();
+               handleAssignToDataElement(uid,value);
             } else if (d2.trackedEntityModule().trackedEntityAttributes.uid(uid).blockingExists()) {
-                String tei = d2.enrollmentModule().enrollments.uid(currentEvent.enrollment()).blockingGet().trackedEntityInstance();
-                if (!isEmpty(value))
-                    d2.trackedEntityModule().trackedEntityAttributeValues.value(uid, tei).blockingSet(value);
-                else if( d2.trackedEntityModule().trackedEntityAttributeValues.value(eventUid, tei).blockingExists())
-                    d2.trackedEntityModule().trackedEntityAttributeValues.value(eventUid, tei).blockingDelete();
+                handleAssignToAttribute(uid,value);
             }
         } catch (D2Error d2Error) {
             Timber.e(d2Error.originalException());
         }
     }
+
+    private void handleAssignToDataElement(String deUid, String value) throws D2Error {
+        List<String> eventUids;
+        if (currentEvent.enrollment() != null) {
+            eventUids = UidsHelper.getUidsList(d2.eventModule().events
+                    .byEnrollmentUid().eq(currentEvent.enrollment())
+                    .byStatus().in(EventStatus.ACTIVE, EventStatus.COMPLETED)
+                    .blockingGet());
+        } else {
+            eventUids = UidsHelper.getUidsList(d2.eventModule().events
+                    .byProgramUid().eq(currentEvent.program())
+                    .byProgramStageUid().eq(currentEvent.programStage())
+                    .byOrganisationUnitUid().eq(currentEvent.organisationUnit())
+                    .blockingGet());
+        }
+
+        for(String eventUid : eventUids){
+            if (!isEmpty(value))
+                d2.trackedEntityModule().trackedEntityDataValues.value(eventUid, deUid).blockingSet(value);
+            else if (d2.trackedEntityModule().trackedEntityDataValues.value(eventUid, deUid).blockingExists())
+                d2.trackedEntityModule().trackedEntityDataValues.value(eventUid, deUid).blockingDelete();
+        }
+    }
+
+    private void handleAssignToAttribute(String attributeUid, String value) throws D2Error{
+        String tei = d2.enrollmentModule().enrollments.uid(currentEvent.enrollment()).blockingGet().trackedEntityInstance();
+        if (!isEmpty(value))
+            d2.trackedEntityModule().trackedEntityAttributeValues.value(attributeUid, tei).blockingSet(value);
+        else if (d2.trackedEntityModule().trackedEntityAttributeValues.value(attributeUid, tei).blockingExists())
+            d2.trackedEntityModule().trackedEntityAttributeValues.value(attributeUid, tei).blockingDelete();
+    }
 }
+
