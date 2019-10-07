@@ -7,6 +7,6 @@
     <solid
         android:color="@color/table_view_default_unselected_background_color"/>
     <stroke
-        android:color="@color/table_view_default_selected_background_color"
+        android:color="?colorPrimary"
         android:width="2dp"/>
 </shape>

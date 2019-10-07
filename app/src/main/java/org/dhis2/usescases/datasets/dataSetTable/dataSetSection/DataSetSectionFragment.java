@@ -135,8 +135,7 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
 
         tableView.setAdapter(adapter);
         tableView.setHeaderCount(columnHeaders.size());
-        /*tableView.setHeadersColor(ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.PRIMARY_LIGHT));
-        tableView.setShadowColor(ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.PRIMARY_DARK));*/
+        tableView.setShadowColor(ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.PRIMARY));
 
         adapter.swap(fields);
 
