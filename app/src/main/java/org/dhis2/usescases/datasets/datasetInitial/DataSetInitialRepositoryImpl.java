@@ -71,7 +71,11 @@ public class DataSetInitialRepositoryImpl implements DataSetInitialRepository {
     @NonNull
     @Override
     public Observable<List<OrganisationUnit>> orgUnits() {
-        return d2.organisationUnitModule().organisationUnits.byDataSetUids(Collections.singletonList(dataSetUid)).withDataSets().get().toObservable();
+        return d2.organisationUnitModule().organisationUnits
+                .byDataSetUids(Collections.singletonList(dataSetUid))
+                .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE)
+                .withDataSets()
+                .get().toObservable();
     }
 
     @NonNull
@@ -92,8 +96,9 @@ public class DataSetInitialRepositoryImpl implements DataSetInitialRepository {
     @NonNull
     @Override
     public Flowable<String> getCategoryOptionCombo(List<String> catOptions, String catCombo) {
-        return Flowable.just(d2.categoryModule().categoryOptionCombos.withCategoryOptions().byCategoryOptions(catOptions).byCategoryComboUid().eq(catCombo).one().blockingGet())
-                .map(BaseIdentifiableObject::uid);
+        return d2.categoryModule().categoryOptionCombos.withCategoryOptions().byCategoryOptions(catOptions).byCategoryComboUid().eq(catCombo).one().get()
+                .map(BaseIdentifiableObject::uid)
+                .toFlowable();
     }
 
     @NonNull

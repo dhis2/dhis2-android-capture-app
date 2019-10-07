@@ -428,7 +428,7 @@ public final class RulesRepository {
             case SETMANDATORYFIELD:
                 return RuleActionSetMandatoryField.create(isEmpty(attribute) ? field : attribute);
             case HIDEOPTION:
-                return RuleActionHideOption.create(content, isEmpty(attribute) ? field : attribute, option); //TODO: CHECK THIS PABLO
+                return RuleActionHideOption.create(content, option, isEmpty(attribute) ? field : attribute);
             case HIDEOPTIONGROUP:
                 return RuleActionHideOptionGroup.create(content, optionGroup);
             case SHOWOPTIONGROUP:
@@ -460,15 +460,14 @@ public final class RulesRepository {
 
 
     public Single<List<RuleEvent>> otherEvents(String eventUidToEvaluate) {
-        Timber.tag("PROGRAMRULEREPOSITORY").d("INIT OTHER EVENTS %s", Thread.currentThread().getName());
         return d2.eventModule().events.uid(eventUidToEvaluate).get()
                 .flatMap(eventToEvaluate ->
                         getOtherEventList(eventToEvaluate).toFlowable()
                                 .flatMapIterable(eventList -> eventList)
-                                .filter(event ->
+                                /*.filter(event ->
                                         event.eventDate().before(eventToEvaluate.eventDate()) ||
                                                 event.eventDate() == eventToEvaluate.eventDate() && event.lastUpdated().before(eventToEvaluate.lastUpdated())
-                                )
+                                )*/
                                 .map(event -> RuleEvent.builder()
                                         .event(event.uid())
                                         .programStage(event.programStage())
@@ -481,7 +480,7 @@ public final class RulesRepository {
                                         .dataValues(translateToRuleDataValue(event))
                                         .build())
                                 .toList()
-                ).doOnSuccess(list -> Timber.tag("PROGRAMRULEREPOSITORY").d("FINISHED OTHER EVENTS"));
+                );
     }
 
     private List<RuleDataValue> translateToRuleDataValue(Event event) {
@@ -517,6 +516,7 @@ public final class RulesRepository {
                     .byUid().notIn(eventToEvaluate.uid())
                     .byProgramUid().eq(eventToEvaluate.program())
                     .byProgramStageUid().eq(eventToEvaluate.programStage())
+                    .byOrganisationUnitUid().eq(eventToEvaluate.organisationUnit())
                     .byStatus().notIn(EventStatus.SCHEDULE, EventStatus.SKIPPED, EventStatus.OVERDUE)
                     .withTrackedEntityDataValues()
                     .orderByEventDate(RepositoryScope.OrderByDirection.DESC)
