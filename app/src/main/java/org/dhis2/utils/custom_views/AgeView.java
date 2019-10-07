@@ -98,7 +98,7 @@ public class AgeView extends FieldLayout implements View.OnClickListener, View.O
 
     private void showCustomCalendar(View view) {
 
-        DatePickerUtils.getDatePickerDialog(getContext(), label, null, true, new DatePickerUtils.OnDatePickerClickListener() {
+        DatePickerUtils.getDatePickerDialog(getContext(), label, selectedCalendar.getTime(), true, new DatePickerUtils.OnDatePickerClickListener() {
             @Override
             public void onNegativeClick() {
                 listener.onAgeSet(null);
@@ -134,7 +134,7 @@ public class AgeView extends FieldLayout implements View.OnClickListener, View.O
             activate();
     }
 
-    protected void handleSingleInputs(boolean finish) {
+    public void handleSingleInputs(boolean finish) {
 
         if (!isEmpty(day.getText()) && !isEmpty(month.getText()) && !isEmpty(year.getText())) {
             Calendar calendar = Calendar.getInstance();
@@ -199,6 +199,7 @@ public class AgeView extends FieldLayout implements View.OnClickListener, View.O
 
         if (initialDate != null) {
             String result = dateFormat.format(initialDate);
+            selectedCalendar.setTime(initialDate);
 
             int[] dateDifference = DateUtils.getDifference(initialDate, Calendar.getInstance().getTime());
             day.setText(String.valueOf(dateDifference[2]));

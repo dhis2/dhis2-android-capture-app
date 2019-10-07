@@ -102,7 +102,7 @@ public class AgeHolder extends FormViewHolder {
                 new DialogClickListener() {
                     @Override
                     public void onPositive() {
-                        ageView.onFocusChange(ageView.findViewById(R.id.input_days), false);
+                        ageView.handleSingleInputs(true);
                     }
 
                     @Override
