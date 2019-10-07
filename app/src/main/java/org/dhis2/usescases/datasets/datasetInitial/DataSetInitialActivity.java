@@ -123,17 +123,19 @@ public class DataSetInitialActivity extends ActivityGlobalAbstract implements Da
 
     @Override
     public void showPeriodSelector(PeriodType periodType, List<DateRangeInputPeriodModel> periods, Integer openFuturePeriods) {
-        new PeriodDialogInputPeriod()
-                .setInputPeriod(periods)
+        PeriodDialogInputPeriod periodDialog = new PeriodDialogInputPeriod();
+        periodDialog.setInputPeriod(periods)
                 .setOpenFuturePeriods(openFuturePeriods)
                 .setPeriod(periodType)
+                .setTitle(binding.dataSetPeriodInputLayout.getHint().toString())
                 .setPossitiveListener(selectedDate -> {
                     Calendar calendar = Calendar.getInstance();
                     calendar.setTime(selectedDate);
                     this.selectedPeriod = calendar.getTime();
                     binding.dataSetPeriodEditText.setText(DateUtils.getInstance().getPeriodUIString(periodType, selectedDate, Locale.getDefault()));
                     checkActionVisivbility();
-                })
+                    periodDialog.dismiss();
+                }).setNegativeListener(v -> binding.dataSetPeriodEditText.setText(null))
                 .show(getSupportFragmentManager(), PeriodDialog.class.getSimpleName());
     }
 
