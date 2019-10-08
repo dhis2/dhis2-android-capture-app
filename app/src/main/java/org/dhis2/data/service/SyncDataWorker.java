@@ -100,6 +100,8 @@ public class SyncDataWorker extends Worker {
 
         cancelNotification();
 
+        presenter.startPeriodicDataWork(getApplicationContext());
+
         return Result.success(createOutputData(true));
     }
 
