@@ -474,6 +474,11 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
         popupMenu.show();
     }
 
+    @Override
+    public boolean isMapVisible() {
+        return binding.mapView.getVisibility() == View.VISIBLE;
+    }
+
     private void showMap(boolean showMap) {
         binding.recycler.setVisibility(showMap ? View.GONE : View.VISIBLE);
         binding.mapView.setVisibility(showMap ? View.VISIBLE : View.GONE);
