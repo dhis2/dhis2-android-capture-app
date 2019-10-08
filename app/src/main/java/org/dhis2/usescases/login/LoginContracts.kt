@@ -50,12 +50,12 @@ class LoginContracts {
 
         fun showBiometricButton()
 
-        fun checkSecuredCredentials(result: Goldfinger.Result)
-
         fun openAccountRecovery()
 
         fun displayAlertDialog(titleResource:Int, descriptionResource:Int,negativeResource:Int?,positiveResource:Int)
         fun alreadyAuthenticated()
+        fun showCredentialsData(type: Goldfinger.Type, vararg args: String)
+        fun showEmptyCredentialsMessage()
     }
 
     interface Presenter {

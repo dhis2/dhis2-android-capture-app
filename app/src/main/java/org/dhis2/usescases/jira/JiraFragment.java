@@ -20,6 +20,7 @@ import com.google.gson.Gson;
 
 import org.dhis2.App;
 import org.dhis2.R;
+import org.dhis2.data.prefs.PreferenceProviderImpl;
 import org.dhis2.databinding.FragmentJiraBinding;
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
 import org.dhis2.utils.NetworkUtils;
@@ -54,7 +55,7 @@ public class JiraFragment extends FragmentGlobalAbstract implements OnJiraIssueC
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         FragmentJiraBinding binding = DataBindingUtil.inflate(inflater, R.layout.fragment_jira, container, false);
         jiraViewModel = ViewModelProviders.of(this).get(JiraViewModel.class);
-        jiraViewModel.init();
+        jiraViewModel.init(new PreferenceProviderImpl(context.getApplicationContext()));
 
         jiraViewModel.issueListResponse().observe(this, response -> {
             if (response.isSuccessful() && response.body() != null) {

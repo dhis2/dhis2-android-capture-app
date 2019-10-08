@@ -4,8 +4,8 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.view.View
+import co.infinum.goldfinger.Goldfinger
 import co.infinum.goldfinger.rx.RxGoldfinger
-import de.adorsys.android.securestoragelibrary.SecurePreferences
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -14,11 +14,15 @@ import org.dhis2.App
 import org.dhis2.BuildConfig
 import org.dhis2.R
 import org.dhis2.data.prefs.Preference
+import org.dhis2.data.prefs.PreferenceProvider
 import org.dhis2.data.server.UserManager
 import org.dhis2.usescases.main.MainActivity
 import org.dhis2.usescases.qrScanner.QRActivity
 import org.dhis2.utils.Constants
-import org.dhis2.utils.analytics.*
+import org.dhis2.utils.analytics.ACCOUNT_RECOVERY
+import org.dhis2.utils.analytics.CLICK
+import org.dhis2.utils.analytics.LOGIN
+import org.dhis2.utils.analytics.SERVER_QR_SCANNER
 import org.hisp.dhis.android.core.d2manager.D2Manager
 import org.hisp.dhis.android.core.maintenance.D2Error
 import org.hisp.dhis.android.core.maintenance.D2ErrorCode
@@ -26,7 +30,7 @@ import org.hisp.dhis.android.core.systeminfo.SystemInfo
 import retrofit2.Response
 import timber.log.Timber
 
-class LoginPresenter : LoginContracts.Presenter {
+class LoginPresenter(private val preferenceProvider: PreferenceProvider) : LoginContracts.Presenter {
 
     override fun stopReadingFingerprint() {
         goldfinger.cancel()
@@ -85,15 +89,15 @@ class LoginPresenter : LoginContracts.Presenter {
 
             disposable.add(
                     Observable.just(goldfinger.hasEnrolledFingerprint())
-                    .filter { canHandleBiometrics ->
-                        this.canHandleBiometrics = canHandleBiometrics
-                        canHandleBiometrics && SecurePreferences.contains(Constants.SECURE_SERVER_URL)
-                    }
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(
-                            { view.showBiometricButton() },
-                            { Timber.e(it) }))
+                            .filter { canHandleBiometrics ->
+                                this.canHandleBiometrics = canHandleBiometrics
+                                canHandleBiometrics && preferenceProvider.contains(Constants.SECURE_SERVER_URL)
+                            }
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(
+                                    { view.showBiometricButton() },
+                                    { Timber.e(it) }))
 
     }
 
@@ -201,11 +205,29 @@ class LoginPresenter : LoginContracts.Presenter {
         disposable.add(
                 goldfinger
                         .authenticate()
+                        .map { result ->
+                            if (preferenceProvider.contains(
+                                            Constants.SECURE_SERVER_URL, Constants.SECURE_USER_NAME,
+                                            Constants.SECURE_PASS
+                                    )) {
+                                Result.success(result)
+                            } else
+                                Result.failure(Exception("Empty credentials"))
+
+                        }
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
                                 {
-                                    credentials ->
-                                        view.checkSecuredCredentials(credentials)
+                                    if (it.isFailure)
+                                        view.showEmptyCredentialsMessage()
+                                    else if (it.isSuccess && it.getOrNull()?.type() == Goldfinger.Type.SUCCESS)
+                                        view.showCredentialsData(Goldfinger.Type.SUCCESS,
+                                                preferenceProvider.getString(Constants.SECURE_SERVER_URL)!!,
+                                                preferenceProvider.getString(Constants.SECURE_USER_NAME)!!,
+                                                preferenceProvider.getString(Constants.SECURE_PASS)!!)
+                                    else
+                                        view.showCredentialsData(Goldfinger.Type.ERROR,
+                                                it.getOrNull()?.message()!!)
                                 },
                                 {
                                     view.displayMessage("AUTH ERROR")

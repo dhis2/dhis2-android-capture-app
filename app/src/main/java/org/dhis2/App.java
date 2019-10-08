@@ -22,6 +22,7 @@ import org.dhis2.data.dagger.PerUser;
 import org.dhis2.data.database.DbModule;
 import org.dhis2.data.forms.FormComponent;
 import org.dhis2.data.forms.FormModule;
+import org.dhis2.data.prefs.PreferenceModule;
 import org.dhis2.data.schedulers.SchedulerModule;
 import org.dhis2.data.schedulers.SchedulersProviderImpl;
 import org.dhis2.data.server.ServerComponent;
@@ -180,6 +181,7 @@ public class App extends MultiDexApplication implements Components {
                 .appModule(new AppModule(this))
                 .schedulerModule(new SchedulerModule(new SchedulersProviderImpl()))
                 .analyticsModule(new AnalyticsModule())
+                .preferenceModule(new PreferenceModule())
                 .utilModule(new UtilsModule());
     }
 
