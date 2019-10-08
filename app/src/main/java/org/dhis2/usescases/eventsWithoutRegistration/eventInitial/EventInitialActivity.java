@@ -832,6 +832,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         if (organisationUnit != null) {
             this.selectedOrgUnit = organisationUnit.uid();
             binding.orgUnit.setText(organisationUnit.displayName());
+            binding.orgUnit.setEnabled(false);
         } else
             binding.orgUnit.setText("");
     }
