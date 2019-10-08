@@ -185,7 +185,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         initialProgram = getIntent().getStringExtra("PROGRAM_UID");
         binding.setNeedsSearch(needsSearch);
         binding.setTotalFilters(FilterManager.getInstance().getTotalFilters());
-        binding.setTotalFiltersSearch(0);
+        binding.setTotalFiltersSearch(presenter.getQueryData().size());
 
         try {
             fromRelationship = getIntent().getBooleanExtra("FROM_RELATIONSHIP", false);
@@ -238,6 +238,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         binding.mapView.onResume();
         presenter.init(this, tEType, initialProgram);
         presenter.initSearch(this);
+        updateFiltersSearch(presenter.getQueryData().size());
         registerReceiver(networkReceiver, new IntentFilter("android.net.conn.CONNECTIVITY_CHANGE"));
         binding.setTotalFilters(FilterManager.getInstance().getTotalFilters());
         filtersAdapter.notifyDataSetChanged();
@@ -286,6 +287,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     @Override
     public void updateFiltersSearch(int totalFilters) {
         binding.setTotalFiltersSearch(totalFilters);
+        binding.executePendingBindings();
     }
 
     @Override
@@ -365,7 +367,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         //Form has been set.
         FormAdapter formAdapter = (FormAdapter) binding.formRecycler.getAdapter();
         formAdapter.setList(trackedEntityAttributes, program, queryData);
-        updateFiltersSearch(0);
+        updateFiltersSearch(queryData.size());
     }
 
     @NonNull
