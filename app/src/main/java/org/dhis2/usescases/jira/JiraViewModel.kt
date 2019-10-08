@@ -14,6 +14,8 @@ import okhttp3.OkHttpClient
 import okhttp3.RequestBody
 import okhttp3.ResponseBody
 import org.dhis2.Bindings.default
+import org.dhis2.data.prefs.PreferenceProvider
+import org.dhis2.data.prefs.PreferenceProviderImpl
 import org.dhis2.utils.BiometricStorage
 import org.dhis2.utils.Constants
 import org.dhis2.utils.jira.IssueRequest
@@ -32,8 +34,9 @@ import retrofit2.http.POST
 class JiraViewModel : ViewModel(), JiraActions {
 
     private lateinit var issueService: JiraIssueService
+    private lateinit var prefs:PreferenceProvider
 
-    fun init() {
+    fun init(preferenceProvider: PreferenceProviderImpl) {
         val retrofit = Retrofit.Builder()
                 .baseUrl("https://jira.dhis2.org/")
                 .client(OkHttpClient())
@@ -41,8 +44,9 @@ class JiraViewModel : ViewModel(), JiraActions {
                 .build()
 
         issueService = retrofit.create<JiraIssueService>(JiraIssueService::class.java)
+        prefs = preferenceProvider
 
-        if (SecurePreferences.contains(Constants.JIRA_USER))
+        if (prefs.contains(Constants.JIRA_USER))
             getJiraIssues()
     }
 
@@ -63,7 +67,7 @@ class JiraViewModel : ViewModel(), JiraActions {
 
     fun getJiraIssues() {
         val basic = String.format("Basic %s", session.value)
-        val request = JiraIssueListRequest(SecurePreferences.getStringValue(Constants.JIRA_USER, userName.value), 20)
+        val request = JiraIssueListRequest(prefs.getString(Constants.JIRA_USER, userName.value), 20)
         val requestBody = RequestBody.create(MediaType.parse("application/json"), Gson().toJson(request))
         issueService.getJiraIssues(basic, requestBody).enqueue(getJiraIssueListCallback())
     }
@@ -73,7 +77,7 @@ class JiraViewModel : ViewModel(), JiraActions {
         return object : Callback<ResponseBody> {
             override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
                 if (response.isSuccessful) {
-                    if (rememberCredentials.value!! && !SecurePreferences.contains(Constants.JIRA_AUTH)) {
+                    if (rememberCredentials.value!! && !prefs.contains(Constants.JIRA_AUTH)) {
                         BiometricStorage.saveJiraCredentials(getAuth())
                         BiometricStorage.saveJiraUser(userName.value!!)
                     }
@@ -96,12 +100,12 @@ class JiraViewModel : ViewModel(), JiraActions {
         isSessionOpen.set(false)
     }
 
-    private val session = MutableLiveData<String?>().default(SecurePreferences.getStringValue(Constants.JIRA_AUTH, null))
+    private val session = MutableLiveData<String?>().default(prefs.getString(Constants.JIRA_AUTH, null))
     private val isSessionOpen = ObservableField<Boolean>(false)
 
     private val userName = MutableLiveData<String>()
     private val pass = MutableLiveData<String>()
-    private val rememberCredentials = MutableLiveData<Boolean>().default(SecurePreferences.contains(Constants.JIRA_AUTH))
+    private val rememberCredentials = MutableLiveData<Boolean>().default(prefs.contains(Constants.JIRA_AUTH))
 
     private val summary = MutableLiveData<String>()
     private val description = MutableLiveData<String>()

@@ -1,6 +1,7 @@
 package org.dhis2;
 
 import org.dhis2.data.database.DbModule;
+import org.dhis2.data.prefs.PreferenceModule;
 import org.dhis2.data.schedulers.SchedulerModule;
 import org.dhis2.data.server.ServerComponent;
 import org.dhis2.data.server.ServerModule;
@@ -20,7 +21,7 @@ import dagger.Component;
  */
 @Singleton
 @Component(modules = {
-        AppModule.class, SchedulerModule.class, UtilsModule.class, AnalyticsModule.class
+        AppModule.class, SchedulerModule.class, UtilsModule.class, AnalyticsModule.class, PreferenceModule.class
 })
 public interface AppComponent {
 
@@ -33,6 +34,8 @@ public interface AppComponent {
         Builder utilModule(UtilsModule utilsModule);
 
         Builder analyticsModule(AnalyticsModule module);
+
+        Builder preferenceModule(PreferenceModule preferenceModule);
 
         AppComponent build();
     }

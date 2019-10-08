@@ -1271,6 +1271,11 @@ public class DateUtils {
 
     }
 
+
+    public static long timeToDate(Date finaLDate){
+        return finaLDate.getTime() - new Date().getTime();
+    }
+
     public interface OnFromToSelector {
         void onFromToSelected(List<DatePeriod> datePeriods);
     }
