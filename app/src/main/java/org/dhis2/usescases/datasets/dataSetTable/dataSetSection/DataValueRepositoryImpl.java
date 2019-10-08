@@ -184,7 +184,8 @@ public class DataValueRepositoryImpl implements DataValueRepository {
                 .flatMapIterable(dataSet -> {
                     List<DataSetElement> dataElements = new ArrayList<>();
                     if (!sectionName.equals("NO_SECTION")) {
-                        List<DataElement> dataElementSection = d2.dataSetModule().sections.withDataElements().byName().eq(sectionName).one().blockingGet().dataElements();
+                        List<DataElement> dataElementSection = d2.dataSetModule().sections.withDataElements()
+                                .byDataSetUid().eq(dataSetUid).byName().eq(sectionName).one().blockingGet().dataElements();
                         for (DataElement dataElement : dataElementSection) {
                             for (DataSetElement dataSetElement : dataSet.dataSetElements())
                                 if (dataSetElement.dataElement().uid().equals(dataElement.uid()))
