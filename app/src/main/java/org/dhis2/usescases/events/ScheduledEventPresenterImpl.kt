@@ -31,7 +31,7 @@ class ScheduledEventPresenterImpl(val d2: D2,
                         .flatMap { event ->
                             Single.zip(
                                     d2.programModule().programStages.withStyle().uid(event.programStage()).get(),
-                                    d2.programModule().programs.withCategoryCombo().uid(event.program()).get(),
+                                    d2.programModule().programs.uid(event.program()).get(),
                                     BiFunction<ProgramStage, Program, Triple<ProgramStage, Program, Event>> { stage, program -> Triple(stage, program, event) })
                         }
                         .observeOn(AndroidSchedulers.mainThread())
@@ -41,8 +41,9 @@ class ScheduledEventPresenterImpl(val d2: D2,
                                     view.setProgram(program)
                                     view.setStage(stage)
                                     view.setEvent(event)
-                                    if (program.categoryCombo() !== null && program.categoryCombo()!!.isDefault == false)
-                                        view.setCatCombo(program.categoryCombo()!!, getCatOptions(event.attributeOptionCombo()))
+                                    if (program.categoryComboUid() !== null &&
+                                            d2.categoryModule().categoryCombos.uid(program.categoryComboUid()).blockingGet()!!.isDefault == false)
+                                        view.setCatCombo(d2.categoryModule().categoryCombos.uid(program.categoryComboUid()).blockingGet()!!, getCatOptions(event.attributeOptionCombo()))
                                 },
                                 { Timber.e(it) }
                         )

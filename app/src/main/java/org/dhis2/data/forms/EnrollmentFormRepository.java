@@ -497,16 +497,17 @@ public class EnrollmentFormRepository implements FormRepository {
     @Override
     public Observable<Trio<Boolean, CategoryCombo, List<CategoryOptionCombo>>> getProgramCategoryCombo(String eventUid) {
         return d2.eventModule().events.uid(eventUid).get()
-                .flatMap(event -> d2.programModule().programs.withCategoryCombo().uid(event.program()).get()
+                .flatMap(event -> d2.programModule().programs.uid(event.program()).get()
                         .flatMap(program -> d2.categoryModule().categoryOptionCombos
-                                .byCategoryComboUid().eq(program.categoryCombo().uid()).get()
+                                .byCategoryComboUid().eq(program.categoryComboUid()).get()
                                 .map(categoryOptionCombos -> {
                                     boolean eventHastOptionSelected = false;
                                     for (CategoryOptionCombo options : categoryOptionCombos) {
                                         if (event.attributeOptionCombo() != null && event.attributeOptionCombo().equals(options.uid()))
                                             eventHastOptionSelected = true;
                                     }
-                                    return Trio.create(eventHastOptionSelected, program.categoryCombo(), categoryOptionCombos);
+                                    CategoryCombo catCombo = d2.categoryModule().categoryCombos.uid(program.categoryComboUid()).blockingGet();
+                                    return Trio.create(eventHastOptionSelected, catCombo, categoryOptionCombos);
                                 })
                         )).toObservable();
     }
