@@ -4,7 +4,6 @@ import android.content.Context;
 import android.view.View;
 import android.widget.TextView;
 
-import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.tablefields.FormViewHolder;
 import org.dhis2.data.forms.dataentry.tablefields.RowAction;
 import org.dhis2.databinding.CustomCellViewBinding;
@@ -32,6 +31,7 @@ public class AgeHolder extends FormViewHolder {
     TextView textView;
     AgeViewModel ageViewModel;
     Context context;
+    String date;
 
     AgeHolder(CustomCellViewBinding binding, FlowableProcessor<RowAction> processor, Context context) {
         super(binding);
@@ -87,12 +87,7 @@ public class AgeHolder extends FormViewHolder {
             ageView.setInitialValue(ageViewModel.value());
         }
 
-        ageView.setAgeChangedListener(ageDate -> {
-            String date = ageDate != null ? DateUtils.databaseDateFormat().format(ageDate) : "";
-            if (ageViewModel.value() == null || !ageViewModel.value().equals(date))
-                processor.onNext(RowAction.create(ageViewModel.uid(), date, ageViewModel.dataElement(),
-                        ageViewModel.categoryOptionCombo(), ageViewModel.catCombo(), ageViewModel.row(), ageViewModel.column()));
-        });
+        ageView.setAgeChangedListener(ageDate -> date = ageDate != null ? DateUtils.databaseDateFormat().format(ageDate) : "");
 
         new TableFieldDialog(
                 context,
@@ -102,14 +97,16 @@ public class AgeHolder extends FormViewHolder {
                 new DialogClickListener() {
                     @Override
                     public void onPositive() {
-                        ageView.handleSingleInputs(true);
+                        if (ageViewModel.value() == null || !ageViewModel.value().equals(date))
+                            processor.onNext(RowAction.create(ageViewModel.uid(), date, ageViewModel.dataElement(),
+                                    ageViewModel.categoryOptionCombo(), ageViewModel.catCombo(), ageViewModel.row(), ageViewModel.column()));
                     }
 
                     @Override
                     public void onNegative() {
                     }
                 },
-                v -> ageView.clearValues()
+                null
         ).show();
     }
 
