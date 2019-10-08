@@ -245,6 +245,10 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
         compositeDisposable.add(
                 FilterManager.getInstance().ouTreeFlowable()
+                        .doOnNext(queryData -> {
+                            if (view.isMapVisible())
+                                mapProcessor.onNext(new Unit());
+                        })
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
@@ -255,6 +259,10 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
         compositeDisposable.add(
                 FilterManager.getInstance().getPeriodRequest()
+                        .doOnNext(queryData -> {
+                            if (view.isMapVisible())
+                                mapProcessor.onNext(new Unit());
+                        })
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
@@ -264,6 +272,10 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
         compositeDisposable.add(
                 FilterManager.getInstance().asFlowable()
+                        .doOnNext(queryData -> {
+                            if (view.isMapVisible())
+                                mapProcessor.onNext(new Unit());
+                        })
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(

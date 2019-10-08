@@ -57,6 +57,8 @@ public class ProgramEventDetailContract {
         Consumer<FeatureType> setFeatureType();
 
         void startNewEvent();
+
+        boolean isMapVisible();
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter {
