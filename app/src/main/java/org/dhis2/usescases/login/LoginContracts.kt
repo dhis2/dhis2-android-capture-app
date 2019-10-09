@@ -1,11 +1,9 @@
 package org.dhis2.usescases.login
 
 
-import android.view.View
 import androidx.annotation.UiThread
 import co.infinum.goldfinger.Goldfinger
 import org.dhis2.usescases.general.AbstractActivityContracts
-import retrofit2.Response
 
 class LoginContracts {
 
@@ -57,36 +55,4 @@ class LoginContracts {
         fun showCredentialsData(type: Goldfinger.Type, vararg args: String)
         fun showEmptyCredentialsMessage()
     }
-
-    interface Presenter {
-        fun init(view: View)
-
-        fun logIn(serverUrl: String, userName: String, pass: String)
-
-        fun onQRClick(v: android.view.View)
-
-        fun unlockSession(pin: String)
-
-        fun stopReadingFingerprint()
-
-        fun logOut()
-
-        fun onButtonClick()
-
-        fun onDestroy()
-
-        fun handleResponse(userResponse: Response<*>)
-
-        fun handleError(throwable: Throwable)
-
-        fun onAccountRecovery()
-
-        //FingerPrintAuth
-
-        fun onFingerprintClick()
-
-        fun canHandleBiometrics(): Boolean?
-        fun onUrlInfoClick(v: android.view.View)
-    }
-
 }

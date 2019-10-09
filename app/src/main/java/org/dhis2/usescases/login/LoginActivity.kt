@@ -5,6 +5,7 @@ import android.app.Activity
 import android.app.Dialog
 import android.content.Intent
 import android.os.Bundle
+import android.os.UserManager
 import android.text.Editable
 import android.text.TextUtils.isEmpty
 import android.text.TextWatcher
@@ -74,7 +75,7 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
     private var qrUrl: String? = null
 
     private var testingCredentials: List<TestingCredential> = ArrayList()
-
+    var userManager : org.dhis2.data.server.UserManager? = null
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -84,6 +85,11 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
             // in case if we don't have cached presenter
             loginComponent = (applicationContext as App).createLoginComponent()
         }
+        val serverComponent = (applicationContext as App).serverComponent
+        serverComponent?.let {
+            userManager = serverComponent.userManager()
+        }
+
         loginComponent.inject(this)
 
         super.onCreate(savedInstanceState)
@@ -188,7 +194,7 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
 
     override fun onResume() {
         super.onResume()
-        presenter.init(this)
+        presenter.init(this, userManager)
         NetworkUtils.isGooglePlayServicesAvailable(this)
     }
 

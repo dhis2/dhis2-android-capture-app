@@ -9,7 +9,6 @@ import co.infinum.goldfinger.rx.RxGoldfinger
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import org.dhis2.App
-import org.dhis2.BuildConfig
 import org.dhis2.R
 import org.dhis2.data.prefs.Preference
 import org.dhis2.data.prefs.PreferenceProvider
@@ -17,7 +16,6 @@ import org.dhis2.data.schedulers.SchedulerProvider
 import org.dhis2.data.server.UserManager
 import org.dhis2.usescases.main.MainActivity
 import org.dhis2.usescases.qrScanner.QRActivity
-import org.dhis2.utils.Constants
 import org.dhis2.utils.Constants.*
 import org.dhis2.utils.analytics.ACCOUNT_RECOVERY
 import org.dhis2.utils.analytics.CLICK
@@ -32,37 +30,34 @@ import timber.log.Timber
 
 class LoginPresenter(
         private val preferenceProvider: PreferenceProvider,
-        private val schedulers: SchedulerProvider) {
+        private val schedulers: SchedulerProvider,
+        private val goldfinger: RxGoldfinger) {
 
     private lateinit var view: LoginContracts.View
     private var userManager: UserManager? = null
     lateinit var disposable: CompositeDisposable
 
     private var canHandleBiometrics: Boolean? = null
-    private lateinit var goldfinger: RxGoldfinger
 
-    fun init(view: LoginContracts.View) {
+    fun init(view: LoginContracts.View, userManager: UserManager?) {
+        this.userManager = userManager
         this.view = view
         this.disposable = CompositeDisposable()
-        goldfinger = RxGoldfinger.Builder(view.context).setLogEnabled(BuildConfig.DEBUG).build()
-        if ((view.context.applicationContext as App).serverComponent != null)
-            userManager = (view.context.applicationContext as App).serverComponent.userManager()
 
         userManager?.let { userManager ->
             disposable.add(userManager.isUserLoggedIn
                     .subscribeOn(schedulers.io())
                     .observeOn(schedulers.ui())
                     .subscribe({ isUserLoggedIn ->
-                        val prefs = view.abstracContext.getSharedPreferences(SHARE_PREFS, Context.MODE_PRIVATE)
-                        if (isUserLoggedIn && !prefs.getBoolean("SessionLocked", false)) {
+                        if (isUserLoggedIn && !preferenceProvider.getBoolean("SessionLocked", false)) {
                             view.startActivity(MainActivity::class.java, null, true, true, null)
-                        } else if (prefs.getBoolean("SessionLocked", false)) {
+                        } else if (preferenceProvider.getBoolean("SessionLocked", false)) {
                             view.showUnlockButton()
                         }
 
                     }, { Timber.e(it) }))
 
-            disposable.add(
+        /*    disposable.add(
                     Observable.just(if (userManager.d2.systemInfoModule().systemInfo.blockingGet() != null)
                         userManager.d2.systemInfoModule().systemInfo.blockingGet()
                     else
@@ -78,11 +73,13 @@ class LoginPresenter(
                                         } else
                                             view.setUrl(view.context.getString(R.string.login_https))
                                     },
-                                    { Timber.e(it) }))
+                                    { Timber.e(it) })) */
         } ?: view.setUrl(view.context.getString(R.string.login_https))
+      //  showBiometricButtonIfVersionIsGreaterThanM(view)
+    }
 
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
+    private fun showBiometricButtonIfVersionIsGreaterThanM(view: LoginContracts.View) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             disposable.add(
                     Observable.just(goldfinger.hasEnrolledFingerprint())
                             .filter { canHandleBiometrics ->
@@ -183,7 +180,7 @@ class LoginPresenter(
             prefs.edit().putBoolean("SessionLocked", false).apply()
             prefs.edit().putString("pin", null).apply()
             view.alreadyAuthenticated()
-        } else{
+        } else {
             view.renderError(throwable)
         }
         view.showLoginProgress(false)
