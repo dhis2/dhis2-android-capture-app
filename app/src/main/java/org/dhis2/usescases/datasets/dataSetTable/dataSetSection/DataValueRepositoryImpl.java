@@ -71,7 +71,7 @@ public class DataValueRepositoryImpl implements DataValueRepository {
 
                     if (dataSetElement.dataElement().uid().equals(dataElement.uid()))
 
-                        if (dataSetElement.categoryCombo() != null && !categoryCombos.contains(dataElement.categoryComboUid()))
+                        if (dataSetElement.categoryCombo() != null && !categoryCombos.contains(dataSetElement.categoryCombo().uid()))
                             categoryCombos.add(dataSetElement.categoryCombo().uid());
 
                         else if (dataElement.categoryCombo() != null && !categoryCombos.contains(dataElement.categoryComboUid()))
@@ -234,17 +234,7 @@ public class DataValueRepositoryImpl implements DataValueRepository {
     public Flowable<List<DataElementOperand>> getGreyFields(String sectionName) {
         if (!sectionName.isEmpty() && !sectionName.equals("NO_SECTION"))
             return d2.dataSetModule().sections.withGreyedFields().byDataSetUid().eq(dataSetUid).byName().eq(sectionName).one().get()
-                .map(section -> {
-                    List<DataElementOperand> greyFields = section.greyedFields();
-                    for(DataElementOperand dataElementOperand : greyFields)
-                        if (dataElementOperand.categoryOptionCombo() == null) {
-                            List<DataSetElement> override = d2.dataSetModule().dataSets.byUid().eq(dataSetUid).withDataSetElements().one().blockingGet().dataSetElements();
-                            DataElement dataElement = d2.dataElementModule().dataElements.byUid().eq(dataElementOperand.dataElement().uid()).one().blockingGet();
-                            DataElement dataElementOverride = transformDataElement(dataElement, override);
-                            greyFields.set(greyFields.indexOf(dataElementOperand), dataElementOperand.toBuilder().categoryOptionCombo(dataElementOverride.categoryCombo()).build());
-                        }
-                    return greyFields;
-                }).toFlowable();
+                .map(Section::greyedFields).toFlowable();
         else
             return Flowable.just(new ArrayList<>());
     }
@@ -350,11 +340,20 @@ public class DataValueRepositoryImpl implements DataValueRepository {
 
     @Override
     public Flowable<List<DataElement>> getDataElements(CategoryCombo categoryCombo, String sectionName) {
-        List<String> dataElementUids = new ArrayList<>();
-        List<DataElement> listDataElements;
         if (!sectionName.equals("NO_SECTION")) {
-            listDataElements = d2.dataSetModule().sections.withDataElements().byDataSetUid().eq(dataSetUid).byName().eq(sectionName).one().blockingGet().dataElements();
+            List<DataElement> listDataElements = d2.dataSetModule().sections.withDataElements().byDataSetUid().eq(dataSetUid).byName().eq(sectionName).one().blockingGet().dataElements();
+            List<DataElement> dataElementsOverride = new ArrayList<>();
+            List<DataSetElement> dataSetElements = d2.dataSetModule().dataSets.withDataSetElements().uid(dataSetUid).blockingGet().dataSetElements();
+
+            for(DataElement de: listDataElements) {
+                DataElement override = transformDataElement(de, dataSetElements);
+                if(override.categoryComboUid().equals(categoryCombo.uid()))
+                    dataElementsOverride.add(override);
+            }
+
+            return Flowable.just(dataElementsOverride);
         }else {
+            List<String> dataElementUids = new ArrayList<>();
             List<DataSetElement> dataSetElements = d2.dataSetModule().dataSets.withDataSetElements().byUid().eq(dataSetUid).one().blockingGet().dataSetElements();
             for (DataSetElement dataSetElement : dataSetElements) {
                 if(dataSetElement.categoryCombo() != null && categoryCombo.uid().equals(dataSetElement.categoryCombo().uid()))
@@ -370,15 +369,6 @@ public class DataValueRepositoryImpl implements DataValueRepository {
                         .orderByName(RepositoryScope.OrderByDirection.ASC)
                         .get().toFlowable();
         }
-
-        List<DataElement> dataElements = new ArrayList<>();
-        for(DataElement de: listDataElements) {
-            if (de.categoryComboUid().equals(categoryCombo.uid())) {
-                dataElements.add(de);
-            }
-        }
-
-        return Flowable.just(dataElements);
     }
 
     @Override
