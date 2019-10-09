@@ -42,7 +42,7 @@ ext {
             lottie           : "2.8.0",
             glide            : "4.7.1",
             indicatordots    : "2.1.2",
-            latestSecureStorageVersion    : "1.0.3",
+            latestSecureStorageVersion    : "1.2.2",
 
             paperwork        : "1.2.7",
             leakcanary       : "1.5",

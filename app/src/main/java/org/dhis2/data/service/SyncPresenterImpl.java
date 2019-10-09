@@ -6,7 +6,9 @@ import android.content.SharedPreferences;
 import androidx.annotation.NonNull;
 import androidx.work.Constraints;
 import androidx.work.ExistingPeriodicWorkPolicy;
+import androidx.work.ExistingWorkPolicy;
 import androidx.work.NetworkType;
+import androidx.work.OneTimeWorkRequest;
 import androidx.work.PeriodicWorkRequest;
 import androidx.work.WorkManager;
 
@@ -224,25 +226,49 @@ final class SyncPresenterImpl implements SyncPresenter {
     public void startPeriodicDataWork(Context context) {
         int seconds = context.getSharedPreferences(Constants.SHARE_PREFS, MODE_PRIVATE).getInt(Constants.TIME_DATA, Constants.TIME_DAILY);
         WorkManager.getInstance(context).cancelUniqueWork(Constants.DATA);
-        PeriodicWorkRequest.Builder syncDataBuilder = new PeriodicWorkRequest.Builder(SyncDataWorker.class, seconds, TimeUnit.SECONDS);
+
+        if(seconds!=0){
+            OneTimeWorkRequest syncDataWorkRequest = new OneTimeWorkRequest.Builder(SyncDataWorker.class)
+                    .addTag(Constants.DATA)
+                    .setInitialDelay(seconds, TimeUnit.SECONDS)
+                    .setConstraints(
+                            new Constraints.Builder()
+                                    .setRequiredNetworkType(NetworkType.CONNECTED)
+                                    .build()
+                    ).build();
+            WorkManager.getInstance(context).enqueueUniqueWork(Constants.DATA, ExistingWorkPolicy.REPLACE,syncDataWorkRequest);
+        }
+       /* PeriodicWorkRequest.Builder syncDataBuilder = new PeriodicWorkRequest.Builder(SyncDataWorker.class, seconds, TimeUnit.SECONDS);
         syncDataBuilder.addTag(Constants.DATA);
         syncDataBuilder.setConstraints(new Constraints.Builder()
                 .setRequiredNetworkType(NetworkType.CONNECTED)
                 .build());
         PeriodicWorkRequest request = syncDataBuilder.build();
-        WorkManager.getInstance(context).enqueueUniquePeriodicWork(Constants.DATA, ExistingPeriodicWorkPolicy.REPLACE, request);
+        WorkManager.getInstance(context).enqueueUniquePeriodicWork(Constants.DATA, ExistingPeriodicWorkPolicy.REPLACE, request);*/
     }
 
     @Override
     public void startPeriodicMetaWork(Context context) {
         int seconds = context.getSharedPreferences(Constants.SHARE_PREFS, MODE_PRIVATE).getInt(Constants.TIME_META, Constants.TIME_DAILY);
         WorkManager.getInstance(context).cancelUniqueWork(Constants.META);
-        PeriodicWorkRequest.Builder syncDataBuilder = new PeriodicWorkRequest.Builder(SyncDataWorker.class, seconds, TimeUnit.SECONDS);
+
+        if (seconds != 0) {
+            OneTimeWorkRequest syncMetaWorkRequest = new OneTimeWorkRequest.Builder(SyncMetadataWorker.class)
+                    .addTag(Constants.META)
+                    .setInitialDelay(seconds, TimeUnit.SECONDS)
+                    .setConstraints(
+                            new Constraints.Builder()
+                                    .setRequiredNetworkType(NetworkType.CONNECTED)
+                                    .build()
+                    ).build();
+            WorkManager.getInstance(context).enqueueUniqueWork(Constants.META, ExistingWorkPolicy.REPLACE,syncMetaWorkRequest);
+        }
+        /*PeriodicWorkRequest.Builder syncDataBuilder = new PeriodicWorkRequest.Builder(SyncDataWorker.class, seconds, TimeUnit.SECONDS);
         syncDataBuilder.addTag(Constants.META);
         syncDataBuilder.setConstraints(new Constraints.Builder()
                 .setRequiredNetworkType(NetworkType.CONNECTED)
                 .build());
         PeriodicWorkRequest request = syncDataBuilder.build();
-        WorkManager.getInstance(context).enqueueUniquePeriodicWork(Constants.META, ExistingPeriodicWorkPolicy.REPLACE, request);
+        WorkManager.getInstance(context).enqueueUniquePeriodicWork(Constants.META, ExistingPeriodicWorkPolicy.REPLACE, request);*/
     }
 }

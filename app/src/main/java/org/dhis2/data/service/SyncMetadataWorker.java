@@ -94,7 +94,9 @@ public class SyncMetadataWorker extends Worker {
             cancelNotification();
 
             if (!isMetaOk)
-                return Result.retry();
+                return Result.failure(createOutputData(false));
+
+            presenter.startPeriodicMetaWork(getApplicationContext());
 
             return Result.success(createOutputData(true));
         } else {
