@@ -124,6 +124,7 @@
     <string name="delete_event">Xóa sự kiện</string>
     <string name="confirm_delete_event">Bạn có chắc chắn muốn xóa sự kiện này?</string>
     <string name="event_was_deleted">Xóa sự kiện thành công</string>
+    <string name="total">Tổng số</string>
 
     <!--TEI Enrollment list-->
     <string name="enrollment_list">Danh sách ghi danh</string>
@@ -218,9 +219,9 @@
     <string name="org_unit_filter">(%d) Đơn vị</string>
     <string name="tuto_main_1">Chào mừng đến với dhis2</string>
     <string name="tuto_main_2">Bạn có thể xem các hoạt động của mình tại đây</string>
-    <string name="tuto_main_3">Bạn có thể áp dụng bộ lọc...</string>
-    <string name="tuto_main_4">...bằng cách thay đổi thời gian và ngày đang chọn</string>
-    <string name="tuto_main_5">...hoặc lọc theo Đơn vị</string>
+    <string name="tuto_main_3">Bạn có thể áp dụng bộ lọc…</string>
+    <string name="tuto_main_4">…bằng cách thay đổi thời gian và ngày đang chọn</string>
+    <string name="tuto_main_5">…hoặc lọc theo Đơn vị</string>
     <string name="tuto_main_6">Xem các hoạt động khác ở thực đơn chính</string>
 
     <!-- RELATIONSHIPS -->
@@ -319,15 +320,15 @@
     <string name="appwidget_text">VÍ DỤ</string>
     <string name="add_widget">Thêm tiện ích</string>
     <string name="showHelp">Hiện trợ giúp</string>
-    <string name="tuto_settings_1">Đang đồng bộ dữ liệu...</string>
-    <string name="tuto_settings_2">...cấu hình...</string>
-    <string name="tuto_settings_3">...cài đặt dung lượng lưu trữ cục bộ...</string>
-    <string name="tuto_settings_4">...hoặc xóa tất cả để bắt đầu lại từ đầu.</string>
+    <string name="tuto_settings_1">Đang đồng bộ dữ liệu…</string>
+    <string name="tuto_settings_2">…cấu hình…</string>
+    <string name="tuto_settings_3">…cài đặt dung lượng lưu trữ cục bộ…</string>
+    <string name="tuto_settings_4">…hoặc xóa tất cả để bắt đầu lại từ đầu.</string>
     <string name="tuto_search_2">Bạn có thể đổi sang các chương trình khác.</string>
     <string name="tuto_dashboard_1">Đây là bảng tin thực của thực thể</string>
-    <string name="tuto_dashboard_2">Xem thông tin hồ sơ của các thực thể...</string>
-    <string name="tuto_dashboard_3">...Chia sẻ thông tin qua QR hoặc SMS...</string>
-    <string name="tuto_dashboard_4">...Hoặc đánh dấu thực thể để theo dõi</string>
+    <string name="tuto_dashboard_2">Xem thông tin hồ sơ của các thực thể…</string>
+    <string name="tuto_dashboard_3">…Chia sẻ thông tin qua QR hoặc SMS…</string>
+    <string name="tuto_dashboard_4">…Hoặc đánh dấu thực thể để theo dõi</string>
     <string name="tuto_dashboard_5">Nhấn để tạo hoặc đặt lịch cho một sự kiện hoặc giới thiệu sang một đơn vị khác.</string>
     <string name="tuto_dashboard_6">Tại đây bạn sẽ thấy tất cả các sự kiện. Nhấn để xem chi tiết một sự kiện.</string>
     <string name="tuto_dashboard_7">Chuyển sang thực đơn để thêm mối quan hệ, xem chỉ số hoặc viết ghi chú.</string>
@@ -358,10 +359,20 @@
     <string name="skip">Bỏ qua</string>
     <string name="reschedule">Sửa lịch</string>
     <string name="event_overdue">Quá hạn</string>
+    <string name="table">Bảng</string>
     <string name="local_data_accept">Chấp nhận</string>
     <string name="login_server_info_title">Đường dẫn đến máy chủ</string>
     <string name="state_warning">Cảnh báo</string>
     <string name="action_close">Đóng lại</string>
+    <string name="data_set_closed">Đóng lại</string>
+    <string name="data_set_open">Mở</string>
+    <string name="unsupported_value_type">Không hỗ trợ kiểu giá trị này</string>
     <string name="data_every_day">Hàng ngày</string>
     <string name="data_every_week">Hàng tuần</string>
+    <string name="sms_completed">Hoàn tất</string>
+    <string name="sms_bar_state_sending">Đang tiến hành</string>
+    <string name="sms_bar_state_failed">KHÔNG THÀNH CÔNG</string>
+
+    <string name="polygon_captured">Polygon captured</string>
+    <string name="polygon">Đa giác</string>
     </resources>
