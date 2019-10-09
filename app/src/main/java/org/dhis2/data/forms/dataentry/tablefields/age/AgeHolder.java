@@ -1,18 +1,16 @@
 package org.dhis2.data.forms.dataentry.tablefields.age;
 
 import android.content.Context;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
 
-import androidx.appcompat.app.AlertDialog;
-
-import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.tablefields.FormViewHolder;
 import org.dhis2.data.forms.dataentry.tablefields.RowAction;
 import org.dhis2.databinding.CustomCellViewBinding;
 import org.dhis2.utils.DateUtils;
+import org.dhis2.utils.DialogClickListener;
 import org.dhis2.utils.custom_views.AgeView;
+import org.dhis2.utils.custom_views.TableFieldDialog;
 
 import java.text.ParseException;
 import java.util.Date;
@@ -33,6 +31,7 @@ public class AgeHolder extends FormViewHolder {
     TextView textView;
     AgeViewModel ageViewModel;
     Context context;
+    String date;
 
     AgeHolder(CustomCellViewBinding binding, FlowableProcessor<RowAction> processor, Context context) {
         super(binding);
@@ -54,16 +53,17 @@ public class AgeHolder extends FormViewHolder {
             } catch (ParseException e) {
                 e.printStackTrace();
             }
-        }
+        } else
+            textView.setText(null);
 
-        if(ageViewModel.mandatory())
+        if (ageViewModel.mandatory())
             binding.icMandatory.setVisibility(View.VISIBLE);
         else
             binding.icMandatory.setVisibility(View.INVISIBLE);
 
-        if(!(accessDataWrite && ageViewModel.editable())) {
+        if (!(accessDataWrite && ageViewModel.editable())) {
             textView.setEnabled(false);
-        }else
+        } else
             textView.setEnabled(true);
 
         binding.executePendingBindings();
@@ -80,31 +80,34 @@ public class AgeHolder extends FormViewHolder {
 
     private void showEditDialog() {
 
-        View view = LayoutInflater.from(context).inflate(R.layout.form_age_custom, null);
-        AgeView ageView = view.findViewById(R.id.custom_ageview);
-
-        AlertDialog alertDialog = new AlertDialog.Builder(context, R.style.CustomDialog)
-                .setPositiveButton(R.string.action_accept, (dialog, which) -> {
-                    ageView.onFocusChange(ageView.findViewById(R.id.input_days), false);
-                    dialog.dismiss();
-                })
-                .setNegativeButton(R.string.clear, (dialog, which) -> processor.onNext(
-                        RowAction.create(ageViewModel.uid(), null, ageViewModel.dataElement(), ageViewModel.categoryOptionCombo(), ageViewModel.catCombo(), ageViewModel.row(), ageViewModel.column())))
-                .create();
-
+        AgeView ageView = new AgeView(context);
         ageView.setIsBgTransparent(true);
-        if(ageViewModel.value() != null && !ageViewModel.value().isEmpty())
+
+        if (ageViewModel.value() != null && !ageViewModel.value().isEmpty()) {
             ageView.setInitialValue(ageViewModel.value());
+        }
 
-        ageView.setLabel(ageViewModel.label(), ageViewModel.description());
+        ageView.setAgeChangedListener(ageDate -> date = ageDate != null ? DateUtils.databaseDateFormat().format(ageDate) : "");
 
-        ageView.setAgeChangedListener(ageDate -> {
-                    if (ageViewModel.value() == null || !ageViewModel.value().equals(DateUtils.databaseDateFormat().format(ageDate)))
-                        processor.onNext(RowAction.create(ageViewModel.uid(), DateUtils.databaseDateFormat().format(ageDate), ageViewModel.dataElement(), ageViewModel.categoryOptionCombo(), ageViewModel.catCombo(), ageViewModel.row(), ageViewModel.column()));
-        });
-        alertDialog.setView(view);
+        new TableFieldDialog(
+                context,
+                ageViewModel.label(),
+                ageViewModel.description(),
+                ageView,
+                new DialogClickListener() {
+                    @Override
+                    public void onPositive() {
+                        if (ageViewModel.value() == null || !ageViewModel.value().equals(date))
+                            processor.onNext(RowAction.create(ageViewModel.uid(), date, ageViewModel.dataElement(),
+                                    ageViewModel.categoryOptionCombo(), ageViewModel.catCombo(), ageViewModel.row(), ageViewModel.column()));
+                    }
 
-        alertDialog.show();
+                    @Override
+                    public void onNegative() {
+                    }
+                },
+                null
+        ).show();
     }
 
     @Override

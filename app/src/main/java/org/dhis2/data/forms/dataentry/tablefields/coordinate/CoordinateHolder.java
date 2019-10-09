@@ -3,20 +3,16 @@ package org.dhis2.data.forms.dataentry.tablefields.coordinate;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
 
-import androidx.appcompat.app.AlertDialog;
-
-import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.tablefields.FormViewHolder;
 import org.dhis2.data.forms.dataentry.tablefields.RowAction;
 import org.dhis2.databinding.CustomCellViewBinding;
+import org.dhis2.utils.DialogClickListener;
 import org.dhis2.utils.custom_views.CoordinatesView;
+import org.dhis2.utils.custom_views.TableFieldDialog;
 import org.hisp.dhis.android.core.common.FeatureType;
-
-import java.util.Locale;
 
 import io.reactivex.processors.FlowableProcessor;
 
@@ -50,12 +46,12 @@ public class CoordinateHolder extends FormViewHolder {
         else
             textView.setText(null);
 
-        if(!(accessDataWrite && coordinateViewModel.editable())) {
+        if (!(accessDataWrite && coordinateViewModel.editable())) {
             textView.setEnabled(false);
-        }else
+        } else
             textView.setEnabled(true);
 
-        if(coordinateViewModel.mandatory())
+        if (coordinateViewModel.mandatory())
             binding.icMandatory.setVisibility(View.VISIBLE);
         else
             binding.icMandatory.setVisibility(View.INVISIBLE);
@@ -72,38 +68,33 @@ public class CoordinateHolder extends FormViewHolder {
     }
 
     private void showEditDialog() {
-        View view = LayoutInflater.from(context).inflate(R.layout.custom_form_coordinate, null);
-        CoordinatesView coordinatesView = view.findViewById(R.id.formCoordinates);
+
+        CoordinatesView coordinatesView = new CoordinatesView(context);
         coordinatesView.setIsBgTransparent(true);
+        coordinatesView.setFeatureType(FeatureType.POINT);
 
-        AlertDialog alertDialog = new AlertDialog.Builder(context, R.style.CustomDialog)
-                .setPositiveButton(R.string.action_accept, (dialog, which) -> {
-                    if (coordinatesView.validateInputtedData()){
-                        processor.onNext(RowAction.create(model.uid(), String.format(Locale.US, "[%.5f,%.5f]", coordinatesView.getLatitude(), coordinatesView.getLongitude()), model.dataElement(), model.categoryOptionCombo(), model.catCombo(), model.row(), model.column()));
-                    }
-                })
-                .setNegativeButton(R.string.clear, (dialog, which) -> processor.onNext(
-                        RowAction.create(model.uid(), null, model.dataElement(), model.categoryOptionCombo(), model.catCombo(), model.row(), model.column())))
-                .create();
-
-        if(model.value() != null && !model.value().isEmpty()) {
-            coordinatesView.setFeatureType(FeatureType.POINT);
+        if (model.value() != null && !model.value().isEmpty()) {
             coordinatesView.setInitialValue(model.value());
         }
 
-        coordinatesView.setLabel(model.label());
+        new TableFieldDialog(
+                context,
+                model.label(),
+                model.description(),
+                coordinatesView,
+                new DialogClickListener() {
+                    @Override
+                    public void onPositive() {
+                        processor.onNext(RowAction.create(model.uid(), coordinatesView.currentCoordinates(),
+                                model.dataElement(), model.categoryOptionCombo(), model.catCombo(), model.row(), model.column()));
+                    }
 
-        coordinatesView.setCurrentLocationListener((geometry) -> {
-            processor.onNext(RowAction.create(model.uid(), geometry.coordinates(), model.dataElement(), model.categoryOptionCombo(), model.catCombo(), model.row(), model.column()));
-            alertDialog.dismiss();
-        });
-
-        coordinatesView.setMapListener(
-                (CoordinatesView.OnMapPositionClick) coordinatesView.getContext()
-        );
-        alertDialog.setView(view);
-
-        alertDialog.show();
+                    @Override
+                    public void onNegative() {
+                    }
+                },
+                null
+        ).show();
     }
 
     @Override

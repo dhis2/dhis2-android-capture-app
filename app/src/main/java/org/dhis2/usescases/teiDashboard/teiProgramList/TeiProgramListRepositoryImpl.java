@@ -21,6 +21,7 @@ import org.hisp.dhis.android.core.program.Program;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -59,7 +60,7 @@ public class TeiProgramListRepositoryImpl implements TeiProgramListRepository {
                             program.style() != null ? program.style().icon() : null,
                             program.displayName(),
                             orgUnit.displayName(),
-                            enrollment.followUp(),
+                            enrollment.followUp()!=null?enrollment.followUp():false,
                             program.uid()
                     );
                 })
@@ -82,7 +83,7 @@ public class TeiProgramListRepositoryImpl implements TeiProgramListRepository {
                             program.style() != null ? program.style().icon() : null,
                             program.displayName(),
                             orgUnit.displayName(),
-                            enrollment.followUp(),
+                            enrollment.followUp()!=null?enrollment.followUp():false,
                             program.uid()
                     );
                 })
@@ -108,7 +109,7 @@ public class TeiProgramListRepositoryImpl implements TeiProgramListRepository {
                         .byOrganisationUnitList(orgUnits)
                         .byTrackedEntityTypeUid().eq(trackedEntityType).withStyle().blockingGet()))
                 .flatMapIterable(programs -> programs)
-                .map(program -> ProgramViewModel.create(
+                .map(program -> ProgramViewModel.Companion.create(
                         program.uid(),
                         program.displayName(),
                         program.style() != null ? program.style().color() : null,
@@ -182,19 +183,11 @@ public class TeiProgramListRepositoryImpl implements TeiProgramListRepository {
 
     @Override
     public Observable<List<OrganisationUnit>> getOrgUnits(String programUid) {
-        if (programUid != null) {
-            return Observable.fromCallable(() -> {
-                List<String> ouUids = new ArrayList<>();
-                try (Cursor ouCursor = d2.databaseAdapter().query("SELECT organisationUnit FROM OrganisationUnitProgramLink WHERE program = ?", programUid)){
-                    ouCursor.moveToFirst();
-                    do {
-                        ouUids.add(ouCursor.getString(0));
-                    } while (ouCursor.moveToNext());
-                }
-                return ouUids;
-            }).flatMap(ouUids -> d2.organisationUnitModule().organisationUnits.byUid().in(ouUids).withPrograms().get().toObservable());
-        } else
-            return Observable.just(d2.organisationUnitModule().organisationUnits.byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE).blockingGet());
+        if (programUid != null)
+            return d2.organisationUnitModule().organisationUnits.byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE)
+                    .byProgramUids(Collections.singletonList(programUid)).withPrograms().get().toObservable();
+        else
+            return d2.organisationUnitModule().organisationUnits.byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE).get().toObservable();
     }
 
     @Override

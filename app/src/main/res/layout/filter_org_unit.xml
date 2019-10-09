@@ -90,7 +90,7 @@
 
             <ImageView
                 android:id="@+id/ouTreeButton"
-                style="@style/ActionIcon_no_padding"
+                style="@style/ActionIconNoPadding"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="16dp"

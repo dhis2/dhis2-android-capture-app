@@ -56,6 +56,7 @@ import org.dhis2.usescases.org_unit_selector.OUTreeActivity;
 import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.HelpManager;
+import org.dhis2.utils.analytics.AnalyticsConstants;
 import org.dhis2.utils.filters.FilterManager;
 import org.dhis2.utils.filters.FiltersAdapter;
 import org.hisp.dhis.android.core.category.CategoryCombo;
@@ -79,6 +80,8 @@ import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconAllowOverlap
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconOffset;
 import static org.dhis2.R.layout.activity_program_event_detail;
 import static org.dhis2.utils.Constants.PROGRAM_UID;
+import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
+import static org.dhis2.utils.analytics.AnalyticsConstants.SHOW_HELP;
 
 /**
  * QUADRAM. Created by Cristian on 13/02/2018.
@@ -102,11 +105,11 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
     private MarkerView currentMarker;
     private FeatureType featureType;
 
-    public static Bundle getBundle(String programUid, String period, List<Date> dates) {
+    public static final String EXTRA_PROGRAM_UID = "PROGRAM_UID";
+
+    public static Bundle getBundle(String programUid) {
         Bundle bundle = new Bundle();
-        bundle.putString("PROGRAM_UID", programUid);
-        bundle.putString("CURRENT_PERIOD", period);
-        bundle.putSerializable("DATES", (ArrayList) dates);
+        bundle.putString(EXTRA_PROGRAM_UID, programUid);
         return bundle;
     }
 
@@ -118,13 +121,14 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
-        ((App) getApplicationContext()).userComponent().plus(new ProgramEventDetailModule(getIntent().getStringExtra("PROGRAM_UID"))).inject(this);
+        this.programUid = getIntent().getStringExtra(EXTRA_PROGRAM_UID);
+
+        ((App) getApplicationContext()).userComponent().plus(new ProgramEventDetailModule(programUid)).inject(this);
         super.onCreate(savedInstanceState);
 
         FilterManager.getInstance().clearCatOptCombo();
         FilterManager.getInstance().clearEventStatus();
 
-        this.programUid = getIntent().getStringExtra("PROGRAM_UID");
         binding = DataBindingUtil.setContentView(this, activity_program_event_detail);
 
         binding.setPresenter(presenter);
@@ -257,6 +261,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
 
     @Override
     public void startNewEvent() {
+        analyticsHelper().setEvent(AnalyticsConstants.CREATE_EVENT, AnalyticsConstants.DATA_CREATION, AnalyticsConstants.CREATE_EVENT);
         binding.addEventButton.setEnabled(false);
         Bundle bundle = new Bundle();
         bundle.putString(PROGRAM_UID, programUid);
@@ -447,6 +452,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
         popupMenu.setOnMenuItemClickListener(item -> {
             switch (item.getItemId()) {
                 case R.id.showHelp:
+                    analyticsHelper().setEvent(SHOW_HELP, CLICK, SHOW_HELP);
                     showTutorial(false);
                     break;
                 case R.id.menu_list:
@@ -466,6 +472,11 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
         popupMenu.getMenu().getItem(0).setVisible(!emptyVisible && !mapVisible && featureType != FeatureType.NONE);
         popupMenu.getMenu().getItem(1).setVisible(!emptyVisible && binding.recycler.getVisibility() == View.GONE && featureType != FeatureType.NONE);
         popupMenu.show();
+    }
+
+    @Override
+    public boolean isMapVisible() {
+        return binding.mapView.getVisibility() == View.VISIBLE;
     }
 
     private void showMap(boolean showMap) {

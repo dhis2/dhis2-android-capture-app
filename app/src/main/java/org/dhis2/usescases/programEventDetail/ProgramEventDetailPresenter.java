@@ -9,8 +9,7 @@ import com.mapbox.mapboxsdk.geometry.LatLng;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity;
-import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity;
-import org.dhis2.usescases.main.program.SyncStatusDialog;
+import org.dhis2.utils.granular_sync.SyncStatusDialog;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.filters.FilterManager;
 import org.hisp.dhis.android.core.category.CategoryOptionCombo;
@@ -167,6 +166,10 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
 
         compositeDisposable.add(
                 FilterManager.getInstance().ouTreeFlowable()
+                        .doOnNext(queryData -> {
+                            if (view.isMapVisible())
+                                mapProcessor.onNext(new Unit());
+                        })
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
@@ -184,6 +187,10 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
 
         compositeDisposable.add(
                 FilterManager.getInstance().asFlowable()
+                        .doOnNext(queryData -> {
+                            if (view.isMapVisible())
+                                mapProcessor.onNext(new Unit());
+                        })
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
@@ -194,18 +201,16 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
 
         compositeDisposable.add(
                 FilterManager.getInstance().getPeriodRequest()
+                        .doOnNext(queryData -> {
+                            if (view.isMapVisible())
+                                mapProcessor.onNext(new Unit());
+                        })
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
                                 periodRequest -> view.showPeriodRequest(periodRequest),
                                 Timber::e
                         ));
-    }
-
-    @Override
-    public void updateDateFilter(List<DatePeriod> datePeriodList) {
-        this.currentDateFilter = datePeriodList;
-        programQueries.onNext(Trio.create(currentDateFilter, currentOrgUnitFilter, currentCatOptionCombo));
     }
 
     @Override

@@ -155,7 +155,7 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
     @NonNull
     @Override
     public Observable<Program> program() {
-        return Observable.just(d2.programModule().programs.withCategoryCombo().withProgramIndicators()
+        return Observable.just(d2.programModule().programs.withProgramIndicators()
                 .withProgramRules().withProgramRuleVariables().withProgramSections().withProgramStages()
                 .withProgramTrackedEntityAttributes().withRelatedProgram().withStyle()
                 .withTrackedEntityType().uid(programUid).blockingGet());
@@ -250,7 +250,7 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
 
     @Override
     public Single<Boolean> hasAccessToAllCatOptions() {
-        return d2.programModule().programs.withCategoryCombo().uid(programUid).get()
+        return d2.programModule().programs.uid(programUid).get()
                 .filter(program -> program.categoryComboUid() != null)
                 .map(program -> d2.categoryModule().categoryCombos.withCategories().withCategoryOptionCombos().uid(program.categoryComboUid()).blockingGet())
                 .filter(catCombo -> !catCombo.isDefault())

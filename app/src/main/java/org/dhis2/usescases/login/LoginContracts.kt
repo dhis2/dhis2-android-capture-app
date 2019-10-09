@@ -3,6 +3,7 @@ package org.dhis2.usescases.login
 
 import android.view.View
 import androidx.annotation.UiThread
+import co.infinum.goldfinger.Goldfinger
 import org.dhis2.usescases.general.AbstractActivityContracts
 import retrofit2.Response
 
@@ -38,6 +39,10 @@ class LoginContracts {
 
         fun showCrashlyticsDialog()
 
+        fun showFingerprintDialog()
+
+        fun hideFingerprintDialog()
+
         @UiThread
         fun renderError(throwable: Throwable)
 
@@ -45,12 +50,12 @@ class LoginContracts {
 
         fun showBiometricButton()
 
-        fun checkSecuredCredentials()
-
         fun openAccountRecovery()
 
         fun displayAlertDialog(titleResource:Int, descriptionResource:Int,negativeResource:Int?,positiveResource:Int)
         fun alreadyAuthenticated()
+        fun showCredentialsData(type: Goldfinger.Type, vararg args: String)
+        fun showEmptyCredentialsMessage()
     }
 
     interface Presenter {
@@ -61,6 +66,8 @@ class LoginContracts {
         fun onQRClick(v: android.view.View)
 
         fun unlockSession(pin: String)
+
+        fun stopReadingFingerprint()
 
         fun logOut()
 

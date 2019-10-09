@@ -74,8 +74,6 @@ final class EditTextCustomHolder extends FormViewHolder {
         });
         binding.customEdittext.setOnEditorActionListener((v, actionId, event) -> {
             sendAction();
-            closeKeyboard(binding.customEdittext.getEditText());
-            validateRegex();
             return true;
         });
 
@@ -83,13 +81,13 @@ final class EditTextCustomHolder extends FormViewHolder {
             setSelectedBackground(isSearchMode);
             binding.customEdittext.getEditText().setFocusable(true);
             binding.customEdittext.getEditText().setFocusableInTouchMode(true);
-            openKeyboard(binding.customEdittext.getEditText());
             binding.customEdittext.getEditText().requestFocus();
+            openKeyboard(binding.customEdittext.getEditText());
         });
     }
 
     private void sendAction() {
-        if (!isEmpty(binding.customEdittext.getEditText().getText()) && editTextModel.error() == null) {
+        if (!isEmpty(binding.customEdittext.getEditText().getText())) {
             checkAutocompleteRendering();
             editTextModel.withValue(binding.customEdittext.getEditText().getText().toString());
             String value = ValidationUtils.validate(editTextModel.valueType(), binding.customEdittext.getEditText().getText().toString());
@@ -100,6 +98,8 @@ final class EditTextCustomHolder extends FormViewHolder {
         }
 
         clearBackground(isSearchMode);
+        closeKeyboard(binding.customEdittext.getEditText());
+
     }
 
     public void update(@NonNull FieldViewModel model) {
@@ -154,7 +154,7 @@ final class EditTextCustomHolder extends FormViewHolder {
                     !binding.customEdittext.getEditText().getText().toString().matches(editTextModel.fieldMask()))
                 binding.customEdittext.setWarning(binding.getRoot().getContext().getString(R.string.wrong_pattern), "");
             else
-                binding.customEdittext.setWarning("", "");
+                binding.customEdittext.setWarning(editTextModel.warning(), editTextModel.error());
     }
 
     @NonNull

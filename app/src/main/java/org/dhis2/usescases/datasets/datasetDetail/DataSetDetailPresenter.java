@@ -5,7 +5,7 @@ import android.os.Bundle;
 import androidx.annotation.IntDef;
 
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableActivity;
-import org.dhis2.usescases.main.program.SyncStatusDialog;
+import org.dhis2.utils.granular_sync.SyncStatusDialog;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.filters.FilterManager;
 
@@ -28,6 +28,7 @@ public class DataSetDetailPresenter implements DataSetDetailContract.Presenter {
     private CompositeDisposable compositeDisposable;
     private Map<String, String> mapPeriodAvailable;
     private FlowableProcessor<Boolean> processor;
+    private String dataSetUid;
 
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({LastSearchType.DATES, LastSearchType.DATE_RANGES})
@@ -43,9 +44,10 @@ public class DataSetDetailPresenter implements DataSetDetailContract.Presenter {
     }
 
     @Override
-    public void init(DataSetDetailContract.View view) {
+    public void init(DataSetDetailContract.View view, String dataSetUid) {
         this.view = view;
         this.processor = PublishProcessor.create();
+        this.dataSetUid = dataSetUid;
         getOrgUnits();
         setDataSet(true);
         manageProcessorDismissDialog();
@@ -178,7 +180,7 @@ public class DataSetDetailPresenter implements DataSetDetailContract.Presenter {
 
     @Override
     public void onSyncIconClick(String orgUnit, String attributeCombo, String periodId) {
-        view.showSyncDialog(orgUnit, attributeCombo, periodId, SyncStatusDialog.ConflictType.DATA_VALUES, processor);
+        view.showSyncDialog(orgUnit, attributeCombo, periodId, SyncStatusDialog.ConflictType.DATA_VALUES, processor, dataSetUid);
     }
 
     @Override

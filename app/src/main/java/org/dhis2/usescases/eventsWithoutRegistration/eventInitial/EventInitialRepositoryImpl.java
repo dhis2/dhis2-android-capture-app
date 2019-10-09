@@ -29,6 +29,7 @@ import org.hisp.dhis.android.core.program.ProgramStage;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -83,16 +84,8 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
     @NonNull
     @Override
     public Observable<List<OrganisationUnit>> orgUnits(String programId) {
-        return Observable.fromCallable(() -> {
-            List<String> ouUids = new ArrayList<>();
-            try (Cursor ouCursor = d2.databaseAdapter().query("SELECT organisationUnit FROM OrganisationUnitProgramLink WHERE program = ?", programId)) {
-                ouCursor.moveToFirst();
-                do {
-                    ouUids.add(ouCursor.getString(0));
-                } while (ouCursor.moveToNext());
-            }
-            return ouUids;
-        }).flatMap(ouUids -> d2.organisationUnitModule().organisationUnits.byUid().in(ouUids).withPrograms().get().toObservable());
+        return d2.organisationUnitModule().organisationUnits.byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE)
+                .byProgramUids(Collections.singletonList(programId)).withPrograms().get().toObservable();
     }
 
     public Observable<List<OrganisationUnit>> orgUnits(String programId, String parentUid) {
@@ -113,7 +106,9 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
     @NonNull
     @Override
     public Observable<CategoryCombo> catCombo(String programUid) {
-        return Observable.defer(() -> Observable.just(d2.categoryModule().categoryCombos.withCategories().withCategoryOptionCombos().uid(d2.programModule().programs.withCategoryCombo().uid(programUid).blockingGet().categoryCombo().uid()).blockingGet()))
+        return d2.programModule().programs.uid(programUid).get()
+                .flatMap(program ->
+                        d2.categoryModule().categoryCombos.withCategories().withCategoryOptionCombos().uid(program.categoryComboUid()).get())
                 .map(categoryCombo -> {
                     List<Category> fullCategories = new ArrayList<>();
                     List<CategoryOptionCombo> fullOptionCombos = new ArrayList<>();
@@ -123,12 +118,12 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
                     for (CategoryOptionCombo categoryOptionCombo : categoryCombo.categoryOptionCombos())
                         fullOptionCombos.add(d2.categoryModule().categoryOptionCombos.withCategoryOptions().uid(categoryOptionCombo.uid()).blockingGet());
                     return categoryCombo.toBuilder().categories(fullCategories).categoryOptionCombos(fullOptionCombos).build();
-                });
+                }).toObservable();
     }
 
     @Override
     public Flowable<Map<String, CategoryOption>> getOptionsFromCatOptionCombo(String eventId) {
-        return Flowable.just(d2.eventModule().events.uid(eventUid).blockingGet())
+        return d2.eventModule().events.uid(eventUid).get().toFlowable()
                 .flatMap(event -> catCombo(event.program()).toFlowable(BackpressureStrategy.LATEST)
                         .flatMap(categoryCombo -> {
                             Map<String, CategoryOption> map = new HashMap<>();
@@ -363,7 +358,7 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
 
     @Override
     public Observable<Program> getProgramWithId(String programUid) {
-        return d2.programModule().programs.withCategoryCombo().withProgramIndicators().withProgramRules().withProgramRuleVariables().withProgramSections().withProgramStages()
+        return d2.programModule().programs.withProgramIndicators().withProgramRules().withProgramRuleVariables().withProgramSections().withProgramStages()
             .withProgramTrackedEntityAttributes().withRelatedProgram().withStyle().withTrackedEntityType().byUid().eq(programUid).one().get().toObservable();
     }
 

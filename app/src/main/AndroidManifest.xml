@@ -71,7 +71,6 @@
         <activity android:name=".data.forms.dataentry.DataEntryActivity" />
         <activity android:name=".usescases.teiDashboard.teiProgramList.TeiProgramListActivity" />
         <activity android:name=".usescases.map.MapSelectorActivity" />
-        <activity android:name=".usescases.eventsWithoutRegistration.eventSummary.EventSummaryActivity" />
         <activity android:name=".usescases.programStageSelection.ProgramStageSelectionActivity" />
         <activity android:name=".utils.WebViewActivity" />
         <activity
@@ -128,6 +127,7 @@
         <activity android:name=".usescases.org_unit_selector.OUTreeActivity" />
         <activity android:name=".usescases.enrollment.EnrollmentActivity"
             android:windowSoftInputMode="adjustPan"/>
+        <activity android:name=".usescases.events.ScheduledEventActivity" />
     </application>
 
 </manifest>

@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <import type="android.view.View" />
+
+        <import type="android.text.TextUtils" />
+
+        <variable
+            name="title"
+            type="java.lang.String" />
+
+        <variable
+            name="subTitle"
+            type="java.lang.String" />
+
+        <variable
+            name="negativeText"
+            type="java.lang.String" />
+
+        <variable
+            name="positiveText"
+            type="java.lang.String" />
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            android:padding="5dp"
+            android:text='@{ title ?? "" }'
+            android:textColor="@color/text_black_333"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Data Element Name" />
+
+        <TextView
+            android:id="@+id/subTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="16dp"
+            android:padding="5dp"
+            android:text='@{ subTitle ?? "" }'
+            android:textColor="@color/text_black_808"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/title"
+            tools:text="Category Option Name" />
+
+
+        <FrameLayout
+            android:id="@+id/viewLayout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="16dp"
+            app:layout_constraintEnd_toStartOf="@+id/clearSelection"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/subTitle" />
+
+        <ImageView
+            android:id="@+id/clearSelection"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="20dp"
+            android:tint="@color/icon_color"
+            app:layout_constraintBottom_toBottomOf="@+id/viewLayout"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/viewLayout"
+            app:srcCompat="@drawable/ic_clear" />
+
+        <Button
+            android:id="@+id/negative"
+            style="@style/TextButton"
+            android:minWidth="0dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="20dp"
+            android:layout_marginBottom="5dp"
+            android:layout_weight="0.5"
+            android:fontFamily="@font/rubik_medium"
+            android:gravity="center"
+            android:text='@{ negativeText ?? "" }'
+            android:textColor="@color/text_black_808"
+            android:textSize="12sp"
+            android:visibility="@{ TextUtils.isEmpty(negativeText) ? View.GONE : View.VISIBLE}"
+            app:layout_constraintEnd_toStartOf="@id/possitive"
+            app:layout_constraintTop_toBottomOf="@id/viewLayout"
+            tools:text="Cancel" />
+
+        <Button
+            android:id="@+id/possitive"
+            style="@style/TextButton"
+            android:minWidth="0dp"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="20dp"
+            android:layout_marginBottom="5dp"
+            android:layout_weight="0.5"
+            android:fontFamily="@font/rubik_medium"
+            android:gravity="center"
+            android:text='@{ positiveText ?? "" }'
+            android:textColor="@color/text_black_333"
+            android:textSize="12sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/viewLayout"
+            tools:text="Accept"
+            tools:visibility="visible" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

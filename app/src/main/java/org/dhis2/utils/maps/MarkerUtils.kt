@@ -35,8 +35,8 @@ object MarkerUtils {
 
     private fun initMarkerCanvas(context: Context, color: Int): Pair<Canvas, Bitmap> {
         val drawable: Drawable = ContextCompat.getDrawable(context, R.drawable.ic_img_marker_frame)!!
-
         tintDrawable(drawable, color)
+        drawable.mutate()
 
         val canvasMarker = Bitmap.createBitmap(drawable.intrinsicWidth, drawable.intrinsicHeight, Bitmap.Config.ARGB_8888)
         val markerBitmap = Bitmap.createBitmap(canvasMarker.width, canvasMarker.height, canvasMarker.config)

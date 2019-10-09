@@ -22,6 +22,8 @@ import javax.inject.Inject;
 
 import timber.log.Timber;
 
+import static org.dhis2.utils.analytics.AnalyticsConstants.ABOUT_FRAGMENT;
+
 /**
  * QUADRAM. Created by ppajuelo on 05/07/2018.
  */

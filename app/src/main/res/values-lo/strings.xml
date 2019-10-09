@@ -1,3 +1,4 @@
+<?xml version='1.0' encoding='utf-8'?>
 <resources>
     <!--GENERAL-->
     <string name="app_name">ລະບົບ DHIS2</string>
@@ -25,7 +26,7 @@
     <string name="sync_complete_text">ການທຳງານຮ່ວມກັນຂອງລະບົບສໍາເລັດແລ້ວ</string>
 
     <string name="sync_error_title">ຄໍາຜິດທີ່ເກີດຈາກການທໍາງານຮ່ວມກັນຂອງລະບົບ</string>
-    <string name="sync_error_text">ມີຄໍາຜິດເກີດຂື້ນໃນຂະນະທີ່ລະບົບທໍາງານຮ່ວມກັນ. ກະລຸນາ, ທົດລອງເບີ່ງອີກ...</string>
+    <string name="sync_error_text">ມີຄໍາຜິດເກີດຂື້ນໃນຂະນະທີ່ລະບົບທໍາງານຮ່ວມກັນ. ກະລຸນາ, ທົດລອງເບີ່ງອີກ…</string>
     <string name="search_result_text">%sຜົນໄດ້ຮັບທີ່ຖືກພົບເຫັນ</string>
     <string name="add_new">ເພີ່ມໃໝ່</string>
     <string name="add">ເພີ່ມ</string>
@@ -372,5 +373,4 @@
     <string name="sms_bar_state_failed">Failed</string>
 
     <string name="polygon">Polygon</string>
-    <!--endregion-->
-</resources>
+    </resources>

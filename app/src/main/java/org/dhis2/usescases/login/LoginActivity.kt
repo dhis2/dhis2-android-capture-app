@@ -2,6 +2,7 @@ package org.dhis2.usescases.login
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.app.Dialog
 import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
@@ -16,14 +17,13 @@ import androidx.appcompat.app.AlertDialog
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import co.infinum.goldfinger.Goldfinger
 import com.andrognito.pinlockview.PinLockListener
 import com.bumptech.glide.Glide
-import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import de.adorsys.android.securestoragelibrary.SecurePreferences
 import okhttp3.HttpUrl
 import org.dhis2.App
 import org.dhis2.Bindings.onRightDrawableClicked
@@ -37,6 +37,9 @@ import org.dhis2.utils.*
 import org.dhis2.utils.Constants.ACCOUNT_RECOVERY
 import org.dhis2.utils.Constants.RQ_QR_SCANNER
 import org.dhis2.utils.WebViewActivity.Companion.WEB_VIEW_URL
+import org.dhis2.utils.analytics.CLICK
+import org.dhis2.utils.analytics.FORGOT_CODE
+import org.dhis2.utils.analytics.UNLOCK_SESSION
 import timber.log.Timber
 import java.io.BufferedReader
 import java.io.InputStreamReader
@@ -47,9 +50,19 @@ import javax.inject.Inject
 
 class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
 
+    override fun showFingerprintDialog() {
+        fingerPrintDialog.show()
+    }
+
+    override fun hideFingerprintDialog() {
+        fingerPrintDialog.hide()
+    }
+
     private lateinit var binding: ActivityLoginBinding
 
     private lateinit var loginViewModel: LoginViewModel
+
+    private lateinit var fingerPrintDialog: Dialog
 
     @Inject
     lateinit var presenter: LoginContracts.Presenter
@@ -76,12 +89,16 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
         super.onCreate(savedInstanceState)
         loginViewModel = ViewModelProviders.of(this).get(LoginViewModel::class.java)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_login)
+
         binding.presenter = presenter
         binding.loginModel = loginViewModel
         setLoginVisibility(false)
 
         binding.pinLayout.forgotCode.visibility = View.VISIBLE
-        binding.pinLayout.forgotCode.setOnClickListener { binding.pinLayout.root.visibility = View.GONE }
+        binding.pinLayout.forgotCode.setOnClickListener {
+            analyticsHelper.setEvent(FORGOT_CODE, CLICK, FORGOT_CODE)
+            binding.pinLayout.root.visibility = View.GONE
+        }
 
         loginViewModel.isDataComplete.observe(this, Observer<Boolean> { this.setLoginVisibility(it) })
         loginViewModel.isTestingEnvironment.observe(this, Observer<Trio<String, String, String>> { testingEnvironment ->
@@ -90,10 +107,10 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
             binding.userPassEdit.setText(testingEnvironment.val2())
         })
         loginViewModel.serverUrl.observe(this, Observer<String> {
-            Glide.with(this).load(String.format("%s/api/staticContent/logo_front",it))
+            Glide.with(this).load(String.format("%s/api/staticContent/logo_front", it))
                     .transition(withCrossFade())
                     .into(binding.logoFront)
-            Glide.with(this).load(String.format("%s/api/staticContent/logo_banner",it))
+            Glide.with(this).load(String.format("%s/api/staticContent/logo_banner", it))
                     .placeholder(R.drawable.ic_dhis_white)
                     .into(binding.logoBanner)
         })
@@ -123,6 +140,20 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
 
         setTestingCredentials()
         setAutocompleteAdapters()
+        setUpFingerPrintDialog()
+    }
+
+    private fun setUpFingerPrintDialog() {
+        fingerPrintDialog = MaterialAlertDialogBuilder(this, R.style.DhisMaterialDialog)
+                .setTitle(R.string.fingerprint_title)
+                .setMessage(R.string.fingerprint_message)
+                .setCancelable(false)
+                .setNegativeButton(R.string.cancel) { dialog, _ ->
+                    presenter.stopReadingFingerprint()
+                    dialog.dismiss()
+                }
+                .create()
+
     }
 
     private fun checkUrl(urlString: String): Boolean {
@@ -249,6 +280,7 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
         binding.pinLayout.pinLockView.attachIndicatorDots(binding.pinLayout.indicatorDots)
         binding.pinLayout.pinLockView.setPinLockListener(object : PinLockListener {
             override fun onComplete(pin: String) {
+                analyticsHelper.setEvent(UNLOCK_SESSION, CLICK, UNLOCK_SESSION)
                 presenter.unlockSession(pin)
             }
 
@@ -359,6 +391,7 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
         if (requestCode == RQ_QR_SCANNER && resultCode == Activity.RESULT_OK) {
             qrUrl = data?.getStringExtra(Constants.EXTRA_DATA)
         }
+        super.onActivityResult(requestCode, resultCode, data)
     }
 
     //region FingerPrint
@@ -366,16 +399,20 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
         binding.biometricButton.visibility = View.VISIBLE
     }
 
-    override fun checkSecuredCredentials() {
-        if (SecurePreferences.contains(Constants.SECURE_SERVER_URL) &&
-                SecurePreferences.contains(Constants.SECURE_USER_NAME) &&
-                SecurePreferences.contains(Constants.SECURE_PASS)) {
-            binding.serverUrlEdit.setText(SecurePreferences.getStringValue(Constants.SECURE_SERVER_URL, null))
-            binding.userNameEdit.setText(SecurePreferences.getStringValue(Constants.SECURE_USER_NAME, null))
-            binding.userPassEdit.setText(SecurePreferences.getStringValue(Constants.SECURE_PASS, null))
+    override fun showCredentialsData(type: Goldfinger.Type, vararg args: String) {
+        hideFingerprintDialog()
+        if (type == Goldfinger.Type.SUCCESS) {
+            binding.serverUrlEdit.setText(args[0])
+            binding.userNameEdit.setText(args[1])
+            binding.userPassEdit.setText(args[2])
             showLoginProgress(true)
-        } else
-            showInfoDialog(getString(R.string.biometrics_dialog_title), getString(R.string.biometrics_first_use_text))
+        } else if (type == Goldfinger.Type.ERROR) {
+            showInfoDialog(getString(R.string.biometrics_dialog_title), args[0])
+        }
+    }
+
+    override fun showEmptyCredentialsMessage() {
+        showInfoDialog(getString(R.string.biometrics_dialog_title), getString(R.string.biometrics_first_use_text))
     }
 //endregion
 

@@ -47,6 +47,7 @@ import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.DialogClickListener;
 import org.dhis2.utils.EventCreationType;
 import org.dhis2.utils.HelpManager;
+import org.dhis2.utils.analytics.AnalyticsConstants;
 import org.dhis2.utils.custom_views.CategoryOptionPopUp;
 import org.dhis2.utils.custom_views.CoordinatesView;
 import org.dhis2.utils.custom_views.CustomDialog;
@@ -97,6 +98,11 @@ import static org.dhis2.utils.Constants.ORG_UNIT;
 import static org.dhis2.utils.Constants.PERMANENT;
 import static org.dhis2.utils.Constants.PROGRAM_UID;
 import static org.dhis2.utils.Constants.TRACKED_ENTITY_INSTANCE;
+import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
+import static org.dhis2.utils.analytics.AnalyticsConstants.CREATE_EVENT;
+import static org.dhis2.utils.analytics.AnalyticsConstants.DELETE_EVENT;
+import static org.dhis2.utils.analytics.AnalyticsConstants.SHARE_EVENT;
+import static org.dhis2.utils.analytics.AnalyticsConstants.SHOW_HELP;
 
 
 /**
@@ -105,7 +111,6 @@ import static org.dhis2.utils.Constants.TRACKED_ENTITY_INSTANCE;
 
 public class EventInitialActivity extends ActivityGlobalAbstract implements EventInitialContract.View, DatePickerDialog.OnDateSetListener {
 
-    private static final int PROGRESS_TIME = 2000;
     @Inject
     EventInitialContract.Presenter presenter;
 
@@ -168,9 +173,6 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
-        setScreenName(this.getLocalClassName());
-        super.onCreate(savedInstanceState);
-
         programUid = getIntent().getStringExtra(PROGRAM_UID);
         eventUid = getIntent().getStringExtra(Constants.EVENT_UID);
         eventCreationType = getIntent().getStringExtra(EVENT_CREATION_TYPE) != null ?
@@ -183,9 +185,11 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         programStageUid = getIntent().getStringExtra(Constants.PROGRAM_STAGE_UID);
         enrollmentStatus = (EnrollmentStatus) getIntent().getSerializableExtra(Constants.ENROLLMENT_STATUS);
         eventScheduleInterval = getIntent().getIntExtra(Constants.EVENT_SCHEDULE_INTERVAL, 0);
-        disposable = new CompositeDisposable();
-
+        setScreenName(this.getLocalClassName());
         ((App) getApplicationContext()).userComponent().plus(new EventInitialModule(eventUid)).inject(this);
+        super.onCreate(savedInstanceState);
+
+        disposable = new CompositeDisposable();
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_event_initial);
         binding.setPresenter(presenter);
@@ -211,6 +215,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                                 binding.actionButton.setEnabled(false);
                                 String programStageModelUid = programStage == null ? "" : programStage.uid();
                                 if (eventUid == null) { // This is a new Event
+                                    analyticsHelper().setEvent(CREATE_EVENT, AnalyticsConstants.DATA_CREATION, CREATE_EVENT);
                                     if (eventCreationType == EventCreationType.REFERAL && tempCreate.equals(PERMANENT)) {
                                         presenter.scheduleEventPermanent(
                                                 enrollmentUid,
@@ -430,7 +435,6 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                             binding.date.clearFocus();
                             if (!fixedOrgUnit) {
                                 presenter.initOrgunit(selectedDate);
-//                                binding.orgUnit.setText("");
                             }
                         })
                         .show(getSupportFragmentManager(), PeriodDialog.class.getSimpleName());
@@ -694,7 +698,6 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         binding.date.clearFocus();
         if (!fixedOrgUnit) {
             presenter.initOrgunit(selectedDate);
-//            binding.orgUnit.setText("");
         }
     }
 
@@ -811,6 +814,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
             Timber.tag(EventInitialActivity.class.getSimpleName()).e("Pressed share button while event not loaded yet");
             return;
         }
+        analyticsHelper().setEvent(SHARE_EVENT, CLICK, SHARE_EVENT);
         String enrollmentUid = eventModel.enrollment();
         Intent intent = new Intent(this, SmsSubmitActivity.class);
         Bundle args = new Bundle();
@@ -828,6 +832,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         if (organisationUnit != null) {
             this.selectedOrgUnit = organisationUnit.uid();
             binding.orgUnit.setText(organisationUnit.displayName());
+            binding.orgUnit.setEnabled(false);
         } else
             binding.orgUnit.setText("");
     }
@@ -958,6 +963,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         popupMenu.setOnMenuItemClickListener(item -> {
             switch (item.getItemId()) {
                 case R.id.showHelp:
+                    analyticsHelper().setEvent(SHOW_HELP, CLICK, SHOW_HELP);
                     setTutorial();
                     break;
                 case R.id.menu_delete:
@@ -983,6 +989,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                 new DialogClickListener() {
                     @Override
                     public void onPositive() {
+                        analyticsHelper().setEvent(DELETE_EVENT, CLICK, DELETE_EVENT);
                         presenter.deleteEvent(getTrackedEntityInstance);
                     }
 

@@ -85,7 +85,7 @@ public class DataSetTableAdapter extends AbstractTableAdapter<CategoryOption, Da
     private Boolean showColumnTotal = false;
     private final FlowableProcessor<Trio<String, String, Integer>> processorOptionSet;
 
-    private int currentWidth = 400;
+    private int currentWidth = 300;
     private int currentHeight;
 
     private String catCombo;
@@ -97,7 +97,7 @@ public class DataSetTableAdapter extends AbstractTableAdapter<CategoryOption, Da
 
     private ObservableField<TableScale> currentTableScale = new ObservableField<>();
 
-    public void scale() {
+    public TableScale scale() {
         if (currentWidth == 200) {
             currentWidth = 300;
             currentHeight = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 36, context.getResources().getDisplayMetrics());
@@ -116,13 +116,18 @@ public class DataSetTableAdapter extends AbstractTableAdapter<CategoryOption, Da
         onScaleListener.scaleTo(currentWidth, currentHeight);
 
         notifyDataSetChanged();
+        return currentTableScale.get();
+    }
+
+    public ObservableField<TableScale> getCurrentTableScale() {
+        return currentTableScale;
     }
 
 
     public DataSetTableAdapter(Context context, @NotNull FlowableProcessor<RowAction> processor, FlowableProcessor<Trio<String, String, Integer>> processorOptionSet) {
         super(context);
-        this.currentHeight = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 48, context.getResources().getDisplayMetrics());
-        this.currentTableScale.set(TableScale.LARGE);
+        this.currentHeight = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 36, context.getResources().getDisplayMetrics());
+        this.currentTableScale.set(TableScale.DEFAULT);
         this.context = context;
         rows = new ArrayList<>();
         this.processor = processor;
@@ -178,9 +183,7 @@ public class DataSetTableAdapter extends AbstractTableAdapter<CategoryOption, Da
     @Override
     public void onBindCellViewHolder(AbstractViewHolder holder, Object cellItemModel, int columnPosition, int rowPosition) {
 
-        String value = cellItemModel != null && !cellItemModel.equals("") ? cellItemModel.toString() : viewModels.get(rowPosition).get(columnPosition).value();
-
-        rows.get(holder.getItemViewType()).onBind(holder, viewModels.get(rowPosition).get(columnPosition), value);
+        rows.get(holder.getItemViewType()).onBind(holder, viewModels.get(rowPosition).get(columnPosition).withValue(cellItemModel.toString()), cellItemModel.toString());
         holder.itemView.getLayoutParams().width = currentWidth;
         holder.itemView.getLayoutParams().height = currentHeight;
     }

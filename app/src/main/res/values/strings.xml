@@ -506,6 +506,7 @@
     <string name="data_every_hour">Every hour</string>
     <string name="data_every_day">Daily</string>
     <string name="data_every_week">Weekly</string>
+    <string name="period_week">Week</string>
     <string name="sync_setting">Synchronization setting: %s</string>
     <string name="relationship_without_enrollment">The record you are trying to access has no enrollment. You can\'t access the dashboard.</string>
     <string name="formatting_error">Formatting error</string>
@@ -568,4 +569,8 @@
     <!--endregion-->
 
     <string name="wrong_pattern">It is not a correct format.</string>
+    <string name="fingerprint_title">Fingerprint</string>
+    <string name="fingerprint_message">Please, put your finger in your fingerprint reader.</string>
+    <string name="security_title">Security</string>
+    <string name="security_rooted_message">For security reasons, this version of the app is not allow to be used in rooted devices. Please use the training version.</string>
 </resources>

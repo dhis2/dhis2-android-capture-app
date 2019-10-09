@@ -1,6 +1,7 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventCapture;
 
 import android.content.Context;
+import android.database.Cursor;
 
 import androidx.annotation.NonNull;
 
@@ -55,6 +56,7 @@ import org.hisp.dhis.rules.models.RuleEffect;
 import org.hisp.dhis.rules.models.RuleEvent;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -72,6 +74,8 @@ import static android.text.TextUtils.isEmpty;
  * QUADRAM. Created by ppajuelo on 19/11/2018.
  */
 public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCaptureRepository {
+
+    public static final String NO_SECTION = "NO_SECTION";
 
     private final FieldViewModelFactory fieldFactory;
     private final BriteDatabase briteDatabase;
@@ -567,8 +571,27 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                     .map(this::checkRenderType);
         else return d2.eventModule().events.uid(eventUid).get()
                 .flatMap(event ->
-                        d2.programModule().programStages.uid(event.programStage()).get()
-                                .map(ProgramStage::programStageDataElements).toFlowable()
+                        d2.programModule().programStages.withProgramStageSections()
+                                .withProgramStageDataElements()
+                                .withStyle().uid(event.programStage()).get()
+                                .map(stage -> {
+                                    List<ProgramStageDataElement> stageDataElements = stage.programStageDataElements();
+                                    if (stage.programStageSections() != null && !stage.programStageSections().isEmpty()) {
+                                        //REORDER PROGRAM STAGE DATA ELEMENTS
+                                        List<String> dataElementsOrder = new ArrayList<>();
+                                        for (ProgramStageSection section : stage.programStageSections()) {
+                                            dataElementsOrder.addAll(UidsHelper.getUidsList(
+                                                    d2.programModule().programStageSections.withDataElements().uid(section.uid()).blockingGet().dataElements()
+                                            ));
+                                        }
+                                        Collections.sort(stageDataElements, (de1, de2) -> {
+                                            Integer pos1 = dataElementsOrder.indexOf(de1.dataElement().uid());
+                                            Integer pos2 = dataElementsOrder.indexOf(de2.dataElement().uid());
+                                            return pos1.compareTo(pos2);
+                                        });
+                                    }
+                                    return stageDataElements;
+                                }).toFlowable()
                                 .flatMapIterable(list -> list)
                                 .map(programStageDataElement -> {
                                     DataElement de = d2.dataElementModule().dataElements.uid(programStageDataElement.dataElement().uid()).blockingGet();
@@ -603,6 +626,11 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
 
                                     ValueTypeDeviceRendering fieldRendering = null;
                                     //TODO: CHANGE
+                                    try (Cursor rendering = briteDatabase.query("SELECT * FROM ValueTypeDeviceRendering WHERE uid = ?", programStageDataElement.uid())) {
+                                        if (rendering != null && rendering.moveToFirst()) {
+                                            fieldRendering = ValueTypeDeviceRendering.create(rendering);
+                                        }
+                                    }
 
                                     ObjectStyle objectStyle = de.style() != null ? de.style() : ObjectStyle.builder().build();
 
@@ -861,19 +889,44 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
     public void assign(String uid, String value) {
         try {
             if (d2.dataElementModule().dataElements.uid(uid).blockingExists()) {
-                if (!isEmpty(value))
-                    d2.trackedEntityModule().trackedEntityDataValues.value(eventUid, uid).blockingSet(value); //TODO: Should be assigned in all events?
-                else if( d2.trackedEntityModule().trackedEntityDataValues.value(eventUid, uid).blockingExists())
-                    d2.trackedEntityModule().trackedEntityDataValues.value(eventUid, uid).blockingDelete();
+               handleAssignToDataElement(uid,value);
             } else if (d2.trackedEntityModule().trackedEntityAttributes.uid(uid).blockingExists()) {
-                String tei = d2.enrollmentModule().enrollments.uid(currentEvent.enrollment()).blockingGet().trackedEntityInstance();
-                if (!isEmpty(value))
-                    d2.trackedEntityModule().trackedEntityAttributeValues.value(uid, tei).blockingSet(value);
-                else if( d2.trackedEntityModule().trackedEntityAttributeValues.value(eventUid, tei).blockingExists())
-                    d2.trackedEntityModule().trackedEntityAttributeValues.value(eventUid, tei).blockingDelete();
+                handleAssignToAttribute(uid,value);
             }
         } catch (D2Error d2Error) {
             Timber.e(d2Error.originalException());
         }
     }
+
+    private void handleAssignToDataElement(String deUid, String value) throws D2Error {
+        List<String> eventUids;
+        if (currentEvent.enrollment() != null) {
+            eventUids = UidsHelper.getUidsList(d2.eventModule().events
+                    .byEnrollmentUid().eq(currentEvent.enrollment())
+                    .byStatus().in(EventStatus.ACTIVE, EventStatus.COMPLETED)
+                    .blockingGet());
+        } else {
+            eventUids = UidsHelper.getUidsList(d2.eventModule().events
+                    .byProgramUid().eq(currentEvent.program())
+                    .byProgramStageUid().eq(currentEvent.programStage())
+                    .byOrganisationUnitUid().eq(currentEvent.organisationUnit())
+                    .blockingGet());
+        }
+
+        for(String eventUid : eventUids){
+            if (!isEmpty(value))
+                d2.trackedEntityModule().trackedEntityDataValues.value(eventUid, deUid).blockingSet(value);
+            else if (d2.trackedEntityModule().trackedEntityDataValues.value(eventUid, deUid).blockingExists())
+                d2.trackedEntityModule().trackedEntityDataValues.value(eventUid, deUid).blockingDelete();
+        }
+    }
+
+    private void handleAssignToAttribute(String attributeUid, String value) throws D2Error{
+        String tei = d2.enrollmentModule().enrollments.uid(currentEvent.enrollment()).blockingGet().trackedEntityInstance();
+        if (!isEmpty(value))
+            d2.trackedEntityModule().trackedEntityAttributeValues.value(attributeUid, tei).blockingSet(value);
+        else if (d2.trackedEntityModule().trackedEntityAttributeValues.value(attributeUid, tei).blockingExists())
+            d2.trackedEntityModule().trackedEntityAttributeValues.value(attributeUid, tei).blockingDelete();
+    }
 }
+

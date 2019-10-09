@@ -1,6 +1,7 @@
 package org.dhis2.utils
 
 import org.hisp.dhis.android.core.common.ValueType
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
@@ -46,5 +47,11 @@ class ValidationUtilsTest {
     fun `unit interval should remove left zeroes`() {
         val result = ValidationUtils.validate(ValueType.UNIT_INTERVAL, "000.01")
         assertTrue(result == "0.01")
+    }
+
+    @Test
+    fun `null value should return null`() {
+        val result = ValidationUtils.validate(ValueType.UNIT_INTERVAL, null)
+        assertNull(result)
     }
 }

@@ -1,7 +1,5 @@
 package org.dhis2.usescases.datasets.datasetInitial;
 
-import android.database.Cursor;
-
 import androidx.annotation.NonNull;
 
 import org.hisp.dhis.android.core.D2;
@@ -9,11 +7,10 @@ import org.hisp.dhis.android.core.category.Category;
 import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryOption;
 import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
-import org.hisp.dhis.android.core.dataset.DataSet;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.period.PeriodType;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -72,17 +69,11 @@ public class DataSetInitialRepositoryImpl implements DataSetInitialRepository {
     @NonNull
     @Override
     public Observable<List<OrganisationUnit>> orgUnits() {
-        return Observable.fromCallable(() -> {
-            List<String> ouUids = new ArrayList<>();
-            try (Cursor ouCursor = d2.databaseAdapter().query("SELECT organisationUnit FROM DataSetOrganisationUnitLink WHERE dataSet = ?", dataSetUid)){
-                ouCursor.moveToFirst();
-                do {
-                    ouUids.add(ouCursor.getString(0));
-                } while (ouCursor.moveToNext());
-            }
-            return ouUids;
-        }).flatMap(ouUids -> d2.organisationUnitModule().organisationUnits.byUid().in(ouUids).withDataSets().get().toObservable());
-
+        return d2.organisationUnitModule().organisationUnits
+                .byDataSetUids(Collections.singletonList(dataSetUid))
+                .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE)
+                .withDataSets()
+                .get().toObservable();
     }
 
     @NonNull
@@ -92,8 +83,8 @@ public class DataSetInitialRepositoryImpl implements DataSetInitialRepository {
                 .map(Category::categoryOptions)
                 .map(list -> {
                     Iterator<CategoryOption> iterator = list.iterator();
-                    while(iterator.hasNext())
-                        if(!iterator.next().access().data().write())
+                    while (iterator.hasNext())
+                        if (!iterator.next().access().data().write())
                             iterator.remove();
 
                     return list;
@@ -103,13 +94,19 @@ public class DataSetInitialRepositoryImpl implements DataSetInitialRepository {
     @NonNull
     @Override
     public Flowable<String> getCategoryOptionCombo(List<String> catOptions, String catCombo) {
-        return Flowable.just(d2.categoryModule().categoryOptionCombos.withCategoryOptions().byCategoryOptions(catOptions).byCategoryComboUid().eq(catCombo).one().blockingGet())
-                .map(BaseIdentifiableObject::uid);
+        return d2.categoryModule().categoryOptionCombos.withCategoryOptions().byCategoryOptions(catOptions).byCategoryComboUid().eq(catCombo).one().get()
+                .map(BaseIdentifiableObject::uid)
+                .toFlowable();
     }
 
     @NonNull
     @Override
     public Flowable<String> getPeriodId(PeriodType periodType, Date date) {
-        return Flowable.fromCallable(() -> d2.periodModule().periodHelper.getPeriod(periodType, date).periodId());
+        return Flowable.fromCallable(() -> {
+            if (d2.periodModule().periodHelper.getPeriod(periodType, date) == null)
+                d2.periodModule().periodHelper.blockingGetPeriodsForDataSet(dataSetUid);
+
+            return d2.periodModule().periodHelper.getPeriod(periodType, date).periodId();
+        });
     }
 }

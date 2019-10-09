@@ -6,7 +6,9 @@ import android.content.SharedPreferences;
 import androidx.annotation.NonNull;
 import androidx.work.Constraints;
 import androidx.work.ExistingPeriodicWorkPolicy;
+import androidx.work.ExistingWorkPolicy;
 import androidx.work.NetworkType;
+import androidx.work.OneTimeWorkRequest;
 import androidx.work.PeriodicWorkRequest;
 import androidx.work.WorkManager;
 
@@ -71,7 +73,7 @@ final class SyncPresenterImpl implements SyncPresenter {
 
     @Override
     public void syncAndDownloadDataValues() {
-        if(!d2.dataSetModule().dataSets.blockingIsEmpty()) {
+        if (!d2.dataSetModule().dataSets.blockingIsEmpty()) {
             Completable.fromObservable(d2.dataValueModule().dataValues.upload())
                     .andThen(
                             Completable.fromObservable(d2.dataSetModule().dataSetCompleteRegistrations.upload()))
@@ -85,6 +87,17 @@ final class SyncPresenterImpl implements SyncPresenter {
         Completable.fromObservable(d2.metadataModule().download()
                 .doOnNext(data -> progressUpdate.onProgressUpdate((int) Math.ceil(data.percentage()))))
                 .blockingAwait();
+    }
+
+    @Override
+    public void uploadResources() {
+        Completable.fromObservable(d2.fileResourceModule().download())
+                .blockingAwait();
+    }
+
+    @Override
+    public void downloadResources() {
+        d2.fileResourceModule().blockingDownload();
     }
 
     @Override
@@ -126,7 +139,7 @@ final class SyncPresenterImpl implements SyncPresenter {
                 .flatMapIterable(dataSets -> dataSets)
                 .flatMap(dataSetReport ->
                         d2.dataValueModule().dataValues
-                                .byOrganisationUnitUid().eq(dataSetReport.attributeOptionComboUid())
+                                .byOrganisationUnitUid().eq(dataSetReport.organisationUnitUid())
                                 .byPeriod().eq(dataSetReport.period())
                                 .byAttributeOptionComboUid().eq(dataSetReport.attributeOptionComboUid())
                                 .upload()
@@ -134,11 +147,12 @@ final class SyncPresenterImpl implements SyncPresenter {
     }
 
     @Override
-    public Observable<D2Progress> syncGranularDataValues(String orgUnit, String attributeOptionCombo, String period) {
+    public Observable<D2Progress> syncGranularDataValues(String orgUnit, String attributeOptionCombo, String period, String[] catOptionCombos) {
         return d2.dataValueModule().dataValues
                 .byAttributeOptionComboUid().eq(attributeOptionCombo)
                 .byOrganisationUnitUid().eq(orgUnit)
                 .byPeriod().eq(period)
+                .byCategoryOptionComboUid().in(catOptionCombos)
                 .upload();
     }
 
@@ -188,7 +202,7 @@ final class SyncPresenterImpl implements SyncPresenter {
         DataSetInstance dataSetReport = d2.dataSetModule().dataSetInstances.byDataSetUid().eq(uid).one().blockingGet();
 
         return d2.dataValueModule().dataValues
-                .byOrganisationUnitUid().eq(dataSetReport.attributeOptionComboUid())
+                .byOrganisationUnitUid().eq(dataSetReport.organisationUnitUid())
                 .byPeriod().eq(dataSetReport.period())
                 .byAttributeOptionComboUid().eq(dataSetReport.attributeOptionComboUid())
                 .byState().notIn(State.SYNCED)
@@ -212,25 +226,49 @@ final class SyncPresenterImpl implements SyncPresenter {
     public void startPeriodicDataWork(Context context) {
         int seconds = context.getSharedPreferences(Constants.SHARE_PREFS, MODE_PRIVATE).getInt(Constants.TIME_DATA, Constants.TIME_DAILY);
         WorkManager.getInstance(context).cancelUniqueWork(Constants.DATA);
-        PeriodicWorkRequest.Builder syncDataBuilder = new PeriodicWorkRequest.Builder(SyncDataWorker.class, seconds, TimeUnit.SECONDS);
+
+        if(seconds!=0){
+            OneTimeWorkRequest syncDataWorkRequest = new OneTimeWorkRequest.Builder(SyncDataWorker.class)
+                    .addTag(Constants.DATA)
+                    .setInitialDelay(seconds, TimeUnit.SECONDS)
+                    .setConstraints(
+                            new Constraints.Builder()
+                                    .setRequiredNetworkType(NetworkType.CONNECTED)
+                                    .build()
+                    ).build();
+            WorkManager.getInstance(context).enqueueUniqueWork(Constants.DATA, ExistingWorkPolicy.REPLACE,syncDataWorkRequest);
+        }
+       /* PeriodicWorkRequest.Builder syncDataBuilder = new PeriodicWorkRequest.Builder(SyncDataWorker.class, seconds, TimeUnit.SECONDS);
         syncDataBuilder.addTag(Constants.DATA);
         syncDataBuilder.setConstraints(new Constraints.Builder()
                 .setRequiredNetworkType(NetworkType.CONNECTED)
                 .build());
         PeriodicWorkRequest request = syncDataBuilder.build();
-        WorkManager.getInstance(context).enqueueUniquePeriodicWork(Constants.DATA, ExistingPeriodicWorkPolicy.REPLACE, request);
+        WorkManager.getInstance(context).enqueueUniquePeriodicWork(Constants.DATA, ExistingPeriodicWorkPolicy.REPLACE, request);*/
     }
 
     @Override
     public void startPeriodicMetaWork(Context context) {
         int seconds = context.getSharedPreferences(Constants.SHARE_PREFS, MODE_PRIVATE).getInt(Constants.TIME_META, Constants.TIME_DAILY);
         WorkManager.getInstance(context).cancelUniqueWork(Constants.META);
-        PeriodicWorkRequest.Builder syncDataBuilder = new PeriodicWorkRequest.Builder(SyncDataWorker.class, seconds, TimeUnit.SECONDS);
+
+        if (seconds != 0) {
+            OneTimeWorkRequest syncMetaWorkRequest = new OneTimeWorkRequest.Builder(SyncMetadataWorker.class)
+                    .addTag(Constants.META)
+                    .setInitialDelay(seconds, TimeUnit.SECONDS)
+                    .setConstraints(
+                            new Constraints.Builder()
+                                    .setRequiredNetworkType(NetworkType.CONNECTED)
+                                    .build()
+                    ).build();
+            WorkManager.getInstance(context).enqueueUniqueWork(Constants.META, ExistingWorkPolicy.REPLACE,syncMetaWorkRequest);
+        }
+        /*PeriodicWorkRequest.Builder syncDataBuilder = new PeriodicWorkRequest.Builder(SyncDataWorker.class, seconds, TimeUnit.SECONDS);
         syncDataBuilder.addTag(Constants.META);
         syncDataBuilder.setConstraints(new Constraints.Builder()
                 .setRequiredNetworkType(NetworkType.CONNECTED)
                 .build());
         PeriodicWorkRequest request = syncDataBuilder.build();
-        WorkManager.getInstance(context).enqueueUniquePeriodicWork(Constants.META, ExistingPeriodicWorkPolicy.REPLACE, request);
+        WorkManager.getInstance(context).enqueueUniquePeriodicWork(Constants.META, ExistingPeriodicWorkPolicy.REPLACE, request);*/
     }
 }

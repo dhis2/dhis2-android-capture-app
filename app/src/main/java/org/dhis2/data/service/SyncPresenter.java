@@ -32,7 +32,7 @@ interface SyncPresenter {
 
     Observable<D2Progress> syncGranularDataSet(String uid);
 
-    Observable<D2Progress> syncGranularDataValues(String orgUnit, String attributeOptionCombo, String period);
+    Observable<D2Progress> syncGranularDataValues(String orgUnit, String attributeOptionCombo, String period, String[] catOptionCombos);
 
     boolean checkSyncEventStatus(String uid);
 
@@ -49,4 +49,8 @@ interface SyncPresenter {
     void startPeriodicDataWork(Context context);
 
     void startPeriodicMetaWork(Context context);
+
+    void downloadResources();
+
+    void uploadResources();
 }

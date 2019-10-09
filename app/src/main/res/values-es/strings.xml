@@ -84,7 +84,7 @@
     <string name="program_completed">Programa Completado</string>
     <string name="program_inactive">Programo suspendido</string>
 
-    <string name="event_open">Abrir</string>
+    <string name="event_open">Abierto</string>
     <string name="event_completed">Evento completado</string>
     <string name="event_skipped">Evento Omitido</string>
     <string name="event_schedule">Evento Programado</string>
@@ -94,7 +94,7 @@
     <string name="event_approved">Evento aprobado</string>
     <string name="event_inactive">Evento inactivo</string>
     <string name="read_only">Sólo lectura</string>
-    <string name="complete">Completo</string>
+    <string name="complete">Completar</string>
     <string name="finish_and_complete">Acabar y completar</string>
     <string name="completed">Completado</string>
     <string name="cancelled">Cancelar</string>
@@ -138,7 +138,7 @@
     <string name="cat_combo">Cat Combo</string>
     <string name="date_default">DD/MM/YYYY</string>
     <string name="cancel">Cancelar</string>
-    <string name="delete">Borrar</string>
+    <string name="delete">Eliminar</string>
     <string name="delete_event">Eliminar evento</string>
     <string name="confirm_delete_event">¿Estás seguro de querer eliminar este evento?</string>
     <string name="event_was_deleted">Evento eliminado</string>
@@ -446,7 +446,7 @@
     <string name="biometrics_security_title">Seguridad biométrica</string>
     <string name="biometrics_security_text">Usar huella dactilar para acceder con este usuario?</string>
     <string name="table">Tabla</string>
-    <string name="login_https">https://|</string>
+    <string name="login_https">https://</string>
     <string name="delete_local_data_message">Los datos no sincronizados se perderán. Continuar?</string>
     <string name="local_data_accept">Aceptar</string>
     <string name="delete_local_data_error">Los datos no se pudieron borrar. Inténtelo de nuevo.</string>
@@ -492,7 +492,9 @@
     <string name="record_marked_for_deletion">Este registro ha sido borrado. No puede acceder a el</string>
     <string name="validation_url">La URL no es válida</string>
     <string name="uncomplete_authority_error">No tiene permisos para abrir este evento</string>
-    <string name="adjusting_form">Adaptando el formulario...</string>
+    <string name="adjusting_form">Adaptando el formulario…</string>
+    <string name="security_title">Seguridad</string>
+    <string name="security_rooted_message">Por motivos de seguridad, esta versión de la aplicación no podra ser utilizada en dispositivos rooteados. Por favor, utilizar la versión de training.</string>
 
     <string name="sms_completed">Completado</string>
     <string name="sms_bar_state_sending">En proceso</string>

@@ -84,8 +84,8 @@ public class SyncActivity extends ActivityGlobalAbstract implements SyncContract
             case SUCCEEDED:
                 binding.eventsText.setText(getString(R.string.data_ready));
                 Bindings.setDrawableEnd(binding.eventsText, AppCompatResources.getDrawable(this, R.drawable.animator_done));
-                presenter.scheduleSync(getSharedPreferences().getInt(Constants.TIME_META, Constants.TIME_DAILY),
-                        getSharedPreferences().getInt(Constants.TIME_DATA, Constants.TIME_15M));
+                /*presenter.scheduleSync(getSharedPreferences().getInt(Constants.TIME_META, Constants.TIME_DAILY),
+                        getSharedPreferences().getInt(Constants.TIME_DATA, Constants.TIME_15M));*/
                 presenter.syncReservedValues();
                 startMain();
                 break;

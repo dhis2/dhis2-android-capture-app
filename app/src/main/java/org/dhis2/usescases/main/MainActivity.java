@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.transition.ChangeBounds;
 import android.transition.Transition;
@@ -18,6 +17,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -54,6 +54,10 @@ import javax.inject.Inject;
 
 import io.reactivex.functions.Consumer;
 
+import static org.dhis2.utils.analytics.AnalyticsConstants.BLOCK_SESSION;
+import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
+import static org.dhis2.utils.analytics.AnalyticsConstants.CLOSE_SESSION;
+
 
 public class MainActivity extends ActivityGlobalAbstract implements MainContracts.View, ExporterListener {
 
@@ -63,7 +67,8 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
     MainContracts.Presenter presenter;
 
     private ProgramFragment programFragment;
-    private FragmentGlobalAbstract activeFragment;
+    @VisibleForTesting
+    protected FragmentGlobalAbstract activeFragment;
 
     ObservableInt currentFragment = new ObservableInt(R.id.menu_home);
     private boolean isPinLayoutVisible = false;
@@ -87,6 +92,7 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
             changeFragment(item.getItemId());
             return false;
         });
+
         binding.pinLayout.pinLockView.attachIndicatorDots(binding.pinLayout.indicatorDots);
         binding.pinLayout.pinLockView.setPinLockListener(new PinLockListener() {
             @Override
@@ -96,12 +102,12 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
 
             @Override
             public void onEmpty() {
-
+                //DO NOTHING
             }
 
             @Override
             public void onPinChange(int pinLength, String intermediatePin) {
-
+                //DO NOTHING
             }
         });
 
@@ -129,7 +135,7 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
     }
 
     @Override
-    protected void onSaveInstanceState(Bundle outState) {
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putInt("Fragment", fragId);
     }
@@ -174,10 +180,10 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
 
     @Override
     public void openDrawer(int gravity) {
-        if (!binding.drawerLayout.isDrawerOpen(gravity))
-            binding.drawerLayout.openDrawer(gravity);
+        if (!binding.mainDrawerLayout.isDrawerOpen(gravity))
+            binding.mainDrawerLayout.openDrawer(gravity);
         else
-            binding.drawerLayout.closeDrawer(gravity);
+            binding.mainDrawerLayout.closeDrawer(gravity);
     }
 
     @Override
@@ -196,16 +202,10 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
         programFragment.openFilter(backDropActive);
     }
 
-    private void checkFilterEnabled() {
-        binding.filter.setBackgroundColor(programFragment.areFiltersApplied() ? getAccentColor() : getPrimaryColor());
-        binding.filter.setColorFilter(programFragment.areFiltersApplied() ? getPrimaryColor() : getAccentColor(), PorterDuff.Mode.SRC_IN);
-        binding.filter.setBackgroundResource(programFragment.areFiltersApplied() ? R.drawable.white_circle : 0);
-    }
-
     @Override
     public void onLockClick() {
         if (prefs.getString("pin", null) == null) {
-            binding.drawerLayout.closeDrawers();
+            binding.mainDrawerLayout.closeDrawers();
             binding.pinLayout.getRoot().setVisibility(View.VISIBLE);
             isPinLayoutVisible = true;
         } else
@@ -257,9 +257,11 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
                 binding.filter.setVisibility(View.GONE);
                 break;
             case R.id.block_button:
+                analyticsHelper.setEvent(BLOCK_SESSION, CLICK, BLOCK_SESSION);
                 onLockClick();
                 break;
             case R.id.logout_button:
+                analyticsHelper.setEvent(CLOSE_SESSION, CLICK, CLOSE_SESSION);
                 presenter.logOut();
                 break;
             case R.id.menu_home:
@@ -276,7 +278,7 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
             getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, activeFragment, tag).commitAllowingStateLoss();
             binding.title.setText(tag);
         }
-        binding.drawerLayout.closeDrawers();
+        binding.mainDrawerLayout.closeDrawers();
 
         if (backDropActive && !(activeFragment instanceof ProgramFragment))
             showHideFilter();
@@ -295,14 +297,14 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
 
     @Override
     public void showPeriodRequest(FilterManager.PeriodRequest periodRequest) {
-        if (periodRequest == FilterManager.PeriodRequest.FROM_TO) {
+        if (periodRequest == FilterManager.PeriodRequest.FROM_TO)
             DateUtils.getInstance().showFromToSelector(this, FilterManager.getInstance()::addPeriod);
-        } else {
-            DateUtils.getInstance().showPeriodDialog(this, datePeriods -> {
-                        FilterManager.getInstance().addPeriod(datePeriods);
-                    },
-                    true);
-        }
+        else
+            DateUtils.getInstance()
+                    .showPeriodDialog(
+                            this,
+                            datePeriods -> FilterManager.getInstance().addPeriod(datePeriods),
+                            true);
     }
 
     public void setTitle(String title) {

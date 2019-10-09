@@ -1,25 +1,27 @@
 package org.dhis2.usescases.login
 
 import android.content.Context
-import android.content.DialogInterface
 import android.content.Intent
 import android.os.Build
 import android.view.View
-import androidx.core.app.ActivityCompat
-import com.github.pwittchen.rxbiometric.library.RxBiometric
-import com.github.pwittchen.rxbiometric.library.validation.RxPreconditions
-import de.adorsys.android.securestoragelibrary.SecurePreferences
+import co.infinum.goldfinger.Goldfinger
+import co.infinum.goldfinger.rx.RxGoldfinger
 import io.reactivex.Observable
-import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.schedulers.Schedulers
 import org.dhis2.App
+import org.dhis2.BuildConfig
 import org.dhis2.R
 import org.dhis2.data.prefs.Preference
+import org.dhis2.data.prefs.PreferenceProvider
+import org.dhis2.data.schedulers.SchedulerProvider
 import org.dhis2.data.server.UserManager
 import org.dhis2.usescases.main.MainActivity
 import org.dhis2.usescases.qrScanner.QRActivity
 import org.dhis2.utils.Constants
+import org.dhis2.utils.analytics.ACCOUNT_RECOVERY
+import org.dhis2.utils.analytics.CLICK
+import org.dhis2.utils.analytics.LOGIN
+import org.dhis2.utils.analytics.SERVER_QR_SCANNER
 import org.hisp.dhis.android.core.d2manager.D2Manager
 import org.hisp.dhis.android.core.maintenance.D2Error
 import org.hisp.dhis.android.core.maintenance.D2ErrorCode
@@ -27,25 +29,32 @@ import org.hisp.dhis.android.core.systeminfo.SystemInfo
 import retrofit2.Response
 import timber.log.Timber
 
-class LoginPresenter : LoginContracts.Presenter {
+class LoginPresenter(
+        private val preferenceProvider: PreferenceProvider,
+        private val schedulers: SchedulerProvider) : LoginContracts.Presenter {
+
+    override fun stopReadingFingerprint() {
+        goldfinger.cancel()
+    }
 
     private lateinit var view: LoginContracts.View
     private var userManager: UserManager? = null
     private lateinit var disposable: CompositeDisposable
 
     private var canHandleBiometrics: Boolean? = null
+    private lateinit var goldfinger: RxGoldfinger
 
     override fun init(view: LoginContracts.View) {
         this.view = view
         this.disposable = CompositeDisposable()
-
+        goldfinger = RxGoldfinger.Builder(view.context).setLogEnabled(BuildConfig.DEBUG).build()
         if ((view.context.applicationContext as App).serverComponent != null)
             userManager = (view.context.applicationContext as App).serverComponent.userManager()
 
         userManager?.let { userManager ->
             disposable.add(userManager.isUserLoggedIn
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribeOn(schedulers.io())
+                    .observeOn(schedulers.ui())
                     .subscribe({ isUserLoggedIn ->
                         val prefs = view.abstracContext.getSharedPreferences(
                                 Constants.SHARE_PREFS, Context.MODE_PRIVATE)
@@ -62,8 +71,8 @@ class LoginPresenter : LoginContracts.Presenter {
                         userManager.d2.systemInfoModule().systemInfo.blockingGet()
                     else
                         SystemInfo.builder().build())
-                            .subscribeOn(Schedulers.io())
-                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribeOn(schedulers.io())
+                            .observeOn(schedulers.ui())
                             .subscribe(
                                     { systemInfo ->
                                         if (systemInfo.contextPath() != null) {
@@ -78,22 +87,24 @@ class LoginPresenter : LoginContracts.Presenter {
 
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
-            disposable.add(RxPreconditions
-                    .hasBiometricSupport(view.context)
-                    .filter { canHandleBiometrics ->
-                        this.canHandleBiometrics = canHandleBiometrics
-                        canHandleBiometrics && SecurePreferences.contains(Constants.SECURE_SERVER_URL)
-                    }
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(
-                            { view.showBiometricButton() },
-                            { Timber.e(it) }))
+
+            disposable.add(
+                    Observable.just(goldfinger.hasEnrolledFingerprint())
+                            .filter { canHandleBiometrics ->
+                                this.canHandleBiometrics = canHandleBiometrics
+                                canHandleBiometrics && preferenceProvider.contains(Constants.SECURE_SERVER_URL)
+                            }
+                            .subscribeOn(schedulers.io())
+                            .observeOn(schedulers.ui())
+                            .subscribe(
+                                    { view.showBiometricButton() },
+                                    { Timber.e(it) }))
 
     }
 
     override fun onButtonClick() {
         view.hideKeyboard()
+        view.analyticsHelper().setEvent(LOGIN, CLICK, LOGIN)
         val prefs = view.abstracContext.getSharedPreferences(
                 Constants.SHARE_PREFS, Context.MODE_PRIVATE)
         if (!prefs.getBoolean(Constants.USER_ASKED_CRASHLYTICS, false))
@@ -121,14 +132,15 @@ class LoginPresenter : LoginContracts.Presenter {
                             }
 
                         }
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeOn(schedulers.io())
+                        .observeOn(schedulers.ui())
                         .subscribe(
                                 { this.handleResponse(it) },
                                 { this.handleError(it) }))
     }
 
     override fun onQRClick(v: View) {
+        view.analyticsHelper().setEvent(SERVER_QR_SCANNER, CLICK, SERVER_QR_SCANNER)
         val intent = Intent(view.context, QRActivity::class.java)
         view.abstractActivity.startActivityForResult(intent, Constants.RQ_QR_SCANNER)
     }
@@ -149,8 +161,8 @@ class LoginPresenter : LoginContracts.Presenter {
     override fun logOut() {
         userManager?.let {
             disposable.add(it.d2.userModule().logOut()
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribeOn(schedulers.io())
+                    .observeOn(schedulers.ui())
                     .subscribe(
                             {
                                 val prefs = view.abstracContext.sharedPreferences
@@ -190,22 +202,42 @@ class LoginPresenter : LoginContracts.Presenter {
     }
 
     override fun onFingerprintClick() {
+        view.showFingerprintDialog()
         disposable.add(
-                RxBiometric
-                        .title("Title")
-                        .description("description")
-                        .negativeButtonText("Cancel")
-                        .negativeButtonListener(DialogInterface.OnClickListener { _, _ -> })
-                        .executor(ActivityCompat.getMainExecutor(view.abstractActivity))
-                        .build()
-                        .authenticate(view.abstractActivity)
-                        .observeOn(AndroidSchedulers.mainThread())
+                goldfinger
+                        .authenticate()
+                        .map { result ->
+                            if (preferenceProvider.contains(
+                                            Constants.SECURE_SERVER_URL, Constants.SECURE_USER_NAME,
+                                            Constants.SECURE_PASS
+                                    )) {
+                                Result.success(result)
+                            } else
+                                Result.failure(Exception("Empty credentials"))
+
+                        }
+                        .observeOn(schedulers.ui())
                         .subscribe(
-                                { view.checkSecuredCredentials() },
-                                { view.displayMessage("AUTH ERROR") }))
+                                {
+                                    if (it.isFailure)
+                                        view.showEmptyCredentialsMessage()
+                                    else if (it.isSuccess && it.getOrNull()?.type() == Goldfinger.Type.SUCCESS)
+                                        view.showCredentialsData(Goldfinger.Type.SUCCESS,
+                                                preferenceProvider.getString(Constants.SECURE_SERVER_URL)!!,
+                                                preferenceProvider.getString(Constants.SECURE_USER_NAME)!!,
+                                                preferenceProvider.getString(Constants.SECURE_PASS)!!)
+                                    else
+                                        view.showCredentialsData(Goldfinger.Type.ERROR,
+                                                it.getOrNull()?.message()!!)
+                                },
+                                {
+                                    view.displayMessage("AUTH ERROR")
+                                    view.hideFingerprintDialog()
+                                }))
     }
 
     override fun onAccountRecovery() {
+        view.analyticsHelper().setEvent(ACCOUNT_RECOVERY, CLICK, ACCOUNT_RECOVERY)
         view.openAccountRecovery()
     }
 

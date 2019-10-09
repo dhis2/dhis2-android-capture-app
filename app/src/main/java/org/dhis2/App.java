@@ -22,6 +22,7 @@ import org.dhis2.data.dagger.PerUser;
 import org.dhis2.data.database.DbModule;
 import org.dhis2.data.forms.FormComponent;
 import org.dhis2.data.forms.FormModule;
+import org.dhis2.data.prefs.PreferenceModule;
 import org.dhis2.data.schedulers.SchedulerModule;
 import org.dhis2.data.schedulers.SchedulersProviderImpl;
 import org.dhis2.data.server.ServerComponent;
@@ -34,6 +35,7 @@ import org.dhis2.usescases.login.LoginModule;
 import org.dhis2.usescases.teiDashboard.TeiDashboardComponent;
 import org.dhis2.usescases.teiDashboard.TeiDashboardModule;
 import org.dhis2.utils.UtilsModule;
+import org.dhis2.utils.analytics.AnalyticsModule;
 import org.dhis2.utils.timber.DebugTree;
 import org.dhis2.utils.timber.ReleaseTree;
 import org.hisp.dhis.android.core.d2manager.D2Manager;
@@ -57,7 +59,7 @@ public class App extends MultiDexApplication implements Components {
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
     }
 
-    private static final String DATABASE_NAME = "dhis.db";
+    protected static final String DATABASE_NAME = "dhis.db";
 
     @NonNull
     @Singleton
@@ -65,11 +67,11 @@ public class App extends MultiDexApplication implements Components {
 
     @Nullable
     @PerServer
-    ServerComponent serverComponent;
+    protected ServerComponent serverComponent;
 
     @Nullable
     @PerUser
-    UserComponent userComponent;
+    protected UserComponent userComponent;
 
     @Nullable
     @PerActivity
@@ -142,7 +144,7 @@ public class App extends MultiDexApplication implements Components {
 
     }
 
-    private void setUpServerComponent() {
+    protected void setUpServerComponent() {
         boolean isLogged = D2Manager.setUp(ServerModule.getD2Configuration(this))
                 .andThen(
                         Single.defer(() -> {
@@ -161,7 +163,7 @@ public class App extends MultiDexApplication implements Components {
     }
 
 
-    private void setUpUserComponent() {
+    protected void setUpUserComponent() {
         UserManager userManager = serverComponent == null
                 ? null : serverComponent.userManager();
         if (userManager != null && userManager.isUserLoggedIn().blockingFirst()) {
@@ -178,6 +180,8 @@ public class App extends MultiDexApplication implements Components {
 //                .dbModule(new DbModule(DATABASE_NAME))
                 .appModule(new AppModule(this))
                 .schedulerModule(new SchedulerModule(new SchedulersProviderImpl()))
+                .analyticsModule(new AnalyticsModule())
+                .preferenceModule(new PreferenceModule())
                 .utilModule(new UtilsModule());
     }
 

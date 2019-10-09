@@ -19,6 +19,7 @@
             android:id="@+id/scroll"
             android:layout_width="match_parent"
             android:layout_height="0dp"
+            android:layout_marginTop="5dp"
             android:background="@color/table_view_default_separator_color"
             app:layout_constraintBottom_toTopOf="@+id/action_layout"
             app:layout_constraintTop_toTopOf="parent">
@@ -38,21 +39,9 @@
             android:id="@+id/headerContainer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
             android:background="@color/white"
             app:layout_constraintTop_toTopOf="parent" />
-
-
-        <!--<Button
-            android:id="@+id/actionButton"
-            style="@style/ButtonRoundedGrey"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="16dp"
-            android:layout_marginBottom="16dp"
-            android:backgroundTint="?colorPrimary"
-            android:onClick="@{()->presenter.complete()}"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />-->
 
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -83,5 +72,16 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <ProgressBar
+            android:id="@+id/program_progress"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toTopOf="@+id/action_layout"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/headerContainer"
+            app:progressColor="@{@color/colorPrimary}" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

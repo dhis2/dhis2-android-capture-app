@@ -27,6 +27,8 @@ import org.dhis2.usescases.datasets.datasetInitial.DataSetInitialComponent;
 import org.dhis2.usescases.datasets.datasetInitial.DataSetInitialModule;
 import org.dhis2.usescases.enrollment.EnrollmentComponent;
 import org.dhis2.usescases.enrollment.EnrollmentModule;
+import org.dhis2.usescases.events.ScheduledEventComponent;
+import org.dhis2.usescases.events.ScheduledEventModule;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureComponent;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureModule;
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialComponent;
@@ -51,12 +53,12 @@ import org.dhis2.usescases.reservedValue.ReservedValueComponent;
 import org.dhis2.usescases.reservedValue.ReservedValueModule;
 import org.dhis2.usescases.searchTrackEntity.SearchTEComponent;
 import org.dhis2.usescases.searchTrackEntity.SearchTEModule;
+import org.dhis2.usescases.settings.SyncManagerComponent;
+import org.dhis2.usescases.settings.SyncManagerModule;
 import org.dhis2.usescases.sms.SmsComponent;
 import org.dhis2.usescases.sms.SmsModule;
 import org.dhis2.usescases.sync.SyncComponent;
 import org.dhis2.usescases.sync.SyncModule;
-import org.dhis2.usescases.settings.SyncManagerComponent;
-import org.dhis2.usescases.settings.SyncManagerModule;
 import org.dhis2.usescases.teiDashboard.TeiDashboardComponent;
 import org.dhis2.usescases.teiDashboard.TeiDashboardModule;
 import org.dhis2.usescases.teiDashboard.eventDetail.EventDetailComponent;
@@ -170,4 +172,7 @@ public interface UserComponent {
 
     @NonNull
     EnrollmentComponent plus(EnrollmentModule enrollmentModule);
+
+    @NonNull
+    ScheduledEventComponent plus(ScheduledEventModule scheduledEventModule);
 }

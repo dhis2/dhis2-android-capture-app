@@ -18,6 +18,7 @@ import org.dhis2.utils.Result
 import org.dhis2.utils.RulesActionCallbacks
 import org.dhis2.utils.RulesUtilsProviderImpl
 import org.hisp.dhis.android.core.D2
+import org.hisp.dhis.android.core.arch.helpers.UidsHelper
 import org.hisp.dhis.android.core.arch.repositories.`object`.ReadOnlyOneObjectRepositoryFinalImpl
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
 import org.hisp.dhis.android.core.common.FeatureType
@@ -26,6 +27,7 @@ import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.enrollment.EnrollmentObjectRepository
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
+import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.event.EventStatus
 import org.hisp.dhis.android.core.maintenance.D2Error
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
@@ -289,8 +291,8 @@ class EnrollmentPresenterImpl(
     override fun openInitial(eventUid: String): Boolean {
         val event = d2.eventModule().events.uid(eventUid).blockingGet()
         val stage = d2.programModule().programStages.uid(event.programStage()).blockingGet()
-        val needsCatCombo = programRepository.blockingGet().categoryCombo() != null &&
-                programRepository.blockingGet().categoryCombo()!!.isDefault == false
+        val needsCatCombo = programRepository.blockingGet().categoryComboUid() != null &&
+                d2.categoryModule().categoryCombos.uid(getProgram().categoryComboUid()).blockingGet()!!.isDefault == false
         val needsCoordinates = stage.featureType() != null && stage.featureType() != FeatureType.NONE
 
         return needsCatCombo || needsCoordinates
@@ -494,7 +496,7 @@ class EnrollmentPresenterImpl(
     }
 
     override fun save(uid: String, value: String?) {
-        saveValue(uid, value)
+        assignValue(uid, value)
     }
 
     override fun setDisplayKeyValue(label: String, value: String) = Unit
@@ -518,5 +520,41 @@ class EnrollmentPresenterImpl(
                 optionsGroupToShow[field]!!.add(optionGroupUid)
             else
                 optionsGroupToShow[field] = ArrayList(optionsGroupsToHide)
+    }
+
+    private fun assignValue(uid: String, value: String?) {
+        try {
+            if (d2.dataElementModule().dataElements.uid(uid).blockingExists()) {
+                handleAssignToDataElement(uid, value)
+            } else if (d2.trackedEntityModule().trackedEntityAttributes.uid(uid).blockingExists()) {
+                handleAssignToAttribute(uid, value)
+            }
+        } catch (d2Error: D2Error) {
+            Timber.e(d2Error.originalException())
+        }
+    }
+
+    @Throws(D2Error::class)
+    private fun handleAssignToDataElement(deUid: String, value: String?) {
+        val eventUids = UidsHelper.getUidsList(d2.eventModule().events
+                .byEnrollmentUid().eq(getEnrollment().uid())
+                .byStatus().`in`(EventStatus.ACTIVE, EventStatus.COMPLETED)
+                .blockingGet())
+
+        for (eventUid in eventUids) {
+            if (!isEmpty(value))
+                d2.trackedEntityModule().trackedEntityDataValues.value(eventUid, deUid).blockingSet(value)
+            else if (d2.trackedEntityModule().trackedEntityDataValues.value(eventUid, deUid).blockingExists())
+                d2.trackedEntityModule().trackedEntityDataValues.value(eventUid, deUid).blockingDelete()
+        }
+    }
+
+    @Throws(D2Error::class)
+    private fun handleAssignToAttribute(attributeUid: String, value: String?) {
+        val tei = teiRepository.blockingGet().uid()
+        if (!isEmpty(value))
+            d2.trackedEntityModule().trackedEntityAttributeValues.value(attributeUid, tei).blockingSet(value)
+        else if (d2.trackedEntityModule().trackedEntityAttributeValues.value(attributeUid, tei).blockingExists())
+            d2.trackedEntityModule().trackedEntityAttributeValues.value(attributeUid, tei).blockingDelete()
     }
 }

@@ -43,7 +43,8 @@ android {
         targetSdkVersion versions.sdk
         versionCode versions.vCode
         versionName versions.vName
-        testInstrumentationRunner "androidx.test.ext.junit.runners.AndroidJUnit4"
+//        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "org.dhis2.usescases.MockRunner"
         vectorDrawables.useSupportLibrary = true
         multiDexEnabled true
 
@@ -51,6 +52,7 @@ android {
 
         buildConfigField "String", "SDK_VERSION", "\"" + libraries.dhis2sdk + "\""
         buildConfigField "String", "MAPBOX_ACCESS_TOKEN", "\"pk.eyJ1Ijoib3Jpa2dnIiwiYSI6ImNqdWpqb24zYTFsOXo0M2xwcXRseGx3aXkifQ.6N9aqvpqdrrSBwO9GyfjUw\""
+
 
         javaCompileOptions {
             annotationProcessorOptions {
@@ -113,6 +115,12 @@ android {
 
         }
 
+        training {
+            applicationIdSuffix = ".training"
+            matchingFallbacks = ['release']
+            signingConfig = signingConfigs.debug
+        }
+
         experimental {
             // custom application suffix which allows to
             // install debug and release builds at the same time
@@ -136,6 +144,14 @@ android {
             applicationIdSuffix = ".beta"
             matchingFallbacks = ['debug']
             signingConfig signingConfigs.debug
+            resValue "string", "content_provider", "com.dhis2.beta.provider"
+        }
+
+        alpha {
+            applicationIdSuffix = ".alpha"
+            matchingFallbacks = ['debug']
+            signingConfig signingConfigs.debug
+            resValue "string", "content_provider", "com.dhis2.alpha.provider"
         }
     }
 
@@ -146,12 +162,6 @@ android {
             dimension "default"
             versionCode versions.vCode
             versionName versions.vName
-        }
-        psi {
-            applicationId "org.dhis2.psi"
-            dimension "default"
-            versionCode 2
-            versionName "1.1.0"
         }
     }
 
@@ -185,6 +195,10 @@ android {
 
             forcedModules = ['com.squareup.okhttp3:okhttp:3.12.0']
         }
+    }
+
+    kotlinOptions {
+        jvmTarget = "1.8"
     }
 }
 
@@ -310,18 +324,19 @@ dependencies {
 
     //Test
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.1'
-    /*  androidTestImplementation('androidx.test.espresso:espresso-core:3.1.1', {
-          exclude group: 'com.android.support', module: 'support-annotations'
-          exclude group: 'com.google.code.findbugs'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+    androidTestImplementation "androidx.test:core:1.2.0"
+    androidTestImplementation 'androidx.test:rules:1.2.0'
+    androidTestImplementation "androidx.test:core-ktx:1.2.0"
+    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
+    androidTestImplementation "androidx.test.ext:junit-ktx:1.1.1"
 
-      })*/
-    androidTestImplementation 'androidx.test.ext:junit:1.1.0'
     testImplementation 'junit:junit:4.12'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     testImplementation 'org.robolectric:robolectric:4.1'
     testImplementation "org.robolectric:shadows-multidex:4.0.1"
     androidTestImplementation 'org.mockito:mockito-android:2.28.2'
+    androidTestImplementation 'org.mockito:mockito-core:2.28.2'
     testImplementation 'org.mockito:mockito-core:2.28.2'
 
 
@@ -359,7 +374,8 @@ dependencies {
     implementation 'cat.ereza:customactivityoncrash:2.2.0'
 
     implementation "com.google.android.gms:play-services-analytics:${libraries.analytics}"
-    implementation 'com.github.pwittchen:rxbiometric:0.1.0'
+    //implementation 'com.github.pwittchen:rxbiometric:0.1.0'
+    implementation 'co.infinum:goldfinger-rx:1.2.1'
     implementation "de.adorsys.android:securestoragelibrary:${libraries.latestSecureStorageVersion}"
 
     implementation 'com.google.firebase:firebase-perf:16.2.3'

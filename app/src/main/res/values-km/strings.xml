@@ -1,3 +1,4 @@
+<?xml version='1.0' encoding='utf-8'?>
 <resources>
     <!--GENERAL-->
     <string name="app_name">ឌីអេចអាយអេសធូ (DHIS 2)</string>
@@ -123,6 +124,7 @@
     <string name="delete_event">លុបចោលព្រឹត្តិការណ៏</string>
     <string name="confirm_delete_event">តើអ្នកច្បាស់ទេថាចង់លុបចោលព្រឹត្តិការណ៏នេះ?</string>
     <string name="event_was_deleted">ព្រឹត្តិការណ៏បានលុបជោគជ័យ</string>
+
     <!--TEI Enrollment list-->
     <string name="enrollment_list">បញ្ជីចុះឈ្មោះ</string>
     <string name="active_programs">កម្មវិធីដំណើរការ</string>
@@ -356,5 +358,4 @@
     <string name="data_every_day">រាល់​ថ្ងៃ</string>
     <string name="data_every_week">រាល់​សប្ដាហ៍</string>
     <string name="sms_completed">បានបញ្ចប់</string>
-    <!--endregion-->
-</resources>
+    </resources>

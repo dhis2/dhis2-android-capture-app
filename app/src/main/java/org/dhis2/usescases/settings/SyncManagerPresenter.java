@@ -17,7 +17,6 @@ import org.dhis2.data.tuples.Pair;
 import org.dhis2.usescases.login.LoginActivity;
 import org.dhis2.usescases.reservedValue.ReservedValueActivity;
 import org.dhis2.utils.Constants;
-import org.dhis2.utils.FileResourcesUtil;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.event.Event;
@@ -29,6 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import io.reactivex.Completable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.observers.DisposableCompletableObserver;
@@ -37,6 +37,10 @@ import io.reactivex.processors.FlowableProcessor;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
+
+import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
+import static org.dhis2.utils.analytics.AnalyticsConstants.SYNC_DATA_NOW;
+import static org.dhis2.utils.analytics.AnalyticsConstants.SYNC_METADATA_NOW;
 
 /**
  * QUADRAM. Created by lmartin on 21/03/2018.
@@ -160,6 +164,7 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
     @Override
     public void syncData() {
         view.syncData();
+        view.analyticsHelper().setEvent(SYNC_DATA_NOW, CLICK, SYNC_DATA_NOW);
         OneTimeWorkRequest.Builder syncDataBuilder = new OneTimeWorkRequest.Builder(SyncDataWorker.class);
         syncDataBuilder.addTag(Constants.DATA_NOW);
         syncDataBuilder.setConstraints(new Constraints.Builder()
@@ -167,10 +172,7 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
                 .build());
         OneTimeWorkRequest request = syncDataBuilder.build();
 
-        FileResourcesUtil.initBulkFileUploadWork() //FIRST UPLOAD IMAGES
-                .then(request) //THEN UPLOAD AND SYNC DATA
-                .then(FileResourcesUtil.initDownloadRequest()) //FINALLY DOWNLOAD IMAGES
-                .enqueue();
+        WorkManager.getInstance(view.getContext().getApplicationContext()).enqueueUniqueWork(Constants.DATA_NOW, ExistingWorkPolicy.KEEP, request);
     }
 
     /**
@@ -179,13 +181,14 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
     @Override
     public void syncMeta() {
         view.syncMeta();
+        view.analyticsHelper().setEvent(SYNC_METADATA_NOW, CLICK, SYNC_METADATA_NOW);
         OneTimeWorkRequest.Builder syncDataBuilder = new OneTimeWorkRequest.Builder(SyncMetadataWorker.class);
         syncDataBuilder.addTag(Constants.META_NOW);
         syncDataBuilder.setConstraints(new Constraints.Builder()
                 .setRequiredNetworkType(NetworkType.CONNECTED)
                 .build());
         OneTimeWorkRequest request = syncDataBuilder.build();
-        WorkManager.getInstance(view.getContext().getApplicationContext()).beginUniqueWork(Constants.META_NOW, ExistingWorkPolicy.REPLACE, request).enqueue();
+        WorkManager.getInstance(view.getContext().getApplicationContext()).beginUniqueWork(Constants.META_NOW, ExistingWorkPolicy.KEEP, request).enqueue();
     }
 
 
@@ -212,7 +215,15 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
 
     @Override
     public void smsSwitch(boolean isChecked) {
-        compositeDisposable.add(d2.smsModule().configCase().setModuleEnabled(isChecked)
+        Completable completable;
+        if (isChecked)
+            completable = d2.smsModule().configCase().setModuleEnabled(true)
+                    .andThen(d2.smsModule().configCase().refreshMetadataIds());
+        else
+            completable = d2.smsModule().configCase().setModuleEnabled(false);
+
+        compositeDisposable.add(completable
+                .subscribeOn(Schedulers.io())
                 .subscribeWith(new DisposableCompletableObserver() {
                     @Override
                     public void onComplete() {

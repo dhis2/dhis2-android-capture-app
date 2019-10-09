@@ -26,6 +26,8 @@ import javax.inject.Inject;
 import io.reactivex.functions.Consumer;
 
 import static android.text.TextUtils.isEmpty;
+import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
+import static org.dhis2.utils.analytics.AnalyticsConstants.CREATE_NOTE;
 
 /**
  * QUADRAM. Created by ppajuelo on 29/11/2017.
@@ -93,6 +95,7 @@ public class NotesFragment extends FragmentGlobalAbstract implements NotesContra
 
     public void addNote(View view) {
         if (presenter.hasProgramWritePermission()) {
+            analyticsHelper().setEvent(CREATE_NOTE, CLICK, CREATE_NOTE);
             noteAdapter.addNote(binding.editNote.getText().toString());
             clearNote(view);
         } else

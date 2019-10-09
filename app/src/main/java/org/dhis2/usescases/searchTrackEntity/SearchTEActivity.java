@@ -109,6 +109,9 @@ import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconOffset;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.lineColor;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.lineWidth;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.textAllowOverlap;
+import static org.dhis2.utils.analytics.AnalyticsConstants.CHANGE_PROGRAM;
+import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
+import static org.dhis2.utils.analytics.AnalyticsConstants.SHOW_HELP;
 
 /**
  * QUADRAM. Created by ppajuelo on 02/11/2017 .
@@ -182,7 +185,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         initialProgram = getIntent().getStringExtra("PROGRAM_UID");
         binding.setNeedsSearch(needsSearch);
         binding.setTotalFilters(FilterManager.getInstance().getTotalFilters());
-        binding.setTotalFiltersSearch(0);
+        binding.setTotalFiltersSearch(presenter.getQueryData().size());
 
         try {
             fromRelationship = getIntent().getBooleanExtra("FROM_RELATIONSHIP", false);
@@ -235,6 +238,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         binding.mapView.onResume();
         presenter.init(this, tEType, initialProgram);
         presenter.initSearch(this);
+        updateFiltersSearch(presenter.getQueryData().size());
         registerReceiver(networkReceiver, new IntentFilter("android.net.conn.CONNECTIVITY_CHANGE"));
         binding.setTotalFilters(FilterManager.getInstance().getTotalFilters());
         filtersAdapter.notifyDataSetChanged();
@@ -283,6 +287,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     @Override
     public void updateFiltersSearch(int totalFilters) {
         binding.setTotalFiltersSearch(totalFilters);
+        binding.executePendingBindings();
     }
 
     @Override
@@ -312,6 +317,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         popupMenu.setOnMenuItemClickListener(item -> {
             switch (item.getItemId()) {
                 case R.id.showHelp:
+                    analyticsHelper().setEvent(SHOW_HELP, CLICK, SHOW_HELP);
                     showTutorial(false);
                     break;
                 case R.id.menu_list:
@@ -325,9 +331,17 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             }
             return false;
         });
-        popupMenu.getMenu().getItem(0).setVisible(binding.mapView.getVisibility() == View.GONE && featureType != FeatureType.NONE);
-        popupMenu.getMenu().getItem(1).setVisible(binding.scrollView.getVisibility() == View.GONE && featureType != FeatureType.NONE);
-        popupMenu.show();
+
+        boolean messageIsVisible = binding.messageContainer.getVisibility() == View.VISIBLE;
+        boolean progressIsVisible = binding.progressLayout.getVisibility() == View.VISIBLE;
+        boolean mapIsVisible = binding.mapView.getVisibility() == View.VISIBLE;
+        boolean teiListIsVisible = binding.scrollView.getVisibility() == View.VISIBLE;
+
+
+        popupMenu.getMenu().getItem(0).setVisible(!messageIsVisible && !mapIsVisible && featureType != FeatureType.NONE);
+        popupMenu.getMenu().getItem(1).setVisible(!messageIsVisible && !teiListIsVisible && featureType != FeatureType.NONE);
+        if (!progressIsVisible)
+            popupMenu.show();
     }
 
     //endregion
@@ -353,7 +367,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         //Form has been set.
         FormAdapter formAdapter = (FormAdapter) binding.formRecycler.getAdapter();
         formAdapter.setList(trackedEntityAttributes, program, queryData);
-        updateFiltersSearch(0);
+        updateFiltersSearch(queryData.size());
     }
 
     @NonNull
@@ -454,6 +468,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int pos, long id) {
                 if (pos > 0) {
+                    analyticsHelper().setEvent(CHANGE_PROGRAM, CLICK , CHANGE_PROGRAM);
                     Program selectedProgram = (Program) adapterView.getItemAtPosition(pos - 1);
                     setProgramColor(presenter.getProgramColor(selectedProgram.uid()));
                     presenter.setProgram((Program) adapterView.getItemAtPosition(pos - 1));
@@ -652,9 +667,11 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                                     binding.mapLayerButton.setVisibility(View.VISIBLE);
                                     MapLayerManager.Companion.init(style, "teis", featureType);
                                     MapLayerManager.Companion.instance().setEnrollmentLayerData(
-                                            ColorUtils.getColorFrom(presenter.getProgram().style() != null ? presenter.getProgram().style().color() : null, ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.PRIMARY)),
+                                            presenter.getProgram() != null ?
+                                                    ColorUtils.getColorFrom(presenter.getProgram().style() != null ? presenter.getProgram().style().color() : null, ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.PRIMARY)) :
+                                                    ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.PRIMARY),
                                             ColorUtils.getPrimaryColor(this, ColorUtils.ColorType.PRIMARY_DARK),
-                                            presenter.getProgram().featureType() != null ? presenter.getProgram().featureType() : FeatureType.NONE
+                                            presenter.getProgram() != null ? presenter.getProgram().featureType() != null ? presenter.getProgram().featureType() : FeatureType.NONE : FeatureType.NONE
                                     );
                                     MapLayerManager.Companion.instance().showEnrollmentLayer().observe(this, show -> {
                                         if (show)
@@ -729,7 +746,12 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
     @Override
     public Consumer<D2Progress> downloadProgress() {
-        return progress -> Snackbar.make(binding.getRoot(), String.format("Downloading %s", String.valueOf(progress.percentage())) + "%", Snackbar.LENGTH_SHORT);
+        return progress -> Snackbar.make(binding.getRoot(), String.format("Downloading %s", String.valueOf(progress.percentage())) + "%", Snackbar.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public boolean isMapVisible() {
+        return binding.mapView.getVisibility() == View.VISIBLE;
     }
 
     private void setSource(Style style, HashMap<String, FeatureCollection> featCollectionMap) {

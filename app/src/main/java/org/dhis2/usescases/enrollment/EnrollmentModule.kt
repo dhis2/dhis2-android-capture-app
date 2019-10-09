@@ -40,7 +40,6 @@ class EnrollmentModule(val enrollmentUid: String, val programUid: String) {
             ReadOnlyOneObjectRepositoryFinalImpl<Program> {
         return d2.programModule().programs
                 .withProgramTrackedEntityAttributes()
-                .withCategoryCombo()
                 .uid(programUid)
     }
 
