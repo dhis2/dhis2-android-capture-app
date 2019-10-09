@@ -223,8 +223,10 @@ public class DataValuePresenter implements DataValueContract.Presenter {
 
                 boolean editable = true;
                 for (DataElementOperand disabledDataElement : dataTableModel.dataElementDisabled())
-                    if (disabledDataElement.categoryOptionCombo().uid().equals(categoryOptionCombo.uid()) &&
-                            disabledDataElement.dataElement().uid().equals(dataElement.uid()))
+                    if ((disabledDataElement.categoryOptionCombo() != null &&
+                            (disabledDataElement.categoryOptionCombo().uid().equals(categoryOptionCombo.uid()) &&
+                                    disabledDataElement.dataElement().uid().equals(dataElement.uid()))) ||
+                         disabledDataElement.dataElement().uid().equals(dataElement.uid()))
                         editable = false;
 
                 for (CategoryOption categoryOption : repository.getCatOptionFromCatOptionCombo(categoryOptionCombo))
