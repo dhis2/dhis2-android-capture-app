@@ -37,7 +37,6 @@ import org.dhis2.databinding.FragmentSettingsBinding;
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.HelpManager;
-import org.dhis2.utils.SyncUtils;
 import org.hisp.dhis.android.core.imports.TrackerImportConflict;
 import org.jetbrains.annotations.NotNull;
 
@@ -53,7 +52,6 @@ import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
 import static org.dhis2.utils.Constants.DATA_NOW;
-import static org.dhis2.utils.Constants.META;
 import static org.dhis2.utils.Constants.META_NOW;
 import static org.dhis2.utils.Constants.TIME_15M;
 import static org.dhis2.utils.Constants.TIME_DAILY;
@@ -64,7 +62,6 @@ import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
 import static org.dhis2.utils.analytics.AnalyticsConstants.CONFIRM_DELETE_LOCAL_DATA;
 import static org.dhis2.utils.analytics.AnalyticsConstants.CONFIRM_RESET;
 import static org.dhis2.utils.analytics.AnalyticsConstants.SYNC_DATA;
-import static org.dhis2.utils.analytics.AnalyticsConstants.SYNC_MANAGER_FRAGMENT;
 import static org.dhis2.utils.analytics.AnalyticsConstants.SYNC_METADATA;
 import static org.dhis2.utils.analytics.AnalyticsConstants.TYPE_SYNC;
 
@@ -138,11 +135,6 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
             }
         });
         presenter.init(this);
-
-        if (SyncUtils.isSyncRunning(context)) {
-            binding.buttonSyncData.setEnabled(false);
-            binding.buttonSyncMeta.setEnabled(false);
-        }
 
         listenerDisposable = new CompositeDisposable();
 
