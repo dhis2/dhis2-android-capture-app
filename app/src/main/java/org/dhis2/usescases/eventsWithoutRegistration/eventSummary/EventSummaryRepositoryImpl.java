@@ -274,7 +274,7 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
     @Override
     public Observable<Program> getProgramWithId(String programUid) {
         return d2.programModule().programs.withTrackedEntityType().withProgramTrackedEntityAttributes().withProgramIndicators().withProgramRules()
-                .withProgramRuleVariables().withProgramSections().withProgramStages().withRelatedProgram().withStyle().withCategoryCombo()
+                .withProgramRuleVariables().withProgramSections().withProgramStages().withRelatedProgram().withStyle()
                 .uid(programUid).get().toObservable();
     }
 }

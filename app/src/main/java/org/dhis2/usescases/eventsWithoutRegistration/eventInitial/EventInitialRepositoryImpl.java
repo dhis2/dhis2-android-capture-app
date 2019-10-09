@@ -106,7 +106,9 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
     @NonNull
     @Override
     public Observable<CategoryCombo> catCombo(String programUid) {
-        return Observable.defer(() -> Observable.just(d2.categoryModule().categoryCombos.withCategories().withCategoryOptionCombos().uid(d2.programModule().programs.withCategoryCombo().uid(programUid).blockingGet().categoryCombo().uid()).blockingGet()))
+        return d2.programModule().programs.uid(programUid).get()
+                .flatMap(program ->
+                        d2.categoryModule().categoryCombos.withCategories().withCategoryOptionCombos().uid(program.categoryComboUid()).get())
                 .map(categoryCombo -> {
                     List<Category> fullCategories = new ArrayList<>();
                     List<CategoryOptionCombo> fullOptionCombos = new ArrayList<>();
@@ -116,7 +118,7 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
                     for (CategoryOptionCombo categoryOptionCombo : categoryCombo.categoryOptionCombos())
                         fullOptionCombos.add(d2.categoryModule().categoryOptionCombos.withCategoryOptions().uid(categoryOptionCombo.uid()).blockingGet());
                     return categoryCombo.toBuilder().categories(fullCategories).categoryOptionCombos(fullOptionCombos).build();
-                });
+                }).toObservable();
     }
 
     @Override
@@ -356,7 +358,7 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
 
     @Override
     public Observable<Program> getProgramWithId(String programUid) {
-        return d2.programModule().programs.withCategoryCombo().withProgramIndicators().withProgramRules().withProgramRuleVariables().withProgramSections().withProgramStages()
+        return d2.programModule().programs.withProgramIndicators().withProgramRules().withProgramRuleVariables().withProgramSections().withProgramStages()
             .withProgramTrackedEntityAttributes().withRelatedProgram().withStyle().withTrackedEntityType().byUid().eq(programUid).one().get().toObservable();
     }
 

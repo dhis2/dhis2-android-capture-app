@@ -48,7 +48,7 @@ class HomeRepositoryImpl implements HomeRepository {
                 .withSections()
                 .withStyle();
 
-        this.programRepository = d2.programModule().programs.withStyle().withCategoryCombo()
+        this.programRepository = d2.programModule().programs.withStyle()
                 .withProgramIndicators().withProgramRules().withProgramRuleVariables().withProgramSections()
                 .withProgramStages().withProgramTrackedEntityAttributes().withStyle()
                 .withRelatedProgram().withTrackedEntityType();
