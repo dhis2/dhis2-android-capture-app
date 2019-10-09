@@ -26,7 +26,7 @@
     <string name="sync_complete_text">ການທຳງານຮ່ວມກັນຂອງລະບົບສໍາເລັດແລ້ວ</string>
 
     <string name="sync_error_title">ຄໍາຜິດທີ່ເກີດຈາກການທໍາງານຮ່ວມກັນຂອງລະບົບ</string>
-    <string name="sync_error_text">ມີຄໍາຜິດເກີດຂື້ນໃນຂະນະທີ່ລະບົບທໍາງານຮ່ວມກັນ. ກະລຸນາ, ທົດລອງເບີ່ງອີກ...</string>
+    <string name="sync_error_text">ມີຄໍາຜິດເກີດຂື້ນໃນຂະນະທີ່ລະບົບທໍາງານຮ່ວມກັນ. ກະລຸນາ, ທົດລອງເບີ່ງອີກ…</string>
     <string name="search_result_text">%sຜົນໄດ້ຮັບທີ່ຖືກພົບເຫັນ</string>
     <string name="add_new">ເພີ່ມໃໝ່</string>
     <string name="add">ເພີ່ມ</string>
@@ -124,6 +124,7 @@
     <string name="delete_event">ລືບກໍລະນີອອກ</string>
     <string name="confirm_delete_event">ທ່ານໝັ້ນໃຈບໍ ວ່າທ່ານຕ້ອງການລືບກໍລະນີນີ້ອອກ?</string>
     <string name="event_was_deleted">ກໍລະນີນີ້ໄດ້ຖືກລືບອອກຮຽບຮ້ອຍແລ້ວ</string>
+    <string name="total">ລວມ</string>
 
     <!--TEI Enrollment list-->
     <string name="enrollment_list">ລາຍລະອຽດການລົງທບຽນ</string>
@@ -356,10 +357,20 @@
     <string name="skip">ຂ້າມ</string>
     <string name="reschedule">ກຳນົດເວລາໃໝ່</string>
     <string name="event_overdue">ກາຍເວລາທີ່ກໍານົດ</string>
+    <string name="table">ຕາຕະລາງຂໍ້ມູນ</string>
     <string name="local_data_accept">​ການ​ຮັບ​ຮອງ</string>
     <string name="login_server_info_title">ທີ່ຢູ່ຂອງເຄື່ອງຄອມພີວເຕີໜ່ວຍແມ່</string>
     <string name="state_warning">Warning</string>
     <string name="action_close">ປິດ</string>
+    <string name="data_set_closed">ປິດ</string>
+    <string name="data_set_open">ເປີດ</string>
+    <string name="unsupported_value_type">ປະເພດຄ່າບໍ່ຮອງຮັບ</string>
     <string name="data_every_day">ທຸກໆມື້</string>
     <string name="data_every_week">ເປັນອາທິດ</string>
+    <string name="sms_completed">ສໍາເລັດແລ້ວ</string>
+    <string name="sms_bar_state_sending">ກໍາລັງດໍາເນີນການ</string>
+    <string name="sms_bar_state_sent">Sent</string>
+    <string name="sms_bar_state_failed">Failed</string>
+
+    <string name="polygon">Polygon</string>
     </resources>

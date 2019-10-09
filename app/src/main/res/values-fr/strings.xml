@@ -132,7 +132,6 @@
     <!--DataSet initial-->
     <string name="report_period">Période du rapport</string>
     <string name="cat_option">Option de catégorie</string>
-
     <!--Event Detail-->
     <string name="event_date">Datee d´événement</string>
     <string name="due_date">Date d\'échéance</string>
@@ -143,6 +142,7 @@
     <string name="delete_event">Effacer l´événement</string>
     <string name="confirm_delete_event">Êtes-vous sûr vouloir effacer l´événement?</string>
     <string name="event_was_deleted">événement supprimé avec succès</string>
+    <string name="total">Total</string>
 
     <!--TEI Enrollment list-->
     <string name="enrollment_list">Liste d\'admission</string>
@@ -232,7 +232,6 @@
     <string name="missing_mandatory_fields_go_back">Supprimer et retourner</string>
     <string name="error_fields">Certains champs ont des erreurs:\n%s\nVeuillez les vérifier.</string>
     <string name="missing_mandatory_fields_finish">Des champs obligatoires ne sont pas renseignés. Vous pouvez terminer la saisie et quitter, mais l\'évènement ne peut être complété.</string>
-
     <!--EVENT SUMMARY-->
     <string name="section_list">Liste des sections</string>
     <string name="event_summary_header" formatted="false">%s questions de %s complétées</string>
@@ -447,6 +446,7 @@ Veuillez les vérifier. </string>
     <string name="biometrics_first_use_text">Afin d\'utiliser la connexion par le scanner d\'empreinte digitale vous devez d\'abord vous connecter normalement</string>
     <string name="biometrics_security_title">Sécurité biométrique</string>
     <string name="biometrics_security_text">Utiliser vos empreintes digitales pour se connecter avec cet utilisateur?</string>
+    <string name="table">Tableau</string>
     <string name="login_https">https://</string>
     <string name="delete_local_data_message">Les données non synchronisées seront perdues. Voulez-vous vraiment continuer? </string>
     <string name="local_data_accept">Accept</string>
@@ -476,6 +476,9 @@ Veuillez les vérifier. </string>
     <string name="no_conflicts_synced_message">Vous êtes à jour! Toutes vos données ont été envoyées au serveur. </string>
     <string name="relationship_error_recursive">Vous ne pouvez pas établir de relation une donnée avec elle-même</string>
     <string name="unblock_session">Dévérouiller la session</string>
+    <string name="data_set_closed">Fermer</string>
+    <string name="data_set_open">Ouvrir</string>
+    <string name="unsupported_value_type">Type de valeur non supporté</string>
     <string name="change_calendar_view">Changer de vue calendrier</string>
     <string name="data_every_fifteen_minutes">15 minutes</string>
     <string name="data_every_hour">Toutes les heures</string>
@@ -492,4 +495,11 @@ Veuillez les vérifier. </string>
     <string name="uncomplete_authority_error">Vous n\'avez pas l\'autorité pour rouvrir cet évènement</string>
     <string name="adjusting_form">Adapter le formulaire...</string>
 
+    <string name="sms_completed">Terminé</string>
+    <string name="sms_bar_state_sending">En cours</string>
+    <string name="sms_bar_state_sent">Envoyé</string>
+    <string name="sms_bar_state_failed">Echoué</string>
+
+    <string name="polygon">Polygone</string>
+    <!--endregion-->
 </resources>
