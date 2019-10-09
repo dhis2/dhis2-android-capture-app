@@ -5,7 +5,7 @@ import android.os.Bundle;
 import androidx.annotation.IntDef;
 
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableActivity;
-import org.dhis2.usescases.main.program.SyncStatusDialog;
+import org.dhis2.utils.granular_sync.SyncStatusDialog;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.filters.FilterManager;
 

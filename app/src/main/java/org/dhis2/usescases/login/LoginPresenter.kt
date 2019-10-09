@@ -7,14 +7,13 @@ import android.view.View
 import co.infinum.goldfinger.Goldfinger
 import co.infinum.goldfinger.rx.RxGoldfinger
 import io.reactivex.Observable
-import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.schedulers.Schedulers
 import org.dhis2.App
 import org.dhis2.BuildConfig
 import org.dhis2.R
 import org.dhis2.data.prefs.Preference
 import org.dhis2.data.prefs.PreferenceProvider
+import org.dhis2.data.schedulers.SchedulerProvider
 import org.dhis2.data.server.UserManager
 import org.dhis2.usescases.main.MainActivity
 import org.dhis2.usescases.qrScanner.QRActivity
@@ -30,7 +29,9 @@ import org.hisp.dhis.android.core.systeminfo.SystemInfo
 import retrofit2.Response
 import timber.log.Timber
 
-class LoginPresenter(private val preferenceProvider: PreferenceProvider) : LoginContracts.Presenter {
+class LoginPresenter(
+        private val preferenceProvider: PreferenceProvider,
+        private val schedulers: SchedulerProvider) : LoginContracts.Presenter {
 
     override fun stopReadingFingerprint() {
         goldfinger.cancel()
@@ -52,8 +53,8 @@ class LoginPresenter(private val preferenceProvider: PreferenceProvider) : Login
 
         userManager?.let { userManager ->
             disposable.add(userManager.isUserLoggedIn
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribeOn(schedulers.io())
+                    .observeOn(schedulers.ui())
                     .subscribe({ isUserLoggedIn ->
                         val prefs = view.abstracContext.getSharedPreferences(
                                 Constants.SHARE_PREFS, Context.MODE_PRIVATE)
@@ -70,8 +71,8 @@ class LoginPresenter(private val preferenceProvider: PreferenceProvider) : Login
                         userManager.d2.systemInfoModule().systemInfo.blockingGet()
                     else
                         SystemInfo.builder().build())
-                            .subscribeOn(Schedulers.io())
-                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribeOn(schedulers.io())
+                            .observeOn(schedulers.ui())
                             .subscribe(
                                     { systemInfo ->
                                         if (systemInfo.contextPath() != null) {
@@ -93,8 +94,8 @@ class LoginPresenter(private val preferenceProvider: PreferenceProvider) : Login
                                 this.canHandleBiometrics = canHandleBiometrics
                                 canHandleBiometrics && preferenceProvider.contains(Constants.SECURE_SERVER_URL)
                             }
-                            .subscribeOn(Schedulers.io())
-                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribeOn(schedulers.io())
+                            .observeOn(schedulers.ui())
                             .subscribe(
                                     { view.showBiometricButton() },
                                     { Timber.e(it) }))
@@ -131,8 +132,8 @@ class LoginPresenter(private val preferenceProvider: PreferenceProvider) : Login
                             }
 
                         }
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeOn(schedulers.io())
+                        .observeOn(schedulers.ui())
                         .subscribe(
                                 { this.handleResponse(it) },
                                 { this.handleError(it) }))
@@ -160,8 +161,8 @@ class LoginPresenter(private val preferenceProvider: PreferenceProvider) : Login
     override fun logOut() {
         userManager?.let {
             disposable.add(it.d2.userModule().logOut()
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribeOn(schedulers.io())
+                    .observeOn(schedulers.ui())
                     .subscribe(
                             {
                                 val prefs = view.abstracContext.sharedPreferences
@@ -215,7 +216,7 @@ class LoginPresenter(private val preferenceProvider: PreferenceProvider) : Login
                                 Result.failure(Exception("Empty credentials"))
 
                         }
-                        .observeOn(AndroidSchedulers.mainThread())
+                        .observeOn(schedulers.ui())
                         .subscribe(
                                 {
                                     if (it.isFailure)

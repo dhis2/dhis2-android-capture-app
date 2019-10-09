@@ -10,7 +10,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityOptionsCompat;
 import io.reactivex.processors.FlowableProcessor;
 
-import org.dhis2.usescases.main.program.SyncStatusDialog;
+import org.dhis2.utils.granular_sync.SyncStatusDialog;
 import org.dhis2.utils.OnDialogClickListener;
 import org.dhis2.utils.analytics.AnalyticsHelper;
 

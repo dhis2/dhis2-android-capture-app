@@ -1,7 +1,6 @@
-package org.dhis2.usescases.main.program;
+package org.dhis2.utils.custom_views;
 
 import android.content.Context;
-import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.CheckBox;
