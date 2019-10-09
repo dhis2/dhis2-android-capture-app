@@ -18,6 +18,7 @@ import org.dhis2.data.server.UserManager
 import org.dhis2.usescases.main.MainActivity
 import org.dhis2.usescases.qrScanner.QRActivity
 import org.dhis2.utils.Constants
+import org.dhis2.utils.Constants.*
 import org.dhis2.utils.analytics.ACCOUNT_RECOVERY
 import org.dhis2.utils.analytics.CLICK
 import org.dhis2.utils.analytics.LOGIN
@@ -31,20 +32,16 @@ import timber.log.Timber
 
 class LoginPresenter(
         private val preferenceProvider: PreferenceProvider,
-        private val schedulers: SchedulerProvider) : LoginContracts.Presenter {
-
-    override fun stopReadingFingerprint() {
-        goldfinger.cancel()
-    }
+        private val schedulers: SchedulerProvider) {
 
     private lateinit var view: LoginContracts.View
     private var userManager: UserManager? = null
-    private lateinit var disposable: CompositeDisposable
+    lateinit var disposable: CompositeDisposable
 
     private var canHandleBiometrics: Boolean? = null
     private lateinit var goldfinger: RxGoldfinger
 
-    override fun init(view: LoginContracts.View) {
+    fun init(view: LoginContracts.View) {
         this.view = view
         this.disposable = CompositeDisposable()
         goldfinger = RxGoldfinger.Builder(view.context).setLogEnabled(BuildConfig.DEBUG).build()
@@ -56,8 +53,7 @@ class LoginPresenter(
                     .subscribeOn(schedulers.io())
                     .observeOn(schedulers.ui())
                     .subscribe({ isUserLoggedIn ->
-                        val prefs = view.abstracContext.getSharedPreferences(
-                                Constants.SHARE_PREFS, Context.MODE_PRIVATE)
+                        val prefs = view.abstracContext.getSharedPreferences(SHARE_PREFS, Context.MODE_PRIVATE)
                         if (isUserLoggedIn && !prefs.getBoolean("SessionLocked", false)) {
                             view.startActivity(MainActivity::class.java, null, true, true, null)
                         } else if (prefs.getBoolean("SessionLocked", false)) {
@@ -76,9 +72,9 @@ class LoginPresenter(
                             .subscribe(
                                     { systemInfo ->
                                         if (systemInfo.contextPath() != null) {
-                                            val prefs = view.abstractActivity.getSharedPreferences(Constants.SHARE_PREFS, Context.MODE_PRIVATE)
+                                            val prefs = view.abstractActivity.getSharedPreferences(SHARE_PREFS, Context.MODE_PRIVATE)
                                             view.setUrl(systemInfo.contextPath() ?: "")
-                                            view.setUser(prefs.getString(Constants.USER, "")!!)
+                                            view.setUser(prefs.getString(USER, "")!!)
                                         } else
                                             view.setUrl(view.context.getString(R.string.login_https))
                                     },
@@ -86,45 +82,44 @@ class LoginPresenter(
         } ?: view.setUrl(view.context.getString(R.string.login_https))
 
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
-
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
             disposable.add(
                     Observable.just(goldfinger.hasEnrolledFingerprint())
                             .filter { canHandleBiometrics ->
                                 this.canHandleBiometrics = canHandleBiometrics
-                                canHandleBiometrics && preferenceProvider.contains(Constants.SECURE_SERVER_URL)
+                                canHandleBiometrics && preferenceProvider.contains(SECURE_SERVER_URL)
                             }
                             .subscribeOn(schedulers.io())
                             .observeOn(schedulers.ui())
                             .subscribe(
                                     { view.showBiometricButton() },
                                     { Timber.e(it) }))
-
+        }
     }
 
-    override fun onButtonClick() {
+    fun onButtonClick() {
         view.hideKeyboard()
         view.analyticsHelper().setEvent(LOGIN, CLICK, LOGIN)
-        val prefs = view.abstracContext.getSharedPreferences(
-                Constants.SHARE_PREFS, Context.MODE_PRIVATE)
-        if (!prefs.getBoolean(Constants.USER_ASKED_CRASHLYTICS, false))
+        val prefs = view.abstracContext.getSharedPreferences(SHARE_PREFS, Context.MODE_PRIVATE)
+        if (!prefs.getBoolean(USER_ASKED_CRASHLYTICS, false)){
             view.showCrashlyticsDialog()
-        else
+        } else {
             view.showLoginProgress(true)
+        }
     }
 
-    override fun logIn(serverUrl: String, userName: String, pass: String) {
+     fun logIn(serverUrl: String, userName: String, pass: String) {
         disposable.add(
                 D2Manager.setServerUrl(serverUrl)
                         .andThen(D2Manager.instantiateD2())
                         .map { (view.abstracContext.applicationContext as App).createServerComponent().userManager() }
                         .flatMapObservable { userManager ->
-                            val prefs = view.abstractActivity.getSharedPreferences(Constants.SHARE_PREFS, Context.MODE_PRIVATE)
-                            prefs.edit().putString(Constants.SERVER, "$serverUrl/api").apply()
+                            val prefs = view.abstractActivity.getSharedPreferences(SHARE_PREFS, Context.MODE_PRIVATE)
+                            prefs.edit().putString(SERVER, "$serverUrl/api").apply()
                             this.userManager = userManager
                             userManager.logIn(userName.trim { it <= ' ' }, pass).map<Response<Any>> { user ->
                                 run {
-                                    prefs.edit().putString(Constants.USER, user.userCredentials()?.username()).apply()
+                                    prefs.edit().putString(USER, user.userCredentials()?.username()).apply()
                                     prefs.edit().putBoolean("SessionLocked", false).apply()
                                     prefs.edit().putString("pin", null).apply()
                                     Response.success<Any>(null)
@@ -134,37 +129,34 @@ class LoginPresenter(
                         }
                         .subscribeOn(schedulers.io())
                         .observeOn(schedulers.ui())
-                        .subscribe(
-                                { this.handleResponse(it) },
-                                { this.handleError(it) }))
+                        .subscribe({ this.handleResponse(it) }, { this.handleError(it) }))
     }
 
-    override fun onQRClick(v: View) {
+    fun onQRClick() {
         view.analyticsHelper().setEvent(SERVER_QR_SCANNER, CLICK, SERVER_QR_SCANNER)
         val intent = Intent(view.context, QRActivity::class.java)
-        view.abstractActivity.startActivityForResult(intent, Constants.RQ_QR_SCANNER)
+        view.abstractActivity.startActivityForResult(intent, RQ_QR_SCANNER)
     }
 
-    override fun unlockSession(pin: String) {
-        val prefs = view.abstracContext.getSharedPreferences(
-                Constants.SHARE_PREFS, Context.MODE_PRIVATE)
+    fun unlockSession(pin: String) {
+        val prefs = view.abstracContext.getSharedPreferences(SHARE_PREFS,
+                Context.MODE_PRIVATE)
         if (prefs.getString("pin", "") == pin) {
             prefs.edit().putBoolean("SessionLocked", false).apply()
             view.startActivity(MainActivity::class.java, null, true, true, null)
         }
     }
 
-    override fun onDestroy() {
+    fun onDestroy() {
         disposable.clear()
     }
 
-    override fun logOut() {
+     fun logOut() {
         userManager?.let {
             disposable.add(it.d2.userModule().logOut()
                     .subscribeOn(schedulers.io())
                     .observeOn(schedulers.ui())
-                    .subscribe(
-                            {
+                    .subscribe({
                                 val prefs = view.abstracContext.sharedPreferences
                                 prefs.edit().putBoolean("SessionLocked", false).apply()
                                 view.handleLogout()
@@ -175,7 +167,7 @@ class LoginPresenter(
         }
     }
 
-    override fun handleResponse(userResponse: Response<*>) {
+    private fun handleResponse(userResponse: Response<*>) {
         view.showLoginProgress(false)
         if (userResponse.isSuccessful) {
             view.sharedPreferences.edit().putBoolean(Preference.INITIAL_SYNC_DONE.name, false).apply()
@@ -184,33 +176,35 @@ class LoginPresenter(
         }
     }
 
-    override fun handleError(throwable: Throwable) {
+     private fun handleError(throwable: Throwable) {
         Timber.e(throwable)
         if (throwable is D2Error && throwable.errorCode() == D2ErrorCode.ALREADY_AUTHENTICATED) {
-            val prefs = view.abstractActivity.getSharedPreferences(Constants.SHARE_PREFS, Context.MODE_PRIVATE)
+            val prefs = view.abstractActivity.getSharedPreferences(SHARE_PREFS, Context.MODE_PRIVATE)
             prefs.edit().putBoolean("SessionLocked", false).apply()
             prefs.edit().putString("pin", null).apply()
             view.alreadyAuthenticated()
-        } else
+        } else{
             view.renderError(throwable)
+        }
         view.showLoginProgress(false)
     }
 
-    //region FINGERPRINT
-    override fun canHandleBiometrics(): Boolean? {
+    fun stopReadingFingerprint() {
+        goldfinger.cancel()
+    }
+
+    fun canHandleBiometrics(): Boolean? {
         return canHandleBiometrics
     }
 
-    override fun onFingerprintClick() {
+    fun onFingerprintClick() {
         view.showFingerprintDialog()
         disposable.add(
                 goldfinger
                         .authenticate()
                         .map { result ->
-                            if (preferenceProvider.contains(
-                                            Constants.SECURE_SERVER_URL, Constants.SECURE_USER_NAME,
-                                            Constants.SECURE_PASS
-                                    )) {
+                            if (preferenceProvider.contains(SECURE_SERVER_URL,
+                                            SECURE_USER_NAME, SECURE_PASS)) {
                                 Result.success(result)
                             } else
                                 Result.failure(Exception("Empty credentials"))
@@ -223,9 +217,9 @@ class LoginPresenter(
                                         view.showEmptyCredentialsMessage()
                                     else if (it.isSuccess && it.getOrNull()?.type() == Goldfinger.Type.SUCCESS)
                                         view.showCredentialsData(Goldfinger.Type.SUCCESS,
-                                                preferenceProvider.getString(Constants.SECURE_SERVER_URL)!!,
-                                                preferenceProvider.getString(Constants.SECURE_USER_NAME)!!,
-                                                preferenceProvider.getString(Constants.SECURE_PASS)!!)
+                                                preferenceProvider.getString(SECURE_SERVER_URL)!!,
+                                                preferenceProvider.getString(SECURE_USER_NAME)!!,
+                                                preferenceProvider.getString(SECURE_PASS)!!)
                                     else
                                         view.showCredentialsData(Goldfinger.Type.ERROR,
                                                 it.getOrNull()?.message()!!)
@@ -236,12 +230,12 @@ class LoginPresenter(
                                 }))
     }
 
-    override fun onAccountRecovery() {
+    fun onAccountRecovery() {
         view.analyticsHelper().setEvent(ACCOUNT_RECOVERY, CLICK, ACCOUNT_RECOVERY)
         view.openAccountRecovery()
     }
 
-    override fun onUrlInfoClick(v: View) {
+    fun onUrlInfoClick(v: View) {
         view.displayAlertDialog(R.string.login_server_info_title, R.string.login_server_info_message, null, R.string.action_accept)
     }
 }

@@ -138,10 +138,8 @@ public class App extends MultiDexApplication implements Components {
     }
 
     private void setUpAppComponent() {
-
         appComponent = prepareAppComponent().build();
         appComponent.inject(this);
-
     }
 
     protected void setUpServerComponent() {
@@ -203,7 +201,7 @@ public class App extends MultiDexApplication implements Components {
     @NonNull
     @Override
     public LoginComponent createLoginComponent() {
-        return (loginComponent = appComponent.plus(new LoginModule()));
+        return (loginComponent = appComponent.plus(LoginModule.INSTANCE));
     }
 
     @Nullable

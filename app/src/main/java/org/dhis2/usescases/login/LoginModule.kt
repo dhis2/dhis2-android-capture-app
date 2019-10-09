@@ -12,13 +12,12 @@ import org.dhis2.data.schedulers.SchedulerProvider
 
 @Module
 @PerActivity
-class LoginModule {
+object LoginModule {
 
+    @JvmStatic
     @Provides
     @PerActivity
-    internal fun providePresenter(preferenceProvider: PreferenceProvider, schedulerProvider : SchedulerProvider): LoginContracts.Presenter {
+    fun providePresenter(preferenceProvider: PreferenceProvider, schedulerProvider : SchedulerProvider): LoginPresenter {
         return LoginPresenter(preferenceProvider,schedulerProvider)
     }
-
-
 }

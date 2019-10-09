@@ -65,7 +65,7 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
     private lateinit var fingerPrintDialog: Dialog
 
     @Inject
-    lateinit var presenter: LoginContracts.Presenter
+    lateinit var presenter: LoginPresenter
 
     private var users: MutableList<String>? = null
     private var urls: MutableList<String>? = null
@@ -133,7 +133,7 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
             }
         })
 
-        binding.serverUrlEdit.onRightDrawableClicked { presenter.onQRClick(binding.serverUrl) }
+        binding.serverUrlEdit.onRightDrawableClicked { presenter.onQRClick() }
 
         binding.clearPassButton.setOnClickListener { binding.userPassEdit.text = null }
         binding.clearUserNameButton.setOnClickListener { binding.userNameEdit.text = null }
@@ -376,7 +376,6 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
 
     }
 
-
     override fun onBackPressed() {
         if (isPinScreenVisible) {
             binding.pinLayout.root.visibility = View.GONE
@@ -394,7 +393,6 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
         super.onActivityResult(requestCode, resultCode, data)
     }
 
-    //region FingerPrint
     override fun showBiometricButton() {
         binding.biometricButton.visibility = View.VISIBLE
     }
@@ -414,7 +412,6 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
     override fun showEmptyCredentialsMessage() {
         showInfoDialog(getString(R.string.biometrics_dialog_title), getString(R.string.biometrics_first_use_text))
     }
-//endregion
 
     override fun openAccountRecovery() {
         val intent = Intent(this, WebViewActivity::class.java)
@@ -429,5 +426,4 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
                 .setPositiveButton(positiveResource, null)
                 .show()
     }
-
 }
