@@ -109,7 +109,7 @@ public class TeiProgramListRepositoryImpl implements TeiProgramListRepository {
                         .byOrganisationUnitList(orgUnits)
                         .byTrackedEntityTypeUid().eq(trackedEntityType).withStyle().blockingGet()))
                 .flatMapIterable(programs -> programs)
-                .map(program -> ProgramViewModel.create(
+                .map(program -> ProgramViewModel.Companion.create(
                         program.uid(),
                         program.displayName(),
                         program.style() != null ? program.style().color() : null,

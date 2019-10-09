@@ -1,4 +1,4 @@
-package org.dhis2.usescases.main.program;
+package org.dhis2.utils.granular_sync;
 
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
@@ -9,7 +9,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import org.dhis2.R;
 import org.dhis2.databinding.ItemSyncConflictBinding;
-import org.hisp.dhis.android.core.imports.TrackerImportConflict;
 
 import java.util.List;
 
@@ -17,7 +16,7 @@ public class SyncConflictAdapter extends RecyclerView.Adapter<SyncConflictHolder
 
     private final List<StatusLogItem> conflicts;
 
-    public SyncConflictAdapter(List<StatusLogItem> conflictList) {
+    SyncConflictAdapter(List<StatusLogItem> conflictList) {
         this.conflicts = conflictList;
     }
 
@@ -38,18 +37,18 @@ public class SyncConflictAdapter extends RecyclerView.Adapter<SyncConflictHolder
         return conflicts.size();
     }
 
-    public void addItems(List<StatusLogItem> conflicts) {
+    void addItems(List<StatusLogItem> conflicts) {
         this.conflicts.clear();
         this.conflicts.addAll(conflicts);
         notifyDataSetChanged();
     }
 
-    public void addItem(StatusLogItem item){
+    void addItem(StatusLogItem item){
         this.conflicts.add(item);
         notifyDataSetChanged();
     }
 
-    public void addAllItems(List<StatusLogItem> conflicts){
+    void addAllItems(List<StatusLogItem> conflicts){
         this.conflicts.addAll(conflicts);
         notifyDataSetChanged();
     }

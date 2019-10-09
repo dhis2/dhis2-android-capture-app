@@ -55,7 +55,7 @@ public class MainActivityTest {
 
         List<ProgramViewModel> testProgramList = new ArrayList<>();
         testProgramList.add(
-                ProgramViewModel.create("programA", "TestingProgram1", "#f50057", "ic_agriculture_negative", 1987, "typeUid",
+                ProgramViewModel.Companion.create("programA", "TestingProgram1", "#f50057", "ic_agriculture_negative", 1987, "typeUid",
                         "TypeTest", ProgramType.WITH_REGISTRATION.name(), "Test description", true, true)
         );
 

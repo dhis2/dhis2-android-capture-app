@@ -32,7 +32,7 @@ import org.dhis2.BuildConfig;
 import org.dhis2.R;
 import org.dhis2.usescases.login.LoginActivity;
 import org.dhis2.usescases.main.MainActivity;
-import org.dhis2.usescases.main.program.SyncStatusDialog;
+import org.dhis2.utils.granular_sync.SyncStatusDialog;
 import org.dhis2.usescases.map.MapSelectorActivity;
 import org.dhis2.usescases.splash.SplashActivity;
 import org.dhis2.utils.Constants;

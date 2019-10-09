@@ -20,7 +20,7 @@ import androidx.work.WorkerParameters;
 import io.reactivex.Single;
 import timber.log.Timber;
 
-import static org.dhis2.usescases.main.program.SyncStatusDialog.*;
+import static org.dhis2.utils.granular_sync.SyncStatusDialog.*;
 import static org.dhis2.utils.Constants.*;
 
 public class SyncGranularRxWorker extends RxWorker {

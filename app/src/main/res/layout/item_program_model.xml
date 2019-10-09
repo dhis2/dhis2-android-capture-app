@@ -22,6 +22,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="?attr/selectableItemBackground"
         android:onClick="@{()->presenter.onItemClick(program)}"
         android:paddingStart="16dp"
         android:paddingTop="8dp"
@@ -76,7 +77,7 @@
             android:layout_alignParentEnd="true"
             android:layout_marginStart="16dp"
             android:gravity="center"
-            android:text="@{program.count().toString()}"
+            android:text="@{Integer.toString(program.count())}"
             android:textColor="@color/text_black_333"
             android:textSize="12sp"
             app:layout_constraintStart_toEndOf="@id/imageLayout"
@@ -103,7 +104,6 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:layout_marginEnd="9dp"
             android:ellipsize="end"
             android:lineSpacingExtra="0.dp"
             android:maxLines="2"
@@ -119,9 +119,9 @@
 
         <ImageView
             android:id="@+id/sync_status"
+            style="@style/ActionIcon"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_margin="10dp"
             android:onClick="@{()->presenter.onSyncStatusClick(program)}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

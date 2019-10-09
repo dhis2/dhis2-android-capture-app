@@ -1,4 +1,4 @@
-package org.dhis2.usescases.main.program;
+package org.dhis2.utils.granular_sync;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
