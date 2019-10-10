@@ -157,7 +157,7 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
     public Observable<Program> program() {
         return Observable.just(d2.programModule().programs.withProgramIndicators()
                 .withProgramRules().withProgramRuleVariables().withProgramSections().withProgramStages()
-                .withProgramTrackedEntityAttributes().withRelatedProgram().withStyle()
+                .withProgramTrackedEntityAttributes().withStyle()
                 .withTrackedEntityType().uid(programUid).blockingGet());
     }
 
