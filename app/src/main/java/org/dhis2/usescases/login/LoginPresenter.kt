@@ -28,21 +28,19 @@ import org.hisp.dhis.android.core.systeminfo.SystemInfo
 import retrofit2.Response
 import timber.log.Timber
 
-class LoginPresenter(
-        private val preferenceProvider: PreferenceProvider,
+class LoginPresenter(private val preferenceProvider: PreferenceProvider,
         private val schedulers: SchedulerProvider,
         private val goldfinger: RxGoldfinger) {
 
     private lateinit var view: LoginContracts.View
     private var userManager: UserManager? = null
-    lateinit var disposable: CompositeDisposable
+    var disposable: CompositeDisposable = CompositeDisposable()
 
     private var canHandleBiometrics: Boolean? = null
 
     fun init(view: LoginContracts.View, userManager: UserManager?) {
         this.userManager = userManager
         this.view = view
-        this.disposable = CompositeDisposable()
 
         userManager?.let { userManager ->
             disposable.add(userManager.isUserLoggedIn
@@ -57,9 +55,15 @@ class LoginPresenter(
 
                     }, { Timber.e(it) }))
 
-        /*    disposable.add(
-                    Observable.just(if (userManager.d2.systemInfoModule().systemInfo.blockingGet() != null)
-                        userManager.d2.systemInfoModule().systemInfo.blockingGet()
+
+        } ?: view.setUrl(view.context.getString(R.string.login_https))
+    }
+
+    fun checkServerInfoAndShowBiometricButton(){
+        userManager?.let {
+            disposable.add(
+                    Observable.just(if (it.d2.systemInfoModule().systemInfo.blockingGet() != null)
+                        it.d2.systemInfoModule().systemInfo.blockingGet()
                     else
                         SystemInfo.builder().build())
                             .subscribeOn(schedulers.io())
@@ -73,9 +77,10 @@ class LoginPresenter(
                                         } else
                                             view.setUrl(view.context.getString(R.string.login_https))
                                     },
-                                    { Timber.e(it) })) */
+                                    { Timber.e(it) }))
         } ?: view.setUrl(view.context.getString(R.string.login_https))
-      //  showBiometricButtonIfVersionIsGreaterThanM(view)
+
+        showBiometricButtonIfVersionIsGreaterThanM(view)
     }
 
     private fun showBiometricButtonIfVersionIsGreaterThanM(view: LoginContracts.View) {
@@ -97,8 +102,7 @@ class LoginPresenter(
     fun onButtonClick() {
         view.hideKeyboard()
         view.analyticsHelper().setEvent(LOGIN, CLICK, LOGIN)
-        val prefs = view.abstracContext.getSharedPreferences(SHARE_PREFS, Context.MODE_PRIVATE)
-        if (!prefs.getBoolean(USER_ASKED_CRASHLYTICS, false)){
+        if (!preferenceProvider.getBoolean(USER_ASKED_CRASHLYTICS, false)){
             view.showCrashlyticsDialog()
         } else {
             view.showLoginProgress(true)
@@ -176,9 +180,10 @@ class LoginPresenter(
      private fun handleError(throwable: Throwable) {
         Timber.e(throwable)
         if (throwable is D2Error && throwable.errorCode() == D2ErrorCode.ALREADY_AUTHENTICATED) {
-            val prefs = view.abstractActivity.getSharedPreferences(SHARE_PREFS, Context.MODE_PRIVATE)
-            prefs.edit().putBoolean("SessionLocked", false).apply()
-            prefs.edit().putString("pin", null).apply()
+            preferenceProvider.apply {
+                setValue("SessionLocked", false)
+                setValue("pin", null)
+            }
             view.alreadyAuthenticated()
         } else {
             view.renderError(throwable)

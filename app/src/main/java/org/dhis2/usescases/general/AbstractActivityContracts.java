@@ -62,6 +62,7 @@ public class AbstractActivityContracts {
 
         void showSyncDialog(String orgUnit, String attributeCombo, String periodId, SyncStatusDialog.ConflictType conflictType, FlowableProcessor processor, String dataSetUid);
 
+        @Deprecated
         AnalyticsHelper analyticsHelper();
     }
 

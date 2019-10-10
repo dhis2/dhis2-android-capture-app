@@ -194,7 +194,10 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
 
     override fun onResume() {
         super.onResume()
-        presenter.init(this, userManager)
+        presenter.apply {
+            init(this@LoginActivity, userManager)
+            checkServerInfoAndShowBiometricButton()
+        }
         NetworkUtils.isGooglePlayServicesAvailable(this)
     }
 
@@ -204,7 +207,7 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
     }
 
     override fun onDestroy() {
-        (applicationContext as App).releaseLoginComponent()
+        (applicationContext as App).loginComponent()
         super.onDestroy()
     }
 
