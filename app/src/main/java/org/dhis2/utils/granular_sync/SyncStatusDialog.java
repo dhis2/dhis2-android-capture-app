@@ -92,20 +92,20 @@ public class SyncStatusDialog extends BottomSheetDialogFragment {
     private String attributeComboDataValue;
     private String periodIdDataValue;
     private String[] catOptionCombos;
-    private FlowableProcessor processor;
+    private FlowableProcessor<Boolean> processor;
 
     public AnalyticsHelper analyticsHelper;
-    private Context context;
     private MutableLiveData<List<SmsSendingService.SendingStatus>> states;
     private SmsSubmitCase smsSender;
     private ArrayList<SmsSendingService.SendingStatus> statesList;
+    private boolean syncing;
 
     public enum ConflictType {
         PROGRAM, TEI, EVENT, DATA_SET, DATA_VALUES
     }
 
     @SuppressLint("ValidFragment")
-    public SyncStatusDialog(String recordUid, ConflictType conflictType, FlowableProcessor processor, AnalyticsHelper analyticsHelper) {
+    public SyncStatusDialog(String recordUid, ConflictType conflictType, FlowableProcessor<Boolean> processor, AnalyticsHelper analyticsHelper) {
         this.recordUid = recordUid;
         this.conflictType = conflictType;
         this.compositeDisposable = new CompositeDisposable();
@@ -115,7 +115,7 @@ public class SyncStatusDialog extends BottomSheetDialogFragment {
 
     @SuppressLint("ValidFragment")
     public SyncStatusDialog(String orgUnitDataValue, String attributeComboDataValue, String periodIdDataValue,
-                            ConflictType conflictType, FlowableProcessor processor, AnalyticsHelper analyticsHelper,
+                            ConflictType conflictType, FlowableProcessor<Boolean> processor, AnalyticsHelper analyticsHelper,
                             String dataSetUid) {
         this.orgUnitDataValue = orgUnitDataValue;
         this.attributeComboDataValue = attributeComboDataValue;
@@ -130,7 +130,6 @@ public class SyncStatusDialog extends BottomSheetDialogFragment {
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
-        this.context = context;
         d2 = ((App) context.getApplicationContext()).serverComponent().userManager().getD2();
     }
 
@@ -159,6 +158,7 @@ public class SyncStatusDialog extends BottomSheetDialogFragment {
             case DATA_VALUES:
                 getCatOptionComboFromDataSet();
                 configureForDataValue();
+                break;
         }
         setRetainInstance(true);
 
@@ -169,10 +169,10 @@ public class SyncStatusDialog extends BottomSheetDialogFragment {
         binding.programName.setText(R.string.qr_data_values);
 
         compositeDisposable.add(
-                Observable.fromCallable(() -> d2.dataValueModule().dataValues.byOrganisationUnitUid().eq(orgUnitDataValue)
+                d2.dataValueModule().dataValues.byOrganisationUnitUid().eq(orgUnitDataValue)
                         .byAttributeOptionComboUid().eq(attributeComboDataValue)
                         .byPeriod().eq(periodIdDataValue)
-                        .byCategoryOptionComboUid().in(catOptionCombos).blockingGet())
+                        .byCategoryOptionComboUid().in(catOptionCombos).get()
                         .map(dataSetElements -> {
                             State state = State.SYNCED;
                             for (DataValue dataValue : dataSetElements) {
@@ -210,8 +210,8 @@ public class SyncStatusDialog extends BottomSheetDialogFragment {
     private void getCatOptionComboFromDataSet() {
         List<String> catCombos = new ArrayList<>();
         DataSet dataSet = d2.dataSetModule().dataSets.withDataSetElements().uid(recordUid).blockingGet();
-        for(DataSetElement dataSetElement: dataSet.dataSetElements()){
-            if(dataSetElement.categoryCombo() != null && !catCombos.contains(dataSetElement.categoryCombo().uid()))
+        for (DataSetElement dataSetElement : dataSet.dataSetElements()) {
+            if (dataSetElement.categoryCombo() != null && !catCombos.contains(dataSetElement.categoryCombo().uid()))
                 catCombos.add(dataSetElement.categoryCombo().uid());
             else
                 catCombos.add(d2.dataElementModule().dataElements.uid(dataSetElement.dataElement().uid()).blockingGet().categoryComboUid());
@@ -233,7 +233,8 @@ public class SyncStatusDialog extends BottomSheetDialogFragment {
                         )
         );
         compositeDisposable.add(
-                Observable.fromCallable(() -> d2.dataSetModule().dataSets.withDataSetElements().uid(recordUid).blockingGet().dataSetElements())
+                d2.dataSetModule().dataSets.withDataSetElements().uid(recordUid).get()
+                        .map(DataSet::dataSetElements)
                         .map(dataSetElements -> {
                             State state = State.SYNCED;
                             for (DataSetElement dataSetElement : dataSetElements) {
@@ -242,32 +243,33 @@ public class SyncStatusDialog extends BottomSheetDialogFragment {
                                         state = State.TO_UPDATE;
                                 }
                             }
-
                             return state;
-                        }).subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread()).subscribe(
-                        state -> {
-                            Bindings.setStateIcon(binding.syncIcon, state);
-                            binding.syncStatusName.setText(getTextByState(state));
-                            binding.syncStatusBar.setBackgroundResource(getColorForState(state));
-                            switch (state) {
-                                case TO_POST:
-                                case TO_UPDATE:
-                                    setNoConflictMessage(getString(R.string.no_conflicts_update_message));
-                                    break;
-                                case SYNCED:
-                                    setNoConflictMessage(getString(R.string.no_conflicts_synced_message));
-                                    break;
-                                case WARNING:
-                                case ERROR:
-                                    setProgramConflictMessage(state);
-                                    break;
-                                default:
-                                    break;
-                            }
-                        },
-                        error -> dismiss()
-                ));
+                        })
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                state -> {
+                                    Bindings.setStateIcon(binding.syncIcon, state);
+                                    binding.syncStatusName.setText(getTextByState(state));
+                                    binding.syncStatusBar.setBackgroundResource(getColorForState(state));
+                                    switch (state) {
+                                        case TO_POST:
+                                        case TO_UPDATE:
+                                            setNoConflictMessage(getString(R.string.no_conflicts_update_message));
+                                            break;
+                                        case SYNCED:
+                                            setNoConflictMessage(getString(R.string.no_conflicts_synced_message));
+                                            break;
+                                        case WARNING:
+                                        case ERROR:
+                                            setProgramConflictMessage(state);
+                                            break;
+                                        default:
+                                            break;
+                                    }
+                                },
+                                error -> dismiss()
+                        ));
 
     }
 
@@ -589,7 +591,7 @@ public class SyncStatusDialog extends BottomSheetDialogFragment {
     @Override
     public void onDismiss(@NonNull DialogInterface dialog) {
         compositeDisposable.clear();
-        processor.onNext(true);
+        processor.onNext(syncing);
         super.onDismiss(dialog);
     }
 
@@ -599,7 +601,7 @@ public class SyncStatusDialog extends BottomSheetDialogFragment {
         smsSender = d2.smsModule().smsSubmitCase();
         statesList = new ArrayList<>();
         states = new MutableLiveData<>();
-        states.observe(getActivity(), states1 -> stateChanged(states1));
+        states.observe(getActivity(), this::stateChanged);
 
         reportState(SmsSendingService.State.STARTED, 0, 0);
         Single<Integer> convertTask;
@@ -660,6 +662,7 @@ public class SyncStatusDialog extends BottomSheetDialogFragment {
             case WAITING_RESULT:
             case RESULT_CONFIRMED:
             case SENT:
+                syncing = true;
                 break;
             case ITEM_NOT_READY:
             case COUNT_NOT_ACCEPTED:
@@ -744,6 +747,7 @@ public class SyncStatusDialog extends BottomSheetDialogFragment {
     }
 
     private void syncGranular() {
+        syncing = true;
         OneTimeWorkRequest.Builder syncGranularEventBuilder = new OneTimeWorkRequest.Builder(SyncGranularRxWorker.class);
         syncGranularEventBuilder.setConstraints(new Constraints.Builder()
                 .setRequiredNetworkType(NetworkType.CONNECTED)
