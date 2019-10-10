@@ -1,6 +1,5 @@
 package org.dhis2.usescases.login
 
-import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.view.View
@@ -17,10 +16,8 @@ import org.dhis2.data.server.UserManager
 import org.dhis2.usescases.main.MainActivity
 import org.dhis2.usescases.qrScanner.QRActivity
 import org.dhis2.utils.Constants.*
+import org.dhis2.utils.analytics.*
 import org.dhis2.utils.analytics.ACCOUNT_RECOVERY
-import org.dhis2.utils.analytics.CLICK
-import org.dhis2.utils.analytics.LOGIN
-import org.dhis2.utils.analytics.SERVER_QR_SCANNER
 import org.hisp.dhis.android.core.d2manager.D2Manager
 import org.hisp.dhis.android.core.maintenance.D2Error
 import org.hisp.dhis.android.core.maintenance.D2ErrorCode
@@ -31,7 +28,8 @@ import timber.log.Timber
 class LoginPresenter(private val view: LoginContracts.View,
                      private val preferenceProvider: PreferenceProvider,
                      private val schedulers: SchedulerProvider,
-                     private val goldfinger: RxGoldfinger) {
+                     private val goldfinger: RxGoldfinger,
+                     private val analyticsHelper: AnalyticsHelper) {
 
     private var userManager: UserManager? = null
     var disposable: CompositeDisposable = CompositeDisposable()
@@ -40,29 +38,26 @@ class LoginPresenter(private val view: LoginContracts.View,
 
     fun init(userManager: UserManager?) {
         this.userManager = userManager
-
-        userManager?.let { userManager ->
-            disposable.add(userManager.isUserLoggedIn
+        this.userManager?.let {
+            disposable.add(it.isUserLoggedIn
                     .subscribeOn(schedulers.io())
                     .observeOn(schedulers.ui())
                     .subscribe({ isUserLoggedIn ->
-                        if (isUserLoggedIn && !preferenceProvider.getBoolean("SessionLocked", false)) {
+                        if (isUserLoggedIn && !preferenceProvider.getBoolean(SESIONLOCKED, false)) {
                             view.startActivity(MainActivity::class.java, null, true, true, null)
-                        } else if (preferenceProvider.getBoolean("SessionLocked", false)) {
+                        } else if (preferenceProvider.getBoolean(SESIONLOCKED, false)) {
                             view.showUnlockButton()
                         }
 
-                    }, { Timber.e(it) }))
-
-
+                    }, { exception-> Timber.e(exception) }))
         } ?: view.setUrl(view.context.getString(R.string.login_https))
     }
 
     fun checkServerInfoAndShowBiometricButton(){
-        userManager?.let {
+        userManager?.let { userManager ->
             disposable.add(
-                    Observable.just(if (it.d2.systemInfoModule().systemInfo.blockingGet() != null)
-                        it.d2.systemInfoModule().systemInfo.blockingGet()
+                    Observable.just(if (userManager.d2.systemInfoModule().systemInfo.blockingGet() != null)
+                        userManager.d2.systemInfoModule().systemInfo.blockingGet()
                     else
                         SystemInfo.builder().build())
                             .subscribeOn(schedulers.io())
@@ -70,9 +65,10 @@ class LoginPresenter(private val view: LoginContracts.View,
                             .subscribe(
                                     { systemInfo ->
                                         if (systemInfo.contextPath() != null) {
-                                            val prefs = view.abstractActivity.getSharedPreferences(SHARE_PREFS, Context.MODE_PRIVATE)
                                             view.setUrl(systemInfo.contextPath() ?: "")
-                                            view.setUser(prefs.getString(USER, "")!!)
+                                            preferenceProvider.getString(USER, "")?.also {
+                                                view.setUser(it)
+                                            }
                                         } else
                                             view.setUrl(view.context.getString(R.string.login_https))
                                     },
@@ -100,7 +96,7 @@ class LoginPresenter(private val view: LoginContracts.View,
 
     fun onButtonClick() {
         view.hideKeyboard()
-        view.analyticsHelper().setEvent(LOGIN, CLICK, LOGIN)
+        analyticsHelper.setEvent(LOGIN, CLICK, LOGIN)
         if (!preferenceProvider.getBoolean(USER_ASKED_CRASHLYTICS, false)){
             view.showCrashlyticsDialog()
         } else {
@@ -114,14 +110,15 @@ class LoginPresenter(private val view: LoginContracts.View,
                         .andThen(D2Manager.instantiateD2())
                         .map { (view.abstracContext.applicationContext as App).createServerComponent().userManager() }
                         .flatMapObservable { userManager ->
-                            val prefs = view.abstractActivity.getSharedPreferences(SHARE_PREFS, Context.MODE_PRIVATE)
-                            prefs.edit().putString(SERVER, "$serverUrl/api").apply()
+                            preferenceProvider.setValue(SERVER, "$serverUrl/api")
                             this.userManager = userManager
                             userManager.logIn(userName.trim { it <= ' ' }, pass).map<Response<Any>> { user ->
                                 run {
-                                    prefs.edit().putString(USER, user.userCredentials()?.username()).apply()
-                                    prefs.edit().putBoolean("SessionLocked", false).apply()
-                                    prefs.edit().putString("pin", null).apply()
+                                    with(preferenceProvider) {
+                                        setValue(USER, user.userCredentials()?.username())
+                                        setValue(SESIONLOCKED, false)
+                                        setValue(PIN, null)
+                                    }
                                     Response.success<Any>(null)
                                 }
                             }
@@ -133,16 +130,14 @@ class LoginPresenter(private val view: LoginContracts.View,
     }
 
     fun onQRClick() {
-        view.analyticsHelper().setEvent(SERVER_QR_SCANNER, CLICK, SERVER_QR_SCANNER)
+        analyticsHelper.setEvent(SERVER_QR_SCANNER, CLICK, SERVER_QR_SCANNER)
         val intent = Intent(view.context, QRActivity::class.java)
         view.abstractActivity.startActivityForResult(intent, RQ_QR_SCANNER)
     }
 
     fun unlockSession(pin: String) {
-        val prefs = view.abstracContext.getSharedPreferences(SHARE_PREFS,
-                Context.MODE_PRIVATE)
-        if (prefs.getString("pin", "") == pin) {
-            prefs.edit().putBoolean("SessionLocked", false).apply()
+        if (preferenceProvider.getString(PIN, "") == pin) {
+            preferenceProvider.setValue(SESIONLOCKED, false)
             view.startActivity(MainActivity::class.java, null, true, true, null)
         }
     }
@@ -158,7 +153,7 @@ class LoginPresenter(private val view: LoginContracts.View,
                     .observeOn(schedulers.ui())
                     .subscribe({
                                 val prefs = view.abstracContext.sharedPreferences
-                                prefs.edit().putBoolean("SessionLocked", false).apply()
+                                prefs.edit().putBoolean(SESIONLOCKED, false).apply()
                                 view.handleLogout()
                             },
                             { view.handleLogout() }
@@ -170,8 +165,7 @@ class LoginPresenter(private val view: LoginContracts.View,
     private fun handleResponse(userResponse: Response<*>) {
         view.showLoginProgress(false)
         if (userResponse.isSuccessful) {
-            view.sharedPreferences.edit().putBoolean(Preference.INITIAL_SYNC_DONE.name, false).apply()
-            (view.context.applicationContext as App).createUserComponent()
+            preferenceProvider.setValue(Preference.INITIAL_SYNC_DONE.name, false)
             view.saveUsersData()
         }
     }
@@ -180,8 +174,8 @@ class LoginPresenter(private val view: LoginContracts.View,
         Timber.e(throwable)
         if (throwable is D2Error && throwable.errorCode() == D2ErrorCode.ALREADY_AUTHENTICATED) {
             preferenceProvider.apply {
-                setValue("SessionLocked", false)
-                setValue("pin", null)
+                setValue(SESIONLOCKED, false)
+                setValue(PIN, null)
             }
             view.alreadyAuthenticated()
         } else {
@@ -212,18 +206,20 @@ class LoginPresenter(private val view: LoginContracts.View,
 
                         }
                         .observeOn(schedulers.ui())
-                        .subscribe(
-                                {
-                                    if (it.isFailure)
+                        .subscribe({
+                                    if (it.isFailure){
                                         view.showEmptyCredentialsMessage()
-                                    else if (it.isSuccess && it.getOrNull()?.type() == Goldfinger.Type.SUCCESS)
+                                    }
+                                    else if (it.isSuccess && it.getOrNull()?.type() == Goldfinger.Type.SUCCESS){
                                         view.showCredentialsData(Goldfinger.Type.SUCCESS,
                                                 preferenceProvider.getString(SECURE_SERVER_URL)!!,
                                                 preferenceProvider.getString(SECURE_USER_NAME)!!,
                                                 preferenceProvider.getString(SECURE_PASS)!!)
-                                    else
+                                    }
+                                    else {
                                         view.showCredentialsData(Goldfinger.Type.ERROR,
                                                 it.getOrNull()?.message()!!)
+                                    }
                                 },
                                 {
                                     view.displayMessage("AUTH ERROR")
@@ -232,11 +228,16 @@ class LoginPresenter(private val view: LoginContracts.View,
     }
 
     fun onAccountRecovery() {
-        view.analyticsHelper().setEvent(ACCOUNT_RECOVERY, CLICK, ACCOUNT_RECOVERY)
+        analyticsHelper.setEvent(ACCOUNT_RECOVERY, CLICK, ACCOUNT_RECOVERY)
         view.openAccountRecovery()
     }
 
     fun onUrlInfoClick(v: View) {
         view.displayAlertDialog(R.string.login_server_info_title, R.string.login_server_info_message, null, R.string.action_accept)
+    }
+
+    companion object {
+        const val SESIONLOCKED = "SessionLocked"
+        const val PIN = "pin"
     }
 }

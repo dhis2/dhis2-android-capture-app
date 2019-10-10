@@ -345,6 +345,7 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
     }
 
     override fun saveUsersData() {
+        (context.applicationContext as App).createUserComponent()
         urls?.let {
             if (!it.contains(binding.serverUrlEdit.text.toString())) {
                 it.add(binding.serverUrlEdit.text.toString())
