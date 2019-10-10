@@ -8,13 +8,11 @@ import org.dhis2.data.tuples.Pair;
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableModel;
 import org.dhis2.utils.DateUtils;
 import org.hisp.dhis.android.core.D2;
-import org.hisp.dhis.android.core.arch.helpers.UidsHelper;
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope;
 import org.hisp.dhis.android.core.category.Category;
 import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryOption;
 import org.hisp.dhis.android.core.category.CategoryOptionCombo;
-import org.hisp.dhis.android.core.common.BaseDeletableDataModel;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.dataapproval.DataApproval;
 import org.hisp.dhis.android.core.dataapproval.DataApprovalState;
@@ -26,6 +24,7 @@ import org.hisp.dhis.android.core.dataset.DataSetCompleteRegistration;
 import org.hisp.dhis.android.core.dataset.DataSetElement;
 import org.hisp.dhis.android.core.dataset.Section;
 import org.hisp.dhis.android.core.datavalue.DataValueObjectRepository;
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.period.Period;
 
 import java.util.ArrayList;
@@ -381,5 +380,45 @@ public class DataValueRepositoryImpl implements DataValueRepository {
     @Override
     public CategoryOption getCatOptionFromUid(String catOption) {
         return d2.categoryModule().categoryOptions.uid(catOption).blockingGet();
+    }
+
+    @Override
+    public Flowable<Boolean> canWriteAny() {
+        return d2.dataSetModule().dataSets.uid(dataSetUid).get().toFlowable()
+                .flatMap(dataSet -> {
+                    if (dataSet.access().data().write())
+                        return d2.categoryModule().categoryOptionCombos.withCategoryOptions()
+                                .byCategoryComboUid().eq(dataSet.categoryCombo().uid()).get().toFlowable()
+                                .map(categoryOptionCombos -> {
+                                    boolean canWriteCatOption = false;
+                                    for (CategoryOptionCombo categoryOptionCombo : categoryOptionCombos) {
+                                        for (CategoryOption categoryOption : categoryOptionCombo.categoryOptions())
+                                            if (categoryOption.access().data().write()) {
+                                                canWriteCatOption = true;
+                                                break;
+                                            }
+                                    }
+                                    boolean canWriteOrgUnit = false;
+
+                                    if (canWriteCatOption) {
+                                        List<OrganisationUnit> organisationUnits = d2.organisationUnitModule().organisationUnits.withDataSets()
+                                                .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE).blockingGet();
+
+                                        for (OrganisationUnit organisationUnit : organisationUnits)
+                                            for (DataSet dSet : organisationUnit.dataSets())
+                                                if (dSet.uid().equals(dataSetUid)) {
+                                                    canWriteOrgUnit = true;
+                                                    break;
+                                                }
+
+                                    }
+
+                                    return canWriteCatOption && canWriteOrgUnit;
+
+                                });
+                    else
+                        return Flowable.just(false);
+                });
+
     }
 }
