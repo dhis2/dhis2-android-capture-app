@@ -41,13 +41,8 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
     private ProgramEventDetailContract.View view;
     protected String programId;
     private CompositeDisposable compositeDisposable;
-    private FlowableProcessor<Trio<List<DatePeriod>, List<String>, List<CategoryOptionCombo>>> programQueries;
 
     //Search fields
-    private List<DatePeriod> currentDateFilter;
-    private List<String> currentOrgUnitFilter;
-    private List<CategoryOptionCombo> currentCatOptionCombo;
-    private FlowableProcessor<Boolean> processorDismissDialog;
     private FlowableProcessor<Pair<String, LatLng>> eventInfoProcessor;
     private FlowableProcessor<Unit> mapProcessor;
 
@@ -55,7 +50,6 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
             @NonNull String programUid, @NonNull ProgramEventDetailRepository programEventDetailRepository) {
         this.eventRepository = programEventDetailRepository;
         this.programId = programUid;
-        this.currentCatOptionCombo = new ArrayList<>();
         eventInfoProcessor = PublishProcessor.create();
         mapProcessor = PublishProcessor.create();
     }
@@ -64,11 +58,6 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
     public void init(ProgramEventDetailContract.View view) {
         this.view = view;
         compositeDisposable = new CompositeDisposable();
-        this.currentOrgUnitFilter = new ArrayList<>();
-        this.currentDateFilter = new ArrayList<>();
-        programQueries = PublishProcessor.create();
-
-        this.processorDismissDialog = PublishProcessor.create();
 
         compositeDisposable.add(eventRepository.featureType()
                 .subscribeOn(Schedulers.io())
@@ -178,13 +167,6 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
                         )
         );
 
-        compositeDisposable.add(processorDismissDialog
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        bool -> init(view),
-                        Timber::d));
-
         compositeDisposable.add(
                 FilterManager.getInstance().asFlowable()
                         .doOnNext(queryData -> {
@@ -215,7 +197,17 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
 
     @Override
     public void onSyncIconClick(String uid) {
-        view.showSyncDialog(uid, SyncStatusDialog.ConflictType.EVENT, processorDismissDialog);
+        view.showSyncDialog(
+                new SyncStatusDialog.Builder()
+                .setConflictType(SyncStatusDialog.ConflictType.EVENT)
+                .setUid(uid)
+                .onDismissListener(hasChanged->{
+                    if(hasChanged)
+                        FilterManager.getInstance().publishData();
+
+                })
+                .build()
+        );
     }
 
     @Override
