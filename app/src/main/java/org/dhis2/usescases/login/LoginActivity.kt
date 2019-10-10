@@ -33,6 +33,7 @@ import org.dhis2.data.tuples.Trio
 import org.dhis2.databinding.ActivityLoginBinding
 import org.dhis2.usescases.general.ActivityGlobalAbstract
 import org.dhis2.usescases.main.MainActivity
+import org.dhis2.usescases.qrScanner.QRActivity
 import org.dhis2.usescases.sync.SyncActivity
 import org.dhis2.utils.*
 import org.dhis2.utils.Constants.ACCOUNT_RECOVERY
@@ -51,18 +52,8 @@ import javax.inject.Inject
 
 class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
 
-    override fun showFingerprintDialog() {
-        fingerPrintDialog.show()
-    }
-
-    override fun hideFingerprintDialog() {
-        fingerPrintDialog.hide()
-    }
-
     private lateinit var binding: ActivityLoginBinding
-
     private lateinit var loginViewModel: LoginViewModel
-
     private lateinit var fingerPrintDialog: Dialog
 
     @Inject
@@ -434,5 +425,19 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
                 .setMessage(descriptionResource)
                 .setPositiveButton(positiveResource, null)
                 .show()
+    }
+
+    override fun navigateToQRActivity() {
+        Intent(context, QRActivity::class.java).apply {
+            startActivityForResult(this, RQ_QR_SCANNER)
+        }
+    }
+
+    override fun showFingerprintDialog() {
+        fingerPrintDialog.show()
+    }
+
+    override fun hideFingerprintDialog() {
+        fingerPrintDialog.hide()
     }
 }

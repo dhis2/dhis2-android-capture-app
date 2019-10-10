@@ -1,10 +1,7 @@
 package org.dhis2.usecases
 
 import co.infinum.goldfinger.rx.RxGoldfinger
-import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.verify
-import com.nhaarman.mockitokotlin2.whenever
+import com.nhaarman.mockitokotlin2.*
 import io.reactivex.Observable
 import junit.framework.Assert.assertTrue
 import org.dhis2.data.prefs.PreferenceProvider
@@ -14,6 +11,11 @@ import org.dhis2.usescases.login.LoginContracts
 import org.dhis2.usescases.login.LoginPresenter
 import org.dhis2.usescases.main.MainActivity
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
+import org.dhis2.utils.Constants
+import org.dhis2.utils.analytics.AnalyticsHelper
+import org.dhis2.utils.analytics.CLICK
+import org.dhis2.utils.analytics.LOGIN
+import org.dhis2.utils.analytics.SERVER_QR_SCANNER
 import org.junit.Before
 import org.junit.Test
 
@@ -26,16 +28,11 @@ class LoginPresenterTest {
     private val goldfinger: RxGoldfinger = mock()
     private val view: LoginContracts.View = mock()
     private val userManager: UserManager = mock()
-
-    /*  private val userManager: UserManager = mock {
-          on { d2 } doReturn mock()
-          on { d2.systemInfoModule().systemInfo } doReturn mock()
-          on { d2.systemInfoModule().systemInfo.blockingGet() } doReturn SystemInfo.builder().contextPath("any").build()
-      } */
+    private val analyticsHelper: AnalyticsHelper = mock()
 
     @Before
     fun setup() {
-        loginPresenter = LoginPresenter(view,preferenceProvider, schedulers, goldfinger)
+        loginPresenter = LoginPresenter(view,preferenceProvider, schedulers, goldfinger, analyticsHelper)
     }
 
     @Test
@@ -49,7 +46,7 @@ class LoginPresenterTest {
     }
 
     @Test
-    fun `Should show unlock button`(){
+    fun `Should show unlock button when login is reached`(){
         whenever(userManager.isUserLoggedIn) doReturn Observable.just(true)
         whenever(preferenceProvider.getBoolean("SessionLocked", false)) doReturn true
 
@@ -59,16 +56,51 @@ class LoginPresenterTest {
     }
 
     @Test
-    fun `Should show loading progress when continue is clicked`(){
+    fun `Should show fabric dialog when continue is clicked and user has not been asked before`(){
+        whenever(preferenceProvider.getBoolean(Constants.USER_ASKED_CRASHLYTICS, false)) doReturn false
         loginPresenter.onButtonClick()
 
         verify(view).hideKeyboard()
+        verify(analyticsHelper).setEvent(LOGIN, CLICK, LOGIN)
+        verify(view).showCrashlyticsDialog()
     }
 
     @Test
-    fun `Should show fabric dialog when continue is clicked and has not been asked before`(){
-        //  loginPresenter.onButtonClick()
+    fun `Should show progress dialog when user click on continue`(){
+        whenever(preferenceProvider.getBoolean(Constants.USER_ASKED_CRASHLYTICS, false)) doReturn true
+        loginPresenter.onButtonClick()
 
+        verify(view).hideKeyboard()
+        verify(analyticsHelper).setEvent(LOGIN, CLICK, LOGIN)
+        verify(view).showLoginProgress(true)
+    }
+
+    @Test
+    fun `Should navigate to QR Activity`(){
+        loginPresenter.onQRClick()
+
+        verify(analyticsHelper).setEvent(SERVER_QR_SCANNER, CLICK, SERVER_QR_SCANNER)
+        verify(view).navigateToQRActivity()
+    }
+
+    @Test
+    fun `Should unlock session`(){
+        whenever((preferenceProvider.getString(LoginPresenter.PIN, ""))) doReturn "123"
+
+        loginPresenter.unlockSession("123")
+
+        verify(preferenceProvider).setValue(LoginPresenter.SESIONLOCKED, false)
+        verify(view).startActivity(MainActivity::class.java, null, true, true, null)
+    }
+
+    @Test
+    fun `Should not unlock session`(){
+        whenever((preferenceProvider.getString(LoginPresenter.PIN, ""))) doReturn "333"
+
+        loginPresenter.unlockSession("123")
+
+        verify(preferenceProvider, times(0)).setValue(LoginPresenter.SESIONLOCKED, false)
+        verify(view, times(0)).startActivity(MainActivity::class.java, null, true, true, null)
     }
 
     @Test

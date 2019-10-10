@@ -1,6 +1,5 @@
 package org.dhis2.usescases.login
 
-import android.content.Intent
 import android.os.Build
 import android.view.View
 import co.infinum.goldfinger.Goldfinger
@@ -14,7 +13,6 @@ import org.dhis2.data.prefs.PreferenceProvider
 import org.dhis2.data.schedulers.SchedulerProvider
 import org.dhis2.data.server.UserManager
 import org.dhis2.usescases.main.MainActivity
-import org.dhis2.usescases.qrScanner.QRActivity
 import org.dhis2.utils.Constants.*
 import org.dhis2.utils.analytics.*
 import org.dhis2.utils.analytics.ACCOUNT_RECOVERY
@@ -131,8 +129,7 @@ class LoginPresenter(private val view: LoginContracts.View,
 
     fun onQRClick() {
         analyticsHelper.setEvent(SERVER_QR_SCANNER, CLICK, SERVER_QR_SCANNER)
-        val intent = Intent(view.context, QRActivity::class.java)
-        view.abstractActivity.startActivityForResult(intent, RQ_QR_SCANNER)
+        view.navigateToQRActivity()
     }
 
     fun unlockSession(pin: String) {

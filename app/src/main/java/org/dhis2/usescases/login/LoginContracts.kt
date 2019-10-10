@@ -41,6 +41,8 @@ class LoginContracts {
 
         fun hideFingerprintDialog()
 
+        fun navigateToQRActivity()
+
         @UiThread
         fun renderError(throwable: Throwable)
 
