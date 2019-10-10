@@ -13,8 +13,7 @@ import org.dhis2.data.server.UserManager
 import org.dhis2.usescases.login.LoginContracts
 import org.dhis2.usescases.login.LoginPresenter
 import org.dhis2.usescases.main.MainActivity
-import org.dhis2.utils.scheduler.TrampolineSchedulerProvider
-import org.hisp.dhis.android.core.systeminfo.SystemInfo
+import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.junit.Before
 import org.junit.Test
 
@@ -36,7 +35,7 @@ class LoginPresenterTest {
 
     @Before
     fun setup() {
-        loginPresenter = LoginPresenter(preferenceProvider, schedulers, goldfinger)
+        loginPresenter = LoginPresenter(view,preferenceProvider, schedulers, goldfinger)
     }
 
     @Test
@@ -44,7 +43,7 @@ class LoginPresenterTest {
         whenever(userManager.isUserLoggedIn) doReturn Observable.just(true)
         whenever(preferenceProvider.getBoolean("SessionLocked", false)) doReturn false
 
-        loginPresenter.init(view, userManager)
+        loginPresenter.init(userManager)
 
         verify(view).startActivity(MainActivity::class.java, null, true, true, null)
     }
@@ -54,7 +53,7 @@ class LoginPresenterTest {
         whenever(userManager.isUserLoggedIn) doReturn Observable.just(true)
         whenever(preferenceProvider.getBoolean("SessionLocked", false)) doReturn true
 
-        loginPresenter.init(view, userManager)
+        loginPresenter.init(userManager)
 
         verify(view).showUnlockButton()
     }
@@ -89,13 +88,17 @@ class LoginPresenterTest {
 
     @Test
     fun `Should open account recovery when user does not remember it`(){
-    //    loginPresenter.onAccountRecovery()
-        //verify(view)
+    //    whenever(view.analyticsHelper())  doReturn
+
+        loginPresenter.onAccountRecovery()
+
+        verify(view).openAccountRecovery()
     }
 
     @Test
     fun `Should stop reading fingerprint`(){
         loginPresenter.stopReadingFingerprint()
+
         verify(goldfinger).cancel()
     }
 

@@ -14,14 +14,14 @@ import org.dhis2.data.server.UserManager
 
 @Module
 @PerActivity
-object LoginModule {
+class LoginModule(private val view: LoginContracts.View) {
 
-    @JvmStatic
+
     @Provides
     @PerActivity
     fun providePresenter(preferenceProvider: PreferenceProvider,
                          schedulerProvider : SchedulerProvider,
                          rxGoldfinger: RxGoldfinger): LoginPresenter {
-        return LoginPresenter(preferenceProvider,schedulerProvider, rxGoldfinger)
+        return LoginPresenter(view ,preferenceProvider,schedulerProvider, rxGoldfinger)
     }
 }

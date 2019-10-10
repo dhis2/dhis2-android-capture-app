@@ -28,19 +28,18 @@ import org.hisp.dhis.android.core.systeminfo.SystemInfo
 import retrofit2.Response
 import timber.log.Timber
 
-class LoginPresenter(private val preferenceProvider: PreferenceProvider,
-        private val schedulers: SchedulerProvider,
-        private val goldfinger: RxGoldfinger) {
+class LoginPresenter(private val view: LoginContracts.View,
+                     private val preferenceProvider: PreferenceProvider,
+                     private val schedulers: SchedulerProvider,
+                     private val goldfinger: RxGoldfinger) {
 
-    private lateinit var view: LoginContracts.View
     private var userManager: UserManager? = null
     var disposable: CompositeDisposable = CompositeDisposable()
 
     private var canHandleBiometrics: Boolean? = null
 
-    fun init(view: LoginContracts.View, userManager: UserManager?) {
+    fun init(userManager: UserManager?) {
         this.userManager = userManager
-        this.view = view
 
         userManager?.let { userManager ->
             disposable.add(userManager.isUserLoggedIn

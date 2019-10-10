@@ -1,4 +1,4 @@
-package org.dhis2.utils.scheduler
+package org.dhis2.data.schedulers
 
 import io.reactivex.schedulers.TestScheduler
 import org.dhis2.data.schedulers.SchedulerProvider

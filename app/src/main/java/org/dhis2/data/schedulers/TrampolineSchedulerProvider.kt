@@ -1,8 +1,6 @@
-package org.dhis2.utils.scheduler
+package org.dhis2.data.schedulers
 
 import io.reactivex.schedulers.Schedulers
-import org.dhis2.data.schedulers.SchedulerProvider
-
 
 class TrampolineSchedulerProvider: SchedulerProvider {
     override fun computation() = Schedulers.trampoline()

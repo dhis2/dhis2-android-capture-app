@@ -31,6 +31,7 @@ import org.dhis2.data.server.UserManager;
 import org.dhis2.data.user.UserComponent;
 import org.dhis2.data.user.UserModule;
 import org.dhis2.usescases.login.LoginComponent;
+import org.dhis2.usescases.login.LoginContracts;
 import org.dhis2.usescases.login.LoginModule;
 import org.dhis2.usescases.teiDashboard.TeiDashboardComponent;
 import org.dhis2.usescases.teiDashboard.TeiDashboardModule;
@@ -200,8 +201,8 @@ public class App extends MultiDexApplication implements Components {
 
     @NonNull
     @Override
-    public LoginComponent createLoginComponent() {
-        return (loginComponent = appComponent.plus(LoginModule.INSTANCE));
+    public LoginComponent createLoginComponent(LoginContracts.View view) {
+        return (loginComponent = appComponent.plus(new LoginModule(view)));
     }
 
     @Nullable

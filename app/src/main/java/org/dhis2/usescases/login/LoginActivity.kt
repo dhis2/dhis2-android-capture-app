@@ -83,7 +83,7 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
         var loginComponent = (applicationContext as App).loginComponent()
         if (loginComponent == null) {
             // in case if we don't have cached presenter
-            loginComponent = (applicationContext as App).createLoginComponent()
+            loginComponent = (applicationContext as App).createLoginComponent(this)
         }
         val serverComponent = (applicationContext as App).serverComponent
         serverComponent?.let {
@@ -191,11 +191,10 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
         }
     }
 
-
     override fun onResume() {
         super.onResume()
         presenter.apply {
-            init(this@LoginActivity, userManager)
+            init(userManager)
             checkServerInfoAndShowBiometricButton()
         }
         NetworkUtils.isGooglePlayServicesAvailable(this)
