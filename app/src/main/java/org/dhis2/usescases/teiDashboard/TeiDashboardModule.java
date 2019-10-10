@@ -10,6 +10,7 @@ import org.dhis2.data.forms.FormRepository;
 import org.dhis2.data.forms.RulesRepository;
 import org.dhis2.data.forms.dataentry.EnrollmentRuleEngineRepository;
 import org.dhis2.data.forms.dataentry.RuleEngineRepository;
+import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.utils.CodeGenerator;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.enrollment.EnrollmentCollectionRepository;
@@ -43,8 +44,8 @@ public class TeiDashboardModule {
 
     @Provides
     @PerActivity
-    TeiDashboardContracts.Presenter providePresenter(D2 d2, DashboardRepository dashboardRepository) {
-        return new TeiDashboardPresenter(d2, dashboardRepository);
+    TeiDashboardContracts.Presenter providePresenter(D2 d2, DashboardRepository dashboardRepository, SchedulerProvider schedulerProvider) {
+        return new TeiDashboardPresenter(d2, dashboardRepository, schedulerProvider);
     }
 
     @Provides

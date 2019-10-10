@@ -2,36 +2,33 @@ package org.dhis2.usescases.datasets.datasetInitial;
 
 import android.os.Bundle;
 
+import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableActivity;
 import org.dhis2.utils.DateUtils;
-import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.period.PeriodType;
 
 import java.util.List;
 import java.util.Locale;
 
-import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
-import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
 public class DataSetInitialPresenter implements DataSetInitialContract.Presenter {
 
+    private final SchedulerProvider schedulerProvider;
     private CompositeDisposable compositeDisposable;
     private DataSetInitialRepository dataSetInitialRepository;
     private DataSetInitialContract.View view;
     private String catCombo;
-    private D2 d2;
     private Integer openFuturePeriods = 0;
     private List<OrganisationUnit> orgUnits;
 
-    public DataSetInitialPresenter(DataSetInitialRepository dataSetInitialRepository, D2 d2) {
+    public DataSetInitialPresenter(DataSetInitialRepository dataSetInitialRepository, SchedulerProvider schedulerProvider) {
         this.dataSetInitialRepository = dataSetInitialRepository;
-        this.d2 = d2;
+        this.schedulerProvider = schedulerProvider;
     }
 
 
@@ -42,8 +39,8 @@ public class DataSetInitialPresenter implements DataSetInitialContract.Presenter
 
         compositeDisposable.add(
                 dataSetInitialRepository.orgUnits()
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
                         .subscribe(
                                 data -> {
                                     this.orgUnits = data;
@@ -56,8 +53,8 @@ public class DataSetInitialPresenter implements DataSetInitialContract.Presenter
 
         compositeDisposable.add(
                 dataSetInitialRepository.dataSet()
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
                         .subscribe(
                                 dataSetInitialModel -> {
                                     catCombo = dataSetInitialModel.categoryCombo();
@@ -83,8 +80,8 @@ public class DataSetInitialPresenter implements DataSetInitialContract.Presenter
     public void onReportPeriodClick(PeriodType periodType) {
         compositeDisposable.add(
                 dataSetInitialRepository.getDataInputPeriod()
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
                         .subscribe(data -> {
                                     view.showPeriodSelector(periodType, data, openFuturePeriods);
                                 },
@@ -96,8 +93,8 @@ public class DataSetInitialPresenter implements DataSetInitialContract.Presenter
     public void onCatOptionClick(String catOptionUid) {
         compositeDisposable.add(
                 dataSetInitialRepository.catCombo(catOptionUid)
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
                         .subscribe(
                                 data -> view.showCatComboSelector(catOptionUid, data),
                                 Timber::d
@@ -113,8 +110,8 @@ public class DataSetInitialPresenter implements DataSetInitialContract.Presenter
                         dataSetInitialRepository.getPeriodId(PeriodType.valueOf(view.getPeriodType()), view.getSelectedPeriod()),
                         Pair::create
                 )
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
                         .subscribe(response -> {
                                     Bundle bundle = DataSetTableActivity.getBundle(
                                             view.getDataSetUid(),

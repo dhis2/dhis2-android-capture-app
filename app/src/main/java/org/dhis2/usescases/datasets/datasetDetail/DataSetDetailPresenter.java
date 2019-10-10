@@ -4,6 +4,7 @@ import android.os.Bundle;
 
 import androidx.annotation.IntDef;
 
+import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableActivity;
 import org.dhis2.utils.granular_sync.SyncStatusDialog;
 import org.dhis2.utils.Constants;
@@ -14,15 +15,14 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.HashMap;
 import java.util.Map;
 
-import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.processors.FlowableProcessor;
 import io.reactivex.processors.PublishProcessor;
-import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
 public class DataSetDetailPresenter implements DataSetDetailContract.Presenter {
 
+    private SchedulerProvider schedulerProvider;
     private DataSetDetailRepository dataSetDetailRepository;
     private DataSetDetailContract.View view;
     private CompositeDisposable compositeDisposable;
@@ -37,8 +37,9 @@ public class DataSetDetailPresenter implements DataSetDetailContract.Presenter {
         int DATE_RANGES = 32;
     }
 
-    public DataSetDetailPresenter(DataSetDetailRepository dataSetDetailRepository) {
+    public DataSetDetailPresenter(DataSetDetailRepository dataSetDetailRepository, SchedulerProvider schedulerProvider) {
         this.dataSetDetailRepository = dataSetDetailRepository;
+        this.schedulerProvider = schedulerProvider;
         compositeDisposable = new CompositeDisposable();
         mapPeriodAvailable = new HashMap<>();
     }
@@ -54,8 +55,8 @@ public class DataSetDetailPresenter implements DataSetDetailContract.Presenter {
 
         compositeDisposable.add(
                 FilterManager.getInstance().asFlowable()
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
                         .subscribe(
                                 filterManager -> view.updateFilters(filterManager.getTotalFilters()),
                                 Timber::e
@@ -64,8 +65,8 @@ public class DataSetDetailPresenter implements DataSetDetailContract.Presenter {
 
         compositeDisposable.add(
                 FilterManager.getInstance().getPeriodRequest()
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
                         .subscribe(
                                 periodRequest -> view.showPeriodRequest(periodRequest),
                                 Timber::e
@@ -73,8 +74,8 @@ public class DataSetDetailPresenter implements DataSetDetailContract.Presenter {
 
         compositeDisposable.add(
                 dataSetDetailRepository.catOptionCombos()
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
                         .subscribe(view::setCatOptionComboFilter,
                                 Timber::e
                         )
@@ -82,8 +83,8 @@ public class DataSetDetailPresenter implements DataSetDetailContract.Presenter {
 
         compositeDisposable.add(
                 dataSetDetailRepository.canWriteAny()
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
                         .subscribe(
                                 view::setWritePermission,
                                 Timber::e
@@ -92,8 +93,8 @@ public class DataSetDetailPresenter implements DataSetDetailContract.Presenter {
 
     private void manageProcessorDismissDialog(){
         compositeDisposable.add(processor
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(schedulerProvider.io())
+                .observeOn(schedulerProvider.ui())
                 .subscribe(bool -> setDataSet(true), Timber::d));
     }
 
@@ -106,8 +107,8 @@ public class DataSetDetailPresenter implements DataSetDetailContract.Presenter {
                                 filterManager.getPeriodFilters(),
                                 filterManager.getStateFilters(),
                                 filterManager.getCatOptComboFilters()))
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
                         .subscribe(
                                 dataSetDetailModels -> {
                                     if(isInit)
@@ -157,8 +158,8 @@ public class DataSetDetailPresenter implements DataSetDetailContract.Presenter {
     public void getOrgUnits() {
         compositeDisposable.add(
                 FilterManager.getInstance().ouTreeFlowable()
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
                         .subscribe(
                                 open -> view.openOrgUnitTreeSelector(),
                                 Timber::e

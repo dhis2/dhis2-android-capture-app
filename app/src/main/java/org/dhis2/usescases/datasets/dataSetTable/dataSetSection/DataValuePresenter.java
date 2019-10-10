@@ -6,13 +6,13 @@ import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.tablefields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.tablefields.FieldViewModelFactoryImpl;
 import org.dhis2.data.forms.dataentry.tablefields.RowAction;
+import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Sextet;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableModel;
 import org.dhis2.utils.DateUtils;
 import org.hisp.dhis.android.core.category.Category;
-import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryOption;
 import org.hisp.dhis.android.core.category.CategoryOptionCombo;
 import org.hisp.dhis.android.core.common.ValueType;
@@ -29,11 +29,9 @@ import java.util.List;
 import java.util.Map;
 
 import io.reactivex.Flowable;
-import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.processors.FlowableProcessor;
 import io.reactivex.processors.PublishProcessor;
-import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
 import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
@@ -41,11 +39,10 @@ import static org.dhis2.utils.analytics.AnalyticsConstants.COMPLETE_REOPEN;
 
 public class DataValuePresenter implements DataValueContract.Presenter {
 
+    private final SchedulerProvider schedulerProvider;
     private String orgUnitUid;
     private String periodTypeName;
     private String attributeOptionCombo;
-
-    private Trio<List<DataElement>, Map<String, List<List<Pair<CategoryOption, Category>>>>, List<CategoryCombo>> tableData;
 
     private DataValueRepository repository;
     private DataValueContract.View view;
@@ -55,7 +52,6 @@ public class DataValuePresenter implements DataValueContract.Presenter {
     private DataTableModel dataTableModel;
     private String periodId;
     private Period period;
-    private List<String> tablesNames;
 
     private List<List<List<FieldViewModel>>> tableCells;
     private List<DataInputPeriod> dataInputPeriodModel;
@@ -70,8 +66,9 @@ public class DataValuePresenter implements DataValueContract.Presenter {
     private List<List<CategoryOption>> transformCategories;
 
 
-    public DataValuePresenter(DataValueRepository repository) {
+    public DataValuePresenter(DataValueRepository repository, SchedulerProvider schedulerProvider) {
         this.repository = repository;
+        this.schedulerProvider = schedulerProvider;
     }
 
     @Override
@@ -89,8 +86,8 @@ public class DataValuePresenter implements DataValueContract.Presenter {
         this.sectionName = sectionName;
 
         compositeDisposable.add(repository.getDataSet()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(schedulerProvider.io())
+                .observeOn(schedulerProvider.ui())
                 .subscribe(dataSet -> {
                     this.dataSet = dataSet;
                     view.setDataSet(dataSet);
@@ -98,8 +95,8 @@ public class DataValuePresenter implements DataValueContract.Presenter {
         );
 
         compositeDisposable.add(repository.getSectionByDataSet(sectionName)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(schedulerProvider.io())
+                .observeOn(schedulerProvider.ui())
                 .subscribe(section -> {
                     this.section = section;
                     view.setSection(section);
@@ -114,8 +111,8 @@ public class DataValuePresenter implements DataValueContract.Presenter {
                         Trio::create
                 )
 
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
                         .subscribe(
                                 data -> {
                                     period = data.val0();
@@ -127,8 +124,8 @@ public class DataValuePresenter implements DataValueContract.Presenter {
         );
 
         compositeDisposable.add(repository.getCatCombo(sectionName).map(List::size)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(schedulerProvider.io())
+                .observeOn(schedulerProvider.ui())
                 .subscribe(view::updateTabLayout, Timber::e)
         );
 
@@ -143,8 +140,8 @@ public class DataValuePresenter implements DataValueContract.Presenter {
                         repository.getCompulsoryDataElements(),
                         Sextet::create
                 ).toObservable().blockingFirst())
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(schedulerProvider.io())
+                .observeOn(schedulerProvider.ui())
                 .subscribe(
                         data -> {
                             List<List<String>> options = new ArrayList<>();
@@ -168,8 +165,8 @@ public class DataValuePresenter implements DataValueContract.Presenter {
         );
         compositeDisposable.add(
                 repository.isCompleted(orgUnitUid, periodId, attributeOptionCombo)
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
                         .subscribe(
                                 data -> view.setCompleteReopenText(data),
                                 Timber::e
@@ -369,8 +366,8 @@ public class DataValuePresenter implements DataValueContract.Presenter {
                         && checkMandatoryField())
                     compositeDisposable.add(
                             repository.completeDataSet(orgUnitUid, periodId, attributeOptionCombo)
-                                    .subscribeOn(Schedulers.io())
-                                    .observeOn(AndroidSchedulers.mainThread())
+                                    .subscribeOn(schedulerProvider.io())
+                                    .observeOn(schedulerProvider.ui())
                                     .subscribe(completed -> {
                                         view.setCompleteReopenText(true);
                                         view.update(completed);
@@ -384,8 +381,8 @@ public class DataValuePresenter implements DataValueContract.Presenter {
                 view.isOpenOrReopen();
                 compositeDisposable.add(
                         repository.reopenDataSet(orgUnitUid, periodId, attributeOptionCombo)
-                                .subscribeOn(Schedulers.io())
-                                .observeOn(AndroidSchedulers.mainThread())
+                                .subscribeOn(schedulerProvider.io())
+                                .observeOn(schedulerProvider.ui())
                                 .subscribe(reopen -> {
                                             view.setCompleteReopenText(false);
                                             view.update(reopen);
@@ -464,8 +461,8 @@ public class DataValuePresenter implements DataValueContract.Presenter {
                     dataSetSectionFragment.updateData(rowAction, dataSetTableModel.catCombo());
                     return repository.updateValue(dataSetTableModel).toFlowable();
                 })
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(schedulerProvider.io())
+                .observeOn(schedulerProvider.ui())
                 .subscribe(o -> view.showSnackBar(), Timber::e));
     }
 

@@ -15,6 +15,7 @@ import org.dhis2.data.forms.dataentry.fields.display.DisplayViewModel;
 import org.dhis2.data.forms.dataentry.fields.image.ImageViewModel;
 import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel;
 import org.dhis2.data.forms.dataentry.fields.unsupported.UnsupportedViewModel;
+import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Quartet;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureFragment.EventCaptureFormFragment;
@@ -64,6 +65,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     private final PublishProcessor<Unit> progressProcessor;
     private final PublishProcessor<Unit> sectionAdjustProcessor;
     private final PublishProcessor<Unit> formAdjustProcessor;
+    private final SchedulerProvider schedulerProvider;
     private CompositeDisposable compositeDisposable;
     private EventCaptureContract.View view;
     private int currentPosition;
@@ -98,11 +100,12 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
         this.lastFocusItem = null;
     }
 
-    public EventCapturePresenterImpl(String eventUid, EventCaptureContract.EventCaptureRepository eventCaptureRepository, RulesUtilsProvider rulesUtils, DataEntryStore dataEntryStore) {
+    public EventCapturePresenterImpl(String eventUid, EventCaptureContract.EventCaptureRepository eventCaptureRepository, RulesUtilsProvider rulesUtils, DataEntryStore dataEntryStore, SchedulerProvider schedulerProvider) {
         this.eventUid = eventUid;
         this.eventCaptureRepository = eventCaptureRepository;
         this.rulesUtils = rulesUtils;
         this.dataEntryStore = dataEntryStore;
+        this.schedulerProvider = schedulerProvider;
         this.currentPosition = 0;
         this.sectionsToHide = new ArrayList<>();
         this.currentSection = new ObservableField<>("");
@@ -127,9 +130,9 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
         compositeDisposable.add(
                 showCalculationProcessor
                         .startWith(true)
-                        .switchMap(shouldShow -> Flowable.just(shouldShow).delay(shouldShow ? 1 : 0, TimeUnit.SECONDS, Schedulers.io()))
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
+                        .switchMap(shouldShow -> Flowable.just(shouldShow).delay(shouldShow ? 1 : 0, TimeUnit.SECONDS, schedulerProvider.io()))
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
                         .subscribe(
                                 view::showRuleCalculation,
                                 Timber::e
@@ -144,8 +147,8 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                         eventCaptureRepository.catOption(),
                         Quartet::create
                 )
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
                         .subscribe(
                                 data -> view.renderInitialInfo(data.val0(), data.val1(), data.val2(), data.val3()),
                                 Timber::e
@@ -155,8 +158,8 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
 
         compositeDisposable.add(
                 eventCaptureRepository.programStage()
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
                         .subscribe(
                                 view::setProgramStage,
                                 Timber::e
@@ -165,8 +168,8 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
 
         compositeDisposable.add(
                 eventCaptureRepository.eventStatus()
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
                         .subscribe(
                                 data -> {
                                     this.eventStatus = data;
@@ -178,8 +181,8 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
 
         compositeDisposable.add(
                 eventCaptureRepository.eventSections()
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
                         .subscribe(
                                 data -> {
                                     this.sectionList = data;
@@ -194,8 +197,8 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                         sectionAdjustProcessor.onBackpressureBuffer(),
                         formAdjustProcessor.onBackpressureBuffer(),
                         (a, b) -> new Unit())
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(Schedulers.io())
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.io())
                         .subscribe(
                                 unit -> {
                                     showCalculationProcessor.onNext(false);
@@ -207,7 +210,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
 
         compositeDisposable.add(
                 progressProcessor
-                        .debounce(500, TimeUnit.MILLISECONDS, Schedulers.io())
+                        .debounce(500, TimeUnit.MILLISECONDS, schedulerProvider.io())
                         .filter(unit -> getFinalSections().size() > 1)
                         .map(unit -> {
                             Iterator<FormSectionViewModel> it = getFinalSections().iterator();
@@ -220,8 +223,8 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                                     getFinalSections().indexOf(formSectionViewModel),
                                     getFinalSections().size());
                         })
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
                         .subscribe(
                                 sectionPositionAndTotal -> EventCaptureFormFragment.getInstance().setSectionProgress(
                                         sectionPositionAndTotal.val0(),
@@ -282,7 +285,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                                     }
                                     return eventSectionModels;
                                 }))
-                        .observeOn(AndroidSchedulers.mainThread())
+                        .observeOn(schedulerProvider.ui())
                         .subscribe(data -> {
                                     Timber.tag("THREAD").d("EVENT SECTION CURRENT THREAD subscribe: %s", Thread.currentThread().getName());
                                     sectionAdjustProcessor.onNext(new Unit());
@@ -295,8 +298,8 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
 
         compositeDisposable.add(
                 sectionProcessor
-                        .observeOn(Schedulers.io())
-                        .subscribeOn(AndroidSchedulers.mainThread())
+                        .observeOn(schedulerProvider.io())
+                        .subscribeOn(schedulerProvider.ui())
                         .subscribe(
                                 data -> {
                                     currentSection.set(data);
@@ -309,7 +312,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
         compositeDisposable.add(
                 sectionProcessor
                         .flatMap(section -> fieldFlowable
-                                .subscribeOn(Schedulers.io())
+                                .subscribeOn(schedulerProvider.io())
                                 .map(fields -> {
                                     List<FieldViewModel> finalFields = new ArrayList<>();
                                     for(FieldViewModel fieldViewModel : fields){
@@ -335,7 +338,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                               List<FieldViewModel> fieldsToShow = fieldMap.get(section.equals("NO_SECTION") ? null : section);
                               return fieldsToShow != null ? fieldsToShow : new ArrayList<FieldViewModel>();
                           }))*/
-                        .observeOn(AndroidSchedulers.mainThread())
+                        .observeOn(schedulerProvider.ui())
                         .subscribe(
                                 updates -> {
                                     Timber.tag("THREAD").d("EVENT FIELDS CURRENT THREAD subscribe: %s", Thread.currentThread().getName());
@@ -351,7 +354,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     private ConnectableFlowable<List<FieldViewModel>> getFieldFlowable() {
         return showCalculationProcessor
                 .startWith(true)
-                .subscribeOn(Schedulers.io())
+                .subscribeOn(schedulerProvider.io())
                 .filter(newCalculation -> newCalculation)
                 .switchMap(newCalculation -> Flowable.zip(
                         eventCaptureRepository.list(),
@@ -371,8 +374,8 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
         if (eventStatus == EventStatus.COMPLETED)
             compositeDisposable.add(
                     eventCaptureRepository.isCompletedEventExpired(eventUid)
-                            .subscribeOn(Schedulers.io())
-                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribeOn(schedulerProvider.io())
+                            .observeOn(schedulerProvider.ui())
                             .subscribe(
                                     hasExpiredResult -> this.hasExpired = hasExpiredResult && eventCaptureRepository.isEventExpired(eventUid),
                                     Timber::e
@@ -410,8 +413,8 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                                     return Flowable.just(position);
                                 }
                             })
-                            .subscribeOn(Schedulers.io())
-                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribeOn(schedulerProvider.io())
+                            .observeOn(schedulerProvider.ui())
                             .subscribe(
                                     position -> {
                                         FormSectionViewModel formSectionViewModel = getFinalSections().get(position);
@@ -448,8 +451,8 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
             compositeDisposable.add(EventCaptureFormFragment.getInstance().dataEntryFlowable()
                     .onBackpressureBuffer()
                     .distinctUntilChanged()
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(Schedulers.io())
+                    .subscribeOn(schedulerProvider.io())
+                    .observeOn(schedulerProvider.io())
                     .switchMap(action -> {
                                 if (action.lastFocusPosition() != null && action.lastFocusPosition() >= 0) { //Triggered by form field
                                     this.lastFocusItem = action.id();
@@ -636,8 +639,8 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     public void completeEvent(boolean addNew) {
         compositeDisposable.add(
                 eventCaptureRepository.completeEvent()
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
                         .subscribe(
                                 success -> {
                                     if (addNew)
@@ -659,8 +662,8 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                             else
                                 return Single.error(new AuthorityException(view.getContext().getString(R.string.uncomplete_authority_error)));
                         })
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
                         .subscribe(canReOpenEvent -> {
                                     if (canReOpenEvent) {
                                         if (eventCaptureRepository.reopenEvent()) {
@@ -683,8 +686,8 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     @Override
     public void deleteEvent() {
         compositeDisposable.add(eventCaptureRepository.deleteEvent()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(schedulerProvider.io())
+                .observeOn(schedulerProvider.ui())
                 .subscribe(
                         result -> {
                             if (result)
@@ -699,8 +702,8 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     @Override
     public void skipEvent() {
         compositeDisposable.add(eventCaptureRepository.updateEventStatus(EventStatus.SKIPPED)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(schedulerProvider.io())
+                .observeOn(schedulerProvider.ui())
                 .subscribe(
                         result -> view.showSnackBar(R.string.event_was_skipped),
                         Timber::e,
@@ -713,8 +716,8 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     public void rescheduleEvent(Date time) {
         compositeDisposable.add(
                 eventCaptureRepository.rescheduleEvent(time)
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
                         .subscribe(
                                 result -> view.finishDataEntry(),
                                 Timber::e
@@ -736,8 +739,8 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     public void initCompletionPercentage(FlowableProcessor<Pair<Float, Float>> completionPercentage) {
         compositeDisposable.add(
                 completionPercentage
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
                         .subscribe(
                                 view.updatePercentage(),
                                 Timber::e

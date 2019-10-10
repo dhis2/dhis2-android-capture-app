@@ -108,8 +108,8 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
                             eventInitialRepository.orgUnits(programId).toFlowable(BackpressureStrategy.LATEST),
                             Sextet::create
                     )
-                            .subscribeOn(Schedulers.io())
-                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribeOn(schedulerProvider.io())
+                            .observeOn(schedulerProvider.ui())
                             .subscribe(sextet -> {
                                 this.program = sextet.val1();
                                 this.catCombo = sextet.val2();
@@ -129,8 +129,8 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
                             eventInitialRepository.orgUnits(programId).toFlowable(BackpressureStrategy.LATEST),
                             Trio::create
                     )
-                            .subscribeOn(Schedulers.io())
-                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribeOn(schedulerProvider.io())
+                            .observeOn(schedulerProvider.ui())
                             .subscribe(trioFlowable -> {
                                 this.program = trioFlowable.val0();
                                 this.catCombo = trioFlowable.val1();
@@ -148,8 +148,8 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
         if (orgInitId != null) {
             compositeDisposable.add(
                     eventInitialRepository.getOrganisationUnit(orgInitId)
-                            .subscribeOn(Schedulers.io())
-                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribeOn(schedulerProvider.io())
+                            .observeOn(schedulerProvider.ui())
                             .subscribe(organisationUnit ->
                                             view.setOrgUnit(organisationUnit.uid(), organisationUnit.displayName()),
                                     Timber::d
@@ -158,8 +158,8 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
 
         compositeDisposable.add(
                 eventInitialRepository.accessDataWrite(programId)
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
                         .subscribe(
                                 view::setAccessDataWrite,
                                 Timber::e
@@ -172,8 +172,8 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
     @Override
     public void getEventSections(@NonNull String eventId) {
         compositeDisposable.add(eventSummaryRepository.programStageSections(eventId)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(schedulerProvider.io())
+                .observeOn(schedulerProvider.ui())
                 .subscribe(
                         view::onEventSections,
                         Timber::e
@@ -207,8 +207,8 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
     @Override
     public void getStageObjectStyle(String uid) {
         compositeDisposable.add(eventInitialRepository.getObjectStyle(uid)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(schedulerProvider.io())
+                .observeOn(schedulerProvider.ui())
                 .subscribe(
                         objectStyle -> view.renderObjectStyle(objectStyle),
                         Timber::e
@@ -219,8 +219,8 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
     @Override
     public void getProgramStage(String programStageUid) {
         compositeDisposable.add(eventInitialRepository.programStageWithId(programStageUid)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(schedulerProvider.io())
+                .observeOn(schedulerProvider.ui())
                 .subscribe(
                         programStage -> view.setProgramStage(programStage),
                         throwable -> view.showProgramStageSelection()
@@ -230,8 +230,8 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
     private void getProgramStages(String programUid, String programStageUid) {
 
         compositeDisposable.add((TextUtils.isEmpty(programStageId) ? eventInitialRepository.programStage(programUid) : eventInitialRepository.programStageWithId(programStageUid))
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(schedulerProvider.io())
+                .observeOn(schedulerProvider.ui())
                 .subscribe(
                         programStage -> view.setProgramStage(programStage),
                         throwable -> view.showProgramStageSelection()
@@ -256,8 +256,8 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
                             programStageModel, date, orgUnitUid,
                             categoryOptionComboUid, categoryOptionsUid,
                             geometry)
-                            .subscribeOn(Schedulers.io())
-                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribeOn(schedulerProvider.io())
+                            .observeOn(schedulerProvider.ui())
                             .subscribe(view::onEventCreated, t -> view.renderError(t.getMessage()))
             );
     }
@@ -272,11 +272,11 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
                             programStageModel, dueDate, orgUnitUid,
                             categoryOptionComboUid, categoryOptionsUid,
                             geometry)
-                            .subscribeOn(Schedulers.io())
+                            .subscribeOn(schedulerProvider.io())
                             /*.switchMap( //TODO: CHECK THAT SDK ALREADY UPDATES ENROLLMENT AND TEI
                                     eventId -> eventInitialRepository.updateTrackedEntityInstance(eventId, trackedEntityInstanceUid, orgUnitUid)
                             )*/
-                            .observeOn(AndroidSchedulers.mainThread())
+                            .observeOn(schedulerProvider.ui())
                             .subscribe(view::onEventCreated, t -> view.renderError(t.getMessage()))
             );
     }
@@ -291,8 +291,8 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
                             programStageModel, dueDate, orgUnitUid,
                             categoryOptionComboUid, categoryOptionsUid,
                             geometry)
-                            .subscribeOn(Schedulers.io())
-                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribeOn(schedulerProvider.io())
+                            .observeOn(schedulerProvider.ui())
                             .subscribe(view::onEventCreated, t -> view.renderError(t.getMessage()))
             );
     }
@@ -303,8 +303,8 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
                           Geometry geometry) {
 
         compositeDisposable.add(eventInitialRepository.editEvent(trackedEntityInstance, eventUid, date, orgUnitUid, catComboUid, catOptionCombo, geometry)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(schedulerProvider.io())
+                .observeOn(schedulerProvider.ui())
                 .subscribe(
                         (eventModel) -> view.onEventUpdated(eventModel.uid()),
                         error -> view.displayMessage(error.getLocalizedMessage())
@@ -369,8 +369,8 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
         Flowable<List<FieldViewModel>> viewModelsFlowable = Flowable.zip(fieldsFlowable, ruleEffectFlowable, this::applyEffects);
 
         compositeDisposable.add(viewModelsFlowable
-                .subscribeOn(AndroidSchedulers.mainThread())
-                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(schedulerProvider.ui())
+                .observeOn(schedulerProvider.ui())
                 .subscribe(view.showFields(sectionUid), throwable -> {
                     throw new OnErrorNotImplementedException(throwable);
                 }));
@@ -449,8 +449,8 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
     public void getEventOrgUnit(String ouUid) {
         compositeDisposable.add(
                 eventInitialRepository.getOrganisationUnit(ouUid)
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
                         .subscribe(
                                 orgUnit -> view.setOrgUnit(orgUnit.uid(), orgUnit.displayName()),
                                 Timber::e
@@ -461,8 +461,8 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
     @Override
     public void initOrgunit(Date selectedDate) {
         compositeDisposable.add(eventInitialRepository.filteredOrgUnits(DateUtils.databaseDateFormat().format(selectedDate), programId, null)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(schedulerProvider.io())
+                .observeOn(schedulerProvider.ui())
                 .subscribe(
                         orgUnits -> {
                             if (orgUnits.size() == 1 && (view.eventcreateionType() == EventCreationType.ADDNEW || view.eventcreateionType() == EventCreationType.DEFAULT))

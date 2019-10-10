@@ -1,6 +1,7 @@
 package org.dhis2.usescases.teiDashboard.dashboardfragments.relationships;
 
 import org.dhis2.data.dagger.PerFragment;
+import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.usescases.teiDashboard.DashboardRepository;
 import org.hisp.dhis.android.core.D2;
 
@@ -24,8 +25,8 @@ public class RelationshipModule {
 
     @Provides
     @PerFragment
-    RelationshipContracts.Presenter providesPresenter(D2 d2, DashboardRepository dashboardRepository) {
-        return new RelationshipPresenterImpl(d2, programUid, teiUid, dashboardRepository);
+    RelationshipContracts.Presenter providesPresenter(D2 d2, DashboardRepository dashboardRepository, SchedulerProvider schedulerProvider) {
+        return new RelationshipPresenterImpl(d2, programUid, teiUid, dashboardRepository, schedulerProvider);
     }
 
 }

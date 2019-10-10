@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
 
 import com.mapbox.mapboxsdk.geometry.LatLng;
 
+import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity;
@@ -20,11 +21,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.reactivex.Observable;
-import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.processors.FlowableProcessor;
 import io.reactivex.processors.PublishProcessor;
-import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
 import static org.dhis2.utils.Constants.ORG_UNIT;
@@ -38,6 +37,7 @@ import static org.dhis2.utils.Constants.PROGRAM_UID;
 public class ProgramEventDetailPresenter implements ProgramEventDetailContract.Presenter {
 
     private final ProgramEventDetailRepository eventRepository;
+    private final SchedulerProvider schedulerProvider;
     private ProgramEventDetailContract.View view;
     protected String programId;
     private CompositeDisposable compositeDisposable;
@@ -52,9 +52,10 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
     private FlowableProcessor<Unit> mapProcessor;
 
     ProgramEventDetailPresenter(
-            @NonNull String programUid, @NonNull ProgramEventDetailRepository programEventDetailRepository) {
+            @NonNull String programUid, @NonNull ProgramEventDetailRepository programEventDetailRepository, SchedulerProvider schedulerProvider) {
         this.eventRepository = programEventDetailRepository;
         this.programId = programUid;
+        this.schedulerProvider = schedulerProvider;
         this.currentCatOptionCombo = new ArrayList<>();
         eventInfoProcessor = PublishProcessor.create();
         mapProcessor = PublishProcessor.create();
@@ -71,8 +72,8 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
         this.processorDismissDialog = PublishProcessor.create();
 
         compositeDisposable.add(eventRepository.featureType()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(schedulerProvider.io())
+                .observeOn(schedulerProvider.ui())
                 .subscribe(
                         view.setFeatureType(),
                         Timber.tag("EVENTLIST")::e
@@ -80,8 +81,8 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
         );
 
         compositeDisposable.add(Observable.just(eventRepository.getAccessDataWrite())
-                .subscribeOn(Schedulers.computation())
-                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(schedulerProvider.computation())
+                .observeOn(schedulerProvider.ui())
                 .subscribe(
                         view::setWritePermission,
                         Timber::e)
@@ -90,8 +91,8 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
 
         compositeDisposable.add(
                 eventRepository.hasAccessToAllCatOptions()
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
                         .subscribe(
                                 view::setOptionComboAccess,
                                 Timber::e
@@ -100,8 +101,8 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
 
         compositeDisposable.add(
                 eventRepository.program()
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribeOn(Schedulers.computation())
+                        .observeOn(schedulerProvider.ui())
+                        .subscribeOn(schedulerProvider.computation())
                         .subscribe(
                                 view::setProgram,
                                 Timber::e
@@ -110,8 +111,8 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
 
         compositeDisposable.add(
                 eventRepository.catOptionCombos()
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
                         .subscribe(view::setCatOptionComboFilter,
                                 Timber::e
                         )
@@ -127,8 +128,8 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
                                 filterManager.getEventStatusFilters(),
                                 filterManager.getStateFilters()
                         ))
-                        .subscribeOn(Schedulers.computation())
-                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeOn(schedulerProvider.computation())
+                        .observeOn(schedulerProvider.ui())
                         .subscribe(
                                 view::setLiveData,
                                 throwable -> view.renderError(throwable.getMessage())
@@ -146,8 +147,8 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
                                                 filterManager.getEventStatusFilters(),
                                                 filterManager.getStateFilters()
                                         )))
-                        .subscribeOn(Schedulers.computation())
-                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeOn(schedulerProvider.computation())
+                        .observeOn(schedulerProvider.ui())
                         .subscribe(
                                 view.setMap(),
                                 throwable -> view.renderError(throwable.getMessage())
@@ -157,8 +158,8 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
                 eventInfoProcessor
                         .flatMap(eventInfo -> eventRepository.getInfoForEvent(eventInfo.val0())
                                 .map(eventData -> Pair.create(eventData, eventInfo.val1())))
-                        .subscribeOn(Schedulers.computation())
-                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeOn(schedulerProvider.computation())
+                        .observeOn(schedulerProvider.ui())
                         .subscribe(
                                 view::setEventInfo,
                                 throwable -> view.renderError(throwable.getMessage())
@@ -170,8 +171,8 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
                             if (view.isMapVisible())
                                 mapProcessor.onNext(new Unit());
                         })
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
                         .subscribe(
                                 open -> view.openOrgUnitTreeSelector(),
                                 Timber::e
@@ -179,8 +180,8 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
         );
 
         compositeDisposable.add(processorDismissDialog
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(schedulerProvider.io())
+                .observeOn(schedulerProvider.ui())
                 .subscribe(
                         bool -> init(view),
                         Timber::d));
@@ -191,8 +192,8 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
                             if (view.isMapVisible())
                                 mapProcessor.onNext(new Unit());
                         })
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
                         .subscribe(
                                 filterManager -> view.updateFilters(filterManager.getTotalFilters()),
                                 Timber::e
@@ -205,8 +206,8 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
                             if (view.isMapVisible())
                                 mapProcessor.onNext(new Unit());
                         })
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
                         .subscribe(
                                 periodRequest -> view.showPeriodRequest(periodRequest),
                                 Timber::e
