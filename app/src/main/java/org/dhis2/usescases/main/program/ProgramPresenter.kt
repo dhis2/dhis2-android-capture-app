@@ -61,7 +61,7 @@ class ProgramPresenter internal constructor(private val homeRepository: HomeRepo
                                         finalList.addAll(programs)
                                         finalList.addAll(dataSets)
                                         finalList.sortWith(Comparator { program1, program2 -> program1.title().compareTo(program2.title(), ignoreCase = true) })
-                                        programs
+                                        finalList
                                     })
                         }
                         .subscribeOn(Schedulers.io())
