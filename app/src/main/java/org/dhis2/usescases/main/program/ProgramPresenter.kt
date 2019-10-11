@@ -10,6 +10,7 @@ import io.reactivex.functions.BiFunction
 import io.reactivex.functions.Consumer
 import io.reactivex.processors.PublishProcessor
 import io.reactivex.schedulers.Schedulers
+import org.dhis2.data.schedulers.SchedulerProvider
 import org.dhis2.data.tuples.Pair
 import org.dhis2.usescases.datasets.datasetDetail.DataSetDetailActivity
 import org.dhis2.usescases.programEventDetail.ProgramEventDetailActivity
@@ -29,7 +30,7 @@ import timber.log.Timber
  * Created by ppajuelo on 18/10/2017.f
  */
 
-class ProgramPresenter internal constructor(private val homeRepository: HomeRepository) : ProgramContract.Presenter {
+class ProgramPresenter internal constructor(private val homeRepository: HomeRepository, private val schedulerProvider : SchedulerProvider) : ProgramContract.Presenter {
 
     private var view: ProgramContract.View? = null
     private var compositeDisposable: CompositeDisposable? = null
@@ -52,8 +53,8 @@ class ProgramPresenter internal constructor(private val homeRepository: HomeRepo
                         .startWith(Pair.create(currentDateFilter, currentOrgUnitFilter))
                         .flatMap { datePeriodOrgs ->
                             Flowable.zip(
-                                    homeRepository.programModels(datePeriodOrgs.val0(), datePeriodOrgs.val1(), FilterManager.getInstance().stateFilters).subscribeOn(Schedulers.io()),
-                                    homeRepository.aggregatesModels(datePeriodOrgs.val0(), datePeriodOrgs.val1(), FilterManager.getInstance().stateFilters).subscribeOn(Schedulers.io()),
+                                    homeRepository.programModels(datePeriodOrgs.val0(), datePeriodOrgs.val1(), FilterManager.getInstance().stateFilters).subscribeOn(schedulerProvider.io()),
+                                    homeRepository.aggregatesModels(datePeriodOrgs.val0(), datePeriodOrgs.val1(), FilterManager.getInstance().stateFilters).subscribeOn(schedulerProvider.io()),
                                     BiFunction<List<ProgramViewModel>, List<ProgramViewModel>, List<ProgramViewModel>> { programs, dataSets ->
                                         val finalList = ArrayList<ProgramViewModel>()
                                         finalList.addAll(programs)
@@ -62,8 +63,8 @@ class ProgramPresenter internal constructor(private val homeRepository: HomeRepo
                                         finalList
                                     })
                         }
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
                         .subscribe(
                                 view.swapProgramModelData(),
                                 Consumer { throwable -> view.renderError(throwable.message ?: "") }
@@ -71,15 +72,15 @@ class ProgramPresenter internal constructor(private val homeRepository: HomeRepo
 
         compositeDisposable!!.add(
                 FilterManager.getInstance().asFlowable()
-                        .subscribeOn(Schedulers.io())
+                        .subscribeOn(schedulerProvider.io())
                         .flatMap { filterManager ->
                             homeRepository.programModels(filterManager.periodFilters, filterManager.orgUnitUidsFilters, filterManager.stateFilters).flatMapIterable { data -> data }
                                     .mergeWith(homeRepository.aggregatesModels(filterManager.periodFilters, filterManager.orgUnitUidsFilters, filterManager.stateFilters).flatMapIterable { data -> data })
                                     .sorted { p1, p2 -> p1.title().compareTo(p2.title(), ignoreCase = true) }.toList().toFlowable()
-                                    .subscribeOn(Schedulers.io())
+                                    .subscribeOn(schedulerProvider.io())
                         }
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
                         .subscribe(
                                 view.swapProgramModelData(),
                                 Consumer { throwable -> view.renderError(throwable.message ?: "") }
@@ -88,8 +89,8 @@ class ProgramPresenter internal constructor(private val homeRepository: HomeRepo
 
         compositeDisposable!!.add(
                 FilterManager.getInstance().ouTreeFlowable()
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
                         .subscribe(
                                 { view.openOrgUnitTreeSelector() },
                                 { Timber.e(it) }

@@ -5,6 +5,7 @@ import androidx.annotation.NonNull;
 import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.dhis2.data.dagger.PerActivity;
+import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.data.user.UserRepository;
 import org.hisp.dhis.android.core.D2;
 
@@ -34,8 +35,8 @@ public class EventDetailModule {
 
     @Provides
     @PerActivity
-    EventDetailContracts.Presenter providePresenter(EventDetailRepository eventDetailRepository, DataEntryStore dataEntryStore) {
-        return new EventDetailPresenter(eventDetailRepository, dataEntryStore);
+    EventDetailContracts.Presenter providePresenter(EventDetailRepository eventDetailRepository, DataEntryStore dataEntryStore, SchedulerProvider schedulerProvider) {
+        return new EventDetailPresenter(eventDetailRepository, dataEntryStore, schedulerProvider);
     }
 
     @Provides

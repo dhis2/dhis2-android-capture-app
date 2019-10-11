@@ -3,16 +3,15 @@ package org.dhis2.usescases.enrollment
 import android.text.TextUtils.isEmpty
 import io.reactivex.Flowable
 import io.reactivex.Single
-import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.functions.BiFunction
 import io.reactivex.processors.FlowableProcessor
 import io.reactivex.processors.PublishProcessor
-import io.reactivex.schedulers.Schedulers
 import org.dhis2.R
 import org.dhis2.data.forms.dataentry.DataEntryRepository
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel
 import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel
+import org.dhis2.data.schedulers.SchedulerProvider
 import org.dhis2.utils.CodeGeneratorImpl
 import org.dhis2.utils.Result
 import org.dhis2.utils.RulesActionCallbacks
@@ -27,7 +26,6 @@ import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.enrollment.EnrollmentObjectRepository
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
-import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.event.EventStatus
 import org.hisp.dhis.android.core.maintenance.D2Error
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
@@ -47,6 +45,7 @@ class EnrollmentPresenterImpl(
         private val dataEntryRepository: DataEntryRepository,
         private val teiRepository: TrackedEntityInstanceObjectRepository,
         private val programRepository: ReadOnlyOneObjectRepositoryFinalImpl<Program>,
+        private val schedulerProvider: SchedulerProvider,
         val formRepository: EnrollmentFormRepository) : EnrollmentContract.Presenter, RulesActionCallbacks {
 
     private val TAG = "EnrollmentPresenter"
@@ -80,8 +79,8 @@ class EnrollmentPresenterImpl(
                                                 .get()
                                     }
                         }
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
                         .subscribe(
                                 { view.displayTeiInfo(it) },
                                 { Timber.tag(TAG).e(it) }
@@ -91,8 +90,8 @@ class EnrollmentPresenterImpl(
         disposable.add(
                 programRepository.get()
                         .map { it.access()?.data()?.write() }
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
                         .subscribe(
                                 { view.setAccess(it) },
                                 { Timber.tag(TAG).e(it) })
@@ -101,8 +100,8 @@ class EnrollmentPresenterImpl(
         disposable.add(
                 enrollmentObjectRepository.get()
                         .map { it.status() }
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
                         .subscribe(
                                 { view.renderStatus(it!!) },
                                 { Timber.tag(TAG).e(it) }
@@ -112,8 +111,8 @@ class EnrollmentPresenterImpl(
         disposable.add(
                 enrollmentObjectRepository.get()
                         .flatMap { enrollment -> d2.organisationUnitModule().organisationUnits.uid(enrollment.organisationUnit()).get() }
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
                         .subscribe({
                             view.displayOrgUnit(it)
                         }, {
@@ -122,8 +121,8 @@ class EnrollmentPresenterImpl(
 
         disposable.add(
                 programRepository.get()
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
                         .subscribe(
                                 { view.setDateLabels(it.enrollmentDateLabel(), it.incidentDateLabel()) },
                                 { Timber.tag(TAG).e(it) }
@@ -132,8 +131,8 @@ class EnrollmentPresenterImpl(
 
         disposable.add(
                 enrollmentObjectRepository.get()
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
                         .subscribe(
                                 { view.setUpEnrollmentDate(it.enrollmentDate()) },
                                 { Timber.tag(TAG).e(it) }
@@ -149,8 +148,8 @@ class EnrollmentPresenterImpl(
                                         enrollment.incidentDate()
                                     }.toSingle()
                         }
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
                         .subscribe(
                                 { view.setUpIncidentDate(it) },
                                 { Timber.tag(TAG).e(it) }
@@ -184,8 +183,8 @@ class EnrollmentPresenterImpl(
                             else
                                 Pair(first = true, second = true)
                         }
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
                         .subscribe(
                                 { view.blockDates(it.first, it.second) },
                                 { Timber.tag(TAG).e(it) }
@@ -199,8 +198,8 @@ class EnrollmentPresenterImpl(
                         enrollmentObjectRepository.get(),
                         BiFunction<Program, Enrollment, Pair<Program, Enrollment>> { program, enrollment -> Pair(program, enrollment) }
                 )
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
                         .subscribe(
                                 { view.displayEnrollmentCoordinates(it) },
                                 { Timber.tag(TAG).e(it) })
@@ -212,8 +211,8 @@ class EnrollmentPresenterImpl(
                             d2.trackedEntityModule().trackedEntityTypes.uid(tei.trackedEntityType()).get()
                                     .map { Pair(it, tei) }
                         }
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
                         .subscribe(
                                 { view.displayTeiCoordinates(it) },
                                 { Timber.tag(TAG).e(it) })
@@ -231,8 +230,8 @@ class EnrollmentPresenterImpl(
                                 Pair(first = false, second = true)
                             }
                         }
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
                         .subscribe(
                                 {
                                     if (it.first)
@@ -257,8 +256,8 @@ class EnrollmentPresenterImpl(
                                     BiFunction { fields, result -> applyRuleEffects(fields, result) }
                             )
                         }
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
                         .subscribe({
                             view.showFields(it)
                         }) {
@@ -272,8 +271,8 @@ class EnrollmentPresenterImpl(
             EnrollmentActivity.EnrollmentMode.NEW -> disposable.add(
                     formRepository.autoGenerateEvents()
                             .flatMap { formRepository.useFirstStageDuringRegistration() }
-                            .subscribeOn(Schedulers.io())
-                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribeOn(schedulerProvider.io())
+                            .observeOn(schedulerProvider.ui())
                             .subscribe(
                                     {
                                         if (!isEmpty(it.second))

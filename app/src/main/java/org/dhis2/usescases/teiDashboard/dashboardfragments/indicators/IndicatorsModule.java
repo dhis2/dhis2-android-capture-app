@@ -9,6 +9,7 @@ import org.dhis2.data.dagger.PerFragment;
 import org.dhis2.data.forms.FormRepository;
 import org.dhis2.data.forms.dataentry.EnrollmentRuleEngineRepository;
 import org.dhis2.data.forms.dataentry.RuleEngineRepository;
+import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.usescases.teiDashboard.DashboardRepository;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.enrollment.EnrollmentCollectionRepository;
@@ -35,8 +36,8 @@ public class IndicatorsModule {
 
     @Provides
     @PerFragment
-    IndicatorsContracts.Presenter providesPresenter(D2 d2, DashboardRepository dashboardRepository, RuleEngineRepository ruleEngineRepository) {
-        return new IndicatorsPresenterImpl(d2, programUid, teiUid, dashboardRepository, ruleEngineRepository);
+    IndicatorsContracts.Presenter providesPresenter(D2 d2, DashboardRepository dashboardRepository, RuleEngineRepository ruleEngineRepository, SchedulerProvider schedulerProvider) {
+        return new IndicatorsPresenterImpl(d2, programUid, teiUid, dashboardRepository, ruleEngineRepository, schedulerProvider);
     }
 
     @Provides

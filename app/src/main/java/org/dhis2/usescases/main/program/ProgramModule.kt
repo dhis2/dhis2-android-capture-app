@@ -14,6 +14,7 @@ import org.hisp.dhis.android.core.D2
 
 import dagger.Module
 import dagger.Provides
+import org.dhis2.data.schedulers.SchedulerProvider
 
 /**
  * QUADRAM. Created by ppajuelo on 07/02/2018.
@@ -24,8 +25,8 @@ class ProgramModule {
 
     @Provides
     @PerFragment
-    internal fun programPresenter(homeRepository: HomeRepository): ProgramContract.Presenter {
-        return ProgramPresenter(homeRepository)
+    internal fun programPresenter(homeRepository: HomeRepository, schedulerProvider : SchedulerProvider): ProgramContract.Presenter {
+        return ProgramPresenter(homeRepository, schedulerProvider)
     }
 
     @Provides

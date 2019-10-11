@@ -4,6 +4,7 @@ package org.dhis2.usescases.teiDashboard.teiDataDetail;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 
+import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.usescases.teiDashboard.DashboardProgramModel;
 import org.dhis2.usescases.teiDashboard.DashboardRepository;
 import org.dhis2.utils.DateUtils;
@@ -12,9 +13,7 @@ import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import java.util.Date;
 
 import io.reactivex.Observable;
-import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
 /**
@@ -26,12 +25,14 @@ public class TeiDataDetailPresenter implements TeiDataDetailContracts.Presenter 
     private final DashboardRepository dashboardRepository;
     private final CompositeDisposable disposable;
     private final EnrollmentStatusStore enrollmentStore;
+    private final SchedulerProvider schedulerProvider;
     private TeiDataDetailContracts.View view;
     private FusedLocationProviderClient mFusedLocationClient;
 
-    TeiDataDetailPresenter(DashboardRepository dashboardRepository, EnrollmentStatusStore enrollmentStatusStore) {
+    TeiDataDetailPresenter(DashboardRepository dashboardRepository, EnrollmentStatusStore enrollmentStatusStore, SchedulerProvider schedulerProvider) {
         this.dashboardRepository = dashboardRepository;
         this.enrollmentStore = enrollmentStatusStore;
+        this.schedulerProvider = schedulerProvider;
         disposable = new CompositeDisposable();
     }
 
@@ -51,8 +52,8 @@ public class TeiDataDetailPresenter implements TeiDataDetailContracts.Presenter 
                     dashboardRepository.getTeiOrgUnits(uid, programUid),
                     dashboardRepository.getTeiActivePrograms(uid, false),
                     DashboardProgramModel::new)
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribeOn(schedulerProvider.io())
+                    .observeOn(schedulerProvider.ui())
                     .subscribe(
                             view::setData,
                             Timber::d)
@@ -60,8 +61,8 @@ public class TeiDataDetailPresenter implements TeiDataDetailContracts.Presenter 
 
             disposable.add(
                     enrollmentStore.enrollmentStatus(enrollmentUid)
-                            .subscribeOn(Schedulers.io())
-                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribeOn(schedulerProvider.io())
+                            .observeOn(schedulerProvider.ui())
                             .subscribe(
                                     view.handleStatus(),
                                     Timber::d)
@@ -71,24 +72,24 @@ public class TeiDataDetailPresenter implements TeiDataDetailContracts.Presenter 
 
             disposable.add(view.reportCoordinatesChanged()
                     .filter(geometry -> geometry != null)
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribeOn(schedulerProvider.io())
+                    .observeOn(schedulerProvider.ui())
                     .subscribe(enrollmentStore.storeCoordinates(), Timber::e));
 
             disposable.add(view.teiCoordinatesChanged()
                     .filter(geometry -> geometry != null)
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribeOn(schedulerProvider.io())
+                    .observeOn(schedulerProvider.ui())
                     .subscribe(enrollmentStore.storeTeiCoordinates(), Timber::e));
 
             disposable.add(view.reportCoordinatesCleared()
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribeOn(schedulerProvider.io())
+                    .observeOn(schedulerProvider.ui())
                     .subscribe(enrollmentStore.clearCoordinates(), Timber::e));
 
             disposable.add(view.teiCoordinatesCleared()
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribeOn(schedulerProvider.io())
+                    .observeOn(schedulerProvider.ui())
                     .subscribe(enrollmentStore.clearTeiCoordinates(), Timber::e));
 
 
@@ -102,16 +103,16 @@ public class TeiDataDetailPresenter implements TeiDataDetailContracts.Presenter 
                     dashboardRepository.getTeiActivePrograms(uid, false),
                     dashboardRepository.getTEIEnrollments(uid),
                     DashboardProgramModel::new)
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribeOn(schedulerProvider.io())
+                    .observeOn(schedulerProvider.ui())
                     .subscribe(view::setData,
                             Timber::d)
             );
         }
 
         disposable.add(dashboardRepository.getAttributeImage(uid)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(schedulerProvider.io())
+                .observeOn(schedulerProvider.ui())
                 .subscribe(
                         view::showTeiImage,
                         Timber::e
@@ -123,8 +124,8 @@ public class TeiDataDetailPresenter implements TeiDataDetailContracts.Presenter 
     @Override
     public void checkTeiCoordinates() {
         disposable.add(enrollmentStore.captureTeiCoordinates()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(schedulerProvider.io())
+                .observeOn(schedulerProvider.ui())
                 .subscribe(view.renderTeiCoordinates(), Timber::e)
         );
     }
@@ -138,8 +139,8 @@ public class TeiDataDetailPresenter implements TeiDataDetailContracts.Presenter 
     public void onDeactivate(DashboardProgramModel dashboardProgramModel) {
         if (dashboardProgramModel.getCurrentProgram().access().data().write())
             disposable.add(enrollmentStore.save(dashboardProgramModel.getCurrentEnrollment().uid(), EnrollmentStatus.CANCELLED)
-                    .subscribeOn(Schedulers.computation())
-                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribeOn(schedulerProvider.computation())
+                    .observeOn(schedulerProvider.ui())
                     .map(result -> EnrollmentStatus.CANCELLED)
                     .subscribe(
                             view.handleStatus(),
@@ -154,8 +155,8 @@ public class TeiDataDetailPresenter implements TeiDataDetailContracts.Presenter 
     public void onReOpen(DashboardProgramModel dashboardProgramModel) {
         if (dashboardProgramModel.getCurrentProgram().access().data().write())
             disposable.add(enrollmentStore.save(dashboardProgramModel.getCurrentEnrollment().uid(), EnrollmentStatus.ACTIVE)
-                    .subscribeOn(Schedulers.computation())
-                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribeOn(schedulerProvider.computation())
+                    .observeOn(schedulerProvider.ui())
                     .map(result -> EnrollmentStatus.ACTIVE)
                     .subscribe(
                             view.handleStatus(),
@@ -169,8 +170,8 @@ public class TeiDataDetailPresenter implements TeiDataDetailContracts.Presenter 
     public void onComplete(DashboardProgramModel dashboardProgramModel) {
         if (dashboardProgramModel.getCurrentProgram().access().data().write())
             disposable.add(enrollmentStore.save(dashboardProgramModel.getCurrentEnrollment().uid(), EnrollmentStatus.COMPLETED)
-                    .subscribeOn(Schedulers.computation())
-                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribeOn(schedulerProvider.computation())
+                    .observeOn(schedulerProvider.ui())
                     .map(result -> EnrollmentStatus.COMPLETED)
                     .subscribe(
                             view.handleStatus(),
@@ -184,8 +185,8 @@ public class TeiDataDetailPresenter implements TeiDataDetailContracts.Presenter 
     public void onActivate(DashboardProgramModel dashboardProgramModel) {
         if (dashboardProgramModel.getCurrentProgram().access().data().write())
             disposable.add(enrollmentStore.save(dashboardProgramModel.getCurrentEnrollment().uid(), EnrollmentStatus.ACTIVE)
-                    .subscribeOn(Schedulers.computation())
-                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribeOn(schedulerProvider.computation())
+                    .observeOn(schedulerProvider.ui())
                     .map(result -> EnrollmentStatus.ACTIVE)
                     .subscribe(
                             view.handleStatus(),
@@ -215,8 +216,8 @@ public class TeiDataDetailPresenter implements TeiDataDetailContracts.Presenter 
     public void updateIncidentDate(Date date) {
         disposable.add(
                 enrollmentStore.saveIncidentDate(DateUtils.databaseDateFormat().format(date))
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
                         .subscribe(
                                 data -> {
                                 },
@@ -229,8 +230,8 @@ public class TeiDataDetailPresenter implements TeiDataDetailContracts.Presenter 
     public void updateEnrollmentDate(Date date) {
         disposable.add(
                 enrollmentStore.saveEnrollmentDate(DateUtils.databaseDateFormat().format(date))
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
                         .subscribe(
                                 data -> {
                                 },

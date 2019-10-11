@@ -11,6 +11,7 @@ import androidx.work.OneTimeWorkRequest;
 import androidx.work.PeriodicWorkRequest;
 import androidx.work.WorkManager;
 
+import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.data.service.SyncDataWorker;
 import org.dhis2.data.service.SyncMetadataWorker;
 import org.dhis2.data.tuples.Pair;
@@ -49,6 +50,7 @@ import static org.dhis2.utils.analytics.AnalyticsConstants.SYNC_METADATA_NOW;
 public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
 
     private final D2 d2;
+    private final SchedulerProvider schedulerProvider;
 
     private enum SettingType {
         EVENT_MAX, TEI_MAX, LIMIT_BY_ORG_UNIT, LIMIT_BY_PROGRAM, TIME_DATA, TIME_META
@@ -59,8 +61,9 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
     private FlowableProcessor<Boolean> checkData;
     private SharedPreferences prefs;
 
-    SyncManagerPresenter(D2 d2) {
+    SyncManagerPresenter(D2 d2, SchedulerProvider schedulerProvider) {
         this.d2 = d2;
+        this.schedulerProvider = schedulerProvider;
         checkData = PublishProcessor.create();
     }
 
@@ -93,8 +96,8 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
                                     }).blockingLast();
                             return Pair.create(teiCount, eventCount);
                         })
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
                         .subscribe(
                                 view.setSyncData(),
                                 Timber::e
@@ -102,8 +105,8 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
         );
 
         ConfigCase smsConfig = d2.smsModule().configCase();
-        compositeDisposable.add(smsConfig.getSmsModuleConfig().subscribeOn(Schedulers.io()
-        ).observeOn(AndroidSchedulers.mainThread()
+        compositeDisposable.add(smsConfig.getSmsModuleConfig().subscribeOn(schedulerProvider.io()
+        ).observeOn(schedulerProvider.ui()
         ).subscribeWith(new DisposableSingleObserver<ConfigCase.SmsConfig>() {
             @Override
             public void onSuccess(ConfigCase.SmsConfig c) {
@@ -223,7 +226,7 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
             completable = d2.smsModule().configCase().setModuleEnabled(false);
 
         compositeDisposable.add(completable
-                .subscribeOn(Schedulers.io())
+                .subscribeOn(schedulerProvider.io())
                 .subscribeWith(new DisposableCompletableObserver() {
                     @Override
                     public void onComplete() {

@@ -1,6 +1,7 @@
 package org.dhis2.usescases.teiDashboard.dashboardfragments.indicators;
 
 import org.dhis2.data.forms.dataentry.RuleEngineRepository;
+import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.usescases.teiDashboard.DashboardRepository;
@@ -31,6 +32,7 @@ import static android.text.TextUtils.isEmpty;
 public class IndicatorsPresenterImpl implements IndicatorsContracts.Presenter {
 
     private final D2 d2;
+    private final SchedulerProvider schedulerProvider;
     private CompositeDisposable compositeDisposable;
     private final String programUid;
     private final String enrollmentUid;
@@ -40,11 +42,12 @@ public class IndicatorsPresenterImpl implements IndicatorsContracts.Presenter {
 
 
     IndicatorsPresenterImpl(D2 d2, String programUid, String teiUid, DashboardRepository dashboardRepository,
-                            RuleEngineRepository ruleEngineRepository) {
+                            RuleEngineRepository ruleEngineRepository, SchedulerProvider schedulerProvider) {
         this.d2 = d2;
         this.programUid = programUid;
         this.dashboardRepository = dashboardRepository;
         this.ruleEngineRepository = ruleEngineRepository;
+        this.schedulerProvider = schedulerProvider;
 
         EnrollmentCollectionRepository enrollmentRepository = d2.enrollmentModule().enrollments
                 .byTrackedEntityInstance().eq(teiUid);
@@ -86,8 +89,8 @@ public class IndicatorsPresenterImpl implements IndicatorsContracts.Presenter {
                                             indicators.add(indicator);
                                     return indicators;
                                 }))
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
                         .subscribe(
                                 view.swapIndicators(),
                                 Timber::d

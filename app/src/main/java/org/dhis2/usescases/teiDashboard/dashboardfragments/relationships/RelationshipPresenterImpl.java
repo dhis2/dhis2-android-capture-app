@@ -6,6 +6,7 @@ import android.os.Bundle;
 import androidx.appcompat.app.AlertDialog;
 
 import org.dhis2.R;
+import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.usescases.searchTrackEntity.SearchTEActivity;
@@ -51,16 +52,18 @@ public class RelationshipPresenterImpl implements RelationshipContracts.Presente
     private final String teiUid;
     private final String teiType;
     private final String programUid;
+    private final SchedulerProvider schedulerProvider;
     private RelationshipContracts.View view;
     private FlowableProcessor<Boolean> updateRelationships;
 
 
-    RelationshipPresenterImpl(D2 d2, String programUid, String teiUid, DashboardRepository dashboardRepository) {
+    RelationshipPresenterImpl(D2 d2, String programUid, String teiUid, DashboardRepository dashboardRepository, SchedulerProvider schedulerProvider) {
         this.programUid = programUid;
         this.compositeDisposable = new CompositeDisposable();
         this.d2 = d2;
         this.teiUid = teiUid;
         this.dashboardRepository = dashboardRepository;
+        this.schedulerProvider = schedulerProvider;
         this.updateRelationships = PublishProcessor.create();
 
         teiType = d2.trackedEntityModule().trackedEntityInstances.byUid().eq(teiUid).withEnrollments().withRelationships().withTrackedEntityAttributeValues().one().blockingGet().trackedEntityType();
@@ -87,8 +90,8 @@ public class RelationshipPresenterImpl implements RelationshipContracts.Presente
                                         })
                                         .toList().toFlowable()
                         )
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
                         .subscribe(
                                 view.setRelationships(),
                                 Timber::d
@@ -134,8 +137,8 @@ public class RelationshipPresenterImpl implements RelationshipContracts.Presente
                                         })
                                         .toList().toFlowable()
                         )
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
                         .subscribe(
                                 view.setRelationships(),
                                 Timber::d
@@ -153,8 +156,8 @@ public class RelationshipPresenterImpl implements RelationshipContracts.Presente
                             }
                             return finalList;
                         })
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
                         .subscribe(
                                 view.setRelationshipTypes(),
                                 Timber::e
@@ -250,8 +253,8 @@ public class RelationshipPresenterImpl implements RelationshipContracts.Presente
     @Override
     public Observable<List<TrackedEntityAttributeValue>> getTEIMainAttributes(String teiUid) {
         return dashboardRepository.mainTrackedEntityAttributes(teiUid)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread());
+                .subscribeOn(schedulerProvider.io())
+                .observeOn(schedulerProvider.ui());
     }
 
     @Override

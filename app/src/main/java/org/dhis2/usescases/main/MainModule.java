@@ -2,6 +2,7 @@ package org.dhis2.usescases.main;
 
 
 import org.dhis2.data.dagger.PerActivity;
+import org.dhis2.data.schedulers.SchedulerProvider;
 import org.hisp.dhis.android.core.D2;
 
 import dagger.Module;
@@ -19,8 +20,8 @@ public final class MainModule {
 
     @Provides
     @PerActivity
-    MainContracts.Presenter homePresenter(D2 d2) {
-        return new MainPresenter(d2);
+    MainContracts.Presenter homePresenter(D2 d2, SchedulerProvider schedulerProvider) {
+        return new MainPresenter(d2, schedulerProvider);
     }
 
 }
