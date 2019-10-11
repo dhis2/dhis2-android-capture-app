@@ -465,6 +465,11 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
         }
     }
 
+    @Override
+    public void nextCalculation(boolean doNextCalculation){
+        showCalculationProcessor.onNext(doNextCalculation);
+    }
+
     @NonNull
     private synchronized List<FieldViewModel> applyEffects(
             @NonNull List<FieldViewModel> viewModels,
@@ -759,6 +764,11 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     @Override
     public Observable<List<OrganisationUnitLevel>> getLevels() {
         return eventCaptureRepository.getOrgUnitLevels();
+    }
+
+    @Override
+    public DataEntryStore getDataEntryStore(){
+        return dataEntryStore;
     }
 
     //region ruleActions
