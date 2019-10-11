@@ -7,6 +7,8 @@ import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import org.dhis2.App
 import org.dhis2.R
+import org.dhis2.data.fingerprint.FingerPrintController
+import org.dhis2.data.fingerprint.Type
 import org.dhis2.data.prefs.Preference
 import org.dhis2.data.prefs.PreferenceProvider
 import org.dhis2.data.schedulers.SchedulerProvider
@@ -25,7 +27,7 @@ import timber.log.Timber
 class LoginPresenter(private val view: LoginContracts.View,
                      private val preferenceProvider: PreferenceProvider,
                      private val schedulers: SchedulerProvider,
-                     private val goldfinger: RxGoldfinger,
+                     private val fingerPrintController: FingerPrintController,
                      private val analyticsHelper: AnalyticsHelper) {
 
     private var userManager: UserManager? = null
@@ -78,7 +80,7 @@ class LoginPresenter(private val view: LoginContracts.View,
     private fun showBiometricButtonIfVersionIsGreaterThanM(view: LoginContracts.View) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             disposable.add(
-                    Observable.just(goldfinger.hasEnrolledFingerprint())
+                    Observable.just(fingerPrintController.hasFingerPrint())
                             .filter { canHandleBiometrics ->
                                 this.canHandleBiometrics = canHandleBiometrics
                                 canHandleBiometrics && preferenceProvider.contains(SECURE_SERVER_URL)
@@ -181,7 +183,7 @@ class LoginPresenter(private val view: LoginContracts.View,
     }
 
     fun stopReadingFingerprint() {
-        goldfinger.cancel()
+        fingerPrintController.cancel()
     }
 
     fun canHandleBiometrics(): Boolean? {
@@ -191,7 +193,8 @@ class LoginPresenter(private val view: LoginContracts.View,
     fun onFingerprintClick() {
         view.showFingerprintDialog()
         disposable.add(
-                goldfinger.authenticate()
+
+                fingerPrintController.authenticate()
                         .map { result ->
                             if (preferenceProvider.contains(SECURE_SERVER_URL,
                                             SECURE_USER_NAME, SECURE_PASS)) {
@@ -205,7 +208,7 @@ class LoginPresenter(private val view: LoginContracts.View,
                                     if (it.isFailure){
                                         view.showEmptyCredentialsMessage()
                                     }
-                                    else if (it.isSuccess && it.getOrNull()?.type() == Goldfinger.Type.SUCCESS){
+                                    else if (it.isSuccess && it.getOrNull()?.type == Type.SUCCESS){
                                         view.showCredentialsData(Goldfinger.Type.SUCCESS,
                                                 preferenceProvider.getString(SECURE_SERVER_URL)!!,
                                                 preferenceProvider.getString(SECURE_USER_NAME)!!,
@@ -213,7 +216,7 @@ class LoginPresenter(private val view: LoginContracts.View,
                                     }
                                     else {
                                         view.showCredentialsData(Goldfinger.Type.ERROR,
-                                                it.getOrNull()?.message()!!)
+                                                it.getOrNull()?.message!!)
                                     }
                                 },
                                 {

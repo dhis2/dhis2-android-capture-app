@@ -1,9 +1,12 @@
 package org.dhis2.usecases
 
-import co.infinum.goldfinger.rx.RxGoldfinger
+import co.infinum.goldfinger.Goldfinger
 import com.nhaarman.mockitokotlin2.*
 import io.reactivex.Observable
 import junit.framework.Assert.assertTrue
+import org.dhis2.data.fingerprint.FingerPrintController
+import org.dhis2.data.fingerprint.FingerPrintResult
+import org.dhis2.data.fingerprint.Type
 import org.dhis2.data.prefs.PreferenceProvider
 import org.dhis2.data.schedulers.SchedulerProvider
 import org.dhis2.data.server.UserManager
@@ -25,7 +28,7 @@ class LoginPresenterTest {
     private val schedulers: SchedulerProvider = TrampolineSchedulerProvider()
 
     private val preferenceProvider: PreferenceProvider = mock()
-    private val goldfinger: RxGoldfinger = mock()
+    private val goldfinger: FingerPrintController = mock()
     private val view: LoginContracts.View = mock()
     private val userManager: UserManager = mock()
     private val analyticsHelper: AnalyticsHelper = mock()
@@ -104,16 +107,6 @@ class LoginPresenterTest {
     }
 
     @Test
-    fun `Should perform login successfully`(){
-
-    }
-
-    @Test
-    fun `Should not perform login successfully`(){
-
-    }
-
-    @Test
     fun `Should show alert when URL info is clicked`(){
         loginPresenter.onUrlInfoClick()
 
@@ -121,15 +114,42 @@ class LoginPresenterTest {
     }
 
     @Test
-    fun `Should fingerprint successfully`(){
+    fun `Should log in with fingerprint successfully`(){
+        whenever(goldfinger.authenticate()) doReturn Observable.just(FingerPrintResult(Type.SUCCESS,"none"))
+        whenever(preferenceProvider.contains(Constants.SECURE_SERVER_URL,
+                Constants.SECURE_USER_NAME, Constants.SECURE_PASS)) doReturn true
+        whenever(preferenceProvider.getString(Constants.SECURE_SERVER_URL)) doReturn "http://dhis2.org"
+        whenever(preferenceProvider.getString(Constants.SECURE_USER_NAME)) doReturn "James"
+        whenever(preferenceProvider.getString(Constants.SECURE_PASS)) doReturn "1234"
+
         loginPresenter.onFingerprintClick()
-    /*    whenever(goldfinger.authenticate()) doReturn Observable.just(Goldfinger( Goldfinger.Type.SUCCESS, Goldfinger.Reason.GOOD))
+
+        verify(view).showCredentialsData(Goldfinger.Type.SUCCESS,
+                preferenceProvider.getString(Constants.SECURE_SERVER_URL)!!,
+                preferenceProvider.getString(Constants.SECURE_USER_NAME)!!,
+                preferenceProvider.getString(Constants.SECURE_PASS)!!)
+    }
+
+    @Test
+    fun `Should show credentials data when logging in with fingerprint`(){
+        whenever(goldfinger.authenticate()) doReturn Observable.just(FingerPrintResult(Type.ERROR,"none"))
         whenever(preferenceProvider.contains(Constants.SECURE_SERVER_URL,
                 Constants.SECURE_USER_NAME, Constants.SECURE_PASS)) doReturn true
 
         loginPresenter.onFingerprintClick()
 
-        verify(view).showFingerprintDialog() */
+        view.showCredentialsData(Goldfinger.Type.ERROR, "none")
+    }
+
+    @Test
+    fun `Should show empty credentials message when trying to log in with fingerprint`(){
+        whenever(goldfinger.authenticate()) doReturn Observable.just(FingerPrintResult(Type.ERROR,"none"))
+        whenever(preferenceProvider.contains(Constants.SECURE_SERVER_URL,
+                Constants.SECURE_USER_NAME, Constants.SECURE_PASS)) doReturn false
+
+        loginPresenter.onFingerprintClick()
+
+        verify(view).showEmptyCredentialsMessage()
     }
 
     @Test
