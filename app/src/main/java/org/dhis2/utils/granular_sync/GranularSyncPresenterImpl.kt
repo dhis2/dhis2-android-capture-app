@@ -25,6 +25,7 @@
 
 package org.dhis2.utils.granular_sync
 
+import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.work.*
@@ -231,7 +232,8 @@ class GranularSyncPresenterImpl(val d2: D2,
         states.postValue(statesList)
     }
 
-    private fun getTitle(): Single<out BaseIdentifiableObject> {
+    @VisibleForTesting
+    fun getTitle(): Single<out BaseIdentifiableObject> {
         return when (conflictType) {
             PROGRAM -> d2.programModule().programs.uid(recordUid).get()
             TEI ->
