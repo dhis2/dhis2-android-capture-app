@@ -36,6 +36,7 @@ import org.hisp.dhis.android.core.arch.helpers.FileResourceDirectoryHelper;
 import org.hisp.dhis.android.core.fileresource.internal.FileResourceUtil;
 
 import java.io.File;
+import java.nio.file.Files;
 
 import io.reactivex.processors.FlowableProcessor;
 
@@ -54,6 +55,7 @@ public class PictureView extends FieldLayout implements View.OnClickListener, Vi
     private OnPictureSelected imageListener;
     private Boolean isEditable;
     private View clearButton;
+    private String currentValue;
 
     public PictureView(Context context) {
         super(context);
@@ -108,7 +110,7 @@ public class PictureView extends FieldLayout implements View.OnClickListener, Vi
     }
 
     private boolean removeFile() {
-        return FileResourcesUtil.getFileForAttribute(getContext(), primaryUid.concat("_").concat(uid).concat(".png")).delete();
+        return new File(currentValue).delete();
     }
 
     public void setLabel(String label) {
@@ -168,10 +170,10 @@ public class PictureView extends FieldLayout implements View.OnClickListener, Vi
             Glide.with(image).clear(image);
             clearButton.setVisibility(View.VISIBLE);
 
-//            File file = FileResourcesUtil.getFileForAttribute(getContext(), primaryUid.concat("_").concat(uid).concat(".png"));
             File file = new File(value);
 
             if (file.exists()) {
+                currentValue = value;
                 setTextSelected(getContext().getString(R.string.image_selected));
                 image.setVisibility(View.VISIBLE);
                 Glide.with(image)
