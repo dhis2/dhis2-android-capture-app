@@ -197,7 +197,7 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
     }
 
     override fun onDestroy() {
-        (applicationContext as App).loginComponent()
+        (applicationContext as App).releaseLoginComponent()
         super.onDestroy()
     }
 
