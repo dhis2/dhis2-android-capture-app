@@ -65,7 +65,7 @@
                 <ImageButton
                     android:id="@+id/urlInfo"
                     style="@style/ActionIconNoPadding"
-                    android:onClick="@{presenter::onUrlInfoClick}"
+                    android:onClick="@{()-> presenter.onUrlInfoClick()}"
                     android:tint="#5C5C5C"
                     app:layout_constraintBottom_toBottomOf="@id/server_url"
                     app:layout_constraintStart_toEndOf="@id/server_url"
@@ -217,7 +217,7 @@
                     android:layout_centerHorizontal="true"
                     android:layout_marginTop="15dp"
                     android:background="?attr/selectableItemBackgroundBorderless"
-                    android:onClick="@{()->presenter.onFingerprintClick()}"
+                    android:onClick="@{()-> presenter.onFingerprintClick()}"
                     android:tint="?colorPrimary"
                     android:visibility="gone"
                     app:layout_constraintBottom_toBottomOf="parent"

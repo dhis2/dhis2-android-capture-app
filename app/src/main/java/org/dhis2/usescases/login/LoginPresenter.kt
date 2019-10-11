@@ -1,7 +1,6 @@
 package org.dhis2.usescases.login
 
 import android.os.Build
-import android.view.View
 import co.infinum.goldfinger.Goldfinger
 import co.infinum.goldfinger.rx.RxGoldfinger
 import io.reactivex.Observable
@@ -192,15 +191,14 @@ class LoginPresenter(private val view: LoginContracts.View,
     fun onFingerprintClick() {
         view.showFingerprintDialog()
         disposable.add(
-                goldfinger
-                        .authenticate()
+                goldfinger.authenticate()
                         .map { result ->
                             if (preferenceProvider.contains(SECURE_SERVER_URL,
                                             SECURE_USER_NAME, SECURE_PASS)) {
                                 Result.success(result)
-                            } else
-                                Result.failure(Exception("Empty credentials"))
-
+                            } else {
+                                Result.failure(Exception(EMPTY_CREDENTIALS))
+                            }
                         }
                         .observeOn(schedulers.ui())
                         .subscribe({
@@ -219,7 +217,7 @@ class LoginPresenter(private val view: LoginContracts.View,
                                     }
                                 },
                                 {
-                                    view.displayMessage("AUTH ERROR")
+                                    view.displayMessage(AUTH_ERROR)
                                     view.hideFingerprintDialog()
                                 }))
     }
@@ -229,12 +227,14 @@ class LoginPresenter(private val view: LoginContracts.View,
         view.openAccountRecovery()
     }
 
-    fun onUrlInfoClick(v: View) {
-        view.displayAlertDialog(R.string.login_server_info_title, R.string.login_server_info_message, null, R.string.action_accept)
+    fun onUrlInfoClick() {
+        view.displayAlertDialog()
     }
 
     companion object {
         const val SESIONLOCKED = "SessionLocked"
         const val PIN = "pin"
+        const val EMPTY_CREDENTIALS = "Empty credentials"
+        const val AUTH_ERROR = "AUTH ERROR"
     }
 }

@@ -114,14 +114,26 @@ class LoginPresenterTest {
     }
 
     @Test
-    fun `Should open information dialog when URL icon i is clicked`(){
-      //  loginPresenter.onUrlInfoClick(View())
+    fun `Should show alert when URL info is clicked`(){
+        loginPresenter.onUrlInfoClick()
+
+        verify(view).displayAlertDialog()
+    }
+
+    @Test
+    fun `Should fingerprint successfully`(){
+        loginPresenter.onFingerprintClick()
+    /*    whenever(goldfinger.authenticate()) doReturn Observable.just(Goldfinger( Goldfinger.Type.SUCCESS, Goldfinger.Reason.GOOD))
+        whenever(preferenceProvider.contains(Constants.SECURE_SERVER_URL,
+                Constants.SECURE_USER_NAME, Constants.SECURE_PASS)) doReturn true
+
+        loginPresenter.onFingerprintClick()
+
+        verify(view).showFingerprintDialog() */
     }
 
     @Test
     fun `Should open account recovery when user does not remember it`(){
-    //    whenever(view.analyticsHelper())  doReturn
-
         loginPresenter.onAccountRecovery()
 
         verify(view).openAccountRecovery()

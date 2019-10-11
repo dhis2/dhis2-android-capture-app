@@ -1,4 +1,4 @@
-package org.dhis2.usescases.login.fingerprint
+package org.dhis2.data.fingerprint
 
 import android.content.Context
 import co.infinum.goldfinger.rx.RxGoldfinger
@@ -16,4 +16,9 @@ object FingerPrintModule {
     @PerActivity
     fun provideFingerPrintModule(context: Context) =
             RxGoldfinger.Builder(context).setLogEnabled(BuildConfig.DEBUG).build()
+
+    @JvmStatic
+    @Provides
+    @PerActivity
+    fun provideFingerPrintMapper() = FingerPrintMapper()
 }

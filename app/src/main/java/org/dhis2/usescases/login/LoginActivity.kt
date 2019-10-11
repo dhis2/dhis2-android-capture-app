@@ -419,11 +419,11 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
         startActivity(intent)
     }
 
-    override fun displayAlertDialog(titleResource: Int, descriptionResource: Int, negativeResource: Int?, positiveResource: Int) {
+    override fun displayAlertDialog() {
         MaterialAlertDialogBuilder(this, R.style.DhisMaterialDialog)
-                .setTitle(titleResource)
-                .setMessage(descriptionResource)
-                .setPositiveButton(positiveResource, null)
+                .setTitle(R.string.login_server_info_title)
+                .setMessage(R.string.login_server_info_message)
+                .setPositiveButton(R.string.action_accept, null)
                 .show()
     }
 
