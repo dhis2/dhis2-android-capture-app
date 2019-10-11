@@ -55,4 +55,5 @@ public interface DataValueRepository {
 
     List<CategoryOption> getCatOptionFromCatOptionCombo(CategoryOptionCombo categoryOptionCombo);
 
+    Flowable<Boolean> canWriteAny();
 }

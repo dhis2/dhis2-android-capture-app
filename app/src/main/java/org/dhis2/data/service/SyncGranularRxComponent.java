@@ -9,5 +9,5 @@ import dagger.Subcomponent;
 @PerService
 @Subcomponent(modules = SyncGranularRxModule.class)
 public interface SyncGranularRxComponent {
-    void inject(@Nonnull SyncGranularRxWorker syncGranularEventWorker);
+    void inject(@Nonnull SyncGranularWorker syncGranularEventWorker);
 }

@@ -6,9 +6,10 @@ import androidx.annotation.IntDef;
 
 import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableActivity;
-import org.dhis2.utils.granular_sync.SyncStatusDialog;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.filters.FilterManager;
+import org.dhis2.utils.granular_sync.GranularSyncContracts;
+import org.dhis2.utils.granular_sync.SyncStatusDialog;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -50,8 +51,27 @@ public class DataSetDetailPresenter implements DataSetDetailContract.Presenter {
         this.processor = PublishProcessor.create();
         this.dataSetUid = dataSetUid;
         getOrgUnits();
-        setDataSet(true);
-        manageProcessorDismissDialog();
+
+        compositeDisposable.add(
+                FilterManager.getInstance().asFlowable()
+                        .startWith(FilterManager.getInstance())
+                        .flatMap(filterManager -> dataSetDetailRepository.dataSetGroups(
+                                filterManager.getOrgUnitUidsFilters(),
+                                filterManager.getPeriodFilters(),
+                                filterManager.getStateFilters(),
+                                filterManager.getCatOptComboFilters()))
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
+                        .subscribe(
+                                dataSetDetailModels -> {
+                                    for (DataSetDetailModel dataset : dataSetDetailModels)
+                                        mapPeriodAvailable.put(dataset.periodId(), dataset.namePeriod());
+
+                                    view.setData(dataSetDetailModels);
+                                },
+                                Timber::d
+                        )
+        );
 
         compositeDisposable.add(
                 FilterManager.getInstance().asFlowable()
@@ -90,39 +110,6 @@ public class DataSetDetailPresenter implements DataSetDetailContract.Presenter {
                                 Timber::e
                         ));
     }
-
-    private void manageProcessorDismissDialog(){
-        compositeDisposable.add(processor
-                .subscribeOn(schedulerProvider.io())
-                .observeOn(schedulerProvider.ui())
-                .subscribe(bool -> setDataSet(true), Timber::d));
-    }
-
-    private void setDataSet(boolean isInit){
-        compositeDisposable.add(
-                FilterManager.getInstance().asFlowable()
-                        .startWith(FilterManager.getInstance())
-                        .flatMap(filterManager -> dataSetDetailRepository.dataSetGroups(
-                                filterManager.getOrgUnitUidsFilters(),
-                                filterManager.getPeriodFilters(),
-                                filterManager.getStateFilters(),
-                                filterManager.getCatOptComboFilters()))
-                        .subscribeOn(schedulerProvider.io())
-                        .observeOn(schedulerProvider.ui())
-                        .subscribe(
-                                dataSetDetailModels -> {
-                                    if(isInit)
-                                        for(DataSetDetailModel dataset: dataSetDetailModels)
-                                            mapPeriodAvailable.put(dataset.periodId(), dataset.namePeriod());
-
-                                    view.setData(dataSetDetailModels);
-                                    //view.setWritePermission(view.accessDataWrite());
-                                },
-                                Timber::d
-                        )
-        );
-    }
-
 
     @Override
     public void addDataSet() {
@@ -181,7 +168,19 @@ public class DataSetDetailPresenter implements DataSetDetailContract.Presenter {
 
     @Override
     public void onSyncIconClick(String orgUnit, String attributeCombo, String periodId) {
-        view.showSyncDialog(orgUnit, attributeCombo, periodId, SyncStatusDialog.ConflictType.DATA_VALUES, processor, dataSetUid);
+        view.showSyncDialog(
+                new SyncStatusDialog.Builder()
+                        .setConflictType(SyncStatusDialog.ConflictType.DATA_VALUES)
+                        .setUid(dataSetUid)
+                        .setOrgUnit(orgUnit)
+                        .setAttributeOptionCombo(attributeCombo)
+                        .setPeriodId(periodId)
+                        .onDismissListener(hasChanged -> {
+                            if(hasChanged)
+                                FilterManager.getInstance().publishData();
+                        })
+                        .build()
+        );
     }
 
     @Override

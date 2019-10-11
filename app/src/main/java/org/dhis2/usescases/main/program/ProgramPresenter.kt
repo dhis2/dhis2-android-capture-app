@@ -8,7 +8,6 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.functions.BiFunction
 import io.reactivex.functions.Consumer
-import io.reactivex.processors.FlowableProcessor
 import io.reactivex.processors.PublishProcessor
 import io.reactivex.schedulers.Schedulers
 import org.dhis2.data.schedulers.SchedulerProvider
@@ -21,6 +20,7 @@ import org.dhis2.utils.Constants
 import org.dhis2.utils.analytics.SELECT_PROGRAM
 import org.dhis2.utils.analytics.TYPE_PROGRAM_SELECTED
 import org.dhis2.utils.filters.FilterManager
+import org.dhis2.utils.granular_sync.GranularSyncContracts
 import org.dhis2.utils.granular_sync.SyncStatusDialog
 import org.hisp.dhis.android.core.period.DatePeriod
 import org.hisp.dhis.android.core.program.ProgramType
@@ -34,16 +34,14 @@ class ProgramPresenter internal constructor(private val homeRepository: HomeRepo
 
     private var view: ProgramContract.View? = null
     private var compositeDisposable: CompositeDisposable? = null
-
-    private var processorDismissDialog: FlowableProcessor<Boolean>? = null
+    private val programQueries = PublishProcessor.create<Pair<List<DatePeriod>, List<String>>>()
 
     override fun init(view: ProgramContract.View) {
         this.view = view
         var currentOrgUnitFilter: List<String> = ArrayList()
         var currentDateFilter: List<DatePeriod> = ArrayList()
         this.compositeDisposable = CompositeDisposable()
-        val programQueries = PublishProcessor.create<Pair<List<DatePeriod>, List<String>>>()
-        this.processorDismissDialog = PublishProcessor.create()
+
 
         if (FilterManager.getInstance().periodFilters.size != 0)
             currentDateFilter = FilterManager.getInstance().periodFilters
@@ -62,7 +60,7 @@ class ProgramPresenter internal constructor(private val homeRepository: HomeRepo
                                         finalList.addAll(programs)
                                         finalList.addAll(dataSets)
                                         finalList.sortWith(Comparator { program1, program2 -> program1.title().compareTo(program2.title(), ignoreCase = true) })
-                                        programs
+                                        finalList
                                     })
                         }
                         .subscribeOn(schedulerProvider.io())
@@ -85,7 +83,7 @@ class ProgramPresenter internal constructor(private val homeRepository: HomeRepo
                         .observeOn(schedulerProvider.ui())
                         .subscribe(
                                 view.swapProgramModelData(),
-                                Consumer{ throwable -> view.renderError(throwable.message?:"") }
+                                Consumer { throwable -> view.renderError(throwable.message ?: "") }
                         )
         )
 
@@ -98,11 +96,6 @@ class ProgramPresenter internal constructor(private val homeRepository: HomeRepo
                                 { Timber.e(it) }
                         )
         )
-
-        compositeDisposable!!.add(processorDismissDialog!!
-                .subscribeOn(schedulerProvider.io())
-                .observeOn(schedulerProvider.ui())
-                .subscribe({ init(view) }, { Timber.d(it) }))
     }
 
     override fun dispose() {
@@ -110,10 +103,26 @@ class ProgramPresenter internal constructor(private val homeRepository: HomeRepo
     }
 
     override fun onSyncStatusClick(program: ProgramViewModel) {
-        if (program.typeName() != "DataSets")
-            view!!.showSyncDialog(program.id(), SyncStatusDialog.ConflictType.PROGRAM, processorDismissDialog)
-        else
-            view!!.showSyncDialog(program.id(), SyncStatusDialog.ConflictType.DATA_SET, processorDismissDialog)
+        view!!.showSyncDialog(
+                SyncStatusDialog.Builder()
+                        .setConflictType(
+                                if (program.typeName() != "DataSets")
+                                    SyncStatusDialog.ConflictType.PROGRAM
+                                else
+                                    SyncStatusDialog.ConflictType.DATA_SET
+                        )
+                        .setUid(program.id())
+                        .onDismissListener(
+                                object : GranularSyncContracts.OnDismissListener {
+                                    override fun onDismiss(hasChanged: Boolean) {
+                                        if (hasChanged)
+                                            programQueries.onNext(
+                                                    Pair.create(FilterManager.getInstance().periodFilters, FilterManager.getInstance().orgUnitUidsFilters)
+                                            )
+                                    }
+                                })
+                        .build()
+        )
     }
 
     override fun onItemClick(programModel: ProgramViewModel) {
@@ -127,7 +136,7 @@ class ProgramPresenter internal constructor(private val homeRepository: HomeRepo
         if (!isEmpty(programModel.type()))
             bundle.putString("TRACKED_ENTITY_UID", programModel.type())
 
-        view!!.analyticsHelper().setEvent(TYPE_PROGRAM_SELECTED, if (!programModel.programType().isEmpty()) programModel.programType() else programModel.typeName(), SELECT_PROGRAM)
+        view!!.analyticsHelper().setEvent(TYPE_PROGRAM_SELECTED, if (programModel.programType().isNotEmpty()) programModel.programType() else programModel.typeName(), SELECT_PROGRAM)
         bundle.putString(idTag, programModel.id())
         bundle.putString(Constants.DATA_SET_NAME, programModel.title())
         bundle.putString(Constants.ACCESS_DATA, java.lang.Boolean.toString(programModel.accessDataWrite()))

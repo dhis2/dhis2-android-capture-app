@@ -59,6 +59,7 @@ public class DataValuePresenter implements DataValueContract.Presenter {
     private FlowableProcessor<RowAction> processor;
     private FlowableProcessor<Trio<String, String, Integer>> processorOptionSet;
     private Boolean isApproval;
+    private Boolean accessDataWrite;
     private String sectionName;
     private DataSet dataSet;
     private Section section;
@@ -84,6 +85,15 @@ public class DataValuePresenter implements DataValueContract.Presenter {
         this.attributeOptionCombo = attributeOptionCombo;
         this.periodId = periodId;
         this.sectionName = sectionName;
+        this.accessDataWrite = true;
+
+        compositeDisposable.add(
+                repository.canWriteAny()
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
+                        .subscribe( accessDataWrite -> this.accessDataWrite = accessDataWrite,
+                                Timber::e
+                        ));
 
         compositeDisposable.add(repository.getDataSet()
                 .subscribeOn(schedulerProvider.io())
@@ -287,7 +297,7 @@ public class DataValuePresenter implements DataValueContract.Presenter {
                 }
         }
 
-        boolean isEditable = dataSet != null && dataSet.access().data().write()
+        boolean isEditable = accessDataWrite
                 && !isExpired(dataSet)
                 && dataInputPeriodModel.size() == 0 || checkHasInputPeriod() != null && DateUtils.getInstance().isInsideInputPeriod(checkHasInputPeriod())
                 && !isApproval;

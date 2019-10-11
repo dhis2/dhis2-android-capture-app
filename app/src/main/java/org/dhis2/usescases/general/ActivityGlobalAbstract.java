@@ -393,16 +393,8 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity
     }
 
     @Override
-    public void showSyncDialog(String programUid, SyncStatusDialog.ConflictType conflictType, FlowableProcessor processor) {
-        new SyncStatusDialog(programUid, conflictType, processor, analyticsHelper)
-                .show(getSupportFragmentManager(), programUid);
-    }
-
-    @Override
-    public void showSyncDialog(String orgUnit, String attributeCombo, String periodId,
-                               SyncStatusDialog.ConflictType conflictType, FlowableProcessor processor, String dataSetUid) {
-        new SyncStatusDialog(orgUnit, attributeCombo, periodId, conflictType, processor, analyticsHelper, dataSetUid)
-                .show(getSupportFragmentManager(), attributeCombo);
+    public void showSyncDialog(SyncStatusDialog dialog) {
+        dialog.show(getSupportFragmentManager(),dialog.getDialogTag());
     }
 
     @Override

@@ -20,7 +20,6 @@ import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.databinding.WidgetDatepickerBinding;
 import org.dhis2.usescases.enrollment.EnrollmentActivity;
-import org.dhis2.utils.granular_sync.SyncStatusDialog;
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel;
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity;
 import org.dhis2.utils.ColorUtils;
@@ -29,6 +28,7 @@ import org.dhis2.utils.NetworkUtils;
 import org.dhis2.utils.ObjectStyleUtils;
 import org.dhis2.utils.custom_views.OrgUnitDialog;
 import org.dhis2.utils.filters.FilterManager;
+import org.dhis2.utils.granular_sync.SyncStatusDialog;
 import org.dhis2.utils.maps.GeometryUtils;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.common.FeatureType;
@@ -83,7 +83,6 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     private Date selectedEnrollmentDate;
 
     private FlowableProcessor<HashMap<String, String>> queryProcessor;
-    private FlowableProcessor<Boolean> processorDismissDialog;
     private String trackedEntityType;
     private String initialProgram;
     private FlowableProcessor<Unit> mapProcessor;
@@ -96,7 +95,6 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         this.schedulerProvider = schedulerProvider;
         queryData = new HashMap<>();
         queryProcessor = PublishProcessor.create();
-        processorDismissDialog = PublishProcessor.create();
         mapProcessor = PublishProcessor.create();
         enrollmentMapProcessor = PublishProcessor.create();
     }
@@ -178,15 +176,6 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                                 () -> Timber.d("COMPLETED")
                         ));
 
-        manageProcessorDismissDialog();
-    }
-
-    private void manageProcessorDismissDialog() {
-        compositeDisposable.add(processorDismissDialog
-                .subscribeOn(schedulerProvider.io())
-                .observeOn(schedulerProvider.ui())
-                .subscribe(bool -> init(view, trackedEntityType, initialProgram),
-                        Timber::d));
     }
 
     @Override
@@ -732,7 +721,18 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
     @Override
     public void onSyncIconClick(String teiUid) {
-        view.showSyncDialog(teiUid, SyncStatusDialog.ConflictType.TEI, processorDismissDialog);
+        view.showSyncDialog(
+                new SyncStatusDialog.Builder()
+                        .setConflictType(SyncStatusDialog.ConflictType.TEI)
+                        .setUid(teiUid)
+                        .onDismissListener(hasChanged -> {
+                            if(hasChanged && view.isMapVisible())
+                                mapProcessor.onNext(new Unit());
+                            else if(hasChanged)
+                                queryProcessor.onNext(queryData);
+                        })
+                        .build()
+        );
     }
 
     @Override

@@ -130,14 +130,8 @@ public abstract class FragmentGlobalAbstract extends Fragment implements Abstrac
     }
 
     @Override
-    public void showSyncDialog(String programUid, SyncStatusDialog.ConflictType conflictType, FlowableProcessor processor) {
-        getAbstractActivity().showSyncDialog(programUid, conflictType, processor);
-    }
-
-    @Override
-    public void showSyncDialog(String orgUnit, String attributeCombo, String periodId,
-                               SyncStatusDialog.ConflictType conflictType, FlowableProcessor processor, String dataSetUid) {
-        getAbstractActivity().showSyncDialog(orgUnit,attributeCombo,periodId ,conflictType, processor, dataSetUid);
+    public void showSyncDialog(SyncStatusDialog dialog) {
+        getAbstractActivity().showSyncDialog(dialog);
     }
 
     @Override

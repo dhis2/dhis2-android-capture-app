@@ -3,6 +3,7 @@ package org.dhis2;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
+import androidx.work.WorkManager;
 
 import org.apache.commons.jexl2.JexlEngine;
 import org.dhis2.utils.CodeGenerator;
@@ -49,6 +50,12 @@ public class AppModule {
     @Singleton
     RuleExpressionEvaluator ruleExpressionEvaluator(@NonNull JexlEngine jexlEngine) {
         return new ExpressionEvaluatorImpl(jexlEngine);
+    }
+
+    @Provides
+    @Singleton
+    WorkManager workManager(){
+        return WorkManager.getInstance(application.getApplicationContext());
     }
 
 
