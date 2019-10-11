@@ -1,9 +1,10 @@
-package org.dhis2.utils.custom_views;
+package org.dhis2.utils.optionset;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.dhis2.databinding.ItemOptionBinding;
+import org.dhis2.utils.custom_views.OptionSetOnClickListener;
 import org.hisp.dhis.android.core.option.Option;
 
 public class OptionSetViewHolder extends RecyclerView.ViewHolder {

@@ -1,14 +1,12 @@
 package org.dhis2.data.forms.dataentry.tablefields.spinner;
 
-import android.view.View;
-
 import org.dhis2.data.forms.dataentry.tablefields.FormViewHolder;
 import org.dhis2.data.forms.dataentry.tablefields.RowAction;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.databinding.FormOptionSetBinding;
-import org.dhis2.utils.custom_views.OptionSetCellDialog;
+import org.dhis2.utils.optionset.OptionSetCellDialog;
 import org.dhis2.utils.custom_views.OptionSetCellPopUp;
-import org.dhis2.utils.custom_views.OptionSetDialog;
+import org.dhis2.utils.optionset.OptionSetDialog;
 
 
 import androidx.fragment.app.FragmentActivity;
@@ -60,7 +58,7 @@ public class SpinnerHolder extends FormViewHolder {
                         binding.optionSetView,
                         (view) -> binding.optionSetView.deleteSelectedOption()
                 );
-                dialog.show(((FragmentActivity) binding.getRoot().getContext()).getSupportFragmentManager(), OptionSetDialog.TAG);
+                dialog.show(((FragmentActivity) binding.getRoot().getContext()).getSupportFragmentManager(), OptionSetDialog.Companion.getTAG());
             } else
                 new OptionSetCellPopUp(itemView.getContext(), binding.optionSetView, viewModel,
                         binding.optionSetView);

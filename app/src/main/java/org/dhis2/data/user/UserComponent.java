@@ -69,6 +69,8 @@ import org.dhis2.usescases.teiDashboard.teiDataDetail.TeiDataDetailComponent;
 import org.dhis2.usescases.teiDashboard.teiDataDetail.TeiDataDetailModule;
 import org.dhis2.usescases.teiDashboard.teiProgramList.TeiProgramListComponent;
 import org.dhis2.usescases.teiDashboard.teiProgramList.TeiProgramListModule;
+import org.dhis2.utils.optionset.OptionSetComponent;
+import org.dhis2.utils.optionset.OptionSetModule;
 
 import dagger.Subcomponent;
 
@@ -175,4 +177,7 @@ public interface UserComponent {
 
     @NonNull
     ScheduledEventComponent plus(ScheduledEventModule scheduledEventModule);
+
+    @NonNull
+    OptionSetComponent plus(OptionSetModule optionSetModule);
 }

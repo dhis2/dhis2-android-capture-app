@@ -1,6 +1,5 @@
 package org.dhis2.data.forms.dataentry.fields.spinner;
 
-import android.graphics.Color;
 import android.view.View;
 
 import androidx.fragment.app.FragmentActivity;
@@ -9,8 +8,7 @@ import androidx.lifecycle.MutableLiveData;
 import org.dhis2.data.forms.dataentry.fields.FormViewHolder;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.databinding.FormOptionSetBinding;
-import org.dhis2.utils.custom_views.FieldLayout;
-import org.dhis2.utils.custom_views.OptionSetDialog;
+import org.dhis2.utils.optionset.OptionSetDialog;
 import org.dhis2.utils.custom_views.OptionSetPopUp;
 
 import io.reactivex.processors.FlowableProcessor;
@@ -75,7 +73,7 @@ public class SpinnerHolder extends FormViewHolder implements View.OnClickListene
                     (view) -> binding.optionSetView.deleteSelectedOption()
             );
             if (dialog.isDialogShown()) { dialog.dismiss(); }
-            dialog.show(((FragmentActivity) binding.getRoot().getContext()).getSupportFragmentManager(), OptionSetDialog.TAG);
+            dialog.show(((FragmentActivity) binding.getRoot().getContext()).getSupportFragmentManager(), OptionSetDialog.Companion.getTAG());
         } else
             new OptionSetPopUp(itemView.getContext(), v, viewModel,
                     binding.optionSetView);

@@ -1,4 +1,4 @@
-package org.dhis2.utils.custom_views;
+package org.dhis2.utils.optionset;
 
 import android.app.Dialog;
 import android.content.Context;
@@ -20,6 +20,7 @@ import org.dhis2.App;
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.tablefields.spinner.SpinnerViewModel;
 import org.dhis2.databinding.DialogOptionSetBinding;
+import org.dhis2.utils.custom_views.OptionSetOnClickListener;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper;
 import org.hisp.dhis.android.core.option.Option;

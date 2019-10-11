@@ -1,4 +1,4 @@
-package org.dhis2.utils.custom_views;
+package org.dhis2.utils.optionset;
 
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.DiffUtil;
 
 import org.dhis2.R;
 import org.dhis2.databinding.ItemOptionBinding;
+import org.dhis2.utils.custom_views.OptionSetOnClickListener;
 import org.hisp.dhis.android.core.option.Option;
 
 public class OptionSetAdapter extends PagedListAdapter<Option, OptionSetViewHolder> {
