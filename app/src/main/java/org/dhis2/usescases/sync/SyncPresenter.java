@@ -110,7 +110,7 @@ public class SyncPresenter implements SyncContracts.Presenter {
     @Override
     public void getTheme() {
         disposable.add(
-                d2.systemSettingModule().systemSetting.get()
+                d2.systemSettingModule().systemSetting().get()
                         .map(systemSettings -> {
                             String style = "";
                             String flag = "";
