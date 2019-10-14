@@ -100,7 +100,7 @@ final class SyncPresenterImpl implements SyncPresenter {
 
     @Override
     public void downloadResources() {
-        if (d2.systemInfoModule().versionManager.is2_33())
+        if (d2.systemInfoModule().versionManager().is2_33())
             d2.fileResourceModule().blockingDownload();
     }
 

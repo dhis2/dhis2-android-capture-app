@@ -29,7 +29,7 @@ class AnalyticsHelper @Inject constructor(context: Context) {
     fun setEvent(param: String, value: String, event: String) {
         if (_d2 != null && d2!!.userModule().isLogged.blockingGet()) {
             val user = d2!!.userModule().userCredentials.blockingGet()
-            val info = d2!!.systemInfoModule().systemInfo.blockingGet()
+            val info = d2!!.systemInfoModule().systemInfo().blockingGet()
             setBundleEvent(param, value, event, user.username(), info.contextPath())
         } else setBundleEvent(param, value, event)
     }
@@ -39,7 +39,7 @@ class AnalyticsHelper @Inject constructor(context: Context) {
         if (_d2 != null) {
            bundle.apply {
                 putString("user", d2!!.userModule().userCredentials.blockingGet().username())
-                putString("server", d2!!.systemInfoModule().systemInfo.blockingGet().contextPath())
+                putString("server", d2!!.systemInfoModule().systemInfo().blockingGet().contextPath())
             }
         }
         params.entries.forEach { bundle.putString(it.key, it.value) }

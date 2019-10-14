@@ -66,8 +66,8 @@ class LoginPresenter(
                     }, { Timber.e(it) }))
 
             disposable.add(
-                    Observable.just(if (userManager.d2.systemInfoModule().systemInfo.blockingGet() != null)
-                        userManager.d2.systemInfoModule().systemInfo.blockingGet()
+                    Observable.just(if (userManager.d2.systemInfoModule().systemInfo().blockingGet() != null)
+                        userManager.d2.systemInfoModule().systemInfo().blockingGet()
                     else
                         SystemInfo.builder().build())
                             .subscribeOn(schedulers.io())
