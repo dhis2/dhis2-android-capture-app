@@ -6,14 +6,18 @@ import com.facebook.stetho.okhttp3.StethoInterceptor;
 
 import org.dhis2.BuildConfig;
 import org.dhis2.data.dagger.PerServer;
+import org.dhis2.utils.analytics.AnalyticsHelper;
+import org.dhis2.utils.analytics.AnalyticsInterceptor;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.d2manager.D2Configuration;
 import org.hisp.dhis.android.core.d2manager.D2Manager;
 
-import java.util.Collections;
+import java.util.ArrayList;
+import java.util.List;
 
 import dagger.Module;
 import dagger.Provides;
+import okhttp3.Interceptor;
 
 @Module
 @PerServer
@@ -38,12 +42,15 @@ public class ServerModule {
     }
 
     public static D2Configuration getD2Configuration(Context context) {
+        List<Interceptor> interceptors = new ArrayList<>();
+        interceptors.add(new StethoInterceptor());
+        interceptors.add(new AnalyticsInterceptor(new AnalyticsHelper(context)));
         return D2Configuration.builder()
                 .appName(BuildConfig.APPLICATION_ID)
                 .appVersion(BuildConfig.VERSION_NAME)
                 .connectTimeoutInSeconds(3 * 60)
                 .readTimeoutInSeconds(3 * 60)
-                .networkInterceptors(Collections.singletonList(new StethoInterceptor()))
+                .networkInterceptors(interceptors)
                 .writeTimeoutInSeconds(3 * 60)
                 .context(context)
                 .build();

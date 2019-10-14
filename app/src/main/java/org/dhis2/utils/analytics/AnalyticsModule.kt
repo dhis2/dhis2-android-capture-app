@@ -13,4 +13,9 @@ class AnalyticsModule internal constructor() {
     fun providesAnalyticsHelper(context: Context): AnalyticsHelper {
         return AnalyticsHelper(context)
     }
+
+    @Provides
+    fun providesAnalyticsInterceptor(analyticHelper: AnalyticsHelper): AnalyticsInterceptor {
+        return AnalyticsInterceptor(analyticHelper)
+    }
 }
