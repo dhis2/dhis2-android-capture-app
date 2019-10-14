@@ -11,53 +11,33 @@ import android.view.Window
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentManager
-
-import com.jakewharton.rxbinding2.widget.RxTextView
-
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.Observer
+import androidx.paging.PagedList
 import org.dhis2.App
 import org.dhis2.R
 import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel
 import org.dhis2.databinding.DialogOptionSetBinding
-import org.hisp.dhis.android.core.D2
-import org.hisp.dhis.android.core.arch.helpers.UidsHelper
-import org.hisp.dhis.android.core.option.Option
-
-import java.util.ArrayList
-import java.util.concurrent.TimeUnit
-
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.schedulers.Schedulers
-import timber.log.Timber
-
-import android.text.TextUtils.isEmpty
-import android.widget.TextView
-import androidx.core.util.Consumer
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.Observer
-import androidx.paging.PagedList
+import org.dhis2.utils.Constants
 import org.dhis2.utils.custom_views.OptionSetOnClickListener
-import org.dhis2.utils.granular_sync.GranularSyncContracts
-import org.dhis2.utils.granular_sync.GranularSyncModule
-import org.hisp.dhis.android.core.common.ObjectWithUid
+import org.hisp.dhis.android.core.option.Option
 import javax.inject.Inject
 
-class OptionSetDialog(private val optionSet: SpinnerViewModel, private val listener: OptionSetOnClickListener,
-                      private val clearListener: View.OnClickListener) : DialogFragment(), OptionSetContracts.View {
+class OptionSetDialog : DialogFragment(), OptionSetContracts.View {
 
     @Inject
     lateinit var presenter: OptionSetContracts.Presenter
 
     private var adapter: OptionSetAdapter? = null
 
+    var optionSet: SpinnerViewModel? = null
+    var optionSetTable: org.dhis2.data.forms.dataentry.tablefields.spinner.SpinnerViewModel? = null
+    var listener: OptionSetOnClickListener? = null
+    var clearListener: View.OnClickListener? = null
+    var defalutSize: Int = 0
+
     var isDialogShown = false
         private set
-
-
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        (context.applicationContext as App).userComponent()!!.plus(OptionSetModule()).inject(this)
-    }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val dialog = super.onCreateDialog(savedInstanceState)
@@ -70,18 +50,23 @@ class OptionSetDialog(private val optionSet: SpinnerViewModel, private val liste
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
 
         val binding = DataBindingUtil.inflate<DialogOptionSetBinding>(inflater, R.layout.dialog_option_set, container, false)
-        binding.title.text = optionSet.label()
 
-        presenter.init(this, optionSet, binding.txtSearch)
+        binding.title.text = if (optionSet != null) optionSet?.label() else optionSetTable?.label()
 
-        adapter = OptionSetAdapter { option ->
-            listener.onSelectOption(option)
-            this.dismiss()
-        }
+        if (optionSet != null)
+            presenter.init(this, optionSet!!, binding.txtSearch)
+        else if (optionSetTable != null)
+            presenter.init(this, optionSetTable!!, binding.txtSearch)
+
+        adapter = OptionSetAdapter (OptionSetOnClickListener {
+                listener?.onSelectOption(it)
+                this.dismiss()
+            })
+
         binding.recycler.adapter = adapter
 
         binding.clearButton.setOnClickListener { view ->
-            clearListener.onClick(view)
+            clearListener?.onClick(view)
             this.dismiss()
         }
         binding.cancelButton.setOnClickListener { this.dismiss() }
@@ -101,19 +86,30 @@ class OptionSetDialog(private val optionSet: SpinnerViewModel, private val liste
         })
     }
 
+    fun create(context: Context) {
+        (context.applicationContext as App).userComponent()!!.plus(OptionSetModule()).inject(this)
+        defalutSize = context.getSharedPreferences(Constants.SHARE_PREFS, Context.MODE_PRIVATE)
+                .getInt(Constants.OPTION_SET_DIALOG_THRESHOLD, 15)
+    }
+
     override fun show(manager: FragmentManager, tag: String?) {
         isDialogShown = true
         super.show(manager, tag)
     }
 
+    override fun showDialog(): Boolean {
+        return presenter.getCount(if (optionSet != null) optionSet!!.optionSet() else optionSetTable!!.optionSet())!! > defalutSize
+    }
+
     override fun dismiss() {
         presenter.onDettach()
-        isDialogShown = false
-        super.dismiss()
+        if (isDialogShown) {
+            isDialogShown = false
+            super.dismiss()
+        }
     }
 
     companion object {
-
         val TAG = OptionSetDialog::class.java.name
     }
 }

@@ -11,10 +11,18 @@ import org.hisp.dhis.android.core.option.Option
 class OptionSetContracts {
 
     interface View {
+
         fun setLiveData(data: LiveData<PagedList<Option>>?)
+
+        fun showDialog(): Boolean
     }
 
     interface Presenter : AbstractActivityContracts.Presenter {
+
         fun init(view: View, optionSet : SpinnerViewModel, textSearch : EditText)
+
+        fun init(view: View, optionSetTable: org.dhis2.data.forms.dataentry.tablefields.spinner.SpinnerViewModel, textSearch: EditText)
+
+        fun getCount(optionSetUid : String) : Int?
     }
 }

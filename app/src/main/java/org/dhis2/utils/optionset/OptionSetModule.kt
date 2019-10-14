@@ -31,7 +31,7 @@ import org.dhis2.data.schedulers.SchedulerProvider
 import org.hisp.dhis.android.core.D2
 
 @Module
-class OptionSetModule() {
+class OptionSetModule {
 
     @Provides
     fun providesPresenter(d2: D2, schedulerProvider: SchedulerProvider): OptionSetContracts.Presenter {

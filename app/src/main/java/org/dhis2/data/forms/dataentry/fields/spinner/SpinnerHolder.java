@@ -67,15 +67,18 @@ public class SpinnerHolder extends FormViewHolder implements View.OnClickListene
     public void onClick(View v) {
         closeKeyboard(v);
         setSelectedBackground(isSearchMode);
-        if (binding.optionSetView.openOptionDialog()) {
-            OptionSetDialog dialog = new OptionSetDialog(viewModel,
-                    binding.optionSetView,
-                    (view) -> binding.optionSetView.deleteSelectedOption()
-            );
-            if (dialog.isDialogShown()) { dialog.dismiss(); }
+        OptionSetDialog dialog = new OptionSetDialog();
+        dialog.create(itemView.getContext());
+        dialog.setOptionSet(viewModel);
+
+        if (dialog.showDialog()) {
+            dialog.setListener(binding.optionSetView);
+            dialog.setClearListener((view) -> binding.optionSetView.deleteSelectedOption());
             dialog.show(((FragmentActivity) binding.getRoot().getContext()).getSupportFragmentManager(), OptionSetDialog.Companion.getTAG());
-        } else
+        } else {
+            dialog.dismiss();
             new OptionSetPopUp(itemView.getContext(), v, viewModel,
                     binding.optionSetView);
+        }
     }
 }
