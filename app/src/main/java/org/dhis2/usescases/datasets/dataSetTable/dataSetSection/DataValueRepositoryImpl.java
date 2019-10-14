@@ -50,7 +50,7 @@ public class DataValueRepositoryImpl implements DataValueRepository {
 
     @Override
     public Flowable<Period> getPeriod(String periodId) {
-        return Flowable.fromCallable(() -> d2.periodModule().periods.byPeriodId().eq(periodId).one().blockingGet());
+        return Flowable.fromCallable(() -> d2.periodModule().periods().byPeriodId().eq(periodId).one().blockingGet());
     }
 
     @Override

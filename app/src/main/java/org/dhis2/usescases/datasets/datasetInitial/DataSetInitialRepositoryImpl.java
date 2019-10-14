@@ -33,7 +33,7 @@ public class DataSetInitialRepositoryImpl implements DataSetInitialRepository {
         return Flowable.just(d2.dataSetModule().dataSets.withDataInputPeriods().byUid().eq(dataSetUid).one().blockingGet())
                 .flatMapIterable(dataSet -> dataSet.dataInputPeriods())
                 .flatMap(dataInputPeriod ->
-                        Flowable.just(d2.periodModule().periods.byPeriodId().eq(dataInputPeriod.period().uid()).blockingGet())
+                        Flowable.just(d2.periodModule().periods().byPeriodId().eq(dataInputPeriod.period().uid()).blockingGet())
                                 .flatMapIterable(periods -> periods)
                                 .map(period -> {
                                     Date periodStartDate = period.startDate();
@@ -103,10 +103,10 @@ public class DataSetInitialRepositoryImpl implements DataSetInitialRepository {
     @Override
     public Flowable<String> getPeriodId(PeriodType periodType, Date date) {
         return Flowable.fromCallable(() -> {
-            if (d2.periodModule().periodHelper.getPeriod(periodType, date) == null)
-                d2.periodModule().periodHelper.blockingGetPeriodsForDataSet(dataSetUid);
+            if (d2.periodModule().periodHelper().getPeriod(periodType, date) == null)
+                d2.periodModule().periodHelper().blockingGetPeriodsForDataSet(dataSetUid);
 
-            return d2.periodModule().periodHelper.getPeriod(periodType, date).periodId();
+            return d2.periodModule().periodHelper().getPeriod(periodType, date).periodId();
         });
     }
 }

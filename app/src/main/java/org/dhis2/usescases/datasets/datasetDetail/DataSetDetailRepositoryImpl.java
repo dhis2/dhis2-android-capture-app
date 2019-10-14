@@ -67,7 +67,7 @@ public class DataSetDetailRepositoryImpl implements DataSetDetailRepository {
         DataSetInstanceCollectionRepository finalRepo = repo;
         return Flowable.fromIterable(finalRepo.blockingGet())
                 .map(dataSetReport -> {
-                    Period period = d2.periodModule().periods.byPeriodId().eq(dataSetReport.period()).one().blockingGet();
+                    Period period = d2.periodModule().periods().byPeriodId().eq(dataSetReport.period()).one().blockingGet();
                     String periodName = DateUtils.getInstance().getPeriodUIString(period.periodType(), period.startDate(), Locale.getDefault());
                     DataSetCompleteRegistration dscr = d2.dataSetModule().dataSetCompleteRegistrations
                             .byDataSetUid().eq(dataSetUid)
@@ -123,10 +123,10 @@ public class DataSetDetailRepositoryImpl implements DataSetDetailRepository {
                 })
                 .filter(dataSetDetailModel -> stateFilters.isEmpty() || stateFilters.contains(dataSetDetailModel.state()))
                 .toSortedList((dataSet1, dataSet2) -> {
-                    Date startDate1 = d2.periodModule().periods
+                    Date startDate1 = d2.periodModule().periods()
                             .byPeriodId().eq(dataSet1.periodId())
                             .byPeriodType().eq(PeriodType.valueOf(dataSet1.periodType())).one().blockingGet().startDate();
-                    Date startDate2 = d2.periodModule().periods
+                    Date startDate2 = d2.periodModule().periods()
                             .byPeriodId().eq(dataSet2.periodId())
                             .byPeriodType().eq(PeriodType.valueOf(dataSet2.periodType())).one().blockingGet().startDate();
                     return startDate2.compareTo(startDate1);
