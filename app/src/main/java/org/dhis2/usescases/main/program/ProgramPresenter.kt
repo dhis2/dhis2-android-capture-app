@@ -37,40 +37,11 @@ class ProgramPresenter internal constructor(private val homeRepository: HomeRepo
 
     override fun init(view: ProgramContract.View) {
         this.view = view
-        var currentOrgUnitFilter: List<String> = ArrayList()
-        var currentDateFilter: List<DatePeriod> = ArrayList()
         this.compositeDisposable = CompositeDisposable()
-
-
-        if (FilterManager.getInstance().periodFilters.size != 0)
-            currentDateFilter = FilterManager.getInstance().periodFilters
-        if (FilterManager.getInstance().orgUnitFilters.size != 0)
-            currentOrgUnitFilter = FilterManager.getInstance().orgUnitUidsFilters
+        val filterFlowable = FilterManager.getInstance().asFlowable().publish()
 
         compositeDisposable!!.add(
-                programQueries
-                        .startWith(Pair.create(currentDateFilter, currentOrgUnitFilter))
-                        .flatMap { datePeriodOrgs ->
-                            Flowable.zip(
-                                    homeRepository.programModels(datePeriodOrgs.val0(), datePeriodOrgs.val1(), FilterManager.getInstance().stateFilters).subscribeOn(Schedulers.io()),
-                                    homeRepository.aggregatesModels(datePeriodOrgs.val0(), datePeriodOrgs.val1(), FilterManager.getInstance().stateFilters).subscribeOn(Schedulers.io()),
-                                    BiFunction<List<ProgramViewModel>, List<ProgramViewModel>, List<ProgramViewModel>> { programs, dataSets ->
-                                        val finalList = ArrayList<ProgramViewModel>()
-                                        finalList.addAll(programs)
-                                        finalList.addAll(dataSets)
-                                        finalList.sortWith(Comparator { program1, program2 -> program1.title().compareTo(program2.title(), ignoreCase = true) })
-                                        finalList
-                                    })
-                        }
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(
-                                view.swapProgramModelData(),
-                                Consumer { throwable -> view.renderError(throwable.message ?: "") }
-                        ))
-
-        compositeDisposable!!.add(
-                FilterManager.getInstance().asFlowable()
+                filterFlowable
                         .subscribeOn(Schedulers.io())
                         .flatMap { filterManager ->
                             homeRepository.programModels(filterManager.periodFilters, filterManager.orgUnitUidsFilters, filterManager.stateFilters).flatMapIterable { data -> data }
@@ -85,6 +56,19 @@ class ProgramPresenter internal constructor(private val homeRepository: HomeRepo
                                 Consumer { throwable -> view.renderError(throwable.message ?: "") }
                         )
         )
+
+        compositeDisposable!!.add(
+                filterFlowable
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                {view.showFilterProgress()},
+                                {Timber.e(it)}
+                        )
+        )
+
+        filterFlowable.connect()
+        FilterManager.getInstance().publishData()
 
         compositeDisposable!!.add(
                 FilterManager.getInstance().ouTreeFlowable()
