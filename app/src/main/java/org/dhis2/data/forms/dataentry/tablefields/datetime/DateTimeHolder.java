@@ -1,11 +1,9 @@
 package org.dhis2.data.forms.dataentry.tablefields.datetime;
 
 
-import androidx.core.content.ContextCompat;
 import androidx.databinding.ViewDataBinding;
 
 import org.dhis2.BR;
-import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.datetime.OnDateSelected;
 import org.dhis2.data.forms.dataentry.tablefields.FormViewHolder;
 import org.dhis2.data.forms.dataentry.tablefields.RowAction;
@@ -69,9 +67,6 @@ public class DateTimeHolder extends FormViewHolder implements OnDateSelected {
             binding.setVariable(BR.initData, null);
         }
 
-        if (!isEmpty(value))
-            binding.setVariable(BR.initData, value);
-
         if (binding instanceof TableDateTextBinding)
             ((TableDateTextBinding) binding).dateView.setAllowFutureDates(dateTimeViewModel.allowFutureDate());
         if (binding instanceof TableDateTimeTextBinding)
@@ -108,28 +103,13 @@ public class DateTimeHolder extends FormViewHolder implements OnDateSelected {
             }
         }
 
-        if (!viewModel.editable()) {
-            if (binding instanceof TableTimeTextBinding)
-                ((TableTimeTextBinding) binding).timeView.getEditText().setBackgroundColor(ContextCompat.getColor(((TableTimeTextBinding) binding).timeView.getContext(), R.color.bg_black_e6e));
-            if (binding instanceof TableDateTextBinding)
-                ((TableDateTextBinding) binding).dateView.getEditText().setBackgroundColor(ContextCompat.getColor(((TableDateTextBinding) binding).dateView.getContext(), R.color.bg_black_e6e));
-            if (binding instanceof TableDateTimeTextBinding)
-                ((TableDateTimeTextBinding) binding).dateTimeView.getEditText().setBackgroundColor(ContextCompat.getColor(((TableDateTimeTextBinding) binding).dateTimeView.getContext(), R.color.bg_black_e6e));
-        } else {
-            if (binding instanceof TableTimeTextBinding)
-                ((TableTimeTextBinding) binding).timeView.setBackgroundColor(ContextCompat.getColor(((TableTimeTextBinding) binding).timeView.getContext(), R.color.white));
-            if (binding instanceof TableDateTextBinding)
-                ((TableDateTextBinding) binding).dateView.setBackgroundColor(ContextCompat.getColor(((TableDateTextBinding) binding).dateView.getContext(), R.color.white));
-            if (binding instanceof TableDateTimeTextBinding)
-                ((TableDateTimeTextBinding) binding).dateTimeView.setBackgroundColor(ContextCompat.getColor(((TableDateTimeTextBinding) binding).dateTimeView.getContext(), R.color.white));
-        }
-
         if (binding instanceof TableTimeTextBinding)
-            ((TableTimeTextBinding) binding).timeView.setEditable(accessDataWrite && viewModel.editable());
+            ((TableTimeTextBinding) binding).timeView.getEditText().setEnabled(accessDataWrite && viewModel.editable());
         if (binding instanceof TableDateTextBinding)
-            ((TableDateTextBinding) binding).dateView.setEditable(accessDataWrite && viewModel.editable());
+            ((TableDateTextBinding) binding).dateView.getEditText().setEnabled(accessDataWrite && viewModel.editable());
         if (binding instanceof TableDateTimeTextBinding)
-            ((TableDateTimeTextBinding) binding).dateTimeView.setEditable(accessDataWrite && viewModel.editable());
+            ((TableDateTimeTextBinding) binding).dateTimeView.getEditText().setEnabled(accessDataWrite && viewModel.editable());
+
 
         if (dateTimeViewModel.mandatory()) {
             if (binding instanceof TableTimeTextBinding)
