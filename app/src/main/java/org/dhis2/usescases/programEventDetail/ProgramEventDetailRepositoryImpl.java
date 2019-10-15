@@ -145,7 +145,7 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
                 event.organisationUnit(),
                 orgUnitName,
                 event.eventDate(),
-                event.state(),
+                event.state()!=null?event.state():State.TO_UPDATE,
                 data,
                 event.status(),
                 hasExpired || !inOrgUnitRange,
