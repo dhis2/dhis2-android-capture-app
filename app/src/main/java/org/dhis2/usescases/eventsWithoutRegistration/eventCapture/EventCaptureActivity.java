@@ -4,6 +4,7 @@ import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.GestureDetector;
 import android.view.Gravity;
@@ -32,9 +33,12 @@ import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.DialogClickListener;
+import org.dhis2.utils.FileResourcesUtil;
 import org.dhis2.utils.custom_views.CustomDialog;
 import org.dhis2.utils.custom_views.FormBottomDialog;
+import org.hisp.dhis.android.core.arch.helpers.FileResourceDirectoryHelper;
 
+import java.io.File;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Calendar;
@@ -113,6 +117,31 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
     protected void onDestroy() {
         presenter.onDettach();
         super.onDestroy();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        switch (requestCode){
+            case Constants.GALLERY_REQUEST:
+                if(resultCode == RESULT_OK){
+                    Uri imageUri = data.getData();
+                    presenter.getDataEntryStore().save(uuid, FileResourcesUtil.getFileFromGallery(this, imageUri).getPath());
+                    presenter.nextCalculation(true);
+                }
+                break;
+            case Constants.CAMERA_REQUEST:
+                if (resultCode == RESULT_OK) {
+                    File file = new File(FileResourceDirectoryHelper.getFileResourceDirectory(this), "tempFile.png");
+                    if (file.exists()) {
+                        presenter.getDataEntryStore().save(uuid, file.getPath());
+                    } else
+                        presenter.getDataEntryStore().save(uuid, null);
+                    presenter.nextCalculation(true);
+                }
+                break;
+        }
     }
 
     @Override

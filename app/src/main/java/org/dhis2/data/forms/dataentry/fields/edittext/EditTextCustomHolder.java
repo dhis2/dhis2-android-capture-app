@@ -67,8 +67,11 @@ final class EditTextCustomHolder extends FormViewHolder {
                binding.customEdittext.getEditText().setFocusable(false);
            }
 
-            if (isSearchMode || (!hasFocus && editTextModel != null && editTextModel.editable() && valueHasChanged())) {
-                sendAction();
+            if (isSearchMode || (!hasFocus && editTextModel != null && editTextModel.editable())) {
+                if(valueHasChanged())
+                    sendAction();
+                else
+                    closeKeyboard(binding.customEdittext.getEditText());
             }
             validateRegex();
         });

@@ -567,8 +567,8 @@ public final class RulesRepository {
                         return d2.enrollmentModule().enrollments
                                 .uid(event.enrollment()).get()
                                 .map(enrollment -> RuleEnrollment.create(enrollment.uid(),
-                                        enrollment.enrollmentDate(),
                                         enrollment.incidentDate() != null ? enrollment.incidentDate() : new Date(),
+                                        enrollment.enrollmentDate(),
                                         RuleEnrollment.Status.valueOf(enrollment.status().name()),
                                         event.organisationUnit(),
                                         ouCode,

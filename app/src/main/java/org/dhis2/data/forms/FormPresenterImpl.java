@@ -456,8 +456,8 @@ class FormPresenterImpl implements FormPresenter {
                         formRepository.getProgramCategoryCombo(eventUid).toFlowable(BackpressureStrategy.LATEST),
                         Pair::create
                 )
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
                         .subscribe(
                                 pair -> {
                                     ProgramStage programStage = pair.val0();
