@@ -103,15 +103,13 @@ class LoginPresenter(private val view: LoginContracts.View,
         }
     }
 
-     fun logIn(serverUrl: String, userName: String, pass: String) {
+    fun logIn(serverUrl: String, userName: String, pass: String) {
         disposable.add(
-                D2Manager.setServerUrl(serverUrl)
-                        .andThen(D2Manager.instantiateD2())
-                        .map { (view.abstracContext.applicationContext as App).createServerComponent().userManager() }
-                        .flatMapObservable { userManager ->
+                Observable.just((view.abstracContext.applicationContext as App).createServerComponent().userManager())
+                        .flatMap { userManager ->
                             preferenceProvider.setValue(SERVER, "$serverUrl/api")
                             this.userManager = userManager
-                            userManager.logIn(userName.trim { it <= ' ' }, pass).map<Response<Any>> { user ->
+                            userManager.logIn(userName.trim { it <= ' ' }, pass, serverUrl).map<Response<Any>> { user ->
                                 run {
                                     with(preferenceProvider) {
                                         setValue(USER, user.userCredentials()?.username())
