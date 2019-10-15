@@ -145,7 +145,8 @@ public class App extends MultiDexApplication implements Components {
     }
 
     protected void setUpServerComponent() {
-        boolean isLogged = D2Manager.setUp(ServerModule.getD2Configuration(this))
+        boolean isLogged = D2Manager.blockingInstantiateD2(ServerModule.getD2Configuration(this)).userModule().isLogged().blockingGet();
+       /* boolean isLogged = D2Manager.setUp(ServerModule.getD2Configuration(this))
                 .andThen(
                         Single.defer(() -> {
                             if (D2Manager.isServerUrlSet())
@@ -154,9 +155,10 @@ public class App extends MultiDexApplication implements Components {
                                 return Single.just(false);
 
                         })
-                ).blockingGet();
-        if (D2Manager.isServerUrlSet())
-            serverComponent = appComponent.plus(new ServerModule(), new DbModule(DATABASE_NAME));
+                ).blockingGet();*/
+
+//        if (isLogged)
+            serverComponent = appComponent.plus(new ServerModule(this), new DbModule(DATABASE_NAME));
 
         if (isLogged)
             setUpUserComponent();
@@ -223,7 +225,7 @@ public class App extends MultiDexApplication implements Components {
 
     @Override
     public ServerComponent createServerComponent() {
-        serverComponent = appComponent.plus(new ServerModule(), new DbModule(DATABASE_NAME));
+        serverComponent = appComponent.plus(new ServerModule(this), new DbModule(DATABASE_NAME));
         return serverComponent;
 
     }

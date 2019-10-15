@@ -23,6 +23,10 @@ import okhttp3.Interceptor;
 @PerServer
 public class ServerModule {
 
+    public ServerModule(Context context){
+        D2Manager.blockingInstantiateD2(getD2Configuration(context));
+    }
+
     @Provides
     @PerServer
     D2 sdk() {

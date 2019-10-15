@@ -22,7 +22,6 @@ import org.dhis2.utils.analytics.ACCOUNT_RECOVERY
 import org.dhis2.utils.analytics.CLICK
 import org.dhis2.utils.analytics.LOGIN
 import org.dhis2.utils.analytics.SERVER_QR_SCANNER
-import org.hisp.dhis.android.core.d2manager.D2Manager
 import org.hisp.dhis.android.core.maintenance.D2Error
 import org.hisp.dhis.android.core.maintenance.D2ErrorCode
 import org.hisp.dhis.android.core.systeminfo.SystemInfo
@@ -115,14 +114,12 @@ class LoginPresenter(
 
     override fun logIn(serverUrl: String, userName: String, pass: String) {
         disposable.add(
-                D2Manager.setServerUrl(serverUrl)
-                        .andThen(D2Manager.instantiateD2())
-                        .map { (view.abstracContext.applicationContext as App).createServerComponent().userManager() }
-                        .flatMapObservable { userManager ->
+                Observable.just((view.abstracContext.applicationContext as App).createServerComponent().userManager())
+                        .flatMap { userManager ->
                             val prefs = view.abstractActivity.getSharedPreferences(Constants.SHARE_PREFS, Context.MODE_PRIVATE)
                             prefs.edit().putString(Constants.SERVER, "$serverUrl/api").apply()
                             this.userManager = userManager
-                            userManager.logIn(userName.trim { it <= ' ' }, pass).map<Response<Any>> { user ->
+                            userManager.logIn(userName.trim { it <= ' ' }, pass, serverUrl).map<Response<Any>> { user ->
                                 run {
                                     prefs.edit().putString(Constants.USER, user.userCredentials()?.username()).apply()
                                     prefs.edit().putBoolean("SessionLocked", false).apply()

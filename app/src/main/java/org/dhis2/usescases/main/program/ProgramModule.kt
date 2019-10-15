@@ -1,19 +1,14 @@
 package org.dhis2.usescases.main.program
 
 import android.content.Context
-import android.view.LayoutInflater
-import android.view.ViewGroup
-
-import androidx.databinding.DataBindingUtil
-import androidx.recyclerview.widget.DividerItemDecoration
 
 import org.dhis2.R
 import org.dhis2.data.dagger.PerFragment
-import org.dhis2.databinding.FragmentProgramBinding
 import org.hisp.dhis.android.core.D2
 
 import dagger.Module
 import dagger.Provides
+import org.dhis2.data.prefs.PreferenceProvider
 import org.dhis2.data.schedulers.SchedulerProvider
 
 /**
@@ -25,8 +20,10 @@ class ProgramModule {
 
     @Provides
     @PerFragment
-    internal fun programPresenter(homeRepository: HomeRepository, schedulerProvider : SchedulerProvider): ProgramContract.Presenter {
-        return ProgramPresenter(homeRepository, schedulerProvider)
+    internal fun programPresenter(homeRepository: HomeRepository,
+                                  schedulerProvider : SchedulerProvider,
+                                  preferenceProvider: PreferenceProvider): ProgramContract.Presenter {
+        return ProgramPresenter(homeRepository, schedulerProvider,preferenceProvider)
     }
 
     @Provides

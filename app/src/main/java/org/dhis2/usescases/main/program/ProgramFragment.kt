@@ -8,7 +8,6 @@ import android.util.SparseBooleanArray
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.animation.Animation
 import androidx.appcompat.app.AlertDialog
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -66,22 +65,18 @@ class ProgramFragment : FragmentGlobalAbstract(), ProgramContract.View {
         presenter.dispose()
     }
 
-    override fun onCreateAnimation(transit: Int, enter: Boolean, nextAnim: Int): Animation? {
-        return super.onCreateAnimation(transit, enter, nextAnim)
-    }
-
     //endregion
 
     override fun swapProgramModelData(): Consumer<List<ProgramViewModel>> {
         return Consumer { programs ->
-            binding!!.programProgress.visibility = View.GONE
+            binding!!.progressLayout.visibility = View.GONE
             binding!!.emptyView.visibility = if (programs.isEmpty()) View.VISIBLE else View.GONE
             (binding!!.programRecycler.adapter as ProgramModelAdapter).setData(programs)
         }
     }
 
     override fun showFilterProgress() {
-        binding!!.programProgress.visibility = View.VISIBLE
+        binding!!.progressLayout.visibility = View.VISIBLE
     }
 
     override fun renderError(message: String) {
