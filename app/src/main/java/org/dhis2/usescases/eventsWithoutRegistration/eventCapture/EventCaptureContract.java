@@ -114,6 +114,8 @@ public class EventCaptureContract {
         Observable<List<OrganisationUnitLevel>> getLevels();
 
         DataEntryStore getDataEntryStore();
+
+        void saveImage(String uuid, String filePath);
     }
 
     public interface EventCaptureRepository {
@@ -172,6 +174,7 @@ public class EventCaptureContract {
         Observable<Boolean> isCompletedEventExpired(String eventUid);
         void assign(String uid, String value);
 
+        void saveImage(String uuid, String filePath);
     }
 
 }

@@ -43,12 +43,10 @@ import java.util.concurrent.TimeUnit;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
-import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.flowables.ConnectableFlowable;
 import io.reactivex.processors.FlowableProcessor;
 import io.reactivex.processors.PublishProcessor;
-import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
 import static android.text.TextUtils.isEmpty;
@@ -315,8 +313,8 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                                 .subscribeOn(schedulerProvider.io())
                                 .map(fields -> {
                                     List<FieldViewModel> finalFields = new ArrayList<>();
-                                    for(FieldViewModel fieldViewModel : fields){
-                                        if(section.equals("NO_SECTION") ||
+                                    for (FieldViewModel fieldViewModel : fields) {
+                                        if (section.equals("NO_SECTION") ||
                                                 section.equals(fieldViewModel.programStageSection()))
                                             finalFields.add(fieldViewModel);
                                     }
@@ -469,7 +467,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     }
 
     @Override
-    public void nextCalculation(boolean doNextCalculation){
+    public void nextCalculation(boolean doNextCalculation) {
         showCalculationProcessor.onNext(doNextCalculation);
     }
 
@@ -770,8 +768,13 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     }
 
     @Override
-    public DataEntryStore getDataEntryStore(){
+    public DataEntryStore getDataEntryStore() {
         return dataEntryStore;
+    }
+
+    @Override
+    public void saveImage(String uuid, String filePath) {
+        eventCaptureRepository.saveImage(uuid, filePath);
     }
 
     //region ruleActions

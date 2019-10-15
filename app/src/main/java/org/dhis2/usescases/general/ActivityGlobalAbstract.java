@@ -30,9 +30,9 @@ import com.google.gson.reflect.TypeToken;
 import org.dhis2.App;
 import org.dhis2.BuildConfig;
 import org.dhis2.R;
+import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity;
 import org.dhis2.usescases.login.LoginActivity;
 import org.dhis2.usescases.main.MainActivity;
-import org.dhis2.utils.granular_sync.SyncStatusDialog;
 import org.dhis2.usescases.map.MapSelectorActivity;
 import org.dhis2.usescases.splash.SplashActivity;
 import org.dhis2.utils.Constants;
@@ -42,6 +42,7 @@ import org.dhis2.utils.analytics.AnalyticsHelper;
 import org.dhis2.utils.custom_views.CoordinatesView;
 import org.dhis2.utils.custom_views.CustomDialog;
 import org.dhis2.utils.custom_views.PictureView;
+import org.dhis2.utils.granular_sync.SyncStatusDialog;
 import org.hisp.dhis.android.core.arch.helpers.GeometryHelper;
 import org.hisp.dhis.android.core.common.FeatureType;
 import org.hisp.dhis.android.core.common.Geometry;
@@ -53,7 +54,6 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import io.reactivex.processors.FlowableProcessor;
 import rx.Observable;
 import rx.subjects.BehaviorSubject;
 import timber.log.Timber;
@@ -393,13 +393,16 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity
 
     @Override
     public void showSyncDialog(SyncStatusDialog dialog) {
-        dialog.show(getSupportFragmentManager(),dialog.getDialogTag());
+        dialog.show(getSupportFragmentManager(), dialog.getDialogTag());
     }
 
     @Override
     public void intentSelected(String uuid, Intent intent, int request, PictureView.OnPictureSelected onPictureSelected) {
         this.uuid = uuid;
-        startActivityForResult(intent, request);
+        if (this instanceof EventCaptureActivity)
+            ((EventCaptureActivity)getContext()).startActivityForResult(intent, request);
+        else
+            startActivityForResult(intent, request);
     }
 
     @Override

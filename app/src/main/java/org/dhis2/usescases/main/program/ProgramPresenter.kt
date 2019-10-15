@@ -7,7 +7,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.functions.Consumer
 import io.reactivex.processors.PublishProcessor
-import io.reactivex.schedulers.Schedulers
+import org.dhis2.data.prefs.PreferenceProvider
 import org.dhis2.data.schedulers.SchedulerProvider
 import org.dhis2.data.tuples.Pair
 import org.dhis2.usescases.datasets.datasetDetail.DataSetDetailActivity
@@ -28,7 +28,9 @@ import timber.log.Timber
  * Created by ppajuelo on 18/10/2017.f
  */
 
-class ProgramPresenter internal constructor(private val homeRepository: HomeRepository, private val schedulerProvider: SchedulerProvider) : ProgramContract.Presenter {
+class ProgramPresenter internal constructor(private val homeRepository: HomeRepository,
+                                            private val schedulerProvider: SchedulerProvider,
+                                            private val preferenceProvider: PreferenceProvider) : ProgramContract.Presenter {
 
     private var view: ProgramContract.View? = null
     private var compositeDisposable: CompositeDisposable? = null
@@ -37,11 +39,10 @@ class ProgramPresenter internal constructor(private val homeRepository: HomeRepo
     override fun init(view: ProgramContract.View) {
         this.view = view
         this.compositeDisposable = CompositeDisposable()
-        val filterFlowable = FilterManager.getInstance().asFlowable().publish()
 
         compositeDisposable!!.add(
-                filterFlowable
-                        .subscribeOn(schedulerProvider.io())
+                FilterManager.getInstance().asFlowable()
+                        .doOnNext { view.showFilterProgress() }
                         .flatMap { filterManager ->
                             homeRepository.programModels(filterManager.periodFilters, filterManager.orgUnitUidsFilters, filterManager.stateFilters).flatMapIterable { data -> data }
                                     .mergeWith(homeRepository.aggregatesModels(filterManager.periodFilters, filterManager.orgUnitUidsFilters, filterManager.stateFilters).flatMapIterable { data -> data })
@@ -55,19 +56,6 @@ class ProgramPresenter internal constructor(private val homeRepository: HomeRepo
                                 Consumer { throwable -> view.renderError(throwable.message ?: "") }
                         )
         )
-
-        compositeDisposable!!.add(
-                filterFlowable
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(
-                                { view.showFilterProgress() },
-                                { Timber.e(it) }
-                        )
-        )
-
-        filterFlowable.connect()
-        FilterManager.getInstance().publishData()
 
         compositeDisposable!!.add(
                 FilterManager.getInstance().ouTreeFlowable()

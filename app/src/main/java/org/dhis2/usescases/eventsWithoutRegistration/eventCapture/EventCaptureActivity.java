@@ -127,7 +127,7 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
             case Constants.GALLERY_REQUEST:
                 if(resultCode == RESULT_OK){
                     Uri imageUri = data.getData();
-                    presenter.getDataEntryStore().save(uuid, FileResourcesUtil.getFileFromGallery(this, imageUri).getPath());
+                    presenter.saveImage(uuid, FileResourcesUtil.getFileFromGallery(this, imageUri).getPath());
                     presenter.nextCalculation(true);
                 }
                 break;
@@ -135,9 +135,9 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
                 if (resultCode == RESULT_OK) {
                     File file = new File(FileResourceDirectoryHelper.getFileResourceDirectory(this), "tempFile.png");
                     if (file.exists()) {
-                        presenter.getDataEntryStore().save(uuid, file.getPath());
+                        presenter.saveImage(uuid, file.getPath());
                     } else
-                        presenter.getDataEntryStore().save(uuid, null);
+                        presenter.saveImage(uuid, null);
                     presenter.nextCalculation(true);
                 }
                 break;

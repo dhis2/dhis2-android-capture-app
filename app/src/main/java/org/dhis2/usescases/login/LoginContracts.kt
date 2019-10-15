@@ -5,6 +5,7 @@ import android.view.View
 import androidx.annotation.UiThread
 import co.infinum.goldfinger.Goldfinger
 import org.dhis2.usescases.general.AbstractActivityContracts
+import org.hisp.dhis.android.core.D2
 import retrofit2.Response
 
 class LoginContracts {

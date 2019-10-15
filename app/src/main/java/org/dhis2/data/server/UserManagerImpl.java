@@ -17,8 +17,8 @@ public class UserManagerImpl implements UserManager {
 
     @NonNull
     @Override
-    public Observable<User> logIn(@NonNull String username, @NonNull String password) {
-        return Observable.defer(() -> d2.userModule().logIn(username, password).toObservable());
+    public Observable<User> logIn(@NonNull String username, @NonNull String password, @NonNull String serverUrl) {
+        return Observable.defer(() -> d2.userModule().logIn(username, password, serverUrl).toObservable());
     }
 
     @NonNull
@@ -47,9 +47,9 @@ public class UserManagerImpl implements UserManager {
 
     @NonNull
     @Override
-    public Single<String> userName(){
-        return Single.defer(()->d2.userModule().user.withUserCredentials().get())
-                .map(user->user.userCredentials().username());
+    public Single<String> userName() {
+        return Single.defer(() -> d2.userModule().user.withUserCredentials().get())
+                .map(user -> user.userCredentials().username());
     }
 
     @Override
