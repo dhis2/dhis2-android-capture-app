@@ -11,7 +11,7 @@ import io.reactivex.Single;
 public interface UserManager {
 
     @NonNull
-    Observable<User> logIn(@NonNull String username, @NonNull String password);
+    Observable<User> logIn(@NonNull String username, @NonNull String password, @NonNull String serverUrl);
 
     @NonNull
     Observable<Boolean> isUserLoggedIn();

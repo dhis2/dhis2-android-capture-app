@@ -3,6 +3,7 @@ package org.dhis2.usescases.splash
 import dagger.Module
 import dagger.Provides
 import org.dhis2.data.dagger.PerActivity
+import org.dhis2.data.schedulers.SchedulerProvider
 import org.dhis2.data.server.ServerComponent
 import org.dhis2.data.server.UserManager
 import org.dhis2.usescases.splash.SplashActivity.Companion.FLAG
@@ -19,8 +20,8 @@ class SplashModule internal constructor(serverComponent: ServerComponent?) {
 
     @Provides
     @PerActivity
-    fun providePresenter(): SplashContracts.Presenter {
-        return SplashPresenter(userManager)
+    fun providePresenter(schedulerProvider : SchedulerProvider): SplashContracts.Presenter {
+        return SplashPresenter(userManager, schedulerProvider)
     }
 
     @Provides

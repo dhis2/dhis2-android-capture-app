@@ -3,5 +3,5 @@
 	url = https://github.com/dhis2/dhis2-android-sdk.git
 [submodule "dhis2-rule-engine"]
 	path = dhis2-rule-engine
-	url = https://github.com/quadramqs/dhis2-rule-engine.git
+	url = https://github.com/dhis2/dhis2-rule-engine.git
 

@@ -11,6 +11,7 @@ import androidx.core.app.ActivityOptionsCompat;
 
 import org.dhis2.Bindings.ExtensionsKt;
 import org.dhis2.R;
+import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.usescases.enrollment.EnrollmentActivity;
 import org.dhis2.usescases.events.ScheduledEventActivity;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity;
@@ -55,6 +56,7 @@ class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
 
     private final D2 d2;
     private final DashboardRepository dashboardRepository;
+    private final SchedulerProvider schedulerProvider;
     private String programUid;
     private final String teiUid;
     private TEIDataContracts.View view;
@@ -62,11 +64,12 @@ class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
     private DashboardProgramModel dashboardModel;
 
     public TEIDataPresenterImpl(D2 d2, DashboardRepository dashboardRepository,
-                                String programUid, String teiUid) {
+                                String programUid, String teiUid, SchedulerProvider schedulerProvider) {
         this.d2 = d2;
         this.dashboardRepository = dashboardRepository;
         this.programUid = programUid;
         this.teiUid = teiUid;
+        this.schedulerProvider = schedulerProvider;
     }
 
     @Override
@@ -77,8 +80,8 @@ class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
         compositeDisposable.add(
                 d2.trackedEntityModule().trackedEntityInstances.uid(teiUid).get()
                         .map(tei -> ExtensionsKt.profilePicturePath(tei, d2, programUid))
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
                         .subscribe(
                                 view::showTeiImage,
                                 Timber::e
@@ -116,8 +119,8 @@ class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
                             }
                             return eventModels;
                         })
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
                         .subscribe(
                                 view.setEvents(),
                                 Timber::d
@@ -129,8 +132,8 @@ class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
     public void getCatComboOptions(Event event) {
         compositeDisposable.add(
                 dashboardRepository.catComboForProgram(event.program())
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
                         .subscribe(catCombo -> {
                                     for (ProgramStage programStage : dashboardModel.getProgramStages()) {
                                         if (event.programStage().equals(programStage.uid()))
@@ -156,8 +159,8 @@ class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
                 dashboardRepository.getEnrollmentEventsWithDisplay(programUid, teiUid)
                         .flatMap(events -> events.isEmpty() ? dashboardRepository.getTEIEnrollmentEvents(programUid, teiUid) : Observable.just(events))
                         .map(events -> Observable.fromIterable(events).all(event -> event.status() == EventStatus.COMPLETED))
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
                         .subscribe(
                                 view.areEventsCompleted(),
                                 Timber::d
@@ -169,8 +172,8 @@ class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
     public void displayGenerateEvent(String eventUid) {
         compositeDisposable.add(
                 dashboardRepository.displayGenerateEvent(eventUid)
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
                         .subscribe(
                                 view.displayGenerateEvent(),
                                 Timber::d
@@ -186,8 +189,8 @@ class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
 
             flowable = dashboardRepository.updateEnrollmentStatus(dashboardModel.getCurrentEnrollment().uid(), newStatus);
             compositeDisposable.add(flowable
-                    .subscribeOn(Schedulers.computation())
-                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribeOn(schedulerProvider.computation())
+                    .observeOn(schedulerProvider.ui())
                     .map(result -> newStatus)
                     .subscribe(
                             view.enrollmentCompleted(),

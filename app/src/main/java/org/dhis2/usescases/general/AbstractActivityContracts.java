@@ -58,9 +58,7 @@ public class AbstractActivityContracts {
         @Deprecated
         SharedPreferences getSharedPreferences();
 
-        void showSyncDialog(String programUid, SyncStatusDialog.ConflictType conflictType, FlowableProcessor processor);
-
-        void showSyncDialog(String orgUnit, String attributeCombo, String periodId, SyncStatusDialog.ConflictType conflictType, FlowableProcessor processor, String dataSetUid);
+        void showSyncDialog(SyncStatusDialog dialog);
 
         @Deprecated
         AnalyticsHelper analyticsHelper();

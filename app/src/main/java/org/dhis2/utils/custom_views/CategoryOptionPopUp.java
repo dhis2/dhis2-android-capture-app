@@ -1,6 +1,7 @@
 package org.dhis2.utils.custom_views;
 
 import android.content.Context;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.View;
 
@@ -23,6 +24,7 @@ public class CategoryOptionPopUp {
     private Category category;
     private List<CategoryOption> options;
     private Date date;
+    private String categoryName;
 
     public static CategoryOptionPopUp getInstance() {
         if (instance == null)
@@ -43,6 +45,16 @@ public class CategoryOptionPopUp {
         return this;
     }
 
+    public CategoryOptionPopUp setCatOptions(List<CategoryOption> catOptions){
+        this.options = catOptions;
+        return this;
+    }
+
+    public CategoryOptionPopUp setCategoryName(String categoryName) {
+        this.categoryName = categoryName;
+        return this;
+    }
+
     public CategoryOptionPopUp setDate(Date date){
         this.date = date;
         return this;
@@ -58,7 +70,7 @@ public class CategoryOptionPopUp {
             }
             return false;
         });
-        menu.getMenu().add(Menu.NONE, Menu.NONE, 0, category.displayName());
+        menu.getMenu().add(Menu.NONE, Menu.NONE, 0, category != null ? category.displayName() : categoryName);
         for (CategoryOption option : options) {
             if(date == null || ((option.startDate() == null || date.after(option.startDate())) && (option.endDate() == null || date.before(option.endDate()))))
                 menu.getMenu().add(Menu.NONE, Menu.NONE, options.indexOf(option) + 1, option.displayName());

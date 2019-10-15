@@ -10,6 +10,7 @@ import org.dhis2.data.forms.RulesRepository
 import org.dhis2.data.forms.dataentry.DataEntryRepository
 import org.dhis2.data.forms.dataentry.EnrollmentRepository
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactoryImpl
+import org.dhis2.data.schedulers.SchedulerProvider
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.`object`.ReadOnlyOneObjectRepositoryFinalImpl
 import org.hisp.dhis.android.core.enrollment.EnrollmentObjectRepository
@@ -65,12 +66,14 @@ class EnrollmentModule(val enrollmentUid: String, val programUid: String) {
                          dataEntryRepository: DataEntryRepository,
                          teiRepository: TrackedEntityInstanceObjectRepository,
                          programRepository: ReadOnlyOneObjectRepositoryFinalImpl<Program>,
+                         schedulerProvider : SchedulerProvider,
                          formRepository: EnrollmentFormRepository): EnrollmentContract.Presenter {
         return EnrollmentPresenterImpl(d2,
                 enrollmentObjectRepository,
                 dataEntryRepository,
                 teiRepository,
                 programRepository,
+                schedulerProvider,
                 formRepository)
     }
 

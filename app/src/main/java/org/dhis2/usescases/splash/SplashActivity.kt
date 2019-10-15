@@ -8,12 +8,14 @@ import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.databinding.DataBindingUtil
+import com.google.firebase.iid.FirebaseInstanceId
 import com.scottyab.rootbeer.RootBeer
 import org.dhis2.App
 import org.dhis2.BuildConfig
 import org.dhis2.R
 import org.dhis2.databinding.ActivitySplashBinding
 import org.dhis2.usescases.general.ActivityGlobalAbstract
+import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Named
 
@@ -41,6 +43,15 @@ class SplashActivity : ActivityGlobalAbstract(), SplashContracts.View {
         appComponent.plus(SplashModule(serverComponent)).inject(this)
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_splash)
+
+        FirebaseInstanceId.getInstance().instanceId
+                .addOnCompleteListener {
+                    if(!it.isSuccessful){
+                        Timber.tag("NOTIFICATION").d("GET INSTANCE FAILED")
+                    }else{
+                        Timber.tag("NOTIFICATION").d("TOKEN IS: %s",it.result!!.token)
+                    }
+                }
 
         renderFlag(flag)
     }

@@ -13,6 +13,8 @@ class ProgramContract {
 
         fun swapProgramModelData(): Consumer<List<ProgramViewModel>>
 
+        fun showFilterProgress()
+
         @UiThread
         fun renderError(message: String)
 

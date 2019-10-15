@@ -21,6 +21,10 @@ public class FilterManager {
 
     public static final int OU_TREE = 1986;
 
+    public void publishData() {
+        filterProcessor.onNext(this);
+    }
+
     public enum PeriodRequest {
         FROM_TO, OTHER
     }

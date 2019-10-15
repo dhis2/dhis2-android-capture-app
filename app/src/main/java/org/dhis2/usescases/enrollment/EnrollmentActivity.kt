@@ -210,30 +210,33 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentContract.View {
     }
 
     override fun goBack() {
-        if (mode == EnrollmentMode.CHECK)
-            onBackPressed()
-        else {
+         onBackPressed()
+    }
 
-            CustomDialog(
-                    this,
-                    getString(R.string.title_delete_go_back),
-                    getString(R.string.delete_go_back),
-                    getString(R.string.cancel),
-                    getString(R.string.missing_mandatory_fields_go_back),
-                    RQ_GO_BACK,
-                    object : DialogClickListener {
-                        override fun onPositive() {
-                            // do nothing
-                        }
+    override fun onBackPressed() {
+        if (mode == EnrollmentMode.CHECK) super.onBackPressed() else showDeleteDialog()
+    }
 
-                        override fun onNegative() {
-                            analyticsHelper().setEvent(DELETE_AND_BACK, CLICK, DELETE_AND_BACK)
-                            presenter.deleteAllSavedData()
-                            finish()
-                        }
-                    })
-                    .show()
-        }
+    private fun showDeleteDialog() {
+        CustomDialog(
+                this,
+                getString(R.string.title_delete_go_back),
+                getString(R.string.delete_go_back),
+                getString(R.string.cancel),
+                getString(R.string.missing_mandatory_fields_go_back),
+                RQ_GO_BACK,
+                object : DialogClickListener {
+                    override fun onPositive() {
+                        // do nothing
+                    }
+
+                    override fun onNegative() {
+                        analyticsHelper().setEvent(DELETE_AND_BACK, CLICK, DELETE_AND_BACK)
+                        presenter.deleteAllSavedData()
+                        finish()
+                    }
+                })
+                .show()
     }
 
     private fun handleGeometry(featureType: FeatureType, dataExtra: String, requestCode: Int) {

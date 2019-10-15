@@ -9,6 +9,8 @@ import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.UiThread;
+import androidx.work.ListenableWorker;
+
 import io.reactivex.Observable;
 
 interface SyncPresenter {
@@ -25,6 +27,14 @@ interface SyncPresenter {
     boolean checkSyncStatus();
 
     Observable<D2Progress> syncGranularEvent(String eventUid);
+
+    ListenableWorker.Result blockSyncGranularProgram(String programUid);
+
+    ListenableWorker.Result blockSyncGranularTei(String teiUid);
+
+    ListenableWorker.Result blockSyncGranularEvent(String eventUid);
+
+    ListenableWorker.Result blockSyncGranularDataSet(String dataSetUid);
 
     Observable<D2Progress> syncGranularProgram(String uid);
 
@@ -53,4 +63,6 @@ interface SyncPresenter {
     void downloadResources();
 
     void uploadResources();
+
+    ListenableWorker.Result blockSyncGranularDataValues(String orgUnitUid, String attrOptionCombo, String periodId, String[] catOptionCombo);
 }
