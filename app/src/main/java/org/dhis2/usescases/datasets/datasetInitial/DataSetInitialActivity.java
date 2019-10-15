@@ -134,7 +134,8 @@ public class DataSetInitialActivity extends ActivityGlobalAbstract implements Da
                     calendar.setTime(selectedDate);
                     this.selectedPeriod = calendar.getTime();
                     binding.dataSetPeriodEditText.setText(DateUtils.getInstance().getPeriodUIString(periodType, selectedDate, Locale.getDefault()));
-                    ((TextInputEditText) selectedView).setText(null);
+                    if(selectedView != null)
+                        ((TextInputEditText) selectedView).setText(null);
                     checkActionVisivbility();
                     periodDialog.dismiss();
                 }).setNegativeListener(v -> binding.dataSetPeriodEditText.setText(null))
