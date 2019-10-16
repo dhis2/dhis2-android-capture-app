@@ -103,10 +103,10 @@ public final class EnrollmentRepository implements DataEntryRepository {
 
         int optionCount = 0;
         if (!isEmpty(optionSet)) {
-            optionCount = d2.optionModule().options.byOptionSetUid().eq(optionSet).blockingCount();
+            optionCount = d2.optionModule().options().byOptionSetUid().eq(optionSet).blockingCount();
 
             if (!isEmpty(dataValue)) {
-                dataValue = d2.optionModule().options
+                dataValue = d2.optionModule().options()
                         .byOptionSetUid().eq(optionSet)
                         .byCode().eq(dataValue).one().blockingGet().displayName();
             }

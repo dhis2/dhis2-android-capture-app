@@ -148,7 +148,7 @@ public final class EnrollmentRuleEngineRepository implements RuleEngineRepositor
             String value = attributeValue.value();
             TrackedEntityAttribute attr = d2.trackedEntityModule().trackedEntityAttributes.withObjectStyle().uid(attributeValue.trackedEntityAttribute()).blockingGet();
             if (attr != null && attr.optionSet() != null) {
-                List<Option> options = d2.optionModule().optionSets.withOptions().uid(attr.optionSet().uid()).blockingGet().options();
+                List<Option> options = d2.optionModule().optionSets().withOptions().uid(attr.optionSet().uid()).blockingGet().options();
                 ProgramRuleVariable ruleVariable = attrRuleVariableMap.get(attr.uid());
                 if (ruleVariable != null && (ruleVariable.useCodeForOptionSet() == null || !ruleVariable.useCodeForOptionSet())) {
                     for (Option option : options) {
@@ -289,7 +289,7 @@ public final class EnrollmentRuleEngineRepository implements RuleEngineRepositor
         TrackedEntityAttribute attr = d2.trackedEntityModule().trackedEntityAttributes.withObjectStyle().uid(uid).blockingGet();
         if (attr != null && attr.optionSet() != null) {
             ProgramRuleVariable ruleVariable = attrRuleVariableMap.get(attr.uid());
-            List<Option> options = d2.optionModule().optionSets.uid(attr.optionSet().uid()).blockingGet().options();
+            List<Option> options = d2.optionModule().optionSets().uid(attr.optionSet().uid()).blockingGet().options();
             if ((ruleVariable != null && (ruleVariable.useCodeForOptionSet() == null || !ruleVariable.useCodeForOptionSet())) &&
                     options != null) {
                 for (Option option : options) {

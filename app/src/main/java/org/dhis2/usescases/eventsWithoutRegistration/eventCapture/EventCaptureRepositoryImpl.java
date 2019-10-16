@@ -422,7 +422,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                             }
 
                             if ((fieldViewModel instanceof SpinnerViewModel || fieldViewModel instanceof ImageViewModel) && !isEmpty(value)) {
-                                value = d2.optionModule().options.byOptionSetUid().eq(fieldViewModel.optionSet()).byCode().eq(value).one().blockingGet().displayName();
+                                value = d2.optionModule().options().byOptionSetUid().eq(fieldViewModel.optionSet()).byCode().eq(value).one().blockingGet().displayName();
                             }
                         }
                         boolean editable = fieldViewModel.editable() != null ? fieldViewModel.editable() : true;
@@ -460,9 +460,9 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                         int optionCount = 0;
                         if (!isEmpty(optionSet)) {
                             if (!isEmpty(dataValue)) {
-                                dataValue = d2.optionModule().options.byOptionSetUid().eq(optionSet).byCode().eq(dataValue).one().blockingGet().displayName();
+                                dataValue = d2.optionModule().options().byOptionSetUid().eq(optionSet).byCode().eq(dataValue).one().blockingGet().displayName();
                             }
-                            optionCount = d2.optionModule().options.byOptionSetUid().eq(optionSet).blockingCount();
+                            optionCount = d2.optionModule().options().byOptionSetUid().eq(optionSet).blockingCount();
                         }
 
                         ValueTypeDeviceRendering fieldRendering = stageDataElement.renderType() != null && stageDataElement.renderType().mobile() != null ? stageDataElement.renderType().mobile() : null;
@@ -507,7 +507,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
 
             ProgramStageSectionRenderingType renderingType = renderingType(fieldViewModel.programStageSection());
             if (!isEmpty(fieldViewModel.optionSet()) && renderingType != ProgramStageSectionRenderingType.LISTING) {
-                List<Option> options = d2.optionModule().options.byOptionSetUid().eq(fieldViewModel.optionSet() == null ? "" : fieldViewModel.optionSet())
+                List<Option> options = d2.optionModule().options().byOptionSetUid().eq(fieldViewModel.optionSet() == null ? "" : fieldViewModel.optionSet())
                         .withStyle().blockingGet();
                 for (Option option : options) {
                     ValueTypeDeviceRendering fieldRendering = null;
@@ -560,7 +560,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                             }
 
                             if ((fieldViewModel instanceof SpinnerViewModel || fieldViewModel instanceof ImageViewModel) && !isEmpty(value)) {
-                                value = d2.optionModule().options.byOptionSetUid().eq(fieldViewModel.optionSet()).byCode().eq(value).one().blockingGet().displayName();
+                                value = d2.optionModule().options().byOptionSetUid().eq(fieldViewModel.optionSet()).byCode().eq(value).one().blockingGet().displayName();
                             }
 
                             if (fieldViewModel instanceof PictureViewModel) {
@@ -629,9 +629,9 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                                     int optionCount = 0;
                                     if (!isEmpty(optionSet)) {
                                         if (!isEmpty(dataValue)) {
-                                            dataValue = d2.optionModule().options.byOptionSetUid().eq(optionSet).byCode().eq(dataValue).one().blockingGet().displayName();
+                                            dataValue = d2.optionModule().options().byOptionSetUid().eq(optionSet).byCode().eq(dataValue).one().blockingGet().displayName();
                                         }
-                                        optionCount = d2.optionModule().options.byOptionSetUid().eq(optionSet).blockingCount();
+                                        optionCount = d2.optionModule().options().byOptionSetUid().eq(optionSet).blockingCount();
                                     }
 
                                     ValueTypeDeviceRendering fieldRendering = null;
@@ -673,8 +673,8 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
         boolean mandatory = stage.compulsory();
         String optionSet = dataElement.optionSetUid();
         String dataValue = value;
-        Option option = d2.optionModule().options.byOptionSetUid().eq(optionSet).byCode().eq(dataValue).one().blockingGet();
-        int optionCount = d2.optionModule().options.byOptionSetUid().eq(optionSet).blockingCount();
+        Option option = d2.optionModule().options().byOptionSetUid().eq(optionSet).byCode().eq(dataValue).one().blockingGet();
+        int optionCount = d2.optionModule().options().byOptionSetUid().eq(optionSet).blockingCount();
         boolean allowFurureDates = stage.allowFutureDate();
         String formName = dataElement.displayFormName();
         String description = dataElement.displayDescription();
@@ -816,7 +816,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                                         .byDataElementUid().eq(de.uid())
                                         .byProgramUid().eq(event.program())
                                         .one().blockingGet();
-                                Option option = d2.optionModule().options.byOptionSetUid().eq(de.optionSetUid())
+                                Option option = d2.optionModule().options().byOptionSetUid().eq(de.optionSetUid())
                                         .byCode().eq(value).one().blockingGet();
                                 if (variable == null || variable.useCodeForOptionSet() != null && variable.useCodeForOptionSet())
                                     value = option.code();
@@ -839,7 +839,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
 
     @Override
     public boolean optionIsInOptionGroup(String optionUid, String optionGroupToHide) {
-        List<ObjectWithUid> optionGroupOptions = d2.optionModule().optionGroups.withOptions().uid(optionGroupToHide).blockingGet().options();
+        List<ObjectWithUid> optionGroupOptions = d2.optionModule().optionGroups().withOptions().uid(optionGroupToHide).blockingGet().options();
         boolean isInGroup = false;
         if (optionGroupOptions != null)
             for (ObjectWithUid uidObject : optionGroupOptions)
@@ -850,7 +850,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
     }
 
     private boolean optionIsInOptionGroup(String optionUid, List<String> optionGroupsToHide) {
-        List<OptionGroup> optionGroups = d2.optionModule().optionGroups.byUid().in(optionGroupsToHide).withOptions().blockingGet();
+        List<OptionGroup> optionGroups = d2.optionModule().optionGroups().byUid().in(optionGroupsToHide).withOptions().blockingGet();
         boolean isInGroup = false;
         for (OptionGroup optionGroup : optionGroups) {
             List<ObjectWithUid> optionGroupOptions = optionGroup.options();

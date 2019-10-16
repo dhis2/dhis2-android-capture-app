@@ -562,7 +562,7 @@ public class EnrollmentFormRepository implements FormRepository {
 
         int optionCount = 0;
         if (optionSetUid != null)
-            optionCount = d2.optionModule().optionSets.withOptions().uid(optionSetUid).blockingGet().options().size();
+            optionCount = d2.optionModule().optionSets().withOptions().uid(optionSetUid).blockingGet().options().size();
 
         FieldViewModelFactoryImpl fieldFactory = new FieldViewModelFactoryImpl(
                 "",

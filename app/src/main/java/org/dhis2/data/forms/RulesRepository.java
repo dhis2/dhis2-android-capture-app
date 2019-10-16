@@ -493,7 +493,7 @@ public final class RulesRepository {
                     boolean useOptionCode = d2.programModule().programRuleVariables.byProgramUid().eq(event.program()).byDataElementUid().eq(dataValue.dataElement())
                             .byUseCodeForOptionSet().isTrue().blockingIsEmpty();
                     if (!useOptionCode)
-                        value = d2.optionModule().options.byOptionSetUid().eq(dataElement.optionSetUid()).byCode().eq(value).one().blockingGet().name();
+                        value = d2.optionModule().options().byOptionSetUid().eq(dataElement.optionSetUid()).byCode().eq(value).one().blockingGet().name();
                 }
                 ruleDataValues.add(
                         RuleDataValue.create(event.eventDate(), event.programStage(), dataValue.dataElement(), value)
@@ -590,7 +590,7 @@ public final class RulesRepository {
                 boolean useOptionCode = d2.programModule().programRuleVariables.byProgramUid().eq(enrollment.program()).byTrackedEntityAttributeUid().eq(attribute.uid())
                         .byUseCodeForOptionSet().isTrue().blockingIsEmpty();
                 if (!useOptionCode)
-                    value = d2.optionModule().options.byOptionSetUid().eq(attribute.optionSet().uid()).byCode().eq(value).one().blockingGet().name();
+                    value = d2.optionModule().options().byOptionSetUid().eq(attribute.optionSet().uid()).byCode().eq(value).one().blockingGet().name();
             }
             RuleAttributeValue.create(attributeValue.trackedEntityAttribute(), value);
         }

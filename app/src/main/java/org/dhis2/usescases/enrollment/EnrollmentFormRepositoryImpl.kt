@@ -231,7 +231,7 @@ class EnrollmentFormRepositoryImpl(
                                 .blockingGet()
                         val finalValue =
                                 if (variable!=null && variable.useCodeForOptionSet() != true && attr.optionSet() != null) {
-                                    d2.optionModule().options.byOptionSetUid().eq(attr.optionSet()!!.uid())
+                                    d2.optionModule().options().byOptionSetUid().eq(attr.optionSet()!!.uid())
                                             .byCode().eq(value.value()!!).one().blockingGet().name()!!
                                 } else
                                     value.value()!!
