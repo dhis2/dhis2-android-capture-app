@@ -62,7 +62,7 @@ fun TrackedEntityInstance.profilePicturePath(d2: D2, programUid: String?): Strin
             .byValue().isNotNull
             .one().blockingGet()
     if (attributeValue != null) {
-        val fileResource = d2.fileResourceModule().fileResources.uid(attributeValue.value()).blockingGet()
+        val fileResource = d2.fileResourceModule().fileResources().uid(attributeValue.value()).blockingGet()
         if (fileResource != null)
             path = fileResource.path()
     }

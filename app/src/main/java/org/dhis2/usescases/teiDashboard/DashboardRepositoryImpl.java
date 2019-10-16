@@ -377,7 +377,7 @@ public class DashboardRepositoryImpl implements DashboardRepository {
                                 .byTrackedEntityAttribute().eq(attrUid).one().blockingGet();
 
                         if (attributeValue != null && !isEmpty(attributeValue.value())) {
-                            FileResource fileResource = d2.fileResourceModule().fileResources.uid(attributeValue.value()).blockingGet();
+                            FileResource fileResource = d2.fileResourceModule().fileResources().uid(attributeValue.value()).blockingGet();
                             if (fileResource != null) {
                                 path = fileResource.path();
                             }

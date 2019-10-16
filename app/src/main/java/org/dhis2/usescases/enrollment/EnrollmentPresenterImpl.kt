@@ -452,7 +452,7 @@ class EnrollmentPresenterImpl(
 
     private fun getFileResource(path: String): String {
         val file = File(path)
-        return d2.fileResourceModule().fileResources.blockingAdd(file)
+        return d2.fileResourceModule().fileResources().blockingAdd(file)
     }
 
     private fun getEventUid(dataElement: String): String? {

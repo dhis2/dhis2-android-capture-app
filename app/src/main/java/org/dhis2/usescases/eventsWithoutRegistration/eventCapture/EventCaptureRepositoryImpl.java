@@ -564,7 +564,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                             }
 
                             if (fieldViewModel instanceof PictureViewModel) {
-                                FileResource fileResource = d2.fileResourceModule().fileResources.uid(value).blockingGet();
+                                FileResource fileResource = d2.fileResourceModule().fileResources().uid(value).blockingGet();
                                 if (fileResource != null)
                                     value = fileResource.path();
                             }
@@ -932,7 +932,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
 
     private String getFileResource(String path) throws D2Error {
         File file = new File(path);
-        return d2.fileResourceModule().fileResources.blockingAdd(file);
+        return d2.fileResourceModule().fileResources().blockingAdd(file);
     }
 
     private void handleAssignToDataElement(String deUid, String value) throws D2Error {
