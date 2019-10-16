@@ -115,7 +115,7 @@ public final class EnrollmentRuleEngineRepository implements RuleEngineRepositor
     }
 
     public void initData() {
-        Enrollment enrollment = d2.enrollmentModule().enrollments.uid(enrollmentUid).blockingGet();
+        Enrollment enrollment = d2.enrollmentModule().enrollments().uid(enrollmentUid).blockingGet();
         OrganisationUnit ou = d2.organisationUnitModule().organisationUnits.uid(enrollment.organisationUnit()).blockingGet();
         Program program = d2.programModule().programs.withProgramRuleVariables().uid(enrollment.program()).blockingGet();
 
@@ -277,7 +277,7 @@ public final class EnrollmentRuleEngineRepository implements RuleEngineRepositor
     }
 
     private List<RuleAttributeValue> getRuleAttributeValueMap() {
-        Enrollment enrollment = d2.enrollmentModule().enrollments.uid(enrollmentUid).blockingGet();
+        Enrollment enrollment = d2.enrollmentModule().enrollments().uid(enrollmentUid).blockingGet();
         Program program = d2.programModule().programs.uid(enrollment.program()).blockingGet();
         setRuleAttributeMap(getAttributesValueMap(enrollment, program));
         return new ArrayList<>(ruleAttributeValueMap.values());

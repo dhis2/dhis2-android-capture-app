@@ -44,7 +44,7 @@ public final class EnrollmentRepository implements DataEntryRepository {
                                 @NonNull String enrollmentUid, D2 d2) {
         this.fieldFactory = fieldFactory;
         this.enrollmentUid = enrollmentUid;
-        this.enrollmentRepository = d2.enrollmentModule().enrollments.uid(enrollmentUid);
+        this.enrollmentRepository = d2.enrollmentModule().enrollments().uid(enrollmentUid);
         this.context = context;
         this.d2 = d2;
     }
@@ -53,7 +53,7 @@ public final class EnrollmentRepository implements DataEntryRepository {
     @Override
     public Flowable<List<FieldViewModel>> list() {
 
-        return d2.enrollmentModule().enrollments.uid(enrollmentUid).get()
+        return d2.enrollmentModule().enrollments().uid(enrollmentUid).get()
                 .flatMap(enrollment -> d2.programModule().programs.withProgramTrackedEntityAttributes().uid(enrollment.program()).get())
                 .map(program -> program.programTrackedEntityAttributes()).toFlowable()
                 .flatMapIterable(programTrackedEntityAttributes -> programTrackedEntityAttributes)

@@ -286,7 +286,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
 
     @Override
     public boolean isEnrollmentOpen() {
-        Enrollment enrollment = d2.enrollmentModule().enrollments.uid(d2.eventModule().events.uid(eventUid).blockingGet().enrollment()).blockingGet();
+        Enrollment enrollment = d2.enrollmentModule().enrollments().uid(d2.eventModule().events.uid(eventUid).blockingGet().enrollment()).blockingGet();
         return enrollment == null || enrollment.status() == EnrollmentStatus.ACTIVE;
     }
 
@@ -306,11 +306,11 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
 
     @Override
     public boolean isEnrollmentCancelled() {
-        Enrollment enrollment = d2.enrollmentModule().enrollments.uid(d2.eventModule().events.uid(eventUid).blockingGet().enrollment()).blockingGet();
+        Enrollment enrollment = d2.enrollmentModule().enrollments().uid(d2.eventModule().events.uid(eventUid).blockingGet().enrollment()).blockingGet();
         if (enrollment == null)
             return false;
         else
-            return d2.enrollmentModule().enrollments.uid(d2.eventModule().events.uid(eventUid).blockingGet().enrollment()).blockingGet().status() == EnrollmentStatus.CANCELLED;
+            return d2.enrollmentModule().enrollments().uid(d2.eventModule().events.uid(eventUid).blockingGet().enrollment()).blockingGet().status() == EnrollmentStatus.CANCELLED;
     }
 
     @Override
@@ -959,7 +959,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
     }
 
     private void handleAssignToAttribute(String attributeUid, String value) throws D2Error {
-        String tei = d2.enrollmentModule().enrollments.uid(currentEvent.enrollment()).blockingGet().trackedEntityInstance();
+        String tei = d2.enrollmentModule().enrollments().uid(currentEvent.enrollment()).blockingGet().trackedEntityInstance();
         if (!isEmpty(value))
             d2.trackedEntityModule().trackedEntityAttributeValues.value(attributeUid, tei).blockingSet(value);
         else if (d2.trackedEntityModule().trackedEntityAttributeValues.value(attributeUid, tei).blockingExists())

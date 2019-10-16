@@ -208,7 +208,7 @@ public class RelationshipPresenterImpl implements RelationshipContracts.Presente
     @Override
     public void openDashboard(String teiUid) {
         if (d2.trackedEntityModule().trackedEntityInstances.byUid().eq(teiUid).one().blockingGet().state() != State.RELATIONSHIP) {
-            if(!d2.enrollmentModule().enrollments.byTrackedEntityInstance().eq(teiUid).blockingGet().isEmpty()) {
+            if(!d2.enrollmentModule().enrollments().byTrackedEntityInstance().eq(teiUid).blockingGet().isEmpty()) {
                 Intent intent = new Intent(view.getContext(), TeiDashboardMobileActivity.class);
                 Bundle bundle = new Bundle();
                 bundle.putString("TEI_UID", teiUid);

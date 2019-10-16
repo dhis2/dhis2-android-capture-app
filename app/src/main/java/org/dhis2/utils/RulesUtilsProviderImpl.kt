@@ -200,7 +200,7 @@ class RulesUtilsProviderImpl(private val codeGenerator: CodeGenerator) : RulesUt
 
         val d2 = D2Manager.getD2()
         val event = d2.eventModule().events.uid(eventUid).blockingGet()
-        val enrollment = d2.enrollmentModule().enrollments.uid(event.enrollment()).blockingGet()
+        val enrollment = d2.enrollmentModule().enrollments().uid(event.enrollment()).blockingGet()
 
         var ruleEngineContext = RuleEngineContext.builder(ExpressionEvaluatorImpl(JexlEngine()))
                 .ruleVariables(

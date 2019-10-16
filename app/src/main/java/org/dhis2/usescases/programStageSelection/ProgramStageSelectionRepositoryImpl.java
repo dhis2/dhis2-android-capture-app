@@ -135,7 +135,7 @@ public class ProgramStageSelectionRepositoryImpl implements ProgramStageSelectio
                 ).toFlowable(BackpressureStrategy.LATEST)
                 .flatMap(attributeValues -> {
 
-                    Enrollment enrollment = d2.enrollmentModule().enrollments.byUid().eq(enrollmentUid == null ? "" : enrollmentUid).one().blockingGet();
+                    Enrollment enrollment = d2.enrollmentModule().enrollments().byUid().eq(enrollmentUid == null ? "" : enrollmentUid).one().blockingGet();
                     String programName = d2.programModule().programs.byUid().eq(enrollment.program()).one().blockingGet().displayName();
                     Date enrollmentDate = enrollment.enrollmentDate();
                     Date incidentDate = enrollment.incidentDate() == null ? enrollmentDate : enrollment.incidentDate();

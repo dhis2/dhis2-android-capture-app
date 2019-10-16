@@ -352,7 +352,7 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
     @Override
     public boolean isEnrollmentOpen() {
         Event event = d2.eventModule().events.uid(eventUid).blockingGet();
-        return event == null || event.enrollment() == null || d2.enrollmentModule().enrollments.uid(event.enrollment()).blockingGet().status() == EnrollmentStatus.ACTIVE;
+        return event == null || event.enrollment() == null || d2.enrollmentModule().enrollments().uid(event.enrollment()).blockingGet().status() == EnrollmentStatus.ACTIVE;
     }
 
 

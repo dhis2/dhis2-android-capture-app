@@ -40,7 +40,7 @@ public final class DataValueStore implements DataEntryStore {
         this.eventUid = eventUid;
         this.eventRepository = d2.eventModule().events.uid(eventUid);
         if (eventRepository.blockingGet().enrollment() != null)
-            this.enrollmentRepository = d2.enrollmentModule().enrollments.uid(eventRepository.blockingGet().enrollment());
+            this.enrollmentRepository = d2.enrollmentModule().enrollments().uid(eventRepository.blockingGet().enrollment());
         else
             this.enrollmentRepository = null;
 

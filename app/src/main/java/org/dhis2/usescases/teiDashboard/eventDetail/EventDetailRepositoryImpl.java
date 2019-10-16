@@ -144,7 +144,7 @@ public class EventDetailRepositoryImpl implements EventDetailRepository {
     @Override
     public Observable<Boolean> isEnrollmentActive(String eventUid) {
         Event event = d2.eventModule().events.uid(eventUid).blockingGet();
-        return Observable.fromCallable(() -> event == null || event.enrollment() == null || d2.enrollmentModule().enrollments.uid(event.enrollment()).blockingGet().status() == EnrollmentStatus.ACTIVE);
+        return Observable.fromCallable(() -> event == null || event.enrollment() == null || d2.enrollmentModule().enrollments().uid(event.enrollment()).blockingGet().status() == EnrollmentStatus.ACTIVE);
     }
 
     @Override

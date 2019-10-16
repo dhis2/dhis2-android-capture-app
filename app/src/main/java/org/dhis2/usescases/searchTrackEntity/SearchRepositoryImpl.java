@@ -335,7 +335,7 @@ public class SearchRepositoryImpl implements SearchRepository {
                     }
                 }
         ).flatMap(uid ->
-                d2.enrollmentModule().enrollments.add(
+                d2.enrollmentModule().enrollments().add(
                         EnrollmentCreateProjection.builder()
                                 .trackedEntityInstance(uid)
                                 .program(programUid)
@@ -343,10 +343,10 @@ public class SearchRepositoryImpl implements SearchRepository {
                                 .build())
                         .map(enrollmentUid -> {
                             boolean displayIncidentDate = d2.programModule().programs.uid(programUid).blockingGet().displayIncidentDate();
-                            d2.enrollmentModule().enrollments.uid(enrollmentUid).setEnrollmentDate(enrollmentDate);
+                            d2.enrollmentModule().enrollments().uid(enrollmentUid).setEnrollmentDate(enrollmentDate);
                             if (displayIncidentDate)
-                                d2.enrollmentModule().enrollments.uid(enrollmentUid).setIncidentDate(new Date());
-                            d2.enrollmentModule().enrollments.uid(enrollmentUid).setFollowUp(false);
+                                d2.enrollmentModule().enrollments().uid(enrollmentUid).setIncidentDate(new Date());
+                            d2.enrollmentModule().enrollments().uid(enrollmentUid).setFollowUp(false);
                             return Pair.create(enrollmentUid, uid);
                         })
         ).toObservable();
@@ -458,7 +458,7 @@ public class SearchRepositoryImpl implements SearchRepository {
 
 
     private void setEnrollmentInfo(SearchTeiModel searchTei) {
-        List<Enrollment> enrollments = d2.enrollmentModule().enrollments.byTrackedEntityInstance().eq(searchTei.getTei().uid()).byStatus().eq(EnrollmentStatus.ACTIVE).blockingGet();
+        List<Enrollment> enrollments = d2.enrollmentModule().enrollments().byTrackedEntityInstance().eq(searchTei.getTei().uid()).byStatus().eq(EnrollmentStatus.ACTIVE).blockingGet();
         for (Enrollment enrollment : enrollments) {
             if (enrollments.indexOf(enrollment) == 0)
                 searchTei.resetEnrollments();
@@ -510,7 +510,7 @@ public class SearchRepositoryImpl implements SearchRepository {
 
     private void setOverdueEvents(@NonNull SearchTeiModel tei, Program selectedProgram) {
         String teiId = tei.getTei() != null && tei.getTei().uid() != null ? tei.getTei().uid() : "";
-        List<Enrollment> enrollments = d2.enrollmentModule().enrollments.byTrackedEntityInstance().eq(teiId).blockingGet();
+        List<Enrollment> enrollments = d2.enrollmentModule().enrollments().byTrackedEntityInstance().eq(teiId).blockingGet();
         EventCollectionRepository repo = d2.eventModule().events.byEnrollmentUid().in(UidsHelper.getUidsList(enrollments)).byStatus().eq(EventStatus.SKIPPED);
         int count;
 
@@ -594,10 +594,10 @@ public class SearchRepositoryImpl implements SearchRepository {
         if (d2.trackedEntityModule().trackedEntityInstances.byUid().eq(tei.uid()).one().blockingExists()) {
             TrackedEntityInstance localTei = d2.trackedEntityModule().trackedEntityInstances.byUid().eq(tei.uid()).one().blockingGet();
             searchTei.setTei(localTei);
-            if (selectedProgram != null && d2.enrollmentModule().enrollments.byTrackedEntityInstance().eq(localTei.uid()).byProgram().eq(selectedProgram.uid()).one().blockingExists()) {
-                searchTei.setCurrentEnrollment(d2.enrollmentModule().enrollments.byTrackedEntityInstance().eq(localTei.uid()).byProgram().eq(selectedProgram.uid()).one().blockingGet());
+            if (selectedProgram != null && d2.enrollmentModule().enrollments().byTrackedEntityInstance().eq(localTei.uid()).byProgram().eq(selectedProgram.uid()).one().blockingExists()) {
+                searchTei.setCurrentEnrollment(d2.enrollmentModule().enrollments().byTrackedEntityInstance().eq(localTei.uid()).byProgram().eq(selectedProgram.uid()).one().blockingGet());
                 searchTei.setOnline(false);
-            } else if (d2.enrollmentModule().enrollments.byTrackedEntityInstance().eq(localTei.uid()).one().blockingExists())
+            } else if (d2.enrollmentModule().enrollments().byTrackedEntityInstance().eq(localTei.uid()).one().blockingExists())
                 searchTei.setOnline(false);
 
             if (offlineOnly)

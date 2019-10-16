@@ -67,7 +67,7 @@ public class TeiDashboardModule {
                                   @NonNull RulesRepository rulesRepository,
                                   @NonNull CodeGenerator codeGenerator,
                                   D2 d2) {
-        EnrollmentCollectionRepository enrollmentRepository = d2.enrollmentModule().enrollments
+        EnrollmentCollectionRepository enrollmentRepository = d2.enrollmentModule().enrollments()
                 .byTrackedEntityInstance().eq(teiUid);
         if (!isEmpty(programUid))
             enrollmentRepository = enrollmentRepository.byProgram().eq(programUid);

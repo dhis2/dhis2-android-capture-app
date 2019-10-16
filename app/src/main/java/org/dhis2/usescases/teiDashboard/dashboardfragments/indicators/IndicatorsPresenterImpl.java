@@ -49,7 +49,7 @@ public class IndicatorsPresenterImpl implements IndicatorsContracts.Presenter {
         this.ruleEngineRepository = ruleEngineRepository;
         this.schedulerProvider = schedulerProvider;
 
-        EnrollmentCollectionRepository enrollmentRepository = d2.enrollmentModule().enrollments
+        EnrollmentCollectionRepository enrollmentRepository = d2.enrollmentModule().enrollments()
                 .byTrackedEntityInstance().eq(teiUid);
         if (!isEmpty(programUid))
             enrollmentRepository = enrollmentRepository.byProgram().eq(programUid);

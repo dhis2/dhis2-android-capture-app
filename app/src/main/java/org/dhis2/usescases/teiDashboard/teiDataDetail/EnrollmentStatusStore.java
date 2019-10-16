@@ -98,7 +98,7 @@ public final class EnrollmentStatusStore implements EnrollmentStatusEntryStore {
 
     @Override
     public Single<TrackedEntityType> captureTeiCoordinates() {
-        return d2.enrollmentModule().enrollments.uid(enrollment).get()
+        return d2.enrollmentModule().enrollments().uid(enrollment).get()
                 .flatMap(enrollment -> d2.programModule().programs.withTrackedEntityType().uid(enrollment.program()).get())
                 .flatMap(program -> d2.trackedEntityModule().trackedEntityTypes.uid(program.trackedEntityType().uid()).get());
     }
@@ -107,7 +107,7 @@ public final class EnrollmentStatusStore implements EnrollmentStatusEntryStore {
     @Override
     public Consumer<Geometry> storeCoordinates() {
         return geometry -> {
-            EnrollmentObjectRepository repo = d2.enrollmentModule().enrollments.uid(enrollment);
+            EnrollmentObjectRepository repo = d2.enrollmentModule().enrollments().uid(enrollment);
             repo.setGeometry(geometry);
         };
     }
@@ -116,7 +116,7 @@ public final class EnrollmentStatusStore implements EnrollmentStatusEntryStore {
     @Override
     public Consumer<Unit> clearCoordinates() {
         return geometry -> {
-            EnrollmentObjectRepository repo = d2.enrollmentModule().enrollments.uid(enrollment);
+            EnrollmentObjectRepository repo = d2.enrollmentModule().enrollments().uid(enrollment);
             repo.setGeometry(null);
         };
     }
@@ -125,7 +125,7 @@ public final class EnrollmentStatusStore implements EnrollmentStatusEntryStore {
     @Override
     public Consumer<Geometry> storeTeiCoordinates() {
         return geometry -> {
-            String teiUid = d2.enrollmentModule().enrollments.uid(enrollment).blockingGet().trackedEntityInstance();
+            String teiUid = d2.enrollmentModule().enrollments().uid(enrollment).blockingGet().trackedEntityInstance();
             d2.trackedEntityModule().trackedEntityInstances.uid(teiUid).setGeometry(geometry);
         };
     }
@@ -134,7 +134,7 @@ public final class EnrollmentStatusStore implements EnrollmentStatusEntryStore {
     @Override
     public Consumer<Unit> clearTeiCoordinates() {
         return geometry -> {
-            String teiUid = d2.enrollmentModule().enrollments.uid(enrollment).blockingGet().trackedEntityInstance();
+            String teiUid = d2.enrollmentModule().enrollments().uid(enrollment).blockingGet().trackedEntityInstance();
             d2.trackedEntityModule().trackedEntityInstances.uid(teiUid).setGeometry(null);
         };
     }

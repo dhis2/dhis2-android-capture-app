@@ -564,7 +564,7 @@ public final class RulesRepository {
                                         new ArrayList<>(),
                                         programName));
                     else
-                        return d2.enrollmentModule().enrollments
+                        return d2.enrollmentModule().enrollments()
                                 .uid(event.enrollment()).get()
                                 .map(enrollment -> RuleEnrollment.create(enrollment.uid(),
                                         enrollment.incidentDate() != null ? enrollment.incidentDate() : new Date(),

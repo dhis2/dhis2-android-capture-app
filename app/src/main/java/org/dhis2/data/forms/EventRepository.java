@@ -420,7 +420,7 @@ public class EventRepository implements FormRepository {
     @NonNull
     @Override
     public Observable<String> getTrackedEntityInstanceUid() {
-        return Observable.defer(() -> d2.enrollmentModule().enrollments.uid(
+        return Observable.defer(() -> d2.enrollmentModule().enrollments().uid(
                 d2.eventModule().events.uid(eventUid).blockingGet().enrollment()
         ).get().toObservable())
                 .map(Enrollment::trackedEntityInstance);

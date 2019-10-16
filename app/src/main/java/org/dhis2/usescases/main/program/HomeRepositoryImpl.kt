@@ -186,7 +186,7 @@ internal class HomeRepositoryImpl(private val d2: D2, private val eventLabel: St
                             val enrollments: List<Enrollment>
                             if (orgUnitFilter.isNotEmpty()) {
                                 if (statesFilter.isNotEmpty())
-                                    enrollments = d2.enrollmentModule().enrollments
+                                    enrollments = d2.enrollmentModule().enrollments()
                                             .byProgram().`in`(programUids)
                                             .byEnrollmentDate().inDatePeriods(dateFilter)
                                             .byOrganisationUnit().`in`(orgUnitFilter)
@@ -195,7 +195,7 @@ internal class HomeRepositoryImpl(private val d2: D2, private val eventLabel: St
                                             .byState().`in`(statesFilter)
                                             .blockingGet()
                                 else
-                                    enrollments = d2.enrollmentModule().enrollments
+                                    enrollments = d2.enrollmentModule().enrollments()
                                             .byProgram().`in`(programUids)
                                             .byEnrollmentDate().inDatePeriods(dateFilter)
                                             .byOrganisationUnit().`in`(orgUnitFilter)
@@ -204,7 +204,7 @@ internal class HomeRepositoryImpl(private val d2: D2, private val eventLabel: St
                                             .blockingGet()
                             } else {
                                 enrollments = if (statesFilter.isNotEmpty())
-                                    d2.enrollmentModule().enrollments
+                                    d2.enrollmentModule().enrollments()
                                             .byProgram().`in`(programUids)
                                             .byEnrollmentDate().inDatePeriods(dateFilter)
                                             .byStatus().eq(EnrollmentStatus.ACTIVE)
@@ -212,7 +212,7 @@ internal class HomeRepositoryImpl(private val d2: D2, private val eventLabel: St
                                             .byState().`in`(statesFilter)
                                             .blockingGet()
                                 else
-                                    d2.enrollmentModule().enrollments
+                                    d2.enrollmentModule().enrollments()
                                             .byProgram().`in`(programUids)
                                             .byEnrollmentDate().inDatePeriods(dateFilter)
                                             .byStatus().eq(EnrollmentStatus.ACTIVE)
@@ -222,7 +222,7 @@ internal class HomeRepositoryImpl(private val d2: D2, private val eventLabel: St
                             count = countEnrollment(enrollments)
                         } else if (orgUnitFilter.isNotEmpty()) {
                             val enrollments = if (statesFilter.isNotEmpty())
-                                d2.enrollmentModule().enrollments
+                                d2.enrollmentModule().enrollments()
                                         .byProgram().`in`(programUids)
                                         .byOrganisationUnit().`in`(orgUnitFilter)
                                         .byStatus().eq(EnrollmentStatus.ACTIVE)
@@ -230,7 +230,7 @@ internal class HomeRepositoryImpl(private val d2: D2, private val eventLabel: St
                                         .byState().`in`(statesFilter)
                                         .blockingGet()
                             else
-                                d2.enrollmentModule().enrollments
+                                d2.enrollmentModule().enrollments()
                                         .byProgram().`in`(programUids)
                                         .byOrganisationUnit().`in`(orgUnitFilter)
                                         .byStatus().eq(EnrollmentStatus.ACTIVE)
@@ -240,14 +240,14 @@ internal class HomeRepositoryImpl(private val d2: D2, private val eventLabel: St
                             count = countEnrollment(enrollments)
                         } else {
                             val enrollments = if (statesFilter.isNotEmpty())
-                                d2.enrollmentModule().enrollments
+                                d2.enrollmentModule().enrollments()
                                         .byProgram().`in`(programUids)
                                         .byStatus().eq(EnrollmentStatus.ACTIVE)
                                         .byDeleted().isFalse
                                         .byState().`in`(statesFilter)
                                         .blockingGet()
                             else
-                                d2.enrollmentModule().enrollments
+                                d2.enrollmentModule().enrollments()
                                         .byProgram().`in`(programUids)
                                         .byStatus().eq(EnrollmentStatus.ACTIVE)
                                         .byDeleted().isFalse

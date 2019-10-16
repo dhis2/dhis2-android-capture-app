@@ -149,7 +149,7 @@ class GranularSyncPresenterImpl(val d2: D2,
             EVENT -> smsSender.convertSimpleEvent(recordUid)
             TEI -> {
                 //TODO: GET ALL ENROLLMENTS FROM TEI
-                val enrollmentUids = UidsHelper.getUidsList(d2.enrollmentModule().enrollments.byTrackedEntityInstance().eq(recordUid)
+                val enrollmentUids = UidsHelper.getUidsList(d2.enrollmentModule().enrollments().byTrackedEntityInstance().eq(recordUid)
                         .byState().`in`(State.TO_POST, State.TO_UPDATE).blockingGet())
                 smsSender.convertEnrollment(enrollmentUids[0])
             }

@@ -38,7 +38,7 @@ public final class AttributeValueStore implements DataEntryStore {
     public AttributeValueStore(D2 d2, @NonNull String enrollment) {
         this.enrollment = enrollment;
         this.d2 = d2;
-        this.enrollmentRepository = d2.enrollmentModule().enrollments.uid(enrollment);
+        this.enrollmentRepository = d2.enrollmentModule().enrollments().uid(enrollment);
     }
 
     @NonNull
