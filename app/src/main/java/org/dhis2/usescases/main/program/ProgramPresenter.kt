@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.Bundle
 import android.text.TextUtils.isEmpty
 import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.functions.Action
 import io.reactivex.functions.Consumer
 import io.reactivex.processors.PublishProcessor
 import org.dhis2.data.prefs.PreferenceProvider
@@ -39,11 +40,13 @@ class ProgramPresenter internal constructor(private val homeRepository: HomeRepo
         this.view = view
         this.compositeDisposable = CompositeDisposable()
 
+        val loadingProcessor = PublishProcessor.create<Boolean>()
+
         compositeDisposable!!.add(
                 FilterManager.getInstance().asFlowable()
                         .startWith(FilterManager.getInstance())
-                        .doOnNext { view.showFilterProgress() }
                         .flatMap { filterManager ->
+                            loadingProcessor.onNext(true)
                             homeRepository.programModels(filterManager.periodFilters, filterManager.orgUnitUidsFilters, filterManager.stateFilters)
                                     .mergeWith(homeRepository.aggregatesModels(filterManager.periodFilters, filterManager.orgUnitUidsFilters, filterManager.stateFilters)).flatMapIterable { data -> data }
                                     .sorted { p1, p2 -> p1.title().compareTo(p2.title(), ignoreCase = true) }.toList().toFlowable()
@@ -53,7 +56,18 @@ class ProgramPresenter internal constructor(private val homeRepository: HomeRepo
                         .observeOn(schedulerProvider.ui())
                         .subscribe(
                                 view.swapProgramModelData(),
-                                Consumer { throwable -> view.renderError(throwable.message ?: "") }
+                                Consumer { throwable -> view.renderError(throwable.message ?: "") },
+                                Action { Timber.d("LOADING ENDED") }
+                        )
+        )
+
+        compositeDisposable!!.add(
+                loadingProcessor
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
+                        .subscribe(
+                                {view.showFilterProgress()},
+                                {Timber.e(it)}
                         )
         )
 

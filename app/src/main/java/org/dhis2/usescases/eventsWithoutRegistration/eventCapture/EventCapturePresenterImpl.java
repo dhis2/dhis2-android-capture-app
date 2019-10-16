@@ -513,7 +513,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
         }
 
         //Display the DisplayViewModels only in the last section
-        if (!isEmpty(currentSection.get()) && !currentSection.get().equals(sectionList.get(sectionList.size() - 1).sectionUid())) {
+        if (getFinalSections().size()>1 && !isEmpty(currentSection.get()) && !currentSection.get().equals(sectionList.get(sectionList.size() - 1).sectionUid())) {
             Iterator<Map.Entry<String, FieldViewModel>> iter = fieldViewModels.entrySet().iterator();
             while (iter.hasNext())
                 if (iter.next().getValue() instanceof DisplayViewModel)

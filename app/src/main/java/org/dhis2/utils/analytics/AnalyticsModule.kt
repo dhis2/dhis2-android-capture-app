@@ -10,6 +10,7 @@ import javax.inject.Singleton
 class AnalyticsModule internal constructor() {
 
     @Provides
+    @Singleton
     fun providesAnalyticsHelper(context: Context): AnalyticsHelper {
         return AnalyticsHelper(context)
     }

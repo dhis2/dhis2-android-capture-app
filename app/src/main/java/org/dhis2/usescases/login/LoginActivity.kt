@@ -104,12 +104,12 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
             binding.userPassEdit.setText(testingEnvironment.val2())
         })
         loginViewModel.serverUrl.observe(this, Observer<String> {
-            Glide.with(this).load(String.format("%s/api/staticContent/logo_front", it))
+           /* Glide.with(this).load(String.format("%s/api/staticContent/logo_front", it))
                     .transition(withCrossFade())
                     .into(binding.logoFront)
             Glide.with(this).load(String.format("%s/api/staticContent/logo_banner", it))
                     .placeholder(R.drawable.ic_dhis_white)
-                    .into(binding.logoBanner)
+                    .into(binding.logoBanner)*/
         })
 
         binding.serverUrlEdit.addTextChangedListener(object : TextWatcher {
@@ -160,7 +160,7 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
     }
 
     private fun setTestingCredentials() {
-        val testingCredentialsIdentifier = resources.getIdentifier("testing_credentials", "raw", packageName)
+        val testingCredentialsIdentifier = resources.getIdentifier("testing_credentials_develop", "raw", packageName)
         if (testingCredentialsIdentifier != -1) {
             val writer = StringWriter()
             val buffer = CharArray(1024)

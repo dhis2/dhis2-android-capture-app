@@ -13,7 +13,6 @@ import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.period.DatePeriod
-import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.program.ProgramCollectionRepository
 import org.hisp.dhis.android.core.program.ProgramType.WITHOUT_REGISTRATION
 import org.hisp.dhis.android.core.program.ProgramType.WITH_REGISTRATION
@@ -102,7 +101,7 @@ internal class HomeRepositoryImpl(private val d2: D2, private val eventLabel: St
                     else
                         programRepository.byOrganisationUnitList(captureOrgUnits)
                 }
-                .flatMap<Program> { programRepo ->
+                .flatMap { programRepo ->
                     ParallelFlowable.from(Flowable.fromIterable(programRepo.blockingGet())).runOn(Schedulers.io())
                             .sequential()
                 }
