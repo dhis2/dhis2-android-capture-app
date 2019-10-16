@@ -3,7 +3,6 @@ package org.dhis2.usescases.main.program
 import android.content.Context
 import android.os.Bundle
 import android.text.TextUtils.isEmpty
-import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.functions.Consumer
 import io.reactivex.processors.PublishProcessor
@@ -42,10 +41,11 @@ class ProgramPresenter internal constructor(private val homeRepository: HomeRepo
 
         compositeDisposable!!.add(
                 FilterManager.getInstance().asFlowable()
+                        .startWith(FilterManager.getInstance())
                         .doOnNext { view.showFilterProgress() }
                         .flatMap { filterManager ->
-                            homeRepository.programModels(filterManager.periodFilters, filterManager.orgUnitUidsFilters, filterManager.stateFilters).flatMapIterable { data -> data }
-                                    .mergeWith(homeRepository.aggregatesModels(filterManager.periodFilters, filterManager.orgUnitUidsFilters, filterManager.stateFilters).flatMapIterable { data -> data })
+                            homeRepository.programModels(filterManager.periodFilters, filterManager.orgUnitUidsFilters, filterManager.stateFilters)
+                                    .mergeWith(homeRepository.aggregatesModels(filterManager.periodFilters, filterManager.orgUnitUidsFilters, filterManager.stateFilters)).flatMapIterable { data -> data }
                                     .sorted { p1, p2 -> p1.title().compareTo(p2.title(), ignoreCase = true) }.toList().toFlowable()
                                     .subscribeOn(schedulerProvider.io())
                         }

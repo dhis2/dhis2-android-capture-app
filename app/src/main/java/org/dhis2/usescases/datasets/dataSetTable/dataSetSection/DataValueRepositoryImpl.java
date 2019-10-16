@@ -179,7 +179,7 @@ public class DataValueRepositoryImpl implements DataValueRepository {
 
         Map<String, String> mapDataElementCatCombo = new HashMap<>();
 
-        return Flowable.just(d2.dataSetModule().dataSets.withSections().withDataSetElements().byUid().eq(dataSetUid).one().blockingGet())
+        return Flowable.just(d2.dataSetModule().dataSets.withDataSetElements().byUid().eq(dataSetUid).one().blockingGet())
                 .flatMapIterable(dataSet -> {
                     List<DataSetElement> dataElements = new ArrayList<>();
                     if (!sectionName.equals("NO_SECTION")) {
