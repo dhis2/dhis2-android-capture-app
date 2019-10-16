@@ -48,7 +48,7 @@ internal class HomeRepositoryImpl(private val d2: D2, private val eventLabel: St
                     var state: State? = State.SYNCED
 
                     dataSet.dataSetElements()!!.forEach {
-                        val dataElement = d2.dataElementModule().dataElements.uid(it.dataElement().uid()).blockingGet()
+                        val dataElement = d2.dataElementModule().dataElements().uid(it.dataElement().uid()).blockingGet()
                         val categoryOptionCombos: List<String>
                         categoryOptionCombos = if (it.categoryCombo() != null)
                             UidsHelper.getUidsList<CategoryOptionCombo>(

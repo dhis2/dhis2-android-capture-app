@@ -179,7 +179,7 @@ class RuleEngineUtils {
 
             // Mime types of the attribute and data element.
             val attributeType: String? = if (attribute != null) d2.trackedEntityModule().trackedEntityAttributes.uid(attribute).blockingGet()!!.valueType()!!.name else null
-            val elementType = if (dataElement != null) d2.dataElementModule().dataElements.uid(dataElement).blockingGet()!!.valueType()!!.name else null
+            val elementType = if (dataElement != null) d2.dataElementModule().dataElements().uid(dataElement).blockingGet()!!.valueType()!!.name else null
 
             // String representation of value type.
             var mimeType: RuleValueType?

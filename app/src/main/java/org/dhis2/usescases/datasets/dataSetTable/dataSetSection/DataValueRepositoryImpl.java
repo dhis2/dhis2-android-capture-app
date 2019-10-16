@@ -82,7 +82,7 @@ public class DataValueRepositoryImpl implements DataValueRepository {
                 if (dataSetElement.categoryCombo() != null)
                     categoryCombos.add(dataSetElement.categoryCombo().uid());
                 else {
-                    DataElement dataElement = d2.dataElementModule().dataElements.uid(dataSetElement.dataElement().uid()).blockingGet();
+                    DataElement dataElement = d2.dataElementModule().dataElements().uid(dataSetElement.dataElement().uid()).blockingGet();
                     categoryCombos.add(dataElement.categoryCombo().uid());
                 }
             }
@@ -200,7 +200,7 @@ public class DataValueRepositoryImpl implements DataValueRepository {
                                 mapDataElementCatCombo.put(dataSetElement.dataElement().uid(), dataSetElement.categoryCombo().uid());
                             else
                                 mapDataElementCatCombo.put(dataSetElement.dataElement().uid(),
-                                        d2.dataElementModule().dataElements.byUid().eq(dataSetElement.dataElement().uid()).one().blockingGet().categoryCombo().uid());
+                                        d2.dataElementModule().dataElements().byUid().eq(dataSetElement.dataElement().uid()).one().blockingGet().categoryCombo().uid());
 
                             return d2.dataValueModule().dataValues.byDataElementUid().eq(dataSetElement.dataElement().uid())
                                     .byAttributeOptionComboUid().eq(catOptionComb)
@@ -359,12 +359,12 @@ public class DataValueRepositoryImpl implements DataValueRepository {
                 if(dataSetElement.categoryCombo() != null && categoryCombo.uid().equals(dataSetElement.categoryCombo().uid()))
                     dataElementUids.add(dataSetElement.dataElement().uid());
                 else{
-                    String uid = d2.dataElementModule().dataElements.uid(dataSetElement.dataElement().uid()).blockingGet().categoryComboUid();
+                    String uid = d2.dataElementModule().dataElements().uid(dataSetElement.dataElement().uid()).blockingGet().categoryComboUid();
                     if(categoryCombo.uid().equals(uid))
                         dataElementUids.add(dataSetElement.dataElement().uid());
                 }
             }
-            return d2.dataElementModule().dataElements
+            return d2.dataElementModule().dataElements()
                         .byUid().in(dataElementUids)
                         .orderByName(RepositoryScope.OrderByDirection.ASC)
                         .get().toFlowable();

@@ -204,7 +204,7 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
 
         if (dataValueList != null)
             for (TrackedEntityDataValue dataValue : dataValueList) {
-                DataElement de = d2.dataElementModule().dataElements.uid(dataValue.dataElement()).blockingGet();
+                DataElement de = d2.dataElementModule().dataElements().uid(dataValue.dataElement()).blockingGet();
                 if (de != null && showInReportsDataElements.contains(de.uid())) {
                     String displayName = !isEmpty(de.displayFormName()) ? de.displayFormName() : de.displayName();
                     String value = dataValue.value();

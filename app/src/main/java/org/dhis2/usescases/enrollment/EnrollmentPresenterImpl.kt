@@ -431,7 +431,7 @@ class EnrollmentPresenterImpl(
             val valueRepository = d2.trackedEntityModule().trackedEntityDataValues
                     .value(eventUid, uid)
 
-            if (d2.dataElementModule().dataElements.uid(uid).blockingGet().valueType() == ValueType.IMAGE
+            if (d2.dataElementModule().dataElements().uid(uid).blockingGet().valueType() == ValueType.IMAGE
                     && value != null) {
                 newValue = getFileResource(value)
             }
@@ -523,7 +523,7 @@ class EnrollmentPresenterImpl(
 
     private fun assignValue(uid: String, value: String?) {
         try {
-            if (d2.dataElementModule().dataElements.uid(uid).blockingExists()) {
+            if (d2.dataElementModule().dataElements().uid(uid).blockingExists()) {
                 handleAssignToDataElement(uid, value)
             } else if (d2.trackedEntityModule().trackedEntityAttributes.uid(uid).blockingExists()) {
                 handleAssignToAttribute(uid, value)

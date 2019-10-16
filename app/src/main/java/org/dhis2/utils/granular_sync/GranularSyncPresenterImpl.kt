@@ -320,7 +320,7 @@ class GranularSyncPresenterImpl(val d2: D2,
                         if (dataSetElement.categoryCombo() != null)
                             dataSetElement.categoryCombo()?.uid()
                         else
-                            d2.dataElementModule().dataElements.uid(dataSetElement.dataElement().uid()).blockingGet().categoryComboUid()
+                            d2.dataElementModule().dataElements().uid(dataSetElement.dataElement().uid()).blockingGet().categoryComboUid()
                     }?.distinct()
                 }
                 .flatMap {

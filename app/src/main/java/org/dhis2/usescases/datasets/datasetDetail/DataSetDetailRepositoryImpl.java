@@ -89,7 +89,7 @@ public class DataSetDetailRepositoryImpl implements DataSetDetailRepository {
                             if (dataSetElement.categoryCombo() != null)
                                 catCombo = dataSetElement.categoryCombo().uid();
                             else
-                                catCombo = d2.dataElementModule().dataElements.uid(dataSetElement.dataElement().uid()).blockingGet().categoryComboUid();
+                                catCombo = d2.dataElementModule().dataElements().uid(dataSetElement.dataElement().uid()).blockingGet().categoryComboUid();
 
                             for (CategoryOptionCombo categoryOptionCombo : d2.categoryModule().categoryOptionCombos()
                                     .byCategoryComboUid().eq(catCombo).blockingGet()) {

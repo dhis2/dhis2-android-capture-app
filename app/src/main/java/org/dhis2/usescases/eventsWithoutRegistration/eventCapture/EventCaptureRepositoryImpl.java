@@ -441,7 +441,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                     .map(section -> section.dataElements())
                     .flatMapIterable(UidsHelper::getUidsList)
                     .map(deUid -> {
-                        DataElement de = d2.dataElementModule().dataElements.uid(deUid).blockingGet();
+                        DataElement de = d2.dataElementModule().dataElements().uid(deUid).blockingGet();
                         ProgramStageDataElement stageDataElement = stageDataElementsMap.get(deUid);
                         TrackedEntityDataValueObjectRepository valueRepository = d2.trackedEntityModule().trackedEntityDataValues.value(eventUid, deUid);
                         ProgramStageSection section = sectionMap.get(sectionUid);
@@ -604,7 +604,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                                 }).toFlowable()
                                 .flatMapIterable(list -> list)
                                 .map(programStageDataElement -> {
-                                    DataElement de = d2.dataElementModule().dataElements.uid(programStageDataElement.dataElement().uid()).blockingGet();
+                                    DataElement de = d2.dataElementModule().dataElements().uid(programStageDataElement.dataElement().uid()).blockingGet();
                                     TrackedEntityDataValueObjectRepository valueRepository = d2.trackedEntityModule().trackedEntityDataValues.value(eventUid, de.uid());
 
                                     ProgramStageSection programStageSection = null;
@@ -809,7 +809,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                         .toFlowable()
                         .flatMapIterable(values -> values)
                         .map(trackedEntityDataValue -> {
-                            DataElement de = d2.dataElementModule().dataElements.uid(trackedEntityDataValue.dataElement()).blockingGet();
+                            DataElement de = d2.dataElementModule().dataElements().uid(trackedEntityDataValue.dataElement()).blockingGet();
                             String value = trackedEntityDataValue.value();
                             if (de.optionSetUid() != null) {
                                 ProgramRuleVariable variable = d2.programModule().programRuleVariables
@@ -898,7 +898,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
     @Override
     public void assign(String uid, String value) {
         try {
-            if (d2.dataElementModule().dataElements.uid(uid).blockingExists()) {
+            if (d2.dataElementModule().dataElements().uid(uid).blockingExists()) {
                 handleAssignToDataElement(uid, value);
             } else if (d2.trackedEntityModule().trackedEntityAttributes.uid(uid).blockingExists()) {
                 handleAssignToAttribute(uid, value);
@@ -913,7 +913,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
         String newFilePath = filePath;
         TrackedEntityDataValueObjectRepository valueRepository = d2.trackedEntityModule().trackedEntityDataValues
                 .value(eventUid, uid);
-        if (d2.dataElementModule().dataElements.uid(uid).blockingGet().valueType() == ValueType.IMAGE
+        if (d2.dataElementModule().dataElements().uid(uid).blockingGet().valueType() == ValueType.IMAGE
                 && filePath != null) {
             try {
                 newFilePath = getFileResource(filePath);

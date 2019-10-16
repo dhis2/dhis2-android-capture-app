@@ -126,7 +126,7 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
                         ProgramStageSection stageSection = d2.programModule().programStageSections.withDataElements().uid(section).blockingGet();
                         for (ProgramStageDataElement programStageDataElement : stage.programStageDataElements()) {
                             if (UidsHelper.getUidsList(stageSection.dataElements()).contains(programStageDataElement.dataElement().uid())) {
-                                DataElement dataelement = d2.dataElementModule().dataElements.uid(programStageDataElement.dataElement().uid()).blockingGet();
+                                DataElement dataelement = d2.dataElementModule().dataElements().uid(programStageDataElement.dataElement().uid()).blockingGet();
                                 fields.add(transform(programStageDataElement, dataelement,
                                         searchValueDataElement(programStageDataElement.dataElement().uid(), event.trackedEntityDataValues()), section, event.status()));
                             }
@@ -134,7 +134,7 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
 
                     } else
                         for (ProgramStageDataElement programStageDataElement : stage.programStageDataElements()) {
-                            DataElement dataelement = d2.dataElementModule().dataElements.uid(programStageDataElement.dataElement().uid()).blockingGet();
+                            DataElement dataelement = d2.dataElementModule().dataElements().uid(programStageDataElement.dataElement().uid()).blockingGet();
                             fields.add(transform(programStageDataElement, dataelement,
                                     searchValueDataElement(programStageDataElement.dataElement().uid(), event.trackedEntityDataValues()), null, event.status()));
 

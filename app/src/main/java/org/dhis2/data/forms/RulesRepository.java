@@ -96,7 +96,7 @@ public final class RulesRepository {
         for (ProgramRuleVariable programRuleVariable : programRuleVariables) {
             String attribute = programRuleVariable.trackedEntityAttribute() != null ? programRuleVariable.trackedEntityAttribute().uid() : null;
             String de = programRuleVariable.dataElement() != null ? programRuleVariable.dataElement().uid() : null;
-            if ((de != null && d2.dataElementModule().dataElements.uid(de).blockingExists()) ||
+            if ((de != null && d2.dataElementModule().dataElements().uid(de).blockingExists()) ||
                     (attribute != null && d2.trackedEntityModule().trackedEntityAttributes.uid(attribute).blockingExists()))
                 ruleVariables.add(
                         translateToRuleVariable(programRuleVariable)
@@ -128,7 +128,7 @@ public final class RulesRepository {
         if (attribute != null)
             valueType = d2.trackedEntityModule().trackedEntityAttributes.uid(attribute).blockingGet().valueType();
         else if (dataElement != null)
-            valueType = d2.dataElementModule().dataElements.uid(dataElement).blockingGet().valueType();
+            valueType = d2.dataElementModule().dataElements().uid(dataElement).blockingGet().valueType();
 
         // String representation of value type.
         RuleValueType mimeType = convertType(valueType != null ? valueType : ValueType.TEXT);
@@ -289,7 +289,7 @@ public final class RulesRepository {
 
         // Mime types of the attribute and data element.
         String attributeType = attribute != null ? d2.trackedEntityModule().trackedEntityAttributes.uid(attribute).blockingGet().valueType().name() : null;
-        String elementType = dataElement != null ? d2.dataElementModule().dataElements.uid(dataElement).blockingGet().valueType().name() : null;
+        String elementType = dataElement != null ? d2.dataElementModule().dataElements().uid(dataElement).blockingGet().valueType().name() : null;
 
         // String representation of value type.
         RuleValueType mimeType = null;
@@ -487,7 +487,7 @@ public final class RulesRepository {
         List<RuleDataValue> ruleDataValues = new ArrayList<>();
         if (event.trackedEntityDataValues() != null)
             for (TrackedEntityDataValue dataValue : event.trackedEntityDataValues()) {
-                DataElement dataElement = d2.dataElementModule().dataElements.uid(dataValue.dataElement()).blockingGet();
+                DataElement dataElement = d2.dataElementModule().dataElements().uid(dataValue.dataElement()).blockingGet();
                 String value = dataValue.value();
                 if (!isEmpty(dataElement.optionSetUid())) {
                     boolean useOptionCode = d2.programModule().programRuleVariables.byProgramUid().eq(event.program()).byDataElementUid().eq(dataValue.dataElement())
