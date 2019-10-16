@@ -244,8 +244,8 @@ class GranularSyncPresenterImpl(val d2: D2,
             EVENT ->
                 d2.programModule().programStages.uid(
                         d2.eventModule().events.uid(recordUid).blockingGet().programStage()).get()
-            DATA_SET -> d2.dataSetModule().dataSets.withDataSetElements().uid(recordUid).get()
-            DATA_VALUES -> d2.dataSetModule().dataSets.withDataSetElements().uid(recordUid).get()
+            DATA_SET -> d2.dataSetModule().dataSets().withDataSetElements().uid(recordUid).get()
+            DATA_VALUES -> d2.dataSetModule().dataSets().withDataSetElements().uid(recordUid).get()
         }
     }
 
@@ -283,7 +283,7 @@ class GranularSyncPresenterImpl(val d2: D2,
                     .map { it.state() }
             EVENT -> d2.eventModule().events.uid(recordUid).get()
                     .map { it.state() }
-            DATA_SET -> d2.dataSetModule().dataSets.withDataSetElements().uid(recordUid).get()
+            DATA_SET -> d2.dataSetModule().dataSets().withDataSetElements().uid(recordUid).get()
                     .map { it.dataSetElements() }
                     .map {
                         var state = State.SYNCED
@@ -314,7 +314,7 @@ class GranularSyncPresenterImpl(val d2: D2,
     }
 
     private fun getDataSetCatOptCombos(): Single<List<String>> {
-        return d2.dataSetModule().dataSets.withDataSetElements().uid(recordUid).get()
+        return d2.dataSetModule().dataSets().withDataSetElements().uid(recordUid).get()
                 .map {
                     it.dataSetElements()?.map { dataSetElement ->
                         if (dataSetElement.categoryCombo() != null)

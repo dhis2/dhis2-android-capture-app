@@ -40,7 +40,7 @@ public class DataSetDetailRepositoryImpl implements DataSetDetailRepository {
 
     @Override
     public Single<Pair<CategoryCombo, List<CategoryOptionCombo>>> catOptionCombos() {
-        return d2.dataSetModule().dataSets.uid(dataSetUid).get()
+        return d2.dataSetModule().dataSets().uid(dataSetUid).get()
                 .filter(program -> program.categoryCombo() != null)
                 .flatMapSingle(program -> d2.categoryModule().categoryCombos().uid(program.categoryCombo().uid()).get())
                 .filter(categoryCombo -> !categoryCombo.isDefault())
@@ -56,7 +56,7 @@ public class DataSetDetailRepositoryImpl implements DataSetDetailRepository {
     @Override
     public Flowable<List<DataSetDetailModel>> dataSetGroups(List<String> orgUnits, List<DatePeriod> periodFilter, List<State> stateFilters, List<CategoryOptionCombo> catOptComboFilters) {
         DataSetInstanceCollectionRepository repo;
-        repo = d2.dataSetModule().dataSetInstances.byDataSetUid().eq(dataSetUid);
+        repo = d2.dataSetModule().dataSetInstances().byDataSetUid().eq(dataSetUid);
         if (!orgUnits.isEmpty())
             repo = repo.byOrganisationUnitUid().in(orgUnits);
         if (!periodFilter.isEmpty())
@@ -69,7 +69,7 @@ public class DataSetDetailRepositoryImpl implements DataSetDetailRepository {
                 .map(dataSetReport -> {
                     Period period = d2.periodModule().periods().byPeriodId().eq(dataSetReport.period()).one().blockingGet();
                     String periodName = DateUtils.getInstance().getPeriodUIString(period.periodType(), period.startDate(), Locale.getDefault());
-                    DataSetCompleteRegistration dscr = d2.dataSetModule().dataSetCompleteRegistrations
+                    DataSetCompleteRegistration dscr = d2.dataSetModule().dataSetCompleteRegistrations()
                             .byDataSetUid().eq(dataSetUid)
                             .byAttributeOptionComboUid().eq(dataSetReport.attributeOptionComboUid())
                             .byOrganisationUnitUid().eq(dataSetReport.organisationUnitUid())
@@ -84,7 +84,7 @@ public class DataSetDetailRepositoryImpl implements DataSetDetailRepository {
                         state = dataSetReport.state();
                         List<String> dataElementsUids = new ArrayList<>();
                         List<String> catOptionCombos = new ArrayList<>();
-                        for (DataSetElement dataSetElement : d2.dataSetModule().dataSets.withDataSetElements().byUid().eq(dataSetUid).one().blockingGet().dataSetElements()) {
+                        for (DataSetElement dataSetElement : d2.dataSetModule().dataSets().withDataSetElements().byUid().eq(dataSetUid).one().blockingGet().dataSetElements()) {
                             String catCombo;
                             if (dataSetElement.categoryCombo() != null)
                                 catCombo = dataSetElement.categoryCombo().uid();
@@ -136,7 +136,7 @@ public class DataSetDetailRepositoryImpl implements DataSetDetailRepository {
 
     @Override
     public Flowable<Boolean> canWriteAny() {
-        return d2.dataSetModule().dataSets.uid(dataSetUid).get().toFlowable()
+        return d2.dataSetModule().dataSets().uid(dataSetUid).get().toFlowable()
                 .flatMap(dataSet -> {
                     if (dataSet.access().data().write())
                         return d2.categoryModule().categoryOptionCombos().withCategoryOptions()

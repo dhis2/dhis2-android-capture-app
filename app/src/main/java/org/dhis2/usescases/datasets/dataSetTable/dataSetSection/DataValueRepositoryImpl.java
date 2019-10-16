@@ -55,16 +55,16 @@ public class DataValueRepositoryImpl implements DataValueRepository {
 
     @Override
     public Flowable<List<DataInputPeriod>> getDataInputPeriod() {
-        return Flowable.fromCallable(() -> d2.dataSetModule().dataSets.withDataInputPeriods().byUid().eq(dataSetUid).one().blockingGet().dataInputPeriods());
+        return Flowable.fromCallable(() -> d2.dataSetModule().dataSets().withDataInputPeriods().byUid().eq(dataSetUid).one().blockingGet().dataInputPeriods());
     }
 
     public Flowable<List<CategoryCombo>> getCatCombo(String sectionName) {
 
         List<String> categoryCombos = new ArrayList<>();
-        List<DataSetElement> dataSetElements = d2.dataSetModule().dataSets.withDataSetElements().uid(dataSetUid).blockingGet().dataSetElements();
+        List<DataSetElement> dataSetElements = d2.dataSetModule().dataSets().withDataSetElements().uid(dataSetUid).blockingGet().dataSetElements();
 
         if (!sectionName.equals("NO_SECTION")) {
-            List<DataElement> dataElements = d2.dataSetModule().sections.withDataElements().byDataSetUid().eq(dataSetUid).byName().eq(sectionName).one().blockingGet().dataElements();
+            List<DataElement> dataElements = d2.dataSetModule().sections().withDataElements().byDataSetUid().eq(dataSetUid).byName().eq(sectionName).one().blockingGet().dataElements();
             for (DataSetElement dataSetElement : dataSetElements) {
                 for (DataElement dataElement : dataElements) {
 
@@ -93,7 +93,7 @@ public class DataValueRepositoryImpl implements DataValueRepository {
 
     @Override
     public Flowable<DataSet> getDataSet() {
-        return Flowable.fromCallable(() -> d2.dataSetModule().dataSets.byUid().eq(dataSetUid).one().blockingGet());
+        return Flowable.fromCallable(() -> d2.dataSetModule().dataSets().byUid().eq(dataSetUid).one().blockingGet());
 
     }
 
@@ -179,11 +179,11 @@ public class DataValueRepositoryImpl implements DataValueRepository {
 
         Map<String, String> mapDataElementCatCombo = new HashMap<>();
 
-        return Flowable.just(d2.dataSetModule().dataSets.withDataSetElements().byUid().eq(dataSetUid).one().blockingGet())
+        return Flowable.just(d2.dataSetModule().dataSets().withDataSetElements().byUid().eq(dataSetUid).one().blockingGet())
                 .flatMapIterable(dataSet -> {
                     List<DataSetElement> dataElements = new ArrayList<>();
                     if (!sectionName.equals("NO_SECTION")) {
-                        List<DataElement> dataElementSection = d2.dataSetModule().sections.withDataElements()
+                        List<DataElement> dataElementSection = d2.dataSetModule().sections().withDataElements()
                                 .byDataSetUid().eq(dataSetUid).byName().eq(sectionName).one().blockingGet().dataElements();
                         for (DataElement dataElement : dataElementSection) {
                             for (DataSetElement dataSetElement : dataSet.dataSetElements())
@@ -226,14 +226,14 @@ public class DataValueRepositoryImpl implements DataValueRepository {
 
     @Override
     public Flowable<List<DataElementOperand>> getCompulsoryDataElements() {
-        return d2.dataSetModule().dataSets.withCompulsoryDataElementOperands().uid(dataSetUid).get()
+        return d2.dataSetModule().dataSets().withCompulsoryDataElementOperands().uid(dataSetUid).get()
                 .map(DataSet::compulsoryDataElementOperands).toFlowable();
     }
 
     @Override
     public Flowable<List<DataElementOperand>> getGreyFields(String sectionName) {
         if (!sectionName.isEmpty() && !sectionName.equals("NO_SECTION"))
-            return d2.dataSetModule().sections.withGreyedFields().byDataSetUid().eq(dataSetUid).byName().eq(sectionName).one().get()
+            return d2.dataSetModule().sections().withGreyedFields().byDataSetUid().eq(dataSetUid).byName().eq(sectionName).one().get()
                 .map(Section::greyedFields).toFlowable();
         else
             return Flowable.just(new ArrayList<>());
@@ -242,7 +242,7 @@ public class DataValueRepositoryImpl implements DataValueRepository {
     @Override
     public Flowable<Section> getSectionByDataSet(String section) {
         if (!section.isEmpty() && !section.equals("NO_SECTION"))
-            return Flowable.just(d2.dataSetModule().sections.byDataSetUid().eq(dataSetUid).byName().eq(section).one().blockingGet());
+            return Flowable.just(d2.dataSetModule().sections().byDataSetUid().eq(dataSetUid).byName().eq(section).one().blockingGet());
         else
             return Flowable.just(Section.builder().uid("").build());
 
@@ -251,7 +251,7 @@ public class DataValueRepositoryImpl implements DataValueRepository {
     @Override
     public Flowable<Boolean> completeDataSet(String orgUnitUid, String periodInitialDate, String catCombo) {
         boolean updateOrInserted;
-        DataSetCompleteRegistration completeRegistration = d2.dataSetModule().dataSetCompleteRegistrations
+        DataSetCompleteRegistration completeRegistration = d2.dataSetModule().dataSetCompleteRegistrations()
                 .byAttributeOptionComboUid().eq(catCombo).byOrganisationUnitUid().eq(orgUnitUid)
                 .byPeriod().eq(periodInitialDate).byDataSetUid().eq(dataSetUid).one().blockingGet();
 
@@ -285,7 +285,7 @@ public class DataValueRepositoryImpl implements DataValueRepository {
 
     @Override
     public Flowable<Boolean> reopenDataSet(String orgUnitUid, String periodInitialDate, String catCombo) {
-        DataSetCompleteRegistration completeRegistration = d2.dataSetModule().dataSetCompleteRegistrations
+        DataSetCompleteRegistration completeRegistration = d2.dataSetModule().dataSetCompleteRegistrations()
                 .byAttributeOptionComboUid().eq(catCombo)
                 .byPeriod().eq(periodInitialDate)
                 .byOrganisationUnitUid().eq(orgUnitUid)
@@ -316,7 +316,7 @@ public class DataValueRepositoryImpl implements DataValueRepository {
     public Flowable<Boolean> isCompleted(String orgUnitUid, String periodInitialDate, String catCombo) {
 
         return Flowable.fromCallable(() -> {
-            DataSetCompleteRegistration completeRegistration = d2.dataSetModule().dataSetCompleteRegistrations
+            DataSetCompleteRegistration completeRegistration = d2.dataSetModule().dataSetCompleteRegistrations()
                     .byDataSetUid().eq(dataSetUid)
                     .byAttributeOptionComboUid().eq(catCombo)
                     .byPeriod().eq(periodInitialDate)
@@ -329,7 +329,7 @@ public class DataValueRepositoryImpl implements DataValueRepository {
     @Override
     public Flowable<Boolean> isApproval(String orgUnit, String period, String attributeOptionCombo) {
         return Flowable.fromCallable(() -> {
-            DataApproval dataApproval = d2.dataSetModule().dataApprovals
+            DataApproval dataApproval = d2.dataSetModule().dataApprovals()
                     .byOrganisationUnitUid().eq(orgUnit)
                     .byPeriodId().eq(period)
                     .byAttributeOptionComboUid().eq(attributeOptionCombo)
@@ -341,9 +341,9 @@ public class DataValueRepositoryImpl implements DataValueRepository {
     @Override
     public Flowable<List<DataElement>> getDataElements(CategoryCombo categoryCombo, String sectionName) {
         if (!sectionName.equals("NO_SECTION")) {
-            List<DataElement> listDataElements = d2.dataSetModule().sections.withDataElements().byDataSetUid().eq(dataSetUid).byName().eq(sectionName).one().blockingGet().dataElements();
+            List<DataElement> listDataElements = d2.dataSetModule().sections().withDataElements().byDataSetUid().eq(dataSetUid).byName().eq(sectionName).one().blockingGet().dataElements();
             List<DataElement> dataElementsOverride = new ArrayList<>();
-            List<DataSetElement> dataSetElements = d2.dataSetModule().dataSets.withDataSetElements().uid(dataSetUid).blockingGet().dataSetElements();
+            List<DataSetElement> dataSetElements = d2.dataSetModule().dataSets().withDataSetElements().uid(dataSetUid).blockingGet().dataSetElements();
 
             for(DataElement de: listDataElements) {
                 DataElement override = transformDataElement(de, dataSetElements);
@@ -354,7 +354,7 @@ public class DataValueRepositoryImpl implements DataValueRepository {
             return Flowable.just(dataElementsOverride);
         }else {
             List<String> dataElementUids = new ArrayList<>();
-            List<DataSetElement> dataSetElements = d2.dataSetModule().dataSets.withDataSetElements().byUid().eq(dataSetUid).one().blockingGet().dataSetElements();
+            List<DataSetElement> dataSetElements = d2.dataSetModule().dataSets().withDataSetElements().byUid().eq(dataSetUid).one().blockingGet().dataSetElements();
             for (DataSetElement dataSetElement : dataSetElements) {
                 if(dataSetElement.categoryCombo() != null && categoryCombo.uid().equals(dataSetElement.categoryCombo().uid()))
                     dataElementUids.add(dataSetElement.dataElement().uid());
@@ -384,7 +384,7 @@ public class DataValueRepositoryImpl implements DataValueRepository {
 
     @Override
     public Flowable<Boolean> canWriteAny() {
-        return d2.dataSetModule().dataSets.uid(dataSetUid).get().toFlowable()
+        return d2.dataSetModule().dataSets().uid(dataSetUid).get().toFlowable()
                 .flatMap(dataSet -> {
                     if (dataSet.access().data().write())
                         return d2.categoryModule().categoryOptionCombos().withCategoryOptions()

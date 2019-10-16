@@ -30,7 +30,7 @@ public class DataSetInitialRepositoryImpl implements DataSetInitialRepository {
 
     @Override
     public Flowable<List<DateRangeInputPeriodModel>> getDataInputPeriod() {
-        return Flowable.just(d2.dataSetModule().dataSets.withDataInputPeriods().byUid().eq(dataSetUid).one().blockingGet())
+        return Flowable.just(d2.dataSetModule().dataSets().withDataInputPeriods().byUid().eq(dataSetUid).one().blockingGet())
                 .flatMapIterable(dataSet -> dataSet.dataInputPeriods())
                 .flatMap(dataInputPeriod ->
                         Flowable.just(d2.periodModule().periods().byPeriodId().eq(dataInputPeriod.period().uid()).blockingGet())
@@ -49,7 +49,7 @@ public class DataSetInitialRepositoryImpl implements DataSetInitialRepository {
     @NonNull
     @Override
     public Observable<DataSetInitialModel> dataSet() {
-        return Observable.just(d2.dataSetModule().dataSets.byUid().eq(dataSetUid).one().blockingGet())
+        return Observable.just(d2.dataSetModule().dataSets().byUid().eq(dataSetUid).one().blockingGet())
                 .map(dataSet -> {
                     String categoryComboDisplayName = d2.categoryModule().categoryCombos().byUid().eq(dataSet.categoryCombo().uid()).one().blockingGet().displayName();
                     CategoryCombo categoryCombos = d2.categoryModule().categoryCombos().withCategories().byUid().eq(dataSet.categoryCombo().uid()).one().blockingGet();

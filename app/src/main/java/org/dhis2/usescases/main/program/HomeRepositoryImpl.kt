@@ -19,7 +19,7 @@ import org.hisp.dhis.android.core.program.ProgramType.WITHOUT_REGISTRATION
 import org.hisp.dhis.android.core.program.ProgramType.WITH_REGISTRATION
 
 internal class HomeRepositoryImpl(private val d2: D2, private val eventLabel: String) : HomeRepository {
-    private val dataSetRepository: DataSetCollectionRepository = d2.dataSetModule().dataSets
+    private val dataSetRepository: DataSetCollectionRepository = d2.dataSetModule().dataSets()
             .withDataSetElements()
             .withStyle()
     private val programRepository: ProgramCollectionRepository = d2.programModule().programs
@@ -31,7 +31,7 @@ internal class HomeRepositoryImpl(private val d2: D2, private val eventLabel: St
     override fun aggregatesModels(dateFilter: List<DatePeriod>, orgUnitFilter: List<String>, statesFilter: List<State>): Flowable<List<ProgramViewModel>> {
         return ParallelFlowable.from<DataSet>(Flowable.fromIterable<DataSet>(dataSetRepository.blockingGet())).runOn(Schedulers.io())
                 .map { dataSet ->
-                    var repo = d2.dataSetModule().dataSetInstances.byDataSetUid().eq(dataSet.uid())
+                    var repo = d2.dataSetModule().dataSetInstances().byDataSetUid().eq(dataSet.uid())
                     if (orgUnitFilter.isNotEmpty())
                         repo = repo.byOrganisationUnitUid().`in`(orgUnitFilter)
                     if (dateFilter.isNotEmpty())
@@ -67,7 +67,7 @@ internal class HomeRepositoryImpl(private val d2: D2, private val eventLabel: St
                         }
                     }
 
-                    d2.dataSetModule().dataSetCompleteRegistrations
+                    d2.dataSetModule().dataSetCompleteRegistrations()
                             .byDataSetUid().eq(dataSet.uid()).blockingGet().forEach {
                                 if (it.state() != State.SYNCED)
                                     state = if (it.deleted() == true)
