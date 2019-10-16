@@ -940,7 +940,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
         //TODO: CHECK Event rules only assign values to current event
         /*if (currentEvent.enrollment() != null) {
             eventUids = UidsHelper.getUidsList(d2.eventModule().events
-                    .byEnrollmentUid().eq(currentEvent.enrollment())
+                    .byEnrollmentUid().eq(currentEvent.enrollment())test
                     .byStatus().in(EventStatus.ACTIVE, EventStatus.COMPLETED)
                     .blockingGet());
         } else {

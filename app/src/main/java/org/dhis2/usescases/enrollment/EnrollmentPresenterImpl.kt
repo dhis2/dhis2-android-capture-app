@@ -69,7 +69,7 @@ class EnrollmentPresenterImpl(
                                     .map { list ->
                                         list.sortBy { it.sortOrder() }
                                         list.map {
-                                            it.trackedEntityAttribute().uid()
+                                            it.trackedEntityAttribute()?.uid()
                                         }
                                     }
                                     .flatMap {
