@@ -161,7 +161,7 @@ public final class RulesRepository {
     @NonNull
     public Single<Map<String, String>> queryConstants() {
         Timber.tag("PROGRAMRULEREPOSITORY").d("INIT CONSTANTS at %s", Thread.currentThread().getName());
-        return d2.constantModule().constants.get()
+        return d2.constantModule().constants().get()
                 .map(constants -> {
                     Map<String, String> constantsMap = new HashMap<>();
                     for (Constant constant : constants) {

@@ -222,7 +222,7 @@ class RulesUtilsProviderImpl(private val codeGenerator: CodeGenerator) : RulesUt
                 )
                 .calculatedValueMap(HashMap())
                 .supplementaryData(RuleEngineUtils.supplementaryData(d2))
-                .constantsValue(d2.constantModule().constants.blockingGet().associate { Pair(it.uid(), it.value().toString()) })
+                .constantsValue(d2.constantModule().constants().blockingGet().associate { Pair(it.uid(), it.value().toString()) })
                 .build()
 
         val ruleEngineBuilder = ruleEngineContext.toEngineBuilder()
