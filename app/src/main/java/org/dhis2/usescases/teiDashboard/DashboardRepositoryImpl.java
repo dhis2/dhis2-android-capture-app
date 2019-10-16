@@ -316,7 +316,7 @@ public class DashboardRepositoryImpl implements DashboardRepository {
                 .mapToOne(cursor -> cursor.getString(0))
                 .flatMap(version -> {
                     if (version.equals("2.29"))
-                        return d2.relationshipModule().relationshipTypes.get().toObservable()
+                        return d2.relationshipModule().relationshipTypes().get().toObservable()
                                 .flatMapIterable(list -> list)
                                 .map(relationshipType -> Pair.create(relationshipType, teType))
                                 .toList().toObservable();

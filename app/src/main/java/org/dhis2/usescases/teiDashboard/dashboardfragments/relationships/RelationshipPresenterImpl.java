@@ -77,13 +77,13 @@ public class RelationshipPresenterImpl implements RelationshipContracts.Presente
                 updateRelationships.startWith(true)
                         .flatMap(update ->
                                 Flowable.fromIterable(
-                                        d2.relationshipModule().relationships.getByItem(
+                                        d2.relationshipModule().relationships().getByItem(
                                                 RelationshipItem.builder().trackedEntityInstance(
                                                         RelationshipItemTrackedEntityInstance.builder().trackedEntityInstance(teiUid).build()).build()
                                         ))
                                         .map(relationship -> {
                                             RelationshipType relationshipType = null;
-                                            for (RelationshipType type : d2.relationshipModule().relationshipTypes.blockingGet())
+                                            for (RelationshipType type : d2.relationshipModule().relationshipTypes().blockingGet())
                                                 if (type.uid().equals(relationship.relationshipType()))
                                                     relationshipType = type;
                                             return Pair.create(relationship, relationshipType);
@@ -102,13 +102,13 @@ public class RelationshipPresenterImpl implements RelationshipContracts.Presente
                 updateRelationships.startWith(true)
                         .flatMap(update ->
                                 Flowable.fromIterable(
-                                        d2.relationshipModule().relationships.getByItem(
+                                        d2.relationshipModule().relationships().getByItem(
                                                 RelationshipItem.builder().trackedEntityInstance(
                                                         RelationshipItemTrackedEntityInstance.builder().trackedEntityInstance(teiUid).build()).build()
                                         ))
                                         .map(relationship -> {
                                             RelationshipType relationshipType = null;
-                                            for (RelationshipType type : d2.relationshipModule().relationshipTypes.blockingGet())
+                                            for (RelationshipType type : d2.relationshipModule().relationshipTypes().blockingGet())
                                                 if (type.uid().equals(relationship.relationshipType()))
                                                     relationshipType = type;
 
@@ -184,7 +184,7 @@ public class RelationshipPresenterImpl implements RelationshipContracts.Presente
     @Override
     public void deleteRelationship(Relationship relationship) {
         try {
-            d2.relationshipModule().relationships.withItems().uid(relationship.uid()).blockingDelete();
+            d2.relationshipModule().relationships().withItems().uid(relationship.uid()).blockingDelete();
         } catch (D2Error e) {
             Timber.d(e);
         } finally {
@@ -197,7 +197,7 @@ public class RelationshipPresenterImpl implements RelationshipContracts.Presente
     public void addRelationship(String trackEntityInstance_A, String relationshipType) {
         try {
             Relationship relationship = RelationshipHelper.teiToTeiRelationship(teiUid, trackEntityInstance_A, relationshipType);
-            d2.relationshipModule().relationships.blockingAdd(relationship);
+            d2.relationshipModule().relationships().blockingAdd(relationship);
         } catch (D2Error e) {
             view.displayMessage(e.errorDescription());
         } finally {
