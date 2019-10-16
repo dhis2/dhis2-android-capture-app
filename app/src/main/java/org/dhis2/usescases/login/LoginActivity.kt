@@ -160,7 +160,7 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
     }
 
     private fun setTestingCredentials() {
-        val testingCredentialsIdentifier = resources.getIdentifier("testing_credentials_develop", "raw", packageName)
+        val testingCredentialsIdentifier = resources.getIdentifier("testing_credentials", "raw", packageName)
         if (testingCredentialsIdentifier != -1) {
             val writer = StringWriter()
             val buffer = CharArray(1024)
