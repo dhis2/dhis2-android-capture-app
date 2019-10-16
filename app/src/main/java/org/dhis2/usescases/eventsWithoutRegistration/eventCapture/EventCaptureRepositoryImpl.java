@@ -937,7 +937,8 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
 
     private void handleAssignToDataElement(String deUid, String value) throws D2Error {
         List<String> eventUids;
-        if (currentEvent.enrollment() != null) {
+        //TODO: CHECK Event rules only assign values to current event
+        /*if (currentEvent.enrollment() != null) {
             eventUids = UidsHelper.getUidsList(d2.eventModule().events
                     .byEnrollmentUid().eq(currentEvent.enrollment())
                     .byStatus().in(EventStatus.ACTIVE, EventStatus.COMPLETED)
@@ -948,8 +949,9 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                     .byProgramStageUid().eq(currentEvent.programStage())
                     .byOrganisationUnitUid().eq(currentEvent.organisationUnit())
                     .blockingGet());
-        }
+        }*/
 
+        eventUids = Collections.singletonList(currentEvent.uid());
         for (String eventUid : eventUids) {
             if (!isEmpty(value))
                 d2.trackedEntityModule().trackedEntityDataValues.value(eventUid, deUid).blockingSet(value);
