@@ -100,7 +100,7 @@ public class ProgramStageSelectionRepositoryImpl implements ProgramStageSelectio
     }
 
     private Single<List<RuleEvent>> ruleEvents(String enrollmentUid) {
-        return d2.eventModule().events
+        return d2.eventModule().events()
                 .byEnrollmentUid().eq(enrollmentUid)
                 .byStatus().in(EventStatus.ACTIVE, EventStatus.COMPLETED)
                 .withTrackedEntityDataValues()
@@ -163,7 +163,7 @@ public class ProgramStageSelectionRepositoryImpl implements ProgramStageSelectio
     @NonNull
     @Override
     public Flowable<List<ProgramStage>> enrollmentProgramStages(String programId, String enrollmentUid) {
-        return d2.eventModule().events.byEnrollmentUid().eq(enrollmentUid == null ? "" : enrollmentUid).byDeleted().isFalse().get()
+        return d2.eventModule().events().byEnrollmentUid().eq(enrollmentUid == null ? "" : enrollmentUid).byDeleted().isFalse().get()
                 .toFlowable().flatMapIterable(events -> events)
                 .map(event -> event.programStage())
                 .toList()

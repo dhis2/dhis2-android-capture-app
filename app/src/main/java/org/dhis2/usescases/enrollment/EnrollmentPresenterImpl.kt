@@ -288,7 +288,7 @@ class EnrollmentPresenterImpl(
     }
 
     override fun openInitial(eventUid: String): Boolean {
-        val event = d2.eventModule().events.uid(eventUid).blockingGet()
+        val event = d2.eventModule().events().uid(eventUid).blockingGet()
         val stage = d2.programModule().programStages.uid(event.programStage()).blockingGet()
         val needsCatCombo = programRepository.blockingGet().categoryComboUid() != null &&
                 d2.categoryModule().categoryCombos().uid(getProgram().categoryComboUid()).blockingGet()!!.isDefault == false
@@ -456,7 +456,7 @@ class EnrollmentPresenterImpl(
     }
 
     private fun getEventUid(dataElement: String): String? {
-        val events = d2.eventModule().events.byEnrollmentUid().eq(getEnrollment().uid())
+        val events = d2.eventModule().events().byEnrollmentUid().eq(getEnrollment().uid())
                 .byStatus().eq(EventStatus.ACTIVE)
                 .orderByEventDate(RepositoryScope.OrderByDirection.DESC).blockingGet().map { it.uid() }
         val dataValues = d2.trackedEntityModule().trackedEntityDataValues
@@ -535,7 +535,7 @@ class EnrollmentPresenterImpl(
 
     @Throws(D2Error::class)
     private fun handleAssignToDataElement(deUid: String, value: String?) {
-        val eventUids = UidsHelper.getUidsList(d2.eventModule().events
+        val eventUids = UidsHelper.getUidsList(d2.eventModule().events()
                 .byEnrollmentUid().eq(getEnrollment().uid())
                 .byStatus().`in`(EventStatus.ACTIVE, EventStatus.COMPLETED)
                 .blockingGet())

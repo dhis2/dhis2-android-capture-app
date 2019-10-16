@@ -123,60 +123,60 @@ internal class HomeRepositoryImpl(private val d2: D2, private val eventLabel: St
                         if (dateFilter.isNotEmpty()) {
                             if (orgUnitFilter.isNotEmpty()) {
                                 count = if (statesFilter.isNotEmpty()) {
-                                    d2.eventModule().events
+                                    d2.eventModule().events()
                                             .byProgramUid().eq(program.uid())
                                             .byEventDate().inDatePeriods(dateFilter)
                                             .byOrganisationUnitUid().`in`(orgUnitFilter)
                                             .byState().`in`(statesFilter)
                                             .blockingCount()
                                 } else
-                                    d2.eventModule().events
+                                    d2.eventModule().events()
                                             .byProgramUid().eq(program.uid())
                                             .byEventDate().inDatePeriods(dateFilter)
                                             .byOrganisationUnitUid().`in`(orgUnitFilter)
                                             .blockingCount()
                             } else {
                                 count = if (statesFilter.isNotEmpty())
-                                    d2.eventModule().events
+                                    d2.eventModule().events()
                                             .byProgramUid().eq(program.uid())
                                             .byEventDate().inDatePeriods(dateFilter)
                                             .byState().`in`(statesFilter)
                                             .blockingCount()
                                 else
-                                    d2.eventModule().events
+                                    d2.eventModule().events()
                                             .byProgramUid().eq(program.uid())
                                             .byEventDate().inDatePeriods(dateFilter)
                                             .blockingCount()
                             }
                         } else if (orgUnitFilter.isNotEmpty()) {
                             count = if (statesFilter.isNotEmpty())
-                                d2.eventModule().events
+                                d2.eventModule().events()
                                         .byProgramUid().eq(program.uid())
                                         .byOrganisationUnitUid().`in`(orgUnitFilter)
                                         .byState().`in`(statesFilter)
                                         .blockingCount()
                             else
-                                d2.eventModule().events
+                                d2.eventModule().events()
                                         .byProgramUid().eq(program.uid())
                                         .byOrganisationUnitUid().`in`(orgUnitFilter)
                                         .blockingCount()
                         } else {
                             count = if (statesFilter.isNotEmpty())
-                                d2.eventModule().events
+                                d2.eventModule().events()
                                         .byProgramUid().eq(program.uid())
                                         .byState().`in`(statesFilter)
                                         .blockingCount()
                             else
-                                d2.eventModule().events
+                                d2.eventModule().events()
                                         .byProgramUid().eq(program.uid())
                                         .blockingCount()
                         }
 
-                        if (d2.eventModule().events.byProgramUid().eq(program.uid()).byState().`in`(State.ERROR, State.WARNING).blockingGet().isNotEmpty())
+                        if (d2.eventModule().events().byProgramUid().eq(program.uid()).byState().`in`(State.ERROR, State.WARNING).blockingGet().isNotEmpty())
                             state = State.WARNING
-                        else if (d2.eventModule().events.byProgramUid().eq(program.uid()).byState().`in`(State.SENT_VIA_SMS, State.SYNCED_VIA_SMS).blockingGet().isNotEmpty())
+                        else if (d2.eventModule().events().byProgramUid().eq(program.uid()).byState().`in`(State.SENT_VIA_SMS, State.SYNCED_VIA_SMS).blockingGet().isNotEmpty())
                             state = State.SENT_VIA_SMS
-                        else if (d2.eventModule().events.byProgramUid().eq(program.uid()).byState().`in`(State.TO_UPDATE, State.TO_POST).blockingGet().isNotEmpty() || d2.eventModule().events.byProgramUid().eq(program.uid()).byDeleted().isTrue.blockingGet().isNotEmpty())
+                        else if (d2.eventModule().events().byProgramUid().eq(program.uid()).byState().`in`(State.TO_UPDATE, State.TO_POST).blockingGet().isNotEmpty() || d2.eventModule().events().byProgramUid().eq(program.uid()).byDeleted().isTrue.blockingGet().isNotEmpty())
                             state = State.TO_UPDATE
 
                     } else {

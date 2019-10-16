@@ -199,7 +199,7 @@ class RulesUtilsProviderImpl(private val codeGenerator: CodeGenerator) : RulesUt
         Timber.tag("RULE UTILS PROVIDER").d("INIT CALCULATIONS FOR EVENT %s", eventUid)
 
         val d2 = D2Manager.getD2()
-        val event = d2.eventModule().events.uid(eventUid).blockingGet()
+        val event = d2.eventModule().events().uid(eventUid).blockingGet()
         val enrollment = d2.enrollmentModule().enrollments().uid(event.enrollment()).blockingGet()
 
         var ruleEngineContext = RuleEngineContext.builder(ExpressionEvaluatorImpl(JexlEngine()))
@@ -238,7 +238,7 @@ class RulesUtilsProviderImpl(private val codeGenerator: CodeGenerator) : RulesUt
             )
                     .events(
                             RuleEngineUtils.translateToRuleEvents(
-                                    d2.eventModule().events
+                                    d2.eventModule().events()
                                             .byEnrollmentUid().eq(event.enrollment())
                                             .byUid().notIn(event.uid())
                                             .byStatus().`in`(EventStatus.ACTIVE, EventStatus.COMPLETED, EventStatus.OVERDUE)
@@ -250,7 +250,7 @@ class RulesUtilsProviderImpl(private val codeGenerator: CodeGenerator) : RulesUt
         else
             ruleEngineBuilder.events(
                     RuleEngineUtils.translateToRuleEvents(
-                            d2.eventModule().events
+                            d2.eventModule().events()
                                     .byUid().notIn(event.uid()!!)
                                     .byStatus().`in`(EventStatus.ACTIVE, EventStatus.COMPLETED, EventStatus.OVERDUE)
                                     .byEventDate().isNotNull

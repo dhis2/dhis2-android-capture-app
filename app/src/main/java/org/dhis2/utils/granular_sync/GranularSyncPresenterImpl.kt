@@ -243,7 +243,7 @@ class GranularSyncPresenterImpl(val d2: D2,
                         .get()
             EVENT ->
                 d2.programModule().programStages.uid(
-                        d2.eventModule().events.uid(recordUid).blockingGet().programStage()).get()
+                        d2.eventModule().events().uid(recordUid).blockingGet().programStage()).get()
             DATA_SET -> d2.dataSetModule().dataSets().withDataSetElements().uid(recordUid).get()
             DATA_VALUES -> d2.dataSetModule().dataSets().withDataSetElements().uid(recordUid).get()
         }
@@ -254,7 +254,7 @@ class GranularSyncPresenterImpl(val d2: D2,
             PROGRAM -> d2.programModule().programs.uid(recordUid).get()
                     .map {
                         if (it.programType() == ProgramType.WITHOUT_REGISTRATION) {
-                            val eventRepository = d2.eventModule().events.byProgramUid().eq(it.uid())
+                            val eventRepository = d2.eventModule().events().byProgramUid().eq(it.uid())
                             if (eventRepository.byState().`in`(State.ERROR).blockingGet().isNotEmpty())
                                 State.ERROR
                             else if (eventRepository.byState().`in`(State.WARNING).blockingGet().isNotEmpty())
@@ -281,7 +281,7 @@ class GranularSyncPresenterImpl(val d2: D2,
                     }
             TEI -> d2.trackedEntityModule().trackedEntityInstances.uid(recordUid).get()
                     .map { it.state() }
-            EVENT -> d2.eventModule().events.uid(recordUid).get()
+            EVENT -> d2.eventModule().events().uid(recordUid).get()
                     .map { it.state() }
             DATA_SET -> d2.dataSetModule().dataSets().withDataSetElements().uid(recordUid).get()
                     .map { it.dataSetElements() }

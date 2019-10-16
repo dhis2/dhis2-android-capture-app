@@ -103,7 +103,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
         this.formRepository = formRepository;
         this.d2 = d2;
 
-        currentEvent = d2.eventModule().events.withTrackedEntityDataValues().uid(eventUid).blockingGet();
+        currentEvent = d2.eventModule().events().withTrackedEntityDataValues().uid(eventUid).blockingGet();
         ProgramStage programStage = d2.programModule().programStages.withProgramStageDataElements().withProgramStageSections().uid(currentEvent.programStage()).blockingGet();
         OrganisationUnit ou = d2.organisationUnitModule().organisationUnits.uid(currentEvent.organisationUnit()).blockingGet();
 
@@ -286,12 +286,12 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
 
     @Override
     public boolean isEnrollmentOpen() {
-        Enrollment enrollment = d2.enrollmentModule().enrollments().uid(d2.eventModule().events.uid(eventUid).blockingGet().enrollment()).blockingGet();
+        Enrollment enrollment = d2.enrollmentModule().enrollments().uid(d2.eventModule().events().uid(eventUid).blockingGet().enrollment()).blockingGet();
         return enrollment == null || enrollment.status() == EnrollmentStatus.ACTIVE;
     }
 
     private boolean inOrgUnitRange(String eventUid) {
-        Event event = d2.eventModule().events.uid(eventUid).blockingGet();
+        Event event = d2.eventModule().events().uid(eventUid).blockingGet();
         String orgUnitUid = event.organisationUnit();
         Date eventDate = event.eventDate();
         boolean inRange = true;
@@ -306,16 +306,16 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
 
     @Override
     public boolean isEnrollmentCancelled() {
-        Enrollment enrollment = d2.enrollmentModule().enrollments().uid(d2.eventModule().events.uid(eventUid).blockingGet().enrollment()).blockingGet();
+        Enrollment enrollment = d2.enrollmentModule().enrollments().uid(d2.eventModule().events().uid(eventUid).blockingGet().enrollment()).blockingGet();
         if (enrollment == null)
             return false;
         else
-            return d2.enrollmentModule().enrollments().uid(d2.eventModule().events.uid(eventUid).blockingGet().enrollment()).blockingGet().status() == EnrollmentStatus.CANCELLED;
+            return d2.enrollmentModule().enrollments().uid(d2.eventModule().events().uid(eventUid).blockingGet().enrollment()).blockingGet().status() == EnrollmentStatus.CANCELLED;
     }
 
     @Override
     public boolean isEventExpired(String eventUid) {
-        Event event = d2.eventModule().events.uid(eventUid).blockingGet();
+        Event event = d2.eventModule().events().uid(eventUid).blockingGet();
         Program program = d2.programModule().programs.uid(event.program()).blockingGet();
         ProgramStage stage = d2.programModule().programStages.uid(event.programStage()).blockingGet();
         boolean isExpired = DateUtils.getInstance().isEventExpired(event.eventDate(), event.completedDate(), event.status(), program.completeEventsExpiryDays(), stage.periodType() != null ? stage.periodType() : program.expiryPeriodType(), program.expiryDays());
@@ -354,26 +354,26 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
 
     @Override
     public Flowable<String> programStageName() {
-        return Flowable.just(d2.eventModule().events.uid(eventUid).blockingGet())
+        return Flowable.just(d2.eventModule().events().uid(eventUid).blockingGet())
                 .map(event -> d2.programModule().programStages.uid(event.programStage()).blockingGet().displayName());
     }
 
     @Override
     public Flowable<String> eventDate() {
-        return Flowable.just(d2.eventModule().events.uid(eventUid).blockingGet())
+        return Flowable.just(d2.eventModule().events().uid(eventUid).blockingGet())
                 .map(event -> DateUtils.uiDateFormat().format(event.eventDate()));
     }
 
     @Override
     public Flowable<String> orgUnit() {
-        return Flowable.just(d2.eventModule().events.uid(eventUid).blockingGet())
+        return Flowable.just(d2.eventModule().events().uid(eventUid).blockingGet())
                 .map(event -> d2.organisationUnitModule().organisationUnits.uid(event.organisationUnit()).blockingGet().displayName());
     }
 
 
     @Override
     public Flowable<String> catOption() {
-        return Flowable.just(d2.eventModule().events.uid(eventUid).blockingGet())
+        return Flowable.just(d2.eventModule().events().uid(eventUid).blockingGet())
                 .map(event -> d2.categoryModule().categoryOptionCombos().uid(event.attributeOptionCombo()))
                 .map(categoryOptionComboRepo -> {
                     if (categoryOptionComboRepo.blockingGet() == null)
@@ -386,7 +386,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
 
     @Override
     public Flowable<List<FormSectionViewModel>> eventSections() {
-        return d2.eventModule().events.uid(eventUid).get()
+        return d2.eventModule().events().uid(eventUid).get()
                 .map(eventSingle -> {
                     List<FormSectionViewModel> formSection = new ArrayList<>();
                     if (eventSingle.deleted() == null || !eventSingle.deleted()) {
@@ -579,7 +579,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                         return fieldViewModels;
                     }).toFlowable()
                     .map(this::checkRenderType);
-        else return d2.eventModule().events.uid(eventUid).get()
+        else return d2.eventModule().events().uid(eventUid).get()
                 .flatMap(event ->
                         d2.programModule().programStages.withProgramStageSections()
                                 .withProgramStageDataElements()
@@ -724,7 +724,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
     public Observable<Boolean> completeEvent() {
         return Observable.fromCallable(() -> {
             try {
-                d2.eventModule().events.uid(currentEvent.uid()).setStatus(EventStatus.COMPLETED);
+                d2.eventModule().events().uid(currentEvent.uid()).setStatus(EventStatus.COMPLETED);
                 return true;
             } catch (D2Error d2Error) {
                 d2Error.printStackTrace();
@@ -736,7 +736,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
     @Override
     public boolean reopenEvent() {
         try {
-            d2.eventModule().events.uid(currentEvent.uid())
+            d2.eventModule().events().uid(currentEvent.uid())
                     .setStatus(EventStatus.ACTIVE);
             return true;
         } catch (D2Error d2Error) {
@@ -747,14 +747,14 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
 
     @Override
     public Observable<Boolean> deleteEvent() {
-        return d2.eventModule().events.uid(eventUid).delete().toObservable();
+        return d2.eventModule().events().uid(eventUid).delete().toObservable();
     }
 
     @Override
     public Observable<Boolean> updateEventStatus(EventStatus status) {
 
         return Observable.fromCallable(() -> {
-            d2.eventModule().events.uid(currentEvent.uid())
+            d2.eventModule().events().uid(currentEvent.uid())
                     .setStatus(status);
             return true;
         });
@@ -763,9 +763,9 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
     @Override
     public Observable<Boolean> rescheduleEvent(Date newDate) {
         return Observable.fromCallable(() -> {
-            d2.eventModule().events.uid(currentEvent.uid())
+            d2.eventModule().events().uid(currentEvent.uid())
                     .setDueDate(newDate);
-            d2.eventModule().events.uid(currentEvent.uid())
+            d2.eventModule().events().uid(currentEvent.uid())
                     .setStatus(EventStatus.SCHEDULE);
             return true;
         });
@@ -781,12 +781,12 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
         boolean canWrite;
         canWrite =
                 d2.programModule().programs.uid(
-                        d2.eventModule().events.uid(eventUid).blockingGet().program()
+                        d2.eventModule().events().uid(eventUid).blockingGet().program()
                 ).blockingGet().access().data().write();
         if (canWrite)
             canWrite =
                     d2.programModule().programStages.uid(
-                            d2.eventModule().events.uid(eventUid).blockingGet().programStage()
+                            d2.eventModule().events().uid(eventUid).blockingGet().programStage()
                     ).blockingGet().access().data().write();
         return canWrite;
     }
@@ -798,13 +798,13 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
 
     @Override
     public Flowable<EventStatus> eventStatus() {
-        return Flowable.just(d2.eventModule().events.uid(eventUid).blockingGet())
+        return Flowable.just(d2.eventModule().events().uid(eventUid).blockingGet())
                 .map(Event::status);
     }
 
     @NonNull
     private Flowable<List<RuleDataValue>> queryDataValues(String eventUid) {
-        return d2.eventModule().events.uid(eventUid).get()
+        return d2.eventModule().events().uid(eventUid).get()
                 .flatMap(event -> d2.trackedEntityModule().trackedEntityDataValues.byEvent().eq(eventUid).byValue().isNotNull().get()
                         .toFlowable()
                         .flatMapIterable(values -> values)
@@ -883,14 +883,14 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
     }
 
     private Observable<Program> getExpiryDateFromEvent(String eventUid) {
-        return d2.eventModule().events.uid(eventUid).get().
+        return d2.eventModule().events().uid(eventUid).get().
                 flatMap(event -> d2.programModule().programs.uid(event.program()).get())
                 .toObservable();
     }
 
     @Override
     public Observable<Boolean> isCompletedEventExpired(String eventUid) {
-        return Observable.zip(d2.eventModule().events.uid(eventUid).get().toObservable(),
+        return Observable.zip(d2.eventModule().events().uid(eventUid).get().toObservable(),
                 getExpiryDateFromEvent(eventUid),
                 ((event, program) -> DateUtils.getInstance().isEventExpired(null, event.completedDate(), program.completeEventsExpiryDays())));
     }
@@ -938,12 +938,12 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
     private void handleAssignToDataElement(String deUid, String value) throws D2Error {
         List<String> eventUids;
         if (currentEvent.enrollment() != null) {
-            eventUids = UidsHelper.getUidsList(d2.eventModule().events
+            eventUids = UidsHelper.getUidsList(d2.eventModule().events()
                     .byEnrollmentUid().eq(currentEvent.enrollment())
                     .byStatus().in(EventStatus.ACTIVE, EventStatus.COMPLETED)
                     .blockingGet());
         } else {
-            eventUids = UidsHelper.getUidsList(d2.eventModule().events
+            eventUids = UidsHelper.getUidsList(d2.eventModule().events()
                     .byProgramUid().eq(currentEvent.program())
                     .byProgramStageUid().eq(currentEvent.programStage())
                     .byOrganisationUnitUid().eq(currentEvent.organisationUnit())

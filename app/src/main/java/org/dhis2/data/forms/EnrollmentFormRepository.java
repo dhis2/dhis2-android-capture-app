@@ -405,7 +405,7 @@ public class EnrollmentFormRepository implements FormRepository {
                                 if (periodType != null)
                                     eventDate = DateUtils.getInstance().getNextPeriod(periodType, eventDate, 0); //Sets eventDate to current Period date
 
-                                List<Event> events = d2.eventModule().events.byEnrollmentUid().eq(enrollment.uid()).byProgramStageUid().eq(programStage.uid()).blockingGet();
+                                List<Event> events = d2.eventModule().events().byEnrollmentUid().eq(enrollment.uid()).byProgramStageUid().eq(programStage.uid()).blockingGet();
                                 if (events == null || events.isEmpty()) {
 
                                     Event.Builder eventBuilder = Event.builder()
@@ -496,7 +496,7 @@ public class EnrollmentFormRepository implements FormRepository {
 
     @Override
     public Observable<Trio<Boolean, CategoryCombo, List<CategoryOptionCombo>>> getProgramCategoryCombo(String eventUid) {
-        return d2.eventModule().events.uid(eventUid).get()
+        return d2.eventModule().events().uid(eventUid).get()
                 .flatMap(event -> d2.programModule().programs.uid(event.program()).get()
                         .flatMap(program -> d2.categoryModule().categoryOptionCombos()
                                 .byCategoryComboUid().eq(program.categoryComboUid()).get()
@@ -623,7 +623,7 @@ public class EnrollmentFormRepository implements FormRepository {
                     }
 
                     if (stageToOpen != null) { //we should check if event exist (if not create) and open
-                        List<Event> event = d2.eventModule().events.byProgramStageUid().eq(stageToOpen.uid()).byEnrollmentUid().eq(enrollmentUid).blockingGet();
+                        List<Event> event = d2.eventModule().events().byProgramStageUid().eq(stageToOpen.uid()).byEnrollmentUid().eq(enrollmentUid).blockingGet();
 
                         if (event != null && !event.isEmpty()) {
                             String eventUid = event.get(0).uid();
@@ -691,7 +691,7 @@ public class EnrollmentFormRepository implements FormRepository {
     }
 
     public Flowable<ProgramStage> getProgramStage(String eventUid) {
-        return Flowable.fromCallable(() -> d2.eventModule().events.byUid().eq(eventUid).one().blockingGet())
+        return Flowable.fromCallable(() -> d2.eventModule().events().byUid().eq(eventUid).one().blockingGet())
                 .map(event -> d2.programModule().programStages.byUid().eq(event.programStage()).one().blockingGet());
     }
 }

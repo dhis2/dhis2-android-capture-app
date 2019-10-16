@@ -174,7 +174,7 @@ public final class AttributeValueStore implements DataEntryStore {
 
     private String eventUid(String attribute) {
         String eventUid = "";
-        List<Event> events = d2.eventModule().events.byEnrollmentUid().eq(enrollment)
+        List<Event> events = d2.eventModule().events().byEnrollmentUid().eq(enrollment)
                 .byStatus().eq(EventStatus.ACTIVE)
                 .orderByEventDate(RepositoryScope.OrderByDirection.DESC).blockingGet();
 

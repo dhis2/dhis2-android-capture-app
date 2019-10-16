@@ -50,7 +50,7 @@ final class SyncPresenterImpl implements SyncPresenter {
         int eventLimit = prefs.getInt(Constants.EVENT_MAX, Constants.EVENT_MAX_DEFAULT);
         boolean limitByOU = prefs.getBoolean(Constants.LIMIT_BY_ORG_UNIT, false);
         boolean limitByProgram = prefs.getBoolean(Constants.LIMIT_BY_PROGRAM, false);
-        Completable.fromObservable(d2.eventModule().events.upload())
+        Completable.fromObservable(d2.eventModule().events().upload())
                 .andThen(Completable.fromObservable(d2.eventModule()
                         .eventDownloader.limit(eventLimit).limitByOrgunit(limitByOU).limitByProgram(limitByProgram).download())
                 ).blockingAwait();
@@ -111,14 +111,14 @@ final class SyncPresenterImpl implements SyncPresenter {
 
     @Override
     public boolean checkSyncStatus() {
-        boolean eventsOk = d2.eventModule().events.byState().notIn(State.SYNCED).blockingGet().isEmpty();
+        boolean eventsOk = d2.eventModule().events().byState().notIn(State.SYNCED).blockingGet().isEmpty();
         boolean teiOk = d2.trackedEntityModule().trackedEntityInstances.byState().notIn(State.SYNCED, State.RELATIONSHIP).blockingGet().isEmpty();
         return eventsOk && teiOk;
     }
 
     @Override
     public Observable<D2Progress> syncGranularEvent(String eventUid) {
-        return d2.eventModule().events.byUid().eq(eventUid).upload();
+        return d2.eventModule().events().byUid().eq(eventUid).upload();
     }
 
     @Override
@@ -190,7 +190,7 @@ final class SyncPresenterImpl implements SyncPresenter {
                     if (program.programType() == ProgramType.WITH_REGISTRATION)
                         return d2.trackedEntityModule().trackedEntityInstances.byProgramUids(Collections.singletonList(uid)).upload();
                     else
-                        return d2.eventModule().events.byProgramUid().eq(uid).upload();
+                        return d2.eventModule().events().byProgramUid().eq(uid).upload();
                 });
     }
 
@@ -224,7 +224,7 @@ final class SyncPresenterImpl implements SyncPresenter {
 
     @Override
     public boolean checkSyncEventStatus(String uid) {
-        return d2.eventModule().events
+        return d2.eventModule().events()
                 .byUid().eq(uid)
                 .byState().notIn(State.SYNCED)
                 .blockingGet().isEmpty();
@@ -257,7 +257,7 @@ final class SyncPresenterImpl implements SyncPresenter {
                     .byState().notIn(State.SYNCED, State.RELATIONSHIP)
                     .blockingGet().isEmpty();
         else
-            return d2.eventModule().events.byProgramUid().eq(uid)
+            return d2.eventModule().events().byProgramUid().eq(uid)
                     .byState().notIn(State.SYNCED)
                     .blockingGet().isEmpty();
 

@@ -460,7 +460,7 @@ public final class RulesRepository {
 
 
     public Single<List<RuleEvent>> otherEvents(String eventUidToEvaluate) {
-        return d2.eventModule().events.uid(eventUidToEvaluate).get()
+        return d2.eventModule().events().uid(eventUidToEvaluate).get()
                 .flatMap(eventToEvaluate ->
                         getOtherEventList(eventToEvaluate).toFlowable()
                                 .flatMapIterable(eventList -> eventList)
@@ -504,7 +504,7 @@ public final class RulesRepository {
 
     private Single<List<Event>> getOtherEventList(Event eventToEvaluate) {
         if (!isEmpty(eventToEvaluate.enrollment()))
-            return d2.eventModule().events.byProgramUid().eq(eventToEvaluate.program())
+            return d2.eventModule().events().byProgramUid().eq(eventToEvaluate.program())
                     .byEnrollmentUid().eq(eventToEvaluate.enrollment())
                     .byUid().notIn(eventToEvaluate.uid())
                     .byStatus().notIn(EventStatus.SCHEDULE, EventStatus.SKIPPED, EventStatus.OVERDUE)
@@ -512,7 +512,7 @@ public final class RulesRepository {
                     .orderByEventDate(RepositoryScope.OrderByDirection.DESC)
                     .get();
         else
-            return d2.eventModule().events
+            return d2.eventModule().events()
                     .byUid().notIn(eventToEvaluate.uid())
                     .byProgramUid().eq(eventToEvaluate.program())
                     .byProgramStageUid().eq(eventToEvaluate.programStage())
@@ -529,7 +529,7 @@ public final class RulesRepository {
 
 
     public Single<List<RuleEvent>> enrollmentEvents(String enrollmentUid) {
-        return d2.eventModule().events.byEnrollmentUid().eq(enrollmentUid)
+        return d2.eventModule().events().byEnrollmentUid().eq(enrollmentUid)
                 .byStatus().notIn(EventStatus.SCHEDULE, EventStatus.SKIPPED, EventStatus.OVERDUE)
                 .withTrackedEntityDataValues()
                 .get()
@@ -548,7 +548,7 @@ public final class RulesRepository {
     }
 
     public Single<RuleEnrollment> enrollment(String eventUid) {
-        return d2.eventModule().events.uid(eventUid).get()
+        return d2.eventModule().events().uid(eventUid).get()
                 .flatMap(event -> {
                     Timber.tag("PROGRAMRULEREPOSITORY").d("INIT ENROLLMENT in %s", Thread.currentThread().getName());
                     String ouCode = d2.organisationUnitModule().organisationUnits.uid(event.organisationUnit()).blockingGet().code();

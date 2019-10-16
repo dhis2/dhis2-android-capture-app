@@ -180,7 +180,7 @@ public class EventRepository implements FormRepository {
         this.eventUid = eventUid;
         this.rulesRepository = rulesRepository;
         this.evaluator = evaluator;
-        String program = eventUid != null ? d2.eventModule().events.uid(eventUid).blockingGet().program() : "";
+        String program = eventUid != null ? d2.eventModule().events().uid(eventUid).blockingGet().program() : "";
 
         // We don't want to rebuild RuleEngine on each request, since metadata of
         // the event is not changing throughout lifecycle of FormComponent.
@@ -421,7 +421,7 @@ public class EventRepository implements FormRepository {
     @Override
     public Observable<String> getTrackedEntityInstanceUid() {
         return Observable.defer(() -> d2.enrollmentModule().enrollments().uid(
-                d2.eventModule().events.uid(eventUid).blockingGet().enrollment()
+                d2.eventModule().events().uid(eventUid).blockingGet().enrollment()
         ).get().toObservable())
                 .map(Enrollment::trackedEntityInstance);
     }
@@ -462,7 +462,7 @@ public class EventRepository implements FormRepository {
 
     @Override
     public Observable<FeatureType> captureCoodinates() {
-        return d2.eventModule().events.byUid().eq(eventUid).one().get().toObservable()
+        return d2.eventModule().events().byUid().eq(eventUid).one().get().toObservable()
                 .map(event -> d2.programModule().programStages.byUid().eq(event.programStage()).one().blockingGet())
                 .map(programStage -> {
                     if (programStage.featureType() == null)
@@ -474,7 +474,7 @@ public class EventRepository implements FormRepository {
 
     @Override
     public Observable<OrganisationUnit> getOrgUnitDates() {
-        return Observable.defer(() -> Observable.just(d2.eventModule().events.uid(eventUid).blockingGet()))
+        return Observable.defer(() -> Observable.just(d2.eventModule().events().uid(eventUid).blockingGet()))
                 .switchMap(event -> Observable.just(d2.organisationUnitModule().organisationUnits.uid(event.organisationUnit()).blockingGet()));
     }
 

@@ -112,7 +112,7 @@ class EnrollmentFormRepositoryImpl(
     }
 
     private fun checkEventToOpen(enrollmentStagePair: Pair<String, String>): Pair<String, String> {
-        val eventCollectionRepository = d2.eventModule().events
+        val eventCollectionRepository = d2.eventModule().events()
                 .byEnrollmentUid().eq(enrollmentUid)
                 .byProgramStageUid().eq(enrollmentStagePair.second)
 
@@ -150,9 +150,9 @@ class EnrollmentFormRepositoryImpl(
                 .organisationUnit(enrollmentRepository.blockingGet().organisationUnit())
                 .build()
 
-        val eventUid = d2.eventModule().events.blockingAdd(eventToAdd)
+        val eventUid = d2.eventModule().events().blockingAdd(eventToAdd)
 
-        val eventRepository = d2.eventModule().events.uid(eventUid)
+        val eventRepository = d2.eventModule().events().uid(eventUid)
 
         val hideDueDate = programStage.hideDueDate() ?: false
         val incidentDate = enrollmentRepository.blockingGet().incidentDate()

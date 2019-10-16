@@ -59,7 +59,7 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
     @NonNull
     @Override
     public Observable<Event> event(String eventId) {
-        return d2.eventModule().events.uid(eventId).get().toObservable();
+        return d2.eventModule().events().uid(eventId).get().toObservable();
     }
 
     @NonNull
@@ -123,7 +123,7 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
 
     @Override
     public Flowable<Map<String, CategoryOption>> getOptionsFromCatOptionCombo(String eventId) {
-        return d2.eventModule().events.uid(eventUid).get().toFlowable()
+        return d2.eventModule().events().uid(eventUid).get().toFlowable()
                 .flatMap(event -> catCombo(event.program()).toFlowable(BackpressureStrategy.LATEST)
                         .flatMap(categoryCombo -> {
                             Map<String, CategoryOption> map = new HashMap<>();
@@ -142,9 +142,9 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
 
     @Override
     public Date getStageLastDate(String programStageUid, String enrollmentUid) {
-        List<Event> activeEvents = d2.eventModule().events.byEnrollmentUid().eq(enrollmentUid).byProgramStageUid().eq(programStageUid)
+        List<Event> activeEvents = d2.eventModule().events().byEnrollmentUid().eq(enrollmentUid).byProgramStageUid().eq(programStageUid)
                 .orderByEventDate(RepositoryScope.OrderByDirection.DESC).blockingGet();
-        List<Event> scheduleEvents = d2.eventModule().events.byEnrollmentUid().eq(enrollmentUid).byProgramStageUid().eq(programStageUid)
+        List<Event> scheduleEvents = d2.eventModule().events().byEnrollmentUid().eq(enrollmentUid).byProgramStageUid().eq(programStageUid)
                 .orderByDueDate(RepositoryScope.OrderByDirection.DESC).blockingGet();
 
         Date activeDate = null;
@@ -181,7 +181,7 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
         cal.set(Calendar.MILLISECOND, 0);
 
         return Observable.fromCallable(() ->
-                d2.eventModule().events.blockingAdd(
+                d2.eventModule().events().blockingAdd(
                         EventCreateProjection.builder()
                                 .enrollment(enrollmentUid)
                                 .program(programUid)
@@ -191,7 +191,7 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
                                 .build()
                 )
         ).map(uid -> {
-            EventObjectRepository eventRepository = d2.eventModule().events.uid(uid);
+            EventObjectRepository eventRepository = d2.eventModule().events().uid(uid);
             eventRepository.setEventDate(cal.getTime());
             if (d2.programModule().programStages.uid(eventRepository.blockingGet().programStage()).blockingGet().featureType() != null)
                 switch (d2.programModule().programStages.uid(eventRepository.blockingGet().programStage()).blockingGet().featureType()) {
@@ -222,7 +222,7 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
         cal.set(Calendar.MILLISECOND, 0);
 
         return Observable.fromCallable(() ->
-                d2.eventModule().events.blockingAdd(
+                d2.eventModule().events().blockingAdd(
                         EventCreateProjection.builder()
                                 .enrollment(enrollmentUid)
                                 .program(programUid)
@@ -232,7 +232,7 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
                                 .build()
                 )
         ).map(uid -> {
-            EventObjectRepository eventRepository = d2.eventModule().events.uid(uid);
+            EventObjectRepository eventRepository = d2.eventModule().events().uid(uid);
             eventRepository.setDueDate(cal.getTime());
             eventRepository.setStatus(EventStatus.SCHEDULE);
             if (d2.programModule().programStages.uid(eventRepository.blockingGet().programStage()).blockingGet().featureType() != null)
@@ -274,7 +274,7 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
                                        String catOptionCombo,
                                        Geometry geometry) {
 
-        return Observable.fromCallable(() -> d2.eventModule().events.uid(eventUid))
+        return Observable.fromCallable(() -> d2.eventModule().events().uid(eventUid))
                 .map(eventRepository -> {
                     eventRepository.setEventDate(DateUtils.databaseDateFormat().parse(date));
                     eventRepository.setOrganisationUnitUid(orgUnitUid);
@@ -299,7 +299,7 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
     @Override
     public Observable<Boolean> accessDataWrite(String programUid) {
         if (eventUid != null)
-            return d2.eventModule().events.uid(eventUid).get().toObservable()
+            return d2.eventModule().events().uid(eventUid).get().toObservable()
                     .flatMap(event -> {
                         if (event.attributeOptionCombo() != null)
                             return accessWithCatOption(programUid, event.attributeOptionCombo());
@@ -343,7 +343,7 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
     @Override
     public void deleteEvent(String eventId, String trackedEntityInstance) {
         try {
-            d2.eventModule().events.uid(eventId).blockingDelete();
+            d2.eventModule().events().uid(eventId).blockingDelete();
         } catch (D2Error d2Error) {
             Timber.e(d2Error);
         }
@@ -351,7 +351,7 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
 
     @Override
     public boolean isEnrollmentOpen() {
-        Event event = d2.eventModule().events.uid(eventUid).blockingGet();
+        Event event = d2.eventModule().events().uid(eventUid).blockingGet();
         return event == null || event.enrollment() == null || d2.enrollmentModule().enrollments().uid(event.enrollment()).blockingGet().status() == EnrollmentStatus.ACTIVE;
     }
 
@@ -364,7 +364,7 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
 
     @Override
     public Flowable<ProgramStage> programStageForEvent(String eventId) {
-        return d2.eventModule().events.byUid().eq(eventId).one().get().toFlowable()
+        return d2.eventModule().events().byUid().eq(eventId).one().get().toFlowable()
                 .map(event -> d2.programModule().programStages.byUid().eq(event.programStage()).one().blockingGet());
     }
 

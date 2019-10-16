@@ -511,7 +511,7 @@ public class SearchRepositoryImpl implements SearchRepository {
     private void setOverdueEvents(@NonNull SearchTeiModel tei, Program selectedProgram) {
         String teiId = tei.getTei() != null && tei.getTei().uid() != null ? tei.getTei().uid() : "";
         List<Enrollment> enrollments = d2.enrollmentModule().enrollments().byTrackedEntityInstance().eq(teiId).blockingGet();
-        EventCollectionRepository repo = d2.eventModule().events.byEnrollmentUid().in(UidsHelper.getUidsList(enrollments)).byStatus().eq(EventStatus.SKIPPED);
+        EventCollectionRepository repo = d2.eventModule().events().byEnrollmentUid().in(UidsHelper.getUidsList(enrollments)).byStatus().eq(EventStatus.SKIPPED);
         int count;
 
         if (selectedProgram == null)
@@ -578,8 +578,8 @@ public class SearchRepositoryImpl implements SearchRepository {
         if (!periods.isEmpty())
             while (iterator.hasNext()) {
                 TrackedEntityInstance tei = iterator.next();
-                boolean hasEventsByEventDate = !d2.eventModule().events.byTrackedEntityInstanceUids(Collections.singletonList(tei.uid())).byEventDate().inDatePeriods(periods).blockingIsEmpty();
-                boolean hasEventsByDueDate = !d2.eventModule().events.byTrackedEntityInstanceUids(Collections.singletonList(tei.uid())).byDueDate().inDatePeriods(periods).blockingIsEmpty();
+                boolean hasEventsByEventDate = !d2.eventModule().events().byTrackedEntityInstanceUids(Collections.singletonList(tei.uid())).byEventDate().inDatePeriods(periods).blockingIsEmpty();
+                boolean hasEventsByDueDate = !d2.eventModule().events().byTrackedEntityInstanceUids(Collections.singletonList(tei.uid())).byDueDate().inDatePeriods(periods).blockingIsEmpty();
                 if (!hasEventsByDueDate && !hasEventsByEventDate)
                     iterator.remove();
 

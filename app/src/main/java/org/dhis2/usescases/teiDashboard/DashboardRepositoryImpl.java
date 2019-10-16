@@ -204,12 +204,12 @@ public class DashboardRepositoryImpl implements DashboardRepository {
     public Event updateState(Event eventModel, EventStatus newStatus) {
 
         try {
-            d2.eventModule().events.uid(eventModel.uid()).setStatus(newStatus);
+            d2.eventModule().events().uid(eventModel.uid()).setStatus(newStatus);
         } catch (D2Error d2Error) {
             Timber.e(d2Error);
         }
 
-        return d2.eventModule().events.uid(eventModel.uid()).blockingGet();
+        return d2.eventModule().events().uid(eventModel.uid()).blockingGet();
     }
 
     @Override
@@ -231,7 +231,7 @@ public class DashboardRepositoryImpl implements DashboardRepository {
         return d2.enrollmentModule().enrollments().byProgram().eq(programUid).byTrackedEntityInstance().eq(teiUid)
                 .byStatus().eq(EnrollmentStatus.ACTIVE).one().get()
                 .flatMap(enrollment ->
-                        d2.eventModule().events.byEnrollmentUid().eq(enrollment.uid())
+                        d2.eventModule().events().byEnrollmentUid().eq(enrollment.uid())
                                 .byDeleted().isFalse()
                                 .get().toFlowable()
                                 .flatMapIterable(events -> events)
@@ -346,7 +346,7 @@ public class DashboardRepositoryImpl implements DashboardRepository {
     public void setDefaultCatOptCombToEvent(String eventUid) {
         List<CategoryCombo> categoryCombos = d2.categoryModule().categoryCombos().byIsDefault().isTrue().withCategories().withCategoryOptionCombos().blockingGet();
         try {
-            d2.eventModule().events.uid(eventUid).setAttributeOptionComboUid(categoryCombos.get(0).categoryOptionCombos().get(0).uid());
+            d2.eventModule().events().uid(eventUid).setAttributeOptionComboUid(categoryCombos.get(0).categoryOptionCombos().get(0).uid());
         } catch (D2Error d2Error) {
             Timber.e(d2Error);
         }

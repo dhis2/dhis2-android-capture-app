@@ -373,7 +373,7 @@ public class QRCodeGenerator implements QRInterface {
                 dataBuilder.append(ATTR_FLAG);
                 dataBuilder.append(setAttrData(attrValue));
             }
-            List<Event> events = d2.eventModule().events.byEnrollmentUid().eq(enrollment.uid()).blockingGet();
+            List<Event> events = d2.eventModule().events().byEnrollmentUid().eq(enrollment.uid()).blockingGet();
             for (Event event : events) {
                 dataBuilder.append(EVENT_FLAG);
                 dataBuilder.append(setEventData(event));

@@ -64,7 +64,7 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
     @Override
     public LiveData<PagedList<ProgramEventViewModel>> filteredProgramEvents(List<DatePeriod> dateFilter, List<String> orgUnitFilter, List<CategoryOptionCombo> catOptCombList,
                                                                             List<EventStatus> eventStatus, List<State> states) {
-        EventCollectionRepository eventRepo = d2.eventModule().events.byProgramUid().eq(programUid);
+        EventCollectionRepository eventRepo = d2.eventModule().events().byProgramUid().eq(programUid);
         if (!dateFilter.isEmpty())
             eventRepo = eventRepo.byEventDate().inDatePeriods(dateFilter);
         if (!orgUnitFilter.isEmpty())
@@ -89,7 +89,7 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
     @Override
     public Flowable<kotlin.Pair<FeatureCollection, BoundingBox>> filteredEventsForMap(List<DatePeriod> dateFilter, List<String> orgUnitFilter, List<CategoryOptionCombo> catOptCombList,
                                                                                       List<EventStatus> eventStatus, List<State> states) {
-        EventCollectionRepository eventRepo = d2.eventModule().events.byProgramUid().eq(programUid);
+        EventCollectionRepository eventRepo = d2.eventModule().events().byProgramUid().eq(programUid);
         if (!dateFilter.isEmpty())
             eventRepo = eventRepo.byEventDate().inDatePeriods(dateFilter);
         if (!orgUnitFilter.isEmpty())
@@ -109,7 +109,7 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
 
     @Override
     public Flowable<ProgramEventViewModel> getInfoForEvent(String eventUid) {
-        return d2.eventModule().events.byUid().eq(eventUid).withTrackedEntityDataValues().one().get()
+        return d2.eventModule().events().byUid().eq(eventUid).withTrackedEntityDataValues().one().get()
                 .map(this::transformToProgramEventModel)
                 .toFlowable();
     }
