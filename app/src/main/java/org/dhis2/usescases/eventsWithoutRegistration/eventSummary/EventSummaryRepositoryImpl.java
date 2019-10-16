@@ -91,7 +91,7 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
                 .map(eventSingle -> {
                     List<FormSectionViewModel> formSection = new ArrayList<>();
                     if (eventSingle.deleted() == null || !eventSingle.deleted()) {
-                        ProgramStage stage = d2.programModule().programStages.withProgramStageSections().uid(eventSingle.programStage()).blockingGet();
+                        ProgramStage stage = d2.programModule().programStages().withProgramStageSections().uid(eventSingle.programStage()).blockingGet();
                         if (stage.programStageSections().size() > 0) {
                             for (ProgramStageSection section : stage.programStageSections())
                                 formSection.add(FormSectionViewModel.createForSection(eventUid, section.uid(), section.displayName(),
@@ -120,10 +120,10 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
         return d2.eventModule().events().withTrackedEntityDataValues().uid(eventUid).get()
                 .map(event -> {
                     List<FieldViewModel> fields = new ArrayList<>();
-                    ProgramStage stage = d2.programModule().programStages.withProgramStageDataElements().withProgramStageSections().uid(event.programStage()).blockingGet();
+                    ProgramStage stage = d2.programModule().programStages().withProgramStageDataElements().withProgramStageSections().uid(event.programStage()).blockingGet();
                     if (section != null) {
 
-                        ProgramStageSection stageSection = d2.programModule().programStageSections.withDataElements().uid(section).blockingGet();
+                        ProgramStageSection stageSection = d2.programModule().programStageSections().withDataElements().uid(section).blockingGet();
                         for (ProgramStageDataElement programStageDataElement : stage.programStageDataElements()) {
                             if (UidsHelper.getUidsList(stageSection.dataElements()).contains(programStageDataElement.dataElement().uid())) {
                                 DataElement dataelement = d2.dataElementModule().dataElements().uid(programStageDataElement.dataElement().uid()).blockingGet();
@@ -233,8 +233,8 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
     public Observable<Boolean> accessDataWrite(String eventId) {
         return d2.eventModule().events().uid(eventId).get()
                 .map(Event::programStage)
-                .flatMap(programStageUid -> d2.programModule().programStages.uid(programStageUid).get())
-                .flatMap(programStage -> d2.programModule().programs.uid(programStage.program().uid()).get()
+                .flatMap(programStageUid -> d2.programModule().programStages().uid(programStageUid).get())
+                .flatMap(programStage -> d2.programModule().programs().uid(programStage.program().uid()).get()
                         .map(program -> program.access().data().write() && programStage.access().data().write()))
                 .toObservable();
     }
@@ -247,7 +247,7 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
                         RuleEvent.builder()
                                 .event(eventUid)
                                 .programStage(event.programStage())
-                                .programStageName(d2.programModule().programStages.uid(event.programStage()).blockingGet().displayName())
+                                .programStageName(d2.programModule().programStages().uid(event.programStage()).blockingGet().displayName())
                                 .status(RuleEvent.Status.valueOf(event.status().name()))
                                 .eventDate(event.eventDate())
                                 .dueDate(event.dueDate() != null ? event.dueDate() : event.eventDate())
@@ -273,7 +273,7 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
 
     @Override
     public Observable<Program> getProgramWithId(String programUid) {
-        return d2.programModule().programs.withTrackedEntityType().withProgramTrackedEntityAttributes().withProgramIndicators().withProgramRules()
+        return d2.programModule().programs().withTrackedEntityType().withProgramTrackedEntityAttributes().withProgramIndicators().withProgramRules()
                 .withProgramRuleVariables().withProgramSections().withProgramStages().withStyle()
                 .uid(programUid).get().toObservable();
     }

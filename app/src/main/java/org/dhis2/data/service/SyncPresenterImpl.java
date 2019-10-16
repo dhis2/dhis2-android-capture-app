@@ -185,7 +185,7 @@ final class SyncPresenterImpl implements SyncPresenter {
 
     @Override
     public Observable<D2Progress> syncGranularProgram(String uid) {
-        return d2.programModule().programs.uid(uid).get().toObservable()
+        return d2.programModule().programs().uid(uid).get().toObservable()
                 .flatMap(program -> {
                     if (program.programType() == ProgramType.WITH_REGISTRATION)
                         return d2.trackedEntityModule().trackedEntityInstances.byProgramUids(Collections.singletonList(uid)).upload();
@@ -249,7 +249,7 @@ final class SyncPresenterImpl implements SyncPresenter {
 
     @Override
     public boolean checkSyncProgramStatus(String uid) {
-        Program program = d2.programModule().programs.uid(uid).blockingGet();
+        Program program = d2.programModule().programs().uid(uid).blockingGet();
 
         if (program.programType() == ProgramType.WITH_REGISTRATION)
             return d2.trackedEntityModule().trackedEntityInstances

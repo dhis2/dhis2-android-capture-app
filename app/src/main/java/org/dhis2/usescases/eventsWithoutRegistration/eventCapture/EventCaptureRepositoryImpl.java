@@ -104,7 +104,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
         this.d2 = d2;
 
         currentEvent = d2.eventModule().events().withTrackedEntityDataValues().uid(eventUid).blockingGet();
-        ProgramStage programStage = d2.programModule().programStages.withProgramStageDataElements().withProgramStageSections().uid(currentEvent.programStage()).blockingGet();
+        ProgramStage programStage = d2.programModule().programStages().withProgramStageDataElements().withProgramStageSections().uid(currentEvent.programStage()).blockingGet();
         OrganisationUnit ou = d2.organisationUnitModule().organisationUnits.uid(currentEvent.organisationUnit()).blockingGet();
 
         eventBuilder = RuleEvent.builder()
@@ -132,7 +132,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
 
         loadDataElementRules(currentEvent);
 
-        List<ProgramStageSection> sections = d2.programModule().programStageSections.byProgramStageUid().eq(programStage.uid())
+        List<ProgramStageSection> sections = d2.programModule().programStageSections().byProgramStageUid().eq(programStage.uid())
                 .withDataElements().withProgramIndicators().blockingGet();
         sectionMap = new HashMap<>();
         if (sections != null && !sections.isEmpty()) {
@@ -150,7 +150,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
 
     private void loadDataElementRules(Event event) {
         float init = System.currentTimeMillis();
-        rules = d2.programModule().programRules.byProgramUid().eq(event.program()).withProgramRuleActions().blockingGet();
+        rules = d2.programModule().programRules().byProgramUid().eq(event.program()).withProgramRuleActions().blockingGet();
         Timber.d("LOAD ALL RULES  AT %s", System.currentTimeMillis() - init);
         mandatoryRules = new ArrayList<>();
         Iterator<ProgramRule> ruleIterator = rules.iterator();
@@ -176,7 +176,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                             mandatoryRules.add(rule);
         }
 
-        List<ProgramRuleVariable> variables = d2.programModule().programRuleVariables
+        List<ProgramRuleVariable> variables = d2.programModule().programRuleVariables()
                 .byProgramUid().eq(event.program())
                 .blockingGet();
 
@@ -217,7 +217,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
 
 
     private List<ProgramRule> filterRules(List<ProgramRule> rules) {
-        Program program = d2.programModule().programs.uid(currentEvent.program()).blockingGet();
+        Program program = d2.programModule().programs().uid(currentEvent.program()).blockingGet();
         if (program.programType().equals(ProgramType.WITH_REGISTRATION)) {
             Iterator<ProgramRule> iterator = rules.iterator();
             while (iterator.hasNext()) {
@@ -316,8 +316,8 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
     @Override
     public boolean isEventExpired(String eventUid) {
         Event event = d2.eventModule().events().uid(eventUid).blockingGet();
-        Program program = d2.programModule().programs.uid(event.program()).blockingGet();
-        ProgramStage stage = d2.programModule().programStages.uid(event.programStage()).blockingGet();
+        Program program = d2.programModule().programs().uid(event.program()).blockingGet();
+        ProgramStage stage = d2.programModule().programStages().uid(event.programStage()).blockingGet();
         boolean isExpired = DateUtils.getInstance().isEventExpired(event.eventDate(), event.completedDate(), event.status(), program.completeEventsExpiryDays(), stage.periodType() != null ? stage.periodType() : program.expiryPeriodType(), program.expiryDays());
         boolean blockAfterComplete = event.status() == EventStatus.COMPLETED && stage.blockEntryForm();
         boolean isInCaptureOrgUnit = d2.organisationUnitModule().organisationUnits
@@ -355,7 +355,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
     @Override
     public Flowable<String> programStageName() {
         return Flowable.just(d2.eventModule().events().uid(eventUid).blockingGet())
-                .map(event -> d2.programModule().programStages.uid(event.programStage()).blockingGet().displayName());
+                .map(event -> d2.programModule().programStages().uid(event.programStage()).blockingGet().displayName());
     }
 
     @Override
@@ -390,7 +390,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                 .map(eventSingle -> {
                     List<FormSectionViewModel> formSection = new ArrayList<>();
                     if (eventSingle.deleted() == null || !eventSingle.deleted()) {
-                        ProgramStage stage = d2.programModule().programStages.withProgramStageSections().uid(eventSingle.programStage()).blockingGet();
+                        ProgramStage stage = d2.programModule().programStages().withProgramStageSections().uid(eventSingle.programStage()).blockingGet();
                         if (stage.programStageSections().size() > 0) {
                             for (ProgramStageSection section : stage.programStageSections())
                                 formSection.add(FormSectionViewModel.createForSection(eventUid, section.uid(), section.displayName(),
@@ -436,7 +436,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                     }).toFlowable()
                     .map(this::checkRenderType);
         else
-            return d2.programModule().programStageSections.withDataElements().uid(sectionUid)
+            return d2.programModule().programStageSections().withDataElements().uid(sectionUid)
                     .get().toFlowable()
                     .map(section -> section.dataElements())
                     .flatMapIterable(UidsHelper::getUidsList)
@@ -491,7 +491,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
     private ProgramStageSectionRenderingType renderingType(String sectionUid) {
         ProgramStageSectionRenderingType renderingType = ProgramStageSectionRenderingType.LISTING;
         if (sectionUid != null) {
-            ProgramStageSectionRendering sectionRendering = d2.programModule().programStageSections.uid(sectionUid).blockingGet().renderType();
+            ProgramStageSectionRendering sectionRendering = d2.programModule().programStageSections().uid(sectionUid).blockingGet().renderType();
             ProgramStageSectionDeviceRendering stageSectionRendering = sectionRendering != null ? sectionRendering.mobile() : null;
             if (stageSectionRendering != null)
                 renderingType = stageSectionRendering.type();
@@ -581,7 +581,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                     .map(this::checkRenderType);
         else return d2.eventModule().events().uid(eventUid).get()
                 .flatMap(event ->
-                        d2.programModule().programStages.withProgramStageSections()
+                        d2.programModule().programStages().withProgramStageSections()
                                 .withProgramStageDataElements()
                                 .withStyle().uid(event.programStage()).get()
                                 .map(stage -> {
@@ -591,7 +591,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                                         List<String> dataElementsOrder = new ArrayList<>();
                                         for (ProgramStageSection section : stage.programStageSections()) {
                                             dataElementsOrder.addAll(UidsHelper.getUidsList(
-                                                    d2.programModule().programStageSections.withDataElements().uid(section.uid()).blockingGet().dataElements()
+                                                    d2.programModule().programStageSections().withDataElements().uid(section.uid()).blockingGet().dataElements()
                                             ));
                                         }
                                         Collections.sort(stageDataElements, (de1, de2) -> {
@@ -608,7 +608,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                                     TrackedEntityDataValueObjectRepository valueRepository = d2.trackedEntityModule().trackedEntityDataValues.value(eventUid, de.uid());
 
                                     ProgramStageSection programStageSection = null;
-                                    List<ProgramStageSection> sections = d2.programModule().programStageSections.withDataElements().byProgramStageUid().eq(event.programStage()).blockingGet();
+                                    List<ProgramStageSection> sections = d2.programModule().programStageSections().withDataElements().byProgramStageUid().eq(event.programStage()).blockingGet();
                                     for (ProgramStageSection section : sections)
                                         if (UidsHelper.getUidsList(section.dataElements()).contains(de.uid())) {
                                             programStageSection = section;
@@ -780,12 +780,12 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
     public boolean getAccessDataWrite() {
         boolean canWrite;
         canWrite =
-                d2.programModule().programs.uid(
+                d2.programModule().programs().uid(
                         d2.eventModule().events().uid(eventUid).blockingGet().program()
                 ).blockingGet().access().data().write();
         if (canWrite)
             canWrite =
-                    d2.programModule().programStages.uid(
+                    d2.programModule().programStages().uid(
                             d2.eventModule().events().uid(eventUid).blockingGet().programStage()
                     ).blockingGet().access().data().write();
         return canWrite;
@@ -812,7 +812,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                             DataElement de = d2.dataElementModule().dataElements().uid(trackedEntityDataValue.dataElement()).blockingGet();
                             String value = trackedEntityDataValue.value();
                             if (de.optionSetUid() != null) {
-                                ProgramRuleVariable variable = d2.programModule().programRuleVariables
+                                ProgramRuleVariable variable = d2.programModule().programRuleVariables()
                                         .byDataElementUid().eq(de.uid())
                                         .byProgramUid().eq(event.program())
                                         .one().blockingGet();
@@ -865,7 +865,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
     @Override
     public String getSectionFor(String field) {
         String sectionToReturn = "NO_SECTION";
-        List<ProgramStageSection> programStages = d2.programModule().programStageSections.byProgramStageUid().eq(currentEvent.programStage()).withDataElements().blockingGet();
+        List<ProgramStageSection> programStages = d2.programModule().programStageSections().byProgramStageUid().eq(currentEvent.programStage()).withDataElements().blockingGet();
         for (ProgramStageSection section : programStages) {
             if (UidsHelper.getUidsList(section.dataElements()).contains(field)) {
                 sectionToReturn = section.uid();
@@ -884,7 +884,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
 
     private Observable<Program> getExpiryDateFromEvent(String eventUid) {
         return d2.eventModule().events().uid(eventUid).get().
-                flatMap(event -> d2.programModule().programs.uid(event.program()).get())
+                flatMap(event -> d2.programModule().programs().uid(event.program()).get())
                 .toObservable();
     }
 

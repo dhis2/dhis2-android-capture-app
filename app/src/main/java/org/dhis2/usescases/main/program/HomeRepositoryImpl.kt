@@ -22,7 +22,7 @@ internal class HomeRepositoryImpl(private val d2: D2, private val eventLabel: St
     private val dataSetRepository: DataSetCollectionRepository = d2.dataSetModule().dataSets()
             .withDataSetElements()
             .withStyle()
-    private val programRepository: ProgramCollectionRepository = d2.programModule().programs
+    private val programRepository: ProgramCollectionRepository = d2.programModule().programs()
             .withStyle()
             .withTrackedEntityType()
 

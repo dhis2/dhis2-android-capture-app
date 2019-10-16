@@ -86,7 +86,7 @@ class RuleEngineUtils {
                     enrollment.organisationUnit()!!,
                     d2.organisationUnitModule().organisationUnits.uid(enrollment.organisationUnit()).blockingGet().code(),
                     translateToRuleAttributeValue(attributeValues),
-                    d2.programModule().programs.uid(enrollment.program()).blockingGet().name()
+                    d2.programModule().programs().uid(enrollment.program()).blockingGet().name()
             )
         }
 
@@ -105,7 +105,7 @@ class RuleEngineUtils {
                                 it,
                                 d2.trackedEntityModule().trackedEntityDataValues.byEvent().eq(it.uid()).blockingGet()
                         ),
-                        d2.programModule().programStages.uid(it.programStage()).blockingGet().name()!!
+                        d2.programModule().programStages().uid(it.programStage()).blockingGet().name()!!
                 )
             }
         }

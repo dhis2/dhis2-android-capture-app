@@ -111,7 +111,7 @@ public class SearchRepositoryImpl implements SearchRepository {
     @Override
     public Observable<List<TrackedEntityAttribute>> programAttributes(String programId) {
         String id = programId == null ? "" : programId;
-        return Observable.fromCallable(() -> d2.programModule().programs.withProgramTrackedEntityAttributes().byUid().eq(id).one().blockingGet().programTrackedEntityAttributes())
+        return Observable.fromCallable(() -> d2.programModule().programs().withProgramTrackedEntityAttributes().byUid().eq(id).one().blockingGet().programTrackedEntityAttributes())
                 .flatMap(attributes -> {
                     List<String> uids = new ArrayList<>();
                     for (ProgramTrackedEntityAttribute pteAttribute : attributes) {
@@ -128,7 +128,7 @@ public class SearchRepositoryImpl implements SearchRepository {
     public Observable<List<Program>> programsWithRegistration(String programTypeId) {
         return Observable.fromCallable(() -> d2.organisationUnitModule().organisationUnits.byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE).blockingGet())
                 .map(UidsHelper::getUidsList)
-                .flatMap(orgUnitsUids -> Observable.just(d2.programModule().programs
+                .flatMap(orgUnitsUids -> Observable.just(d2.programModule().programs()
                         .byOrganisationUnitList(orgUnitsUids)
                         .byRegistration().isTrue()
                         .byTrackedEntityTypeUid().eq(teiType)
@@ -342,7 +342,7 @@ public class SearchRepositoryImpl implements SearchRepository {
                                 .organisationUnit(orgUnit)
                                 .build())
                         .map(enrollmentUid -> {
-                            boolean displayIncidentDate = d2.programModule().programs.uid(programUid).blockingGet().displayIncidentDate();
+                            boolean displayIncidentDate = d2.programModule().programs().uid(programUid).blockingGet().displayIncidentDate();
                             d2.enrollmentModule().enrollments().uid(enrollmentUid).setEnrollmentDate(enrollmentDate);
                             if (displayIncidentDate)
                                 d2.enrollmentModule().enrollments().uid(enrollmentUid).setIncidentDate(new Date());
@@ -419,7 +419,7 @@ public class SearchRepositoryImpl implements SearchRepository {
                 }
             }
 
-            boolean displayIncidentDate = d2.programModule().programs.uid(programUid).blockingGet().displayIncidentDate();
+            boolean displayIncidentDate = d2.programModule().programs().uid(programUid).blockingGet().displayIncidentDate();
 
             Enrollment enrollment = Enrollment.builder()
                     .uid(codeGenerator.generate())
@@ -468,7 +468,7 @@ public class SearchRepositoryImpl implements SearchRepository {
     }
 
     private Trio<String, String, String> getProgramInfo(String programUid) {
-        Program program = d2.programModule().programs.withStyle().byUid().eq(programUid).one().blockingGet();
+        Program program = d2.programModule().programs().withStyle().byUid().eq(programUid).one().blockingGet();
         String programColor = program.style() != null && program.style().color() != null ? program.style().color() : "";
         String programIcon = program.style() != null && program.style().icon() != null ? program.style().icon() : "";
         return Trio.create(program.displayName(), programColor, programIcon);
@@ -526,7 +526,7 @@ public class SearchRepositoryImpl implements SearchRepository {
 
     @Override
     public String getProgramColor(@NonNull String programUid) {
-        Program program = d2.programModule().programs.withStyle().byUid().eq(programUid).one().blockingGet();
+        Program program = d2.programModule().programs().withStyle().byUid().eq(programUid).one().blockingGet();
         return program.style() != null ?
                 program.style().color() != null ?
                         program.style().color() :

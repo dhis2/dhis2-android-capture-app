@@ -56,7 +56,7 @@ public class EventDetailRepositoryImpl implements EventDetailRepository {
     @Override
     public Observable<List<ProgramStageSection>> programStageSection(String eventUid) {
         return eventModelDetail(eventUid)
-                .map(event -> d2.programModule().programStageSections.byProgramStageUid().eq(event.programStage()).blockingGet());
+                .map(event -> d2.programModule().programStageSections().byProgramStageUid().eq(event.programStage()).blockingGet());
 
     }
 
@@ -64,7 +64,7 @@ public class EventDetailRepositoryImpl implements EventDetailRepository {
     @Override
     public Observable<ProgramStage> programStage(String eventUid) {
         return eventModelDetail(eventUid)
-                .map(event -> d2.programModule().programStages.uid(event.programStage()).blockingGet());
+                .map(event -> d2.programModule().programStages().uid(event.programStage()).blockingGet());
     }
 
     @Override
@@ -111,7 +111,7 @@ public class EventDetailRepositoryImpl implements EventDetailRepository {
     @Override
     public Observable<Pair<String, List<CategoryOptionCombo>>> getCategoryOptionCombos() {
         return d2.eventModule().events().uid(eventUid).get()
-                .flatMap(event -> d2.programModule().programs.uid(event.program()).get())
+                .flatMap(event -> d2.programModule().programs().uid(event.program()).get())
                 .map(Program::categoryComboUid)
                 .flatMap(catCombo -> d2.categoryModule().categoryCombos().uid(catCombo).get()
                         .map(categoryCombo -> Pair.create(
@@ -129,7 +129,7 @@ public class EventDetailRepositoryImpl implements EventDetailRepository {
     @Override
     public Observable<Program> getProgram(String eventUid) {
         return eventModelDetail(eventUid)
-                .map(event -> d2.programModule().programs.uid(event.program()).blockingGet());
+                .map(event -> d2.programModule().programs().uid(event.program()).blockingGet());
     }
 
     @Override
@@ -150,7 +150,7 @@ public class EventDetailRepositoryImpl implements EventDetailRepository {
     @Override
     public Observable<Program> getExpiryDateFromEvent(String eventUid) {
         return d2.eventModule().events().uid(eventUid).get()
-                .flatMap(event -> d2.programModule().programs.uid(event.program()).get())
+                .flatMap(event -> d2.programModule().programs().uid(event.program()).get())
                 .toObservable();
     }
 }

@@ -87,7 +87,7 @@ class EnrollmentFormRepositoryImpl(
     }
 
     private fun getFirstStage(): Single<Pair<String, String>> {
-        return d2.programModule().programStages.byProgramUid().eq(programUid)
+        return d2.programModule().programStages().byProgramUid().eq(programUid)
                 .orderBySortOrder(RepositoryScope.OrderByDirection.ASC)
                 .get()
                 .map {
@@ -99,7 +99,7 @@ class EnrollmentFormRepositoryImpl(
     }
 
     private fun checkOpenAfterEnrollment(): Single<Pair<String, String>> {
-        return d2.programModule().programStages.byProgramUid().eq(programUid)
+        return d2.programModule().programStages().byProgramUid().eq(programUid)
                 .byOpenAfterEnrollment().isTrue
                 .orderBySortOrder(RepositoryScope.OrderByDirection.ASC)
                 .get()
@@ -120,13 +120,13 @@ class EnrollmentFormRepositoryImpl(
             Pair(enrollmentStagePair.first, eventCollectionRepository.one().blockingGet().uid()!!)
         else {
             Pair(enrollmentStagePair.first, generateEvent(DateUtils.getInstance().today,
-                    d2.programModule().programStages.uid(enrollmentStagePair.second).blockingGet()))
+                    d2.programModule().programStages().uid(enrollmentStagePair.second).blockingGet()))
         }
     }
 
     override fun autoGenerateEvents(): Single<Boolean> {
         val now = DateUtils.getInstance().today
-        return d2.programModule().programStages
+        return d2.programModule().programStages()
                 .byProgramUid().eq(programUid)
                 .byAutoGenerateEvent().isTrue
                 .orderBySortOrder(RepositoryScope.OrderByDirection.ASC)
@@ -224,7 +224,7 @@ class EnrollmentFormRepositoryImpl(
                         val attr = d2.trackedEntityModule().trackedEntityAttributes
                                 .uid(it.trackedEntityAttribute()!!.uid())
                                 .blockingGet()
-                        val variable = d2.programModule().programRuleVariables
+                        val variable = d2.programModule().programRuleVariables()
                                 .byProgramUid().eq(programUid)
                                 .byTrackedEntityAttributeUid().eq(attr.uid())
                                 .one()

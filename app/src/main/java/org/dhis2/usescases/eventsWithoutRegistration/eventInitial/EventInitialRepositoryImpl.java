@@ -106,7 +106,7 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
     @NonNull
     @Override
     public Observable<CategoryCombo> catCombo(String programUid) {
-        return d2.programModule().programs.uid(programUid).get()
+        return d2.programModule().programs().uid(programUid).get()
                 .flatMap(program ->
                         d2.categoryModule().categoryCombos().withCategories().withCategoryOptionCombos().uid(program.categoryComboUid()).get())
                 .map(categoryCombo -> {
@@ -193,8 +193,8 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
         ).map(uid -> {
             EventObjectRepository eventRepository = d2.eventModule().events().uid(uid);
             eventRepository.setEventDate(cal.getTime());
-            if (d2.programModule().programStages.uid(eventRepository.blockingGet().programStage()).blockingGet().featureType() != null)
-                switch (d2.programModule().programStages.uid(eventRepository.blockingGet().programStage()).blockingGet().featureType()) {
+            if (d2.programModule().programStages().uid(eventRepository.blockingGet().programStage()).blockingGet().featureType() != null)
+                switch (d2.programModule().programStages().uid(eventRepository.blockingGet().programStage()).blockingGet().featureType()) {
                     case NONE:
                         break;
                     case POINT:
@@ -235,8 +235,8 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
             EventObjectRepository eventRepository = d2.eventModule().events().uid(uid);
             eventRepository.setDueDate(cal.getTime());
             eventRepository.setStatus(EventStatus.SCHEDULE);
-            if (d2.programModule().programStages.uid(eventRepository.blockingGet().programStage()).blockingGet().featureType() != null)
-                switch (d2.programModule().programStages.uid(eventRepository.blockingGet().programStage()).blockingGet().featureType()) {
+            if (d2.programModule().programStages().uid(eventRepository.blockingGet().programStage()).blockingGet().featureType() != null)
+                switch (d2.programModule().programStages().uid(eventRepository.blockingGet().programStage()).blockingGet().featureType()) {
                     case NONE:
                         break;
                     case POINT:
@@ -254,13 +254,13 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
     @NonNull
     @Override
     public Observable<ProgramStage> programStage(String programUid) {
-        return d2.programModule().programStages.byProgramUid().eq(programUid).one().get().toObservable();
+        return d2.programModule().programStages().byProgramUid().eq(programUid).one().get().toObservable();
     }
 
     @NonNull
     @Override
     public Observable<ProgramStage> programStageWithId(String programStageUid) {
-        return d2.programModule().programStages.byUid().eq(programStageUid).one().get().toObservable();
+        return d2.programModule().programStages().byUid().eq(programStageUid).one().get().toObservable();
     }
 
 
@@ -279,7 +279,7 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
                     eventRepository.setEventDate(DateUtils.databaseDateFormat().parse(date));
                     eventRepository.setOrganisationUnitUid(orgUnitUid);
                     eventRepository.setAttributeOptionComboUid(catOptionCombo);
-                    FeatureType featureType = d2.programModule().programStages.uid(eventRepository.blockingGet().programStage()).blockingGet().featureType();
+                    FeatureType featureType = d2.programModule().programStages().uid(eventRepository.blockingGet().programStage()).blockingGet().featureType();
                     if (featureType != null)
                         switch (featureType) {
                             case NONE:
@@ -334,8 +334,8 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
 
     private Observable<Boolean> programAccess(String programUid) {
         return Observable.fromCallable(() ->
-                d2.programModule().programStages.byProgramUid().eq(programUid).one().blockingGet().access().data().write() &&
-                        d2.programModule().programs.uid(programUid).blockingGet().access().data().write()
+                d2.programModule().programStages().byProgramUid().eq(programUid).one().blockingGet().access().data().write() &&
+                        d2.programModule().programs().uid(programUid).blockingGet().access().data().write()
 
         );
     }
@@ -358,14 +358,14 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
 
     @Override
     public Observable<Program> getProgramWithId(String programUid) {
-        return d2.programModule().programs.withProgramIndicators().withProgramRules().withProgramRuleVariables().withProgramSections().withProgramStages()
+        return d2.programModule().programs().withProgramIndicators().withProgramRules().withProgramRuleVariables().withProgramSections().withProgramStages()
             .withProgramTrackedEntityAttributes().withStyle().withTrackedEntityType().byUid().eq(programUid).one().get().toObservable();
     }
 
     @Override
     public Flowable<ProgramStage> programStageForEvent(String eventId) {
         return d2.eventModule().events().byUid().eq(eventId).one().get().toFlowable()
-                .map(event -> d2.programModule().programStages.byUid().eq(event.programStage()).one().blockingGet());
+                .map(event -> d2.programModule().programStages().byUid().eq(event.programStage()).one().blockingGet());
     }
 
     @Override
@@ -375,7 +375,7 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
 
     @Override
     public Observable<ObjectStyle> getObjectStyle(String uid) {
-        return d2.programModule().programStages.byUid().eq(uid).withStyle().one().get().toObservable()
+        return d2.programModule().programStages().byUid().eq(uid).withStyle().one().get().toObservable()
                 .map(programStage -> (programStage.style() != null) ? programStage.style() : ObjectStyle.builder().build());
     }
 }

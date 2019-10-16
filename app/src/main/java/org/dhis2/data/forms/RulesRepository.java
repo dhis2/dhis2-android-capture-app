@@ -87,7 +87,7 @@ public final class RulesRepository {
     @NonNull
     public Single<List<RuleVariable>> ruleVariables(@NonNull String programUid) {
         Timber.tag("PROGRAMRULEREPOSITORY").d("INIT RULES VARIABLES %s", Thread.currentThread().getName());
-        return d2.programModule().programRuleVariables.byProgramUid().eq(programUid).get()
+        return d2.programModule().programRuleVariables().byProgramUid().eq(programUid).get()
                 .map(this::translateToRuleVariable);
     }
 
@@ -109,7 +109,7 @@ public final class RulesRepository {
 
     @NonNull
     public Single<List<RuleVariable>> ruleVariablesProgramStages(@NonNull String programUid) {
-        return d2.programModule().programRuleVariables.byProgramUid().eq(programUid).get()
+        return d2.programModule().programRuleVariables().byProgramUid().eq(programUid).get()
                 .toFlowable().flatMapIterable(list -> list)
                 .map(this::mapToRuleVariableProgramStages)
                 .toList();
@@ -175,7 +175,7 @@ public final class RulesRepository {
     @NonNull
     private Single<List<ProgramRule>> queryRules(
             @NonNull String programUid) {
-        return d2.programModule().programRules
+        return d2.programModule().programRules()
                 .byProgramUid().eq(programUid)
                 .withProgramRuleActions()
                 .get();
@@ -471,7 +471,7 @@ public final class RulesRepository {
                                 .map(event -> RuleEvent.builder()
                                         .event(event.uid())
                                         .programStage(event.programStage())
-                                        .programStageName(d2.programModule().programStages.uid(event.programStage()).blockingGet().name())
+                                        .programStageName(d2.programModule().programStages().uid(event.programStage()).blockingGet().name())
                                         .status(event.status() == EventStatus.VISITED ? RuleEvent.Status.ACTIVE : RuleEvent.Status.valueOf(event.status().name()))
                                         .eventDate(event.eventDate())
                                         .dueDate(event.dueDate() != null ? event.dueDate() : event.eventDate())
@@ -490,7 +490,7 @@ public final class RulesRepository {
                 DataElement dataElement = d2.dataElementModule().dataElements().uid(dataValue.dataElement()).blockingGet();
                 String value = dataValue.value();
                 if (!isEmpty(dataElement.optionSetUid())) {
-                    boolean useOptionCode = d2.programModule().programRuleVariables.byProgramUid().eq(event.program()).byDataElementUid().eq(dataValue.dataElement())
+                    boolean useOptionCode = d2.programModule().programRuleVariables().byProgramUid().eq(event.program()).byDataElementUid().eq(dataValue.dataElement())
                             .byUseCodeForOptionSet().isTrue().blockingIsEmpty();
                     if (!useOptionCode)
                         value = d2.optionModule().options().byOptionSetUid().eq(dataElement.optionSetUid()).byCode().eq(value).one().blockingGet().name();
@@ -537,7 +537,7 @@ public final class RulesRepository {
                 .map(event -> RuleEvent.builder()
                         .event(event.uid())
                         .programStage(event.programStage())
-                        .programStageName(d2.programModule().programStages.uid(event.programStage()).blockingGet().name())
+                        .programStageName(d2.programModule().programStages().uid(event.programStage()).blockingGet().name())
                         .status(event.status() == EventStatus.VISITED ? RuleEvent.Status.ACTIVE : RuleEvent.Status.valueOf(event.status().name()))
                         .eventDate(event.eventDate())
                         .dueDate(event.dueDate() != null ? event.dueDate() : event.eventDate())
@@ -552,7 +552,7 @@ public final class RulesRepository {
                 .flatMap(event -> {
                     Timber.tag("PROGRAMRULEREPOSITORY").d("INIT ENROLLMENT in %s", Thread.currentThread().getName());
                     String ouCode = d2.organisationUnitModule().organisationUnits.uid(event.organisationUnit()).blockingGet().code();
-                    String programName = d2.programModule().programs.uid(event.program()).blockingGet().name();
+                    String programName = d2.programModule().programs().uid(event.program()).blockingGet().name();
                     if (event.enrollment() == null)
                         return Single.just(
                                 RuleEnrollment.create("",
@@ -587,7 +587,7 @@ public final class RulesRepository {
             TrackedEntityAttribute attribute = d2.trackedEntityModule().trackedEntityAttributes.uid(attributeValue.trackedEntityAttribute()).blockingGet();
             String value = attributeValue.value();
             if (attribute.optionSet() != null && !isEmpty(attribute.optionSet().uid())) {
-                boolean useOptionCode = d2.programModule().programRuleVariables.byProgramUid().eq(enrollment.program()).byTrackedEntityAttributeUid().eq(attribute.uid())
+                boolean useOptionCode = d2.programModule().programRuleVariables().byProgramUid().eq(enrollment.program()).byTrackedEntityAttributeUid().eq(attribute.uid())
                         .byUseCodeForOptionSet().isTrue().blockingIsEmpty();
                 if (!useOptionCode)
                     value = d2.optionModule().options().byOptionSetUid().eq(attribute.optionSet().uid()).byCode().eq(value).one().blockingGet().name();

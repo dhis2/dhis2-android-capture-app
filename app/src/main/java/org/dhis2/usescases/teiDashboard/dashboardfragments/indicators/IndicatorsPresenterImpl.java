@@ -69,7 +69,7 @@ public class IndicatorsPresenterImpl implements IndicatorsContracts.Presenter {
                                 Observable.fromIterable(indicators)
                                         .filter(indicator -> indicator.displayInForm() != null && indicator.displayInForm())
                                         .map(indicator -> {
-                                            String indicatorValue = d2.programModule().programIndicatorEngine.getProgramIndicatorValue(
+                                            String indicatorValue = d2.programModule().programIndicatorEngine().getProgramIndicatorValue(
                                                     enrollmentUid,
                                                     null,
                                                     indicator.uid());

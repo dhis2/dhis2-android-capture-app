@@ -235,14 +235,14 @@ class GranularSyncPresenterImpl(val d2: D2,
     @VisibleForTesting
     fun getTitle(): Single<out BaseIdentifiableObject> {
         return when (conflictType) {
-            PROGRAM -> d2.programModule().programs.uid(recordUid).get()
+            PROGRAM -> d2.programModule().programs().uid(recordUid).get()
             TEI ->
                 d2.trackedEntityModule().trackedEntityTypes.uid(
                         d2.trackedEntityModule().trackedEntityInstances.uid(recordUid)
                                 .blockingGet().trackedEntityType())
                         .get()
             EVENT ->
-                d2.programModule().programStages.uid(
+                d2.programModule().programStages().uid(
                         d2.eventModule().events().uid(recordUid).blockingGet().programStage()).get()
             DATA_SET -> d2.dataSetModule().dataSets().withDataSetElements().uid(recordUid).get()
             DATA_VALUES -> d2.dataSetModule().dataSets().withDataSetElements().uid(recordUid).get()
@@ -251,7 +251,7 @@ class GranularSyncPresenterImpl(val d2: D2,
 
     private fun getState(): Single<State> {
         return when (conflictType) {
-            PROGRAM -> d2.programModule().programs.uid(recordUid).get()
+            PROGRAM -> d2.programModule().programs().uid(recordUid).get()
                     .map {
                         if (it.programType() == ProgramType.WITHOUT_REGISTRATION) {
                             val eventRepository = d2.eventModule().events().byProgramUid().eq(it.uid())

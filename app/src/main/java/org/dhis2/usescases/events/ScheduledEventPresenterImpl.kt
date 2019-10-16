@@ -30,8 +30,8 @@ class ScheduledEventPresenterImpl(val d2: D2,
                 d2.eventModule().events().uid(eventUid).get()
                         .flatMap { event ->
                             Single.zip(
-                                    d2.programModule().programStages.withStyle().uid(event.programStage()).get(),
-                                    d2.programModule().programs.uid(event.program()).get(),
+                                    d2.programModule().programStages().withStyle().uid(event.programStage()).get(),
+                                    d2.programModule().programs().uid(event.program()).get(),
                                     BiFunction<ProgramStage, Program, Triple<ProgramStage, Program, Event>> { stage, program -> Triple(stage, program, event) })
                         }
                         .observeOn(AndroidSchedulers.mainThread())

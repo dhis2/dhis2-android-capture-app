@@ -54,7 +54,7 @@ public final class EnrollmentRepository implements DataEntryRepository {
     public Flowable<List<FieldViewModel>> list() {
 
         return d2.enrollmentModule().enrollments().uid(enrollmentUid).get()
-                .flatMap(enrollment -> d2.programModule().programs.withProgramTrackedEntityAttributes().uid(enrollment.program()).get())
+                .flatMap(enrollment -> d2.programModule().programs().withProgramTrackedEntityAttributes().uid(enrollment.program()).get())
                 .map(program -> program.programTrackedEntityAttributes()).toFlowable()
                 .flatMapIterable(programTrackedEntityAttributes -> programTrackedEntityAttributes)
                 .map(this::transform).toList().toFlowable();

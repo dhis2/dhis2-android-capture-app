@@ -116,7 +116,7 @@ public class ProgramStageSelectionRepositoryImpl implements ProgramStageSelectio
                     return RuleEvent.builder()
                             .event(event.uid())
                             .programStage(event.programStage())
-                            .programStageName(d2.programModule().programStages.uid(event.programStage()).blockingGet().displayName())
+                            .programStageName(d2.programModule().programStages().uid(event.programStage()).blockingGet().displayName())
                             .status(RuleEvent.Status.valueOf(event.status().name()))
                             .eventDate(event.eventDate() == null ? event.dueDate() : event.eventDate())
                             .dueDate(event.dueDate() != null ? event.dueDate() : event.eventDate())
@@ -136,7 +136,7 @@ public class ProgramStageSelectionRepositoryImpl implements ProgramStageSelectio
                 .flatMap(attributeValues -> {
 
                     Enrollment enrollment = d2.enrollmentModule().enrollments().byUid().eq(enrollmentUid == null ? "" : enrollmentUid).one().blockingGet();
-                    String programName = d2.programModule().programs.byUid().eq(enrollment.program()).one().blockingGet().displayName();
+                    String programName = d2.programModule().programs().byUid().eq(enrollment.program()).one().blockingGet().displayName();
                     Date enrollmentDate = enrollment.enrollmentDate();
                     Date incidentDate = enrollment.incidentDate() == null ? enrollmentDate : enrollment.incidentDate();
                     RuleEnrollment.Status status = RuleEnrollment.Status.valueOf(enrollment.status().name());
@@ -168,7 +168,7 @@ public class ProgramStageSelectionRepositoryImpl implements ProgramStageSelectio
                 .map(event -> event.programStage())
                 .toList()
                 .flatMap(currentProgramStagesUids -> {
-                    ProgramStageCollectionRepository repository = d2.programModule().programStages.byProgramUid().eq(programId).withStyle();
+                    ProgramStageCollectionRepository repository = d2.programModule().programStages().byProgramUid().eq(programId).withStyle();
                     if (eventCreationType.equals(EventCreationType.SCHEDULE.name()))
                         repository = repository.byHideDueDate().eq(false);
 
@@ -195,6 +195,6 @@ public class ProgramStageSelectionRepositoryImpl implements ProgramStageSelectio
 
     @Override
     public ProgramStage getStage(String programStageUid) {
-        return d2.programModule().programStages.uid(programStageUid).blockingGet();
+        return d2.programModule().programStages().uid(programStageUid).blockingGet();
     }
 }

@@ -116,7 +116,7 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
 
     @Override
     public Single<FeatureType> featureType() {
-        return d2.programModule().programStages
+        return d2.programModule().programStages()
                 .byProgramUid().eq(programUid).one().get()
                 .map(stage -> {
                     if (stage.featureType() != null)
@@ -129,7 +129,7 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
     private ProgramEventViewModel transformToProgramEventModel(Event event) {
         String orgUnitName = getOrgUnitName(event.organisationUnit());
         List<String> showInReportsDataElements = new ArrayList<>();
-        for (ProgramStageDataElement programStageDataElement : d2.programModule().programStages.withProgramStageDataElements()
+        for (ProgramStageDataElement programStageDataElement : d2.programModule().programStages().withProgramStageDataElements()
                 .withProgramStageSections().withStyle().uid(event.programStage()).blockingGet().programStageDataElements()) {
             if (programStageDataElement.displayInReports())
                 showInReportsDataElements.add(programStageDataElement.dataElement().uid());
@@ -155,7 +155,7 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
     @NonNull
     @Override
     public Observable<Program> program() {
-        return Observable.just(d2.programModule().programs.withProgramIndicators()
+        return Observable.just(d2.programModule().programs().withProgramIndicators()
                 .withProgramRules().withProgramRuleVariables().withProgramSections().withProgramStages()
                 .withProgramTrackedEntityAttributes().withStyle()
                 .withTrackedEntityType().uid(programUid).blockingGet());
@@ -174,7 +174,7 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
     }
 
     private boolean isExpired(Event event) {
-        Program program = d2.programModule().programs.uid(event.program()).blockingGet();
+        Program program = d2.programModule().programs().uid(event.program()).blockingGet();
         return DateUtils.getInstance().isEventExpired(event.eventDate(),
                 event.completedDate(),
                 event.status(),
@@ -224,10 +224,10 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
     @Override
     public boolean getAccessDataWrite() {
         boolean canWrite;
-        canWrite = d2.programModule().programs.uid(programUid).blockingGet().access().data().write();
-        if (canWrite && d2.programModule().programStages.byProgramUid().eq(programUid).one().blockingGet() != null)
-            canWrite = d2.programModule().programStages.byProgramUid().eq(programUid).one().blockingGet().access().data().write();
-        else if (d2.programModule().programStages.byProgramUid().eq(programUid).one().blockingGet() == null)
+        canWrite = d2.programModule().programs().uid(programUid).blockingGet().access().data().write();
+        if (canWrite && d2.programModule().programStages().byProgramUid().eq(programUid).one().blockingGet() != null)
+            canWrite = d2.programModule().programStages().byProgramUid().eq(programUid).one().blockingGet().access().data().write();
+        else if (d2.programModule().programStages().byProgramUid().eq(programUid).one().blockingGet() == null)
             canWrite = false;
 
         return canWrite;
@@ -235,7 +235,7 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
 
     @Override
     public Single<Pair<CategoryCombo, List<CategoryOptionCombo>>> catOptionCombos() {
-        return d2.programModule().programs.uid(programUid).get()
+        return d2.programModule().programs().uid(programUid).get()
                 .filter(program -> program.categoryCombo() != null)
                 .flatMapSingle(program -> d2.categoryModule().categoryCombos().uid(program.categoryComboUid()).get())
                 .filter(categoryCombo -> !categoryCombo.isDefault())
@@ -250,7 +250,7 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
 
     @Override
     public Single<Boolean> hasAccessToAllCatOptions() {
-        return d2.programModule().programs.uid(programUid).get()
+        return d2.programModule().programs().uid(programUid).get()
                 .filter(program -> program.categoryComboUid() != null)
                 .map(program -> d2.categoryModule().categoryCombos().withCategories().withCategoryOptionCombos().uid(program.categoryComboUid()).blockingGet())
                 .filter(catCombo -> !catCombo.isDefault())

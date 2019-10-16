@@ -167,7 +167,7 @@ public class RelationshipPresenterImpl implements RelationshipContracts.Presente
 
     @Override
     public void goToAddRelationship(String teiTypeToAdd) {
-        if (d2.programModule().programs.uid(programUid).blockingGet().access().data().write()) {
+        if (d2.programModule().programs().uid(programUid).blockingGet().access().data().write()) {
             view.analyticsHelper().setEvent(NEW_RELATIONSHIP, CLICK, NEW_RELATIONSHIP);
             Intent intent = new Intent(view.getContext(), SearchTEActivity.class);
             Bundle extras = new Bundle();

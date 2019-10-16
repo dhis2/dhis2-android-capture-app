@@ -117,7 +117,7 @@ public final class EnrollmentRuleEngineRepository implements RuleEngineRepositor
     public void initData() {
         Enrollment enrollment = d2.enrollmentModule().enrollments().uid(enrollmentUid).blockingGet();
         OrganisationUnit ou = d2.organisationUnitModule().organisationUnits.uid(enrollment.organisationUnit()).blockingGet();
-        Program program = d2.programModule().programs.withProgramRuleVariables().uid(enrollment.program()).blockingGet();
+        Program program = d2.programModule().programs().withProgramRuleVariables().uid(enrollment.program()).blockingGet();
 
         attrRuleVariableMap = new HashMap<>();
         for (ProgramRuleVariable ruleVariable : program.programRuleVariables()) {
@@ -169,7 +169,7 @@ public final class EnrollmentRuleEngineRepository implements RuleEngineRepositor
     }
 
     private void loadAttrRules(String programUid) {
-        List<ProgramRule> rules = d2.programModule().programRules.byProgramUid().eq(programUid).withProgramRuleActions().blockingGet();
+        List<ProgramRule> rules = d2.programModule().programRules().byProgramUid().eq(programUid).withProgramRuleActions().blockingGet();
         mandatoryRules = new ArrayList<>();
         Iterator<ProgramRule> ruleIterator = rules.iterator();
         while (ruleIterator.hasNext()) {
@@ -192,7 +192,7 @@ public final class EnrollmentRuleEngineRepository implements RuleEngineRepositor
                             mandatoryRules.add(rule);
         }
 
-        List<ProgramRuleVariable> variables = d2.programModule().programRuleVariables
+        List<ProgramRuleVariable> variables = d2.programModule().programRuleVariables()
                 .byProgramUid().eq(programUid)
                 .blockingGet();
         Iterator<ProgramRuleVariable> variableIterator = variables.iterator();
@@ -278,7 +278,7 @@ public final class EnrollmentRuleEngineRepository implements RuleEngineRepositor
 
     private List<RuleAttributeValue> getRuleAttributeValueMap() {
         Enrollment enrollment = d2.enrollmentModule().enrollments().uid(enrollmentUid).blockingGet();
-        Program program = d2.programModule().programs.uid(enrollment.program()).blockingGet();
+        Program program = d2.programModule().programs().uid(enrollment.program()).blockingGet();
         setRuleAttributeMap(getAttributesValueMap(enrollment, program));
         return new ArrayList<>(ruleAttributeValueMap.values());
     }

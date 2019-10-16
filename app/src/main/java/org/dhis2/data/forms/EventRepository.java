@@ -463,7 +463,7 @@ public class EventRepository implements FormRepository {
     @Override
     public Observable<FeatureType> captureCoodinates() {
         return d2.eventModule().events().byUid().eq(eventUid).one().get().toObservable()
-                .map(event -> d2.programModule().programStages.byUid().eq(event.programStage()).one().blockingGet())
+                .map(event -> d2.programModule().programStages().byUid().eq(event.programStage()).one().blockingGet())
                 .map(programStage -> {
                     if (programStage.featureType() == null)
                         return FeatureType.NONE;

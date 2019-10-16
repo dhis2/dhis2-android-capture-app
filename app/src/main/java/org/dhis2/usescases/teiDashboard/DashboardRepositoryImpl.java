@@ -214,7 +214,7 @@ public class DashboardRepositoryImpl implements DashboardRepository {
 
     @Override
     public Observable<List<ProgramStage>> getProgramStages(String programUid) {
-        return d2.programModule().programStages.byProgramUid().eq(programUid).get().toObservable();
+        return d2.programModule().programStages().byProgramUid().eq(programUid).get().toObservable();
     }
 
     @Override
@@ -236,7 +236,7 @@ public class DashboardRepositoryImpl implements DashboardRepository {
                                 .get().toFlowable()
                                 .flatMapIterable(events -> events)
                                 .map(event -> {
-                                            if (Boolean.FALSE.equals(d2.programModule().programs.uid(programUid).blockingGet().ignoreOverdueEvents()))
+                                            if (Boolean.FALSE.equals(d2.programModule().programs().uid(programUid).blockingGet().ignoreOverdueEvents()))
                                                 if (event.status() == EventStatus.SCHEDULE && event.dueDate().before(DateUtils.getInstance().getToday()))
                                                     event = updateState(event, EventStatus.OVERDUE);
 
@@ -248,7 +248,7 @@ public class DashboardRepositoryImpl implements DashboardRepository {
       /*  return briteDatabase.createQuery(EVENTS_TABLE, EVENTS_QUERY, progId, teiId, progId)
                 .mapToList(cursor -> {
                     Event eventModel = Event.create(cursor);
-                    if (Boolean.FALSE.equals(d2.programModule().programs.uid(programUid).blockingGet().ignoreOverdueEvents()))
+                    if (Boolean.FALSE.equals(d2.programModule().programs().uid(programUid).blockingGet().ignoreOverdueEvents()))
                         if (eventModel.status() == EventStatus.SCHEDULE && eventModel.dueDate().before(DateUtils.getInstance().getToday()))
                             eventModel = updateState(eventModel, EventStatus.OVERDUE);
 
@@ -329,7 +329,7 @@ public class DashboardRepositoryImpl implements DashboardRepository {
 
     @Override
     public Observable<CategoryCombo> catComboForProgram(String programUid) {
-        return Observable.defer(() -> Observable.just(d2.categoryModule().categoryCombos().withCategories().withCategoryOptionCombos().uid(d2.programModule().programs.uid(programUid).blockingGet().categoryCombo().uid()).blockingGet()))
+        return Observable.defer(() -> Observable.just(d2.categoryModule().categoryCombos().withCategories().withCategoryOptionCombos().uid(d2.programModule().programs().uid(programUid).blockingGet().categoryCombo().uid()).blockingGet()))
                 .map(categoryCombo -> {
                     List<Category> fullCategories = new ArrayList<>();
                     List<CategoryOptionCombo> fullOptionCombos = new ArrayList<>();
@@ -400,7 +400,7 @@ public class DashboardRepositoryImpl implements DashboardRepository {
 
     @Override
     public Flowable<List<ProgramIndicator>> getIndicators(String programUid) {
-        return d2.programModule().programIndicators.byProgramUid().eq(programUid).withLegendSets().get().toFlowable();
+        return d2.programModule().programIndicators().byProgramUid().eq(programUid).withLegendSets().get().toFlowable();
     }
 
     @Override
@@ -484,12 +484,12 @@ public class DashboardRepositoryImpl implements DashboardRepository {
     @Override
     public Observable<List<ProgramTrackedEntityAttribute>> getProgramTrackedEntityAttributes(String programUid) {
         if (programUid != null)
-            return Observable.fromCallable(() -> d2.programModule().programs.withProgramTrackedEntityAttributes().byUid().eq(programUid).one().blockingGet().programTrackedEntityAttributes());
+            return Observable.fromCallable(() -> d2.programModule().programs().withProgramTrackedEntityAttributes().byUid().eq(programUid).one().blockingGet().programTrackedEntityAttributes());
         else
             return Observable.fromCallable(() -> d2.trackedEntityModule().trackedEntityAttributes.byDisplayInListNoProgram().eq(true).blockingGet())
                     .map(trackedEntityAttributes -> {
                         List<Program> programs =
-                                d2.programModule().programs.withProgramTrackedEntityAttributes().blockingGet();
+                                d2.programModule().programs().withProgramTrackedEntityAttributes().blockingGet();
                         List<String> teaUids = UidsHelper.getUidsList(trackedEntityAttributes);
                         List<ProgramTrackedEntityAttribute> programTrackedEntityAttributes = new ArrayList<>();
                         for (Program program : programs) {
@@ -528,7 +528,7 @@ public class DashboardRepositoryImpl implements DashboardRepository {
         return enrollmentRepo.get().toObservable().flatMapIterable(enrollments -> enrollments)
                 .map(Enrollment::program)
                 .toList().toObservable()
-                .map(programUids -> d2.programModule().programs.byUid().in(programUids).withStyle().blockingGet());
+                .map(programUids -> d2.programModule().programs().byUid().in(programUids).withStyle().blockingGet());
     }
 
     @Override

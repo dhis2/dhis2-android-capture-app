@@ -49,7 +49,7 @@ fun TrackedEntityInstance.profilePicturePath(d2: D2, programUid: String?): Strin
             .blockingGet().map { it.trackedEntityAttribute().uid() }
 
     if (attributes.isEmpty() && programUid != null) {
-        attributes = d2.programModule().programTrackedEntityAttributes
+        attributes = d2.programModule().programTrackedEntityAttributes()
                 .byDisplayInList().isTrue
                 .byProgram().eq(programUid)
                 .byTrackedEntityAttribute().`in`(imageAttributes)

@@ -159,7 +159,7 @@ class EnrollmentPresenterImpl(
         disposable.add(
                 programRepository.get()
                         .flatMap { program ->
-                            d2.programModule().programStages
+                            d2.programModule().programStages()
                                     .byProgramUid().eq(program.uid())
                                     .byAutoGenerateEvent().isTrue
                                     .get()
@@ -289,7 +289,7 @@ class EnrollmentPresenterImpl(
 
     override fun openInitial(eventUid: String): Boolean {
         val event = d2.eventModule().events().uid(eventUid).blockingGet()
-        val stage = d2.programModule().programStages.uid(event.programStage()).blockingGet()
+        val stage = d2.programModule().programStages().uid(event.programStage()).blockingGet()
         val needsCatCombo = programRepository.blockingGet().categoryComboUid() != null &&
                 d2.categoryModule().categoryCombos().uid(getProgram().categoryComboUid()).blockingGet()!!.isDefault == false
         val needsCoordinates = stage.featureType() != null && stage.featureType() != FeatureType.NONE

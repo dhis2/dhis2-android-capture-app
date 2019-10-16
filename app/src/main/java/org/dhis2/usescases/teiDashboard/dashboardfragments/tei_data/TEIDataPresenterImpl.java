@@ -103,7 +103,7 @@ class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
                                 if (eventModel.eventDate() != null) {
                                     RuleEffectResult effectResult = new RulesUtilsProviderImpl(new CodeGeneratorImpl()).evaluateEvent(eventModel.uid(),null);
                                     List<String> newMandatoryFields = effectResult.getMandatoryFields();
-                                    List<ProgramStageDataElement> psDataElementList = d2.programModule().programStages.uid(eventModel.programStage())
+                                    List<ProgramStageDataElement> psDataElementList = d2.programModule().programStages().uid(eventModel.programStage())
                                             .withAllChildren().blockingGet().programStageDataElements();
                                     for (ProgramStageDataElement psDataElement : psDataElementList) {
                                         if (psDataElement.compulsory())
@@ -183,7 +183,7 @@ class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
 
     @Override
     public void completeEnrollment() {
-        if (d2.programModule().programs.uid(programUid).blockingGet().access().data().write()) {
+        if (d2.programModule().programs().uid(programUid).blockingGet().access().data().write()) {
             Flowable<Long> flowable;
             EnrollmentStatus newStatus = EnrollmentStatus.COMPLETED;
 

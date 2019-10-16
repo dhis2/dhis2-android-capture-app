@@ -205,7 +205,7 @@ class RulesUtilsProviderImpl(private val codeGenerator: CodeGenerator) : RulesUt
         var ruleEngineContext = RuleEngineContext.builder(ExpressionEvaluatorImpl(JexlEngine()))
                 .ruleVariables(
                         RuleEngineUtils.translateToRuleVariable(
-                                d2.programModule().programRuleVariables
+                                d2.programModule().programRuleVariables()
                                         .byProgramUid().eq(event.program())
                                         .blockingGet(),
                                 d2
@@ -213,7 +213,7 @@ class RulesUtilsProviderImpl(private val codeGenerator: CodeGenerator) : RulesUt
                 )
                 .rules(
                         RuleEngineUtils.translateToRules(
-                                d2.programModule().programRules
+                                d2.programModule().programRules()
                                         .byProgramUid().eq(event.program())
                                         .withProgramRuleActions()
                                         .blockingGet(),
@@ -267,13 +267,13 @@ class RulesUtilsProviderImpl(private val codeGenerator: CodeGenerator) : RulesUt
         ).call())
 
         val dataElements = if (section == null)
-            d2.programModule().programStages.uid(event.programStage())
+            d2.programModule().programStages().uid(event.programStage())
                     .blockingGet().programStageDataElements()!!
                     .map {
                         it.dataElement()!!.uid()
                     }
         else
-            d2.programModule().programStageSections
+            d2.programModule().programStageSections()
                     .uid(section)
                     .blockingGet().dataElements()!!
                     .map {
@@ -350,7 +350,7 @@ class RulesUtilsProviderImpl(private val codeGenerator: CodeGenerator) : RulesUt
 
         sectionsToHide.add(action.programStageSection())
         val sectionDataElements = UidsHelper.getUidsList(
-                D2Manager.getD2().programModule().programStageSections.uid(action.programStageSection())
+                D2Manager.getD2().programModule().programStageSections().uid(action.programStageSection())
                         .blockingGet().dataElements())
         sectionDataElements.forEach {
             if (fields.contains(it)) {
