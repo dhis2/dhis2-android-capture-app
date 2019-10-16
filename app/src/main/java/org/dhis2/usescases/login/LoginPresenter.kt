@@ -1,70 +1,59 @@
 package org.dhis2.usescases.login
 
-import android.content.Context
-import android.content.Intent
 import android.os.Build
-import android.view.View
 import co.infinum.goldfinger.Goldfinger
 import co.infinum.goldfinger.rx.RxGoldfinger
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import org.dhis2.App
-import org.dhis2.BuildConfig
 import org.dhis2.R
+import org.dhis2.data.fingerprint.FingerPrintController
+import org.dhis2.data.fingerprint.Type
 import org.dhis2.data.prefs.Preference
 import org.dhis2.data.prefs.PreferenceProvider
 import org.dhis2.data.schedulers.SchedulerProvider
 import org.dhis2.data.server.UserManager
 import org.dhis2.usescases.main.MainActivity
-import org.dhis2.usescases.qrScanner.QRActivity
-import org.dhis2.utils.Constants
+import org.dhis2.utils.Constants.*
+import org.dhis2.utils.analytics.*
 import org.dhis2.utils.analytics.ACCOUNT_RECOVERY
-import org.dhis2.utils.analytics.CLICK
-import org.dhis2.utils.analytics.LOGIN
-import org.dhis2.utils.analytics.SERVER_QR_SCANNER
+import org.hisp.dhis.android.core.d2manager.D2Manager
 import org.hisp.dhis.android.core.maintenance.D2Error
 import org.hisp.dhis.android.core.maintenance.D2ErrorCode
 import org.hisp.dhis.android.core.systeminfo.SystemInfo
 import retrofit2.Response
 import timber.log.Timber
 
-class LoginPresenter(
-        private val preferenceProvider: PreferenceProvider,
-        private val schedulers: SchedulerProvider) : LoginContracts.Presenter {
+class LoginPresenter(private val view: LoginContracts.View,
+                     private val preferenceProvider: PreferenceProvider,
+                     private val schedulers: SchedulerProvider,
+                     private val fingerPrintController: FingerPrintController,
+                     private val analyticsHelper: AnalyticsHelper) {
 
-    override fun stopReadingFingerprint() {
-        goldfinger.cancel()
-    }
-
-    private lateinit var view: LoginContracts.View
     private var userManager: UserManager? = null
-    private lateinit var disposable: CompositeDisposable
+    var disposable: CompositeDisposable = CompositeDisposable()
 
     private var canHandleBiometrics: Boolean? = null
-    private lateinit var goldfinger: RxGoldfinger
 
-    override fun init(view: LoginContracts.View) {
-        this.view = view
-        this.disposable = CompositeDisposable()
-        goldfinger = RxGoldfinger.Builder(view.context).setLogEnabled(BuildConfig.DEBUG).build()
-        if ((view.context.applicationContext as App).serverComponent != null)
-            userManager = (view.context.applicationContext as App).serverComponent.userManager()
-
-        userManager?.let { userManager ->
-            disposable.add(userManager.isUserLoggedIn
+    fun init(userManager: UserManager?) {
+        this.userManager = userManager
+        this.userManager?.let {
+            disposable.add(it.isUserLoggedIn
                     .subscribeOn(schedulers.io())
                     .observeOn(schedulers.ui())
                     .subscribe({ isUserLoggedIn ->
-                        val prefs = view.abstracContext.getSharedPreferences(
-                                Constants.SHARE_PREFS, Context.MODE_PRIVATE)
-                        if (isUserLoggedIn && !prefs.getBoolean("SessionLocked", false)) {
+                        if (isUserLoggedIn && !preferenceProvider.getBoolean(SESIONLOCKED, false)) {
                             view.startActivity(MainActivity::class.java, null, true, true, null)
-                        } else if (prefs.getBoolean("SessionLocked", false)) {
+                        } else if (preferenceProvider.getBoolean(SESIONLOCKED, false)) {
                             view.showUnlockButton()
                         }
 
-                    }, { Timber.e(it) }))
+                    }, { exception-> Timber.e(exception) }))
+        } ?: view.setUrl(view.context.getString(R.string.login_https))
+    }
 
+    fun checkServerInfoAndShowBiometricButton(){
+        userManager?.let { userManager ->
             disposable.add(
                     Observable.just(if (userManager.d2.systemInfoModule().systemInfo.blockingGet() != null)
                         userManager.d2.systemInfoModule().systemInfo.blockingGet()
@@ -75,55 +64,58 @@ class LoginPresenter(
                             .subscribe(
                                     { systemInfo ->
                                         if (systemInfo.contextPath() != null) {
-                                            val prefs = view.abstractActivity.getSharedPreferences(Constants.SHARE_PREFS, Context.MODE_PRIVATE)
                                             view.setUrl(systemInfo.contextPath() ?: "")
-                                            view.setUser(prefs.getString(Constants.USER, "")!!)
+                                            preferenceProvider.getString(USER, "")?.also {
+                                                view.setUser(it)
+                                            }
                                         } else
                                             view.setUrl(view.context.getString(R.string.login_https))
                                     },
                                     { Timber.e(it) }))
         } ?: view.setUrl(view.context.getString(R.string.login_https))
 
+        showBiometricButtonIfVersionIsGreaterThanM(view)
+    }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
-
+    private fun showBiometricButtonIfVersionIsGreaterThanM(view: LoginContracts.View) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             disposable.add(
-                    Observable.just(goldfinger.hasEnrolledFingerprint())
+                    Observable.just(fingerPrintController.hasFingerPrint())
                             .filter { canHandleBiometrics ->
                                 this.canHandleBiometrics = canHandleBiometrics
-                                canHandleBiometrics && preferenceProvider.contains(Constants.SECURE_SERVER_URL)
+                                canHandleBiometrics && preferenceProvider.contains(SECURE_SERVER_URL)
                             }
                             .subscribeOn(schedulers.io())
                             .observeOn(schedulers.ui())
                             .subscribe(
                                     { view.showBiometricButton() },
                                     { Timber.e(it) }))
-
+        }
     }
 
-    override fun onButtonClick() {
+    fun onButtonClick() {
         view.hideKeyboard()
-        view.analyticsHelper().setEvent(LOGIN, CLICK, LOGIN)
-        val prefs = view.abstracContext.getSharedPreferences(
-                Constants.SHARE_PREFS, Context.MODE_PRIVATE)
-        if (!prefs.getBoolean(Constants.USER_ASKED_CRASHLYTICS, false))
+        analyticsHelper.setEvent(LOGIN, CLICK, LOGIN)
+        if (!preferenceProvider.getBoolean(USER_ASKED_CRASHLYTICS, false)){
             view.showCrashlyticsDialog()
-        else
+        } else {
             view.showLoginProgress(true)
+        }
     }
 
-    override fun logIn(serverUrl: String, userName: String, pass: String) {
+    fun logIn(serverUrl: String, userName: String, pass: String) {
         disposable.add(
                 Observable.just((view.abstracContext.applicationContext as App).createServerComponent().userManager())
                         .flatMap { userManager ->
-                            val prefs = view.abstractActivity.getSharedPreferences(Constants.SHARE_PREFS, Context.MODE_PRIVATE)
-                            prefs.edit().putString(Constants.SERVER, "$serverUrl/api").apply()
+                            preferenceProvider.setValue(SERVER, "$serverUrl/api")
                             this.userManager = userManager
                             userManager.logIn(userName.trim { it <= ' ' }, pass, serverUrl).map<Response<Any>> { user ->
                                 run {
-                                    prefs.edit().putString(Constants.USER, user.userCredentials()?.username()).apply()
-                                    prefs.edit().putBoolean("SessionLocked", false).apply()
-                                    prefs.edit().putString("pin", null).apply()
+                                    with(preferenceProvider) {
+                                        setValue(USER, user.userCredentials()?.username())
+                                        setValue(SESIONLOCKED, false)
+                                        setValue(PIN, null)
+                                    }
                                     Response.success<Any>(null)
                                 }
                             }
@@ -131,39 +123,33 @@ class LoginPresenter(
                         }
                         .subscribeOn(schedulers.io())
                         .observeOn(schedulers.ui())
-                        .subscribe(
-                                { this.handleResponse(it) },
-                                { this.handleError(it) }))
+                        .subscribe({ this.handleResponse(it) }, { this.handleError(it) }))
     }
 
-    override fun onQRClick(v: View) {
-        view.analyticsHelper().setEvent(SERVER_QR_SCANNER, CLICK, SERVER_QR_SCANNER)
-        val intent = Intent(view.context, QRActivity::class.java)
-        view.abstractActivity.startActivityForResult(intent, Constants.RQ_QR_SCANNER)
+    fun onQRClick() {
+        analyticsHelper.setEvent(SERVER_QR_SCANNER, CLICK, SERVER_QR_SCANNER)
+        view.navigateToQRActivity()
     }
 
-    override fun unlockSession(pin: String) {
-        val prefs = view.abstracContext.getSharedPreferences(
-                Constants.SHARE_PREFS, Context.MODE_PRIVATE)
-        if (prefs.getString("pin", "") == pin) {
-            prefs.edit().putBoolean("SessionLocked", false).apply()
+    fun unlockSession(pin: String) {
+        if (preferenceProvider.getString(PIN, "") == pin) {
+            preferenceProvider.setValue(SESIONLOCKED, false)
             view.startActivity(MainActivity::class.java, null, true, true, null)
         }
     }
 
-    override fun onDestroy() {
+    fun onDestroy() {
         disposable.clear()
     }
 
-    override fun logOut() {
+     fun logOut() {
         userManager?.let {
             disposable.add(it.d2.userModule().logOut()
                     .subscribeOn(schedulers.io())
                     .observeOn(schedulers.ui())
-                    .subscribe(
-                            {
+                    .subscribe({
                                 val prefs = view.abstracContext.sharedPreferences
-                                prefs.edit().putBoolean("SessionLocked", false).apply()
+                                prefs.edit().putBoolean(SESIONLOCKED, false).apply()
                                 view.handleLogout()
                             },
                             { view.handleLogout() }
@@ -172,73 +158,84 @@ class LoginPresenter(
         }
     }
 
-    override fun handleResponse(userResponse: Response<*>) {
+    private fun handleResponse(userResponse: Response<*>) {
         view.showLoginProgress(false)
         if (userResponse.isSuccessful) {
-            view.sharedPreferences.edit().putBoolean(Preference.INITIAL_SYNC_DONE.name, false).apply()
-            (view.context.applicationContext as App).createUserComponent()
+            preferenceProvider.setValue(Preference.INITIAL_SYNC_DONE.name, false)
             view.saveUsersData()
         }
     }
 
-    override fun handleError(throwable: Throwable) {
+     private fun handleError(throwable: Throwable) {
         Timber.e(throwable)
         if (throwable is D2Error && throwable.errorCode() == D2ErrorCode.ALREADY_AUTHENTICATED) {
-            val prefs = view.abstractActivity.getSharedPreferences(Constants.SHARE_PREFS, Context.MODE_PRIVATE)
-            prefs.edit().putBoolean("SessionLocked", false).apply()
-            prefs.edit().putString("pin", null).apply()
+            preferenceProvider.apply {
+                setValue(SESIONLOCKED, false)
+                setValue(PIN, null)
+            }
             view.alreadyAuthenticated()
-        } else
+        } else {
             view.renderError(throwable)
+        }
         view.showLoginProgress(false)
     }
 
-    //region FINGERPRINT
-    override fun canHandleBiometrics(): Boolean? {
+    fun stopReadingFingerprint() {
+        fingerPrintController.cancel()
+    }
+
+    fun canHandleBiometrics(): Boolean? {
         return canHandleBiometrics
     }
 
-    override fun onFingerprintClick() {
+    fun onFingerprintClick() {
         view.showFingerprintDialog()
         disposable.add(
-                goldfinger
-                        .authenticate()
-                        .map { result ->
-                            if (preferenceProvider.contains(
-                                            Constants.SECURE_SERVER_URL, Constants.SECURE_USER_NAME,
-                                            Constants.SECURE_PASS
-                                    )) {
-                                Result.success(result)
-                            } else
-                                Result.failure(Exception("Empty credentials"))
 
+                fingerPrintController.authenticate()
+                        .map { result ->
+                            if (preferenceProvider.contains(SECURE_SERVER_URL,
+                                            SECURE_USER_NAME, SECURE_PASS)) {
+                                Result.success(result)
+                            } else {
+                                Result.failure(Exception(EMPTY_CREDENTIALS))
+                            }
                         }
                         .observeOn(schedulers.ui())
-                        .subscribe(
-                                {
-                                    if (it.isFailure)
+                        .subscribe({
+                                    if (it.isFailure){
                                         view.showEmptyCredentialsMessage()
-                                    else if (it.isSuccess && it.getOrNull()?.type() == Goldfinger.Type.SUCCESS)
+                                    }
+                                    else if (it.isSuccess && it.getOrNull()?.type == Type.SUCCESS){
                                         view.showCredentialsData(Goldfinger.Type.SUCCESS,
-                                                preferenceProvider.getString(Constants.SECURE_SERVER_URL)!!,
-                                                preferenceProvider.getString(Constants.SECURE_USER_NAME)!!,
-                                                preferenceProvider.getString(Constants.SECURE_PASS)!!)
-                                    else
+                                                preferenceProvider.getString(SECURE_SERVER_URL)!!,
+                                                preferenceProvider.getString(SECURE_USER_NAME)!!,
+                                                preferenceProvider.getString(SECURE_PASS)!!)
+                                    }
+                                    else {
                                         view.showCredentialsData(Goldfinger.Type.ERROR,
-                                                it.getOrNull()?.message()!!)
+                                                it.getOrNull()?.message!!)
+                                    }
                                 },
                                 {
-                                    view.displayMessage("AUTH ERROR")
+                                    view.displayMessage(AUTH_ERROR)
                                     view.hideFingerprintDialog()
                                 }))
     }
 
-    override fun onAccountRecovery() {
-        view.analyticsHelper().setEvent(ACCOUNT_RECOVERY, CLICK, ACCOUNT_RECOVERY)
+    fun onAccountRecovery() {
+        analyticsHelper.setEvent(ACCOUNT_RECOVERY, CLICK, ACCOUNT_RECOVERY)
         view.openAccountRecovery()
     }
 
-    override fun onUrlInfoClick(v: View) {
-        view.displayAlertDialog(R.string.login_server_info_title, R.string.login_server_info_message, null, R.string.action_accept)
+    fun onUrlInfoClick() {
+        view.displayAlertDialog()
+    }
+
+    companion object {
+        const val SESIONLOCKED = "SessionLocked"
+        const val PIN = "pin"
+        const val EMPTY_CREDENTIALS = "Empty credentials"
+        const val AUTH_ERROR = "AUTH ERROR"
     }
 }

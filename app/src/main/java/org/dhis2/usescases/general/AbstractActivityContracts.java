@@ -55,10 +55,12 @@ public class AbstractActivityContracts {
 
         void showDescription(String description);
 
+        @Deprecated
         SharedPreferences getSharedPreferences();
 
         void showSyncDialog(SyncStatusDialog dialog);
 
+        @Deprecated
         AnalyticsHelper analyticsHelper();
     }
 
