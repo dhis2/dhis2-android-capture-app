@@ -13,6 +13,7 @@ import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.ObjectWithUid
 import org.hisp.dhis.android.core.program.*
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityType
+import org.junit.Ignore
 import org.junit.Test
 import org.mockito.BDDMockito.*
 import org.mockito.Mockito
@@ -28,7 +29,8 @@ class GranularSyncPresenterTest {
     private val programRepoMock = mock(ReadOnlyOneObjectRepositoryFinalImpl::class.java)
 
     private val testProgram = getProgram()
-    @Test
+
+    @Test @Ignore
     fun simplePresenterTest() {
         //GIVEN
         val presenter = GranularSyncPresenterImpl(

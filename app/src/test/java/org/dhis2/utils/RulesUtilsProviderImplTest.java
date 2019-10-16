@@ -14,6 +14,7 @@ import org.hisp.dhis.rules.models.RuleActionShowWarning;
 import org.hisp.dhis.rules.models.RuleEffect;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -26,6 +27,7 @@ import static com.google.common.truth.Truth.assertThat;
 /**
  * QUADRAM. Created by ppajuelo on 07/11/2018.
  */
+@Ignore
 public class RulesUtilsProviderImplTest {
 
     String testUid = "XXXXXX";

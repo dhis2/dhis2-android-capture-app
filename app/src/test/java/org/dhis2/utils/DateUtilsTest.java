@@ -5,6 +5,7 @@ import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.period.PeriodType;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.text.ParseException;
@@ -18,6 +19,7 @@ import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
+@Ignore
 public class DateUtilsTest {
 
     @Test

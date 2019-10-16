@@ -9,6 +9,7 @@ import android.util.TypedValue
 import org.dhis2.R
 import org.junit.Assert.assertEquals
 import org.junit.Before
+import org.junit.Ignore
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mock
@@ -17,6 +18,7 @@ import org.mockito.MockitoAnnotations
 import org.robolectric.RobolectricTestRunner
 
 @RunWith(RobolectricTestRunner::class)
+@Ignore
 class ColorUtilsTest {
 
     @Mock private lateinit var mockApplicationContext: Context
