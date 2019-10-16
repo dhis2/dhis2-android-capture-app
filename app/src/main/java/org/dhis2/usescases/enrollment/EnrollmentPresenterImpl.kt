@@ -291,7 +291,7 @@ class EnrollmentPresenterImpl(
         val event = d2.eventModule().events.uid(eventUid).blockingGet()
         val stage = d2.programModule().programStages.uid(event.programStage()).blockingGet()
         val needsCatCombo = programRepository.blockingGet().categoryComboUid() != null &&
-                d2.categoryModule().categoryCombos.uid(getProgram().categoryComboUid()).blockingGet()!!.isDefault == false
+                d2.categoryModule().categoryCombos().uid(getProgram().categoryComboUid()).blockingGet()!!.isDefault == false
         val needsCoordinates = stage.featureType() != null && stage.featureType() != FeatureType.NONE
 
         return needsCatCombo || needsCoordinates

@@ -94,15 +94,15 @@ public class DataSetTableRepositoryImpl implements DataSetTableRepository {
 
     @Override
     public Flowable<String> getCatComboName(String catcomboUid) {
-        return Flowable.fromCallable(() -> d2.categoryModule().categoryOptionCombos.uid(catcomboUid).blockingGet().displayName());
+        return Flowable.fromCallable(() -> d2.categoryModule().categoryOptionCombos().uid(catcomboUid).blockingGet().displayName());
     }
 
     @Override
     public String getCatOptComboFromOptionList(List<String> catOpts) {
         if(catOpts.isEmpty())
-            return d2.categoryModule().categoryOptionCombos.byDisplayName().like("default").one().blockingGet().uid();
+            return d2.categoryModule().categoryOptionCombos().byDisplayName().like("default").one().blockingGet().uid();
         else
-            return d2.categoryModule().categoryOptionCombos.byCategoryOptions(catOpts).one().blockingGet().uid();
+            return d2.categoryModule().categoryOptionCombos().byCategoryOptions(catOpts).one().blockingGet().uid();
     }
 
 

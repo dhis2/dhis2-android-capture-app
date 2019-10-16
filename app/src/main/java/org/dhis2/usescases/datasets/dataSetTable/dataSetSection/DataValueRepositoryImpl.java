@@ -87,7 +87,7 @@ public class DataValueRepositoryImpl implements DataValueRepository {
                 }
             }
         }
-        return d2.categoryModule().categoryCombos.byUid().in(categoryCombos).withCategories().withCategoryOptionCombos().orderByDisplayName(RepositoryScope.OrderByDirection.ASC).get().toFlowable();
+        return d2.categoryModule().categoryCombos().byUid().in(categoryCombos).withCategories().withCategoryOptionCombos().orderByDisplayName(RepositoryScope.OrderByDirection.ASC).get().toFlowable();
 
 }
 
@@ -124,10 +124,10 @@ public class DataValueRepositoryImpl implements DataValueRepository {
 
     private List<List<Pair<CategoryOption, Category>>> getMap(String catCombo) {
         List<List<Pair<CategoryOption, Category>>> finalList = new ArrayList<>();
-        List<Category> categories = d2.categoryModule().categoryCombos.withCategories().withCategoryOptionCombos().byUid().eq(catCombo).one().blockingGet().categories();
+        List<Category> categories = d2.categoryModule().categoryCombos().withCategories().withCategoryOptionCombos().byUid().eq(catCombo).one().blockingGet().categories();
 
         for (Category category : categories) {
-            List<CategoryOption> catOptions = d2.categoryModule().categories.withCategoryOptions().byUid().eq(category.uid()).one().blockingGet().categoryOptions();
+            List<CategoryOption> catOptions = d2.categoryModule().categories().withCategoryOptions().byUid().eq(category.uid()).one().blockingGet().categoryOptions();
             for (CategoryOption catOption : catOptions) {
                 boolean add = true;
                 for (List<Pair<CategoryOption, Category>> catComboList : finalList) {
@@ -210,7 +210,7 @@ public class DataValueRepositoryImpl implements DataValueRepository {
                                     .blockingGet();
                         }
                 ).map(dataValue -> {
-                    List<CategoryOption> categoryOptions = d2.categoryModule().categoryOptionCombos.withCategoryOptions()
+                    List<CategoryOption> categoryOptions = d2.categoryModule().categoryOptionCombos().withCategoryOptions()
                             .byUid().eq(dataValue.categoryOptionCombo()).one().blockingGet().categoryOptions();
                     List<String> uidCatOptions = new ArrayList<>();
                     for (CategoryOption catOption : categoryOptions)
@@ -373,13 +373,13 @@ public class DataValueRepositoryImpl implements DataValueRepository {
 
     @Override
     public List<CategoryOption> getCatOptionFromCatOptionCombo(CategoryOptionCombo categoryOptionCombo) {
-        return d2.categoryModule().categoryOptionCombos.withCategoryOptions().uid(categoryOptionCombo.uid()).blockingGet().categoryOptions();
+        return d2.categoryModule().categoryOptionCombos().withCategoryOptions().uid(categoryOptionCombo.uid()).blockingGet().categoryOptions();
     }
 
 
     @Override
     public CategoryOption getCatOptionFromUid(String catOption) {
-        return d2.categoryModule().categoryOptions.uid(catOption).blockingGet();
+        return d2.categoryModule().categoryOptions().uid(catOption).blockingGet();
     }
 
     @Override
@@ -387,7 +387,7 @@ public class DataValueRepositoryImpl implements DataValueRepository {
         return d2.dataSetModule().dataSets.uid(dataSetUid).get().toFlowable()
                 .flatMap(dataSet -> {
                     if (dataSet.access().data().write())
-                        return d2.categoryModule().categoryOptionCombos.withCategoryOptions()
+                        return d2.categoryModule().categoryOptionCombos().withCategoryOptions()
                                 .byCategoryComboUid().eq(dataSet.categoryCombo().uid()).get().toFlowable()
                                 .map(categoryOptionCombos -> {
                                     boolean canWriteCatOption = false;

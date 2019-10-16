@@ -52,12 +52,12 @@ internal class HomeRepositoryImpl(private val d2: D2, private val eventLabel: St
                         val categoryOptionCombos: List<String>
                         categoryOptionCombos = if (it.categoryCombo() != null)
                             UidsHelper.getUidsList<CategoryOptionCombo>(
-                                    d2.categoryModule().categoryCombos.withCategoryOptionCombos().uid(it.categoryCombo()!!.uid()).blockingGet()!!.categoryOptionCombos()!!)
+                                    d2.categoryModule().categoryCombos().withCategoryOptionCombos().uid(it.categoryCombo()!!.uid()).blockingGet()!!.categoryOptionCombos()!!)
                         else
                             UidsHelper.getUidsList<CategoryOptionCombo>(
-                                    d2.categoryModule().categoryCombos.withCategoryOptionCombos().uid(dataElement!!.categoryComboUid()).blockingGet()!!.categoryOptionCombos()!!)
+                                    d2.categoryModule().categoryCombos().withCategoryOptionCombos().uid(dataElement!!.categoryComboUid()).blockingGet()!!.categoryOptionCombos()!!)
                         val attributeOptionCombos = UidsHelper.getUidsList<CategoryOptionCombo>(
-                                d2.categoryModule().categoryCombos.withCategoryOptionCombos().uid(dataSet.categoryCombo()!!.uid()).blockingGet()!!.categoryOptionCombos()!!
+                                d2.categoryModule().categoryCombos().withCategoryOptionCombos().uid(dataSet.categoryCombo()!!.uid()).blockingGet()!!.categoryOptionCombos()!!
                         )
                         for (dataValue in d2.dataValueModule().dataValues.byAttributeOptionComboUid().`in`(attributeOptionCombos)
                                 .byCategoryOptionComboUid().`in`(categoryOptionCombos)

@@ -336,7 +336,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
             List<String> optionUid = UidsHelper.getUidsList(d2.categoryModule()
                     .categoryOptionCombos.withCategoryOptions().uid(event.attributeOptionCombo())
                     .blockingGet().categoryOptions());
-            List<CategoryOption> options = d2.categoryModule().categoryOptions.byUid().in(optionUid).blockingGet();
+            List<CategoryOption> options = d2.categoryModule().categoryOptions().byUid().in(optionUid).blockingGet();
             boolean access = true;
             Date eventDate = event.eventDate();
             for (CategoryOption option : options) {
@@ -374,7 +374,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
     @Override
     public Flowable<String> catOption() {
         return Flowable.just(d2.eventModule().events.uid(eventUid).blockingGet())
-                .map(event -> d2.categoryModule().categoryOptionCombos.uid(event.attributeOptionCombo()))
+                .map(event -> d2.categoryModule().categoryOptionCombos().uid(event.attributeOptionCombo()))
                 .map(categoryOptionComboRepo -> {
                     if (categoryOptionComboRepo.blockingGet() == null)
                         return "";

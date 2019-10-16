@@ -51,8 +51,8 @@ public class DataSetInitialRepositoryImpl implements DataSetInitialRepository {
     public Observable<DataSetInitialModel> dataSet() {
         return Observable.just(d2.dataSetModule().dataSets.byUid().eq(dataSetUid).one().blockingGet())
                 .map(dataSet -> {
-                    String categoryComboDisplayName = d2.categoryModule().categoryCombos.byUid().eq(dataSet.categoryCombo().uid()).one().blockingGet().displayName();
-                    CategoryCombo categoryCombos = d2.categoryModule().categoryCombos.withCategories().byUid().eq(dataSet.categoryCombo().uid()).one().blockingGet();
+                    String categoryComboDisplayName = d2.categoryModule().categoryCombos().byUid().eq(dataSet.categoryCombo().uid()).one().blockingGet().displayName();
+                    CategoryCombo categoryCombos = d2.categoryModule().categoryCombos().withCategories().byUid().eq(dataSet.categoryCombo().uid()).one().blockingGet();
 
                     return DataSetInitialModel.create(
                             dataSet.displayName(),
@@ -79,7 +79,7 @@ public class DataSetInitialRepositoryImpl implements DataSetInitialRepository {
     @NonNull
     @Override
     public Observable<List<CategoryOption>> catCombo(String categoryUid) {
-        return Observable.just(d2.categoryModule().categories.withCategoryOptions().byUid().eq(categoryUid).one().blockingGet())
+        return Observable.just(d2.categoryModule().categories().withCategoryOptions().byUid().eq(categoryUid).one().blockingGet())
                 .map(Category::categoryOptions)
                 .map(list -> {
                     Iterator<CategoryOption> iterator = list.iterator();
@@ -94,7 +94,7 @@ public class DataSetInitialRepositoryImpl implements DataSetInitialRepository {
     @NonNull
     @Override
     public Flowable<String> getCategoryOptionCombo(List<String> catOptions, String catCombo) {
-        return d2.categoryModule().categoryOptionCombos.withCategoryOptions().byCategoryOptions(catOptions).byCategoryComboUid().eq(catCombo).one().get()
+        return d2.categoryModule().categoryOptionCombos().withCategoryOptions().byCategoryOptions(catOptions).byCategoryComboUid().eq(catCombo).one().get()
                 .map(BaseIdentifiableObject::uid)
                 .toFlowable();
     }

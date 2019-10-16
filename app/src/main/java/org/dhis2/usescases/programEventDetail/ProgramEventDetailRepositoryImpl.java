@@ -137,7 +137,7 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
         List<Pair<String, String>> data = getData(event.trackedEntityDataValues(), showInReportsDataElements);
         boolean hasExpired = isExpired(event);
         boolean inOrgUnitRange = checkOrgUnitRange(event.organisationUnit(), event.eventDate());
-        CategoryOptionCombo catOptComb = d2.categoryModule().categoryOptionCombos.uid(event.attributeOptionCombo()).blockingGet();
+        CategoryOptionCombo catOptComb = d2.categoryModule().categoryOptionCombos().uid(event.attributeOptionCombo()).blockingGet();
         String attributeOptionCombo = catOptComb != null && !catOptComb.displayName().equals("default") ? catOptComb.displayName() : "";
 
         return ProgramEventViewModel.create(
@@ -237,12 +237,12 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
     public Single<Pair<CategoryCombo, List<CategoryOptionCombo>>> catOptionCombos() {
         return d2.programModule().programs.uid(programUid).get()
                 .filter(program -> program.categoryCombo() != null)
-                .flatMapSingle(program -> d2.categoryModule().categoryCombos.uid(program.categoryComboUid()).get())
+                .flatMapSingle(program -> d2.categoryModule().categoryCombos().uid(program.categoryComboUid()).get())
                 .filter(categoryCombo -> !categoryCombo.isDefault())
                 .flatMapSingle(categoryCombo -> Single.zip(
-                        d2.categoryModule().categoryCombos
+                        d2.categoryModule().categoryCombos()
                                 .uid(categoryCombo.uid()).get(),
-                        d2.categoryModule().categoryOptionCombos
+                        d2.categoryModule().categoryOptionCombos()
                                 .byCategoryComboUid().eq(categoryCombo.uid()).get(),
                         Pair::create
                 ));
@@ -252,15 +252,15 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
     public Single<Boolean> hasAccessToAllCatOptions() {
         return d2.programModule().programs.uid(programUid).get()
                 .filter(program -> program.categoryComboUid() != null)
-                .map(program -> d2.categoryModule().categoryCombos.withCategories().withCategoryOptionCombos().uid(program.categoryComboUid()).blockingGet())
+                .map(program -> d2.categoryModule().categoryCombos().withCategories().withCategoryOptionCombos().uid(program.categoryComboUid()).blockingGet())
                 .filter(catCombo -> !catCombo.isDefault())
                 .map(catCombo -> {
                     boolean hasAccess = true;
                     for (Category category : catCombo.categories()) {
-                        List<CategoryOption> options = d2.categoryModule().categories.withCategoryOptions().uid(category.uid()).blockingGet().categoryOptions();
+                        List<CategoryOption> options = d2.categoryModule().categories().withCategoryOptions().uid(category.uid()).blockingGet().categoryOptions();
                         int accesibleOptions = options.size();
                         for (CategoryOption categoryOption : options) {
-                            if (!d2.categoryModule().categoryOptions.uid(categoryOption.uid()).blockingGet().access().data().write())
+                            if (!d2.categoryModule().categoryOptions().uid(categoryOption.uid()).blockingGet().access().data().write())
                                 accesibleOptions--;
                         }
                         if (accesibleOptions == 0) {

@@ -113,10 +113,10 @@ public class EventDetailRepositoryImpl implements EventDetailRepository {
         return d2.eventModule().events.uid(eventUid).get()
                 .flatMap(event -> d2.programModule().programs.uid(event.program()).get())
                 .map(Program::categoryComboUid)
-                .flatMap(catCombo -> d2.categoryModule().categoryCombos.uid(catCombo).get()
+                .flatMap(catCombo -> d2.categoryModule().categoryCombos().uid(catCombo).get()
                         .map(categoryCombo -> Pair.create(
                                 categoryCombo.name(),
-                                d2.categoryModule().categoryOptionCombos.withCategoryOptions().byCategoryComboUid().eq(categoryCombo.uid()).orderByDisplayName(RepositoryScope.OrderByDirection.ASC).blockingGet()))
+                                d2.categoryModule().categoryOptionCombos().withCategoryOptions().byCategoryComboUid().eq(categoryCombo.uid()).orderByDisplayName(RepositoryScope.OrderByDirection.ASC).blockingGet()))
                 ).toObservable();
     }
 

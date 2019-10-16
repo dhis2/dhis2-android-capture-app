@@ -324,7 +324,7 @@ class GranularSyncPresenterImpl(val d2: D2,
                     }?.distinct()
                 }
                 .flatMap {
-                    d2.categoryModule().categoryOptionCombos.byCategoryComboUid().`in`(it).get()
+                    d2.categoryModule().categoryOptionCombos().byCategoryComboUid().`in`(it).get()
                 }
                 .map { UidsHelper.getUidsList(it) }
     }

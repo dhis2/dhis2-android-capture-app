@@ -42,8 +42,8 @@ class ScheduledEventPresenterImpl(val d2: D2,
                                     view.setStage(stage)
                                     view.setEvent(event)
                                     if (program.categoryComboUid() !== null &&
-                                            d2.categoryModule().categoryCombos.uid(program.categoryComboUid()).blockingGet()!!.isDefault == false)
-                                        view.setCatCombo(d2.categoryModule().categoryCombos.uid(program.categoryComboUid()).blockingGet()!!, getCatOptions(event.attributeOptionCombo()))
+                                            d2.categoryModule().categoryCombos().uid(program.categoryComboUid()).blockingGet()!!.isDefault == false)
+                                        view.setCatCombo(d2.categoryModule().categoryCombos().uid(program.categoryComboUid()).blockingGet()!!, getCatOptions(event.attributeOptionCombo()))
                                 },
                                 { Timber.e(it) }
                         )
@@ -84,7 +84,7 @@ class ScheduledEventPresenterImpl(val d2: D2,
     }
 
     override fun setCatOptionCombo(catComboUid: String, arrayList: ArrayList<CategoryOption>) {
-        val catOptComboUid = d2.categoryModule().categoryOptionCombos.byCategoryOptions(UidsHelper.getUidsList(arrayList))
+        val catOptComboUid = d2.categoryModule().categoryOptionCombos().byCategoryOptions(UidsHelper.getUidsList(arrayList))
                 .byCategoryComboUid().eq(catComboUid).one().blockingGet().uid()
         d2.eventModule().events.uid(eventUid).setAttributeOptionComboUid(catOptComboUid)
     }

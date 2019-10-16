@@ -54,7 +54,7 @@ final class MainPresenter implements MainContracts.Presenter {
         );
 
         compositeDisposable.add(
-                d2.categoryModule().categoryCombos.byIsDefault().eq(true).one().get().toObservable()
+                d2.categoryModule().categoryCombos().byIsDefault().eq(true).one().get().toObservable()
                         .subscribeOn(schedulerProvider.io())
                         .subscribe(
                                 categoryCombo -> {
@@ -68,7 +68,7 @@ final class MainPresenter implements MainContracts.Presenter {
 
 
         compositeDisposable.add(
-                d2.categoryModule().categoryOptionCombos.byCode().eq(DEFAULT).one().get().toObservable()
+                d2.categoryModule().categoryOptionCombos().byCode().eq(DEFAULT).one().get().toObservable()
                         .subscribeOn(schedulerProvider.io())
                         .subscribe(
                                 categoryOptionCombo -> {

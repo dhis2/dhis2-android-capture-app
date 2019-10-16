@@ -42,12 +42,12 @@ public class DataSetDetailRepositoryImpl implements DataSetDetailRepository {
     public Single<Pair<CategoryCombo, List<CategoryOptionCombo>>> catOptionCombos() {
         return d2.dataSetModule().dataSets.uid(dataSetUid).get()
                 .filter(program -> program.categoryCombo() != null)
-                .flatMapSingle(program -> d2.categoryModule().categoryCombos.uid(program.categoryCombo().uid()).get())
+                .flatMapSingle(program -> d2.categoryModule().categoryCombos().uid(program.categoryCombo().uid()).get())
                 .filter(categoryCombo -> !categoryCombo.isDefault())
                 .flatMapSingle(categoryCombo -> Single.zip(
-                        d2.categoryModule().categoryCombos
+                        d2.categoryModule().categoryCombos()
                                 .uid(categoryCombo.uid()).get(),
-                        d2.categoryModule().categoryOptionCombos
+                        d2.categoryModule().categoryOptionCombos()
                                 .byCategoryComboUid().eq(categoryCombo.uid()).get(),
                         Pair::create
                 ));
@@ -91,7 +91,7 @@ public class DataSetDetailRepositoryImpl implements DataSetDetailRepository {
                             else
                                 catCombo = d2.dataElementModule().dataElements.uid(dataSetElement.dataElement().uid()).blockingGet().categoryComboUid();
 
-                            for (CategoryOptionCombo categoryOptionCombo : d2.categoryModule().categoryOptionCombos
+                            for (CategoryOptionCombo categoryOptionCombo : d2.categoryModule().categoryOptionCombos()
                                     .byCategoryComboUid().eq(catCombo).blockingGet()) {
                                 if (!catOptionCombos.contains(categoryOptionCombo.uid()))
                                     catOptionCombos.add(categoryOptionCombo.uid());
@@ -139,7 +139,7 @@ public class DataSetDetailRepositoryImpl implements DataSetDetailRepository {
         return d2.dataSetModule().dataSets.uid(dataSetUid).get().toFlowable()
                 .flatMap(dataSet -> {
                     if (dataSet.access().data().write())
-                        return d2.categoryModule().categoryOptionCombos.withCategoryOptions()
+                        return d2.categoryModule().categoryOptionCombos().withCategoryOptions()
                                 .byCategoryComboUid().eq(dataSet.categoryCombo().uid()).get().toFlowable()
                                 .map(categoryOptionCombos -> {
                                     boolean canWriteCatOption = false;
