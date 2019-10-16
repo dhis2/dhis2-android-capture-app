@@ -277,11 +277,11 @@ final class SyncPresenterImpl implements SyncPresenter {
 
     @Override
     public List<TrackerImportConflict> messageTrackerImportConflict(String uid) {
-        List<TrackerImportConflict> trackerImportConflicts = d2.importModule().trackerImportConflicts.byTrackedEntityInstanceUid().eq(uid).blockingGet();
+        List<TrackerImportConflict> trackerImportConflicts = d2.importModule().trackerImportConflicts().byTrackedEntityInstanceUid().eq(uid).blockingGet();
         if (trackerImportConflicts != null && !trackerImportConflicts.isEmpty())
             return trackerImportConflicts;
 
-        trackerImportConflicts = d2.importModule().trackerImportConflicts.byEventUid().eq(uid).blockingGet();
+        trackerImportConflicts = d2.importModule().trackerImportConflicts().byEventUid().eq(uid).blockingGet();
         if (trackerImportConflicts != null && !trackerImportConflicts.isEmpty())
             return trackerImportConflicts;
 

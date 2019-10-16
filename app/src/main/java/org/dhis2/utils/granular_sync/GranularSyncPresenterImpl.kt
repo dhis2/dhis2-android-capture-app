@@ -90,9 +90,9 @@ class GranularSyncPresenterImpl(val d2: D2,
                 Single.just(conflictType)
                         .flatMap {
                             if (it == PROGRAM)
-                                d2.importModule().trackerImportConflicts.byTrackedEntityInstanceUid().eq(recordUid).get()
+                                d2.importModule().trackerImportConflicts().byTrackedEntityInstanceUid().eq(recordUid).get()
                             else
-                                d2.importModule().trackerImportConflicts.byEventUid().eq(recordUid).get()
+                                d2.importModule().trackerImportConflicts().byEventUid().eq(recordUid).get()
                         }
                         .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.ui())
