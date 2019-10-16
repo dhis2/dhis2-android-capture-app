@@ -77,7 +77,7 @@ final class SyncPresenterImpl implements SyncPresenter {
     @Override
     public void syncAndDownloadDataValues() {
         if (!d2.dataSetModule().dataSets().blockingIsEmpty()) {
-            Completable.fromObservable(d2.dataValueModule().dataValues.upload())
+            Completable.fromObservable(d2.dataValueModule().dataValues().upload())
                     .andThen(
                             Completable.fromObservable(d2.dataSetModule().dataSetCompleteRegistrations().upload()))
                     .andThen(
@@ -204,7 +204,7 @@ final class SyncPresenterImpl implements SyncPresenter {
         return d2.dataSetModule().dataSetInstances().byDataSetUid().eq(uid).get().toObservable()
                 .flatMapIterable(dataSets -> dataSets)
                 .flatMap(dataSetReport ->
-                        d2.dataValueModule().dataValues
+                        d2.dataValueModule().dataValues()
                                 .byOrganisationUnitUid().eq(dataSetReport.organisationUnitUid())
                                 .byPeriod().eq(dataSetReport.period())
                                 .byAttributeOptionComboUid().eq(dataSetReport.attributeOptionComboUid())
@@ -214,7 +214,7 @@ final class SyncPresenterImpl implements SyncPresenter {
 
     @Override
     public Observable<D2Progress> syncGranularDataValues(String orgUnit, String attributeOptionCombo, String period, String[] catOptionCombos) {
-        return d2.dataValueModule().dataValues
+        return d2.dataValueModule().dataValues()
                 .byAttributeOptionComboUid().eq(attributeOptionCombo)
                 .byOrganisationUnitUid().eq(orgUnit)
                 .byPeriod().eq(period)
@@ -240,7 +240,7 @@ final class SyncPresenterImpl implements SyncPresenter {
 
     @Override
     public boolean checkSyncDataValueStatus(String orgUnit, String attributeOptionCombo, String period) {
-        return d2.dataValueModule().dataValues.byPeriod().eq(period)
+        return d2.dataValueModule().dataValues().byPeriod().eq(period)
                 .byOrganisationUnitUid().eq(orgUnit)
                 .byAttributeOptionComboUid().eq(attributeOptionCombo)
                 .byState().notIn(State.SYNCED)
@@ -267,7 +267,7 @@ final class SyncPresenterImpl implements SyncPresenter {
     public boolean checkSyncDataSetStatus(String uid) {
         DataSetInstance dataSetReport = d2.dataSetModule().dataSetInstances().byDataSetUid().eq(uid).one().blockingGet();
 
-        return d2.dataValueModule().dataValues
+        return d2.dataValueModule().dataValues()
                 .byOrganisationUnitUid().eq(dataSetReport.organisationUnitUid())
                 .byPeriod().eq(dataSetReport.period())
                 .byAttributeOptionComboUid().eq(dataSetReport.attributeOptionComboUid())

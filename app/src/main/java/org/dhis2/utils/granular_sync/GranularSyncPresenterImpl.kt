@@ -288,7 +288,7 @@ class GranularSyncPresenterImpl(val d2: D2,
                     .map {
                         var state = State.SYNCED
                         it.forEach { de ->
-                            d2.dataValueModule().dataValues.byDataElementUid().eq(de.dataElement().uid()).blockingGet().forEach { dv ->
+                            d2.dataValueModule().dataValues().byDataElementUid().eq(de.dataElement().uid()).blockingGet().forEach { dv ->
                                 if (dv.state() != State.SYNCED)
                                     state = State.TO_UPDATE
                             }
@@ -297,7 +297,7 @@ class GranularSyncPresenterImpl(val d2: D2,
                     }
             DATA_VALUES -> getDataSetCatOptCombos()
                     .flatMap {
-                        d2.dataValueModule().dataValues
+                        d2.dataValueModule().dataValues()
                                 .byOrganisationUnitUid().eq(dvOrgUnit)
                                 .byAttributeOptionComboUid().eq(dvAttrCombo)
                                 .byPeriod().eq(dvPeriodId).byCategoryOptionComboUid().`in`(it).get()

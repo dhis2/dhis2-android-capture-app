@@ -79,7 +79,7 @@ public class DataSetTableRepositoryImpl implements DataSetTableRepository {
                 for(DataSetElement dataSetElement : d2.dataSetModule().dataSets().withDataSetElements().byUid().eq(dataSetUid).one().blockingGet().dataSetElements()){
                     dataElementsUids.add(dataSetElement.dataElement().uid());
                 }
-                for (DataValue dataValue : d2.dataValueModule().dataValues
+                for (DataValue dataValue : d2.dataValueModule().dataValues()
                         .byDataElementUid().in(dataElementsUids)
                         .byAttributeOptionComboUid().eq(catOptCombo)
                         .byOrganisationUnitUid().eq(orgUnitUid)

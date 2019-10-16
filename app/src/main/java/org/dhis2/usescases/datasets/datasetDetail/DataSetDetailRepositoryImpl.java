@@ -100,7 +100,7 @@ public class DataSetDetailRepositoryImpl implements DataSetDetailRepository {
                             dataElementsUids.add(dataSetElement.dataElement().uid());
                         }
 
-                        for (DataValue dataValue : d2.dataValueModule().dataValues
+                        for (DataValue dataValue : d2.dataValueModule().dataValues()
                                 .byDataElementUid().in(dataElementsUids)
                                 //.byCategoryOptionComboUid().in(catOptionCombos) //TODO set when datsetInstances works fine
                                 .byAttributeOptionComboUid().eq(dataSetReport.attributeOptionComboUid())

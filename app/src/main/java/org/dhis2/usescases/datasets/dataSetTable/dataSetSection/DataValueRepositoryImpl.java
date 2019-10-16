@@ -99,7 +99,7 @@ public class DataValueRepositoryImpl implements DataValueRepository {
 
     public Completable updateValue(DataSetTableModel dataValue) {
 
-        DataValueObjectRepository dataValueObject = d2.dataValueModule().dataValues.value(
+        DataValueObjectRepository dataValueObject = d2.dataValueModule().dataValues().value(
                 dataValue.period(),
                 dataValue.organisationUnit(),
                 dataValue.dataElement(),
@@ -202,7 +202,7 @@ public class DataValueRepositoryImpl implements DataValueRepository {
                                 mapDataElementCatCombo.put(dataSetElement.dataElement().uid(),
                                         d2.dataElementModule().dataElements().byUid().eq(dataSetElement.dataElement().uid()).one().blockingGet().categoryCombo().uid());
 
-                            return d2.dataValueModule().dataValues.byDataElementUid().eq(dataSetElement.dataElement().uid())
+                            return d2.dataValueModule().dataValues().byDataElementUid().eq(dataSetElement.dataElement().uid())
                                     .byAttributeOptionComboUid().eq(catOptionComb)
                                     .byPeriod().eq(initPeriodType)
                                     .byOrganisationUnitUid().eq(orgUnitUid)

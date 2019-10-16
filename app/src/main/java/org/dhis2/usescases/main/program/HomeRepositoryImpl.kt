@@ -59,7 +59,7 @@ internal class HomeRepositoryImpl(private val d2: D2, private val eventLabel: St
                         val attributeOptionCombos = UidsHelper.getUidsList<CategoryOptionCombo>(
                                 d2.categoryModule().categoryCombos().withCategoryOptionCombos().uid(dataSet.categoryCombo()!!.uid()).blockingGet()!!.categoryOptionCombos()!!
                         )
-                        for (dataValue in d2.dataValueModule().dataValues.byAttributeOptionComboUid().`in`(attributeOptionCombos)
+                        for (dataValue in d2.dataValueModule().dataValues().byAttributeOptionComboUid().`in`(attributeOptionCombos)
                                 .byCategoryOptionComboUid().`in`(categoryOptionCombos)
                                 .byDataElementUid().eq(it.dataElement().uid()).blockingGet()) {
                             if (dataValue.state() != State.SYNCED)
