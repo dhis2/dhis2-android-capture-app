@@ -17,8 +17,6 @@ import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.program.ProgramCollectionRepository
 import org.hisp.dhis.android.core.program.ProgramType.WITHOUT_REGISTRATION
 import org.hisp.dhis.android.core.program.ProgramType.WITH_REGISTRATION
-import timber.log.Timber
-import java.util.*
 
 internal class HomeRepositoryImpl(private val d2: D2, private val eventLabel: String) : HomeRepository {
     private val dataSetRepository: DataSetCollectionRepository = d2.dataSetModule().dataSets
@@ -28,18 +26,19 @@ internal class HomeRepositoryImpl(private val d2: D2, private val eventLabel: St
             .withStyle()
             .withTrackedEntityType()
 
+    private var captureOrgUnits: List<String> = ArrayList()
 
     override fun aggregatesModels(dateFilter: List<DatePeriod>, orgUnitFilter: List<String>, statesFilter: List<State>): Flowable<List<ProgramViewModel>> {
         return ParallelFlowable.from<DataSet>(Flowable.fromIterable<DataSet>(dataSetRepository.blockingGet())).runOn(Schedulers.io())
                 .map { dataSet ->
                     var repo = d2.dataSetModule().dataSetInstances.byDataSetUid().eq(dataSet.uid())
-                    if (!orgUnitFilter.isEmpty())
+                    if (orgUnitFilter.isNotEmpty())
                         repo = repo.byOrganisationUnitUid().`in`(orgUnitFilter)
-                    if (!dateFilter.isEmpty())
+                    if (dateFilter.isNotEmpty())
                         repo = repo.byPeriodStartDate().inDatePeriods(dateFilter)
 
                     var count = 0
-                    if (!statesFilter.isEmpty()) {
+                    if (statesFilter.isNotEmpty()) {
                         for (instance in repo.blockingGet())
                             if (statesFilter.contains(instance.state()))
                                 count++
@@ -95,11 +94,10 @@ internal class HomeRepositoryImpl(private val d2: D2, private val eventLabel: St
 
     override fun programModels(dateFilter: List<DatePeriod>, orgUnitFilter: List<String>, statesFilter: List<State>): Flowable<List<ProgramViewModel>> {
 
-        return d2.organisationUnitModule().organisationUnits.byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE).get()
-                .toFlowable()
-                .map{ UidsHelper.getUidsList(it) }
-                .map{ captureOrgUnits ->
-                    if (!orgUnitFilter.isEmpty())
+        return getCaptureOrgUnits()
+                .map { captureOrgUnits ->
+                    this.captureOrgUnits = captureOrgUnits
+                    if (orgUnitFilter.isNotEmpty())
                         programRepository.byOrganisationUnitList(orgUnitFilter)
                     else
                         programRepository.byOrganisationUnitList(captureOrgUnits)
@@ -122,9 +120,9 @@ internal class HomeRepositoryImpl(private val d2: D2, private val eventLabel: St
                     val count: Int
                     var state = State.SYNCED
                     if (program.programType() == WITHOUT_REGISTRATION) {
-                        if (!dateFilter.isEmpty()) {
-                            if (!orgUnitFilter.isEmpty()) {
-                                count = if (!statesFilter.isEmpty()) {
+                        if (dateFilter.isNotEmpty()) {
+                            if (orgUnitFilter.isNotEmpty()) {
+                                count = if (statesFilter.isNotEmpty()) {
                                     d2.eventModule().events
                                             .byProgramUid().eq(program.uid())
                                             .byEventDate().inDatePeriods(dateFilter)
@@ -138,7 +136,7 @@ internal class HomeRepositoryImpl(private val d2: D2, private val eventLabel: St
                                             .byOrganisationUnitUid().`in`(orgUnitFilter)
                                             .blockingCount()
                             } else {
-                                count = if (!statesFilter.isEmpty())
+                                count = if (statesFilter.isNotEmpty())
                                     d2.eventModule().events
                                             .byProgramUid().eq(program.uid())
                                             .byEventDate().inDatePeriods(dateFilter)
@@ -150,8 +148,8 @@ internal class HomeRepositoryImpl(private val d2: D2, private val eventLabel: St
                                             .byEventDate().inDatePeriods(dateFilter)
                                             .blockingCount()
                             }
-                        } else if (!orgUnitFilter.isEmpty()) {
-                            count = if (!statesFilter.isEmpty())
+                        } else if (orgUnitFilter.isNotEmpty()) {
+                            count = if (statesFilter.isNotEmpty())
                                 d2.eventModule().events
                                         .byProgramUid().eq(program.uid())
                                         .byOrganisationUnitUid().`in`(orgUnitFilter)
@@ -163,7 +161,7 @@ internal class HomeRepositoryImpl(private val d2: D2, private val eventLabel: St
                                         .byOrganisationUnitUid().`in`(orgUnitFilter)
                                         .blockingCount()
                         } else {
-                            count = if (!statesFilter.isEmpty())
+                            count = if (statesFilter.isNotEmpty())
                                 d2.eventModule().events
                                         .byProgramUid().eq(program.uid())
                                         .byState().`in`(statesFilter)
@@ -174,20 +172,20 @@ internal class HomeRepositoryImpl(private val d2: D2, private val eventLabel: St
                                         .blockingCount()
                         }
 
-                        if (!d2.eventModule().events.byProgramUid().eq(program.uid()).byState().`in`(State.ERROR, State.WARNING).blockingGet().isEmpty())
+                        if (d2.eventModule().events.byProgramUid().eq(program.uid()).byState().`in`(State.ERROR, State.WARNING).blockingGet().isNotEmpty())
                             state = State.WARNING
-                        else if (!d2.eventModule().events.byProgramUid().eq(program.uid()).byState().`in`(State.SENT_VIA_SMS, State.SYNCED_VIA_SMS).blockingGet().isEmpty())
+                        else if (d2.eventModule().events.byProgramUid().eq(program.uid()).byState().`in`(State.SENT_VIA_SMS, State.SYNCED_VIA_SMS).blockingGet().isNotEmpty())
                             state = State.SENT_VIA_SMS
-                        else if (!d2.eventModule().events.byProgramUid().eq(program.uid()).byState().`in`(State.TO_UPDATE, State.TO_POST).blockingGet().isEmpty() || !d2.eventModule().events.byProgramUid().eq(program.uid()).byDeleted().isTrue.blockingGet().isEmpty())
+                        else if (d2.eventModule().events.byProgramUid().eq(program.uid()).byState().`in`(State.TO_UPDATE, State.TO_POST).blockingGet().isNotEmpty() || d2.eventModule().events.byProgramUid().eq(program.uid()).byDeleted().isTrue.blockingGet().isNotEmpty())
                             state = State.TO_UPDATE
 
                     } else {
                         val programUids = ArrayList<String>()
                         programUids.add(program.uid())
-                        if (!dateFilter.isEmpty()) {
+                        if (dateFilter.isNotEmpty()) {
                             val enrollments: List<Enrollment>
-                            if (!orgUnitFilter.isEmpty()) {
-                                if (!statesFilter.isEmpty())
+                            if (orgUnitFilter.isNotEmpty()) {
+                                if (statesFilter.isNotEmpty())
                                     enrollments = d2.enrollmentModule().enrollments
                                             .byProgram().`in`(programUids)
                                             .byEnrollmentDate().inDatePeriods(dateFilter)
@@ -205,7 +203,7 @@ internal class HomeRepositoryImpl(private val d2: D2, private val eventLabel: St
                                             .byDeleted().isFalse
                                             .blockingGet()
                             } else {
-                                enrollments = if (!statesFilter.isEmpty())
+                                enrollments = if (statesFilter.isNotEmpty())
                                     d2.enrollmentModule().enrollments
                                             .byProgram().`in`(programUids)
                                             .byEnrollmentDate().inDatePeriods(dateFilter)
@@ -222,8 +220,8 @@ internal class HomeRepositoryImpl(private val d2: D2, private val eventLabel: St
                                             .blockingGet()
                             }
                             count = countEnrollment(enrollments)
-                        } else if (!orgUnitFilter.isEmpty()) {
-                            val enrollments = if (!statesFilter.isEmpty())
+                        } else if (orgUnitFilter.isNotEmpty()) {
+                            val enrollments = if (statesFilter.isNotEmpty())
                                 d2.enrollmentModule().enrollments
                                         .byProgram().`in`(programUids)
                                         .byOrganisationUnit().`in`(orgUnitFilter)
@@ -241,7 +239,7 @@ internal class HomeRepositoryImpl(private val d2: D2, private val eventLabel: St
 
                             count = countEnrollment(enrollments)
                         } else {
-                            val enrollments = if (!statesFilter.isEmpty())
+                            val enrollments = if (statesFilter.isNotEmpty())
                                 d2.enrollmentModule().enrollments
                                         .byProgram().`in`(programUids)
                                         .byStatus().eq(EnrollmentStatus.ACTIVE)
@@ -258,11 +256,11 @@ internal class HomeRepositoryImpl(private val d2: D2, private val eventLabel: St
                             count = countEnrollment(enrollments)
                         }
 
-                        if (!d2.trackedEntityModule().trackedEntityInstances.byProgramUids(programUids).byState().`in`(State.ERROR, State.WARNING).blockingGet().isEmpty())
+                        if (d2.trackedEntityModule().trackedEntityInstances.byProgramUids(programUids).byState().`in`(State.ERROR, State.WARNING).blockingGet().isNotEmpty())
                             state = State.WARNING
-                        else if (!d2.trackedEntityModule().trackedEntityInstances.byProgramUids(programUids).byState().`in`(State.SENT_VIA_SMS, State.SYNCED_VIA_SMS).blockingGet().isEmpty())
+                        else if (d2.trackedEntityModule().trackedEntityInstances.byProgramUids(programUids).byState().`in`(State.SENT_VIA_SMS, State.SYNCED_VIA_SMS).blockingGet().isNotEmpty())
                             state = State.SENT_VIA_SMS
-                        else if (!d2.trackedEntityModule().trackedEntityInstances.byProgramUids(programUids).byState().`in`(State.TO_UPDATE, State.TO_POST).blockingGet().isEmpty() || !d2.trackedEntityModule().trackedEntityInstances.byProgramUids(programUids).byDeleted().isTrue.blockingGet().isEmpty())
+                        else if (d2.trackedEntityModule().trackedEntityInstances.byProgramUids(programUids).byState().`in`(State.TO_UPDATE, State.TO_POST).blockingGet().isNotEmpty() || d2.trackedEntityModule().trackedEntityInstances.byProgramUids(programUids).byDeleted().isTrue.blockingGet().isNotEmpty())
                             state = State.TO_UPDATE
                     }
 
@@ -276,11 +274,21 @@ internal class HomeRepositoryImpl(private val d2: D2, private val eventLabel: St
                             typeName!!,
                             program.programType()!!.name,
                             program.displayDescription(),
-                            true,
-                            true,
-                            state.name
+                            onlyEnrollOnce = true,
+                            accessDataWrite = true,
+                            state = state.name
                     )
                 }.toList().toFlowable()
+    }
+
+    private fun getCaptureOrgUnits(): Flowable<List<String>> {
+        return if (captureOrgUnits.isNotEmpty()) {
+            Flowable.just(captureOrgUnits)
+        } else {
+            d2.organisationUnitModule().organisationUnits.byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE).get()
+                    .toFlowable()
+                    .map { UidsHelper.getUidsList(it) }
+        }
     }
 
     private fun countEnrollment(enrollments: List<Enrollment>): Int {
