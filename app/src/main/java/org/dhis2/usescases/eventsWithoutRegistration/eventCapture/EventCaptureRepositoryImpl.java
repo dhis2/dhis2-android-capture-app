@@ -334,7 +334,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
     private boolean getCatComboAccess(Event event) {
         if (event.attributeOptionCombo() != null) {
             List<String> optionUid = UidsHelper.getUidsList(d2.categoryModule()
-                    .categoryOptionCombos.withCategoryOptions().uid(event.attributeOptionCombo())
+                    .categoryOptionCombos().withCategoryOptions().uid(event.attributeOptionCombo())
                     .blockingGet().categoryOptions());
             List<CategoryOption> options = d2.categoryModule().categoryOptions().byUid().in(optionUid).blockingGet();
             boolean access = true;

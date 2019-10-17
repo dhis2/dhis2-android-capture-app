@@ -52,7 +52,7 @@ final class SyncPresenterImpl implements SyncPresenter {
         boolean limitByProgram = prefs.getBoolean(Constants.LIMIT_BY_PROGRAM, false);
         Completable.fromObservable(d2.eventModule().events().upload())
                 .andThen(Completable.fromObservable(d2.eventModule()
-                        .eventDownloader.limit(eventLimit).limitByOrgunit(limitByOU).limitByProgram(limitByProgram).download())
+                        .eventDownloader().limit(eventLimit).limitByOrgunit(limitByOU).limitByProgram(limitByProgram).download())
                 ).blockingAwait();
 
     }
