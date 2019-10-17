@@ -5,14 +5,15 @@ import android.content.SharedPreferences;
 
 import androidx.annotation.NonNull;
 import androidx.work.Constraints;
-import androidx.work.ExistingPeriodicWorkPolicy;
+import androidx.work.Data;
 import androidx.work.ExistingWorkPolicy;
+import androidx.work.ListenableWorker;
 import androidx.work.NetworkType;
 import androidx.work.OneTimeWorkRequest;
-import androidx.work.PeriodicWorkRequest;
 import androidx.work.WorkManager;
 
 import org.dhis2.utils.Constants;
+import org.dhis2.utils.DateUtils;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.arch.call.D2Progress;
 import org.hisp.dhis.android.core.common.State;
@@ -21,6 +22,8 @@ import org.hisp.dhis.android.core.imports.TrackerImportConflict;
 import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.program.ProgramType;
 
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -97,7 +100,8 @@ final class SyncPresenterImpl implements SyncPresenter {
 
     @Override
     public void downloadResources() {
-        d2.fileResourceModule().blockingDownload();
+        if (d2.systemInfoModule().versionManager.is2_33())
+            d2.fileResourceModule().blockingDownload();
     }
 
     @Override
@@ -115,6 +119,68 @@ final class SyncPresenterImpl implements SyncPresenter {
     @Override
     public Observable<D2Progress> syncGranularEvent(String eventUid) {
         return d2.eventModule().events.byUid().eq(eventUid).upload();
+    }
+
+    @Override
+    public ListenableWorker.Result blockSyncGranularProgram(String programUid) {
+        Completable.fromObservable(syncGranularProgram(programUid))
+                .blockingAwait();
+        if (!checkSyncProgramStatus(programUid))
+            return ListenableWorker.Result.failure();
+        else
+            return ListenableWorker.Result.success();
+    }
+
+    @Override
+    public ListenableWorker.Result blockSyncGranularTei(String teiUid) {
+        Completable.fromObservable(syncGranularTEI(teiUid))
+                .blockingAwait();
+        if (!checkSyncTEIStatus(teiUid)) {
+            List<TrackerImportConflict> trackerImportConflicts =
+                    messageTrackerImportConflict(teiUid);
+            List<String> mergeDateConflicts = new ArrayList<>();
+            for (TrackerImportConflict conflict : trackerImportConflicts) {
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTimeInMillis(conflict.created().getTime());
+                String date = DateUtils.databaseDateFormat().format(calendar.getTime());
+                mergeDateConflicts.add(
+                        date + "/" + conflict.conflict());
+            }
+            Data data = new Data.Builder().putStringArray("conflict",
+                    mergeDateConflicts.toArray(new String[mergeDateConflicts.size()])).build();
+            return ListenableWorker.Result.failure(data);
+        }
+        return ListenableWorker.Result.success();
+    }
+
+    @Override
+    public ListenableWorker.Result blockSyncGranularEvent(String eventUid) {
+        Completable.fromObservable(syncGranularEvent(eventUid))
+                .blockingAwait();
+        if (!checkSyncEventStatus(eventUid))
+            return ListenableWorker.Result.failure();
+        else
+            return ListenableWorker.Result.success();
+    }
+
+    @Override
+    public ListenableWorker.Result blockSyncGranularDataSet(String dataSetUid) {
+        Completable.fromObservable(syncGranularDataSet(dataSetUid))
+                .blockingAwait();
+        if (!checkSyncDataSetStatus(dataSetUid))
+            return ListenableWorker.Result.failure();
+        else
+            return ListenableWorker.Result.success();
+    }
+
+    @Override
+    public ListenableWorker.Result blockSyncGranularDataValues(String orgUnitUid, String attrOptionCombo, String periodId, String[] catOptionCombo) {
+        Completable.fromObservable(syncGranularDataValues(orgUnitUid, attrOptionCombo, periodId, catOptionCombo))
+                .blockingAwait();
+        if (!checkSyncDataValueStatus(orgUnitUid, attrOptionCombo, periodId))
+            return ListenableWorker.Result.failure();
+        else
+            return ListenableWorker.Result.success();
     }
 
     @Override
@@ -227,7 +293,7 @@ final class SyncPresenterImpl implements SyncPresenter {
         int seconds = context.getSharedPreferences(Constants.SHARE_PREFS, MODE_PRIVATE).getInt(Constants.TIME_DATA, Constants.TIME_DAILY);
         WorkManager.getInstance(context).cancelUniqueWork(Constants.DATA);
 
-        if(seconds!=0){
+        if (seconds != 0) {
             OneTimeWorkRequest syncDataWorkRequest = new OneTimeWorkRequest.Builder(SyncDataWorker.class)
                     .addTag(Constants.DATA)
                     .setInitialDelay(seconds, TimeUnit.SECONDS)
@@ -236,7 +302,7 @@ final class SyncPresenterImpl implements SyncPresenter {
                                     .setRequiredNetworkType(NetworkType.CONNECTED)
                                     .build()
                     ).build();
-            WorkManager.getInstance(context).enqueueUniqueWork(Constants.DATA, ExistingWorkPolicy.REPLACE,syncDataWorkRequest);
+            WorkManager.getInstance(context).enqueueUniqueWork(Constants.DATA, ExistingWorkPolicy.REPLACE, syncDataWorkRequest);
         }
        /* PeriodicWorkRequest.Builder syncDataBuilder = new PeriodicWorkRequest.Builder(SyncDataWorker.class, seconds, TimeUnit.SECONDS);
         syncDataBuilder.addTag(Constants.DATA);
@@ -261,7 +327,7 @@ final class SyncPresenterImpl implements SyncPresenter {
                                     .setRequiredNetworkType(NetworkType.CONNECTED)
                                     .build()
                     ).build();
-            WorkManager.getInstance(context).enqueueUniqueWork(Constants.META, ExistingWorkPolicy.REPLACE,syncMetaWorkRequest);
+            WorkManager.getInstance(context).enqueueUniqueWork(Constants.META, ExistingWorkPolicy.REPLACE, syncMetaWorkRequest);
         }
         /*PeriodicWorkRequest.Builder syncDataBuilder = new PeriodicWorkRequest.Builder(SyncDataWorker.class, seconds, TimeUnit.SECONDS);
         syncDataBuilder.addTag(Constants.META);

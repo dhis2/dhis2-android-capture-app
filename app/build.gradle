@@ -209,34 +209,37 @@ sonarqube {
 }
 
 dependencies {
-    implementation project(':core')
+    debugImplementation project(':core')
     implementation project(':customFab')
-    implementation project(':dhis2-rule-engine')
+    debugImplementation project(':dhis2-rule-engine')
     implementation project(':viewpagerdotsindicator')
     implementation project(':tableview')
 
-    //region SUPPORT LIBRARIES
+    //region AndroidX
     implementation 'androidx.appcompat:appcompat:1.1.0'
     implementation 'androidx.annotation:annotation:1.1.0'
     implementation 'androidx.cardview:cardview:1.0.0'
-    implementation 'com.google.android.material:material:1.1.0-alpha10'
+    implementation 'com.google.android.material:material:1.1.0-beta01'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
-    implementation 'androidx.multidex:multidex:2.0.1'
+    implementation "androidx.multidex:multidex:${libraries.multidex}"
     implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
-
+    implementation "androidx.lifecycle:lifecycle-extensions:${libraries.lifecycle}"
+    //JOB SCHEDULER
+    implementation "androidx.work:work-runtime:2.2.0"
+    implementation "androidx.work:work-rxjava2:2.2.0"
     //endregion
 
     //region DHIS2 LIBRARIES
 
-    /* implementation("org.hisp.dhis:android-core:${libraries.dhis2sdk}") {
-            exclude group: "org.hisp.dhis", module: "core-rules"
-        }*/
+    releaseImplementation("org.hisp.dhis:android-core:${libraries.dhis2sdk}") {
+        exclude group: "org.hisp.dhis", module: "core-rules"
+    }
 
-    //implementation "org.hisp.dhis.rules:rule-engine:${libraries.ruleEngine}"
+    releaseImplementation "org.hisp.dhis.rules:rule-engine:${libraries.ruleEngine}"
     //endregion
 
     //region UI LIBRARIES
-    //TreeView
+    //AndroidTreeView
     implementation "com.github.bmelnychuk:atv:${libraries.atv}"
     //FAB
     implementation "com.github.dekoservidoni:omfm:${libraries.omfm}"
@@ -253,10 +256,6 @@ dependencies {
     implementation "com.github.akarnokd:rxjava2-interop:${libraries.rxjavainteroperop}"
     implementation 'io.reactivex.rxjava2:rxkotlin:2.3.0'
 
-
-    //region ViewModel
-    implementation "androidx.lifecycle:lifecycle-extensions:${libraries.lifecycle}"
-
     //rxbinding
     implementation "com.jakewharton.rxbinding2:rxbinding:${libraries.rxbindings}"
     implementation "com.jakewharton.rxbinding2:rxbinding-appcompat-v7:${libraries.rxbindings}"
@@ -264,7 +263,6 @@ dependencies {
 
     //region DAGGER
     implementation "com.google.dagger:dagger:${libraries.dagger}"
-//    implementation 'androidx.constraintlayout:constraintlayout:2.0.0-alpha3'
     kapt "com.google.dagger:dagger-compiler:${libraries.dagger}"
     //endregion
 
@@ -289,8 +287,8 @@ dependencies {
     //region PLAY SERVICES
 
     //LOCATION
-    implementation 'com.google.android.gms:play-services-basement:16.2.0'
-    implementation 'com.google.android.gms:play-services-location:16.0.0'
+    implementation 'com.google.android.gms:play-services-basement:17.1.1'
+    implementation 'com.google.android.gms:play-services-location:17.0.0'
     //endregion
 
     // Kujaku dependencies
@@ -304,15 +302,9 @@ dependencies {
     implementation "com.jakewharton.timber:timber:${libraries.timber}"
 
     //GSON
-    implementation 'com.google.code.gson:gson:2.8.2'
+    implementation 'com.google.code.gson:gson:2.8.5'
 
-    //JOB SCHEDULER
-    implementation "androidx.work:work-runtime:2.2.0"
-    implementation "androidx.work:work-rxjava2:2.2.0"
-/*
-    implementation("android.arch.work:work-runtime:1.0.0-alpha10") {
-        exclude group: 'com.google.guava', module: 'listenablefuture'
-    }*/
+
 
     //CRASHLYTICS
     implementation('com.crashlytics.sdk.android:crashlytics:2.9.5@aar') {
@@ -320,7 +312,9 @@ dependencies {
     }
 
     //FIREBASE
-    implementation 'com.google.firebase:firebase-core:16.0.7'
+    implementation 'com.google.firebase:firebase-core:17.2.0'
+    implementation 'com.google.firebase:firebase-perf:19.0.0'
+    implementation 'com.google.firebase:firebase-messaging:20.0.0'
 
     //Test
     implementation fileTree(include: ['*.jar'], dir: 'libs')
@@ -333,12 +327,13 @@ dependencies {
 
     testImplementation 'junit:junit:4.12'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    testImplementation 'org.robolectric:robolectric:4.1'
+    testImplementation 'org.robolectric:robolectric:4.2.1'
     testImplementation "org.robolectric:shadows-multidex:4.0.1"
     androidTestImplementation 'org.mockito:mockito-android:2.28.2'
     androidTestImplementation 'org.mockito:mockito-core:2.28.2'
     testImplementation 'org.mockito:mockito-core:2.28.2'
-
+    testImplementation 'org.mockito:mockito-inline:2.13.0'
+    testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:2.1.0"
 
     testImplementation 'com.google.truth:truth:0.43'
     implementation 'com.facebook.stetho:stetho:1.5.0'
@@ -378,7 +373,6 @@ dependencies {
     implementation 'co.infinum:goldfinger-rx:1.2.1'
     implementation "de.adorsys.android:securestoragelibrary:${libraries.latestSecureStorageVersion}"
 
-    implementation 'com.google.firebase:firebase-perf:16.2.3'
 
     implementation 'com.github.prabhat1707:DbExporterHelper:v1.0'
 

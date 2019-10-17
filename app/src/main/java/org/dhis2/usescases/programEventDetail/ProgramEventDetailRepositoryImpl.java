@@ -145,7 +145,7 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
                 event.organisationUnit(),
                 orgUnitName,
                 event.eventDate(),
-                event.state(),
+                event.state()!=null?event.state():State.TO_UPDATE,
                 data,
                 event.status(),
                 hasExpired || !inOrgUnitRange,
@@ -157,7 +157,7 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
     public Observable<Program> program() {
         return Observable.just(d2.programModule().programs.withProgramIndicators()
                 .withProgramRules().withProgramRuleVariables().withProgramSections().withProgramStages()
-                .withProgramTrackedEntityAttributes().withRelatedProgram().withStyle()
+                .withProgramTrackedEntityAttributes().withStyle()
                 .withTrackedEntityType().uid(programUid).blockingGet());
     }
 

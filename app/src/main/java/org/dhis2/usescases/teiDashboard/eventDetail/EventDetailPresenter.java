@@ -16,6 +16,7 @@ import androidx.fragment.app.Fragment;
 import org.dhis2.R;
 import org.dhis2.data.forms.FormFragment;
 import org.dhis2.data.forms.dataentry.DataEntryFragment;
+import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.databinding.WidgetDatepickerBinding;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.OnDialogClickListener;
@@ -36,7 +37,6 @@ import io.reactivex.BackpressureStrategy;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
 import static android.text.TextUtils.isEmpty;
@@ -49,15 +49,17 @@ public class EventDetailPresenter implements EventDetailContracts.Presenter {
 
     private final EventDetailRepository eventDetailRepository;
     private final DataEntryStore dataEntryStore;
+    private final SchedulerProvider schedulerProvider;
     private EventDetailContracts.View view;
     private CompositeDisposable disposable;
     private EventDetailModel eventDetailModel;
 
     private boolean changedEventStatus = false;
 
-    EventDetailPresenter(EventDetailRepository eventDetailRepository, DataEntryStore dataEntryStore) {
+    EventDetailPresenter(EventDetailRepository eventDetailRepository, DataEntryStore dataEntryStore, SchedulerProvider schedulerProvider) {
         this.eventDetailRepository = eventDetailRepository;
         this.dataEntryStore = dataEntryStore;
+        this.schedulerProvider = schedulerProvider;
         disposable = new CompositeDisposable();
 
     }
@@ -73,8 +75,8 @@ public class EventDetailPresenter implements EventDetailContracts.Presenter {
 
         disposable.add(
                 eventDetailRepository.eventStatus(eventUid)
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
                         .flatMap(
                                 data -> Observable.zip(
                                         eventDetailRepository.eventModelDetail(eventUid),
@@ -85,8 +87,8 @@ public class EventDetailPresenter implements EventDetailContracts.Presenter {
                                         eventDetailRepository.isEnrollmentActive(eventUid),
                                         EventDetailModel::new).toFlowable(BackpressureStrategy.LATEST)
                         )
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
                         .subscribe(
                                 data -> {
                                     eventDetailModel = data;
@@ -101,8 +103,8 @@ public class EventDetailPresenter implements EventDetailContracts.Presenter {
     public void getExpiryDate(String eventUid) {
         disposable.add(
                 eventDetailRepository.getExpiryDateFromEvent(eventUid)
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
                         .subscribe(
                                 view::isEventExpired,
                                 Timber::d
@@ -209,8 +211,8 @@ public class EventDetailPresenter implements EventDetailContracts.Presenter {
                 .setNegativeListener(v -> orgUnitDialog.dismiss());
 
         disposable.add(eventDetailRepository.getOrgUnits()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(schedulerProvider.io())
+                .observeOn(schedulerProvider.ui())
                 .subscribe(
                         orgUnits -> {
                             orgUnitDialog.setOrgUnits(orgUnits);

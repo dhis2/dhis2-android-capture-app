@@ -5,6 +5,7 @@ import android.app.Activity
 import android.app.Dialog
 import android.content.Intent
 import android.os.Bundle
+import android.os.UserManager
 import android.text.Editable
 import android.text.TextUtils.isEmpty
 import android.text.TextWatcher
@@ -32,6 +33,7 @@ import org.dhis2.data.tuples.Trio
 import org.dhis2.databinding.ActivityLoginBinding
 import org.dhis2.usescases.general.ActivityGlobalAbstract
 import org.dhis2.usescases.main.MainActivity
+import org.dhis2.usescases.qrScanner.QRActivity
 import org.dhis2.usescases.sync.SyncActivity
 import org.dhis2.utils.*
 import org.dhis2.utils.Constants.ACCOUNT_RECOVERY
@@ -50,22 +52,12 @@ import javax.inject.Inject
 
 class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
 
-    override fun showFingerprintDialog() {
-        fingerPrintDialog.show()
-    }
-
-    override fun hideFingerprintDialog() {
-        fingerPrintDialog.hide()
-    }
-
     private lateinit var binding: ActivityLoginBinding
-
     private lateinit var loginViewModel: LoginViewModel
-
     private lateinit var fingerPrintDialog: Dialog
 
     @Inject
-    lateinit var presenter: LoginContracts.Presenter
+    lateinit var presenter: LoginPresenter
 
     private var users: MutableList<String>? = null
     private var urls: MutableList<String>? = null
@@ -74,7 +66,7 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
     private var qrUrl: String? = null
 
     private var testingCredentials: List<TestingCredential> = ArrayList()
-
+    var userManager : org.dhis2.data.server.UserManager? = null
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -82,8 +74,13 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
         var loginComponent = (applicationContext as App).loginComponent()
         if (loginComponent == null) {
             // in case if we don't have cached presenter
-            loginComponent = (applicationContext as App).createLoginComponent()
+            loginComponent = (applicationContext as App).createLoginComponent(this)
         }
+        val serverComponent = (applicationContext as App).serverComponent
+        serverComponent?.let {
+            userManager = serverComponent.userManager()
+        }
+
         loginComponent.inject(this)
 
         super.onCreate(savedInstanceState)
@@ -107,12 +104,12 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
             binding.userPassEdit.setText(testingEnvironment.val2())
         })
         loginViewModel.serverUrl.observe(this, Observer<String> {
-            Glide.with(this).load(String.format("%s/api/staticContent/logo_front", it))
+           /* Glide.with(this).load(String.format("%s/api/staticContent/logo_front", it))
                     .transition(withCrossFade())
                     .into(binding.logoFront)
             Glide.with(this).load(String.format("%s/api/staticContent/logo_banner", it))
                     .placeholder(R.drawable.ic_dhis_white)
-                    .into(binding.logoBanner)
+                    .into(binding.logoBanner)*/
         })
 
         binding.serverUrlEdit.addTextChangedListener(object : TextWatcher {
@@ -133,7 +130,7 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
             }
         })
 
-        binding.serverUrlEdit.onRightDrawableClicked { presenter.onQRClick(binding.serverUrl) }
+        binding.serverUrlEdit.onRightDrawableClicked { presenter.onQRClick() }
 
         binding.clearPassButton.setOnClickListener { binding.userPassEdit.text = null }
         binding.clearUserNameButton.setOnClickListener { binding.userNameEdit.text = null }
@@ -185,10 +182,12 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
         }
     }
 
-
     override fun onResume() {
         super.onResume()
-        presenter.init(this)
+        presenter.apply {
+            init(userManager)
+            checkServerInfoAndShowBiometricButton()
+        }
         NetworkUtils.isGooglePlayServicesAvailable(this)
     }
 
@@ -337,6 +336,7 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
     }
 
     override fun saveUsersData() {
+        (context.applicationContext as App).createUserComponent()
         urls?.let {
             if (!it.contains(binding.serverUrlEdit.text.toString())) {
                 it.add(binding.serverUrlEdit.text.toString())
@@ -376,7 +376,6 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
 
     }
 
-
     override fun onBackPressed() {
         if (isPinScreenVisible) {
             binding.pinLayout.root.visibility = View.GONE
@@ -394,7 +393,6 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
         super.onActivityResult(requestCode, resultCode, data)
     }
 
-    //region FingerPrint
     override fun showBiometricButton() {
         binding.biometricButton.visibility = View.VISIBLE
     }
@@ -414,7 +412,6 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
     override fun showEmptyCredentialsMessage() {
         showInfoDialog(getString(R.string.biometrics_dialog_title), getString(R.string.biometrics_first_use_text))
     }
-//endregion
 
     override fun openAccountRecovery() {
         val intent = Intent(this, WebViewActivity::class.java)
@@ -422,12 +419,25 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
         startActivity(intent)
     }
 
-    override fun displayAlertDialog(titleResource: Int, descriptionResource: Int, negativeResource: Int?, positiveResource: Int) {
+    override fun displayAlertDialog() {
         MaterialAlertDialogBuilder(this, R.style.DhisMaterialDialog)
-                .setTitle(titleResource)
-                .setMessage(descriptionResource)
-                .setPositiveButton(positiveResource, null)
+                .setTitle(R.string.login_server_info_title)
+                .setMessage(R.string.login_server_info_message)
+                .setPositiveButton(R.string.action_accept, null)
                 .show()
     }
 
+    override fun navigateToQRActivity() {
+        Intent(context, QRActivity::class.java).apply {
+            startActivityForResult(this, RQ_QR_SCANNER)
+        }
+    }
+
+    override fun showFingerprintDialog() {
+        fingerPrintDialog.show()
+    }
+
+    override fun hideFingerprintDialog() {
+        fingerPrintDialog.hide()
+    }
 }

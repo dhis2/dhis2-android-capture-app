@@ -9,6 +9,7 @@ import org.dhis2.data.server.ServerComponent;
 import org.dhis2.data.user.UserComponent;
 
 import org.dhis2.usescases.login.LoginComponent;
+import org.dhis2.usescases.login.LoginContracts;
 import org.dhis2.usescases.sync.SyncComponent;
 import org.hisp.dhis.android.core.configuration.Configuration;
 
@@ -23,7 +24,7 @@ public interface Components {
 
 
     @NonNull
-    LoginComponent createLoginComponent();
+    LoginComponent createLoginComponent(LoginContracts.View view);
 
     @Nullable
     LoginComponent loginComponent();

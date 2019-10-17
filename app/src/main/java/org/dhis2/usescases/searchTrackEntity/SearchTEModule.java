@@ -5,6 +5,7 @@ import androidx.annotation.NonNull;
 import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.dhis2.data.dagger.PerActivity;
+import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.utils.CodeGenerator;
 import org.hisp.dhis.android.core.D2;
 
@@ -33,8 +34,8 @@ public class SearchTEModule {
 
     @Provides
     @PerActivity
-    SearchTEContractsModule.Presenter providePresenter(D2 d2, SearchRepository searchRepository) {
-        return new SearchTEPresenter(d2, searchRepository);
+    SearchTEContractsModule.Presenter providePresenter(D2 d2, SearchRepository searchRepository, SchedulerProvider schedulerProvider) {
+        return new SearchTEPresenter(d2, searchRepository, schedulerProvider);
     }
 
     @Provides

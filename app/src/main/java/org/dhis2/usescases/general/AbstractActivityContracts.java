@@ -55,12 +55,12 @@ public class AbstractActivityContracts {
 
         void showDescription(String description);
 
+        @Deprecated
         SharedPreferences getSharedPreferences();
 
-        void showSyncDialog(String programUid, SyncStatusDialog.ConflictType conflictType, FlowableProcessor processor);
+        void showSyncDialog(SyncStatusDialog dialog);
 
-        void showSyncDialog(String orgUnit, String attributeCombo, String periodId, SyncStatusDialog.ConflictType conflictType, FlowableProcessor processor, String dataSetUid);
-
+        @Deprecated
         AnalyticsHelper analyticsHelper();
     }
 

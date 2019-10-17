@@ -69,10 +69,14 @@ class ProgramFragment : FragmentGlobalAbstract(), ProgramContract.View {
 
     override fun swapProgramModelData(): Consumer<List<ProgramViewModel>> {
         return Consumer { programs ->
-            binding!!.programProgress.visibility = View.GONE
+            binding!!.progressLayout.visibility = View.GONE
             binding!!.emptyView.visibility = if (programs.isEmpty()) View.VISIBLE else View.GONE
             (binding!!.programRecycler.adapter as ProgramModelAdapter).setData(programs)
         }
+    }
+
+    override fun showFilterProgress() {
+        binding!!.progressLayout.visibility = View.VISIBLE
     }
 
     override fun renderError(message: String) {

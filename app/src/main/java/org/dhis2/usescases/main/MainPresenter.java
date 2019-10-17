@@ -7,6 +7,7 @@ import android.view.Gravity;
 import androidx.annotation.NonNull;
 import androidx.work.WorkManager;
 
+import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.usescases.login.LoginActivity;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.filters.FilterManager;
@@ -24,6 +25,7 @@ import static android.text.TextUtils.isEmpty;
 final class MainPresenter implements MainContracts.Presenter {
 
     public static final String DEFAULT = "default";
+    private final SchedulerProvider schedulerProvider;
 
     private MainContracts.View view;
     private CompositeDisposable compositeDisposable;
@@ -31,8 +33,9 @@ final class MainPresenter implements MainContracts.Presenter {
 
     private final D2 d2;
 
-    MainPresenter(@NonNull D2 d2) {
+    MainPresenter(@NonNull D2 d2, SchedulerProvider schedulerProvider) {
         this.d2 = d2;
+        this.schedulerProvider = schedulerProvider;
     }
 
     @Override
@@ -42,8 +45,8 @@ final class MainPresenter implements MainContracts.Presenter {
 
         compositeDisposable.add(d2.userModule().user.get()
                 .map(this::username)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(schedulerProvider.io())
+                .observeOn(schedulerProvider.ui())
                 .subscribe(
                         view.renderUsername(),
                         Timber::e
@@ -52,7 +55,7 @@ final class MainPresenter implements MainContracts.Presenter {
 
         compositeDisposable.add(
                 d2.categoryModule().categoryCombos.byIsDefault().eq(true).one().get().toObservable()
-                        .subscribeOn(Schedulers.io())
+                        .subscribeOn(schedulerProvider.io())
                         .subscribe(
                                 categoryCombo -> {
                                     SharedPreferences prefs = view.getAbstracContext().getSharedPreferences(
@@ -66,7 +69,7 @@ final class MainPresenter implements MainContracts.Presenter {
 
         compositeDisposable.add(
                 d2.categoryModule().categoryOptionCombos.byCode().eq(DEFAULT).one().get().toObservable()
-                        .subscribeOn(Schedulers.io())
+                        .subscribeOn(schedulerProvider.io())
                         .subscribe(
                                 categoryOptionCombo -> {
                                     SharedPreferences prefs = view.getAbstracContext().getSharedPreferences(
@@ -79,8 +82,8 @@ final class MainPresenter implements MainContracts.Presenter {
 
         compositeDisposable.add(
                 FilterManager.getInstance().asFlowable()
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
                         .subscribe(
                                 filterManager -> view.updateFilters(filterManager.getTotalFilters()),
                                 Timber::e
@@ -89,8 +92,8 @@ final class MainPresenter implements MainContracts.Presenter {
 
         compositeDisposable.add(
                 FilterManager.getInstance().getPeriodRequest()
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
                         .subscribe(
                                 periodRequest -> view.showPeriodRequest(periodRequest),
                                 Timber::e
@@ -100,8 +103,8 @@ final class MainPresenter implements MainContracts.Presenter {
     @Override
     public void logOut() {
         compositeDisposable.add(d2.userModule().logOut()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(schedulerProvider.io())
+                .observeOn(schedulerProvider.ui())
                 .subscribe(() -> {
                     WorkManager.getInstance(view.getContext().getApplicationContext()).cancelAllWork();
                     view.startActivity(LoginActivity.class, null, true, true, null);

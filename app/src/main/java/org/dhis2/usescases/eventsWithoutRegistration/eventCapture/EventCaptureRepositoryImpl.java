@@ -16,9 +16,11 @@ import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactoryImpl;
 import org.dhis2.data.forms.dataentry.fields.image.ImageViewModel;
 import org.dhis2.data.forms.dataentry.fields.orgUnit.OrgUnitViewModel;
+import org.dhis2.data.forms.dataentry.fields.picture.PictureViewModel;
 import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.Result;
+import org.dhis2.utils.custom_views.PictureView;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper;
 import org.hisp.dhis.android.core.category.CategoryOption;
@@ -31,6 +33,7 @@ import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.event.EventStatus;
+import org.hisp.dhis.android.core.fileresource.FileResource;
 import org.hisp.dhis.android.core.maintenance.D2Error;
 import org.hisp.dhis.android.core.option.Option;
 import org.hisp.dhis.android.core.option.OptionGroup;
@@ -55,6 +58,7 @@ import org.hisp.dhis.rules.models.RuleDataValue;
 import org.hisp.dhis.rules.models.RuleEffect;
 import org.hisp.dhis.rules.models.RuleEvent;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -558,6 +562,12 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                             if ((fieldViewModel instanceof SpinnerViewModel || fieldViewModel instanceof ImageViewModel) && !isEmpty(value)) {
                                 value = d2.optionModule().options.byOptionSetUid().eq(fieldViewModel.optionSet()).byCode().eq(value).one().blockingGet().displayName();
                             }
+
+                            if (fieldViewModel instanceof PictureViewModel) {
+                                FileResource fileResource = d2.fileResourceModule().fileResources.uid(value).blockingGet();
+                                if (fileResource != null)
+                                    value = fileResource.path();
+                            }
                         }
                         boolean editable = fieldViewModel.editable() != null ? fieldViewModel.editable() : true;
                         fieldViewModel = fieldViewModel.withValue(value).withEditMode(editable);
@@ -889,20 +899,48 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
     public void assign(String uid, String value) {
         try {
             if (d2.dataElementModule().dataElements.uid(uid).blockingExists()) {
-               handleAssignToDataElement(uid,value);
+                handleAssignToDataElement(uid, value);
             } else if (d2.trackedEntityModule().trackedEntityAttributes.uid(uid).blockingExists()) {
-                handleAssignToAttribute(uid,value);
+                handleAssignToAttribute(uid, value);
             }
         } catch (D2Error d2Error) {
             Timber.e(d2Error.originalException());
         }
     }
 
+    @Override
+    public void saveImage(String uid, String filePath) {
+        String newFilePath = filePath;
+        TrackedEntityDataValueObjectRepository valueRepository = d2.trackedEntityModule().trackedEntityDataValues
+                .value(eventUid, uid);
+        if (d2.dataElementModule().dataElements.uid(uid).blockingGet().valueType() == ValueType.IMAGE
+                && filePath != null) {
+            try {
+                newFilePath = getFileResource(filePath);
+            } catch (D2Error d2Error) {
+                d2Error.printStackTrace();
+            }
+        }
+        try {
+            if (!isEmpty(filePath))
+                valueRepository.blockingSet(newFilePath);
+            else
+                valueRepository.blockingDelete();
+        }catch (D2Error d2Error){}
+
+    }
+
+    private String getFileResource(String path) throws D2Error {
+        File file = new File(path);
+        return d2.fileResourceModule().fileResources.blockingAdd(file);
+    }
+
     private void handleAssignToDataElement(String deUid, String value) throws D2Error {
         List<String> eventUids;
-        if (currentEvent.enrollment() != null) {
+        //TODO: CHECK Event rules only assign values to current event
+        /*if (currentEvent.enrollment() != null) {
             eventUids = UidsHelper.getUidsList(d2.eventModule().events
-                    .byEnrollmentUid().eq(currentEvent.enrollment())
+                    .byEnrollmentUid().eq(currentEvent.enrollment())test
                     .byStatus().in(EventStatus.ACTIVE, EventStatus.COMPLETED)
                     .blockingGet());
         } else {
@@ -911,9 +949,10 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                     .byProgramStageUid().eq(currentEvent.programStage())
                     .byOrganisationUnitUid().eq(currentEvent.organisationUnit())
                     .blockingGet());
-        }
+        }*/
 
-        for(String eventUid : eventUids){
+        eventUids = Collections.singletonList(currentEvent.uid());
+        for (String eventUid : eventUids) {
             if (!isEmpty(value))
                 d2.trackedEntityModule().trackedEntityDataValues.value(eventUid, deUid).blockingSet(value);
             else if (d2.trackedEntityModule().trackedEntityDataValues.value(eventUid, deUid).blockingExists())
@@ -921,7 +960,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
         }
     }
 
-    private void handleAssignToAttribute(String attributeUid, String value) throws D2Error{
+    private void handleAssignToAttribute(String attributeUid, String value) throws D2Error {
         String tei = d2.enrollmentModule().enrollments.uid(currentEvent.enrollment()).blockingGet().trackedEntityInstance();
         if (!isEmpty(value))
             d2.trackedEntityModule().trackedEntityAttributeValues.value(attributeUid, tei).blockingSet(value);

@@ -5,6 +5,7 @@ import android.content.Context;
 import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.dhis2.data.dagger.PerActivity;
+import org.dhis2.data.schedulers.SchedulerProvider;
 import org.hisp.dhis.android.core.D2;
 
 import dagger.Module;
@@ -27,8 +28,8 @@ public class ReservedValueModule {
 
     @PerActivity
     @Provides
-    ReservedValueContracts.Presenter providePresenter(ReservedValueRepository repository, D2 d2) {
-        return new ReservedValuePresenter(repository, d2);
+    ReservedValueContracts.Presenter providePresenter(ReservedValueRepository repository, D2 d2, SchedulerProvider schedulerProvider) {
+        return new ReservedValuePresenter(repository, d2, schedulerProvider);
     }
 
     @PerActivity

@@ -6,6 +6,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import org.dhis2.data.prefs.Preference
+import org.dhis2.data.schedulers.SchedulerProvider
 import org.dhis2.data.server.UserManager
 import org.dhis2.usescases.login.LoginActivity
 import org.dhis2.usescases.main.MainActivity
@@ -14,7 +15,7 @@ import org.dhis2.utils.Constants
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
 
-class SplashPresenter internal constructor(private val userManager: UserManager?) : SplashContracts.Presenter {
+class SplashPresenter internal constructor(private val userManager: UserManager?, private val schedulerProvider: SchedulerProvider) : SplashContracts.Presenter {
     private var view: SplashContracts.View? = null
     var compositeDisposable: CompositeDisposable = CompositeDisposable()
 
@@ -32,9 +33,9 @@ class SplashPresenter internal constructor(private val userManager: UserManager?
             navigateTo(LoginActivity::class.java)
         else
             compositeDisposable.add(userManager.isUserLoggedIn
-                    .delay(2000, TimeUnit.MILLISECONDS, Schedulers.io())
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
+                    .delay(2000, TimeUnit.MILLISECONDS, schedulerProvider.io())
+                    .subscribeOn(schedulerProvider.io())
+                    .observeOn(schedulerProvider.ui())
                     .subscribe(
                             {
                                 val prefs = view!!.abstracContext.getSharedPreferences(

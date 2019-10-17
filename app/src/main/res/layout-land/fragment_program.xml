@@ -11,13 +11,6 @@
         android:clipToPadding="false"
         >
 
-        <ProgressBar
-            android:id="@+id/program_progress"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:layout_centerInParent="true"
-            app:progressColor="@{@color/colorPrimary}" />
-
         <TextView
             android:id="@+id/emptyView"
             android:layout_width="match_parent"
@@ -73,11 +66,27 @@
                 app:layout_constraintStart_toStartOf="parent" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
+        <RelativeLayout
+            android:id="@+id/progressLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/filter">
+
+            <ProgressBar
+                android:id="@+id/program_progress"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_centerInParent="true"
+                android:layout_margin="5dp"
+                app:progressColor="@{@color/colorPrimary}" />
+        </RelativeLayout>
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/program_recycler"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_below="@+id/filter"
+            android:layout_below="@+id/progressLayout"
             android:clipToPadding="false"
             app:initGrid="@{true}"
             app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
