@@ -216,24 +216,6 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity
     }
 
     @Override
-    public <T> void saveListToPreference(String key, List<T> list) {
-        Gson gson = new Gson();
-        String json = gson.toJson(list);
-
-        getSharedPreferences(Constants.SHARE_PREFS, MODE_PRIVATE).edit().putString(key, json).apply();
-    }
-
-    @Override
-    public <T> List<T> getListFromPreference(String key) {
-        Gson gson = new Gson();
-        String json = getSharedPreferences().getString(key, "[]");
-        Type type = new TypeToken<List<T>>() {
-        }.getType();
-
-        return gson.fromJson(json, type);
-    }
-
-    @Override
     public SharedPreferences getSharedPreferences() {
         return getSharedPreferences(Constants.SHARE_PREFS, MODE_PRIVATE);
     }

@@ -103,23 +103,6 @@ public abstract class FragmentGlobalAbstract extends Fragment implements Abstrac
     }
 
     @Override
-    public <T> void saveListToPreference(String key, List<T> list) {
-        Gson gson = new Gson();
-        String json = gson.toJson(list);
-        getSharedPreferences().edit().putString(key, json).apply();
-    }
-
-    @Override
-    public <T> List<T> getListFromPreference(String key) {
-        Gson gson = new Gson();
-        String json = getAbstracContext().getSharedPreferences(Constants.SHARE_PREFS, MODE_PRIVATE).getString(key, null);
-        Type type = new TypeToken<List<T>>() {
-        }.getType();
-
-        return gson.fromJson(json, type);
-    }
-
-    @Override
     public SharedPreferences getSharedPreferences() {
         return getAbstractActivity().getSharedPreferences();
     }
