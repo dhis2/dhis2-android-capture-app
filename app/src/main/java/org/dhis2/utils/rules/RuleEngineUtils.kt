@@ -69,7 +69,7 @@ class RuleEngineUtils {
             }
 
             //USER ROLES
-            val userRoleUids = UidsHelper.getUidsList<UserRole>(d2.userModule().userRoles.blockingGet())
+            val userRoleUids = UidsHelper.getUidsList<UserRole>(d2.userModule().userRoles().blockingGet())
             supData["USER"] = userRoleUids
 
             return supData

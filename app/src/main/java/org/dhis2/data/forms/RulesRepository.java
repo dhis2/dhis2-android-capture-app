@@ -620,7 +620,7 @@ public final class RulesRepository {
             }
 
             //USER ROLES
-            List<String> userRoleUids = UidsHelper.getUidsList(d2.userModule().userRoles.blockingGet());
+            List<String> userRoleUids = UidsHelper.getUidsList(d2.userModule().userRoles().blockingGet());
             supData.put("USER", userRoleUids);
             Timber.tag("PROGRAMRULEREPOSITORY").d("FINISHED SUPPLEM");
 

@@ -206,7 +206,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
         return Single.defer(() -> Single.fromCallable(() -> {
                     boolean local = d2.trackedEntityModule().trackedEntityInstances().uid(
                             teUid).blockingGet().state() == State.TO_POST;
-                    boolean hasAuthority = d2.userModule().authorities
+                    boolean hasAuthority = d2.userModule().authorities()
                             .byName().eq("F_TEI_CASCADE_DELETE").one().blockingExists();
                     return local || hasAuthority;
                 }
@@ -217,7 +217,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
         return Single.defer(() -> Single.fromCallable(() -> {
                     boolean local = d2.enrollmentModule().enrollments().uid(
                             dashboardProgramModel.getCurrentEnrollment().uid()).blockingGet().state() == State.TO_POST;
-                    boolean hasAuthority = d2.userModule().authorities
+                    boolean hasAuthority = d2.userModule().authorities()
                             .byName().eq("F_ENROLLMENT_CASCADE_DELETE").one().blockingExists();
                     return local || hasAuthority;
                 }

@@ -43,7 +43,7 @@ final class MainPresenter implements MainContracts.Presenter {
         this.view = view;
         this.compositeDisposable = new CompositeDisposable();
 
-        compositeDisposable.add(d2.userModule().user.get()
+        compositeDisposable.add(d2.userModule().user().get()
                 .map(this::username)
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())

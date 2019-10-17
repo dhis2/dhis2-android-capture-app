@@ -877,7 +877,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
 
     @Override
     public Single<Boolean> canReOpenEvent() {
-        return Single.defer(() -> Single.fromCallable(() -> d2.userModule().authorities
+        return Single.defer(() -> Single.fromCallable(() -> d2.userModule().authorities()
                 .byName().in("F_UNCOMPLETE_EVENT", "ALL").one().blockingExists()
         ));
     }
