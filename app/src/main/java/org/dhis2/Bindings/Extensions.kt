@@ -31,7 +31,7 @@ fun EditText.onRightDrawableClicked(onClicked: (view: EditText) -> Unit) {
 fun TrackedEntityInstance.profilePicturePath(d2: D2, programUid: String?): String {
     var path: String? = null
 
-    val attrRepository = d2.trackedEntityModule().trackedEntityAttributes
+    val attrRepository = d2.trackedEntityModule().trackedEntityAttributes()
     val imageAttributes = if (programUid != null)
         attrRepository
                 .byValueType().eq(ValueType.IMAGE)
@@ -42,7 +42,7 @@ fun TrackedEntityInstance.profilePicturePath(d2: D2, programUid: String?): Strin
                 .byValueType().eq(ValueType.IMAGE)
                 .blockingGet().map { it.uid() }
 
-    var attributes = d2.trackedEntityModule().trackedEntityTypeAttributes
+    var attributes = d2.trackedEntityModule().trackedEntityTypeAttributes()
             .byTrackedEntityTypeUid().eq(trackedEntityType())
             .byDisplayInList().isTrue
             .byTrackedEntityAttributeUid().`in`(imageAttributes)
@@ -56,7 +56,7 @@ fun TrackedEntityInstance.profilePicturePath(d2: D2, programUid: String?): Strin
                 .blockingGet().filter { it.trackedEntityAttribute() != null }.map { it.trackedEntityAttribute()!!.uid() }
     }
 
-    val attributeValue = d2.trackedEntityModule().trackedEntityAttributeValues
+    val attributeValue = d2.trackedEntityModule().trackedEntityAttributeValues()
             .byTrackedEntityInstance().eq(uid())
             .byTrackedEntityAttribute().`in`(attributes)
             .byValue().isNotNull

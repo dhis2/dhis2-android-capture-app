@@ -55,7 +55,7 @@ class RuleEngineUtils {
             val supData = java.util.HashMap<String, List<String>>()
 
             //ORG UNIT GROUPS
-            d2.organisationUnitModule().organisationUnitGroups.blockingGet().forEach {
+            d2.organisationUnitModule().organisationUnitGroups().blockingGet().forEach {
                 if (it.code() != null)
                     supData[it.code()!!] = ArrayList()
             }
@@ -103,7 +103,7 @@ class RuleEngineUtils {
                         d2.organisationUnitModule().organisationUnits().uid(it.organisationUnit()).blockingGet().code(),
                         translateToRuleDataValue(
                                 it,
-                                d2.trackedEntityModule().trackedEntityDataValues.byEvent().eq(it.uid()).blockingGet()
+                                d2.trackedEntityModule().trackedEntityDataValues().byEvent().eq(it.uid()).blockingGet()
                         ),
                         d2.programModule().programStages().uid(it.programStage()).blockingGet().name()!!
                 )
@@ -178,7 +178,7 @@ class RuleEngineUtils {
             val attribute = if (programRuleVariable.trackedEntityAttribute() != null) programRuleVariable.trackedEntityAttribute()!!.uid() else null
 
             // Mime types of the attribute and data element.
-            val attributeType: String? = if (attribute != null) d2.trackedEntityModule().trackedEntityAttributes.uid(attribute).blockingGet()!!.valueType()!!.name else null
+            val attributeType: String? = if (attribute != null) d2.trackedEntityModule().trackedEntityAttributes().uid(attribute).blockingGet()!!.valueType()!!.name else null
             val elementType = if (dataElement != null) d2.dataElementModule().dataElements().uid(dataElement).blockingGet()!!.valueType()!!.name else null
 
             // String representation of value type.

@@ -195,7 +195,7 @@ public class DashboardRepositoryImpl implements DashboardRepository {
 
     @Override
     public Observable<List<TrackedEntityAttributeValue>> mainTrackedEntityAttributes(String teiUid) {
-        return d2.trackedEntityModule().trackedEntityAttributeValues
+        return d2.trackedEntityModule().trackedEntityAttributeValues()
                 .byTrackedEntityInstance().eq(teiUid)
                 .get().toObservable();
     }
@@ -354,10 +354,10 @@ public class DashboardRepositoryImpl implements DashboardRepository {
 
     @Override
     public Observable<String> getAttributeImage(String teiUid) {
-        return d2.trackedEntityModule().trackedEntityInstances.uid(teiUid).get()
+        return d2.trackedEntityModule().trackedEntityInstances().uid(teiUid).get()
                 .map(tei -> {
                     String path = "";
-                    Iterator<TrackedEntityAttribute> iterator = d2.trackedEntityModule().trackedEntityAttributes
+                    Iterator<TrackedEntityAttribute> iterator = d2.trackedEntityModule().trackedEntityAttributes()
                             .byValueType().eq(ValueType.IMAGE)
                             .blockingGet().iterator();
                     List<String> imageAttributesUids = new ArrayList<>();
@@ -373,7 +373,7 @@ public class DashboardRepositoryImpl implements DashboardRepository {
                                 .byTrackedEntityTypeUid().eq(tei.trackedEntityType())
                                 .byTrackedEntityAttributeUid().in(imageAttributesUids).one().blockingGet()).trackedEntityAttribute().uid();
 
-                        attributeValue = d2.trackedEntityModule().trackedEntityAttributeValues.byTrackedEntityInstance().eq(tei.uid())
+                        attributeValue = d2.trackedEntityModule().trackedEntityAttributeValues().byTrackedEntityInstance().eq(tei.uid())
                                 .byTrackedEntityAttribute().eq(attrUid).one().blockingGet();
 
                         if (attributeValue != null && !isEmpty(attributeValue.value())) {
@@ -478,7 +478,7 @@ public class DashboardRepositoryImpl implements DashboardRepository {
 
     @Override
     public Observable<TrackedEntityInstance> getTrackedEntityInstance(String teiUid) {
-        return Observable.fromCallable(() -> d2.trackedEntityModule().trackedEntityInstances.byUid().eq(teiUid).one().blockingGet());
+        return Observable.fromCallable(() -> d2.trackedEntityModule().trackedEntityInstances().byUid().eq(teiUid).one().blockingGet());
     }
 
     @Override
@@ -486,7 +486,7 @@ public class DashboardRepositoryImpl implements DashboardRepository {
         if (programUid != null)
             return Observable.fromCallable(() -> d2.programModule().programs().withProgramTrackedEntityAttributes().byUid().eq(programUid).one().blockingGet().programTrackedEntityAttributes());
         else
-            return Observable.fromCallable(() -> d2.trackedEntityModule().trackedEntityAttributes.byDisplayInListNoProgram().eq(true).blockingGet())
+            return Observable.fromCallable(() -> d2.trackedEntityModule().trackedEntityAttributes().byDisplayInListNoProgram().eq(true).blockingGet())
                     .map(trackedEntityAttributes -> {
                         List<Program> programs =
                                 d2.programModule().programs().withProgramTrackedEntityAttributes().blockingGet();
@@ -555,7 +555,7 @@ public class DashboardRepositoryImpl implements DashboardRepository {
     @Override
     public void updateTeiState() {
         TrackedEntityInstance tei =
-                d2.trackedEntityModule().trackedEntityInstances.uid(teiUid).blockingGet();
+                d2.trackedEntityModule().trackedEntityInstances().uid(teiUid).blockingGet();
         ContentValues cv = tei.toContentValues();
         cv.put(TrackedEntityInstance.Columns.STATE, tei.state() == State.TO_POST ? State.TO_POST.name() : State.TO_UPDATE.name());
         cv.put("lastUpdated", DateUtils.databaseDateFormat().format(Calendar.getInstance().getTime()));

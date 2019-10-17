@@ -237,8 +237,8 @@ class GranularSyncPresenterImpl(val d2: D2,
         return when (conflictType) {
             PROGRAM -> d2.programModule().programs().uid(recordUid).get()
             TEI ->
-                d2.trackedEntityModule().trackedEntityTypes.uid(
-                        d2.trackedEntityModule().trackedEntityInstances.uid(recordUid)
+                d2.trackedEntityModule().trackedEntityTypes().uid(
+                        d2.trackedEntityModule().trackedEntityInstances().uid(recordUid)
                                 .blockingGet().trackedEntityType())
                         .get()
             EVENT ->
@@ -266,7 +266,7 @@ class GranularSyncPresenterImpl(val d2: D2,
                             else
                                 State.SYNCED
                         } else {
-                            val teiRepository = d2.trackedEntityModule().trackedEntityInstances.byProgramUids(Collections.singletonList(it.uid()))
+                            val teiRepository = d2.trackedEntityModule().trackedEntityInstances().byProgramUids(Collections.singletonList(it.uid()))
                             if (teiRepository.byState().`in`(State.ERROR).blockingGet().isNotEmpty())
                                 State.ERROR
                             else if (teiRepository.byState().`in`(State.WARNING).blockingGet().isNotEmpty())
@@ -279,7 +279,7 @@ class GranularSyncPresenterImpl(val d2: D2,
                                 State.SYNCED
                         }
                     }
-            TEI -> d2.trackedEntityModule().trackedEntityInstances.uid(recordUid).get()
+            TEI -> d2.trackedEntityModule().trackedEntityInstances().uid(recordUid).get()
                     .map { it.state() }
             EVENT -> d2.eventModule().events().uid(recordUid).get()
                     .map { it.state() }

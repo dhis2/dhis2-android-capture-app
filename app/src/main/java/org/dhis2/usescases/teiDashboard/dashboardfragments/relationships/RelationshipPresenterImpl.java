@@ -66,7 +66,7 @@ public class RelationshipPresenterImpl implements RelationshipContracts.Presente
         this.schedulerProvider = schedulerProvider;
         this.updateRelationships = PublishProcessor.create();
 
-        teiType = d2.trackedEntityModule().trackedEntityInstances.byUid().eq(teiUid).withEnrollments().withRelationships().withTrackedEntityAttributeValues().one().blockingGet().trackedEntityType();
+        teiType = d2.trackedEntityModule().trackedEntityInstances().byUid().eq(teiUid).withEnrollments().withRelationships().withTrackedEntityAttributeValues().one().blockingGet().trackedEntityType();
     }
 
     @Override
@@ -122,7 +122,7 @@ public class RelationshipPresenterImpl implements RelationshipContracts.Presente
                                                 direction = RelationshipViewModel.RelationshipDirection.TO;
                                             }
 
-                                            TrackedEntityInstance tei = d2.trackedEntityModule().trackedEntityInstances.withTrackedEntityAttributeValues().uid(relationshipTEIUid).blockingGet();
+                                            TrackedEntityInstance tei = d2.trackedEntityModule().trackedEntityInstances().withTrackedEntityAttributeValues().uid(relationshipTEIUid).blockingGet();
                                             List<TrackedEntityTypeAttribute> typeAttributes = d2.trackedEntityModule().trackedEntityTypeAttributes
                                                     .byTrackedEntityTypeUid().eq(tei.trackedEntityType())
                                                     .byDisplayInList().isTrue()
@@ -130,7 +130,7 @@ public class RelationshipPresenterImpl implements RelationshipContracts.Presente
                                             List<String> attributeUids = new ArrayList<>();
                                             for (TrackedEntityTypeAttribute typeAttribute : typeAttributes)
                                                 attributeUids.add(typeAttribute.trackedEntityAttribute().uid());
-                                            List<TrackedEntityAttributeValue> attributeValues = d2.trackedEntityModule().trackedEntityAttributeValues.byTrackedEntityInstance().eq(tei.uid())
+                                            List<TrackedEntityAttributeValue> attributeValues = d2.trackedEntityModule().trackedEntityAttributeValues().byTrackedEntityInstance().eq(tei.uid())
                                                     .byTrackedEntityAttribute().in(attributeUids).blockingGet();
 
                                             return RelationshipViewModel.create(relationship, relationshipType, direction, relationshipTEIUid, attributeValues);
@@ -207,7 +207,7 @@ public class RelationshipPresenterImpl implements RelationshipContracts.Presente
 
     @Override
     public void openDashboard(String teiUid) {
-        if (d2.trackedEntityModule().trackedEntityInstances.byUid().eq(teiUid).one().blockingGet().state() != State.RELATIONSHIP) {
+        if (d2.trackedEntityModule().trackedEntityInstances().byUid().eq(teiUid).one().blockingGet().state() != State.RELATIONSHIP) {
             if(!d2.enrollmentModule().enrollments().byTrackedEntityInstance().eq(teiUid).blockingGet().isEmpty()) {
                 Intent intent = new Intent(view.getContext(), TeiDashboardMobileActivity.class);
                 Bundle bundle = new Bundle();
@@ -216,7 +216,7 @@ public class RelationshipPresenterImpl implements RelationshipContracts.Presente
                 intent.putExtras(bundle);
                 view.getAbstractActivity().startActivity(intent);
             }else
-                view.showInfoDialog(String.format(view.getContext().getString(R.string.resource_not_found), d2.trackedEntityModule().trackedEntityTypes.uid(teiType).blockingGet().displayName()),
+                view.showInfoDialog(String.format(view.getContext().getString(R.string.resource_not_found), d2.trackedEntityModule().trackedEntityTypes().uid(teiType).blockingGet().displayName()),
                         view.getContext().getString(R.string.relationship_without_enrollment),
                         view.getContext().getString(R.string.ok),
                         view.getContext().getString(R.string.no),
@@ -232,7 +232,7 @@ public class RelationshipPresenterImpl implements RelationshipContracts.Presente
                             }
                         }).show();
         } else {
-            view.showInfoDialog(String.format(view.getContext().getString(R.string.resource_not_found), d2.trackedEntityModule().trackedEntityTypes.uid(teiType).blockingGet().displayName()),
+            view.showInfoDialog(String.format(view.getContext().getString(R.string.resource_not_found), d2.trackedEntityModule().trackedEntityTypes().uid(teiType).blockingGet().displayName()),
                     view.getContext().getString(R.string.relationship_not_found_message),
                     view.getContext().getString(R.string.yes),
                     view.getContext().getString(R.string.no),

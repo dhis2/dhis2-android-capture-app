@@ -299,7 +299,7 @@ public class EnrollmentFormRepository implements FormRepository {
     public Consumer<Geometry> storeTeiCoordinates() {
         return geometry -> {
             String teiUid = d2.enrollmentModule().enrollments().uid(enrollmentUid).blockingGet().trackedEntityInstance();
-            d2.trackedEntityModule().trackedEntityInstances.uid(teiUid).setGeometry(geometry);
+            d2.trackedEntityModule().trackedEntityInstances().uid(teiUid).setGeometry(geometry);
         };
     }
 
@@ -446,8 +446,8 @@ public class EnrollmentFormRepository implements FormRepository {
                         .map(program -> {
                             List<FieldViewModel> fieldViewModelList = new ArrayList<>();
                             for (ProgramTrackedEntityAttribute ptea : program.programTrackedEntityAttributes()) {
-                                TrackedEntityAttribute tea = d2.trackedEntityModule().trackedEntityAttributes.withObjectStyle().uid(ptea.trackedEntityAttribute().uid()).blockingGet();
-                                TrackedEntityAttributeValue value = d2.trackedEntityModule().trackedEntityAttributeValues
+                                TrackedEntityAttribute tea = d2.trackedEntityModule().trackedEntityAttributes().withObjectStyle().uid(ptea.trackedEntityAttribute().uid()).blockingGet();
+                                TrackedEntityAttributeValue value = d2.trackedEntityModule().trackedEntityAttributeValues()
                                         .byTrackedEntityAttribute().eq(tea.uid())
                                         .byTrackedEntityInstance().eq(enrollment.trackedEntityInstance())
                                         .one().blockingGet();
@@ -534,7 +534,7 @@ public class EnrollmentFormRepository implements FormRepository {
     public Single<TrackedEntityType> captureTeiCoordinates() {
         return d2.enrollmentModule().enrollments().uid(enrollmentUid).get()
                 .flatMap(enrollment -> d2.programModule().programs().withTrackedEntityType().uid(enrollment.program()).get())
-                .flatMap(program -> d2.trackedEntityModule().trackedEntityTypes.withTrackedEntityTypeAttributes().withStyle()
+                .flatMap(program -> d2.trackedEntityModule().trackedEntityTypes().withTrackedEntityTypeAttributes().withStyle()
                                         .uid(program.trackedEntityType().uid()).get());
     }
 

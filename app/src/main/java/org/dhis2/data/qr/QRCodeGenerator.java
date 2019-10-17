@@ -362,13 +362,13 @@ public class QRCodeGenerator implements QRInterface {
     private String getData(String teiUid) {
         StringBuilder dataBuilder = new StringBuilder();
         dataBuilder.append(TEI_FLAG);
-        TrackedEntityInstance tei = d2.trackedEntityModule().trackedEntityInstances.uid(teiUid).blockingGet();
+        TrackedEntityInstance tei = d2.trackedEntityModule().trackedEntityInstances().uid(teiUid).blockingGet();
         dataBuilder.append(setTeiData(tei));
         List<Enrollment> enrollments = d2.enrollmentModule().enrollments().byTrackedEntityInstance().eq(teiUid).blockingGet();
         for (Enrollment enrollment : enrollments) {
             dataBuilder.append(ENROLLMENT_FLAG);
             dataBuilder.append(setEnrollmentData(enrollment));
-            List<TrackedEntityAttributeValue> teAttrValues = d2.trackedEntityModule().trackedEntityAttributeValues.byTrackedEntityInstance().eq(teiUid).blockingGet();
+            List<TrackedEntityAttributeValue> teAttrValues = d2.trackedEntityModule().trackedEntityAttributeValues().byTrackedEntityInstance().eq(teiUid).blockingGet();
             for (TrackedEntityAttributeValue attrValue : teAttrValues) {
                 dataBuilder.append(ATTR_FLAG);
                 dataBuilder.append(setAttrData(attrValue));
@@ -377,7 +377,7 @@ public class QRCodeGenerator implements QRInterface {
             for (Event event : events) {
                 dataBuilder.append(EVENT_FLAG);
                 dataBuilder.append(setEventData(event));
-                List<TrackedEntityDataValue> teDataValue = d2.trackedEntityModule().trackedEntityDataValues.byEvent().eq(event.uid()).blockingGet();
+                List<TrackedEntityDataValue> teDataValue = d2.trackedEntityModule().trackedEntityDataValues().byEvent().eq(event.uid()).blockingGet();
                 for (TrackedEntityDataValue dataValue : teDataValue) {
                     dataBuilder.append(DE_FLAG);
                     dataBuilder.append(setTEDataValue(dataValue));

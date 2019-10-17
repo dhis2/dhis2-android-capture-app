@@ -100,7 +100,7 @@ public final class EnrollmentStatusStore implements EnrollmentStatusEntryStore {
     public Single<TrackedEntityType> captureTeiCoordinates() {
         return d2.enrollmentModule().enrollments().uid(enrollment).get()
                 .flatMap(enrollment -> d2.programModule().programs().withTrackedEntityType().uid(enrollment.program()).get())
-                .flatMap(program -> d2.trackedEntityModule().trackedEntityTypes.uid(program.trackedEntityType().uid()).get());
+                .flatMap(program -> d2.trackedEntityModule().trackedEntityTypes().uid(program.trackedEntityType().uid()).get());
     }
 
     @NonNull
@@ -126,7 +126,7 @@ public final class EnrollmentStatusStore implements EnrollmentStatusEntryStore {
     public Consumer<Geometry> storeTeiCoordinates() {
         return geometry -> {
             String teiUid = d2.enrollmentModule().enrollments().uid(enrollment).blockingGet().trackedEntityInstance();
-            d2.trackedEntityModule().trackedEntityInstances.uid(teiUid).setGeometry(geometry);
+            d2.trackedEntityModule().trackedEntityInstances().uid(teiUid).setGeometry(geometry);
         };
     }
 
@@ -135,7 +135,7 @@ public final class EnrollmentStatusStore implements EnrollmentStatusEntryStore {
     public Consumer<Unit> clearTeiCoordinates() {
         return geometry -> {
             String teiUid = d2.enrollmentModule().enrollments().uid(enrollment).blockingGet().trackedEntityInstance();
-            d2.trackedEntityModule().trackedEntityInstances.uid(teiUid).setGeometry(null);
+            d2.trackedEntityModule().trackedEntityInstances().uid(teiUid).setGeometry(null);
         };
     }
 

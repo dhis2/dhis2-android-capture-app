@@ -138,7 +138,7 @@ public final class EnrollmentRuleEngineRepository implements RuleEngineRepositor
     }
 
     private Map<String, String> getAttributesValueMap(Enrollment enrollment, Program program) {
-        List<TrackedEntityAttributeValue> attributeValueList = d2.trackedEntityModule().trackedEntityAttributeValues
+        List<TrackedEntityAttributeValue> attributeValueList = d2.trackedEntityModule().trackedEntityAttributeValues()
                 .byTrackedEntityInstance().eq(enrollment.trackedEntityInstance())
                 .blockingGet();
 
@@ -146,7 +146,7 @@ public final class EnrollmentRuleEngineRepository implements RuleEngineRepositor
         for (TrackedEntityAttributeValue attributeValue : attributeValueList) {
             String uid = attributeValue.trackedEntityAttribute();
             String value = attributeValue.value();
-            TrackedEntityAttribute attr = d2.trackedEntityModule().trackedEntityAttributes.withObjectStyle().uid(attributeValue.trackedEntityAttribute()).blockingGet();
+            TrackedEntityAttribute attr = d2.trackedEntityModule().trackedEntityAttributes().withObjectStyle().uid(attributeValue.trackedEntityAttribute()).blockingGet();
             if (attr != null && attr.optionSet() != null) {
                 List<Option> options = d2.optionModule().optionSets().withOptions().uid(attr.optionSet().uid()).blockingGet().options();
                 ProgramRuleVariable ruleVariable = attrRuleVariableMap.get(attr.uid());
@@ -286,7 +286,7 @@ public final class EnrollmentRuleEngineRepository implements RuleEngineRepositor
     @Override
     public void updateRuleAttributeMap(String uid, String value) {
         lastUpdatedAttr = uid;
-        TrackedEntityAttribute attr = d2.trackedEntityModule().trackedEntityAttributes.withObjectStyle().uid(uid).blockingGet();
+        TrackedEntityAttribute attr = d2.trackedEntityModule().trackedEntityAttributes().withObjectStyle().uid(uid).blockingGet();
         if (attr != null && attr.optionSet() != null) {
             ProgramRuleVariable ruleVariable = attrRuleVariableMap.get(attr.uid());
             List<Option> options = d2.optionModule().optionSets().uid(attr.optionSet().uid()).blockingGet().options();

@@ -31,7 +31,7 @@ class EnrollmentModule(val enrollmentUid: String, val programUid: String) {
     @PerActivity
     fun provideTeiRepository(d2: D2, enrollmentRepository: EnrollmentObjectRepository):
             TrackedEntityInstanceObjectRepository {
-        return d2.trackedEntityModule().trackedEntityInstances
+        return d2.trackedEntityModule().trackedEntityInstances()
                 .uid(enrollmentRepository.blockingGet().trackedEntityInstance())
     }
 

@@ -261,7 +261,7 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
     @NonNull
     private Flowable<List<RuleDataValue>> queryDataValues(String eventUid) {
         return d2.eventModule().events().uid(eventUid).get()
-                .flatMap(event -> d2.trackedEntityModule().trackedEntityDataValues
+                .flatMap(event -> d2.trackedEntityModule().trackedEntityDataValues()
                         .byEvent().eq(eventUid)
                         .get()
                         .toFlowable()

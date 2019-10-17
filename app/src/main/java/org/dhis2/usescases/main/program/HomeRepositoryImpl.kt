@@ -111,7 +111,7 @@ internal class HomeRepositoryImpl(private val d2: D2, private val eventLabel: St
                     if (program.programType() == WITH_REGISTRATION) {
                         typeName = if (program.trackedEntityType() != null) program.trackedEntityType()!!.displayName() else "TEI"
                         if (typeName == null)
-                            typeName = d2.trackedEntityModule().trackedEntityTypes.uid(program.trackedEntityType()!!.uid()).blockingGet()!!.displayName()
+                            typeName = d2.trackedEntityModule().trackedEntityTypes().uid(program.trackedEntityType()!!.uid()).blockingGet()!!.displayName()
                     } else if (program.programType() == WITHOUT_REGISTRATION)
                         typeName = eventLabel
                     else
@@ -256,11 +256,11 @@ internal class HomeRepositoryImpl(private val d2: D2, private val eventLabel: St
                             count = countEnrollment(enrollments)
                         }
 
-                        if (d2.trackedEntityModule().trackedEntityInstances.byProgramUids(programUids).byState().`in`(State.ERROR, State.WARNING).blockingGet().isNotEmpty())
+                        if (d2.trackedEntityModule().trackedEntityInstances().byProgramUids(programUids).byState().`in`(State.ERROR, State.WARNING).blockingGet().isNotEmpty())
                             state = State.WARNING
-                        else if (d2.trackedEntityModule().trackedEntityInstances.byProgramUids(programUids).byState().`in`(State.SENT_VIA_SMS, State.SYNCED_VIA_SMS).blockingGet().isNotEmpty())
+                        else if (d2.trackedEntityModule().trackedEntityInstances().byProgramUids(programUids).byState().`in`(State.SENT_VIA_SMS, State.SYNCED_VIA_SMS).blockingGet().isNotEmpty())
                             state = State.SENT_VIA_SMS
-                        else if (d2.trackedEntityModule().trackedEntityInstances.byProgramUids(programUids).byState().`in`(State.TO_UPDATE, State.TO_POST).blockingGet().isNotEmpty() || d2.trackedEntityModule().trackedEntityInstances.byProgramUids(programUids).byDeleted().isTrue.blockingGet().isNotEmpty())
+                        else if (d2.trackedEntityModule().trackedEntityInstances().byProgramUids(programUids).byState().`in`(State.TO_UPDATE, State.TO_POST).blockingGet().isNotEmpty() || d2.trackedEntityModule().trackedEntityInstances().byProgramUids(programUids).byDeleted().isTrue.blockingGet().isNotEmpty())
                             state = State.TO_UPDATE
                     }
 

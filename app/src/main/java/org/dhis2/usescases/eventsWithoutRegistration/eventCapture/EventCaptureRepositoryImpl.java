@@ -411,7 +411,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                     .flatMapIterable(fieldViewModels -> fieldViewModels)
                     .map(fieldViewModel -> {
                         String uid = fieldViewModel.uid();
-                        TrackedEntityDataValueObjectRepository valueRepository = d2.trackedEntityModule().trackedEntityDataValues.value(eventUid, uid);
+                        TrackedEntityDataValueObjectRepository valueRepository = d2.trackedEntityModule().trackedEntityDataValues().value(eventUid, uid);
 
                         String value = null;
                         if (valueRepository.blockingExists()) {
@@ -443,7 +443,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                     .map(deUid -> {
                         DataElement de = d2.dataElementModule().dataElements().uid(deUid).blockingGet();
                         ProgramStageDataElement stageDataElement = stageDataElementsMap.get(deUid);
-                        TrackedEntityDataValueObjectRepository valueRepository = d2.trackedEntityModule().trackedEntityDataValues.value(eventUid, deUid);
+                        TrackedEntityDataValueObjectRepository valueRepository = d2.trackedEntityModule().trackedEntityDataValues().value(eventUid, deUid);
                         ProgramStageSection section = sectionMap.get(sectionUid);
 
 
@@ -549,7 +549,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                     .flatMapIterable(fieldViewModels -> fieldViewModels)
                     .map(fieldViewModel -> {
                         String uid = fieldViewModel.uid();
-                        TrackedEntityDataValueObjectRepository valueRepository = d2.trackedEntityModule().trackedEntityDataValues.value(eventUid, uid);
+                        TrackedEntityDataValueObjectRepository valueRepository = d2.trackedEntityModule().trackedEntityDataValues().value(eventUid, uid);
 
                         String value = null;
                         if (valueRepository.blockingExists()) {
@@ -605,7 +605,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                                 .flatMapIterable(list -> list)
                                 .map(programStageDataElement -> {
                                     DataElement de = d2.dataElementModule().dataElements().uid(programStageDataElement.dataElement().uid()).blockingGet();
-                                    TrackedEntityDataValueObjectRepository valueRepository = d2.trackedEntityModule().trackedEntityDataValues.value(eventUid, de.uid());
+                                    TrackedEntityDataValueObjectRepository valueRepository = d2.trackedEntityModule().trackedEntityDataValues().value(eventUid, de.uid());
 
                                     ProgramStageSection programStageSection = null;
                                     List<ProgramStageSection> sections = d2.programModule().programStageSections().withDataElements().byProgramStageUid().eq(event.programStage()).blockingGet();
@@ -805,7 +805,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
     @NonNull
     private Flowable<List<RuleDataValue>> queryDataValues(String eventUid) {
         return d2.eventModule().events().uid(eventUid).get()
-                .flatMap(event -> d2.trackedEntityModule().trackedEntityDataValues.byEvent().eq(eventUid).byValue().isNotNull().get()
+                .flatMap(event -> d2.trackedEntityModule().trackedEntityDataValues().byEvent().eq(eventUid).byValue().isNotNull().get()
                         .toFlowable()
                         .flatMapIterable(values -> values)
                         .map(trackedEntityDataValue -> {
@@ -900,7 +900,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
         try {
             if (d2.dataElementModule().dataElements().uid(uid).blockingExists()) {
                 handleAssignToDataElement(uid, value);
-            } else if (d2.trackedEntityModule().trackedEntityAttributes.uid(uid).blockingExists()) {
+            } else if (d2.trackedEntityModule().trackedEntityAttributes().uid(uid).blockingExists()) {
                 handleAssignToAttribute(uid, value);
             }
         } catch (D2Error d2Error) {
@@ -911,7 +911,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
     @Override
     public void saveImage(String uid, String filePath) {
         String newFilePath = filePath;
-        TrackedEntityDataValueObjectRepository valueRepository = d2.trackedEntityModule().trackedEntityDataValues
+        TrackedEntityDataValueObjectRepository valueRepository = d2.trackedEntityModule().trackedEntityDataValues()
                 .value(eventUid, uid);
         if (d2.dataElementModule().dataElements().uid(uid).blockingGet().valueType() == ValueType.IMAGE
                 && filePath != null) {
@@ -952,18 +952,18 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
 
         for (String eventUid : eventUids) {
             if (!isEmpty(value))
-                d2.trackedEntityModule().trackedEntityDataValues.value(eventUid, deUid).blockingSet(value);
-            else if (d2.trackedEntityModule().trackedEntityDataValues.value(eventUid, deUid).blockingExists())
-                d2.trackedEntityModule().trackedEntityDataValues.value(eventUid, deUid).blockingDelete();
+                d2.trackedEntityModule().trackedEntityDataValues().value(eventUid, deUid).blockingSet(value);
+            else if (d2.trackedEntityModule().trackedEntityDataValues().value(eventUid, deUid).blockingExists())
+                d2.trackedEntityModule().trackedEntityDataValues().value(eventUid, deUid).blockingDelete();
         }
     }
 
     private void handleAssignToAttribute(String attributeUid, String value) throws D2Error {
         String tei = d2.enrollmentModule().enrollments().uid(currentEvent.enrollment()).blockingGet().trackedEntityInstance();
         if (!isEmpty(value))
-            d2.trackedEntityModule().trackedEntityAttributeValues.value(attributeUid, tei).blockingSet(value);
-        else if (d2.trackedEntityModule().trackedEntityAttributeValues.value(attributeUid, tei).blockingExists())
-            d2.trackedEntityModule().trackedEntityAttributeValues.value(attributeUid, tei).blockingDelete();
+            d2.trackedEntityModule().trackedEntityAttributeValues().value(attributeUid, tei).blockingSet(value);
+        else if (d2.trackedEntityModule().trackedEntityAttributeValues().value(attributeUid, tei).blockingExists())
+            d2.trackedEntityModule().trackedEntityAttributeValues().value(attributeUid, tei).blockingDelete();
     }
 }
 

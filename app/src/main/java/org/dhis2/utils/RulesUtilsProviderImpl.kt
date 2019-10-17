@@ -230,7 +230,7 @@ class RulesUtilsProviderImpl(private val codeGenerator: CodeGenerator) : RulesUt
             ruleEngineBuilder.enrollment(
                     RuleEngineUtils.translateToRuleEnrollment(
                             enrollment,
-                            d2.trackedEntityModule().trackedEntityAttributeValues
+                            d2.trackedEntityModule().trackedEntityAttributeValues()
                                     .byTrackedEntityInstance().eq(enrollment.trackedEntityInstance())
                                     .blockingGet(),
                             d2
@@ -328,13 +328,13 @@ class RulesUtilsProviderImpl(private val codeGenerator: CodeGenerator) : RulesUt
     private fun setHideField(action: RuleActionHideField, fields: List<String>) { //TODO: CHECK IF ACTION FIELD IS DE OR ATTR
         (fields as ArrayList).remove(action.field())
 
-        if (eventUid != null && D2Manager.getD2().trackedEntityModule().trackedEntityDataValues
+        if (eventUid != null && D2Manager.getD2().trackedEntityModule().trackedEntityDataValues()
                         .value(eventUid, action.field()).blockingExists())
-            D2Manager.getD2().trackedEntityModule().trackedEntityDataValues
+            D2Manager.getD2().trackedEntityModule().trackedEntityDataValues()
                     .value(eventUid, action.field()).blockingDelete()
-        else if (teiUid != null && D2Manager.getD2().trackedEntityModule().trackedEntityAttributeValues
+        else if (teiUid != null && D2Manager.getD2().trackedEntityModule().trackedEntityAttributeValues()
                         .value(action.field(), teiUid).blockingExists())
-            D2Manager.getD2().trackedEntityModule().trackedEntityAttributeValues
+            D2Manager.getD2().trackedEntityModule().trackedEntityAttributeValues()
                     .value(action.field(), teiUid).blockingDelete()
     }
 
@@ -355,13 +355,13 @@ class RulesUtilsProviderImpl(private val codeGenerator: CodeGenerator) : RulesUt
         sectionDataElements.forEach {
             if (fields.contains(it)) {
                 (fields as ArrayList).remove(it)
-                if (eventUid != null && D2Manager.getD2().trackedEntityModule().trackedEntityDataValues
+                if (eventUid != null && D2Manager.getD2().trackedEntityModule().trackedEntityDataValues()
                                 .value(eventUid, it).blockingExists())
-                    D2Manager.getD2().trackedEntityModule().trackedEntityDataValues
+                    D2Manager.getD2().trackedEntityModule().trackedEntityDataValues()
                             .value(eventUid, it).blockingDelete()
-                else if (teiUid != null && D2Manager.getD2().trackedEntityModule().trackedEntityAttributeValues
+                else if (teiUid != null && D2Manager.getD2().trackedEntityModule().trackedEntityAttributeValues()
                                 .value(it, teiUid).blockingExists())
-                    D2Manager.getD2().trackedEntityModule().trackedEntityAttributeValues
+                    D2Manager.getD2().trackedEntityModule().trackedEntityAttributeValues()
                             .value(it, teiUid).blockingDelete()
             }
         }
@@ -370,10 +370,10 @@ class RulesUtilsProviderImpl(private val codeGenerator: CodeGenerator) : RulesUt
 
     private fun setAssign(action: RuleActionAssign) { //TODO: CHECK IF ACTION FIELD IS DE OR ATTR
         if (eventUid != null)
-            D2Manager.getD2().trackedEntityModule().trackedEntityDataValues
+            D2Manager.getD2().trackedEntityModule().trackedEntityDataValues()
                     .value(eventUid, action.field()).blockingSet(action.content())
         else if (teiUid != null)
-            D2Manager.getD2().trackedEntityModule().trackedEntityAttributeValues
+            D2Manager.getD2().trackedEntityModule().trackedEntityAttributeValues()
                     .value(action.field(), teiUid).blockingSet(action.content())
     }
 

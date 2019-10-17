@@ -214,14 +214,14 @@ class EnrollmentFormRepositoryImpl(
         return programRepository.get()
                 .map { program ->
                     program.programTrackedEntityAttributes()!!.filter {
-                        d2.trackedEntityModule().trackedEntityAttributeValues
+                        d2.trackedEntityModule().trackedEntityAttributeValues()
                                 .value(it.trackedEntityAttribute()!!.uid(), enrollmentRepository.blockingGet().trackedEntityInstance())
                                 .blockingExists()
                     }.map {
-                        val value = d2.trackedEntityModule().trackedEntityAttributeValues
+                        val value = d2.trackedEntityModule().trackedEntityAttributeValues()
                                 .value(it.trackedEntityAttribute()!!.uid(), enrollmentRepository.blockingGet().trackedEntityInstance())
                                 .blockingGet()
-                        val attr = d2.trackedEntityModule().trackedEntityAttributes
+                        val attr = d2.trackedEntityModule().trackedEntityAttributes()
                                 .uid(it.trackedEntityAttribute()!!.uid())
                                 .blockingGet()
                         val variable = d2.programModule().programRuleVariables()

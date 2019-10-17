@@ -78,7 +78,7 @@ class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
         this.compositeDisposable = new CompositeDisposable();
 
         compositeDisposable.add(
-                d2.trackedEntityModule().trackedEntityInstances.uid(teiUid).get()
+                d2.trackedEntityModule().trackedEntityInstances().uid(teiUid).get()
                         .map(tei -> ExtensionsKt.profilePicturePath(tei, d2, programUid))
                         .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.ui())
@@ -109,7 +109,7 @@ class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
                                         if (psDataElement.compulsory())
                                             newMandatoryFields.add(psDataElement.dataElement().uid());
                                     }
-                                    boolean missingMandatories = !newMandatoryFields.isEmpty() && d2.trackedEntityModule().trackedEntityDataValues
+                                    boolean missingMandatories = !newMandatoryFields.isEmpty() && d2.trackedEntityModule().trackedEntityDataValues()
                                             .byEvent().eq(eventModel.uid())
                                             .byDataElement().in(newMandatoryFields)
                                             .blockingCount() < newMandatoryFields.size();

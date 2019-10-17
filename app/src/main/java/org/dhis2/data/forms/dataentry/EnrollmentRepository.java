@@ -73,9 +73,9 @@ public final class EnrollmentRepository implements DataEntryRepository {
 
     @NonNull
     private FieldViewModel transform(@NonNull ProgramTrackedEntityAttribute programTrackedEntityAttribute) {
-        TrackedEntityAttribute attribute = d2.trackedEntityModule().trackedEntityAttributes.withObjectStyle().uid(programTrackedEntityAttribute.trackedEntityAttribute().uid())
+        TrackedEntityAttribute attribute = d2.trackedEntityModule().trackedEntityAttributes().withObjectStyle().uid(programTrackedEntityAttribute.trackedEntityAttribute().uid())
                 .blockingGet();
-        TrackedEntityAttributeValueObjectRepository attrValueRepository = d2.trackedEntityModule().trackedEntityAttributeValues
+        TrackedEntityAttributeValueObjectRepository attrValueRepository = d2.trackedEntityModule().trackedEntityAttributeValues()
                 .value(attribute.uid(), enrollmentRepository.blockingGet().trackedEntityInstance());
 
         String uid = attribute.uid();
@@ -120,7 +120,7 @@ public final class EnrollmentRepository implements DataEntryRepository {
                 //checks if tei has been deleted
                 if (teiUid != null) {
                     try {
-                        dataValue = d2.trackedEntityModule().reservedValueManager.blockingGetValue(uid, orgUnitUid);
+                        dataValue = d2.trackedEntityModule().reservedValueManager().blockingGetValue(uid, orgUnitUid);
                     } catch (Exception e) {
                         dataValue = null;
                         warning = context.getString(R.string.no_reserved_values);
@@ -129,7 +129,7 @@ public final class EnrollmentRepository implements DataEntryRepository {
                     //Checks if ValueType is Numeric and that it start with a 0, then removes the 0
                     if (valueType == ValueType.NUMBER)
                         while (dataValue.startsWith("0")) {
-                            dataValue = d2.trackedEntityModule().reservedValueManager.blockingGetValue(uid, orgUnitUid);
+                            dataValue = d2.trackedEntityModule().reservedValueManager().blockingGetValue(uid, orgUnitUid);
                         }
 
                     if (!isEmpty(dataValue)) {

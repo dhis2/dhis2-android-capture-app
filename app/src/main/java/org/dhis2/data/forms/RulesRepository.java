@@ -97,7 +97,7 @@ public final class RulesRepository {
             String attribute = programRuleVariable.trackedEntityAttribute() != null ? programRuleVariable.trackedEntityAttribute().uid() : null;
             String de = programRuleVariable.dataElement() != null ? programRuleVariable.dataElement().uid() : null;
             if ((de != null && d2.dataElementModule().dataElements().uid(de).blockingExists()) ||
-                    (attribute != null && d2.trackedEntityModule().trackedEntityAttributes.uid(attribute).blockingExists()))
+                    (attribute != null && d2.trackedEntityModule().trackedEntityAttributes().uid(attribute).blockingExists()))
                 ruleVariables.add(
                         translateToRuleVariable(programRuleVariable)
                 );
@@ -126,7 +126,7 @@ public final class RulesRepository {
         // Mime types of the attribute and data element.
         ValueType valueType = null;
         if (attribute != null)
-            valueType = d2.trackedEntityModule().trackedEntityAttributes.uid(attribute).blockingGet().valueType();
+            valueType = d2.trackedEntityModule().trackedEntityAttributes().uid(attribute).blockingGet().valueType();
         else if (dataElement != null)
             valueType = d2.dataElementModule().dataElements().uid(dataElement).blockingGet().valueType();
 
@@ -288,7 +288,7 @@ public final class RulesRepository {
         String attribute = programRuleVariable.trackedEntityAttribute() != null ? programRuleVariable.trackedEntityAttribute().uid() : null;
 
         // Mime types of the attribute and data element.
-        String attributeType = attribute != null ? d2.trackedEntityModule().trackedEntityAttributes.uid(attribute).blockingGet().valueType().name() : null;
+        String attributeType = attribute != null ? d2.trackedEntityModule().trackedEntityAttributes().uid(attribute).blockingGet().valueType().name() : null;
         String elementType = dataElement != null ? d2.dataElementModule().dataElements().uid(dataElement).blockingGet().valueType().name() : null;
 
         // String representation of value type.
@@ -580,11 +580,11 @@ public final class RulesRepository {
     }
 
     private List<RuleAttributeValue> getAttributesValues(Enrollment enrollment) {
-        List<TrackedEntityAttributeValue> attributeValues = d2.trackedEntityModule().trackedEntityAttributeValues
+        List<TrackedEntityAttributeValue> attributeValues = d2.trackedEntityModule().trackedEntityAttributeValues()
                 .byTrackedEntityInstance().eq(enrollment.trackedEntityInstance()).blockingGet();
         List<RuleAttributeValue> ruleAttributeValues = new ArrayList<>();
         for (TrackedEntityAttributeValue attributeValue : attributeValues) {
-            TrackedEntityAttribute attribute = d2.trackedEntityModule().trackedEntityAttributes.uid(attributeValue.trackedEntityAttribute()).blockingGet();
+            TrackedEntityAttribute attribute = d2.trackedEntityModule().trackedEntityAttributes().uid(attributeValue.trackedEntityAttribute()).blockingGet();
             String value = attributeValue.value();
             if (attribute.optionSet() != null && !isEmpty(attribute.optionSet().uid())) {
                 boolean useOptionCode = d2.programModule().programRuleVariables().byProgramUid().eq(enrollment.program()).byTrackedEntityAttributeUid().eq(attribute.uid())

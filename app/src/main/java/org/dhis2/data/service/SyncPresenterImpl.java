@@ -64,7 +64,7 @@ final class SyncPresenterImpl implements SyncPresenter {
         int teiLimit = prefs.getInt(Constants.TEI_MAX, Constants.TEI_MAX_DEFAULT);
         boolean limitByOU = prefs.getBoolean(Constants.LIMIT_BY_ORG_UNIT, false);
         boolean limitByProgram = prefs.getBoolean(Constants.LIMIT_BY_PROGRAM, false);
-        Completable.fromObservable(d2.trackedEntityModule().trackedEntityInstances.upload()).andThen(
+        Completable.fromObservable(d2.trackedEntityModule().trackedEntityInstances().upload()).andThen(
                 Completable.fromObservable(d2.trackedEntityModule()
                         .trackedEntityInstanceDownloader.limit(teiLimit).limitByOrgunit(limitByOU).limitByProgram(limitByProgram)
                         .download()
@@ -106,13 +106,13 @@ final class SyncPresenterImpl implements SyncPresenter {
 
     @Override
     public void syncReservedValues() {
-        d2.trackedEntityModule().reservedValueManager.blockingDownloadAllReservedValues(100);
+        d2.trackedEntityModule().reservedValueManager().blockingDownloadAllReservedValues(100);
     }
 
     @Override
     public boolean checkSyncStatus() {
         boolean eventsOk = d2.eventModule().events().byState().notIn(State.SYNCED).blockingGet().isEmpty();
-        boolean teiOk = d2.trackedEntityModule().trackedEntityInstances.byState().notIn(State.SYNCED, State.RELATIONSHIP).blockingGet().isEmpty();
+        boolean teiOk = d2.trackedEntityModule().trackedEntityInstances().byState().notIn(State.SYNCED, State.RELATIONSHIP).blockingGet().isEmpty();
         return eventsOk && teiOk;
     }
 
@@ -188,7 +188,7 @@ final class SyncPresenterImpl implements SyncPresenter {
         return d2.programModule().programs().uid(uid).get().toObservable()
                 .flatMap(program -> {
                     if (program.programType() == ProgramType.WITH_REGISTRATION)
-                        return d2.trackedEntityModule().trackedEntityInstances.byProgramUids(Collections.singletonList(uid)).upload();
+                        return d2.trackedEntityModule().trackedEntityInstances().byProgramUids(Collections.singletonList(uid)).upload();
                     else
                         return d2.eventModule().events().byProgramUid().eq(uid).upload();
                 });
@@ -196,7 +196,7 @@ final class SyncPresenterImpl implements SyncPresenter {
 
     @Override
     public Observable<D2Progress> syncGranularTEI(String uid) {
-        return d2.trackedEntityModule().trackedEntityInstances.byUid().eq(uid).upload();
+        return d2.trackedEntityModule().trackedEntityInstances().byUid().eq(uid).upload();
     }
 
     @Override
@@ -232,7 +232,7 @@ final class SyncPresenterImpl implements SyncPresenter {
 
     @Override
     public boolean checkSyncTEIStatus(String uid) {
-        return d2.trackedEntityModule().trackedEntityInstances
+        return d2.trackedEntityModule().trackedEntityInstances()
                 .byUid().eq(uid)
                 .byState().notIn(State.SYNCED, State.RELATIONSHIP)
                 .blockingGet().isEmpty();
@@ -252,7 +252,7 @@ final class SyncPresenterImpl implements SyncPresenter {
         Program program = d2.programModule().programs().uid(uid).blockingGet();
 
         if (program.programType() == ProgramType.WITH_REGISTRATION)
-            return d2.trackedEntityModule().trackedEntityInstances
+            return d2.trackedEntityModule().trackedEntityInstances()
                     .byProgramUids(Collections.singletonList(uid))
                     .byState().notIn(State.SYNCED, State.RELATIONSHIP)
                     .blockingGet().isEmpty();

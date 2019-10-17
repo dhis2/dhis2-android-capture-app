@@ -146,7 +146,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
                             if (canDelete) {
                                 view.analyticsHelper().setEvent(DELETE_TEI, CLICK, DELETE_TEI);
                                 return Single.fromCallable(() -> {
-                                    d2.trackedEntityModule().trackedEntityInstances.uid(teUid)
+                                    d2.trackedEntityModule().trackedEntityInstances().uid(teUid)
                                             .blockingDelete();
                                     return true;
                                 });
@@ -204,7 +204,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
 
     private Single<Boolean> canDeleteTEI() {
         return Single.defer(() -> Single.fromCallable(() -> {
-                    boolean local = d2.trackedEntityModule().trackedEntityInstances.uid(
+                    boolean local = d2.trackedEntityModule().trackedEntityInstances().uid(
                             teUid).blockingGet().state() == State.TO_POST;
                     boolean hasAuthority = d2.userModule().authorities
                             .byName().eq("F_TEI_CASCADE_DELETE").one().blockingExists();
