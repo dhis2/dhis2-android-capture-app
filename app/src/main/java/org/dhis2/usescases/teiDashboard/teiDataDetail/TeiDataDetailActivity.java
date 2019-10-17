@@ -28,13 +28,12 @@ import org.dhis2.usescases.teiDashboard.DashboardProgramModel;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.DatePickerUtils;
 import org.dhis2.utils.FileResourcesUtil;
-import org.dhis2.utils.custom_views.CoordinatesView;
+import org.dhis2.utils.customviews.CoordinatesView;
 import org.hisp.dhis.android.core.arch.helpers.GeometryHelper;
 import org.hisp.dhis.android.core.common.FeatureType;
 import org.hisp.dhis.android.core.common.Geometry;
 import org.hisp.dhis.android.core.common.Unit;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
-import org.hisp.dhis.android.core.enrollment.internal.EnrollmentFields;
 import org.hisp.dhis.android.core.program.ProgramStage;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityType;
 

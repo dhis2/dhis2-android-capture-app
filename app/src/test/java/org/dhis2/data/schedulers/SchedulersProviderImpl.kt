@@ -1,10 +1,9 @@
 package org.dhis2.data.schedulers
 
 import io.reactivex.Scheduler
-import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 
-class TrampolineProviderImpl : SchedulerProvider {
+class SchedulersProviderImpl : SchedulerProvider {
 
     override fun computation(): Scheduler {
         return Schedulers.trampoline()
@@ -17,6 +16,4 @@ class TrampolineProviderImpl : SchedulerProvider {
     override fun ui(): Scheduler {
         return Schedulers.trampoline()
     }
-
-
 }

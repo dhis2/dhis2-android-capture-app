@@ -287,13 +287,13 @@
                     </androidx.constraintlayout.widget.ConstraintLayout>
                 </com.google.android.flexbox.FlexboxLayout>
 
-                <org.dhis2.utils.custom_views.CoordinatesView
+                <org.dhis2.utils.customviews.CoordinatesView
                     android:id="@+id/tei_coordinates_view"
                     android:layout_width="wrap_content"
                     android:visibility="gone"
                     android:layout_height="wrap_content" />
 
-                <org.dhis2.utils.custom_views.CoordinatesView
+                <org.dhis2.utils.customviews.CoordinatesView
                     android:id="@+id/coordinates_view"
                     android:layout_width="wrap_content"
                     android:visibility="gone"

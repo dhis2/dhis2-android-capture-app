@@ -22,7 +22,7 @@ import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.DialogClickListener;
 import org.dhis2.utils.HelpManager;
-import org.dhis2.utils.custom_views.CustomDialog;
+import org.dhis2.utils.customviews.CustomDialog;
 import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.program.Program;
 

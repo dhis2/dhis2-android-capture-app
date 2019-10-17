@@ -2,6 +2,4 @@ package org.dhis2.usescases.eventsWithoutRegistration.eventCapture.eventInitialF
 
 import org.dhis2.usescases.general.FragmentGlobalAbstract
 
-class EventCaptureInitialFragment : FragmentGlobalAbstract() {
-
-}
+class EventCaptureInitialFragment : FragmentGlobalAbstract()

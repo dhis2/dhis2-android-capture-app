@@ -37,7 +37,11 @@ class MapLayerDialog(val teiIcon: Bitmap, val enrollmentIcon: Bitmap?) : DialogF
 
     lateinit var binding: DialogMapLayerBinding
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         binding = DataBindingUtil.inflate(inflater, R.layout.dialog_map_layer, container, false)
 
         initLiveData()
@@ -64,21 +68,28 @@ class MapLayerDialog(val teiIcon: Bitmap, val enrollmentIcon: Bitmap?) : DialogF
             layerManager.setHeapMapLayer(isChecked)
         }
         binding.acceptButton.setOnClickListener { dismiss() }
-
     }
 
     private fun initLiveData() {
-        layerManager.showTeiLayer().observe(this, Observer {
-            binding.teiCheck.isChecked = it
-        })
+        layerManager.showTeiLayer().observe(
+            this,
+            Observer {
+                binding.teiCheck.isChecked = it
+            }
+        )
 
-        layerManager.showEnrollmentLayer().observe(this, Observer {
-            binding.enrollmentCheck.isChecked = it
-        })
+        layerManager.showEnrollmentLayer().observe(
+            this,
+            Observer {
+                binding.enrollmentCheck.isChecked = it
+            }
+        )
 
-        layerManager.showHeatMapLayer().observe(this, Observer {
-            binding.heatmapCheck.isChecked = it
-        })
+        layerManager.showHeatMapLayer().observe(
+            this,
+            Observer {
+                binding.heatmapCheck.isChecked = it
+            }
+        )
     }
-
 }

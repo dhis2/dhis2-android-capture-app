@@ -10,14 +10,14 @@ import androidx.appcompat.app.AlertDialog
 import androidx.databinding.DataBindingUtil
 import com.google.firebase.iid.FirebaseInstanceId
 import com.scottyab.rootbeer.RootBeer
+import javax.inject.Inject
+import javax.inject.Named
 import org.dhis2.App
 import org.dhis2.BuildConfig
 import org.dhis2.R
 import org.dhis2.databinding.ActivitySplashBinding
 import org.dhis2.usescases.general.ActivityGlobalAbstract
 import timber.log.Timber
-import javax.inject.Inject
-import javax.inject.Named
 
 class SplashActivity : ActivityGlobalAbstract(), SplashContracts.View {
     companion object {
@@ -35,7 +35,6 @@ class SplashActivity : ActivityGlobalAbstract(), SplashContracts.View {
 
     private lateinit var alertDialog: AlertDialog
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.SplashTheme)
         val appComponent = (applicationContext as App).appComponent()
@@ -45,13 +44,13 @@ class SplashActivity : ActivityGlobalAbstract(), SplashContracts.View {
         binding = DataBindingUtil.setContentView(this, R.layout.activity_splash)
 
         FirebaseInstanceId.getInstance().instanceId
-                .addOnCompleteListener {
-                    if(!it.isSuccessful){
-                        Timber.tag("NOTIFICATION").d("GET INSTANCE FAILED")
-                    }else{
-                        Timber.tag("NOTIFICATION").d("TOKEN IS: %s",it.result!!.token)
-                    }
+            .addOnCompleteListener {
+                if (!it.isSuccessful) {
+                    Timber.tag("NOTIFICATION").d("GET INSTANCE FAILED")
+                } else {
+                    Timber.tag("NOTIFICATION").d("TOKEN IS: %s", it.result!!.token)
                 }
+            }
 
         renderFlag(flag)
     }
@@ -59,11 +58,14 @@ class SplashActivity : ActivityGlobalAbstract(), SplashContracts.View {
     override fun onResume() {
         super.onResume()
 
-        if (BuildConfig.DEBUG || !RootBeer(this).isRootedWithoutBusyBoxCheck)
+        if (BuildConfig.DEBUG || !RootBeer(this).isRootedWithoutBusyBoxCheck) {
             presenter.init(this)
-        else
-            showRootedDialog(getString(R.string.security_title),
-                    getString(R.string.security_rooted_message))
+        } else {
+            showRootedDialog(
+                getString(R.string.security_title),
+                getString(R.string.security_rooted_message)
+            )
+        }
     }
 
     override fun onPause() {
@@ -72,10 +74,11 @@ class SplashActivity : ActivityGlobalAbstract(), SplashContracts.View {
     }
 
     override fun renderFlag(flagName: String) {
-        val resource = if (!isEmpty(flagName))
+        val resource = if (!isEmpty(flagName)) {
             resources.getIdentifier(flagName, "drawable", packageName)
-        else
+        } else {
             -1
+        }
         if (resource != -1) {
             binding.flag.setImageResource(resource)
             binding.logo.visibility = View.GONE
@@ -86,13 +89,13 @@ class SplashActivity : ActivityGlobalAbstract(), SplashContracts.View {
     private fun showRootedDialog(title: String, message: String) {
         alertDialog = AlertDialog.Builder(activity).create()
         if (!alertDialog.isShowing) {
-
-            //TITLE
-            val titleView = LayoutInflater.from(activity).inflate(R.layout.dialog_rooted_title, null)
+            // TITLE
+            val titleView =
+                LayoutInflater.from(activity).inflate(R.layout.dialog_rooted_title, null)
             titleView.findViewById<TextView>(R.id.dialogTitle).text = title
             alertDialog.setCustomTitle(titleView)
 
-            //BODY
+            // BODY
             val msgView = LayoutInflater.from(activity).inflate(R.layout.dialog_rooted_body, null)
             msgView.findViewById<TextView>(R.id.dialogBody).text = message
 
@@ -106,5 +109,4 @@ class SplashActivity : ActivityGlobalAbstract(), SplashContracts.View {
             alertDialog.show()
         }
     }
-
 }

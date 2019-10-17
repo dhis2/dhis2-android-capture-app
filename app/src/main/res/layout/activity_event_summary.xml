@@ -136,7 +136,7 @@
                         </androidx.constraintlayout.widget.ConstraintLayout>
 
 
-                        <org.dhis2.utils.custom_views.CircularCompletionView
+                        <org.dhis2.utils.customviews.CircularCompletionView
                             android:id="@+id/completion"
                             android:layout_width="90dp"
                             android:layout_height="90dp"

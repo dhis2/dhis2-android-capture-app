@@ -6,10 +6,9 @@ import org.dhis2.data.dagger.PerServer;
 import org.dhis2.data.database.DbModule;
 import org.dhis2.data.user.UserComponent;
 import org.dhis2.data.user.UserModule;
-import org.dhis2.utils.granular_sync.GranularSyncComponent;
-import org.dhis2.utils.granular_sync.GranularSyncModule;
+import org.dhis2.utils.granularsync.GranularSyncComponent;
+import org.dhis2.utils.granularsync.GranularSyncModule;
 
-import dagger.Component;
 import dagger.Subcomponent;
 
 @PerServer

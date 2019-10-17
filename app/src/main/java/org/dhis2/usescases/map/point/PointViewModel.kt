@@ -8,7 +8,7 @@ import com.mapbox.geojson.Point
 import com.mapbox.mapboxsdk.style.layers.SymbolLayer
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource
 
-class PointViewModel(app: Application): AndroidViewModel(app) {
+class PointViewModel(app: Application) : AndroidViewModel(app) {
 
     var layer: SymbolLayer? = null
     var source: GeoJsonSource? = null

@@ -1,12 +1,9 @@
 package org.dhis2.usescases.main.program
 
 import androidx.databinding.BaseObservable
-
 import com.google.auto.value.AutoValue
-
-import org.hisp.dhis.android.core.common.State
-
 import java.io.Serializable
+import org.hisp.dhis.android.core.common.State
 
 @AutoValue
 abstract class ProgramViewModel : BaseObservable(), Serializable {
@@ -40,17 +37,63 @@ abstract class ProgramViewModel : BaseObservable(), Serializable {
 
     companion object {
 
-        fun create(uid: String, displayName: String, color: String?,
-                   icon: String?, count: Int, type: String?,
-                   typeName: String, programType: String, description: String?, onlyEnrollOnce: Boolean, accessDataWrite: Boolean): ProgramViewModel {
-            return AutoValue_ProgramViewModel(uid, displayName, color, icon, count, type, typeName, programType, description, onlyEnrollOnce, accessDataWrite, State.SYNCED.name)
+        fun create(
+            uid: String,
+            displayName: String,
+            color: String?,
+            icon: String?,
+            count: Int,
+            type: String?,
+            typeName: String,
+            programType: String,
+            description: String?,
+            onlyEnrollOnce: Boolean,
+            accessDataWrite: Boolean
+        ): ProgramViewModel {
+            return AutoValue_ProgramViewModel(
+                uid,
+                displayName,
+                color,
+                icon,
+                count,
+                type,
+                typeName,
+                programType,
+                description,
+                onlyEnrollOnce,
+                accessDataWrite,
+                State.SYNCED.name
+            )
         }
 
-        fun create(uid: String, displayName: String, color: String?,
-                   icon: String?, count: Int, type: String?,
-                   typeName: String, programType: String, description: String?, onlyEnrollOnce: Boolean, accessDataWrite: Boolean, state: String): ProgramViewModel {
-            return AutoValue_ProgramViewModel(uid, displayName, color, icon, count, type, typeName, programType, description, onlyEnrollOnce, accessDataWrite, state)
+        fun create(
+            uid: String,
+            displayName: String,
+            color: String?,
+            icon: String?,
+            count: Int,
+            type: String?,
+            typeName: String,
+            programType: String,
+            description: String?,
+            onlyEnrollOnce: Boolean,
+            accessDataWrite: Boolean,
+            state: String
+        ): ProgramViewModel {
+            return AutoValue_ProgramViewModel(
+                uid,
+                displayName,
+                color,
+                icon,
+                count,
+                type,
+                typeName,
+                programType,
+                description,
+                onlyEnrollOnce,
+                accessDataWrite,
+                state
+            )
         }
     }
-
 }

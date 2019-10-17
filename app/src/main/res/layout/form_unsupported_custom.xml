@@ -9,7 +9,7 @@
 
     </data>
 
-    <org.dhis2.utils.custom_views.UnsupportedView
+    <org.dhis2.utils.customviews.UnsupportedView
         android:id="@+id/unsupportedView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />

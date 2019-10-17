@@ -194,13 +194,13 @@
                         tools:text="OU Test" />
                 </com.google.android.material.textfield.TextInputLayout>
 
-                <org.dhis2.utils.custom_views.CoordinatesView
+                <org.dhis2.utils.customviews.CoordinatesView
                     android:id="@+id/tei_coordinates_view"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:visibility="gone" />
 
-                <org.dhis2.utils.custom_views.CoordinatesView
+                <org.dhis2.utils.customviews.CoordinatesView
                     android:id="@+id/coordinates_view"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

@@ -6,14 +6,18 @@ import android.content.Context
 import android.os.Bundle
 import androidx.annotation.NonNull
 import com.google.firebase.analytics.FirebaseAnalytics
-import org.hisp.dhis.android.core.d2manager.D2Manager
 import javax.inject.Inject
+import org.hisp.dhis.android.core.d2manager.D2Manager
 
 class AnalyticsHelper @Inject constructor(context: Context) {
 
     private var analytics: FirebaseAnalytics = FirebaseAnalytics.getInstance(context)
 
-    fun setCurrentScreen(@NonNull activity: Activity, screenName: String, classOverride: String? = null) {
+    fun setCurrentScreen(
+        @NonNull activity: Activity,
+        screenName: String,
+        classOverride: String? = null
+    ) {
         analytics.setCurrentScreen(activity, screenName, classOverride)
     }
 
@@ -48,8 +52,13 @@ class AnalyticsHelper @Inject constructor(context: Context) {
         setBundleEvent(param, value, event, "", "")
     }
 
-    private fun setBundleEvent(param: String, value: String, event: String,
-                               user: String? = "", server: String? = "") {
+    private fun setBundleEvent(
+        param: String,
+        value: String,
+        event: String,
+        user: String? = "",
+        server: String? = ""
+    ) {
         val bundle = Bundle()
         bundle.apply {
             if (!user.isNullOrEmpty() && !server.isNullOrEmpty()) {
@@ -65,5 +74,4 @@ class AnalyticsHelper @Inject constructor(context: Context) {
     private fun logEvent(event: String, bundle: Bundle) {
         analytics.logEvent(event, bundle)
     }
-
 }
