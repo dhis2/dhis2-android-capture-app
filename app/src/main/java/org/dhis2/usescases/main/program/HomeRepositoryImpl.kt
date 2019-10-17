@@ -285,7 +285,7 @@ internal class HomeRepositoryImpl(private val d2: D2, private val eventLabel: St
         return if (captureOrgUnits.isNotEmpty()) {
             Flowable.just(captureOrgUnits)
         } else {
-            d2.organisationUnitModule().organisationUnits.byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE).get()
+            d2.organisationUnitModule().organisationUnits().byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE).get()
                     .toFlowable()
                     .map { UidsHelper.getUidsList(it) }
         }

@@ -185,7 +185,7 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
 
     private boolean checkOrgUnitRange(String orgUnitUid, Date eventDate) {
         boolean inRange = true;
-        OrganisationUnit orgUnit = d2.organisationUnitModule().organisationUnits.uid(orgUnitUid).blockingGet();
+        OrganisationUnit orgUnit = d2.organisationUnitModule().organisationUnits().uid(orgUnitUid).blockingGet();
         if (orgUnit.openingDate() != null && eventDate.before(orgUnit.openingDate()))
             inRange = false;
         if (orgUnit.closedDate() != null && eventDate.after(orgUnit.closedDate()))
@@ -196,7 +196,7 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
     }
 
     private String getOrgUnitName(String orgUnitUid) {
-        return d2.organisationUnitModule().organisationUnits.uid(orgUnitUid).blockingGet().displayName();
+        return d2.organisationUnitModule().organisationUnits().uid(orgUnitUid).blockingGet().displayName();
     }
 
     private List<Pair<String, String>> getData(List<TrackedEntityDataValue> dataValueList, List<String> showInReportsDataElements) {

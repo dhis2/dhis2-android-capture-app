@@ -60,7 +60,7 @@ class RuleEngineUtils {
                     supData[it.code()!!] = ArrayList()
             }
 
-            d2.organisationUnitModule().organisationUnits.withOrganisationUnitGroups().blockingGet().forEach {
+            d2.organisationUnitModule().organisationUnits().withOrganisationUnitGroups().blockingGet().forEach {
                 if (it.organisationUnitGroups() != null)
                     it.organisationUnitGroups()!!.forEach { ouGroup ->
                         if (supData[ouGroup.code()] != null && !supData[ouGroup.code()]!!.contains(it.uid()))
@@ -84,7 +84,7 @@ class RuleEngineUtils {
                     enrollment.enrollmentDate() ?: Calendar.getInstance().time,
                     RuleEnrollment.Status.valueOf(enrollment.status()!!.name),
                     enrollment.organisationUnit()!!,
-                    d2.organisationUnitModule().organisationUnits.uid(enrollment.organisationUnit()).blockingGet().code(),
+                    d2.organisationUnitModule().organisationUnits().uid(enrollment.organisationUnit()).blockingGet().code(),
                     translateToRuleAttributeValue(attributeValues),
                     d2.programModule().programs().uid(enrollment.program()).blockingGet().name()
             )
@@ -100,7 +100,7 @@ class RuleEngineUtils {
                         it.eventDate()!!,
                         it.dueDate() ?: it.eventDate()!!,
                         it.organisationUnit()!!,
-                        d2.organisationUnitModule().organisationUnits.uid(it.organisationUnit()).blockingGet().code(),
+                        d2.organisationUnitModule().organisationUnits().uid(it.organisationUnit()).blockingGet().code(),
                         translateToRuleDataValue(
                                 it,
                                 d2.trackedEntityModule().trackedEntityDataValues.byEvent().eq(it.uid()).blockingGet()

@@ -121,7 +121,7 @@ public class ProgramStageSelectionRepositoryImpl implements ProgramStageSelectio
                             .eventDate(event.eventDate() == null ? event.dueDate() : event.eventDate())
                             .dueDate(event.dueDate() != null ? event.dueDate() : event.eventDate())
                             .organisationUnit(event.organisationUnit())
-                            .organisationUnitCode(d2.organisationUnitModule().organisationUnits.uid(event.organisationUnit()).blockingGet().code())
+                            .organisationUnitCode(d2.organisationUnitModule().organisationUnits().uid(event.organisationUnit()).blockingGet().code())
                             .dataValues(dataValues)
                             .build();
                 }).toList();
@@ -156,7 +156,7 @@ public class ProgramStageSelectionRepositoryImpl implements ProgramStageSelectio
 
     @Nonnull
     private String getOrgUnitCode(String orgUnitUid) {
-        String ouCode = d2.organisationUnitModule().organisationUnits.byUid().eq(orgUnitUid).one().blockingGet().code();
+        String ouCode = d2.organisationUnitModule().organisationUnits().byUid().eq(orgUnitUid).one().blockingGet().code();
         return ouCode == null ? "" : ouCode;
     }
 

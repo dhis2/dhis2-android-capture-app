@@ -476,7 +476,7 @@ public final class RulesRepository {
                                         .eventDate(event.eventDate())
                                         .dueDate(event.dueDate() != null ? event.dueDate() : event.eventDate())
                                         .organisationUnit(event.organisationUnit())
-                                        .organisationUnitCode(d2.organisationUnitModule().organisationUnits.uid(event.organisationUnit()).blockingGet().code())
+                                        .organisationUnitCode(d2.organisationUnitModule().organisationUnits().uid(event.organisationUnit()).blockingGet().code())
                                         .dataValues(translateToRuleDataValue(event))
                                         .build())
                                 .toList()
@@ -542,7 +542,7 @@ public final class RulesRepository {
                         .eventDate(event.eventDate())
                         .dueDate(event.dueDate() != null ? event.dueDate() : event.eventDate())
                         .organisationUnit(event.organisationUnit())
-                        .organisationUnitCode(d2.organisationUnitModule().organisationUnits.uid(event.organisationUnit()).blockingGet().code())
+                        .organisationUnitCode(d2.organisationUnitModule().organisationUnits().uid(event.organisationUnit()).blockingGet().code())
                         .dataValues(translateToRuleDataValue(event))
                         .build()).toList();
     }
@@ -551,7 +551,7 @@ public final class RulesRepository {
         return d2.eventModule().events().uid(eventUid).get()
                 .flatMap(event -> {
                     Timber.tag("PROGRAMRULEREPOSITORY").d("INIT ENROLLMENT in %s", Thread.currentThread().getName());
-                    String ouCode = d2.organisationUnitModule().organisationUnits.uid(event.organisationUnit()).blockingGet().code();
+                    String ouCode = d2.organisationUnitModule().organisationUnits().uid(event.organisationUnit()).blockingGet().code();
                     String programName = d2.programModule().programs().uid(event.program()).blockingGet().name();
                     if (event.enrollment() == null)
                         return Single.just(
@@ -609,7 +609,7 @@ public final class RulesRepository {
                 if (ouGroup.code() != null)
                     supData.put(ouGroup.code(), new ArrayList<>());
 
-            for (OrganisationUnit ou : d2.organisationUnitModule().organisationUnits.withOrganisationUnitGroups().blockingGet()) {
+            for (OrganisationUnit ou : d2.organisationUnitModule().organisationUnits().withOrganisationUnitGroups().blockingGet()) {
                 if (ou.organisationUnitGroups() != null) {
                     for (OrganisationUnitGroup ouGroup : ou.organisationUnitGroups()) {
                         List<String> groupOUs = supData.get(ouGroup.code());

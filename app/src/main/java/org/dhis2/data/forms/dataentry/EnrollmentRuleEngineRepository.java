@@ -116,7 +116,7 @@ public final class EnrollmentRuleEngineRepository implements RuleEngineRepositor
 
     public void initData() {
         Enrollment enrollment = d2.enrollmentModule().enrollments().uid(enrollmentUid).blockingGet();
-        OrganisationUnit ou = d2.organisationUnitModule().organisationUnits.uid(enrollment.organisationUnit()).blockingGet();
+        OrganisationUnit ou = d2.organisationUnitModule().organisationUnits().uid(enrollment.organisationUnit()).blockingGet();
         Program program = d2.programModule().programs().withProgramRuleVariables().uid(enrollment.program()).blockingGet();
 
         attrRuleVariableMap = new HashMap<>();

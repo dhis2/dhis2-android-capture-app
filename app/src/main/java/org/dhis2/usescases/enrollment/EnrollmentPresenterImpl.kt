@@ -110,7 +110,7 @@ class EnrollmentPresenterImpl(
 
         disposable.add(
                 enrollmentObjectRepository.get()
-                        .flatMap { enrollment -> d2.organisationUnitModule().organisationUnits.uid(enrollment.organisationUnit()).get() }
+                        .flatMap { enrollment -> d2.organisationUnitModule().organisationUnits().uid(enrollment.organisationUnit()).get() }
                         .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.ui())
                         .subscribe({
@@ -331,7 +331,7 @@ class EnrollmentPresenterImpl(
     }
 
     override fun getOrgUnit(): OrganisationUnit {
-        return d2.organisationUnitModule().organisationUnits
+        return d2.organisationUnitModule().organisationUnits()
                 .uid(getEnrollment().organisationUnit()).blockingGet()
     }
 

@@ -69,7 +69,7 @@ public class DataSetInitialRepositoryImpl implements DataSetInitialRepository {
     @NonNull
     @Override
     public Observable<List<OrganisationUnit>> orgUnits() {
-        return d2.organisationUnitModule().organisationUnits
+        return d2.organisationUnitModule().organisationUnits()
                 .byDataSetUids(Collections.singletonList(dataSetUid))
                 .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE)
                 .withDataSets()

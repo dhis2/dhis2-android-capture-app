@@ -52,7 +52,7 @@ public class TeiProgramListRepositoryImpl implements TeiProgramListRepository {
                 .flatMapIterable(enrollments -> enrollments)
                 .map(enrollment -> {
                     Program program = d2.programModule().programs().byUid().eq(enrollment.program()).withStyle().one().blockingGet();
-                    OrganisationUnit orgUnit = d2.organisationUnitModule().organisationUnits.byUid().eq(enrollment.organisationUnit()).one().blockingGet();
+                    OrganisationUnit orgUnit = d2.organisationUnitModule().organisationUnits().byUid().eq(enrollment.organisationUnit()).one().blockingGet();
                     return EnrollmentViewModel.create(
                             enrollment.uid(),
                             DateUtils.getInstance().formatDate(enrollment.enrollmentDate()),
@@ -75,7 +75,7 @@ public class TeiProgramListRepositoryImpl implements TeiProgramListRepository {
                 .flatMapIterable(enrollments -> enrollments)
                 .map(enrollment -> {
                     Program program = d2.programModule().programs().byUid().eq(enrollment.program()).withStyle().one().blockingGet();
-                    OrganisationUnit orgUnit = d2.organisationUnitModule().organisationUnits.byUid().eq(enrollment.organisationUnit()).one().blockingGet();
+                    OrganisationUnit orgUnit = d2.organisationUnitModule().organisationUnits().byUid().eq(enrollment.organisationUnit()).one().blockingGet();
                     return EnrollmentViewModel.create(
                             enrollment.uid(),
                             DateUtils.getInstance().formatDate(enrollment.enrollmentDate()),
@@ -95,7 +95,7 @@ public class TeiProgramListRepositoryImpl implements TeiProgramListRepository {
     @Override
     public Observable<List<ProgramViewModel>> allPrograms(String trackedEntityId) {
         String trackedEntityType = d2.trackedEntityModule().trackedEntityInstances.byUid().eq(trackedEntityId).one().blockingGet().trackedEntityType();
-        return Observable.just(d2.organisationUnitModule().organisationUnits.byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE).blockingGet())
+        return Observable.just(d2.organisationUnitModule().organisationUnits().byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE).blockingGet())
                 .map(captureOrgUnits -> {
                     Iterator<OrganisationUnit> it = captureOrgUnits.iterator();
                     List<String> captureOrgUnitUids = new ArrayList();
@@ -184,10 +184,10 @@ public class TeiProgramListRepositoryImpl implements TeiProgramListRepository {
     @Override
     public Observable<List<OrganisationUnit>> getOrgUnits(String programUid) {
         if (programUid != null)
-            return d2.organisationUnitModule().organisationUnits.byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE)
+            return d2.organisationUnitModule().organisationUnits().byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE)
                     .byProgramUids(Collections.singletonList(programUid)).withPrograms().get().toObservable();
         else
-            return d2.organisationUnitModule().organisationUnits.byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE).get().toObservable();
+            return d2.organisationUnitModule().organisationUnits().byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE).get().toObservable();
     }
 
     @Override

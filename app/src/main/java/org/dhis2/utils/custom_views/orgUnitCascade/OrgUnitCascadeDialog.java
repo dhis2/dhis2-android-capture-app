@@ -106,7 +106,7 @@ public class OrgUnitCascadeDialog extends DialogFragment {
                 .skipInitialValue()
                 .debounce(500, TimeUnit.MILLISECONDS)
                 .filter(data -> !isEmpty(data))
-                .map(textTofind -> d2.organisationUnitModule().organisationUnits.byDisplayName().like("%" + textTofind.toString() + "%").blockingGet())
+                .map(textTofind -> d2.organisationUnitModule().organisationUnits().byDisplayName().like("%" + textTofind.toString() + "%").blockingGet())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
@@ -115,7 +115,7 @@ public class OrgUnitCascadeDialog extends DialogFragment {
                 ));
 
         disposable.add(
-                Observable.fromCallable(() -> d2.organisationUnitModule().organisationUnits.blockingGet())
+                Observable.fromCallable(() -> d2.organisationUnitModule().organisationUnits().blockingGet())
                         .map(ouList -> {
                             int maxLevel = -1;
                             for (OrganisationUnit ou : ouList) {
@@ -127,7 +127,7 @@ public class OrgUnitCascadeDialog extends DialogFragment {
                         .map(maxLevel -> {
                             List<OrgUnitItem> orgUnitItems = new ArrayList<>();
                             for (int i = 1; i <= maxLevel; i++) {
-                                OrgUnitItem orgUnitItem = new OrgUnitItem(d2.organisationUnitModule().organisationUnits, ouSelectionType);
+                                OrgUnitItem orgUnitItem = new OrgUnitItem(d2.organisationUnitModule().organisationUnits(), ouSelectionType);
                                 orgUnitItem.setMaxLevel(maxLevel);
                                 orgUnitItem.setLevel(i);
                                 orgUnitItem.setOrganisationUnitLevel(d2.organisationUnitModule().organisationUnitLevels.byLevel().eq(i).one().blockingGet());//TODO: CHECK IF OU ALREADY SELECTED
@@ -154,7 +154,7 @@ public class OrgUnitCascadeDialog extends DialogFragment {
             } else {
                 binding.acceptButton.setVisibility(View.INVISIBLE);
             }
-        }, d2.organisationUnitModule().organisationUnits, ouSelectionType);
+        }, d2.organisationUnitModule().organisationUnits(), ouSelectionType);
         binding.recycler.setAdapter(adapter);
     }
 
@@ -164,7 +164,7 @@ public class OrgUnitCascadeDialog extends DialogFragment {
                 binding.orgUnitSearchEditText.getText().clear();
                 showChips(new ArrayList<>());
                 String selectedOrgUnitUid = ((OrgUnitCascadeAdapter) binding.recycler.getAdapter()).getSelectedOrgUnit();
-                callbacks.textChangedConsumer(selectedOrgUnitUid, d2.organisationUnitModule().organisationUnits.uid(selectedOrgUnitUid).blockingGet().displayName());
+                callbacks.textChangedConsumer(selectedOrgUnitUid, d2.organisationUnitModule().organisationUnits().uid(selectedOrgUnitUid).blockingGet().displayName());
                 dismiss();
             }
         });

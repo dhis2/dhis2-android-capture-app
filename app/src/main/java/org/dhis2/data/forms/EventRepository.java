@@ -475,7 +475,7 @@ public class EventRepository implements FormRepository {
     @Override
     public Observable<OrganisationUnit> getOrgUnitDates() {
         return Observable.defer(() -> Observable.just(d2.eventModule().events().uid(eventUid).blockingGet()))
-                .switchMap(event -> Observable.just(d2.organisationUnitModule().organisationUnits.uid(event.organisationUnit()).blockingGet()));
+                .switchMap(event -> Observable.just(d2.organisationUnitModule().organisationUnits().uid(event.organisationUnit()).blockingGet()));
     }
 
     @Override
@@ -546,7 +546,7 @@ public class EventRepository implements FormRepository {
                 objectStyle = ObjectStyle.create(objStyleCursor);
         }
         if (valueType == ValueType.ORGANISATION_UNIT && !isEmpty(dataValue)) {
-            dataValue = dataValue + "_ou_" + d2.organisationUnitModule().organisationUnits.uid(dataValue).blockingGet().displayName();
+            dataValue = dataValue + "_ou_" + d2.organisationUnitModule().organisationUnits().uid(dataValue).blockingGet().displayName();
         }
 
         return fieldFactory.create(uid, isEmpty(formLabel) ? label : formLabel, valueType,

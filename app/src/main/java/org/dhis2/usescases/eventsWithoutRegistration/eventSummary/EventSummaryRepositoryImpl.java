@@ -180,7 +180,7 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
         }
 
         if (ValueType.valueOf(valueTypeName) == ValueType.ORGANISATION_UNIT && !isEmpty(dataValue)) {
-            dataValue = dataValue + "_ou_" + d2.organisationUnitModule().organisationUnits.uid(dataValue).blockingGet().displayName();
+            dataValue = dataValue + "_ou_" + d2.organisationUnitModule().organisationUnits().uid(dataValue).blockingGet().displayName();
         }
         return fieldFactory.create(uid, formName == null ? displayName : formName,
                 ValueType.valueOf(valueTypeName), mandatory, optionSet, dataValue,
@@ -252,7 +252,7 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
                                 .eventDate(event.eventDate())
                                 .dueDate(event.dueDate() != null ? event.dueDate() : event.eventDate())
                                 .organisationUnit(event.organisationUnit())
-                                .organisationUnitCode(d2.organisationUnitModule().organisationUnits.uid(event.organisationUnit()).blockingGet().code())
+                                .organisationUnitCode(d2.organisationUnitModule().organisationUnits().uid(event.organisationUnit()).blockingGet().code())
                                 .dataValues(dataValues)
                                 .build()
                 ).toFlowable();

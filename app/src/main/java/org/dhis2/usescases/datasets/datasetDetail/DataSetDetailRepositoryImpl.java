@@ -153,7 +153,7 @@ public class DataSetDetailRepositoryImpl implements DataSetDetailRepository {
                                     boolean canWriteOrgUnit = false;
 
                                     if (canWriteCatOption) {
-                                        List<OrganisationUnit> organisationUnits = d2.organisationUnitModule().organisationUnits.withDataSets()
+                                        List<OrganisationUnit> organisationUnits = d2.organisationUnitModule().organisationUnits().withDataSets()
                                                 .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE).blockingGet();
 
                                         for (OrganisationUnit organisationUnit : organisationUnits)

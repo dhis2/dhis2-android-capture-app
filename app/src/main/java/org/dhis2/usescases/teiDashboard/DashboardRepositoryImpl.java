@@ -516,7 +516,7 @@ public class DashboardRepositoryImpl implements DashboardRepository {
                     for (Enrollment enrollment : enrollments) {
                         orgUnitIds.add(enrollment.organisationUnit());
                     }
-                    return d2.organisationUnitModule().organisationUnits.byUid().in(orgUnitIds).blockingGet();
+                    return d2.organisationUnitModule().organisationUnits().byUid().in(orgUnitIds).blockingGet();
                 });
     }
 

@@ -541,7 +541,7 @@ public class EnrollmentFormRepository implements FormRepository {
     @Override
     public Observable<OrganisationUnit> getOrgUnitDates() {
         return Observable.defer(() -> Observable.just(d2.enrollmentModule().enrollments().uid(enrollmentUid).blockingGet()))
-                .switchMap(enrollment -> Observable.just(d2.organisationUnitModule().organisationUnits.uid(enrollment.organisationUnit()).blockingGet()));
+                .switchMap(enrollment -> Observable.just(d2.organisationUnitModule().organisationUnits().uid(enrollment.organisationUnit()).blockingGet()));
     }
 
     @NonNull
@@ -582,7 +582,7 @@ public class EnrollmentFormRepository implements FormRepository {
         }
 
         if (valueType == ValueType.ORGANISATION_UNIT && !isEmpty(dataValue)) {
-            dataValue = dataValue + "_ou_" + d2.organisationUnitModule().organisationUnits.uid(dataValue).blockingGet().displayName();
+            dataValue = dataValue + "_ou_" + d2.organisationUnitModule().organisationUnits().uid(dataValue).blockingGet().displayName();
         }
 
         return fieldFactory.create(uid, label, valueType, mandatory, optionSetUid, dataValue, null,

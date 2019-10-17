@@ -84,12 +84,12 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
     @NonNull
     @Override
     public Observable<List<OrganisationUnit>> orgUnits(String programId) {
-        return d2.organisationUnitModule().organisationUnits.byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE)
+        return d2.organisationUnitModule().organisationUnits().byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE)
                 .byProgramUids(Collections.singletonList(programId)).withPrograms().get().toObservable();
     }
 
     public Observable<List<OrganisationUnit>> orgUnits(String programId, String parentUid) {
-        return d2.organisationUnitModule().organisationUnits
+        return d2.organisationUnitModule().organisationUnits()
                 .byParentUid().eq(parentUid)
                 .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE)
                 .withPrograms().get()
@@ -370,7 +370,7 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
 
     @Override
     public Observable<OrganisationUnit> getOrganisationUnit(String orgUnitUid) {
-        return d2.organisationUnitModule().organisationUnits.byUid().eq(orgUnitUid).one().get().toObservable();
+        return d2.organisationUnitModule().organisationUnits().byUid().eq(orgUnitUid).one().get().toObservable();
     }
 
     @Override

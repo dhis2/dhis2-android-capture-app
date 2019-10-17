@@ -126,7 +126,7 @@ public class SearchRepositoryImpl implements SearchRepository {
 
     @Override
     public Observable<List<Program>> programsWithRegistration(String programTypeId) {
-        return Observable.fromCallable(() -> d2.organisationUnitModule().organisationUnits.byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE).blockingGet())
+        return Observable.fromCallable(() -> d2.organisationUnitModule().organisationUnits().byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE).blockingGet())
                 .map(UidsHelper::getUidsList)
                 .flatMap(orgUnitsUids -> Observable.just(d2.programModule().programs()
                         .byOrganisationUnitList(orgUnitsUids)
@@ -154,7 +154,7 @@ public class SearchRepositoryImpl implements SearchRepository {
         OrganisationUnitMode ouMode;
         if (orgUnits.isEmpty()) {
             orgUnits.addAll(
-                    UidsHelper.getUidsList(d2.organisationUnitModule().organisationUnits
+                    UidsHelper.getUidsList(d2.organisationUnitModule().organisationUnits()
                             .byRootOrganisationUnit(true)
 //                            .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_TEI_SEARCH)TODO: SHOULD WE USE THE SCOPE??
                             .blockingGet()));
@@ -240,7 +240,7 @@ public class SearchRepositoryImpl implements SearchRepository {
         OrganisationUnitMode ouMode;
         if (orgUnits.isEmpty()) {
             orgUnits.addAll(
-                    UidsHelper.getUidsList(d2.organisationUnitModule().organisationUnits
+                    UidsHelper.getUidsList(d2.organisationUnitModule().organisationUnits()
                             .byRootOrganisationUnit(true)
                             .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_TEI_SEARCH)
                             .blockingGet()));
@@ -450,10 +450,10 @@ public class SearchRepositoryImpl implements SearchRepository {
     public Observable<List<OrganisationUnit>> getOrgUnits(@Nullable String selectedProgramUid) {
 
         if (selectedProgramUid != null)
-            return d2.organisationUnitModule().organisationUnits.byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE)
+            return d2.organisationUnitModule().organisationUnits().byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE)
                     .byProgramUids(Collections.singletonList(selectedProgramUid)).withPrograms().get().toObservable();
         else
-            return d2.organisationUnitModule().organisationUnits.byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE).get().toObservable();
+            return d2.organisationUnitModule().organisationUnits().byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE).get().toObservable();
     }
 
 

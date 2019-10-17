@@ -63,7 +63,7 @@ class EnrollmentFormRepositoryImpl(
                 .enrollmentDate(enrollmentRepository.blockingGet().enrollmentDate())
                 .status(RuleEnrollment.Status.valueOf(enrollmentRepository.blockingGet().status()!!.name))
                 .organisationUnit(enrollmentRepository.blockingGet().organisationUnit())
-                .organisationUnitCode(d2.organisationUnitModule().organisationUnits.uid(enrollmentRepository.blockingGet().organisationUnit()).blockingGet().code())
+                .organisationUnitCode(d2.organisationUnitModule().organisationUnits().uid(enrollmentRepository.blockingGet().organisationUnit()).blockingGet().code())
                 .programName(programRepository.blockingGet().displayName())
     }
 

@@ -105,7 +105,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
 
         currentEvent = d2.eventModule().events().withTrackedEntityDataValues().uid(eventUid).blockingGet();
         ProgramStage programStage = d2.programModule().programStages().withProgramStageDataElements().withProgramStageSections().uid(currentEvent.programStage()).blockingGet();
-        OrganisationUnit ou = d2.organisationUnitModule().organisationUnits.uid(currentEvent.organisationUnit()).blockingGet();
+        OrganisationUnit ou = d2.organisationUnitModule().organisationUnits().uid(currentEvent.organisationUnit()).blockingGet();
 
         eventBuilder = RuleEvent.builder()
                 .event(currentEvent.uid())
@@ -295,7 +295,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
         String orgUnitUid = event.organisationUnit();
         Date eventDate = event.eventDate();
         boolean inRange = true;
-        OrganisationUnit orgUnit = d2.organisationUnitModule().organisationUnits.uid(orgUnitUid).blockingGet();
+        OrganisationUnit orgUnit = d2.organisationUnitModule().organisationUnits().uid(orgUnitUid).blockingGet();
         if (eventDate != null && orgUnit.openingDate() != null && eventDate.before(orgUnit.openingDate()))
             inRange = false;
         if (eventDate != null && orgUnit.closedDate() != null && eventDate.after(orgUnit.closedDate()))
@@ -320,7 +320,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
         ProgramStage stage = d2.programModule().programStages().uid(event.programStage()).blockingGet();
         boolean isExpired = DateUtils.getInstance().isEventExpired(event.eventDate(), event.completedDate(), event.status(), program.completeEventsExpiryDays(), stage.periodType() != null ? stage.periodType() : program.expiryPeriodType(), program.expiryDays());
         boolean blockAfterComplete = event.status() == EventStatus.COMPLETED && stage.blockEntryForm();
-        boolean isInCaptureOrgUnit = d2.organisationUnitModule().organisationUnits
+        boolean isInCaptureOrgUnit = d2.organisationUnitModule().organisationUnits()
                 .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE)
                 .byUid().eq(event.organisationUnit()).one().blockingExists();
         boolean hasCatComboAccess = event.attributeOptionCombo() == null || getCatComboAccess(event);
@@ -367,7 +367,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
     @Override
     public Flowable<String> orgUnit() {
         return Flowable.just(d2.eventModule().events().uid(eventUid).blockingGet())
-                .map(event -> d2.organisationUnitModule().organisationUnits.uid(event.organisationUnit()).blockingGet().displayName());
+                .map(event -> d2.organisationUnitModule().organisationUnits().uid(event.organisationUnit()).blockingGet().displayName());
     }
 
 
@@ -418,7 +418,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                             value = valueRepository.blockingGet().value();
 
                             if (fieldViewModel instanceof OrgUnitViewModel && !isEmpty(value)) {
-                                value = value + "_ou_" + d2.organisationUnitModule().organisationUnits.uid(value).blockingGet().displayName();
+                                value = value + "_ou_" + d2.organisationUnitModule().organisationUnits().uid(value).blockingGet().displayName();
                             }
 
                             if ((fieldViewModel instanceof SpinnerViewModel || fieldViewModel instanceof ImageViewModel) && !isEmpty(value)) {
@@ -470,7 +470,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                         ObjectStyle objectStyle = de.style() != null ? de.style() : ObjectStyle.builder().build();
 
                         if (valueType == ValueType.ORGANISATION_UNIT && !isEmpty(dataValue)) {
-                            dataValue = dataValue + "_ou_" + d2.organisationUnitModule().organisationUnits.uid(dataValue).blockingGet().displayName();
+                            dataValue = dataValue + "_ou_" + d2.organisationUnitModule().organisationUnits().uid(dataValue).blockingGet().displayName();
                         }
 
                         ProgramStageSectionRenderingType renderingType = section.renderType() != null && section.renderType().mobile() != null ? section.renderType().mobile().type() : null;
@@ -556,7 +556,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                             value = valueRepository.blockingGet().value();
 
                             if (fieldViewModel instanceof OrgUnitViewModel && !isEmpty(value)) {
-                                value = value + "_ou_" + d2.organisationUnitModule().organisationUnits.uid(value).blockingGet().displayName();
+                                value = value + "_ou_" + d2.organisationUnitModule().organisationUnits().uid(value).blockingGet().displayName();
                             }
 
                             if ((fieldViewModel instanceof SpinnerViewModel || fieldViewModel instanceof ImageViewModel) && !isEmpty(value)) {
@@ -645,7 +645,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                                     ObjectStyle objectStyle = de.style() != null ? de.style() : ObjectStyle.builder().build();
 
                                     if (valueType == ValueType.ORGANISATION_UNIT && !isEmpty(dataValue)) {
-                                        dataValue = dataValue + "_ou_" + d2.organisationUnitModule().organisationUnits.uid(dataValue).blockingGet().displayName();
+                                        dataValue = dataValue + "_ou_" + d2.organisationUnitModule().organisationUnits().uid(dataValue).blockingGet().displayName();
                                     }
 
                                     ProgramStageSectionRenderingType renderingType = programStageSection != null && programStageSection.renderType() != null &&
@@ -688,7 +688,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
         ObjectStyle objectStyle = dataElement.style();
 
         if (ValueType.valueOf(valueTypeName) == ValueType.ORGANISATION_UNIT && !isEmpty(dataValue)) {
-            dataValue = dataValue + "_ou_" + d2.organisationUnitModule().organisationUnits.uid(dataValue).blockingGet().displayName();
+            dataValue = dataValue + "_ou_" + d2.organisationUnitModule().organisationUnits().uid(dataValue).blockingGet().displayName();
         }
 
         ProgramStageSectionRenderingType renderingType = renderingType(programStageSection);

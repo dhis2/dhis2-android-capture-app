@@ -89,19 +89,19 @@ public class EventDetailRepositoryImpl implements EventDetailRepository {
     @Override
     public Observable<String> orgUnitName(String eventUid) {
         return eventModelDetail(eventUid)
-                .map(event -> d2.organisationUnitModule().organisationUnits.uid(event.organisationUnit()).blockingGet().displayName());
+                .map(event -> d2.organisationUnitModule().organisationUnits().uid(event.organisationUnit()).blockingGet().displayName());
     }
 
     @NonNull
     @Override
     public Observable<OrganisationUnit> orgUnit(String eventUid) {
         return eventModelDetail(eventUid)
-                .map(event -> d2.organisationUnitModule().organisationUnits.uid(event.organisationUnit()).blockingGet());
+                .map(event -> d2.organisationUnitModule().organisationUnits().uid(event.organisationUnit()).blockingGet());
     }
 
     @Override
     public Observable<List<OrganisationUnit>> getOrgUnits() {
-        return d2.organisationUnitModule().organisationUnits
+        return d2.organisationUnitModule().organisationUnits()
                 .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE)
                 .byProgramUids(Collections.singletonList(getProgram(eventUid).blockingFirst().uid()))
                 .withPrograms().get().toObservable();
