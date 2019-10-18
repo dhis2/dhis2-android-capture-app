@@ -102,12 +102,14 @@ public class App extends MultiDexApplication implements Components {
 
         Fabric.with(this, new Crashlytics());
 
-        setUpAppComponent();
-        setUpServerComponent();
+
 //        setUpUserComponent();
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP)
             upgradeSecurityProviderSync();
+
+        setUpAppComponent();
+        setUpServerComponent();
 
         Scheduler asyncMainThreadScheduler = AndroidSchedulers.from(Looper.getMainLooper(), true);
         RxAndroidPlugins.setInitMainThreadSchedulerHandler(schedulerCallable -> asyncMainThreadScheduler);
