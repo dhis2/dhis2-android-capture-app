@@ -834,7 +834,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
 
     @Override
     public Observable<List<OrganisationUnitLevel>> getOrgUnitLevels() {
-        return Observable.just(d2.organisationUnitModule().organisationUnitLevels.blockingGet());
+        return Observable.just(d2.organisationUnitModule().organisationUnitLevels().blockingGet());
     }
 
     @Override
@@ -937,19 +937,21 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
 
     private void handleAssignToDataElement(String deUid, String value) throws D2Error {
         List<String> eventUids;
-        if (currentEvent.enrollment() != null) {
-            eventUids = UidsHelper.getUidsList(d2.eventModule().events()
-                    .byEnrollmentUid().eq(currentEvent.enrollment())
+        //TODO: CHECK Event rules only assign values to current event
+        /*if (currentEvent.enrollment() != null) {
+            eventUids = UidsHelper.getUidsList(d2.eventModule().events
+                    .byEnrollmentUid().eq(currentEvent.enrollment())test
                     .byStatus().in(EventStatus.ACTIVE, EventStatus.COMPLETED)
                     .blockingGet());
         } else {
-            eventUids = UidsHelper.getUidsList(d2.eventModule().events()
+            eventUids = UidsHelper.getUidsList(d2.eventModule().events
                     .byProgramUid().eq(currentEvent.program())
                     .byProgramStageUid().eq(currentEvent.programStage())
                     .byOrganisationUnitUid().eq(currentEvent.organisationUnit())
                     .blockingGet());
-        }
+        }*/
 
+        eventUids = Collections.singletonList(currentEvent.uid());
         for (String eventUid : eventUids) {
             if (!isEmpty(value))
                 d2.trackedEntityModule().trackedEntityDataValues().value(eventUid, deUid).blockingSet(value);

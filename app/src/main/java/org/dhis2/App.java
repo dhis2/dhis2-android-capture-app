@@ -13,6 +13,8 @@ import androidx.multidex.MultiDexApplication;
 
 import com.crashlytics.android.Crashlytics;
 import com.facebook.stetho.Stetho;
+import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
+import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.security.ProviderInstaller;
 import com.mapbox.mapboxsdk.Mapbox;
 
@@ -31,6 +33,7 @@ import org.dhis2.data.server.UserManager;
 import org.dhis2.data.user.UserComponent;
 import org.dhis2.data.user.UserModule;
 import org.dhis2.usescases.login.LoginComponent;
+import org.dhis2.usescases.login.LoginContracts;
 import org.dhis2.usescases.login.LoginModule;
 import org.dhis2.usescases.teiDashboard.TeiDashboardComponent;
 import org.dhis2.usescases.teiDashboard.TeiDashboardModule;
@@ -99,16 +102,27 @@ public class App extends MultiDexApplication implements Components {
 
         Fabric.with(this, new Crashlytics());
 
-        setUpAppComponent();
-        setUpServerComponent();
+
 //        setUpUserComponent();
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP)
-            upgradeSecurityProvider();
+            upgradeSecurityProviderSync();
 
+        setUpAppComponent();
+        setUpServerComponent();
 
         Scheduler asyncMainThreadScheduler = AndroidSchedulers.from(Looper.getMainLooper(), true);
         RxAndroidPlugins.setInitMainThreadSchedulerHandler(schedulerCallable -> asyncMainThreadScheduler);
+    }
+
+    private void upgradeSecurityProviderSync(){
+        try {
+            ProviderInstaller.installIfNeeded(this);
+            Timber.e("New security provider installed.");
+        } catch (GooglePlayServicesRepairableException | GooglePlayServicesNotAvailableException e) {
+            e.printStackTrace();
+            Timber.e("New security provider install failed.");
+        }
     }
 
     private void upgradeSecurityProvider() {
@@ -137,10 +151,8 @@ public class App extends MultiDexApplication implements Components {
     }
 
     private void setUpAppComponent() {
-
         appComponent = prepareAppComponent().build();
         appComponent.inject(this);
-
     }
 
     protected void setUpServerComponent() {
@@ -192,8 +204,8 @@ public class App extends MultiDexApplication implements Components {
 
     @NonNull
     @Override
-    public LoginComponent createLoginComponent() {
-        return (loginComponent = appComponent.plus(new LoginModule()));
+    public LoginComponent createLoginComponent(LoginContracts.View view) {
+        return (loginComponent = appComponent.plus(new LoginModule(view)));
     }
 
     @Nullable

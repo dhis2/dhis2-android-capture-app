@@ -69,7 +69,7 @@ class EnrollmentPresenterImpl(
                                     .map { list ->
                                         list.sortBy { it.sortOrder() }
                                         list.map {
-                                            it.trackedEntityAttribute().uid()
+                                            it.trackedEntityAttribute()?.uid()
                                         }
                                     }
                                     .flatMap {
@@ -524,7 +524,8 @@ class EnrollmentPresenterImpl(
     private fun assignValue(uid: String, value: String?) {
         try {
             if (d2.dataElementModule().dataElements().uid(uid).blockingExists()) {
-                handleAssignToDataElement(uid, value)
+                //TODO: CHECK THIS: Enrollments rules should not assign values to dataElements
+//                handleAssignToDataElement(uid, value)
             } else if (d2.trackedEntityModule().trackedEntityAttributes().uid(uid).blockingExists()) {
                 handleAssignToAttribute(uid, value)
             }
