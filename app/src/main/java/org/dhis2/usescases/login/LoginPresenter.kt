@@ -16,6 +16,7 @@ import org.dhis2.data.schedulers.SchedulerProvider
 import org.dhis2.data.server.UserManager
 import org.dhis2.usescases.main.MainActivity
 import org.dhis2.utils.Constants.*
+import org.dhis2.utils.TestingCredential
 import org.dhis2.utils.analytics.ACCOUNT_RECOVERY
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.dhis2.utils.analytics.CLICK
@@ -28,7 +29,7 @@ import retrofit2.Response
 import timber.log.Timber
 
 class LoginPresenter(private val view: LoginContracts.View,
-                     val preferenceProvider: PreferenceProvider,
+                     private val preferenceProvider: PreferenceProvider,
                      private val schedulers: SchedulerProvider,
                      private val fingerPrintController: FingerPrintController,
                      private val analyticsHelper: AnalyticsHelper) {
@@ -126,7 +127,7 @@ class LoginPresenter(private val view: LoginContracts.View,
                         }
                         .subscribeOn(schedulers.io())
                         .observeOn(schedulers.ui())
-                        .subscribe({ this.handleResponse(it) }, { this.handleError(it) }))
+                        .subscribe({ this.handleResponse(it, userName, serverUrl) }, { this.handleError(it) }))
     }
 
     fun onQRClick() {
@@ -161,10 +162,17 @@ class LoginPresenter(private val view: LoginContracts.View,
         }
     }
 
-    private fun handleResponse(userResponse: Response<*>) {
+    private fun handleResponse(userResponse: Response<*>, userName: String, server: String) {
         view.showLoginProgress(false)
         if (userResponse.isSuccessful) {
             preferenceProvider.setValue(Preference.INITIAL_SYNC_DONE, false)
+
+            val updatedServer = (preferenceProvider.getSet(PREFS_URLS, HashSet()) as HashSet).add(userName)
+            val updatedUsers = (preferenceProvider.getSet(PREFS_USERS, HashSet()) as HashSet).add(server)
+
+            preferenceProvider.setValue(PREFS_URLS, updatedServer)
+            preferenceProvider.setValue(PREFS_USERS, updatedUsers)
+
             view.saveUsersData()
         }
     }
@@ -231,6 +239,29 @@ class LoginPresenter(private val view: LoginContracts.View,
 
     fun onUrlInfoClick() {
         view.displayAlertDialog()
+    }
+
+    fun getAutocompleteData(testingCredentials: List<TestingCredential>): Pair<MutableList<String>, MutableList<String>> {
+        val urls = preferenceProvider.getSet(PREFS_URLS, emptySet())!!.toMutableList()
+        val users = preferenceProvider.getSet(PREFS_USERS, emptySet())!!.toMutableList()
+
+        urls.let {
+            for (testingCredential in testingCredentials) {
+                if (!it.contains(testingCredential.server_url))
+                    it.add(testingCredential.server_url)
+            }
+        }
+
+        preferenceProvider.setValue(PREFS_URLS, HashSet(urls))
+
+        users.let {
+            if (!it.contains(USER_TEST_ANDROID))
+                it.add(USER_TEST_ANDROID)
+        }
+
+        preferenceProvider.setValue(PREFS_USERS, HashSet(users))
+
+        return Pair(urls, users)
     }
 
     companion object {

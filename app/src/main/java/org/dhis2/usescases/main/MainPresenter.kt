@@ -22,10 +22,9 @@ class MainPresenter(
         private val d2: D2,
         private val schedulerProvider: SchedulerProvider) {
 
-    private var compositeDisposable: CompositeDisposable? = null
+    private var compositeDisposable: CompositeDisposable? = CompositeDisposable()
 
     fun init() {
-        this.compositeDisposable = CompositeDisposable()
 
         compositeDisposable!!.add(d2.userModule().user.get()
                 .map { this.username(it) }

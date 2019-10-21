@@ -2,7 +2,6 @@ package org.dhis2.usescases.splash
 
 
 import io.reactivex.disposables.CompositeDisposable
-import org.dhis2.Bindings.parseToList
 import org.dhis2.data.prefs.Preference
 import org.dhis2.data.prefs.PreferenceProvider
 import org.dhis2.data.schedulers.SchedulerProvider

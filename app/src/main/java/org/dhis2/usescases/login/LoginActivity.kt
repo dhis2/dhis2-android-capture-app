@@ -102,14 +102,6 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
             binding.userNameEdit.setText(testingEnvironment.val1())
             binding.userPassEdit.setText(testingEnvironment.val2())
         })
-        loginViewModel.serverUrl.observe(this, Observer<String> {
-            /* Glide.with(this).load(String.format("%s/api/staticContent/logo_front", it))
-                     .transition(withCrossFade())
-                     .into(binding.logoFront)
-             Glide.with(this).load(String.format("%s/api/staticContent/logo_banner", it))
-                     .placeholder(R.drawable.ic_dhis_white)
-                     .into(binding.logoBanner)*/
-        })
 
         binding.serverUrlEdit.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(p0: Editable?) {
@@ -137,9 +129,10 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
         setTestingCredentials()
         setAutocompleteAdapters()
         setUpFingerPrintDialog()
+
     }
 
-    private fun setUpFingerPrintDialog() {
+    override fun setUpFingerPrintDialog() {
         fingerPrintDialog = MaterialAlertDialogBuilder(this, R.style.DhisMaterialDialog)
                 .setTitle(R.string.fingerprint_title)
                 .setMessage(R.string.fingerprint_message)
@@ -158,7 +151,7 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
                 HttpUrl.parse(urlString) != null
     }
 
-    private fun setTestingCredentials() {
+    override fun setTestingCredentials() {
         val testingCredentialsIdentifier = resources.getIdentifier("testing_credentials", "raw", packageName)
         if (testingCredentialsIdentifier != -1) {
             val writer = StringWriter()
@@ -304,31 +297,14 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
         binding.serverUrlEdit.dropDownWidth = resources.displayMetrics.widthPixels
         binding.userNameEdit.dropDownWidth = resources.displayMetrics.widthPixels
 
-        urls = presenter.preferenceProvider.getSet(Constants.PREFS_URLS, emptySet())!!.toMutableList()
-        users = presenter.preferenceProvider.getSet(Constants.PREFS_USERS, emptySet())!!.toMutableList()
+        val(urls, users) = presenter.getAutocompleteData(testingCredentials)
 
-        urls?.let {
-            for (testingCredential in testingCredentials) {
-                if (!it.contains(testingCredential.server_url))
-                    it.add(testingCredential.server_url)
-            }
-        }
-
-        presenter.preferenceProvider.setValue(Constants.PREFS_URLS, HashSet(urls))
-
-        users?.let {
-            if (!it.contains(Constants.USER_TEST_ANDROID))
-                it.add(Constants.USER_TEST_ANDROID)
-        }
-
-        presenter.preferenceProvider.setValue(Constants.PREFS_USERS, HashSet(users))
-
-        urls?.let {
+        urls.let {
             val urlAdapter = ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, it)
             binding.serverUrlEdit.setAdapter(urlAdapter)
         }
 
-        users?.let {
+        users.let {
             val userAdapter = ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, it)
             binding.userNameEdit.setAdapter(userAdapter)
         }
@@ -336,19 +312,6 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
 
     override fun saveUsersData() {
         (context.applicationContext as App).createUserComponent()
-        urls?.let {
-            if (!it.contains(binding.serverUrlEdit.text.toString())) {
-                it.add(binding.serverUrlEdit.text.toString())
-                presenter.preferenceProvider.setValue(Constants.PREFS_URLS, HashSet(it))
-            }
-        }
-
-        users?.let {
-            if (!it.contains(binding.userNameEdit.text.toString())) {
-                it.add(binding.userNameEdit.text.toString())
-                presenter.preferenceProvider.setValue(Constants.PREFS_USERS, HashSet(it))
-            }
-        }
 
         if (presenter.canHandleBiometrics() == true &&
                 !BiometricStorage.areCredentialsSet() && !BiometricStorage.areSameCredentials(

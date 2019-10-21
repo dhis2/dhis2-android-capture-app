@@ -86,7 +86,7 @@ class PreferenceProviderImpl(val context: Context) : PreferenceProvider {
     override fun getSet(key: String, default: Set<String>): Set<String>? {
         return SecurePreferences.getStringSetValue(
             context, key,
-            sharedPreferences.getStringSet(key, default)!!
+            default
         )
     }
 
