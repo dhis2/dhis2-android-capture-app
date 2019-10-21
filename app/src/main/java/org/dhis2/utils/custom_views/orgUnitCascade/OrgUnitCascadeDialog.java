@@ -130,7 +130,7 @@ public class OrgUnitCascadeDialog extends DialogFragment {
                                 OrgUnitItem orgUnitItem = new OrgUnitItem(d2.organisationUnitModule().organisationUnits(), ouSelectionType);
                                 orgUnitItem.setMaxLevel(maxLevel);
                                 orgUnitItem.setLevel(i);
-                                orgUnitItem.setOrganisationUnitLevel(d2.organisationUnitModule().organisationUnitLevels.byLevel().eq(i).one().blockingGet());//TODO: CHECK IF OU ALREADY SELECTED
+                                orgUnitItem.setOrganisationUnitLevel(d2.organisationUnitModule().organisationUnitLevels().byLevel().eq(i).one().blockingGet());//TODO: CHECK IF OU ALREADY SELECTED
                                 orgUnitItems.add(orgUnitItem);
                             }
                             return orgUnitItems;
@@ -188,7 +188,7 @@ public class OrgUnitCascadeDialog extends DialogFragment {
             Chip chip = new Chip(getContext());
 
             String level = "";
-            OrganisationUnitLevel ouLevel = d2.organisationUnitModule().organisationUnitLevels.byLevel().eq(ou.level()).one().blockingGet();
+            OrganisationUnitLevel ouLevel = d2.organisationUnitModule().organisationUnitLevels().byLevel().eq(ou.level()).one().blockingGet();
             if (ouLevel != null) {
                 level = ouLevel.displayName() + " : ";
             } else

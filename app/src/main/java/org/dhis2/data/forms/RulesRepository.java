@@ -605,7 +605,7 @@ public final class RulesRepository {
             Map<String, List<String>> supData = new HashMap<>();
 
             //ORG UNIT GROUPS
-            for (OrganisationUnitGroup ouGroup : d2.organisationUnitModule().organisationUnitGroups.blockingGet())
+            for (OrganisationUnitGroup ouGroup : d2.organisationUnitModule().organisationUnitGroups().blockingGet())
                 if (ouGroup.code() != null)
                     supData.put(ouGroup.code(), new ArrayList<>());
 

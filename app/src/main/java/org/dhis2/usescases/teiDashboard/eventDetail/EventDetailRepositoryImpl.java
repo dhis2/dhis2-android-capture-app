@@ -104,7 +104,7 @@ public class EventDetailRepositoryImpl implements EventDetailRepository {
         return d2.organisationUnitModule().organisationUnits()
                 .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE)
                 .byProgramUids(Collections.singletonList(getProgram(eventUid).blockingFirst().uid()))
-                .withPrograms().get().toObservable();
+                .get().toObservable();
 
     }
 

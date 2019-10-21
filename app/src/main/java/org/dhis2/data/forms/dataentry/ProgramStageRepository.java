@@ -291,6 +291,6 @@ final class ProgramStageRepository implements DataEntryRepository {
 
     @Override
     public Observable<List<OrganisationUnitLevel>> getOrgUnitLevels() {
-        return Observable.just(d2.organisationUnitModule().organisationUnitLevels.blockingGet());
+        return Observable.just(d2.organisationUnitModule().organisationUnitLevels().blockingGet());
     }
 }

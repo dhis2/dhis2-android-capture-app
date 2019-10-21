@@ -365,11 +365,11 @@ public class DashboardRepositoryImpl implements DashboardRepository {
                         imageAttributesUids.add(iterator.next().uid());
 
                     TrackedEntityAttributeValue attributeValue;
-                    if (d2.trackedEntityModule().trackedEntityTypeAttributes
+                    if (d2.trackedEntityModule().trackedEntityTypeAttributes()
                             .byTrackedEntityTypeUid().eq(tei.trackedEntityType())
                             .byTrackedEntityAttributeUid().in(imageAttributesUids).one().blockingExists()) {
 
-                        String attrUid = Objects.requireNonNull(d2.trackedEntityModule().trackedEntityTypeAttributes
+                        String attrUid = Objects.requireNonNull(d2.trackedEntityModule().trackedEntityTypeAttributes()
                                 .byTrackedEntityTypeUid().eq(tei.trackedEntityType())
                                 .byTrackedEntityAttributeUid().in(imageAttributesUids).one().blockingGet()).trackedEntityAttribute().uid();
 

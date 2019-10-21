@@ -66,7 +66,7 @@ final class SyncPresenterImpl implements SyncPresenter {
         boolean limitByProgram = prefs.getBoolean(Constants.LIMIT_BY_PROGRAM, false);
         Completable.fromObservable(d2.trackedEntityModule().trackedEntityInstances().upload()).andThen(
                 Completable.fromObservable(d2.trackedEntityModule()
-                        .trackedEntityInstanceDownloader.limit(teiLimit).limitByOrgunit(limitByOU).limitByProgram(limitByProgram)
+                        .trackedEntityInstanceDownloader().limit(teiLimit).limitByOrgunit(limitByOU).limitByProgram(limitByProgram)
                         .download()
                         .doOnNext(data -> Timber.d(data.percentage() + "% " + data.doneCalls().size() + "/" + data.totalCalls())))
                         .doOnError(error -> Timber.d("error while downloading TEIs"))

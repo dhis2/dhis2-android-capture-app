@@ -85,22 +85,16 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
     @Override
     public Observable<List<OrganisationUnit>> orgUnits(String programId) {
         return d2.organisationUnitModule().organisationUnits().byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE)
-                .byProgramUids(Collections.singletonList(programId)).withPrograms().get().toObservable();
+                .byProgramUids(Collections.singletonList(programId)).get().toObservable();
     }
 
     public Observable<List<OrganisationUnit>> orgUnits(String programId, String parentUid) {
         return d2.organisationUnitModule().organisationUnits()
+                .byProgramUids(Collections.singletonList(programId))
                 .byParentUid().eq(parentUid)
                 .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE)
-                .withPrograms().get()
-                .map(organisationUnits -> {
-                    List<OrganisationUnit> programOrganisationUnits = new ArrayList<>();
-                    for (OrganisationUnit organisationUnit : organisationUnits) {
-                        if (UidsHelper.getUids(organisationUnit.programs()).contains(programId))
-                            programOrganisationUnits.add(organisationUnit);
-                    }
-                    return programOrganisationUnits.isEmpty() ? organisationUnits : programOrganisationUnits;
-                }).toObservable();
+                .get()
+                .toObservable();
     }
 
     @NonNull

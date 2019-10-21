@@ -451,7 +451,7 @@ public class SearchRepositoryImpl implements SearchRepository {
 
         if (selectedProgramUid != null)
             return d2.organisationUnitModule().organisationUnits().byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE)
-                    .byProgramUids(Collections.singletonList(selectedProgramUid)).withPrograms().get().toObservable();
+                    .byProgramUids(Collections.singletonList(selectedProgramUid)).get().toObservable();
         else
             return d2.organisationUnitModule().organisationUnits().byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE).get().toObservable();
     }

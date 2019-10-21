@@ -9,7 +9,6 @@ import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryOption;
 import org.hisp.dhis.android.core.category.CategoryOptionCombo;
 import org.hisp.dhis.android.core.common.State;
-import org.hisp.dhis.android.core.dataset.DataSet;
 import org.hisp.dhis.android.core.dataset.DataSetCompleteRegistration;
 import org.hisp.dhis.android.core.dataset.DataSetElement;
 import org.hisp.dhis.android.core.dataset.DataSetInstanceCollectionRepository;
@@ -20,7 +19,7 @@ import org.hisp.dhis.android.core.period.Period;
 import org.hisp.dhis.android.core.period.PeriodType;
 
 import java.util.ArrayList;
-import java.util.Comparator;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -153,15 +152,11 @@ public class DataSetDetailRepositoryImpl implements DataSetDetailRepository {
                                     boolean canWriteOrgUnit = false;
 
                                     if (canWriteCatOption) {
-                                        List<OrganisationUnit> organisationUnits = d2.organisationUnitModule().organisationUnits().withDataSets()
+
+                                        List<OrganisationUnit> organisationUnits = d2.organisationUnitModule().organisationUnits().byDataSetUids(Collections.singletonList(dataSetUid))
                                                 .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE).blockingGet();
 
-                                        for (OrganisationUnit organisationUnit : organisationUnits)
-                                            for (DataSet dSet : organisationUnit.dataSets())
-                                                if (dSet.uid().equals(dataSetUid)) {
-                                                    canWriteOrgUnit = true;
-                                                    break;
-                                                }
+                                        canWriteOrgUnit = !organisationUnits.isEmpty();
 
                                     }
 

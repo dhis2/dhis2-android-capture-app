@@ -72,7 +72,6 @@ public class DataSetInitialRepositoryImpl implements DataSetInitialRepository {
         return d2.organisationUnitModule().organisationUnits()
                 .byDataSetUids(Collections.singletonList(dataSetUid))
                 .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE)
-                .withDataSets()
                 .get().toObservable();
     }
 
