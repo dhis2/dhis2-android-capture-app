@@ -7,6 +7,8 @@ import junit.framework.Assert.assertTrue
 import org.dhis2.data.fingerprint.FingerPrintController
 import org.dhis2.data.fingerprint.FingerPrintResult
 import org.dhis2.data.fingerprint.Type
+import org.dhis2.data.prefs.Preference.Companion.PIN
+import org.dhis2.data.prefs.Preference.Companion.SESSION_LOCKED
 import org.dhis2.data.prefs.PreferenceProvider
 import org.dhis2.data.schedulers.SchedulerProvider
 import org.dhis2.data.server.UserManager
@@ -15,6 +17,7 @@ import org.dhis2.usescases.login.LoginPresenter
 import org.dhis2.usescases.main.MainActivity
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.dhis2.utils.Constants
+import org.dhis2.utils.TestingCredential
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.dhis2.utils.analytics.CLICK
 import org.dhis2.utils.analytics.LOGIN
@@ -88,21 +91,21 @@ class LoginPresenterTest {
 
     @Test
     fun `Should unlock session`(){
-        whenever((preferenceProvider.getString(LoginPresenter.PIN, ""))) doReturn "123"
+        whenever((preferenceProvider.getString(PIN, ""))) doReturn "123"
 
         loginPresenter.unlockSession("123")
 
-        verify(preferenceProvider).setValue(LoginPresenter.SESIONLOCKED, false)
+        verify(preferenceProvider).setValue(SESSION_LOCKED, false)
         verify(view).startActivity(MainActivity::class.java, null, true, true, null)
     }
 
     @Test
     fun `Should not unlock session`(){
-        whenever((preferenceProvider.getString(LoginPresenter.PIN, ""))) doReturn "333"
+        whenever((preferenceProvider.getString(PIN, ""))) doReturn "333"
 
         loginPresenter.unlockSession("123")
 
-        verify(preferenceProvider, times(0)).setValue(LoginPresenter.SESIONLOCKED, false)
+        verify(preferenceProvider, times(0)).setValue(SESSION_LOCKED, false)
         verify(view, times(0)).startActivity(MainActivity::class.java, null, true, true, null)
     }
 
@@ -184,5 +187,37 @@ class LoginPresenterTest {
 
         val disposableSize = loginPresenter.disposable.size()
         assertTrue(disposableSize == 0)
+    }
+
+    @Test
+    fun `Should load testing servers and users`(){
+        val urlSet = hashSetOf("url1","url2","url3")
+        val userSet = hashSetOf("user1","user2")
+
+        val testingCredentials = listOf(
+                TestingCredential("testing_server_1","testing_user1","psw",""),
+                TestingCredential("testing_server_2","testing_user2","psw",""),
+                TestingCredential("testing_server_3","testing_user3","psw","")
+        )
+
+        whenever(preferenceProvider.getSet(Constants.PREFS_URLS, emptySet())) doReturn urlSet
+        whenever(preferenceProvider.getSet(Constants.PREFS_USERS, emptySet())) doReturn userSet
+
+        val (urls,users) = loginPresenter.getAutocompleteData(testingCredentials)
+
+        urlSet.forEach {
+            assertTrue(urls.contains(it))
+        }
+
+        userSet.forEach {
+            assertTrue(users.contains(it))
+        }
+
+        assertTrue(users.contains(Constants.USER_TEST_ANDROID))
+
+        testingCredentials.forEach {
+            assertTrue(urls.contains(it.server_url))
+        }
+
     }
 }

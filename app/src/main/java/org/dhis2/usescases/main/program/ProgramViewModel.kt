@@ -52,5 +52,4 @@ abstract class ProgramViewModel : BaseObservable(), Serializable {
             return AutoValue_ProgramViewModel(uid, displayName, color, icon, count, type, typeName, programType, description, onlyEnrollOnce, accessDataWrite, state)
         }
     }
-
 }

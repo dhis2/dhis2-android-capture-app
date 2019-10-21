@@ -42,9 +42,10 @@ class ProgramFragment : FragmentGlobalAbstract(), ProgramContract.View {
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        if (activity != null)
+        if (activity != null) {
             (activity!!.applicationContext as Components).userComponent()!!
                     .plus(ProgramModule()).inject(this)
+        }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -120,6 +121,6 @@ class ProgramFragment : FragmentGlobalAbstract(), ProgramContract.View {
     }
 
     override fun clearFilters() {
-        (activity as MainActivity).adapter.notifyDataSetChanged()
+        (activity as MainActivity).adapter?.notifyDataSetChanged()
     }
 }
