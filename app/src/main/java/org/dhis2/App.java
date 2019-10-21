@@ -13,6 +13,8 @@ import androidx.multidex.MultiDexApplication;
 
 import com.crashlytics.android.Crashlytics;
 import com.facebook.stetho.Stetho;
+import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
+import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.security.ProviderInstaller;
 import com.mapbox.mapboxsdk.Mapbox;
 
@@ -100,16 +102,27 @@ public class App extends MultiDexApplication implements Components {
 
         Fabric.with(this, new Crashlytics());
 
-        setUpAppComponent();
-        setUpServerComponent();
+
 //        setUpUserComponent();
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP)
-            upgradeSecurityProvider();
+            upgradeSecurityProviderSync();
 
+        setUpAppComponent();
+        setUpServerComponent();
 
         Scheduler asyncMainThreadScheduler = AndroidSchedulers.from(Looper.getMainLooper(), true);
         RxAndroidPlugins.setInitMainThreadSchedulerHandler(schedulerCallable -> asyncMainThreadScheduler);
+    }
+
+    private void upgradeSecurityProviderSync(){
+        try {
+            ProviderInstaller.installIfNeeded(this);
+            Timber.e("New security provider installed.");
+        } catch (GooglePlayServicesRepairableException | GooglePlayServicesNotAvailableException e) {
+            e.printStackTrace();
+            Timber.e("New security provider install failed.");
+        }
     }
 
     private void upgradeSecurityProvider() {
