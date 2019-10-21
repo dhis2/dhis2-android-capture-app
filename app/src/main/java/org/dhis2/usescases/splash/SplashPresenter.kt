@@ -9,7 +9,6 @@ import org.dhis2.data.schedulers.SchedulerProvider
 import org.dhis2.data.server.UserManager
 import org.dhis2.utils.Constants
 import timber.log.Timber
-import java.util.*
 import java.util.concurrent.TimeUnit
 
 class SplashPresenter internal constructor(
@@ -27,7 +26,8 @@ class SplashPresenter internal constructor(
     fun init() {
         preferenceProvider.sharedPreferences().all.forEach {
             when (it.key) {
-                Constants.PREFS_URLS, Constants.PREFS_USERS ->{}
+                Constants.PREFS_URLS, Constants.PREFS_USERS -> {
+                }
                 else -> preferenceProvider.setValue(it.key, it.value)
             }
         }
@@ -35,9 +35,7 @@ class SplashPresenter internal constructor(
     }
 
     private fun isUserLoggedIn() {
-        if (userManager == null)
-            view.goToNextScreen(false, sessionLocked = false, initialSyncDone = false)
-        else
+        userManager?.let {userManager->
             compositeDisposable.add(userManager.isUserLoggedIn
                     .delay(2000, TimeUnit.MILLISECONDS, schedulerProvider.io())
                     .subscribeOn(schedulerProvider.io())
@@ -51,5 +49,6 @@ class SplashPresenter internal constructor(
                             },
                             { Timber.d(it) }
                     ))
+        } ?: view.goToNextScreen(false, sessionLocked = false, initialSyncDone = false)
     }
 }

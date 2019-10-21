@@ -17,6 +17,7 @@ import org.dhis2.databinding.ActivitySplashBinding
 import org.dhis2.usescases.general.ActivityGlobalAbstract
 import org.dhis2.usescases.login.LoginActivity
 import org.dhis2.usescases.main.MainActivity
+import org.dhis2.usescases.sync.SyncActivity
 import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Named
@@ -113,7 +114,7 @@ class SplashActivity : ActivityGlobalAbstract(), SplashView {
         if (isUserLogged && initialSyncDone && !sessionLocked) {
             startActivity(MainActivity::class.java, null, true, true, null)
         } else if (isUserLogged && !initialSyncDone) {
-            startActivity(MainActivity::class.java, null, true, true, null)
+            startActivity(SyncActivity::class.java, null, true, true, null)
         } else {
             startActivity(LoginActivity::class.java, null, true, true, null)
         }

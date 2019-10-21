@@ -26,6 +26,7 @@ import okhttp3.HttpUrl
 import org.dhis2.App
 import org.dhis2.Bindings.onRightDrawableClicked
 import org.dhis2.R
+import org.dhis2.data.server.UserManager
 import org.dhis2.data.tuples.Trio
 import org.dhis2.databinding.ActivityLoginBinding
 import org.dhis2.usescases.general.ActivityGlobalAbstract
@@ -64,7 +65,7 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
     private var qrUrl: String? = null
 
     private var testingCredentials: List<TestingCredential> = ArrayList()
-    var userManager: org.dhis2.data.server.UserManager? = null
+    var userManager: UserManager? = null
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
