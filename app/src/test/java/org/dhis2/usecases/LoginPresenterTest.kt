@@ -153,6 +153,18 @@ class LoginPresenterTest {
     }
 
     @Test
+    fun `Should display message and hide fingerprint dialog when authenticate throws an error`() {
+        whenever(
+            goldfinger.authenticate()
+        ) doReturn Observable.error(Exception(LoginPresenter.AUTH_ERROR))
+
+        loginPresenter.onFingerprintClick()
+
+        verify(view).displayMessage(LoginPresenter.AUTH_ERROR)
+        verify(view).hideFingerprintDialog()
+    }
+
+    @Test
     fun `Should open account recovery when user does not remember it`(){
         loginPresenter.onAccountRecovery()
 
