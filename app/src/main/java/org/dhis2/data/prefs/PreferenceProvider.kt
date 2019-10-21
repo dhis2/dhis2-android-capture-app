@@ -1,6 +1,10 @@
 package org.dhis2.data.prefs
 
+import android.content.SharedPreferences
+
 interface PreferenceProvider {
+
+    fun sharedPreferences() : SharedPreferences
 
     fun saveUserCredentials(serverUrl: String, userName: String, pass: String)
 
