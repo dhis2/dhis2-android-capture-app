@@ -17,6 +17,7 @@ import androidx.paging.PagedList
 import org.dhis2.App
 import org.dhis2.R
 import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel
+import org.dhis2.data.forms.dataentry.tablefields.spinner.SpinnerViewModel as TableSpinnerViewModel
 import org.dhis2.databinding.DialogOptionSetBinding
 import org.dhis2.utils.Constants
 import org.dhis2.utils.custom_views.OptionSetOnClickListener
@@ -31,7 +32,7 @@ class OptionSetDialog : DialogFragment(), OptionSetContracts.View {
     private var adapter: OptionSetAdapter? = null
 
     var optionSet: SpinnerViewModel? = null
-    var optionSetTable: org.dhis2.data.forms.dataentry.tablefields.spinner.SpinnerViewModel? = null
+    var optionSetTable: TableSpinnerViewModel? = null
     var listener: OptionSetOnClickListener? = null
     var clearListener: View.OnClickListener? = null
     var defalutSize: Int = 0

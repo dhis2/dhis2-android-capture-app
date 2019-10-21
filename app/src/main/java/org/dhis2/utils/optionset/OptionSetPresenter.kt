@@ -7,6 +7,7 @@ import androidx.paging.PagedList
 import com.jakewharton.rxbinding2.widget.RxTextView
 import io.reactivex.disposables.CompositeDisposable
 import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel
+import org.dhis2.data.forms.dataentry.tablefields.spinner.SpinnerViewModel as TableSpinnerViewModel
 import org.dhis2.data.schedulers.SchedulerProvider
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper
@@ -40,7 +41,7 @@ class OptionSetPresenter(val d2: D2, val schedulerProvider: SchedulerProvider) :
 
     override fun init(
             view : OptionSetContracts.View,
-            optionSetTable : org.dhis2.data.forms.dataentry.tablefields.spinner.SpinnerViewModel,
+            optionSetTable : TableSpinnerViewModel,
             textSearch : EditText){
         this.view = view
         this.textSearch = textSearch
