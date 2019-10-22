@@ -25,7 +25,6 @@
 
 package org.dhis2.usescases.main
 
-
 import androidx.annotation.UiThread
 import io.reactivex.functions.Consumer
 import org.dhis2.usescases.general.AbstractActivityContracts
@@ -47,5 +46,4 @@ interface MainView : AbstractActivityContracts.View {
     fun updateFilters(totalFilters: Int)
 
     fun showPeriodRequest(periodRequest: FilterManager.PeriodRequest)
-
 }

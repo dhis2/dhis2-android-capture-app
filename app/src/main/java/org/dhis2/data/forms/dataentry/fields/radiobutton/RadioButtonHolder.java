@@ -1,6 +1,5 @@
 package org.dhis2.data.forms.dataentry.fields.radiobutton;
 
-import android.graphics.Color;
 import android.view.View;
 import android.widget.RadioGroup;
 
@@ -8,9 +7,7 @@ import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.FormViewHolder;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.databinding.FormYesNoBinding;
-import org.dhis2.utils.custom_views.FieldLayout;
 
-import androidx.appcompat.content.res.AppCompatResources;
 import androidx.lifecycle.MutableLiveData;
 
 import io.reactivex.processors.FlowableProcessor;

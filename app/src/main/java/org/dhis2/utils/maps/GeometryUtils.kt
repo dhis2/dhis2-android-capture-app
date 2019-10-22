@@ -1,6 +1,10 @@
 package org.dhis2.utils.maps
 
-import com.mapbox.geojson.*
+import com.mapbox.geojson.BoundingBox
+import com.mapbox.geojson.Feature
+import com.mapbox.geojson.FeatureCollection
+import com.mapbox.geojson.Point
+import com.mapbox.geojson.Polygon
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel
 import org.hisp.dhis.android.core.arch.helpers.GeometryHelper
 import org.hisp.dhis.android.core.common.FeatureType
@@ -16,7 +20,9 @@ object GeometryUtils {
     private var westBound: Double = 0.0
     private var boundsInt = false
 
-    fun getSourceFromTeis(teiList: List<SearchTeiModel>): Pair<HashMap<String, FeatureCollection>, BoundingBox> {
+    fun getSourceFromTeis(
+        teiList: List<SearchTeiModel>
+    ): Pair<HashMap<String, FeatureCollection>, BoundingBox> {
         boundsInt = false
         northBound = 0.0
         southBound = 0.0
@@ -35,7 +41,7 @@ object GeometryUtils {
                     val point = getPointFeature(geometry)
                     if (point != null) {
                         point.addStringProperty("teiUid", it.tei.uid())
-                        point.addStringProperty("teiImage",it.profilePicturePath)
+                        point.addStringProperty("teiImage", it.profilePicturePath)
                         featureMap["TEI"]!!.add(point)
                     }
                 } else if (geometry.type() == FeatureType.POLYGON) {
@@ -50,7 +56,7 @@ object GeometryUtils {
                 }
             }
 
-            if (it.selectedEnrollment!=null && it.selectedEnrollment.geometry() != null) {
+            if (it.selectedEnrollment != null && it.selectedEnrollment.geometry() != null) {
                 val geometry = it.selectedEnrollment.geometry()!!
                 if (geometry.type() == FeatureType.POINT) {
                     val point = getPointFeature(geometry)
@@ -72,15 +78,17 @@ object GeometryUtils {
         }
 
         val teiFeatureCollection = FeatureCollection.fromFeatures(featureMap["TEI"] as ArrayList)
-        val enrollmentFeatureCollection = FeatureCollection.fromFeatures(featureMap["ENROLLMENT"] as ArrayList)
+        val enrollmentFeatureCollection =
+            FeatureCollection.fromFeatures(featureMap["ENROLLMENT"] as ArrayList)
 
         val featureCollectionMap = HashMap<String, FeatureCollection>()
         featureCollectionMap["TEI"] = teiFeatureCollection
         featureCollectionMap["ENROLLMENT"] = enrollmentFeatureCollection
 
-        return Pair<HashMap<String, FeatureCollection>, BoundingBox>(featureCollectionMap,
-                BoundingBox.fromLngLats(westBound, southBound, eastBound, northBound))
-
+        return Pair<HashMap<String, FeatureCollection>, BoundingBox>(
+            featureCollectionMap,
+            BoundingBox.fromLngLats(westBound, southBound, eastBound, northBound)
+        )
     }
 
     fun getSourceFromEvent(eventList: List<Event>): Pair<FeatureCollection, BoundingBox> {
@@ -91,17 +99,22 @@ object GeometryUtils {
         westBound = 0.0
 
         val features = eventList
-                .filter { it.geometry() != null }
-                .map {
-                    handleGeometry(it.geometry()!!, "eventUid", it.uid()!!)
-                }
-                .filter { it != null }
-        return Pair<FeatureCollection, BoundingBox>(FeatureCollection.fromFeatures(features),
-                BoundingBox.fromLngLats(westBound, southBound, eastBound, northBound))
+            .filter { it.geometry() != null }
+            .map {
+                handleGeometry(it.geometry()!!, "eventUid", it.uid()!!)
+            }
+            .filter { it != null }
+        return Pair<FeatureCollection, BoundingBox>(
+            FeatureCollection.fromFeatures(features),
+            BoundingBox.fromLngLats(westBound, southBound, eastBound, northBound)
+        )
     }
 
-    private fun handleGeometry(geometry: Geometry, property: String, propertyValue: String): Feature? {
-
+    private fun handleGeometry(
+        geometry: Geometry,
+        property: String,
+        propertyValue: String
+    ): Feature? {
         if (geometry.type() == FeatureType.POINT) {
             val point = getPointFeature(geometry)
             point?.addStringProperty(property, propertyValue)
@@ -110,8 +123,9 @@ object GeometryUtils {
             val polygon = getPolygonFeature(geometry)
             polygon.addStringProperty(property, propertyValue)
             return polygon
-        } else
+        } else {
             return null
+        }
     }
 
     private fun getPolygonFeature(geometry: Geometry): Feature {
@@ -138,11 +152,11 @@ object GeometryUtils {
         val lat = sdkPolygon[0][0][1]
         val lon = sdkPolygon[0][0][0]
 
-
-        val point = if (lat >= -90 && lat <= 90 && lon >= -180 && lon <= 180)
+        val point = if (lat >= -90 && lat <= 90 && lon >= -180 && lon <= 180) {
             Point.fromLngLat(lon, lat)
-        else
+        } else {
             throw IllegalArgumentException("latitude or longitud have wrong values")
+        }
 
         return Feature.fromGeometry(point)
     }
@@ -170,15 +184,18 @@ object GeometryUtils {
             westBound = lon
             boundsInt = true
         } else {
-
-            if (northBound < lat)
+            if (northBound < lat) {
                 northBound = lat
-            if (southBound > lat)
+            }
+            if (southBound > lat) {
                 southBound = lat
-            if (eastBound < lon)
+            }
+            if (eastBound < lon) {
                 eastBound = lon
-            if (westBound > lon)
+            }
+            if (westBound > lon) {
                 westBound = lon
+            }
         }
     }
 }

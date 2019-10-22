@@ -8,11 +8,13 @@ import org.dhis2.R
 import org.dhis2.databinding.ItemPointGeoBinding
 
 class PointAdapter(
-        val viewModel: PointViewModel
-): RecyclerView.Adapter<PointAdapter.Holder>() {
+    val viewModel: PointViewModel
+) : RecyclerView.Adapter<PointAdapter.Holder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Holder {
-        val binding: ItemPointGeoBinding = DataBindingUtil.inflate(LayoutInflater.from(parent.context),
-                R.layout.item_point_geo, parent, false)
+        val binding: ItemPointGeoBinding = DataBindingUtil.inflate(
+            LayoutInflater.from(parent.context),
+            R.layout.item_point_geo, parent, false
+        )
         return Holder(binding)
     }
 
@@ -24,8 +26,7 @@ class PointAdapter(
         holder.bind()
     }
 
-
-    inner class Holder(val binding: ItemPointGeoBinding): RecyclerView.ViewHolder(binding.root) {
+    inner class Holder(val binding: ItemPointGeoBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind() {
             binding.let {
                 it.viewModel = viewModel

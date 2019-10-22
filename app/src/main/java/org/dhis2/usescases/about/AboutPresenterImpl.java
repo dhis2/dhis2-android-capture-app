@@ -40,7 +40,7 @@ public class AboutPresenterImpl implements AboutContracts.AboutPresenter {
                 ));
 
         compositeDisposable.add(
-                d2.systemInfoModule().systemInfo.get().toObservable().map(SystemInfo::contextPath)
+                d2.systemInfoModule().systemInfo().get().toObservable().map(SystemInfo::contextPath)
                 .cacheWithInitialCapacity(1)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())

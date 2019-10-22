@@ -4,7 +4,7 @@ import android.content.SharedPreferences
 
 interface PreferenceProvider {
 
-    fun sharedPreferences() : SharedPreferences
+    fun sharedPreferences(): SharedPreferences
 
     fun saveUserCredentials(serverUrl: String, userName: String, pass: String)
 

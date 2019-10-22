@@ -18,6 +18,4 @@ class ScheduledEventModule(val eventUid: String) {
     internal fun providePresenter(d2: D2): ScheduledEventContract.Presenter {
         return ScheduledEventPresenterImpl(d2, eventUid)
     }
-
-
 }

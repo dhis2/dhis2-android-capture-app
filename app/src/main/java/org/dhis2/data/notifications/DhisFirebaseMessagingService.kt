@@ -29,7 +29,7 @@ import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import timber.log.Timber
 
-class DhisFirebaseMessagingService : FirebaseMessagingService(){
+class DhisFirebaseMessagingService : FirebaseMessagingService() {
     override fun onMessageReceived(p0: RemoteMessage) {
         Timber.tag("NOTIFICATION").d("NEW MESSAGE")
         super.onMessageReceived(p0)

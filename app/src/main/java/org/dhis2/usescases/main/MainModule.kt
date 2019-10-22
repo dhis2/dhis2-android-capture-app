@@ -1,6 +1,5 @@
 package org.dhis2.usescases.main
 
-
 import dagger.Module
 import dagger.Provides
 import org.dhis2.data.dagger.PerActivity
@@ -15,5 +14,4 @@ class MainModule(val view: MainView) {
     fun homePresenter(d2: D2, schedulerProvider: SchedulerProvider): MainPresenter {
         return MainPresenter(view, d2, schedulerProvider)
     }
-
 }

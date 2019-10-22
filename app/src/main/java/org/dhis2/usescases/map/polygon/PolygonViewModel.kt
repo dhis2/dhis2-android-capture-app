@@ -9,9 +9,9 @@ import com.google.gson.Gson
 import com.mapbox.geojson.Point
 import com.mapbox.mapboxsdk.style.layers.SymbolLayer
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource
-import java.util.*
+import java.util.UUID
 
-class PolygonViewModel(val app: Application): AndroidViewModel(app) {
+class PolygonViewModel(val app: Application) : AndroidViewModel(app) {
 
     private var _response = MutableLiveData<MutableList<PolygonPoint>>()
     val response: LiveData<MutableList<PolygonPoint>>
@@ -29,15 +29,13 @@ class PolygonViewModel(val app: Application): AndroidViewModel(app) {
         }
     }
 
-
     fun remove(polygonPoint: PolygonPoint) {
         val list = _response.value
         list?.remove(polygonPoint)
         _response.value = list
     }
 
-    fun createPolygonPoint(): PolygonPoint
-    {
+    fun createPolygonPoint(): PolygonPoint {
         return PolygonPoint()
     }
 
@@ -45,20 +43,26 @@ class PolygonViewModel(val app: Application): AndroidViewModel(app) {
         val list = mutableListOf<MutableList<MutableList<Double>>>()
         list.add(mutableListOf())
         _response.value?.forEach {
-            it.point?.let {point ->
+            it.point?.let { point ->
                 list[0].add(mutableListOf(point.longitude(), point.latitude()))
             }
         }
         return if (list[0].size > 2) {
-            list[0].add(list[0][0]) //set last point same as first
+            list[0].add(list[0][0]) // set last point same as first
             Gson().toJson(list)
         } else {
-            Toast.makeText(app, "Polygon must contains at least 4 points.", Toast.LENGTH_SHORT).show() //TODO: CHANGE TO SET STRING
+            Toast.makeText(app, "Polygon must contains at least 4 points.", Toast.LENGTH_SHORT)
+                .show() // TODO: CHANGE TO SET STRING
             null
         }
     }
 
-    inner class PolygonPoint(var point: Point? = null, var source: GeoJsonSource? = null, var layer: SymbolLayer? = null, var selected: Boolean = true) {
+    inner class PolygonPoint(
+        var point: Point? = null,
+        var source: GeoJsonSource? = null,
+        var layer: SymbolLayer? = null,
+        var selected: Boolean = true
+    ) {
         val uuid = UUID.randomUUID().toString()
         override fun toString(): String {
             point?.let {

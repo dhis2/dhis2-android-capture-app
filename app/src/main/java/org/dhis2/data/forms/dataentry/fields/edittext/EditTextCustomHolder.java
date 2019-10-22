@@ -21,7 +21,7 @@ import org.dhis2.databinding.FormEditTextCustomBinding;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.Preconditions;
 import org.dhis2.utils.ValidationUtils;
-import org.dhis2.utils.custom_views.TextInputAutoCompleteTextView;
+import org.dhis2.utils.customviews.TextInputAutoCompleteTextView;
 import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.common.ValueTypeDeviceRendering;
 import org.hisp.dhis.android.core.common.ValueTypeRenderingType;

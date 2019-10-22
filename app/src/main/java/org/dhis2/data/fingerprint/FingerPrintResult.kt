@@ -1,6 +1,6 @@
 package org.dhis2.data.fingerprint
 
-class FingerPrintResult (val type: Type, val message: String?)
+class FingerPrintResult(val type: Type, val message: String?)
 
 enum class Type {
     SUCCESS,

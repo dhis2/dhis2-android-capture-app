@@ -8,7 +8,7 @@ import org.dhis2.R;
 import org.dhis2.databinding.ActivityReservedValueBinding;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.utils.Constants;
-import org.dhis2.utils.custom_views.CustomDialog;
+import org.dhis2.utils.customviews.CustomDialog;
 
 import java.util.List;
 
