@@ -96,7 +96,9 @@ class RuleEngineUtils {
                 }
             }
 
-            d2.organisationUnitModule().organisationUnits().withOrganisationUnitGroups().blockingGet()
+            d2
+                .organisationUnitModule()
+                .organisationUnits().withOrganisationUnitGroups().blockingGet()
                 .forEach {
                     if (it.organisationUnitGroups() != null) {
                         it.organisationUnitGroups()!!.forEach { ouGroup ->

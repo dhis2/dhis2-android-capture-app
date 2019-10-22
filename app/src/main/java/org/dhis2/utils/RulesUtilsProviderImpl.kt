@@ -398,10 +398,10 @@ class RulesUtilsProviderImpl(private val codeGenerator: CodeGenerator) : RulesUt
                             .byEnrollmentUid().eq(event.enrollment())
                             .byUid().notIn(event.uid())
                             .byStatus().`in`(
-                                EventStatus.ACTIVE,
-                                EventStatus.COMPLETED,
-                                EventStatus.OVERDUE
-                            )
+                            EventStatus.ACTIVE,
+                            EventStatus.COMPLETED,
+                            EventStatus.OVERDUE
+                        )
                             .byEventDate().isNotNull
                             .blockingGet(),
                         d2
@@ -413,10 +413,10 @@ class RulesUtilsProviderImpl(private val codeGenerator: CodeGenerator) : RulesUt
                     d2.eventModule().events()
                         .byUid().notIn(event.uid()!!)
                         .byStatus().`in`(
-                            EventStatus.ACTIVE,
-                            EventStatus.COMPLETED,
-                            EventStatus.OVERDUE
-                        )
+                        EventStatus.ACTIVE,
+                        EventStatus.COMPLETED,
+                        EventStatus.OVERDUE
+                    )
                         .byEventDate().isNotNull
                         .blockingGet(),
                     d2
@@ -561,7 +561,7 @@ class RulesUtilsProviderImpl(private val codeGenerator: CodeGenerator) : RulesUt
         (fields as ArrayList).remove(action.field())
 
         if (eventUid != null && D2Manager.getD2().trackedEntityModule().trackedEntityDataValues()
-                .value(eventUid, action.field()).blockingExists()
+            .value(eventUid, action.field()).blockingExists()
         ) {
             D2Manager.getD2().trackedEntityModule().trackedEntityDataValues()
                 .value(eventUid, action.field()).blockingDelete()

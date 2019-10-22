@@ -112,12 +112,12 @@ class GranularSyncPresenterImpl(
                         if (it == PROGRAM) {
                             d2
                                 .importModule()
-                                .trackerImportConflicts
+                                .trackerImportConflicts()
                                 .byTrackedEntityInstanceUid().eq(recordUid).get()
                         } else {
                             d2
                                 .importModule()
-                                .trackerImportConflicts
+                                .trackerImportConflicts()
                                 .byEventUid().eq(recordUid).get()
                         }
                     }
@@ -190,7 +190,7 @@ class GranularSyncPresenterImpl(
             TEI -> {
                 // TODO: GET ALL ENROLLMENTS FROM TEI
                 val enrollmentUids = UidsHelper.getUidsList(
-                    d2.enrollmentModule().enrollments.byTrackedEntityInstance().eq(recordUid)
+                    d2.enrollmentModule().enrollments().byTrackedEntityInstance().eq(recordUid)
                         .byState().`in`(State.TO_POST, State.TO_UPDATE).blockingGet()
                 )
                 smsSender.convertEnrollment(enrollmentUids[0])
@@ -299,30 +299,30 @@ class GranularSyncPresenterImpl(
     @VisibleForTesting
     fun getTitle(): Single<out BaseIdentifiableObject> {
         return when (conflictType) {
-            PROGRAM -> d2.programModule().programs.uid(recordUid).get()
+            PROGRAM -> d2.programModule().programs().uid(recordUid).get()
             TEI ->
-                d2.trackedEntityModule().trackedEntityTypes.uid(
-                    d2.trackedEntityModule().trackedEntityInstances.uid(recordUid)
+                d2.trackedEntityModule().trackedEntityTypes().uid(
+                    d2.trackedEntityModule().trackedEntityInstances().uid(recordUid)
                         .blockingGet().trackedEntityType()
                 )
                     .get()
             EVENT ->
-                d2.programModule().programStages.uid(
-                    d2.eventModule().events.uid(recordUid).blockingGet().programStage()
+                d2.programModule().programStages().uid(
+                    d2.eventModule().events().uid(recordUid).blockingGet().programStage()
                 ).get()
-            DATA_SET -> d2.dataSetModule().dataSets.withDataSetElements().uid(recordUid).get()
-            DATA_VALUES -> d2.dataSetModule().dataSets.withDataSetElements().uid(recordUid).get()
+            DATA_SET -> d2.dataSetModule().dataSets().withDataSetElements().uid(recordUid).get()
+            DATA_VALUES -> d2.dataSetModule().dataSets().withDataSetElements().uid(recordUid).get()
         }
     }
 
     private fun getState(): Single<State> {
         return when (conflictType) {
             PROGRAM ->
-                d2.programModule().programs.uid(recordUid).get()
+                d2.programModule().programs().uid(recordUid).get()
                     .map {
                         if (it.programType() == ProgramType.WITHOUT_REGISTRATION) {
                             val eventRepository =
-                                d2.eventModule().events.byProgramUid().eq(it.uid())
+                                d2.eventModule().events().byProgramUid().eq(it.uid())
                             if (eventRepository.byState().`in`(State.ERROR)
                                 .blockingGet().isNotEmpty()
                             ) {
@@ -349,7 +349,7 @@ class GranularSyncPresenterImpl(
                             }
                         } else {
                             val teiRepository =
-                                d2.trackedEntityModule().trackedEntityInstances.byProgramUids(
+                                d2.trackedEntityModule().trackedEntityInstances().byProgramUids(
                                     Collections.singletonList(it.uid())
                                 )
                             if (teiRepository.byState().`in`(State.ERROR)
@@ -379,18 +379,18 @@ class GranularSyncPresenterImpl(
                         }
                     }
             TEI ->
-                d2.trackedEntityModule().trackedEntityInstances.uid(recordUid).get()
+                d2.trackedEntityModule().trackedEntityInstances().uid(recordUid).get()
                     .map { it.state() }
             EVENT ->
-                d2.eventModule().events.uid(recordUid).get()
+                d2.eventModule().events().uid(recordUid).get()
                     .map { it.state() }
             DATA_SET ->
-                d2.dataSetModule().dataSets.withDataSetElements().uid(recordUid).get()
+                d2.dataSetModule().dataSets().withDataSetElements().uid(recordUid).get()
                     .map { it.dataSetElements() }
                     .map {
                         var state = State.SYNCED
                         it.forEach { de ->
-                            d2.dataValueModule().dataValues.byDataElementUid()
+                            d2.dataValueModule().dataValues().byDataElementUid()
                                 .eq(de.dataElement().uid()).blockingGet().forEach { dv ->
                                 if (dv.state() != State.SYNCED) {
                                     state = State.TO_UPDATE
@@ -402,7 +402,7 @@ class GranularSyncPresenterImpl(
             DATA_VALUES ->
                 getDataSetCatOptCombos()
                     .flatMap {
-                        d2.dataValueModule().dataValues
+                        d2.dataValueModule().dataValues()
                             .byOrganisationUnitUid().eq(dvOrgUnit)
                             .byAttributeOptionComboUid().eq(dvAttrCombo)
                             .byPeriod().eq(dvPeriodId).byCategoryOptionComboUid().`in`(it).get()
@@ -420,21 +420,21 @@ class GranularSyncPresenterImpl(
     }
 
     private fun getDataSetCatOptCombos(): Single<List<String>> {
-        return d2.dataSetModule().dataSets.withDataSetElements().uid(recordUid).get()
+        return d2.dataSetModule().dataSets().withDataSetElements().uid(recordUid).get()
             .map {
                 it.dataSetElements()?.map { dataSetElement ->
                     if (dataSetElement.categoryCombo() != null) {
                         dataSetElement.categoryCombo()?.uid()
                     } else {
                         d2.dataElementModule()
-                            .dataElements
+                            .dataElements()
                             .uid(dataSetElement.dataElement().uid())
                             .blockingGet().categoryComboUid()
                     }
                 }?.distinct()
             }
             .flatMap {
-                d2.categoryModule().categoryOptionCombos.byCategoryComboUid().`in`(it).get()
+                d2.categoryModule().categoryOptionCombos().byCategoryComboUid().`in`(it).get()
             }
             .map { UidsHelper.getUidsList(it) }
     }

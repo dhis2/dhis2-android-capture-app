@@ -231,14 +231,16 @@ internal class HomeRepositoryImpl(private val d2: D2, private val eventLabel: St
                         }
                     }
 
-                    if (d2.eventModule().events().byProgramUid().eq(program.uid()).byState().`in`(
-                        State.ERROR,
-                        State.WARNING
-                    ).blockingGet().isNotEmpty()
+                    if (
+                        d2.eventModule().events().byProgramUid().eq(program.uid()).byState().`in`(
+                            State.ERROR,
+                            State.WARNING
+                        ).blockingGet().isNotEmpty()
                     ) {
                         state = State.WARNING
-                    } else if (d2.eventModule().events()
-                        .byProgramUid().eq(program.uid()).byState().`in`(
+                    } else if (
+                        d2.eventModule().events()
+                            .byProgramUid().eq(program.uid()).byState().`in`(
                             State.SENT_VIA_SMS,
                             State.SYNCED_VIA_SMS
                         ).blockingGet().isNotEmpty()
@@ -251,7 +253,7 @@ internal class HomeRepositoryImpl(private val d2: D2, private val eventLabel: St
                             State.TO_POST
                         )
                             .blockingGet().isNotEmpty() ||
-                        d2.eventModule().events.byProgramUid().eq(program.uid())
+                        d2.eventModule().events().byProgramUid().eq(program.uid())
                             .byDeleted().isTrue.blockingGet().isNotEmpty()
                     ) {
                         state = State.TO_UPDATE

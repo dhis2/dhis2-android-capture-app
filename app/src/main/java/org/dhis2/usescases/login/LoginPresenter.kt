@@ -61,7 +61,7 @@ class LoginPresenter(
                             if (isUserLoggedIn && !preferenceProvider.getBoolean(
                                 SESSION_LOCKED,
                                 false
-                                )
+                            )
                             ) {
                                 view.startActivity(MainActivity::class.java, null, true, true, null)
                             } else if (preferenceProvider.getBoolean(SESSION_LOCKED, false)) {
@@ -301,16 +301,18 @@ class LoginPresenter(
 
         urls.let {
             for (testingCredential in testingCredentials) {
-                if (!it.contains(testingCredential.server_url))
+                if (!it.contains(testingCredential.server_url)) {
                     it.add(testingCredential.server_url)
+                }
             }
         }
 
         preferenceProvider.setValue(PREFS_URLS, HashSet(urls))
 
         users.let {
-            if (!it.contains(USER_TEST_ANDROID))
+            if (!it.contains(USER_TEST_ANDROID)) {
                 it.add(USER_TEST_ANDROID)
+            }
         }
 
         preferenceProvider.setValue(PREFS_USERS, HashSet(users))

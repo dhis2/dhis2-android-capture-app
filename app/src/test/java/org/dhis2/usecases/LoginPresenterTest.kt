@@ -235,20 +235,20 @@ class LoginPresenterTest {
     }
 
     @Test
-    fun `Should load testing servers and users`(){
-        val urlSet = hashSetOf("url1","url2","url3")
-        val userSet = hashSetOf("user1","user2")
+    fun `Should load testing servers and users`() {
+        val urlSet = hashSetOf("url1", "url2", "url3")
+        val userSet = hashSetOf("user1", "user2")
 
         val testingCredentials = listOf(
-                TestingCredential("testing_server_1","testing_user1","psw",""),
-                TestingCredential("testing_server_2","testing_user2","psw",""),
-                TestingCredential("testing_server_3","testing_user3","psw","")
+            TestingCredential("testing_server_1", "testing_user1", "psw", ""),
+            TestingCredential("testing_server_2", "testing_user2", "psw", ""),
+            TestingCredential("testing_server_3", "testing_user3", "psw", "")
         )
 
         whenever(preferenceProvider.getSet(Constants.PREFS_URLS, emptySet())) doReturn urlSet
         whenever(preferenceProvider.getSet(Constants.PREFS_USERS, emptySet())) doReturn userSet
 
-        val (urls,users) = loginPresenter.getAutocompleteData(testingCredentials)
+        val (urls, users) = loginPresenter.getAutocompleteData(testingCredentials)
 
         urlSet.forEach {
             assertTrue(urls.contains(it))
@@ -263,6 +263,5 @@ class LoginPresenterTest {
         testingCredentials.forEach {
             assertTrue(urls.contains(it.server_url))
         }
-
     }
 }

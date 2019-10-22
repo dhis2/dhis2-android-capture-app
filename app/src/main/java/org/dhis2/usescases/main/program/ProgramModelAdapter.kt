@@ -3,9 +3,9 @@ package org.dhis2.usescases.main.program
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import java.util.ArrayList
-import androidx.recyclerview.widget.DiffUtil
 import org.dhis2.R
 import org.dhis2.databinding.ItemProgramModelBinding
 
@@ -53,7 +53,10 @@ class ProgramModelAdapter internal constructor(
         diffResult.dispatchUpdatesTo(this)
     }
 
-    private class ProgramDiffUtil(val oldFields : List<ProgramViewModel>, val newFields: List<ProgramViewModel>) : DiffUtil.Callback(){
+    private class ProgramDiffUtil(
+        val oldFields: List<ProgramViewModel>,
+        val newFields: List<ProgramViewModel>
+    ) : DiffUtil.Callback() {
 
         override fun getOldListSize(): Int = oldFields.size
         override fun getNewListSize(): Int = newFields.size

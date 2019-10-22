@@ -23,27 +23,11 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.dhis2.usescases.main
+package org.dhis2.utils.optionset
 
-import androidx.annotation.UiThread
-import io.reactivex.functions.Consumer
-import org.dhis2.usescases.general.AbstractActivityContracts
-import org.dhis2.utils.filters.FilterManager
+import dagger.Subcomponent
 
-interface MainView : AbstractActivityContracts.View {
-
-    @UiThread
-    fun renderUsername(): Consumer<String>
-
-    fun openDrawer(gravity: Int)
-
-    fun showHideFilter()
-
-    fun onLockClick()
-
-    fun changeFragment(id: Int)
-
-    fun updateFilters(totalFilters: Int)
-
-    fun showPeriodRequest(periodRequest: FilterManager.PeriodRequest)
+@Subcomponent(modules = [OptionSetModule::class])
+interface OptionSetComponent {
+    fun inject(syncStatusDialog: OptionSetDialog)
 }

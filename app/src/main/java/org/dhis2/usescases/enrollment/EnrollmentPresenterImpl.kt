@@ -353,7 +353,7 @@ class EnrollmentPresenterImpl(
 
     override fun getOrgUnit(): OrganisationUnit {
         return d2.organisationUnitModule().organisationUnits()
-                .uid(getEnrollment().organisationUnit()).blockingGet()
+            .uid(getEnrollment().organisationUnit()).blockingGet()
     }
 
     override fun updateEnrollmentStatus(newStatus: EnrollmentStatus): Boolean {
@@ -429,7 +429,7 @@ class EnrollmentPresenterImpl(
 
     private fun saveAttribute(uid: String, value: String?): Boolean {
         val valueRepository = d2.trackedEntityModule().trackedEntityAttributeValues()
-                .value(uid, teiRepository.blockingGet().uid())
+            .value(uid, teiRepository.blockingGet().uid())
         var newValue = value
         if (d2.trackedEntityModule().trackedEntityAttributes().uid(uid).blockingGet().valueType() ==
             ValueType.IMAGE &&
@@ -460,7 +460,7 @@ class EnrollmentPresenterImpl(
         var newValue = value
         return if (eventUid != null) {
             val valueRepository = d2.trackedEntityModule().trackedEntityDataValues()
-                    .value(eventUid, uid)
+                .value(eventUid, uid)
 
             if (d2.dataElementModule().dataElements().uid(uid).blockingGet().valueType() ==
                 ValueType.IMAGE &&

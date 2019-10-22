@@ -34,7 +34,7 @@ class EnrollmentModule(val enrollmentUid: String, val programUid: String) {
         enrollmentRepository: EnrollmentObjectRepository
     ): TrackedEntityInstanceObjectRepository {
         return d2.trackedEntityModule().trackedEntityInstances()
-                .uid(enrollmentRepository.blockingGet().trackedEntityInstance())
+            .uid(enrollmentRepository.blockingGet().trackedEntityInstance())
     }
 
     @Provides

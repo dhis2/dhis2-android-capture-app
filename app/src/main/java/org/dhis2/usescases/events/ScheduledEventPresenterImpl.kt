@@ -4,6 +4,7 @@ import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.functions.BiFunction
+import java.util.Date
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper
 import org.hisp.dhis.android.core.category.CategoryOption
@@ -12,7 +13,6 @@ import org.hisp.dhis.android.core.event.EventStatus
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.program.ProgramStage
 import timber.log.Timber
-import java.util.Date
 
 class ScheduledEventPresenterImpl(
     val d2: D2,
@@ -47,11 +47,11 @@ class ScheduledEventPresenterImpl(
                         view.setStage(stage)
                         view.setEvent(event)
                         if (program.categoryComboUid() !== null && d2
-                                .categoryModule()
-                                .categoryCombos()
-                                .uid(catComboUid)
-                                .blockingGet()
-                                .isDefault == false
+                            .categoryModule()
+                            .categoryCombos()
+                            .uid(catComboUid)
+                            .blockingGet()
+                            .isDefault == false
                         ) {
                             view.setCatCombo(
                                 d2
