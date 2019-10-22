@@ -15,6 +15,7 @@ import org.dhis2.data.prefs.Preference.Companion.PIN
 import org.dhis2.data.prefs.Preference.Companion.SESSION_LOCKED
 import org.dhis2.data.prefs.PreferenceProvider
 import org.dhis2.data.schedulers.SchedulerProvider
+import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.dhis2.data.server.UserManager
 import org.dhis2.usescases.login.LoginContracts
 import org.dhis2.usescases.login.LoginPresenter
@@ -31,7 +32,7 @@ import org.junit.Test
 class LoginPresenterTest {
 
     private lateinit var loginPresenter: LoginPresenter
-    private val schedulers: SchedulerProvider = SchedulerProvider()
+    private val schedulers: SchedulerProvider = TrampolineSchedulerProvider()
 
     private val preferenceProvider: PreferenceProvider = mock()
     private val goldfinger: FingerPrintController = mock()
