@@ -14,20 +14,26 @@ import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.paging.PagedList
+import com.jakewharton.rxbinding2.widget.RxTextView
+import io.reactivex.Observable
+import io.reactivex.android.schedulers.AndroidSchedulers
 import org.dhis2.App
 import org.dhis2.R
 import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel
-import org.dhis2.data.forms.dataentry.tablefields.spinner.SpinnerViewModel as TableSpinnerViewModel
 import org.dhis2.databinding.DialogOptionSetBinding
 import org.dhis2.utils.Constants
 import org.dhis2.utils.custom_views.OptionSetOnClickListener
 import org.hisp.dhis.android.core.option.Option
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
+import org.dhis2.data.forms.dataentry.tablefields.spinner.SpinnerViewModel as TableSpinnerViewModel
 
-class OptionSetDialog : DialogFragment(), OptionSetContracts.View {
+class OptionSetDialog : DialogFragment(), OptionSetView {
+
+    private lateinit var binding: DialogOptionSetBinding
 
     @Inject
-    lateinit var presenter: OptionSetContracts.Presenter
+    lateinit var presenter: OptionSetPresenter
 
     private var adapter: OptionSetAdapter? = null
 
@@ -35,7 +41,7 @@ class OptionSetDialog : DialogFragment(), OptionSetContracts.View {
     var optionSetTable: TableSpinnerViewModel? = null
     var listener: OptionSetOnClickListener? = null
     var clearListener: View.OnClickListener? = null
-    var defalutSize: Int = 0
+    var defaultSize: Int = 0
 
     var isDialogShown = false
         private set
@@ -50,19 +56,19 @@ class OptionSetDialog : DialogFragment(), OptionSetContracts.View {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
 
-        val binding = DataBindingUtil.inflate<DialogOptionSetBinding>(inflater, R.layout.dialog_option_set, container, false)
+        binding = DataBindingUtil.inflate(inflater, R.layout.dialog_option_set, container, false)
 
         binding.title.text = if (optionSet != null) optionSet?.label() else optionSetTable?.label()
 
         if (optionSet != null)
-            presenter.init(this, optionSet!!, binding.txtSearch)
+            presenter.init(optionSet!!)
         else if (optionSetTable != null)
-            presenter.init(this, optionSetTable!!, binding.txtSearch)
+            presenter.init(optionSetTable!!)
 
-        adapter = OptionSetAdapter (OptionSetOnClickListener {
-                listener?.onSelectOption(it)
-                this.dismiss()
-            })
+        adapter = OptionSetAdapter(OptionSetOnClickListener {
+            listener?.onSelectOption(it)
+            this.dismiss()
+        })
 
         binding.recycler.adapter = adapter
 
@@ -77,7 +83,7 @@ class OptionSetDialog : DialogFragment(), OptionSetContracts.View {
     }
 
     override fun onCancel(dialog: DialogInterface) {
-        presenter.onDettach()
+        presenter.onDetach()
         super.onCancel(dialog)
     }
 
@@ -88,8 +94,8 @@ class OptionSetDialog : DialogFragment(), OptionSetContracts.View {
     }
 
     fun create(context: Context) {
-        (context.applicationContext as App).userComponent()!!.plus(OptionSetModule()).inject(this)
-        defalutSize = context.getSharedPreferences(Constants.SHARE_PREFS, Context.MODE_PRIVATE)
+        (context.applicationContext as App).userComponent()!!.plus(OptionSetModule(this)).inject(this)
+        defaultSize = context.getSharedPreferences(Constants.SHARE_PREFS, Context.MODE_PRIVATE)
                 .getInt(Constants.OPTION_SET_DIALOG_THRESHOLD, 15)
     }
 
@@ -99,18 +105,23 @@ class OptionSetDialog : DialogFragment(), OptionSetContracts.View {
     }
 
     override fun showDialog(): Boolean {
-        return presenter.getCount(if (optionSet != null) optionSet!!.optionSet() else optionSetTable!!.optionSet())!! > defalutSize
+        return presenter.getCount(if (optionSet != null) optionSet!!.optionSet() else optionSetTable!!.optionSet())!! > defaultSize
     }
 
     override fun dismiss() {
-        presenter.onDettach()
+        presenter.onDetach()
         if (isDialogShown) {
             isDialogShown = false
             super.dismiss()
         }
     }
 
+    override fun searchSource(): Observable<CharSequence> {
+        return RxTextView.textChanges(binding.txtSearch)
+                .startWith("")
+    }
+
     companion object {
-        val TAG = OptionSetDialog::class.java.name
+        val TAG: String = OptionSetDialog::class.java.name
     }
 }
