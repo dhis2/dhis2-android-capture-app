@@ -1,4 +1,4 @@
-package org.dhis2.usecases
+package org.dhis2.usecases.login
 
 import co.infinum.goldfinger.Goldfinger
 import com.nhaarman.mockitokotlin2.doReturn
