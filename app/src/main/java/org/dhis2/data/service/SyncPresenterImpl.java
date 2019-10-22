@@ -174,8 +174,9 @@ final class SyncPresenterImpl implements SyncPresenter {
     }
 
     @Override
-    public ListenableWorker.Result blockSyncGranularDataValues(String orgUnitUid, String attrOptionCombo, String periodId, String[] catOptionCombo) {
+    public ListenableWorker.Result blockSyncGranularDataValues(String dataSetUid, String orgUnitUid, String attrOptionCombo, String periodId, String[] catOptionCombo) {
         Completable.fromObservable(syncGranularDataValues(orgUnitUid, attrOptionCombo, periodId, catOptionCombo))
+                .andThen(Completable.fromObservable(syncGranularDataSet(dataSetUid, orgUnitUid, attrOptionCombo, periodId)))
                 .blockingAwait();
         if (!checkSyncDataValueStatus(orgUnitUid, attrOptionCombo, periodId))
             return ListenableWorker.Result.failure();
@@ -220,6 +221,15 @@ final class SyncPresenterImpl implements SyncPresenter {
                 .byPeriod().eq(period)
                 .byCategoryOptionComboUid().in(catOptionCombos)
                 .upload();
+    }
+
+    @Override
+    public Observable<D2Progress> syncGranularDataSet(String dataSetUid, String orgUnit, String attributeOptionCombo, String period) {
+        return d2.dataSetModule().dataSetCompleteRegistrations
+                .byDataSetUid().eq(dataSetUid)
+                .byAttributeOptionComboUid().eq(attributeOptionCombo)
+                .byOrganisationUnitUid().eq(orgUnit)
+                .byPeriod().eq(period).upload();
     }
 
     @Override
