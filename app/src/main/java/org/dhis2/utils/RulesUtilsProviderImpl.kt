@@ -199,13 +199,13 @@ class RulesUtilsProviderImpl(private val codeGenerator: CodeGenerator) : RulesUt
         Timber.tag("RULE UTILS PROVIDER").d("INIT CALCULATIONS FOR EVENT %s", eventUid)
 
         val d2 = D2Manager.getD2()
-        val event = d2.eventModule().events.uid(eventUid).blockingGet()
-        val enrollment = d2.enrollmentModule().enrollments.uid(event.enrollment()).blockingGet()
+        val event = d2.eventModule().events().uid(eventUid).blockingGet()
+        val enrollment = d2.enrollmentModule().enrollments().uid(event.enrollment()).blockingGet()
 
         var ruleEngineContext = RuleEngineContext.builder(ExpressionEvaluatorImpl(JexlEngine()))
                 .ruleVariables(
                         RuleEngineUtils.translateToRuleVariable(
-                                d2.programModule().programRuleVariables
+                                d2.programModule().programRuleVariables()
                                         .byProgramUid().eq(event.program())
                                         .blockingGet(),
                                 d2
@@ -213,7 +213,7 @@ class RulesUtilsProviderImpl(private val codeGenerator: CodeGenerator) : RulesUt
                 )
                 .rules(
                         RuleEngineUtils.translateToRules(
-                                d2.programModule().programRules
+                                d2.programModule().programRules()
                                         .byProgramUid().eq(event.program())
                                         .withProgramRuleActions()
                                         .blockingGet(),
@@ -222,7 +222,7 @@ class RulesUtilsProviderImpl(private val codeGenerator: CodeGenerator) : RulesUt
                 )
                 .calculatedValueMap(HashMap())
                 .supplementaryData(RuleEngineUtils.supplementaryData(d2))
-                .constantsValue(d2.constantModule().constants.blockingGet().associate { Pair(it.uid(), it.value().toString()) })
+                .constantsValue(d2.constantModule().constants().blockingGet().associate { Pair(it.uid(), it.value().toString()) })
                 .build()
 
         val ruleEngineBuilder = ruleEngineContext.toEngineBuilder()
@@ -230,7 +230,7 @@ class RulesUtilsProviderImpl(private val codeGenerator: CodeGenerator) : RulesUt
             ruleEngineBuilder.enrollment(
                     RuleEngineUtils.translateToRuleEnrollment(
                             enrollment,
-                            d2.trackedEntityModule().trackedEntityAttributeValues
+                            d2.trackedEntityModule().trackedEntityAttributeValues()
                                     .byTrackedEntityInstance().eq(enrollment.trackedEntityInstance())
                                     .blockingGet(),
                             d2
@@ -238,7 +238,7 @@ class RulesUtilsProviderImpl(private val codeGenerator: CodeGenerator) : RulesUt
             )
                     .events(
                             RuleEngineUtils.translateToRuleEvents(
-                                    d2.eventModule().events
+                                    d2.eventModule().events()
                                             .byEnrollmentUid().eq(event.enrollment())
                                             .byUid().notIn(event.uid())
                                             .byStatus().`in`(EventStatus.ACTIVE, EventStatus.COMPLETED, EventStatus.OVERDUE)
@@ -250,7 +250,7 @@ class RulesUtilsProviderImpl(private val codeGenerator: CodeGenerator) : RulesUt
         else
             ruleEngineBuilder.events(
                     RuleEngineUtils.translateToRuleEvents(
-                            d2.eventModule().events
+                            d2.eventModule().events()
                                     .byUid().notIn(event.uid()!!)
                                     .byStatus().`in`(EventStatus.ACTIVE, EventStatus.COMPLETED, EventStatus.OVERDUE)
                                     .byEventDate().isNotNull
@@ -267,13 +267,13 @@ class RulesUtilsProviderImpl(private val codeGenerator: CodeGenerator) : RulesUt
         ).call())
 
         val dataElements = if (section == null)
-            d2.programModule().programStages.uid(event.programStage())
+            d2.programModule().programStages().uid(event.programStage())
                     .blockingGet().programStageDataElements()!!
                     .map {
                         it.dataElement()!!.uid()
                     }
         else
-            d2.programModule().programStageSections
+            d2.programModule().programStageSections()
                     .uid(section)
                     .blockingGet().dataElements()!!
                     .map {
@@ -328,13 +328,13 @@ class RulesUtilsProviderImpl(private val codeGenerator: CodeGenerator) : RulesUt
     private fun setHideField(action: RuleActionHideField, fields: List<String>) { //TODO: CHECK IF ACTION FIELD IS DE OR ATTR
         (fields as ArrayList).remove(action.field())
 
-        if (eventUid != null && D2Manager.getD2().trackedEntityModule().trackedEntityDataValues
+        if (eventUid != null && D2Manager.getD2().trackedEntityModule().trackedEntityDataValues()
                         .value(eventUid, action.field()).blockingExists())
-            D2Manager.getD2().trackedEntityModule().trackedEntityDataValues
+            D2Manager.getD2().trackedEntityModule().trackedEntityDataValues()
                     .value(eventUid, action.field()).blockingDelete()
-        else if (teiUid != null && D2Manager.getD2().trackedEntityModule().trackedEntityAttributeValues
+        else if (teiUid != null && D2Manager.getD2().trackedEntityModule().trackedEntityAttributeValues()
                         .value(action.field(), teiUid).blockingExists())
-            D2Manager.getD2().trackedEntityModule().trackedEntityAttributeValues
+            D2Manager.getD2().trackedEntityModule().trackedEntityAttributeValues()
                     .value(action.field(), teiUid).blockingDelete()
     }
 
@@ -350,18 +350,18 @@ class RulesUtilsProviderImpl(private val codeGenerator: CodeGenerator) : RulesUt
 
         sectionsToHide.add(action.programStageSection())
         val sectionDataElements = UidsHelper.getUidsList(
-                D2Manager.getD2().programModule().programStageSections.uid(action.programStageSection())
+                D2Manager.getD2().programModule().programStageSections().uid(action.programStageSection())
                         .blockingGet().dataElements())
         sectionDataElements.forEach {
             if (fields.contains(it)) {
                 (fields as ArrayList).remove(it)
-                if (eventUid != null && D2Manager.getD2().trackedEntityModule().trackedEntityDataValues
+                if (eventUid != null && D2Manager.getD2().trackedEntityModule().trackedEntityDataValues()
                                 .value(eventUid, it).blockingExists())
-                    D2Manager.getD2().trackedEntityModule().trackedEntityDataValues
+                    D2Manager.getD2().trackedEntityModule().trackedEntityDataValues()
                             .value(eventUid, it).blockingDelete()
-                else if (teiUid != null && D2Manager.getD2().trackedEntityModule().trackedEntityAttributeValues
+                else if (teiUid != null && D2Manager.getD2().trackedEntityModule().trackedEntityAttributeValues()
                                 .value(it, teiUid).blockingExists())
-                    D2Manager.getD2().trackedEntityModule().trackedEntityAttributeValues
+                    D2Manager.getD2().trackedEntityModule().trackedEntityAttributeValues()
                             .value(it, teiUid).blockingDelete()
             }
         }
@@ -370,10 +370,10 @@ class RulesUtilsProviderImpl(private val codeGenerator: CodeGenerator) : RulesUt
 
     private fun setAssign(action: RuleActionAssign) { //TODO: CHECK IF ACTION FIELD IS DE OR ATTR
         if (eventUid != null)
-            D2Manager.getD2().trackedEntityModule().trackedEntityDataValues
+            D2Manager.getD2().trackedEntityModule().trackedEntityDataValues()
                     .value(eventUid, action.field()).blockingSet(action.content())
         else if (teiUid != null)
-            D2Manager.getD2().trackedEntityModule().trackedEntityAttributeValues
+            D2Manager.getD2().trackedEntityModule().trackedEntityAttributeValues()
                     .value(action.field(), teiUid).blockingSet(action.content())
     }
 

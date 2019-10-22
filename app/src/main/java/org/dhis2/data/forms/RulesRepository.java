@@ -87,7 +87,7 @@ public final class RulesRepository {
     @NonNull
     public Single<List<RuleVariable>> ruleVariables(@NonNull String programUid) {
         Timber.tag("PROGRAMRULEREPOSITORY").d("INIT RULES VARIABLES %s", Thread.currentThread().getName());
-        return d2.programModule().programRuleVariables.byProgramUid().eq(programUid).get()
+        return d2.programModule().programRuleVariables().byProgramUid().eq(programUid).get()
                 .map(this::translateToRuleVariable);
     }
 
@@ -96,8 +96,8 @@ public final class RulesRepository {
         for (ProgramRuleVariable programRuleVariable : programRuleVariables) {
             String attribute = programRuleVariable.trackedEntityAttribute() != null ? programRuleVariable.trackedEntityAttribute().uid() : null;
             String de = programRuleVariable.dataElement() != null ? programRuleVariable.dataElement().uid() : null;
-            if ((de != null && d2.dataElementModule().dataElements.uid(de).blockingExists()) ||
-                    (attribute != null && d2.trackedEntityModule().trackedEntityAttributes.uid(attribute).blockingExists()))
+            if ((de != null && d2.dataElementModule().dataElements().uid(de).blockingExists()) ||
+                    (attribute != null && d2.trackedEntityModule().trackedEntityAttributes().uid(attribute).blockingExists()))
                 ruleVariables.add(
                         translateToRuleVariable(programRuleVariable)
                 );
@@ -109,7 +109,7 @@ public final class RulesRepository {
 
     @NonNull
     public Single<List<RuleVariable>> ruleVariablesProgramStages(@NonNull String programUid) {
-        return d2.programModule().programRuleVariables.byProgramUid().eq(programUid).get()
+        return d2.programModule().programRuleVariables().byProgramUid().eq(programUid).get()
                 .toFlowable().flatMapIterable(list -> list)
                 .map(this::mapToRuleVariableProgramStages)
                 .toList();
@@ -126,9 +126,9 @@ public final class RulesRepository {
         // Mime types of the attribute and data element.
         ValueType valueType = null;
         if (attribute != null)
-            valueType = d2.trackedEntityModule().trackedEntityAttributes.uid(attribute).blockingGet().valueType();
+            valueType = d2.trackedEntityModule().trackedEntityAttributes().uid(attribute).blockingGet().valueType();
         else if (dataElement != null)
-            valueType = d2.dataElementModule().dataElements.uid(dataElement).blockingGet().valueType();
+            valueType = d2.dataElementModule().dataElements().uid(dataElement).blockingGet().valueType();
 
         // String representation of value type.
         RuleValueType mimeType = convertType(valueType != null ? valueType : ValueType.TEXT);
@@ -161,7 +161,7 @@ public final class RulesRepository {
     @NonNull
     public Single<Map<String, String>> queryConstants() {
         Timber.tag("PROGRAMRULEREPOSITORY").d("INIT CONSTANTS at %s", Thread.currentThread().getName());
-        return d2.constantModule().constants.get()
+        return d2.constantModule().constants().get()
                 .map(constants -> {
                     Map<String, String> constantsMap = new HashMap<>();
                     for (Constant constant : constants) {
@@ -175,7 +175,7 @@ public final class RulesRepository {
     @NonNull
     private Single<List<ProgramRule>> queryRules(
             @NonNull String programUid) {
-        return d2.programModule().programRules
+        return d2.programModule().programRules()
                 .byProgramUid().eq(programUid)
                 .withProgramRuleActions()
                 .get();
@@ -288,8 +288,8 @@ public final class RulesRepository {
         String attribute = programRuleVariable.trackedEntityAttribute() != null ? programRuleVariable.trackedEntityAttribute().uid() : null;
 
         // Mime types of the attribute and data element.
-        String attributeType = attribute != null ? d2.trackedEntityModule().trackedEntityAttributes.uid(attribute).blockingGet().valueType().name() : null;
-        String elementType = dataElement != null ? d2.dataElementModule().dataElements.uid(dataElement).blockingGet().valueType().name() : null;
+        String attributeType = attribute != null ? d2.trackedEntityModule().trackedEntityAttributes().uid(attribute).blockingGet().valueType().name() : null;
+        String elementType = dataElement != null ? d2.dataElementModule().dataElements().uid(dataElement).blockingGet().valueType().name() : null;
 
         // String representation of value type.
         RuleValueType mimeType = null;
@@ -460,7 +460,7 @@ public final class RulesRepository {
 
 
     public Single<List<RuleEvent>> otherEvents(String eventUidToEvaluate) {
-        return d2.eventModule().events.uid(eventUidToEvaluate).get()
+        return d2.eventModule().events().uid(eventUidToEvaluate).get()
                 .flatMap(eventToEvaluate ->
                         getOtherEventList(eventToEvaluate).toFlowable()
                                 .flatMapIterable(eventList -> eventList)
@@ -471,12 +471,12 @@ public final class RulesRepository {
                                 .map(event -> RuleEvent.builder()
                                         .event(event.uid())
                                         .programStage(event.programStage())
-                                        .programStageName(d2.programModule().programStages.uid(event.programStage()).blockingGet().name())
+                                        .programStageName(d2.programModule().programStages().uid(event.programStage()).blockingGet().name())
                                         .status(event.status() == EventStatus.VISITED ? RuleEvent.Status.ACTIVE : RuleEvent.Status.valueOf(event.status().name()))
                                         .eventDate(event.eventDate())
                                         .dueDate(event.dueDate() != null ? event.dueDate() : event.eventDate())
                                         .organisationUnit(event.organisationUnit())
-                                        .organisationUnitCode(d2.organisationUnitModule().organisationUnits.uid(event.organisationUnit()).blockingGet().code())
+                                        .organisationUnitCode(d2.organisationUnitModule().organisationUnits().uid(event.organisationUnit()).blockingGet().code())
                                         .dataValues(translateToRuleDataValue(event))
                                         .build())
                                 .toList()
@@ -487,13 +487,13 @@ public final class RulesRepository {
         List<RuleDataValue> ruleDataValues = new ArrayList<>();
         if (event.trackedEntityDataValues() != null)
             for (TrackedEntityDataValue dataValue : event.trackedEntityDataValues()) {
-                DataElement dataElement = d2.dataElementModule().dataElements.uid(dataValue.dataElement()).blockingGet();
+                DataElement dataElement = d2.dataElementModule().dataElements().uid(dataValue.dataElement()).blockingGet();
                 String value = dataValue.value();
                 if (!isEmpty(dataElement.optionSetUid())) {
-                    boolean useOptionCode = d2.programModule().programRuleVariables.byProgramUid().eq(event.program()).byDataElementUid().eq(dataValue.dataElement())
+                    boolean useOptionCode = d2.programModule().programRuleVariables().byProgramUid().eq(event.program()).byDataElementUid().eq(dataValue.dataElement())
                             .byUseCodeForOptionSet().isTrue().blockingIsEmpty();
                     if (!useOptionCode)
-                        value = d2.optionModule().options.byOptionSetUid().eq(dataElement.optionSetUid()).byCode().eq(value).one().blockingGet().name();
+                        value = d2.optionModule().options().byOptionSetUid().eq(dataElement.optionSetUid()).byCode().eq(value).one().blockingGet().name();
                 }
                 ruleDataValues.add(
                         RuleDataValue.create(event.eventDate(), event.programStage(), dataValue.dataElement(), value)
@@ -504,7 +504,7 @@ public final class RulesRepository {
 
     private Single<List<Event>> getOtherEventList(Event eventToEvaluate) {
         if (!isEmpty(eventToEvaluate.enrollment()))
-            return d2.eventModule().events.byProgramUid().eq(eventToEvaluate.program())
+            return d2.eventModule().events().byProgramUid().eq(eventToEvaluate.program())
                     .byEnrollmentUid().eq(eventToEvaluate.enrollment())
                     .byUid().notIn(eventToEvaluate.uid())
                     .byStatus().notIn(EventStatus.SCHEDULE, EventStatus.SKIPPED, EventStatus.OVERDUE)
@@ -512,7 +512,7 @@ public final class RulesRepository {
                     .orderByEventDate(RepositoryScope.OrderByDirection.DESC)
                     .get();
         else
-            return d2.eventModule().events
+            return d2.eventModule().events()
                     .byUid().notIn(eventToEvaluate.uid())
                     .byProgramUid().eq(eventToEvaluate.program())
                     .byProgramStageUid().eq(eventToEvaluate.programStage())
@@ -529,7 +529,7 @@ public final class RulesRepository {
 
 
     public Single<List<RuleEvent>> enrollmentEvents(String enrollmentUid) {
-        return d2.eventModule().events.byEnrollmentUid().eq(enrollmentUid)
+        return d2.eventModule().events().byEnrollmentUid().eq(enrollmentUid)
                 .byStatus().notIn(EventStatus.SCHEDULE, EventStatus.SKIPPED, EventStatus.OVERDUE)
                 .withTrackedEntityDataValues()
                 .get()
@@ -537,22 +537,22 @@ public final class RulesRepository {
                 .map(event -> RuleEvent.builder()
                         .event(event.uid())
                         .programStage(event.programStage())
-                        .programStageName(d2.programModule().programStages.uid(event.programStage()).blockingGet().name())
+                        .programStageName(d2.programModule().programStages().uid(event.programStage()).blockingGet().name())
                         .status(event.status() == EventStatus.VISITED ? RuleEvent.Status.ACTIVE : RuleEvent.Status.valueOf(event.status().name()))
                         .eventDate(event.eventDate())
                         .dueDate(event.dueDate() != null ? event.dueDate() : event.eventDate())
                         .organisationUnit(event.organisationUnit())
-                        .organisationUnitCode(d2.organisationUnitModule().organisationUnits.uid(event.organisationUnit()).blockingGet().code())
+                        .organisationUnitCode(d2.organisationUnitModule().organisationUnits().uid(event.organisationUnit()).blockingGet().code())
                         .dataValues(translateToRuleDataValue(event))
                         .build()).toList();
     }
 
     public Single<RuleEnrollment> enrollment(String eventUid) {
-        return d2.eventModule().events.uid(eventUid).get()
+        return d2.eventModule().events().uid(eventUid).get()
                 .flatMap(event -> {
                     Timber.tag("PROGRAMRULEREPOSITORY").d("INIT ENROLLMENT in %s", Thread.currentThread().getName());
-                    String ouCode = d2.organisationUnitModule().organisationUnits.uid(event.organisationUnit()).blockingGet().code();
-                    String programName = d2.programModule().programs.uid(event.program()).blockingGet().name();
+                    String ouCode = d2.organisationUnitModule().organisationUnits().uid(event.organisationUnit()).blockingGet().code();
+                    String programName = d2.programModule().programs().uid(event.program()).blockingGet().name();
                     if (event.enrollment() == null)
                         return Single.just(
                                 RuleEnrollment.create("",
@@ -564,7 +564,7 @@ public final class RulesRepository {
                                         new ArrayList<>(),
                                         programName));
                     else
-                        return d2.enrollmentModule().enrollments
+                        return d2.enrollmentModule().enrollments()
                                 .uid(event.enrollment()).get()
                                 .map(enrollment -> RuleEnrollment.create(enrollment.uid(),
                                         enrollment.incidentDate() != null ? enrollment.incidentDate() : new Date(),
@@ -580,17 +580,17 @@ public final class RulesRepository {
     }
 
     private List<RuleAttributeValue> getAttributesValues(Enrollment enrollment) {
-        List<TrackedEntityAttributeValue> attributeValues = d2.trackedEntityModule().trackedEntityAttributeValues
+        List<TrackedEntityAttributeValue> attributeValues = d2.trackedEntityModule().trackedEntityAttributeValues()
                 .byTrackedEntityInstance().eq(enrollment.trackedEntityInstance()).blockingGet();
         List<RuleAttributeValue> ruleAttributeValues = new ArrayList<>();
         for (TrackedEntityAttributeValue attributeValue : attributeValues) {
-            TrackedEntityAttribute attribute = d2.trackedEntityModule().trackedEntityAttributes.uid(attributeValue.trackedEntityAttribute()).blockingGet();
+            TrackedEntityAttribute attribute = d2.trackedEntityModule().trackedEntityAttributes().uid(attributeValue.trackedEntityAttribute()).blockingGet();
             String value = attributeValue.value();
             if (attribute.optionSet() != null && !isEmpty(attribute.optionSet().uid())) {
-                boolean useOptionCode = d2.programModule().programRuleVariables.byProgramUid().eq(enrollment.program()).byTrackedEntityAttributeUid().eq(attribute.uid())
+                boolean useOptionCode = d2.programModule().programRuleVariables().byProgramUid().eq(enrollment.program()).byTrackedEntityAttributeUid().eq(attribute.uid())
                         .byUseCodeForOptionSet().isTrue().blockingIsEmpty();
                 if (!useOptionCode)
-                    value = d2.optionModule().options.byOptionSetUid().eq(attribute.optionSet().uid()).byCode().eq(value).one().blockingGet().name();
+                    value = d2.optionModule().options().byOptionSetUid().eq(attribute.optionSet().uid()).byCode().eq(value).one().blockingGet().name();
             }
             RuleAttributeValue.create(attributeValue.trackedEntityAttribute(), value);
         }
@@ -605,11 +605,11 @@ public final class RulesRepository {
             Map<String, List<String>> supData = new HashMap<>();
 
             //ORG UNIT GROUPS
-            for (OrganisationUnitGroup ouGroup : d2.organisationUnitModule().organisationUnitGroups.blockingGet())
+            for (OrganisationUnitGroup ouGroup : d2.organisationUnitModule().organisationUnitGroups().blockingGet())
                 if (ouGroup.code() != null)
                     supData.put(ouGroup.code(), new ArrayList<>());
 
-            for (OrganisationUnit ou : d2.organisationUnitModule().organisationUnits.withOrganisationUnitGroups().blockingGet()) {
+            for (OrganisationUnit ou : d2.organisationUnitModule().organisationUnits().withOrganisationUnitGroups().blockingGet()) {
                 if (ou.organisationUnitGroups() != null) {
                     for (OrganisationUnitGroup ouGroup : ou.organisationUnitGroups()) {
                         List<String> groupOUs = supData.get(ouGroup.code());
@@ -620,7 +620,7 @@ public final class RulesRepository {
             }
 
             //USER ROLES
-            List<String> userRoleUids = UidsHelper.getUidsList(d2.userModule().userRoles.blockingGet());
+            List<String> userRoleUids = UidsHelper.getUidsList(d2.userModule().userRoles().blockingGet());
             supData.put("USER", userRoleUids);
             Timber.tag("PROGRAMRULEREPOSITORY").d("FINISHED SUPPLEM");
 

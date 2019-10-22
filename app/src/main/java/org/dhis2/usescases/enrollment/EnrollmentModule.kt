@@ -24,14 +24,14 @@ class EnrollmentModule(val enrollmentUid: String, val programUid: String) {
     @Provides
     @PerActivity
     fun provideEnrollmentRepository(d2: D2): EnrollmentObjectRepository {
-        return d2.enrollmentModule().enrollments.uid(enrollmentUid)
+        return d2.enrollmentModule().enrollments().uid(enrollmentUid)
     }
 
     @Provides
     @PerActivity
     fun provideTeiRepository(d2: D2, enrollmentRepository: EnrollmentObjectRepository):
             TrackedEntityInstanceObjectRepository {
-        return d2.trackedEntityModule().trackedEntityInstances
+        return d2.trackedEntityModule().trackedEntityInstances()
                 .uid(enrollmentRepository.blockingGet().trackedEntityInstance())
     }
 
@@ -39,7 +39,7 @@ class EnrollmentModule(val enrollmentUid: String, val programUid: String) {
     @PerActivity
     fun provideProgramRepository(d2: D2):
             ReadOnlyOneObjectRepositoryFinalImpl<Program> {
-        return d2.programModule().programs
+        return d2.programModule().programs()
                 .withProgramTrackedEntityAttributes()
                 .uid(programUid)
     }

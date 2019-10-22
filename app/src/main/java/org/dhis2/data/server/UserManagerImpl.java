@@ -30,7 +30,7 @@ public class UserManagerImpl implements UserManager {
     @NonNull
     @Override
     public Single<String> userInitials() {
-        return Single.defer(() -> d2.userModule().user.get())
+        return Single.defer(() -> d2.userModule().user().get())
                 .map(user -> {
                     String fn = user.firstName() != null ? user.firstName() : "";
                     String sn = user.surname() != null ? user.surname() : "";
@@ -41,14 +41,14 @@ public class UserManagerImpl implements UserManager {
     @Override
     @NonNull
     public Single<String> userFullName() {
-        return Single.defer(() -> d2.userModule().user.get())
+        return Single.defer(() -> d2.userModule().user().get())
                 .map(user -> String.format("%s %s", user.firstName(), user.surname()));
     }
 
     @NonNull
     @Override
     public Single<String> userName() {
-        return Single.defer(() -> d2.userModule().user.withUserCredentials().get())
+        return Single.defer(() -> d2.userModule().user().withUserCredentials().get())
                 .map(user -> user.userCredentials().username());
     }
 

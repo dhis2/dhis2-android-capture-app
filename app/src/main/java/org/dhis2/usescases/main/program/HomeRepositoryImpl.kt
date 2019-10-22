@@ -18,10 +18,10 @@ import org.hisp.dhis.android.core.program.ProgramType.WITHOUT_REGISTRATION
 import org.hisp.dhis.android.core.program.ProgramType.WITH_REGISTRATION
 
 internal class HomeRepositoryImpl(private val d2: D2, private val eventLabel: String) : HomeRepository {
-    private val dataSetRepository: DataSetCollectionRepository = d2.dataSetModule().dataSets
+    private val dataSetRepository: DataSetCollectionRepository = d2.dataSetModule().dataSets()
             .withDataSetElements()
             .withStyle()
-    private val programRepository: ProgramCollectionRepository = d2.programModule().programs
+    private val programRepository: ProgramCollectionRepository = d2.programModule().programs()
             .withStyle()
             .withTrackedEntityType()
 
@@ -30,7 +30,7 @@ internal class HomeRepositoryImpl(private val d2: D2, private val eventLabel: St
     override fun aggregatesModels(dateFilter: List<DatePeriod>, orgUnitFilter: List<String>, statesFilter: List<State>): Flowable<List<ProgramViewModel>> {
         return ParallelFlowable.from<DataSet>(Flowable.fromIterable<DataSet>(dataSetRepository.blockingGet())).runOn(Schedulers.io())
                 .map { dataSet ->
-                    var repo = d2.dataSetModule().dataSetInstances.byDataSetUid().eq(dataSet.uid())
+                    var repo = d2.dataSetModule().dataSetInstances().byDataSetUid().eq(dataSet.uid())
                     if (orgUnitFilter.isNotEmpty())
                         repo = repo.byOrganisationUnitUid().`in`(orgUnitFilter)
                     if (dateFilter.isNotEmpty())
@@ -47,18 +47,18 @@ internal class HomeRepositoryImpl(private val d2: D2, private val eventLabel: St
                     var state: State? = State.SYNCED
 
                     dataSet.dataSetElements()!!.forEach {
-                        val dataElement = d2.dataElementModule().dataElements.uid(it.dataElement().uid()).blockingGet()
+                        val dataElement = d2.dataElementModule().dataElements().uid(it.dataElement().uid()).blockingGet()
                         val categoryOptionCombos: List<String>
                         categoryOptionCombos = if (it.categoryCombo() != null)
                             UidsHelper.getUidsList<CategoryOptionCombo>(
-                                    d2.categoryModule().categoryCombos.withCategoryOptionCombos().uid(it.categoryCombo()!!.uid()).blockingGet()!!.categoryOptionCombos()!!)
+                                    d2.categoryModule().categoryCombos().withCategoryOptionCombos().uid(it.categoryCombo()!!.uid()).blockingGet()!!.categoryOptionCombos()!!)
                         else
                             UidsHelper.getUidsList<CategoryOptionCombo>(
-                                    d2.categoryModule().categoryCombos.withCategoryOptionCombos().uid(dataElement!!.categoryComboUid()).blockingGet()!!.categoryOptionCombos()!!)
+                                    d2.categoryModule().categoryCombos().withCategoryOptionCombos().uid(dataElement!!.categoryComboUid()).blockingGet()!!.categoryOptionCombos()!!)
                         val attributeOptionCombos = UidsHelper.getUidsList<CategoryOptionCombo>(
-                                d2.categoryModule().categoryCombos.withCategoryOptionCombos().uid(dataSet.categoryCombo()!!.uid()).blockingGet()!!.categoryOptionCombos()!!
+                                d2.categoryModule().categoryCombos().withCategoryOptionCombos().uid(dataSet.categoryCombo()!!.uid()).blockingGet()!!.categoryOptionCombos()!!
                         )
-                        for (dataValue in d2.dataValueModule().dataValues.byAttributeOptionComboUid().`in`(attributeOptionCombos)
+                        for (dataValue in d2.dataValueModule().dataValues().byAttributeOptionComboUid().`in`(attributeOptionCombos)
                                 .byCategoryOptionComboUid().`in`(categoryOptionCombos)
                                 .byDataElementUid().eq(it.dataElement().uid()).blockingGet()) {
                             if (dataValue.state() != State.SYNCED)
@@ -66,7 +66,7 @@ internal class HomeRepositoryImpl(private val d2: D2, private val eventLabel: St
                         }
                     }
 
-                    d2.dataSetModule().dataSetCompleteRegistrations
+                    d2.dataSetModule().dataSetCompleteRegistrations()
                             .byDataSetUid().eq(dataSet.uid()).blockingGet().forEach {
                                 if (it.state() != State.SYNCED)
                                     state = if (it.deleted() == true)
@@ -110,7 +110,7 @@ internal class HomeRepositoryImpl(private val d2: D2, private val eventLabel: St
                     if (program.programType() == WITH_REGISTRATION) {
                         typeName = if (program.trackedEntityType() != null) program.trackedEntityType()!!.displayName() else "TEI"
                         if (typeName == null)
-                            typeName = d2.trackedEntityModule().trackedEntityTypes.uid(program.trackedEntityType()!!.uid()).blockingGet()!!.displayName()
+                            typeName = d2.trackedEntityModule().trackedEntityTypes().uid(program.trackedEntityType()!!.uid()).blockingGet()!!.displayName()
                     } else if (program.programType() == WITHOUT_REGISTRATION)
                         typeName = eventLabel
                     else
@@ -122,60 +122,60 @@ internal class HomeRepositoryImpl(private val d2: D2, private val eventLabel: St
                         if (dateFilter.isNotEmpty()) {
                             if (orgUnitFilter.isNotEmpty()) {
                                 count = if (statesFilter.isNotEmpty()) {
-                                    d2.eventModule().events
+                                    d2.eventModule().events()
                                             .byProgramUid().eq(program.uid())
                                             .byEventDate().inDatePeriods(dateFilter)
                                             .byOrganisationUnitUid().`in`(orgUnitFilter)
                                             .byState().`in`(statesFilter)
                                             .blockingCount()
                                 } else
-                                    d2.eventModule().events
+                                    d2.eventModule().events()
                                             .byProgramUid().eq(program.uid())
                                             .byEventDate().inDatePeriods(dateFilter)
                                             .byOrganisationUnitUid().`in`(orgUnitFilter)
                                             .blockingCount()
                             } else {
                                 count = if (statesFilter.isNotEmpty())
-                                    d2.eventModule().events
+                                    d2.eventModule().events()
                                             .byProgramUid().eq(program.uid())
                                             .byEventDate().inDatePeriods(dateFilter)
                                             .byState().`in`(statesFilter)
                                             .blockingCount()
                                 else
-                                    d2.eventModule().events
+                                    d2.eventModule().events()
                                             .byProgramUid().eq(program.uid())
                                             .byEventDate().inDatePeriods(dateFilter)
                                             .blockingCount()
                             }
                         } else if (orgUnitFilter.isNotEmpty()) {
                             count = if (statesFilter.isNotEmpty())
-                                d2.eventModule().events
+                                d2.eventModule().events()
                                         .byProgramUid().eq(program.uid())
                                         .byOrganisationUnitUid().`in`(orgUnitFilter)
                                         .byState().`in`(statesFilter)
                                         .blockingCount()
                             else
-                                d2.eventModule().events
+                                d2.eventModule().events()
                                         .byProgramUid().eq(program.uid())
                                         .byOrganisationUnitUid().`in`(orgUnitFilter)
                                         .blockingCount()
                         } else {
                             count = if (statesFilter.isNotEmpty())
-                                d2.eventModule().events
+                                d2.eventModule().events()
                                         .byProgramUid().eq(program.uid())
                                         .byState().`in`(statesFilter)
                                         .blockingCount()
                             else
-                                d2.eventModule().events
+                                d2.eventModule().events()
                                         .byProgramUid().eq(program.uid())
                                         .blockingCount()
                         }
 
-                        if (d2.eventModule().events.byProgramUid().eq(program.uid()).byState().`in`(State.ERROR, State.WARNING).blockingGet().isNotEmpty())
+                        if (d2.eventModule().events().byProgramUid().eq(program.uid()).byState().`in`(State.ERROR, State.WARNING).blockingGet().isNotEmpty())
                             state = State.WARNING
-                        else if (d2.eventModule().events.byProgramUid().eq(program.uid()).byState().`in`(State.SENT_VIA_SMS, State.SYNCED_VIA_SMS).blockingGet().isNotEmpty())
+                        else if (d2.eventModule().events().byProgramUid().eq(program.uid()).byState().`in`(State.SENT_VIA_SMS, State.SYNCED_VIA_SMS).blockingGet().isNotEmpty())
                             state = State.SENT_VIA_SMS
-                        else if (d2.eventModule().events.byProgramUid().eq(program.uid()).byState().`in`(State.TO_UPDATE, State.TO_POST).blockingGet().isNotEmpty() || d2.eventModule().events.byProgramUid().eq(program.uid()).byDeleted().isTrue.blockingGet().isNotEmpty())
+                        else if (d2.eventModule().events().byProgramUid().eq(program.uid()).byState().`in`(State.TO_UPDATE, State.TO_POST).blockingGet().isNotEmpty() || d2.eventModule().events().byProgramUid().eq(program.uid()).byDeleted().isTrue.blockingGet().isNotEmpty())
                             state = State.TO_UPDATE
 
                     } else {
@@ -185,7 +185,7 @@ internal class HomeRepositoryImpl(private val d2: D2, private val eventLabel: St
                             val enrollments: List<Enrollment>
                             if (orgUnitFilter.isNotEmpty()) {
                                 if (statesFilter.isNotEmpty())
-                                    enrollments = d2.enrollmentModule().enrollments
+                                    enrollments = d2.enrollmentModule().enrollments()
                                             .byProgram().`in`(programUids)
                                             .byEnrollmentDate().inDatePeriods(dateFilter)
                                             .byOrganisationUnit().`in`(orgUnitFilter)
@@ -194,7 +194,7 @@ internal class HomeRepositoryImpl(private val d2: D2, private val eventLabel: St
                                             .byState().`in`(statesFilter)
                                             .blockingGet()
                                 else
-                                    enrollments = d2.enrollmentModule().enrollments
+                                    enrollments = d2.enrollmentModule().enrollments()
                                             .byProgram().`in`(programUids)
                                             .byEnrollmentDate().inDatePeriods(dateFilter)
                                             .byOrganisationUnit().`in`(orgUnitFilter)
@@ -203,7 +203,7 @@ internal class HomeRepositoryImpl(private val d2: D2, private val eventLabel: St
                                             .blockingGet()
                             } else {
                                 enrollments = if (statesFilter.isNotEmpty())
-                                    d2.enrollmentModule().enrollments
+                                    d2.enrollmentModule().enrollments()
                                             .byProgram().`in`(programUids)
                                             .byEnrollmentDate().inDatePeriods(dateFilter)
                                             .byStatus().eq(EnrollmentStatus.ACTIVE)
@@ -211,7 +211,7 @@ internal class HomeRepositoryImpl(private val d2: D2, private val eventLabel: St
                                             .byState().`in`(statesFilter)
                                             .blockingGet()
                                 else
-                                    d2.enrollmentModule().enrollments
+                                    d2.enrollmentModule().enrollments()
                                             .byProgram().`in`(programUids)
                                             .byEnrollmentDate().inDatePeriods(dateFilter)
                                             .byStatus().eq(EnrollmentStatus.ACTIVE)
@@ -221,7 +221,7 @@ internal class HomeRepositoryImpl(private val d2: D2, private val eventLabel: St
                             count = countEnrollment(enrollments)
                         } else if (orgUnitFilter.isNotEmpty()) {
                             val enrollments = if (statesFilter.isNotEmpty())
-                                d2.enrollmentModule().enrollments
+                                d2.enrollmentModule().enrollments()
                                         .byProgram().`in`(programUids)
                                         .byOrganisationUnit().`in`(orgUnitFilter)
                                         .byStatus().eq(EnrollmentStatus.ACTIVE)
@@ -229,7 +229,7 @@ internal class HomeRepositoryImpl(private val d2: D2, private val eventLabel: St
                                         .byState().`in`(statesFilter)
                                         .blockingGet()
                             else
-                                d2.enrollmentModule().enrollments
+                                d2.enrollmentModule().enrollments()
                                         .byProgram().`in`(programUids)
                                         .byOrganisationUnit().`in`(orgUnitFilter)
                                         .byStatus().eq(EnrollmentStatus.ACTIVE)
@@ -239,14 +239,14 @@ internal class HomeRepositoryImpl(private val d2: D2, private val eventLabel: St
                             count = countEnrollment(enrollments)
                         } else {
                             val enrollments = if (statesFilter.isNotEmpty())
-                                d2.enrollmentModule().enrollments
+                                d2.enrollmentModule().enrollments()
                                         .byProgram().`in`(programUids)
                                         .byStatus().eq(EnrollmentStatus.ACTIVE)
                                         .byDeleted().isFalse
                                         .byState().`in`(statesFilter)
                                         .blockingGet()
                             else
-                                d2.enrollmentModule().enrollments
+                                d2.enrollmentModule().enrollments()
                                         .byProgram().`in`(programUids)
                                         .byStatus().eq(EnrollmentStatus.ACTIVE)
                                         .byDeleted().isFalse
@@ -255,11 +255,11 @@ internal class HomeRepositoryImpl(private val d2: D2, private val eventLabel: St
                             count = countEnrollment(enrollments)
                         }
 
-                        if (d2.trackedEntityModule().trackedEntityInstances.byProgramUids(programUids).byState().`in`(State.ERROR, State.WARNING).blockingGet().isNotEmpty())
+                        if (d2.trackedEntityModule().trackedEntityInstances().byProgramUids(programUids).byState().`in`(State.ERROR, State.WARNING).blockingGet().isNotEmpty())
                             state = State.WARNING
-                        else if (d2.trackedEntityModule().trackedEntityInstances.byProgramUids(programUids).byState().`in`(State.SENT_VIA_SMS, State.SYNCED_VIA_SMS).blockingGet().isNotEmpty())
+                        else if (d2.trackedEntityModule().trackedEntityInstances().byProgramUids(programUids).byState().`in`(State.SENT_VIA_SMS, State.SYNCED_VIA_SMS).blockingGet().isNotEmpty())
                             state = State.SENT_VIA_SMS
-                        else if (d2.trackedEntityModule().trackedEntityInstances.byProgramUids(programUids).byState().`in`(State.TO_UPDATE, State.TO_POST).blockingGet().isNotEmpty() || d2.trackedEntityModule().trackedEntityInstances.byProgramUids(programUids).byDeleted().isTrue.blockingGet().isNotEmpty())
+                        else if (d2.trackedEntityModule().trackedEntityInstances().byProgramUids(programUids).byState().`in`(State.TO_UPDATE, State.TO_POST).blockingGet().isNotEmpty() || d2.trackedEntityModule().trackedEntityInstances().byProgramUids(programUids).byDeleted().isTrue.blockingGet().isNotEmpty())
                             state = State.TO_UPDATE
                     }
 
@@ -284,7 +284,7 @@ internal class HomeRepositoryImpl(private val d2: D2, private val eventLabel: St
         return if (captureOrgUnits.isNotEmpty()) {
             Flowable.just(captureOrgUnits)
         } else {
-            d2.organisationUnitModule().organisationUnits.byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE).get()
+            d2.organisationUnitModule().organisationUnits().byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE).get()
                     .toFlowable()
                     .map { UidsHelper.getUidsList(it) }
         }

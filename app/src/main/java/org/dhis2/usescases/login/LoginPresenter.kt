@@ -59,8 +59,8 @@ class LoginPresenter(private val view: LoginContracts.View,
     fun checkServerInfoAndShowBiometricButton() {
         userManager?.let { userManager ->
             disposable.add(
-                    Observable.just(if (userManager.d2.systemInfoModule().systemInfo.blockingGet() != null)
-                        userManager.d2.systemInfoModule().systemInfo.blockingGet()
+                    Observable.just(if (userManager.d2.systemInfoModule().systemInfo().blockingGet() != null)
+                        userManager.d2.systemInfoModule().systemInfo().blockingGet()
                     else
                         SystemInfo.builder().build())
                             .subscribeOn(schedulers.io())

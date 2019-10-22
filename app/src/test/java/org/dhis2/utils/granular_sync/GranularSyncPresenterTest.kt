@@ -42,9 +42,9 @@ class GranularSyncPresenterTest {
                 workManager
         )
         Mockito.`when`(d2.programModule()).thenReturn(mock(ProgramModule::class.java))
-        Mockito.`when`(d2.programModule().programs).thenReturn(mock(ProgramCollectionRepository::class.java))
-        Mockito.`when`(d2.programModule().programs.uid("test_uid")).thenReturn(programRepoMock as ReadOnlyOneObjectRepositoryFinalImpl<Program>?)
-        Mockito.`when`(d2.programModule().programs.uid("test_uid").get()).thenReturn(Single.just(testProgram))
+        Mockito.`when`(d2.programModule().programs()).thenReturn(mock(ProgramCollectionRepository::class.java))
+        Mockito.`when`(d2.programModule().programs().uid("test_uid")).thenReturn(programRepoMock as ReadOnlyOneObjectRepositoryFinalImpl<Program>?)
+        Mockito.`when`(d2.programModule().programs().uid("test_uid").get()).thenReturn(Single.just(testProgram))
         //WHEN
         presenter.configure(view)
         //THEN

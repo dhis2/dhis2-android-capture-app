@@ -50,7 +50,7 @@ public class ReservedValuePresenter implements ReservedValueContracts.Presenter 
     public void onClickRefill(ReservedValueModel reservedValue) {
         disposable.add(
                 d2.trackedEntityModule()
-                        .reservedValueManager
+                        .reservedValueManager()
                         .downloadReservedValues(reservedValue.uid(), 100)
                         .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.io())
