@@ -68,7 +68,7 @@
                 android:theme="@style/loginInputText"
                 tools:hint="hint">
 
-                <org.dhis2.utils.custom_views.TextInputAutoCompleteTextView
+                <org.dhis2.utils.customviews.TextInputAutoCompleteTextView
                     android:paddingTop="32dp"
                     android:paddingStart="12dp"
                     android:paddingEnd="12dp"

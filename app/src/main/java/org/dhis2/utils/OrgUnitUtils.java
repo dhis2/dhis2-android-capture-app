@@ -6,7 +6,7 @@ import androidx.annotation.NonNull;
 
 import com.unnamed.b.atv.model.TreeNode;
 
-import org.dhis2.utils.custom_views.OrgUnitHolder_2;
+import org.dhis2.utils.customviews.OrgUnitHolder_2;
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 

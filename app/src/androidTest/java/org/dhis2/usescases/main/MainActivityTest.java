@@ -61,7 +61,7 @@ public class MainActivityTest {
 
         scenario.onActivity(activity -> {
             try {
-                ((ProgramFragment) activity.activeFragment).swapProgramModelData().accept(testProgramList);
+                ((ProgramFragment) activity.getActiveFragment()).swapProgramModelData().accept(testProgramList);
             } catch (Exception e) {
                 e.printStackTrace();
             }

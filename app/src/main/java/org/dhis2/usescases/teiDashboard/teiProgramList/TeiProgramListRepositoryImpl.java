@@ -48,11 +48,11 @@ public class TeiProgramListRepositoryImpl implements TeiProgramListRepository {
     @NonNull
     @Override
     public Observable<List<EnrollmentViewModel>> activeEnrollments(String trackedEntityId) {
-        return Observable.fromCallable(() -> d2.enrollmentModule().enrollments.byTrackedEntityInstance().eq(trackedEntityId).byStatus().eq(EnrollmentStatus.ACTIVE).withEvents().blockingGet())
+        return Observable.fromCallable(() -> d2.enrollmentModule().enrollments().byTrackedEntityInstance().eq(trackedEntityId).byStatus().eq(EnrollmentStatus.ACTIVE).blockingGet())
                 .flatMapIterable(enrollments -> enrollments)
                 .map(enrollment -> {
-                    Program program = d2.programModule().programs.byUid().eq(enrollment.program()).withStyle().one().blockingGet();
-                    OrganisationUnit orgUnit = d2.organisationUnitModule().organisationUnits.byUid().eq(enrollment.organisationUnit()).one().blockingGet();
+                    Program program = d2.programModule().programs().byUid().eq(enrollment.program()).withStyle().one().blockingGet();
+                    OrganisationUnit orgUnit = d2.organisationUnitModule().organisationUnits().byUid().eq(enrollment.organisationUnit()).one().blockingGet();
                     return EnrollmentViewModel.create(
                             enrollment.uid(),
                             DateUtils.getInstance().formatDate(enrollment.enrollmentDate()),
@@ -71,11 +71,11 @@ public class TeiProgramListRepositoryImpl implements TeiProgramListRepository {
     @NonNull
     @Override
     public Observable<List<EnrollmentViewModel>> otherEnrollments(String trackedEntityId) {
-        return Observable.fromCallable(() -> d2.enrollmentModule().enrollments.byTrackedEntityInstance().eq(trackedEntityId).byStatus().neq(EnrollmentStatus.ACTIVE).withEvents().blockingGet())
+        return Observable.fromCallable(() -> d2.enrollmentModule().enrollments().byTrackedEntityInstance().eq(trackedEntityId).byStatus().neq(EnrollmentStatus.ACTIVE).blockingGet())
                 .flatMapIterable(enrollments -> enrollments)
                 .map(enrollment -> {
-                    Program program = d2.programModule().programs.byUid().eq(enrollment.program()).withStyle().one().blockingGet();
-                    OrganisationUnit orgUnit = d2.organisationUnitModule().organisationUnits.byUid().eq(enrollment.organisationUnit()).one().blockingGet();
+                    Program program = d2.programModule().programs().byUid().eq(enrollment.program()).withStyle().one().blockingGet();
+                    OrganisationUnit orgUnit = d2.organisationUnitModule().organisationUnits().byUid().eq(enrollment.organisationUnit()).one().blockingGet();
                     return EnrollmentViewModel.create(
                             enrollment.uid(),
                             DateUtils.getInstance().formatDate(enrollment.enrollmentDate()),
@@ -94,8 +94,8 @@ public class TeiProgramListRepositoryImpl implements TeiProgramListRepository {
     @NonNull
     @Override
     public Observable<List<ProgramViewModel>> allPrograms(String trackedEntityId) {
-        String trackedEntityType = d2.trackedEntityModule().trackedEntityInstances.byUid().eq(trackedEntityId).one().blockingGet().trackedEntityType();
-        return Observable.just(d2.organisationUnitModule().organisationUnits.byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE).blockingGet())
+        String trackedEntityType = d2.trackedEntityModule().trackedEntityInstances().byUid().eq(trackedEntityId).one().blockingGet().trackedEntityType();
+        return Observable.just(d2.organisationUnitModule().organisationUnits().byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE).blockingGet())
                 .map(captureOrgUnits -> {
                     Iterator<OrganisationUnit> it = captureOrgUnits.iterator();
                     List<String> captureOrgUnitUids = new ArrayList();
@@ -105,7 +105,7 @@ public class TeiProgramListRepositoryImpl implements TeiProgramListRepository {
                     }
                     return captureOrgUnitUids;
                 })
-                .flatMap(orgUnits->Observable.fromCallable(() -> d2.programModule().programs
+                .flatMap(orgUnits->Observable.fromCallable(() -> d2.programModule().programs()
                         .byOrganisationUnitList(orgUnits)
                         .byTrackedEntityTypeUid().eq(trackedEntityType).withStyle().blockingGet()))
                 .flatMapIterable(programs -> programs)
@@ -129,9 +129,9 @@ public class TeiProgramListRepositoryImpl implements TeiProgramListRepository {
     @NonNull
     @Override
     public Observable<List<Program>> alreadyEnrolledPrograms(String trackedEntityId) {
-        return Observable.fromCallable(() -> d2.enrollmentModule().enrollments.byTrackedEntityInstance().eq(trackedEntityId).blockingGet())
+        return Observable.fromCallable(() -> d2.enrollmentModule().enrollments().byTrackedEntityInstance().eq(trackedEntityId).blockingGet())
                 .flatMapIterable(enrollments -> enrollments)
-                .map(enrollment -> d2.programModule().programs.byUid().eq(enrollment.program()).one().blockingGet())
+                .map(enrollment -> d2.programModule().programs().byUid().eq(enrollment.program()).one().blockingGet())
                 .toList()
                 .toObservable();
     }
@@ -184,21 +184,21 @@ public class TeiProgramListRepositoryImpl implements TeiProgramListRepository {
     @Override
     public Observable<List<OrganisationUnit>> getOrgUnits(String programUid) {
         if (programUid != null)
-            return d2.organisationUnitModule().organisationUnits.byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE)
-                    .byProgramUids(Collections.singletonList(programUid)).withPrograms().get().toObservable();
+            return d2.organisationUnitModule().organisationUnits().byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE)
+                    .byProgramUids(Collections.singletonList(programUid)).get().toObservable();
         else
-            return d2.organisationUnitModule().organisationUnits.byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE).get().toObservable();
+            return d2.organisationUnitModule().organisationUnits().byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE).get().toObservable();
     }
 
     @Override
     public String getProgramColor(@NonNull String programUid) {
-        Program program = d2.programModule().programs.byUid().eq(programUid).withStyle().one().blockingGet();
+        Program program = d2.programModule().programs().byUid().eq(programUid).withStyle().one().blockingGet();
         return program.style() != null ? program.style().color() : null;
     }
 
     @Override
     public Program getProgram(String programUid) {
-        Program program = d2.programModule().programs.byUid().eq(programUid).one().blockingGet();
+        Program program = d2.programModule().programs().byUid().eq(programUid).one().blockingGet();
         return program;
     }
 }

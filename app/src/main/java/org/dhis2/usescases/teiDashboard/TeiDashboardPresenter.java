@@ -146,7 +146,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
                             if (canDelete) {
                                 view.analyticsHelper().setEvent(DELETE_TEI, CLICK, DELETE_TEI);
                                 return Single.fromCallable(() -> {
-                                    d2.trackedEntityModule().trackedEntityInstances.uid(teUid)
+                                    d2.trackedEntityModule().trackedEntityInstances().uid(teUid)
                                             .blockingDelete();
                                     return true;
                                 });
@@ -177,10 +177,10 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
                             if (canDelete) {
                                 view.analyticsHelper().setEvent(DELETE_ENROLL, CLICK, DELETE_ENROLL);
                                 return Single.fromCallable(() -> {
-                                    EnrollmentObjectRepository enrollmentObjectRepository = d2.enrollmentModule().enrollments.uid(dashboardProgramModel.getCurrentEnrollment().uid());
+                                    EnrollmentObjectRepository enrollmentObjectRepository = d2.enrollmentModule().enrollments().uid(dashboardProgramModel.getCurrentEnrollment().uid());
                                     enrollmentObjectRepository.setStatus(enrollmentObjectRepository.blockingGet().status());
                                     enrollmentObjectRepository.blockingDelete();
-                                    return !d2.enrollmentModule().enrollments.byTrackedEntityInstance().eq(teUid)
+                                    return !d2.enrollmentModule().enrollments().byTrackedEntityInstance().eq(teUid)
                                             .byDeleted().isFalse()
                                             .byStatus().eq(EnrollmentStatus.ACTIVE).blockingGet().isEmpty();
                                 });
@@ -204,9 +204,9 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
 
     private Single<Boolean> canDeleteTEI() {
         return Single.defer(() -> Single.fromCallable(() -> {
-                    boolean local = d2.trackedEntityModule().trackedEntityInstances.uid(
+                    boolean local = d2.trackedEntityModule().trackedEntityInstances().uid(
                             teUid).blockingGet().state() == State.TO_POST;
-                    boolean hasAuthority = d2.userModule().authorities
+                    boolean hasAuthority = d2.userModule().authorities()
                             .byName().eq("F_TEI_CASCADE_DELETE").one().blockingExists();
                     return local || hasAuthority;
                 }
@@ -215,9 +215,9 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
 
     private Single<Boolean> canDeleteEnrollment() {
         return Single.defer(() -> Single.fromCallable(() -> {
-                    boolean local = d2.enrollmentModule().enrollments.uid(
+                    boolean local = d2.enrollmentModule().enrollments().uid(
                             dashboardProgramModel.getCurrentEnrollment().uid()).blockingGet().state() == State.TO_POST;
-                    boolean hasAuthority = d2.userModule().authorities
+                    boolean hasAuthority = d2.userModule().authorities()
                             .byName().eq("F_ENROLLMENT_CASCADE_DELETE").one().blockingExists();
                     return local || hasAuthority;
                 }

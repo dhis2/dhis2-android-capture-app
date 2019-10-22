@@ -44,7 +44,7 @@ import static org.dhis2.utils.Constants.CONFLICT_TYPE;
 import static org.dhis2.utils.Constants.ORG_UNIT;
 import static org.dhis2.utils.Constants.PERIOD_ID;
 import static org.dhis2.utils.Constants.UID;
-import static org.dhis2.utils.granular_sync.SyncStatusDialog.ConflictType;
+import static org.dhis2.utils.granularsync.SyncStatusDialog.ConflictType;
 
 public class SyncGranularWorker extends Worker {
 

@@ -30,10 +30,10 @@ public class DataSetInitialRepositoryImpl implements DataSetInitialRepository {
 
     @Override
     public Flowable<List<DateRangeInputPeriodModel>> getDataInputPeriod() {
-        return Flowable.just(d2.dataSetModule().dataSets.withDataInputPeriods().byUid().eq(dataSetUid).one().blockingGet())
+        return Flowable.just(d2.dataSetModule().dataSets().withDataInputPeriods().byUid().eq(dataSetUid).one().blockingGet())
                 .flatMapIterable(dataSet -> dataSet.dataInputPeriods())
                 .flatMap(dataInputPeriod ->
-                        Flowable.just(d2.periodModule().periods.byPeriodId().eq(dataInputPeriod.period().uid()).blockingGet())
+                        Flowable.just(d2.periodModule().periods().byPeriodId().eq(dataInputPeriod.period().uid()).blockingGet())
                                 .flatMapIterable(periods -> periods)
                                 .map(period -> {
                                     Date periodStartDate = period.startDate();
@@ -49,10 +49,10 @@ public class DataSetInitialRepositoryImpl implements DataSetInitialRepository {
     @NonNull
     @Override
     public Observable<DataSetInitialModel> dataSet() {
-        return Observable.just(d2.dataSetModule().dataSets.byUid().eq(dataSetUid).one().blockingGet())
+        return Observable.just(d2.dataSetModule().dataSets().byUid().eq(dataSetUid).one().blockingGet())
                 .map(dataSet -> {
-                    String categoryComboDisplayName = d2.categoryModule().categoryCombos.byUid().eq(dataSet.categoryCombo().uid()).one().blockingGet().displayName();
-                    CategoryCombo categoryCombos = d2.categoryModule().categoryCombos.withCategories().byUid().eq(dataSet.categoryCombo().uid()).one().blockingGet();
+                    String categoryComboDisplayName = d2.categoryModule().categoryCombos().byUid().eq(dataSet.categoryCombo().uid()).one().blockingGet().displayName();
+                    CategoryCombo categoryCombos = d2.categoryModule().categoryCombos().withCategories().byUid().eq(dataSet.categoryCombo().uid()).one().blockingGet();
 
                     return DataSetInitialModel.create(
                             dataSet.displayName(),
@@ -69,17 +69,16 @@ public class DataSetInitialRepositoryImpl implements DataSetInitialRepository {
     @NonNull
     @Override
     public Observable<List<OrganisationUnit>> orgUnits() {
-        return d2.organisationUnitModule().organisationUnits
+        return d2.organisationUnitModule().organisationUnits()
                 .byDataSetUids(Collections.singletonList(dataSetUid))
                 .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE)
-                .withDataSets()
                 .get().toObservable();
     }
 
     @NonNull
     @Override
     public Observable<List<CategoryOption>> catCombo(String categoryUid) {
-        return Observable.just(d2.categoryModule().categories.withCategoryOptions().byUid().eq(categoryUid).one().blockingGet())
+        return Observable.just(d2.categoryModule().categories().withCategoryOptions().byUid().eq(categoryUid).one().blockingGet())
                 .map(Category::categoryOptions)
                 .map(list -> {
                     Iterator<CategoryOption> iterator = list.iterator();
@@ -94,7 +93,7 @@ public class DataSetInitialRepositoryImpl implements DataSetInitialRepository {
     @NonNull
     @Override
     public Flowable<String> getCategoryOptionCombo(List<String> catOptions, String catCombo) {
-        return d2.categoryModule().categoryOptionCombos.withCategoryOptions().byCategoryOptions(catOptions).byCategoryComboUid().eq(catCombo).one().get()
+        return d2.categoryModule().categoryOptionCombos().withCategoryOptions().byCategoryOptions(catOptions).byCategoryComboUid().eq(catCombo).one().get()
                 .map(BaseIdentifiableObject::uid)
                 .toFlowable();
     }
@@ -103,10 +102,10 @@ public class DataSetInitialRepositoryImpl implements DataSetInitialRepository {
     @Override
     public Flowable<String> getPeriodId(PeriodType periodType, Date date) {
         return Flowable.fromCallable(() -> {
-            if (d2.periodModule().periodHelper.getPeriod(periodType, date) == null)
-                d2.periodModule().periodHelper.blockingGetPeriodsForDataSet(dataSetUid);
+            if (d2.periodModule().periodHelper().getPeriod(periodType, date) == null)
+                d2.periodModule().periodHelper().blockingGetPeriodsForDataSet(dataSetUid);
 
-            return d2.periodModule().periodHelper.getPeriod(periodType, date).periodId();
+            return d2.periodModule().periodHelper().getPeriod(periodType, date).periodId();
         });
     }
 }

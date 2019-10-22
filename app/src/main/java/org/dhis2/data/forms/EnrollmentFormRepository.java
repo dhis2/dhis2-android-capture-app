@@ -153,16 +153,16 @@ public class EnrollmentFormRepository implements FormRepository {
     @NonNull
     @Override
     public Flowable<String> title() {
-        return d2.enrollmentModule().enrollments.uid(enrollmentUid).get()
-                .flatMap(enrollment -> d2.programModule().programs.uid(enrollment.program()).get())
+        return d2.enrollmentModule().enrollments().uid(enrollmentUid).get()
+                .flatMap(enrollment -> d2.programModule().programs().uid(enrollment.program()).get())
                 .map(program -> program.displayName()).toFlowable();
     }
 
     @NonNull
     @Override
     public Flowable<Pair<Program, String>> reportDate() {
-        return d2.enrollmentModule().enrollments.uid(enrollmentUid).get()
-                .flatMap(enrollment -> d2.programModule().programs.uid(enrollment.program()).get()
+        return d2.enrollmentModule().enrollments().uid(enrollmentUid).get()
+                .flatMap(enrollment -> d2.programModule().programs().uid(enrollment.program()).get()
                         .map(program -> Pair.create(program, enrollment.enrollmentDate() != null ?
                                 DateUtils.uiDateFormat().format(enrollment.enrollmentDate()) : "")))
                 .toFlowable();
@@ -171,8 +171,8 @@ public class EnrollmentFormRepository implements FormRepository {
     @NonNull
     @Override
     public Flowable<Pair<Program, String>> incidentDate() {
-        return d2.enrollmentModule().enrollments.uid(enrollmentUid).get()
-                .flatMap(enrollment -> d2.programModule().programs.uid(enrollment.program()).get().
+        return d2.enrollmentModule().enrollments().uid(enrollmentUid).get()
+                .flatMap(enrollment -> d2.programModule().programs().uid(enrollment.program()).get().
                         map(program -> Pair.create(program, enrollment.incidentDate() != null ?
                                 DateUtils.uiDateFormat().format(enrollment.incidentDate()) : "")))
                 .toFlowable();
@@ -180,15 +180,15 @@ public class EnrollmentFormRepository implements FormRepository {
 
     @Override
     public Flowable<Program> getAllowDatesInFuture() {
-        return d2.enrollmentModule().enrollments.uid(enrollmentUid).get()
-                .flatMap(enrollment -> d2.programModule().programs.uid(enrollment.program()).get())
+        return d2.enrollmentModule().enrollments().uid(enrollmentUid).get()
+                .flatMap(enrollment -> d2.programModule().programs().uid(enrollment.program()).get())
                 .toFlowable();
     }
 
     @NonNull
     @Override
     public Flowable<ReportStatus> reportStatus() {
-        return d2.enrollmentModule().enrollments.uid(enrollmentUid).get()
+        return d2.enrollmentModule().enrollments().uid(enrollmentUid).get()
                 .map(enrollment -> ReportStatus.fromEnrollmentStatus(enrollment.status()))
                 .toFlowable();
     }
@@ -196,7 +196,7 @@ public class EnrollmentFormRepository implements FormRepository {
     @NonNull
     @Override
     public Flowable<List<FormSectionViewModel>> sections() {
-        return d2.enrollmentModule().enrollments.uid(enrollmentUid).get()
+        return d2.enrollmentModule().enrollments().uid(enrollmentUid).get()
                 .map(enrollment -> Arrays.asList(FormSectionViewModel
                         .createForEnrollment(enrollment.uid()))).toFlowable();
     }
@@ -289,7 +289,7 @@ public class EnrollmentFormRepository implements FormRepository {
     @Override
     public Consumer<Geometry> storeCoordinates() {
         return geometry -> {
-            EnrollmentObjectRepository repo = d2.enrollmentModule().enrollments.uid(enrollmentUid);
+            EnrollmentObjectRepository repo = d2.enrollmentModule().enrollments().uid(enrollmentUid);
             repo.setGeometry(geometry);
         };
     }
@@ -298,15 +298,15 @@ public class EnrollmentFormRepository implements FormRepository {
     @Override
     public Consumer<Geometry> storeTeiCoordinates() {
         return geometry -> {
-            String teiUid = d2.enrollmentModule().enrollments.uid(enrollmentUid).blockingGet().trackedEntityInstance();
-            d2.trackedEntityModule().trackedEntityInstances.uid(teiUid).setGeometry(geometry);
+            String teiUid = d2.enrollmentModule().enrollments().uid(enrollmentUid).blockingGet().trackedEntityInstance();
+            d2.trackedEntityModule().trackedEntityInstances().uid(teiUid).setGeometry(geometry);
         };
     }
 
 
     @Override
     public Consumer<Unit> clearCoordinates() {
-        return unit -> d2.enrollmentModule().enrollments.uid(enrollmentUid).setGeometry(null);
+        return unit -> d2.enrollmentModule().enrollments().uid(enrollmentUid).setGeometry(null);
     }
 
     @NonNull
@@ -358,8 +358,8 @@ public class EnrollmentFormRepository implements FormRepository {
         Date now = calNow.getTime();
 
 
-        return d2.enrollmentModule().enrollments.uid(enrollmentUid).get()
-                .flatMap(enrollment -> d2.programModule().programStages.byAutoGenerateEvent().isTrue()
+        return d2.enrollmentModule().enrollments().uid(enrollmentUid).get()
+                .flatMap(enrollment -> d2.programModule().programStages().byAutoGenerateEvent().isTrue()
                         .byProgramUid().eq(enrollment.program()).get()
                         .flatMap(programStages -> {
                             for (ProgramStage programStage : programStages) {
@@ -405,7 +405,7 @@ public class EnrollmentFormRepository implements FormRepository {
                                 if (periodType != null)
                                     eventDate = DateUtils.getInstance().getNextPeriod(periodType, eventDate, 0); //Sets eventDate to current Period date
 
-                                List<Event> events = d2.eventModule().events.byEnrollmentUid().eq(enrollment.uid()).byProgramStageUid().eq(programStage.uid()).blockingGet();
+                                List<Event> events = d2.eventModule().events().byEnrollmentUid().eq(enrollment.uid()).byProgramStageUid().eq(programStage.uid()).blockingGet();
                                 if (events == null || events.isEmpty()) {
 
                                     Event.Builder eventBuilder = Event.builder()
@@ -441,13 +441,13 @@ public class EnrollmentFormRepository implements FormRepository {
     @NonNull
     @Override
     public Observable<List<FieldViewModel>> fieldValues() {
-        return d2.enrollmentModule().enrollments.uid(enrollmentUid).get()
-                .flatMap(enrollment -> d2.programModule().programs.withProgramTrackedEntityAttributes().uid(enrollment.program()).get()
+        return d2.enrollmentModule().enrollments().uid(enrollmentUid).get()
+                .flatMap(enrollment -> d2.programModule().programs().withProgramTrackedEntityAttributes().uid(enrollment.program()).get()
                         .map(program -> {
                             List<FieldViewModel> fieldViewModelList = new ArrayList<>();
                             for (ProgramTrackedEntityAttribute ptea : program.programTrackedEntityAttributes()) {
-                                TrackedEntityAttribute tea = d2.trackedEntityModule().trackedEntityAttributes.withObjectStyle().uid(ptea.trackedEntityAttribute().uid()).blockingGet();
-                                TrackedEntityAttributeValue value = d2.trackedEntityModule().trackedEntityAttributeValues
+                                TrackedEntityAttribute tea = d2.trackedEntityModule().trackedEntityAttributes().withObjectStyle().uid(ptea.trackedEntityAttribute().uid()).blockingGet();
+                                TrackedEntityAttributeValue value = d2.trackedEntityModule().trackedEntityAttributeValues()
                                         .byTrackedEntityAttribute().eq(tea.uid())
                                         .byTrackedEntityInstance().eq(enrollment.trackedEntityInstance())
                                         .one().blockingGet();
@@ -490,15 +490,15 @@ public class EnrollmentFormRepository implements FormRepository {
     @NonNull
     @Override
     public Observable<String> getTrackedEntityInstanceUid() {
-        return d2.enrollmentModule().enrollments.uid(enrollmentUid).get()
+        return d2.enrollmentModule().enrollments().uid(enrollmentUid).get()
                 .map(enrollment -> enrollment.trackedEntityInstance()).toObservable();
     }
 
     @Override
     public Observable<Trio<Boolean, CategoryCombo, List<CategoryOptionCombo>>> getProgramCategoryCombo(String eventUid) {
-        return d2.eventModule().events.uid(eventUid).get()
-                .flatMap(event -> d2.programModule().programs.uid(event.program()).get()
-                        .flatMap(program -> d2.categoryModule().categoryOptionCombos
+        return d2.eventModule().events().uid(eventUid).get()
+                .flatMap(event -> d2.programModule().programs().uid(event.program()).get()
+                        .flatMap(program -> d2.categoryModule().categoryOptionCombos()
                                 .byCategoryComboUid().eq(program.categoryComboUid()).get()
                                 .map(categoryOptionCombos -> {
                                     boolean eventHastOptionSelected = false;
@@ -506,7 +506,7 @@ public class EnrollmentFormRepository implements FormRepository {
                                         if (event.attributeOptionCombo() != null && event.attributeOptionCombo().equals(options.uid()))
                                             eventHastOptionSelected = true;
                                     }
-                                    CategoryCombo catCombo = d2.categoryModule().categoryCombos.uid(program.categoryComboUid()).blockingGet();
+                                    CategoryCombo catCombo = d2.categoryModule().categoryCombos().uid(program.categoryComboUid()).blockingGet();
                                     return Trio.create(eventHastOptionSelected, catCombo, categoryOptionCombos);
                                 })
                         )).toObservable();
@@ -519,8 +519,8 @@ public class EnrollmentFormRepository implements FormRepository {
 
     @Override
     public Observable<FeatureType> captureCoodinates() {
-        return d2.enrollmentModule().enrollments.byUid().eq(enrollmentUid).one().get().toObservable()
-                .map(enrollment -> d2.programModule().programs.byUid().eq(enrollment.program()).one().blockingGet())
+        return d2.enrollmentModule().enrollments().byUid().eq(enrollmentUid).one().get().toObservable()
+                .map(enrollment -> d2.programModule().programs().byUid().eq(enrollment.program()).one().blockingGet())
                 .map(program -> {
                     if (program.featureType() == null)
                         return FeatureType.NONE;
@@ -532,16 +532,16 @@ public class EnrollmentFormRepository implements FormRepository {
 
     @Override
     public Single<TrackedEntityType> captureTeiCoordinates() {
-        return d2.enrollmentModule().enrollments.uid(enrollmentUid).get()
-                .flatMap(enrollment -> d2.programModule().programs.withTrackedEntityType().uid(enrollment.program()).get())
-                .flatMap(program -> d2.trackedEntityModule().trackedEntityTypes.withTrackedEntityTypeAttributes().withStyle()
+        return d2.enrollmentModule().enrollments().uid(enrollmentUid).get()
+                .flatMap(enrollment -> d2.programModule().programs().withTrackedEntityType().uid(enrollment.program()).get())
+                .flatMap(program -> d2.trackedEntityModule().trackedEntityTypes().withTrackedEntityTypeAttributes().withStyle()
                                         .uid(program.trackedEntityType().uid()).get());
     }
 
     @Override
     public Observable<OrganisationUnit> getOrgUnitDates() {
-        return Observable.defer(() -> Observable.just(d2.enrollmentModule().enrollments.uid(enrollmentUid).blockingGet()))
-                .switchMap(enrollment -> Observable.just(d2.organisationUnitModule().organisationUnits.uid(enrollment.organisationUnit()).blockingGet()));
+        return Observable.defer(() -> Observable.just(d2.enrollmentModule().enrollments().uid(enrollmentUid).blockingGet()))
+                .switchMap(enrollment -> Observable.just(d2.organisationUnitModule().organisationUnits().uid(enrollment.organisationUnit()).blockingGet()));
     }
 
     @NonNull
@@ -562,7 +562,7 @@ public class EnrollmentFormRepository implements FormRepository {
 
         int optionCount = 0;
         if (optionSetUid != null)
-            optionCount = d2.optionModule().optionSets.withOptions().uid(optionSetUid).blockingGet().options().size();
+            optionCount = d2.optionModule().optionSets().withOptions().uid(optionSetUid).blockingGet().options().size();
 
         FieldViewModelFactoryImpl fieldFactory = new FieldViewModelFactoryImpl(
                 "",
@@ -582,7 +582,7 @@ public class EnrollmentFormRepository implements FormRepository {
         }
 
         if (valueType == ValueType.ORGANISATION_UNIT && !isEmpty(dataValue)) {
-            dataValue = dataValue + "_ou_" + d2.organisationUnitModule().organisationUnits.uid(dataValue).blockingGet().displayName();
+            dataValue = dataValue + "_ou_" + d2.organisationUnitModule().organisationUnits().uid(dataValue).blockingGet().displayName();
         }
 
         return fieldFactory.create(uid, label, valueType, mandatory, optionSetUid, dataValue, null,
@@ -592,8 +592,8 @@ public class EnrollmentFormRepository implements FormRepository {
     @NonNull
     @Override
     public Observable<Trio<String, String, String>> useFirstStageDuringRegistration() { //enrollment uid, trackedEntityType, event uid
-        return d2.programModule().programs.uid(programUid).get()
-                .flatMap(program -> d2.programModule().programStages.byProgramUid().eq(programUid).get()
+        return d2.programModule().programs().uid(programUid).get()
+                .flatMap(program -> d2.programModule().programStages().byProgramUid().eq(programUid).get()
                         .map(programStages -> {
                             Collections.sort(programStages, (ps1, ps2) -> {
                                 Integer priority1 = ps1.sortOrder();
@@ -623,13 +623,13 @@ public class EnrollmentFormRepository implements FormRepository {
                     }
 
                     if (stageToOpen != null) { //we should check if event exist (if not create) and open
-                        List<Event> event = d2.eventModule().events.byProgramStageUid().eq(stageToOpen.uid()).byEnrollmentUid().eq(enrollmentUid).blockingGet();
+                        List<Event> event = d2.eventModule().events().byProgramStageUid().eq(stageToOpen.uid()).byEnrollmentUid().eq(enrollmentUid).blockingGet();
 
                         if (event != null && !event.isEmpty()) {
                             String eventUid = event.get(0).uid();
                             return Trio.create(getTeiUid(), programUid, eventUid);
                         } else {
-                            Enrollment enrollment = d2.enrollmentModule().enrollments.uid(enrollmentUid).blockingGet();
+                            Enrollment enrollment = d2.enrollmentModule().enrollments().uid(enrollmentUid).blockingGet();
 
                             if (enrollment != null) {
                                 Date createdDate = DateUtils.getInstance().getCalendar().getTime();
@@ -656,7 +656,7 @@ public class EnrollmentFormRepository implements FormRepository {
 
                         }
                     } else { //open Dashboard
-                        Enrollment enrollment = d2.enrollmentModule().enrollments.uid(enrollmentUid).blockingGet();
+                        Enrollment enrollment = d2.enrollmentModule().enrollments().uid(enrollmentUid).blockingGet();
 
                         String programUid = "";
                         String teiUid = "";
@@ -673,7 +673,7 @@ public class EnrollmentFormRepository implements FormRepository {
 
     private String getTeiUid() {
         String teiUid = "";
-        Enrollment enrollment = d2.enrollmentModule().enrollments.uid(enrollmentUid).blockingGet();
+        Enrollment enrollment = d2.enrollmentModule().enrollments().uid(enrollmentUid).blockingGet();
         if (enrollment != null)
             teiUid = enrollment.trackedEntityInstance();
 
@@ -682,7 +682,7 @@ public class EnrollmentFormRepository implements FormRepository {
 
     @NonNull
     private Flowable<String> enrollmentProgram() {
-        return d2.enrollmentModule().enrollments.uid(enrollmentUid).get()
+        return d2.enrollmentModule().enrollments().uid(enrollmentUid).get()
                 .map(enrollment -> {
                     this.programUid = enrollment.program();
                     return enrollment.program();
@@ -691,7 +691,7 @@ public class EnrollmentFormRepository implements FormRepository {
     }
 
     public Flowable<ProgramStage> getProgramStage(String eventUid) {
-        return Flowable.fromCallable(() -> d2.eventModule().events.byUid().eq(eventUid).one().blockingGet())
-                .map(event -> d2.programModule().programStages.byUid().eq(event.programStage()).one().blockingGet());
+        return Flowable.fromCallable(() -> d2.eventModule().events().byUid().eq(eventUid).one().blockingGet())
+                .map(event -> d2.programModule().programStages().byUid().eq(event.programStage()).one().blockingGet());
     }
 }

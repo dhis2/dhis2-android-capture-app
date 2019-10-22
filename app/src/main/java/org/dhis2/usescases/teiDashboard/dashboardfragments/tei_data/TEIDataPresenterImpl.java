@@ -78,7 +78,7 @@ class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
         this.compositeDisposable = new CompositeDisposable();
 
         compositeDisposable.add(
-                d2.trackedEntityModule().trackedEntityInstances.uid(teiUid).get()
+                d2.trackedEntityModule().trackedEntityInstances().uid(teiUid).get()
                         .map(tei -> ExtensionsKt.profilePicturePath(tei, d2, programUid))
                         .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.ui())
@@ -103,13 +103,13 @@ class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
                                 if (eventModel.eventDate() != null) {
                                     RuleEffectResult effectResult = new RulesUtilsProviderImpl(new CodeGeneratorImpl()).evaluateEvent(eventModel.uid(),null);
                                     List<String> newMandatoryFields = effectResult.getMandatoryFields();
-                                    List<ProgramStageDataElement> psDataElementList = d2.programModule().programStages.uid(eventModel.programStage())
+                                    List<ProgramStageDataElement> psDataElementList = d2.programModule().programStages().uid(eventModel.programStage())
                                             .withAllChildren().blockingGet().programStageDataElements();
                                     for (ProgramStageDataElement psDataElement : psDataElementList) {
                                         if (psDataElement.compulsory())
                                             newMandatoryFields.add(psDataElement.dataElement().uid());
                                     }
-                                    boolean missingMandatories = !newMandatoryFields.isEmpty() && d2.trackedEntityModule().trackedEntityDataValues
+                                    boolean missingMandatories = !newMandatoryFields.isEmpty() && d2.trackedEntityModule().trackedEntityDataValues()
                                             .byEvent().eq(eventModel.uid())
                                             .byDataElement().in(newMandatoryFields)
                                             .blockingCount() < newMandatoryFields.size();
@@ -183,7 +183,7 @@ class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
 
     @Override
     public void completeEnrollment() {
-        if (d2.programModule().programs.uid(programUid).blockingGet().access().data().write()) {
+        if (d2.programModule().programs().uid(programUid).blockingGet().access().data().write()) {
             Flowable<Long> flowable;
             EnrollmentStatus newStatus = EnrollmentStatus.COMPLETED;
 
@@ -297,7 +297,7 @@ class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
             intent.putExtras(EventCaptureActivity.getActivityBundle(uid, programUid));
             view.openEventCapture(intent);
         } else {
-            Event event = d2.eventModule().events.uid(uid).blockingGet();
+            Event event = d2.eventModule().events().uid(uid).blockingGet();
             Intent intent = new Intent(view.getContext(), EventInitialActivity.class);
             intent.putExtras(EventInitialActivity.getBundle(
                     programUid, uid, EventCreationType.DEFAULT.name(), teiUid, null, event.organisationUnit(), event.programStage(), dashboardModel.getCurrentEnrollment().uid(), 0, dashboardModel.getCurrentEnrollment().status()

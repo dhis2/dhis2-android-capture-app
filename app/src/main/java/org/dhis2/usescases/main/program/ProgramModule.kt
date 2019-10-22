@@ -1,15 +1,13 @@
 package org.dhis2.usescases.main.program
 
 import android.content.Context
-
-import org.dhis2.R
-import org.dhis2.data.dagger.PerFragment
-import org.hisp.dhis.android.core.D2
-
 import dagger.Module
 import dagger.Provides
+import org.dhis2.R
+import org.dhis2.data.dagger.PerFragment
 import org.dhis2.data.prefs.PreferenceProvider
 import org.dhis2.data.schedulers.SchedulerProvider
+import org.hisp.dhis.android.core.D2
 
 /**
  * QUADRAM. Created by ppajuelo on 07/02/2018.
@@ -20,10 +18,12 @@ class ProgramModule {
 
     @Provides
     @PerFragment
-    internal fun programPresenter(homeRepository: HomeRepository,
-                                  schedulerProvider : SchedulerProvider,
-                                  preferenceProvider: PreferenceProvider): ProgramContract.Presenter {
-        return ProgramPresenter(homeRepository, schedulerProvider,preferenceProvider)
+    internal fun programPresenter(
+        homeRepository: HomeRepository,
+        schedulerProvider: SchedulerProvider,
+        preferenceProvider: PreferenceProvider
+    ): ProgramContract.Presenter {
+        return ProgramPresenter(homeRepository, schedulerProvider, preferenceProvider)
     }
 
     @Provides

@@ -43,7 +43,7 @@
                 tools:ignore="ContentDescription" />
 
 
-            <org.dhis2.utils.custom_views.CircularCompletionView
+            <org.dhis2.utils.customviews.CircularCompletionView
                 android:id="@+id/completion"
                 android:layout_width="wrap_content"
                 android:layout_height="0dp"

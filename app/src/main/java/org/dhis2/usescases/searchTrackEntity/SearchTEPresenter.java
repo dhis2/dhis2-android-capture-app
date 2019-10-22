@@ -26,9 +26,9 @@ import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.NetworkUtils;
 import org.dhis2.utils.ObjectStyleUtils;
-import org.dhis2.utils.custom_views.OrgUnitDialog;
+import org.dhis2.utils.customviews.OrgUnitDialog;
 import org.dhis2.utils.filters.FilterManager;
-import org.dhis2.utils.granular_sync.SyncStatusDialog;
+import org.dhis2.utils.granularsync.SyncStatusDialog;
 import org.dhis2.utils.maps.GeometryUtils;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.common.FeatureType;
@@ -52,7 +52,6 @@ import io.reactivex.Observable;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.processors.FlowableProcessor;
 import io.reactivex.processors.PublishProcessor;
-import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
 import static android.app.Activity.RESULT_OK;
@@ -666,7 +665,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     @Override
     public void downloadTei(String teiUid) {
         compositeDisposable.add(
-                d2.trackedEntityModule().trackedEntityInstanceDownloader.byUid().in(Collections.singletonList(teiUid)).download()
+                d2.trackedEntityModule().trackedEntityInstanceDownloader().byUid().in(Collections.singletonList(teiUid)).download()
                         .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.ui())
                         .subscribe(
@@ -678,7 +677,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
     @Override
     public String nameOUByUid(String uid) {
-        OrganisationUnit organisationUnit = d2.organisationUnitModule().organisationUnits.uid(uid).blockingGet();
+        OrganisationUnit organisationUnit = d2.organisationUnitModule().organisationUnits().uid(uid).blockingGet();
         return organisationUnit != null ? organisationUnit.name() : null;
     }
 
@@ -687,7 +686,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         List<String> teiUids = new ArrayList<>();
         teiUids.add(TEIuid);
         compositeDisposable.add(
-                d2.trackedEntityModule().trackedEntityInstanceDownloader.byUid().in(teiUids).download()
+                d2.trackedEntityModule().trackedEntityInstanceDownloader().byUid().in(teiUids).download()
                         .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.ui())
                         .subscribe(
@@ -767,7 +766,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
     @Override
     public Drawable getSymbolIcon() {
-        TrackedEntityType teiType = d2.trackedEntityModule().trackedEntityTypes.withTrackedEntityTypeAttributes().withStyle().uid(trackedEntityType).blockingGet();
+        TrackedEntityType teiType = d2.trackedEntityModule().trackedEntityTypes().withTrackedEntityTypeAttributes().withStyle().uid(trackedEntityType).blockingGet();
 
         if (teiType.style() != null && teiType.style().icon() != null) {
             return
@@ -790,7 +789,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
     @Override
     public int getTEIColor() {
-        TrackedEntityType teiType = d2.trackedEntityModule().trackedEntityTypes.withTrackedEntityTypeAttributes().withStyle().uid(trackedEntityType).blockingGet();
+        TrackedEntityType teiType = d2.trackedEntityModule().trackedEntityTypes().withTrackedEntityTypeAttributes().withStyle().uid(trackedEntityType).blockingGet();
 
         if (teiType.style() != null && teiType.style().color() != null) {
             return ColorUtils.parseColor(teiType.style().color());

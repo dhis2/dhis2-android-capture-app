@@ -20,8 +20,8 @@ import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.databinding.WidgetDatepickerBinding;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.OnDialogClickListener;
-import org.dhis2.utils.custom_views.OrgUnitDialog;
-import org.dhis2.utils.custom_views.PeriodDialog;
+import org.dhis2.utils.customviews.OrgUnitDialog;
+import org.dhis2.utils.customviews.PeriodDialog;
 import org.hisp.dhis.android.core.category.CategoryOptionCombo;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.event.Event;
@@ -35,7 +35,6 @@ import java.util.List;
 
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Observable;
-import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import timber.log.Timber;
 

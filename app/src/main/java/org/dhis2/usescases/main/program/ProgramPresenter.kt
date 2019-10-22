@@ -18,8 +18,8 @@ import org.dhis2.utils.Constants
 import org.dhis2.utils.analytics.SELECT_PROGRAM
 import org.dhis2.utils.analytics.TYPE_PROGRAM_SELECTED
 import org.dhis2.utils.filters.FilterManager
-import org.dhis2.utils.granular_sync.GranularSyncContracts
-import org.dhis2.utils.granular_sync.SyncStatusDialog
+import org.dhis2.utils.granularsync.GranularSyncContracts
+import org.dhis2.utils.granularsync.SyncStatusDialog
 import org.hisp.dhis.android.core.period.DatePeriod
 import org.hisp.dhis.android.core.program.ProgramType
 import timber.log.Timber
@@ -28,9 +28,11 @@ import timber.log.Timber
  * Created by ppajuelo on 18/10/2017.f
  */
 
-class ProgramPresenter internal constructor(private val homeRepository: HomeRepository,
-                                            private val schedulerProvider: SchedulerProvider,
-                                            private val preferenceProvider: PreferenceProvider) : ProgramContract.Presenter {
+class ProgramPresenter internal constructor(
+    private val homeRepository: HomeRepository,
+    private val schedulerProvider: SchedulerProvider,
+    private val preferenceProvider: PreferenceProvider
+) : ProgramContract.Presenter {
 
     private var view: ProgramContract.View? = null
     private var compositeDisposable: CompositeDisposable? = null
@@ -43,42 +45,57 @@ class ProgramPresenter internal constructor(private val homeRepository: HomeRepo
         val loadingProcessor = PublishProcessor.create<Boolean>()
 
         compositeDisposable!!.add(
-                FilterManager.getInstance().asFlowable()
-                        .startWith(FilterManager.getInstance())
-                        .flatMap { filterManager ->
-                            loadingProcessor.onNext(true)
-                            homeRepository.programModels(filterManager.periodFilters, filterManager.orgUnitUidsFilters, filterManager.stateFilters)
-                                    .mergeWith(homeRepository.aggregatesModels(filterManager.periodFilters, filterManager.orgUnitUidsFilters, filterManager.stateFilters)).flatMapIterable { data -> data }
-                                    .sorted { p1, p2 -> p1.title().compareTo(p2.title(), ignoreCase = true) }.toList().toFlowable()
-                                    .subscribeOn(schedulerProvider.io())
-                        }
-                        .subscribeOn(schedulerProvider.io())
-                        .observeOn(schedulerProvider.ui())
-                        .subscribe(
-                                view.swapProgramModelData(),
-                                Consumer { throwable -> view.renderError(throwable.message ?: "") },
-                                Action { Timber.d("LOADING ENDED") }
+            FilterManager.getInstance().asFlowable()
+                .startWith(FilterManager.getInstance())
+                .doOnNext { Timber.tag("INIT DATA").d("NEW FILTER") }
+                .switchMap { filterManager ->
+                    loadingProcessor.onNext(true)
+                    homeRepository.programModels(
+                        filterManager.periodFilters,
+                        filterManager.orgUnitUidsFilters,
+                        filterManager.stateFilters
+                    )
+                        .mergeWith(
+                            homeRepository.aggregatesModels(
+                                filterManager.periodFilters,
+                                filterManager.orgUnitUidsFilters,
+                                filterManager.stateFilters
+                            )
                         )
+                        .doOnNext { Timber.tag("INIT DATA").d("LIST READY TO BE SORTED SORTED") }
+                        .flatMapIterable { data -> data }
+                        .sorted { p1, p2 -> p1.title().compareTo(p2.title(), ignoreCase = true) }
+                        .toList().toFlowable()
+                        .subscribeOn(schedulerProvider.io())
+                        .doOnNext { Timber.tag("INIT DATA").d("LIST SORTED") }
+                }
+                .subscribeOn(schedulerProvider.io())
+                .observeOn(schedulerProvider.ui())
+                .subscribe(
+                    view.swapProgramModelData(),
+                    Consumer { throwable -> view.renderError(throwable.message ?: "") },
+                    Action { Timber.tag("INIT DATA").d("LOADING ENDED") }
+                )
         )
 
         compositeDisposable!!.add(
-                loadingProcessor
-                        .subscribeOn(schedulerProvider.io())
-                        .observeOn(schedulerProvider.ui())
-                        .subscribe(
-                                {view.showFilterProgress()},
-                                {Timber.e(it)}
-                        )
+            loadingProcessor
+                .subscribeOn(schedulerProvider.io())
+                .observeOn(schedulerProvider.ui())
+                .subscribe(
+                    { view.showFilterProgress() },
+                    { Timber.e(it) }
+                )
         )
 
         compositeDisposable!!.add(
-                FilterManager.getInstance().ouTreeFlowable()
-                        .subscribeOn(schedulerProvider.io())
-                        .observeOn(schedulerProvider.ui())
-                        .subscribe(
-                                { view.openOrgUnitTreeSelector() },
-                                { Timber.e(it) }
-                        )
+            FilterManager.getInstance().ouTreeFlowable()
+                .subscribeOn(schedulerProvider.io())
+                .observeOn(schedulerProvider.ui())
+                .subscribe(
+                    { view.openOrgUnitTreeSelector() },
+                    { Timber.e(it) }
+                )
         )
     }
 
@@ -88,62 +105,96 @@ class ProgramPresenter internal constructor(private val homeRepository: HomeRepo
 
     override fun onSyncStatusClick(program: ProgramViewModel) {
         view!!.showSyncDialog(
-                SyncStatusDialog.Builder()
-                        .setConflictType(
-                                if (program.typeName() != "DataSets")
-                                    SyncStatusDialog.ConflictType.PROGRAM
-                                else
-                                    SyncStatusDialog.ConflictType.DATA_SET
-                        )
-                        .setUid(program.id())
-                        .onDismissListener(
-                                object : GranularSyncContracts.OnDismissListener {
-                                    override fun onDismiss(hasChanged: Boolean) {
-                                        if (hasChanged)
-                                            programQueries.onNext(
-                                                    Pair.create(FilterManager.getInstance().periodFilters, FilterManager.getInstance().orgUnitUidsFilters)
-                                            )
-                                    }
-                                })
-                        .build()
+            SyncStatusDialog.Builder()
+                .setConflictType(
+                    if (program.typeName() != "DataSets") {
+                        SyncStatusDialog.ConflictType.PROGRAM
+                    } else {
+                        SyncStatusDialog.ConflictType.DATA_SET
+                    }
+                )
+                .setUid(program.id())
+                .onDismissListener(
+                    object : GranularSyncContracts.OnDismissListener {
+                        override fun onDismiss(hasChanged: Boolean) {
+                            if (hasChanged) {
+                                programQueries.onNext(
+                                    Pair.create(
+                                        FilterManager.getInstance().periodFilters,
+                                        FilterManager.getInstance().orgUnitUidsFilters
+                                    )
+                                )
+                            }
+                        }
+                    })
+                .build()
         )
     }
 
     override fun onItemClick(programModel: ProgramViewModel) {
-
         val bundle = Bundle()
-        val idTag = if (programModel.typeName() == "DataSets")
+        val idTag = if (programModel.typeName() == "DataSets") {
             "DATASET_UID"
-        else
+        } else {
             "PROGRAM_UID"
+        }
 
-        if (!isEmpty(programModel.type()))
+        if (!isEmpty(programModel.type())) {
             bundle.putString("TRACKED_ENTITY_UID", programModel.type())
+        }
 
-        view!!.analyticsHelper().setEvent(TYPE_PROGRAM_SELECTED, if (programModel.programType().isNotEmpty()) programModel.programType() else programModel.typeName(), SELECT_PROGRAM)
+        view!!.analyticsHelper().setEvent(
+            TYPE_PROGRAM_SELECTED,
+            if (programModel.programType().isNotEmpty()) {
+                programModel.programType()
+            } else {
+                programModel.typeName()
+            },
+            SELECT_PROGRAM
+        )
         bundle.putString(idTag, programModel.id())
         bundle.putString(Constants.DATA_SET_NAME, programModel.title())
-        bundle.putString(Constants.ACCESS_DATA, java.lang.Boolean.toString(programModel.accessDataWrite()))
+        bundle.putString(
+            Constants.ACCESS_DATA,
+            java.lang.Boolean.toString(programModel.accessDataWrite())
+        )
         val programTheme = ColorUtils.getThemeFromColor(programModel.color())
         val prefs = view!!.abstracContext.getSharedPreferences(
-                Constants.SHARE_PREFS, Context.MODE_PRIVATE)
+            Constants.SHARE_PREFS, Context.MODE_PRIVATE
+        )
         if (programTheme != -1) {
             prefs.edit().putInt(Constants.PROGRAM_THEME, programTheme).apply()
-        } else
+        } else {
             prefs.edit().remove(Constants.PROGRAM_THEME).apply()
+        }
 
-        when {
-            programModel.programType() == ProgramType.WITH_REGISTRATION.name -> view!!.startActivity(SearchTEActivity::class.java, bundle, false, false, null)
-            programModel.programType() == ProgramType.WITHOUT_REGISTRATION.name -> view!!.startActivity(ProgramEventDetailActivity::class.java,
-                    ProgramEventDetailActivity.getBundle(programModel.id()),
-                    false, false, null)
-            else -> view!!.startActivity(DataSetDetailActivity::class.java, bundle, false, false, null)
+        when (programModel.programType()) {
+            ProgramType.WITH_REGISTRATION.name -> view!!.startActivity(
+                SearchTEActivity::class.java,
+                bundle,
+                false,
+                false,
+                null
+            )
+            ProgramType.WITHOUT_REGISTRATION.name -> view!!.startActivity(
+                ProgramEventDetailActivity::class.java,
+                ProgramEventDetailActivity.getBundle(programModel.id()),
+                false, false, null
+            )
+            else -> view!!.startActivity(
+                DataSetDetailActivity::class.java,
+                bundle,
+                false,
+                false,
+                null
+            )
         }
     }
 
     override fun showDescription(description: String) {
-        if (!isEmpty(description))
+        if (!isEmpty(description)) {
             view!!.showDescription(description)
+        }
     }
 
     override fun showHideFilterClick() {

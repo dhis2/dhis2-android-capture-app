@@ -12,16 +12,16 @@ import androidx.appcompat.app.AlertDialog
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.DividerItemDecoration
 import io.reactivex.functions.Consumer
+import javax.inject.Inject
 import org.dhis2.Components
 import org.dhis2.R
 import org.dhis2.databinding.FragmentProgramBinding
 import org.dhis2.usescases.general.FragmentGlobalAbstract
 import org.dhis2.usescases.main.MainActivity
-import org.dhis2.usescases.org_unit_selector.OUTreeActivity
+import org.dhis2.usescases.orgunitselector.OUTreeActivity
 import org.dhis2.utils.HelpManager
 import org.dhis2.utils.filters.FilterManager
 import timber.log.Timber
-import javax.inject.Inject
 
 /**
  * Created by ppajuelo on 18/10/2017.f
@@ -36,22 +36,31 @@ class ProgramFragment : FragmentGlobalAbstract(), ProgramContract.View {
     @Inject
     lateinit var adapter: ProgramModelAdapter
 
-    //-------------------------------------------
+    // -------------------------------------------
     //region LIFECYCLE
-
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        if (activity != null)
+        if (activity != null) {
             (activity!!.applicationContext as Components).userComponent()!!
-                    .plus(ProgramModule()).inject(this)
+                .plus(ProgramModule()).inject(this)
+        }
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_program, container, false)
         binding!!.presenter = presenter
         binding!!.programRecycler.adapter = adapter
-        binding!!.programRecycler.addItemDecoration(DividerItemDecoration(context!!, DividerItemDecoration.VERTICAL))
+        binding!!.programRecycler.addItemDecoration(
+            DividerItemDecoration(
+                context!!,
+                DividerItemDecoration.VERTICAL
+            )
+        )
         return binding!!.root
     }
 
@@ -80,12 +89,13 @@ class ProgramFragment : FragmentGlobalAbstract(), ProgramContract.View {
     }
 
     override fun renderError(message: String) {
-        if (isAdded && activity != null)
+        if (isAdded && activity != null) {
             AlertDialog.Builder(activity!!)
-                    .setPositiveButton(android.R.string.ok, null)
-                    .setTitle(getString(R.string.error))
-                    .setMessage(message)
-                    .show()
+                .setPositiveButton(android.R.string.ok, null)
+                .setTitle(getString(R.string.error))
+                .setMessage(message)
+                .show()
+        }
     }
 
     override fun openOrgUnitTreeSelector() {
@@ -96,19 +106,27 @@ class ProgramFragment : FragmentGlobalAbstract(), ProgramContract.View {
     override fun setTutorial() {
         try {
             if (context != null && isAdded) {
-                Handler().postDelayed({
-                    if (abstractActivity != null) {
-                        val stepCondition = SparseBooleanArray()
-                        stepCondition.put(7, binding!!.programRecycler.adapter!!.itemCount > 0)
-                        HelpManager.getInstance().show(abstractActivity, HelpManager.TutorialName.PROGRAM_FRAGMENT, stepCondition)
-                    }
-
-                }, 500)
+                Handler().postDelayed(
+                    {
+                        if (abstractActivity != null) {
+                            val stepCondition = SparseBooleanArray()
+                            stepCondition.put(
+                                7,
+                                binding!!.programRecycler.adapter!!.itemCount > 0
+                            )
+                            HelpManager.getInstance().show(
+                                abstractActivity,
+                                HelpManager.TutorialName.PROGRAM_FRAGMENT,
+                                stepCondition
+                            )
+                        }
+                    },
+                    500
+                )
             }
         } catch (e: Exception) {
             Timber.e(e)
         }
-
     }
 
     fun openFilter(open: Boolean) {
@@ -120,6 +138,6 @@ class ProgramFragment : FragmentGlobalAbstract(), ProgramContract.View {
     }
 
     override fun clearFilters() {
-        (activity as MainActivity).adapter.notifyDataSetChanged()
+        (activity as MainActivity).adapter?.notifyDataSetChanged()
     }
 }

@@ -154,7 +154,7 @@ public class SyncActivity extends ActivityGlobalAbstract implements SyncContract
 
 
     public void startMain() {
-        getSharedPreferences().edit().putBoolean(Preference.INITIAL_SYNC_DONE.name(), true).apply();
+        getSharedPreferences().edit().putBoolean(Preference.INITIAL_SYNC_DONE, true).apply();
         Intent intent = new Intent(this, MainActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);

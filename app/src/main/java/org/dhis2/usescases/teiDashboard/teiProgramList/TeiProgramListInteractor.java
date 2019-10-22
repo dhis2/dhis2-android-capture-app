@@ -11,7 +11,7 @@ import androidx.appcompat.app.AlertDialog;
 import org.dhis2.R;
 import org.dhis2.databinding.WidgetDatepickerBinding;
 import org.dhis2.usescases.main.program.ProgramViewModel;
-import org.dhis2.utils.custom_views.OrgUnitDialog;
+import org.dhis2.utils.customviews.OrgUnitDialog;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.Program;
 

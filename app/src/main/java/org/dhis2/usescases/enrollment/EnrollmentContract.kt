@@ -1,6 +1,7 @@
 package org.dhis2.usescases.enrollment
 
 import io.reactivex.Flowable
+import java.util.Date
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel
 import org.dhis2.data.forms.dataentry.fields.RowAction
 import org.dhis2.usescases.general.AbstractActivityContracts
@@ -13,7 +14,6 @@ import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityType
-import java.util.*
 
 class EnrollmentContract {
     interface View : AbstractActivityContracts.View {
@@ -28,14 +28,24 @@ class EnrollmentContract {
         fun showFields(fields: List<FieldViewModel>)
 
         fun displayEnrollmentCoordinates(enrollmentCoordinatesData: Pair<Program, Enrollment>?)
-        fun displayTeiCoordinates(teiCoordinatesData: Pair<TrackedEntityType, TrackedEntityInstance>?)
+        fun displayTeiCoordinates(
+            teiCoordinatesData: Pair<TrackedEntityType, TrackedEntityInstance>?
+        )
 
         fun setDateLabels(enrollmentDateLabel: String?, indicendDateLabel: String?)
         fun setUpIncidentDate(incidentDate: Date?)
         fun setUpEnrollmentDate(enrollmentDate: Date?)
         fun onReportDateClick()
         fun onIncidentDateClick()
-        fun showCalendar(date: Date?, minDate: Date?, maxDate: Date?, label: String, allowFuture: Boolean, listener: DatePickerUtils.OnDatePickerClickListener)
+        fun showCalendar(
+            date: Date?,
+            minDate: Date?,
+            maxDate: Date?,
+            label: String,
+            allowFuture: Boolean,
+            listener: DatePickerUtils.OnDatePickerClickListener
+        )
+
         fun blockDates(blockEnrollmentDate: Boolean, blockIncidentDate: Boolean)
         fun displayTeiInfo(it: List<TrackedEntityAttributeValue>)
         fun rowActions(): Flowable<RowAction>

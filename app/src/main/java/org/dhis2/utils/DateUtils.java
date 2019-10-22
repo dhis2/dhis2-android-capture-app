@@ -1,14 +1,12 @@
 package org.dhis2.utils;
 
 
-import android.icu.util.CopticCalendar;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.dhis2.data.forms.section.viewmodels.date.DatePickerDialogFragment;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
-import org.dhis2.utils.custom_views.RxDateDialog;
+import org.dhis2.utils.customviews.RxDateDialog;
 import org.hisp.dhis.android.core.dataset.DataInputPeriod;
 import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.event.EventStatus;
@@ -17,7 +15,6 @@ import org.hisp.dhis.android.core.period.PeriodType;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;

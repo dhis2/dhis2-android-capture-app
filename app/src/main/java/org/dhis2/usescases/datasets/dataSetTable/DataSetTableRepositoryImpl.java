@@ -33,13 +33,13 @@ public class DataSetTableRepositoryImpl implements DataSetTableRepository {
 
     @Override
     public Flowable<DataSet> getDataSet() {
-        return Flowable.fromCallable(() -> d2.dataSetModule().dataSets.byUid().eq(dataSetUid).one().blockingGet());
+        return Flowable.fromCallable(() -> d2.dataSetModule().dataSets().byUid().eq(dataSetUid).one().blockingGet());
     }
 
     @Override
     public Flowable<List<String>> getSections() {
 
-        return Flowable.fromCallable(() -> d2.dataSetModule().sections.byDataSetUid().eq(dataSetUid).blockingGet())
+        return Flowable.fromCallable(() -> d2.dataSetModule().sections().byDataSetUid().eq(dataSetUid).blockingGet())
                 .switchMap(sections -> {
                     List<String> sectionUids = new ArrayList<>();
                     if (sections.isEmpty()) {
@@ -56,7 +56,7 @@ public class DataSetTableRepositoryImpl implements DataSetTableRepository {
 
     @Override
     public Flowable<Boolean> dataSetStatus() {
-        DataSetCompleteRegistration dscr = d2.dataSetModule().dataSetCompleteRegistrations
+        DataSetCompleteRegistration dscr = d2.dataSetModule().dataSetCompleteRegistrations()
                 .byDataSetUid().eq(dataSetUid)
                 .byAttributeOptionComboUid().eq(catOptCombo)
                 .byOrganisationUnitUid().eq(orgUnitUid)
@@ -67,7 +67,7 @@ public class DataSetTableRepositoryImpl implements DataSetTableRepository {
     public Flowable<State> dataSetState(){
         return Flowable.defer(() ->{
             State state = null;
-            DataSetInstance dataSetInstance = d2.dataSetModule().dataSetInstances
+            DataSetInstance dataSetInstance = d2.dataSetModule().dataSetInstances()
                     .byDataSetUid().eq(dataSetUid)
                     .byAttributeOptionComboUid().eq(catOptCombo)
                     .byOrganisationUnitUid().eq(orgUnitUid)
@@ -76,10 +76,10 @@ public class DataSetTableRepositoryImpl implements DataSetTableRepository {
             if(dataSetInstance != null ) {
                 state = dataSetInstance.state();
                 List<String> dataElementsUids = new ArrayList<>();
-                for(DataSetElement dataSetElement : d2.dataSetModule().dataSets.withDataSetElements().byUid().eq(dataSetUid).one().blockingGet().dataSetElements()){
+                for(DataSetElement dataSetElement : d2.dataSetModule().dataSets().withDataSetElements().byUid().eq(dataSetUid).one().blockingGet().dataSetElements()){
                     dataElementsUids.add(dataSetElement.dataElement().uid());
                 }
-                for (DataValue dataValue : d2.dataValueModule().dataValues
+                for (DataValue dataValue : d2.dataValueModule().dataValues()
                         .byDataElementUid().in(dataElementsUids)
                         .byAttributeOptionComboUid().eq(catOptCombo)
                         .byOrganisationUnitUid().eq(orgUnitUid)
@@ -94,15 +94,15 @@ public class DataSetTableRepositoryImpl implements DataSetTableRepository {
 
     @Override
     public Flowable<String> getCatComboName(String catcomboUid) {
-        return Flowable.fromCallable(() -> d2.categoryModule().categoryOptionCombos.uid(catcomboUid).blockingGet().displayName());
+        return Flowable.fromCallable(() -> d2.categoryModule().categoryOptionCombos().uid(catcomboUid).blockingGet().displayName());
     }
 
     @Override
     public String getCatOptComboFromOptionList(List<String> catOpts) {
         if(catOpts.isEmpty())
-            return d2.categoryModule().categoryOptionCombos.byDisplayName().like("default").one().blockingGet().uid();
+            return d2.categoryModule().categoryOptionCombos().byDisplayName().like("default").one().blockingGet().uid();
         else
-            return d2.categoryModule().categoryOptionCombos.byCategoryOptions(catOpts).one().blockingGet().uid();
+            return d2.categoryModule().categoryOptionCombos().byCategoryOptions(catOpts).one().blockingGet().uid();
     }
 
 

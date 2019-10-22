@@ -6,10 +6,9 @@ class Preconditions {
 
         @JvmStatic
         fun <T> isNull(obj: T?, message: String) =
-                obj?.let { it } ?: throw IllegalArgumentException(message)
+            obj?.let { it } ?: throw IllegalArgumentException(message)
 
         @JvmStatic
-        fun equals(one: Any?, two: Any?) = one == two || (one != null && one == two)// NOPMD
-
+        fun equals(one: Any?, two: Any?) = one == two || (one != null && one == two) // NOPMD
     }
 }

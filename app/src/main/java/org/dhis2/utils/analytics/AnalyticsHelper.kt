@@ -6,14 +6,18 @@ import android.content.Context
 import android.os.Bundle
 import androidx.annotation.NonNull
 import com.google.firebase.analytics.FirebaseAnalytics
-import org.hisp.dhis.android.core.d2manager.D2Manager
 import javax.inject.Inject
+import org.hisp.dhis.android.core.d2manager.D2Manager
 
 class AnalyticsHelper @Inject constructor(context: Context) {
 
     private var analytics: FirebaseAnalytics = FirebaseAnalytics.getInstance(context)
 
-    fun setCurrentScreen(@NonNull activity: Activity, screenName: String, classOverride: String? = null) {
+    fun setCurrentScreen(
+        @NonNull activity: Activity,
+        screenName: String,
+        classOverride: String? = null
+    ) {
         analytics.setCurrentScreen(activity, screenName, classOverride)
     }
 
@@ -21,8 +25,8 @@ class AnalyticsHelper @Inject constructor(context: Context) {
     fun setEvent(param: String, value: String, event: String) {
         val d2 = D2Manager.getD2()
         if (d2 != null && d2.userModule().isLogged.blockingGet()) {
-            val user = d2.userModule().userCredentials.blockingGet()
-            val info = d2.systemInfoModule().systemInfo.blockingGet()
+            val user = d2.userModule().userCredentials().blockingGet()
+            val info = d2.systemInfoModule().systemInfo().blockingGet()
             setBundleEvent(param, value, event, user.username(), info.contextPath())
         } else setBundleEvent(param, value, event)
     }
@@ -33,8 +37,8 @@ class AnalyticsHelper @Inject constructor(context: Context) {
 
         if (d2 != null && d2.userModule().blockingIsLogged()) {
             bundle.apply {
-                putString("user", d2.userModule().userCredentials.blockingGet().username())
-                putString("server", d2.systemInfoModule().systemInfo.blockingGet().contextPath())
+                putString("user", d2.userModule().userCredentials().blockingGet().username())
+                putString("server", d2.systemInfoModule().systemInfo().blockingGet().contextPath())
             }
         }
         params.entries.forEach { bundle.putString(it.key, it.value) }
@@ -48,8 +52,13 @@ class AnalyticsHelper @Inject constructor(context: Context) {
         setBundleEvent(param, value, event, "", "")
     }
 
-    private fun setBundleEvent(param: String, value: String, event: String,
-                               user: String? = "", server: String? = "") {
+    private fun setBundleEvent(
+        param: String,
+        value: String,
+        event: String,
+        user: String? = "",
+        server: String? = ""
+    ) {
         val bundle = Bundle()
         bundle.apply {
             if (!user.isNullOrEmpty() && !server.isNullOrEmpty()) {
@@ -65,5 +74,4 @@ class AnalyticsHelper @Inject constructor(context: Context) {
     private fun logEvent(event: String, bundle: Bundle) {
         analytics.logEvent(event, bundle)
     }
-
 }

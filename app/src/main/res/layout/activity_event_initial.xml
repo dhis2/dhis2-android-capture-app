@@ -64,7 +64,7 @@
                 app:layout_constraintStart_toEndOf="@id/menu"
                 tools:text="TITLE\ntest\n234" />
 
-            <org.dhis2.utils.custom_views.CircularCompletionView
+            <org.dhis2.utils.customviews.CircularCompletionView
                 android:id="@+id/completion"
                 android:layout_width="60dp"
                 android:layout_height="0dp"
@@ -229,7 +229,7 @@
                             android:layout_height="wrap_content"
                             android:orientation="vertical" />
 
-                        <org.dhis2.utils.custom_views.CoordinatesView
+                        <org.dhis2.utils.customviews.CoordinatesView
                             android:id="@+id/geometry"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"

@@ -1,6 +1,5 @@
 package org.dhis2.usescases.login
 
-
 import dagger.Subcomponent
 import org.dhis2.data.dagger.PerActivity
 import org.dhis2.data.fingerprint.FingerPrintModule

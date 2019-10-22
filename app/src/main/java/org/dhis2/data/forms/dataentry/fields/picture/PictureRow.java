@@ -10,7 +10,7 @@ import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.Row;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.databinding.CustomFormPictureBinding;
-import org.dhis2.utils.custom_views.PictureView;
+import org.dhis2.utils.customviews.PictureView;
 
 import io.reactivex.processors.FlowableProcessor;
 

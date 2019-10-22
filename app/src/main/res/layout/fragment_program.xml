@@ -9,6 +9,7 @@
         android:layout_height="match_parent"
         android:background="@drawable/ic_front_backdrop_bg"
         android:clipToPadding="false"
+        android:animateLayoutChanges="true"
         tools:openDrawer="end">
 
         <TextView

@@ -9,8 +9,8 @@ import org.dhis2.data.forms.dataentry.tablefields.RowAction;
 import org.dhis2.databinding.CustomCellViewBinding;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.DialogClickListener;
-import org.dhis2.utils.custom_views.AgeView;
-import org.dhis2.utils.custom_views.TableFieldDialog;
+import org.dhis2.utils.customviews.AgeView;
+import org.dhis2.utils.customviews.TableFieldDialog;
 
 import java.text.ParseException;
 import java.util.Date;
