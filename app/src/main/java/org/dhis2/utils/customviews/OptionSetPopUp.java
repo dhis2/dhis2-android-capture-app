@@ -50,7 +50,7 @@ public class OptionSetPopUp extends PopupMenu {
         disposable = new CompositeDisposable();
 
         disposable.add(
-                Single.fromCallable(() -> d2.optionModule().options
+                Single.fromCallable(() -> d2.optionModule().options()
                         .byOptionSetUid().eq(model.optionSet()))
                         .map(optionRepository -> {
                             List<String> finalOptionsToHide = new ArrayList<>();
@@ -61,7 +61,7 @@ public class OptionSetPopUp extends PopupMenu {
                             if (!optionGroupsToShow.isEmpty()) {
                                 for (String groupUid : optionGroupsToShow) {
                                     finalOptionsToShow.addAll(
-                                            UidsHelper.getUidsList(d2.optionModule().optionGroups.withOptions().uid(groupUid).blockingGet().options())
+                                            UidsHelper.getUidsList(d2.optionModule().optionGroups().withOptions().uid(groupUid).blockingGet().options())
                                     );
                                 }
                             }
@@ -69,7 +69,7 @@ public class OptionSetPopUp extends PopupMenu {
                             if (!optionGroupsToHide.isEmpty()) {
                                 for (String groupUid : optionGroupsToHide) {
                                     finalOptionsToHide.addAll(
-                                            UidsHelper.getUidsList(d2.optionModule().optionGroups.withOptions().uid(groupUid).blockingGet().options())
+                                            UidsHelper.getUidsList(d2.optionModule().optionGroups().withOptions().uid(groupUid).blockingGet().options())
                                     );
                                 }
                             }

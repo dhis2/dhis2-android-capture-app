@@ -55,7 +55,7 @@ class DhisCustomLauncher : AppWidgetProvider() {
                 val d2 = (context.applicationContext as App).serverComponent.userManager().d2
 
                 widgetImage = if (d2 != null) {
-                    val systemSetting = d2.systemSettingModule().systemSetting.flag().blockingGet()
+                    val systemSetting = d2.systemSettingModule().systemSetting().flag().blockingGet()
                     if (systemSetting != null) {
                         systemSetting.value() ?: ""
                     } else {

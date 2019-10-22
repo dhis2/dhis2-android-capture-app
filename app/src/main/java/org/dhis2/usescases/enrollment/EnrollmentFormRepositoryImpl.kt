@@ -88,7 +88,7 @@ class EnrollmentFormRepositoryImpl(
             )
             .organisationUnit(enrollmentRepository.blockingGet().organisationUnit())
             .organisationUnitCode(
-                d2.organisationUnitModule().organisationUnits.uid(
+                d2.organisationUnitModule().organisationUnits().uid(
                     enrollmentRepository.blockingGet().organisationUnit()
                 ).blockingGet().code()
             )
@@ -117,7 +117,7 @@ class EnrollmentFormRepositoryImpl(
     }
 
     private fun getFirstStage(): Single<Pair<String, String>> {
-        return d2.programModule().programStages.byProgramUid().eq(programUid)
+        return d2.programModule().programStages().byProgramUid().eq(programUid)
             .orderBySortOrder(RepositoryScope.OrderByDirection.ASC)
             .get()
             .map {
@@ -130,7 +130,7 @@ class EnrollmentFormRepositoryImpl(
     }
 
     private fun checkOpenAfterEnrollment(): Single<Pair<String, String>> {
-        return d2.programModule().programStages.byProgramUid().eq(programUid)
+        return d2.programModule().programStages().byProgramUid().eq(programUid)
             .byOpenAfterEnrollment().isTrue
             .orderBySortOrder(RepositoryScope.OrderByDirection.ASC)
             .get()
@@ -144,7 +144,7 @@ class EnrollmentFormRepositoryImpl(
     }
 
     private fun checkEventToOpen(enrollmentStagePair: Pair<String, String>): Pair<String, String> {
-        val eventCollectionRepository = d2.eventModule().events
+        val eventCollectionRepository = d2.eventModule().events()
             .byEnrollmentUid().eq(enrollmentUid)
             .byProgramStageUid().eq(enrollmentStagePair.second)
 
@@ -155,7 +155,7 @@ class EnrollmentFormRepositoryImpl(
                 enrollmentStagePair.first,
                 generateEvent(
                     DateUtils.getInstance().today,
-                    d2.programModule().programStages.uid(enrollmentStagePair.second).blockingGet()
+                    d2.programModule().programStages().uid(enrollmentStagePair.second).blockingGet()
                 )
             )
         }
@@ -163,7 +163,7 @@ class EnrollmentFormRepositoryImpl(
 
     override fun autoGenerateEvents(): Single<Boolean> {
         val now = DateUtils.getInstance().today
-        return d2.programModule().programStages
+        return d2.programModule().programStages()
             .byProgramUid().eq(programUid)
             .byAutoGenerateEvent().isTrue
             .orderBySortOrder(RepositoryScope.OrderByDirection.ASC)
@@ -185,9 +185,9 @@ class EnrollmentFormRepositoryImpl(
             .organisationUnit(enrollmentRepository.blockingGet().organisationUnit())
             .build()
 
-        val eventUid = d2.eventModule().events.blockingAdd(eventToAdd)
+        val eventUid = d2.eventModule().events().blockingAdd(eventToAdd)
 
-        val eventRepository = d2.eventModule().events.uid(eventUid)
+        val eventRepository = d2.eventModule().events().uid(eventUid)
 
         val hideDueDate = programStage.hideDueDate() ?: false
         val incidentDate = enrollmentRepository.blockingGet().incidentDate()
@@ -253,23 +253,23 @@ class EnrollmentFormRepositoryImpl(
         return programRepository.get()
             .map { program ->
                 program.programTrackedEntityAttributes()!!.filter {
-                    d2.trackedEntityModule().trackedEntityAttributeValues
+                    d2.trackedEntityModule().trackedEntityAttributeValues()
                         .value(
                             it.trackedEntityAttribute()!!.uid(),
                             enrollmentRepository.blockingGet().trackedEntityInstance()
                         )
                         .blockingExists()
                 }.map {
-                    val value = d2.trackedEntityModule().trackedEntityAttributeValues
+                    val value = d2.trackedEntityModule().trackedEntityAttributeValues()
                         .value(
                             it.trackedEntityAttribute()!!.uid(),
                             enrollmentRepository.blockingGet().trackedEntityInstance()
                         )
                         .blockingGet()
-                    val attr = d2.trackedEntityModule().trackedEntityAttributes
+                    val attr = d2.trackedEntityModule().trackedEntityAttributes()
                         .uid(it.trackedEntityAttribute()!!.uid())
                         .blockingGet()
-                    val variable = d2.programModule().programRuleVariables
+                    val variable = d2.programModule().programRuleVariables()
                         .byProgramUid().eq(programUid)
                         .byTrackedEntityAttributeUid().eq(attr.uid())
                         .one()

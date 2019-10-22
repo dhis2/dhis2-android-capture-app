@@ -111,7 +111,7 @@ public class OptionSetDialog extends DialogFragment {
                 .debounce(500, TimeUnit.MILLISECONDS, Schedulers.io())
                 .map(textToSearch ->
                 {
-                    OptionCollectionRepository optionRepository = d2.optionModule().options
+                    OptionCollectionRepository optionRepository = d2.optionModule().options()
                             .byOptionSetUid().eq(optionSet.optionSet());
 
                     List<String> finalOptionsToHide = new ArrayList<>();
@@ -123,7 +123,7 @@ public class OptionSetDialog extends DialogFragment {
                     if(!optionGroupsToShow.isEmpty()){
                         for(String groupUid: optionGroupsToShow){
                             finalOptionsToShow.addAll(
-                              UidsHelper.getUidsList(d2.optionModule().optionGroups.withOptions().uid(groupUid).blockingGet().options())
+                              UidsHelper.getUidsList(d2.optionModule().optionGroups().withOptions().uid(groupUid).blockingGet().options())
                             );
                         }
                     }
@@ -131,7 +131,7 @@ public class OptionSetDialog extends DialogFragment {
                     if (!optionGroupsToHide.isEmpty()) {
                         for (String groupUid : optionGroupsToHide) {
                             finalOptionsToHide.addAll(
-                                    UidsHelper.getUidsList(d2.optionModule().optionGroups.withOptions().uid(groupUid).blockingGet().options())
+                                    UidsHelper.getUidsList(d2.optionModule().optionGroups().withOptions().uid(groupUid).blockingGet().options())
                             );
                         }
                     }

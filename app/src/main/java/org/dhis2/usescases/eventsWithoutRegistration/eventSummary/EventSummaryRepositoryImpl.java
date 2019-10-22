@@ -87,11 +87,11 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
     @NonNull
     @Override
     public Flowable<List<FormSectionViewModel>> programStageSections(String eventUid) {
-        return d2.eventModule().events.uid(eventUid).get()
+        return d2.eventModule().events().uid(eventUid).get()
                 .map(eventSingle -> {
                     List<FormSectionViewModel> formSection = new ArrayList<>();
                     if (eventSingle.deleted() == null || !eventSingle.deleted()) {
-                        ProgramStage stage = d2.programModule().programStages.withProgramStageSections().uid(eventSingle.programStage()).blockingGet();
+                        ProgramStage stage = d2.programModule().programStages().withProgramStageSections().uid(eventSingle.programStage()).blockingGet();
                         if (stage.programStageSections().size() > 0) {
                             for (ProgramStageSection section : stage.programStageSections())
                                 formSection.add(FormSectionViewModel.createForSection(eventUid, section.uid(), section.displayName(),
@@ -106,9 +106,9 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
     @Override
     public boolean isEnrollmentOpen() {
         boolean isEnrollmentOpen = true;
-        if (d2.eventModule().events.byUid().eq(eventUid).one().blockingExists()) {
-            isEnrollmentOpen = d2.enrollmentModule().enrollments.byUid()
-                    .eq(d2.eventModule().events.byUid().eq(eventUid).one().blockingGet().enrollment())
+        if (d2.eventModule().events().byUid().eq(eventUid).one().blockingExists()) {
+            isEnrollmentOpen = d2.enrollmentModule().enrollments().byUid()
+                    .eq(d2.eventModule().events().byUid().eq(eventUid).one().blockingGet().enrollment())
                     .one().blockingGet().status() == EnrollmentStatus.ACTIVE;
         }
         return isEnrollmentOpen;
@@ -117,16 +117,16 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
     @NonNull
     @Override
     public Flowable<List<FieldViewModel>> list(String section, String eventUid) {
-        return d2.eventModule().events.withTrackedEntityDataValues().uid(eventUid).get()
+        return d2.eventModule().events().withTrackedEntityDataValues().uid(eventUid).get()
                 .map(event -> {
                     List<FieldViewModel> fields = new ArrayList<>();
-                    ProgramStage stage = d2.programModule().programStages.withProgramStageDataElements().withProgramStageSections().uid(event.programStage()).blockingGet();
+                    ProgramStage stage = d2.programModule().programStages().withProgramStageDataElements().withProgramStageSections().uid(event.programStage()).blockingGet();
                     if (section != null) {
 
-                        ProgramStageSection stageSection = d2.programModule().programStageSections.withDataElements().uid(section).blockingGet();
+                        ProgramStageSection stageSection = d2.programModule().programStageSections().withDataElements().uid(section).blockingGet();
                         for (ProgramStageDataElement programStageDataElement : stage.programStageDataElements()) {
                             if (UidsHelper.getUidsList(stageSection.dataElements()).contains(programStageDataElement.dataElement().uid())) {
-                                DataElement dataelement = d2.dataElementModule().dataElements.uid(programStageDataElement.dataElement().uid()).blockingGet();
+                                DataElement dataelement = d2.dataElementModule().dataElements().uid(programStageDataElement.dataElement().uid()).blockingGet();
                                 fields.add(transform(programStageDataElement, dataelement,
                                         searchValueDataElement(programStageDataElement.dataElement().uid(), event.trackedEntityDataValues()), section, event.status()));
                             }
@@ -134,7 +134,7 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
 
                     } else
                         for (ProgramStageDataElement programStageDataElement : stage.programStageDataElements()) {
-                            DataElement dataelement = d2.dataElementModule().dataElements.uid(programStageDataElement.dataElement().uid()).blockingGet();
+                            DataElement dataelement = d2.dataElementModule().dataElements().uid(programStageDataElement.dataElement().uid()).blockingGet();
                             fields.add(transform(programStageDataElement, dataelement,
                                     searchValueDataElement(programStageDataElement.dataElement().uid(), event.trackedEntityDataValues()), null, event.status()));
 
@@ -160,7 +160,7 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
         boolean mandatory = stage.compulsory();
         String optionSet = dataElement.optionSetUid();
         String dataValue = value;
-        List<Option> option = d2.optionModule().options.byOptionSetUid().eq(optionSet).byCode().eq(dataValue).blockingGet();
+        List<Option> option = d2.optionModule().options().byOptionSetUid().eq(optionSet).byCode().eq(dataValue).blockingGet();
         boolean allowFurureDates = stage.allowFutureDate();
         String formName = dataElement.displayFormName();
         String description = dataElement.displayDescription();
@@ -180,7 +180,7 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
         }
 
         if (ValueType.valueOf(valueTypeName) == ValueType.ORGANISATION_UNIT && !isEmpty(dataValue)) {
-            dataValue = dataValue + "_ou_" + d2.organisationUnitModule().organisationUnits.uid(dataValue).blockingGet().displayName();
+            dataValue = dataValue + "_ou_" + d2.organisationUnitModule().organisationUnits().uid(dataValue).blockingGet().displayName();
         }
         return fieldFactory.create(uid, formName == null ? displayName : formName,
                 ValueType.valueOf(valueTypeName), mandatory, optionSet, dataValue,
@@ -205,7 +205,7 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
 
     @Override
     public Observable<Event> changeStatus(String eventUid) {
-        return d2.eventModule().events.uid(eventUid).get()
+        return d2.eventModule().events().uid(eventUid).get()
                 .map(event -> {
                     switch (event.status()) {
                         case ACTIVE:
@@ -213,11 +213,11 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
                         case VISITED:
                         case SCHEDULE:
                         case OVERDUE:
-                            d2.eventModule().events.uid(event.uid()).setStatus(EventStatus.COMPLETED);
-                            d2.eventModule().events.uid(event.uid()).setCompletedDate(DateUtils.getInstance().getToday());
+                            d2.eventModule().events().uid(event.uid()).setStatus(EventStatus.COMPLETED);
+                            d2.eventModule().events().uid(event.uid()).setCompletedDate(DateUtils.getInstance().getToday());
                             break;
                         case COMPLETED:
-                            d2.eventModule().events.uid(event.uid()).setStatus(EventStatus.ACTIVE);
+                            d2.eventModule().events().uid(event.uid()).setStatus(EventStatus.ACTIVE);
                             break;
                     }
                     return event;
@@ -226,33 +226,33 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
 
     @Override
     public Flowable<Event> getEvent(String eventId) {
-        return d2.eventModule().events.uid(eventId).get().toFlowable();
+        return d2.eventModule().events().uid(eventId).get().toFlowable();
     }
 
     @Override
     public Observable<Boolean> accessDataWrite(String eventId) {
-        return d2.eventModule().events.uid(eventId).get()
+        return d2.eventModule().events().uid(eventId).get()
                 .map(Event::programStage)
-                .flatMap(programStageUid -> d2.programModule().programStages.uid(programStageUid).get())
-                .flatMap(programStage -> d2.programModule().programs.uid(programStage.program().uid()).get()
+                .flatMap(programStageUid -> d2.programModule().programStages().uid(programStageUid).get())
+                .flatMap(programStage -> d2.programModule().programs().uid(programStage.program().uid()).get()
                         .map(program -> program.access().data().write() && programStage.access().data().write()))
                 .toObservable();
     }
 
     @NonNull
     private Flowable<RuleEvent> queryEvent(@NonNull List<RuleDataValue> dataValues) {
-        return d2.eventModule().events.uid(eventUid)
+        return d2.eventModule().events().uid(eventUid)
                 .get()
                 .map(event ->
                         RuleEvent.builder()
                                 .event(eventUid)
                                 .programStage(event.programStage())
-                                .programStageName(d2.programModule().programStages.uid(event.programStage()).blockingGet().displayName())
+                                .programStageName(d2.programModule().programStages().uid(event.programStage()).blockingGet().displayName())
                                 .status(RuleEvent.Status.valueOf(event.status().name()))
                                 .eventDate(event.eventDate())
                                 .dueDate(event.dueDate() != null ? event.dueDate() : event.eventDate())
                                 .organisationUnit(event.organisationUnit())
-                                .organisationUnitCode(d2.organisationUnitModule().organisationUnits.uid(event.organisationUnit()).blockingGet().code())
+                                .organisationUnitCode(d2.organisationUnitModule().organisationUnits().uid(event.organisationUnit()).blockingGet().code())
                                 .dataValues(dataValues)
                                 .build()
                 ).toFlowable();
@@ -260,8 +260,8 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
 
     @NonNull
     private Flowable<List<RuleDataValue>> queryDataValues(String eventUid) {
-        return d2.eventModule().events.uid(eventUid).get()
-                .flatMap(event -> d2.trackedEntityModule().trackedEntityDataValues
+        return d2.eventModule().events().uid(eventUid).get()
+                .flatMap(event -> d2.trackedEntityModule().trackedEntityDataValues()
                         .byEvent().eq(eventUid)
                         .get()
                         .toFlowable()
@@ -273,7 +273,7 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
 
     @Override
     public Observable<Program> getProgramWithId(String programUid) {
-        return d2.programModule().programs.withTrackedEntityType().withProgramTrackedEntityAttributes().withProgramIndicators().withProgramRules()
+        return d2.programModule().programs().withTrackedEntityType().withProgramTrackedEntityAttributes().withProgramIndicators().withProgramRules()
                 .withProgramRuleVariables().withProgramSections().withProgramStages().withStyle()
                 .uid(programUid).get().toObservable();
     }

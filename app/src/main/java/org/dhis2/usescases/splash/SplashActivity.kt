@@ -17,9 +17,12 @@ import org.dhis2.BuildConfig
 import org.dhis2.R
 import org.dhis2.databinding.ActivitySplashBinding
 import org.dhis2.usescases.general.ActivityGlobalAbstract
+import org.dhis2.usescases.login.LoginActivity
+import org.dhis2.usescases.main.MainActivity
+import org.dhis2.usescases.sync.SyncActivity
 import timber.log.Timber
 
-class SplashActivity : ActivityGlobalAbstract(), SplashContracts.View {
+class SplashActivity : ActivityGlobalAbstract(), SplashView {
     companion object {
         const val FLAG = "FLAG"
     }
@@ -27,7 +30,7 @@ class SplashActivity : ActivityGlobalAbstract(), SplashContracts.View {
     lateinit var binding: ActivitySplashBinding
 
     @Inject
-    lateinit var presenter: SplashContracts.Presenter
+    lateinit var presenter: SplashPresenter
 
     @Inject
     @field:Named(FLAG)
@@ -39,7 +42,7 @@ class SplashActivity : ActivityGlobalAbstract(), SplashContracts.View {
         setTheme(R.style.SplashTheme)
         val appComponent = (applicationContext as App).appComponent()
         val serverComponent = (applicationContext as App).serverComponent()
-        appComponent.plus(SplashModule(serverComponent)).inject(this)
+        appComponent.plus(SplashModule(this, serverComponent)).inject(this)
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_splash)
 
@@ -59,7 +62,7 @@ class SplashActivity : ActivityGlobalAbstract(), SplashContracts.View {
         super.onResume()
 
         if (BuildConfig.DEBUG || !RootBeer(this).isRootedWithoutBusyBoxCheck) {
-            presenter.init(this)
+            presenter.init()
         } else {
             showRootedDialog(
                 getString(R.string.security_title),
@@ -107,6 +110,16 @@ class SplashActivity : ActivityGlobalAbstract(), SplashContracts.View {
             alertDialog.setCanceledOnTouchOutside(false)
             alertDialog.setCancelable(false)
             alertDialog.show()
+        }
+    }
+
+    override fun goToNextScreen(isUserLogged: Boolean, sessionLocked: Boolean, initialSyncDone: Boolean) {
+        if (isUserLogged && initialSyncDone && !sessionLocked) {
+            startActivity(MainActivity::class.java, null, true, true, null)
+        } else if (isUserLogged && !initialSyncDone) {
+            startActivity(SyncActivity::class.java, null, true, true, null)
+        } else {
+            startActivity(LoginActivity::class.java, null, true, true, null)
         }
     }
 }

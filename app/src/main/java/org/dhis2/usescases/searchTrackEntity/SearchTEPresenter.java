@@ -665,7 +665,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     @Override
     public void downloadTei(String teiUid) {
         compositeDisposable.add(
-                d2.trackedEntityModule().trackedEntityInstanceDownloader.byUid().in(Collections.singletonList(teiUid)).download()
+                d2.trackedEntityModule().trackedEntityInstanceDownloader().byUid().in(Collections.singletonList(teiUid)).download()
                         .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.ui())
                         .subscribe(
@@ -677,7 +677,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
     @Override
     public String nameOUByUid(String uid) {
-        OrganisationUnit organisationUnit = d2.organisationUnitModule().organisationUnits.uid(uid).blockingGet();
+        OrganisationUnit organisationUnit = d2.organisationUnitModule().organisationUnits().uid(uid).blockingGet();
         return organisationUnit != null ? organisationUnit.name() : null;
     }
 
@@ -686,7 +686,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         List<String> teiUids = new ArrayList<>();
         teiUids.add(TEIuid);
         compositeDisposable.add(
-                d2.trackedEntityModule().trackedEntityInstanceDownloader.byUid().in(teiUids).download()
+                d2.trackedEntityModule().trackedEntityInstanceDownloader().byUid().in(teiUids).download()
                         .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.ui())
                         .subscribe(
@@ -766,7 +766,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
     @Override
     public Drawable getSymbolIcon() {
-        TrackedEntityType teiType = d2.trackedEntityModule().trackedEntityTypes.withTrackedEntityTypeAttributes().withStyle().uid(trackedEntityType).blockingGet();
+        TrackedEntityType teiType = d2.trackedEntityModule().trackedEntityTypes().withTrackedEntityTypeAttributes().withStyle().uid(trackedEntityType).blockingGet();
 
         if (teiType.style() != null && teiType.style().icon() != null) {
             return
@@ -789,7 +789,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
     @Override
     public int getTEIColor() {
-        TrackedEntityType teiType = d2.trackedEntityModule().trackedEntityTypes.withTrackedEntityTypeAttributes().withStyle().uid(trackedEntityType).blockingGet();
+        TrackedEntityType teiType = d2.trackedEntityModule().trackedEntityTypes().withTrackedEntityTypeAttributes().withStyle().uid(trackedEntityType).blockingGet();
 
         if (teiType.style() != null && teiType.style().color() != null) {
             return ColorUtils.parseColor(teiType.style().color());

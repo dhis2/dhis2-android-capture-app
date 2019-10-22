@@ -90,13 +90,13 @@ class RuleEngineUtils {
             val supData = java.util.HashMap<String, List<String>>()
 
             // ORG UNIT GROUPS
-            d2.organisationUnitModule().organisationUnitGroups.blockingGet().forEach {
+            d2.organisationUnitModule().organisationUnitGroups().blockingGet().forEach {
                 if (it.code() != null) {
                     supData[it.code()!!] = ArrayList()
                 }
             }
 
-            d2.organisationUnitModule().organisationUnits.withOrganisationUnitGroups().blockingGet()
+            d2.organisationUnitModule().organisationUnits().withOrganisationUnitGroups().blockingGet()
                 .forEach {
                     if (it.organisationUnitGroups() != null) {
                         it.organisationUnitGroups()!!.forEach { ouGroup ->
@@ -111,7 +111,7 @@ class RuleEngineUtils {
 
             // USER ROLES
             val userRoleUids =
-                UidsHelper.getUidsList<UserRole>(d2.userModule().userRoles.blockingGet())
+                UidsHelper.getUidsList<UserRole>(d2.userModule().userRoles().blockingGet())
             supData["USER"] = userRoleUids
 
             return supData
@@ -130,10 +130,10 @@ class RuleEngineUtils {
                 enrollment.organisationUnit()!!,
                 d2
                     .organisationUnitModule()
-                    .organisationUnits
+                    .organisationUnits()
                     .uid(enrollment.organisationUnit()).blockingGet().code(),
                 translateToRuleAttributeValue(attributeValues),
-                d2.programModule().programs.uid(enrollment.program()).blockingGet().name()
+                d2.programModule().programs().uid(enrollment.program()).blockingGet().name()
             )
         }
 
@@ -151,16 +151,16 @@ class RuleEngineUtils {
                     it.organisationUnit()!!,
                     d2
                         .organisationUnitModule()
-                        .organisationUnits
+                        .organisationUnits()
                         .uid(it.organisationUnit()).blockingGet().code(),
                     translateToRuleDataValue(
                         it,
                         d2
                             .trackedEntityModule()
-                            .trackedEntityDataValues
+                            .trackedEntityDataValues()
                             .byEvent().eq(it.uid()).blockingGet()
                     ),
-                    d2.programModule().programStages.uid(it.programStage()).blockingGet().name()!!
+                    d2.programModule().programStages().uid(it.programStage()).blockingGet().name()!!
                 )
             }
         }
@@ -279,7 +279,7 @@ class RuleEngineUtils {
                 if (attribute != null) {
                     d2
                         .trackedEntityModule()
-                        .trackedEntityAttributes
+                        .trackedEntityAttributes()
                         .uid(attribute).blockingGet()!!.valueType()!!.name
                 } else {
                     null
@@ -288,7 +288,8 @@ class RuleEngineUtils {
                 if (dataElement != null) {
                     d2
                         .dataElementModule()
-                        .dataElements.uid(dataElement).blockingGet()!!.valueType()!!.name
+                        .dataElements()
+                        .uid(dataElement).blockingGet()!!.valueType()!!.name
                 } else {
                     null
                 }

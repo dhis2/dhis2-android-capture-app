@@ -45,7 +45,7 @@ public class IndicatorsModule {
     RuleEngineRepository ruleEngineRepository(@NonNull BriteDatabase briteDatabase,
                                               @NonNull FormRepository formRepository,
                                               D2 d2) {
-        EnrollmentCollectionRepository enrollmentRepository = d2.enrollmentModule().enrollments
+        EnrollmentCollectionRepository enrollmentRepository = d2.enrollmentModule().enrollments()
                 .byTrackedEntityInstance().eq(teiUid);
         if (!isEmpty(programUid))
             enrollmentRepository = enrollmentRepository.byProgram().eq(programUid);

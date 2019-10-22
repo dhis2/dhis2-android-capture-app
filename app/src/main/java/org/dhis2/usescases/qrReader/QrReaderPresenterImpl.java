@@ -591,7 +591,7 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
         List<String> uidToDownload = new ArrayList<>();
         uidToDownload.add(teiUid);
         compositeDisposable.add(
-                d2.trackedEntityModule().trackedEntityInstanceDownloader.byUid().in(uidToDownload).download()
+                d2.trackedEntityModule().trackedEntityInstanceDownloader().byUid().in(uidToDownload).download()
                         .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.ui())
                         .subscribe(
@@ -604,7 +604,7 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
                                 },
                                 () -> {
                                     view.finishDownload();
-                                    if (d2.trackedEntityModule().trackedEntityInstances.uid(teiUid).blockingExists()) {
+                                    if (d2.trackedEntityModule().trackedEntityInstances().uid(teiUid).blockingExists()) {
                                         view.goToDashBoard(teiUid);
                                     } else {
                                         view.renderTeiInfo(teiUid);

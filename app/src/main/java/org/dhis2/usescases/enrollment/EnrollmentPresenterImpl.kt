@@ -63,7 +63,7 @@ class EnrollmentPresenterImpl(
         disposable.add(
             teiRepository.get()
                 .flatMap { tei ->
-                    d2.trackedEntityModule().trackedEntityTypeAttributes
+                    d2.trackedEntityModule().trackedEntityTypeAttributes()
                         .byTrackedEntityTypeUid().eq(tei.trackedEntityType()).get()
                         .map { list ->
                             list.sortBy { it.sortOrder() }
@@ -72,7 +72,7 @@ class EnrollmentPresenterImpl(
                             }
                         }
                         .flatMap {
-                            d2.trackedEntityModule().trackedEntityAttributeValues
+                            d2.trackedEntityModule().trackedEntityAttributeValues()
                                 .byTrackedEntityInstance().eq(tei.uid())
                                 .byTrackedEntityAttribute().`in`(it)
                                 .get()
@@ -111,7 +111,7 @@ class EnrollmentPresenterImpl(
         disposable.add(
             enrollmentObjectRepository.get()
                 .flatMap { enrollment ->
-                    d2.organisationUnitModule().organisationUnits.uid(
+                    d2.organisationUnitModule().organisationUnits().uid(
                         enrollment.organisationUnit()
                     ).get()
                 }
@@ -167,13 +167,12 @@ class EnrollmentPresenterImpl(
         disposable.add(
             programRepository.get()
                 .flatMap { program ->
-                    d2.programModule().programStages
+                    d2.programModule().programStages()
                         .byProgramUid().eq(program.uid())
                         .byAutoGenerateEvent().isTrue
                         .get()
                 }
                 .map { stages ->
-
                     var blockEnrollmentDate = false
                     var blockIncidentDate = false
                     stages.forEach {
@@ -221,7 +220,7 @@ class EnrollmentPresenterImpl(
         disposable.add(
             teiRepository.get()
                 .flatMap { tei ->
-                    d2.trackedEntityModule().trackedEntityTypes.uid(tei.trackedEntityType()).get()
+                    d2.trackedEntityModule().trackedEntityTypes().uid(tei.trackedEntityType()).get()
                         .map { Pair(it, tei) }
                 }
                 .subscribeOn(schedulerProvider.io())
@@ -305,10 +304,10 @@ class EnrollmentPresenterImpl(
 
     override fun openInitial(eventUid: String): Boolean {
         val catComboUid = getProgram().categoryComboUid()
-        val event = d2.eventModule().events.uid(eventUid).blockingGet()
-        val stage = d2.programModule().programStages.uid(event.programStage()).blockingGet()
+        val event = d2.eventModule().events().uid(eventUid).blockingGet()
+        val stage = d2.programModule().programStages().uid(event.programStage()).blockingGet()
         val needsCatCombo = programRepository.blockingGet().categoryComboUid() != null &&
-            d2.categoryModule().categoryCombos.uid(catComboUid).blockingGet().isDefault == false
+            d2.categoryModule().categoryCombos().uid(catComboUid).blockingGet().isDefault == false
         val needsCoordinates =
             stage.featureType() != null && stage.featureType() != FeatureType.NONE
 
@@ -353,8 +352,8 @@ class EnrollmentPresenterImpl(
     }
 
     override fun getOrgUnit(): OrganisationUnit {
-        return d2.organisationUnitModule().organisationUnits
-            .uid(getEnrollment().organisationUnit()).blockingGet()
+        return d2.organisationUnitModule().organisationUnits()
+                .uid(getEnrollment().organisationUnit()).blockingGet()
     }
 
     override fun updateEnrollmentStatus(newStatus: EnrollmentStatus): Boolean {
@@ -405,9 +404,9 @@ class EnrollmentPresenterImpl(
     private fun checkUniqueFilter(uid: String, value: String?): Boolean {
         return if (value != null && valueIsAttribute(uid)) {
             val isUnique =
-                d2.trackedEntityModule().trackedEntityAttributes.uid(uid).blockingGet()!!.unique()
+                d2.trackedEntityModule().trackedEntityAttributes().uid(uid).blockingGet()!!.unique()
                     ?: false
-            val hasValue = !d2.trackedEntityModule().trackedEntityAttributeValues
+            val hasValue = !d2.trackedEntityModule().trackedEntityAttributeValues()
                 .byTrackedEntityAttribute().eq(uid)
                 .byValue().eq(value).blockingGet().isEmpty()
             if (isUnique) {
@@ -429,10 +428,10 @@ class EnrollmentPresenterImpl(
     }
 
     private fun saveAttribute(uid: String, value: String?): Boolean {
-        val valueRepository = d2.trackedEntityModule().trackedEntityAttributeValues
-            .value(uid, teiRepository.blockingGet().uid())
+        val valueRepository = d2.trackedEntityModule().trackedEntityAttributeValues()
+                .value(uid, teiRepository.blockingGet().uid())
         var newValue = value
-        if (d2.trackedEntityModule().trackedEntityAttributes.uid(uid).blockingGet().valueType() ==
+        if (d2.trackedEntityModule().trackedEntityAttributes().uid(uid).blockingGet().valueType() ==
             ValueType.IMAGE &&
             value != null
         ) {
@@ -460,10 +459,10 @@ class EnrollmentPresenterImpl(
         val eventUid = getEventUid(uid)
         var newValue = value
         return if (eventUid != null) {
-            val valueRepository = d2.trackedEntityModule().trackedEntityDataValues
-                .value(eventUid, uid)
+            val valueRepository = d2.trackedEntityModule().trackedEntityDataValues()
+                    .value(eventUid, uid)
 
-            if (d2.dataElementModule().dataElements.uid(uid).blockingGet().valueType() ==
+            if (d2.dataElementModule().dataElements().uid(uid).blockingGet().valueType() ==
                 ValueType.IMAGE &&
                 value != null
             ) {
@@ -493,14 +492,14 @@ class EnrollmentPresenterImpl(
 
     private fun getFileResource(path: String): String {
         val file = File(path)
-        return d2.fileResourceModule().fileResources.blockingAdd(file)
+        return d2.fileResourceModule().fileResources().blockingAdd(file)
     }
 
     private fun getEventUid(dataElement: String): String? {
-        val events = d2.eventModule().events.byEnrollmentUid().eq(getEnrollment().uid())
+        val events = d2.eventModule().events().byEnrollmentUid().eq(getEnrollment().uid())
             .byStatus().eq(EventStatus.ACTIVE)
             .orderByEventDate(RepositoryScope.OrderByDirection.DESC).blockingGet().map { it.uid() }
-        val dataValues = d2.trackedEntityModule().trackedEntityDataValues
+        val dataValues = d2.trackedEntityModule().trackedEntityDataValues()
             .byDataElement().eq(dataElement)
             .byEvent().`in`(events)
             .blockingGet()
@@ -513,7 +512,7 @@ class EnrollmentPresenterImpl(
     }
 
     private fun valueIsAttribute(uid: String): Boolean {
-        return d2.trackedEntityModule().trackedEntityAttributes.uid(uid).blockingExists()
+        return d2.trackedEntityModule().trackedEntityAttributes().uid(uid).blockingExists()
     }
 
     override fun onDettach() {
@@ -567,10 +566,12 @@ class EnrollmentPresenterImpl(
 
     private fun assignValue(uid: String, value: String?) {
         try {
-            if (d2.dataElementModule().dataElements.uid(uid).blockingExists()) {
+            if (d2.dataElementModule().dataElements().uid(uid).blockingExists()) {
                 // TODO: CHECK THIS: Enrollments rules should not assign values to dataElements
 //                handleAssignToDataElement(uid, value)
-            } else if (d2.trackedEntityModule().trackedEntityAttributes.uid(uid).blockingExists()) {
+            } else if (
+                d2.trackedEntityModule().trackedEntityAttributes().uid(uid).blockingExists()
+            ) {
                 handleAssignToAttribute(uid, value)
             }
         } catch (d2Error: D2Error) {
@@ -581,7 +582,7 @@ class EnrollmentPresenterImpl(
     @Throws(D2Error::class)
     private fun handleAssignToDataElement(deUid: String, value: String?) {
         val eventUids = UidsHelper.getUidsList(
-            d2.eventModule().events
+            d2.eventModule().events()
                 .byEnrollmentUid().eq(getEnrollment().uid())
                 .byStatus().`in`(EventStatus.ACTIVE, EventStatus.COMPLETED)
                 .blockingGet()
@@ -589,16 +590,16 @@ class EnrollmentPresenterImpl(
 
         for (eventUid in eventUids) {
             if (!isEmpty(value)) {
-                d2.trackedEntityModule().trackedEntityDataValues.value(
+                d2.trackedEntityModule().trackedEntityDataValues().value(
                     eventUid,
                     deUid
                 ).blockingSet(value)
-            } else if (d2.trackedEntityModule().trackedEntityDataValues.value(
+            } else if (d2.trackedEntityModule().trackedEntityDataValues().value(
                 eventUid,
                 deUid
             ).blockingExists()
             ) {
-                d2.trackedEntityModule().trackedEntityDataValues.value(
+                d2.trackedEntityModule().trackedEntityDataValues().value(
                     eventUid,
                     deUid
                 ).blockingDelete()
@@ -610,14 +611,14 @@ class EnrollmentPresenterImpl(
     private fun handleAssignToAttribute(attributeUid: String, value: String?) {
         val tei = teiRepository.blockingGet().uid()
         if (!isEmpty(value)) {
-            d2.trackedEntityModule().trackedEntityAttributeValues.value(attributeUid, tei)
+            d2.trackedEntityModule().trackedEntityAttributeValues().value(attributeUid, tei)
                 .blockingSet(value)
-        } else if (d2.trackedEntityModule().trackedEntityAttributeValues.value(
+        } else if (d2.trackedEntityModule().trackedEntityAttributeValues().value(
             attributeUid,
             tei
         ).blockingExists()
         ) {
-            d2.trackedEntityModule().trackedEntityAttributeValues.value(attributeUid, tei)
+            d2.trackedEntityModule().trackedEntityAttributeValues().value(attributeUid, tei)
                 .blockingDelete()
         }
     }

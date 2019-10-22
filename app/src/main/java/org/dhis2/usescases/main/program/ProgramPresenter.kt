@@ -47,7 +47,8 @@ class ProgramPresenter internal constructor(
         compositeDisposable!!.add(
             FilterManager.getInstance().asFlowable()
                 .startWith(FilterManager.getInstance())
-                .flatMap { filterManager ->
+                .doOnNext { Timber.tag("INIT DATA").d("NEW FILTER") }
+                .switchMap { filterManager ->
                     loadingProcessor.onNext(true)
                     homeRepository.programModels(
                         filterManager.periodFilters,
@@ -60,17 +61,20 @@ class ProgramPresenter internal constructor(
                                 filterManager.orgUnitUidsFilters,
                                 filterManager.stateFilters
                             )
-                        ).flatMapIterable { data -> data }
+                        )
+                        .doOnNext { Timber.tag("INIT DATA").d("LIST READY TO BE SORTED SORTED") }
+                        .flatMapIterable { data -> data }
                         .sorted { p1, p2 -> p1.title().compareTo(p2.title(), ignoreCase = true) }
                         .toList().toFlowable()
                         .subscribeOn(schedulerProvider.io())
+                        .doOnNext { Timber.tag("INIT DATA").d("LIST SORTED") }
                 }
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
                     view.swapProgramModelData(),
                     Consumer { throwable -> view.renderError(throwable.message ?: "") },
-                    Action { Timber.d("LOADING ENDED") }
+                    Action { Timber.tag("INIT DATA").d("LOADING ENDED") }
                 )
         )
 

@@ -55,5 +55,7 @@ class LoginContracts {
         fun alreadyAuthenticated()
         fun showCredentialsData(type: Goldfinger.Type, vararg args: String)
         fun showEmptyCredentialsMessage()
+        fun setTestingCredentials()
+        fun setUpFingerPrintDialog()
     }
 }

@@ -49,14 +49,14 @@ public class EventDetailRepositoryImpl implements EventDetailRepository {
     @NonNull
     @Override
     public Observable<Event> eventModelDetail(String uid) {
-        return Observable.fromCallable(() -> d2.eventModule().events.uid(uid).blockingGet()).filter(event -> event.deleted() == null || !event.deleted());
+        return Observable.fromCallable(() -> d2.eventModule().events().uid(uid).blockingGet()).filter(event -> event.deleted() == null || !event.deleted());
     }
 
     @NonNull
     @Override
     public Observable<List<ProgramStageSection>> programStageSection(String eventUid) {
         return eventModelDetail(eventUid)
-                .map(event -> d2.programModule().programStageSections.byProgramStageUid().eq(event.programStage()).blockingGet());
+                .map(event -> d2.programModule().programStageSections().byProgramStageUid().eq(event.programStage()).blockingGet());
 
     }
 
@@ -64,13 +64,13 @@ public class EventDetailRepositoryImpl implements EventDetailRepository {
     @Override
     public Observable<ProgramStage> programStage(String eventUid) {
         return eventModelDetail(eventUid)
-                .map(event -> d2.programModule().programStages.uid(event.programStage()).blockingGet());
+                .map(event -> d2.programModule().programStages().uid(event.programStage()).blockingGet());
     }
 
     @Override
     public void deleteNotPostedEvent(String eventUid) {
         try {
-            d2.eventModule().events.uid(eventUid).blockingDelete();
+            d2.eventModule().events().uid(eventUid).blockingDelete();
         } catch (D2Error d2Error) {
             Timber.e(d2Error);
         }
@@ -79,7 +79,7 @@ public class EventDetailRepositoryImpl implements EventDetailRepository {
     @Override
     public void deletePostedEvent(Event eventModel) {
         try {
-            d2.eventModule().events.uid(eventModel.uid()).blockingDelete();
+            d2.eventModule().events().uid(eventModel.uid()).blockingDelete();
         } catch (D2Error d2Error) {
             Timber.e(d2Error);
         }
@@ -89,53 +89,53 @@ public class EventDetailRepositoryImpl implements EventDetailRepository {
     @Override
     public Observable<String> orgUnitName(String eventUid) {
         return eventModelDetail(eventUid)
-                .map(event -> d2.organisationUnitModule().organisationUnits.uid(event.organisationUnit()).blockingGet().displayName());
+                .map(event -> d2.organisationUnitModule().organisationUnits().uid(event.organisationUnit()).blockingGet().displayName());
     }
 
     @NonNull
     @Override
     public Observable<OrganisationUnit> orgUnit(String eventUid) {
         return eventModelDetail(eventUid)
-                .map(event -> d2.organisationUnitModule().organisationUnits.uid(event.organisationUnit()).blockingGet());
+                .map(event -> d2.organisationUnitModule().organisationUnits().uid(event.organisationUnit()).blockingGet());
     }
 
     @Override
     public Observable<List<OrganisationUnit>> getOrgUnits() {
-        return d2.organisationUnitModule().organisationUnits
+        return d2.organisationUnitModule().organisationUnits()
                 .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE)
                 .byProgramUids(Collections.singletonList(getProgram(eventUid).blockingFirst().uid()))
-                .withPrograms().get().toObservable();
+                .get().toObservable();
 
     }
 
     @Override
     public Observable<Pair<String, List<CategoryOptionCombo>>> getCategoryOptionCombos() {
-        return d2.eventModule().events.uid(eventUid).get()
-                .flatMap(event -> d2.programModule().programs.uid(event.program()).get())
+        return d2.eventModule().events().uid(eventUid).get()
+                .flatMap(event -> d2.programModule().programs().uid(event.program()).get())
                 .map(Program::categoryComboUid)
-                .flatMap(catCombo -> d2.categoryModule().categoryCombos.uid(catCombo).get()
+                .flatMap(catCombo -> d2.categoryModule().categoryCombos().uid(catCombo).get()
                         .map(categoryCombo -> Pair.create(
                                 categoryCombo.name(),
-                                d2.categoryModule().categoryOptionCombos.withCategoryOptions().byCategoryComboUid().eq(categoryCombo.uid()).orderByDisplayName(RepositoryScope.OrderByDirection.ASC).blockingGet()))
+                                d2.categoryModule().categoryOptionCombos().withCategoryOptions().byCategoryComboUid().eq(categoryCombo.uid()).orderByDisplayName(RepositoryScope.OrderByDirection.ASC).blockingGet()))
                 ).toObservable();
     }
 
     @NonNull
     @Override
     public Flowable<EventStatus> eventStatus(String eventUid) {
-        return Flowable.fromCallable(() -> d2.eventModule().events.uid(eventUid).blockingGet().status());
+        return Flowable.fromCallable(() -> d2.eventModule().events().uid(eventUid).blockingGet().status());
     }
 
     @Override
     public Observable<Program> getProgram(String eventUid) {
         return eventModelDetail(eventUid)
-                .map(event -> d2.programModule().programs.uid(event.program()).blockingGet());
+                .map(event -> d2.programModule().programs().uid(event.program()).blockingGet());
     }
 
     @Override
     public void saveCatOption(CategoryOptionCombo selectedOption) {
         try {
-            d2.eventModule().events.uid(eventUid).setAttributeOptionComboUid(selectedOption.uid());
+            d2.eventModule().events().uid(eventUid).setAttributeOptionComboUid(selectedOption.uid());
         } catch (D2Error d2Error) {
             Timber.e(d2Error);
         }
@@ -143,14 +143,14 @@ public class EventDetailRepositoryImpl implements EventDetailRepository {
 
     @Override
     public Observable<Boolean> isEnrollmentActive(String eventUid) {
-        Event event = d2.eventModule().events.uid(eventUid).blockingGet();
-        return Observable.fromCallable(() -> event == null || event.enrollment() == null || d2.enrollmentModule().enrollments.uid(event.enrollment()).blockingGet().status() == EnrollmentStatus.ACTIVE);
+        Event event = d2.eventModule().events().uid(eventUid).blockingGet();
+        return Observable.fromCallable(() -> event == null || event.enrollment() == null || d2.enrollmentModule().enrollments().uid(event.enrollment()).blockingGet().status() == EnrollmentStatus.ACTIVE);
     }
 
     @Override
     public Observable<Program> getExpiryDateFromEvent(String eventUid) {
-        return d2.eventModule().events.uid(eventUid).get()
-                .flatMap(event -> d2.programModule().programs.uid(event.program()).get())
+        return d2.eventModule().events().uid(eventUid).get()
+                .flatMap(event -> d2.programModule().programs().uid(event.program()).get())
                 .toObservable();
     }
 }

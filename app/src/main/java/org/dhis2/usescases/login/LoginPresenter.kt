@@ -9,16 +9,22 @@ import org.dhis2.R
 import org.dhis2.data.fingerprint.FingerPrintController
 import org.dhis2.data.fingerprint.Type
 import org.dhis2.data.prefs.Preference
+import org.dhis2.data.prefs.Preference.Companion.PIN
+import org.dhis2.data.prefs.Preference.Companion.SESSION_LOCKED
 import org.dhis2.data.prefs.PreferenceProvider
 import org.dhis2.data.schedulers.SchedulerProvider
 import org.dhis2.data.server.UserManager
 import org.dhis2.usescases.main.MainActivity
+import org.dhis2.utils.Constants.PREFS_URLS
+import org.dhis2.utils.Constants.PREFS_USERS
 import org.dhis2.utils.Constants.SECURE_PASS
 import org.dhis2.utils.Constants.SECURE_SERVER_URL
 import org.dhis2.utils.Constants.SECURE_USER_NAME
 import org.dhis2.utils.Constants.SERVER
 import org.dhis2.utils.Constants.USER
 import org.dhis2.utils.Constants.USER_ASKED_CRASHLYTICS
+import org.dhis2.utils.Constants.USER_TEST_ANDROID
+import org.dhis2.utils.TestingCredential
 import org.dhis2.utils.analytics.ACCOUNT_RECOVERY
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.dhis2.utils.analytics.CLICK
@@ -53,12 +59,12 @@ class LoginPresenter(
                     .subscribe(
                         { isUserLoggedIn ->
                             if (isUserLoggedIn && !preferenceProvider.getBoolean(
-                                SESIONLOCKED,
+                                SESSION_LOCKED,
                                 false
-                            )
+                                )
                             ) {
                                 view.startActivity(MainActivity::class.java, null, true, true, null)
-                            } else if (preferenceProvider.getBoolean(SESIONLOCKED, false)) {
+                            } else if (preferenceProvider.getBoolean(SESSION_LOCKED, false)) {
                                 view.showUnlockButton()
                             }
                         },
@@ -72,8 +78,8 @@ class LoginPresenter(
         userManager?.let { userManager ->
             disposable.add(
                 Observable.just(
-                    if (userManager.d2.systemInfoModule().systemInfo.blockingGet() != null) {
-                        userManager.d2.systemInfoModule().systemInfo.blockingGet()
+                    if (userManager.d2.systemInfoModule().systemInfo().blockingGet() != null) {
+                        userManager.d2.systemInfoModule().systemInfo().blockingGet()
                     } else {
                         SystemInfo.builder().build()
                     }
@@ -141,7 +147,7 @@ class LoginPresenter(
                             run {
                                 with(preferenceProvider) {
                                     setValue(USER, user.userCredentials()?.username())
-                                    setValue(SESIONLOCKED, false)
+                                    setValue(SESSION_LOCKED, false)
                                     setValue(PIN, null)
                                 }
                                 Response.success<Any>(null)
@@ -150,7 +156,14 @@ class LoginPresenter(
                 }
                 .subscribeOn(schedulers.io())
                 .observeOn(schedulers.ui())
-                .subscribe({ this.handleResponse(it) }, { this.handleError(it) })
+                .subscribe(
+                    {
+                        this.handleResponse(it, userName, serverUrl)
+                    },
+                    {
+                        this.handleError(it)
+                    }
+                )
         )
     }
 
@@ -161,7 +174,7 @@ class LoginPresenter(
 
     fun unlockSession(pin: String) {
         if (preferenceProvider.getString(PIN, "") == pin) {
-            preferenceProvider.setValue(SESIONLOCKED, false)
+            preferenceProvider.setValue(SESSION_LOCKED, false)
             view.startActivity(MainActivity::class.java, null, true, true, null)
         }
     }
@@ -179,7 +192,7 @@ class LoginPresenter(
                     .subscribe(
                         {
                             val prefs = view.abstracContext.sharedPreferences
-                            prefs.edit().putBoolean(SESIONLOCKED, false).apply()
+                            prefs.edit().putBoolean(SESSION_LOCKED, false).apply()
                             view.handleLogout()
                         },
                         { view.handleLogout() }
@@ -188,10 +201,19 @@ class LoginPresenter(
         }
     }
 
-    private fun handleResponse(userResponse: Response<*>) {
+    private fun handleResponse(userResponse: Response<*>, userName: String, server: String) {
         view.showLoginProgress(false)
         if (userResponse.isSuccessful) {
-            preferenceProvider.setValue(Preference.INITIAL_SYNC_DONE.name, false)
+            preferenceProvider.setValue(Preference.INITIAL_SYNC_DONE, false)
+
+            val updatedServer =
+                (preferenceProvider.getSet(PREFS_URLS, HashSet()) as HashSet).add(userName)
+            val updatedUsers =
+                (preferenceProvider.getSet(PREFS_USERS, HashSet()) as HashSet).add(server)
+
+            preferenceProvider.setValue(PREFS_URLS, updatedServer)
+            preferenceProvider.setValue(PREFS_USERS, updatedUsers)
+
             view.saveUsersData()
         }
     }
@@ -200,7 +222,7 @@ class LoginPresenter(
         Timber.e(throwable)
         if (throwable is D2Error && throwable.errorCode() == D2ErrorCode.ALREADY_AUTHENTICATED) {
             preferenceProvider.apply {
-                setValue(SESIONLOCKED, false)
+                setValue(SESSION_LOCKED, false)
                 setValue(PIN, null)
             }
             view.alreadyAuthenticated()
@@ -271,9 +293,32 @@ class LoginPresenter(
         view.displayAlertDialog()
     }
 
+    fun getAutocompleteData(
+        testingCredentials: List<TestingCredential>
+    ): Pair<MutableList<String>, MutableList<String>> {
+        val urls = preferenceProvider.getSet(PREFS_URLS, emptySet())!!.toMutableList()
+        val users = preferenceProvider.getSet(PREFS_USERS, emptySet())!!.toMutableList()
+
+        urls.let {
+            for (testingCredential in testingCredentials) {
+                if (!it.contains(testingCredential.server_url))
+                    it.add(testingCredential.server_url)
+            }
+        }
+
+        preferenceProvider.setValue(PREFS_URLS, HashSet(urls))
+
+        users.let {
+            if (!it.contains(USER_TEST_ANDROID))
+                it.add(USER_TEST_ANDROID)
+        }
+
+        preferenceProvider.setValue(PREFS_USERS, HashSet(users))
+
+        return Pair(urls, users)
+    }
+
     companion object {
-        const val SESIONLOCKED = "SessionLocked"
-        const val PIN = "pin"
         const val EMPTY_CREDENTIALS = "Empty credentials"
         const val AUTH_ERROR = "AUTH ERROR"
     }

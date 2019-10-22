@@ -138,6 +138,6 @@ class ProgramFragment : FragmentGlobalAbstract(), ProgramContract.View {
     }
 
     override fun clearFilters() {
-        (activity as MainActivity).adapter.notifyDataSetChanged()
+        (activity as MainActivity).adapter?.notifyDataSetChanged()
     }
 }
