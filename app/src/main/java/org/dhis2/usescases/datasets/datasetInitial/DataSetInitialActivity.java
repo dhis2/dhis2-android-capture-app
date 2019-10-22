@@ -1,10 +1,7 @@
 package org.dhis2.usescases.datasets.datasetInitial;
 
 import android.os.Bundle;
-import android.view.Gravity;
-import android.view.Menu;
 import android.view.View;
-import android.widget.PopupMenu;
 
 import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
@@ -96,6 +93,18 @@ public class DataSetInitialActivity extends ActivityGlobalAbstract implements Da
         checkActionVisivbility();
     }
 
+    private void clearCatOptionCombo(){
+        if(!binding.getDataSetModel().categoryComboName().equals("default")){
+            for(int i=0; i<binding.catComboContainer.getChildCount();i++){
+                View catView = binding.catComboContainer.getChildAt(i);
+                ((TextInputEditText)catView.findViewById(R.id.input_editText)).setText(null);
+            }
+            for (Category categories : binding.getDataSetModel().getCategories()) {
+                selectedCatOptions.put(categories.uid(), null);
+            }
+        }
+    }
+
     /**
      * When changing orgUnit, date must be cleared
      */
@@ -113,7 +122,9 @@ public class DataSetInitialActivity extends ActivityGlobalAbstract implements Da
                         if (selectedOrgUnit == null)
                             orgUnitDialog.dismiss();
                         binding.dataSetOrgUnitEditText.setText(selectedOrgUnit.displayName());
-                        binding.dataSetPeriodEditText.setText("");
+                        binding.dataSetPeriodEditText.setText(null);
+                        selectedPeriod = null;
+                        clearCatOptionCombo();
                     }
                     checkActionVisivbility();
                     orgUnitDialog.dismiss();
@@ -134,10 +145,15 @@ public class DataSetInitialActivity extends ActivityGlobalAbstract implements Da
                     calendar.setTime(selectedDate);
                     this.selectedPeriod = calendar.getTime();
                     binding.dataSetPeriodEditText.setText(DateUtils.getInstance().getPeriodUIString(periodType, selectedDate, Locale.getDefault()));
-                    ((TextInputEditText) selectedView).setText(null);
+                    clearCatOptionCombo();
                     checkActionVisivbility();
                     periodDialog.dismiss();
-                }).setNegativeListener(v -> binding.dataSetPeriodEditText.setText(null))
+                })
+                .setNegativeListener(v -> {
+                    this.selectedPeriod = null;
+                    binding.dataSetPeriodEditText.setText(null);
+                    checkActionVisivbility();
+                })
                 .show(getSupportFragmentManager(), PeriodDialog.class.getSimpleName());
     }
 

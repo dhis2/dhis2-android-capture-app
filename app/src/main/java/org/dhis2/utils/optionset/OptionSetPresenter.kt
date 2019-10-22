@@ -57,7 +57,7 @@ class OptionSetPresenter(val d2: D2, val schedulerProvider: SchedulerProvider) :
                 .startWith("")
                 .debounce(500, TimeUnit.MILLISECONDS, schedulerProvider.io())
                 .map<LiveData<PagedList<Option>>> { textToSearch ->
-                    var optionRepository = d2.optionModule().options
+                    var optionRepository = d2.optionModule().options()
                             .byOptionSetUid().eq(optionSetUid)
 
                     val finalOptionsToHide = ArrayList<String>()
@@ -70,7 +70,7 @@ class OptionSetPresenter(val d2: D2, val schedulerProvider: SchedulerProvider) :
                         for (groupUid in optionGroupsToShow!!) {
                             finalOptionsToShow.addAll(
                                     UidsHelper.getUidsList<ObjectWithUid>(
-                                            d2.optionModule().optionGroups.withOptions().uid(groupUid).blockingGet()!!.options()!!)
+                                            d2.optionModule().optionGroups().withOptions().uid(groupUid).blockingGet()!!.options()!!)
                             )
                         }
                     }
@@ -79,7 +79,7 @@ class OptionSetPresenter(val d2: D2, val schedulerProvider: SchedulerProvider) :
                         for (groupUid in optionGroupsToHide!!) {
                             finalOptionsToHide.addAll(
                                     UidsHelper.getUidsList<ObjectWithUid>(
-                                            d2.optionModule().optionGroups.withOptions().uid(groupUid).blockingGet()!!.options()!!)
+                                            d2.optionModule().optionGroups().withOptions().uid(groupUid).blockingGet()!!.options()!!)
                             )
                         }
                     }
@@ -104,7 +104,7 @@ class OptionSetPresenter(val d2: D2, val schedulerProvider: SchedulerProvider) :
     }
 
     override fun getCount(optionSetUid : String): Int? {
-        return d2.optionModule().options.byOptionSetUid().eq(optionSetUid).blockingCount()
+        return d2.optionModule().options().byOptionSetUid().eq(optionSetUid).blockingCount()
     }
 
     override fun onDettach() {

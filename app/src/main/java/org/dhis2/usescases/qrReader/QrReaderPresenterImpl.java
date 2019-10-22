@@ -5,6 +5,7 @@ import android.util.Log;
 
 import com.squareup.sqlbrite2.BriteDatabase;
 
+import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.utils.DateUtils;
@@ -50,6 +51,7 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
 
     private final BriteDatabase briteDatabase;
     private final D2 d2;
+    private final SchedulerProvider schedulerProvider;
     private QrReaderContracts.View view;
     private CompositeDisposable compositeDisposable;
 
@@ -65,10 +67,11 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
     private ArrayList<JSONObject> eventsJson = new ArrayList<>();
     private String teiUid;
 
-    QrReaderPresenterImpl(BriteDatabase briteDatabase, D2 d2) {
+    QrReaderPresenterImpl(BriteDatabase briteDatabase, D2 d2, SchedulerProvider schedulerProvider) {
         this.briteDatabase = briteDatabase;
         this.d2 = d2;
         this.compositeDisposable = new CompositeDisposable();
+        this.schedulerProvider = schedulerProvider;
     }
 
     @Override
@@ -588,9 +591,9 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
         List<String> uidToDownload = new ArrayList<>();
         uidToDownload.add(teiUid);
         compositeDisposable.add(
-                d2.trackedEntityModule().trackedEntityInstanceDownloader.byUid().in(uidToDownload).download()
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
+                d2.trackedEntityModule().trackedEntityInstanceDownloader().byUid().in(uidToDownload).download()
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
                         .subscribe(
                                 data -> {
 
@@ -601,7 +604,7 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
                                 },
                                 () -> {
                                     view.finishDownload();
-                                    if (d2.trackedEntityModule().trackedEntityInstances.uid(teiUid).blockingExists()) {
+                                    if (d2.trackedEntityModule().trackedEntityInstances().uid(teiUid).blockingExists()) {
                                         view.goToDashBoard(teiUid);
                                     } else {
                                         view.renderTeiInfo(teiUid);

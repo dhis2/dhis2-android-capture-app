@@ -10,6 +10,7 @@ import org.dhis2.data.forms.RulesRepository
 import org.dhis2.data.forms.dataentry.DataEntryRepository
 import org.dhis2.data.forms.dataentry.EnrollmentRepository
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactoryImpl
+import org.dhis2.data.schedulers.SchedulerProvider
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.`object`.ReadOnlyOneObjectRepositoryFinalImpl
 import org.hisp.dhis.android.core.enrollment.EnrollmentObjectRepository
@@ -23,14 +24,14 @@ class EnrollmentModule(val enrollmentUid: String, val programUid: String) {
     @Provides
     @PerActivity
     fun provideEnrollmentRepository(d2: D2): EnrollmentObjectRepository {
-        return d2.enrollmentModule().enrollments.uid(enrollmentUid)
+        return d2.enrollmentModule().enrollments().uid(enrollmentUid)
     }
 
     @Provides
     @PerActivity
     fun provideTeiRepository(d2: D2, enrollmentRepository: EnrollmentObjectRepository):
             TrackedEntityInstanceObjectRepository {
-        return d2.trackedEntityModule().trackedEntityInstances
+        return d2.trackedEntityModule().trackedEntityInstances()
                 .uid(enrollmentRepository.blockingGet().trackedEntityInstance())
     }
 
@@ -38,7 +39,7 @@ class EnrollmentModule(val enrollmentUid: String, val programUid: String) {
     @PerActivity
     fun provideProgramRepository(d2: D2):
             ReadOnlyOneObjectRepositoryFinalImpl<Program> {
-        return d2.programModule().programs
+        return d2.programModule().programs()
                 .withProgramTrackedEntityAttributes()
                 .uid(programUid)
     }
@@ -65,12 +66,14 @@ class EnrollmentModule(val enrollmentUid: String, val programUid: String) {
                          dataEntryRepository: DataEntryRepository,
                          teiRepository: TrackedEntityInstanceObjectRepository,
                          programRepository: ReadOnlyOneObjectRepositoryFinalImpl<Program>,
+                         schedulerProvider : SchedulerProvider,
                          formRepository: EnrollmentFormRepository): EnrollmentContract.Presenter {
         return EnrollmentPresenterImpl(d2,
                 enrollmentObjectRepository,
                 dataEntryRepository,
                 teiRepository,
                 programRepository,
+                schedulerProvider,
                 formRepository)
     }
 

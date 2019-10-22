@@ -6,6 +6,7 @@ import android.os.Bundle;
 import androidx.lifecycle.MutableLiveData;
 
 import org.dhis2.R;
+import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.utils.AuthorityException;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.common.State;
@@ -32,6 +33,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
 
     private final DashboardRepository dashboardRepository;
     private final D2 d2;
+    private final SchedulerProvider schedulerProvider;
     private TeiDashboardContracts.View view;
 
     private String teUid;
@@ -42,9 +44,10 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
 
     private MutableLiveData<DashboardProgramModel> dashboardProgramModelLiveData = new MutableLiveData<>();
 
-    TeiDashboardPresenter(D2 d2, DashboardRepository dashboardRepository) {
+    TeiDashboardPresenter(D2 d2, DashboardRepository dashboardRepository, SchedulerProvider schedulerProvider) {
         this.d2 = d2;
         this.dashboardRepository = dashboardRepository;
+        this.schedulerProvider = schedulerProvider;
         compositeDisposable = new CompositeDisposable();
     }
 
@@ -73,8 +76,8 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
                     dashboardRepository.getTeiOrgUnits(teUid, programUid),
                     dashboardRepository.getTeiActivePrograms(teUid, false),
                     DashboardProgramModel::new)
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribeOn(schedulerProvider.io())
+                    .observeOn(schedulerProvider.ui())
                     .subscribe(
                             dashboardModel -> {
                                 this.dashboardProgramModel = dashboardModel;
@@ -94,8 +97,8 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
                     dashboardRepository.getTeiActivePrograms(teUid, true),
                     dashboardRepository.getTEIEnrollments(teUid),
                     DashboardProgramModel::new)
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribeOn(schedulerProvider.io())
+                    .observeOn(schedulerProvider.ui())
                     .subscribe(
                             dashboardModel -> {
                                 this.dashboardProgramModel = dashboardModel;
@@ -143,7 +146,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
                             if (canDelete) {
                                 view.analyticsHelper().setEvent(DELETE_TEI, CLICK, DELETE_TEI);
                                 return Single.fromCallable(() -> {
-                                    d2.trackedEntityModule().trackedEntityInstances.uid(teUid)
+                                    d2.trackedEntityModule().trackedEntityInstances().uid(teUid)
                                             .blockingDelete();
                                     return true;
                                 });
@@ -151,8 +154,8 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
                             else
                                 return Single.error(new AuthorityException(view.getContext().getString(R.string.delete_authority_error)));
                         })
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
                         .subscribe(
                                 canDelete -> view.handleTEIdeletion(),
                                 error -> {
@@ -174,10 +177,10 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
                             if (canDelete) {
                                 view.analyticsHelper().setEvent(DELETE_ENROLL, CLICK, DELETE_ENROLL);
                                 return Single.fromCallable(() -> {
-                                    EnrollmentObjectRepository enrollmentObjectRepository = d2.enrollmentModule().enrollments.uid(dashboardProgramModel.getCurrentEnrollment().uid());
+                                    EnrollmentObjectRepository enrollmentObjectRepository = d2.enrollmentModule().enrollments().uid(dashboardProgramModel.getCurrentEnrollment().uid());
                                     enrollmentObjectRepository.setStatus(enrollmentObjectRepository.blockingGet().status());
                                     enrollmentObjectRepository.blockingDelete();
-                                    return !d2.enrollmentModule().enrollments.byTrackedEntityInstance().eq(teUid)
+                                    return !d2.enrollmentModule().enrollments().byTrackedEntityInstance().eq(teUid)
                                             .byDeleted().isFalse()
                                             .byStatus().eq(EnrollmentStatus.ACTIVE).blockingGet().isEmpty();
                                 });
@@ -185,8 +188,8 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
                             else
                                 return Single.error(new AuthorityException(view.getContext().getString(R.string.delete_authority_error)));
                         })
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
                         .subscribe(
                                 hasMoreEnrollments -> view.handleEnrollmentDeletion(hasMoreEnrollments),
                                 error -> {
@@ -201,9 +204,9 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
 
     private Single<Boolean> canDeleteTEI() {
         return Single.defer(() -> Single.fromCallable(() -> {
-                    boolean local = d2.trackedEntityModule().trackedEntityInstances.uid(
+                    boolean local = d2.trackedEntityModule().trackedEntityInstances().uid(
                             teUid).blockingGet().state() == State.TO_POST;
-                    boolean hasAuthority = d2.userModule().authorities
+                    boolean hasAuthority = d2.userModule().authorities()
                             .byName().eq("F_TEI_CASCADE_DELETE").one().blockingExists();
                     return local || hasAuthority;
                 }
@@ -212,9 +215,9 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
 
     private Single<Boolean> canDeleteEnrollment() {
         return Single.defer(() -> Single.fromCallable(() -> {
-                    boolean local = d2.enrollmentModule().enrollments.uid(
+                    boolean local = d2.enrollmentModule().enrollments().uid(
                             dashboardProgramModel.getCurrentEnrollment().uid()).blockingGet().state() == State.TO_POST;
-                    boolean hasAuthority = d2.userModule().authorities
+                    boolean hasAuthority = d2.userModule().authorities()
                             .byName().eq("F_ENROLLMENT_CASCADE_DELETE").one().blockingExists();
                     return local || hasAuthority;
                 }

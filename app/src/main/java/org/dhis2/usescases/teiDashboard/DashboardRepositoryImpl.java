@@ -195,7 +195,7 @@ public class DashboardRepositoryImpl implements DashboardRepository {
 
     @Override
     public Observable<List<TrackedEntityAttributeValue>> mainTrackedEntityAttributes(String teiUid) {
-        return d2.trackedEntityModule().trackedEntityAttributeValues
+        return d2.trackedEntityModule().trackedEntityAttributeValues()
                 .byTrackedEntityInstance().eq(teiUid)
                 .get().toObservable();
     }
@@ -204,39 +204,39 @@ public class DashboardRepositoryImpl implements DashboardRepository {
     public Event updateState(Event eventModel, EventStatus newStatus) {
 
         try {
-            d2.eventModule().events.uid(eventModel.uid()).setStatus(newStatus);
+            d2.eventModule().events().uid(eventModel.uid()).setStatus(newStatus);
         } catch (D2Error d2Error) {
             Timber.e(d2Error);
         }
 
-        return d2.eventModule().events.uid(eventModel.uid()).blockingGet();
+        return d2.eventModule().events().uid(eventModel.uid()).blockingGet();
     }
 
     @Override
     public Observable<List<ProgramStage>> getProgramStages(String programUid) {
-        return d2.programModule().programStages.byProgramUid().eq(programUid).get().toObservable();
+        return d2.programModule().programStages().byProgramUid().eq(programUid).get().toObservable();
     }
 
     @Override
     public Observable<Enrollment> getEnrollment(String programUid, String teiUid) {
         String progId = programUid == null ? "" : programUid;
         String teiId = teiUid == null ? "" : teiUid;
-        return Observable.fromCallable(() -> d2.enrollmentModule().enrollments.byTrackedEntityInstance()
+        return Observable.fromCallable(() -> d2.enrollmentModule().enrollments().byTrackedEntityInstance()
                 .eq(teiId).byProgram().eq(progId).one().blockingGet());
     }
 
     @Override
     public Observable<List<Event>> getTEIEnrollmentEvents(String programUid, String teiUid) {
 
-        return d2.enrollmentModule().enrollments.byProgram().eq(programUid).byTrackedEntityInstance().eq(teiUid)
+        return d2.enrollmentModule().enrollments().byProgram().eq(programUid).byTrackedEntityInstance().eq(teiUid)
                 .byStatus().eq(EnrollmentStatus.ACTIVE).one().get()
                 .flatMap(enrollment ->
-                        d2.eventModule().events.byEnrollmentUid().eq(enrollment.uid())
+                        d2.eventModule().events().byEnrollmentUid().eq(enrollment.uid())
                                 .byDeleted().isFalse()
                                 .get().toFlowable()
                                 .flatMapIterable(events -> events)
                                 .map(event -> {
-                                            if (Boolean.FALSE.equals(d2.programModule().programs.uid(programUid).blockingGet().ignoreOverdueEvents()))
+                                            if (Boolean.FALSE.equals(d2.programModule().programs().uid(programUid).blockingGet().ignoreOverdueEvents()))
                                                 if (event.status() == EventStatus.SCHEDULE && event.dueDate().before(DateUtils.getInstance().getToday()))
                                                     event = updateState(event, EventStatus.OVERDUE);
 
@@ -248,7 +248,7 @@ public class DashboardRepositoryImpl implements DashboardRepository {
       /*  return briteDatabase.createQuery(EVENTS_TABLE, EVENTS_QUERY, progId, teiId, progId)
                 .mapToList(cursor -> {
                     Event eventModel = Event.create(cursor);
-                    if (Boolean.FALSE.equals(d2.programModule().programs.uid(programUid).blockingGet().ignoreOverdueEvents()))
+                    if (Boolean.FALSE.equals(d2.programModule().programs().uid(programUid).blockingGet().ignoreOverdueEvents()))
                         if (eventModel.status() == EventStatus.SCHEDULE && eventModel.dueDate().before(DateUtils.getInstance().getToday()))
                             eventModel = updateState(eventModel, EventStatus.OVERDUE);
 
@@ -316,7 +316,7 @@ public class DashboardRepositoryImpl implements DashboardRepository {
                 .mapToOne(cursor -> cursor.getString(0))
                 .flatMap(version -> {
                     if (version.equals("2.29"))
-                        return d2.relationshipModule().relationshipTypes.get().toObservable()
+                        return d2.relationshipModule().relationshipTypes().get().toObservable()
                                 .flatMapIterable(list -> list)
                                 .map(relationshipType -> Pair.create(relationshipType, teType))
                                 .toList().toObservable();
@@ -329,24 +329,24 @@ public class DashboardRepositoryImpl implements DashboardRepository {
 
     @Override
     public Observable<CategoryCombo> catComboForProgram(String programUid) {
-        return Observable.defer(() -> Observable.just(d2.categoryModule().categoryCombos.withCategories().withCategoryOptionCombos().uid(d2.programModule().programs.uid(programUid).blockingGet().categoryCombo().uid()).blockingGet()))
+        return Observable.defer(() -> Observable.just(d2.categoryModule().categoryCombos().withCategories().withCategoryOptionCombos().uid(d2.programModule().programs().uid(programUid).blockingGet().categoryCombo().uid()).blockingGet()))
                 .map(categoryCombo -> {
                     List<Category> fullCategories = new ArrayList<>();
                     List<CategoryOptionCombo> fullOptionCombos = new ArrayList<>();
                     for (Category category : categoryCombo.categories()) {
-                        fullCategories.add(d2.categoryModule().categories.withCategoryOptions().uid(category.uid()).blockingGet());
+                        fullCategories.add(d2.categoryModule().categories().withCategoryOptions().uid(category.uid()).blockingGet());
                     }
                     for (CategoryOptionCombo categoryOptionCombo : categoryCombo.categoryOptionCombos())
-                        fullOptionCombos.add(d2.categoryModule().categoryOptionCombos.withCategoryOptions().uid(categoryOptionCombo.uid()).blockingGet());
+                        fullOptionCombos.add(d2.categoryModule().categoryOptionCombos().withCategoryOptions().uid(categoryOptionCombo.uid()).blockingGet());
                     return categoryCombo.toBuilder().categories(fullCategories).categoryOptionCombos(fullOptionCombos).build();
                 });
     }
 
     @Override
     public void setDefaultCatOptCombToEvent(String eventUid) {
-        List<CategoryCombo> categoryCombos = d2.categoryModule().categoryCombos.byIsDefault().isTrue().withCategories().withCategoryOptionCombos().blockingGet();
+        List<CategoryCombo> categoryCombos = d2.categoryModule().categoryCombos().byIsDefault().isTrue().withCategories().withCategoryOptionCombos().blockingGet();
         try {
-            d2.eventModule().events.uid(eventUid).setAttributeOptionComboUid(categoryCombos.get(0).categoryOptionCombos().get(0).uid());
+            d2.eventModule().events().uid(eventUid).setAttributeOptionComboUid(categoryCombos.get(0).categoryOptionCombos().get(0).uid());
         } catch (D2Error d2Error) {
             Timber.e(d2Error);
         }
@@ -354,10 +354,10 @@ public class DashboardRepositoryImpl implements DashboardRepository {
 
     @Override
     public Observable<String> getAttributeImage(String teiUid) {
-        return d2.trackedEntityModule().trackedEntityInstances.uid(teiUid).get()
+        return d2.trackedEntityModule().trackedEntityInstances().uid(teiUid).get()
                 .map(tei -> {
                     String path = "";
-                    Iterator<TrackedEntityAttribute> iterator = d2.trackedEntityModule().trackedEntityAttributes
+                    Iterator<TrackedEntityAttribute> iterator = d2.trackedEntityModule().trackedEntityAttributes()
                             .byValueType().eq(ValueType.IMAGE)
                             .blockingGet().iterator();
                     List<String> imageAttributesUids = new ArrayList<>();
@@ -365,19 +365,19 @@ public class DashboardRepositoryImpl implements DashboardRepository {
                         imageAttributesUids.add(iterator.next().uid());
 
                     TrackedEntityAttributeValue attributeValue;
-                    if (d2.trackedEntityModule().trackedEntityTypeAttributes
+                    if (d2.trackedEntityModule().trackedEntityTypeAttributes()
                             .byTrackedEntityTypeUid().eq(tei.trackedEntityType())
                             .byTrackedEntityAttributeUid().in(imageAttributesUids).one().blockingExists()) {
 
-                        String attrUid = Objects.requireNonNull(d2.trackedEntityModule().trackedEntityTypeAttributes
+                        String attrUid = Objects.requireNonNull(d2.trackedEntityModule().trackedEntityTypeAttributes()
                                 .byTrackedEntityTypeUid().eq(tei.trackedEntityType())
                                 .byTrackedEntityAttributeUid().in(imageAttributesUids).one().blockingGet()).trackedEntityAttribute().uid();
 
-                        attributeValue = d2.trackedEntityModule().trackedEntityAttributeValues.byTrackedEntityInstance().eq(tei.uid())
+                        attributeValue = d2.trackedEntityModule().trackedEntityAttributeValues().byTrackedEntityInstance().eq(tei.uid())
                                 .byTrackedEntityAttribute().eq(attrUid).one().blockingGet();
 
                         if (attributeValue != null && !isEmpty(attributeValue.value())) {
-                            FileResource fileResource = d2.fileResourceModule().fileResources.uid(attributeValue.value()).blockingGet();
+                            FileResource fileResource = d2.fileResourceModule().fileResources().uid(attributeValue.value()).blockingGet();
                             if (fileResource != null) {
                                 path = fileResource.path();
                             }
@@ -400,15 +400,15 @@ public class DashboardRepositoryImpl implements DashboardRepository {
 
     @Override
     public Flowable<List<ProgramIndicator>> getIndicators(String programUid) {
-        return d2.programModule().programIndicators.byProgramUid().eq(programUid).withLegendSets().get().toFlowable();
+        return d2.programModule().programIndicators().byProgramUid().eq(programUid).withLegendSets().get().toFlowable();
     }
 
     @Override
     public boolean setFollowUp(String enrollmentUid) {
 
-        boolean followUp = Boolean.TRUE.equals(d2.enrollmentModule().enrollments.uid(enrollmentUid).blockingGet().followUp());
+        boolean followUp = Boolean.TRUE.equals(d2.enrollmentModule().enrollments().uid(enrollmentUid).blockingGet().followUp());
         try {
-            d2.enrollmentModule().enrollments.uid(enrollmentUid).setFollowUp(!followUp);
+            d2.enrollmentModule().enrollments().uid(enrollmentUid).setFollowUp(!followUp);
             return !followUp;
         } catch (D2Error d2Error) {
             Timber.e(d2Error);
@@ -463,7 +463,7 @@ public class DashboardRepositoryImpl implements DashboardRepository {
         return Flowable
                 .defer(() -> {
                     //UPDATE ENROLLMENT
-                    Enrollment enrollment = d2.enrollmentModule().enrollments.uid(uid).blockingGet();
+                    Enrollment enrollment = d2.enrollmentModule().enrollments().uid(uid).blockingGet();
                     ContentValues cv = enrollment.toContentValues();
                     cv.put("lastUpdated", DateUtils.databaseDateFormat().format(Calendar.getInstance().getTime()));
                     cv.put("status", value.name());
@@ -478,18 +478,18 @@ public class DashboardRepositoryImpl implements DashboardRepository {
 
     @Override
     public Observable<TrackedEntityInstance> getTrackedEntityInstance(String teiUid) {
-        return Observable.fromCallable(() -> d2.trackedEntityModule().trackedEntityInstances.byUid().eq(teiUid).one().blockingGet());
+        return Observable.fromCallable(() -> d2.trackedEntityModule().trackedEntityInstances().byUid().eq(teiUid).one().blockingGet());
     }
 
     @Override
     public Observable<List<ProgramTrackedEntityAttribute>> getProgramTrackedEntityAttributes(String programUid) {
         if (programUid != null)
-            return Observable.fromCallable(() -> d2.programModule().programs.withProgramTrackedEntityAttributes().byUid().eq(programUid).one().blockingGet().programTrackedEntityAttributes());
+            return Observable.fromCallable(() -> d2.programModule().programs().withProgramTrackedEntityAttributes().byUid().eq(programUid).one().blockingGet().programTrackedEntityAttributes());
         else
-            return Observable.fromCallable(() -> d2.trackedEntityModule().trackedEntityAttributes.byDisplayInListNoProgram().eq(true).blockingGet())
+            return Observable.fromCallable(() -> d2.trackedEntityModule().trackedEntityAttributes().byDisplayInListNoProgram().eq(true).blockingGet())
                     .map(trackedEntityAttributes -> {
                         List<Program> programs =
-                                d2.programModule().programs.withProgramTrackedEntityAttributes().blockingGet();
+                                d2.programModule().programs().withProgramTrackedEntityAttributes().blockingGet();
                         List<String> teaUids = UidsHelper.getUidsList(trackedEntityAttributes);
                         List<ProgramTrackedEntityAttribute> programTrackedEntityAttributes = new ArrayList<>();
                         for (Program program : programs) {
@@ -505,7 +505,7 @@ public class DashboardRepositoryImpl implements DashboardRepository {
 
     @Override
     public Observable<List<OrganisationUnit>> getTeiOrgUnits(@NonNull String teiUid, @Nullable String programUid) {
-        EnrollmentCollectionRepository enrollmentRepo = d2.enrollmentModule().enrollments.byTrackedEntityInstance().eq(teiUid);
+        EnrollmentCollectionRepository enrollmentRepo = d2.enrollmentModule().enrollments().byTrackedEntityInstance().eq(teiUid);
         if (programUid != null) {
             enrollmentRepo = enrollmentRepo.byProgram().eq(programUid);
         }
@@ -516,24 +516,24 @@ public class DashboardRepositoryImpl implements DashboardRepository {
                     for (Enrollment enrollment : enrollments) {
                         orgUnitIds.add(enrollment.organisationUnit());
                     }
-                    return d2.organisationUnitModule().organisationUnits.byUid().in(orgUnitIds).blockingGet();
+                    return d2.organisationUnitModule().organisationUnits().byUid().in(orgUnitIds).blockingGet();
                 });
     }
 
     @Override
     public Observable<List<Program>> getTeiActivePrograms(String teiUid, boolean showOnlyActive) {
-        EnrollmentCollectionRepository enrollmentRepo = d2.enrollmentModule().enrollments.byTrackedEntityInstance().eq(teiUid);
+        EnrollmentCollectionRepository enrollmentRepo = d2.enrollmentModule().enrollments().byTrackedEntityInstance().eq(teiUid);
         if (showOnlyActive)
             enrollmentRepo.byStatus().eq(EnrollmentStatus.ACTIVE);
         return enrollmentRepo.get().toObservable().flatMapIterable(enrollments -> enrollments)
                 .map(Enrollment::program)
                 .toList().toObservable()
-                .map(programUids -> d2.programModule().programs.byUid().in(programUids).withStyle().blockingGet());
+                .map(programUids -> d2.programModule().programs().byUid().in(programUids).withStyle().blockingGet());
     }
 
     @Override
     public Observable<List<Enrollment>> getTEIEnrollments(String teiUid) {
-        return d2.enrollmentModule().enrollments.byTrackedEntityInstance().eq(teiUid).get().toObservable();
+        return d2.enrollmentModule().enrollments().byTrackedEntityInstance().eq(teiUid).get().toObservable();
     }
 
     @Override
@@ -545,7 +545,7 @@ public class DashboardRepositoryImpl implements DashboardRepository {
     }
 
     private void updateEnrollmentState(String enrollmentUid) {
-        Enrollment enrollment = d2.enrollmentModule().enrollments.uid(enrollmentUid).blockingGet();
+        Enrollment enrollment = d2.enrollmentModule().enrollments().uid(enrollmentUid).blockingGet();
         ContentValues cv = enrollment.toContentValues();
         cv.put("lastUpdated", DateUtils.databaseDateFormat().format(Calendar.getInstance().getTime()));
         cv.put("state", enrollment.state() == State.TO_POST ? State.TO_POST.name() : State.TO_UPDATE.name());
@@ -555,7 +555,7 @@ public class DashboardRepositoryImpl implements DashboardRepository {
     @Override
     public void updateTeiState() {
         TrackedEntityInstance tei =
-                d2.trackedEntityModule().trackedEntityInstances.uid(teiUid).blockingGet();
+                d2.trackedEntityModule().trackedEntityInstances().uid(teiUid).blockingGet();
         ContentValues cv = tei.toContentValues();
         cv.put(TrackedEntityInstance.Columns.STATE, tei.state() == State.TO_POST ? State.TO_POST.name() : State.TO_UPDATE.name());
         cv.put("lastUpdated", DateUtils.databaseDateFormat().format(Calendar.getInstance().getTime()));

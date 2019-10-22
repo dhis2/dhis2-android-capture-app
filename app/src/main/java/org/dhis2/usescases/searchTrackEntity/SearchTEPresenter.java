@@ -16,6 +16,7 @@ import androidx.appcompat.content.res.AppCompatResources;
 import androidx.paging.PagedList;
 
 import org.dhis2.R;
+import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.databinding.WidgetDatepickerBinding;
 import org.dhis2.usescases.enrollment.EnrollmentActivity;
@@ -48,7 +49,6 @@ import java.util.Map;
 import javax.annotation.Nullable;
 
 import io.reactivex.Observable;
-import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.processors.FlowableProcessor;
 import io.reactivex.processors.PublishProcessor;
@@ -71,6 +71,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     private static final int MAX_NO_SELECTED_PROGRAM_RESULTS = 5;
     private final SearchRepository searchRepository;
     private final D2 d2;
+    private final SchedulerProvider schedulerProvider;
     private SearchTEContractsModule.View view;
 
     private Program selectedProgram;
@@ -88,9 +89,10 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     private FlowableProcessor<Unit> enrollmentMapProcessor;
     private Dialog dialogDisplayed;
 
-    public SearchTEPresenter(D2 d2, SearchRepository searchRepository) {
+    public SearchTEPresenter(D2 d2, SearchRepository searchRepository, SchedulerProvider schedulerProvider) {
         this.searchRepository = searchRepository;
         this.d2 = d2;
+        this.schedulerProvider = schedulerProvider;
         queryData = new HashMap<>();
         queryProcessor = PublishProcessor.create();
         mapProcessor = PublishProcessor.create();
@@ -109,15 +111,15 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
         compositeDisposable.add(
                 searchRepository.getTrackedEntityType(trackedEntityType)
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(Schedulers.io())
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.io())
                         .flatMap(trackedEntity ->
                         {
                             this.trackedEntity = trackedEntity;
                             return searchRepository.programsWithRegistration(trackedEntityType);
                         })
-                        .subscribeOn(AndroidSchedulers.mainThread())
-                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeOn(schedulerProvider.ui())
+                        .observeOn(schedulerProvider.ui())
                         .subscribe(programs -> {
 
                                     List<Program> programsWithTEType = new ArrayList<>();
@@ -146,8 +148,8 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         compositeDisposable.add(
                 searchRepository.getTrackedEntityType(trackedEntityType)
                         .map(teiType -> teiType.featureType() != null ? teiType.featureType() : FeatureType.NONE)
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
                         .subscribe(
                                 view.featureType(),
                                 Timber::d
@@ -166,8 +168,8 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                                                         query, NetworkUtils.isOnline(view.getContext())))
                                         .map(GeometryUtils.INSTANCE::getSourceFromTeis)
                         )
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
                         .subscribe(
                                 view.setMap(),
                                 Timber::e,
@@ -180,8 +182,8 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     public void initSearch(SearchTEContractsModule.View view) {
 
         compositeDisposable.add(view.rowActionss()
-                .subscribeOn(AndroidSchedulers.mainThread())
-                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(schedulerProvider.ui())
+                .observeOn(schedulerProvider.ui())
                 .subscribe(data -> {
                             Map<String, String> queryDataBU = new HashMap<>(queryData);
                             view.setFabIcon(true);
@@ -219,16 +221,16 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                                     data, NetworkUtils.isOnline(view.getContext()));
                         })
                         .doOnError(this::handleError)
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
                         .subscribe(view::setLiveData, Timber::d)
         );
 
         compositeDisposable.add(
                 queryProcessor
                         .startWith(queryData)
-                        .subscribeOn(AndroidSchedulers.mainThread())
-                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeOn(schedulerProvider.ui())
+                        .observeOn(schedulerProvider.ui())
                         .subscribe(data -> view.clearData(), Timber::d)
         );
 
@@ -238,8 +240,8 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                             if (view.isMapVisible())
                                 mapProcessor.onNext(new Unit());
                         })
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
                         .subscribe(
                                 open -> view.openOrgUnitTreeSelector(),
                                 Timber::e
@@ -252,8 +254,8 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                             if (view.isMapVisible())
                                 mapProcessor.onNext(new Unit());
                         })
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
                         .subscribe(
                                 periodRequest -> view.showPeriodRequest(periodRequest),
                                 Timber::e
@@ -265,8 +267,8 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                             if (view.isMapVisible())
                                 mapProcessor.onNext(new Unit());
                         })
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
                         .subscribe(
                                 filterManager -> view.updateFilters(filterManager.getTotalFilters()),
                                 Timber::e
@@ -355,8 +357,8 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
     private void getTrackedEntityTypeAttributes() {
         compositeDisposable.add(searchRepository.trackedEntityTypeAttributes()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(schedulerProvider.io())
+                .observeOn(schedulerProvider.ui())
                 .subscribe(
                         data -> view.setForm(data, selectedProgram, queryData),
                         Timber::d)
@@ -365,8 +367,8 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
     private void getProgramTrackedEntityAttributes() {
         compositeDisposable.add(searchRepository.programAttributes(selectedProgram.uid())
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(schedulerProvider.io())
+                .observeOn(schedulerProvider.ui())
                 .subscribe(
                         data -> view.setForm(data, selectedProgram, queryData),
                         Timber::d)
@@ -382,8 +384,8 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                                 filterManager.getOrgUnitUidsFilters(),
                                 filterManager.getStateFilters(),
                                 queryData, NetworkUtils.isOnline(view.getContext())))
-                        .subscribeOn(Schedulers.computation())
-                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeOn(schedulerProvider.computation())
+                        .observeOn(schedulerProvider.ui())
                         .subscribe(
                                 view::setLiveData,
                                 Timber::d)
@@ -482,8 +484,8 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                 .setNegativeListener(v -> orgUnitDialog.dismiss());
 
         compositeDisposable.add(getOrgUnits()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(schedulerProvider.io())
+                .observeOn(schedulerProvider.ui())
                 .subscribe(
                         allOrgUnits -> {
                             if (allOrgUnits.size() > 1) {
@@ -619,8 +621,8 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     private void enrollInOrgUnit(String orgUnitUid, String programUid, String uid, Date enrollmentDate) {
         compositeDisposable.add(
                 searchRepository.saveToEnroll(trackedEntity.uid(), orgUnitUid, programUid, uid, queryData, enrollmentDate)
-                        .subscribeOn(Schedulers.computation())
-                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeOn(schedulerProvider.computation())
+                        .observeOn(schedulerProvider.ui())
                         .subscribe(enrollmentAndTEI -> {
                                     if (view.fromRelationshipTEI() == null) {
                                         this.view.analyticsHelper().setEvent(CREATE_ENROLL, CLICK, CREATE_ENROLL);
@@ -664,9 +666,9 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     @Override
     public void downloadTei(String teiUid) {
         compositeDisposable.add(
-                d2.trackedEntityModule().trackedEntityInstanceDownloader.byUid().in(Collections.singletonList(teiUid)).download()
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
+                d2.trackedEntityModule().trackedEntityInstanceDownloader().byUid().in(Collections.singletonList(teiUid)).download()
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
                         .subscribe(
                                 view.downloadProgress(),
                                 Timber::d,
@@ -676,7 +678,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
     @Override
     public String nameOUByUid(String uid) {
-        OrganisationUnit organisationUnit = d2.organisationUnitModule().organisationUnits.uid(uid).blockingGet();
+        OrganisationUnit organisationUnit = d2.organisationUnitModule().organisationUnits().uid(uid).blockingGet();
         return organisationUnit != null ? organisationUnit.name() : null;
     }
 
@@ -685,9 +687,9 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         List<String> teiUids = new ArrayList<>();
         teiUids.add(TEIuid);
         compositeDisposable.add(
-                d2.trackedEntityModule().trackedEntityInstanceDownloader.byUid().in(teiUids).download()
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
+                d2.trackedEntityModule().trackedEntityInstanceDownloader().byUid().in(teiUids).download()
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
                         .subscribe(
                                 data -> Timber.d("DOWNLOADING TEI %s : %s%", TEIuid, data.percentage()),
                                 Timber::d,
@@ -765,7 +767,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
     @Override
     public Drawable getSymbolIcon() {
-        TrackedEntityType teiType = d2.trackedEntityModule().trackedEntityTypes.withTrackedEntityTypeAttributes().withStyle().uid(trackedEntityType).blockingGet();
+        TrackedEntityType teiType = d2.trackedEntityModule().trackedEntityTypes().withTrackedEntityTypeAttributes().withStyle().uid(trackedEntityType).blockingGet();
 
         if (teiType.style() != null && teiType.style().icon() != null) {
             return
@@ -788,7 +790,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
     @Override
     public int getTEIColor() {
-        TrackedEntityType teiType = d2.trackedEntityModule().trackedEntityTypes.withTrackedEntityTypeAttributes().withStyle().uid(trackedEntityType).blockingGet();
+        TrackedEntityType teiType = d2.trackedEntityModule().trackedEntityTypes().withTrackedEntityTypeAttributes().withStyle().uid(trackedEntityType).blockingGet();
 
         if (teiType.style() != null && teiType.style().color() != null) {
             return ColorUtils.parseColor(teiType.style().color());

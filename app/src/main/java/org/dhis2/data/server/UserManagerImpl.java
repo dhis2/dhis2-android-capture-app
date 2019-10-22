@@ -17,8 +17,8 @@ public class UserManagerImpl implements UserManager {
 
     @NonNull
     @Override
-    public Observable<User> logIn(@NonNull String username, @NonNull String password) {
-        return Observable.defer(() -> d2.userModule().logIn(username, password).toObservable());
+    public Observable<User> logIn(@NonNull String username, @NonNull String password, @NonNull String serverUrl) {
+        return Observable.defer(() -> d2.userModule().logIn(username, password, serverUrl).toObservable());
     }
 
     @NonNull
@@ -30,7 +30,7 @@ public class UserManagerImpl implements UserManager {
     @NonNull
     @Override
     public Single<String> userInitials() {
-        return Single.defer(() -> d2.userModule().user.get())
+        return Single.defer(() -> d2.userModule().user().get())
                 .map(user -> {
                     String fn = user.firstName() != null ? user.firstName() : "";
                     String sn = user.surname() != null ? user.surname() : "";
@@ -41,15 +41,15 @@ public class UserManagerImpl implements UserManager {
     @Override
     @NonNull
     public Single<String> userFullName() {
-        return Single.defer(() -> d2.userModule().user.get())
+        return Single.defer(() -> d2.userModule().user().get())
                 .map(user -> String.format("%s %s", user.firstName(), user.surname()));
     }
 
     @NonNull
     @Override
-    public Single<String> userName(){
-        return Single.defer(()->d2.userModule().user.withUserCredentials().get())
-                .map(user->user.userCredentials().username());
+    public Single<String> userName() {
+        return Single.defer(() -> d2.userModule().user().withUserCredentials().get())
+                .map(user -> user.userCredentials().username());
     }
 
     @Override

@@ -1,6 +1,7 @@
 package org.dhis2.usescases.datasets.datasetDetail;
 
 import org.dhis2.data.dagger.PerActivity;
+import org.dhis2.data.schedulers.SchedulerProvider;
 import org.hisp.dhis.android.core.D2;
 
 import dagger.Module;
@@ -25,8 +26,8 @@ public class DataSetDetailModule {
 
     @Provides
     @PerActivity
-    DataSetDetailContract.Presenter providesPresenter(DataSetDetailRepository dataSetDetailRepository) {
-        return new DataSetDetailPresenter(dataSetDetailRepository);
+    DataSetDetailContract.Presenter providesPresenter(DataSetDetailRepository dataSetDetailRepository, SchedulerProvider schedulerProvider) {
+        return new DataSetDetailPresenter(dataSetDetailRepository, schedulerProvider);
     }
 
     @Provides

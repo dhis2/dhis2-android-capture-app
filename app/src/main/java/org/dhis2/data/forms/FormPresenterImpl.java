@@ -95,8 +95,8 @@ class FormPresenterImpl implements FormPresenter {
 
     @Override
     public String getEnrollmentOu(String enrollmentUid) {
-        if (d2.enrollmentModule().enrollments.uid(enrollmentUid).blockingExists())
-            return d2.enrollmentModule().enrollments.uid(enrollmentUid).blockingGet().organisationUnit();
+        if (d2.enrollmentModule().enrollments().uid(enrollmentUid).blockingExists())
+            return d2.enrollmentModule().enrollments().uid(enrollmentUid).blockingGet().organisationUnit();
         else
             return null;
     }
@@ -456,8 +456,8 @@ class FormPresenterImpl implements FormPresenter {
                         formRepository.getProgramCategoryCombo(eventUid).toFlowable(BackpressureStrategy.LATEST),
                         Pair::create
                 )
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
                         .subscribe(
                                 pair -> {
                                     ProgramStage programStage = pair.val0();

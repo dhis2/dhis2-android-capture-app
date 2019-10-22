@@ -87,8 +87,8 @@ final class DataEntryPresenterImpl implements DataEntryPresenter, RulesActionCal
         this.dataEntryView = dataEntryView;
 
         disposable.add(Flowable.zip(
-                dataEntryRepository.list().subscribeOn(Schedulers.computation()),
-                ruleEngineRepository.calculate().subscribeOn(Schedulers.computation()),
+                dataEntryRepository.list().subscribeOn(schedulerProvider.computation()),
+                ruleEngineRepository.calculate().subscribeOn(schedulerProvider.computation()),
                 this::applyEffects)
                 .subscribeOn(schedulerProvider.computation())
                 .observeOn(schedulerProvider.ui())

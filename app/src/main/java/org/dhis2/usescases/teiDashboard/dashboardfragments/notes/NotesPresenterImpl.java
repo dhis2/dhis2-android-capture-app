@@ -1,5 +1,6 @@
 package org.dhis2.usescases.teiDashboard.dashboardfragments.notes;
 
+import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.usescases.teiDashboard.DashboardRepository;
 import org.hisp.dhis.android.core.D2;
@@ -18,14 +19,16 @@ public class NotesPresenterImpl implements NotesContracts.Presenter {
     private final String programUid;
     private final String teiUid;
     private final D2 d2;
+    private final SchedulerProvider schedulerProvider;
     private NotesContracts.View view;
     private CompositeDisposable compositeDisposable;
 
-    NotesPresenterImpl(D2 d2, DashboardRepository dashboardRepository, String programUid, String teiUid) {
+    NotesPresenterImpl(D2 d2, DashboardRepository dashboardRepository, String programUid, String teiUid, SchedulerProvider schedulerProvider) {
         this.d2 = d2;
         this.dashboardRepository = dashboardRepository;
         this.programUid = programUid;
         this.teiUid = teiUid;
+        this.schedulerProvider = schedulerProvider;
     }
 
     @Override
@@ -47,8 +50,8 @@ public class NotesPresenterImpl implements NotesContracts.Presenter {
     @Override
     public void setNoteProcessor(Flowable<Pair<String, Boolean>> noteProcessor) {
         compositeDisposable.add(noteProcessor
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(schedulerProvider.io())
+                .observeOn(schedulerProvider.ui())
                 .subscribe(
                         dashboardRepository.handleNote(),
                         Timber::d
@@ -58,8 +61,8 @@ public class NotesPresenterImpl implements NotesContracts.Presenter {
     @Override
     public void subscribeToNotes() {
         compositeDisposable.add(dashboardRepository.getNotes(programUid, teiUid)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(schedulerProvider.io())
+                .observeOn(schedulerProvider.ui())
                 .subscribe(
                         view.swapNotes(),
                         Timber::d
@@ -69,6 +72,6 @@ public class NotesPresenterImpl implements NotesContracts.Presenter {
 
     @Override
     public boolean hasProgramWritePermission() {
-        return d2.programModule().programs.uid(programUid).blockingGet().access().data().write();
+        return d2.programModule().programs().uid(programUid).blockingGet().access().data().write();
     }
 }

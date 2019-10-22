@@ -4,10 +4,12 @@ import androidx.annotation.NonNull;
 import androidx.databinding.ObservableField;
 
 import org.dhis2.data.forms.FormSectionViewModel;
+import org.dhis2.data.forms.dataentry.DataEntryStore;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.usescases.general.AbstractActivityContracts;
 import org.dhis2.utils.Result;
+import org.dhis2.utils.RulesActionCallbacks;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitLevel;
 import org.hisp.dhis.rules.models.RuleEffect;
@@ -77,6 +79,8 @@ public class EventCaptureContract {
 
         void subscribeToSection();
 
+        void nextCalculation(boolean doNextCalculation);
+
         void onNextSection();
 
         void onPreviousSection();
@@ -108,6 +112,10 @@ public class EventCaptureContract {
         boolean hasExpired();
 
         Observable<List<OrganisationUnitLevel>> getLevels();
+
+        DataEntryStore getDataEntryStore();
+
+        void saveImage(String uuid, String filePath);
     }
 
     public interface EventCaptureRepository {
@@ -166,6 +174,7 @@ public class EventCaptureContract {
         Observable<Boolean> isCompletedEventExpired(String eventUid);
         void assign(String uid, String value);
 
+        void saveImage(String uuid, String filePath);
     }
 
 }

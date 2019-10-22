@@ -9,7 +9,7 @@
 
         <variable
             name="presenter"
-            type="org.dhis2.usescases.login.LoginContracts.Presenter" />
+            type="org.dhis2.usescases.login.LoginPresenter" />
 
         <variable
             name="loginModel"
@@ -66,7 +66,7 @@
                 <ImageButton
                     android:id="@+id/urlInfo"
                     style="@style/ActionIconNoPadding"
-                    android:onClick="@{presenter::onUrlInfoClick}"
+                    android:onClick="@{()-> presenter.onUrlInfoClick()}"
                     android:tint="#5C5C5C"
                     app:layout_constraintBottom_toBottomOf="@id/server_url"
                     app:layout_constraintEnd_toEndOf="parent"

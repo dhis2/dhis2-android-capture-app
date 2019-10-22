@@ -27,11 +27,11 @@ class ScheduledEventPresenterImpl(val d2: D2,
         disposable = CompositeDisposable()
 
         disposable.add(
-                d2.eventModule().events.uid(eventUid).get()
+                d2.eventModule().events().uid(eventUid).get()
                         .flatMap { event ->
                             Single.zip(
-                                    d2.programModule().programStages.withStyle().uid(event.programStage()).get(),
-                                    d2.programModule().programs.uid(event.program()).get(),
+                                    d2.programModule().programStages().withStyle().uid(event.programStage()).get(),
+                                    d2.programModule().programs().uid(event.program()).get(),
                                     BiFunction<ProgramStage, Program, Triple<ProgramStage, Program, Event>> { stage, program -> Triple(stage, program, event) })
                         }
                         .observeOn(AndroidSchedulers.mainThread())
@@ -42,8 +42,8 @@ class ScheduledEventPresenterImpl(val d2: D2,
                                     view.setStage(stage)
                                     view.setEvent(event)
                                     if (program.categoryComboUid() !== null &&
-                                            d2.categoryModule().categoryCombos.uid(program.categoryComboUid()).blockingGet()!!.isDefault == false)
-                                        view.setCatCombo(d2.categoryModule().categoryCombos.uid(program.categoryComboUid()).blockingGet()!!, getCatOptions(event.attributeOptionCombo()))
+                                            d2.categoryModule().categoryCombos().uid(program.categoryComboUid()).blockingGet()!!.isDefault == false)
+                                        view.setCatCombo(d2.categoryModule().categoryCombos().uid(program.categoryComboUid()).blockingGet()!!, getCatOptions(event.attributeOptionCombo()))
                                 },
                                 { Timber.e(it) }
                         )
@@ -67,25 +67,25 @@ class ScheduledEventPresenterImpl(val d2: D2,
     }
 
     override fun setEventDate(date: Date) {
-        d2.eventModule().events.uid(eventUid).setEventDate(date)
-        d2.eventModule().events.uid(eventUid).setStatus(EventStatus.ACTIVE)
+        d2.eventModule().events().uid(eventUid).setEventDate(date)
+        d2.eventModule().events().uid(eventUid).setStatus(EventStatus.ACTIVE)
         view.back()
     }
 
     override fun setDueDate(date: Date) {
-        d2.eventModule().events.uid(eventUid).setDueDate(date)
-        d2.eventModule().events.uid(eventUid).setStatus(EventStatus.SCHEDULE)
+        d2.eventModule().events().uid(eventUid).setDueDate(date)
+        d2.eventModule().events().uid(eventUid).setStatus(EventStatus.SCHEDULE)
         view.back()
     }
 
     override fun skipEvent() {
-        d2.eventModule().events.uid(eventUid).setStatus(EventStatus.SKIPPED)
+        d2.eventModule().events().uid(eventUid).setStatus(EventStatus.SKIPPED)
         view.back()
     }
 
     override fun setCatOptionCombo(catComboUid: String, arrayList: ArrayList<CategoryOption>) {
-        val catOptComboUid = d2.categoryModule().categoryOptionCombos.byCategoryOptions(UidsHelper.getUidsList(arrayList))
+        val catOptComboUid = d2.categoryModule().categoryOptionCombos().byCategoryOptions(UidsHelper.getUidsList(arrayList))
                 .byCategoryComboUid().eq(catComboUid).one().blockingGet().uid()
-        d2.eventModule().events.uid(eventUid).setAttributeOptionComboUid(catOptComboUid)
+        d2.eventModule().events().uid(eventUid).setAttributeOptionComboUid(catOptComboUid)
     }
 }

@@ -30,9 +30,9 @@ import com.google.gson.reflect.TypeToken;
 import org.dhis2.App;
 import org.dhis2.BuildConfig;
 import org.dhis2.R;
+import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity;
 import org.dhis2.usescases.login.LoginActivity;
 import org.dhis2.usescases.main.MainActivity;
-import org.dhis2.utils.granular_sync.SyncStatusDialog;
 import org.dhis2.usescases.map.MapSelectorActivity;
 import org.dhis2.usescases.splash.SplashActivity;
 import org.dhis2.utils.Constants;
@@ -42,6 +42,7 @@ import org.dhis2.utils.analytics.AnalyticsHelper;
 import org.dhis2.utils.custom_views.CoordinatesView;
 import org.dhis2.utils.custom_views.CustomDialog;
 import org.dhis2.utils.custom_views.PictureView;
+import org.dhis2.utils.granular_sync.SyncStatusDialog;
 import org.hisp.dhis.android.core.arch.helpers.GeometryHelper;
 import org.hisp.dhis.android.core.common.FeatureType;
 import org.hisp.dhis.android.core.common.Geometry;
@@ -53,7 +54,6 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import io.reactivex.processors.FlowableProcessor;
 import rx.Observable;
 import rx.subjects.BehaviorSubject;
 import timber.log.Timber;
@@ -91,8 +91,8 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         FirebaseAnalytics mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
 
-        if (((App) getApplicationContext()).serverComponent() != null && analyticsHelper() != null)
-            analyticsHelper().setD2(((App) getApplicationContext()).serverComponent().userManager().getD2());
+        /*if (((App) getApplicationContext()).serverComponent() != null && analyticsHelper() != null)
+            analyticsHelper().setD2(((App) getApplicationContext()).serverComponent().userManager().getD2());*/
 
         if (!getResources().getBoolean(R.bool.is_tablet))
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT);
@@ -216,24 +216,6 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity
     }
 
     @Override
-    public <T> void saveListToPreference(String key, List<T> list) {
-        Gson gson = new Gson();
-        String json = gson.toJson(list);
-
-        getSharedPreferences(Constants.SHARE_PREFS, MODE_PRIVATE).edit().putString(key, json).apply();
-    }
-
-    @Override
-    public <T> List<T> getListFromPreference(String key) {
-        Gson gson = new Gson();
-        String json = getSharedPreferences().getString(key, "[]");
-        Type type = new TypeToken<List<T>>() {
-        }.getType();
-
-        return gson.fromJson(json, type);
-    }
-
-    @Override
     public SharedPreferences getSharedPreferences() {
         return getSharedPreferences(Constants.SHARE_PREFS, MODE_PRIVATE);
     }
@@ -353,7 +335,6 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK && requestCode == Constants.RQ_MAP_LOCATION_VIEW) {
             if (coordinatesView != null && data.getExtras() != null) {
                 FeatureType locationType = FeatureType.valueOf(data.getStringExtra(MapSelectorActivity.Companion.getLOCATION_TYPE_EXTRA()));
@@ -394,13 +375,16 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity
 
     @Override
     public void showSyncDialog(SyncStatusDialog dialog) {
-        dialog.show(getSupportFragmentManager(),dialog.getDialogTag());
+        dialog.show(getSupportFragmentManager(), dialog.getDialogTag());
     }
 
     @Override
     public void intentSelected(String uuid, Intent intent, int request, PictureView.OnPictureSelected onPictureSelected) {
         this.uuid = uuid;
-        startActivityForResult(intent, request);
+        if (this instanceof EventCaptureActivity)
+            ((EventCaptureActivity)getContext()).startActivityForResult(intent, request);
+        else
+            startActivityForResult(intent, request);
     }
 
     @Override

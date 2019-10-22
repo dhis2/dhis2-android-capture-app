@@ -19,8 +19,6 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import co.infinum.goldfinger.Goldfinger
 import com.andrognito.pinlockview.PinLockListener
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -28,10 +26,12 @@ import okhttp3.HttpUrl
 import org.dhis2.App
 import org.dhis2.Bindings.onRightDrawableClicked
 import org.dhis2.R
+import org.dhis2.data.server.UserManager
 import org.dhis2.data.tuples.Trio
 import org.dhis2.databinding.ActivityLoginBinding
 import org.dhis2.usescases.general.ActivityGlobalAbstract
 import org.dhis2.usescases.main.MainActivity
+import org.dhis2.usescases.qrScanner.QRActivity
 import org.dhis2.usescases.sync.SyncActivity
 import org.dhis2.utils.*
 import org.dhis2.utils.Constants.ACCOUNT_RECOVERY
@@ -46,26 +46,17 @@ import java.io.InputStreamReader
 import java.io.StringWriter
 import java.util.*
 import javax.inject.Inject
+import kotlin.collections.HashSet
 
 
 class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
 
-    override fun showFingerprintDialog() {
-        fingerPrintDialog.show()
-    }
-
-    override fun hideFingerprintDialog() {
-        fingerPrintDialog.hide()
-    }
-
     private lateinit var binding: ActivityLoginBinding
-
     private lateinit var loginViewModel: LoginViewModel
-
     private lateinit var fingerPrintDialog: Dialog
 
     @Inject
-    lateinit var presenter: LoginContracts.Presenter
+    lateinit var presenter: LoginPresenter
 
     private var users: MutableList<String>? = null
     private var urls: MutableList<String>? = null
@@ -74,7 +65,7 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
     private var qrUrl: String? = null
 
     private var testingCredentials: List<TestingCredential> = ArrayList()
-
+    var userManager: UserManager? = null
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -82,8 +73,13 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
         var loginComponent = (applicationContext as App).loginComponent()
         if (loginComponent == null) {
             // in case if we don't have cached presenter
-            loginComponent = (applicationContext as App).createLoginComponent()
+            loginComponent = (applicationContext as App).createLoginComponent(this)
         }
+        val serverComponent = (applicationContext as App).serverComponent
+        serverComponent?.let {
+            userManager = serverComponent.userManager()
+        }
+
         loginComponent.inject(this)
 
         super.onCreate(savedInstanceState)
@@ -106,14 +102,6 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
             binding.userNameEdit.setText(testingEnvironment.val1())
             binding.userPassEdit.setText(testingEnvironment.val2())
         })
-        loginViewModel.serverUrl.observe(this, Observer<String> {
-            Glide.with(this).load(String.format("%s/api/staticContent/logo_front", it))
-                    .transition(withCrossFade())
-                    .into(binding.logoFront)
-            Glide.with(this).load(String.format("%s/api/staticContent/logo_banner", it))
-                    .placeholder(R.drawable.ic_dhis_white)
-                    .into(binding.logoBanner)
-        })
 
         binding.serverUrlEdit.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(p0: Editable?) {
@@ -133,7 +121,7 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
             }
         })
 
-        binding.serverUrlEdit.onRightDrawableClicked { presenter.onQRClick(binding.serverUrl) }
+        binding.serverUrlEdit.onRightDrawableClicked { presenter.onQRClick() }
 
         binding.clearPassButton.setOnClickListener { binding.userPassEdit.text = null }
         binding.clearUserNameButton.setOnClickListener { binding.userNameEdit.text = null }
@@ -141,9 +129,10 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
         setTestingCredentials()
         setAutocompleteAdapters()
         setUpFingerPrintDialog()
+
     }
 
-    private fun setUpFingerPrintDialog() {
+    override fun setUpFingerPrintDialog() {
         fingerPrintDialog = MaterialAlertDialogBuilder(this, R.style.DhisMaterialDialog)
                 .setTitle(R.string.fingerprint_title)
                 .setMessage(R.string.fingerprint_message)
@@ -162,7 +151,7 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
                 HttpUrl.parse(urlString) != null
     }
 
-    private fun setTestingCredentials() {
+    override fun setTestingCredentials() {
         val testingCredentialsIdentifier = resources.getIdentifier("testing_credentials", "raw", packageName)
         if (testingCredentialsIdentifier != -1) {
             val writer = StringWriter()
@@ -185,10 +174,12 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
         }
     }
 
-
     override fun onResume() {
         super.onResume()
-        presenter.init(this)
+        presenter.apply {
+            init(userManager)
+            checkServerInfoAndShowBiometricButton()
+        }
         NetworkUtils.isGooglePlayServicesAvailable(this)
     }
 
@@ -306,50 +297,21 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
         binding.serverUrlEdit.dropDownWidth = resources.displayMetrics.widthPixels
         binding.userNameEdit.dropDownWidth = resources.displayMetrics.widthPixels
 
-        urls = getListFromPreference(Constants.PREFS_URLS)
-        users = getListFromPreference(Constants.PREFS_USERS)
+        val(urls, users) = presenter.getAutocompleteData(testingCredentials)
 
-        urls?.let {
-            for (testingCredential in testingCredentials) {
-                if (!it.contains(testingCredential.server_url))
-                    it.add(testingCredential.server_url)
-            }
-        }
-
-        saveListToPreference(Constants.PREFS_URLS, urls)
-
-        users?.let {
-            if (!it.contains(Constants.USER_TEST_ANDROID))
-                it.add(Constants.USER_TEST_ANDROID)
-        }
-
-        saveListToPreference(Constants.PREFS_USERS, users)
-
-        urls?.let {
+        urls.let {
             val urlAdapter = ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, it)
             binding.serverUrlEdit.setAdapter(urlAdapter)
         }
 
-        users?.let {
+        users.let {
             val userAdapter = ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, it)
             binding.userNameEdit.setAdapter(userAdapter)
         }
     }
 
     override fun saveUsersData() {
-        urls?.let {
-            if (!it.contains(binding.serverUrlEdit.text.toString())) {
-                it.add(binding.serverUrlEdit.text.toString())
-                saveListToPreference(Constants.PREFS_URLS, it)
-            }
-        }
-
-        users?.let {
-            if (!it.contains(binding.userNameEdit.text.toString())) {
-                it.add(binding.userNameEdit.text.toString())
-                saveListToPreference(Constants.PREFS_USERS, it)
-            }
-        }
+        (context.applicationContext as App).createUserComponent()
 
         if (presenter.canHandleBiometrics() == true &&
                 !BiometricStorage.areCredentialsSet() && !BiometricStorage.areSameCredentials(
@@ -376,7 +338,6 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
 
     }
 
-
     override fun onBackPressed() {
         if (isPinScreenVisible) {
             binding.pinLayout.root.visibility = View.GONE
@@ -394,7 +355,6 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
         super.onActivityResult(requestCode, resultCode, data)
     }
 
-    //region FingerPrint
     override fun showBiometricButton() {
         binding.biometricButton.visibility = View.VISIBLE
     }
@@ -414,7 +374,6 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
     override fun showEmptyCredentialsMessage() {
         showInfoDialog(getString(R.string.biometrics_dialog_title), getString(R.string.biometrics_first_use_text))
     }
-//endregion
 
     override fun openAccountRecovery() {
         val intent = Intent(this, WebViewActivity::class.java)
@@ -422,12 +381,25 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
         startActivity(intent)
     }
 
-    override fun displayAlertDialog(titleResource: Int, descriptionResource: Int, negativeResource: Int?, positiveResource: Int) {
+    override fun displayAlertDialog() {
         MaterialAlertDialogBuilder(this, R.style.DhisMaterialDialog)
-                .setTitle(titleResource)
-                .setMessage(descriptionResource)
-                .setPositiveButton(positiveResource, null)
+                .setTitle(R.string.login_server_info_title)
+                .setMessage(R.string.login_server_info_message)
+                .setPositiveButton(R.string.action_accept, null)
                 .show()
     }
 
+    override fun navigateToQRActivity() {
+        Intent(context, QRActivity::class.java).apply {
+            startActivityForResult(this, RQ_QR_SCANNER)
+        }
+    }
+
+    override fun showFingerprintDialog() {
+        fingerPrintDialog.show()
+    }
+
+    override fun hideFingerprintDialog() {
+        fingerPrintDialog.hide()
+    }
 }

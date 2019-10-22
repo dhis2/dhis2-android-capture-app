@@ -43,10 +43,6 @@ public class AbstractActivityContracts {
 
         void showTutorial(boolean shaked);
 
-        <T> void saveListToPreference(String key, List<T> list);
-
-        <T> List<T> getListFromPreference(String key);
-
         void hideKeyboard();
 
         void showToast(String message);
@@ -55,10 +51,12 @@ public class AbstractActivityContracts {
 
         void showDescription(String description);
 
+        @Deprecated
         SharedPreferences getSharedPreferences();
 
         void showSyncDialog(SyncStatusDialog dialog);
 
+        @Deprecated
         AnalyticsHelper analyticsHelper();
     }
 

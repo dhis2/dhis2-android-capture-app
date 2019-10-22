@@ -1,5 +1,4 @@
 package org.dhis2.data.user;
-
 import androidx.annotation.NonNull;
 
 import org.hisp.dhis.android.core.D2;
@@ -18,6 +17,6 @@ public class UserRepositoryImpl implements UserRepository {
     @NonNull
     @Override
     public Flowable<UserCredentials> credentials() {
-        return Flowable.fromCallable(() -> d2.userModule().userCredentials.blockingGet());
+        return Flowable.fromCallable(() -> d2.userModule().userCredentials().blockingGet());
     }
 }

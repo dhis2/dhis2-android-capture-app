@@ -64,7 +64,7 @@ public class OUTreeActivity extends ActivityGlobalAbstract implements OrgUnitSel
 
         compositeDisposable.add(
                 onStartSearch
-                        .flatMap(e -> d2.organisationUnitModule().organisationUnits
+                        .flatMap(e -> d2.organisationUnitModule().organisationUnits()
                                 .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_TEI_SEARCH)
                                 .orderByDisplayName(RepositoryScope.OrderByDirection.ASC)
                                 .byRootOrganisationUnit(true)
@@ -85,7 +85,7 @@ public class OUTreeActivity extends ActivityGlobalAbstract implements OrgUnitSel
                                     for (OrganisationUnit org : organisationUnits) {
                                         nodes.add(new TreeNode(org,
                                                 false,
-                                                !d2.organisationUnitModule().organisationUnits.byParentUid().eq(org.uid()).blockingIsEmpty(),
+                                                !d2.organisationUnitModule().organisationUnits().byParentUid().eq(org.uid()).blockingIsEmpty(),
                                                 FilterManager.getInstance().getOrgUnitFilters().contains(org),
                                                 org.level()));
                                     }
@@ -105,7 +105,7 @@ public class OUTreeActivity extends ActivityGlobalAbstract implements OrgUnitSel
                 ouChildListener
                         .debounce(500, TimeUnit.MILLISECONDS)
                         .flatMap(parentOu ->
-                                d2.organisationUnitModule().organisationUnits
+                                d2.organisationUnitModule().organisationUnits()
                                         .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_TEI_SEARCH)
                                         .byParentUid().eq(parentOu.val1().uid())
                                         .orderByDisplayName(RepositoryScope.OrderByDirection.ASC)
@@ -117,7 +117,7 @@ public class OUTreeActivity extends ActivityGlobalAbstract implements OrgUnitSel
                             for (OrganisationUnit org : organisationUnits.val1()) {
                                 nodes.add(new TreeNode(org,
                                         false,
-                                        !d2.organisationUnitModule().organisationUnits.byParentUid().eq(org.uid()).blockingIsEmpty(),
+                                        !d2.organisationUnitModule().organisationUnits().byParentUid().eq(org.uid()).blockingIsEmpty(),
                                         FilterManager.getInstance().getOrgUnitFilters().contains(org),
                                         org.level()));
                             }
@@ -138,7 +138,7 @@ public class OUTreeActivity extends ActivityGlobalAbstract implements OrgUnitSel
                         .filter(name ->
                                 name.length() > 3
                         )
-                        .flatMap(name -> d2.organisationUnitModule().organisationUnits
+                        .flatMap(name -> d2.organisationUnitModule().organisationUnits()
                                 .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_TEI_SEARCH)
                                 .byDisplayName().like("%" + name + "%")
                                 .orderByDisplayName(RepositoryScope.OrderByDirection.ASC)
@@ -154,14 +154,14 @@ public class OUTreeActivity extends ActivityGlobalAbstract implements OrgUnitSel
                                 orderedList = addToArray(orderedList, org.uid());
                             }
                             for (String str : orderedList) {
-                                OrganisationUnit organisationUnitParent = d2.organisationUnitModule().organisationUnits
+                                OrganisationUnit organisationUnitParent = d2.organisationUnitModule().organisationUnits()
                                         .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_TEI_SEARCH)
                                         .byUid().eq(str).one().blockingGet();
                                 if (organisationUnitParent != null)
                                     nodes.add(
                                             new TreeNode(organisationUnitParent,
                                                     false,
-                                                    !d2.organisationUnitModule().organisationUnits.byParentUid().eq(organisationUnitParent.uid()).blockingIsEmpty(),
+                                                    !d2.organisationUnitModule().organisationUnits().byParentUid().eq(organisationUnitParent.uid()).blockingIsEmpty(),
                                                     FilterManager.getInstance().getOrgUnitFilters().contains(organisationUnitParent),
                                                     organisationUnitParent.level())
                                     );

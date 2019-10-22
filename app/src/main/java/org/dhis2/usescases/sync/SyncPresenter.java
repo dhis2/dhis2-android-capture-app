@@ -8,6 +8,7 @@ import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkManager;
 
 import org.dhis2.R;
+import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.data.service.ReservedValuesWorker;
 import org.dhis2.data.service.SyncDataWorker;
 import org.dhis2.data.service.SyncInitWorker;
@@ -28,13 +29,15 @@ import timber.log.Timber;
 public class SyncPresenter implements SyncContracts.Presenter {
 
     private final D2 d2;
+    private final SchedulerProvider schedulerProvider;
     private SyncContracts.View view;
 
     private CompositeDisposable disposable;
 
 
-    SyncPresenter(D2 d2) {
+    SyncPresenter(D2 d2, SchedulerProvider schedulerProvider) {
         this.d2 = d2;
+        this.schedulerProvider = schedulerProvider;
     }
 
     @Override
@@ -107,7 +110,7 @@ public class SyncPresenter implements SyncContracts.Presenter {
     @Override
     public void getTheme() {
         disposable.add(
-                d2.systemSettingModule().systemSetting.get()
+                d2.systemSettingModule().systemSetting().get()
                         .map(systemSettings -> {
                             String style = "";
                             String flag = "";
@@ -126,8 +129,8 @@ public class SyncPresenter implements SyncContracts.Presenter {
                             else
                                 return Pair.create(flag, R.style.AppTheme);
                         })
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
                         .subscribe(flagTheme -> {
                                     view.saveFlag(flagTheme.val0());
                                     view.saveTheme(flagTheme.val1());

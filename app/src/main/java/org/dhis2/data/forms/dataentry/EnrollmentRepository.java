@@ -44,7 +44,7 @@ public final class EnrollmentRepository implements DataEntryRepository {
                                 @NonNull String enrollmentUid, D2 d2) {
         this.fieldFactory = fieldFactory;
         this.enrollmentUid = enrollmentUid;
-        this.enrollmentRepository = d2.enrollmentModule().enrollments.uid(enrollmentUid);
+        this.enrollmentRepository = d2.enrollmentModule().enrollments().uid(enrollmentUid);
         this.context = context;
         this.d2 = d2;
     }
@@ -53,8 +53,8 @@ public final class EnrollmentRepository implements DataEntryRepository {
     @Override
     public Flowable<List<FieldViewModel>> list() {
 
-        return d2.enrollmentModule().enrollments.uid(enrollmentUid).get()
-                .flatMap(enrollment -> d2.programModule().programs.withProgramTrackedEntityAttributes().uid(enrollment.program()).get())
+        return d2.enrollmentModule().enrollments().uid(enrollmentUid).get()
+                .flatMap(enrollment -> d2.programModule().programs().withProgramTrackedEntityAttributes().uid(enrollment.program()).get())
                 .map(program -> program.programTrackedEntityAttributes()).toFlowable()
                 .flatMapIterable(programTrackedEntityAttributes -> programTrackedEntityAttributes)
                 .map(this::transform).toList().toFlowable();
@@ -62,20 +62,20 @@ public final class EnrollmentRepository implements DataEntryRepository {
 
     @Override
     public Observable<List<OrganisationUnitLevel>> getOrgUnitLevels() {
-        return Observable.just(d2.organisationUnitModule().organisationUnitLevels.blockingGet());
+        return Observable.just(d2.organisationUnitModule().organisationUnitLevels().blockingGet());
     }
 
     @Override
     public Observable<List<OrganisationUnit>> getOrgUnits() {
-        return d2.organisationUnitModule().organisationUnits.byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE).get().toObservable();
+        return d2.organisationUnitModule().organisationUnits().byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE).get().toObservable();
     }
 
 
     @NonNull
     private FieldViewModel transform(@NonNull ProgramTrackedEntityAttribute programTrackedEntityAttribute) {
-        TrackedEntityAttribute attribute = d2.trackedEntityModule().trackedEntityAttributes.withObjectStyle().uid(programTrackedEntityAttribute.trackedEntityAttribute().uid())
+        TrackedEntityAttribute attribute = d2.trackedEntityModule().trackedEntityAttributes().withObjectStyle().uid(programTrackedEntityAttribute.trackedEntityAttribute().uid())
                 .blockingGet();
-        TrackedEntityAttributeValueObjectRepository attrValueRepository = d2.trackedEntityModule().trackedEntityAttributeValues
+        TrackedEntityAttributeValueObjectRepository attrValueRepository = d2.trackedEntityModule().trackedEntityAttributeValues()
                 .value(attribute.uid(), enrollmentRepository.blockingGet().trackedEntityInstance());
 
         String uid = attribute.uid();
@@ -96,17 +96,17 @@ public final class EnrollmentRepository implements DataEntryRepository {
 
 
         if (valueType == ValueType.IMAGE && !isEmpty(dataValue)) {
-            FileResource fileResource = d2.fileResourceModule().fileResources.uid(dataValue).blockingGet();
+            FileResource fileResource = d2.fileResourceModule().fileResources().uid(dataValue).blockingGet();
             if (fileResource != null)
                 dataValue = fileResource.path();
         }
 
         int optionCount = 0;
         if (!isEmpty(optionSet)) {
-            optionCount = d2.optionModule().options.byOptionSetUid().eq(optionSet).blockingCount();
+            optionCount = d2.optionModule().options().byOptionSetUid().eq(optionSet).blockingCount();
 
             if (!isEmpty(dataValue)) {
-                dataValue = d2.optionModule().options
+                dataValue = d2.optionModule().options()
                         .byOptionSetUid().eq(optionSet)
                         .byCode().eq(dataValue).one().blockingGet().displayName();
             }
@@ -120,7 +120,7 @@ public final class EnrollmentRepository implements DataEntryRepository {
                 //checks if tei has been deleted
                 if (teiUid != null) {
                     try {
-                        dataValue = d2.trackedEntityModule().reservedValueManager.blockingGetValue(uid, orgUnitUid);
+                        dataValue = d2.trackedEntityModule().reservedValueManager().blockingGetValue(uid, orgUnitUid);
                     } catch (Exception e) {
                         dataValue = null;
                         warning = context.getString(R.string.no_reserved_values);
@@ -129,7 +129,7 @@ public final class EnrollmentRepository implements DataEntryRepository {
                     //Checks if ValueType is Numeric and that it start with a 0, then removes the 0
                     if (valueType == ValueType.NUMBER)
                         while (dataValue.startsWith("0")) {
-                            dataValue = d2.trackedEntityModule().reservedValueManager.blockingGetValue(uid, orgUnitUid);
+                            dataValue = d2.trackedEntityModule().reservedValueManager().blockingGetValue(uid, orgUnitUid);
                         }
 
                     if (!isEmpty(dataValue)) {
@@ -150,7 +150,7 @@ public final class EnrollmentRepository implements DataEntryRepository {
         ObjectStyle objectStyle = attribute.style() != null ? attribute.style() : ObjectStyle.builder().build();
 
         if (valueType == ValueType.ORGANISATION_UNIT && !isEmpty(dataValue)) {
-            dataValue = dataValue + "_ou_" + d2.organisationUnitModule().organisationUnits.uid(dataValue).blockingGet().displayName();
+            dataValue = dataValue + "_ou_" + d2.organisationUnitModule().organisationUnits().uid(dataValue).blockingGet().displayName();
         }
 
         if (warning != null) {

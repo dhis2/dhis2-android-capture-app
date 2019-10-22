@@ -1,8 +1,10 @@
 package org.dhis2.utils.granular_sync
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.DialogInterface
+import android.content.pm.PackageManager
 import android.graphics.drawable.AnimatedVectorDrawable
 import android.os.Build
 import android.os.Bundle
@@ -13,6 +15,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -34,6 +38,9 @@ import org.hisp.dhis.android.core.imports.TrackerImportConflict
 import java.text.ParseException
 import java.util.*
 import javax.inject.Inject
+
+private const val SMS_PERMISSIONS_REQ_ID = 102
+
 
 @SuppressLint("ValidFragment")
 class SyncStatusDialog private constructor(private val recordUid: String, private val conflictType: ConflictType,
@@ -265,7 +272,28 @@ class SyncStatusDialog private constructor(private val recordUid: String, privat
         binding!!.noConflictMessage.visibility = View.GONE
         binding!!.synsStatusRecycler.visibility = View.VISIBLE
 
-        presenter!!.initSMSSync().observe(this, Observer { this.stateChanged(it) })
+        if (checkPermissions())
+            presenter!!.initSMSSync().observe(this, Observer { this.stateChanged(it) })
+        else closeDialog()
+    }
+
+    private fun checkPermissions(): Boolean {
+        // check permissions
+        val smsPermissions = arrayOf(Manifest.permission.ACCESS_NETWORK_STATE, Manifest.permission.READ_PHONE_STATE, Manifest.permission.SEND_SMS, Manifest.permission.RECEIVE_SMS, Manifest.permission.READ_SMS)
+        if (!hasPermissions(smsPermissions)) {
+            ActivityCompat.requestPermissions(activity!!, smsPermissions, SMS_PERMISSIONS_REQ_ID)
+            return false
+        }
+        return true
+    }
+
+    private fun hasPermissions(permissions: Array<String>): Boolean {
+        for (permission in permissions) {
+            if (ContextCompat.checkSelfPermission(context!!, permission) != PackageManager.PERMISSION_GRANTED) {
+                return false
+            }
+        }
+        return true
     }
 
     private fun stateChanged(states: List<SmsSendingService.SendingStatus>?) {
@@ -284,6 +312,7 @@ class SyncStatusDialog private constructor(private val recordUid: String, privat
         if (states.isEmpty()) {
             return
         }
+
         val lastState = states[states.size - 1]
         when (lastState.state!!) {
             SmsSendingService.State.WAITING_COUNT_CONFIRMATION -> {
