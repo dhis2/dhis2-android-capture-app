@@ -5,16 +5,18 @@ import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import java.util.ArrayList
 import org.dhis2.R
 import org.dhis2.databinding.ItemProgramModelBinding
-import org.hisp.dhis.android.core.program.Program
-import java.util.*
 
 /**
  * QUADRAM. Created by ppajuelo on 13/06/2018.
  */
 
-class ProgramModelAdapter internal constructor(private val presenter: ProgramContract.Presenter) : RecyclerView.Adapter<ProgramModelHolder>() {
+class ProgramModelAdapter internal constructor(
+    private val presenter: ProgramContract.Presenter
+) : RecyclerView.Adapter<ProgramModelHolder>() {
+
     private val programList: MutableList<ProgramViewModel>
 
     init {
@@ -23,15 +25,18 @@ class ProgramModelAdapter internal constructor(private val presenter: ProgramCon
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProgramModelHolder {
-        val binding = DataBindingUtil.inflate<ItemProgramModelBinding>(LayoutInflater.from(parent.context), R.layout.item_program_model, parent, false)
+        val binding = DataBindingUtil.inflate<ItemProgramModelBinding>(
+            LayoutInflater.from(parent.context),
+            R.layout.item_program_model,
+            parent,
+            false
+        )
         return ProgramModelHolder(binding)
     }
 
     override fun onBindViewHolder(holder: ProgramModelHolder, position: Int) {
-
         holder.bind(presenter, programList[holder.adapterPosition])
     }
-
 
     override fun getItemId(position: Int): Long {
         return programList[position].id().hashCode().toLong()
@@ -48,7 +53,10 @@ class ProgramModelAdapter internal constructor(private val presenter: ProgramCon
         diffResult.dispatchUpdatesTo(this)
     }
 
-    private class ProgramDiffUtil(val oldFields : List<ProgramViewModel>, val newFields: List<ProgramViewModel>) : DiffUtil.Callback(){
+    private class ProgramDiffUtil(
+        val oldFields: List<ProgramViewModel>,
+        val newFields: List<ProgramViewModel>
+    ) : DiffUtil.Callback() {
 
         override fun getOldListSize(): Int = oldFields.size
         override fun getNewListSize(): Int = newFields.size

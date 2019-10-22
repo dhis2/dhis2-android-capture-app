@@ -18,10 +18,18 @@ class LoginModule(private val view: LoginContracts.View) {
 
     @Provides
     @PerActivity
-    fun providePresenter(preferenceProvider: PreferenceProvider,
-                         schedulerProvider : SchedulerProvider,
-                         fingerPrintController: FingerPrintController,
-                         analyticsHelper: AnalyticsHelper): LoginPresenter {
-        return LoginPresenter(view ,preferenceProvider,schedulerProvider, fingerPrintController, analyticsHelper)
+    fun providePresenter(
+        preferenceProvider: PreferenceProvider,
+        schedulerProvider: SchedulerProvider,
+        fingerPrintController: FingerPrintController,
+        analyticsHelper: AnalyticsHelper
+    ): LoginPresenter {
+        return LoginPresenter(
+            view,
+            preferenceProvider,
+            schedulerProvider,
+            fingerPrintController,
+            analyticsHelper
+        )
     }
 }

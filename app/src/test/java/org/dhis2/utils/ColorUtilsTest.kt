@@ -19,13 +19,17 @@ import org.robolectric.RobolectricTestRunner
 @RunWith(RobolectricTestRunner::class)
 class ColorUtilsTest {
 
-    @Mock private lateinit var mockApplicationContext: Context
-    @Mock private lateinit var mockContextResources: Resources
-    @Mock private lateinit var attributes: AttributeSet
-    @Mock private lateinit var typedArray: TypedArray
+    @Mock
+    private lateinit var mockApplicationContext: Context
+    @Mock
+    private lateinit var mockContextResources: Resources
+    @Mock
+    private lateinit var attributes: AttributeSet
+    @Mock
+    private lateinit var typedArray: TypedArray
 
     @Before
-    fun setUp(){
+    fun setUp() {
         MockitoAnnotations.initMocks(this)
     }
 
@@ -35,14 +39,14 @@ class ColorUtilsTest {
         val testColor2 = "#fbc"
         val testColor3 = "#000000"
 
-        assertEquals(Color.parseColor(testColor1), ColorUtils.getColorFrom( testColor1, -14590324))
-        assertEquals(Color.parseColor("#ffbbcc"), ColorUtils.getColorFrom( testColor2, -14590324))
-        assertEquals(Color.parseColor("#215e8c"), ColorUtils.getColorFrom( testColor3, -14590324))
-        assertEquals(Color.parseColor("#215e8c"), ColorUtils.getColorFrom( null, -14590324))
+        assertEquals(Color.parseColor(testColor1), ColorUtils.getColorFrom(testColor1, -14590324))
+        assertEquals(Color.parseColor("#ffbbcc"), ColorUtils.getColorFrom(testColor2, -14590324))
+        assertEquals(Color.parseColor("#215e8c"), ColorUtils.getColorFrom(testColor3, -14590324))
+        assertEquals(Color.parseColor("#215e8c"), ColorUtils.getColorFrom(null, -14590324))
     }
 
     @Test
-    fun getContrastColor(){
+    fun getContrastColor() {
         val testBlack = Color.BLACK
         val testWhite = Color.WHITE
 
@@ -51,7 +55,7 @@ class ColorUtilsTest {
     }
 
     @Test
-    fun getThemeFromColor(){
+    fun getThemeFromColor() {
         val testColor1 = "#ffcdd2"
         val testColor2 = "#e57373"
         val testColor3 = "#d32f2f"
@@ -69,24 +73,55 @@ class ColorUtilsTest {
     }
 
     @Test
-    fun getPrimaryColor(){
+    fun getPrimaryColor() {
         val typedValue = TypedValue()
 
-        `when`(mockApplicationContext.obtainStyledAttributes(typedValue.data, intArrayOf(R.attr.colorPrimary))).thenReturn(typedArray)
-        `when`(typedArray.getColor(0,0)).thenReturn(-14590324)
-        assertEquals(-14590324, ColorUtils.getPrimaryColor(mockApplicationContext, ColorUtils.ColorType.PRIMARY))
+        `when`(
+            mockApplicationContext.obtainStyledAttributes(
+                typedValue.data,
+                intArrayOf(R.attr.colorPrimary)
+            )
+        ).thenReturn(typedArray)
+        `when`(typedArray.getColor(0, 0)).thenReturn(-14590324)
+        assertEquals(
+            -14590324,
+            ColorUtils.getPrimaryColor(mockApplicationContext, ColorUtils.ColorType.PRIMARY)
+        )
 
-        `when`(mockApplicationContext.obtainStyledAttributes(typedValue.data, intArrayOf(R.attr.colorPrimaryLight))).thenReturn(typedArray)
-        `when`(typedArray.getColor(0,0)).thenReturn(-6754663)
-        assertEquals(-6754663, ColorUtils.getPrimaryColor(mockApplicationContext, ColorUtils.ColorType.PRIMARY_LIGHT))
+        `when`(
+            mockApplicationContext.obtainStyledAttributes(
+                typedValue.data,
+                intArrayOf(R.attr.colorPrimaryLight)
+            )
+        ).thenReturn(typedArray)
+        `when`(typedArray.getColor(0, 0)).thenReturn(-6754663)
+        assertEquals(
+            -6754663,
+            ColorUtils.getPrimaryColor(mockApplicationContext, ColorUtils.ColorType.PRIMARY_LIGHT)
+        )
 
-        `when`(mockApplicationContext.obtainStyledAttributes(typedValue.data, intArrayOf(R.attr.colorPrimaryDark))).thenReturn(typedArray)
-        `when`(typedArray.getColor(0,0)).thenReturn(-3895296)
-        assertEquals(-3895296, ColorUtils.getPrimaryColor(mockApplicationContext, ColorUtils.ColorType.PRIMARY_DARK))
+        `when`(
+            mockApplicationContext.obtainStyledAttributes(
+                typedValue.data,
+                intArrayOf(R.attr.colorPrimaryDark)
+            )
+        ).thenReturn(typedArray)
+        `when`(typedArray.getColor(0, 0)).thenReturn(-3895296)
+        assertEquals(
+            -3895296,
+            ColorUtils.getPrimaryColor(mockApplicationContext, ColorUtils.ColorType.PRIMARY_DARK)
+        )
 
-        `when`(mockApplicationContext.obtainStyledAttributes(typedValue.data, intArrayOf(R.attr.colorAccent))).thenReturn(typedArray)
-        `when`(typedArray.getColor(0,0)).thenReturn(-6754663)
-        assertEquals(-6754663, ColorUtils.getPrimaryColor(mockApplicationContext, ColorUtils.ColorType.ACCENT))
-
+        `when`(
+            mockApplicationContext.obtainStyledAttributes(
+                typedValue.data,
+                intArrayOf(R.attr.colorAccent)
+            )
+        ).thenReturn(typedArray)
+        `when`(typedArray.getColor(0, 0)).thenReturn(-6754663)
+        assertEquals(
+            -6754663,
+            ColorUtils.getPrimaryColor(mockApplicationContext, ColorUtils.ColorType.ACCENT)
+        )
     }
 }

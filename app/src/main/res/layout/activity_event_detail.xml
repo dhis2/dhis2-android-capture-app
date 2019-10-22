@@ -271,7 +271,7 @@
                                         tools:text="Sierre Leone" />
                                 </com.google.android.material.textfield.TextInputLayout>
 
-                                <org.dhis2.utils.custom_views.CoordinatesView
+                                <org.dhis2.utils.customviews.CoordinatesView
                                     android:id="@+id/captureCoordinates"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"

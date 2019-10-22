@@ -9,7 +9,7 @@ import org.dhis2.data.forms.dataentry.fields.FormViewHolder;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.databinding.FormOptionSetBinding;
 import org.dhis2.utils.optionset.OptionSetDialog;
-import org.dhis2.utils.custom_views.OptionSetPopUp;
+import org.dhis2.utils.customviews.OptionSetPopUp;
 
 import io.reactivex.processors.FlowableProcessor;
 

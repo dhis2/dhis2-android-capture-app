@@ -16,17 +16,15 @@ import androidx.lifecycle.Observer
 import androidx.paging.PagedList
 import com.jakewharton.rxbinding2.widget.RxTextView
 import io.reactivex.Observable
-import io.reactivex.android.schedulers.AndroidSchedulers
+import javax.inject.Inject
 import org.dhis2.App
 import org.dhis2.R
 import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel
+import org.dhis2.data.forms.dataentry.tablefields.spinner.SpinnerViewModel as TableSpinnerViewModel
 import org.dhis2.databinding.DialogOptionSetBinding
 import org.dhis2.utils.Constants
-import org.dhis2.utils.custom_views.OptionSetOnClickListener
+import org.dhis2.utils.customviews.OptionSetOnClickListener
 import org.hisp.dhis.android.core.option.Option
-import java.util.concurrent.TimeUnit
-import javax.inject.Inject
-import org.dhis2.data.forms.dataentry.tablefields.spinner.SpinnerViewModel as TableSpinnerViewModel
 
 class OptionSetDialog : DialogFragment(), OptionSetView {
 
@@ -54,21 +52,28 @@ class OptionSetDialog : DialogFragment(), OptionSetView {
         return dialog
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         binding = DataBindingUtil.inflate(inflater, R.layout.dialog_option_set, container, false)
 
         binding.title.text = if (optionSet != null) optionSet?.label() else optionSetTable?.label()
+        binding.title.text = if (optionSet != null) optionSet?.label() else optionSetTable?.label()
 
-        if (optionSet != null)
+        if (optionSet != null) {
             presenter.init(optionSet!!)
-        else if (optionSetTable != null)
+        } else if (optionSetTable != null) {
             presenter.init(optionSetTable!!)
+        }
 
-        adapter = OptionSetAdapter(OptionSetOnClickListener {
-            listener?.onSelectOption(it)
-            this.dismiss()
-        })
+        adapter = OptionSetAdapter(
+            OptionSetOnClickListener {
+                listener?.onSelectOption(it)
+                this.dismiss()
+            }
+        )
 
         binding.recycler.adapter = adapter
 
@@ -79,7 +84,6 @@ class OptionSetDialog : DialogFragment(), OptionSetView {
         binding.cancelButton.setOnClickListener { this.dismiss() }
 
         return binding.root
-
     }
 
     override fun onCancel(dialog: DialogInterface) {
@@ -88,15 +92,19 @@ class OptionSetDialog : DialogFragment(), OptionSetView {
     }
 
     override fun setLiveData(data: LiveData<PagedList<Option>>?) {
-        data?.observe(this, Observer {
-            adapter?.submitList(it)
-        })
+        data?.observe(
+            this,
+            Observer {
+                adapter?.submitList(it)
+            }
+        )
     }
 
     fun create(context: Context) {
-        (context.applicationContext as App).userComponent()!!.plus(OptionSetModule(this)).inject(this)
+        (context.applicationContext as App)
+            .userComponent()!!.plus(OptionSetModule(this)).inject(this)
         defaultSize = context.getSharedPreferences(Constants.SHARE_PREFS, Context.MODE_PRIVATE)
-                .getInt(Constants.OPTION_SET_DIALOG_THRESHOLD, 15)
+            .getInt(Constants.OPTION_SET_DIALOG_THRESHOLD, 15)
     }
 
     override fun show(manager: FragmentManager, tag: String?) {
@@ -105,7 +113,13 @@ class OptionSetDialog : DialogFragment(), OptionSetView {
     }
 
     override fun showDialog(): Boolean {
-        return presenter.getCount(if (optionSet != null) optionSet!!.optionSet() else optionSetTable!!.optionSet())!! > defaultSize
+        return presenter.getCount(
+            if (optionSet != null) {
+                optionSet!!.optionSet()
+            } else {
+                optionSetTable!!.optionSet()
+            }
+        )!! > defaultSize
     }
 
     override fun dismiss() {
@@ -118,7 +132,7 @@ class OptionSetDialog : DialogFragment(), OptionSetView {
 
     override fun searchSource(): Observable<CharSequence> {
         return RxTextView.textChanges(binding.txtSearch)
-                .startWith("")
+            .startWith("")
     }
 
     companion object {

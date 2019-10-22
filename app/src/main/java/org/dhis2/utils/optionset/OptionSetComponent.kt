@@ -27,7 +27,7 @@ package org.dhis2.utils.optionset
 
 import dagger.Subcomponent
 
-@Subcomponent(modules= [OptionSetModule::class])
+@Subcomponent(modules = [OptionSetModule::class])
 interface OptionSetComponent {
-    fun inject(syncStatusDialog : OptionSetDialog)
+    fun inject(syncStatusDialog: OptionSetDialog)
 }

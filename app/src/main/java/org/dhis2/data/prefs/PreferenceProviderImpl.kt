@@ -4,6 +4,10 @@ import android.content.Context
 import android.content.SharedPreferences
 import de.adorsys.android.securestoragelibrary.SecurePreferences
 import org.dhis2.utils.Constants
+import org.dhis2.utils.Constants.SECURE_CREDENTIALS
+import org.dhis2.utils.Constants.SECURE_PASS
+import org.dhis2.utils.Constants.SECURE_SERVER_URL
+import org.dhis2.utils.Constants.SECURE_USER_NAME
 
 class PreferenceProviderImpl(val context: Context) : PreferenceProvider {
 
@@ -97,31 +101,23 @@ class PreferenceProviderImpl(val context: Context) : PreferenceProvider {
     }
 
     override fun saveUserCredentials(serverUrl: String, userName: String, pass: String) {
-        SecurePreferences.setValue(context, Constants.SECURE_CREDENTIALS, true)
-        SecurePreferences.setValue(context, Constants.SECURE_SERVER_URL, serverUrl)
-        SecurePreferences.setValue(context, Constants.SECURE_USER_NAME, userName)
-        SecurePreferences.setValue(context, Constants.SECURE_PASS, pass)
+        SecurePreferences.setValue(context, SECURE_CREDENTIALS, true)
+        SecurePreferences.setValue(context, SECURE_SERVER_URL, serverUrl)
+        SecurePreferences.setValue(context, SECURE_USER_NAME, userName)
+        SecurePreferences.setValue(context, SECURE_PASS, pass)
     }
 
     override fun areCredentialsSet(): Boolean {
         return SecurePreferences.getBooleanValue(
-            context, Constants.SECURE_CREDENTIALS,
-            sharedPreferences.getBoolean(Constants.SECURE_CREDENTIALS, false)
+            context, SECURE_CREDENTIALS,
+            sharedPreferences.getBoolean(SECURE_CREDENTIALS, false)
         )
     }
 
     override fun areSameCredentials(serverUrl: String, userName: String, pass: String): Boolean {
-        return SecurePreferences.getStringValue(
-            context,
-            Constants.SECURE_SERVER_URL,
-            ""
-        ) == serverUrl &&
-                SecurePreferences.getStringValue(
-                    context,
-                    Constants.SECURE_USER_NAME,
-                    ""
-                ) == userName &&
-                SecurePreferences.getStringValue(context, Constants.SECURE_PASS, "") == pass
+        return SecurePreferences.getStringValue(context, SECURE_SERVER_URL, "") == serverUrl &&
+            SecurePreferences.getStringValue(context, SECURE_USER_NAME, "") == userName &&
+            SecurePreferences.getStringValue(context, SECURE_PASS, "") == pass
     }
 
     override fun saveJiraCredentials(jiraAuth: String): String {

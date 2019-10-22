@@ -6,7 +6,7 @@ import org.dhis2.data.forms.dataentry.tablefields.FormViewHolder;
 import org.dhis2.data.forms.dataentry.tablefields.RowAction;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.databinding.FormOptionSetBinding;
-import org.dhis2.utils.custom_views.OptionSetCellPopUp;
+import org.dhis2.utils.customviews.OptionSetCellPopUp;
 import org.dhis2.utils.optionset.OptionSetDialog;
 
 import io.reactivex.processors.FlowableProcessor;

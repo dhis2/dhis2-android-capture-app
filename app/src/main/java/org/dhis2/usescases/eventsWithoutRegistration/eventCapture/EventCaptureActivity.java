@@ -34,8 +34,8 @@ import org.dhis2.utils.Constants;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.DialogClickListener;
 import org.dhis2.utils.FileResourcesUtil;
-import org.dhis2.utils.custom_views.CustomDialog;
-import org.dhis2.utils.custom_views.FormBottomDialog;
+import org.dhis2.utils.customviews.CustomDialog;
+import org.dhis2.utils.customviews.FormBottomDialog;
 import org.hisp.dhis.android.core.arch.helpers.FileResourceDirectoryHelper;
 
 import java.io.File;

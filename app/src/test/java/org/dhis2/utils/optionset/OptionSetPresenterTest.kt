@@ -27,9 +27,14 @@ package org.dhis2.utils.optionset
 
 import androidx.lifecycle.LiveData
 import androidx.paging.PagedList
-import com.nhaarman.mockitokotlin2.*
+import com.nhaarman.mockitokotlin2.doReturn
+import com.nhaarman.mockitokotlin2.mock
+import com.nhaarman.mockitokotlin2.times
+import com.nhaarman.mockitokotlin2.verify
+import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Observable
 import io.reactivex.schedulers.TestScheduler
+import java.util.concurrent.TimeUnit
 import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel
 import org.dhis2.data.schedulers.SchedulerProvider
 import org.dhis2.data.schedulers.TestSchedulerProvider
@@ -42,7 +47,6 @@ import org.hisp.dhis.android.core.option.OptionGroup
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
-import java.util.concurrent.TimeUnit
 
 class OptionSetPresenterTest {
 
@@ -51,7 +55,7 @@ class OptionSetPresenterTest {
     private val testSchedulers: TestSchedulerProvider = TestSchedulerProvider(TestScheduler())
     private val view: OptionSetView = mock()
     private val d2: D2 = mock()
-    private val optionLivePagedData : LiveData<PagedList<Option>> = mock()
+    private val optionLivePagedData: LiveData<PagedList<Option>> = mock()
 
     @Before
     fun setup() {
@@ -64,10 +68,15 @@ class OptionSetPresenterTest {
         whenever(d2.optionModule().optionGroups()) doReturn mock()
         whenever(d2.optionModule().optionGroups().withOptions()) doReturn mock()
         whenever(d2.optionModule().optionGroups().withOptions().uid("optionGroup")) doReturn mock()
-        whenever(d2.optionModule().optionGroups().withOptions().uid("optionGroup").blockingGet()) doReturn mockOptionGroupList()
-        whenever(d2.optionModule().optionGroups().withOptions().uid("optionGroup").blockingGet()) doReturn mockOptionGroupList()
-
-        whenever(d2.optionModule().options().byOptionSetUid().eq("optionSet").getPaged(20)) doReturn optionLivePagedData
+        whenever(
+            d2.optionModule().optionGroups().withOptions().uid("optionGroup").blockingGet()
+        ) doReturn mockOptionGroupList()
+        whenever(
+            d2.optionModule().optionGroups().withOptions().uid("optionGroup").blockingGet()
+        ) doReturn mockOptionGroupList()
+        whenever(
+            d2.optionModule().options().byOptionSetUid().eq("optionSet").getPaged(20)
+        ) doReturn optionLivePagedData
 
         whenever(view.searchSource()) doReturn Observable.just("" as CharSequence)
 
@@ -76,18 +85,19 @@ class OptionSetPresenterTest {
         testSchedulers.io().advanceTimeBy(500, TimeUnit.MILLISECONDS)
         testSchedulers.io().triggerActions()
         testSchedulers.ui().triggerActions()
-        verify(view,times(1)).setLiveData(optionLivePagedData)
-
+        verify(view, times(1)).setLiveData(optionLivePagedData)
     }
 
     @Test
     fun `Should return the number of options available`() {
         mockOptionRepository()
-        whenever(d2.optionModule().options().byOptionSetUid().eq("optionSet").blockingCount()) doReturn 5
+        whenever(
+            d2.optionModule().options().byOptionSetUid().eq("optionSet").blockingCount()
+        ) doReturn 5
+
         val count = presenter.getCount("optionSet")
 
         assertTrue(count == 5)
-
     }
 
     @Test
@@ -106,31 +116,33 @@ class OptionSetPresenterTest {
 
     private fun mockOptionGroupList(): OptionGroup {
         return OptionGroup.builder()
-                .uid("optionGroup")
-                .optionSet(ObjectWithUid.create("optionSet"))
-                .options(mockOptionList())
-                .build()
+            .uid("optionGroup")
+            .optionSet(ObjectWithUid.create("optionSet"))
+            .options(mockOptionList())
+            .build()
     }
 
     private fun mockOptionList(): List<ObjectWithUid> {
         return listOf(
-                ObjectWithUid.create("option1"),
-                ObjectWithUid.create("option2"),
-                ObjectWithUid.create("option3"),
-                ObjectWithUid.create("option4"),
-                ObjectWithUid.create("option5")
+            ObjectWithUid.create("option1"),
+            ObjectWithUid.create("option2"),
+            ObjectWithUid.create("option3"),
+            ObjectWithUid.create("option4"),
+            ObjectWithUid.create("option5")
         )
     }
 
     private fun getTestSpinnerModel(): SpinnerViewModel {
-        return SpinnerViewModel.create("id", "label", "hint",
-                false,
-                "optionSet",
-                "value",
-                "section",
-                true,
-                "description",
-                10,
-                ObjectStyle.builder().build())
+        return SpinnerViewModel.create(
+            "id", "label", "hint",
+            false,
+            "optionSet",
+            "value",
+            "section",
+            true,
+            "description",
+            10,
+            ObjectStyle.builder().build()
+        )
     }
 }

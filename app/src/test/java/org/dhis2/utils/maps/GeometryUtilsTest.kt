@@ -11,12 +11,16 @@ class GeometryUtilsTest {
 
     @Test
     fun testSDKPolygonTOMapboxPolygon() {
-        val geometyCoordinates = "[[[40.39759639378224, -3.698477966536842], [40.404590159350164, -3.6924125981587395], [40.39949197211405, -3.683772308499641], [40.39066727410409, -3.6919262238280623]]]"
+        val geometyCoordinates =
+            "[[[40.39759639378224, -3.698477966536842], " +
+                "[40.404590159350164, -3.6924125981587395], " +
+                " [40.39949197211405, -3.683772308499641], " +
+                "[40.39066727410409, -3.6919262238280623]]]"
 
         val geometry = Geometry.builder()
-                .coordinates(geometyCoordinates)
-                .type(FeatureType.POLYGON)
-                .build()
+            .coordinates(geometyCoordinates)
+            .type(FeatureType.POLYGON)
+            .build()
         val sdkPolygon = GeometryHelper.getPolygon(geometry)
         val pointList = ArrayList<Point>()
         sdkPolygon.forEach {

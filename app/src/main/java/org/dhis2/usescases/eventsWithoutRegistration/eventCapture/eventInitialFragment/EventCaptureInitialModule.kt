@@ -3,8 +3,4 @@ package org.dhis2.usescases.eventsWithoutRegistration.eventCapture.eventInitialF
 import dagger.Module
 
 @Module
-class EventCaptureInitialModule {
-
-
-
-}
+class EventCaptureInitialModule

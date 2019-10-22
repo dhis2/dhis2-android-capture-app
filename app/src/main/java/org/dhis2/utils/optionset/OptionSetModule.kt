@@ -37,5 +37,4 @@ class OptionSetModule(val view: OptionSetView) {
     fun providesPresenter(d2: D2, schedulerProvider: SchedulerProvider): OptionSetPresenter {
         return OptionSetPresenter(view, d2, schedulerProvider)
     }
-
 }

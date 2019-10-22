@@ -4,13 +4,13 @@
 
     <data>
 
-        <import type="org.dhis2.utils.custom_views.FormBottomDialog.ActionType" />
+        <import type="org.dhis2.utils.customviews.FormBottomDialog.ActionType" />
 
         <import type="android.view.View" />
 
         <variable
             name="listener"
-            type="org.dhis2.utils.custom_views.OnFormBottomDialogItemSelection" />
+            type="org.dhis2.utils.customviews.OnFormBottomDialogItemSelection" />
 
         <variable
             name="canWrite"

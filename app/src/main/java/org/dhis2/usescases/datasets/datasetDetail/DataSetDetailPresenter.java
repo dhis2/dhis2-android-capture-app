@@ -8,8 +8,7 @@ import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableActivity;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.filters.FilterManager;
-import org.dhis2.utils.granular_sync.GranularSyncContracts;
-import org.dhis2.utils.granular_sync.SyncStatusDialog;
+import org.dhis2.utils.granularsync.SyncStatusDialog;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

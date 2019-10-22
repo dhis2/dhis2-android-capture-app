@@ -20,6 +20,7 @@ import androidx.databinding.ObservableInt
 import com.andrognito.pinlockview.PinLockListener
 import com.android.dbexporterlibrary.ExporterListener
 import io.reactivex.functions.Consumer
+import javax.inject.Inject
 import org.dhis2.App
 import org.dhis2.R
 import org.dhis2.data.prefs.Preference
@@ -40,7 +41,6 @@ import org.dhis2.utils.analytics.CLICK
 import org.dhis2.utils.analytics.CLOSE_SESSION
 import org.dhis2.utils.filters.FilterManager
 import org.dhis2.utils.filters.FiltersAdapter
-import javax.inject.Inject
 
 private const val FRAGMENT = "Fragment"
 private const val PERMISSION_REQUEST = 1987
@@ -63,7 +63,7 @@ class MainActivity : ActivityGlobalAbstract(), MainView, ExporterListener {
     var adapter: FiltersAdapter? = null
         private set
 
-    //-------------------------------------
+    // -------------------------------------
     //region LIFECYCLE
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -99,8 +99,8 @@ class MainActivity : ActivityGlobalAbstract(), MainView, ExporterListener {
         }
 
         prefs = abstracContext.getSharedPreferences(
-                Constants.SHARE_PREFS, Context.MODE_PRIVATE)
-
+            Constants.SHARE_PREFS, Context.MODE_PRIVATE
+        )
 
         adapter = FiltersAdapter()
         binding.filterLayout.adapter = adapter
@@ -120,11 +120,19 @@ class MainActivity : ActivityGlobalAbstract(), MainView, ExporterListener {
         super.onResume()
         presenter.init()
 
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-
-            ActivityCompat.requestPermissions(this,
-                    arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA),
-                    PERMISSION_REQUEST)
+        if (ContextCompat.checkSelfPermission(
+            this,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
+        ) != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.CAMERA
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA),
+                PERMISSION_REQUEST
+            )
         }
         binding.totalFilters = FilterManager.getInstance().totalFilters
         adapter!!.notifyDataSetChanged()
@@ -142,7 +150,8 @@ class MainActivity : ActivityGlobalAbstract(), MainView, ExporterListener {
     override fun renderUsername(): Consumer<String> {
         return Consumer { username ->
             binding.userName = username
-            (binding.navView.getHeaderView(0).findViewById<View>(R.id.user_info) as TextView).text = username
+            (binding.navView.getHeaderView(0).findViewById<View>(R.id.user_info) as TextView)
+                .text = username
             binding.executePendingBindings()
         }
     }
@@ -150,10 +159,11 @@ class MainActivity : ActivityGlobalAbstract(), MainView, ExporterListener {
     /*End of user info methods*/
 
     override fun openDrawer(gravity: Int) {
-        if (!binding.mainDrawerLayout.isDrawerOpen(gravity))
+        if (!binding.mainDrawerLayout.isDrawerOpen(gravity)) {
             binding.mainDrawerLayout.openDrawer(gravity)
-        else
+        } else {
             binding.mainDrawerLayout.closeDrawer(gravity)
+        }
     }
 
     override fun showHideFilter() {
@@ -163,10 +173,23 @@ class MainActivity : ActivityGlobalAbstract(), MainView, ExporterListener {
         backDropActive = !backDropActive
         val initSet = ConstraintSet()
         initSet.clone(binding.backdropLayout)
-        if (backDropActive)
-            initSet.connect(R.id.fragment_container, ConstraintSet.TOP, R.id.filterLayout, ConstraintSet.BOTTOM, 50)
-        else
-            initSet.connect(R.id.fragment_container, ConstraintSet.TOP, R.id.toolbar, ConstraintSet.BOTTOM, 0)
+        if (backDropActive) {
+            initSet.connect(
+                R.id.fragment_container,
+                ConstraintSet.TOP,
+                R.id.filterLayout,
+                ConstraintSet.BOTTOM,
+                50
+            )
+        } else {
+            initSet.connect(
+                R.id.fragment_container,
+                ConstraintSet.TOP,
+                R.id.toolbar,
+                ConstraintSet.BOTTOM,
+                0
+            )
+        }
         initSet.applyTo(binding.backdropLayout)
         programFragment!!.openFilter(backDropActive)
     }
@@ -176,8 +199,9 @@ class MainActivity : ActivityGlobalAbstract(), MainView, ExporterListener {
             binding.mainDrawerLayout.closeDrawers()
             binding.pinLayout.root.visibility = View.VISIBLE
             isPinLayoutVisible = true
-        } else
+        } else {
             presenter.blockSession(prefs!!.getString(Preference.PIN, "")!!)
+        }
     }
 
     override fun onBackPressed() {
@@ -247,14 +271,15 @@ class MainActivity : ActivityGlobalAbstract(), MainView, ExporterListener {
 
         if (activeFragment != null) {
             currentFragment.set(id)
-            supportFragmentManager.beginTransaction().replace(R.id.fragment_container, activeFragment!!, tag).commitAllowingStateLoss()
+            supportFragmentManager.beginTransaction()
+                .replace(R.id.fragment_container, activeFragment!!, tag).commitAllowingStateLoss()
             binding.title.text = tag
         }
         binding.mainDrawerLayout.closeDrawers()
 
-        if (backDropActive && activeFragment !is ProgramFragment)
+        if (backDropActive && activeFragment !is ProgramFragment) {
             showHideFilter()
-
+        }
     }
 
     override fun updateFilters(totalFilters: Int) {
@@ -263,13 +288,15 @@ class MainActivity : ActivityGlobalAbstract(), MainView, ExporterListener {
 
     override fun showPeriodRequest(periodRequest: FilterManager.PeriodRequest) {
         if (periodRequest == FilterManager.PeriodRequest.FROM_TO) {
-            DateUtils.getInstance().showFromToSelector(this) { FilterManager.getInstance().addPeriod(it) }
+            DateUtils.getInstance()
+                .showFromToSelector(this) { FilterManager.getInstance().addPeriod(it) }
         } else {
             DateUtils.getInstance()
-                    .showPeriodDialog(
-                            this,
-                            { datePeriods -> FilterManager.getInstance().addPeriod(datePeriods) },
-                            true)
+                .showPeriodDialog(
+                    this,
+                    { datePeriods -> FilterManager.getInstance().addPeriod(datePeriods) },
+                    true
+                )
         }
     }
 
@@ -284,7 +311,6 @@ class MainActivity : ActivityGlobalAbstract(), MainView, ExporterListener {
             else -> showToast(getString(R.string.no_intructions))
         }
     }
-
 
     public override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (requestCode == FilterManager.OU_TREE && resultCode == Activity.RESULT_OK) {
