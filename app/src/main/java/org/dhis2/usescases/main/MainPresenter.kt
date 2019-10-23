@@ -1,15 +1,17 @@
 package org.dhis2.usescases.main
 
-import android.content.Context
 import android.text.TextUtils.isEmpty
 import android.view.Gravity
 import androidx.work.WorkManager
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.functions.Consumer
-import org.dhis2.data.prefs.Preference
+import org.dhis2.data.prefs.Preference.Companion.DEFAULT_CAT_COMBO
+import org.dhis2.data.prefs.Preference.Companion.PIN
+import org.dhis2.data.prefs.Preference.Companion.PREF_DEFAULT_CAT_OPTION_COMBO
+import org.dhis2.data.prefs.Preference.Companion.SESSION_LOCKED
+import org.dhis2.data.prefs.PreferenceProvider
 import org.dhis2.data.schedulers.SchedulerProvider
 import org.dhis2.usescases.login.LoginActivity
-import org.dhis2.utils.Constants
 import org.dhis2.utils.filters.FilterManager
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.user.User
@@ -20,15 +22,17 @@ const val DEFAULT = "default"
 class MainPresenter(
     private val view: MainView,
     private val d2: D2,
-    private val schedulerProvider: SchedulerProvider
+    private val schedulerProvider: SchedulerProvider,
+    private val preferences: PreferenceProvider,
+    private val workManger: WorkManager
 ) {
 
-    private var compositeDisposable: CompositeDisposable? = CompositeDisposable()
+    var disposable: CompositeDisposable = CompositeDisposable()
 
     fun init() {
-        compositeDisposable!!.add(
+        disposable.add(
             d2.userModule().user().get()
-                .map { this.username(it) }
+                .map { username(it) }
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
@@ -37,43 +41,34 @@ class MainPresenter(
                 )
         )
 
-        compositeDisposable!!.add(
+        /*disposable.add(
             d2.categoryModule().categoryCombos().byIsDefault().eq(true).one().get().toObservable()
                 .subscribeOn(schedulerProvider.io())
                 .subscribe(
                     { categoryCombo ->
-                        val prefs = view.abstracContext.getSharedPreferences(
-                            Constants.SHARE_PREFS, Context.MODE_PRIVATE
-                        )
-                        prefs.edit().putString(
-                            Constants.DEFAULT_CAT_COMBO,
-                            categoryCombo.uid()
-                        ).apply()
+                        preferences.setValue(DEFAULT_CAT_COMBO, categoryCombo.uid())
                     },
                     { Timber.e(it) }
                 )
         )
 
-        compositeDisposable!!.add(
+        disposable.add(
             d2
                 .categoryModule()
                 .categoryOptionCombos().byCode().eq(DEFAULT).one().get().toObservable()
                 .subscribeOn(schedulerProvider.io())
                 .subscribe(
                     { categoryOptionCombo ->
-                        val prefs = view.abstracContext.getSharedPreferences(
-                            Constants.SHARE_PREFS, Context.MODE_PRIVATE
-                        )
-                        prefs.edit().putString(
-                            Constants.PREF_DEFAULT_CAT_OPTION_COMBO,
+                        preferences.setValue(
+                            PREF_DEFAULT_CAT_OPTION_COMBO,
                             categoryOptionCombo.uid()
-                        ).apply()
+                        )
                     },
                     { Timber.e(it) }
                 )
         )
 
-        compositeDisposable!!.add(
+        disposable.add(
             FilterManager.getInstance().asFlowable()
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
@@ -83,7 +78,7 @@ class MainPresenter(
                 )
         )
 
-        compositeDisposable!!.add(
+        disposable.add(
             FilterManager.getInstance().periodRequest
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
@@ -91,17 +86,17 @@ class MainPresenter(
                     { periodRequest -> view.showPeriodRequest(periodRequest) },
                     { Timber.e(it) }
                 )
-        )
+        )*/
     }
 
     fun logOut() {
-        compositeDisposable!!.add(
+        disposable.add(
             d2.userModule().logOut()
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
                     {
-                        WorkManager.getInstance(view.context.applicationContext).cancelAllWork()
+                        workManger.cancelAllWork()
                         view.startActivity(LoginActivity::class.java, null, true, true, null)
                     },
                     { Timber.e(it) }
@@ -110,12 +105,9 @@ class MainPresenter(
     }
 
     fun blockSession(pin: String) {
-        val prefs = view.abstracContext.getSharedPreferences(
-            Constants.SHARE_PREFS, Context.MODE_PRIVATE
-        )
-        prefs.edit().putBoolean(Preference.SESSION_LOCKED, true).apply()
-        prefs.edit().putString(Preference.PIN, pin).apply()
-        WorkManager.getInstance(view.context.applicationContext).cancelAllWork()
+        preferences.setValue(SESSION_LOCKED, true)
+        preferences.setValue(PIN, pin)
+        workManger.cancelAllWork()
         view.back()
     }
 
@@ -124,7 +116,7 @@ class MainPresenter(
     }
 
     fun onDetach() {
-        compositeDisposable!!.clear()
+        disposable.clear()
     }
 
     fun onMenuClick() {
