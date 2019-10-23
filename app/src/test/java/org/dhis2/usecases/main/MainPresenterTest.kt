@@ -8,16 +8,19 @@ import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Completable
 import io.reactivex.Single
-import io.reactivex.schedulers.TestScheduler
+import org.dhis2.data.prefs.Preference.Companion.DEFAULT_CAT_COMBO
 import org.dhis2.data.prefs.Preference.Companion.PIN
+import org.dhis2.data.prefs.Preference.Companion.PREF_DEFAULT_CAT_OPTION_COMBO
 import org.dhis2.data.prefs.Preference.Companion.SESSION_LOCKED
 import org.dhis2.data.prefs.PreferenceProvider
 import org.dhis2.data.schedulers.SchedulerProvider
-import org.dhis2.data.schedulers.TestSchedulerProvider
+import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.dhis2.usescases.login.LoginActivity
 import org.dhis2.usescases.main.MainPresenter
 import org.dhis2.usescases.main.MainView
 import org.hisp.dhis.android.core.D2
+import org.hisp.dhis.android.core.category.CategoryCombo
+import org.hisp.dhis.android.core.category.CategoryOptionCombo
 import org.hisp.dhis.android.core.user.User
 import org.junit.Assert.assertTrue
 import org.junit.Before
@@ -30,30 +33,37 @@ import org.junit.Test
 class MainPresenterTest {
 
     private lateinit var presenter: MainPresenter
-    private val schedulers: TestSchedulerProvider = TestSchedulerProvider(TestScheduler())
+    private val schedulers: SchedulerProvider = TrampolineSchedulerProvider()
     private val view: MainView = mock()
     private val d2: D2 = mock()
     private val preferences: PreferenceProvider = mock()
     private val workManger: WorkManager = mock()
 
-
     @Before
     fun setUp() {
         presenter = MainPresenter(view, d2, schedulers, preferences, workManger)
+        presenterMocks()
     }
 
     @Test
-    fun `Should show username on activity resumed`(){
-        val user = Single.just(createUserMock())
-        whenever(d2.userModule()) doReturn mock()
-        whenever(d2.userModule().user()) doReturn mock()
-        whenever(d2.userModule().user().get()) doReturn user
-        schedulers.ui().triggerActions()
-
+    fun `Should show username on activity resumed`() {
         presenter.init()
 
+        verify(view).renderUsername(any())
+    }
 
-        verify(view).showHideFilter()
+    @Test
+    fun `Should save default categoryCombo uid to preferences`() {
+        presenter.init()
+
+        verify(preferences).setValue(DEFAULT_CAT_COMBO, "uid")
+    }
+
+    @Test
+    fun `Should save default categoryOptionCombo uid to preferences`() {
+        presenter.init()
+
+        verify(preferences).setValue(PREF_DEFAULT_CAT_OPTION_COMBO, "uid")
     }
 
     @Test
@@ -102,7 +112,36 @@ class MainPresenterTest {
         verify(view).openDrawer(any())
     }
 
-    private fun createUserMock(): User {
+    private fun presenterMocks() {
+        // UserModule
+        whenever(d2.userModule()) doReturn mock()
+        whenever(d2.userModule().user()) doReturn mock()
+        whenever(d2.userModule().user().get()) doReturn Single.just(createUser())
+
+        // categoryModule
+        whenever(d2.categoryModule()) doReturn mock()
+        whenever(d2.categoryModule().categoryCombos()) doReturn mock()
+        whenever(d2.categoryModule().categoryCombos().byIsDefault()) doReturn mock()
+        whenever(d2.categoryModule().categoryCombos().byIsDefault().eq(true)) doReturn mock()
+        whenever(d2.categoryModule().categoryCombos().byIsDefault().eq(true).one()) doReturn mock()
+        whenever(
+            d2.categoryModule().categoryCombos().byIsDefault().eq(true).one().get()
+        ) doReturn Single.just(createCategoryCombo())
+
+        whenever(d2.categoryModule().categoryOptionCombos()) doReturn mock()
+        whenever(d2.categoryModule().categoryOptionCombos().byCode()) doReturn mock()
+        whenever(d2.categoryModule().categoryOptionCombos().byCode().eq("default")) doReturn mock()
+        whenever(
+            d2.categoryModule().categoryOptionCombos().byCode().eq("default").one()
+        ) doReturn mock()
+        whenever(
+            d2.categoryModule().categoryOptionCombos().byCode().eq("default").one().get()
+        ) doReturn Single.just(
+            createCategoryOptionCombo()
+        )
+    }
+
+    private fun createUser(): User {
         return User.builder()
             .uid("userUid")
             .firstName("test_name")
@@ -110,4 +149,15 @@ class MainPresenterTest {
             .build()
     }
 
+    private fun createCategoryCombo(): CategoryCombo {
+        return CategoryCombo.builder()
+            .uid("uid")
+            .build()
+    }
+
+    private fun createCategoryOptionCombo(): CategoryOptionCombo {
+        return CategoryOptionCombo.builder()
+            .uid("uid")
+            .build()
+    }
 }

@@ -26,14 +26,13 @@
 package org.dhis2.usescases.main
 
 import androidx.annotation.UiThread
-import io.reactivex.functions.Consumer
 import org.dhis2.usescases.general.AbstractActivityContracts
 import org.dhis2.utils.filters.FilterManager
 
 interface MainView : AbstractActivityContracts.View {
 
     @UiThread
-    fun renderUsername(): Consumer<String>
+    fun renderUsername(username: String)
 
     fun openDrawer(gravity: Int)
 

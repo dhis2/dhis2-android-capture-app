@@ -4,7 +4,6 @@ import android.text.TextUtils.isEmpty
 import android.view.Gravity
 import androidx.work.WorkManager
 import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.functions.Consumer
 import org.dhis2.data.prefs.Preference.Companion.DEFAULT_CAT_COMBO
 import org.dhis2.data.prefs.Preference.Companion.PIN
 import org.dhis2.data.prefs.Preference.Companion.PREF_DEFAULT_CAT_OPTION_COMBO
@@ -36,13 +35,15 @@ class MainPresenter(
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
-                    view.renderUsername(),
-                    Consumer { Timber.e(it) }
+                    {
+                        view.renderUsername(it)
+                    },
+                    { Timber.e(it) }
                 )
         )
 
-        /*disposable.add(
-            d2.categoryModule().categoryCombos().byIsDefault().eq(true).one().get().toObservable()
+        disposable.add(
+            d2.categoryModule().categoryCombos().byIsDefault().eq(true).one().get()
                 .subscribeOn(schedulerProvider.io())
                 .subscribe(
                     { categoryCombo ->
@@ -55,7 +56,7 @@ class MainPresenter(
         disposable.add(
             d2
                 .categoryModule()
-                .categoryOptionCombos().byCode().eq(DEFAULT).one().get().toObservable()
+                .categoryOptionCombos().byCode().eq(DEFAULT).one().get()
                 .subscribeOn(schedulerProvider.io())
                 .subscribe(
                     { categoryOptionCombo ->
@@ -67,7 +68,9 @@ class MainPresenter(
                     { Timber.e(it) }
                 )
         )
+    }
 
+    fun initFilters() {
         disposable.add(
             FilterManager.getInstance().asFlowable()
                 .subscribeOn(schedulerProvider.io())
@@ -86,7 +89,7 @@ class MainPresenter(
                     { periodRequest -> view.showPeriodRequest(periodRequest) },
                     { Timber.e(it) }
                 )
-        )*/
+        )
     }
 
     fun logOut() {
