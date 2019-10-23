@@ -9,7 +9,8 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="@color/white">
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/indicators_recycler"
@@ -21,12 +22,22 @@
         <TextView
             android:id="@+id/empty_indicators"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@color/white"
+            android:layout_height="wrap_content"
             android:gravity="center"
-            android:padding="42dp"
             android:text="@string/empty_indicators"
-            android:textSize="@dimen/primaryTextSize" />
+            android:textSize="@dimen/primaryTextSize"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ProgressBar
+            android:id="@+id/spinner"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            app:layout_constraintBottom_toTopOf="@id/empty_indicators"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:progressColor="@{@color/colorPrimary}" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
