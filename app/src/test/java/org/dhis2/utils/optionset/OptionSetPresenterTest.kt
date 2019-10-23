@@ -36,9 +36,7 @@ import io.reactivex.Observable
 import io.reactivex.schedulers.TestScheduler
 import java.util.concurrent.TimeUnit
 import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel
-import org.dhis2.data.schedulers.SchedulerProvider
 import org.dhis2.data.schedulers.TestSchedulerProvider
-import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.ObjectStyle
 import org.hisp.dhis.android.core.common.ObjectWithUid
@@ -51,7 +49,6 @@ import org.junit.Test
 class OptionSetPresenterTest {
 
     private lateinit var presenter: OptionSetPresenter
-    private val schedulers: SchedulerProvider = TrampolineSchedulerProvider()
     private val testSchedulers: TestSchedulerProvider = TestSchedulerProvider(TestScheduler())
     private val view: OptionSetView = mock()
     private val d2: D2 = mock()
@@ -101,7 +98,7 @@ class OptionSetPresenterTest {
     }
 
     @Test
-    fun onDetach() {
+    fun `Should clear the disposables onDetach()`() {
         presenter.onDetach()
         val disposableSize = presenter.disposable.size()
         assertTrue(disposableSize == 0)

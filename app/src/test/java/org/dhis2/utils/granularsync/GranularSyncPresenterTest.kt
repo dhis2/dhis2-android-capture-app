@@ -3,7 +3,7 @@ package org.dhis2.utils.granularsync
 import androidx.work.WorkManager
 import io.reactivex.Single
 import java.util.Date
-import org.dhis2.data.schedulers.SchedulersProviderImpl
+import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.`object`.ReadOnlyOneObjectRepositoryFinalImpl
 import org.hisp.dhis.android.core.common.Access
@@ -25,7 +25,7 @@ class GranularSyncPresenterTest {
 
     private val d2 = mock(D2::class.java)
     private val view = mock(GranularSyncContracts.View::class.java)
-    private val schedulerProvider = SchedulersProviderImpl()
+    private val schedulerProvider = TrampolineSchedulerProvider()
     private val workManager = mock(WorkManager::class.java)
     private val programRepoMock = mock(ReadOnlyOneObjectRepositoryFinalImpl::class.java)
 
@@ -44,11 +44,11 @@ class GranularSyncPresenterTest {
             workManager
         )
         Mockito.`when`(d2.programModule()).thenReturn(mock(ProgramModule::class.java))
-        Mockito.`when`(d2.programModule().programs)
+        Mockito.`when`(d2.programModule().programs())
             .thenReturn(mock(ProgramCollectionRepository::class.java))
-        Mockito.`when`(d2.programModule().programs.uid("test_uid"))
+        Mockito.`when`(d2.programModule().programs().uid("test_uid"))
             .thenReturn(programRepoMock as ReadOnlyOneObjectRepositoryFinalImpl<Program>?)
-        Mockito.`when`(d2.programModule().programs.uid("test_uid").get())
+        Mockito.`when`(d2.programModule().programs().uid("test_uid").get())
             .thenReturn(Single.just(testProgram))
         // WHEN
         presenter.configure(view)
