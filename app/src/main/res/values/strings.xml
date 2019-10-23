@@ -574,4 +574,5 @@
     <string name="fingerprint_message">Please, put your finger in your fingerprint reader.</string>
     <string name="security_title">Security</string>
     <string name="security_rooted_message">For security reasons, this version of the app is not allow to be used in rooted devices. Please use the training version.</string>
+    <string name="fix_error">There are some errors. Please fix them before continuing.</string>
 </resources>
