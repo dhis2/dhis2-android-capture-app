@@ -42,11 +42,12 @@ class MainPresenterTest {
     @Before
     fun setUp() {
         presenter = MainPresenter(view, d2, schedulers, preferences, workManger)
-        presenterMocks()
     }
 
     @Test
     fun `Should show username on activity resumed`() {
+        presenterMocks()
+
         presenter.init()
 
         verify(view).renderUsername(any())
@@ -54,6 +55,8 @@ class MainPresenterTest {
 
     @Test
     fun `Should save default categoryCombo uid to preferences`() {
+        presenterMocks()
+
         presenter.init()
 
         verify(preferences).setValue(DEFAULT_CAT_COMBO, "uid")
@@ -61,6 +64,8 @@ class MainPresenterTest {
 
     @Test
     fun `Should save default categoryOptionCombo uid to preferences`() {
+        presenterMocks()
+
         presenter.init()
 
         verify(preferences).setValue(PREF_DEFAULT_CAT_OPTION_COMBO, "uid")

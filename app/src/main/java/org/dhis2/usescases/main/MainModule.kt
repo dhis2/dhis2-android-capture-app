@@ -20,8 +20,8 @@ class MainModule(val view: MainView) {
         schedulerProvider: SchedulerProvider,
         preferences: PreferenceProvider
     ): MainPresenter {
-        val workManger = WorkManager.getInstance(context)
+        val workManager = WorkManager.getInstance(context)
 
-        return MainPresenter(view, d2, schedulerProvider, preferences, workManger)
+        return MainPresenter(view, d2, schedulerProvider, preferences, workManager)
     }
 }

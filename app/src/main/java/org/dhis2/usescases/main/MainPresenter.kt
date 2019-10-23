@@ -35,9 +35,7 @@ class MainPresenter(
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
-                    {
-                        view.renderUsername(it)
-                    },
+                    { view.renderUsername(it) },
                     { Timber.e(it) }
                 )
         )
