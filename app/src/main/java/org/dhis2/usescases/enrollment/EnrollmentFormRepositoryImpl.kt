@@ -57,7 +57,7 @@ class EnrollmentFormRepositoryImpl(
                     enrollmentRepository.blockingGet().uid()
                 ).subscribeOn(Schedulers.io()),
                 rulesRepository.queryConstants().subscribeOn(Schedulers.io()),
-                rulesRepository.suplementaryData.subscribeOn(Schedulers.io()),
+                rulesRepository.supplementaryData().subscribeOn(Schedulers.io()),
                 Function5 { rules, variables, events, constants, supplData ->
                     val builder = RuleEngineContext.builder(expressionEvaluator)
                         .rules(rules)

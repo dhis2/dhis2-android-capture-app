@@ -7,6 +7,7 @@ import androidx.annotation.NonNull;
 
 import com.squareup.sqlbrite2.BriteDatabase;
 
+import org.dhis2.Bindings.RuleExtensionsKt;
 import org.dhis2.R;
 import org.dhis2.data.forms.FormRepository;
 import org.dhis2.data.forms.FormSectionViewModel;
@@ -77,8 +78,6 @@ import static android.text.TextUtils.isEmpty;
  * QUADRAM. Created by ppajuelo on 19/11/2018.
  */
 public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCaptureRepository {
-
-    public static final String NO_SECTION = "NO_SECTION";
 
     private final FieldViewModelFactory fieldFactory;
     private final BriteDatabase briteDatabase;
@@ -254,21 +253,9 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
 
     private List<RuleAction> transformToRuleAction(List<ProgramRuleAction> programRuleActions) {
         List<RuleAction> ruleActions = new ArrayList<>();
-        if (programRuleActions != null)
-            for (ProgramRuleAction programRuleAction : programRuleActions)
-                ruleActions.add(
-                        RulesRepository.create(
-                                programRuleAction.programRuleActionType(),
-                                programRuleAction.programStage() != null ? programRuleAction.programStage().uid() : null,
-                                programRuleAction.programStageSection() != null ? programRuleAction.programStageSection().uid() : null,
-                                programRuleAction.trackedEntityAttribute() != null ? programRuleAction.trackedEntityAttribute().uid() : null,
-                                programRuleAction.dataElement() != null ? programRuleAction.dataElement().uid() : null,
-                                programRuleAction.location(),
-                                programRuleAction.content(),
-                                programRuleAction.data(),
-                                programRuleAction.option() != null ? programRuleAction.option().uid() : null,
-                                programRuleAction.optionGroup() != null ? programRuleAction.optionGroup().uid() : null)
-                );
+        if (programRuleActions != null){
+            ruleActions = RuleExtensionsKt.toRuleActionList(programRuleActions);
+        }
         return ruleActions;
     }
 

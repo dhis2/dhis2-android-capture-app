@@ -104,7 +104,7 @@ public class EnrollmentFormRepository implements FormRepository {
                         rulesRepository.ruleVariables(program).subscribeOn(Schedulers.io()),
                         rulesRepository.enrollmentEvents(enrollmentUid).subscribeOn(Schedulers.io()),
                         rulesRepository.queryConstants().subscribeOn(Schedulers.io()),
-                        rulesRepository.getSuplementaryData().subscribeOn(Schedulers.io()),
+                        rulesRepository.getSupplementaryData().subscribeOn(Schedulers.io()),
                         (rules, variables, events, constants, supplementaryData) -> {
                             RuleEngine.Builder builder = RuleEngineContext.builder(expressionEvaluator)
                                     .rules(rules)
@@ -128,7 +128,7 @@ public class EnrollmentFormRepository implements FormRepository {
                         rulesRepository.ruleVariables(program),
                         rulesRepository.enrollmentEvents(enrollmentUid),
                         rulesRepository.queryConstants(),
-                        rulesRepository.getSuplementaryData(),
+                        rulesRepository.getSupplementaryData(),
                         (rules, variables, events, constants, supplementaryData) -> {
                             RuleEngine.Builder builder = RuleEngineContext.builder(expressionEvaluator)
                                     .rules(rules)

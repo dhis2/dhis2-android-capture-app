@@ -6,7 +6,6 @@ import android.database.Cursor;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
@@ -190,7 +189,7 @@ public class EventRepository implements FormRepository {
                 rulesRepository.otherEvents(eventUid).subscribeOn(Schedulers.io()),
                 rulesRepository.enrollment(eventUid).subscribeOn(Schedulers.io()),
                 rulesRepository.queryConstants().subscribeOn(Schedulers.io()),
-                rulesRepository.getSuplementaryData().subscribeOn(Schedulers.io()),
+                rulesRepository.getSupplementaryData().subscribeOn(Schedulers.io()),
                 (rules, variables, events, enrollment, constants, supplementaryData) -> {
 
                     RuleEngine.Builder builder = RuleEngineContext.builder(evaluator)
@@ -223,7 +222,7 @@ public class EventRepository implements FormRepository {
                         rulesRepository.otherEvents(eventUid).subscribeOn(Schedulers.io()),
                         rulesRepository.enrollment(eventUid).subscribeOn(Schedulers.io()),
                         rulesRepository.queryConstants().subscribeOn(Schedulers.io()),
-                        rulesRepository.getSuplementaryData().subscribeOn(Schedulers.io()),
+                        rulesRepository.getSupplementaryData().subscribeOn(Schedulers.io()),
                         (rules, variables, events, enrollment, constants, supplementaryData) -> {
 
                             RuleEngine.Builder builder = RuleEngineContext.builder(evaluator)
