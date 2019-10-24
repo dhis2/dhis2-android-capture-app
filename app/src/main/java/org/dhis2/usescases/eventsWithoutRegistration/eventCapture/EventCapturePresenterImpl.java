@@ -539,7 +539,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     private void changeSection() {
 
         if (!errors.isEmpty() && errors.get(currentSection.get()) != null) {
-            view.showSnackBar(R.string.fix_error);
+            view.showErrorSnackBar();
         }
 
         List<FormSectionViewModel> finalSections = getFinalSections();
