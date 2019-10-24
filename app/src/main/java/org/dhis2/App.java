@@ -41,7 +41,7 @@ import org.dhis2.utils.UtilsModule;
 import org.dhis2.utils.analytics.AnalyticsModule;
 import org.dhis2.utils.timber.DebugTree;
 import org.dhis2.utils.timber.ReleaseTree;
-import org.hisp.dhis.android.core.d2manager.D2Manager;
+import org.hisp.dhis.android.core.D2Manager;
 
 import javax.inject.Singleton;
 
