@@ -497,16 +497,19 @@ public class DataValuePresenter implements DataValueContract.Presenter {
         for (int columnPosition = 0; columnPosition < listCategories.get(rowPosition).size(); columnPosition++) {
             if (rowPosition == 0)
                 currentCatComboIds = new ArrayList<>();
-            //Remove catOptions below the rowPosition before adding new one
-            for (int currentRowPosition = currentCatComboIds.size(); currentRowPosition > 0; currentRowPosition--) {
-                if (currentCatComboIds.size() == rowPosition + currentRowPosition)
-                    currentCatComboIds.remove(currentCatComboIds.size() - currentRowPosition);
-            }
+
+            removeCategoryOptionsBelowRowPosition(currentCatComboIds, rowPosition);
             currentCatComboIds.add(listCategories.get(rowPosition).get(columnPosition).val0().uid());
             getCatOptionCombos(listCategories, rowPosition + 1, catComboUidList, currentCatComboIds);
         }
 
         return catComboUidList;
+    }
+    private void removeCategoryOptionsBelowRowPosition(List<String> currentCatComboIds, int rowPosition){
+        for (int currentRowPosition = currentCatComboIds.size(); currentRowPosition > 0; currentRowPosition--) {
+            if (currentCatComboIds.size() == rowPosition + currentRowPosition)
+                currentCatComboIds.remove(currentCatComboIds.size() - currentRowPosition);
+        }
     }
 
     public DataInputPeriod checkHasInputPeriod() {
