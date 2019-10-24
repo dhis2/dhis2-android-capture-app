@@ -7,7 +7,10 @@ import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Completable
+import io.reactivex.Flowable
 import io.reactivex.Single
+import io.reactivex.processors.BehaviorProcessor
+import io.reactivex.processors.FlowableProcessor
 import org.dhis2.data.prefs.Preference.Companion.DEFAULT_CAT_COMBO
 import org.dhis2.data.prefs.Preference.Companion.PIN
 import org.dhis2.data.prefs.Preference.Companion.PREF_DEFAULT_CAT_OPTION_COMBO
@@ -18,6 +21,7 @@ import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.dhis2.usescases.login.LoginActivity
 import org.dhis2.usescases.main.MainPresenter
 import org.dhis2.usescases.main.MainView
+import org.dhis2.utils.filters.FilterManager
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.category.CategoryCombo
 import org.hisp.dhis.android.core.category.CategoryOptionCombo
@@ -38,37 +42,36 @@ class MainPresenterTest {
     private val d2: D2 = mock()
     private val preferences: PreferenceProvider = mock()
     private val workManger: WorkManager = mock()
+    private val filterManager: FilterManager = mock()
 
     @Before
     fun setUp() {
-        presenter = MainPresenter(view, d2, schedulers, preferences, workManger)
+        presenter = MainPresenter(view, d2, schedulers, preferences, workManger, filterManager)
     }
 
     @Test
-    fun `Should show username on activity resumed`() {
+    fun `Should save default settings and render user name when the activity is resumed`() {
         presenterMocks()
 
         presenter.init()
 
         verify(view).renderUsername(any())
-    }
-
-    @Test
-    fun `Should save default categoryCombo uid to preferences`() {
-        presenterMocks()
-
-        presenter.init()
-
         verify(preferences).setValue(DEFAULT_CAT_COMBO, "uid")
+        verify(preferences).setValue(PREF_DEFAULT_CAT_OPTION_COMBO, "uid")
     }
 
     @Test
-    fun `Should save default categoryOptionCombo uid to preferences`() {
-        presenterMocks()
+    fun `Should setup filters when activity is resumed`() {
+        val periodRequest: FlowableProcessor<FilterManager.PeriodRequest> =
+            BehaviorProcessor.create()
+        whenever(filterManager.asFlowable()) doReturn Flowable.just(filterManager)
+        whenever(filterManager.periodRequest) doReturn periodRequest
+        periodRequest.onNext(FilterManager.PeriodRequest.FROM_TO)
 
-        presenter.init()
+        presenter.initFilters()
 
-        verify(preferences).setValue(PREF_DEFAULT_CAT_OPTION_COMBO, "uid")
+        verify(view).updateFilters(any())
+        verify(view).showPeriodRequest(periodRequest.blockingFirst())
     }
 
     @Test

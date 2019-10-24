@@ -23,7 +23,8 @@ class MainPresenter(
     private val d2: D2,
     private val schedulerProvider: SchedulerProvider,
     private val preferences: PreferenceProvider,
-    private val workManger: WorkManager
+    private val workManger: WorkManager,
+    private val filterManager: FilterManager
 ) {
 
     var disposable: CompositeDisposable = CompositeDisposable()
@@ -70,7 +71,7 @@ class MainPresenter(
 
     fun initFilters() {
         disposable.add(
-            FilterManager.getInstance().asFlowable()
+            filterManager.asFlowable()
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
@@ -80,7 +81,7 @@ class MainPresenter(
         )
 
         disposable.add(
-            FilterManager.getInstance().periodRequest
+            filterManager.periodRequest
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
