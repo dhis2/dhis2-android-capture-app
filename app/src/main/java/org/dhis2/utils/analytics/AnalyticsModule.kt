@@ -1,8 +1,10 @@
 package org.dhis2.utils.analytics
 
 import android.content.Context
+import com.google.firebase.analytics.FirebaseAnalytics
 import dagger.Module
 import dagger.Provides
+import org.dhis2.data.prefs.PreferenceProvider
 import javax.inject.Singleton
 
 @Module
@@ -11,8 +13,14 @@ class AnalyticsModule internal constructor() {
 
     @Provides
     @Singleton
-    fun providesAnalyticsHelper(context: Context): AnalyticsHelper {
-        return AnalyticsHelper(context)
+    fun providesAnalyticsHelper(
+        context: Context,
+        preferencesProvider: PreferenceProvider
+    ): AnalyticsHelper {
+        return AnalyticsHelper(
+            FirebaseAnalytics.getInstance(context),
+            preferencesProvider
+        )
     }
 
     @Provides

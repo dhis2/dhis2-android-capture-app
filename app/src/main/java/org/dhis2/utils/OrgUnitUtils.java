@@ -7,7 +7,6 @@ import androidx.annotation.NonNull;
 import com.unnamed.b.atv.model.TreeNode;
 
 import org.dhis2.utils.customviews.OrgUnitHolder_2;
-import org.hisp.dhis.android.core.arch.helpers.UidsHelper;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 
 import java.util.ArrayList;
@@ -38,10 +37,8 @@ public class OrgUnitUtils {
         ArrayList<String> myOrgUnitUids = new ArrayList<>();
 
         for (OrganisationUnit myorg : myOrgs) {
-            if (myorg.programs() != null && UidsHelper.getUids(myorg.programs()).contains(programId))
-                myOrgUnitUids.add(myorg.uid());
-            else if (myorg.dataSets() != null && UidsHelper.getUids(myorg.dataSets()).contains(programId))
-                myOrgUnitUids.add(myorg.uid());            String[] pathName = myorg.displayNamePath().split("/");
+            myOrgUnitUids.add(myorg.uid());
+            String[] pathName = myorg.displayNamePath().split("/");
             String[] pathUid = myorg.path().split("/");
             int count = 0;
             for (int i = 0; i < myorg.displayName().length(); i++) {

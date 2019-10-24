@@ -1,25 +1,17 @@
 package org.dhis2.utils.analytics
 
 import android.annotation.SuppressLint
-import android.app.Activity
-import android.content.Context
 import android.os.Bundle
-import androidx.annotation.NonNull
 import com.google.firebase.analytics.FirebaseAnalytics
-import javax.inject.Inject
+import org.dhis2.data.prefs.PreferenceProvider
+import org.dhis2.utils.Constants
 import org.hisp.dhis.android.core.d2manager.D2Manager
+import javax.inject.Inject
 
-class AnalyticsHelper @Inject constructor(context: Context) {
-
-    private var analytics: FirebaseAnalytics = FirebaseAnalytics.getInstance(context)
-
-    fun setCurrentScreen(
-        @NonNull activity: Activity,
-        screenName: String,
-        classOverride: String? = null
-    ) {
-        analytics.setCurrentScreen(activity, screenName, classOverride)
-    }
+class AnalyticsHelper @Inject constructor(
+    val analytics: FirebaseAnalytics,
+    private val preferencesProvider: PreferenceProvider
+) {
 
     @SuppressLint("CheckResult")
     fun setEvent(param: String, value: String, event: String) {
@@ -38,8 +30,17 @@ class AnalyticsHelper @Inject constructor(context: Context) {
         if (d2 != null && d2.userModule().blockingIsLogged()) {
             bundle.apply {
                 putString("user", d2.userModule().userCredentials().blockingGet().username())
-                putString("server", d2.systemInfoModule().systemInfo().blockingGet().contextPath())
+                if (preferencesProvider.contains(Constants.USER)) {
+                    putString(
+                        "server",
+                        d2.systemInfoModule().systemInfo().blockingGet().contextPath()
+                    )
+                }
             }
+            analytics.setUserProperty(
+                "serverUrl",
+                d2.systemInfoModule().systemInfo().blockingGet().contextPath()
+            )
         }
         params.entries.forEach { bundle.putString(it.key, it.value) }
         logEvent(event, bundle)

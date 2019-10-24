@@ -127,7 +127,10 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract {
     }
 
     public void setSingleSection(DataEntryArguments arguments, FormSectionViewModel formSectionViewModel) {
-        this.currentSection = "NO_SECTION";
+        this.currentSection = formSectionViewModel.sectionUid() != null ? formSectionViewModel.sectionUid() : "NO_SECTION";
+        binding.currentSectionTitle.sectionTitle.setText(formSectionViewModel.label());
+        binding.currentSectionTitle.setSectionUid(currentSection);
+
         binding.currentSectionTitle.root.setVisibility(View.GONE);
 
         setUpRecyclerView(arguments);
@@ -191,6 +194,13 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract {
 
     public void setSectionSelector(List<EventSectionModel> data, float unsupportedPercentage) {
         sectionSelectorAdapter.swapData(data, unsupportedPercentage);
+        if (data.size() == 1) {
+            isLastPosition.set(true);
+            binding.currentSectionTitle.root.setVisibility(View.GONE);
+        } else {
+            isLastPosition.set(false);
+            binding.currentSectionTitle.root.setVisibility(View.VISIBLE);
+        }
     }
 
     public FlowableProcessor<RowAction> dataEntryFlowable() {

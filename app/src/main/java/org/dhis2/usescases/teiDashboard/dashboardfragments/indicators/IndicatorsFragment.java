@@ -60,6 +60,7 @@ public class IndicatorsFragment extends FragmentGlobalAbstract implements Indica
     @Override
     public void onResume() {
         super.onResume();
+        binding.spinner.setVisibility(View.VISIBLE);
         presenter.init(this);
     }
 
@@ -75,6 +76,9 @@ public class IndicatorsFragment extends FragmentGlobalAbstract implements Indica
             if (adapter != null) {
                 adapter.setIndicators(indicators);
             }
+
+            binding.spinner.setVisibility(View.GONE);
+
             if (indicators != null && !indicators.isEmpty()) {
                 binding.emptyIndicators.setVisibility(View.GONE);
             } else {
