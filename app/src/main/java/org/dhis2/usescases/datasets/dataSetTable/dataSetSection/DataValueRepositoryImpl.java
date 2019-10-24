@@ -406,7 +406,7 @@ public class DataValueRepositoryImpl implements DataValueRepository {
                                                 .byDataSetUids(Collections.singletonList(dataSetUid))
                                                 .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE).blockingGet();
 
-                                       canWriteCatOption = !organisationUnits.isEmpty();
+                                        canWriteOrgUnit = !organisationUnits.isEmpty();
 
                                     }
 
