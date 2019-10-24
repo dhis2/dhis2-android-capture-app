@@ -488,26 +488,25 @@ public class DataValuePresenter implements DataValueContract.Presenter {
     }
 
     @Override
-    public List<List<String>> getCatOptionCombos(List<List<Pair<CategoryOption, Category>>> listCategories, int num, List<List<String>> result, List<String> current) {
-        if (num == listCategories.size()) {
-            List<String> resultHelp = new ArrayList<>();
-            for (String option : current)
-                resultHelp.add(option);
-            result.add(resultHelp);
-            return result;
+    public List<List<String>> getCatOptionCombos(List<List<Pair<CategoryOption, Category>>> listCategories, int rowPosition, List<List<String>> catComboUidList, List<String> currentCatComboIds) {
+        if (rowPosition == listCategories.size()) {
+            List<String> resultHelp = new ArrayList<>(currentCatComboIds);
+            catComboUidList.add(resultHelp);
+            return catComboUidList;
         }
-        for (int i = 0; i < listCategories.get(num).size(); i++) {
-            if (num == 0)
-                current = new ArrayList<>();
-            for (int j = current.size(); j > 0; j--) {
-                if (current.size() == num + j)
-                    current.remove(current.size() - j);
+        for (int columnPosition = 0; columnPosition < listCategories.get(rowPosition).size(); columnPosition++) {
+            if (rowPosition == 0)
+                currentCatComboIds = new ArrayList<>();
+            //Remove catOptions below the rowPosition before adding new one
+            for (int currentRowPosition = currentCatComboIds.size(); currentRowPosition > 0; currentRowPosition--) {
+                if (currentCatComboIds.size() == rowPosition + currentRowPosition)
+                    currentCatComboIds.remove(currentCatComboIds.size() - currentRowPosition);
             }
-            current.add(listCategories.get(num).get(i).val0().uid());
-            getCatOptionCombos(listCategories, num + 1, result, current);
+            currentCatComboIds.add(listCategories.get(rowPosition).get(columnPosition).val0().uid());
+            getCatOptionCombos(listCategories, rowPosition + 1, catComboUidList, currentCatComboIds);
         }
 
-        return result;
+        return catComboUidList;
     }
 
     public DataInputPeriod checkHasInputPeriod() {
