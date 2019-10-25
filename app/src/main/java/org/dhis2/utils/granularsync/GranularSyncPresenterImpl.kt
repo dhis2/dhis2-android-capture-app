@@ -414,7 +414,15 @@ class GranularSyncPresenterImpl(
                                 state = State.TO_UPDATE
                             }
                         }
-                        state
+                        if (state == State.SYNCED) {
+                            d2.dataSetModule().dataSetCompleteRegistrations()
+                                .byDataSetUid().eq(recordUid)
+                                .byAttributeOptionComboUid().eq(dvAttrCombo)
+                                .byOrganisationUnitUid().eq(dvOrgUnit)
+                                .byPeriod().eq(dvPeriodId).one().blockingGet().state()
+                        } else {
+                            state
+                        }
                     }
         }
     }

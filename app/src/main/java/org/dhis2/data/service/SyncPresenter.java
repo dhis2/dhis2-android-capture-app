@@ -44,6 +44,8 @@ interface SyncPresenter {
 
     Observable<D2Progress> syncGranularDataValues(String orgUnit, String attributeOptionCombo, String period, String[] catOptionCombos);
 
+    Observable<D2Progress> syncGranularDataSet(String dataSetUid, String orgUnit, String attributeOptionCombo, String period);
+
     boolean checkSyncEventStatus(String uid);
 
     boolean checkSyncTEIStatus(String uid);
@@ -64,5 +66,5 @@ interface SyncPresenter {
 
     void uploadResources();
 
-    ListenableWorker.Result blockSyncGranularDataValues(String orgUnitUid, String attrOptionCombo, String periodId, String[] catOptionCombo);
+    ListenableWorker.Result blockSyncGranularDataValues(String dataSetUid, String orgUnitUid, String attrOptionCombo, String periodId, String[] catOptionCombo);
 }
