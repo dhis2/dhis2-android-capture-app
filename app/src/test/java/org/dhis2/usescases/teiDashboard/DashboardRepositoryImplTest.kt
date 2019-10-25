@@ -43,7 +43,6 @@ class DashboardRepositoryImplTest {
         testObserver.assertValue(getMockStage())
 
         testObserver.dispose()
-
     }
 
     private fun getMockSingleEvent(): Event {
