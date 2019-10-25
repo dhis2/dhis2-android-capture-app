@@ -38,28 +38,18 @@ public class OrgUnitUtils {
 
         for (OrganisationUnit myorg : myOrgs) {
             myOrgUnitUids.add(myorg.uid());
-            String[] pathName = myorg.displayNamePath().split("/");
             String[] pathUid = myorg.path().split("/");
-            int count = 0;
-            for (int i = 0; i < myorg.displayName().length(); i++) {
-                if (myorg.displayName().charAt(i) == '/')
-                    count++;
-            }
 
-            if (myorg.displayName().contains("/"))
-                pathName[(pathName.length - 1) - count] = myorg.displayName();
-
-            for (int i = myorg.level(); i > 0; i--) {
+            for (int ouLevel = myorg.level(); ouLevel > 0; ouLevel--) {
                 OrganisationUnit orgToAdd = OrganisationUnit.builder()
-                        .uid(pathUid[i])
-                        .openingDate(myOrgUnitMap.get(pathUid[i]) != null ? myOrgUnitMap.get(pathUid[i]).openingDate() : null)
-                        .closedDate(myOrgUnitMap.get(pathUid[i]) != null ? myOrgUnitMap.get(pathUid[i]).closedDate() : null)
-                        .level(i)
-//                        .parent(pathUid[i - 1])
-                        .path(pathUid[i - 1])
-                        .name(pathName[i])
-                        .displayName(pathName[i])
-                        .displayShortName(pathName[i])
+                        .uid(pathUid[ouLevel])
+                        .openingDate(myOrgUnitMap.get(pathUid[ouLevel]) != null ? myOrgUnitMap.get(pathUid[ouLevel]).openingDate() : null)
+                        .closedDate(myOrgUnitMap.get(pathUid[ouLevel]) != null ? myOrgUnitMap.get(pathUid[ouLevel]).closedDate() : null)
+                        .level(ouLevel)
+                        .path(pathUid[ouLevel - 1])
+                        .name(myorg.displayNamePath().get(ouLevel -1))
+                        .displayName(myorg.displayNamePath().get(ouLevel -1))
+                        .displayShortName(myorg.displayNamePath().get(ouLevel -1))
                         .build();
                 if (!allOrgs.contains(orgToAdd))
                     allOrgs.add(orgToAdd);
