@@ -44,7 +44,7 @@ public class OrgUnitCascadeAdapter extends RecyclerView.Adapter<OrgUnitCascadeHo
         this.selectionType = ouSelectionType;
 
         if (isEmpty(selectedOrgUnit))
-            for (int ouLevel = 1; ouLevel < items.size(); ouLevel++)
+            for (int ouLevel = 1; i < items.size(); ouLevel++)
                 selectedParent.put(ouLevel, "");
         else {
             OrganisationUnit ou = organisationUnits.uid(selectedOrgUnit).blockingGet();
