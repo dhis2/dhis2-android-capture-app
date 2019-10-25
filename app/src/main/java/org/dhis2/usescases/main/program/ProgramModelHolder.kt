@@ -14,7 +14,7 @@ import timber.log.Timber
 class ProgramModelHolder(private val binding: ItemProgramModelBinding) :
     RecyclerView.ViewHolder(binding.root) {
 
-    fun bind(presenter: ProgramContract.Presenter, programViewModel: ProgramViewModel) {
+    fun bind(presenter: ProgramPresenter, programViewModel: ProgramViewModel) {
         binding.program = programViewModel
         binding.presenter = presenter
 
@@ -49,5 +49,10 @@ class ProgramModelHolder(private val binding: ItemProgramModelBinding) :
         binding.programImage.setImageDrawable(iconImage)
         binding.programImage.setColorFilter(ColorUtils.getContrastColor(color))
         binding.programImage.setBackgroundColor(color)
+
+        itemView.setOnClickListener { v ->
+            val programTheme = ColorUtils.getThemeFromColor(programViewModel.color())
+            presenter.onItemClick(programViewModel, programTheme)
+        }
     }
 }

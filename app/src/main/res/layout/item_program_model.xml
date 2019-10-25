@@ -11,7 +11,7 @@
 
         <variable
             name="presenter"
-            type="org.dhis2.usescases.main.program.ProgramContract.Presenter" />
+            type="org.dhis2.usescases.main.program.ProgramPresenter" />
 
         <variable
             name="program"
@@ -23,7 +23,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="?attr/selectableItemBackground"
-        android:onClick="@{()->presenter.onItemClick(program)}"
         android:paddingStart="16dp"
         android:paddingTop="8dp"
         android:paddingEnd="16dp"

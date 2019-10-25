@@ -13,8 +13,8 @@ import org.dhis2.databinding.ItemProgramModelBinding
  * QUADRAM. Created by ppajuelo on 13/06/2018.
  */
 
-class ProgramModelAdapter internal constructor(
-    private val presenter: ProgramContract.Presenter
+class ProgramModelAdapter(
+    private val presenter: ProgramPresenter
 ) : RecyclerView.Adapter<ProgramModelHolder>() {
 
     private val programList: MutableList<ProgramViewModel>
