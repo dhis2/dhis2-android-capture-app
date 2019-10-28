@@ -403,7 +403,6 @@ public class DashboardRepositoryImpl implements DashboardRepository {
                     sqLiteBind(insetNoteStatement, 6, State.TO_POST.name()); //state
 
                     long inserted = briteDatabase.executeInsert("Note", insetNoteStatement);
-
                     if (inserted != -1) {
                         updateEnrollmentState(enrollmentUid);
                         updateTeiState();
