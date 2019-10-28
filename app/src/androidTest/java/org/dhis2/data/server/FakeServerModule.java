@@ -6,8 +6,8 @@ import com.facebook.stetho.okhttp3.StethoInterceptor;
 import com.google.common.collect.Lists;
 
 import org.hisp.dhis.android.core.D2;
-import org.hisp.dhis.android.core.d2manager.D2Configuration;
-import org.hisp.dhis.android.core.d2manager.D2Manager;
+import org.hisp.dhis.android.core.D2Configuration;
+import org.hisp.dhis.android.core.D2Manager;
 
 public class FakeServerModule extends ServerModule {
 

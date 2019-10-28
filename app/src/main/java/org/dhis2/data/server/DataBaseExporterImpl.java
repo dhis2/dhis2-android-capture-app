@@ -8,8 +8,7 @@ import com.google.gson.Gson;
 import org.dhis2.utils.FileResourcesUtil;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.common.BaseDataModel;
-import org.hisp.dhis.android.core.d2manager.D2Manager;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance;
+import org.hisp.dhis.android.core.D2Manager;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
