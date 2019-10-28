@@ -7,7 +7,6 @@ import org.dhis2.R
 import org.dhis2.data.dagger.PerFragment
 import org.dhis2.data.prefs.PreferenceProvider
 import org.dhis2.data.schedulers.SchedulerProvider
-import org.dhis2.utils.ColorUtils
 import org.dhis2.utils.filters.FilterManager
 import org.hisp.dhis.android.core.D2
 

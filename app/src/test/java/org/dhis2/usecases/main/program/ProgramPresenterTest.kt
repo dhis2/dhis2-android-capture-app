@@ -8,25 +8,19 @@ import com.nhaarman.mockitokotlin2.verifyZeroInteractions
 import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Flowable
 import io.reactivex.schedulers.TestScheduler
+import java.util.concurrent.TimeUnit
 import org.dhis2.data.prefs.PreferenceProvider
-import org.dhis2.data.schedulers.SchedulerProvider
 import org.dhis2.data.schedulers.TestSchedulerProvider
-import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.dhis2.usescases.main.program.HomeRepository
 import org.dhis2.usescases.main.program.ProgramPresenter
 import org.dhis2.usescases.main.program.ProgramView
 import org.dhis2.usescases.main.program.ProgramViewModel
 import org.dhis2.utils.Constants.PROGRAM_THEME
 import org.dhis2.utils.filters.FilterManager
-import org.dhis2.utils.granularsync.SyncStatusDialog
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 
-/**
- * Created by frodriguez on 10/24/2019.
- *
- */
 class ProgramPresenterTest {
 
     private lateinit var presenter: ProgramPresenter
@@ -38,24 +32,37 @@ class ProgramPresenterTest {
     private val filterManager: FilterManager = mock()
 
     @Before
-    fun setUp(){
+    fun setUp() {
         presenter = ProgramPresenter(view, homeRepository, schedulers, preferences, filterManager)
     }
 
     @Test
-    fun `Should initialize program list`(){
+    fun `Should initialize program list`() {
         val programs = listOf(programViewModel())
         val filterManagerFlowable = Flowable.just(filterManager)
         val programsFlowable = Flowable.just(programs)
+
         whenever(filterManager.asFlowable()) doReturn filterManagerFlowable
-        //whenever(homeRepository.programModels(any(), any(), any())) doReturn programsFlowable
-        //whenever(homeRepository.aggregatesModels(any(), any(), any())) doReturn programsFlowable
-        schedulers.ui().triggerActions()
+        whenever(filterManager.ouTreeFlowable()) doReturn Flowable.just(true)
+        whenever(homeRepository.programModels(any(), any(), any())) doReturn programsFlowable
+        whenever(homeRepository.aggregatesModels(any(), any(), any())) doReturn Flowable.empty()
 
         presenter.init()
+        schedulers.io().advanceTimeBy(1, TimeUnit.SECONDS)
 
         verify(view).swapProgramModelData(programs)
+        verify(view).openOrgUnitTreeSelector()
+    }
 
+    @Test
+    fun `Should render error when there is a problem getting programs`() {
+        whenever(filterManager.asFlowable()) doReturn Flowable.error(Exception(""))
+        whenever(filterManager.ouTreeFlowable()) doReturn Flowable.just(true)
+
+        presenter.init()
+        schedulers.io().advanceTimeBy(1, TimeUnit.SECONDS)
+
+        verify(view).renderError("")
     }
 
     @Test
@@ -68,7 +75,7 @@ class ProgramPresenterTest {
     }
 
     @Test
-    fun `Should navigate to program clicked and save program's theme setting if it has a theme`(){
+    fun `Should navigate to program clicked and save program's theme setting if it has a theme`() {
         val programViewModel = programViewModel()
 
         presenter.onItemClick(programViewModel, 1)
@@ -78,7 +85,7 @@ class ProgramPresenterTest {
     }
 
     @Test
-    fun `Should navigate to program clicked and remove theme setting if it doesn't has a theme`(){
+    fun `Should navigate to program clicked and remove theme setting if it doesn't has a theme`() {
         val programViewModel = programViewModel()
 
         presenter.onItemClick(programViewModel, -1)
@@ -88,7 +95,7 @@ class ProgramPresenterTest {
     }
 
     @Test
-    fun `Should show program description when image is clicked`(){
+    fun `Should show program description when image is clicked`() {
         presenter.showDescription("description")
 
         verify(view).showDescription("description")
@@ -109,14 +116,14 @@ class ProgramPresenterTest {
     }
 
     @Test
-    fun `Should hide filters screen`(){
+    fun `Should hide filters screen`() {
         presenter.showHideFilterClick()
 
         verify(view).showHideFilter()
     }
 
     @Test
-    fun `Should clear all filters`(){
+    fun `Should clear all filters`() {
         presenter.clearFilterClick()
 
         verify(filterManager).clearAllFilters()
@@ -124,13 +131,13 @@ class ProgramPresenterTest {
     }
 
     @Test
-    fun `Should clear all disposables`(){
+    fun `Should clear all disposables`() {
         presenter.dispose()
 
         assertTrue(presenter.disposable.size() == 0)
     }
 
-    private fun programViewModel(): ProgramViewModel{
+    private fun programViewModel(): ProgramViewModel {
         return ProgramViewModel.create(
             "uid",
             "displayName",
@@ -145,5 +152,4 @@ class ProgramPresenterTest {
             accessDataWrite = true
         )
     }
-
 }

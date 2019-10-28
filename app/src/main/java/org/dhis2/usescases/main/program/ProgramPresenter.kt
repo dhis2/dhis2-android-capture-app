@@ -1,8 +1,6 @@
 package org.dhis2.usescases.main.program
 
 import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.functions.Action
-import io.reactivex.functions.Consumer
 import io.reactivex.processors.PublishProcessor
 import org.dhis2.data.prefs.PreferenceProvider
 import org.dhis2.data.schedulers.SchedulerProvider
@@ -11,10 +9,6 @@ import org.dhis2.utils.Constants.PROGRAM_THEME
 import org.dhis2.utils.filters.FilterManager
 import org.hisp.dhis.android.core.period.DatePeriod
 import timber.log.Timber
-
-/**
- * Created by ppajuelo on 18/10/2017.f
- */
 
 class ProgramPresenter internal constructor(
     private val view: ProgramView,
@@ -28,15 +22,12 @@ class ProgramPresenter internal constructor(
     private val programQueries = PublishProcessor.create<Pair<List<DatePeriod>, List<String>>>()
 
     fun init() {
-
-        val loadingProcessor = PublishProcessor.create<Boolean>()
-
         disposable.add(
             filterManager.asFlowable()
                 .startWith(filterManager)
                 .doOnNext { Timber.tag("INIT DATA").d("NEW FILTER") }
                 .switchMap { filterManager ->
-                    loadingProcessor.onNext(true)
+                    view.showFilterProgress()
                     homeRepository.programModels(
                         filterManager.periodFilters,
                         filterManager.orgUnitUidsFilters,
@@ -65,16 +56,6 @@ class ProgramPresenter internal constructor(
                 )
         )
 
-        /*disposable.add(
-            loadingProcessor
-                .subscribeOn(schedulerProvider.io())
-                .observeOn(schedulerProvider.ui())
-                .subscribe(
-                    { view.showFilterProgress() },
-                    { Timber.e(it) }
-                )
-        )
-
         disposable.add(
             filterManager.ouTreeFlowable()
                 .subscribeOn(schedulerProvider.io())
@@ -83,7 +64,7 @@ class ProgramPresenter internal constructor(
                     { view.openOrgUnitTreeSelector() },
                     { Timber.e(it) }
                 )
-        )*/
+        )
     }
 
     fun onSyncStatusClick(program: ProgramViewModel) {

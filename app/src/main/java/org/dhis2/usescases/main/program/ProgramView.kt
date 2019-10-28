@@ -1,7 +1,6 @@
 package org.dhis2.usescases.main.program
 
 import androidx.annotation.UiThread
-import io.reactivex.functions.Consumer
 import org.dhis2.usescases.general.AbstractActivityContracts
 
 interface ProgramView : AbstractActivityContracts.View {
@@ -23,4 +22,3 @@ interface ProgramView : AbstractActivityContracts.View {
 
     fun showSyncDialog(program: ProgramViewModel)
 }
-
