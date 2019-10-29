@@ -19,7 +19,6 @@ import androidx.databinding.DataBindingUtil
 import androidx.databinding.ObservableInt
 import com.andrognito.pinlockview.PinLockListener
 import com.android.dbexporterlibrary.ExporterListener
-import io.reactivex.functions.Consumer
 import javax.inject.Inject
 import org.dhis2.App
 import org.dhis2.R
@@ -119,6 +118,7 @@ class MainActivity : ActivityGlobalAbstract(), MainView, ExporterListener {
     override fun onResume() {
         super.onResume()
         presenter.init()
+        presenter.initFilters()
 
         if (ContextCompat.checkSelfPermission(
             this,
@@ -147,13 +147,11 @@ class MainActivity : ActivityGlobalAbstract(), MainView, ExporterListener {
 
     /*User info methods*/
 
-    override fun renderUsername(): Consumer<String> {
-        return Consumer { username ->
-            binding.userName = username
-            (binding.navView.getHeaderView(0).findViewById<View>(R.id.user_info) as TextView)
-                .text = username
-            binding.executePendingBindings()
-        }
+    override fun renderUsername(username: String) {
+        binding.userName = username
+        (binding.navView.getHeaderView(0).findViewById<View>(R.id.user_info) as TextView)
+            .text = username
+        binding.executePendingBindings()
     }
 
     /*End of user info methods*/

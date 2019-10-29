@@ -63,7 +63,7 @@
         <activity android:name=".usescases.programEventDetail.ProgramEventDetailActivity" />
         <activity
             android:name=".usescases.searchTrackEntity.SearchTEActivity"
-            android:configChanges="keyboardHidden|orientation|screenSize" />
+            android:configChanges="keyboardHidden|screenSize" />
         <activity android:name=".usescases.teiDashboard.TeiDashboardMobileActivity" />
         <activity android:name=".usescases.teiDashboard.teiDataDetail.TeiDataDetailActivity" />
         <activity android:name=".usescases.teiDashboard.eventDetail.EventDetailActivity" />

@@ -245,15 +245,6 @@ public class DashboardRepositoryImpl implements DashboardRepository {
                                 ).toList()
 
                 ).toObservable();
-      /*  return briteDatabase.createQuery(EVENTS_TABLE, EVENTS_QUERY, progId, teiId, progId)
-                .mapToList(cursor -> {
-                    Event eventModel = Event.create(cursor);
-                    if (Boolean.FALSE.equals(d2.programModule().programs().uid(programUid).blockingGet().ignoreOverdueEvents()))
-                        if (eventModel.status() == EventStatus.SCHEDULE && eventModel.dueDate().before(DateUtils.getInstance().getToday()))
-                            eventModel = updateState(eventModel, EventStatus.OVERDUE);
-
-                    return eventModel;
-                });*/
     }
 
     @Override
@@ -266,9 +257,10 @@ public class DashboardRepositoryImpl implements DashboardRepository {
 
     @Override
     public Observable<ProgramStage> displayGenerateEvent(String eventUid) {
-        String id = eventUid == null ? "" : eventUid;
-        return briteDatabase.createQuery("ProgramStage", PROGRAM_STAGE_FROM_EVENT, id)
-                .mapToOne(ProgramStage::create);
+        return d2.eventModule().events().uid(eventUid).get()
+                .map(Event::programStage)
+                .flatMap(stageUid -> d2.programModule().programStages().uid(stageUid).get())
+                .toObservable();
     }
 
 
