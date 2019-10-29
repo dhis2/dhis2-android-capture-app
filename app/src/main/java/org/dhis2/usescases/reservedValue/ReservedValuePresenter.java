@@ -15,7 +15,7 @@ public class ReservedValuePresenter {
 
     private final SchedulerProvider schedulerProvider;
     private ReservedValueContracts.View view;
-    private CompositeDisposable disposable;
+    CompositeDisposable disposable;
     private ReservedValueRepository repository;
     private D2 d2;
     private FlowableProcessor<Boolean> updateProcessor;
@@ -75,5 +75,9 @@ public class ReservedValuePresenter {
 
     public void onPause() {
         disposable.clear();
+    }
+
+    public CompositeDisposable getDisposable() {
+        return disposable;
     }
 }
