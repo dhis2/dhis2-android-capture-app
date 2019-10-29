@@ -1,4 +1,4 @@
-package org.dhis2.usecases.login
+package org.dhis2.usecases.reservedValues
 
 import com.nhaarman.mockitokotlin2.*
 import io.reactivex.BackpressureStrategy
