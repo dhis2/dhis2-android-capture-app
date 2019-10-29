@@ -22,12 +22,14 @@ class ProgramPresenter internal constructor(
     private val programQueries = PublishProcessor.create<Pair<List<DatePeriod>, List<String>>>()
 
     fun init() {
+        val loadingProcessor = PublishProcessor.create<Boolean>()
+
         disposable.add(
             filterManager.asFlowable()
                 .startWith(filterManager)
                 .doOnNext { Timber.tag("INIT DATA").d("NEW FILTER") }
                 .switchMap { filterManager ->
-                    view.showFilterProgress()
+                    loadingProcessor.onNext(true)
                     homeRepository.programModels(
                         filterManager.periodFilters,
                         filterManager.orgUnitUidsFilters,
@@ -53,6 +55,16 @@ class ProgramPresenter internal constructor(
                     { programs -> view.swapProgramModelData(programs) },
                     { throwable -> view.renderError(throwable.message ?: "") },
                     { Timber.tag("INIT DATA").d("LOADING ENDED") }
+                )
+        )
+
+        disposable.add(
+            loadingProcessor
+                .subscribeOn(schedulerProvider.io())
+                .observeOn(schedulerProvider.ui())
+                .subscribe(
+                    { view.showFilterProgress() },
+                    { Timber.e(it) }
                 )
         )
 

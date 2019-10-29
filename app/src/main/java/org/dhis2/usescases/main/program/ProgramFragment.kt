@@ -151,14 +151,14 @@ class ProgramFragment : FragmentGlobalAbstract(), ProgramView {
 
     override fun navigateTo(program: ProgramViewModel) {
         val bundle = Bundle()
-        val idTag = if (program.typeName() == "DataSets") {
-            "DATASET_UID"
+        val idTag = if (program.typeName() == Constants.DATA_SET) {
+            Constants.DATASET_UID
         } else {
-            "PROGRAM_UID"
+            Constants.PROGRAM_UID
         }
 
         if (!TextUtils.isEmpty(program.type())) {
-            bundle.putString("TRACKED_ENTITY_UID", program.type())
+            bundle.putString(Constants.TRACKED_ENTITY_UID, program.type())
         }
 
         abstractActivity.analyticsHelper.setEvent(
@@ -174,7 +174,7 @@ class ProgramFragment : FragmentGlobalAbstract(), ProgramView {
         bundle.putString(Constants.DATA_SET_NAME, program.title())
         bundle.putString(
             Constants.ACCESS_DATA,
-            java.lang.Boolean.toString(program.accessDataWrite())
+            program.accessDataWrite().toString()
         )
 
         when (program.programType()) {
@@ -193,7 +193,7 @@ class ProgramFragment : FragmentGlobalAbstract(), ProgramView {
     override fun showSyncDialog(program: ProgramViewModel) {
         val dialog = SyncStatusDialog.Builder()
             .setConflictType(
-                if (program.typeName() != "DataSets") {
+                if (program.typeName() != Constants.DATA_SET) {
                     SyncStatusDialog.ConflictType.PROGRAM
                 } else {
                     SyncStatusDialog.ConflictType.DATA_SET

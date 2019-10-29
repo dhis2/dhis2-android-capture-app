@@ -6,7 +6,7 @@ import com.google.firebase.analytics.FirebaseAnalytics
 import javax.inject.Inject
 import org.dhis2.data.prefs.PreferenceProvider
 import org.dhis2.utils.Constants
-import org.hisp.dhis.android.core.d2manager.D2Manager
+import org.hisp.dhis.android.core.D2Manager
 
 class AnalyticsHelper @Inject constructor(
     val analytics: FirebaseAnalytics,
