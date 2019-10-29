@@ -10,6 +10,9 @@ import org.dhis2.usescases.reservedValue.ReservedValuePresenter
 import org.dhis2.usescases.reservedValue.ReservedValueRepository
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.call.D2Progress
+import org.hisp.dhis.android.core.maintenance.D2Error
+import org.hisp.dhis.android.core.maintenance.D2ErrorCode
+import org.hisp.dhis.android.core.maintenance.D2ErrorComponent
 import org.junit.Before
 import org.junit.Test
 import rx.observers.TestSubscriber
@@ -23,13 +26,7 @@ class ReservedValuePresenterTest {
     private val d2: D2 = mock {
         on { trackedEntityModule() } doReturn mock()
         on { trackedEntityModule().reservedValueManager() } doReturn mock()
-        on {
-            trackedEntityModule()
-                .reservedValueManager()
-                .downloadReservedValues("any", 100)
-        } doReturn dummyD2Progress
     }
-
     private val view: ReservedValueContracts.View = mock()
     private val scheduler = TrampolineSchedulerProvider()
 
@@ -40,6 +37,13 @@ class ReservedValuePresenterTest {
 
     @Test
     fun `Should download reserverd values when refill is clicked`() {
+        whenever(
+            d2.trackedEntityModule().reservedValueManager().downloadReservedValues(
+                "any",
+                100
+            )
+        ) doReturn dummyD2Progress
+
         reservedValuePresenter.onClickRefill(dummyReservedValueModel())
 
         assert(!dummyD2Progress.isEmpty.blockingGet())
@@ -47,8 +51,31 @@ class ReservedValuePresenterTest {
     }
 
     @Test
-    fun `Should catch exception when error happens during download`() {
+    fun `Should catch exception D2 when error happens during download`() {
+        whenever(
+            d2.trackedEntityModule().reservedValueManager().downloadReservedValues(
+                "any",
+                100
+            )
+        ) doReturn D2Error()
 
+        reservedValuePresenter.onClickRefill(dummyReservedValueModel())
+
+        verify(view).showReservedValuesError()
+    }
+
+    @Test
+    fun `Should not catch exception random when error happens during download`(){
+        whenever(
+            d2.trackedEntityModule().reservedValueManager().downloadReservedValues(
+                "any",
+                100
+            )
+        ) doReturn Observable.error(Throwable("random"))
+
+        reservedValuePresenter.onClickRefill(dummyReservedValueModel())
+
+        verifyZeroInteractions(view)
     }
 
     @Test
@@ -70,4 +97,12 @@ class ReservedValuePresenterTest {
 
     private fun dummyReservedValueModel() =
         ReservedValueModel.create("any", "any", true, "any", "any", 1599)
+
+    private fun D2Error(): Observable<D2Progress> {
+        return Observable.error(
+            D2Error.builder().httpErrorCode(500).errorCode(D2ErrorCode.API_RESPONSE_PROCESS_ERROR).errorComponent(
+                D2ErrorComponent.Database
+            ).errorDescription("buug").build()
+        )
+    }
 }
