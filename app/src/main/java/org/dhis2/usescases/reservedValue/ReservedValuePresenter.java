@@ -41,9 +41,6 @@ public class ReservedValuePresenter {
                                 Timber::e
                         )
         );
-
-
-
     }
 
     public void onClickRefill(ReservedValueModel reservedValue) {

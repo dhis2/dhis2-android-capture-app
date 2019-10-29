@@ -1,6 +1,8 @@
 package org.dhis2.usecases.login
 
 import com.nhaarman.mockitokotlin2.*
+import io.reactivex.BackpressureStrategy
+import io.reactivex.Flowable
 import io.reactivex.Observable
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.dhis2.usescases.login.LoginPresenter
@@ -36,6 +38,16 @@ class ReservedValuePresenterTest {
     }
 
     @Test
+    fun `Should init sucessfully and show reserved values`() {
+        val dataElements = dummyDataElements()
+        whenever(repository.dataElements) doReturn dummyDataElements()
+
+        reservedValuePresenter.init()
+
+        verify(view).setDataElements(dataElements?.blockingFirst())
+    }
+
+    @Test
     fun `Should download reserverd values when refill is clicked`() {
         whenever(
             d2.trackedEntityModule().reservedValueManager().downloadReservedValues(
@@ -65,7 +77,7 @@ class ReservedValuePresenterTest {
     }
 
     @Test
-    fun `Should not catch exception random when error happens during download`(){
+    fun `Should not catch exception random when error happens during download`() {
         whenever(
             d2.trackedEntityModule().reservedValueManager().downloadReservedValues(
                 "any",
@@ -104,5 +116,11 @@ class ReservedValuePresenterTest {
                 D2ErrorComponent.Database
             ).errorDescription("buug").build()
         )
+    }
+
+    private fun dummyDataElements(): Flowable<MutableList<ReservedValueModel>>? {
+        val reservedValue =
+            ReservedValueModel.create("any", "other", true, "arg", "none", 1)
+        return Observable.just(mutableListOf(reservedValue)).toFlowable(BackpressureStrategy.LATEST)
     }
 }
