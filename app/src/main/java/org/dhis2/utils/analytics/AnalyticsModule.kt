@@ -4,8 +4,8 @@ import android.content.Context
 import com.google.firebase.analytics.FirebaseAnalytics
 import dagger.Module
 import dagger.Provides
-import org.dhis2.data.prefs.PreferenceProvider
 import javax.inject.Singleton
+import org.dhis2.data.prefs.PreferenceProvider
 
 @Module
 @Singleton

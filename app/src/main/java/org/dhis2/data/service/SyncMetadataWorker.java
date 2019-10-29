@@ -73,7 +73,7 @@ public class SyncMetadataWorker extends Worker {
             boolean noNetwork = false;
 
             try {
-                presenter.syncMetadata(getApplicationContext(), progress -> triggerNotification(
+                presenter.syncMetadata(progress -> triggerNotification(
                         getApplicationContext().getString(R.string.app_name),
                         getApplicationContext().getString(R.string.syncing_configuration),
                         progress));
@@ -96,7 +96,7 @@ public class SyncMetadataWorker extends Worker {
             if (!isMetaOk)
                 return Result.failure(createOutputData(false));
 
-            presenter.startPeriodicMetaWork(getApplicationContext());
+            presenter.startPeriodicMetaWork();
 
             return Result.success(createOutputData(true));
         } else {

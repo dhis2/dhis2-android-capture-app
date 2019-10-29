@@ -1,24 +1,20 @@
 package org.dhis2.data.service;
 
-import android.content.Context;
-
 import org.hisp.dhis.android.core.arch.call.D2Progress;
 import org.hisp.dhis.android.core.imports.TrackerImportConflict;
 
 import java.util.List;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.UiThread;
 import androidx.work.ListenableWorker;
 
 import io.reactivex.Observable;
 
 interface SyncPresenter {
-    void syncAndDownloadEvents(Context context) throws Exception;
+    void syncAndDownloadEvents() throws Exception;
 
-    void syncAndDownloadTeis(Context context) throws Exception;
+    void syncAndDownloadTeis() throws Exception;
 
-    void syncMetadata(Context context, SyncMetadataWorker.OnProgressUpdate progressUpdate) throws Exception;
+    void syncMetadata(SyncMetadataWorker.OnProgressUpdate progressUpdate) throws Exception;
 
     void syncAndDownloadDataValues() throws Exception;
 
@@ -58,9 +54,9 @@ interface SyncPresenter {
 
     List<TrackerImportConflict> messageTrackerImportConflict(String uid);
 
-    void startPeriodicDataWork(Context context);
+    void startPeriodicDataWork();
 
-    void startPeriodicMetaWork(Context context);
+    void startPeriodicMetaWork();
 
     void downloadResources();
 

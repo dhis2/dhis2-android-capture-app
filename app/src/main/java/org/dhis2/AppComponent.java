@@ -5,6 +5,7 @@ import org.dhis2.data.prefs.PreferenceModule;
 import org.dhis2.data.schedulers.SchedulerModule;
 import org.dhis2.data.server.ServerComponent;
 import org.dhis2.data.server.ServerModule;
+import org.dhis2.data.service.SyncGranularRxModule;
 import org.dhis2.usescases.login.LoginComponent;
 import org.dhis2.usescases.login.LoginModule;
 import org.dhis2.usescases.splash.SplashComponent;
