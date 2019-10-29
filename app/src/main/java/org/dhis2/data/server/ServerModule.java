@@ -11,8 +11,8 @@ import org.dhis2.data.prefs.PreferenceProviderImpl;
 import org.dhis2.utils.analytics.AnalyticsHelper;
 import org.dhis2.utils.analytics.AnalyticsInterceptor;
 import org.hisp.dhis.android.core.D2;
-import org.hisp.dhis.android.core.d2manager.D2Configuration;
-import org.hisp.dhis.android.core.d2manager.D2Manager;
+import org.hisp.dhis.android.core.D2Configuration;
+import org.hisp.dhis.android.core.D2Manager;
 
 import java.util.ArrayList;
 import java.util.List;

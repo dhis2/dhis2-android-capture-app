@@ -8,6 +8,7 @@ import org.dhis2.data.forms.dataentry.tablefields.FieldViewModelFactoryImpl;
 import org.dhis2.data.forms.dataentry.tablefields.RowAction;
 import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.data.tuples.Pair;
+import org.dhis2.data.tuples.Quartet;
 import org.dhis2.data.tuples.Sextet;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableModel;
@@ -88,46 +89,29 @@ public class DataValuePresenter implements DataValueContract.Presenter {
         this.accessDataWrite = true;
 
         compositeDisposable.add(
-                repository.canWriteAny()
-                        .subscribeOn(schedulerProvider.io())
-                        .observeOn(schedulerProvider.ui())
-                        .subscribe( accessDataWrite -> this.accessDataWrite = accessDataWrite,
-                                Timber::e
-                        ));
-
-        compositeDisposable.add(repository.getDataSet()
-                .subscribeOn(schedulerProvider.io())
-                .observeOn(schedulerProvider.ui())
-                .subscribe(dataSet -> {
-                    this.dataSet = dataSet;
-                    view.setDataSet(dataSet);
-                }, Timber::e)
-        );
-
-        compositeDisposable.add(repository.getSectionByDataSet(sectionName)
-                .subscribeOn(schedulerProvider.io())
-                .observeOn(schedulerProvider.ui())
-                .subscribe(section -> {
-                    this.section = section;
-                    view.setSection(section);
-                }, Timber::e)
-        );
-
-        compositeDisposable.add(
                 Flowable.zip(
+                        repository.canWriteAny(),
+                        repository.getDataSet(),
+                        repository.getSectionByDataSet(sectionName),
                         repository.getPeriod(periodId),
                         repository.getDataInputPeriod(),
                         repository.isApproval(orgUnitUid, periodId, attributeOptionCombo),
-                        Trio::create
+                        Sextet::create
                 )
 
                         .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.ui())
                         .subscribe(
                                 data -> {
-                                    period = data.val0();
-                                    dataInputPeriodModel = data.val1();
-                                    isApproval = data.val2();
+                                    this.accessDataWrite = data.val0();
+                                    this.dataSet = data.val1();
+                                    this.section = data.val2();
+                                    this.period = data.val3();
+                                    this.dataInputPeriodModel = data.val4();
+                                    this.isApproval = data.val5();
+                                    view.setDataSet(dataSet);
+                                    view.setSection(section);
+                                    initTable();
                                 }
                                 ,
                                 Timber::e)
@@ -139,6 +123,18 @@ public class DataValuePresenter implements DataValueContract.Presenter {
                 .subscribe(view::updateTabLayout, Timber::e)
         );
 
+        compositeDisposable.add(
+                repository.isCompleted(orgUnitUid, periodId, attributeOptionCombo)
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
+                        .subscribe(
+                                view::setCompleteReopenText,
+                                Timber::e
+                        )
+        );
+    }
+
+    private void initTable() {
         compositeDisposable.add(repository.getCatCombo(sectionName)
                 .flatMapIterable(categoryCombos -> categoryCombos)
                 .map(categoryCombo -> Flowable.zip(
@@ -150,40 +146,30 @@ public class DataValuePresenter implements DataValueContract.Presenter {
                         repository.getCompulsoryDataElements(),
                         Sextet::create
                 ).toObservable().blockingFirst())
+                .map(data -> {
+                    List<List<String>> options = new ArrayList<>();
+                    for (Map.Entry<String, List<List<Pair<CategoryOption, Category>>>> map : data.val2().entrySet()) {
+                        options = getCatOptionCombos(map.getValue(), 0, new ArrayList<>(), null);
+                    }
+                    transformCategories = new ArrayList<>();
+                    catOptionOrder = getCatOptionOrder(options);
+                    for (Map.Entry<String, List<List<CategoryOption>>> map : transformCategories(data.val2()).entrySet()) {
+                        transformCategories.addAll(map.getValue());
+                    }
+
+                    dataTableModel = DataTableModel.create(
+                            data.val1(), data.val3(), data.val4(),
+                            data.val5(), data.val0(), transformCategories);
+
+                    return setTableData(dataTableModel);
+                })
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
-                        data -> {
-                            List<List<String>> options = new ArrayList<>();
-                            for (Map.Entry<String, List<List<Pair<CategoryOption, Category>>>> map : data.val2().entrySet()) {
-                                options = getCatOptionCombos(map.getValue(), 0, new ArrayList<>(), null);
-                            }
-                            transformCategories = new ArrayList<>();
-                            catOptionOrder = getCatOptionOrder(options);
-                            for (Map.Entry<String, List<List<CategoryOption>>> map : transformCategories(data.val2()).entrySet()) {
-                                transformCategories.addAll(map.getValue());
-                            }
-
-                            dataTableModel = DataTableModel.create(
-                                    data.val1(), data.val3(), data.val4(),
-                                    data.val5(), data.val0(), transformCategories);
-
-                            setTableData(dataTableModel);
-                        },
+                        quartet -> view.setTableData(quartet.val0(), quartet.val1(), quartet.val2(), quartet.val3()),
                         Timber::e
                 )
         );
-        compositeDisposable.add(
-                repository.isCompleted(orgUnitUid, periodId, attributeOptionCombo)
-                        .subscribeOn(schedulerProvider.io())
-                        .observeOn(schedulerProvider.ui())
-                        .subscribe(
-                                data -> view.setCompleteReopenText(data),
-                                Timber::e
-                        )
-        );
-
-
     }
 
     private List<List<CategoryOption>> getCatOptionOrder(List<List<String>> options) {
@@ -211,7 +197,7 @@ public class DataValuePresenter implements DataValueContract.Presenter {
     }
 
 
-    private void setTableData(DataTableModel dataTableModel) {
+    private Quartet<DataTableModel, List<List<FieldViewModel>>, ArrayList<List<String>>, Boolean> setTableData(DataTableModel dataTableModel) {
         ArrayList<List<String>> cells = new ArrayList<>();
         List<List<FieldViewModel>> listFields = new ArrayList<>();
         int row = 0, column = 0;
@@ -233,7 +219,7 @@ public class DataValuePresenter implements DataValueContract.Presenter {
                     if ((disabledDataElement.categoryOptionCombo() != null &&
                             (disabledDataElement.categoryOptionCombo().uid().equals(categoryOptionCombo.uid()) &&
                                     disabledDataElement.dataElement().uid().equals(dataElement.uid()))) ||
-                         disabledDataElement.dataElement().uid().equals(dataElement.uid()))
+                            disabledDataElement.dataElement().uid().equals(dataElement.uid()))
                         editable = false;
 
                 for (CategoryOption categoryOption : repository.getCatOptionFromCatOptionCombo(categoryOptionCombo))
@@ -302,7 +288,7 @@ public class DataValuePresenter implements DataValueContract.Presenter {
                 && dataInputPeriodModel.size() == 0 || checkHasInputPeriod() != null && DateUtils.getInstance().isInsideInputPeriod(checkHasInputPeriod())
                 && !isApproval;
 
-        view.setTableData(dataTableModel, listFields, cells, isEditable);
+        return Quartet.create(dataTableModel, listFields, cells, isEditable);
     }
 
     private Boolean isExpired(DataSet dataSet) {
@@ -502,24 +488,28 @@ public class DataValuePresenter implements DataValueContract.Presenter {
     }
 
     @Override
-    public List<List<String>> getCatOptionCombos(List<List<Pair<CategoryOption, Category>>> listCategories, int num, List<List<String>> result, List<String> current) {
-        if (num == listCategories.size()) {
-            List<String> resultHelp = new ArrayList<>();
-            for (String option : current)
-                resultHelp.add(option);
-            result.add(resultHelp);
-            return result;
+    public List<List<String>> getCatOptionCombos(List<List<Pair<CategoryOption, Category>>> listCategories, int rowPosition, List<List<String>> catComboUidList, List<String> currentCatComboIds) {
+        if (rowPosition == listCategories.size()) {
+            List<String> resultHelp = new ArrayList<>(currentCatComboIds);
+            catComboUidList.add(resultHelp);
+            return catComboUidList;
         }
-        for (int i = 0; i < listCategories.get(num).size(); i++) {
-            if (num == 0)
-                current = new ArrayList<>();
-            if (current.size() == num + 1)
-                current.remove(current.size() - 1);
-            current.add(listCategories.get(num).get(i).val0().uid());
-            getCatOptionCombos(listCategories, num + 1, result, current);
+        for (int columnPosition = 0; columnPosition < listCategories.get(rowPosition).size(); columnPosition++) {
+            if (rowPosition == 0)
+                currentCatComboIds = new ArrayList<>();
+
+            removeCategoryOptionsBelowRowPosition(currentCatComboIds, rowPosition);
+            currentCatComboIds.add(listCategories.get(rowPosition).get(columnPosition).val0().uid());
+            getCatOptionCombos(listCategories, rowPosition + 1, catComboUidList, currentCatComboIds);
         }
 
-        return result;
+        return catComboUidList;
+    }
+    private void removeCategoryOptionsBelowRowPosition(List<String> currentCatComboIds, int rowPosition){
+        for (int currentRowPosition = currentCatComboIds.size(); currentRowPosition > 0; currentRowPosition--) {
+            if (currentCatComboIds.size() == rowPosition + currentRowPosition)
+                currentCatComboIds.remove(currentCatComboIds.size() - currentRowPosition);
+        }
     }
 
     public DataInputPeriod checkHasInputPeriod() {

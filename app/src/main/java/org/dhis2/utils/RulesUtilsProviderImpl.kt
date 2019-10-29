@@ -6,7 +6,7 @@ import org.dhis2.data.forms.dataentry.fields.display.DisplayViewModel
 import org.dhis2.utils.rules.RuleEffectResult
 import org.dhis2.utils.rules.RuleEngineUtils
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper
-import org.hisp.dhis.android.core.d2manager.D2Manager
+import org.hisp.dhis.android.core.D2Manager
 import org.hisp.dhis.android.core.event.EventStatus
 import org.hisp.dhis.android.core.program.ProgramStage
 import org.hisp.dhis.rules.RuleEngineContext

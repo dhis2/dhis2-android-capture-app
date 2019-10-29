@@ -73,7 +73,7 @@ public class SyncGranularWorker extends Worker {
             case DATA_SET:
                 return presenter.blockSyncGranularDataSet(uid);
             case DATA_VALUES:
-                return presenter.blockSyncGranularDataValues(getInputData().getString(ORG_UNIT),
+                return presenter.blockSyncGranularDataValues(uid, getInputData().getString(ORG_UNIT),
                         getInputData().getString(ATTRIBUTE_OPTION_COMBO), getInputData().getString(PERIOD_ID), getInputData().getStringArray(CATEGORY_OPTION_COMBO));
             default:
                 return Result.failure();

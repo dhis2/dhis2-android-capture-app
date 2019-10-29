@@ -44,18 +44,17 @@ public class OrgUnitCascadeAdapter extends RecyclerView.Adapter<OrgUnitCascadeHo
         this.selectionType = ouSelectionType;
 
         if (isEmpty(selectedOrgUnit))
-            for (int i = 1; i < items.size(); i++)
-                selectedParent.put(i, "");
+            for (int ouLevel = 1; i < items.size(); ouLevel++)
+                selectedParent.put(ouLevel, "");
         else {
             OrganisationUnit ou = organisationUnits.uid(selectedOrgUnit).blockingGet();
             String[] uidPath = ou.path().replaceFirst("/", "").split("/");
-            String[] namePath = ou.displayNamePath().replaceFirst("/", "").split("/");
-            for (int i = 0; i < uidPath.length; i++) {
-                selectedParent.put(i + 1, uidPath[i]);
-                if (i > 0)
-                    items.get(i).setParentUid(uidPath[i]);
-                items.get(i).setName(namePath[i]);
-                items.get(i).setUid(uidPath[i]);
+            for (int ouLevel = 1; ouLevel < uidPath.length+1; ouLevel++) {
+                selectedParent.put(ouLevel, uidPath[ouLevel-1]);
+                if (ouLevel > 1)
+                    items.get(ouLevel-1).setParentUid(uidPath[ouLevel-1]);
+                items.get(ouLevel-1).setName(ou.displayNamePath().get(ouLevel-1));
+                items.get(ouLevel-1).setUid(uidPath[ouLevel-1]);
             }
 
         }
