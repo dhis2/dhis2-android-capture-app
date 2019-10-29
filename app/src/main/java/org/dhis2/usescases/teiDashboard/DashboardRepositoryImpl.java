@@ -228,8 +228,10 @@ public class DashboardRepositoryImpl implements DashboardRepository {
     @Override
     public Observable<List<Event>> getTEIEnrollmentEvents(String programUid, String teiUid) {
 
-        return d2.enrollmentModule().enrollments().byProgram().eq(programUid).byTrackedEntityInstance().eq(teiUid)
-                .byStatus().eq(EnrollmentStatus.ACTIVE).one().get()
+        return d2.enrollmentModule().enrollments()
+                .byProgram().eq(programUid)
+                .byTrackedEntityInstance().eq(teiUid)
+                .one().get()
                 .flatMap(enrollment ->
                         d2.eventModule().events().byEnrollmentUid().eq(enrollment.uid())
                                 .byDeleted().isFalse()
