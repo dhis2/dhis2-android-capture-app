@@ -1,7 +1,5 @@
 package org.dhis2.usescases.reservedValue;
 
-import android.content.Context;
-
 import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.dhis2.data.dagger.PerActivity;
@@ -14,22 +12,16 @@ import dagger.Provides;
 @Module
 public class ReservedValueModule {
 
-    private Context context;
+    private ReservedValueContracts.View view;
 
-    public ReservedValueModule(Context context) {
-        this.context = context;
+    ReservedValueModule(ReservedValueActivity view){
+        this.view = view;
     }
 
     @PerActivity
     @Provides
-    ReservedValueContracts.View provideView(ReservedValueActivity activity) {
-        return activity;
-    }
-
-    @PerActivity
-    @Provides
-    ReservedValueContracts.Presenter providePresenter(ReservedValueRepository repository, D2 d2, SchedulerProvider schedulerProvider) {
-        return new ReservedValuePresenter(repository, d2, schedulerProvider);
+    ReservedValuePresenter providePresenter(ReservedValueRepository repository, D2 d2, SchedulerProvider schedulerProvider) {
+        return new ReservedValuePresenter(repository, d2, schedulerProvider, view);
     }
 
     @PerActivity

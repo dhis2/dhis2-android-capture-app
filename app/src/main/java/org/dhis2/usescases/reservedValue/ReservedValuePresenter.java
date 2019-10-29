@@ -11,7 +11,7 @@ import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
-public class ReservedValuePresenter implements ReservedValueContracts.Presenter {
+public class ReservedValuePresenter {
 
     private final SchedulerProvider schedulerProvider;
     private ReservedValueContracts.View view;
@@ -20,18 +20,16 @@ public class ReservedValuePresenter implements ReservedValueContracts.Presenter 
     private D2 d2;
     private FlowableProcessor<Boolean> updateProcessor;
 
-    public ReservedValuePresenter(ReservedValueRepository repository, D2 d2, SchedulerProvider schedulerProvider) {
+    public ReservedValuePresenter(ReservedValueRepository repository, D2 d2, SchedulerProvider schedulerProvider, ReservedValueContracts.View view) {
         this.repository = repository;
         this.d2 = d2;
         this.updateProcessor = PublishProcessor.create();
         this.schedulerProvider = schedulerProvider;
+        this.view = view;
+        this.disposable = new CompositeDisposable();
     }
 
-    @Override
-    public void init(ReservedValueContracts.View view) {
-        this.view = view;
-        disposable = new CompositeDisposable();
-
+    public void init() {
         disposable.add(
                 updateProcessor
                         .startWith(true)
@@ -44,9 +42,10 @@ public class ReservedValuePresenter implements ReservedValueContracts.Presenter 
                         )
         );
 
+
+
     }
 
-    @Override
     public void onClickRefill(ReservedValueModel reservedValue) {
         disposable.add(
                 d2.trackedEntityModule()
@@ -69,13 +68,11 @@ public class ReservedValuePresenter implements ReservedValueContracts.Presenter 
         }
     }
 
-    @Override
     public void onBackClick() {
         if (view != null)
             view.onBackClick();
     }
 
-    @Override
     public void onPause() {
         disposable.clear();
     }
