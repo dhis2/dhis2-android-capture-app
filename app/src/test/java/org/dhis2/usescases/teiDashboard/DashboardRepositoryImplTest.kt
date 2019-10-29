@@ -40,6 +40,8 @@ class DashboardRepositoryImplTest {
 
         val testObserver = repository.displayGenerateEvent("event_uid").test()
 
+        testObserver.assertNoErrors()
+        testObserver.assertValueCount(1)
         testObserver.assertValue(getMockStage())
 
         testObserver.dispose()
