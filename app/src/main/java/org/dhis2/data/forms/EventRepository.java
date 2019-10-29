@@ -176,7 +176,7 @@ public class EventRepository implements FormRepository {
                            @NonNull D2 d2) {
         this.d2 = d2;
         this.briteDatabase = briteDatabase;
-        this.eventUid = eventUid;
+        this.eventUid = eventUid != null ? eventUid : "";
         this.rulesRepository = rulesRepository;
         this.evaluator = evaluator;
         String program = eventUid != null ? d2.eventModule().events().uid(eventUid).blockingGet().program() : "";
@@ -186,10 +186,10 @@ public class EventRepository implements FormRepository {
         this.cachedRuleEngineFlowable = Single.zip(
                 rulesRepository.rulesNew(program).subscribeOn(Schedulers.io()),
                 rulesRepository.ruleVariables(program).subscribeOn(Schedulers.io()),
-                rulesRepository.otherEvents(eventUid).subscribeOn(Schedulers.io()),
-                rulesRepository.enrollment(eventUid).subscribeOn(Schedulers.io()),
+                rulesRepository.otherEvents(this.eventUid).subscribeOn(Schedulers.io()),
+                rulesRepository.enrollment(this.eventUid).subscribeOn(Schedulers.io()),
                 rulesRepository.queryConstants().subscribeOn(Schedulers.io()),
-                rulesRepository.getSupplementaryData().subscribeOn(Schedulers.io()),
+                rulesRepository.supplementaryData().subscribeOn(Schedulers.io()),
                 (rules, variables, events, enrollment, constants, supplementaryData) -> {
 
                     RuleEngine.Builder builder = RuleEngineContext.builder(evaluator)
@@ -222,7 +222,7 @@ public class EventRepository implements FormRepository {
                         rulesRepository.otherEvents(eventUid).subscribeOn(Schedulers.io()),
                         rulesRepository.enrollment(eventUid).subscribeOn(Schedulers.io()),
                         rulesRepository.queryConstants().subscribeOn(Schedulers.io()),
-                        rulesRepository.getSupplementaryData().subscribeOn(Schedulers.io()),
+                        rulesRepository.supplementaryData().subscribeOn(Schedulers.io()),
                         (rules, variables, events, enrollment, constants, supplementaryData) -> {
 
                             RuleEngine.Builder builder = RuleEngineContext.builder(evaluator)

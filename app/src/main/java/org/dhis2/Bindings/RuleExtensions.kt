@@ -37,6 +37,7 @@ import org.hisp.dhis.android.core.program.ProgramRuleVariable
 import org.hisp.dhis.android.core.program.ProgramRuleVariableCollectionRepository
 import org.hisp.dhis.android.core.program.ProgramRuleVariableSourceType
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeCollectionRepository
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValue
 import org.hisp.dhis.rules.models.Rule
 import org.hisp.dhis.rules.models.RuleAction
@@ -55,6 +56,7 @@ import org.hisp.dhis.rules.models.RuleActionShowError
 import org.hisp.dhis.rules.models.RuleActionShowOptionGroup
 import org.hisp.dhis.rules.models.RuleActionShowWarning
 import org.hisp.dhis.rules.models.RuleActionWarningOnCompletion
+import org.hisp.dhis.rules.models.RuleAttributeValue
 import org.hisp.dhis.rules.models.RuleDataValue
 import org.hisp.dhis.rules.models.RuleValueType
 import org.hisp.dhis.rules.models.RuleVariable
@@ -288,4 +290,11 @@ fun List<TrackedEntityDataValue>.toRuleDataValue(
             value!!
         )
     }
+}
+
+fun List<TrackedEntityAttributeValue>.toRuleAttributeValue(): List<RuleAttributeValue> {
+    return filter { it.trackedEntityAttribute() != null && it.value() != null }
+        .map {
+            RuleAttributeValue.create(it.trackedEntityAttribute()!!, it.value()!!)
+        }
 }
