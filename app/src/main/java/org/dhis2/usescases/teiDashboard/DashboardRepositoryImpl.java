@@ -77,39 +77,6 @@ public class DashboardRepositoryImpl implements DashboardRepository {
             "WHERE Enrollment.trackedEntityInstance = ? AND Enrollment.program = ?\n" +
             "ORDER BY Note.storedDate DESC";
 
-    private final String PROGRAM_STAGE_FROM_EVENT = String.format(
-            "SELECT %s.* FROM %s JOIN %s " +
-                    "ON %s.%s = %s.%s " +
-                    "WHERE %s.%s = ? " +
-                    "LIMIT 1",
-            "ProgramStage", "ProgramStage", "TABLE",
-            "ProgramStage", "uid", "Event", "programStage",
-            "Event", "uid");
-
-
-    private final String EVENTS_QUERY = String.format(
-            "SELECT DISTINCT %s.* FROM %s " +
-                    "JOIN %s ON %s.%s = %s.%s " +
-                    "WHERE %s.%s = " +
-                    "(SELECT %s.%s FROM %s " +
-                    "WHERE %s.%s = ? " +
-                    "AND %s.%s = ? ORDER BY %s DESC LIMIT 1)" + //ProgramUid
-                    "AND %s.%s != '%s' " +
-                    "AND %s.%s IN (SELECT %s FROM %s WHERE %s = ?) " +
-                    "ORDER BY CASE WHEN ( Event.status IN ('SCHEDULE','SKIPPED','OVERDUE')) " +
-                    "THEN %s.%s " +
-                    "ELSE %s.%s END DESC, %s.%s ASC",
-            "Event", "Event",
-            "ProgramStage", "ProgramStage", "uid", "Event", "programStage",
-            "Event", "enrollment",
-            "Enrollment", "uid", "Enrollment",
-            "Enrollment", "program",
-            "Enrollment", "trackedEntityInstance", "created",
-            "Event", "deleted", true,
-            "ProgramStage", "uid", "uid", "ProgramStage", "program",
-            "Event", "dueDate",
-            "Event", "eventDate", "ProgramStage", "sortOrder");
-
     private final String EVENTS_DISPLAY_BOX = String.format(
             "SELECT Event.* FROM %s " +
                     "JOIN %s ON %s.%s = %s.%s " +
@@ -124,8 +91,6 @@ public class DashboardRepositoryImpl implements DashboardRepository {
             "Enrollment", "trackedEntityInstance",
             "ProgramStage", "displayGenerateEventBox");
 
-
-    private static final Set<String> EVENTS_TABLE = new HashSet<>(Arrays.asList("Event", "Enrollment"));
     private static final Set<String> EVENTS_PROGRAM_STAGE_TABLE = new HashSet<>(Arrays.asList("Event", "Enrollment", "ProgramStage"));
 
     private final String ATTRIBUTE_VALUES_QUERY = String.format(
@@ -438,7 +403,6 @@ public class DashboardRepositoryImpl implements DashboardRepository {
                     sqLiteBind(insetNoteStatement, 6, State.TO_POST.name()); //state
 
                     long inserted = briteDatabase.executeInsert("Note", insetNoteStatement);
-
                     if (inserted != -1) {
                         updateEnrollmentState(enrollmentUid);
                         updateTeiState();
