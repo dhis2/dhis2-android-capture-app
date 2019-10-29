@@ -1,11 +1,14 @@
 package org.dhis2.usecases.reservedValues
 
-import com.nhaarman.mockitokotlin2.*
+import com.nhaarman.mockitokotlin2.doReturn
+import com.nhaarman.mockitokotlin2.mock
+import com.nhaarman.mockitokotlin2.verify
+import com.nhaarman.mockitokotlin2.verifyZeroInteractions
+import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.BackpressureStrategy
 import io.reactivex.Flowable
 import io.reactivex.Observable
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
-import org.dhis2.usescases.login.LoginPresenter
 import org.dhis2.usescases.reservedValue.ReservedValueContracts
 import org.dhis2.usescases.reservedValue.ReservedValueModel
 import org.dhis2.usescases.reservedValue.ReservedValuePresenter
@@ -17,8 +20,6 @@ import org.hisp.dhis.android.core.maintenance.D2ErrorCode
 import org.hisp.dhis.android.core.maintenance.D2ErrorComponent
 import org.junit.Before
 import org.junit.Test
-import rx.observers.TestSubscriber
-import timber.log.Timber
 
 class ReservedValuePresenterTest {
 
@@ -105,16 +106,21 @@ class ReservedValuePresenterTest {
     }
 
     private fun dummyD2Progress() =
-        Observable.just(D2Progress.builder().totalCalls(5).doneCalls(listOf("1")).isComplete(false).build())
+        Observable.just(
+            D2Progress.builder().totalCalls(5).doneCalls(listOf("1"))
+                .isComplete(false).build()
+        )
 
     private fun dummyReservedValueModel() =
         ReservedValueModel.create("any", "any", true, "any", "any", 1599)
 
     private fun D2Error(): Observable<D2Progress> {
         return Observable.error(
-            D2Error.builder().httpErrorCode(500).errorCode(D2ErrorCode.API_RESPONSE_PROCESS_ERROR).errorComponent(
-                D2ErrorComponent.Database
-            ).errorDescription("buug").build()
+            D2Error.builder().httpErrorCode(500)
+                .errorCode(D2ErrorCode.API_RESPONSE_PROCESS_ERROR)
+                .errorComponent(
+                    D2ErrorComponent.Database
+                ).errorDescription("buug").build()
         )
     }
 
