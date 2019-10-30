@@ -26,12 +26,10 @@ public class ServiceModule {
     @Provides
     @PerService
     SyncPresenter syncPresenter(
-            @NonNull Context context,
             @NonNull D2 d2,
-            @NonNull PreferenceProvider preferences
+            @NonNull PreferenceProvider preferences,
+            @NonNull WorkManager workManager
     ) {
-        WorkManager workManager = WorkManager.getInstance(context);
-
         return new SyncPresenterImpl(d2, preferences, workManager);
     }
 }

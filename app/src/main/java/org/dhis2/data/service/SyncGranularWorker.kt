@@ -52,7 +52,7 @@ class SyncGranularWorker(
         Objects.requireNonNull((applicationContext as App).userComponent())!!
             .plus(SyncGranularRxModule()).inject(this)
 
-        val uid = inputData.getString(UID)?.let { it } ?: return Result.failure()
+        val uid = inputData.getString(UID) ?: return Result.failure()
         val conflictType = inputData.getString(CONFLICT_TYPE)?.let { ConflictType.valueOf(it) }
 
         try {
