@@ -14,7 +14,8 @@ import org.hisp.dhis.android.core.period.PeriodType
 
 private class PeriodAdapter(
     private val periodType: PeriodType,
-    openFuturePeriods: Int
+    openFuturePeriods: Int,
+    val listener: (Date) -> Unit
 ) : RecyclerView.Adapter<DateViewHolder>() {
 
     companion object {
@@ -22,7 +23,6 @@ private class PeriodAdapter(
     }
 
     private val datePeriods: MutableList<Date>
-    private var onDateSetListener: PeriodDialog.OnDateSet? = null
     private var lastDate: Date
 
     init {
@@ -58,7 +58,7 @@ private class PeriodAdapter(
                 )
             )
             holder.itemView.setOnClickListener {
-                onDateSetListener?.onDateSet(datePeriods[holder.adapterPosition])
+                listener(datePeriods[holder.adapterPosition])
             }
         }
     }
@@ -70,11 +70,5 @@ private class PeriodAdapter(
         }
     }
 
-    override fun getItemCount(): Int {
-        return datePeriods.size + 1
-    }
-
-    fun setOnDateSetListener(onDateSetListener: PeriodDialog.OnDateSet) {
-        this.onDateSetListener = onDateSetListener
-    }
+    override fun getItemCount() = datePeriods.size + 1
 }

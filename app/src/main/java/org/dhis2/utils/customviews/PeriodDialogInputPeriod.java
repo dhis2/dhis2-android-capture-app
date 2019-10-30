@@ -17,6 +17,7 @@ import org.dhis2.utils.DateUtils;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import kotlin.Unit;
 
 public class PeriodDialogInputPeriod extends PeriodDialog {
 
@@ -72,8 +73,13 @@ public class PeriodDialogInputPeriod extends PeriodDialog {
         if (!isAllowed && !isEmpty) {
             binding.noPeriods.setText(getString(R.string.there_is_no_available_period));
         } else {
-            PeriodAdapter periodAdapter = new PeriodAdapter(getPeriod(), openFuturePeriods != null ? openFuturePeriods : 0);
-            periodAdapter.setOnDateSetListener(getPossitiveListener());
+            PeriodAdapter periodAdapter = new PeriodAdapter(
+                    getPeriod(),
+                    openFuturePeriods != null ? openFuturePeriods : 0,
+                    date -> {
+                        getPossitiveListener().onDateSet(date);
+                        return Unit.INSTANCE;
+                    });
             binding.recyclerDate.setAdapter(periodAdapter);
         }
         return binding.getRoot();
