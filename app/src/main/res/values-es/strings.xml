@@ -492,9 +492,7 @@
     <string name="record_marked_for_deletion">Este registro ha sido borrado. No puede acceder a el</string>
     <string name="validation_url">La URL no es válida</string>
     <string name="uncomplete_authority_error">No tiene permisos para abrir este evento</string>
-    <string name="adjusting_form">Adaptando el formulario…</string>
-    <string name="security_title">Seguridad</string>
-    <string name="security_rooted_message">Por motivos de seguridad, esta versión de la aplicación no podra ser utilizada en dispositivos rooteados. Por favor, utilizar la versión de training.</string>
+    <string name="adjusting_form">Adaptando el formulario...</string>
 
     <string name="sms_completed">Completado</string>
     <string name="sms_bar_state_sending">En proceso</string>
