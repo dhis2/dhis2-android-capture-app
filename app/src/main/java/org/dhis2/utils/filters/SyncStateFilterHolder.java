@@ -20,9 +20,6 @@ class SyncStateFilterHolder extends FilterHolder {
         super.bind();
         filterIcon.setImageDrawable(AppCompatResources.getDrawable(itemView.getContext(), R.drawable.ic_filter_sync));
         filterTitle.setText("State");
-        filterValues.setText(
-                FilterManager.getInstance().getStateFilters().isEmpty() ? "No filters applied" : "Filters applying"
-        );
         ItemFilterStateBinding localBinding = (ItemFilterStateBinding) binding;
 
         localBinding.filterState.stateSynced.setChecked(

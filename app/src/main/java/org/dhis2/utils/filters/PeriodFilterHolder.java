@@ -31,13 +31,11 @@ class PeriodFilterHolder extends FilterHolder implements CompoundButton.OnChecke
     public void bind() {
         super.bind();
         filterIcon.setImageDrawable(AppCompatResources.getDrawable(itemView.getContext(), R.drawable.ic_calendar_positive));
-        filterTitle.setText("Period");
-        filterValues.setText(
-                FilterManager.getInstance().getPeriodFilters().isEmpty()?"No filters applied" : "Filters applying"
-        );
+        filterTitle.setText(R.string.filters_title_period);
+
         setListeners(localBinding.periodLayout);
 
-        switch (FilterManager.getInstance().getPeriodIdSelected()){
+        switch (FilterManager.getInstance().getPeriodIdSelected()) {
             case R.id.today:
                 localBinding.periodLayout.today.setChecked(true);
                 break;
@@ -86,8 +84,16 @@ class PeriodFilterHolder extends FilterHolder implements CompoundButton.OnChecke
         periodLayout.thisMonth.setOnCheckedChangeListener(this);
         periodLayout.lastMonth.setOnCheckedChangeListener(this);
         periodLayout.nextMonth.setOnCheckedChangeListener(this);
-        periodLayout.fromTo.setOnCheckedChangeListener(this);
-        periodLayout.other.setOnCheckedChangeListener(this);
+        periodLayout.fromTo.setOnClickListener(view -> {
+            if (periodLayout.fromTo.isChecked()) {
+                FilterManager.getInstance().addPeriodRequest(FilterManager.PeriodRequest.FROM_TO);
+            }
+        });
+        periodLayout.other.setOnClickListener(view -> {
+            if (periodLayout.other.isChecked()) {
+                FilterManager.getInstance().addPeriodRequest(FilterManager.PeriodRequest.OTHER);
+            }
+        });
         periodLayout.anytime.setOnCheckedChangeListener(this);
     }
 
@@ -154,14 +160,14 @@ class PeriodFilterHolder extends FilterHolder implements CompoundButton.OnChecke
                 else
                     FilterManager.getInstance().addPeriod(null);
 
-            } else if(id == R.id.other && FilterManager.getInstance().getPeriodIdSelected() != R.id.other ) {
+            } else if (id == R.id.other && FilterManager.getInstance().getPeriodIdSelected() != R.id.other) {
                 FilterManager.getInstance().addPeriodRequest(FilterManager.PeriodRequest.OTHER);
 
-            }else if(id == R.id.fromTo && FilterManager.getInstance().getPeriodIdSelected() != R.id.fromTo){
+            } else if (id == R.id.fromTo && FilterManager.getInstance().getPeriodIdSelected() != R.id.fromTo) {
                 FilterManager.getInstance().addPeriodRequest(FilterManager.PeriodRequest.FROM_TO);
             }
 
-            if( id != FilterManager.getInstance().getPeriodIdSelected()){
+            if (id != FilterManager.getInstance().getPeriodIdSelected()) {
                 FilterManager.getInstance().setPeriodIdSelected(id);
             }
         }

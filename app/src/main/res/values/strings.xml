@@ -575,4 +575,20 @@
     <string name="security_title">Security</string>
     <string name="security_rooted_message">For security reasons, this version of the app is not allow to be used in rooted devices. Please use the training version.</string>
     <string name="fix_error">There are some errors. Please fix them before continuing.</string>
+
+    <string name="filters_active">Filters applying</string>
+    <string name="filters_disabled">No filters applied</string>
+    <string name="filters_title_period">Period</string>
+    <string name="filter_period_today">Today</string>
+    <string name="filter_period_yesterday">Yesterday</string>
+    <string name="filter_period_tomorrow">Tomorrow</string>
+    <string name="filter_period_this_week">This week</string>
+    <string name="filter_period_last_week">Last week</string>
+    <string name="filter_perdior_next_week">Next week</string>
+    <string name="filter_period_this_month">This month</string>
+    <string name="filter_period_last_month">Last month</string>
+    <string name="filter_period_next_month">Next month</string>
+    <string name="filter_period_form_to">From - To</string>
+    <string name="filter_period_other">Other</string>
+    <string name="filter_period_any">Anytime</string>
 </resources>

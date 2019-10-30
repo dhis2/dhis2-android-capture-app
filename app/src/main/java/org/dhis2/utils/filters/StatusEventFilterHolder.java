@@ -20,9 +20,7 @@ public class StatusEventFilterHolder extends FilterHolder {
         super.bind();
         filterTitle.setText("Status");
         filterIcon.setImageDrawable(AppCompatResources.getDrawable(itemView.getContext(), R.drawable.ic_status));
-        filterValues.setText(
-                FilterManager.getInstance().getEventStatusFilters().isEmpty() ? "No filters applied" : "Filters applying"
-        );
+
         ItemFilterStatusBinding localBinding = (ItemFilterStatusBinding) binding;
 
         localBinding.filterStatus.stateScheduled.setChecked(FilterManager.getInstance().getEventStatusFilters().contains(EventStatus.SCHEDULE));
