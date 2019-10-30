@@ -7,6 +7,7 @@ import org.dhis2.R
 import org.dhis2.data.dagger.PerFragment
 import org.dhis2.data.prefs.PreferenceProvider
 import org.dhis2.data.schedulers.SchedulerProvider
+import org.dhis2.utils.filters.FilterManager
 import org.hisp.dhis.android.core.D2
 
 /**
@@ -14,16 +15,23 @@ import org.hisp.dhis.android.core.D2
  */
 @Module
 @PerFragment
-class ProgramModule {
+class ProgramModule(private val view: ProgramView) {
 
     @Provides
     @PerFragment
     internal fun programPresenter(
         homeRepository: HomeRepository,
         schedulerProvider: SchedulerProvider,
-        preferenceProvider: PreferenceProvider
-    ): ProgramContract.Presenter {
-        return ProgramPresenter(homeRepository, schedulerProvider, preferenceProvider)
+        preferenceProvider: PreferenceProvider,
+        filterManager: FilterManager
+    ): ProgramPresenter {
+        return ProgramPresenter(
+            view,
+            homeRepository,
+            schedulerProvider,
+            preferenceProvider,
+            filterManager
+        )
     }
 
     @Provides
@@ -35,7 +43,7 @@ class ProgramModule {
 
     @Provides
     @PerFragment
-    internal fun providesAdapter(presenter: ProgramContract.Presenter): ProgramModelAdapter {
+    internal fun providesAdapter(presenter: ProgramPresenter): ProgramModelAdapter {
         return ProgramModelAdapter(presenter)
     }
 }

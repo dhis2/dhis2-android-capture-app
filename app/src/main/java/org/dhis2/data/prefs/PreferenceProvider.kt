@@ -15,6 +15,7 @@ interface PreferenceProvider {
     fun closeJiraSession()
     fun clear()
     fun setValue(key: String, value: Any? = null)
+    fun removeValue(key: String)
     fun contains(vararg keys: String): Boolean
     fun getString(key: String, default: String? = null): String?
     fun getInt(key: String, default: Int): Int

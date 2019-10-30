@@ -3,13 +3,21 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <data>
+
+        <variable
+            name="presenter"
+            type="org.dhis2.usescases.main.program.ProgramPresenter" />
+
+    </data>
+
     <RelativeLayout
         android:id="@+id/drawer_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:animateLayoutChanges="true"
         android:background="@drawable/ic_front_backdrop_bg"
         android:clipToPadding="false"
-        android:animateLayoutChanges="true"
         tools:openDrawer="end">
 
         <TextView
@@ -96,11 +104,4 @@
 
     </RelativeLayout>
 
-    <data>
-
-        <variable
-            name="presenter"
-            type="org.dhis2.usescases.main.program.ProgramContract.Presenter" />
-
-    </data>
 </layout>

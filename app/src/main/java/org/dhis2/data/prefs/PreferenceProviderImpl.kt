@@ -52,6 +52,13 @@ class PreferenceProviderImpl(val context: Context) : PreferenceProvider {
         }
     }
 
+    override fun removeValue(key: String) {
+        if (contains(key)) {
+            SecurePreferences.removeValue(context, key)
+            sharedPreferences.edit().remove(key).apply()
+        }
+    }
+
     override fun getString(key: String, default: String?): String? {
         return SecurePreferences.getStringValue(
             context, key,

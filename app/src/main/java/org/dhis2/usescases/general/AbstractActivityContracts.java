@@ -53,6 +53,7 @@ public class AbstractActivityContracts {
         @Deprecated
         SharedPreferences getSharedPreferences();
 
+        @Deprecated
         void showSyncDialog(SyncStatusDialog dialog);
 
         @Deprecated

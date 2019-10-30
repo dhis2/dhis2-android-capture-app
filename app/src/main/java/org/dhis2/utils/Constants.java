@@ -8,10 +8,6 @@ public class Constants {
 
     public static final String EXTRA_DATA = "extra_data";
 
-    //TUTORIALS
-    public static final String TUTORIAL_HOME = "TUTORIAL_HOME_v2";
-    public static final String TUTORIAL_SEARCH = "TUTORIAL_SEARCH_v2";
-
     //PREFERENCES
     public static final String SHARE_PREFS = "org.dhis2";
     public static final String PREFS_URLS = "pref_urls";
@@ -31,8 +27,6 @@ public class Constants {
     // MAP SELECTION
     public static final int RQ_MAP_LOCATION = 102;
     public static final int RQ_MAP_LOCATION_VIEW = 103;
-    public static final int RQ_PROGRAM_STAGE = 104;
-
     //RQ_CODES
     public static final int RQ_ENROLLMENTS = 2001;
     public static final int REQ_ADD_RELATIONSHIP = 2002;
@@ -56,8 +50,6 @@ public class Constants {
 
     //EVENT_CREATION
     public static final String PREVIOUS_DASHBOARD_PROGRAM = "previous_dashboard_program";
-    public static final String DEFAULT_CAT_OPTION = "as6ygGvUGNg";
-    public static final String DEFAULT_CAT_OPTION_COMBO = "bRowv6yZOF2";
     public static final String SCREEN_NAME = "SCREEN_NAME";
     public static final String PROGRAM_THEME = "PROGRAM_THEME";
     public static final String SERVER = "SERVER";
@@ -72,14 +64,9 @@ public class Constants {
     public static final String DEFAULT_CAT_COMBO = "DEFAULT_CAT_COMB";
     public static final String DATA_SET_SECTION = "DATA_SET_SECTION";
     public static final String PROGRAM_STAGE_UID = "PROGRAM_STAGE_UID";
-    public static final String EXTRA_FROM_LOGIN = "EXTRA_FROM_LOGIN";
-    public static final String PREF_DEFAULT_CAT_OPTION_COMBO = "PREF_DEFAULT_CAT_OPTION_COMBO";
     public static final int RQ_MANDATORY_EVENTS = 2001;
     public static final String OPTION_SET_DIALOG_THRESHOLD = "optionSetDialogThredshold";
-    public static final String URL_TEST_229 = "https://play.dhis2.org/android-previous1";
-    public static final String URL_TEST_230 = "https://play.dhis2.org/android-current";
     public static final String USER_TEST_ANDROID = "android";
-    public static final String USER_TEST_ANDROID_PASS = "Android123";
     public static final String SECURE_SERVER_URL = "SEURE_SERVER_URL";
     public static final String SECURE_USER_NAME = "SECURE_USER_NAME";
     public static final String SECURE_PASS = "SECURE_PASS";
@@ -99,9 +86,6 @@ public class Constants {
     public static final String EVENT_CREATION_TYPE = "EVENT_CREATION_TYPE";
     public static final String EVENT_SCHEDULE_INTERVAL = "EVENT_SCHEDULE_INTERVAL";
     public static final String TRACKED_ENTITY_INSTANCE = "TRACKED_ENTITY_INSTANCE";
-    public static final String REFERRAL = "REFERRAL";
-    public static final String ADDNEW = "ADDNEW";
-    public static final String SCHEDULENEW = "SCHEDULENEW";
     public static final String PROGRAM_UID = "PROGRAM_UID";
     public static final String ORG_UNIT = "ORG_UNIT";
     public static final String ORG_UNIT_NAME = "ORG_UNIT_NAME";
@@ -111,7 +95,6 @@ public class Constants {
     public static final String EVENT_REPEATABLE = "EVENT_REPEATABLE";
     public static final String EVENT_PERIOD_TYPE = "EVENT_PERIOD_TYPE";
     public static final String ENROLLMENT_DATE_UID = "ENROLLMENT_DATE_UID";
-    public static final String INCIDENT_DATE_UID = "INCIDENT_DATE_UID";
     public static final String ENROLLMENT_DATE = "enrollmentDate";
     public static final String INCIDENT_DATE = "incidentDate";
 
@@ -120,7 +103,6 @@ public class Constants {
     public static final String META_NOW = "METADATA_NOW";
     public static final String DATA = "DATA";
     public static final String DATA_NOW = "DATA_NOW";
-    public static final String EVENT_NOW = "EVENT_NOW";
     public static final String TIME_META = "timeMeta";
     public static final String TIME_DATA = "timeData";
     public static final String JIRA_AUTH = "JIRA_AUTH";
@@ -135,6 +117,10 @@ public class Constants {
     public final static String CATEGORY_OPTION_COMBO = "category_option_combo";
     public static final String INIT_META = "SYNC_INIT_META";
     public static final String INIT_DATA = "SYNC_INIT_DATA";
+
+    public static final String DATA_SET = "DataSets";
+    public static final String DATASET_UID = "DATASET_UID";
+    public static final String TRACKED_ENTITY_UID = "TRACKED_ENTITY_UID";
 
     private Constants() {
         // hide public constructor
