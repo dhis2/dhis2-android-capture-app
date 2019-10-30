@@ -9,7 +9,7 @@
 
         <variable
             name="presenter"
-            type="org.dhis2.usescases.reservedValue.ReservedValueContracts.Presenter" />
+            type="org.dhis2.usescases.reservedValue.ReservedValuePresenter" />
 
         <variable
             name="dataElement"
