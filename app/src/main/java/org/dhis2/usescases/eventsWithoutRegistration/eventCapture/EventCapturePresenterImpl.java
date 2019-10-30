@@ -285,7 +285,6 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                                 }))
                         .observeOn(schedulerProvider.ui())
                         .subscribe(data -> {
-                                    Timber.tag("THREAD").d("EVENT SECTION CURRENT THREAD subscribe: %s", Thread.currentThread().getName());
                                     sectionAdjustProcessor.onNext(new Unit());
                                     subscribeToSection();
                                     EventCaptureFormFragment.getInstance().setSectionSelector(data, (float) unsupportedFields / (float) totalFields);
@@ -325,7 +324,6 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                         .observeOn(schedulerProvider.ui())
                         .subscribe(
                                 updates -> {
-                                    Timber.tag("THREAD").d("EVENT FIELDS CURRENT THREAD subscribe: %s", Thread.currentThread().getName());
                                     EventCaptureFormFragment.getInstance().showFields(updates, lastFocusItem);
                                     formAdjustProcessor.onNext(new Unit());
                                 },

@@ -82,7 +82,7 @@ public class ProgramStageSelectionRepositoryImpl implements ProgramStageSelectio
                         rulesRepository.rulesNew(programUid),
                         rulesRepository.ruleVariablesProgramStages(programUid),
                         ruleEvents(enrollmentUid),
-                        rulesRepository.getSuplementaryData(),
+                        rulesRepository.supplementaryData(),
                         rulesRepository.queryConstants(),
                         (rules, variables, ruleEvents, supplementaryData, constants) -> {
                             RuleEngine.Builder builder = RuleEngineContext.builder(evaluator)

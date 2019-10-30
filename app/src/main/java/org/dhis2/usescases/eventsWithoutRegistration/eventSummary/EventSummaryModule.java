@@ -73,6 +73,6 @@ public class EventSummaryModule {
 
     @Provides
     RulesRepository rulesRepository(@NonNull BriteDatabase briteDatabase,@NonNull D2 d2) {
-        return new RulesRepository(briteDatabase,d2);
+        return new RulesRepository(d2);
     }
 }

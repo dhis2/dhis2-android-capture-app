@@ -1,16 +1,13 @@
 package org.dhis2.data.forms.dataentry;
 
-import android.database.Cursor;
-
 import androidx.annotation.NonNull;
 
 import com.squareup.sqlbrite2.BriteDatabase;
 
+import org.dhis2.Bindings.RuleExtensionsKt;
 import org.dhis2.data.forms.FormRepository;
-import org.dhis2.data.forms.RulesRepository;
 import org.dhis2.utils.Result;
 import org.hisp.dhis.android.core.D2;
-import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.android.core.option.Option;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
@@ -28,18 +25,15 @@ import org.hisp.dhis.rules.models.RuleAction;
 import org.hisp.dhis.rules.models.RuleAttributeValue;
 import org.hisp.dhis.rules.models.RuleEffect;
 import org.hisp.dhis.rules.models.RuleEnrollment;
+import org.jetbrains.annotations.NotNull;
 
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-
-import javax.annotation.Nonnull;
 
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
@@ -47,17 +41,6 @@ import io.reactivex.Flowable;
 import static android.text.TextUtils.isEmpty;
 
 public final class EnrollmentRuleEngineRepository implements RuleEngineRepository {
-    private static final String QUERY_ENROLLMENT = "SELECT\n" +
-            "  Enrollment.uid,\n" +
-            "  Enrollment.incidentDate,\n" +
-            "  Enrollment.enrollmentDate,\n" +
-            "  Enrollment.status,\n" +
-            "  Enrollment.organisationUnit,\n" +
-            "  Program.displayName\n" +
-            "FROM Enrollment\n" +
-            "JOIN Program ON Program.uid = Enrollment.program\n" +
-            "WHERE Enrollment.uid = ? \n" +
-            "LIMIT 1;";
 
     private static final String QUERY_ATTRIBUTE_VALUES = "SELECT\n" +
             "  Field.id,\n" +
@@ -103,7 +86,8 @@ public final class EnrollmentRuleEngineRepository implements RuleEngineRepositor
     public EnrollmentRuleEngineRepository(
             @NonNull BriteDatabase briteDatabase,
             @NonNull FormRepository formRepository,
-            @NonNull String enrollmentUid, D2 d2) {
+            @NonNull String enrollmentUid,
+            @NotNull D2 d2) {
         this.d2 = d2;
         this.briteDatabase = briteDatabase;
         this.formRepository = formRepository;
@@ -241,21 +225,9 @@ public final class EnrollmentRuleEngineRepository implements RuleEngineRepositor
 
     private List<RuleAction> transformToRuleAction(List<ProgramRuleAction> programRuleActions) {
         List<RuleAction> ruleActions = new ArrayList<>();
-        if (programRuleActions != null)
-            for (ProgramRuleAction programRuleAction : programRuleActions)
-                ruleActions.add(
-                        RulesRepository.create(
-                                programRuleAction.programRuleActionType(),
-                                programRuleAction.programStage() != null ? programRuleAction.programStage().uid() : null,
-                                programRuleAction.programStageSection() != null ? programRuleAction.programStageSection().uid() : null,
-                                programRuleAction.trackedEntityAttribute() != null ? programRuleAction.trackedEntityAttribute().uid() : null,
-                                programRuleAction.dataElement() != null ? programRuleAction.dataElement().uid() : null,
-                                programRuleAction.location(),
-                                programRuleAction.content(),
-                                programRuleAction.data(),
-                                programRuleAction.option() != null ? programRuleAction.option().uid() : null,
-                                programRuleAction.optionGroup() != null ? programRuleAction.optionGroup().uid() : null)
-                );
+        if (programRuleActions != null) {
+            ruleActions = RuleExtensionsKt.toRuleActionList(programRuleActions);
+        }
         return ruleActions;
     }
 
@@ -336,35 +308,10 @@ public final class EnrollmentRuleEngineRepository implements RuleEngineRepositor
         return calculate();
     }
 
-    private List<Rule> getRulesFor(String lastUpdatedAttr) {
-        return attributeRules.get(lastUpdatedAttr);
-    }
-
-    @NonNull
-    private Flowable<RuleEnrollment> queryEnrollment(
-            @NonNull List<RuleAttributeValue> attributeValues) {
-        return briteDatabase.createQuery("Enrollment", QUERY_ENROLLMENT, enrollmentUid == null ? "" : enrollmentUid)
-                .mapToOne(cursor -> {
-                    Date enrollmentDate = parseDate(cursor.getString(2));
-                    Date incidentDate = cursor.isNull(1) ?
-                            enrollmentDate : parseDate(cursor.getString(1));
-                    RuleEnrollment.Status status = RuleEnrollment.Status
-                            .valueOf(cursor.getString(3));
-                    String orgUnit = cursor.getString(4);
-                    String programName = cursor.getString(5);
-                    String ouCode = getOrgUnitCode(orgUnit);
-
-                    return RuleEnrollment.create(cursor.getString(0),
-                            incidentDate, enrollmentDate, status, orgUnit, ouCode, attributeValues, programName);
-                }).toFlowable(BackpressureStrategy.LATEST);
-    }
-
     @NonNull
     private Flowable<List<RuleAttributeValue>> queryAttributeValues() {
-
-
         return briteDatabase.createQuery(Arrays.asList("Enrollment",
-                "TrackedEntityAttributeValue"), QUERY_ATTRIBUTE_VALUES, enrollmentUid == null ? "" : enrollmentUid)
+                "TrackedEntityAttributeValue"), QUERY_ATTRIBUTE_VALUES, enrollmentUid)
                 .mapToList(cursor -> {
                             String value = cursor.getString(1);
                             boolean useCode = cursor.getInt(2) == 1;
@@ -375,26 +322,5 @@ public final class EnrollmentRuleEngineRepository implements RuleEngineRepositor
                             return RuleAttributeValue.create(cursor.getString(0), value);
                         }
                 ).toFlowable(BackpressureStrategy.LATEST);
-    }
-
-    @NonNull
-    private static Date parseDate(@NonNull String date) {
-        try {
-            return BaseIdentifiableObject.DATE_FORMAT.parse(date);
-        } catch (ParseException parseException) {
-            throw new RuntimeException(parseException);
-        }
-    }
-
-    @Nonnull
-    private String getOrgUnitCode(String orgUnitUid) {
-        String ouCode = "";
-        try (Cursor cursor = briteDatabase.query("SELECT code FROM OrganisationUnit WHERE uid = ? LIMIT 1", orgUnitUid)) {
-            if (cursor != null && cursor.moveToFirst()) {
-                ouCode = cursor.getString(0);
-            }
-        }
-
-        return ouCode;
     }
 }

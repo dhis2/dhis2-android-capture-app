@@ -5,6 +5,7 @@ import android.widget.EditText
 import androidx.lifecycle.MutableLiveData
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.ValueType
+import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance
 
 /**
@@ -25,6 +26,10 @@ fun EditText.onRightDrawableClicked(onClicked: (view: EditText) -> Unit) {
         }
         hasConsumed
     }
+}
+
+fun List<Event>.toUids():List<String>{
+    return map{it.uid()}
 }
 
 fun TrackedEntityInstance.profilePicturePath(d2: D2, programUid: String?): String {

@@ -85,7 +85,7 @@ class EnrollmentModule(val enrollmentUid: String, val programUid: String) {
     @Provides
     @PerActivity
     internal fun rulesRepository(briteDatabase: BriteDatabase, d2: D2): RulesRepository {
-        return RulesRepository(briteDatabase, d2)
+        return RulesRepository(d2)
     }
 
     @Provides
