@@ -66,13 +66,13 @@ public class SyncDataWorker extends Worker {
             Timber.e(e);
         }
         try {
-            presenter.syncAndDownloadEvents(getApplicationContext());
+            presenter.syncAndDownloadEvents();
         } catch (Exception e) {
             Timber.e(e);
             isEventOk = false;
         }
         try {
-            presenter.syncAndDownloadTeis(getApplicationContext());
+            presenter.syncAndDownloadTeis();
         } catch (Exception e) {
             Timber.e(e);
             isTeiOk = false;
@@ -100,7 +100,7 @@ public class SyncDataWorker extends Worker {
 
         cancelNotification();
 
-        presenter.startPeriodicDataWork(getApplicationContext());
+        presenter.startPeriodicDataWork();
 
         return Result.success(createOutputData(true));
     }

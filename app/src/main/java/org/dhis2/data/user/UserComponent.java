@@ -164,7 +164,7 @@ public interface UserComponent {
     NfcDataWriteComponent plus(NfcDataWriteModule nfcModule);
 
     @NonNull
-    SyncGranularRxComponent plus(SyncGranularRxModule syncGranularEventModule);
+    SyncGranularRxComponent plus(SyncGranularRxModule syncGranularRxModule);
 
     @NonNull
     SyncComponent plus(SyncModule syncModule);
