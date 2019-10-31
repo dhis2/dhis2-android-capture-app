@@ -62,7 +62,7 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
     private String dataSetUid;
 
     @Inject
-    DataValueContract.Presenter presenterFragment;
+    DataValuePresenter presenterFragment;
 
     private ArrayList<Integer> heights = new ArrayList<>();
     private MutableLiveData<Integer> currentTablePosition = new MutableLiveData<>();
@@ -86,7 +86,7 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
         super.onAttach(context);
         activity = (DataSetTableActivity) context;
         dataSetUid = getArguments().getString(Constants.DATA_SET_UID, dataSetUid);
-        ((App) context.getApplicationContext()).userComponent().plus(new DataValueModule(dataSetUid)).inject(this);
+        ((App) context.getApplicationContext()).userComponent().plus(new DataValueModule(dataSetUid, this)).inject(this);
     }
 
     @Nullable
