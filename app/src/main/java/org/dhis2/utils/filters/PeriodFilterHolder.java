@@ -86,11 +86,13 @@ class PeriodFilterHolder extends FilterHolder implements CompoundButton.OnChecke
         periodLayout.nextMonth.setOnCheckedChangeListener(this);
         periodLayout.fromTo.setOnClickListener(view -> {
             if (periodLayout.fromTo.isChecked()) {
+                updateSelection(R.id.fromTo);
                 FilterManager.getInstance().addPeriodRequest(FilterManager.PeriodRequest.FROM_TO);
             }
         });
         periodLayout.other.setOnClickListener(view -> {
             if (periodLayout.other.isChecked()) {
+                updateSelection(R.id.other);
                 FilterManager.getInstance().addPeriodRequest(FilterManager.PeriodRequest.OTHER);
             }
         });
@@ -103,18 +105,7 @@ class PeriodFilterHolder extends FilterHolder implements CompoundButton.OnChecke
         if (b) {
             int id = compoundButton.getId();
 
-            localBinding.periodLayout.today.setChecked(id == R.id.today);
-            localBinding.periodLayout.yesterday.setChecked(id == R.id.yesterday);
-            localBinding.periodLayout.tomorrow.setChecked(id == R.id.tomorrow);
-            localBinding.periodLayout.thisWeek.setChecked(id == R.id.this_week);
-            localBinding.periodLayout.lastWeek.setChecked(id == R.id.last_week);
-            localBinding.periodLayout.nextWeek.setChecked(id == R.id.next_week);
-            localBinding.periodLayout.thisMonth.setChecked(id == R.id.this_month);
-            localBinding.periodLayout.lastMonth.setChecked(id == R.id.last_month);
-            localBinding.periodLayout.nextMonth.setChecked(id == R.id.next_month);
-            localBinding.periodLayout.fromTo.setChecked(id == R.id.fromTo);
-            localBinding.periodLayout.other.setChecked(id == R.id.other);
-            localBinding.periodLayout.anytime.setChecked(id == R.id.anytime);
+            updateSelection(id);
 
             if (id != R.id.other && id != R.id.fromTo) {
                 Date[] dates = null;
@@ -171,5 +162,21 @@ class PeriodFilterHolder extends FilterHolder implements CompoundButton.OnChecke
                 FilterManager.getInstance().setPeriodIdSelected(id);
             }
         }
+    }
+
+    private void updateSelection(int id) {
+
+        localBinding.periodLayout.today.setChecked(id == R.id.today);
+        localBinding.periodLayout.yesterday.setChecked(id == R.id.yesterday);
+        localBinding.periodLayout.tomorrow.setChecked(id == R.id.tomorrow);
+        localBinding.periodLayout.thisWeek.setChecked(id == R.id.this_week);
+        localBinding.periodLayout.lastWeek.setChecked(id == R.id.last_week);
+        localBinding.periodLayout.nextWeek.setChecked(id == R.id.next_week);
+        localBinding.periodLayout.thisMonth.setChecked(id == R.id.this_month);
+        localBinding.periodLayout.lastMonth.setChecked(id == R.id.last_month);
+        localBinding.periodLayout.nextMonth.setChecked(id == R.id.next_month);
+        localBinding.periodLayout.fromTo.setChecked(id == R.id.fromTo);
+        localBinding.periodLayout.other.setChecked(id == R.id.other);
+        localBinding.periodLayout.anytime.setChecked(id == R.id.anytime);
     }
 }

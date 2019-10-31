@@ -27,7 +27,7 @@ class OrgUnitFilterHolder extends FilterHolder {
     public void bind() {
         super.bind();
         filterIcon.setImageDrawable(AppCompatResources.getDrawable(itemView.getContext(), R.drawable.ic_filter_ou));
-        filterTitle.setText("Org Unit");
+        filterTitle.setText(R.string.filters_title_org_unit);
 
         setUpAdapter();
 

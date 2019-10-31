@@ -2,6 +2,7 @@ package org.dhis2.data.forms.section.viewmodels.date;
 
 import android.app.DatePickerDialog;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -31,6 +32,10 @@ public class DatePickerDialogFragment extends DialogFragment {
     private FormattedOnDateSetListener onDateSetListener;
     private Date openingDate;
     private Date closingDate;
+    private Date initialDate;
+    private Context context;
+
+    Dialog dialog;
 
     public static DatePickerDialogFragment create(boolean allowDatesInFuture) {
         Bundle arguments = new Bundle();
@@ -54,6 +59,12 @@ public class DatePickerDialogFragment extends DialogFragment {
         return fragment;
     }
 
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        this.context = context;
+    }
+
     @NonNull
     @Override
     public Dialog onCreateDialog(@NonNull Bundle savedInstanceState) {
@@ -62,8 +73,11 @@ public class DatePickerDialogFragment extends DialogFragment {
 
     private DatePickerDialog showNativeCalendar() {
         Calendar calendar = Calendar.getInstance();
+
+        if (initialDate != null) calendar.setTime(initialDate);
+
         DatePickerDialog datePickerDialog = new DatePickerDialog(
-                getContext(), (view, year, month, dayOfMonth) -> {
+                context, (view, year, month, dayOfMonth) -> {
             Calendar chosenDate = Calendar.getInstance();
             chosenDate.set(year, month, dayOfMonth);
             if (onDateSetListener != null) {
@@ -90,42 +104,43 @@ public class DatePickerDialogFragment extends DialogFragment {
 
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
             datePickerDialog.setButton(DialogInterface.BUTTON_NEUTRAL,
-                    getContext().getResources().getString(R.string.change_calendar), (dialog, which) -> {
+                    context.getResources().getString(R.string.change_calendar), (dialog, which) -> {
                         datePickerDialog.dismiss();
                         showCustomCalendar().show();
                     });
         }
-
         return datePickerDialog;
     }
 
     private Dialog showCustomCalendar() {
-        LayoutInflater layoutInflater = LayoutInflater.from(getContext());
+        LayoutInflater layoutInflater = LayoutInflater.from(context);
         View datePickerView = layoutInflater.inflate(R.layout.widget_datepicker, null);
         final DatePicker datePicker = datePickerView.findViewById(R.id.widget_datepicker);
         final ImageButton changeCalendarButton = datePickerView.findViewById(R.id.changeCalendarButton);
         final Button clearButton = datePickerView.findViewById(R.id.clearButton);
         final Button acceptButton = datePickerView.findViewById(R.id.acceptButton);
-        if(fromOtherPeriod())
-            clearButton.setText(getString(R.string.sectionSelectorNext));
+        if (fromOtherPeriod())
+            clearButton.setText(context.getString(R.string.sectionSelectorNext));
 
         Calendar c = Calendar.getInstance();
+        if (initialDate != null) c.setTime(initialDate);
+
         int year = c.get(Calendar.YEAR);
         int month = c.get(Calendar.MONTH);
         int day = c.get(Calendar.DAY_OF_MONTH);
 
         datePicker.updateDate(year, month, day);
 
-        AlertDialog.Builder alertDialog = new AlertDialog.Builder(getContext(), R.style.DatePickerTheme);
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(context, R.style.DatePickerTheme);
 
         changeCalendarButton.setOnClickListener(view -> {
             showNativeCalendar().show();
-            DatePickerDialogFragment.this.dismiss();
+            dialog.dismiss();
         });
         clearButton.setOnClickListener(view -> {
             if (onDateSetListener != null)
                 onDateSetListener.onClearDate();
-            DatePickerDialogFragment.this.dismiss();
+            dialog.dismiss();
         });
 
         acceptButton.setOnClickListener(view -> {
@@ -134,7 +149,7 @@ public class DatePickerDialogFragment extends DialogFragment {
             if (onDateSetListener != null) {
                 onDateSetListener.onDateSet(chosenDate.getTime());
             }
-            DatePickerDialogFragment.this.dismiss();
+            dialog.dismiss();
         });
 
         if (openingDate != null)
@@ -156,7 +171,8 @@ public class DatePickerDialogFragment extends DialogFragment {
         if (getArguments().getString(ARG_TITLE) != null)
             alertDialog.setTitle(getArguments().getString(ARG_TITLE));
 
-        return alertDialog.create();
+        dialog = alertDialog.create();
+        return dialog;
     }
 
     public void show(@NonNull FragmentManager fragmentManager) {
@@ -171,7 +187,7 @@ public class DatePickerDialogFragment extends DialogFragment {
         return getArguments().getBoolean(ARG_ALLOW_DATES_IN_FUTURE, false);
     }
 
-    private boolean fromOtherPeriod(){
+    private boolean fromOtherPeriod() {
         return getArguments().getBoolean(ARG_FROM_OTHER_PERIOD, false);
     }
 
@@ -180,11 +196,16 @@ public class DatePickerDialogFragment extends DialogFragment {
         this.closingDate = closingDate;
     }
 
+    public void setInitialDate(Date initialDate) {
+        this.initialDate = initialDate;
+    }
+
     /**
      * The listener used to indicate the user has finished selecting a date.
      */
     public interface FormattedOnDateSetListener {
         //TODO Should change names of methods cause it make no sense with the new filter
+
         /**
          * @param date the date in the correct simple fate format
          */
