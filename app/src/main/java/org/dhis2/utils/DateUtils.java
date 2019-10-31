@@ -837,6 +837,7 @@ public class DateUtils {
                 calendar.set(Calendar.DAY_OF_WEEK, Calendar.SATURDAY);
                 break;
             case WeeklySunday:
+                calendar.setFirstDayOfWeek(Calendar.SUNDAY);
                 calendar.add(Calendar.WEEK_OF_YEAR, page);
                 calendar.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
                 break;
@@ -855,7 +856,7 @@ public class DateUtils {
                 calendar.set(Calendar.DAY_OF_MONTH, 1);
                 break;
             case Quarterly:
-                extra = 3 - page * (calendar.get(Calendar.MONTH)) % 3;
+                extra = 4 - page * (calendar.get(Calendar.MONTH)+1) % 3;
                 calendar.add(Calendar.MONTH, page * extra);
                 calendar.set(Calendar.DAY_OF_MONTH, 1);
                 break;
@@ -1154,7 +1155,8 @@ public class DateUtils {
                 expDate = calendar.getTime();
             }
 
-            expiredBecouseOfPeriod = expDate != null && expDate.before(getCalendar().getTime());
+//            expiredBecouseOfPeriod = expDate != null && expDate.before(getCalendar().getTime());
+            expiredBecouseOfPeriod = expDate != null && expDate.compareTo(getCalendar().getTime())<=0;
 
             return expiredBecouseOfPeriod || expiredBecouseOfCompletion;
         } else
