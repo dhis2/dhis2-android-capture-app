@@ -122,7 +122,9 @@ public class CategoryComboDialog extends AlertDialog {
                                             selectedCatOption.remove(category.uid());
                                         catSelectorBinding.catCombo.setText(item != null ? item.displayName() : null);
                                         if (selectedCatOption.size() == categoryCombo.categories().size()) {
-                                            listenerNew.onCatOptionComboSelected(getCatOptionCombo(categoryCombo.categoryOptionCombos(), new ArrayList<>(selectedCatOption.values())));
+                                            listenerNew.onCatOptionComboSelected(
+                                                    getCatOptionCombo(categoryCombo.categoryOptionCombos(),
+                                                            new ArrayList<>(selectedCatOption.values())));
                                             dismiss();
                                         }
                                     })
