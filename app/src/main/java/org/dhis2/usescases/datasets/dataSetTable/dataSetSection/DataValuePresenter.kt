@@ -1,5 +1,6 @@
 package org.dhis2.usescases.datasets.dataSetTable.dataSetSection
 
+import androidx.annotation.VisibleForTesting
 import io.reactivex.Flowable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.functions.Function6
@@ -31,6 +32,7 @@ import org.hisp.dhis.android.core.dataelement.DataElementOperand
 import org.hisp.dhis.android.core.dataset.DataInputPeriod
 import org.hisp.dhis.android.core.dataset.DataSet
 import org.hisp.dhis.android.core.dataset.Section
+import org.hisp.dhis.android.core.datavalue.DataValue
 import org.hisp.dhis.android.core.period.Period
 import timber.log.Timber
 
@@ -515,8 +517,8 @@ class DataValuePresenter(
             if (view.isOpenOrReopen) {
                 if ((
                     !dataSet!!.fieldCombinationRequired()!! ||
-                        checkAllFieldRequired() && dataSet!!.fieldCombinationRequired()!!
-                    ) &&
+                        checkAllFieldRequired(tableCells, dataTableModel?.dataValues()) &&
+                            dataSet!!.fieldCombinationRequired()!!) &&
                     checkMandatoryField()
                 ) {
                     disposable.add(
@@ -560,11 +562,16 @@ class DataValuePresenter(
         }
     }
 
-    private fun checkAllFieldRequired(): Boolean {
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    fun checkAllFieldRequired(
+        tableCells: MutableList<List<List<FieldViewModel>>>,
+        dataValues: List<DataSetTableModel>?
+    ): Boolean {
+
         var allFields = true
         tableCells.forEach { table ->
             table.forEach { row ->
-                val fieldsWithValue = dataTableModel?.dataValues()
+                val fieldsWithValue = dataValues
                     ?.filter { dataSetTableModel ->
                         dataSetTableModel.dataElement() == row.first().dataElement()
                     }
@@ -582,7 +589,8 @@ class DataValuePresenter(
         return allFields
     }
 
-    private fun checkMandatoryField(): Boolean {
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    fun checkMandatoryField(): Boolean {
         var mandatoryOk = true
         tableCells.forEach { table ->
             table.forEach { row ->
