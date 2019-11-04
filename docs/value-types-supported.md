@@ -39,4 +39,4 @@ Any issues around using a particular feature with Android are highlighted with a
 | Username | Enables selection of a valid DHIS2 username as the value | ![](resources/images/image3_icon.png) | ![](resources/images/image3_icon.png) | ![](resources/images/image3_icon.png) | |
 | Coordinate | Enables manual entry of geographical coordinates (doesn't enable automatic capture of coordinates) | ✓ | ✓ | ✓ | |
 | URL | Enables manual entry of a URL. | ✓ | ✓ | ✓ | |
-| Image | | ✓ | ✓ | ✓ | |
+| Image | Enables upload of images. | ✓ | ✓ | ✓ | |
