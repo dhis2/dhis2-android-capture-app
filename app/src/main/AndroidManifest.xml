@@ -126,7 +126,7 @@
 
         <activity android:name=".usescases.orgunitselector.OUTreeActivity" />
         <activity android:name=".usescases.enrollment.EnrollmentActivity"
-            android:windowSoftInputMode="adjustPan"/>
+            android:windowSoftInputMode="adjustResize|stateHidden"/>
         <activity android:name=".usescases.events.ScheduledEventActivity" />
 
         <service
