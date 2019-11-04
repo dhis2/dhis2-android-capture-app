@@ -64,6 +64,7 @@ In the notes, ‘admin’ refers to someone who develops and configures a DHIS2 
 |Ask user to create new event when stage is complete|If selected, when the Program Stage is completed the user is prompted to book.|✓|n/a||
 |Hide due date|Only shows the actual date for events, hiding the due date.|✓|n/a||
 |Capture coordinates (event)/Feature Type-Point|Enables the user to capture geographical coordinates when each event is created &ndash; particularly useful in devices that have GPS (eg Android), as instead of having to type in coordinates, the user can automatically populate them with the press of a button.|✓|✓||
+|Capture Polygon (event)/Feature Type-Polygon |Enables users to capture locations (enclosed areas) when each event is created. A Polygon must contain at least 4 points.|✓|✓||
 |Description of report date|Allows an admin to customize the label that is used for the event&rsquo;s date.|✓|✓||
 |Data elements-compulsory|This enables an admin to mark a data element as "compulsory", meaning an event can not be saved until a value is captured.|✓|✓||
 |Data elements &ndash; allow provided elsewhere|On the form, this places a tick-box next to the selected data element, and enables previous data to be pulled into the data element.|&ndash;|n/a||
