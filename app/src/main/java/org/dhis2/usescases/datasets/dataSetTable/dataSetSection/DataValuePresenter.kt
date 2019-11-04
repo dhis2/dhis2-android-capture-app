@@ -32,7 +32,6 @@ import org.hisp.dhis.android.core.dataelement.DataElementOperand
 import org.hisp.dhis.android.core.dataset.DataInputPeriod
 import org.hisp.dhis.android.core.dataset.DataSet
 import org.hisp.dhis.android.core.dataset.Section
-import org.hisp.dhis.android.core.datavalue.DataValue
 import org.hisp.dhis.android.core.period.Period
 import timber.log.Timber
 
@@ -518,8 +517,9 @@ class DataValuePresenter(
                 if ((
                     !dataSet!!.fieldCombinationRequired()!! ||
                         checkAllFieldRequired(tableCells, dataTableModel?.dataValues()) &&
-                            dataSet!!.fieldCombinationRequired()!!) &&
-                    checkMandatoryField()
+                        dataSet!!.fieldCombinationRequired()!!
+                    ) &&
+                    checkMandatoryField(tableCells, dataTableModel?.dataValues())
                 ) {
                     disposable.add(
                         repository.completeDataSet(orgUnitUid, periodId, attributeOptionCombo)
@@ -533,7 +533,7 @@ class DataValuePresenter(
                                 { Timber.e(it) }
                             )
                     )
-                } else if (!checkMandatoryField()) {
+                } else if (!checkMandatoryField(tableCells, dataTableModel?.dataValues())) {
                     view.showAlertDialog(
                         view.context.getString(R.string.missing_mandatory_fields_title),
                         view.context.resources.getString(R.string.field_mandatory)
@@ -567,7 +567,6 @@ class DataValuePresenter(
         tableCells: MutableList<List<List<FieldViewModel>>>,
         dataValues: List<DataSetTableModel>?
     ): Boolean {
-
         var allFields = true
         tableCells.forEach { table ->
             table.forEach { row ->
@@ -590,12 +589,15 @@ class DataValuePresenter(
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    fun checkMandatoryField(): Boolean {
+    fun checkMandatoryField(
+        tableCells: MutableList<List<List<FieldViewModel>>>,
+        dataValues: List<DataSetTableModel>?
+    ): Boolean {
         var mandatoryOk = true
         tableCells.forEach { table ->
             table.forEach { row ->
                 row.forEach { field ->
-                    val fieldWithValue = dataTableModel?.dataValues()
+                    val fieldWithValue = dataValues
                         ?.filter { dataSetTableModel ->
                             dataSetTableModel.dataElement() == field.dataElement() &&
                                 dataSetTableModel.categoryOptionCombo() ==
