@@ -1155,7 +1155,6 @@ public class DateUtils {
                 expDate = calendar.getTime();
             }
 
-//            expiredBecouseOfPeriod = expDate != null && expDate.before(getCalendar().getTime());
             expiredBecouseOfPeriod = expDate != null && expDate.compareTo(getCalendar().getTime())<=0;
 
             return expiredBecouseOfPeriod || expiredBecouseOfCompletion;
