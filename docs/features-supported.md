@@ -29,6 +29,8 @@ In the notes, ‘admin’ refers to someone who develops and configures a DHIS2 
 |Description of incident date|Allows an admin to customize the label that is used for the incident date.|✓|n/a||
 |Description of enrolment date|Allows an admin to customize the label that is used for the enrollment date.|✓|n/a||
 |Capture coordinates (enrolment)|Enables users to capture geographical coordinates during enrolment in the program.|✓|n/a||
+|Capture Polygon (enrolment) |Enables users to capture locations (enclosed areas) during enrolment in the program.|✓|n/a||
+|TEI Coordinates |Enables users to capture geographical coordinates for the TEI during the enrolment in the program.|✓|n/a||
 |Relationships: create and update|Enables users to create and update relationships.|✓|n/a||
 |Relationships - shortcut link to add a relative|This enables admins to add a link for one specific relationship to the Dashboard, enabling users to directly create a linked TEI (eg "child" patient).|&ndash;|n/a||
 |Attributes: display in list|This setting determines whether an Attribute can be viewed in lists such as search results, and whether it can be seen in the shortlist of Attributes shown under "Profile" in the Dashboard.|✓|n/a|The first three attributes will be shown||
