@@ -91,13 +91,13 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
     private List<Rule> finalMandatoryRules;
     private List<FieldViewModel> sectionFields;
 
-    public EventCaptureRepositoryImpl(Context context, BriteDatabase briteDatabase, FormRepository formRepository, String eventUid, D2 d2) {
+    public EventCaptureRepositoryImpl(Context context, FormRepository formRepository, String eventUid, D2 d2) {
         this.eventUid = eventUid;
         this.formRepository = formRepository;
         this.d2 = d2;
 
         currentEvent = d2.eventModule().events().withTrackedEntityDataValues().uid(eventUid).blockingGet();
-        currentStage = d2.programModule().programStages().withProgramStageDataElements().withProgramStageSections().uid(currentEvent.programStage()).blockingGet();
+        currentStage = d2.programModule().programStages().uid(currentEvent.programStage()).blockingGet();
         OrganisationUnit ou = d2.organisationUnitModule().organisationUnits().uid(currentEvent.organisationUnit()).blockingGet();
 
         eventBuilder = RuleEvent.builder()
@@ -135,7 +135,10 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
         }
 
         stageDataElementsMap = new HashMap<>();
-        for (ProgramStageDataElement psDe : currentStage.programStageDataElements()) {
+        List<ProgramStageDataElement> programStageDataElements = d2.programModule().programStageDataElements()
+                .byProgramStage().eq(currentStage.uid())
+                .blockingGet();
+        for (ProgramStageDataElement psDe : programStageDataElements) {
             stageDataElementsMap.put(psDe.dataElement().uid(), psDe);
         }
 
@@ -313,9 +316,10 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                 .map(eventSingle -> {
                     List<FormSectionViewModel> formSection = new ArrayList<>();
                     if (eventSingle.deleted() == null || !eventSingle.deleted()) {
-                        ProgramStage stage = d2.programModule().programStages().withProgramStageSections().uid(eventSingle.programStage()).blockingGet();
-                        if (stage.programStageSections().size() > 0) {
-                            for (ProgramStageSection section : stage.programStageSections())
+                        ProgramStage stage = d2.programModule().programStages().uid(eventSingle.programStage()).blockingGet();
+                        List<ProgramStageSection> stageSections = d2.programModule().programStageSections().byProgramStageUid().eq(stage.uid()).blockingGet();
+                        if (stageSections.size() > 0) {
+                            for (ProgramStageSection section :stageSections)
                                 formSection.add(FormSectionViewModel.createForSection(eventUid, section.uid(), section.displayName(),
                                         section.renderType().mobile() != null ? section.renderType().mobile().type().name() : null));
                         } else

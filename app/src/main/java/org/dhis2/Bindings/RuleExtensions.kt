@@ -112,28 +112,32 @@ fun ProgramRuleAction.toRuleEngineObject(): RuleAction {
             content(),
             data()
         )
-        ProgramRuleActionType.DISPLAYKEYVALUEPAIR -> RuleActionDisplayKeyValuePair.createForIndicators(
-            content(),
-            data()
-        )
-        ProgramRuleActionType.HIDESECTION -> programStageSection()?.let {
-            RuleActionHideSection.create(it.uid())
-        } ?: RuleActionUnsupported.create(
-            "HIDE SECTION RULE IS MISSING PROGRAM STAGE SECTION",
-            name() ?: uid()
-        )
-        ProgramRuleActionType.HIDEPROGRAMSTAGE -> programStage()?.let {
-            RuleActionHideProgramStage.create(it.uid())
-        } ?: RuleActionUnsupported.create(
-            "HIDE STAGE RULE IS MISSING PROGRAM STAGE",
-            name() ?: uid()
-        )
-        ProgramRuleActionType.ASSIGN -> data()?.let {
-            RuleActionAssign.create(content(), it, field)
-        } ?: RuleActionUnsupported.create(
-            "ASSIGN RULE IS MISSING DATA",
-            name() ?: uid()
-        )
+        ProgramRuleActionType.DISPLAYKEYVALUEPAIR ->
+            RuleActionDisplayKeyValuePair.createForIndicators(
+                content(),
+                data()
+            )
+        ProgramRuleActionType.HIDESECTION ->
+            programStageSection()?.let {
+                RuleActionHideSection.create(it.uid())
+            } ?: RuleActionUnsupported.create(
+                "HIDE SECTION RULE IS MISSING PROGRAM STAGE SECTION",
+                name() ?: uid()
+            )
+        ProgramRuleActionType.HIDEPROGRAMSTAGE ->
+            programStage()?.let {
+                RuleActionHideProgramStage.create(it.uid())
+            } ?: RuleActionUnsupported.create(
+                "HIDE STAGE RULE IS MISSING PROGRAM STAGE",
+                name() ?: uid()
+            )
+        ProgramRuleActionType.ASSIGN ->
+            data()?.let {
+                RuleActionAssign.create(content(), it, field)
+            } ?: RuleActionUnsupported.create(
+                "ASSIGN RULE IS MISSING DATA",
+                name() ?: uid()
+            )
         ProgramRuleActionType.SHOWWARNING -> RuleActionShowWarning.create(content(), data(), field)
         ProgramRuleActionType.WARNINGONCOMPLETE -> RuleActionWarningOnCompletion.create(
             content(),
@@ -146,50 +150,55 @@ fun ProgramRuleAction.toRuleEngineObject(): RuleAction {
             data(),
             field
         )
-        ProgramRuleActionType.CREATEEVENT -> programStage()?.let {
-            RuleActionCreateEvent.create(
-                content(),
-                data(),
-                it.uid()
+        ProgramRuleActionType.CREATEEVENT ->
+            programStage()?.let {
+                RuleActionCreateEvent.create(
+                    content(),
+                    data(),
+                    it.uid()
+                )
+            } ?: RuleActionUnsupported.create(
+                "CREATE EVENT RULE IS MISSING PROGRAM STAGE SECTION",
+                name() ?: uid()
             )
-        } ?: RuleActionUnsupported.create(
-            "CREATE EVENT RULE IS MISSING PROGRAM STAGE SECTION",
-            name() ?: uid()
-        )
         ProgramRuleActionType.SETMANDATORYFIELD -> RuleActionSetMandatoryField.create(field)
-        ProgramRuleActionType.HIDEOPTION -> option()?.let {
-            RuleActionHideOption.create(
-                content(),
-                it.uid(),
-                field
+        ProgramRuleActionType.HIDEOPTION ->
+            option()?.let {
+                RuleActionHideOption.create(
+                    content(),
+                    it.uid(),
+                    field
+                )
+            } ?: RuleActionUnsupported.create(
+                "HIDE OPTION RULE IS MISSING OPTION",
+                name() ?: uid()
             )
-        } ?: RuleActionUnsupported.create(
-            "HIDE OPTION RULE IS MISSING OPTION",
-            name() ?: uid()
-        )
-        ProgramRuleActionType.SHOWOPTIONGROUP -> optionGroup()?.let {
-            RuleActionShowOptionGroup.create(
-                content(),
-                it.uid(),
-                field
+        ProgramRuleActionType.SHOWOPTIONGROUP ->
+            optionGroup()?.let {
+                RuleActionShowOptionGroup.create(
+                    content(),
+                    it.uid(),
+                    field
+                )
+            } ?: RuleActionUnsupported.create(
+                "SHOW OPTION GROUP RULE IS MISSING OPTION GROUP",
+                name() ?: uid()
             )
-        } ?: RuleActionUnsupported.create(
-            "SHOW OPTION GROUP RULE IS MISSING OPTION GROUP",
-            name() ?: uid()
-        )
-        ProgramRuleActionType.HIDEOPTIONGROUP -> optionGroup()?.let {
-            RuleActionHideOptionGroup.create(
-                content(),
-                it.uid()
+        ProgramRuleActionType.HIDEOPTIONGROUP ->
+            optionGroup()?.let {
+                RuleActionHideOptionGroup.create(
+                    content(),
+                    it.uid()
+                )
+            } ?: RuleActionUnsupported.create(
+                "HIDE OPTION GROUP RULE IS MISSING OPTION GROUP",
+                name() ?: uid()
             )
-        } ?: RuleActionUnsupported.create(
-            "HIDE OPTION GROUP RULE IS MISSING OPTION GROUP",
-            name() ?: uid()
-        )
-        ProgramRuleActionType.SENDMESSAGE, ProgramRuleActionType.SCHEDULEMESSAGE, null -> RuleActionUnsupported.create(
-            "UNSUPPORTED RULE ACTION TYPE",
-            name() ?: uid()
-        )
+        ProgramRuleActionType.SENDMESSAGE, ProgramRuleActionType.SCHEDULEMESSAGE, null ->
+            RuleActionUnsupported.create(
+                "UNSUPPORTED RULE ACTION TYPE",
+                name() ?: uid()
+            )
     }
 }
 
@@ -197,7 +206,6 @@ fun ProgramRuleVariable.toRuleVariable(
     attributeRepository: TrackedEntityAttributeCollectionRepository,
     dataElementRepository: DataElementCollectionRepository
 ): RuleVariable {
-
     val valueType = when (programRuleVariableSourceType()) {
         ProgramRuleVariableSourceType.DATAELEMENT_NEWEST_EVENT_PROGRAM_STAGE,
         ProgramRuleVariableSourceType.DATAELEMENT_NEWEST_EVENT_PROGRAM,
@@ -275,8 +283,11 @@ fun List<TrackedEntityDataValue>.toRuleDataValue(
         var value = it.value()
         val de = dataElementRepository.uid(it.dataElement()).blockingGet()
         if (!de.optionSetUid().isNullOrEmpty()) {
-            if (!ruleVariableRepository.byProgramUid().eq(event.program()).byDataElementUid().eq(it.dataElement())
-                    .byUseCodeForOptionSet().isTrue.blockingIsEmpty()
+            if (!ruleVariableRepository
+                .byProgramUid().eq(event.program())
+                .byDataElementUid().eq(it.dataElement())
+                .byUseCodeForOptionSet().isTrue
+                .blockingIsEmpty()
             ) {
                 value =
                     optionRepository.byOptionSetUid().eq(de.optionSetUid()).byCode().eq(value).one()

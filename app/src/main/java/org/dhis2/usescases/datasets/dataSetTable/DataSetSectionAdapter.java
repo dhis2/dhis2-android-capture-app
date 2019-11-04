@@ -29,7 +29,7 @@ public final class DataSetSectionAdapter extends FragmentStatePagerAdapter {
     private List<DataSetSectionFragment> fragments;
 
     DataSetSectionAdapter(FragmentManager fm, boolean accessDataWrite, String dataSetUid, Context context) {
-        super(fm);
+        super(fm,BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
         fragments = new ArrayList<>();
         sections = new ArrayList<>();
         this.accessDataWrite = accessDataWrite;

@@ -22,9 +22,7 @@ import org.dhis2.usescases.sms.InputArguments;
 import org.dhis2.usescases.sms.SmsSubmitActivity;
 import org.dhis2.usescases.teiDashboard.DashboardProgramModel;
 import org.dhis2.usescases.teiDashboard.DashboardRepository;
-import org.dhis2.usescases.teiDashboard.eventDetail.EventDetailActivity;
 import org.dhis2.usescases.teiDashboard.nfc_data.NfcDataWriteActivity;
-import org.dhis2.usescases.teiDashboard.teiDataDetail.TeiDataDetailActivity;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.EventCreationType;
 import org.hisp.dhis.android.core.D2;
@@ -36,12 +34,9 @@ import org.hisp.dhis.android.core.program.ProgramStage;
 
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
-import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
-import static android.text.TextUtils.isEmpty;
 import static org.dhis2.utils.analytics.AnalyticsConstants.ACTIVE_FOLLOW_UP;
 import static org.dhis2.utils.analytics.AnalyticsConstants.FOLLOW_UP;
 import static org.dhis2.utils.analytics.AnalyticsConstants.SHARE_TEI;
@@ -260,16 +255,7 @@ class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
 
     @Override
     public void seeDetails(View sharedView, DashboardProgramModel dashboardProgramModel) {
-        Intent intent = new Intent(view.getContext(), TeiDataDetailActivity.class);
-        Bundle extras = new Bundle();
-        extras.putString("TEI_UID", teiUid);
-        extras.putString("PROGRAM_UID", programUid);
-        if (dashboardProgramModel.getCurrentEnrollment() != null)
-            extras.putString("ENROLLMENT_UID", dashboardProgramModel.getCurrentEnrollment().uid());
-        intent.putExtras(extras);
         ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(view.getAbstractActivity(), sharedView, "user_info");
-//        view.seeDetails(intent, options.toBundle());
-
         view.seeDetails(EnrollmentActivity.Companion.getIntent(view.getContext(),
                 dashboardProgramModel.getCurrentEnrollment().uid(),
                 dashboardProgramModel.getCurrentProgram().uid(),
@@ -278,18 +264,7 @@ class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
 
     @Override
     public void onScheduleSelected(String uid, View sharedView) {
-        String title = String.format("%s %s - %s",
-                dashboardModel.getTrackedEntityAttributeValueBySortOrder(1) != null ? dashboardModel.getTrackedEntityAttributeValueBySortOrder(1) : "",
-                dashboardModel.getTrackedEntityAttributeValueBySortOrder(2) != null ? dashboardModel.getTrackedEntityAttributeValueBySortOrder(2) : "",
-                dashboardModel.getCurrentProgram() != null ? dashboardModel.getCurrentProgram().displayName() : view.getContext().getString(R.string.dashboard_overview)
-        );
         Intent intent = ScheduledEventActivity.Companion.getIntent(view.getContext(),uid);
-        /*Intent intent = new Intent(view.getContext(), EventDetailActivity.class);
-        Bundle extras = new Bundle();
-        extras.putString("EVENT_UID", uid);
-        extras.putString("TOOLBAR_TITLE", title);
-        extras.putString("TEI_UID", teiUid);
-        intent.putExtras(extras);*/
         ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(view.getAbstractActivity(), sharedView, "shared_view");
         view.openEventDetails(intent, options.toBundle());
     }

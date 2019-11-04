@@ -1,10 +1,13 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventInitial;
 
-import android.content.Context;
-import android.database.Cursor;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 import org.dhis2.utils.DateUtils;
 import org.hisp.dhis.android.core.D2;
@@ -27,14 +30,10 @@ import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.program.ProgramStage;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import android.content.Context;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
@@ -109,7 +108,10 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
                     for (Category category : categoryCombo.categories()) {
                         fullCategories.add(d2.categoryModule().categories().withCategoryOptions().uid(category.uid()).blockingGet());
                     }
-                    for (CategoryOptionCombo categoryOptionCombo : categoryCombo.categoryOptionCombos())
+                    List<CategoryOptionCombo> catOptionCombos = d2.categoryModule().categoryOptionCombos()
+                            .byCategoryComboUid().eq(categoryCombo.uid())
+                            .blockingGet();
+                    for (CategoryOptionCombo categoryOptionCombo : catOptionCombos)
                         fullOptionCombos.add(d2.categoryModule().categoryOptionCombos().withCategoryOptions().uid(categoryOptionCombo.uid()).blockingGet());
                     return categoryCombo.toBuilder().categories(fullCategories).categoryOptionCombos(fullOptionCombos).build();
                 }).toObservable();
@@ -357,7 +359,7 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
 
     @Override
     public Observable<Program> getProgramWithId(String programUid) {
-        return d2.programModule().programs().withProgramIndicators().withProgramRules().withProgramRuleVariables().withProgramSections().withProgramStages()
+        return d2.programModule().programs().withProgramIndicators().withProgramRuleVariables().withProgramSections()
             .withProgramTrackedEntityAttributes().withStyle().withTrackedEntityType().byUid().eq(programUid).one().get().toObservable();
     }
 

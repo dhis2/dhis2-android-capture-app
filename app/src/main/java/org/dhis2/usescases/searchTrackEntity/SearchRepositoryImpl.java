@@ -110,8 +110,7 @@ public class SearchRepositoryImpl implements SearchRepository {
     @NonNull
     @Override
     public Observable<List<TrackedEntityAttribute>> programAttributes(String programId) {
-        String id = programId == null ? "" : programId;
-        return Observable.fromCallable(() -> d2.programModule().programs().withProgramTrackedEntityAttributes().byUid().eq(id).one().blockingGet().programTrackedEntityAttributes())
+        return d2.programModule().programTrackedEntityAttributes().byProgram().eq(programId).get().toObservable()
                 .flatMap(attributes -> {
                     List<String> uids = new ArrayList<>();
                     for (ProgramTrackedEntityAttribute pteAttribute : attributes) {
@@ -185,7 +184,7 @@ public class SearchRepositoryImpl implements SearchRepository {
                 periods.add(DatePeriod.create(enrollmentDate, enrollmentDate));
 
             } catch (ParseException ex) {
-                Timber.d(ex.getMessage());
+                Timber.d(ex);
             }
         }
         DataSource dataSource;
@@ -267,7 +266,7 @@ public class SearchRepositoryImpl implements SearchRepository {
                 periods.add(DatePeriod.create(enrollmentDate, enrollmentDate));
 
             } catch (ParseException ex) {
-                Timber.d(ex.getMessage());
+                Timber.d(ex);
             }
         }
 
