@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.user.User;
+import org.hisp.dhis.android.core.user.UserCredentials;
 
 import io.reactivex.Observable;
 import io.reactivex.Single;
@@ -48,8 +49,9 @@ public class UserManagerImpl implements UserManager {
     @NonNull
     @Override
     public Single<String> userName() {
-        return Single.defer(() -> d2.userModule().user().withUserCredentials().get())
-                .map(user -> user.userCredentials().username());
+
+        return Single.defer(() -> d2.userModule().userCredentials().get())
+                .map(UserCredentials::username);
     }
 
     @Override

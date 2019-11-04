@@ -20,13 +20,13 @@ import org.jetbrains.annotations.NotNull;
 
 public class DashboardPagerAdapter extends FragmentStatePagerAdapter {
 
-    private static final int MOVILE_DASHBOARD_SIZE = 4;
+    private static final int MOBILE_DASHBOARD_SIZE = 4;
     private String currentProgram;
     private Context context;
 
 
     public DashboardPagerAdapter(Context context, FragmentManager fm, String program) {
-        super(fm);
+        super(fm, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
         this.context = context;
         this.currentProgram = program;
     }
@@ -47,22 +47,22 @@ public class DashboardPagerAdapter extends FragmentStatePagerAdapter {
     public Fragment getItem(int position) {
         switch (position) {
             case 1:
-                if (indicatorsFragment == null){
+                if (indicatorsFragment == null) {
                     indicatorsFragment = new IndicatorsFragment();
                 }
                 return indicatorsFragment;
             case 2:
-                if (relationshipFragment == null){
+                if (relationshipFragment == null) {
                     relationshipFragment = new RelationshipFragment();
                 }
                 return relationshipFragment;
             case 3:
-                if (notesFragment == null){
+                if (notesFragment == null) {
                     notesFragment = new NotesFragment();
                 }
                 return notesFragment;
             default:
-                if (teiDataFragment == null){
+                if (teiDataFragment == null) {
                     teiDataFragment = new TEIDataFragment();
                 }
                 return teiDataFragment;
@@ -71,7 +71,7 @@ public class DashboardPagerAdapter extends FragmentStatePagerAdapter {
 
     @Override
     public int getCount() {
-        return currentProgram != null ? MOVILE_DASHBOARD_SIZE : 1;
+        return currentProgram != null ? MOBILE_DASHBOARD_SIZE : 1;
     }
 
     @Override

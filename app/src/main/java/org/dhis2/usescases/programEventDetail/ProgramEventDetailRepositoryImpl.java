@@ -1,14 +1,10 @@
 package org.dhis2.usescases.programEventDetail;
 
-import androidx.annotation.NonNull;
-import androidx.lifecycle.LiveData;
-import androidx.paging.DataSource;
-import androidx.paging.LivePagedListBuilder;
-import androidx.paging.PagedList;
+import static android.text.TextUtils.isEmpty;
 
-import com.mapbox.geojson.BoundingBox;
-import com.mapbox.geojson.FeatureCollection;
-import com.squareup.sqlbrite2.BriteDatabase;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.utils.DateUtils;
@@ -34,15 +30,19 @@ import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.program.ProgramStageDataElement;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValue;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import com.mapbox.geojson.BoundingBox;
+import com.mapbox.geojson.FeatureCollection;
+import com.squareup.sqlbrite2.BriteDatabase;
+
+import androidx.annotation.NonNull;
+import androidx.lifecycle.LiveData;
+import androidx.paging.DataSource;
+import androidx.paging.LivePagedListBuilder;
+import androidx.paging.PagedList;
 
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
-
-import static android.text.TextUtils.isEmpty;
 
 /**
  * QUADRAM. Created by ppajuelo on 02/11/2017.
@@ -129,9 +129,10 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
     private ProgramEventViewModel transformToProgramEventModel(Event event) {
         String orgUnitName = getOrgUnitName(event.organisationUnit());
         List<String> showInReportsDataElements = new ArrayList<>();
-        for (ProgramStageDataElement programStageDataElement : d2.programModule().programStages().withProgramStageDataElements()
-                .withProgramStageSections().withStyle().uid(event.programStage()).blockingGet().programStageDataElements()) {
-            if (programStageDataElement.displayInReports())
+        List<ProgramStageDataElement> programStageDataElements = d2.programModule().programStageDataElements()
+                .byProgramStage().eq(event.programStage()).blockingGet();
+        for (ProgramStageDataElement programStageDataElement : programStageDataElements) {
+            if (Boolean.TRUE.equals(programStageDataElement.displayInReports()))
                 showInReportsDataElements.add(programStageDataElement.dataElement().uid());
         }
         List<Pair<String, String>> data = getData(event.trackedEntityDataValues(), showInReportsDataElements);
@@ -155,10 +156,7 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
     @NonNull
     @Override
     public Observable<Program> program() {
-        return Observable.just(d2.programModule().programs().withProgramIndicators()
-                .withProgramRules().withProgramRuleVariables().withProgramSections().withProgramStages()
-                .withProgramTrackedEntityAttributes().withStyle()
-                .withTrackedEntityType().uid(programUid).blockingGet());
+        return Observable.just(d2.programModule().programs().uid(programUid).blockingGet());
     }
 
     private LiveData<PagedList<ProgramEventViewModel>> transform(PagedList<Event> events) {
