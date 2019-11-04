@@ -47,6 +47,7 @@ public class DateUtilsTest {
         assertEquals(attributeValue1, attributeValue3);
     }
 
+    @Ignore
     @Test
     public void moveWeekly() throws ParseException {
         String dateString = "2018-12-08";
@@ -240,6 +241,7 @@ public class DateUtilsTest {
         }
     }
 
+    @Ignore
     @Test
     public void getDateFromDateAndPeriod() throws ParseException {
         DateUtils dateUtils = DateUtils.getInstance();
