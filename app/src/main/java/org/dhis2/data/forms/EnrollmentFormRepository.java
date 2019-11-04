@@ -445,7 +445,7 @@ public class EnrollmentFormRepository implements FormRepository {
                 .flatMap(enrollment -> d2.programModule().programs().withProgramTrackedEntityAttributes().uid(enrollment.program()).get()
                         .map(program -> {
                             List<FieldViewModel> fieldViewModelList = new ArrayList<>();
-                            for (ProgramTrackedEntityAttribute ptea : program.programTrackedEntityAttributes()) {
+                            for (ProgramTrackedEntityAttribute ptea : d2.programModule().programTrackedEntityAttributes().byProgram().eq(programUid).blockingGet()) {
                                 TrackedEntityAttribute tea = d2.trackedEntityModule().trackedEntityAttributes().withObjectStyle().uid(ptea.trackedEntityAttribute().uid()).blockingGet();
                                 TrackedEntityAttributeValue value = d2.trackedEntityModule().trackedEntityAttributeValues()
                                         .byTrackedEntityAttribute().eq(tea.uid())
@@ -562,7 +562,7 @@ public class EnrollmentFormRepository implements FormRepository {
 
         int optionCount = 0;
         if (optionSetUid != null)
-            optionCount = d2.optionModule().optionSets().withOptions().uid(optionSetUid).blockingGet().options().size();
+            optionCount = d2.optionModule().options().byOptionSetUid().eq(optionSetUid).blockingCount();
 
         FieldViewModelFactoryImpl fieldFactory = new FieldViewModelFactoryImpl(
                 "",

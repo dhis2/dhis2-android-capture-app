@@ -36,6 +36,7 @@ public class CategoryComboDialog extends AlertDialog {
     private final String catComboName;
     private final CategoryCombo categoryCombo;
     private final OnCatOptionComboSelected listenerNew;
+    private final List<CategoryOptionCombo> categoryOptionCombos;
     private Context context;
     private AlertDialog dialog;
     private int requestCode;
@@ -53,6 +54,7 @@ public class CategoryComboDialog extends AlertDialog {
         this.context = context;
         this.categoryCombo = null;
         this.catComboName = categoryComboModel.displayName();
+        this.categoryOptionCombos = null;
         this.options = options;
         this.requestCode = requestCode;
         this.listener = listener;
@@ -66,6 +68,7 @@ public class CategoryComboDialog extends AlertDialog {
         this.categoryCombo = null;
         this.context = context;
         this.catComboName = catComboName;
+        this.categoryOptionCombos = null;
         this.options = options;
         this.requestCode = requestCode;
         this.listener = listener;
@@ -74,12 +77,13 @@ public class CategoryComboDialog extends AlertDialog {
         setCancelable(false);
     }
 
-    public CategoryComboDialog(Context context, CategoryCombo categoryCombo, int requestCode, OnCatOptionComboSelected listener, String title) {
+    public CategoryComboDialog(Context context, CategoryCombo categoryCombo, List<CategoryOptionCombo> categoryOptionCombos, int requestCode, OnCatOptionComboSelected listener, String title) {
         super(context);
         this.options = null;
         this.catComboName = categoryCombo.displayName();
         this.context = context;
         this.categoryCombo = categoryCombo;
+        this.categoryOptionCombos = categoryOptionCombos;
         this.requestCode = requestCode;
         this.listener = null;
         this.listenerNew = listener;
@@ -122,7 +126,7 @@ public class CategoryComboDialog extends AlertDialog {
                                             selectedCatOption.remove(category.uid());
                                         catSelectorBinding.catCombo.setText(item != null ? item.displayName() : null);
                                         if (selectedCatOption.size() == categoryCombo.categories().size()) {
-                                            listenerNew.onCatOptionComboSelected(getCatOptionCombo(categoryCombo.categoryOptionCombos(), new ArrayList<>(selectedCatOption.values())));
+                                            listenerNew.onCatOptionComboSelected(getCatOptionCombo(categoryOptionCombos, new ArrayList<>(selectedCatOption.values())));
                                             dismiss();
                                         }
                                     })

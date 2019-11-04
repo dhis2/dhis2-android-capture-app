@@ -12,6 +12,7 @@ import androidx.core.app.ActivityOptionsCompat;
 import org.dhis2.Bindings.ExtensionsKt;
 import org.dhis2.R;
 import org.dhis2.data.schedulers.SchedulerProvider;
+import org.dhis2.data.tuples.Pair;
 import org.dhis2.usescases.enrollment.EnrollmentActivity;
 import org.dhis2.usescases.events.ScheduledEventActivity;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity;
@@ -132,12 +133,15 @@ class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
     public void getCatComboOptions(Event event) {
         compositeDisposable.add(
                 dashboardRepository.catComboForProgram(event.program())
+                        .flatMap(categoryCombo -> dashboardRepository.catOptionCombos(categoryCombo.uid()),
+                                Pair::create
+                        )
                         .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.ui())
-                        .subscribe(catCombo -> {
+                        .subscribe(categoryComboListPair -> {
                                     for (ProgramStage programStage : dashboardModel.getProgramStages()) {
                                         if (event.programStage().equals(programStage.uid()))
-                                            view.showCatComboDialog(event.uid(), catCombo);
+                                            view.showCatComboDialog(event.uid(), categoryComboListPair.val0(), categoryComboListPair.val1());
                                     }
                                 },
                                 Timber::e));
