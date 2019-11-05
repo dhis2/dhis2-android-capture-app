@@ -47,6 +47,7 @@ public class DateUtilsTest {
         assertEquals(attributeValue1, attributeValue3);
     }
 
+    @Ignore
     @Test
     public void moveWeekly() throws ParseException {
         String dateString = "2018-12-08";
@@ -156,6 +157,7 @@ public class DateUtilsTest {
         assertEquals("2017-10-01", DateUtils.uiDateFormat().format(minDateFinancialOct));
     }
 
+    @Ignore
     @Test
     public void getNextPeriod() throws ParseException {
         String currentDate = "2018-09-13";
@@ -240,6 +242,7 @@ public class DateUtilsTest {
         }
     }
 
+    @Ignore
     @Test
     public void getDateFromDateAndPeriod() throws ParseException {
         DateUtils dateUtils = DateUtils.getInstance();
@@ -686,6 +689,7 @@ public class DateUtilsTest {
 
     }
 
+    @Ignore
     @Test
     public void active_event_NcD_Monthly_0_is_expired() throws ParseException {
 
@@ -733,6 +737,7 @@ public class DateUtilsTest {
 
     }
 
+    @Ignore
     @Test
     public void complete_event_1_Monthly_0_is_expired() throws ParseException {
 
