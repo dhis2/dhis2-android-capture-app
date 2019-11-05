@@ -407,7 +407,6 @@ public class DateUtilsTest {
 
     @Ignore
     @Test
-    @Ignore
     public void moveWeekSaturday() throws ParseException {
         String dateString = "2018-12-07";
         Date date = DateUtils.uiDateFormat().parse(dateString);
@@ -442,7 +441,6 @@ public class DateUtilsTest {
 
     @Ignore
     @Test
-    @Ignore
     public void moveWeekSunday() throws ParseException {
         String dateString = "2018-12-08";
         Date date = DateUtils.uiDateFormat().parse(dateString);
@@ -472,7 +470,6 @@ public class DateUtilsTest {
 
     @Ignore
     @Test
-    @Ignore
     public void moveBiWeekly() throws ParseException {
         String dateString = "2018-12-08";
         Date date = DateUtils.uiDateFormat().parse(dateString);
@@ -654,7 +651,6 @@ public class DateUtilsTest {
 
     @Ignore
     @Test
-    @Ignore
     public void testGetPeriodUIString() throws ParseException {
         Date testDate = DateUtils.uiDateFormat().parse("2019-01-11");
 
@@ -706,7 +702,6 @@ public class DateUtilsTest {
 
     @Ignore
     @Test
-    @Ignore
     public void active_event_NcD_Monthly_1_is_expired() throws ParseException {
 
         Date currentDate = DateUtils.uiDateFormat().parse("2019-03-01");
@@ -755,7 +750,6 @@ public class DateUtilsTest {
 
     @Ignore
     @Test
-    @Ignore
     public void complete_event_1_Monthly_1_is_not_expired() throws ParseException {
 
         Date currentDate = DateUtils.uiDateFormat().parse("2019-03-01");
@@ -767,7 +761,6 @@ public class DateUtilsTest {
 
     @Ignore
     @Test
-    @Ignore
     public void complete_event_1_NPT_NeD_is_expired() throws ParseException {
 
         Date currentDate = DateUtils.uiDateFormat().parse("2019-03-02");
@@ -789,7 +782,6 @@ public class DateUtilsTest {
 
     @Ignore
     @Test(expected = NullPointerException.class)
-    @Ignore
     public void complete_event_with_null_complete_date_throws_error() throws ParseException {
 
         DateUtils.getInstance().isEventExpired(toDate("2019-02-28"), null, EventStatus.COMPLETED, 1, null, 0);
