@@ -1,22 +1,23 @@
 package org.dhis2.usescases.datasets.dataSetTable;
 
-import android.database.Cursor;
+import static org.dhis2.usescases.datasets.dataSetTable.DataSetTableModel.Columns.CATEGORY_OPTION;
+import static org.dhis2.usescases.datasets.dataSetTable.DataSetTableModel.Columns.LIST_CATEGORY_OPTION;
 
-import androidx.annotation.Nullable;
+import java.util.List;
+
 
 import com.gabrielittner.auto.value.cursor.ColumnName;
 import com.google.auto.value.AutoValue;
 
-import org.hisp.dhis.android.core.common.BaseModel;
+import android.database.Cursor;
 
-import java.util.List;
+import androidx.annotation.Nullable;
 
-import static org.dhis2.usescases.datasets.dataSetTable.DataSetTableModel.Columns.CATEGORY_OPTION;
-import static org.dhis2.usescases.datasets.dataSetTable.DataSetTableModel.Columns.LIST_CATEGORY_OPTION;
+import org.hisp.dhis.android.core.common.CoreColumns;
 
 @AutoValue
 public abstract class DataSetTableModel{
-    public static class Columns extends BaseModel.Columns {
+    public static class Columns extends CoreColumns {
         static final String DATA_ELEMENT = "dataElement";
         static final String PERIOD = "period";
         static final String ORGANISATION_UNIT = "organisationUnit";

@@ -21,6 +21,7 @@ import org.hisp.dhis.android.core.dataelement.DataElementOperand;
 import org.hisp.dhis.android.core.dataset.DataInputPeriod;
 import org.hisp.dhis.android.core.dataset.DataSet;
 import org.hisp.dhis.android.core.dataset.DataSetCompleteRegistration;
+import org.hisp.dhis.android.core.dataset.DataSetCompleteRegistrationTableInfo;
 import org.hisp.dhis.android.core.dataset.DataSetElement;
 import org.hisp.dhis.android.core.dataset.Section;
 import org.hisp.dhis.android.core.datavalue.DataValueObjectRepository;
@@ -259,9 +260,9 @@ public class DataValueRepositoryImpl implements DataValueRepository {
         String where = "period = ? AND dataSet = ? AND attributeOptionCombo = ? AND organisationUnit = ?";
 
         ContentValues contentValues = new ContentValues();
-        contentValues.put(DataSetCompleteRegistration.Columns.STATE,
+        contentValues.put(DataSetCompleteRegistrationTableInfo.Columns.STATE,
                 completeRegistration!= null? State.TO_UPDATE.name(): State.TO_POST.name());
-        contentValues.put(DataSetCompleteRegistration.Columns.DELETED, false);
+        contentValues.put(DataSetCompleteRegistrationTableInfo.Columns.DELETED, false);
         String completeDate = DateUtils.databaseDateFormat().format(Calendar.getInstance().getTime());
         contentValues.put("date", completeDate);
         String[] values = {periodInitialDate, dataSetUid, catCombo, orgUnitUid};
@@ -299,8 +300,8 @@ public class DataValueRepositoryImpl implements DataValueRepository {
             String[] values = {periodInitialDate, dataSetUid, catCombo, orgUnitUid};
 
             ContentValues contentValues = new ContentValues();
-            contentValues.put(DataSetCompleteRegistration.Columns.DELETED, true);
-            contentValues.put(DataSetCompleteRegistration.Columns.STATE, State.TO_UPDATE.name());
+            contentValues.put(DataSetCompleteRegistrationTableInfo.Columns.DELETED, true);
+            contentValues.put(DataSetCompleteRegistrationTableInfo.Columns.STATE, State.TO_UPDATE.name());
             String completeDate = DateUtils.databaseDateFormat().format(DateUtils.getInstance().getToday());
             contentValues.put("date", completeDate);
 

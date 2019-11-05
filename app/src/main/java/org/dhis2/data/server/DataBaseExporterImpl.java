@@ -9,6 +9,7 @@ import org.dhis2.utils.FileResourcesUtil;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.common.BaseDataModel;
 import org.hisp.dhis.android.core.D2Manager;
+import org.hisp.dhis.android.core.common.BaseDataObject;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -83,9 +84,9 @@ public class DataBaseExporterImpl implements DataBaseExporter {
                         JSONArray array = dataJson.getJSONArray(table);
                         Iterator<String> columns = array.getJSONObject(0).keys();
                         //TODO: SAVE EVERYTHING IN THE DATABASE
-                        new TypeToken<List<? extends BaseDataModel>>(){}.getType();
-                        Class<? extends BaseDataModel> klass = Class.forName(table).asSubclass(BaseDataModel.class);
-                        List<BaseDataModel> dataList = new Gson().fromJson(array.toString(),TypeToken.of(klass).getType());
+                        new TypeToken<List<? extends BaseDataObject>>(){}.getType();
+                        Class<? extends BaseDataObject> klass = Class.forName(table).asSubclass(BaseDataObject.class);
+                        List<BaseDataObject> dataList = new Gson().fromJson(array.toString(),TypeToken.of(klass).getType());
                     }
                     return true;
                 });

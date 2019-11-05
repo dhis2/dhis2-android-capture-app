@@ -43,6 +43,7 @@ import org.hisp.dhis.android.core.relationship.RelationshipType;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceTableInfo;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -556,7 +557,7 @@ public class DashboardRepositoryImpl implements DashboardRepository {
         TrackedEntityInstance tei =
                 d2.trackedEntityModule().trackedEntityInstances().uid(teiUid).blockingGet();
         ContentValues cv = tei.toContentValues();
-        cv.put(TrackedEntityInstance.Columns.STATE, tei.state() == State.TO_POST ? State.TO_POST.name() : State.TO_UPDATE.name());
+        cv.put(TrackedEntityInstanceTableInfo.Columns.STATE, tei.state() == State.TO_POST ? State.TO_POST.name() : State.TO_UPDATE.name());
         cv.put("lastUpdated", DateUtils.databaseDateFormat().format(Calendar.getInstance().getTime()));
         briteDatabase.update("TrackedEntityInstance", cv, "uid = ?", teiUid);
     }
