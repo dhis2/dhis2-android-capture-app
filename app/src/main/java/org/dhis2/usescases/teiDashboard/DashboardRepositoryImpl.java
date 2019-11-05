@@ -19,6 +19,7 @@ import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.ValueUtils;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper;
+import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope;
 import org.hisp.dhis.android.core.category.Category;
 import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryOptionCombo;
@@ -42,6 +43,7 @@ import org.hisp.dhis.android.core.relationship.RelationshipType;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceTableInfo;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -288,24 +290,48 @@ public class DashboardRepositoryImpl implements DashboardRepository {
 
     @Override
     public Observable<CategoryCombo> catComboForProgram(String programUid) {
-        return Observable.defer(() -> Observable.just(d2.categoryModule().categoryCombos().withCategories().withCategoryOptionCombos().uid(d2.programModule().programs().uid(programUid).blockingGet().categoryCombo().uid()).blockingGet()))
+        return Observable.defer(() -> Observable.just(
+                d2.categoryModule().categoryCombos().withCategories().withCategoryOptionCombos()
+                        .uid(
+                                d2.programModule().programs().uid(programUid)
+                                        .blockingGet().categoryComboUid()
+                        ).blockingGet()))
                 .map(categoryCombo -> {
                     List<Category> fullCategories = new ArrayList<>();
                     List<CategoryOptionCombo> fullOptionCombos = new ArrayList<>();
                     for (Category category : categoryCombo.categories()) {
-                        fullCategories.add(d2.categoryModule().categories().withCategoryOptions().uid(category.uid()).blockingGet());
+                        fullCategories.add(
+                                d2.categoryModule().categories()
+                                        .withCategoryOptions().uid(category.uid())
+                                        .blockingGet());
                     }
-                    for (CategoryOptionCombo categoryOptionCombo : categoryCombo.categoryOptionCombos())
-                        fullOptionCombos.add(d2.categoryModule().categoryOptionCombos().withCategoryOptions().uid(categoryOptionCombo.uid()).blockingGet());
+
+                    List<CategoryOptionCombo> catOptionCombos =
+                            d2.categoryModule().categoryOptionCombos()
+                                    .byCategoryComboUid().eq(categoryCombo.uid())
+                                    .blockingGet();
+
+                    for (CategoryOptionCombo categoryOptionCombo : catOptionCombos) {
+                        fullOptionCombos.add(
+                                d2.categoryModule().categoryOptionCombos()
+                                        .withCategoryOptions().uid(categoryOptionCombo.uid())
+                                        .blockingGet());
+                    }
                     return categoryCombo.toBuilder().categories(fullCategories).categoryOptionCombos(fullOptionCombos).build();
                 });
     }
 
     @Override
     public void setDefaultCatOptCombToEvent(String eventUid) {
-        List<CategoryCombo> categoryCombos = d2.categoryModule().categoryCombos().byIsDefault().isTrue().withCategories().withCategoryOptionCombos().blockingGet();
+        CategoryCombo defaultCatCombo = d2.categoryModule().categoryCombos()
+                .byIsDefault().isTrue()
+                .one().blockingGet();
+        CategoryOptionCombo defaultCatOptComb = d2.categoryModule().categoryOptionCombos()
+                .byCategoryComboUid().eq(defaultCatCombo.uid())
+                .one().blockingGet();
         try {
-            d2.eventModule().events().uid(eventUid).setAttributeOptionComboUid(categoryCombos.get(0).categoryOptionCombos().get(0).uid());
+            d2.eventModule().events().uid(eventUid)
+                    .setAttributeOptionComboUid(defaultCatOptComb.uid());
         } catch (D2Error d2Error) {
             Timber.e(d2Error);
         }
@@ -441,23 +467,39 @@ public class DashboardRepositoryImpl implements DashboardRepository {
 
     @Override
     public Observable<List<ProgramTrackedEntityAttribute>> getProgramTrackedEntityAttributes(String programUid) {
-        if (programUid != null)
-            return Observable.fromCallable(() -> d2.programModule().programs().withProgramTrackedEntityAttributes().byUid().eq(programUid).one().blockingGet().programTrackedEntityAttributes());
-        else
-            return Observable.fromCallable(() -> d2.trackedEntityModule().trackedEntityAttributes().byDisplayInListNoProgram().eq(true).blockingGet())
+        if (programUid != null) {
+            return d2.programModule().programTrackedEntityAttributes()
+                    .byProgram().eq(programUid)
+                    .orderBySortOrder(RepositoryScope.OrderByDirection.ASC).get().toObservable();
+        } else {
+            return Observable.fromCallable(() ->
+                    d2.trackedEntityModule().trackedEntityAttributes()
+                            .byDisplayInListNoProgram().eq(true)
+                            .blockingGet()
+            )
                     .map(trackedEntityAttributes -> {
-                        List<Program> programs =
-                                d2.programModule().programs().withProgramTrackedEntityAttributes().blockingGet();
+                        List<Program> programs = d2.programModule().programs()
+                                .blockingGet();
+
                         List<String> teaUids = UidsHelper.getUidsList(trackedEntityAttributes);
-                        List<ProgramTrackedEntityAttribute> programTrackedEntityAttributes = new ArrayList<>();
+                        List<ProgramTrackedEntityAttribute> programTrackedEntityAttributes =
+                                new ArrayList<>();
+
                         for (Program program : programs) {
-                            for (ProgramTrackedEntityAttribute pteattr : program.programTrackedEntityAttributes()) {
+                            List<ProgramTrackedEntityAttribute> attributeList =
+                                    d2.programModule().programTrackedEntityAttributes()
+                                            .byProgram().eq(program.uid())
+                                            .orderBySortOrder(RepositoryScope.OrderByDirection.ASC)
+                                            .blockingGet();
+
+                            for (ProgramTrackedEntityAttribute pteattr : attributeList) {
                                 if (teaUids.contains(pteattr.uid()))
                                     programTrackedEntityAttributes.add(pteattr);
                             }
                         }
                         return programTrackedEntityAttributes;
                     });
+        }
     }
 
 
@@ -515,7 +557,7 @@ public class DashboardRepositoryImpl implements DashboardRepository {
         TrackedEntityInstance tei =
                 d2.trackedEntityModule().trackedEntityInstances().uid(teiUid).blockingGet();
         ContentValues cv = tei.toContentValues();
-        cv.put(TrackedEntityInstance.Columns.STATE, tei.state() == State.TO_POST ? State.TO_POST.name() : State.TO_UPDATE.name());
+        cv.put(TrackedEntityInstanceTableInfo.Columns.STATE, tei.state() == State.TO_POST ? State.TO_POST.name() : State.TO_UPDATE.name());
         cv.put("lastUpdated", DateUtils.databaseDateFormat().format(Calendar.getInstance().getTime()));
         briteDatabase.update("TrackedEntityInstance", cv, "uid = ?", teiUid);
     }

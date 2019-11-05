@@ -1,7 +1,6 @@
 package org.dhis2;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.Build;
 import android.os.Looper;
 
@@ -22,8 +21,6 @@ import org.dhis2.data.dagger.PerActivity;
 import org.dhis2.data.dagger.PerServer;
 import org.dhis2.data.dagger.PerUser;
 import org.dhis2.data.database.DbModule;
-import org.dhis2.data.forms.FormComponent;
-import org.dhis2.data.forms.FormModule;
 import org.dhis2.data.prefs.PreferenceModule;
 import org.dhis2.data.schedulers.SchedulerModule;
 import org.dhis2.data.schedulers.SchedulersProviderImpl;
@@ -77,10 +74,6 @@ public class App extends MultiDexApplication implements Components {
 
     @Nullable
     @PerActivity
-    FormComponent formComponent;
-
-    @Nullable
-    @PerActivity
     LoginComponent loginComponent;
 
     @Nullable
@@ -125,25 +118,6 @@ public class App extends MultiDexApplication implements Components {
         }
     }
 
-    private void upgradeSecurityProvider() {
-        try {
-            ProviderInstaller.installIfNeededAsync(this, new ProviderInstaller.ProviderInstallListener() {
-                @Override
-                public void onProviderInstalled() {
-                    Timber.e("New security provider installed.");
-                }
-
-                @Override
-                public void onProviderInstallFailed(int errorCode, Intent recoveryIntent) {
-                    Timber.e("New security provider install failed.");
-                }
-            });
-        } catch (Exception ex) {
-            Timber.e(ex, "Unknown issue trying to install a new security provider");
-        }
-
-    }
-
     @Override
     protected void attachBaseContext(Context base) {
         super.attachBaseContext(base);
@@ -185,11 +159,6 @@ public class App extends MultiDexApplication implements Components {
                 .analyticsModule(new AnalyticsModule())
                 .preferenceModule(new PreferenceModule())
                 .utilModule(new UtilsModule());
-    }
-
-    @NonNull
-    protected AppComponent createAppComponent() {
-        return (appComponent = prepareAppComponent().build());
     }
 
     @NonNull
@@ -264,23 +233,7 @@ public class App extends MultiDexApplication implements Components {
     public void releaseUserComponent() {
         userComponent = null;
     }
-    ////////////////////////////////////////////////////////////////////////
-    // Form component
-    ////////////////////////////////////////////////////////////////////////
 
-    @NonNull
-    public FormComponent createFormComponent(@NonNull FormModule formModule) {
-        return (formComponent = userComponent.plus(formModule));
-    }
-
-    @Nullable
-    public FormComponent formComponent() {
-        return formComponent;
-    }
-
-    public void releaseFormComponent() {
-        formComponent = null;
-    }
 
     ////////////////////////////////////////////////////////////////////////
     // Dashboard component
@@ -303,12 +256,5 @@ public class App extends MultiDexApplication implements Components {
     // AndroidInjector
     ////////////////////////////////////////////////////////////////////////
 
-
-    /**
-     * Visible only for testing purposes.
-     */
-    public void setTestComponent(AppComponent testingComponent) {
-        appComponent = testingComponent;
-    }
 
 }

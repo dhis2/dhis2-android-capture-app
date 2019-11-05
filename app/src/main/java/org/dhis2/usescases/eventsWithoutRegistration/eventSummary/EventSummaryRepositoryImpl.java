@@ -91,9 +91,10 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
                 .map(eventSingle -> {
                     List<FormSectionViewModel> formSection = new ArrayList<>();
                     if (eventSingle.deleted() == null || !eventSingle.deleted()) {
-                        ProgramStage stage = d2.programModule().programStages().withProgramStageSections().uid(eventSingle.programStage()).blockingGet();
-                        if (stage.programStageSections().size() > 0) {
-                            for (ProgramStageSection section : stage.programStageSections())
+                        ProgramStage stage = d2.programModule().programStages().uid(eventSingle.programStage()).blockingGet();
+                        List<ProgramStageSection> stageSections = d2.programModule().programStageSections().byProgramStageUid().eq(stage.uid()).blockingGet();
+                        if (stageSections.size() > 0) {
+                            for (ProgramStageSection section : stageSections)
                                 formSection.add(FormSectionViewModel.createForSection(eventUid, section.uid(), section.displayName(),
                                         section.renderType().mobile() != null ? section.renderType().mobile().type().name() : null));
                         } else
@@ -120,11 +121,12 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
         return d2.eventModule().events().withTrackedEntityDataValues().uid(eventUid).get()
                 .map(event -> {
                     List<FieldViewModel> fields = new ArrayList<>();
-                    ProgramStage stage = d2.programModule().programStages().withProgramStageDataElements().withProgramStageSections().uid(event.programStage()).blockingGet();
-                    if (section != null) {
+                    ProgramStage stage = d2.programModule().programStages().uid(event.programStage()).blockingGet();
+                    List<ProgramStageDataElement> stageDataElements = d2.programModule().programStageDataElements().byProgramStage().eq(stage.uid()).blockingGet();
 
+                    if (section != null) {
                         ProgramStageSection stageSection = d2.programModule().programStageSections().withDataElements().uid(section).blockingGet();
-                        for (ProgramStageDataElement programStageDataElement : stage.programStageDataElements()) {
+                        for (ProgramStageDataElement programStageDataElement : stageDataElements) {
                             if (UidsHelper.getUidsList(stageSection.dataElements()).contains(programStageDataElement.dataElement().uid())) {
                                 DataElement dataelement = d2.dataElementModule().dataElements().uid(programStageDataElement.dataElement().uid()).blockingGet();
                                 fields.add(transform(programStageDataElement, dataelement,
@@ -132,13 +134,14 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
                             }
                         }
 
-                    } else
-                        for (ProgramStageDataElement programStageDataElement : stage.programStageDataElements()) {
+                    } else {
+                        for (ProgramStageDataElement programStageDataElement : stageDataElements) {
                             DataElement dataelement = d2.dataElementModule().dataElements().uid(programStageDataElement.dataElement().uid()).blockingGet();
                             fields.add(transform(programStageDataElement, dataelement,
                                     searchValueDataElement(programStageDataElement.dataElement().uid(), event.trackedEntityDataValues()), null, event.status()));
 
                         }
+                    }
                     return fields;
                 }).toFlowable();
     }
@@ -273,8 +276,8 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
 
     @Override
     public Observable<Program> getProgramWithId(String programUid) {
-        return d2.programModule().programs().withTrackedEntityType().withProgramTrackedEntityAttributes().withProgramIndicators().withProgramRules()
-                .withProgramRuleVariables().withProgramSections().withProgramStages().withStyle()
+        return d2.programModule().programs().withTrackedEntityType().withProgramTrackedEntityAttributes().withProgramIndicators()
+                .withProgramRuleVariables().withProgramSections().withStyle()
                 .uid(programUid).get().toObservable();
     }
 }
