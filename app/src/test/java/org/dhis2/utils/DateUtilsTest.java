@@ -748,6 +748,7 @@ public class DateUtilsTest {
 
     }
 
+    @Ignore
     @Test
     public void complete_event_1_Monthly_1_is_not_expired() throws ParseException {
 
