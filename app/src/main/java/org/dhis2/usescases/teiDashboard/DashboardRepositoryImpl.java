@@ -322,6 +322,11 @@ public class DashboardRepositoryImpl implements DashboardRepository {
     }
 
     @Override
+    public Observable<List<CategoryOptionCombo>> catOptionCombos(String catComboUid){
+        return d2.categoryModule().categoryOptionCombos().byCategoryComboUid().eq(catComboUid).get().toObservable();
+    }
+
+    @Override
     public void setDefaultCatOptCombToEvent(String eventUid) {
         CategoryCombo defaultCatCombo = d2.categoryModule().categoryCombos()
                 .byIsDefault().isTrue()

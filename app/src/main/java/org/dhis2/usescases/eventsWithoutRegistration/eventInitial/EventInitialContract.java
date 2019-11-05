@@ -36,7 +36,7 @@ public class EventInitialContract {
 
         void setProgram(@NonNull Program program);
 
-        void setCatComboOptions(CategoryCombo catCombo, Map<String, CategoryOption> stringCategoryOptionMap);
+        void setCatComboOptions(CategoryCombo catCombo, List<CategoryOptionCombo> categoryOptionCombos, Map<String, CategoryOption> stringCategoryOptionMap);
 
         void showDateDialog(DatePickerDialog.OnDateSetListener listener);
 

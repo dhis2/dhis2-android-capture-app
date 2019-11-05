@@ -57,6 +57,7 @@ import org.hisp.dhis.android.core.arch.helpers.GeometryHelper;
 import org.hisp.dhis.android.core.category.Category;
 import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryOption;
+import org.hisp.dhis.android.core.category.CategoryOptionCombo;
 import org.hisp.dhis.android.core.common.FeatureType;
 import org.hisp.dhis.android.core.common.Geometry;
 import org.hisp.dhis.android.core.common.ObjectStyle;
@@ -549,7 +550,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     }
 
     @Override
-    public void setCatComboOptions(CategoryCombo catCombo, Map<String, CategoryOption> stringCategoryOptionMap) {
+    public void setCatComboOptions(CategoryCombo catCombo, List<CategoryOptionCombo> categoryOptionCombos, Map<String, CategoryOption> stringCategoryOptionMap) {
 
         runOnUiThread(() -> {
             this.catCombo = catCombo;
@@ -574,7 +575,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                                                     selectedCatOption.remove(category.uid());
                                                 catSelectorBinding.catCombo.setText(item != null ? item.displayName() : null);
                                                 if (selectedCatOption.size() == catCombo.categories().size()) {
-                                                    catOptionComboUid = presenter.getCatOptionCombo(catCombo.categoryOptionCombos(), new ArrayList<>(selectedCatOption.values()));
+                                                    catOptionComboUid = presenter.getCatOptionCombo(categoryOptionCombos, new ArrayList<>(selectedCatOption.values()));
                                                     checkActionButtonVisibility();
                                                 }
                                             })
@@ -587,7 +588,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                     binding.catComboLayout.addView(catSelectorBinding.getRoot());
                 }
             else if (catCombo.isDefault())
-                catOptionComboUid = catCombo.categoryOptionCombos().get(0).uid();
+                catOptionComboUid = categoryOptionCombos.get(0).uid();
 
         });
     }

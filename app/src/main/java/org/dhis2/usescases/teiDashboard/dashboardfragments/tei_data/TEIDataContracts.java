@@ -6,6 +6,7 @@ import android.os.Bundle;
 import org.dhis2.usescases.general.AbstractActivityContracts;
 import org.dhis2.usescases.teiDashboard.DashboardProgramModel;
 import org.hisp.dhis.android.core.category.CategoryCombo;
+import org.hisp.dhis.android.core.category.CategoryOptionCombo;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.event.EventStatus;
@@ -32,7 +33,7 @@ public class TEIDataContracts {
 
         Consumer<EnrollmentStatus> enrollmentCompleted();
 
-        void showCatComboDialog(String eventId, CategoryCombo categoryCombo);
+        void showCatComboDialog(String eventId, CategoryCombo categoryCombo, List<CategoryOptionCombo> categoryOptionCombos);
 
         void switchFollowUp(boolean followUp);
 
