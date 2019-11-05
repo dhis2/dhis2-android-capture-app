@@ -33,10 +33,10 @@ Any issues around using a particular feature with Android are highlighted with a
 | Text | Text (length of text up to 50,000 characters) | ✓ | ✓ | ✓ | | |
 | Long text | Text (no constraints on length) | ✓ | ✓ | ✓ | | |
 | Letter | A single letter | ✓ | ✓ | ✓ | | |
-| File | Enables upload of files in various formats (requires appropriate storage to be configured) | ![](resources/images/image3_icon.png) | ![](resources/images/image3_icon.png) | ![](resources/images/image3_icon.png) | |
-| Organisation unit | Enables selection of a DHIS2 organisation unit as the chosen value | ✓ | ✓ | ✓ | |
-| Tracker Associate | Enables selection of an existing Tracker 'tracked entity instance' (e.g. a person) as the value | &ndash; | &ndash; | &ndash; | |
-| Username | Enables selection of a valid DHIS2 username as the value | ![](resources/images/image3_icon.png) | ![](resources/images/image3_icon.png) | ![](resources/images/image3_icon.png) | |
-| Coordinate | Enables manual entry of geographical coordinates (doesn't enable automatic capture of coordinates) | ✓ | ✓ | ✓ | |
-| URL | Enables manual entry of a URL. | ✓ | ✓ | ✓ | |
-| Image | Enables upload of images. | ✓ | ✓ | ✓ | |
+| File | Enables upload of files in various formats (requires appropriate storage to be configured) | ![](resources/images/image3_icon.png) | ![](resources/images/image3_icon.png) | ![](resources/images/image3_icon.png) | &ndash; | |
+| Organisation unit | Enables selection of a DHIS2 organisation unit as the chosen value | ✓ | ✓ | ✓ |  &ndash;| |
+| Tracker Associate | Enables selection of an existing Tracker 'tracked entity instance' (e.g. a person) as the value | &ndash; | &ndash; | &ndash; | &ndash; | |
+| Username | Enables selection of a valid DHIS2 username as the value | ![](resources/images/image3_icon.png) | ![](resources/images/image3_icon.png) | ![](resources/images/image3_icon.png) |  &ndash; |
+| Coordinate | Enables manual entry of geographical coordinates (doesn't enable automatic capture of coordinates) | ✓ | ✓ | ✓ | | |
+| URL | Enables manual entry of a URL. | ✓ | ✓ | ✓ | | |
+| Image | Enables upload of images. | ✓ | ✓ | ✓ | &ndash; | |
