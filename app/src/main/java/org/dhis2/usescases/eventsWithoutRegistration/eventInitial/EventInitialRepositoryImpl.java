@@ -118,6 +118,11 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
     }
 
     @Override
+    public Observable<List<CategoryOptionCombo>> catOptionCombos(String catOptionComboUid){
+        return d2.categoryModule().categoryOptionCombos().byCategoryComboUid().eq(catOptionComboUid).get().toObservable();
+    }
+
+    @Override
     public Flowable<Map<String, CategoryOption>> getOptionsFromCatOptionCombo(String eventId) {
         return d2.eventModule().events().uid(eventUid).get().toFlowable()
                 .flatMap(event -> catCombo(event.program()).toFlowable(BackpressureStrategy.LATEST)
