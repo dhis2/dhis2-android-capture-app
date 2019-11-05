@@ -26,6 +26,7 @@ import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.android.core.enrollment.EnrollmentObjectRepository;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
+import org.hisp.dhis.android.core.enrollment.EnrollmentTableInfo;
 import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
@@ -215,7 +216,7 @@ public class EnrollmentFormRepository implements FormRepository {
 
             ContentValues enrollment = new ContentValues();
             enrollment.put("enrollmentDate", DateUtils.databaseDateFormat().format(cal.getTime()));
-            enrollment.put(Enrollment.Columns.STATE, State.TO_UPDATE.name()); // TODO: Check if state is TO_POST
+            enrollment.put(EnrollmentTableInfo.Columns.STATE, State.TO_UPDATE.name()); // TODO: Check if state is TO_POST
             // TODO: and if so, keep the TO_POST state
 
             briteDatabase.update("Enrollment", enrollment,
@@ -243,7 +244,7 @@ public class EnrollmentFormRepository implements FormRepository {
 
             ContentValues enrollment = new ContentValues();
             enrollment.put("enrollmentDate", reportDateToStore);
-            enrollment.put(Enrollment.Columns.STATE, State.TO_UPDATE.name()); // TODO: Check if state is TO_POST
+            enrollment.put(EnrollmentTableInfo.Columns.STATE, State.TO_UPDATE.name()); // TODO: Check if state is TO_POST
             // TODO: and if so, keep the TO_POST state
 
             long updated = briteDatabase.update("Enrollment", enrollment,
@@ -273,7 +274,7 @@ public class EnrollmentFormRepository implements FormRepository {
             }
             ContentValues enrollment = new ContentValues();
             enrollment.put("incidentDate", incidentDateToStore);
-            enrollment.put(Enrollment.Columns.STATE, State.TO_UPDATE.name()); // TODO: Check if state is TO_POST
+            enrollment.put(EnrollmentTableInfo.Columns.STATE, State.TO_UPDATE.name()); // TODO: Check if state is TO_POST
             // TODO: and if so, keep the TO_POST state
 
             long updated = briteDatabase.update("Enrollment", enrollment,
@@ -323,7 +324,7 @@ public class EnrollmentFormRepository implements FormRepository {
 
             ContentValues enrollment = new ContentValues();
             enrollment.put("incidentDate", DateUtils.databaseDateFormat().format(cal.getTime()));
-            enrollment.put(Enrollment.Columns.STATE, State.TO_UPDATE.name()); // TODO: Check if state is TO_POST
+            enrollment.put(EnrollmentTableInfo.Columns.STATE, State.TO_UPDATE.name()); // TODO: Check if state is TO_POST
             // TODO: and if so, keep the TO_POST state
 
             briteDatabase.update("Enrollment", enrollment,
@@ -338,7 +339,7 @@ public class EnrollmentFormRepository implements FormRepository {
             ContentValues enrollment = new ContentValues();
             enrollment.put("status",
                     ReportStatus.toEnrollmentStatus(reportStatus).name());
-            enrollment.put(Enrollment.Columns.STATE, State.TO_UPDATE.name()); // TODO: Check if state is TO_POST
+            enrollment.put(EnrollmentTableInfo.Columns.STATE, State.TO_UPDATE.name()); // TODO: Check if state is TO_POST
             // TODO: and if so, keep the TO_POST state
 
             briteDatabase.update("Enrollment", enrollment,
