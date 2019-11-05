@@ -1,21 +1,20 @@
 package org.dhis2.data.server;
 
-import android.database.Cursor;
-
-import com.google.common.reflect.TypeToken;
-import com.google.gson.Gson;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 import org.dhis2.utils.FileResourcesUtil;
 import org.hisp.dhis.android.core.D2;
-import org.hisp.dhis.android.core.common.BaseDataModel;
 import org.hisp.dhis.android.core.D2Manager;
 import org.hisp.dhis.android.core.common.BaseDataObject;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import com.google.common.reflect.TypeToken;
+import com.google.gson.Gson;
+
+import android.database.Cursor;
 
 import io.reactivex.Flowable;
 import timber.log.Timber;
