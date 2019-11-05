@@ -28,8 +28,8 @@ fun EditText.onRightDrawableClicked(onClicked: (view: EditText) -> Unit) {
     }
 }
 
-fun List<Event>.toUids():List<String>{
-    return map{it.uid()}
+fun List<Event>.toUids(): List<String> {
+    return map { it.uid() }
 }
 
 fun TrackedEntityInstance.profilePicturePath(d2: D2, programUid: String?): String {

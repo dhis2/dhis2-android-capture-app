@@ -12,7 +12,6 @@ import org.hisp.dhis.android.core.program.ProgramStage
 import org.junit.Before
 import org.junit.Test
 
-
 class DashboardRepositoryImplTest {
 
     private lateinit var repository: DashboardRepositoryImpl
@@ -27,16 +26,17 @@ class DashboardRepositoryImplTest {
 
     @Test
     fun `Should return program stage to show display generate event`() {
-
         whenever(d2.eventModule()) doReturn mock()
         whenever(d2.eventModule().events()) doReturn mock()
         whenever(d2.eventModule().events().uid("event_uid")) doReturn mock()
-        whenever(d2.eventModule().events().uid("event_uid").get()) doReturn Single.just(getMockSingleEvent())
+        whenever(d2.eventModule().events().uid("event_uid").get()) doReturn
+            Single.just(getMockSingleEvent())
 
         whenever(d2.programModule()) doReturn mock()
         whenever(d2.programModule().programStages()) doReturn mock()
         whenever(d2.programModule().programStages().uid("program_stage")) doReturn mock()
-        whenever(d2.programModule().programStages().uid("program_stage").get()) doReturn Single.just(getMockStage())
+        whenever(d2.programModule().programStages().uid("program_stage").get()) doReturn
+            Single.just(getMockStage())
 
         val testObserver = repository.displayGenerateEvent("event_uid").test()
 
@@ -49,17 +49,15 @@ class DashboardRepositoryImplTest {
 
     private fun getMockSingleEvent(): Event {
         return Event.builder()
-                .uid("event_uid")
-                .programStage("program_stage")
-                .program("program")
-                .build()
+            .uid("event_uid")
+            .programStage("program_stage")
+            .program("program")
+            .build()
     }
 
     private fun getMockStage(): ProgramStage {
         return ProgramStage.builder()
-                .uid("program_stage")
-                .build()
-
+            .uid("program_stage")
+            .build()
     }
-
 }

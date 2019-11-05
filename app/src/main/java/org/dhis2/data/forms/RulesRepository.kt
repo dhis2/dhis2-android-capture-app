@@ -2,6 +2,11 @@ package org.dhis2.data.forms
 
 import android.text.TextUtils.isEmpty
 import io.reactivex.Single
+import java.util.ArrayList
+import java.util.Calendar
+import java.util.Date
+import java.util.HashMap
+import java.util.Objects
 import org.dhis2.Bindings.toRuleDataValue
 import org.dhis2.Bindings.toRuleList
 import org.dhis2.Bindings.toRuleVariable
@@ -18,30 +23,29 @@ import org.hisp.dhis.rules.models.RuleAttributeValue
 import org.hisp.dhis.rules.models.RuleEnrollment
 import org.hisp.dhis.rules.models.RuleEvent
 import org.hisp.dhis.rules.models.RuleVariable
-import java.util.ArrayList
-import java.util.Calendar
-import java.util.Date
-import java.util.HashMap
-import java.util.Objects
-
 
 class RulesRepository(private val d2: D2) {
 
-    //ORG UNIT GROUPS
-    //USER ROLES
+    // ORG UNIT GROUPS
+    // USER ROLES
     fun supplementaryData(): Single<Map<String, List<String>>> {
         return Single.fromCallable {
             val supData = HashMap<String, MutableList<String>>()
-            for (ouGroup in d2.organisationUnitModule().organisationUnitGroups().blockingGet())
-                if (ouGroup.code() != null)
+            for (ouGroup in d2.organisationUnitModule().organisationUnitGroups().blockingGet()) {
+                if (ouGroup.code() != null) {
                     supData[ouGroup.code()!!] = ArrayList()
-
-            for (ou in d2.organisationUnitModule().organisationUnits().withOrganisationUnitGroups().blockingGet()) {
+                }
+            }
+            for (
+                ou in d2.organisationUnitModule().organisationUnits()
+                    .withOrganisationUnitGroups().blockingGet()
+            ) {
                 if (ou.organisationUnitGroups() != null) {
                     for (ouGroup in ou.organisationUnitGroups()!!) {
                         val groupOUs = supData[ouGroup.code()]
-                        if (groupOUs != null && !groupOUs.contains(ou.uid()))
+                        if (groupOUs != null && !groupOUs.contains(ou.uid())) {
                             groupOUs.add(ou.uid())
+                        }
                     }
                 }
             }
@@ -99,7 +103,6 @@ class RulesRepository(private val d2: D2) {
             .byProgramUid().eq(programUid)
             .withProgramRuleActions()
             .get()
-
     }
 
     fun otherEvents(eventUidToEvaluate: String): Single<List<RuleEvent>> {
@@ -111,14 +114,25 @@ class RulesRepository(private val d2: D2) {
                         RuleEvent.builder()
                             .event(event.uid())
                             .programStage(event.programStage())
-                            .programStageName(d2.programModule().programStages().uid(event.programStage()).blockingGet()!!.name())
+                            .programStageName(
+                                d2.programModule().programStages().uid(event.programStage())
+                                    .blockingGet()!!.name()
+                            )
                             .status(
-                                if (event.status() == EventStatus.VISITED) RuleEvent.Status.ACTIVE else RuleEvent.Status.valueOf(
-                                    event.status()!!.name
-                                )
+                                if (event.status() == EventStatus.VISITED) {
+                                    RuleEvent.Status.ACTIVE
+                                } else {
+                                    RuleEvent.Status.valueOf(event.status()!!.name)
+                                }
                             )
                             .eventDate(event.eventDate())
-                            .dueDate(if (event.dueDate() != null) event.dueDate() else event.eventDate())
+                            .dueDate(
+                                if (event.dueDate() != null) {
+                                    event.dueDate()
+                                } else {
+                                    event.eventDate()
+                                }
+                            )
                             .organisationUnit(event.organisationUnit())
                             .organisationUnitCode(
                                 d2.organisationUnitModule().organisationUnits().uid(
@@ -157,35 +171,34 @@ class RulesRepository(private val d2: D2) {
                 .withTrackedEntityDataValues()
                 .orderByEventDate(RepositoryScope.OrderByDirection.DESC)
                 .get().map { list ->
-                    var currentEventIndex = -1
-                    var index = 0
-                    do {
-                        if (list[index].uid() == eventToEvaluate.uid()) {
-                            currentEventIndex = index
-                        } else {
-                            index++
-                        }
-                    } while (currentEventIndex == -1)
-
-                    var newEvents = list.subList(0, currentEventIndex)
-                    var previousEvents = list.subList(currentEventIndex + 1, list.size)
-
-                    if (newEvents.size > 10) {
-                        newEvents = newEvents.subList(0, 10)
+                var currentEventIndex = -1
+                var index = 0
+                do {
+                    if (list[index].uid() == eventToEvaluate.uid()) {
+                        currentEventIndex = index
+                    } else {
+                        index++
                     }
-                    if (previousEvents.size > 10) {
-                        previousEvents = previousEvents.subList(0, 10)
-                    }
+                } while (currentEventIndex == -1)
 
-                    val finalList = ArrayList<Event>()
-                    finalList.addAll(newEvents)
-                    finalList.addAll(previousEvents)
+                var newEvents = list.subList(0, currentEventIndex)
+                var previousEvents = list.subList(currentEventIndex + 1, list.size)
 
-                    finalList
+                if (newEvents.size > 10) {
+                    newEvents = newEvents.subList(0, 10)
                 }
+                if (previousEvents.size > 10) {
+                    previousEvents = previousEvents.subList(0, 10)
+                }
+
+                val finalList = ArrayList<Event>()
+                finalList.addAll(newEvents)
+                finalList.addAll(previousEvents)
+
+                finalList
+            }
         }
     }
-
 
     fun enrollmentEvents(enrollmentUid: String): Single<List<RuleEvent>> {
         return d2.eventModule().events().byEnrollmentUid().eq(enrollmentUid)
@@ -197,16 +210,25 @@ class RulesRepository(private val d2: D2) {
                 RuleEvent.builder()
                     .event(event.uid())
                     .programStage(event.programStage())
-                    .programStageName(d2.programModule().programStages().uid(event.programStage()).blockingGet()!!.name())
+                    .programStageName(
+                        d2.programModule().programStages().uid(event.programStage())
+                            .blockingGet()!!.name()
+                    )
                     .status(
-                        if (event.status() == EventStatus.VISITED) RuleEvent.Status.ACTIVE else RuleEvent.Status.valueOf(
-                            event.status()!!.name
-                        )
+                        if (event.status() == EventStatus.VISITED) {
+                            RuleEvent.Status.ACTIVE
+                        } else {
+                            RuleEvent.Status.valueOf(event.status()!!.name)
+                        }
                     )
                     .eventDate(event.eventDate())
                     .dueDate(if (event.dueDate() != null) event.dueDate() else event.eventDate())
                     .organisationUnit(event.organisationUnit())
-                    .organisationUnitCode(d2.organisationUnitModule().organisationUnits().uid(event.organisationUnit()).blockingGet()!!.code())
+                    .organisationUnitCode(
+                        d2.organisationUnitModule()
+                            .organisationUnits().uid(event.organisationUnit())
+                            .blockingGet()!!.code()
+                    )
                     .dataValues(
                         event.trackedEntityDataValues()?.toRuleDataValue(
                             event,
@@ -222,8 +244,9 @@ class RulesRepository(private val d2: D2) {
     fun enrollment(eventUid: String): Single<RuleEnrollment> {
         return d2.eventModule().events().uid(eventUid).get()
             .flatMap { event ->
-                val ouCode =
-                    d2.organisationUnitModule().organisationUnits().uid(event.organisationUnit()).blockingGet()!!.code()
+                val ouCode = d2.organisationUnitModule().organisationUnits()
+                    .uid(event.organisationUnit())
+                    .blockingGet()!!.code()
                 val programName =
                     d2.programModule().programs().uid(event.program()).blockingGet()!!.name()
                 if (event.enrollment() == null) {
@@ -270,11 +293,12 @@ class RulesRepository(private val d2: D2) {
                 val useOptionCode = d2.programModule().programRuleVariables().byProgramUid()
                     .eq(enrollment.program()).byTrackedEntityAttributeUid().eq(attribute.uid())
                     .byUseCodeForOptionSet().isTrue.blockingIsEmpty()
-                if (!useOptionCode)
-                    value =
-                        d2.optionModule().options().byOptionSetUid().eq(attribute.optionSet()!!.uid()).byCode().eq(
-                            value
-                        ).one().blockingGet()!!.name()
+                if (!useOptionCode) {
+                    value = d2.optionModule().options()
+                        .byOptionSetUid().eq(attribute.optionSet()!!.uid())
+                        .byCode().eq(value)
+                        .one().blockingGet()!!.name()
+                }
             }
             RuleAttributeValue.create(attributeValue.trackedEntityAttribute()!!, value!!)
         }
