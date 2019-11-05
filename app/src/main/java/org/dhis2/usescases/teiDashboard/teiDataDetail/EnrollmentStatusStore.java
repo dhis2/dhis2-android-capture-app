@@ -18,6 +18,7 @@ import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.android.core.enrollment.EnrollmentObjectRepository;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceTableInfo;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityType;
 
 import java.util.Calendar;
@@ -161,7 +162,7 @@ public final class EnrollmentStatusStore implements EnrollmentStatusEntryStore {
                 .switchMap(tei -> {
                     if (State.SYNCED.equals(tei.state()) || tei.deleted() || State.ERROR.equals(tei.state())) {
                         ContentValues values = new ContentValues();
-                        values.put(TrackedEntityInstance.Columns.STATE, tei.state() == State.TO_POST ? State.TO_POST.name() : State.TO_UPDATE.name());
+                        values.put(TrackedEntityInstanceTableInfo.Columns.STATE, tei.state() == State.TO_POST ? State.TO_POST.name() : State.TO_UPDATE.name());
 
                         if (briteDatabase.update("TrackedEntityInstance", values,
                                 "uid = ?", tei.uid()) <= 0) {

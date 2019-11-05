@@ -7,7 +7,7 @@ import androidx.annotation.Nullable;
 import com.gabrielittner.auto.value.cursor.ColumnName;
 import com.google.auto.value.AutoValue;
 
-import org.hisp.dhis.android.core.common.BaseModel;
+import org.hisp.dhis.android.core.common.CoreColumns;
 
 import java.util.List;
 
@@ -16,7 +16,7 @@ import static org.dhis2.usescases.datasets.dataSetTable.DataSetTableModel.Column
 
 @AutoValue
 public abstract class DataSetTableModel{
-    public static class Columns extends BaseModel.Columns {
+    public static class Columns extends CoreColumns {
         static final String DATA_ELEMENT = "dataElement";
         static final String PERIOD = "period";
         static final String ORGANISATION_UNIT = "organisationUnit";

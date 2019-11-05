@@ -5,14 +5,14 @@ import androidx.annotation.Nullable;
 import com.gabrielittner.auto.value.cursor.ColumnName;
 import com.google.auto.value.AutoValue;
 
-import org.hisp.dhis.android.core.common.BaseModel;
+import org.hisp.dhis.android.core.common.CoreColumns;
 
 import java.util.Date;
 
 @AutoValue
 public abstract class DateRangeInputPeriodModel {
 
-    public static class Columns extends BaseModel.Columns {
+    public static class Columns extends CoreColumns {
         public static final String DATA_SET = "dataSet";
         public static final String PERIOD = "period";
         public static final String OPENING_DATE = "openingDate";
