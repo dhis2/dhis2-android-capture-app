@@ -1,10 +1,10 @@
 # Recommendations for a DHIS 2 mobile deployment
 
-If you plan to deploy the DHIS2 Android App in the field, we strongly recommend you to read the [Mobile Implementation Guidelines](https://s3-eu-west-1.amazonaws.com/content.dhis2.org/Publications/DHIS+2+Mobile+Implementation+Guidelines.pdf) published by UiO. They include chapters on technology requirements, security and configuration aspects, and testing and roll out recommendations. Below you will find some key aspects briefly introduced, we recommend reading the extended document.
+If you plan to deploy the DHIS2 Android App in the field, we strongly recommend you to read the [Mobile Implementation Guidelines](https://s3-eu-west-1.amazonaws.com/content.dhis2.org/Publications/DHIS+2+Mobile+Implementation+Guidelines.pdf) published by UiO. It includes chapters on technology requirements, security and configuration aspects, and testing and roll out recommendations. Below you will find some key aspects briefly introduced, we recommend reading the extended document.
 
 ## Mobile device specifications
 
-The Android App is compatible with DHIS 2 2.29, 2.30 and 2.31.
+The Android App is compatible with DHIS 2 versions 2.29, 2.30 and 2.31.
 
 It requires a device that is running Android v4.4 or higher.
 
