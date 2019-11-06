@@ -5,7 +5,6 @@ import io.reactivex.parallel.ParallelFlowable
 import io.reactivex.schedulers.Schedulers
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper
-import org.hisp.dhis.android.core.category.CategoryOptionCombo
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.dataset.DataSet
 import org.hisp.dhis.android.core.dataset.DataSetCollectionRepository
@@ -57,60 +56,24 @@ internal class HomeRepositoryImpl(private val d2: D2, private val eventLabel: St
                     count = repo.blockingCount()
                 }
 
-                var state: State? = State.SYNCED
-
-                dataSet.dataSetElements()!!.forEach {
-                    val dataElement =
-                        d2.dataElementModule().dataElements().uid(it.dataElement().uid())
-                            .blockingGet()
-                    val categoryOptionCombos: List<String>
-                    categoryOptionCombos = if (it.categoryCombo() != null) {
-                        UidsHelper.getUidsList<CategoryOptionCombo>(
-                            d2
-                                .categoryModule()
-                                .categoryCombos()
-                                .withCategoryOptionCombos()
-                                .uid(it.categoryCombo()!!.uid())
-                                .blockingGet()!!
-                                .categoryOptionCombos()!!
-                        )
-                    } else {
-                        UidsHelper.getUidsList<CategoryOptionCombo>(
-                            d2.categoryModule().categoryCombos().withCategoryOptionCombos().uid(
-                                dataElement!!.categoryComboUid()
-                            ).blockingGet()!!.categoryOptionCombos()!!
-                        )
-                    }
-                    val attributeOptionCombos = UidsHelper.getUidsList<CategoryOptionCombo>(
-                        d2
-                            .categoryModule()
-                            .categoryCombos()
-                            .withCategoryOptionCombos()
-                            .uid(dataSet.categoryCombo()!!.uid())
-                            .blockingGet()!!
-                            .categoryOptionCombos()!!
-                    )
-                    for (
-                        dataValue in d2.dataValueModule().dataValues()
-                            .byAttributeOptionComboUid().`in`(attributeOptionCombos)
-                            .byCategoryOptionComboUid().`in`(categoryOptionCombos)
-                            .byDataElementUid().eq(it.dataElement().uid()).blockingGet()
-                    ) {
-                        if (dataValue.state() != State.SYNCED) {
-                            state = State.TO_UPDATE
-                        }
-                    }
+                val possibleStates = repo.blockingGet().map {
+                    it.state()
                 }
 
-                d2.dataSetModule().dataSetCompleteRegistrations()
-                    .byDataSetUid().eq(dataSet.uid()).blockingGet().forEach {
-                    if (it.state() != State.SYNCED) {
-                        state = if (it.deleted() == true) {
-                            State.TO_UPDATE
-                        } else {
-                            it.state()
-                        }
-                    }
+                val state = if (possibleStates.contains(State.ERROR) ||
+                    possibleStates.contains(State.WARNING)
+                ) {
+                    State.WARNING
+                } else if (possibleStates.contains(State.SENT_VIA_SMS) ||
+                    possibleStates.contains(State.SYNCED_VIA_SMS)
+                ) {
+                    State.SENT_VIA_SMS
+                } else if (possibleStates.contains(State.TO_UPDATE) ||
+                    possibleStates.contains(State.TO_POST)
+                ) {
+                    State.TO_UPDATE
+                } else {
+                    State.SYNCED
                 }
 
                 ProgramViewModel.create(
