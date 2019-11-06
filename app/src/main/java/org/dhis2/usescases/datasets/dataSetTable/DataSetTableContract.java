@@ -30,7 +30,7 @@ public class DataSetTableContract {
 
         void setDataSetState(State state);
 
-        void runSmsSubmission();
+        void showSyncDialog();
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter {
@@ -38,7 +38,7 @@ public class DataSetTableContract {
         void onBackClick();
         void onSyncClick();
 
-        void init(View view, String orgUnitUid, String periodTypeName, String catCombo, String periodFinalDate, String periodId);
+        void init(String orgUnitUid, String periodTypeName, String catCombo, String periodFinalDate, String periodId);
 
         String getOrgUnitUid();
         String getPeriodTypeName();
@@ -48,6 +48,7 @@ public class DataSetTableContract {
         void optionsClick();
 
         void onClickSelectTable(int numTable);
+        void updateState();
 
         String getCatOptComboFromOptionList(List<String> catOpts);
     }

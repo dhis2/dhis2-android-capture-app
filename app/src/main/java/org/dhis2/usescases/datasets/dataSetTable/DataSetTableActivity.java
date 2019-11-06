@@ -76,7 +76,7 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
         dataSetUid = getIntent().getStringExtra(Constants.DATA_SET_UID);
         accessDataWrite = getIntent().getBooleanExtra(Constants.ACCESS_DATA, true);
 
-        ((App) getApplicationContext()).userComponent().plus(new DataSetTableModule(dataSetUid, periodId, orgUnitUid, catOptCombo)).inject(this);
+        ((App) getApplicationContext()).userComponent().plus(new DataSetTableModule(this, dataSetUid, periodId, orgUnitUid, catOptCombo)).inject(this);
         super.onCreate(savedInstanceState);
 
         //Orientation
@@ -88,7 +88,7 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
 
         setViewPager();
 
-        presenter.init(this, orgUnitUid, periodTypeName, catOptCombo, periodInitialDate, periodId);
+        presenter.init(orgUnitUid, periodTypeName, catOptCombo, periodInitialDate, periodId);
     }
 
     @Override
@@ -242,18 +242,23 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
     }
 
     @Override
-    public void runSmsSubmission() {
+    public void showSyncDialog() {
         SyncStatusDialog dialog = new SyncStatusDialog.Builder()
                 .setConflictType(SyncStatusDialog.ConflictType.DATA_VALUES)
                 .setUid(dataSetUid)
                 .setOrgUnit(orgUnitUid)
                 .setPeriodId(periodId)
                 .setAttributeOptionCombo(catOptCombo)
+                .onDismissListener(hasChanged -> {
+                    if(hasChanged){
+                        presenter.updateState();
+                    }
+                })
                 .build();
         dialog.show(getSupportFragmentManager(), dialog.getDialogTag());
     }
 
     public void update() {
-        presenter.init(this, orgUnitUid, periodTypeName, catOptCombo, periodInitialDate, periodId);
+        presenter.init(orgUnitUid, periodTypeName, catOptCombo, periodInitialDate, periodId);
     }
 }
