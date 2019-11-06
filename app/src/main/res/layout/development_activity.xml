@@ -80,14 +80,6 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
-
-            <ImageButton
-                android:id="@+id/iconButtonBack"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                app:srcCompat="@drawable/ic_keyboard_arrow_left" />
-
             <ImageButton
                 android:id="@+id/iconButton"
                 android:layout_width="0dp"
@@ -95,6 +87,12 @@
                 android:layout_weight="1"
                 app:srcCompat="@drawable/ic_keyboard_arrow_right" />
         </LinearLayout>
+
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/automaticErrorCheck"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Automatic error search"/>
 
 
     </LinearLayout>
