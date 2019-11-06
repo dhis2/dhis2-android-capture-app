@@ -176,7 +176,7 @@ class SyncStatusDialog private constructor(
             State.WARNING, State.ERROR ->
                 if (conflictType == ConflictType.PROGRAM || conflictType == ConflictType.DATA_SET) {
                     setProgramConflictMessage(state)
-                }else if(conflictType == ConflictType.DATA_VALUES){
+                } else if (conflictType == ConflictType.DATA_VALUES) {
                     setDataSetInstanceMessage()
                 }
             else -> {}

@@ -386,23 +386,25 @@ class GranularSyncPresenterImpl(
                     .map { it.state() }
             DATA_SET ->
                 d2.dataSetModule().dataSetInstances().byDataSetUid().eq(recordUid).get()
-                    .map { dataSetInstances->
+                    .map { dataSetInstances ->
                         dataSetInstances.map { it.state() }
-                    }.map { possibleStates->
-                        if(possibleStates.contains(State.ERROR)){
-                            State.ERROR
-                        }else if (possibleStates.contains(State.WARNING)){
-                            State.WARNING
-                        }else if(possibleStates.contains(State.SENT_VIA_SMS) ||
-                                possibleStates.contains(State.SYNCED_VIA_SMS)){
-                            State.SENT_VIA_SMS
-                        }else if(possibleStates.contains(State.TO_POST)||
-                                possibleStates.contains(State.TO_UPDATE)){
-                            State.TO_UPDATE
-                        }else{
-                            State.SYNCED
-                        }
+                    }.map { possibleStates ->
+                    if (possibleStates.contains(State.ERROR)) {
+                        State.ERROR
+                    } else if (possibleStates.contains(State.WARNING)) {
+                        State.WARNING
+                    } else if (possibleStates.contains(State.SENT_VIA_SMS) ||
+                        possibleStates.contains(State.SYNCED_VIA_SMS)
+                    ) {
+                        State.SENT_VIA_SMS
+                    } else if (possibleStates.contains(State.TO_POST) ||
+                        possibleStates.contains(State.TO_UPDATE)
+                    ) {
+                        State.TO_UPDATE
+                    } else {
+                        State.SYNCED
                     }
+                }
             DATA_VALUES ->
                 d2.dataSetModule().dataSetInstances()
                     .byOrganisationUnitUid().eq(dvOrgUnit)
