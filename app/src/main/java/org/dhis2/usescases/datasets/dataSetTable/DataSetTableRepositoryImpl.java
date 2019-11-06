@@ -74,6 +74,17 @@ public class DataSetTableRepositoryImpl implements DataSetTableRepository {
                     .byPeriod().eq(periodId).one().blockingGet();
 
             state = dataSetInstance.state();
+
+            DataSetCompleteRegistration dscr = d2.dataSetModule().dataSetCompleteRegistrations()
+                    .byDataSetUid().eq(dataSetUid)
+                    .byAttributeOptionComboUid().eq(catOptCombo)
+                    .byOrganisationUnitUid().eq(orgUnitUid)
+                    .byPeriod().eq(periodId).one().blockingGet();
+
+            if(state == State.SYNCED && dscr!=null){
+                state = dscr.state();
+            }
+
             return state != null ? Flowable.just(state) : Flowable.empty();
         });
     }

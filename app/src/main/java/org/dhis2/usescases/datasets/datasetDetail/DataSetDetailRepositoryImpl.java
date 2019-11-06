@@ -1,6 +1,11 @@
 package org.dhis2.usescases.datasets.datasetDetail;
 
 
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.utils.DateUtils;
 import org.hisp.dhis.android.core.D2;
@@ -10,19 +15,11 @@ import org.hisp.dhis.android.core.category.CategoryOption;
 import org.hisp.dhis.android.core.category.CategoryOptionCombo;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.dataset.DataSetCompleteRegistration;
-import org.hisp.dhis.android.core.dataset.DataSetElement;
 import org.hisp.dhis.android.core.dataset.DataSetInstanceCollectionRepository;
-import org.hisp.dhis.android.core.datavalue.DataValue;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.period.DatePeriod;
 import org.hisp.dhis.android.core.period.Period;
 import org.hisp.dhis.android.core.period.PeriodType;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
 
 import io.reactivex.Flowable;
 import io.reactivex.Single;
@@ -73,7 +70,13 @@ public class DataSetDetailRepositoryImpl implements DataSetDetailRepository {
                             .byAttributeOptionComboUid().eq(dataSetReport.attributeOptionComboUid())
                             .byOrganisationUnitUid().eq(dataSetReport.organisationUnitUid())
                             .byPeriod().eq(dataSetReport.period()).one().blockingGet();
+
                     State state = dataSetReport.state();
+
+                    if(state == State.SYNCED && dscr!=null){
+                        state = dscr.state();
+                    }
+
 
                     return DataSetDetailModel.create(
                             dataSetReport.organisationUnitUid(),
