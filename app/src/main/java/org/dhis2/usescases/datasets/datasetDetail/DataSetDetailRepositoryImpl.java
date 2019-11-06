@@ -73,42 +73,7 @@ public class DataSetDetailRepositoryImpl implements DataSetDetailRepository {
                             .byAttributeOptionComboUid().eq(dataSetReport.attributeOptionComboUid())
                             .byOrganisationUnitUid().eq(dataSetReport.organisationUnitUid())
                             .byPeriod().eq(dataSetReport.period()).one().blockingGet();
-                    State state;
-                    if (dscr != null && dscr.state() != State.SYNCED) {
-                        if (dscr.deleted() != null && dscr.deleted())
-                            state = State.TO_UPDATE;
-                        else
-                            state = dscr.state();
-                    } else {
-                        state = dataSetReport.state();
-                        List<String> dataElementsUids = new ArrayList<>();
-                        List<String> catOptionCombos = new ArrayList<>();
-                        for (DataSetElement dataSetElement : d2.dataSetModule().dataSets().withDataSetElements().byUid().eq(dataSetUid).one().blockingGet().dataSetElements()) {
-                            String catCombo;
-                            if (dataSetElement.categoryCombo() != null)
-                                catCombo = dataSetElement.categoryCombo().uid();
-                            else
-                                catCombo = d2.dataElementModule().dataElements().uid(dataSetElement.dataElement().uid()).blockingGet().categoryComboUid();
-
-                            for (CategoryOptionCombo categoryOptionCombo : d2.categoryModule().categoryOptionCombos()
-                                    .byCategoryComboUid().eq(catCombo).blockingGet()) {
-                                if (!catOptionCombos.contains(categoryOptionCombo.uid()))
-                                    catOptionCombos.add(categoryOptionCombo.uid());
-                            }
-
-                            dataElementsUids.add(dataSetElement.dataElement().uid());
-                        }
-
-                        for (DataValue dataValue : d2.dataValueModule().dataValues()
-                                .byDataElementUid().in(dataElementsUids)
-                                //.byCategoryOptionComboUid().in(catOptionCombos) //TODO set when datsetInstances works fine
-                                .byAttributeOptionComboUid().eq(dataSetReport.attributeOptionComboUid())
-                                .byOrganisationUnitUid().eq(dataSetReport.organisationUnitUid())
-                                .byPeriod().eq(dataSetReport.period()).blockingGet()) {
-                            if (dataValue.state() != State.SYNCED)
-                                state = State.TO_UPDATE;
-                        }
-                    }
+                    State state = dataSetReport.state();
 
                     return DataSetDetailModel.create(
                             dataSetReport.organisationUnitUid(),

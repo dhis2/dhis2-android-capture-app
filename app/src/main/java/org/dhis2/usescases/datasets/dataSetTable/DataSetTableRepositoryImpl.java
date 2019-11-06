@@ -66,28 +66,14 @@ public class DataSetTableRepositoryImpl implements DataSetTableRepository {
 
     public Flowable<State> dataSetState(){
         return Flowable.defer(() ->{
-            State state = null;
+            State state;
             DataSetInstance dataSetInstance = d2.dataSetModule().dataSetInstances()
                     .byDataSetUid().eq(dataSetUid)
                     .byAttributeOptionComboUid().eq(catOptCombo)
                     .byOrganisationUnitUid().eq(orgUnitUid)
                     .byPeriod().eq(periodId).one().blockingGet();
 
-            if(dataSetInstance != null ) {
-                state = dataSetInstance.state();
-                List<String> dataElementsUids = new ArrayList<>();
-                for(DataSetElement dataSetElement : d2.dataSetModule().dataSets().withDataSetElements().byUid().eq(dataSetUid).one().blockingGet().dataSetElements()){
-                    dataElementsUids.add(dataSetElement.dataElement().uid());
-                }
-                for (DataValue dataValue : d2.dataValueModule().dataValues()
-                        .byDataElementUid().in(dataElementsUids)
-                        .byAttributeOptionComboUid().eq(catOptCombo)
-                        .byOrganisationUnitUid().eq(orgUnitUid)
-                        .byPeriod().eq(periodId).blockingGet()) {
-                    if (dataValue.state() != State.SYNCED)
-                        state = State.TO_UPDATE;
-                }
-            }
+            state = dataSetInstance.state();
             return state != null ? Flowable.just(state) : Flowable.empty();
         });
     }

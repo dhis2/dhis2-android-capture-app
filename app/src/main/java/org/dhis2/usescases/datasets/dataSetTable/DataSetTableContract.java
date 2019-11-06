@@ -1,6 +1,7 @@
 package org.dhis2.usescases.datasets.dataSetTable;
 
 import org.dhis2.usescases.general.AbstractActivityContracts;
+import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.dataset.DataSet;
 
 import java.util.List;
@@ -27,7 +28,7 @@ public class DataSetTableContract {
 
         void isDataSetOpen(boolean dataSetIsOpen);
 
-        void isDataSetSynced(boolean dataSetIsSynced);
+        void setDataSetState(State state);
 
         void runSmsSubmission();
     }

@@ -87,7 +87,7 @@ public class DataSetTablePresenter implements DataSetTableContract.Presenter {
                 tableRepository.dataSetState()
                         .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.ui())
-                        .subscribe(state -> view.isDataSetSynced(state == State.SYNCED),
+                        .subscribe(view::setDataSetState,
                                 Timber::d
                         )
         );

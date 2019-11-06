@@ -385,44 +385,32 @@ class GranularSyncPresenterImpl(
                 d2.eventModule().events().uid(recordUid).get()
                     .map { it.state() }
             DATA_SET ->
-                d2.dataSetModule().dataSets().withDataSetElements().uid(recordUid).get()
-                    .map { it.dataSetElements() }
-                    .map {
-                        var state = State.SYNCED
-                        it.forEach { de ->
-                            d2.dataValueModule().dataValues().byDataElementUid()
-                                .eq(de.dataElement().uid()).blockingGet().forEach { dv ->
-                                if (dv.state() != State.SYNCED) {
-                                    state = State.TO_UPDATE
-                                }
-                            }
+                d2.dataSetModule().dataSetInstances().byDataSetUid().eq(recordUid).get()
+                    .map { dataSetInstances->
+                        dataSetInstances.map { it.state() }
+                    }.map { possibleStates->
+                        if(possibleStates.contains(State.ERROR)){
+                            State.ERROR
+                        }else if (possibleStates.contains(State.WARNING)){
+                            State.WARNING
+                        }else if(possibleStates.contains(State.SENT_VIA_SMS) ||
+                                possibleStates.contains(State.SYNCED_VIA_SMS)){
+                            State.SENT_VIA_SMS
+                        }else if(possibleStates.contains(State.TO_POST)||
+                                possibleStates.contains(State.TO_UPDATE)){
+                            State.TO_UPDATE
+                        }else{
+                            State.SYNCED
                         }
-                        state
                     }
             DATA_VALUES ->
-                getDataSetCatOptCombos()
-                    .flatMap {
-                        d2.dataValueModule().dataValues()
-                            .byOrganisationUnitUid().eq(dvOrgUnit)
-                            .byAttributeOptionComboUid().eq(dvAttrCombo)
-                            .byPeriod().eq(dvPeriodId).byCategoryOptionComboUid().`in`(it).get()
-                    }
+                d2.dataSetModule().dataSetInstances()
+                    .byOrganisationUnitUid().eq(dvOrgUnit)
+                    .byPeriod().eq(dvPeriodId)
+                    .byAttributeOptionComboUid().eq(dvAttrCombo)
+                    .byDataSetUid().eq(recordUid).one().get()
                     .map {
-                        var state = State.SYNCED
-                        it.forEach { dv ->
-                            if (dv.state() != State.SYNCED) {
-                                state = State.TO_UPDATE
-                            }
-                        }
-                        if (state == State.SYNCED) {
-                            d2.dataSetModule().dataSetCompleteRegistrations()
-                                .byDataSetUid().eq(recordUid)
-                                .byAttributeOptionComboUid().eq(dvAttrCombo)
-                                .byOrganisationUnitUid().eq(dvOrgUnit)
-                                .byPeriod().eq(dvPeriodId).one().blockingGet().state()
-                        } else {
-                            state
-                        }
+                        it.state()
                     }
         }
     }
