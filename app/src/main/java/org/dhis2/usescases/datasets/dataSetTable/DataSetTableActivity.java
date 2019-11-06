@@ -220,13 +220,18 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
     }
 
     @Override
-    public void runSmsSubmission() {
+    public void showSyncDialog() {
         SyncStatusDialog dialog = new SyncStatusDialog.Builder()
                 .setConflictType(SyncStatusDialog.ConflictType.DATA_VALUES)
                 .setUid(dataSetUid)
                 .setOrgUnit(orgUnitUid)
                 .setPeriodId(periodId)
                 .setAttributeOptionCombo(catOptCombo)
+                .onDismissListener(hasChanged -> {
+                    if(hasChanged){
+                        presenter.updateState();
+                    }
+                })
                 .build();
         dialog.show(getSupportFragmentManager(), dialog.getDialogTag());
     }

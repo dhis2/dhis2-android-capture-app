@@ -39,7 +39,7 @@ public class DataSetTablePresenter implements DataSetTableContract.Presenter {
 
     @Override
     public void onSyncClick() {
-        view.runSmsSubmission();
+        view.showSyncDialog();
     }
 
     @Override
@@ -138,6 +138,18 @@ public class DataSetTablePresenter implements DataSetTableContract.Presenter {
     @Override
     public String getCatOptComboFromOptionList(List<String> catOpts) {
         return tableRepository.getCatOptComboFromOptionList(catOpts);
+    }
+
+    @Override
+    public void updateState(){
+        compositeDisposable.add(
+                tableRepository.dataSetState()
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
+                        .subscribe(state -> view.isDataSetSynced(state == State.SYNCED),
+                                Timber::d
+                        )
+        );
     }
 
 }

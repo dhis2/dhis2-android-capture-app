@@ -29,7 +29,7 @@ public class DataSetTableContract {
 
         void isDataSetSynced(boolean dataSetIsSynced);
 
-        void runSmsSubmission();
+        void showSyncDialog();
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter {
@@ -47,6 +47,7 @@ public class DataSetTableContract {
         void optionsClick();
 
         void onClickSelectTable(int numTable);
+        void updateState();
 
         String getCatOptComboFromOptionList(List<String> catOpts);
     }
