@@ -33,7 +33,6 @@ class DataValuePresenterTest {
 
     @Test
     fun `Check all row have values`() {
-
         val dataValues: List<DataSetTableModel> = createDataValues()
 
         val tableCells: MutableList<List<List<FieldViewModel>>> = createTableCells()
@@ -43,7 +42,6 @@ class DataValuePresenterTest {
 
     @Test
     fun `Check no row have values`() {
-
         val dataValues: List<DataSetTableModel> = listOf()
 
         val tableCells: MutableList<List<List<FieldViewModel>>> = createTableCells()
@@ -53,32 +51,27 @@ class DataValuePresenterTest {
 
     @Test
     fun `Check one field without value`() {
-
         val dataValues: MutableList<DataSetTableModel> = createDataValues().toMutableList()
 
         dataValues.removeAt(0)
 
         val tableCells: MutableList<List<List<FieldViewModel>>> = createTableCells()
 
-
         assertFalse(presenter.checkAllFieldRequired(tableCells, dataValues))
-        verify(view).highligthHeaderRow(0,0, false)
+        verify(view).highligthHeaderRow(0, 0, false)
     }
 
     @Test
     fun `Check all mandatory fields with value`() {
-
         val dataValues: List<DataSetTableModel> = createDataValues()
 
         val tableCells: MutableList<List<List<FieldViewModel>>> = createTableCells()
-
 
         assertTrue(presenter.checkMandatoryField(tableCells, dataValues))
     }
 
     @Test
     fun `Check mandatory field without value`() {
-
         val dataValues: MutableList<DataSetTableModel> = createDataValues().toMutableList()
 
         dataValues.removeAt(0)
@@ -86,13 +79,13 @@ class DataValuePresenterTest {
         val tableCells: MutableList<List<List<FieldViewModel>>> = createTableCells()
 
         assertFalse(presenter.checkMandatoryField(tableCells, dataValues))
-        verify(view).highligthHeaderRow(0,0,true)
+        verify(view).highligthHeaderRow(0, 0, true)
     }
 
-    private fun createDataValues() : List<DataSetTableModel>{
+    private fun createDataValues(): List<DataSetTableModel> {
         val dataValues = arrayListOf<DataSetTableModel>()
-        repeat(2){ row ->
-            repeat(2){ column ->
+        repeat(2) { row ->
+            repeat(2) { column ->
                 dataValues.add(
                     DataSetTableModel.create(
                         0,
@@ -113,11 +106,11 @@ class DataValuePresenterTest {
         return dataValues
     }
 
-    private fun createTableCells() : MutableList<List<List<FieldViewModel>>>{
+    private fun createTableCells(): MutableList<List<List<FieldViewModel>>> {
         val table = arrayListOf<List<FieldViewModel>>()
-        repeat(2){ row ->
+        repeat(2) { row ->
             val fields = arrayListOf<FieldViewModel>()
-            repeat(2){ column ->
+            repeat(2) { column ->
                 fields.add(
                     EditTextViewModel.create(
                         "",
@@ -145,5 +138,4 @@ class DataValuePresenterTest {
         }
         return mutableListOf(table)
     }
-
 }
