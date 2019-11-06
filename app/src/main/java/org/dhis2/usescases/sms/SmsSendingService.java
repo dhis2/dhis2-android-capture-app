@@ -292,8 +292,9 @@ public class SmsSendingService extends Service {
         COUNT_NOT_ACCEPTED, SENDING, SENT, WAITING_RESULT, RESULT_CONFIRMED,
         WAITING_RESULT_TIMEOUT, COMPLETED, ERROR;
 
-        private static final Set<State> ERROR_TYPES = new HashSet<>(Arrays.asList(STARTED,CONVERTED,SENDING,WAITING_RESULT,RESULT_CONFIRMED,SENT));
-        private static final Set<State> SENDING_TYPES = new HashSet<>(Arrays.asList(ITEM_NOT_READY,COUNT_NOT_ACCEPTED,WAITING_RESULT_TIMEOUT,ERROR));
+        private static final Set<State> STARTING_TYPES = new HashSet<>(Arrays.asList(STARTED,WAITING_COUNT_CONFIRMATION,CONVERTED));
+        private static final Set<State> SENDING_TYPES = new HashSet<>(Arrays.asList(SENDING,WAITING_RESULT,RESULT_CONFIRMED,SENT));
+        private static final Set<State> ERROR_TYPES = new HashSet<>(Arrays.asList(ITEM_NOT_READY,COUNT_NOT_ACCEPTED,WAITING_RESULT_TIMEOUT,ERROR));
         private static final Set<State> COMPLETED_TYPES = new HashSet<>(Arrays.asList(COMPLETED));
         public boolean isError(){
             return ERROR_TYPES.contains(this);
@@ -306,6 +307,8 @@ public class SmsSendingService extends Service {
         public boolean isCompleted(){
             return COMPLETED_TYPES.contains(this);
         }
+
+        public boolean isStarting() { return STARTING_TYPES.contains(this); }
 
     }
 

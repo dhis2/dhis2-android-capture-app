@@ -277,6 +277,7 @@ class GranularSyncPresenterImpl(
     override fun reportState(state: SmsSendingService.State, sent: Int, total: Int) {
         val submissionId = smsSender.submissionId
         val currentStatus = SmsSendingService.SendingStatus(submissionId, state, null, sent, total)
+        statesList.clear()
         statesList.add(currentStatus)
         states.postValue(statesList)
     }
