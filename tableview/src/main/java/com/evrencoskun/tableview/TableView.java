@@ -409,11 +409,13 @@ public class TableView extends FrameLayout implements ITableView {
                         mColumnHeaderParams.topMargin = height * i;
                         mBuckupHeaderParams.height = height;
                         mBuckupHeaderParams.topMargin = height * i;
+                        mBackupHeaders.get(i).scrollToPosition(0);
                     }
 
                     //CELL HEADERS
                     FrameLayout.LayoutParams mCellHeaderParams = ((FrameLayout.LayoutParams) mCellRecyclerView.getLayoutParams());
                     mCellHeaderParams.topMargin = height * mHeaderCount;
+                    scrollToColumnPosition(0);
 
                     //Corner
                     if(getAdapter().getCornerView()!=null) {
