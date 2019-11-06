@@ -388,8 +388,13 @@ class GranularSyncPresenterImpl(
             DATA_SET ->
                 d2.dataSetModule().dataSetInstances().byDataSetUid().eq(recordUid).get()
                     .map { dataSetInstances ->
-                        dataSetInstances.map { it.state() }
+                        dataSetInstances.map { it.state() }.toMutableList()
                     }.map { possibleStates ->
+
+                        possibleStates.addAll(d2.dataSetModule().dataSetCompleteRegistrations()
+                            .byDataSetUid().eq(recordUid)
+                            .blockingGet().map { it.state() })
+
                     if (possibleStates.contains(State.ERROR)) {
                         State.ERROR
                     } else if (possibleStates.contains(State.WARNING)) {
