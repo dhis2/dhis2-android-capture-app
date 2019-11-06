@@ -348,40 +348,30 @@ class SyncStatusDialog private constructor(
     }
 
     private fun stateChanged(states: List<SmsSendingService.SendingStatus>?) {
-        if (states == null) return
+        if (states.isNullOrEmpty()) return
 
-        for (status in states) {
+        states.forEach {
             when {
-                status.state.isSending -> {
+                it.state.isStarting -> {
                     adapter!!.addItem(
-                        StatusLogItem.create(
-                            Date(),
-                            getString(R.string.sms_bar_state_sending)
-                        )
+                        StatusLogItem.create(Date(), getString(R.string.sms_bar_state_starting))
                     )
                     adapter!!.addItem(
-                        StatusLogItem.create(
-                            Date(),
-                            status.sent.toString() + "/" + status.total
-                        )
+                        StatusLogItem.create(Date(), it.sent.toString() + "/" + it.total)
                     )
                 }
-                status.state.isError -> adapter!!.addItem(
-                    StatusLogItem.create(
-                        Date(),
-                        getString(R.string.sms_bar_state_failed)
+                it.state.isSending -> {
+                    adapter!!.addItem(
+                        StatusLogItem.create(Date(), getString(R.string.sms_bar_state_sending))
                     )
+                }
+                it.state.isError -> adapter!!.addItem(
+                    StatusLogItem.create(Date(), getString(R.string.sms_bar_state_failed))
                 )
-                status.state.isCompleted -> adapter!!.addItem(
-                    StatusLogItem.create(
-                        Date(),
-                        getString(R.string.sms_bar_state_sent)
-                    )
+                it.state.isCompleted -> adapter!!.addItem(
+                    StatusLogItem.create(Date(), getString(R.string.sms_bar_state_sent))
                 )
             }
-        }
-        if (states.isEmpty()) {
-            return
         }
 
         val lastState = states[states.size - 1]

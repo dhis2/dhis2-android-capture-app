@@ -547,6 +547,7 @@
     <string name="sms_title_enrollment">SMS TEI registration and enrollment</string>
     <string name="sms_title_event">SMS event submission</string>
     <string name="sms_title_data_set">SMS data set submission</string>
+    <string name="sms_bar_state_starting">Starting</string>
     <string name="sms_bar_state_sending">In progress</string>
     <string name="sms_bar_state_sent">Sent</string>
     <string name="sms_bar_state_failed">Failed</string>
