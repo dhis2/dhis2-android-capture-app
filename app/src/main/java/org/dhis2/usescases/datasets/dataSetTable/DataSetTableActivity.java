@@ -75,7 +75,7 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
         dataSetUid = getIntent().getStringExtra(Constants.DATA_SET_UID);
         accessDataWrite = getIntent().getBooleanExtra(Constants.ACCESS_DATA, true);
 
-        ((App) getApplicationContext()).userComponent().plus(new DataSetTableModule(dataSetUid, periodId, orgUnitUid, catOptCombo)).inject(this);
+        ((App) getApplicationContext()).userComponent().plus(new DataSetTableModule(this, dataSetUid, periodId, orgUnitUid, catOptCombo)).inject(this);
         super.onCreate(savedInstanceState);
 
         //Orientation
@@ -87,7 +87,7 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
 
         setViewPager();
 
-        presenter.init(this, orgUnitUid, periodTypeName, catOptCombo, periodInitialDate, periodId);
+        presenter.init(orgUnitUid, periodTypeName, catOptCombo, periodInitialDate, periodId);
     }
 
     @Override
@@ -237,6 +237,6 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
     }
 
     public void update() {
-        presenter.init(this, orgUnitUid, periodTypeName, catOptCombo, periodInitialDate, periodId);
+        presenter.init(orgUnitUid, periodTypeName, catOptCombo, periodInitialDate, periodId);
     }
 }

@@ -18,7 +18,7 @@ public class DataSetTablePresenter implements DataSetTableContract.Presenter {
     private final DataSetTableRepository tableRepository;
     private final SchedulerProvider schedulerProvider;
     DataSetTableContract.View view;
-    private CompositeDisposable compositeDisposable;
+    public CompositeDisposable disposable;
 
     private String orgUnitUid;
     private String periodTypeName;
@@ -27,40 +27,30 @@ public class DataSetTablePresenter implements DataSetTableContract.Presenter {
     private boolean open = true;
     private String periodId;
 
-    public DataSetTablePresenter(DataSetTableRepository dataSetTableRepository, SchedulerProvider schedulerProvider) {
+    public DataSetTablePresenter(DataSetTableContract.View view, DataSetTableRepository dataSetTableRepository, SchedulerProvider schedulerProvider) {
+        this.view = view;
         this.tableRepository = dataSetTableRepository;
         this.schedulerProvider = schedulerProvider;
+        disposable = new CompositeDisposable();
     }
 
     @Override
-    public void onBackClick() {
-        view.back();
-    }
-
-    @Override
-    public void onSyncClick() {
-        view.showSyncDialog();
-    }
-
-    @Override
-    public void init(DataSetTableContract.View view, String orgUnitUid, String periodTypeName, String catCombo,
+    public void init(String orgUnitUid, String periodTypeName, String catCombo,
                      String periodFinalDate, String periodId) {
-        this.view = view;
-        compositeDisposable = new CompositeDisposable();
         this.orgUnitUid = orgUnitUid;
         this.periodTypeName = periodTypeName;
         this.periodFinalDate = periodFinalDate;
         this.catCombo = catCombo;
         this.periodId = periodId;
 
-        compositeDisposable.add(
+        disposable.add(
                 tableRepository.getSections()
                         .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.ui())
                         .subscribe(view::setSections, Timber::e)
         );
 
-        compositeDisposable.add(
+        disposable.add(
                 Flowable.zip(
                         tableRepository.getDataSet(),
                         tableRepository.getCatComboName(catCombo),
@@ -74,7 +64,7 @@ public class DataSetTablePresenter implements DataSetTableContract.Presenter {
                         )
         );
 
-        compositeDisposable.add(
+        disposable.add(
                 tableRepository.dataSetStatus()
                         .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.ui())
@@ -83,7 +73,7 @@ public class DataSetTablePresenter implements DataSetTableContract.Presenter {
                         )
         );
 
-        compositeDisposable.add(
+        disposable.add(
                 tableRepository.dataSetState()
                         .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.ui())
@@ -94,8 +84,18 @@ public class DataSetTablePresenter implements DataSetTableContract.Presenter {
     }
 
     @Override
+    public void onBackClick() {
+        view.back();
+    }
+
+    @Override
+    public void onSyncClick() {
+        view.showSyncDialog();
+    }
+
+    @Override
     public void onDettach() {
-        compositeDisposable.dispose();
+        disposable.dispose();
     }
 
     @Override
@@ -142,7 +142,7 @@ public class DataSetTablePresenter implements DataSetTableContract.Presenter {
 
     @Override
     public void updateState(){
-        compositeDisposable.add(
+        disposable.add(
                 tableRepository.dataSetState()
                         .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.ui())

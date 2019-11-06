@@ -37,7 +37,7 @@ public class DataSetTableContract {
         void onBackClick();
         void onSyncClick();
 
-        void init(View view, String orgUnitUid, String periodTypeName, String catCombo, String periodFinalDate, String periodId);
+        void init(String orgUnitUid, String periodTypeName, String catCombo, String periodFinalDate, String periodId);
 
         String getOrgUnitUid();
         String getPeriodTypeName();
