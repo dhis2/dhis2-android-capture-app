@@ -1,7 +1,6 @@
 package org.dhis2.usescases.datasets.dataSetTable;
 
 
-import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.view.View;
@@ -19,13 +18,11 @@ import org.dhis2.App;
 import org.dhis2.R;
 import org.dhis2.databinding.ActivityDatasetTableBinding;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
-import org.dhis2.usescases.sms.InputArguments;
-import org.dhis2.usescases.sms.SmsSubmitActivity;
 import org.dhis2.utils.Constants;
+import org.dhis2.utils.granularsync.SyncStatusDialog;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.dataset.DataSet;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -246,14 +243,14 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
 
     @Override
     public void runSmsSubmission() {
-        if (!getResources().getBoolean(R.bool.sms_enabled)) {
-            return;
-        }
-        Intent intent = new Intent(this, SmsSubmitActivity.class);
-        Bundle args = new Bundle();
-        InputArguments.setDataSet(args, dataSetUid, orgUnitUid, periodId, catOptCombo);
-        intent.putExtras(args);
-        startActivity(intent);
+        SyncStatusDialog dialog = new SyncStatusDialog.Builder()
+                .setConflictType(SyncStatusDialog.ConflictType.DATA_VALUES)
+                .setUid(dataSetUid)
+                .setOrgUnit(orgUnitUid)
+                .setPeriodId(periodId)
+                .setAttributeOptionCombo(catOptCombo)
+                .build();
+        dialog.show(getSupportFragmentManager(), dialog.getDialogTag());
     }
 
     public void update() {
