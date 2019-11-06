@@ -26,28 +26,17 @@ public class DataSetDetailPresenter implements DataSetDetailContract.Presenter {
     private DataSetDetailRepository dataSetDetailRepository;
     private DataSetDetailContract.View view;
     private CompositeDisposable compositeDisposable;
-    private Map<String, String> mapPeriodAvailable;
-    private FlowableProcessor<Boolean> processor;
     private String dataSetUid;
-
-    @Retention(RetentionPolicy.SOURCE)
-    @IntDef({LastSearchType.DATES, LastSearchType.DATE_RANGES})
-    public @interface LastSearchType {
-        int DATES = 1;
-        int DATE_RANGES = 32;
-    }
 
     public DataSetDetailPresenter(DataSetDetailRepository dataSetDetailRepository, SchedulerProvider schedulerProvider) {
         this.dataSetDetailRepository = dataSetDetailRepository;
         this.schedulerProvider = schedulerProvider;
         compositeDisposable = new CompositeDisposable();
-        mapPeriodAvailable = new HashMap<>();
     }
 
     @Override
     public void init(DataSetDetailContract.View view, String dataSetUid) {
         this.view = view;
-        this.processor = PublishProcessor.create();
         this.dataSetUid = dataSetUid;
         getOrgUnits();
 
@@ -62,12 +51,7 @@ public class DataSetDetailPresenter implements DataSetDetailContract.Presenter {
                         .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.ui())
                         .subscribe(
-                                dataSetDetailModels -> {
-                                    for (DataSetDetailModel dataset : dataSetDetailModels)
-                                        mapPeriodAvailable.put(dataset.periodId(), dataset.namePeriod());
-
-                                    view.setData(dataSetDetailModels);
-                                },
+                                view::setData,
                                 Timber::d
                         )
         );

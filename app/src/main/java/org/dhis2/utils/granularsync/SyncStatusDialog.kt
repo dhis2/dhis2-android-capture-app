@@ -176,6 +176,8 @@ class SyncStatusDialog private constructor(
             State.WARNING, State.ERROR ->
                 if (conflictType == ConflictType.PROGRAM || conflictType == ConflictType.DATA_SET) {
                     setProgramConflictMessage(state)
+                } else if (conflictType == ConflictType.DATA_VALUES) {
+                    setDataSetInstanceMessage()
                 }
             else -> {}
         }
@@ -263,6 +265,13 @@ class SyncStatusDialog private constructor(
 
         binding!!.noConflictMessage.text = str
         setNetworkMessage()
+    }
+
+    private fun setDataSetInstanceMessage() {
+        binding!!.synsStatusRecycler.visibility = View.GONE
+        binding!!.noConflictMessage.visibility = View.VISIBLE
+
+        binding!!.noConflictMessage.text = getString(R.string.data_values_error_sync_message)
     }
 
     private fun getTextByState(state: State): Int {
