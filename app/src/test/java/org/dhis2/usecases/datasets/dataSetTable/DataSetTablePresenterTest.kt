@@ -82,23 +82,12 @@ class DataSetTablePresenterTest {
     }
 
     @Test
-    fun `Should tell the dataset is sync when called`() {
+    fun `Should set the dataset state`() {
         val state = State.SYNCED
         whenever(repository.dataSetState()) doReturn Flowable.just(state)
 
         presenter.updateState()
 
-        verify(view).isDataSetSynced(true)
+        verify(view).setDataSetState(state)
     }
-
-    @Test
-    fun `Should tell the dataset is not sync when called`() {
-        val state = State.TO_UPDATE
-        whenever(repository.dataSetState()) doReturn Flowable.just(state)
-
-        presenter.updateState()
-
-        verify(view).isDataSetSynced(false)
-    }
-
 }
