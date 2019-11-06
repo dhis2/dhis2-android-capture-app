@@ -28,17 +28,14 @@ class AnalyticsHelper @Inject constructor(
         val d2 = D2Manager.getD2()
 
         if (d2 != null && d2.userModule().blockingIsLogged()) {
-            bundle.apply {
-                putString("user", d2.userModule().userCredentials().blockingGet().username())
-                if (preferencesProvider.contains(Constants.USER)) {
-                    putString(
-                        "server",
-                        d2.systemInfoModule().systemInfo().blockingGet().contextPath()
-                    )
-                }
+            if (preferencesProvider.contains(Constants.USER)) {
+                analytics.setUserProperty(
+                    USER_PROPERTY_NAME,
+                    d2.userModule().userCredentials().blockingGet().username()
+                )
             }
             analytics.setUserProperty(
-                "serverUrl",
+                USER_PROPERTY_SERVER,
                 d2.systemInfoModule().systemInfo().blockingGet().contextPath()
             )
         }
