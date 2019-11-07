@@ -13,12 +13,14 @@ import dagger.Provides;
 @Module
 public class DataSetTableModule {
 
+    private DataSetTableContract.View view;
     private final String dataSetUid;
     private final String periodId;
     private final String orgUnitUid;
     private final String catOptCombo;
 
-    DataSetTableModule(String dataSetUid, String periodId, String orgUnitUid, String catOptCombo) {
+    DataSetTableModule(DataSetTableActivity view, String dataSetUid, String periodId, String orgUnitUid, String catOptCombo) {
+        this.view = view;
         this.dataSetUid = dataSetUid;
         this.periodId = periodId;
         this.orgUnitUid = orgUnitUid;
@@ -27,14 +29,8 @@ public class DataSetTableModule {
 
     @Provides
     @PerActivity
-    DataSetTableContract.View provideView(DataSetTableActivity activity) {
-        return activity;
-    }
-
-    @Provides
-    @PerActivity
     DataSetTableContract.Presenter providesPresenter(DataSetTableRepository DataSetTableRepository, SchedulerProvider schedulerProvider) {
-        return new DataSetTablePresenter(DataSetTableRepository, schedulerProvider);
+        return new DataSetTablePresenter(view, DataSetTableRepository, schedulerProvider);
     }
 
     @Provides
