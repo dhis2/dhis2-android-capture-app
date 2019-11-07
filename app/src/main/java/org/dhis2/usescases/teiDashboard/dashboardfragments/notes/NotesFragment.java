@@ -96,7 +96,6 @@ public class NotesFragment extends FragmentGlobalAbstract implements NotesContra
     public void addNote(View view) {
         if (presenter.hasProgramWritePermission()) {
             analyticsHelper().setEvent(CREATE_NOTE, CLICK, CREATE_NOTE);
-//            noteAdapter.addNote(binding.editNote.getText().toString());
             presenter.saveNote(binding.editNote.getText().toString());
             clearNote(view);
         } else
