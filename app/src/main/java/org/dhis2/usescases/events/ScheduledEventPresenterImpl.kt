@@ -30,7 +30,7 @@ class ScheduledEventPresenterImpl(
             d2.eventModule().events().uid(eventUid).get()
                 .flatMap {
                     Single.zip(
-                        d2.programModule().programStages().withStyle().uid(it.programStage()).get(),
+                        d2.programModule().programStages().uid(it.programStage()).get(),
                         d2.programModule().programs().uid(it.program()).get(),
                         BiFunction<ProgramStage, Program, Triple<ProgramStage, Program, Event>>
                         { stage, program ->

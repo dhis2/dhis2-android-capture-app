@@ -766,7 +766,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
     @Override
     public Drawable getSymbolIcon() {
-        TrackedEntityType teiType = d2.trackedEntityModule().trackedEntityTypes().withTrackedEntityTypeAttributes().withStyle().uid(trackedEntityType).blockingGet();
+        TrackedEntityType teiType = d2.trackedEntityModule().trackedEntityTypes().withTrackedEntityTypeAttributes().uid(trackedEntityType).blockingGet();
 
         if (teiType.style() != null && teiType.style().icon() != null) {
             return
@@ -789,7 +789,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
     @Override
     public int getTEIColor() {
-        TrackedEntityType teiType = d2.trackedEntityModule().trackedEntityTypes().withTrackedEntityTypeAttributes().withStyle().uid(trackedEntityType).blockingGet();
+        TrackedEntityType teiType = d2.trackedEntityModule().trackedEntityTypes().withTrackedEntityTypeAttributes().uid(trackedEntityType).blockingGet();
 
         if (teiType.style() != null && teiType.style().color() != null) {
             return ColorUtils.parseColor(teiType.style().color());

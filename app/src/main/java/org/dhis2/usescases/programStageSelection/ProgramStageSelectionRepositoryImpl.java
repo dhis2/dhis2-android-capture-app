@@ -168,7 +168,7 @@ public class ProgramStageSelectionRepositoryImpl implements ProgramStageSelectio
                 .map(event -> event.programStage())
                 .toList()
                 .flatMap(currentProgramStagesUids -> {
-                    ProgramStageCollectionRepository repository = d2.programModule().programStages().byProgramUid().eq(programId).withStyle();
+                    ProgramStageCollectionRepository repository = d2.programModule().programStages().byProgramUid().eq(programId);
                     if (eventCreationType.equals(EventCreationType.SCHEDULE.name()))
                         repository = repository.byHideDueDate().eq(false);
 

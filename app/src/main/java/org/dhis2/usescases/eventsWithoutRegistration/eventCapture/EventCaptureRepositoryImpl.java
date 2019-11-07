@@ -350,7 +350,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
             ProgramStageSectionRenderingType renderingType = renderingType(fieldViewModel.programStageSection());
             if (!isEmpty(fieldViewModel.optionSet()) && renderingType != ProgramStageSectionRenderingType.LISTING) {
                 List<Option> options = d2.optionModule().options().byOptionSetUid().eq(fieldViewModel.optionSet() == null ? "" : fieldViewModel.optionSet())
-                        .withStyle().blockingGet();
+                        .blockingGet();
                 for (Option option : options) {
                     ValueTypeDeviceRendering fieldRendering = null;
 

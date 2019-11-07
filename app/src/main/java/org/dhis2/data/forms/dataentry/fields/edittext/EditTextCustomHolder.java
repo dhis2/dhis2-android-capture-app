@@ -114,12 +114,7 @@ final class EditTextCustomHolder extends FormViewHolder {
 
         binding.customEdittext.setObjectSyle(model.objectStyle());
         if (model.objectStyle() != null) {
-            objectStyle = ObjectStyle.builder()
-                    .color(model.objectStyle().color())
-                    .icon(model.objectStyle().icon())
-                    .uid(model.objectStyle().uid())
-                    .objectTable(model.objectStyle().objectTable())
-                    .build();
+            objectStyle = model.objectStyle();
         }
         label = new StringBuilder(model.label());
         binding.customEdittext.setLabel(model.label(), model.mandatory());

@@ -131,7 +131,6 @@ public class SearchRepositoryImpl implements SearchRepository {
                         .byOrganisationUnitList(orgUnitsUids)
                         .byRegistration().isTrue()
                         .byTrackedEntityTypeUid().eq(teiType)
-                        .withStyle()
                         .blockingGet()));
     }
 
@@ -467,7 +466,7 @@ public class SearchRepositoryImpl implements SearchRepository {
     }
 
     private Trio<String, String, String> getProgramInfo(String programUid) {
-        Program program = d2.programModule().programs().withStyle().byUid().eq(programUid).one().blockingGet();
+        Program program = d2.programModule().programs().byUid().eq(programUid).one().blockingGet();
         String programColor = program.style() != null && program.style().color() != null ? program.style().color() : "";
         String programIcon = program.style() != null && program.style().icon() != null ? program.style().icon() : "";
         return Trio.create(program.displayName(), programColor, programIcon);
@@ -525,7 +524,7 @@ public class SearchRepositoryImpl implements SearchRepository {
 
     @Override
     public String getProgramColor(@NonNull String programUid) {
-        Program program = d2.programModule().programs().withStyle().byUid().eq(programUid).one().blockingGet();
+        Program program = d2.programModule().programs().byUid().eq(programUid).one().blockingGet();
         return program.style() != null ?
                 program.style().color() != null ?
                         program.style().color() :
@@ -608,8 +607,8 @@ public class SearchRepositoryImpl implements SearchRepository {
 
             searchTei.setProfilePicture(profilePicturePath(tei, selectedProgram));
             ObjectStyle os = null;
-            if (d2.trackedEntityModule().trackedEntityTypes().withStyle().uid(tei.trackedEntityType()).blockingExists())
-                os = d2.trackedEntityModule().trackedEntityTypes().withStyle().uid(tei.trackedEntityType()).blockingGet().style();
+            if (d2.trackedEntityModule().trackedEntityTypes().uid(tei.trackedEntityType()).blockingExists())
+                os = d2.trackedEntityModule().trackedEntityTypes().uid(tei.trackedEntityType()).blockingGet().style();
 
             searchTei.setDefaultTypeIcon(os != null ? os.icon() : null);
             return searchTei;
@@ -631,8 +630,8 @@ public class SearchRepositoryImpl implements SearchRepository {
             }
             searchTei.setAttributeValues(attributeModels);
             ObjectStyle os = null;
-            if (d2.trackedEntityModule().trackedEntityTypes().withStyle().uid(tei.trackedEntityType()).blockingExists())
-                os = d2.trackedEntityModule().trackedEntityTypes().withStyle().uid(tei.trackedEntityType()).blockingGet().style();
+            if (d2.trackedEntityModule().trackedEntityTypes().uid(tei.trackedEntityType()).blockingExists())
+                os = d2.trackedEntityModule().trackedEntityTypes().uid(tei.trackedEntityType()).blockingGet().style();
             searchTei.setDefaultTypeIcon(os != null ? os.icon() : null);
             return searchTei;
         }

@@ -176,11 +176,7 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
 
         ValueTypeDeviceRendering fieldRendering = stage.renderType() == null ? null : stage.renderType().mobile();
 
-        ObjectStyle objectStyle = ObjectStyle.builder().build();
-        try (Cursor objStyleCursor = briteDatabase.query("SELECT * FROM ObjectStyle WHERE uid = ?", uid)) {
-            if (objStyleCursor != null && objStyleCursor.moveToFirst())
-                objectStyle = ObjectStyle.create(objStyleCursor);
-        }
+        ObjectStyle objectStyle = d2.dataElementModule().dataElements().uid(uid).blockingGet().style();
 
         if (ValueType.valueOf(valueTypeName) == ValueType.ORGANISATION_UNIT && !isEmpty(dataValue)) {
             dataValue = dataValue + "_ou_" + d2.organisationUnitModule().organisationUnits().uid(dataValue).blockingGet().displayName();
@@ -277,7 +273,7 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
     @Override
     public Observable<Program> getProgramWithId(String programUid) {
         return d2.programModule().programs().withTrackedEntityType().withProgramTrackedEntityAttributes().withProgramIndicators()
-                .withProgramRuleVariables().withProgramSections().withStyle()
+                .withProgramRuleVariables().withProgramSections()
                 .uid(programUid).get().toObservable();
     }
 }

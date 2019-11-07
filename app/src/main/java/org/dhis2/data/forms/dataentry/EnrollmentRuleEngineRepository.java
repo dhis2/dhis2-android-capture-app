@@ -136,7 +136,7 @@ public final class EnrollmentRuleEngineRepository
         {
             String uid = attributeValue.trackedEntityAttribute();
             String value = attributeValue.value();
-            TrackedEntityAttribute attr = d2.trackedEntityModule().trackedEntityAttributes().withObjectStyle()
+            TrackedEntityAttribute attr = d2.trackedEntityModule().trackedEntityAttributes()
                 .uid( attributeValue.trackedEntityAttribute() ).blockingGet();
             if ( attr != null && attr.optionSet() != null )
             {
@@ -286,7 +286,7 @@ public final class EnrollmentRuleEngineRepository
     public void updateRuleAttributeMap( String uid, String value )
     {
         lastUpdatedAttr = uid;
-        TrackedEntityAttribute attr = d2.trackedEntityModule().trackedEntityAttributes().withObjectStyle().uid( uid )
+        TrackedEntityAttribute attr = d2.trackedEntityModule().trackedEntityAttributes().uid( uid )
             .blockingGet();
         if ( attr != null && attr.optionSet() != null )
         {
