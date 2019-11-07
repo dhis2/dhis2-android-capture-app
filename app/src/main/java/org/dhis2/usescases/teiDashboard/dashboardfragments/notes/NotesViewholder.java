@@ -6,7 +6,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import org.dhis2.databinding.ItemNotesBinding;
 import org.dhis2.utils.DateUtils;
-import org.hisp.dhis.android.core.enrollment.note.Note;
+import org.hisp.dhis.android.core.note.Note;
 
 import java.text.ParseException;
 import java.util.Date;

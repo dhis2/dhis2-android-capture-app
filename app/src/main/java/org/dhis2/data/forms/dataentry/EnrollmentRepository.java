@@ -72,7 +72,7 @@ public final class EnrollmentRepository implements DataEntryRepository {
 
     @NonNull
     private FieldViewModel transform(@NonNull ProgramTrackedEntityAttribute programTrackedEntityAttribute) {
-        TrackedEntityAttribute attribute = d2.trackedEntityModule().trackedEntityAttributes().withObjectStyle().uid(programTrackedEntityAttribute.trackedEntityAttribute().uid())
+        TrackedEntityAttribute attribute = d2.trackedEntityModule().trackedEntityAttributes().uid(programTrackedEntityAttribute.trackedEntityAttribute().uid())
                 .blockingGet();
         TrackedEntityAttributeValueObjectRepository attrValueRepository = d2.trackedEntityModule().trackedEntityAttributeValues()
                 .value(attribute.uid(), enrollmentRepository.blockingGet().trackedEntityInstance());

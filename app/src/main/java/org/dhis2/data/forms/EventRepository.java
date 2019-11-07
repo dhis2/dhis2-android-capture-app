@@ -539,11 +539,9 @@ public class EventRepository implements FormRepository {
                 "",
                 "",
                 "");
-        ObjectStyle objectStyle = ObjectStyle.builder().build();
-        try (Cursor objStyleCursor = briteDatabase.query("SELECT * FROM ObjectStyle WHERE uid = ?", uid)) {
-            if (objStyleCursor.moveToFirst())
-                objectStyle = ObjectStyle.create(objStyleCursor);
-        }
+        ObjectStyle objectStyle = d2.dataElementModule().dataElements().uid(uid).blockingGet().style();
+
+
         if (valueType == ValueType.ORGANISATION_UNIT && !isEmpty(dataValue)) {
             dataValue = dataValue + "_ou_" + d2.organisationUnitModule().organisationUnits().uid(dataValue).blockingGet().displayName();
         }

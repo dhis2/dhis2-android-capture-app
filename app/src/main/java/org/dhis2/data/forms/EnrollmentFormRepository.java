@@ -447,7 +447,7 @@ public class EnrollmentFormRepository implements FormRepository {
                         .map(program -> {
                             List<FieldViewModel> fieldViewModelList = new ArrayList<>();
                             for (ProgramTrackedEntityAttribute ptea : d2.programModule().programTrackedEntityAttributes().byProgram().eq(programUid).blockingGet()) {
-                                TrackedEntityAttribute tea = d2.trackedEntityModule().trackedEntityAttributes().withObjectStyle().uid(ptea.trackedEntityAttribute().uid()).blockingGet();
+                                TrackedEntityAttribute tea = d2.trackedEntityModule().trackedEntityAttributes().uid(ptea.trackedEntityAttribute().uid()).blockingGet();
                                 TrackedEntityAttributeValue value = d2.trackedEntityModule().trackedEntityAttributeValues()
                                         .byTrackedEntityAttribute().eq(tea.uid())
                                         .byTrackedEntityInstance().eq(enrollment.trackedEntityInstance())
@@ -535,7 +535,7 @@ public class EnrollmentFormRepository implements FormRepository {
     public Single<TrackedEntityType> captureTeiCoordinates() {
         return d2.enrollmentModule().enrollments().uid(enrollmentUid).get()
                 .flatMap(enrollment -> d2.programModule().programs().withTrackedEntityType().uid(enrollment.program()).get())
-                .flatMap(program -> d2.trackedEntityModule().trackedEntityTypes().withTrackedEntityTypeAttributes().withStyle()
+                .flatMap(program -> d2.trackedEntityModule().trackedEntityTypes().withTrackedEntityTypeAttributes()
                                         .uid(program.trackedEntityType().uid()).get());
     }
 
@@ -576,11 +576,7 @@ public class EnrollmentFormRepository implements FormRepository {
                 "",
                 "");
 
-        ObjectStyle objectStyle = ObjectStyle.builder().build();//TODO change to module tea.style(); that return a null even getting "withObjectStyle"
-        try (Cursor objStyleCursor = briteDatabase.query("SELECT * FROM ObjectStyle WHERE uid = ?", uid)) {
-            if (objStyleCursor != null && objStyleCursor.moveToFirst())
-                objectStyle = ObjectStyle.create(objStyleCursor);
-        }
+        ObjectStyle objectStyle = tea.style();
 
         if (valueType == ValueType.ORGANISATION_UNIT && !isEmpty(dataValue)) {
             dataValue = dataValue + "_ou_" + d2.organisationUnitModule().organisationUnits().uid(dataValue).blockingGet().displayName();

@@ -20,9 +20,7 @@ internal class HomeRepositoryImpl(private val d2: D2, private val eventLabel: St
     HomeRepository {
     private val dataSetRepository: DataSetCollectionRepository = d2.dataSetModule().dataSets()
         .withDataSetElements()
-        .withStyle()
     private val programRepository: ProgramCollectionRepository = d2.programModule().programs()
-        .withStyle()
         .withTrackedEntityType()
 
     private var captureOrgUnits: List<String> = ArrayList()
