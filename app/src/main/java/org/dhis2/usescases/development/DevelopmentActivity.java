@@ -1,6 +1,7 @@
 package org.dhis2.usescases.development;
 
 import android.os.Bundle;
+import android.widget.CompoundButton;
 
 import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
@@ -60,11 +61,12 @@ public class DevelopmentActivity extends ActivityGlobalAbstract {
         count = 0;
 
         binding.iconButton.setOnClickListener(view -> {
-            count++;
-            if (count == iconNames.size())
-                count = 0;
-            renderIconForPosition(count);
+            nextDrawable();
+        });
 
+        binding.automaticErrorCheck.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if(isChecked)
+                nextDrawable();
         });
 
         renderIconForPosition(count);
@@ -78,9 +80,10 @@ public class DevelopmentActivity extends ActivityGlobalAbstract {
         int iconResource_negative = getResources().getIdentifier(iconName + "_negative", "drawable", getPackageName());
         int iconResource_outline = getResources().getIdentifier(iconName + "_outline", "drawable", getPackageName());
         int iconResource_positive = getResources().getIdentifier(iconName + "_positive", "drawable", getPackageName());
+        binding.iconInput.setError(null);
 
+        boolean hasError = false;
         try {
-            binding.iconInput.setError(null);
             binding.iconImagePossitive.setImageResource(iconResource_positive);
             binding.iconImageOutline.setImageResource(iconResource_outline);
             binding.iconImageNegative.setImageResource(iconResource_negative);
@@ -91,7 +94,20 @@ public class DevelopmentActivity extends ActivityGlobalAbstract {
 
         } catch (Exception e) {
             e.printStackTrace();
-            binding.iconInput.setError("This drawable has errors");
+            hasError = true;
         }
+
+        if(hasError){
+            binding.iconInput.setError("This drawable has errors");
+        }else if(binding.automaticErrorCheck.isChecked()){
+            nextDrawable();
+        }
+    }
+
+    private void nextDrawable(){
+        count++;
+        if (count == iconNames.size())
+            count = 0;
+        renderIconForPosition(count);
     }
 }
