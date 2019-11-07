@@ -4,6 +4,7 @@ import org.dhis2.usescases.general.AbstractActivityContracts;
 import org.hisp.dhis.android.core.category.CategoryOption;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.period.PeriodType;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Date;
 import java.util.List;
@@ -39,6 +40,8 @@ public class DataSetInitialContract {
         String getPeriodType();
 
         void setOrgUnit(OrganisationUnit organisationUnit);
+
+        void navigateToDataSetTable(String catOptionCombo, String periodId);
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter {
