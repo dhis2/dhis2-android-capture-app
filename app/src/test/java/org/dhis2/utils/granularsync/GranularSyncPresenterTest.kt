@@ -1,8 +1,10 @@
 package org.dhis2.utils.granularsync
 
 import androidx.work.WorkManager
+import com.nhaarman.mockitokotlin2.doReturn
+import com.nhaarman.mockitokotlin2.mock
+import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Single
-import java.util.Date
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.`object`.ReadOnlyOneObjectRepositoryFinalImpl
@@ -10,32 +12,37 @@ import org.hisp.dhis.android.core.common.Access
 import org.hisp.dhis.android.core.common.DataAccess
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.ObjectWithUid
+import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.program.AccessLevel
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.program.ProgramCollectionRepository
 import org.hisp.dhis.android.core.program.ProgramModule
 import org.hisp.dhis.android.core.program.ProgramType
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityType
 import org.junit.Test
 import org.mockito.BDDMockito.then
 import org.mockito.Mockito
 import org.mockito.Mockito.mock
+import java.util.Collections
+import java.util.Date
 
 class GranularSyncPresenterTest {
 
     private val d2 = mock(D2::class.java)
     private val view = mock(GranularSyncContracts.View::class.java)
-    private val schedulerProvider = TrampolineSchedulerProvider()
+    private val trampolineSchedulerProvider = TrampolineSchedulerProvider()
     private val workManager = mock(WorkManager::class.java)
     private val programRepoMock = mock(ReadOnlyOneObjectRepositoryFinalImpl::class.java)
 
     private val testProgram = getProgram()
+
     @Test
     fun simplePresenterTest() {
         // GIVEN
         val presenter = GranularSyncPresenterImpl(
             d2,
-            schedulerProvider,
+            trampolineSchedulerProvider,
             SyncStatusDialog.ConflictType.PROGRAM,
             "test_uid",
             null,
@@ -54,6 +61,68 @@ class GranularSyncPresenterTest {
         presenter.configure(view)
         // THEN
         then(view).should().showTitle("DISPLAY_NAME")
+    }
+
+    @Test
+    fun `should return tracker program error state`() {
+        val presenter = GranularSyncPresenterImpl(
+            d2,
+            trampolineSchedulerProvider,
+            SyncStatusDialog.ConflictType.PROGRAM,
+            "test_uid",
+            null,
+            null,
+            null,
+            workManager
+        )
+
+        whenever(d2.programModule()) doReturn mock()
+        whenever(d2.programModule().programs()) doReturn mock()
+        whenever(d2.programModule().programs().uid("test_uid")) doReturn mock()
+        whenever(d2.programModule().programs().uid("test_uid").get()) doReturn Single.just(
+            getProgram()
+        )
+
+        whenever(d2.trackedEntityModule()) doReturn mock()
+        whenever(d2.trackedEntityModule().trackedEntityInstances()) doReturn mock()
+        whenever(
+            d2.trackedEntityModule().trackedEntityInstances().byProgramUids(
+                Collections.singletonList("test_uid")
+            )
+        ) doReturn mock()
+
+        whenever(
+            d2.trackedEntityModule().trackedEntityInstances().byProgramUids(
+                Collections.singletonList("test_uid")
+            ).byState()
+        ) doReturn mock()
+        whenever(
+            d2.trackedEntityModule().trackedEntityInstances().byProgramUids(
+                Collections.singletonList("test_uid")
+            ).byState().`in`(State.ERROR)
+        ) doReturn mock()
+        whenever(
+            d2.trackedEntityModule().trackedEntityInstances().byProgramUids(
+                Collections.singletonList("test_uid")
+            ).byState().`in`(State.ERROR).blockingGet()
+        ) doReturn getListOfTEIsWithError()
+        val testSubscriber = presenter.getState().test()
+
+        testSubscriber.assertSubscribed()
+        testSubscriber.assertValueCount(1)
+        testSubscriber.assertValue(State.ERROR)
+
+    }
+
+    private fun getListOfTEIsWithError(): MutableList<TrackedEntityInstance> {
+        return mutableListOf(
+            TrackedEntityInstance.builder()
+                .uid("tei_uid")
+                .organisationUnit("org_unit")
+                .trackedEntityType("te_type")
+                .state(State.ERROR)
+                .build()
+        )
     }
 
     private fun getProgram(): Program {
