@@ -3,8 +3,8 @@ package org.dhis2.data.fingerprint
 import co.infinum.goldfinger.rx.RxGoldfinger
 import io.reactivex.Observable
 
-class FingerPrintControllerImpl(val goldfinger: RxGoldfinger, val mapper:FingerPrintMapper)
-    : FingerPrintController {
+class FingerPrintControllerImpl(val goldfinger: RxGoldfinger, val mapper: FingerPrintMapper) :
+    FingerPrintController {
 
     override fun hasFingerPrint(): Boolean {
         return goldfinger.hasEnrolledFingerprint()

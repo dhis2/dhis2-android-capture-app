@@ -40,9 +40,9 @@ public class SyncInitWorker extends Worker {
             ((App) getApplicationContext()).userComponent().plus(new SyncInitWorkerModule()).inject(this);
 
             if (getInputData().getBoolean(INIT_META, false))
-                presenter.startPeriodicMetaWork(getApplicationContext());
+                presenter.startPeriodicMetaWork();
             if (getInputData().getBoolean(INIT_DATA, false))
-                presenter.startPeriodicDataWork(getApplicationContext());
+                presenter.startPeriodicDataWork();
 
             return Result.success();
         } else {

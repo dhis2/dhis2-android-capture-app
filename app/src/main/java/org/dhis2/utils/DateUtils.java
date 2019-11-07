@@ -1,14 +1,13 @@
 package org.dhis2.utils;
 
 
-import android.icu.util.CopticCalendar;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.dhis2.data.forms.section.viewmodels.date.DatePickerDialogFragment;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
-import org.dhis2.utils.custom_views.RxDateDialog;
+import org.dhis2.utils.customviews.RxDateDialog;
+import org.dhis2.utils.filters.FilterManager;
 import org.hisp.dhis.android.core.dataset.DataInputPeriod;
 import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.event.EventStatus;
@@ -17,7 +16,6 @@ import org.hisp.dhis.android.core.period.PeriodType;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -839,6 +837,7 @@ public class DateUtils {
                 calendar.set(Calendar.DAY_OF_WEEK, Calendar.SATURDAY);
                 break;
             case WeeklySunday:
+                calendar.setFirstDayOfWeek(Calendar.SUNDAY);
                 calendar.add(Calendar.WEEK_OF_YEAR, page);
                 calendar.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
                 break;
@@ -857,7 +856,7 @@ public class DateUtils {
                 calendar.set(Calendar.DAY_OF_MONTH, 1);
                 break;
             case Quarterly:
-                extra = 3 - page * (calendar.get(Calendar.MONTH)) % 3;
+                extra = 4 - page * (calendar.get(Calendar.MONTH)+1) % 3;
                 calendar.add(Calendar.MONTH, page * extra);
                 calendar.set(Calendar.DAY_OF_MONTH, 1);
                 break;
@@ -1156,7 +1155,7 @@ public class DateUtils {
                 expDate = calendar.getTime();
             }
 
-            expiredBecouseOfPeriod = expDate != null && expDate.before(getCalendar().getTime());
+            expiredBecouseOfPeriod = expDate != null && expDate.compareTo(getCalendar().getTime())<=0;
 
             return expiredBecouseOfPeriod || expiredBecouseOfCompletion;
         } else
@@ -1216,6 +1215,8 @@ public class DateUtils {
 
     public void showFromToSelector(ActivityGlobalAbstract activity, OnFromToSelector fromToListener) {
         DatePickerDialogFragment fromCalendar = DatePickerDialogFragment.create(true);
+        if (!FilterManager.getInstance().getPeriodFilters().isEmpty())
+            fromCalendar.setInitialDate(FilterManager.getInstance().getPeriodFilters().get(0).startDate());
         fromCalendar.setFormattedOnDateSetListener(new DatePickerDialogFragment.FormattedOnDateSetListener() {
             @Override
             public void onDateSet(@NonNull Date fromDate) {
@@ -1250,6 +1251,8 @@ public class DateUtils {
     public void showPeriodDialog(ActivityGlobalAbstract activity, OnFromToSelector fromToListener, boolean fromOtherPeriod) {
         DatePickerDialogFragment fromCalendar = DatePickerDialogFragment.create(true, "Daily", fromOtherPeriod);
 //        fromCalendar.setOpeningClosingDates(null, null); TODO: MAX 1 year in the future?
+        if (!FilterManager.getInstance().getPeriodFilters().isEmpty())
+            fromCalendar.setInitialDate(FilterManager.getInstance().getPeriodFilters().get(0).startDate());
         fromCalendar.setFormattedOnDateSetListener(new DatePickerDialogFragment.FormattedOnDateSetListener() {
             @Override
             public void onDateSet(@NonNull Date date) {
@@ -1272,7 +1275,7 @@ public class DateUtils {
     }
 
 
-    public static long timeToDate(Date finaLDate){
+    public static long timeToDate(Date finaLDate) {
         return finaLDate.getTime() - new Date().getTime();
     }
 

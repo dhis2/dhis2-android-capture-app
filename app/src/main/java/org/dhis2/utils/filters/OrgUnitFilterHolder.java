@@ -27,10 +27,8 @@ class OrgUnitFilterHolder extends FilterHolder {
     public void bind() {
         super.bind();
         filterIcon.setImageDrawable(AppCompatResources.getDrawable(itemView.getContext(), R.drawable.ic_filter_ou));
-        filterTitle.setText("Org Unit");
-        filterValues.setText(
-                FilterManager.getInstance().getOrgUnitFilters().isEmpty()?"No filters applied" : "Filters applying"
-        );
+        filterTitle.setText(R.string.filters_title_org_unit);
+
         setUpAdapter();
 
     }
@@ -52,7 +50,7 @@ class OrgUnitFilterHolder extends FilterHolder {
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 if (charSequence.length() > 3) {
-                    currentOrgUnit = d2.organisationUnitModule().organisationUnits
+                    currentOrgUnit = d2.organisationUnitModule().organisationUnits()
                             .byDisplayName().like("%" + charSequence + "%").one().blockingGet();
                     if (currentOrgUnit != null)
                         localBinding.filterOrgUnit.orgUnitHint.setText(currentOrgUnit.displayName());

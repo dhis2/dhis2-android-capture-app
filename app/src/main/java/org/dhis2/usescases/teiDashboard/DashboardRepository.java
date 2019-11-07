@@ -8,11 +8,12 @@ import androidx.annotation.Nullable;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Trio;
 import org.hisp.dhis.android.core.category.CategoryCombo;
+import org.hisp.dhis.android.core.category.CategoryOptionCombo;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
-import org.hisp.dhis.android.core.enrollment.note.Note;
 import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.event.EventStatus;
+import org.hisp.dhis.android.core.note.Note;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.program.ProgramIndicator;
@@ -72,6 +73,8 @@ public interface DashboardRepository {
     Observable<List<Pair<RelationshipType, String>>> relationshipsForTeiType(String teType);
 
     Observable<CategoryCombo> catComboForProgram(String program);
+
+    Observable<List<CategoryOptionCombo>> catOptionCombos(String catComboUid);
 
     void setDefaultCatOptCombToEvent(String eventUid);
 

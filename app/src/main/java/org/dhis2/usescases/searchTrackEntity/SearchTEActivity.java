@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
+import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.graphics.PointF;
 import android.graphics.RectF;
@@ -67,7 +68,7 @@ import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.databinding.ActivitySearchBinding;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
-import org.dhis2.usescases.org_unit_selector.OUTreeActivity;
+import org.dhis2.usescases.orgunitselector.OUTreeActivity;
 import org.dhis2.usescases.searchTrackEntity.adapters.FormAdapter;
 import org.dhis2.usescases.searchTrackEntity.adapters.RelationshipLiveAdapter;
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiLiveAdapter;
@@ -468,7 +469,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int pos, long id) {
                 if (pos > 0) {
-                    analyticsHelper().setEvent(CHANGE_PROGRAM, CLICK , CHANGE_PROGRAM);
+                    analyticsHelper().setEvent(CHANGE_PROGRAM, CLICK, CHANGE_PROGRAM);
                     Program selectedProgram = (Program) adapterView.getItemAtPosition(pos - 1);
                     setProgramColor(presenter.getProgramColor(selectedProgram.uid()));
                     presenter.setProgram((Program) adapterView.getItemAtPosition(pos - 1));
@@ -596,7 +597,8 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         }
         binding.filterOpen.setVisibility(backDropActive ? View.VISIBLE : View.GONE);
 
-        activeFilter(general);
+        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT)
+            activeFilter(general);
     }
 
     private void activeFilter(boolean general) {

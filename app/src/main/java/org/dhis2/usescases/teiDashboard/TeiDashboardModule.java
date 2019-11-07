@@ -8,8 +8,6 @@ import org.dhis2.data.dagger.PerActivity;
 import org.dhis2.data.forms.EnrollmentFormRepository;
 import org.dhis2.data.forms.FormRepository;
 import org.dhis2.data.forms.RulesRepository;
-import org.dhis2.data.forms.dataentry.EnrollmentRuleEngineRepository;
-import org.dhis2.data.forms.dataentry.RuleEngineRepository;
 import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.utils.CodeGenerator;
 import org.hisp.dhis.android.core.D2;
@@ -57,7 +55,7 @@ public class TeiDashboardModule {
     @Provides
     @PerActivity
     RulesRepository rulesRepository(@NonNull BriteDatabase briteDatabase, @NonNull D2 d2) {
-        return new RulesRepository(briteDatabase, d2);
+        return new RulesRepository(d2);
     }
 
     @Provides
@@ -67,7 +65,7 @@ public class TeiDashboardModule {
                                   @NonNull RulesRepository rulesRepository,
                                   @NonNull CodeGenerator codeGenerator,
                                   D2 d2) {
-        EnrollmentCollectionRepository enrollmentRepository = d2.enrollmentModule().enrollments
+        EnrollmentCollectionRepository enrollmentRepository = d2.enrollmentModule().enrollments()
                 .byTrackedEntityInstance().eq(teiUid);
         if (!isEmpty(programUid))
             enrollmentRepository = enrollmentRepository.byProgram().eq(programUid);

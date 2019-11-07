@@ -1,7 +1,6 @@
 package org.dhis2;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.Build;
 import android.os.Looper;
 
@@ -13,6 +12,8 @@ import androidx.multidex.MultiDexApplication;
 
 import com.crashlytics.android.Crashlytics;
 import com.facebook.stetho.Stetho;
+import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
+import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.security.ProviderInstaller;
 import com.mapbox.mapboxsdk.Mapbox;
 
@@ -20,8 +21,6 @@ import org.dhis2.data.dagger.PerActivity;
 import org.dhis2.data.dagger.PerServer;
 import org.dhis2.data.dagger.PerUser;
 import org.dhis2.data.database.DbModule;
-import org.dhis2.data.forms.FormComponent;
-import org.dhis2.data.forms.FormModule;
 import org.dhis2.data.prefs.PreferenceModule;
 import org.dhis2.data.schedulers.SchedulerModule;
 import org.dhis2.data.schedulers.SchedulersProviderImpl;
@@ -39,7 +38,7 @@ import org.dhis2.utils.UtilsModule;
 import org.dhis2.utils.analytics.AnalyticsModule;
 import org.dhis2.utils.timber.DebugTree;
 import org.dhis2.utils.timber.ReleaseTree;
-import org.hisp.dhis.android.core.d2manager.D2Manager;
+import org.hisp.dhis.android.core.D2Manager;
 
 import javax.inject.Singleton;
 
@@ -75,10 +74,6 @@ public class App extends MultiDexApplication implements Components {
 
     @Nullable
     @PerActivity
-    FormComponent formComponent;
-
-    @Nullable
-    @PerActivity
     LoginComponent loginComponent;
 
     @Nullable
@@ -100,35 +95,27 @@ public class App extends MultiDexApplication implements Components {
 
         Fabric.with(this, new Crashlytics());
 
-        setUpAppComponent();
-        setUpServerComponent();
+
 //        setUpUserComponent();
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP)
-            upgradeSecurityProvider();
+            upgradeSecurityProviderSync();
 
+        setUpAppComponent();
+        setUpServerComponent();
 
         Scheduler asyncMainThreadScheduler = AndroidSchedulers.from(Looper.getMainLooper(), true);
         RxAndroidPlugins.setInitMainThreadSchedulerHandler(schedulerCallable -> asyncMainThreadScheduler);
     }
 
-    private void upgradeSecurityProvider() {
+    private void upgradeSecurityProviderSync(){
         try {
-            ProviderInstaller.installIfNeededAsync(this, new ProviderInstaller.ProviderInstallListener() {
-                @Override
-                public void onProviderInstalled() {
-                    Timber.e("New security provider installed.");
-                }
-
-                @Override
-                public void onProviderInstallFailed(int errorCode, Intent recoveryIntent) {
-                    Timber.e("New security provider install failed.");
-                }
-            });
-        } catch (Exception ex) {
-            Timber.e(ex, "Unknown issue trying to install a new security provider");
+            ProviderInstaller.installIfNeeded(this);
+            Timber.e("New security provider installed.");
+        } catch (GooglePlayServicesRepairableException | GooglePlayServicesNotAvailableException e) {
+            e.printStackTrace();
+            Timber.e("New security provider install failed.");
         }
-
     }
 
     @Override
@@ -172,11 +159,6 @@ public class App extends MultiDexApplication implements Components {
                 .analyticsModule(new AnalyticsModule())
                 .preferenceModule(new PreferenceModule())
                 .utilModule(new UtilsModule());
-    }
-
-    @NonNull
-    protected AppComponent createAppComponent() {
-        return (appComponent = prepareAppComponent().build());
     }
 
     @NonNull
@@ -251,23 +233,7 @@ public class App extends MultiDexApplication implements Components {
     public void releaseUserComponent() {
         userComponent = null;
     }
-    ////////////////////////////////////////////////////////////////////////
-    // Form component
-    ////////////////////////////////////////////////////////////////////////
 
-    @NonNull
-    public FormComponent createFormComponent(@NonNull FormModule formModule) {
-        return (formComponent = userComponent.plus(formModule));
-    }
-
-    @Nullable
-    public FormComponent formComponent() {
-        return formComponent;
-    }
-
-    public void releaseFormComponent() {
-        formComponent = null;
-    }
 
     ////////////////////////////////////////////////////////////////////////
     // Dashboard component
@@ -290,12 +256,5 @@ public class App extends MultiDexApplication implements Components {
     // AndroidInjector
     ////////////////////////////////////////////////////////////////////////
 
-
-    /**
-     * Visible only for testing purposes.
-     */
-    public void setTestComponent(AppComponent testingComponent) {
-        appComponent = testingComponent;
-    }
 
 }

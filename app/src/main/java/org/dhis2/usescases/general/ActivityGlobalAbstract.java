@@ -27,7 +27,6 @@ import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
-import org.dhis2.App;
 import org.dhis2.BuildConfig;
 import org.dhis2.R;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity;
@@ -39,10 +38,10 @@ import org.dhis2.utils.Constants;
 import org.dhis2.utils.HelpManager;
 import org.dhis2.utils.OnDialogClickListener;
 import org.dhis2.utils.analytics.AnalyticsHelper;
-import org.dhis2.utils.custom_views.CoordinatesView;
-import org.dhis2.utils.custom_views.CustomDialog;
-import org.dhis2.utils.custom_views.PictureView;
-import org.dhis2.utils.granular_sync.SyncStatusDialog;
+import org.dhis2.utils.customviews.CoordinatesView;
+import org.dhis2.utils.customviews.CustomDialog;
+import org.dhis2.utils.customviews.PictureView;
+import org.dhis2.utils.granularsync.SyncStatusDialog;
 import org.hisp.dhis.android.core.arch.helpers.GeometryHelper;
 import org.hisp.dhis.android.core.common.FeatureType;
 import org.hisp.dhis.android.core.common.Geometry;
@@ -213,24 +212,6 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity
             message = getString(R.string.permission_denied);
 
         Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
-    }
-
-    @Override
-    public <T> void saveListToPreference(String key, List<T> list) {
-        Gson gson = new Gson();
-        String json = gson.toJson(list);
-
-        getSharedPreferences(Constants.SHARE_PREFS, MODE_PRIVATE).edit().putString(key, json).apply();
-    }
-
-    @Override
-    public <T> List<T> getListFromPreference(String key) {
-        Gson gson = new Gson();
-        String json = getSharedPreferences().getString(key, "[]");
-        Type type = new TypeToken<List<T>>() {
-        }.getType();
-
-        return gson.fromJson(json, type);
     }
 
     @Override

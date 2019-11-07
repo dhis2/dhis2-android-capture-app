@@ -29,7 +29,6 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import com.mapbox.geojson.BoundingBox;
 import com.mapbox.geojson.Feature;
 import com.mapbox.geojson.FeatureCollection;
-import com.mapbox.mapboxsdk.Mapbox;
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.geometry.LatLngBounds;
@@ -45,14 +44,13 @@ import com.mapbox.mapboxsdk.style.sources.GeoJsonOptions;
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource;
 
 import org.dhis2.App;
-import org.dhis2.BuildConfig;
 import org.dhis2.R;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.databinding.ActivityProgramEventDetailBinding;
 import org.dhis2.databinding.InfoWindowEventBinding;
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
-import org.dhis2.usescases.org_unit_selector.OUTreeActivity;
+import org.dhis2.usescases.orgunitselector.OUTreeActivity;
 import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.HelpManager;
@@ -66,8 +64,6 @@ import org.hisp.dhis.android.core.program.Program;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import javax.inject.Inject;

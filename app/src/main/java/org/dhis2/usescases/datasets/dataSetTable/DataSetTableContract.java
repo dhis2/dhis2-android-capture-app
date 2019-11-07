@@ -1,6 +1,7 @@
 package org.dhis2.usescases.datasets.dataSetTable;
 
 import org.dhis2.usescases.general.AbstractActivityContracts;
+import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.dataset.DataSet;
 
 import java.util.List;
@@ -27,9 +28,9 @@ public class DataSetTableContract {
 
         void isDataSetOpen(boolean dataSetIsOpen);
 
-        void isDataSetSynced(boolean dataSetIsSynced);
+        void setDataSetState(State state);
 
-        void runSmsSubmission();
+        void showSyncDialog();
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter {
@@ -37,7 +38,7 @@ public class DataSetTableContract {
         void onBackClick();
         void onSyncClick();
 
-        void init(View view, String orgUnitUid, String periodTypeName, String catCombo, String periodFinalDate, String periodId);
+        void init(String orgUnitUid, String periodTypeName, String catCombo, String periodFinalDate, String periodId);
 
         String getOrgUnitUid();
         String getPeriodTypeName();
@@ -47,6 +48,7 @@ public class DataSetTableContract {
         void optionsClick();
 
         void onClickSelectTable(int numTable);
+        void updateState();
 
         String getCatOptComboFromOptionList(List<String> catOpts);
     }

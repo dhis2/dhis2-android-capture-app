@@ -21,7 +21,7 @@ import org.dhis2.databinding.FormEditTextCustomBinding;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.Preconditions;
 import org.dhis2.utils.ValidationUtils;
-import org.dhis2.utils.custom_views.TextInputAutoCompleteTextView;
+import org.dhis2.utils.customviews.TextInputAutoCompleteTextView;
 import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.common.ValueTypeDeviceRendering;
 import org.hisp.dhis.android.core.common.ValueTypeRenderingType;
@@ -76,6 +76,7 @@ final class EditTextCustomHolder extends FormViewHolder {
             validateRegex();
         });
         binding.customEdittext.setOnEditorActionListener((v, actionId, event) -> {
+            binding.customEdittext.getEditText().clearFocus();
             sendAction();
             return true;
         });
@@ -113,12 +114,7 @@ final class EditTextCustomHolder extends FormViewHolder {
 
         binding.customEdittext.setObjectSyle(model.objectStyle());
         if (model.objectStyle() != null) {
-            objectStyle = ObjectStyle.builder()
-                    .color(model.objectStyle().color())
-                    .icon(model.objectStyle().icon())
-                    .uid(model.objectStyle().uid())
-                    .objectTable(model.objectStyle().objectTable())
-                    .build();
+            objectStyle = model.objectStyle();
         }
         label = new StringBuilder(model.label());
         binding.customEdittext.setLabel(model.label(), model.mandatory());

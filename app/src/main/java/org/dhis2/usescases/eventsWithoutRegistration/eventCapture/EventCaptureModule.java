@@ -1,11 +1,5 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventCapture;
 
-import android.content.Context;
-
-import androidx.annotation.NonNull;
-
-import com.squareup.sqlbrite2.BriteDatabase;
-
 import org.dhis2.data.dagger.PerActivity;
 import org.dhis2.data.forms.EventRepository;
 import org.dhis2.data.forms.FormRepository;
@@ -17,6 +11,12 @@ import org.dhis2.data.user.UserRepository;
 import org.dhis2.utils.RulesUtilsProvider;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.rules.RuleExpressionEvaluator;
+
+import com.squareup.sqlbrite2.BriteDatabase;
+
+import android.content.Context;
+
+import androidx.annotation.NonNull;
 
 import dagger.Module;
 import dagger.Provides;
@@ -50,15 +50,14 @@ public class EventCaptureModule {
     @Provides
     @PerActivity
     EventCaptureContract.EventCaptureRepository provideRepository(Context context,
-                                                                  @NonNull BriteDatabase briteDatabase,
                                                                   FormRepository formRepository, D2 d2) {
-        return new EventCaptureRepositoryImpl(context, briteDatabase, formRepository, eventUid, d2);
+        return new EventCaptureRepositoryImpl(context, formRepository, eventUid, d2);
     }
 
     @Provides
     @PerActivity
-    RulesRepository rulesRepository(@NonNull BriteDatabase briteDatabase, @NonNull D2 d2) {
-        return new RulesRepository(briteDatabase, d2);
+    RulesRepository rulesRepository(@NonNull D2 d2) {
+        return new RulesRepository(d2);
     }
 
     @Provides

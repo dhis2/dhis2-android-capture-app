@@ -6,7 +6,6 @@ import android.database.Cursor;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
@@ -177,20 +176,20 @@ public class EventRepository implements FormRepository {
                            @NonNull D2 d2) {
         this.d2 = d2;
         this.briteDatabase = briteDatabase;
-        this.eventUid = eventUid;
+        this.eventUid = eventUid != null ? eventUid : "";
         this.rulesRepository = rulesRepository;
         this.evaluator = evaluator;
-        String program = eventUid != null ? d2.eventModule().events.uid(eventUid).blockingGet().program() : "";
+        String program = eventUid != null ? d2.eventModule().events().uid(eventUid).blockingGet().program() : "";
 
         // We don't want to rebuild RuleEngine on each request, since metadata of
         // the event is not changing throughout lifecycle of FormComponent.
         this.cachedRuleEngineFlowable = Single.zip(
                 rulesRepository.rulesNew(program).subscribeOn(Schedulers.io()),
                 rulesRepository.ruleVariables(program).subscribeOn(Schedulers.io()),
-                rulesRepository.otherEvents(eventUid).subscribeOn(Schedulers.io()),
-                rulesRepository.enrollment(eventUid).subscribeOn(Schedulers.io()),
+                rulesRepository.otherEvents(this.eventUid).subscribeOn(Schedulers.io()),
+                rulesRepository.enrollment(this.eventUid).subscribeOn(Schedulers.io()),
                 rulesRepository.queryConstants().subscribeOn(Schedulers.io()),
-                rulesRepository.getSuplementaryData().subscribeOn(Schedulers.io()),
+                rulesRepository.supplementaryData().subscribeOn(Schedulers.io()),
                 (rules, variables, events, enrollment, constants, supplementaryData) -> {
 
                     RuleEngine.Builder builder = RuleEngineContext.builder(evaluator)
@@ -223,7 +222,7 @@ public class EventRepository implements FormRepository {
                         rulesRepository.otherEvents(eventUid).subscribeOn(Schedulers.io()),
                         rulesRepository.enrollment(eventUid).subscribeOn(Schedulers.io()),
                         rulesRepository.queryConstants().subscribeOn(Schedulers.io()),
-                        rulesRepository.getSuplementaryData().subscribeOn(Schedulers.io()),
+                        rulesRepository.supplementaryData().subscribeOn(Schedulers.io()),
                         (rules, variables, events, enrollment, constants, supplementaryData) -> {
 
                             RuleEngine.Builder builder = RuleEngineContext.builder(evaluator)
@@ -420,8 +419,8 @@ public class EventRepository implements FormRepository {
     @NonNull
     @Override
     public Observable<String> getTrackedEntityInstanceUid() {
-        return Observable.defer(() -> d2.enrollmentModule().enrollments.uid(
-                d2.eventModule().events.uid(eventUid).blockingGet().enrollment()
+        return Observable.defer(() -> d2.enrollmentModule().enrollments().uid(
+                d2.eventModule().events().uid(eventUid).blockingGet().enrollment()
         ).get().toObservable())
                 .map(Enrollment::trackedEntityInstance);
     }
@@ -462,8 +461,8 @@ public class EventRepository implements FormRepository {
 
     @Override
     public Observable<FeatureType> captureCoodinates() {
-        return d2.eventModule().events.byUid().eq(eventUid).one().get().toObservable()
-                .map(event -> d2.programModule().programStages.byUid().eq(event.programStage()).one().blockingGet())
+        return d2.eventModule().events().byUid().eq(eventUid).one().get().toObservable()
+                .map(event -> d2.programModule().programStages().byUid().eq(event.programStage()).one().blockingGet())
                 .map(programStage -> {
                     if (programStage.featureType() == null)
                         return FeatureType.NONE;
@@ -474,8 +473,8 @@ public class EventRepository implements FormRepository {
 
     @Override
     public Observable<OrganisationUnit> getOrgUnitDates() {
-        return Observable.defer(() -> Observable.just(d2.eventModule().events.uid(eventUid).blockingGet()))
-                .switchMap(event -> Observable.just(d2.organisationUnitModule().organisationUnits.uid(event.organisationUnit()).blockingGet()));
+        return Observable.defer(() -> Observable.just(d2.eventModule().events().uid(eventUid).blockingGet()))
+                .switchMap(event -> Observable.just(d2.organisationUnitModule().organisationUnits().uid(event.organisationUnit()).blockingGet()));
     }
 
     @Override
@@ -540,13 +539,11 @@ public class EventRepository implements FormRepository {
                 "",
                 "",
                 "");
-        ObjectStyle objectStyle = ObjectStyle.builder().build();
-        try (Cursor objStyleCursor = briteDatabase.query("SELECT * FROM ObjectStyle WHERE uid = ?", uid)) {
-            if (objStyleCursor.moveToFirst())
-                objectStyle = ObjectStyle.create(objStyleCursor);
-        }
+        ObjectStyle objectStyle = d2.dataElementModule().dataElements().uid(uid).blockingGet().style();
+
+
         if (valueType == ValueType.ORGANISATION_UNIT && !isEmpty(dataValue)) {
-            dataValue = dataValue + "_ou_" + d2.organisationUnitModule().organisationUnits.uid(dataValue).blockingGet().displayName();
+            dataValue = dataValue + "_ou_" + d2.organisationUnitModule().organisationUnits().uid(dataValue).blockingGet().displayName();
         }
 
         return fieldFactory.create(uid, isEmpty(formLabel) ? label : formLabel, valueType,

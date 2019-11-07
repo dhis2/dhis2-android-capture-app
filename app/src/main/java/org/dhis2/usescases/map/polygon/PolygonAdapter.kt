@@ -8,13 +8,15 @@ import org.dhis2.R
 import org.dhis2.databinding.ItemPolygonFullBinding
 
 class PolygonAdapter(
-        val list: List<PolygonViewModel.PolygonPoint>,
-        val viewModel: PolygonViewModel
-): RecyclerView.Adapter<PolygonAdapter.Holder>() {
+    val list: List<PolygonViewModel.PolygonPoint>,
+    val viewModel: PolygonViewModel
+) : RecyclerView.Adapter<PolygonAdapter.Holder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Holder {
-        val binding: ItemPolygonFullBinding = DataBindingUtil.inflate(LayoutInflater.from(parent.context),
-                R.layout.item_polygon_full, parent, false)
+        val binding: ItemPolygonFullBinding = DataBindingUtil.inflate(
+            LayoutInflater.from(parent.context),
+            R.layout.item_polygon_full, parent, false
+        )
         return Holder(binding)
     }
 
@@ -30,8 +32,8 @@ class PolygonAdapter(
         }
     }
 
-
-    inner class Holder(val binding: ItemPolygonFullBinding): RecyclerView.ViewHolder(binding.root) {
+    inner class Holder(val binding: ItemPolygonFullBinding) :
+        RecyclerView.ViewHolder(binding.root) {
         fun bind(polygonPoint: PolygonViewModel.PolygonPoint) {
             binding.let {
                 it.isLast = adapterPosition == list.size
@@ -40,5 +42,4 @@ class PolygonAdapter(
             }
         }
     }
-
 }

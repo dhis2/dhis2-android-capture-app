@@ -500,5 +500,21 @@
     <string name="sms_bar_state_failed">Ha fallado</string>
 
     <string name="polygon">Polígono</string>
+
+    <string name="filters_active">Filtros activos</string>
+    <string name="filters_disabled">No hay filtros activos</string>
+    <string name="filters_title_period">Periodo</string>
+    <string name="filter_period_today">Hoy</string>
+    <string name="filter_period_yesterday">Ayer</string>
+    <string name="filter_period_tomorrow">Mañana</string>
+    <string name="filter_period_this_week">Esta semana</string>
+    <string name="filter_period_last_week">Semana previa</string>
+    <string name="filter_perdior_next_week">Semana siguiente</string>
+    <string name="filter_period_this_month">Mes actual</string>
+    <string name="filter_period_last_month">Mes anterior</string>
+    <string name="filter_period_next_month">Mes siguiente</string>
+    <string name="filter_period_form_to">Desde - hasta</string>
+    <string name="filter_period_other">Otro</string>
+    <string name="filter_period_any">Cualquiera</string>
     <!--endregion-->
 </resources>

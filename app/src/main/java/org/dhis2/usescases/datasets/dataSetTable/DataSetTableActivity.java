@@ -1,7 +1,6 @@
 package org.dhis2.usescases.datasets.dataSetTable;
 
 
-import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.view.View;
@@ -19,12 +18,11 @@ import org.dhis2.App;
 import org.dhis2.R;
 import org.dhis2.databinding.ActivityDatasetTableBinding;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
-import org.dhis2.usescases.sms.InputArguments;
-import org.dhis2.usescases.sms.SmsSubmitActivity;
 import org.dhis2.utils.Constants;
+import org.dhis2.utils.granularsync.SyncStatusDialog;
+import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.dataset.DataSet;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -78,7 +76,7 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
         dataSetUid = getIntent().getStringExtra(Constants.DATA_SET_UID);
         accessDataWrite = getIntent().getBooleanExtra(Constants.ACCESS_DATA, true);
 
-        ((App) getApplicationContext()).userComponent().plus(new DataSetTableModule(dataSetUid, periodId, orgUnitUid, catOptCombo)).inject(this);
+        ((App) getApplicationContext()).userComponent().plus(new DataSetTableModule(this, dataSetUid, periodId, orgUnitUid, catOptCombo)).inject(this);
         super.onCreate(savedInstanceState);
 
         //Orientation
@@ -90,7 +88,7 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
 
         setViewPager();
 
-        presenter.init(this, orgUnitUid, periodTypeName, catOptCombo, periodInitialDate, periodId);
+        presenter.init(orgUnitUid, periodTypeName, catOptCombo, periodInitialDate, periodId);
     }
 
     @Override
@@ -218,23 +216,49 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
     }
 
     @Override
-    public void isDataSetSynced(boolean dataSetIsSynced) {
-        binding.syncState.setImageResource(dataSetIsSynced ? R.drawable.ic_sync_green : R.drawable.ic_sync_problem_grey);
+    public void setDataSetState(State state) {
+        int syncIconRes;
+        switch (state){
+
+            case ERROR:
+                syncIconRes = R.drawable.ic_sync_problem_red;
+                break;
+            case WARNING:
+                syncIconRes = R.drawable.ic_sync_warning;
+                break;
+            case TO_POST:
+            case TO_UPDATE:
+                syncIconRes = R.drawable.ic_sync_problem_grey;
+                break;
+            case SENT_VIA_SMS:
+            case SYNCED_VIA_SMS:
+                syncIconRes = R.drawable.ic_sync_sms;
+                break;
+            default:
+                syncIconRes = R.drawable.ic_sync_green;
+                break;
+        }
+        binding.syncState.setImageResource(syncIconRes);
     }
 
     @Override
-    public void runSmsSubmission() {
-        if (!getResources().getBoolean(R.bool.sms_enabled)) {
-            return;
-        }
-        Intent intent = new Intent(this, SmsSubmitActivity.class);
-        Bundle args = new Bundle();
-        InputArguments.setDataSet(args, dataSetUid, orgUnitUid, periodId, catOptCombo);
-        intent.putExtras(args);
-        startActivity(intent);
+    public void showSyncDialog() {
+        SyncStatusDialog dialog = new SyncStatusDialog.Builder()
+                .setConflictType(SyncStatusDialog.ConflictType.DATA_VALUES)
+                .setUid(dataSetUid)
+                .setOrgUnit(orgUnitUid)
+                .setPeriodId(periodId)
+                .setAttributeOptionCombo(catOptCombo)
+                .onDismissListener(hasChanged -> {
+                    if(hasChanged){
+                        presenter.updateState();
+                    }
+                })
+                .build();
+        dialog.show(getSupportFragmentManager(), dialog.getDialogTag());
     }
 
     public void update() {
-        presenter.init(this, orgUnitUid, periodTypeName, catOptCombo, periodInitialDate, periodId);
+        presenter.init(orgUnitUid, periodTypeName, catOptCombo, periodInitialDate, periodId);
     }
 }

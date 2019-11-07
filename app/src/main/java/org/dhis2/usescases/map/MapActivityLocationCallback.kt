@@ -7,7 +7,8 @@ import com.mapbox.android.core.location.LocationEngineResult
 import com.mapbox.mapboxsdk.geometry.LatLng
 import java.lang.ref.WeakReference
 
-class MapActivityLocationCallback(activity: MapSelectorActivity) : LocationEngineCallback<LocationEngineResult> {
+class MapActivityLocationCallback(activity: MapSelectorActivity) :
+    LocationEngineCallback<LocationEngineResult> {
 
     private val activityWeakReference: WeakReference<MapSelectorActivity> = WeakReference(activity)
     private val locationListener: OnLocationChanged = activity
@@ -18,7 +19,6 @@ class MapActivityLocationCallback(activity: MapSelectorActivity) : LocationEngin
 
             locationListener.onLocationChanged(LatLng(location!!.latitude, location.longitude))
         }
-
     }
 
     override fun onFailure(exception: Exception) {
@@ -31,5 +31,4 @@ class MapActivityLocationCallback(activity: MapSelectorActivity) : LocationEngin
     interface OnLocationChanged {
         fun onLocationChanged(latLng: LatLng)
     }
-
 }

@@ -14,7 +14,6 @@ import org.dhis2.data.forms.RulesRepository;
 import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.usescases.eventsWithoutRegistration.eventSummary.EventSummaryRepository;
 import org.dhis2.usescases.eventsWithoutRegistration.eventSummary.EventSummaryRepositoryImpl;
-import org.dhis2.utils.CodeGenerator;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.rules.RuleExpressionEvaluator;
 
@@ -68,7 +67,7 @@ public class EventInitialModule {
 
     @Provides
     RulesRepository rulesRepository(@NonNull BriteDatabase briteDatabase, @NonNull D2 d2) {
-        return new RulesRepository(briteDatabase, d2);
+        return new RulesRepository(d2);
     }
 
     @Provides

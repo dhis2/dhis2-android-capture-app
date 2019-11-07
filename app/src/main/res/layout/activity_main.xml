@@ -18,7 +18,7 @@
 
         <variable
             name="presenter"
-            type="org.dhis2.usescases.main.MainContracts.Presenter" />
+            type="org.dhis2.usescases.main.MainPresenter" />
 
         <variable
             name="currentFragment"

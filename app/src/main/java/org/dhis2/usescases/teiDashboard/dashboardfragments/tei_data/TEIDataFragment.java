@@ -33,9 +33,10 @@ import org.dhis2.utils.Constants;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.DialogClickListener;
 import org.dhis2.utils.EventCreationType;
-import org.dhis2.utils.custom_views.CategoryComboDialog;
-import org.dhis2.utils.custom_views.CustomDialog;
+import org.dhis2.utils.customviews.CategoryComboDialog;
+import org.dhis2.utils.customviews.CustomDialog;
 import org.hisp.dhis.android.core.category.CategoryCombo;
+import org.hisp.dhis.android.core.category.CategoryOptionCombo;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.program.ProgramStage;
@@ -348,8 +349,8 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
     }
 
     @Override
-    public void showCatComboDialog(String eventId, CategoryCombo categoryCombo) {
-        CategoryComboDialog dialog = new CategoryComboDialog(getAbstracContext(), categoryCombo, 123,
+    public void showCatComboDialog(String eventId, CategoryCombo categoryCombo, List<CategoryOptionCombo> categoryOptionCombos) {
+        CategoryComboDialog dialog = new CategoryComboDialog(getAbstracContext(), categoryCombo, categoryOptionCombos, 123,
                 selectedOption -> presenter.changeCatOption(eventId, selectedOption), categoryCombo.displayName());
         dialog.setCancelable(false);
         dialog.setCanceledOnTouchOutside(false);

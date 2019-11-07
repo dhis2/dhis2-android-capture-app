@@ -1,5 +1,9 @@
 @file:JvmName("AnalyticsConstants")
+
 package org.dhis2.utils.analytics
+
+const val USER_PROPERTY_SERVER = "serverUrl"
+const val USER_PROPERTY_NAME = "userName"
 
 const val SYNC_MANAGER_FRAGMENT: String = "SyncManagerFragment"
 const val LOGIN = "login"

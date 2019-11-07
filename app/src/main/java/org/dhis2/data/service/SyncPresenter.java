@@ -1,24 +1,20 @@
 package org.dhis2.data.service;
 
-import android.content.Context;
-
 import org.hisp.dhis.android.core.arch.call.D2Progress;
 import org.hisp.dhis.android.core.imports.TrackerImportConflict;
 
 import java.util.List;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.UiThread;
 import androidx.work.ListenableWorker;
 
 import io.reactivex.Observable;
 
 interface SyncPresenter {
-    void syncAndDownloadEvents(Context context) throws Exception;
+    void syncAndDownloadEvents() throws Exception;
 
-    void syncAndDownloadTeis(Context context) throws Exception;
+    void syncAndDownloadTeis() throws Exception;
 
-    void syncMetadata(Context context, SyncMetadataWorker.OnProgressUpdate progressUpdate) throws Exception;
+    void syncMetadata(SyncMetadataWorker.OnProgressUpdate progressUpdate) throws Exception;
 
     void syncAndDownloadDataValues() throws Exception;
 
@@ -44,6 +40,8 @@ interface SyncPresenter {
 
     Observable<D2Progress> syncGranularDataValues(String orgUnit, String attributeOptionCombo, String period, String[] catOptionCombos);
 
+    Observable<D2Progress> syncGranularDataSet(String dataSetUid, String orgUnit, String attributeOptionCombo, String period);
+
     boolean checkSyncEventStatus(String uid);
 
     boolean checkSyncTEIStatus(String uid);
@@ -56,13 +54,13 @@ interface SyncPresenter {
 
     List<TrackerImportConflict> messageTrackerImportConflict(String uid);
 
-    void startPeriodicDataWork(Context context);
+    void startPeriodicDataWork();
 
-    void startPeriodicMetaWork(Context context);
+    void startPeriodicMetaWork();
 
     void downloadResources();
 
     void uploadResources();
 
-    ListenableWorker.Result blockSyncGranularDataValues(String orgUnitUid, String attrOptionCombo, String periodId, String[] catOptionCombo);
+    ListenableWorker.Result blockSyncGranularDataValues(String dataSetUid, String orgUnitUid, String attrOptionCombo, String periodId, String[] catOptionCombo);
 }

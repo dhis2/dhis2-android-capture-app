@@ -117,7 +117,7 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
                                 view.setProgram(sextet.val1());
                                 view.setProgramStage(sextet.val3());
                                 view.setEvent(sextet.val0());
-                                view.setCatComboOptions(catCombo, !sextet.val4().isEmpty() ? sextet.val4() : null);
+                                getCatOptionCombos(catCombo, !sextet.val4().isEmpty() ? sextet.val4() : null);
                             }, Timber::d)
             );
 
@@ -136,7 +136,7 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
                                 this.catCombo = trioFlowable.val1();
                                 this.orgUnits = trioFlowable.val2();
                                 view.setProgram(trioFlowable.val0());
-                                view.setCatComboOptions(catCombo, null);
+                                getCatOptionCombos(catCombo, null);
                             }, Timber::d)
             );
             getProgramStages(programId, programStageId);
@@ -168,6 +168,17 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
         );
     }
 
+    private void getCatOptionCombos(CategoryCombo categoryCombo, Map<String, CategoryOption> stringCategoryOptionMap){
+        compositeDisposable.add(
+                eventInitialRepository.catOptionCombos(categoryCombo.uid())
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
+                        .subscribe( categoryOptionCombos ->
+                                        view.setCatComboOptions(categoryCombo, categoryOptionCombos, stringCategoryOptionMap),
+                                Timber::e
+                        )
+        );
+    }
 
     @Override
     public void getEventSections(@NonNull String eventId) {

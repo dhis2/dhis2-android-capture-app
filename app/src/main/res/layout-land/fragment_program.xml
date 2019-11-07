@@ -4,6 +4,14 @@
     tools:showIn="@layout/activity_main"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <data>
+
+        <variable
+            name="presenter"
+            type="org.dhis2.usescases.main.program.ProgramPresenter" />
+
+    </data>
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -93,13 +101,5 @@
             app:spanCount="@{3}" />
 
     </RelativeLayout>
-
-
-    <data>
-
-        <variable
-            name="presenter"
-            type="org.dhis2.usescases.main.program.ProgramContract.Presenter" />
-    </data>
 
 </layout>

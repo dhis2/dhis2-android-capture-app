@@ -66,6 +66,8 @@ public class EventCaptureContract {
         void setProgramStage(String programStageUid);
 
         void showRuleCalculation(Boolean shouldShow);
+
+        void showErrorSnackBar();
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter {
@@ -129,9 +131,6 @@ public class EventCaptureContract {
         Flowable<String> catOption();
 
         Flowable<List<FormSectionViewModel>> eventSections();
-
-        @NonNull
-        Flowable<List<FieldViewModel>> list(String sectionUid);
 
         @NonNull
         Flowable<List<FieldViewModel>> list();

@@ -8,7 +8,6 @@ import androidx.annotation.Nullable;
 import org.dhis2.data.forms.FormSectionViewModel;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.usescases.general.AbstractActivityContracts;
-import org.dhis2.usescases.org_unit_selector.TreeNode;
 import org.dhis2.utils.EventCreationType;
 import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryOption;
@@ -37,7 +36,7 @@ public class EventInitialContract {
 
         void setProgram(@NonNull Program program);
 
-        void setCatComboOptions(CategoryCombo catCombo, Map<String, CategoryOption> stringCategoryOptionMap);
+        void setCatComboOptions(CategoryCombo catCombo, List<CategoryOptionCombo> categoryOptionCombos, Map<String, CategoryOption> stringCategoryOptionMap);
 
         void showDateDialog(DatePickerDialog.OnDateSetListener listener);
 

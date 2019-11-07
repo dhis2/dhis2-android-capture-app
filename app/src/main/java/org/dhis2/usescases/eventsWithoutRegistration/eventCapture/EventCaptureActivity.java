@@ -23,8 +23,8 @@ import com.google.android.material.snackbar.Snackbar;
 
 import org.dhis2.App;
 import org.dhis2.R;
-import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
+import org.dhis2.data.tuples.Pair;
 import org.dhis2.databinding.ActivityEventCaptureBinding;
 import org.dhis2.databinding.WidgetDatepickerBinding;
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity;
@@ -34,8 +34,8 @@ import org.dhis2.utils.Constants;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.DialogClickListener;
 import org.dhis2.utils.FileResourcesUtil;
-import org.dhis2.utils.custom_views.CustomDialog;
-import org.dhis2.utils.custom_views.FormBottomDialog;
+import org.dhis2.utils.customviews.CustomDialog;
+import org.dhis2.utils.customviews.FormBottomDialog;
 import org.hisp.dhis.android.core.arch.helpers.FileResourceDirectoryHelper;
 
 import java.io.File;
@@ -123,9 +123,9 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        switch (requestCode){
+        switch (requestCode) {
             case Constants.GALLERY_REQUEST:
-                if(resultCode == RESULT_OK){
+                if (resultCode == RESULT_OK) {
                     Uri imageUri = data.getData();
                     presenter.saveImage(uuid, FileResourcesUtil.getFileFromGallery(this, imageUri).getPath());
                     presenter.nextCalculation(true);
@@ -244,6 +244,11 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
                 finishDataEntry();
                 break;
         }
+    }
+
+    @Override
+    public void showErrorSnackBar() {
+        showSnackBar(R.string.fix_error);
     }
 
     private void reschedule() {

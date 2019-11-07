@@ -8,16 +8,16 @@ import org.dhis2.utils.NetworkUtils;
 public class ReservedValueViewHolder extends RecyclerView.ViewHolder {
 
     private ItemReservedValueBinding binding;
-    private ReservedValueContracts.Presenter presenter;
+    private ReservedValuePresenter presenter;
 
-    public ReservedValueViewHolder(ItemReservedValueBinding binding, ReservedValueContracts.Presenter presenter) {
+    public ReservedValueViewHolder(ItemReservedValueBinding binding, ReservedValuePresenter presenter) {
         super(binding.getRoot());
         this.binding = binding;
         this.presenter = presenter;
 
     }
 
-    public void bind(ReservedValueContracts.Presenter presenter, ReservedValueModel dataElement){
+    public void bind(ReservedValuePresenter presenter, ReservedValueModel dataElement){
         //TODO cambiarlo en el xml tambien
         binding.setVariable(BR.dataElement, dataElement);
         binding.setVariable(BR.presenter, presenter);

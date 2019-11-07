@@ -14,10 +14,10 @@ import org.dhis2.databinding.ItemReservedValueBinding;
 
 public class ReservedValueAdapter extends RecyclerView.Adapter<ReservedValueViewHolder> {
 
-    private ReservedValueContracts.Presenter presenter;
+    private ReservedValuePresenter presenter;
     private List<ReservedValueModel> dataElements;
 
-    public ReservedValueAdapter(ReservedValueContracts.Presenter presenter) {
+    public ReservedValueAdapter(ReservedValuePresenter presenter) {
         this.presenter = presenter;
         dataElements = new ArrayList<>();
     }

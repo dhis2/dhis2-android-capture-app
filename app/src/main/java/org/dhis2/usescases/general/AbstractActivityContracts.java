@@ -8,9 +8,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityOptionsCompat;
-import io.reactivex.processors.FlowableProcessor;
 
-import org.dhis2.utils.granular_sync.SyncStatusDialog;
+import org.dhis2.utils.granularsync.SyncStatusDialog;
 import org.dhis2.utils.OnDialogClickListener;
 import org.dhis2.utils.analytics.AnalyticsHelper;
 
@@ -43,10 +42,6 @@ public class AbstractActivityContracts {
 
         void showTutorial(boolean shaked);
 
-        <T> void saveListToPreference(String key, List<T> list);
-
-        <T> List<T> getListFromPreference(String key);
-
         void hideKeyboard();
 
         void showToast(String message);
@@ -58,6 +53,7 @@ public class AbstractActivityContracts {
         @Deprecated
         SharedPreferences getSharedPreferences();
 
+        @Deprecated
         void showSyncDialog(SyncStatusDialog dialog);
 
         @Deprecated

@@ -11,6 +11,7 @@
             name="filterCount"
             type="androidx.databinding.ObservableField&lt;java.lang.Integer&gt;" />
     </data>
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/filterLayout"
         android:layout_width="match_parent"
@@ -80,6 +81,7 @@
             android:ellipsize="end"
             android:fontFamily="@font/rubik_light"
             android:maxLines="1"
+            android:text="@{filterCount>0?@string/filters_active:@string/filters_disabled}"
             android:textColor="@color/white"
             android:textSize="10sp"
             app:layout_constraintBottom_toBottomOf="parent"

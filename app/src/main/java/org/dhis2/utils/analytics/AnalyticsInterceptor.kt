@@ -35,14 +35,13 @@ class AnalyticsInterceptor(private val analyticHelper: AnalyticsHelper) : Interc
         val response = chain.proceed(request)
         if (response.code() >= 400) {
             analyticHelper.setEvent(
-                    API_CALL,
-                    HashMap<String, String>().apply {
-                        put(API_CALL_RESPONSE_CODE, response.code().toString())
-                        put(API_CALL_ENDPOINT, request.url().toString())
-                    }
+                API_CALL,
+                HashMap<String, String>().apply {
+                    put(API_CALL_RESPONSE_CODE, response.code().toString())
+                    put(API_CALL_ENDPOINT, request.url().toString())
+                }
             )
         }
         return response
     }
-
 }

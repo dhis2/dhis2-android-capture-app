@@ -1,10 +1,10 @@
 package org.dhis2.usescases.teiDashboard.dashboardfragments.notes;
 
+import java.util.List;
+
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.usescases.general.AbstractActivityContracts;
-import org.hisp.dhis.android.core.enrollment.note.Note;
-
-import java.util.List;
+import org.hisp.dhis.android.core.note.Note;
 
 import io.reactivex.Flowable;
 import io.reactivex.functions.Consumer;
@@ -28,6 +28,8 @@ public class NotesContracts {
         void subscribeToNotes();
 
         boolean hasProgramWritePermission();
+
+        void saveNote(String toString);
     }
 
 }

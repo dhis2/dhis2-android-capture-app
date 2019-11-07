@@ -21,7 +21,7 @@ import org.dhis2.data.forms.dataentry.tablefields.FormViewHolder;
 import org.dhis2.data.forms.dataentry.tablefields.RowAction;
 import org.dhis2.databinding.CustomTextViewCellBinding;
 import org.dhis2.utils.DialogClickListener;
-import org.dhis2.utils.custom_views.TableFieldDialog;
+import org.dhis2.utils.customviews.TableFieldDialog;
 import org.hisp.dhis.android.core.common.ValueType;
 
 import java.util.ArrayList;

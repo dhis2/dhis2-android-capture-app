@@ -285,7 +285,6 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                                 }))
                         .observeOn(schedulerProvider.ui())
                         .subscribe(data -> {
-                                    Timber.tag("THREAD").d("EVENT SECTION CURRENT THREAD subscribe: %s", Thread.currentThread().getName());
                                     sectionAdjustProcessor.onNext(new Unit());
                                     subscribeToSection();
                                     EventCaptureFormFragment.getInstance().setSectionSelector(data, (float) unsupportedFields / (float) totalFields);
@@ -309,37 +308,22 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
 
         compositeDisposable.add(
                 sectionProcessor
-                        .flatMap(section -> fieldFlowable
+                        .switchMap(section -> fieldFlowable
                                 .subscribeOn(schedulerProvider.io())
                                 .map(fields -> {
                                     List<FieldViewModel> finalFields = new ArrayList<>();
                                     for (FieldViewModel fieldViewModel : fields) {
                                         if (section.equals("NO_SECTION") ||
-                                                section.equals(fieldViewModel.programStageSection()))
+                                                section.equals(fieldViewModel.programStageSection()) ||
+                                                fieldViewModel instanceof DisplayViewModel)
                                             finalFields.add(fieldViewModel);
                                     }
                                     return finalFields;
                                 })
                         )
-                        /*  .map(fields -> {
-                              Timber.tag("THREAD").d("EVENT FIELDS CURRENT THREAD : %s", Thread.currentThread().getName());
-                              HashMap<String, List<FieldViewModel>> fieldMap = new HashMap<>();
-                              for (FieldViewModel fieldViewModel : fields) {
-                                  if (!fieldMap.containsKey(fieldViewModel.programStageSection()))
-                                      fieldMap.put(fieldViewModel.programStageSection(), new ArrayList<>());
-                                  fieldMap.get(fieldViewModel.programStageSection()).add(fieldViewModel);
-                              }
-                              if (fieldMap.containsKey(null) && fieldMap.containsKey(section))
-                                  for (FieldViewModel fieldViewModel : fieldMap.get(null))
-                                      fieldMap.get(section).add(fieldViewModel);
-
-                              List<FieldViewModel> fieldsToShow = fieldMap.get(section.equals("NO_SECTION") ? null : section);
-                              return fieldsToShow != null ? fieldsToShow : new ArrayList<FieldViewModel>();
-                          }))*/
                         .observeOn(schedulerProvider.ui())
                         .subscribe(
                                 updates -> {
-                                    Timber.tag("THREAD").d("EVENT FIELDS CURRENT THREAD subscribe: %s", Thread.currentThread().getName());
                                     EventCaptureFormFragment.getInstance().showFields(updates, lastFocusItem);
                                     formAdjustProcessor.onNext(new Unit());
                                 },
@@ -513,7 +497,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
         }
 
         //Display the DisplayViewModels only in the last section
-        if (getFinalSections().size()>1 && !isEmpty(currentSection.get()) && !currentSection.get().equals(sectionList.get(sectionList.size() - 1).sectionUid())) {
+        if (getFinalSections().size() > 1 && !isEmpty(currentSection.get()) && !currentSection.get().equals(sectionList.get(sectionList.size() - 1).sectionUid())) {
             Iterator<Map.Entry<String, FieldViewModel>> iter = fieldViewModels.entrySet().iterator();
             while (iter.hasNext())
                 if (iter.next().getValue() instanceof DisplayViewModel)
@@ -552,8 +536,9 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
 
     private void changeSection() {
 
-        if (!errors.isEmpty() && errors.get(currentSection.get()) != null)
-            return;
+        if (!errors.isEmpty() && errors.get(currentSection.get()) != null) {
+            view.showErrorSnackBar();
+        }
 
         List<FormSectionViewModel> finalSections = getFinalSections();
 

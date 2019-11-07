@@ -1,6 +1,10 @@
 package org.dhis2.data.prefs
 
+import android.content.SharedPreferences
+
 interface PreferenceProvider {
+
+    fun sharedPreferences(): SharedPreferences
 
     fun saveUserCredentials(serverUrl: String, userName: String, pass: String)
 
@@ -11,6 +15,7 @@ interface PreferenceProvider {
     fun closeJiraSession()
     fun clear()
     fun setValue(key: String, value: Any? = null)
+    fun removeValue(key: String)
     fun contains(vararg keys: String): Boolean
     fun getString(key: String, default: String? = null): String?
     fun getInt(key: String, default: Int): Int
