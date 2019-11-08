@@ -5,16 +5,14 @@ import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Flowable
+import io.reactivex.Observable
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
-import org.dhis2.usescases.datasets.dataSetTable.DataSetTableContract
-import org.dhis2.usescases.datasets.dataSetTable.DataSetTablePresenter
-import org.dhis2.usescases.datasets.dataSetTable.DataSetTableRepository
-import org.dhis2.usescases.datasets.datasetInitial.DataSetInitialContract
+import org.dhis2.usescases.datasets.datasetInitial.DataSetInitialModel
 import org.dhis2.usescases.datasets.datasetInitial.DataSetInitialPresenter
 import org.dhis2.usescases.datasets.datasetInitial.DataSetInitialRepository
+import org.dhis2.usescases.datasets.datasetInitial.DataSetInitialView
 import org.dhis2.usescases.datasets.datasetInitial.DateRangeInputPeriodModel
-import org.hisp.dhis.android.core.common.State
-import org.hisp.dhis.android.core.dataset.DataInputPeriod
+import org.hisp.dhis.android.core.category.CategoryOption
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.period.PeriodType
 import org.junit.Assert
@@ -26,7 +24,7 @@ class DataSetInitialPresenterTest {
 
     private lateinit var presenter: DataSetInitialPresenter
 
-    private val view: DataSetInitialContract.View = mock()
+    private val view: DataSetInitialView = mock()
     private val repository: DataSetInitialRepository = mock()
     private val scheduler = TrampolineSchedulerProvider()
 
@@ -36,7 +34,29 @@ class DataSetInitialPresenterTest {
     }
 
     @Test
-    fun `Should go back when bakc button is clicked`(){
+    fun `Should setOrgUnit and data`() {
+
+        val orgUnits = listOf(OrganisationUnit.builder().uid("orgUnitUid").build())
+        val dataSet = DataSetInitialModel.create(
+            "name",
+            "desc",
+            "catComboUid",
+            "catCombo",
+            PeriodType.Daily,
+            mutableListOf(),
+            0
+            )
+        whenever(repository.orgUnits()) doReturn Observable.just(orgUnits)
+        whenever(repository.dataSet()) doReturn Observable.just(dataSet)
+
+        presenter.init()
+
+        verify(view).setOrgUnit(orgUnits[0])
+        verify(view).setData(dataSet)
+    }
+
+    @Test
+    fun `Should go back when back button is clicked`(){
         presenter.onBackClick()
 
         verify(view).back()
@@ -80,6 +100,43 @@ class DataSetInitialPresenterTest {
 
         verify(view).showPeriodSelector(periodType, periods, 0)
     }
+
+    @Test
+    fun `Should show catOptionSelector when field is clicked`() {
+        val catOptionUid = "catOptionUid"
+        val catOptions = listOf(CategoryOption.builder().uid(catOptionUid).build())
+
+        whenever(repository.catCombo(catOptionUid)) doReturn Observable.just(catOptions)
+
+        presenter.onCatOptionClick(catOptionUid)
+
+        verify(view).showCatComboSelector(catOptionUid, catOptions)
+    }
+
+    @Test
+    fun `Should navigate to dataSetTableActivity when actionbutton is clicked`() {
+        val catCombo = "catCombo"
+        val catOptionCombo = "catOptionCombo"
+        val periodId = "periodId"
+        val periodType = PeriodType.Monthly
+
+        whenever(view.getSelectedCatOptions()) doReturn mock()
+        whenever(view.selectedPeriod) doReturn mock()
+
+        whenever(repository.getCategoryOptionCombo(
+            view.getSelectedCatOptions(),
+            catCombo
+        )) doReturn Flowable.just(catOptionCombo)
+        whenever(repository.getPeriodId(
+            periodType,
+            view.selectedPeriod
+        )) doReturn Flowable.just(periodId)
+
+        presenter.onActionButtonClick(PeriodType.Monthly)
+
+        verify(view).navigateToDataSetTable(catOptionCombo, periodId)
+    }
+
 
 
 }

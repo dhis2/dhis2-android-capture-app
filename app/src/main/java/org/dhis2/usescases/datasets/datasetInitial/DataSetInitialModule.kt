@@ -12,13 +12,13 @@ import org.hisp.dhis.android.core.D2
 @PerActivity
 @Module
 class DataSetInitialModule internal constructor(
-    private val view: DataSetInitialContract.View,
+    private val view: DataSetInitialView,
     private val dataSetUid: String
 ) {
 
     @Provides
     @PerActivity
-    internal fun provideView(activity: DataSetInitialActivity): DataSetInitialContract.View {
+    internal fun provideView(activity: DataSetInitialActivity): DataSetInitialView {
         return activity
     }
 

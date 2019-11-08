@@ -9,7 +9,7 @@ import org.hisp.dhis.android.core.period.PeriodType
 import timber.log.Timber
 
 class DataSetInitialPresenter(
-    private val view: DataSetInitialContract.View,
+    private val view: DataSetInitialView,
     private val dataSetInitialRepository: DataSetInitialRepository,
     private val schedulerProvider: SchedulerProvider
 ) {
@@ -17,7 +17,7 @@ class DataSetInitialPresenter(
     var compositeDisposable: CompositeDisposable = CompositeDisposable()
     private var catCombo: String? = null
     private var openFuturePeriods: Int? = 0
-    private var orgUnits: List<OrganisationUnit>? = null
+    private var orgUnits: List<OrganisationUnit> = arrayListOf()
 
     fun init() {
         compositeDisposable.add(
@@ -82,20 +82,21 @@ class DataSetInitialPresenter(
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
-                    { data -> view.showCatComboSelector(catOptionUid, data) }, { Timber.d(it) }
+                    { catOptions -> view.showCatComboSelector(catOptionUid, catOptions) },
+                    { Timber.d(it) }
                 )
         )
     }
 
-    fun onActionButtonClick() {
+    fun onActionButtonClick(periodType: PeriodType) {
         compositeDisposable.add(
             Flowable.zip<String, String, Pair<String, String>>(
                 dataSetInitialRepository.getCategoryOptionCombo(
-                    view.selectedCatOptions,
+                    view.getSelectedCatOptions(),
                     catCombo
                 ),
                 dataSetInitialRepository.getPeriodId(
-                    PeriodType.valueOf(view.periodType),
+                    periodType,
                     view.selectedPeriod
                 ),
                 BiFunction<String, String, Pair<String, String>> { catOptionCombo, periodId ->
