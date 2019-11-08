@@ -1,4 +1,4 @@
-package org.dhis2.usecases.main.program
+package org.dhis2.usescases.main.program
 
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doReturn
@@ -11,10 +11,6 @@ import io.reactivex.schedulers.TestScheduler
 import java.util.concurrent.TimeUnit
 import org.dhis2.data.prefs.PreferenceProvider
 import org.dhis2.data.schedulers.TestSchedulerProvider
-import org.dhis2.usescases.main.program.HomeRepository
-import org.dhis2.usescases.main.program.ProgramPresenter
-import org.dhis2.usescases.main.program.ProgramView
-import org.dhis2.usescases.main.program.ProgramViewModel
 import org.dhis2.utils.Constants.PROGRAM_THEME
 import org.dhis2.utils.filters.FilterManager
 import org.junit.Assert.assertTrue
