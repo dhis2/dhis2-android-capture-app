@@ -28,7 +28,6 @@ import org.dhis2.data.forms.dataentry.tablefields.RowAction;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.databinding.FragmentDatasetSectionBinding;
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableActivity;
-import org.dhis2.usescases.datasets.dataSetTable.DataSetTableContract;
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
 import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.Constants;
@@ -55,11 +54,15 @@ import static org.dhis2.utils.analytics.AnalyticsConstants.ZOOM_TABLE;
 public class DataSetSectionFragment extends FragmentGlobalAbstract implements DataValueContract.View {
 
     FragmentDatasetSectionBinding binding;
-    private DataSetTableContract.Presenter presenter;
     private DataSetTableActivity activity;
     private List<DataSetTableAdapter> adapters = new ArrayList<>();
     private String sectionName;
     private String dataSetUid;
+    private String orgUnitUid;
+    private String periodType;
+    private String catOptionCombo;
+    private String periodInitialDate;
+    private String periodUid;
 
     @Inject
     DataValuePresenter presenterFragment;
@@ -71,13 +74,26 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
     private int tablesCount;
 
     @NonNull
-    public static DataSetSectionFragment create(@NonNull String sectionUid, boolean accessDataWrite, String dataSetUid) {
+    public static DataSetSectionFragment create(
+            @NonNull String sectionUid,
+            String dataSetUid,
+            String orgUnitUid,
+            String periodType,
+            String catOptionCombo,
+            String periodInitialDate,
+            String periodUid,
+            boolean accessDataWrite) {
         Bundle bundle = new Bundle();
         bundle.putString(Constants.DATA_SET_SECTION, sectionUid);
         bundle.putBoolean(Constants.ACCESS_DATA, accessDataWrite);
+        bundle.putString(Constants.DATA_SET_UID, dataSetUid);
+        bundle.putString(Constants.ORG_UNIT, orgUnitUid);
+        bundle.putString(Constants.PERIOD_TYPE, periodType);
+        bundle.putString(Constants.CATEGORY_OPTION_COMBO, catOptionCombo);
+        bundle.putString(Constants.PERIOD_INITIAL_DATE, periodInitialDate);
+        bundle.putString(Constants.PERIOD_ID, periodUid);
         DataSetSectionFragment dataSetSectionFragment = new DataSetSectionFragment();
         dataSetSectionFragment.setArguments(bundle);
-        bundle.putString(Constants.DATA_SET_UID, dataSetUid);
         return dataSetSectionFragment;
     }
 
@@ -86,6 +102,11 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
         super.onAttach(context);
         activity = (DataSetTableActivity) context;
         dataSetUid = getArguments().getString(Constants.DATA_SET_UID, dataSetUid);
+        orgUnitUid = getArguments().getString(Constants.ORG_UNIT, orgUnitUid);
+        periodType = getArguments().getString(Constants.PERIOD_TYPE, periodType);
+        catOptionCombo = getArguments().getString(Constants.CATEGORY_OPTION_COMBO, catOptionCombo);
+        periodInitialDate = getArguments().getString(Constants.PERIOD_INITIAL_DATE, periodInitialDate);
+        periodUid = getArguments().getString(Constants.PERIOD_ID, periodUid);
         ((App) context.getApplicationContext()).userComponent().plus(new DataValueModule(dataSetUid, this)).inject(this);
     }
 
@@ -95,10 +116,8 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_dataset_section, container, false);
         currentTablePosition.observe(this, this::loadHeader);
         binding.setPresenter(presenterFragment);
-        presenter = activity.getPresenter();
         sectionName = getArguments().getString(Constants.DATA_SET_SECTION);
-        presenterFragment.init(this, presenter.getOrgUnitUid(), presenter.getPeriodTypeName(),
-                presenter.getPeriodFinalDate(), presenter.getCatCombo(), sectionName, presenter.getPeriodId());
+        presenterFragment.init(this, orgUnitUid, periodType, periodInitialDate, catOptionCombo, sectionName, periodUid);
         return binding.getRoot();
     }
 

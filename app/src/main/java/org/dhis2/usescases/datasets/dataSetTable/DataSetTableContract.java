@@ -16,7 +16,7 @@ public class DataSetTableContract {
 
         Boolean accessDataWrite();
 
-        void showOptions(boolean open);
+        void showOptions();
 
         String getDataSetUid();
 
@@ -36,18 +36,15 @@ public class DataSetTableContract {
     public interface Presenter extends AbstractActivityContracts.Presenter {
 
         void onBackClick();
+
         void onSyncClick();
 
-        void init(String orgUnitUid, String periodTypeName, String catCombo, String periodFinalDate, String periodId);
+        void init(String catCombo);
 
-        String getOrgUnitUid();
-        String getPeriodTypeName();
-        String getPeriodFinalDate();
-        String getCatCombo();
-        String getPeriodId();
         void optionsClick();
 
         void onClickSelectTable(int numTable);
+
         void updateState();
 
         String getCatOptComboFromOptionList(List<String> catOpts);

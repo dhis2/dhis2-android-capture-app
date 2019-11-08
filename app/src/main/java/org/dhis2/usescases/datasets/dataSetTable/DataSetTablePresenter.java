@@ -2,7 +2,7 @@ package org.dhis2.usescases.datasets.dataSetTable;
 
 import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.data.tuples.Pair;
-import org.hisp.dhis.android.core.common.State;
+import org.dhis2.utils.analytics.AnalyticsHelper;
 
 import java.util.List;
 
@@ -17,31 +17,23 @@ public class DataSetTablePresenter implements DataSetTableContract.Presenter {
 
     private final DataSetTableRepository tableRepository;
     private final SchedulerProvider schedulerProvider;
+    private final AnalyticsHelper analyticsHelper;
     DataSetTableContract.View view;
     public CompositeDisposable disposable;
 
-    private String orgUnitUid;
-    private String periodTypeName;
-    private String periodFinalDate;
-    private String catCombo;
-    private boolean open = true;
-    private String periodId;
-
-    public DataSetTablePresenter(DataSetTableContract.View view, DataSetTableRepository dataSetTableRepository, SchedulerProvider schedulerProvider) {
+    public DataSetTablePresenter(DataSetTableContract.View view,
+                                 DataSetTableRepository dataSetTableRepository,
+                                 SchedulerProvider schedulerProvider,
+                                 AnalyticsHelper analyticsHelper) {
         this.view = view;
         this.tableRepository = dataSetTableRepository;
         this.schedulerProvider = schedulerProvider;
+        this.analyticsHelper = analyticsHelper;
         disposable = new CompositeDisposable();
     }
 
     @Override
-    public void init(String orgUnitUid, String periodTypeName, String catCombo,
-                     String periodFinalDate, String periodId) {
-        this.orgUnitUid = orgUnitUid;
-        this.periodTypeName = periodTypeName;
-        this.periodFinalDate = periodFinalDate;
-        this.catCombo = catCombo;
-        this.periodId = periodId;
+    public void init(String catCombo) {
 
         disposable.add(
                 tableRepository.getSections()
@@ -103,31 +95,10 @@ public class DataSetTablePresenter implements DataSetTableContract.Presenter {
         view.displayMessage(message);
     }
 
-    public String getOrgUnitUid() {
-        return orgUnitUid;
-    }
-
-    public String getPeriodTypeName() {
-        return periodTypeName;
-    }
-
-    public String getPeriodFinalDate() {
-        return periodFinalDate;
-    }
-
-    public String getPeriodId() {
-        return periodId;
-    }
-
-    public String getCatCombo() {
-        return catCombo;
-    }
-
     @Override
     public void optionsClick() {
-        view.analyticsHelper().setEvent(INFO_DATASET_TABLE, CLICK, INFO_DATASET_TABLE);
-        view.showOptions(open);
-        open = !open;
+        analyticsHelper.setEvent(INFO_DATASET_TABLE, CLICK, INFO_DATASET_TABLE);
+        view.showOptions();
     }
 
     @Override

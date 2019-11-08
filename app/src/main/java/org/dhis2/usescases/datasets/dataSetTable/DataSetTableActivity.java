@@ -88,7 +88,7 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
 
         setViewPager();
 
-        presenter.init(orgUnitUid, periodTypeName, catOptCombo, periodInitialDate, periodId);
+        presenter.init(catOptCombo);
     }
 
     @Override
@@ -98,7 +98,16 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
     }
 
     private void setViewPager() {
-        viewPagerAdapter = new DataSetSectionAdapter(getSupportFragmentManager(), accessDataWrite, getIntent().getStringExtra(Constants.DATA_SET_UID), this);
+        viewPagerAdapter = new DataSetSectionAdapter(
+                getSupportFragmentManager(),
+                this,
+                dataSetUid,
+                orgUnitUid,
+                periodTypeName,
+                catOptCombo,
+                periodInitialDate,
+                periodId,
+                accessDataWrite);
         binding.viewPager.setAdapter(viewPagerAdapter);
         binding.tabLayout.setupWithViewPager(binding.viewPager);
         binding.tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
@@ -171,11 +180,12 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
     }
 
     @Override
-    public void showOptions(boolean open) {
-        if (open)
+    public void showOptions() {
+        if (binding.infoContainer.getVisibility() != View.VISIBLE) {
             binding.infoContainer.setVisibility(View.VISIBLE);
-        else
+        } else {
             binding.infoContainer.setVisibility(View.GONE);
+        }
     }
 
 
@@ -259,6 +269,6 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
     }
 
     public void update() {
-        presenter.init(orgUnitUid, periodTypeName, catOptCombo, periodInitialDate, periodId);
+        presenter.init(catOptCombo);
     }
 }

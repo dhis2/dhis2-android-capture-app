@@ -25,15 +25,33 @@ public final class DataSetSectionAdapter extends FragmentStatePagerAdapter {
     private List<String> sections;
     private boolean accessDataWrite;
     private String dataSetUid;
+    private String orgUnitUid;
+    private String periodType;
+    private String catOptionCombo;
+    private String periodInitialDate;
+    private String periodUid;
     private Context context;
     private List<DataSetSectionFragment> fragments;
 
-    DataSetSectionAdapter(FragmentManager fm, boolean accessDataWrite, String dataSetUid, Context context) {
-        super(fm,BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
+    DataSetSectionAdapter(FragmentManager fm,
+                          Context context,
+                          String dataSetUid,
+                          String orgUnitUid,
+                          String periodType,
+                          String catOptionCombo,
+                          String periodInitialDate,
+                          String periodUid,
+                          boolean accessDataWrite) {
+        super(fm, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
         fragments = new ArrayList<>();
         sections = new ArrayList<>();
         this.accessDataWrite = accessDataWrite;
         this.dataSetUid = dataSetUid;
+        this.orgUnitUid = orgUnitUid;
+        this.periodType = periodType;
+        this.catOptionCombo = catOptionCombo;
+        this.periodInitialDate = periodInitialDate;
+        this.periodUid = periodUid;
         this.context = context;
     }
 
@@ -43,7 +61,15 @@ public final class DataSetSectionAdapter extends FragmentStatePagerAdapter {
 
     @Override
     public Fragment getItem(int position) {
-        DataSetSectionFragment fragment = DataSetSectionFragment.create(sections.get(position), accessDataWrite, dataSetUid);
+        DataSetSectionFragment fragment = DataSetSectionFragment.create(
+                sections.get(position),
+                dataSetUid,
+                orgUnitUid,
+                periodType,
+                catOptionCombo,
+                periodInitialDate,
+                periodUid,
+                accessDataWrite);
         fragments.add(fragment);
         return fragment;
     }
@@ -62,7 +88,7 @@ public final class DataSetSectionAdapter extends FragmentStatePagerAdapter {
     public CharSequence getPageTitle(int position) {
         SpannableString sb = new SpannableString(sections.get(position) + "  ");
 
-        if (fragments.size() > position && (fragments.get(position).currentNumTables()  > 1)) {
+        if (fragments.size() > position && (fragments.get(position).currentNumTables() > 1)) {
             Drawable image = context.getResources().getDrawable(R.drawable.ic_arrow_down_white);
             image.setBounds(0, 0, image.getIntrinsicWidth(), image.getIntrinsicHeight());
             ImageSpan imageSpan = new ImageSpan(image, ImageSpan.ALIGN_BOTTOM);
