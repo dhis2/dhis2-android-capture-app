@@ -19,7 +19,7 @@ class DataSetTablePresenterTest {
 
     private lateinit var presenter: DataSetTablePresenter
 
-    private val view: DataSetTableContract.View = mock()
+    private val view: DataSetTableView = mock()
     private val repository: DataSetTableRepository = mock()
     private val scheduler = TrampolineSchedulerProvider()
     private val analyticsHelper: AnalyticsHelper = mock()

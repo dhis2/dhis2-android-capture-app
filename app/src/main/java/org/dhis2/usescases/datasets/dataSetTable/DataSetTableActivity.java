@@ -27,7 +27,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-public class DataSetTableActivity extends ActivityGlobalAbstract implements DataSetTableContract.View {
+public class DataSetTableActivity extends ActivityGlobalAbstract implements DataSetTableView {
 
     String orgUnitUid;
     String orgUnitName;
@@ -42,7 +42,7 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
     private List<String> sections;
 
     @Inject
-    DataSetTableContract.Presenter presenter;
+    DataSetTablePresenter presenter;
     private ActivityDatasetTableBinding binding;
     private DataSetSectionAdapter viewPagerAdapter;
 
@@ -164,15 +164,6 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
                 viewPagerAdapter.swapData(sections);
         }
     }
-
-    @Override
-    public void setDataValue(List<DataSetTableModel> data) {
-    }
-
-    public DataSetTableContract.Presenter getPresenter() {
-        return presenter;
-    }
-
 
     @Override
     public Boolean accessDataWrite() {
