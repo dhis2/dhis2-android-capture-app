@@ -329,7 +329,7 @@ class EnrollmentPresenterImpl(
 
         val fieldMap = fields.map { it.uid() to it }.toMap().toMutableMap()
 
-        RulesUtilsProviderImpl(CodeGeneratorImpl())
+        RulesUtilsProviderImpl()
             .applyRuleEffects(fieldMap, result, this)
 
         fieldMap.values.forEach {
