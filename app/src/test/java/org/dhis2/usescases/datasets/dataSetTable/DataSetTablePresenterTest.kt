@@ -30,7 +30,7 @@ class DataSetTablePresenterTest {
     }
 
     @Test
-    fun `Should be able to setup all configuration of the DateSet`(){
+    fun `Should be able to setup all configuration of the DateSet`() {
         val sections = listOf("section_1", "section_2", "section_3")
         val dataSet = dummyDataSet()
         val catComboName = "Category Combo"
@@ -51,21 +51,21 @@ class DataSetTablePresenterTest {
     }
 
     @Test
-    fun `Should go back when back button is clicked`(){
+    fun `Should go back when back button is clicked`() {
         presenter.onBackClick()
 
         verify(view).back()
     }
 
     @Test
-    fun `Should show syncDialog when button is clicked`(){
+    fun `Should show syncDialog when button is clicked`() {
         presenter.onSyncClick()
 
         verify(view).showSyncDialog()
     }
 
     @Test
-    fun `Should dispose of all disposables`(){
+    fun `Should dispose of all disposables`() {
         presenter.onDettach()
 
         val disposableSize = presenter.disposable.size()
@@ -83,7 +83,7 @@ class DataSetTablePresenterTest {
     }
 
     @Test
-    fun `Should open the options view when button is clicked`(){
+    fun `Should open the options view when button is clicked`() {
         presenter.optionsClick()
 
         verify(analyticsHelper).setEvent(any(), any(), any())
@@ -121,7 +121,6 @@ class DataSetTablePresenterTest {
 
         verify(view).setDataSetState(state)
     }
-
 
     private fun dummyDataSet() = DataSet.builder().uid("uid").build()
 }
