@@ -1,12 +1,16 @@
 package org.dhis2.usescases.datasets.dataSetTable
 
+import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
+import com.nhaarman.mockitokotlin2.verifyNoMoreInteractions
 import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Flowable
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
+import org.dhis2.utils.analytics.AnalyticsHelper
 import org.hisp.dhis.android.core.common.State
+import org.hisp.dhis.android.core.dataset.DataSet
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
@@ -18,14 +22,36 @@ class DataSetTablePresenterTest {
     private val view: DataSetTableContract.View = mock()
     private val repository: DataSetTableRepository = mock()
     private val scheduler = TrampolineSchedulerProvider()
+    private val analyticsHelper: AnalyticsHelper = mock()
 
     @Before
     fun setUp() {
-        presenter = DataSetTablePresenter(view, repository, scheduler)
+        presenter = DataSetTablePresenter(view, repository, scheduler, analyticsHelper)
     }
 
     @Test
-    fun `Should go back when bakc button is clicked`(){
+    fun `Should be able to setup all configuration of the DateSet`(){
+        val sections = listOf("section_1", "section_2", "section_3")
+        val dataSet = dummyDataSet()
+        val catComboName = "Category Combo"
+
+        whenever(repository.sections) doReturn Flowable.just(sections)
+        whenever(repository.dataSet) doReturn Flowable.just(dataSet)
+        whenever(repository.getCatComboName(any())) doReturn Flowable.just(catComboName)
+        whenever(repository.dataSetStatus()) doReturn Flowable.just(true)
+        whenever(repository.dataSetState()) doReturn Flowable.just(State.SYNCED)
+
+        presenter.init("catComb")
+
+        verify(view).setSections(sections)
+        verify(view).renderDetails(dataSet, catComboName)
+        verify(view).isDataSetOpen(true)
+        verify(view).setDataSetState(State.SYNCED)
+        verifyNoMoreInteractions(view)
+    }
+
+    @Test
+    fun `Should go back when back button is clicked`(){
         presenter.onBackClick()
 
         verify(view).back()
@@ -57,6 +83,14 @@ class DataSetTablePresenterTest {
     }
 
     @Test
+    fun `Should open the options view when button is clicked`(){
+        presenter.optionsClick()
+
+        verify(analyticsHelper).setEvent(any(), any(), any())
+        verify(view).showOptions()
+    }
+
+    @Test
     fun `Should go on selected table`() {
         val table = 1
 
@@ -79,7 +113,7 @@ class DataSetTablePresenterTest {
     }
 
     @Test
-    fun `Should set the dataset state`() {
+    fun `Should set the DataSet state`() {
         val state = State.SYNCED
         whenever(repository.dataSetState()) doReturn Flowable.just(state)
 
@@ -87,4 +121,7 @@ class DataSetTablePresenterTest {
 
         verify(view).setDataSetState(state)
     }
+
+
+    private fun dummyDataSet() = DataSet.builder().uid("uid").build()
 }
