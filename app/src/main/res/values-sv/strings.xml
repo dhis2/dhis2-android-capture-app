@@ -1,4 +1,3 @@
-<?xml version='1.0' encoding='utf-8'?>
 <resources>
     <!--GENERAL-->
     <string name="app_name">DHIS2</string>
@@ -326,4 +325,5 @@
     <string name="data_every_day">Dagligen</string>
     <string name="data_every_week">Varje vecka</string>
     <string name="sms_completed">Avklarad</string>
-    </resources>
+    <!--endregion-->
+</resources>
