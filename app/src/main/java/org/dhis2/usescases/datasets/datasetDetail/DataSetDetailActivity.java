@@ -17,6 +17,7 @@ import org.dhis2.App;
 import org.dhis2.R;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.databinding.ActivityDatasetDetailBinding;
+import org.dhis2.usescases.datasets.dataSetTable.DataSetTableActivity;
 import org.dhis2.usescases.datasets.datasetInitial.DataSetInitialActivity;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.usescases.orgunitselector.OUTreeActivity;
@@ -24,6 +25,7 @@ import org.dhis2.utils.Constants;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.filters.FilterManager;
 import org.dhis2.utils.filters.FiltersAdapter;
+import org.dhis2.utils.granularsync.SyncStatusDialog;
 import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryOptionCombo;
 
@@ -43,7 +45,7 @@ public class DataSetDetailActivity extends ActivityGlobalAbstract implements Dat
     private ArrayList<Date> chosenDateMonth = new ArrayList<>();
     private ArrayList<Date> chosenDateYear = new ArrayList<>();
     private String dataSetUid;
-    private Boolean accessWriteData;
+    private Boolean accessDataWrite;
 
     @Inject
     DataSetDetailPresenter presenter;
@@ -65,7 +67,7 @@ public class DataSetDetailActivity extends ActivityGlobalAbstract implements Dat
 
         dataSetUid = getIntent().getStringExtra("DATASET_UID");
         binding.setName(getIntent().getStringExtra(Constants.DATA_SET_NAME));
-        accessWriteData = Boolean.valueOf(getIntent().getStringExtra(Constants.ACCESS_DATA));
+        accessDataWrite = Boolean.valueOf(getIntent().getStringExtra(Constants.ACCESS_DATA));
         binding.setPresenter(presenter);
 
         adapter = new DataSetDetailAdapter(presenter);
@@ -80,7 +82,7 @@ public class DataSetDetailActivity extends ActivityGlobalAbstract implements Dat
     @Override
     protected void onResume() {
         super.onResume();
-        presenter.init(dataSetUid);
+        presenter.init();
         binding.addDatasetButton.setEnabled(true);
         binding.setTotalFilters(FilterManager.getInstance().getTotalFilters());
         filtersAdapter.notifyDataSetChanged();
@@ -179,20 +181,41 @@ public class DataSetDetailActivity extends ActivityGlobalAbstract implements Dat
     }
 
     @Override
-    public String dataSetUid() {
-        return dataSetUid;
-    }
-
-    @Override
-    public Boolean accessDataWrite() {
-        return accessWriteData;
-    }
-
-    @Override
     public void startNewDataSet() {
         binding.addDatasetButton.setEnabled(false);
         Bundle bundle = new Bundle();
         bundle.putString(Constants.DATA_SET_UID, dataSetUid);
         startActivity(DataSetInitialActivity.class,bundle,false,false,null);
+    }
+
+    @Override
+    public void openDataSet(DataSetDetailModel dataSet) {
+        Bundle bundle = new Bundle();
+        bundle.putString(Constants.ORG_UNIT, dataSet.orgUnitUid());
+        bundle.putString(Constants.ORG_UNIT_NAME, dataSet.nameOrgUnit());
+        bundle.putString(Constants.PERIOD_ID, dataSet.periodId());
+        bundle.putString(Constants.PERIOD_TYPE, dataSet.periodType());
+        bundle.putString(Constants.PERIOD_TYPE_DATE, dataSet.namePeriod());
+        bundle.putString(Constants.CAT_COMB, dataSet.catOptionComboUid());
+        bundle.putString(Constants.DATA_SET_UID, dataSetUid);
+        bundle.putBoolean(Constants.ACCESS_DATA, accessDataWrite);
+        startActivity(DataSetTableActivity.class, bundle, false, false, null);
+    }
+
+    @Override
+    public void showSyncDialog(DataSetDetailModel dataSet) {
+        SyncStatusDialog dialog = new SyncStatusDialog.Builder()
+                .setConflictType(SyncStatusDialog.ConflictType.DATA_VALUES)
+                .setUid(dataSetUid)
+                .setOrgUnit(dataSet.orgUnitUid())
+                .setAttributeOptionCombo(dataSet.catOptionComboUid())
+                .setPeriodId(dataSet.periodId())
+                .onDismissListener(hasChanged -> {
+                    if(hasChanged)
+                        presenter.updateFilters();
+                })
+                .build();
+
+        dialog.show(getSupportFragmentManager(), dialog.getDialogTag());
     }
 }

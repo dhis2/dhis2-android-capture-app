@@ -1,6 +1,5 @@
 package org.dhis2.usescases.datasets.datasetDetail;
 
-
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.usescases.general.AbstractActivityContracts;
 import org.dhis2.utils.filters.FilterManager;
@@ -29,9 +28,9 @@ interface DataSetDetailView extends AbstractActivityContracts.View {
 
     void setWritePermission(Boolean aBoolean);
 
-    String dataSetUid();
-
-    Boolean accessDataWrite();
-
     void startNewDataSet();
+
+    void openDataSet(DataSetDetailModel dataSet);
+
+    void showSyncDialog(DataSetDetailModel dataSet);
 }
