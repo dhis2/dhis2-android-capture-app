@@ -54,7 +54,6 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
         this.d2 = d2;
     }
 
-
     @NonNull
     @Override
     public Observable<Event> event(String eventId) {
@@ -378,5 +377,13 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
     public Observable<ObjectStyle> getObjectStyle(String uid) {
         return d2.programModule().programStages().byUid().eq(uid).one().get().toObservable()
                 .map(programStage -> (programStage.style() != null) ? programStage.style() : ObjectStyle.builder().build());
+    }
+
+    @Override
+    public String getCategoryOptionCombo(String categoryComboUid, List<String> categoryOptionsUid){
+        return d2.categoryModule().categoryOptionCombos()
+                .byCategoryComboUid().eq(categoryComboUid)
+                .byCategoryOptions(categoryOptionsUid)
+                .one().blockingGet().uid();
     }
 }
