@@ -467,11 +467,6 @@ public class EventInitialPresenter
     public String getCatOptionCombo( List<CategoryOptionCombo> categoryOptionCombos, List<CategoryOption> values )
     {
         return eventInitialRepository.getCategoryOptionCombo( catCombo.uid(), UidsHelper.getUidsList( values ) );
-        /*
-         * String attrOptionComb = ""; for (CategoryOptionCombo catOptComb :
-         * categoryOptionCombos) if (catOptComb.categoryOptions().containsAll(values))
-         * attrOptionComb = catOptComb.uid(); return attrOptionComb;
-         */
     }
 
     @Override
