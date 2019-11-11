@@ -20,28 +20,33 @@ import io.reactivex.processors.FlowableProcessor;
 import io.reactivex.processors.PublishProcessor;
 import timber.log.Timber;
 
-public class DataSetDetailPresenter implements DataSetDetailContract.Presenter {
+public class DataSetDetailPresenter {
 
-    private SchedulerProvider schedulerProvider;
+    private DataSetDetailView view;
     private DataSetDetailRepository dataSetDetailRepository;
-    private DataSetDetailContract.View view;
-    private CompositeDisposable compositeDisposable;
+    private SchedulerProvider schedulerProvider;
+    private FilterManager filterManager;
+    public CompositeDisposable compositeDisposable;
     private String dataSetUid;
 
-    public DataSetDetailPresenter(DataSetDetailRepository dataSetDetailRepository, SchedulerProvider schedulerProvider) {
+    public DataSetDetailPresenter(DataSetDetailView view,
+                                  DataSetDetailRepository dataSetDetailRepository,
+                                  SchedulerProvider schedulerProvider,
+                                  FilterManager filterManager) {
+        this.view = view;
         this.dataSetDetailRepository = dataSetDetailRepository;
         this.schedulerProvider = schedulerProvider;
+        this.filterManager = filterManager;
         compositeDisposable = new CompositeDisposable();
     }
 
-    @Override
-    public void init(DataSetDetailContract.View view, String dataSetUid) {
-        this.view = view;
+    public void init(String dataSetUid) {
+
         this.dataSetUid = dataSetUid;
         getOrgUnits();
 
         compositeDisposable.add(
-                FilterManager.getInstance().asFlowable()
+                filterManager.asFlowable()
                         .startWith(FilterManager.getInstance())
                         .flatMap(filterManager -> dataSetDetailRepository.dataSetGroups(
                                 filterManager.getOrgUnitUidsFilters(),
@@ -57,7 +62,7 @@ public class DataSetDetailPresenter implements DataSetDetailContract.Presenter {
         );
 
         compositeDisposable.add(
-                FilterManager.getInstance().asFlowable()
+                filterManager.asFlowable()
                         .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.ui())
                         .subscribe(
@@ -67,7 +72,7 @@ public class DataSetDetailPresenter implements DataSetDetailContract.Presenter {
         );
 
         compositeDisposable.add(
-                FilterManager.getInstance().getPeriodRequest()
+                filterManager.getPeriodRequest()
                         .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.ui())
                         .subscribe(
@@ -94,18 +99,15 @@ public class DataSetDetailPresenter implements DataSetDetailContract.Presenter {
                         ));
     }
 
-    @Override
     public void addDataSet() {
         view.startNewDataSet();
     }
 
-    @Override
     public void onBackClick() {
         if (view != null)
             view.back();
     }
 
-    @Override
     public void onDataSetClick(String orgUnit, String orgUnitName, String periodId, String periodType, String initPeriodType, String catOptionComb) {
         Bundle bundle = new Bundle();
         bundle.putString(Constants.ORG_UNIT, orgUnit);
@@ -120,14 +122,13 @@ public class DataSetDetailPresenter implements DataSetDetailContract.Presenter {
         view.startActivity(DataSetTableActivity.class, bundle, false, false, null);
     }
 
-    @Override
     public void showFilter() {
         view.showHideFilter();
     }
 
     public void getOrgUnits() {
         compositeDisposable.add(
-                FilterManager.getInstance().ouTreeFlowable()
+                filterManager.ouTreeFlowable()
                         .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.ui())
                         .subscribe(
@@ -137,19 +138,14 @@ public class DataSetDetailPresenter implements DataSetDetailContract.Presenter {
         );
     }
 
-
-    @Override
     public void onDettach() {
         compositeDisposable.clear();
     }
 
-    @Override
     public void displayMessage(String message) {
         view.displayMessage(message);
     }
 
-
-    @Override
     public void onSyncIconClick(String orgUnit, String attributeCombo, String periodId) {
         view.showSyncDialog(
                 new SyncStatusDialog.Builder()
@@ -160,15 +156,14 @@ public class DataSetDetailPresenter implements DataSetDetailContract.Presenter {
                         .setPeriodId(periodId)
                         .onDismissListener(hasChanged -> {
                             if(hasChanged)
-                                FilterManager.getInstance().publishData();
+                                filterManager.publishData();
                         })
                         .build()
         );
     }
 
-    @Override
     public void clearFilterClick() {
-        FilterManager.getInstance().clearAllFilters();
+        filterManager.clearAllFilters();
         view.clearFilters();
     }
 }

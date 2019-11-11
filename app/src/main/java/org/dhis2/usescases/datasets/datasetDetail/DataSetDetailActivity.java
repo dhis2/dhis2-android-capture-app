@@ -36,7 +36,7 @@ import javax.inject.Inject;
 import io.reactivex.processors.PublishProcessor;
 
 
-public class DataSetDetailActivity extends ActivityGlobalAbstract implements DataSetDetailContract.View {
+public class DataSetDetailActivity extends ActivityGlobalAbstract implements DataSetDetailView {
 
     private ActivityDatasetDetailBinding binding;
     private ArrayList<Date> chosenDateWeek = new ArrayList<>();
@@ -46,7 +46,7 @@ public class DataSetDetailActivity extends ActivityGlobalAbstract implements Dat
     private Boolean accessWriteData;
 
     @Inject
-    DataSetDetailContract.Presenter presenter;
+    DataSetDetailPresenter presenter;
 
     private static PublishProcessor<Integer> currentPage;
     DataSetDetailAdapter adapter;
@@ -55,7 +55,7 @@ public class DataSetDetailActivity extends ActivityGlobalAbstract implements Dat
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        ((App) getApplicationContext()).userComponent().plus(new DataSetDetailModule(getIntent().getStringExtra("DATASET_UID"))).inject(this);
+        ((App) getApplicationContext()).userComponent().plus(new DataSetDetailModule(this, getIntent().getStringExtra("DATASET_UID"))).inject(this);
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_dataset_detail);
 
@@ -80,7 +80,7 @@ public class DataSetDetailActivity extends ActivityGlobalAbstract implements Dat
     @Override
     protected void onResume() {
         super.onResume();
-        presenter.init(this, dataSetUid);
+        presenter.init(dataSetUid);
         binding.addDatasetButton.setEnabled(true);
         binding.setTotalFilters(FilterManager.getInstance().getTotalFilters());
         filtersAdapter.notifyDataSetChanged();

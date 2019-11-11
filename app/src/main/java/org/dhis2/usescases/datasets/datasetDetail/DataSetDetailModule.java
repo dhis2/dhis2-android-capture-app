@@ -2,6 +2,7 @@ package org.dhis2.usescases.datasets.datasetDetail;
 
 import org.dhis2.data.dagger.PerActivity;
 import org.dhis2.data.schedulers.SchedulerProvider;
+import org.dhis2.utils.filters.FilterManager;
 import org.hisp.dhis.android.core.D2;
 
 import dagger.Module;
@@ -11,23 +12,22 @@ import dagger.Provides;
 @Module
 public class DataSetDetailModule {
 
+    private DataSetDetailView view;
 
     private final String datasetUid;
 
-    public DataSetDetailModule(String datasetUid) {
+    public DataSetDetailModule(DataSetDetailView view, String datasetUid) {
+        this.view = view;
         this.datasetUid = datasetUid;
     }
 
     @Provides
     @PerActivity
-    DataSetDetailContract.View provideView(DataSetDetailActivity activity) {
-        return activity;
-    }
-
-    @Provides
-    @PerActivity
-    DataSetDetailContract.Presenter providesPresenter(DataSetDetailRepository dataSetDetailRepository, SchedulerProvider schedulerProvider) {
-        return new DataSetDetailPresenter(dataSetDetailRepository, schedulerProvider);
+    DataSetDetailPresenter providesPresenter(
+            DataSetDetailRepository dataSetDetailRepository,
+            SchedulerProvider schedulerProvider,
+            FilterManager filterManager) {
+        return new DataSetDetailPresenter(view, dataSetDetailRepository, schedulerProvider, filterManager);
     }
 
     @Provides
