@@ -15,18 +15,16 @@ import dagger.Provides;
 @Module
 public class NotesModule {
 
-    private final String programUid;
-    private final String teiUid;
+    private NotesContracts.View view;
 
-    public NotesModule(String programUid, String teiUid) {
-        this.programUid = programUid;
-        this.teiUid = teiUid;
+    public NotesModule(NotesContracts.View view) {
+        this.view = view;
     }
 
     @Provides
     @PerFragment
-    NotesContracts.Presenter providesPresenter(D2 d2, DashboardRepository dashboardRepository, SchedulerProvider schedulerProvider) {
-        return new NotesPresenterImpl(d2, dashboardRepository, programUid, teiUid, schedulerProvider);
+    NotesPresenterImpl providesPresenter(D2 d2, DashboardRepository dashboardRepository, SchedulerProvider schedulerProvider) {
+        return new NotesPresenterImpl(d2, dashboardRepository, schedulerProvider, view);
     }
 
 }

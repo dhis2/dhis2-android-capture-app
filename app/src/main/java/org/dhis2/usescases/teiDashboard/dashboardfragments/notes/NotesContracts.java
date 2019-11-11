@@ -19,17 +19,4 @@ public class NotesContracts {
         Consumer<List<Note>> swapNotes();
     }
 
-    public interface Presenter extends AbstractActivityContracts.Presenter {
-
-        void init(View view);
-
-        void setNoteProcessor(Flowable<Pair<String, Boolean>> noteProcessor);
-
-        void subscribeToNotes();
-
-        boolean hasProgramWritePermission();
-
-        void saveNote(String toString);
-    }
-
 }

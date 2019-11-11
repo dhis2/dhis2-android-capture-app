@@ -36,7 +36,7 @@ import io.reactivex.functions.Consumer;
 public class NotesFragment extends FragmentGlobalAbstract implements NotesContracts.View {
 
     @Inject
-    NotesContracts.Presenter presenter;
+    NotesPresenterImpl presenter;
 
     FragmentNotesBinding binding;
     private NotesAdapter noteAdapter;
@@ -45,11 +45,13 @@ public class NotesFragment extends FragmentGlobalAbstract implements NotesContra
     public void onAttach(Context context) {
         super.onAttach(context);
         TeiDashboardMobileActivity activity = (TeiDashboardMobileActivity) context;
-        if (((App) context.getApplicationContext()).dashboardComponent() != null)
+        if (((App) context.getApplicationContext()).dashboardComponent() != null) {
             ((App) context.getApplicationContext())
                     .dashboardComponent()
-                    .plus(new NotesModule(activity.getProgramUid(), activity.getTeiUid()))
+                    .plus(new NotesModule(this))
                     .inject(this);
+            presenter.init(activity.getProgramUid(), activity.getTeiUid());
+        }
     }
 
     @Nullable
@@ -82,7 +84,6 @@ public class NotesFragment extends FragmentGlobalAbstract implements NotesContra
     @Override
     public void onResume() {
         super.onResume();
-        presenter.init(this);
         presenter.setNoteProcessor(noteAdapter.asFlowable());
         presenter.subscribeToNotes();
     }
