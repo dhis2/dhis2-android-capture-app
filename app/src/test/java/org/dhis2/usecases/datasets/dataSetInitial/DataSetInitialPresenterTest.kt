@@ -63,24 +63,6 @@ class DataSetInitialPresenterTest {
     }
 
     @Test
-    fun `Should dispose of all disposables`(){
-        presenter.onDettach()
-
-        val disposableSize = presenter.compositeDisposable.size()
-
-        Assert.assertTrue(disposableSize == 0)
-    }
-
-    @Test
-    fun `Should display message`() {
-        val message = "message"
-
-        presenter.displayMessage(message)
-
-        verify(view).displayMessage(message)
-    }
-
-    @Test
     fun `Should show orgUnitDialog when field is clicked`() {
         val orgUnits = listOf<OrganisationUnit>()
 
@@ -115,13 +97,15 @@ class DataSetInitialPresenterTest {
 
     @Test
     fun `Should navigate to dataSetTableActivity when actionbutton is clicked`() {
-        val catCombo = "catCombo"
+        val catCombo = "catComboUid"
         val catOptionCombo = "catOptionCombo"
         val periodId = "periodId"
         val periodType = PeriodType.Monthly
 
-        whenever(view.getSelectedCatOptions()) doReturn mock()
-        whenever(view.selectedPeriod) doReturn mock()
+        `Should setOrgUnit and data`()
+
+        whenever(view.getSelectedCatOptions()) doReturn listOf("catOption")
+        whenever(view.selectedPeriod) doReturn Date()
 
         whenever(repository.getCategoryOptionCombo(
             view.getSelectedCatOptions(),
@@ -132,11 +116,26 @@ class DataSetInitialPresenterTest {
             view.selectedPeriod
         )) doReturn Flowable.just(periodId)
 
-        presenter.onActionButtonClick(PeriodType.Monthly)
+        presenter.onActionButtonClick(periodType)
 
         verify(view).navigateToDataSetTable(catOptionCombo, periodId)
     }
 
+    @Test
+    fun `Should dispose of all disposables`(){
+        presenter.onDettach()
 
+        val disposableSize = presenter.compositeDisposable.size()
 
+        Assert.assertTrue(disposableSize == 0)
+    }
+
+    @Test
+    fun `Should display message`() {
+        val message = "message"
+
+        presenter.displayMessage(message)
+
+        verify(view).displayMessage(message)
+    }
 }
