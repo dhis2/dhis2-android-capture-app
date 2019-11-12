@@ -244,6 +244,7 @@ public class DashboardRepositoryImpl
     public Integer getObjectStyle( Context context, String uid )
     {
         TrackedEntityType teType = d2.trackedEntityModule().trackedEntityTypes().uid( uid ).blockingGet();
+
         if ( teType.style() != null && teType.style().icon() != null )
         {
             String iconName = teType.style().icon();
