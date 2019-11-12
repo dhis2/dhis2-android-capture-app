@@ -128,6 +128,7 @@ class DataSetDetailPresenterTest {
         whenever(filterManager.ouTreeFlowable()) doReturn Flowable.just(true)
 
         presenter.getOrgUnits()
+        scheduler.io().triggerActions()
 
         verify(view).openOrgUnitTreeSelector()
     }
