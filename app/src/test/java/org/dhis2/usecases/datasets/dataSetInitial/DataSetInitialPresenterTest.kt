@@ -2,7 +2,10 @@ package org.dhis2.usecases.datasets.dataSetInitial
 
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
+import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
+import com.nhaarman.mockitokotlin2.verifyNoMoreInteractions
+import com.nhaarman.mockitokotlin2.verifyZeroInteractions
 import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Flowable
 import io.reactivex.Observable
@@ -33,19 +36,22 @@ class DataSetInitialPresenterTest {
         presenter = DataSetInitialPresenter(view, repository, scheduler)
     }
 
+    private fun dummyDataSetInitial() = DataSetInitialModel.create(
+        "name",
+        "desc",
+        "catComboUid",
+        "catCombo",
+        PeriodType.Daily,
+        mutableListOf(),
+        0
+    )
+
     @Test
-    fun `Should setOrgUnit and data`() {
+    fun `Should set OrgUnit and data`() {
 
         val orgUnits = listOf(OrganisationUnit.builder().uid("orgUnitUid").build())
-        val dataSet = DataSetInitialModel.create(
-            "name",
-            "desc",
-            "catComboUid",
-            "catCombo",
-            PeriodType.Daily,
-            mutableListOf(),
-            0
-            )
+        val dataSet = dummyDataSetInitial()
+
         whenever(repository.orgUnits()) doReturn Observable.just(orgUnits)
         whenever(repository.dataSet()) doReturn Observable.just(dataSet)
 
@@ -54,6 +60,40 @@ class DataSetInitialPresenterTest {
         verify(view).setOrgUnit(orgUnits[0])
         verify(view).setData(dataSet)
     }
+
+    @Test
+    fun `Should not set OrgUnits when size is bigger than 1`() {
+
+        val orgUnits = listOf(
+            OrganisationUnit.builder().uid("orgUnitUid").build(),
+            OrganisationUnit.builder().uid("orgUnitUid2").build()
+        )
+        val dataSet = dummyDataSetInitial()
+
+        whenever(repository.orgUnits()) doReturn Observable.just(orgUnits)
+        whenever(repository.dataSet()) doReturn Observable.just(dataSet)
+
+        presenter.init()
+
+        verify(view, times(0)).setOrgUnit(orgUnits[0])
+        verify(view).setData(dataSet)
+    }
+
+    @Test
+    fun `Should not set OrgUnit when size is 0`() {
+
+        val orgUnits = listOf<OrganisationUnit>()
+        val dataSet = dummyDataSetInitial()
+
+        whenever(repository.orgUnits()) doReturn Observable.just(orgUnits)
+        whenever(repository.dataSet()) doReturn Observable.just(dataSet)
+
+        presenter.init()
+
+        verify(view).setData(dataSet)
+        verifyNoMoreInteractions(view)
+    }
+
 
     @Test
     fun `Should go back when back button is clicked`(){
@@ -102,7 +142,8 @@ class DataSetInitialPresenterTest {
         val periodId = "periodId"
         val periodType = PeriodType.Monthly
 
-        `Should setOrgUnit and data`()
+        whenever(repository.orgUnits()) doReturn Observable.just(listOf())
+        whenever(repository.dataSet()) doReturn Observable.just(dummyDataSetInitial())
 
         whenever(view.getSelectedCatOptions()) doReturn listOf("catOption")
         whenever(view.selectedPeriod) doReturn Date()
@@ -116,6 +157,7 @@ class DataSetInitialPresenterTest {
             view.selectedPeriod
         )) doReturn Flowable.just(periodId)
 
+        presenter.init()
         presenter.onActionButtonClick(periodType)
 
         verify(view).navigateToDataSetTable(catOptionCombo, periodId)
