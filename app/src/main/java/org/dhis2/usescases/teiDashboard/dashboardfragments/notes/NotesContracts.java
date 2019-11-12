@@ -16,7 +16,7 @@ public class NotesContracts {
 
     public interface View extends AbstractActivityContracts.View {
 
-        Consumer<List<Note>> swapNotes();
+        void swapNotes(List<Note> noteModels);
     }
 
 }

@@ -25,7 +25,7 @@ public class NotesPresenterImpl {
     private final SchedulerProvider schedulerProvider;
     private NotesContracts.View view;
     public CompositeDisposable compositeDisposable;
-    private FlowableProcessor<Boolean> noteProcessor;
+    public FlowableProcessor<Boolean> noteProcessor;
 
     public NotesPresenterImpl(D2 d2, DashboardRepository dashboardRepository, SchedulerProvider schedulerProvider,
                        NotesContracts.View view) {
@@ -55,7 +55,7 @@ public class NotesPresenterImpl {
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
-                        dashboardRepository.handleNote(),
+                        dashboardRepository::handleNote,
                         Timber::d
                 ));
     }
@@ -75,7 +75,7 @@ public class NotesPresenterImpl {
                 .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.ui())
                         .subscribe(
-                                view.swapNotes(),
+                                view::swapNotes,
                                 Timber::d
                         )
         );

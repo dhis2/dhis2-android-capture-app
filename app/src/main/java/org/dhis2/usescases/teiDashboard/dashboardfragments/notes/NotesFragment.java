@@ -108,7 +108,7 @@ public class NotesFragment extends FragmentGlobalAbstract implements NotesContra
     }
 
     @Override
-    public Consumer<List<Note>> swapNotes() {
-        return noteModels -> noteAdapter.setItems(noteModels);
+    public void swapNotes(List<Note> noteModels) {
+        noteAdapter.setItems(noteModels);
     }
 }
