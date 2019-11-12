@@ -1,5 +1,7 @@
 package org.dhis2.usescases.datasets.datasetDetail;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.utils.filters.FilterManager;
 
@@ -39,12 +41,15 @@ public class DataSetDetailPresenter {
                         .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.ui())
                         .subscribe(
-                                view::setData,
+                                data -> {
+                                    view.setData(data);
+                                    view.updateFilters(filterManager.getTotalFilters());
+                                },
                                 Timber::d
                         )
         );
 
-        disposable.add(
+        /*disposable.add(
                 filterManager.asFlowable()
                         .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.ui())
@@ -52,7 +57,7 @@ public class DataSetDetailPresenter {
                                 filterManager -> view.updateFilters(filterManager.getTotalFilters()),
                                 Timber::e
                         )
-        );
+        );*/
 
         disposable.add(
                 filterManager.getPeriodRequest()
@@ -98,6 +103,7 @@ public class DataSetDetailPresenter {
         view.showHideFilter();
     }
 
+    @VisibleForTesting
     public void getOrgUnits() {
         disposable.add(
                 filterManager.ouTreeFlowable()

@@ -28,15 +28,24 @@
 
 package org.dhis2.usescases.datasets.datasetDetail
 
+import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Flowable
-import org.dhis2.data.schedulers.TrampolineSchedulerProvider
+import io.reactivex.Single
+import io.reactivex.processors.BehaviorProcessor
+import io.reactivex.processors.FlowableProcessor
+import io.reactivex.processors.PublishProcessor
+import io.reactivex.schedulers.TestScheduler
+import org.dhis2.data.schedulers.TestSchedulerProvider
+import org.dhis2.data.tuples.Pair
 import org.dhis2.utils.filters.FilterManager
+import org.dhis2.utils.filters.FilterManager.PeriodRequest
+import org.hisp.dhis.android.core.category.CategoryCombo
+import org.hisp.dhis.android.core.category.CategoryOptionCombo
 import org.hisp.dhis.android.core.common.State
-import org.hisp.dhis.android.core.period.PeriodType
 import org.junit.Before
 import org.junit.Test
 
@@ -46,12 +55,42 @@ class DataSetDetailPresenterTest {
 
     private val view: DataSetDetailView = mock()
     private val repository: DataSetDetailRepository = mock()
-    private val scheduler = TrampolineSchedulerProvider()
+    private val scheduler = TestSchedulerProvider(TestScheduler())
     private val filterManager: FilterManager = mock()
 
     @Before
     fun setUp() {
         presenter = DataSetDetailPresenter(view, repository, scheduler, filterManager)
+    }
+
+    @Test
+    fun `Should get the list of dataset`() {
+        val filterProcessor: FlowableProcessor<FilterManager> = PublishProcessor.create()
+        val periodRequest: FlowableProcessor<PeriodRequest> = BehaviorProcessor.create()
+        val filterManagerFlowable = Flowable.just(filterManager).startWith(filterProcessor)
+        val dataSets = listOf(dummyDataSet(), dummyDataSet(), dummyDataSet())
+        val catOptionComboPair = Pair.create(dummyCategoryCombo(), dummyListCatOptionCombo())
+
+        whenever(filterManager.asFlowable()) doReturn filterManagerFlowable
+        whenever(filterManager.ouTreeFlowable()) doReturn Flowable.just(true)
+        whenever(
+            repository.dataSetGroups(any(), any(), any(), any())
+        ) doReturn Flowable.just(dataSets)
+        whenever(filterManager.periodRequest) doReturn periodRequest
+        whenever(repository.catOptionCombos()) doReturn Single.just(catOptionComboPair)
+        whenever(repository.canWriteAny()) doReturn Flowable.just(true)
+        filterProcessor.onNext(filterManager)
+        periodRequest.onNext(PeriodRequest.FROM_TO)
+
+        presenter.init()
+        scheduler.io().triggerActions()
+
+        verify(view).openOrgUnitTreeSelector()
+        verify(view).setData(dataSets)
+        verify(view).updateFilters(any())
+        verify(view).showPeriodRequest(periodRequest.blockingFirst())
+        verify(view).setCatOptionComboFilter(catOptionComboPair)
+        verify(view).setWritePermission(true)
     }
 
     @Test
@@ -128,7 +167,7 @@ class DataSetDetailPresenterTest {
     }
 
     @Test
-    fun `Should clear all filters when reset filter button is clicked`(){
+    fun `Should clear all filters when reset filter button is clicked`() {
         presenter.clearFilterClick()
 
         verify(filterManager).clearAllFilters()
@@ -145,4 +184,10 @@ class DataSetDetailPresenterTest {
         State.SYNCED,
         ""
     )
+
+    private fun dummyCategoryCombo() = CategoryCombo.builder().uid("uid").build()
+
+    private fun dummyListCatOptionCombo(): List<CategoryOptionCombo> {
+        return listOf(CategoryOptionCombo.builder().uid("uid").build())
+    }
 }
