@@ -554,9 +554,11 @@ public class SearchRepositoryImpl implements SearchRepository {
 
     private List<TrackedEntityInstance> filterByState(List<TrackedEntityInstance> teis, List<State> states) {
         Iterator<TrackedEntityInstance> iterator = teis.iterator();
-        while (iterator.hasNext()) {
-            if (!states.contains(iterator.next().state()))
-                iterator.remove();
+        if(!states.isEmpty()) {
+            while (iterator.hasNext()) {
+                if (!states.contains(iterator.next().state()))
+                    iterator.remove();
+            }
         }
         return teis;
     }
