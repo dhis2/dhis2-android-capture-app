@@ -16,10 +16,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import io.reactivex.Flowable
-import java.io.File
-import java.util.Calendar
-import java.util.Date
-import javax.inject.Inject
 import org.dhis2.App
 import org.dhis2.R
 import org.dhis2.data.forms.dataentry.DataEntryAdapter
@@ -33,11 +29,7 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialAc
 import org.dhis2.usescases.general.ActivityGlobalAbstract
 import org.dhis2.usescases.map.MapSelectorActivity
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity
-import org.dhis2.utils.Constants
-import org.dhis2.utils.DatePickerUtils
-import org.dhis2.utils.DateUtils
-import org.dhis2.utils.DialogClickListener
-import org.dhis2.utils.FileResourcesUtil
+import org.dhis2.utils.*
 import org.dhis2.utils.analytics.CLICK
 import org.dhis2.utils.analytics.DELETE_AND_BACK
 import org.dhis2.utils.analytics.SAVE_ENROLL
@@ -54,13 +46,16 @@ import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityType
+import java.io.File
+import java.util.*
+import javax.inject.Inject
 
-class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentContract.View {
+class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
 
     enum class EnrollmentMode { NEW, CHECK }
 
     @Inject
-    lateinit var presenter: EnrollmentContract.Presenter
+    lateinit var presenter: EnrollmentPresenterImpl
 
     lateinit var binding: EnrollmentActivityBinding
     lateinit var mode: EnrollmentMode
@@ -75,10 +70,10 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentContract.View {
         const val RQ_GO_BACK = 1026
 
         fun getIntent(
-            context: Context,
-            enrollmentUid: String,
-            programUid: String,
-            enrollmentMode: EnrollmentMode
+                context: Context,
+                enrollmentUid: String,
+                programUid: String,
+                enrollmentMode: EnrollmentMode
         ): Intent {
             val intent = Intent(context, EnrollmentActivity::class.java)
             intent.putExtra(ENROLLMENT_UID_EXTRA, enrollmentUid)
@@ -94,10 +89,11 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentContract.View {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         (applicationContext as App).userComponent()!!.plus(
-            EnrollmentModule(
-                intent.getStringExtra(ENROLLMENT_UID_EXTRA),
-                intent.getStringExtra(PROGRAM_UID_EXTRA)
-            )
+                EnrollmentModule(
+                        this,
+                        intent.getStringExtra(ENROLLMENT_UID_EXTRA),
+                        intent.getStringExtra(PROGRAM_UID_EXTRA)
+                )
         ).inject(this)
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.enrollment_activity)
@@ -106,30 +102,20 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentContract.View {
         mode = EnrollmentMode.valueOf(intent.getStringExtra(MODE_EXTRA))
 
         binding.programLockLayout.visibility =
-            if (mode == EnrollmentMode.NEW) View.GONE else View.VISIBLE
+                if (mode == EnrollmentMode.NEW) View.GONE else View.VISIBLE
 
         binding.coordinatesView.setIsBgTransparent(true)
         binding.teiCoordinatesView.setIsBgTransparent(true)
 
         adapter = DataEntryAdapter(
-            LayoutInflater.from(this), supportFragmentManager,
-            DataEntryArguments.forEnrollment(intent.getStringExtra(ENROLLMENT_UID_EXTRA))
+                LayoutInflater.from(this), supportFragmentManager,
+                DataEntryArguments.forEnrollment(intent.getStringExtra(ENROLLMENT_UID_EXTRA))
         )
         binding.fieldRecycler.isNestedScrollingEnabled = true
         binding.fieldRecycler.adapter = adapter
 
         binding.next.setOnClickListener {
-            if (!adapter.mandatoryOk()) {
-                showInfoDialog(
-                    getString(R.string.unable_to_complete),
-                    getString(R.string.missing_mandatory_fields)
-                )
-            } else if (adapter.hasError()) {
-                showInfoDialog(
-                    getString(R.string.unable_to_complete),
-                    getString(R.string.field_errors)
-                )
-            } else {
+            if(presenter.dataIntegrityCheck(adapter.mandatoryOk(),adapter.hasError())){
                 analyticsHelper().setEvent(SAVE_ENROLL, CLICK, SAVE_ENROLL)
                 presenter.finish(mode)
             }
@@ -140,7 +126,7 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentContract.View {
                 if (newState == RecyclerView.SCROLL_STATE_DRAGGING) {
                     adapter.setLastFocusItem(null)
                     val imm = context!!.getSystemService(
-                        Activity.INPUT_METHOD_SERVICE
+                            Activity.INPUT_METHOD_SERVICE
                     ) as InputMethodManager
                     imm.hideSoftInputFromWindow(recyclerView.windowToken, 0)
                     binding.root.requestFocus()
@@ -152,7 +138,7 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentContract.View {
 
     override fun onResume() {
         super.onResume()
-        presenter.init(this)
+        presenter.init()
     }
 
     override fun onPause() {
@@ -167,10 +153,10 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentContract.View {
             RQ_INCIDENT_GEOMETRY, RQ_ENROLLMENT_GEOMETRY -> {
                 if (resultCode == Activity.RESULT_OK) {
                     handleGeometry(
-                        FeatureType.valueOfFeatureType(
-                            data!!.getStringExtra(MapSelectorActivity.LOCATION_TYPE_EXTRA)
-                        ),
-                        data.getStringExtra(MapSelectorActivity.DATA_EXTRA), requestCode
+                            FeatureType.valueOfFeatureType(
+                                    data!!.getStringExtra(MapSelectorActivity.LOCATION_TYPE_EXTRA)
+                            ),
+                            data.getStringExtra(MapSelectorActivity.DATA_EXTRA), requestCode
                     )
                 }
             }
@@ -179,8 +165,8 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentContract.View {
                     try {
                         val imageUri = data?.data
                         presenter.saveValue(
-                            uuid,
-                            FileResourcesUtil.getFileFromGallery(this, imageUri).path
+                                uuid,
+                                FileResourcesUtil.getFileFromGallery(this, imageUri).path
                         )
                     } catch (e: Exception) {
                         e.printStackTrace()
@@ -191,8 +177,8 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentContract.View {
             Constants.CAMERA_REQUEST -> {
                 if (resultCode == Activity.RESULT_OK) {
                     val file = File(
-                        FileResourceDirectoryHelper.getFileResourceDirectory(this),
-                        "tempFile.png"
+                            FileResourceDirectoryHelper.getFileResourceDirectory(this),
+                            "tempFile.png"
                     )
                     if (file.exists()) {
                         presenter.saveValue(uuid, file.path)
@@ -208,16 +194,16 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentContract.View {
     override fun openEvent(eventUid: String) {
         if (presenter.openInitial(eventUid)) {
             val bundle = EventInitialActivity.getBundle(
-                presenter.getProgram().uid(),
-                eventUid,
-                null,
-                presenter.getEnrollment().trackedEntityInstance(),
-                null,
-                presenter.getEnrollment().organisationUnit(),
-                null,
-                presenter.getEnrollment().uid(),
-                0,
-                presenter.getEnrollment().status()
+                    presenter.getProgram().uid(),
+                    eventUid,
+                    null,
+                    presenter.getEnrollment().trackedEntityInstance(),
+                    null,
+                    presenter.getEnrollment().organisationUnit(),
+                    null,
+                    presenter.getEnrollment().uid(),
+                    0,
+                    presenter.getEnrollment().status()
             )
             val eventInitialIntent = Intent(abstracContext, EventInitialActivity::class.java)
             eventInitialIntent.putExtras(bundle)
@@ -225,11 +211,11 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentContract.View {
         } else {
             val eventCreationIntent = Intent(abstracContext, EventCaptureActivity::class.java)
             eventCreationIntent.putExtras(
-                EventCaptureActivity.getActivityBundle(eventUid, presenter.getProgram().uid())
+                    EventCaptureActivity.getActivityBundle(eventUid, presenter.getProgram().uid())
             )
             eventCreationIntent.putExtra(
-                Constants.TRACKED_ENTITY_INSTANCE,
-                presenter.getEnrollment().trackedEntityInstance()
+                    Constants.TRACKED_ENTITY_INSTANCE,
+                    presenter.getEnrollment().trackedEntityInstance()
             )
             startActivityForResult(eventCreationIntent, RQ_EVENT)
         }
@@ -247,7 +233,23 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentContract.View {
     }
 
     override fun goBack() {
-        onBackPressed()
+        if (presenter.dataIntegrityCheck(adapter.mandatoryOk(), adapter.hasError())) {
+            onBackPressed()
+        }
+    }
+
+    override fun showMissingMandatoryFieldsMessage() {
+        showInfoDialog(
+                getString(R.string.unable_to_complete),
+                getString(R.string.missing_mandatory_fields)
+        )
+    }
+
+    override fun showErrorFieldsMessage() {
+        showInfoDialog(
+                getString(R.string.unable_to_complete),
+                getString(R.string.field_errors)
+        )
     }
 
     override fun onBackPressed() {
@@ -256,44 +258,44 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentContract.View {
 
     private fun showDeleteDialog() {
         CustomDialog(
-            this,
-            getString(R.string.title_delete_go_back),
-            getString(R.string.delete_go_back),
-            getString(R.string.cancel),
-            getString(R.string.missing_mandatory_fields_go_back),
-            RQ_GO_BACK,
-            object : DialogClickListener {
-                override fun onPositive() {
-                    // do nothing
-                }
+                this,
+                getString(R.string.title_delete_go_back),
+                getString(R.string.delete_go_back),
+                getString(R.string.cancel),
+                getString(R.string.missing_mandatory_fields_go_back),
+                RQ_GO_BACK,
+                object : DialogClickListener {
+                    override fun onPositive() {
+                        // do nothing
+                    }
 
-                override fun onNegative() {
-                    analyticsHelper().setEvent(DELETE_AND_BACK, CLICK, DELETE_AND_BACK)
-                    presenter.deleteAllSavedData()
-                    finish()
+                    override fun onNegative() {
+                        analyticsHelper().setEvent(DELETE_AND_BACK, CLICK, DELETE_AND_BACK)
+                        presenter.deleteAllSavedData()
+                        finish()
+                    }
                 }
-            }
         )
-            .show()
+                .show()
     }
 
     private fun handleGeometry(featureType: FeatureType, dataExtra: String, requestCode: Int) {
         val geometry: Geometry? =
-            when (featureType) {
-                FeatureType.POINT -> {
-                    val type = object : TypeToken<List<Double>>() {}.type
-                    GeometryHelper.createPointGeometry(Gson().fromJson(dataExtra, type))
+                when (featureType) {
+                    FeatureType.POINT -> {
+                        val type = object : TypeToken<List<Double>>() {}.type
+                        GeometryHelper.createPointGeometry(Gson().fromJson(dataExtra, type))
+                    }
+                    FeatureType.POLYGON -> {
+                        val type = object : TypeToken<List<List<List<Double>>>>() {}.type
+                        GeometryHelper.createPolygonGeometry(Gson().fromJson(dataExtra, type))
+                    }
+                    FeatureType.MULTI_POLYGON -> {
+                        val type = object : TypeToken<List<List<List<List<Double>>>>>() {}.type
+                        GeometryHelper.createMultiPolygonGeometry(Gson().fromJson(dataExtra, type))
+                    }
+                    else -> null
                 }
-                FeatureType.POLYGON -> {
-                    val type = object : TypeToken<List<List<List<Double>>>>() {}.type
-                    GeometryHelper.createPolygonGeometry(Gson().fromJson(dataExtra, type))
-                }
-                FeatureType.MULTI_POLYGON -> {
-                    val type = object : TypeToken<List<List<List<List<Double>>>>>() {}.type
-                    GeometryHelper.createMultiPolygonGeometry(Gson().fromJson(dataExtra, type))
-                }
-                else -> null
-            }
 
         if (geometry != null) {
             when (requestCode) {
@@ -308,11 +310,11 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentContract.View {
     /*region TEI*/
     override fun displayTeiInfo(it: List<TrackedEntityAttributeValue>) {
         binding.title.text =
-            if (mode != EnrollmentMode.NEW) {
-                it.map { it.value() }.joinToString(separator = " ", limit = 3)
-            } else {
-                String.format(getString(R.string.enroll_in), presenter.getProgram().displayName())
-            }
+                if (mode != EnrollmentMode.NEW) {
+                    it.map { it.value() }.joinToString(separator = " ", limit = 3)
+                } else {
+                    String.format(getString(R.string.enroll_in), presenter.getProgram().displayName())
+                }
     }
     /*endregion*/
     /*region ACCESS*/
@@ -391,59 +393,59 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentContract.View {
 
     override fun onReportDateClick() {
         showCalendar(
-            presenter.getEnrollment().enrollmentDate(),
-            presenter.getOrgUnit().openingDate(),
-            presenter.getOrgUnit().closedDate(),
-            binding.reportDateLayout.hint.toString(),
-            presenter.getProgram().selectEnrollmentDatesInFuture() ?: false,
-            object : DatePickerUtils.OnDatePickerClickListener {
-                override fun onNegativeClick() {
-                    val date = Date()
-                    presenter.updateEnrollmentDate(date)
-                }
+                presenter.getEnrollment().enrollmentDate(),
+                presenter.getOrgUnit().openingDate(),
+                presenter.getOrgUnit().closedDate(),
+                binding.reportDateLayout.hint.toString(),
+                presenter.getProgram().selectEnrollmentDatesInFuture() ?: false,
+                object : DatePickerUtils.OnDatePickerClickListener {
+                    override fun onNegativeClick() {
+                        val date = Date()
+                        presenter.updateEnrollmentDate(date)
+                    }
 
-                override fun onPositiveClick(datePicker: DatePicker) {
-                    val calendar = Calendar.getInstance()
-                    calendar.set(datePicker.year, datePicker.month, datePicker.dayOfMonth)
-                    presenter.updateEnrollmentDate(calendar.time)
+                    override fun onPositiveClick(datePicker: DatePicker) {
+                        val calendar = Calendar.getInstance()
+                        calendar.set(datePicker.year, datePicker.month, datePicker.dayOfMonth)
+                        presenter.updateEnrollmentDate(calendar.time)
+                    }
                 }
-            }
         )
     }
 
     override fun onIncidentDateClick() {
         showCalendar(
-            presenter.getEnrollment().incidentDate(),
-            presenter.getOrgUnit().openingDate(),
-            presenter.getOrgUnit().closedDate(),
-            binding.incidentDateLayout.hint.toString(),
-            presenter.getProgram().selectIncidentDatesInFuture() ?: false,
-            object : DatePickerUtils.OnDatePickerClickListener {
-                override fun onNegativeClick() {
-                    val date = Date()
-                    presenter.updateIncidentDate(date)
-                }
+                presenter.getEnrollment().incidentDate(),
+                presenter.getOrgUnit().openingDate(),
+                presenter.getOrgUnit().closedDate(),
+                binding.incidentDateLayout.hint.toString(),
+                presenter.getProgram().selectIncidentDatesInFuture() ?: false,
+                object : DatePickerUtils.OnDatePickerClickListener {
+                    override fun onNegativeClick() {
+                        val date = Date()
+                        presenter.updateIncidentDate(date)
+                    }
 
-                override fun onPositiveClick(datePicker: DatePicker) {
-                    val calendar = Calendar.getInstance()
-                    calendar.set(datePicker.year, datePicker.month, datePicker.dayOfMonth)
-                    presenter.updateIncidentDate(calendar.time)
+                    override fun onPositiveClick(datePicker: DatePicker) {
+                        val calendar = Calendar.getInstance()
+                        calendar.set(datePicker.year, datePicker.month, datePicker.dayOfMonth)
+                        presenter.updateIncidentDate(calendar.time)
+                    }
                 }
-            }
         )
     }
 
     override fun showCalendar(
-        date: Date?,
-        minDate: Date?,
-        maxDate: Date?,
-        label: String,
-        allowFuture: Boolean,
-        listener: DatePickerUtils.OnDatePickerClickListener
+            date: Date?,
+            minDate: Date?,
+            maxDate: Date?,
+            label: String,
+            allowFuture: Boolean,
+            listener: DatePickerUtils.OnDatePickerClickListener
     ) {
         DatePickerUtils.getDatePickerDialog(
-            this, label, date, minDate, maxDate, allowFuture,
-            listener
+                this, label, date, minDate, maxDate, allowFuture,
+                listener
         ).show()
     }
 
@@ -451,14 +453,14 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentContract.View {
 
     /*region GEOMETRY*/
     override fun displayEnrollmentCoordinates(
-        enrollmentCoordinatesData: Pair<Program, Enrollment>?
+            enrollmentCoordinatesData: Pair<Program, Enrollment>?
     ) {
         binding.coordinatesView.visibility =
-            if (enrollmentCoordinatesData!!.first.featureType() != FeatureType.NONE) {
-                View.VISIBLE
-            } else {
-                View.GONE
-            }
+                if (enrollmentCoordinatesData!!.first.featureType() != FeatureType.NONE) {
+                    View.VISIBLE
+                } else {
+                    View.GONE
+                }
 
         binding.coordinatesView.setLabel(getString(R.string.enrollment_coordinates))
 
@@ -467,8 +469,8 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentContract.View {
 
         binding.coordinatesView.setMapListener {
             startActivityForResult(
-                MapSelectorActivity.create(this, it.featureType, it.currentCoordinates()),
-                RQ_ENROLLMENT_GEOMETRY
+                    MapSelectorActivity.create(this, it.featureType, it.currentCoordinates()),
+                    RQ_ENROLLMENT_GEOMETRY
             )
         }
         binding.coordinatesView.setCurrentLocationListener {
@@ -477,17 +479,17 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentContract.View {
     }
 
     override fun displayTeiCoordinates(
-        teiCoordinatesData: Pair<TrackedEntityType, TrackedEntityInstance>?
+            teiCoordinatesData: Pair<TrackedEntityType, TrackedEntityInstance>?
     ) {
         binding.teiCoordinatesView.visibility =
-            if (teiCoordinatesData!!.first.featureType() != FeatureType.NONE) {
-                View.VISIBLE
-            } else {
-                View.GONE
-            }
+                if (teiCoordinatesData!!.first.featureType() != FeatureType.NONE) {
+                    View.VISIBLE
+                } else {
+                    View.GONE
+                }
 
         binding.teiCoordinatesView.setLabel(
-            "${getString(R.string.tei_coordinates)} ${teiCoordinatesData.first.displayName()}"
+                "${getString(R.string.tei_coordinates)} ${teiCoordinatesData.first.displayName()}"
         )
 
         binding.teiCoordinatesView.featureType = teiCoordinatesData.first.featureType()
@@ -495,8 +497,8 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentContract.View {
 
         binding.teiCoordinatesView.setMapListener {
             startActivityForResult(
-                MapSelectorActivity.create(this, it.featureType, it.currentCoordinates()),
-                RQ_INCIDENT_GEOMETRY
+                    MapSelectorActivity.create(this, it.featureType, it.currentCoordinates()),
+                    RQ_INCIDENT_GEOMETRY
             )
         }
         binding.teiCoordinatesView.setCurrentLocationListener {
