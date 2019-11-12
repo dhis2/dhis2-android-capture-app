@@ -409,7 +409,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
             binding.date.setText(selectedDateString);
             if(selectedOrgUnit == null)
                 presenter.initOrgunit(selectedDate);
-            else
+            else if (eventCreationType != EventCreationType.REFERAL)
                 binding.orgUnit.setEnabled(false);
 
         } else {
