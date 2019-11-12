@@ -2,15 +2,13 @@ package org.dhis2.usescases.programStageSelection
 
 import android.content.res.ColorStateList
 import android.graphics.Color
-
+import androidx.core.view.ViewCompat
+import androidx.recyclerview.widget.RecyclerView
 import org.dhis2.BR
 import org.dhis2.Bindings.Bindings
 import org.dhis2.databinding.ItemProgramStageBinding
 import org.hisp.dhis.android.core.common.ObjectStyle
 import org.hisp.dhis.android.core.program.ProgramStage
-
-import androidx.core.view.ViewCompat
-import androidx.recyclerview.widget.RecyclerView
 
 class ProgramStageSelectionViewHolder(
     private val binding: ItemProgramStageBinding
@@ -43,8 +41,7 @@ class ProgramStageSelectionViewHolder(
         }
 
         itemView.setOnClickListener {
-            if (programStage.access().data().write())
-                presenter.onProgramStageClick(programStage)
+            presenter.onProgramStageClick(programStage)
         }
     }
 }

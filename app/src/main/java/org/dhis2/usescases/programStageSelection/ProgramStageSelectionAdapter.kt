@@ -2,12 +2,11 @@ package org.dhis2.usescases.programStageSelection
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-
+import androidx.databinding.DataBindingUtil
+import androidx.recyclerview.widget.RecyclerView
 import org.dhis2.R
 import org.dhis2.databinding.ItemProgramStageBinding
 import org.hisp.dhis.android.core.program.ProgramStage
-import androidx.databinding.DataBindingUtil
-import androidx.recyclerview.widget.RecyclerView
 
 /**
  * Created by Cristian on 13/02/2018.

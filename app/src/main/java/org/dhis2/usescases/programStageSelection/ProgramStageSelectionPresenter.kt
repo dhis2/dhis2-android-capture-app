@@ -1,5 +1,6 @@
 package org.dhis2.usescases.programStageSelection
 
+import androidx.annotation.VisibleForTesting
 import io.reactivex.Flowable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.functions.BiFunction
@@ -21,25 +22,19 @@ class ProgramStageSelectionPresenter(
 
     fun getProgramStages(
         programId: String,
-        uid: String
+        enrollmentUid: String
     ) {
-        val stagesFlowable = programStageSelectionRepository.enrollmentProgramStages(programId, uid)
-        val ruleEffectFlowable = programStageSelectionRepository.calculate()
-
-        val stageModelsFlowable =
+        compositeDisposable.add(
             Flowable.zip<List<ProgramStage>, Result<RuleEffect>, List<ProgramStage>>(
-                stagesFlowable.subscribeOn(schedulerProvider.io()),
-                ruleEffectFlowable.subscribeOn(schedulerProvider.io()),
+                programStageSelectionRepository.enrollmentProgramStages(
+                    programId,
+                    enrollmentUid
+                ),
+                programStageSelectionRepository.calculate(),
                 BiFunction { stageModels, calcResult ->
-                    this.applyEffects(
-                        stageModels,
-                        calcResult
-                    )
+                    applyEffects(stageModels, calcResult)
                 }
             )
-
-        compositeDisposable.add(
-            stageModelsFlowable
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
@@ -49,7 +44,8 @@ class ProgramStageSelectionPresenter(
         )
     }
 
-    private fun applyEffects(
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    fun applyEffects(
         stageModels: List<ProgramStage>,
         calcResult: Result<RuleEffect>
     ): List<ProgramStage> =
@@ -70,12 +66,20 @@ class ProgramStageSelectionPresenter(
         compositeDisposable.clear()
     }
 
-    fun displayMessage(message: String) {
+    fun displayMessage(message: String?) {
         view.displayMessage(message)
     }
 
     fun onProgramStageClick(programStage: ProgramStage) {
-        view.setResult(programStage.uid(), programStage.repeatable(), programStage.periodType())
+        if (programStage.access().data().write()) {
+            view.setResult(
+                programStage.uid(),
+                programStage.repeatable(),
+                programStage.periodType()
+            )
+        } else {
+            displayMessage(null)
+        }
     }
 
     fun getStandardInterval(programStageUid: String): Int {

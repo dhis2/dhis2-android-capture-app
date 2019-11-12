@@ -4,20 +4,15 @@ import android.content.Intent
 import android.content.res.Configuration
 import android.content.res.Resources
 import android.os.Bundle
-
+import androidx.databinding.DataBindingUtil
+import androidx.recyclerview.widget.GridLayoutManager
+import javax.inject.Inject
 import org.dhis2.App
 import org.dhis2.R
 import org.dhis2.databinding.ActivityProgramStageSelectionBinding
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity
 import org.dhis2.usescases.general.ActivityGlobalAbstract
 import org.dhis2.utils.Constants
-import org.hisp.dhis.android.core.period.PeriodType
-import org.hisp.dhis.android.core.program.ProgramStage
-
-import javax.inject.Inject
-import androidx.databinding.DataBindingUtil
-import androidx.recyclerview.widget.GridLayoutManager
-
 import org.dhis2.utils.Constants.ENROLLMENT_UID
 import org.dhis2.utils.Constants.EVENT_CREATION_TYPE
 import org.dhis2.utils.Constants.EVENT_PERIOD_TYPE
@@ -26,7 +21,8 @@ import org.dhis2.utils.Constants.EVENT_SCHEDULE_INTERVAL
 import org.dhis2.utils.Constants.ORG_UNIT
 import org.dhis2.utils.Constants.PROGRAM_UID
 import org.dhis2.utils.Constants.TRACKED_ENTITY_INSTANCE
-
+import org.hisp.dhis.android.core.period.PeriodType
+import org.hisp.dhis.android.core.program.ProgramStage
 
 /**
  * QUADRAM. Created by ppajuelo on 31/10/2017.
@@ -66,7 +62,7 @@ class ProgramStageSelectionActivity : ActivityGlobalAbstract(), ProgramStageSele
     override fun onResume() {
         super.onResume()
         val orientation = Resources.getSystem().configuration.orientation
-        presenter.getProgramStages(programId, enrollmentId) //TODO: enrollment / event path
+        presenter.getProgramStages(programId, enrollmentId) // TODO: enrollment / event path
         val columnCount = if (orientation == Configuration.ORIENTATION_LANDSCAPE) 3 else 2
         binding.recyclerView.layoutManager = GridLayoutManager(this, columnCount)
     }
