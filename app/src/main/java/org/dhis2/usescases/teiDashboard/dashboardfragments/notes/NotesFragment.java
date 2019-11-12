@@ -36,7 +36,7 @@ import io.reactivex.functions.Consumer;
 public class NotesFragment extends FragmentGlobalAbstract implements NotesContracts.View {
 
     @Inject
-    NotesPresenterImpl presenter;
+    NotesPresenter presenter;
 
     FragmentNotesBinding binding;
     private NotesAdapter noteAdapter;

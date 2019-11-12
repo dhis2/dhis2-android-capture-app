@@ -11,6 +11,7 @@ import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.dhis2.data.tuples.Pair
 import org.dhis2.usescases.teiDashboard.DashboardRepositoryImpl
 import org.dhis2.usescases.teiDashboard.dashboardfragments.notes.NotesContracts
+import org.dhis2.usescases.teiDashboard.dashboardfragments.notes.NotesPresenter
 import org.dhis2.usescases.teiDashboard.dashboardfragments.notes.NotesPresenterImpl
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.Access
@@ -27,7 +28,7 @@ import org.junit.Test
 import org.mockito.ArgumentCaptor
 
 class NotesPresenterTest {
-    private lateinit var notesPresenter: NotesPresenterImpl
+    private lateinit var notesPresenter: NotesPresenter
     private val dashboardRepository: DashboardRepositoryImpl = mock()
     private val schedulers: SchedulerProvider = TrampolineSchedulerProvider()
     private val view: NotesContracts.View = mock()
@@ -35,7 +36,7 @@ class NotesPresenterTest {
 
     @Before
     fun setUp(){
-        notesPresenter = NotesPresenterImpl(d2, dashboardRepository, schedulers, view)
+        notesPresenter = NotesPresenter(d2, dashboardRepository, schedulers, view)
         notesPresenter.init("program_uid", "tei_uid")
     }
 
@@ -118,7 +119,7 @@ class NotesPresenterTest {
         whenever(d2.noteModule().notes()
             .blockingAdd(noteCreationProject())) doReturn testingNoteUid
 
-        val testSubscriber = notesPresenter.noteProcessor.test()
+        val testSubscriber = notesPresenter.processor.test()
 
         notesPresenter.saveNote("message")
 
