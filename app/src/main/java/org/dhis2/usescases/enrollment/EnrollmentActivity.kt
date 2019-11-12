@@ -247,7 +247,19 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentContract.View {
     }
 
     override fun goBack() {
-        onBackPressed()
+        if (!adapter.mandatoryOk()) {
+            showInfoDialog(
+                    getString(R.string.unable_to_complete),
+                    getString(R.string.missing_mandatory_fields)
+            )
+        } else if (adapter.hasError()) {
+            showInfoDialog(
+                    getString(R.string.unable_to_complete),
+                    getString(R.string.field_errors)
+            )
+        } else {
+            onBackPressed()
+        }
     }
 
     override fun onBackPressed() {
