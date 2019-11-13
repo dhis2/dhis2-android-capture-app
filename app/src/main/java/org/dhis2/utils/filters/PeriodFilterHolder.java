@@ -84,18 +84,8 @@ class PeriodFilterHolder extends FilterHolder implements CompoundButton.OnChecke
         periodLayout.thisMonth.setOnCheckedChangeListener(this);
         periodLayout.lastMonth.setOnCheckedChangeListener(this);
         periodLayout.nextMonth.setOnCheckedChangeListener(this);
-        periodLayout.fromTo.setOnClickListener(view -> {
-            if (periodLayout.fromTo.isChecked()) {
-                updateSelection(R.id.fromTo);
-                FilterManager.getInstance().addPeriodRequest(FilterManager.PeriodRequest.FROM_TO);
-            }
-        });
-        periodLayout.other.setOnClickListener(view -> {
-            if (periodLayout.other.isChecked()) {
-                updateSelection(R.id.other);
-                FilterManager.getInstance().addPeriodRequest(FilterManager.PeriodRequest.OTHER);
-            }
-        });
+        periodLayout.fromTo.setOnCheckedChangeListener(this);
+        periodLayout.other.setOnCheckedChangeListener(this);
         periodLayout.anytime.setOnCheckedChangeListener(this);
     }
 
