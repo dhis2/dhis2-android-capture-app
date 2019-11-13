@@ -5,6 +5,7 @@ import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Flowable
+import java.lang.Exception
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.dhis2.usescases.programStageSelection.ProgramStageSelectionPresenter
 import org.dhis2.usescases.programStageSelection.ProgramStageSelectionRepository
@@ -20,7 +21,6 @@ import org.hisp.dhis.rules.models.RuleEffect
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
-import java.lang.Exception
 
 class ProgramStageSelectionPresenterTest {
 
@@ -49,10 +49,12 @@ class ProgramStageSelectionPresenterTest {
             )
         )
 
-        whenever(repository.enrollmentProgramStages(
-            programId,
-            enrollmentUid
-        )) doReturn Flowable.just(programStages)
+        whenever(
+            repository.enrollmentProgramStages(
+                programId,
+                enrollmentUid
+            )
+        ) doReturn Flowable.just(programStages)
         whenever(repository.calculate()) doReturn Flowable.just(calcResult)
         whenever(presenter.applyEffects(programStages, calcResult)) doReturn programStages
 
@@ -62,8 +64,7 @@ class ProgramStageSelectionPresenterTest {
     }
 
     @Test
-    fun `Should hide programStage when app`(){
-
+    fun `Should hide programStage when app`() {
         val programStages: MutableList<ProgramStage> =
             mutableListOf(ProgramStage.builder().uid("programStage").build())
         val calcResult = Result.success(
@@ -74,10 +75,12 @@ class ProgramStageSelectionPresenterTest {
             )
         )
 
-        whenever(rulesUtils.applyProgramStageRuleEffects(
-            programStages,
-            calcResult
-        )) doReturn emptyList()
+        whenever(
+            rulesUtils.applyProgramStageRuleEffects(
+                programStages,
+                calcResult
+            )
+        ) doReturn emptyList()
 
         Assert.assertEquals(
             presenter.applyEffects(programStages, calcResult).size,
@@ -86,8 +89,7 @@ class ProgramStageSelectionPresenterTest {
     }
 
     @Test
-    fun `Should do nothing when rule effect has error`(){
-
+    fun `Should do nothing when rule effect has error`() {
         val programStages: MutableList<ProgramStage> =
             mutableListOf(ProgramStage.builder().uid("programStage").build())
         val calcResult: Result<RuleEffect> = Result.failure(
@@ -102,7 +104,6 @@ class ProgramStageSelectionPresenterTest {
 
     @Test
     fun `Should set program stage when it is clicked`() {
-
         val programStage = ProgramStage.builder()
             .uid("programStage")
             .repeatable(false)
@@ -117,12 +118,10 @@ class ProgramStageSelectionPresenterTest {
             programStage.repeatable(),
             programStage.periodType()
         )
-
     }
 
     @Test
     fun `Should display message when it is clicked with no access`() {
-
         val programStage = ProgramStage.builder()
             .uid("programStage")
             .repeatable(false)
@@ -136,14 +135,14 @@ class ProgramStageSelectionPresenterTest {
     }
 
     @Test
-    fun `Should go back when back button is clicked`(){
+    fun `Should go back when back button is clicked`() {
         presenter.onBackClick()
 
         verify(view).back()
     }
 
     @Test
-    fun `Should dispose of all disposables`(){
+    fun `Should dispose of all disposables`() {
         presenter.onDetach()
 
         val disposableSize = presenter.compositeDisposable.size()
@@ -159,7 +158,4 @@ class ProgramStageSelectionPresenterTest {
 
         verify(view).displayMessage(message)
     }
-
-
-
 }
