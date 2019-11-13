@@ -5,10 +5,10 @@ import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.verifyNoMoreInteractions
-import com.nhaarman.mockitokotlin2.verifyZeroInteractions
 import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Flowable
 import io.reactivex.Observable
+import java.util.Date
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.dhis2.usescases.datasets.datasetInitial.DataSetInitialModel
 import org.dhis2.usescases.datasets.datasetInitial.DataSetInitialPresenter
@@ -21,7 +21,6 @@ import org.hisp.dhis.android.core.period.PeriodType
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
-import java.util.Date
 
 class DataSetInitialPresenterTest {
 
@@ -48,7 +47,6 @@ class DataSetInitialPresenterTest {
 
     @Test
     fun `Should set OrgUnit and data`() {
-
         val orgUnits = listOf(OrganisationUnit.builder().uid("orgUnitUid").build())
         val dataSet = dummyDataSetInitial()
 
@@ -63,7 +61,6 @@ class DataSetInitialPresenterTest {
 
     @Test
     fun `Should not set OrgUnits when size is bigger than 1`() {
-
         val orgUnits = listOf(
             OrganisationUnit.builder().uid("orgUnitUid").build(),
             OrganisationUnit.builder().uid("orgUnitUid2").build()
@@ -81,7 +78,6 @@ class DataSetInitialPresenterTest {
 
     @Test
     fun `Should not set OrgUnit when size is 0`() {
-
         val orgUnits = listOf<OrganisationUnit>()
         val dataSet = dummyDataSetInitial()
 
@@ -94,9 +90,8 @@ class DataSetInitialPresenterTest {
         verifyNoMoreInteractions(view)
     }
 
-
     @Test
-    fun `Should go back when back button is clicked`(){
+    fun `Should go back when back button is clicked`() {
         presenter.onBackClick()
 
         verify(view).back()
@@ -114,7 +109,16 @@ class DataSetInitialPresenterTest {
     @Test
     fun `Should show periodSelector when field is clicked`() {
         val periodType = PeriodType.Monthly
-        val periods = listOf(DateRangeInputPeriodModel.create("dataSet", "period", Date(), Date(), Date(), Date()))
+        val periods = listOf(
+            DateRangeInputPeriodModel.create(
+                "dataSet",
+                "period",
+                Date(),
+                Date(),
+                Date(),
+                Date()
+            )
+        )
 
         whenever(repository.dataInputPeriod) doReturn Flowable.just(periods)
 
@@ -148,14 +152,18 @@ class DataSetInitialPresenterTest {
         whenever(view.getSelectedCatOptions()) doReturn listOf("catOption")
         whenever(view.selectedPeriod) doReturn Date()
 
-        whenever(repository.getCategoryOptionCombo(
-            view.getSelectedCatOptions(),
-            catCombo
-        )) doReturn Flowable.just(catOptionCombo)
-        whenever(repository.getPeriodId(
-            periodType,
-            view.selectedPeriod
-        )) doReturn Flowable.just(periodId)
+        whenever(
+            repository.getCategoryOptionCombo(
+                view.getSelectedCatOptions(),
+                catCombo
+            )
+        ) doReturn Flowable.just(catOptionCombo)
+        whenever(
+            repository.getPeriodId(
+                periodType,
+                view.selectedPeriod
+            )
+        ) doReturn Flowable.just(periodId)
 
         presenter.init()
         presenter.onActionButtonClick(periodType)
@@ -164,7 +172,7 @@ class DataSetInitialPresenterTest {
     }
 
     @Test
-    fun `Should dispose of all disposables`(){
+    fun `Should dispose of all disposables`() {
         presenter.onDettach()
 
         val disposableSize = presenter.compositeDisposable.size()

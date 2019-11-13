@@ -31,7 +31,7 @@ class DataSetInitialPresenter(
                             view.setOrgUnit(orgUnits[0])
                         }
                     },
-                    { Timber.d(it) }
+                    Timber::e
                 )
         )
 
@@ -45,7 +45,7 @@ class DataSetInitialPresenter(
                         openFuturePeriods = dataSetInitialModel.openFuturePeriods()
                         view.setData(dataSetInitialModel)
                     },
-                    { Timber.d(it) }
+                    Timber::e
                 )
         )
     }
@@ -71,7 +71,7 @@ class DataSetInitialPresenter(
                             openFuturePeriods
                         )
                     },
-                    { Timber.e(it) }
+                    Timber::e
                 )
         )
     }
@@ -83,7 +83,7 @@ class DataSetInitialPresenter(
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
                     { catOptions -> view.showCatComboSelector(catOptionUid, catOptions) },
-                    { Timber.d(it) }
+                    Timber::e
                 )
         )
     }
@@ -109,7 +109,7 @@ class DataSetInitialPresenter(
                     { (catOptionCombo, periodId) ->
                         view.navigateToDataSetTable(catOptionCombo, periodId)
                     },
-                    { Timber.e(it) }
+                    Timber::e
                 )
         )
     }
