@@ -26,8 +26,8 @@ class DataSetTablePresenter(
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
-                    { view.setSections(it) },
-                    { Timber.e(it) }
+                    view::setSections,
+                    Timber::e
                 )
         )
 
@@ -41,7 +41,7 @@ class DataSetTablePresenter(
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
                     { data -> view.renderDetails(data.val0(), data.val1()) },
-                    { Timber.e(it) }
+                    Timber::e
                 )
         )
 
@@ -50,8 +50,8 @@ class DataSetTablePresenter(
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
-                    { view.isDataSetOpen(it) },
-                    { Timber.d(it) }
+                    view::isDataSetOpen,
+                    Timber::d
                 )
         )
 
@@ -60,8 +60,8 @@ class DataSetTablePresenter(
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
-                    { view.setDataSetState(it) },
-                    { Timber.d(it) }
+                    view::setDataSetState,
+                    Timber::d
                 )
         )
     }
@@ -101,8 +101,8 @@ class DataSetTablePresenter(
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
-                    { view.setDataSetState(it) },
-                    { Timber.d(it) }
+                    view::setDataSetState,
+                    Timber::d
                 )
         )
     }
