@@ -75,16 +75,27 @@ class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
 
         compositeDisposable.add(
                 d2.trackedEntityModule().trackedEntityInstances().uid(teiUid).get()
-                        .map(tei -> ExtensionsKt.profilePicturePath(tei, d2, programUid))
+                        .map(tei -> {
+                                    String defaultIcon = d2.trackedEntityModule().trackedEntityTypes().uid(tei.trackedEntityType()).blockingGet().style().icon();
+                                    return Pair.create(
+                                            ExtensionsKt.profilePicturePath(tei, d2, programUid),
+                                            defaultIcon != null ? defaultIcon : ""
+                                    );
+                                }
+                        )
                         .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.ui())
                         .subscribe(
-                                view::showTeiImage,
+                                fileNameAndDefault -> view.showTeiImage(
+                                        fileNameAndDefault.val0(),
+                                        fileNameAndDefault.val1()
+                                ),
                                 Timber::e
                         )
         );
 
     }
+
 
     @Override
     public void getTEIEvents() {
@@ -264,7 +275,7 @@ class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
 
     @Override
     public void onScheduleSelected(String uid, View sharedView) {
-        Intent intent = ScheduledEventActivity.Companion.getIntent(view.getContext(),uid);
+        Intent intent = ScheduledEventActivity.Companion.getIntent(view.getContext(), uid);
         ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(view.getAbstractActivity(), sharedView, "shared_view");
         view.openEventDetails(intent, options.toBundle());
     }

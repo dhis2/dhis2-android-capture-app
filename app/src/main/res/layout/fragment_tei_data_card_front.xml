@@ -195,7 +195,6 @@
                 android:background="@drawable/photo_temp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/ic_tei_default"
                 tools:ignore="ContentDescription" />
 
 
