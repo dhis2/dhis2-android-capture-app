@@ -210,14 +210,16 @@ class DataSetDetailActivity : ActivityGlobalAbstract(), DataSetDetailView {
 
     override fun openDataSet(dataSet: DataSetDetailModel) {
         val bundle = Bundle()
-        bundle.putString(Constants.ORG_UNIT, dataSet.orgUnitUid())
-        bundle.putString(Constants.ORG_UNIT_NAME, dataSet.nameOrgUnit())
-        bundle.putString(Constants.PERIOD_ID, dataSet.periodId())
-        bundle.putString(Constants.PERIOD_TYPE, dataSet.periodType())
-        bundle.putString(Constants.PERIOD_TYPE_DATE, dataSet.namePeriod())
-        bundle.putString(Constants.CAT_COMB, dataSet.catOptionComboUid())
-        bundle.putString(Constants.DATA_SET_UID, dataSetUid)
-        bundle.putBoolean(Constants.ACCESS_DATA, accessDataWrite)
+        with(bundle) {
+            putString(Constants.ORG_UNIT, dataSet.orgUnitUid())
+            putString(Constants.ORG_UNIT_NAME, dataSet.nameOrgUnit())
+            putString(Constants.PERIOD_ID, dataSet.periodId())
+            putString(Constants.PERIOD_TYPE, dataSet.periodType())
+            putString(Constants.PERIOD_TYPE_DATE, dataSet.namePeriod())
+            putString(Constants.CAT_COMB, dataSet.catOptionComboUid())
+            putString(Constants.DATA_SET_UID, dataSetUid)
+            putBoolean(Constants.ACCESS_DATA, accessDataWrite)
+        }
         startActivity(DataSetTableActivity::class.java, bundle, false, false, null)
     }
 
