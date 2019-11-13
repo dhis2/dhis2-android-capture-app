@@ -1,9 +1,10 @@
 package org.dhis2.usecases.teiDashboard.dashboardfragments.notes
 
-import com.nhaarman.mockitokotlin2.*
-import io.reactivex.Flowable
+import com.nhaarman.mockitokotlin2.doReturn
+import com.nhaarman.mockitokotlin2.mock
+import com.nhaarman.mockitokotlin2.verify
+import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Single
-import io.reactivex.functions.Consumer
 import io.reactivex.processors.BehaviorProcessor
 import io.reactivex.processors.FlowableProcessor
 import org.dhis2.data.schedulers.SchedulerProvider
@@ -12,20 +13,16 @@ import org.dhis2.data.tuples.Pair
 import org.dhis2.usescases.teiDashboard.DashboardRepositoryImpl
 import org.dhis2.usescases.teiDashboard.dashboardfragments.notes.NotesContracts
 import org.dhis2.usescases.teiDashboard.dashboardfragments.notes.NotesPresenter
-import org.dhis2.usescases.teiDashboard.dashboardfragments.notes.NotesPresenterImpl
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.Access
 import org.hisp.dhis.android.core.common.DataAccess
-import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
 import org.hisp.dhis.android.core.note.Note
 import org.hisp.dhis.android.core.note.NoteCreateProjection
 import org.hisp.dhis.android.core.program.Program
-import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
-import org.mockito.ArgumentCaptor
 
 class NotesPresenterTest {
     private lateinit var notesPresenter: NotesPresenter
