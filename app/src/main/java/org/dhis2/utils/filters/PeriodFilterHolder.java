@@ -65,8 +65,10 @@ class PeriodFilterHolder extends FilterHolder implements CompoundButton.OnChecke
                 break;
             case R.id.fromTo:
                 localBinding.periodLayout.fromTo.setChecked(true);
+                localBinding.periodLayout.other.setChecked(false);
                 break;
             case R.id.other:
+                localBinding.periodLayout.fromTo.setChecked(false);
                 localBinding.periodLayout.other.setChecked(true);
                 break;
             default:
@@ -84,8 +86,26 @@ class PeriodFilterHolder extends FilterHolder implements CompoundButton.OnChecke
         periodLayout.thisMonth.setOnCheckedChangeListener(this);
         periodLayout.lastMonth.setOnCheckedChangeListener(this);
         periodLayout.nextMonth.setOnCheckedChangeListener(this);
-        periodLayout.fromTo.setOnCheckedChangeListener(this);
-        periodLayout.other.setOnCheckedChangeListener(this);
+        periodLayout.fromTo.setOnClickListener(view -> {
+            if (periodLayout.fromTo.isChecked()) {
+                int id = R.id.fromTo;
+                updateSelection(id);
+                FilterManager.getInstance().addPeriodRequest(FilterManager.PeriodRequest.FROM_TO);
+                if (id != FilterManager.getInstance().getPeriodIdSelected()) {
+                    FilterManager.getInstance().setPeriodIdSelected(id);
+                }
+            }
+        });
+        periodLayout.other.setOnClickListener(view -> {
+            if (periodLayout.other.isChecked()) {
+                int id = R.id.other;
+                updateSelection(id);
+                FilterManager.getInstance().addPeriodRequest(FilterManager.PeriodRequest.OTHER);
+                if (id != FilterManager.getInstance().getPeriodIdSelected()) {
+                    FilterManager.getInstance().setPeriodIdSelected(id);
+                }
+            }
+        });
         periodLayout.anytime.setOnCheckedChangeListener(this);
     }
 
@@ -140,12 +160,6 @@ class PeriodFilterHolder extends FilterHolder implements CompoundButton.OnChecke
                     FilterManager.getInstance().addPeriod(Collections.singletonList(DatePeriod.builder().startDate(dates[0]).endDate(dates[1]).build()));
                 else
                     FilterManager.getInstance().addPeriod(null);
-
-            } else if (id == R.id.other && FilterManager.getInstance().getPeriodIdSelected() != R.id.other) {
-                FilterManager.getInstance().addPeriodRequest(FilterManager.PeriodRequest.OTHER);
-
-            } else if (id == R.id.fromTo && FilterManager.getInstance().getPeriodIdSelected() != R.id.fromTo) {
-                FilterManager.getInstance().addPeriodRequest(FilterManager.PeriodRequest.FROM_TO);
             }
 
             if (id != FilterManager.getInstance().getPeriodIdSelected()) {
