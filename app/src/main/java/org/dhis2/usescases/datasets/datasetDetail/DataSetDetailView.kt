@@ -36,7 +36,7 @@ import org.hisp.dhis.android.core.category.CategoryOptionCombo
 
 interface DataSetDetailView : AbstractActivityContracts.View {
 
-    fun setData(dataSetDetailModels: List<DataSetDetailModel>)
+    fun setData(dataSets: List<DataSetDetailModel>)
 
     fun renderError(message: String)
 
@@ -54,7 +54,7 @@ interface DataSetDetailView : AbstractActivityContracts.View {
         categoryOptionCombos: Pair<CategoryCombo, List<CategoryOptionCombo>>
     )
 
-    fun setWritePermission(aBoolean: Boolean?)
+    fun setWritePermission(canWrite: Boolean)
 
     fun startNewDataSet()
 
