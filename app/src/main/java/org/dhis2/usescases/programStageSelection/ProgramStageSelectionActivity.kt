@@ -84,23 +84,26 @@ class ProgramStageSelectionActivity : ActivityGlobalAbstract(), ProgramStageSele
     }
 
     override fun setResult(programStageUid: String, repeatable: Boolean?, periodType: PeriodType?) {
-        val intent = Intent(this, EventInitialActivity::class.java)
-        val bundle = Bundle()
-        bundle.putString(PROGRAM_UID, getIntent().getStringExtra(PROGRAM_UID))
-        bundle.putString(
-            TRACKED_ENTITY_INSTANCE,
-            getIntent().getStringExtra(TRACKED_ENTITY_INSTANCE)
-        )
-        bundle.putString(ORG_UNIT, getIntent().getStringExtra(ORG_UNIT))
-        bundle.putString(ENROLLMENT_UID, getIntent().getStringExtra(ENROLLMENT_UID))
-        bundle.putString(EVENT_CREATION_TYPE, getIntent().getStringExtra(EVENT_CREATION_TYPE))
-        bundle.putBoolean(EVENT_REPEATABLE, repeatable ?: false)
-        bundle.putSerializable(EVENT_PERIOD_TYPE, periodType)
-        bundle.putString(Constants.PROGRAM_STAGE_UID, programStageUid)
-        bundle.putInt(EVENT_SCHEDULE_INTERVAL, presenter.getStandardInterval(programStageUid))
-        intent.addFlags(Intent.FLAG_ACTIVITY_FORWARD_RESULT)
-        intent.putExtras(bundle)
-        startActivity(intent)
+        Intent(this, EventInitialActivity::class.java).run {
+            addFlags(Intent.FLAG_ACTIVITY_FORWARD_RESULT)
+            putExtras(
+                Bundle().apply {
+                    putString(
+                        TRACKED_ENTITY_INSTANCE,
+                        intent.getStringExtra(TRACKED_ENTITY_INSTANCE)
+                    )
+                    putString(PROGRAM_UID, programId)
+                    putString(ORG_UNIT, intent.getStringExtra(ORG_UNIT))
+                    putString(ENROLLMENT_UID, enrollmentId)
+                    putString(EVENT_CREATION_TYPE, intent.getStringExtra(EVENT_CREATION_TYPE))
+                    putBoolean(EVENT_REPEATABLE, repeatable ?: false)
+                    putSerializable(EVENT_PERIOD_TYPE, periodType)
+                    putString(Constants.PROGRAM_STAGE_UID, programStageUid)
+                    putInt(EVENT_SCHEDULE_INTERVAL, presenter.getStandardInterval(programStageUid))
+                }
+            )
+            startActivity(this)
+        }
         finish()
     }
 }
