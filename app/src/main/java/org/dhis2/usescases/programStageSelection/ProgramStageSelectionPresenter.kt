@@ -18,7 +18,7 @@ class ProgramStageSelectionPresenter(
     private val schedulerProvider: SchedulerProvider
 ) {
 
-    private val compositeDisposable = CompositeDisposable()
+    val compositeDisposable = CompositeDisposable()
 
     fun getProgramStages(
         programId: String,
@@ -38,8 +38,8 @@ class ProgramStageSelectionPresenter(
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
-                    { view.setData(it) },
-                    { Timber.e(it) }
+                    view::setData,
+                    Timber::e
                 )
         )
     }
@@ -48,26 +48,9 @@ class ProgramStageSelectionPresenter(
     fun applyEffects(
         stageModels: List<ProgramStage>,
         calcResult: Result<RuleEffect>
-    ): List<ProgramStage> =
-        when {
-            calcResult.error() != null -> stageModels
-            else -> {
-                val stageView = stageModels.associateBy({ it.uid() }, { it }).toMutableMap()
-                ruleUtils.applyRuleEffects(stageView, calcResult)
-                stageView.values.toList()
-            }
-        }
-
-    fun onBackClick() {
-        view.back()
-    }
-
-    fun onDetach() {
-        compositeDisposable.clear()
-    }
-
-    fun displayMessage(message: String?) {
-        view.displayMessage(message)
+    ): List<ProgramStage> = when {
+        calcResult.error() != null -> stageModels
+        else -> ruleUtils.applyProgramStageRuleEffects(stageModels.toMutableList(), calcResult)
     }
 
     fun onProgramStageClick(programStage: ProgramStage) {
@@ -84,5 +67,17 @@ class ProgramStageSelectionPresenter(
 
     fun getStandardInterval(programStageUid: String): Int {
         return programStageSelectionRepository.getStage(programStageUid).standardInterval() ?: 0
+    }
+
+    fun onBackClick() {
+        view.back()
+    }
+
+    fun onDetach() {
+        compositeDisposable.clear()
+    }
+
+    fun displayMessage(message: String?) {
+        view.displayMessage(message)
     }
 }

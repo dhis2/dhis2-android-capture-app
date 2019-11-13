@@ -17,10 +17,10 @@ interface RulesUtilsProvider {
         rulesActionCallbacks: RulesActionCallbacks
     )
 
-    fun applyRuleEffects(
-        programStages: MutableMap<String, ProgramStage>,
+    fun applyProgramStageRuleEffects(
+        programStages: MutableList<ProgramStage>,
         calcResult: Result<RuleEffect>
-    )
+    ): List<ProgramStage>
 
     fun applyRuleEffects(fields: List<String>, calcResult: Result<RuleEffect>): RuleEffectResult
 }

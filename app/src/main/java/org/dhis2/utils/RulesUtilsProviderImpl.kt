@@ -129,13 +129,14 @@ class RulesUtilsProviderImpl(private val codeGenerator: CodeGenerator) : RulesUt
         currentFieldViewModels!!.putAll(fieldViewModels)
     }
 
-    override fun applyRuleEffects(
-        programStages: MutableMap<String, ProgramStage>,
+    override fun applyProgramStageRuleEffects(
+        programStages: MutableList<ProgramStage>,
         calcResult: Result<RuleEffect>
-    ) {
+    ): List<ProgramStage> {
         calcResult.items().filter { it.ruleAction() is RuleActionHideProgramStage }.forEach {
             hideProgramStage(programStages, it.ruleAction() as RuleActionHideProgramStage)
         }
+        return programStages
     }
 
     private fun showWarning(
@@ -304,10 +305,12 @@ class RulesUtilsProviderImpl(private val codeGenerator: CodeGenerator) : RulesUt
     }
 
     private fun hideProgramStage(
-        programStages: MutableMap<String, ProgramStage>,
+        programStages: MutableList<ProgramStage>,
         hideProgramStage: RuleActionHideProgramStage
     ) {
-        programStages.remove(hideProgramStage.programStage())
+        programStages.remove(
+            programStages.firstOrNull { hideProgramStage.programStage() == it.uid() }
+        )
     }
 
     private fun hideOption(
