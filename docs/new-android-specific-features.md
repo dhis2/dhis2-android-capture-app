@@ -1,8 +1,6 @@
-# Android specific features
+# Generic features
 
-## Generic Features
-
-### Login
+## Login
 
 There are two ways to access the application:
 
@@ -23,13 +21,13 @@ There are two ways to access the application:
 ![](resources/images/image62.PNG){ width=25%}
 ![](resources/images/image63.PNG){ width=25%}
  
-### Account Recovery
+## Account Recovery
 
 The users will be able to restore their own password if they have the setting enabled: Enabled User Account Recovery.
 
 ![](resources/images/image64.PNG){ width=25%}
 
-### Blocking session (PIN)
+## Blocking session (PIN)
 
 User is able to lock the session using a 4 digit PIN. This allows to move to other apps in your phone without deleting the local data.
 If the user forgets the PIN number, log in by entering the credentials is also available.
@@ -37,7 +35,7 @@ If the user forgets the PIN number, log in by entering the credentials is also a
 ![](resources/images/image65.PNG){width=25%}
 ![](resources/images/image63.PNG){width=25%}
 
-### Instructions/ information buttons
+## Instructions/ information buttons
 
 A contextual guide opens the first time the user opens the App.
 
@@ -48,7 +46,7 @@ A contextual guide opens the first time the user opens the App.
 >
 >  User is able to re-open<!-- PALD: unnecessary: (trigger)--> the instructions by clicking on the three dots at the top right corner of the screen.
 
-### Filter
+## Filter
 
 <!-- PALD alternative: "The Filter allows you to narrow down the data available from the ..." -->
 Allows the user to filter data from the available programs based on periods (specific day, week, month, or year) or organisation units.
@@ -57,7 +55,7 @@ Allows the user to filter data from the available programs based on periods (spe
 ![](resources/images/image4.jpg){ width=25%}
 ![](resources/images/image8.jpg){ width=25%}
 
-### Sync Information
+## Sync Information
 
 Allows the user to check sync information for a specific program.
 
@@ -67,7 +65,7 @@ Allows the user to check sync information for a specific program.
 ![](resources/images/image69.png){ width=25%}
 ![](resources/images/image70.png){ width=25%}
 
-### Org unit
+## Org unit
 
 ![](resources/images/image30.png){ width=25%}
 
@@ -79,7 +77,7 @@ User must check the box to select the org unit wanted.
 >
 >  Mobile users are not expected to access the org. unit hierarchy of a whole country. Maximum number of org units is difficult to set, as the App does not set the limit, but the resources on the device (memory, processor). We could say below 250 org units should be safe, but still believe that is a very big number for a mobile use case.
 
-### Differentiating tracker and event programs
+## Differentiating tracker and event programs
 
 ![](resources/images/image71.PNG){ width=25%}
 
@@ -87,7 +85,7 @@ User must check the box to select the org unit wanted.
 >
 >  An easy way to differentiate program is by looking at the word at the bottom left corner. The word 'Event' will always be in event programs. In tracker will appear the name of the tracked entity type (person, patient, building, etc.).
 
-### Sharing Data
+## Sharing Data
 
 ![](resources/images/image72.png){ width=25%}
 ![](resources/images/image73.png){ width=25%}
