@@ -1,5 +1,6 @@
 package org.dhis2.usescases.programstageselection
 
+import com.nhaarman.mockitokotlin2.doAnswer
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
@@ -56,7 +57,12 @@ class ProgramStageSelectionPresenterTest {
             )
         ) doReturn Flowable.just(programStages)
         whenever(repository.calculate()) doReturn Flowable.just(calcResult)
-        whenever(presenter.applyEffects(programStages, calcResult)) doReturn programStages
+        whenever(
+            rulesUtils.applyRuleEffects(
+                programStages.associateBy({ it.uid() }, { it }).toMutableMap(),
+                calcResult
+            )
+        ) doAnswer { null }
 
         presenter.getProgramStages(programId, enrollmentUid)
 
@@ -76,16 +82,16 @@ class ProgramStageSelectionPresenterTest {
         )
 
         whenever(
-            rulesUtils.applyProgramStageRuleEffects(
-                programStages,
+            rulesUtils.applyRuleEffects(
+                programStages.associateBy({ it.uid() }, { it }).toMutableMap(),
                 calcResult
             )
-        ) doReturn emptyList()
+        ) doAnswer {
+            it.getArgument<MutableMap<String, ProgramStage>>(0).remove("programStage")
+            null
+        }
 
-        Assert.assertEquals(
-            presenter.applyEffects(programStages, calcResult).size,
-            0
-        )
+        Assert.assertEquals(presenter.applyEffects(programStages, calcResult).size, 0)
     }
 
     @Test

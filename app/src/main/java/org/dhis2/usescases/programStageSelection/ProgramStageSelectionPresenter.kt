@@ -50,7 +50,11 @@ class ProgramStageSelectionPresenter(
         calcResult: Result<RuleEffect>
     ): List<ProgramStage> = when {
         calcResult.error() != null -> stageModels
-        else -> ruleUtils.applyProgramStageRuleEffects(stageModels.toMutableList(), calcResult)
+        else -> {
+            val stageView = stageModels.associateBy({ it.uid() }, { it }).toMutableMap()
+            ruleUtils.applyRuleEffects(stageView, calcResult)
+            stageView.values.toList()
+        }
     }
 
     fun onProgramStageClick(programStage: ProgramStage) {
