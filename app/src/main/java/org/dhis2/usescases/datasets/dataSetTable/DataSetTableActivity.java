@@ -27,7 +27,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-public class DataSetTableActivity extends ActivityGlobalAbstract implements DataSetTableContract.View {
+public class DataSetTableActivity extends ActivityGlobalAbstract implements DataSetTableView {
 
     String orgUnitUid;
     String orgUnitName;
@@ -42,7 +42,7 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
     private List<String> sections;
 
     @Inject
-    DataSetTableContract.Presenter presenter;
+    DataSetTablePresenter presenter;
     private ActivityDatasetTableBinding binding;
     private DataSetSectionAdapter viewPagerAdapter;
 
@@ -88,7 +88,7 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
 
         setViewPager();
 
-        presenter.init(orgUnitUid, periodTypeName, catOptCombo, periodInitialDate, periodId);
+        presenter.init(catOptCombo);
     }
 
     @Override
@@ -98,7 +98,16 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
     }
 
     private void setViewPager() {
-        viewPagerAdapter = new DataSetSectionAdapter(getSupportFragmentManager(), accessDataWrite, getIntent().getStringExtra(Constants.DATA_SET_UID), this);
+        viewPagerAdapter = new DataSetSectionAdapter(
+                getSupportFragmentManager(),
+                this,
+                dataSetUid,
+                orgUnitUid,
+                periodTypeName,
+                catOptCombo,
+                periodInitialDate,
+                periodId,
+                accessDataWrite);
         binding.viewPager.setAdapter(viewPagerAdapter);
         binding.tabLayout.setupWithViewPager(binding.viewPager);
         binding.tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
@@ -157,25 +166,17 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
     }
 
     @Override
-    public void setDataValue(List<DataSetTableModel> data) {
-    }
-
-    public DataSetTableContract.Presenter getPresenter() {
-        return presenter;
-    }
-
-
-    @Override
     public Boolean accessDataWrite() {
         return accessDataWrite;
     }
 
     @Override
-    public void showOptions(boolean open) {
-        if (open)
+    public void showOptions() {
+        if (binding.infoContainer.getVisibility() != View.VISIBLE) {
             binding.infoContainer.setVisibility(View.VISIBLE);
-        else
+        } else {
             binding.infoContainer.setVisibility(View.GONE);
+        }
     }
 
 
@@ -259,6 +260,6 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
     }
 
     public void update() {
-        presenter.init(orgUnitUid, periodTypeName, catOptCombo, periodInitialDate, periodId);
+        presenter.init(catOptCombo);
     }
 }

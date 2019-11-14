@@ -5,6 +5,8 @@ import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Single
+import java.util.Collections
+import java.util.Date
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.`object`.ReadOnlyOneObjectRepositoryFinalImpl
@@ -24,8 +26,6 @@ import org.junit.Test
 import org.mockito.BDDMockito.then
 import org.mockito.Mockito
 import org.mockito.Mockito.mock
-import java.util.Collections
-import java.util.Date
 
 class GranularSyncPresenterTest {
 
@@ -111,7 +111,6 @@ class GranularSyncPresenterTest {
         testSubscriber.assertSubscribed()
         testSubscriber.assertValueCount(1)
         testSubscriber.assertValue(State.ERROR)
-
     }
 
     private fun getListOfTEIsWithError(): MutableList<TrackedEntityInstance> {

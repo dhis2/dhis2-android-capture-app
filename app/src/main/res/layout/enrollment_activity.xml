@@ -11,7 +11,7 @@
 
         <variable
             name="view"
-            type="org.dhis2.usescases.enrollment.EnrollmentContract.View" />
+            type="org.dhis2.usescases.enrollment.EnrollmentView" />
 
         <variable
             name="enrollmentStatus"

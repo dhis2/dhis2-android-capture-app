@@ -7,9 +7,9 @@ import androidx.recyclerview.widget.RecyclerView;
 public class TableCheckboxViewHolder extends RecyclerView.ViewHolder{
 
     private ItemTableCheckboxBinding binding;
-    private DataSetTableContract.Presenter presenter;
+    private DataSetTablePresenter presenter;
 
-    public TableCheckboxViewHolder(ItemTableCheckboxBinding binding, DataSetTableContract.Presenter presenter) {
+    public TableCheckboxViewHolder(ItemTableCheckboxBinding binding, DataSetTablePresenter presenter) {
         super(binding.getRoot());
         this.binding = binding;
         this.presenter = presenter;
