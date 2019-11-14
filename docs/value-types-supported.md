@@ -21,15 +21,15 @@ Any issues around using a particular feature with Android are highlighted with a
 | Age | Enables entry of either an age in years/months/days or a date-of-birth (both are stored as date-of-birth) | ✓ | ✓ | ✓ |✓ | |
 | Phone number | A valid phone number | ✓ | ✓ | ✓ |✓ | |
 | Email | An email address in a valid format | ✓ | ✓ | ✓ |✓ | |
-| Yes/no | Boolean yes/no (or no response) | ✓ | ✓ | ✓ | | |
+| Yes/no | Boolean yes/no (or no response) | ✓ | ✓ | ✓ | ✓| |
 | Yes only | Yes or no response | ✓ | ✓ | ✓ | ✓|
-| Number | Any valid number, including decimals | ✓ | ✓ | ✓ | | |
+| Number | Any valid number, including decimals | ✓ | ✓ | ✓ | ✓| |
 | Integer | Any integer (whole numbers, no decimals) | ✓ | ✓ | ✓ | ✓| |
 | Positive Integer | Only positive integers (no zero or negative values) | ✓ | ✓ | ✓ | ✓| |
 | Positive or Zero Integer | Only zero or positive integers (no negative values) | ✓ | ✓ | ✓ | ✓| |
 | Negative Integer | Only negative integers (no zero or positive values) | ✓ | ✓ | ✓ |✓ | |
 | Percentage | Any decimal value between 0 and 100 | ✓ | ✓ | ✓ | ✓| |
-| Unit interval | Any decimal value between 0 and 1 | ✓ | ✓ | ✓ | | |
+| Unit interval | Any decimal value between 0 and 1 | ✓ | ✓ | ✓ |✓ | |
 | Text | Text (length of text up to 50,000 characters) | ✓ | ✓ | ✓ |✓ | |
 | Long text | Text (no constraints on length) | ✓ | ✓ | ✓ |✓ | |
 | Letter | A single letter | ✓ | ✓ | ✓ | ✓| |
