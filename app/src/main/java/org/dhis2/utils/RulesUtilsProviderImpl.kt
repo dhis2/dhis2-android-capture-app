@@ -138,7 +138,7 @@ class RulesUtilsProviderImpl : RulesUtilsProvider {
         val model = fieldViewModels[showWarning.field()]
         if (model != null) {
             fieldViewModels[showWarning.field()] =
-                model.withWarning(showWarning.content() + " " + data)
+                model.withWarning("${showWarning.content()} $data")
         }
     }
 
@@ -151,7 +151,7 @@ class RulesUtilsProviderImpl : RulesUtilsProvider {
         val model = fieldViewModels[showError.field()]
 
         if (model != null) {
-            fieldViewModels[showError.field()] = model.withError(showError.content() + " " + data)
+            fieldViewModels[showError.field()] = model.withError("${showError.content()} $data")
         }
 
         rulesActionCallbacks.setShowError(showError, model)
@@ -175,7 +175,7 @@ class RulesUtilsProviderImpl : RulesUtilsProvider {
 
         val displayViewModel = DisplayViewModel.create(
             uid, "",
-            displayText.content() + " " + ruleEffect.data(), "Display"
+            "${displayText.content()} ${ruleEffect.data()}", "Display"
         )
         fieldViewModels[uid] = displayViewModel
     }
@@ -269,7 +269,7 @@ class RulesUtilsProviderImpl : RulesUtilsProvider {
         val model = fieldViewModels[warningOnCompletion.field()]
         if (model != null) {
             fieldViewModels[warningOnCompletion.field()] =
-                model.withWarning(warningOnCompletion.content() + " " + data)
+                model.withWarning("${warningOnCompletion.content()} $data")
         }
 
         rulesActionCallbacks.setMessageOnComplete(warningOnCompletion.content(), true)
@@ -284,7 +284,7 @@ class RulesUtilsProviderImpl : RulesUtilsProvider {
         val model = fieldViewModels[errorOnCompletion.field()]
         if (model != null) {
             fieldViewModels[errorOnCompletion.field()] =
-                model.withWarning(errorOnCompletion.content() + " " + data)
+                model.withWarning("${errorOnCompletion.content()} $data")
         }
 
         rulesActionCallbacks.setMessageOnComplete(errorOnCompletion.content(), false)
