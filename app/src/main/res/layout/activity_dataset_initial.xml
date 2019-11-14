@@ -12,11 +12,7 @@
 
         <variable
             name="presenter"
-            type="org.dhis2.usescases.datasets.datasetInitial.DataSetInitialContract.Presenter" />
-
-        <variable
-            name="action"
-            type="org.dhis2.usescases.datasets.datasetInitial.DataSetInitialContract.Action" />
+            type="org.dhis2.usescases.datasets.datasetInitial.DataSetInitialPresenter" />
 
     </data>
 
@@ -148,7 +144,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="15dp"
-            android:onClick="@{()->presenter.onActionButtonClick()}"
+            android:onClick="@{()->presenter.onActionButtonClick(dataSetModel.periodType())}"
             android:text="@string/create"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
