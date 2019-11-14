@@ -7,11 +7,17 @@ import android.view.View;
 import android.view.Window;
 import android.widget.AdapterView;
 
+import androidx.databinding.DataBindingUtil;
+
+import org.dhis2.App;
 import org.dhis2.R;
 import org.dhis2.databinding.CatComboDialogBinding;
 import org.dhis2.databinding.CatComboDialogNewBinding;
 import org.dhis2.databinding.CategorySelectorBinding;
 import org.dhis2.utils.CatComboAdapter2;
+import org.hisp.dhis.android.core.D2;
+import org.hisp.dhis.android.core.D2Manager;
+import org.hisp.dhis.android.core.arch.helpers.UidsHelper;
 import org.hisp.dhis.android.core.category.Category;
 import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryOption;
@@ -21,10 +27,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.databinding.DataBindingUtil;
 
 /**
  * QUADRAM. Created by frodriguez on 5/4/2018.
@@ -36,7 +38,7 @@ public class CategoryComboDialog extends AlertDialog {
     private final String catComboName;
     private final CategoryCombo categoryCombo;
     private final OnCatOptionComboSelected listenerNew;
-    private final List<CategoryOptionCombo> categoryOptionCombos;
+    private D2 d2;
     private Context context;
     private AlertDialog dialog;
     private int requestCode;
@@ -45,66 +47,34 @@ public class CategoryComboDialog extends AlertDialog {
 
     private Map<String, CategoryOption> selectedCatOption = new HashMap<>();
 
-    public CategoryComboDialog(@NonNull Context context,
-                               @NonNull CategoryCombo categoryComboModel,
-                               List<CategoryOptionCombo> options,
-                               int requestCode,
-                               @Nullable OnCatOptionSelected listener) {
-        super(context);
-        this.context = context;
-        this.categoryCombo = null;
-        this.catComboName = categoryComboModel.displayName();
-        this.categoryOptionCombos = null;
-        this.options = options;
-        this.requestCode = requestCode;
-        this.listener = listener;
-        this.listenerNew = null;
-
-        setCancelable(false);
-    }
-
-    public CategoryComboDialog(Context context, String catComboName, List<CategoryOptionCombo> options, int requestCode, OnCatOptionSelected listener, String title) {
-        super(context);
-        this.categoryCombo = null;
-        this.context = context;
-        this.catComboName = catComboName;
-        this.categoryOptionCombos = null;
-        this.options = options;
-        this.requestCode = requestCode;
-        this.listener = listener;
-        this.title = title;
-        this.listenerNew = null;
-        setCancelable(false);
-    }
-
     public CategoryComboDialog(Context context, CategoryCombo categoryCombo, List<CategoryOptionCombo> categoryOptionCombos, int requestCode, OnCatOptionComboSelected listener, String title) {
         super(context);
+        if (((App) context.getApplicationContext()).serverComponent() != null) {
+            this.d2 = ((App) context.getApplicationContext()).serverComponent().userManager().getD2();
+        }
         this.options = null;
         this.catComboName = categoryCombo.displayName();
         this.context = context;
         this.categoryCombo = categoryCombo;
-        this.categoryOptionCombos = categoryOptionCombos;
         this.requestCode = requestCode;
         this.listener = null;
         this.listenerNew = listener;
         this.title = title;
     }
 
-
     @Override
     public void show() {
-        if(categoryCombo == null)
+        if (categoryCombo == null)
             setLegacyDialog();
         else
             setDialog();
-
 
         dialog.show();
     }
 
     private void setDialog() {
         Builder builder = new Builder(context);
-        CatComboDialogNewBinding binding = CatComboDialogNewBinding.inflate(LayoutInflater.from(context),null,false);
+        CatComboDialogNewBinding binding = CatComboDialogNewBinding.inflate(LayoutInflater.from(context), null, false);
         builder.setCancelable(false);
         builder.setView(binding.getRoot());
         dialog = builder.create();
@@ -126,8 +96,7 @@ public class CategoryComboDialog extends AlertDialog {
                                             selectedCatOption.remove(category.uid());
                                         catSelectorBinding.catCombo.setText(item != null ? item.displayName() : null);
                                         if (selectedCatOption.size() == categoryCombo.categories().size()) {
-                                            listenerNew.onCatOptionComboSelected(getCatOptionCombo(categoryOptionCombos,
-                                                    new ArrayList<>(selectedCatOption.values())));
+                                            listenerNew.onCatOptionComboSelected(getCatOptionCombo(new ArrayList<>(selectedCatOption.values())));
                                             dismiss();
                                         }
                                     })
@@ -139,15 +108,17 @@ public class CategoryComboDialog extends AlertDialog {
 
     }
 
-    public String getCatOptionCombo(List<CategoryOptionCombo> categoryOptionCombos, List<CategoryOption> values) {
-        String attrOptionComb = "";
-        for (CategoryOptionCombo catOptComb : categoryOptionCombos)
-            if (catOptComb.categoryOptions().containsAll(values))
-                attrOptionComb = catOptComb.uid();
-        return attrOptionComb;
+    private String getCatOptionCombo(List<CategoryOption> values) {
+        CategoryOptionCombo catOptCombo =
+                d2.categoryModule().categoryOptionCombos()
+                        .byCategoryOptions(UidsHelper.getUidsList(values)).one().blockingGet();
+        if (catOptCombo != null)
+            return catOptCombo.uid();
+        else
+            return "";
     }
 
-    private void setLegacyDialog(){
+    private void setLegacyDialog() {
         Builder builder = new Builder(context);
         LayoutInflater inflater = LayoutInflater.from(context);
         CatComboDialogBinding binding = DataBindingUtil.inflate(inflater, R.layout.cat_combo_dialog, null, false);
@@ -197,7 +168,7 @@ public class CategoryComboDialog extends AlertDialog {
         void onCatOptionSelected(CategoryOptionCombo selectedOption);
     }
 
-    public interface OnCatOptionComboSelected{
+    public interface OnCatOptionComboSelected {
         void onCatOptionComboSelected(String categoryOptionComboUid);
     }
 }
