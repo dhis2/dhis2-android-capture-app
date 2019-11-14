@@ -46,6 +46,7 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceTableInfo;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityType;
 
 import com.squareup.sqlbrite2.BriteDatabase;
 
@@ -242,20 +243,17 @@ public class DashboardRepositoryImpl
     @Override
     public Integer getObjectStyle( Context context, String uid )
     {
-        String GET_OBJECT_STYLE = "SELECT * FROM ObjectStyle WHERE uid = ?";
-        try (Cursor objectStyleCurosr = briteDatabase.query( GET_OBJECT_STYLE, uid ))
+        TrackedEntityType teType = d2.trackedEntityModule().trackedEntityTypes().uid( uid ).blockingGet();
+
+        if ( teType.style() != null && teType.style().icon() != null )
         {
-            if ( objectStyleCurosr != null && objectStyleCurosr.moveToNext() )
-            {
-                String iconName = objectStyleCurosr.getString( objectStyleCurosr.getColumnIndex( "icon" ) );
-                Resources resources = context.getResources();
-                iconName = iconName.startsWith( "ic_" ) ? iconName : "ic_" + iconName;
-                objectStyleCurosr.close();
-                return resources.getIdentifier( iconName, "drawable", context.getPackageName() );
-            }
-            else
-                return R.drawable.ic_person;
+            String iconName = teType.style().icon();
+            Resources resources = context.getResources();
+            iconName = iconName.startsWith( "ic_" ) ? iconName : "ic_" + iconName;
+            return resources.getIdentifier( iconName, "drawable", context.getPackageName() );
         }
+        else
+            return R.drawable.ic_person;
     }
 
     @Override
