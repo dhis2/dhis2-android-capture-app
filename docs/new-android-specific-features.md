@@ -49,11 +49,12 @@ A contextual guide opens the first time the user opens the App.
 ## Filter
 
 <!-- PALD alternative: "The Filter allows you to narrow down the data available from the ..." -->
-Allows the user to filter data from the available programs based on periods (specific day, week, month, or year) or organisation units.
+The app has new and improved filters for all listing screens (home, event listing, tei search and dataSets).
 
-![](resources/images/image10.jpg){ width=25%}
-![](resources/images/image4.jpg){ width=25%}
-![](resources/images/image8.jpg){ width=25%}
+Filter by period, org. Unit, sync state, event status and category option combination.
+
+![](resources/images/image96.png){ width=25%}
+![](resources/images/image97.png){ width=25%}
 
 ## Sync Information
 
@@ -64,6 +65,26 @@ Allows the user to check sync information for a specific program.
 
 ![](resources/images/image69.png){ width=25%}
 ![](resources/images/image70.png){ width=25%}
+
+### Granular Sync
+
+Allows to sync individual records (Program, Event, TEI, DataSet, DataValues) with the server.
+
+![](resources/images/image89.png){ width=25%}
+
+
+### SMS Sync
+
+When there is no internet conexion, it allows to send a record though several SMS messages.
+The record is marked as “SMS synced”.
+
+![](resources/images/image91.png){ width=25%}
+
+> **Tip**
+>
+>  Edit parameters related to SMS gateway in the SMS Settings (Settings Menu)
+
+![](resources/images/image90.png){ width=25%}
 
 ## Org unit
 
@@ -89,3 +110,48 @@ User must check the box to select the org unit wanted.
 
 ![](resources/images/image72.png){ width=25%}
 ![](resources/images/image73.png){ width=25%}
+
+## Data Sets
+
+The user can now enter aggregate data for an organisation Unit, a period and a set of data elements and send it to the server.
+
+![](resources/images/image87.png){ width=25%}
+
+> **Tip**
+>
+>  The word "DataSets" at the bottom left corner is used to differentiate a data set from a program.
+
+![](resources/images/image93.png){ width=25%}
+![](resources/images/image92.png){ width=25%}
+
+## Capture Coordinates
+
+### TEI coordinates
+
+Capture the TEI coordinates in the registration form.  Enable this feature in the TET feature type.
+
+![](resources/images/image94.png){ width=25%}
+
+### Polygons
+
+The app now supports the geoJSON format and the user is able to capture polygons.
+
+![](resources/images/image95.png){ width=25%}
+
+## Images
+
+ValueType image has been implemented app side.
+This allows to pick an image for a data element or attribute and send it to the server.
+For TEIs, the first data element/attribute with this value type and marked as displayed in list will be used as the TEI profile image.
+
+![](resources/images/image99.png){ width=25%}
+![](resources/images/image98.png){ width=25%}
+![](resources/images/image100.png){ width=25%}
+
+## Display events and TEIs in maps
+
+When a program stage or tracked entity type have a feature type (and for programs with registration the option displayFrontPageList is enabled) the listings can be switched to display the information in a map.
+
+![](resources/images/image101.png){ width=25%}
+![](resources/images/image102.png){ width=25%}
+![](resources/images/image103.png){ width=25%}
