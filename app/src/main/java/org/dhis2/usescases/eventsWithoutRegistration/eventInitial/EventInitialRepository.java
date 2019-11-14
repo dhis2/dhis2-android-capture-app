@@ -80,4 +80,6 @@ public interface EventInitialRepository {
     Observable<OrganisationUnit> getOrganisationUnit(String orgUnitUid);
 
     Observable<ObjectStyle> getObjectStyle(String uid);
+
+    String getCategoryOptionCombo(String categoryComboUid, List<String> categoryOptionsUid);
 }

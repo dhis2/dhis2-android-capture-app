@@ -14,7 +14,7 @@
 
         <variable
             name="presenter"
-            type="org.dhis2.usescases.datasets.datasetDetail.DataSetDetailContract.Presenter" />
+            type="org.dhis2.usescases.datasets.datasetDetail.DataSetDetailPresenter" />
 
         <variable
             name="totalFilters"
