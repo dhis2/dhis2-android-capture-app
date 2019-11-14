@@ -7,7 +7,6 @@
 !INCLUDE "new-android-specific-features.md"
 !INCLUDE "programs-specific-features.md"
 !INCLUDE "features-supported.md"
-!INCLUDE "aggregate-features-supported.md"
 !INCLUDE "program-rules-supported-in-android-capture-app.md"
 !INCLUDE "program-indicators.md"
 !INCLUDE "value-types-supported.md"
