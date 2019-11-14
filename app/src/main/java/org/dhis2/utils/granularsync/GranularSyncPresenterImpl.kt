@@ -379,7 +379,8 @@ class GranularSyncPresenterImpl(
 
         return when {
             eventRepository.byState().`in`(State.ERROR).blockingGet().isNotEmpty() -> State.ERROR
-            eventRepository.byState().`in`(State.WARNING).blockingGet().isNotEmpty() ->
+            eventRepository.byState().`in`(State.WARNING)
+                .blockingGet().isNotEmpty() ->
                 State.WARNING
             eventRepository.byState().`in`(State.SENT_VIA_SMS, State.SYNCED_VIA_SMS)
                 .blockingGet().isNotEmpty() ->
