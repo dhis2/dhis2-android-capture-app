@@ -54,7 +54,13 @@ The app has new and improved filters for all listing screens (home, event listin
 Filter by period, org. Unit, sync state, event status and category option combination.
 
 ![](resources/images/image96.png){ width=25%}
+
 ![](resources/images/image97.png){ width=25%}
+
+Filters will adapt to the different programs and data sets. 
+1. Program without registration: Period, Org. Unit, Sync State, Event Status and, Category Combination.
+2. Program with registration: Period, Org. Unit, and Sync State.
+3. Data Sets: Period, Org. Unit, and Syn State.
 
 ## Sync Information
 
@@ -98,31 +104,26 @@ User must check the box to select the org unit wanted.
 >
 >  Mobile users are not expected to access the org. unit hierarchy of a whole country. Maximum number of org units is difficult to set, as the App does not set the limit, but the resources on the device (memory, processor). We could say below 250 org units should be safe, but still believe that is a very big number for a mobile use case.
 
-## Differentiating tracker and event programs
-
-![](resources/images/image71.PNG){ width=25%}
-
-> **Tip**
->
->  An easy way to differentiate program is by looking at the word at the bottom left corner. The word 'Event' will always be in event programs. In tracker will appear the name of the tracked entity type (person, patient, building, etc.).
-
-## Sharing Data
-
-![](resources/images/image72.png){ width=25%}
-![](resources/images/image73.png){ width=25%}
-
 ## Data Sets
 
 The user can now enter aggregate data for an organisation Unit, a period and a set of data elements and send it to the server.
 
 ![](resources/images/image87.png){ width=25%}
+![](resources/images/image93.png){ width=25%}
+![](resources/images/image92.png){ width=25%}
+
+## Differentiating Data Sets, Tracker and Event programs
+
+![](resources/images/image87.PNG){ width=25%}
 
 > **Tip**
 >
->  The word "DataSets" at the bottom left corner is used to differentiate a data set from a program.
+>  An easy way to differentiate them is by looking at the word at the bottom left corner. The word 'Event' will always be in event programs. In tracker will appear the name of the tracked entity type (person, patient, building, etc.). For data sets, the word 'DataSets' will be shown next to the number of records.
 
-![](resources/images/image93.png){ width=25%}
-![](resources/images/image92.png){ width=25%}
+## Sharing Data
+
+![](resources/images/image72.png){ width=25%}
+![](resources/images/image73.png){ width=25%}
 
 ## Capture Coordinates
 
