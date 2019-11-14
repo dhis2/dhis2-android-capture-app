@@ -16,10 +16,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import io.reactivex.Flowable
-import java.io.File
-import java.util.Calendar
-import java.util.Date
-import javax.inject.Inject
 import org.dhis2.App
 import org.dhis2.R
 import org.dhis2.data.forms.dataentry.DataEntryAdapter
@@ -54,13 +50,17 @@ import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityType
+import java.io.File
+import java.util.Calendar
+import java.util.Date
+import javax.inject.Inject
 
-class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentContract.View {
+class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
 
     enum class EnrollmentMode { NEW, CHECK }
 
     @Inject
-    lateinit var presenter: EnrollmentContract.Presenter
+    lateinit var presenter: EnrollmentPresenterImpl
 
     lateinit var binding: EnrollmentActivityBinding
     lateinit var mode: EnrollmentMode
@@ -95,6 +95,7 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentContract.View {
     override fun onCreate(savedInstanceState: Bundle?) {
         (applicationContext as App).userComponent()!!.plus(
             EnrollmentModule(
+                this,
                 intent.getStringExtra(ENROLLMENT_UID_EXTRA),
                 intent.getStringExtra(PROGRAM_UID_EXTRA)
             )
@@ -119,17 +120,7 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentContract.View {
         binding.fieldRecycler.adapter = adapter
 
         binding.next.setOnClickListener {
-            if (!adapter.mandatoryOk()) {
-                showInfoDialog(
-                    getString(R.string.unable_to_complete),
-                    getString(R.string.missing_mandatory_fields)
-                )
-            } else if (adapter.hasError()) {
-                showInfoDialog(
-                    getString(R.string.unable_to_complete),
-                    getString(R.string.field_errors)
-                )
-            } else {
+            if (presenter.dataIntegrityCheck(adapter.mandatoryOk(), adapter.hasError())) {
                 analyticsHelper().setEvent(SAVE_ENROLL, CLICK, SAVE_ENROLL)
                 presenter.finish(mode)
             }
@@ -152,7 +143,7 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentContract.View {
 
     override fun onResume() {
         super.onResume()
-        presenter.init(this)
+        presenter.init()
     }
 
     override fun onPause() {
@@ -250,8 +241,28 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentContract.View {
         onBackPressed()
     }
 
+    override fun showMissingMandatoryFieldsMessage() {
+        showInfoDialog(
+            getString(R.string.unable_to_complete),
+            getString(R.string.missing_mandatory_fields)
+        )
+    }
+
+    override fun showErrorFieldsMessage() {
+        showInfoDialog(
+            getString(R.string.unable_to_complete),
+            getString(R.string.field_errors)
+        )
+    }
+
     override fun onBackPressed() {
-        if (mode == EnrollmentMode.CHECK) super.onBackPressed() else showDeleteDialog()
+        if (mode == EnrollmentMode.CHECK) {
+            if (presenter.dataIntegrityCheck(adapter.mandatoryOk(), adapter.hasError())) {
+                super.onBackPressed()
+            }
+        } else {
+            showDeleteDialog()
+        }
     }
 
     private fun showDeleteDialog() {
