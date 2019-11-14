@@ -28,21 +28,21 @@ class DataSetTablePresenterTest {
     }
 
     @Test
-    fun `Should go back when bakc button is clicked`(){
+    fun `Should go back when bakc button is clicked`() {
         presenter.onBackClick()
 
         verify(view).back()
     }
 
     @Test
-    fun `Should show syncDialog when button is clicked`(){
+    fun `Should show syncDialog when button is clicked`() {
         presenter.onSyncClick()
 
         verify(view).showSyncDialog()
     }
 
     @Test
-    fun `Should dispose of all disposables`(){
+    fun `Should dispose of all disposables`() {
         presenter.onDettach()
 
         val disposableSize = presenter.disposable.size()

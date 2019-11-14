@@ -30,16 +30,18 @@ class NotesPresenterTest {
     private val dashboardRepository: DashboardRepositoryImpl = mock()
     private val schedulers: SchedulerProvider = TrampolineSchedulerProvider()
     private val view: NotesView = mock()
-    private val d2: D2 = mock ()
+    private val d2: D2 = mock()
 
     @Before
-    fun setUp(){
-        notesPresenter = NotesPresenter(d2, dashboardRepository, schedulers,
-            view, "program_uid", "tei_uid")
+    fun setUp() {
+        notesPresenter = NotesPresenter(
+            d2, dashboardRepository, schedulers,
+            view, "program_uid", "tei_uid"
+        )
     }
 
     @Test
-    fun `Should display message`(){
+    fun `Should display message`() {
         val message = "message"
 
         notesPresenter.displayMessage(message)
@@ -47,41 +49,47 @@ class NotesPresenterTest {
         verify(view).displayMessage(message)
     }
     @Test
-    fun `Should return true if program has write permission`(){
+    fun `Should return true if program has write permission`() {
         programModuleMock()
-        whenever(d2.programModule().programs().uid("program_uid")
-            .blockingGet()) doReturn getProgramDefaultAccessTrue()
+        whenever(
+            d2.programModule().programs().uid("program_uid")
+                .blockingGet()
+        ) doReturn getProgramDefaultAccessTrue()
 
         assertTrue(notesPresenter.hasProgramWritePermission())
     }
 
     @Test
-    fun `Should return false if program has not write permission`(){
+    fun `Should return false if program has not write permission`() {
         programModuleMock()
-        whenever(d2.programModule().programs().uid("program_uid")
-            .blockingGet()) doReturn getProgramDefaultAccessFalse()
+        whenever(
+            d2.programModule().programs().uid("program_uid")
+                .blockingGet()
+        ) doReturn getProgramDefaultAccessFalse()
 
         assertFalse(notesPresenter.hasProgramWritePermission())
     }
 
     @Test
-    fun `Should return true if program has null write permission`(){
+    fun `Should return true if program has null write permission`() {
         programModuleMock()
-        whenever(d2.programModule().programs().uid("program_uid")
-                .blockingGet()) doReturn getProgramDefaultAccessNull()
+        whenever(
+            d2.programModule().programs().uid("program_uid")
+                .blockingGet()
+        ) doReturn getProgramDefaultAccessNull()
 
         assertTrue(notesPresenter.hasProgramWritePermission())
     }
 
     @Test
-    fun `Should clear disposables`(){
+    fun `Should clear disposables`() {
         notesPresenter.onDettach()
 
         assertTrue(notesPresenter.compositeDisposable.size() == 0)
     }
 
     @Test
-    fun `Should set note processor`(){
+    fun `Should set note processor`() {
         val dummyPair = Pair.create("test", true)
         val noteProcessor: FlowableProcessor<Pair<String, Boolean>> = BehaviorProcessor.create()
         noteProcessor.onNext(dummyPair)
@@ -92,7 +100,7 @@ class NotesPresenterTest {
     }
 
     @Test
-    fun `Should subscribeToNotes`(){
+    fun `Should subscribeToNotes`() {
         val notes = listOf<Note>(Note.builder().uid("note_uid").build())
         val noteProcessor: FlowableProcessor<Boolean> = BehaviorProcessor.create()
         noteProcessor.onNext(true)
@@ -103,8 +111,10 @@ class NotesPresenterTest {
         whenever(d2.noteModule().notes()) doReturn mock()
         whenever(d2.noteModule().notes().byEnrollmentUid()) doReturn mock()
         whenever(d2.noteModule().notes().byEnrollmentUid().eq("enroll_uid")) doReturn mock()
-        whenever(d2.noteModule().notes().byEnrollmentUid()
-                .eq("enroll_uid").get()) doReturn Single.just(notes)
+        whenever(
+            d2.noteModule().notes().byEnrollmentUid()
+                .eq("enroll_uid").get()
+        ) doReturn Single.just(notes)
 
         notesPresenter.subscribeToNotes()
 
@@ -112,15 +122,17 @@ class NotesPresenterTest {
     }
 
     @Test
-    fun `Should save a note`(){
+    fun `Should save a note`() {
         val testingNoteUid = "note_uid"
 
         mockEnrollmentByProgramTeiStatus()
 
         whenever(d2.noteModule()) doReturn mock()
         whenever(d2.noteModule().notes()) doReturn mock()
-        whenever(d2.noteModule().notes()
-            .blockingAdd(noteCreationProject())) doReturn testingNoteUid
+        whenever(
+            d2.noteModule().notes()
+                .blockingAdd(noteCreationProject())
+        ) doReturn testingNoteUid
 
         val testSubscriber = notesPresenter.processor.test()
 
@@ -130,66 +142,94 @@ class NotesPresenterTest {
         testSubscriber.assertValue(true)
     }
 
-    private fun getProgramDefaultAccessTrue(): Program{
+    private fun getProgramDefaultAccessTrue(): Program {
         return Program.builder()
-                .uid("program_uid")
-                .access(Access.create(false, false,
-                        DataAccess.create(false, true)))
-                .build()
+            .uid("program_uid")
+            .access(
+                Access.create(
+                    false, false,
+                    DataAccess.create(false, true)
+                )
+            )
+            .build()
     }
 
-    private fun getProgramDefaultAccessFalse(): Program{
+    private fun getProgramDefaultAccessFalse(): Program {
         return Program.builder()
-                .uid("program_uid")
-                .access(Access.create(false, false,
-                        DataAccess.create(false, false)))
-                .build()
+            .uid("program_uid")
+            .access(
+                Access.create(
+                    false, false,
+                    DataAccess.create(false, false)
+                )
+            )
+            .build()
     }
 
-    private fun getProgramDefaultAccessNull(): Program{
+    private fun getProgramDefaultAccessNull(): Program {
         return Program.builder()
-                .uid("program_uid")
-                .access(Access.create(false, false,
-                        DataAccess.create(false, null)))
-                .build()
+            .uid("program_uid")
+            .access(
+                Access.create(
+                    false, false,
+                    DataAccess.create(false, null)
+                )
+            )
+            .build()
     }
 
-    private fun noteCreationProject(): NoteCreateProjection{
+    private fun noteCreationProject(): NoteCreateProjection {
         return NoteCreateProjection.builder()
-                .enrollment("enroll_uid")
-                .value("message")
-                .build()
+            .enrollment("enroll_uid")
+            .value("message")
+            .build()
     }
 
-    private fun programModuleMock(){
+    private fun programModuleMock() {
         whenever(d2.programModule()) doReturn mock()
         whenever(d2.programModule().programs()) doReturn mock()
         whenever(d2.programModule().programs().uid("program_uid")) doReturn mock()
     }
 
-    private fun mockEnrollmentByProgramTeiStatus(){
+    private fun mockEnrollmentByProgramTeiStatus() {
         whenever(d2.enrollmentModule()) doReturn mock()
         whenever(d2.enrollmentModule().enrollments()) doReturn mock()
         whenever(d2.enrollmentModule().enrollments().byProgram()) doReturn mock()
-        whenever(d2.enrollmentModule().enrollments().byProgram()
-            .eq("program_uid")) doReturn mock()
-        whenever(d2.enrollmentModule().enrollments().byProgram().eq("program_uid")
-                .byTrackedEntityInstance()) doReturn mock()
-        whenever(d2.enrollmentModule().enrollments().byProgram().eq("program_uid")
-                .byTrackedEntityInstance().eq("tei_uid")) doReturn mock()
-        whenever(d2.enrollmentModule().enrollments().byProgram().eq("program_uid")
-                .byTrackedEntityInstance().eq("tei_uid").byStatus()) doReturn mock()
-        whenever(d2.enrollmentModule().enrollments().byProgram().eq("program_uid")
+        whenever(
+            d2.enrollmentModule().enrollments().byProgram()
+                .eq("program_uid")
+        ) doReturn mock()
+        whenever(
+            d2.enrollmentModule().enrollments().byProgram().eq("program_uid")
+                .byTrackedEntityInstance()
+        ) doReturn mock()
+        whenever(
+            d2.enrollmentModule().enrollments().byProgram().eq("program_uid")
+                .byTrackedEntityInstance().eq("tei_uid")
+        ) doReturn mock()
+        whenever(
+            d2.enrollmentModule().enrollments().byProgram().eq("program_uid")
                 .byTrackedEntityInstance().eq("tei_uid").byStatus()
-            .eq(EnrollmentStatus.ACTIVE)) doReturn mock()
-        whenever(d2.enrollmentModule().enrollments().byProgram().eq("program_uid")
+        ) doReturn mock()
+        whenever(
+            d2.enrollmentModule().enrollments().byProgram().eq("program_uid")
                 .byTrackedEntityInstance().eq("tei_uid").byStatus()
-            .eq(EnrollmentStatus.ACTIVE).one()) doReturn mock()
-        whenever(d2.enrollmentModule().enrollments().byProgram().eq("program_uid")
+                .eq(EnrollmentStatus.ACTIVE)
+        ) doReturn mock()
+        whenever(
+            d2.enrollmentModule().enrollments().byProgram().eq("program_uid")
                 .byTrackedEntityInstance().eq("tei_uid").byStatus()
-            .eq(EnrollmentStatus.ACTIVE).one().blockingGet()) doReturn mock()
-        whenever(d2.enrollmentModule().enrollments().byProgram().eq("program_uid")
+                .eq(EnrollmentStatus.ACTIVE).one()
+        ) doReturn mock()
+        whenever(
+            d2.enrollmentModule().enrollments().byProgram().eq("program_uid")
                 .byTrackedEntityInstance().eq("tei_uid").byStatus()
-            .eq(EnrollmentStatus.ACTIVE).one().blockingGet().uid()) doReturn "enroll_uid"
+                .eq(EnrollmentStatus.ACTIVE).one().blockingGet()
+        ) doReturn mock()
+        whenever(
+            d2.enrollmentModule().enrollments().byProgram().eq("program_uid")
+                .byTrackedEntityInstance().eq("tei_uid").byStatus()
+                .eq(EnrollmentStatus.ACTIVE).one().blockingGet().uid()
+        ) doReturn "enroll_uid"
     }
 }

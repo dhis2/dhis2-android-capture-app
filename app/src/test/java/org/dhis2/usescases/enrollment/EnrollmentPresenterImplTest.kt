@@ -27,46 +27,44 @@ class EnrollmentPresenterImplTest {
     private val enrollmentRepository: EnrollmentObjectRepository = mock()
     private val schedulers: SchedulerProvider = TrampolineSchedulerProvider()
 
-
     @Before
     fun setUp() {
         presenter = EnrollmentPresenterImpl(
-                enrollmentView,
-                d2,
-                enrollmentRepository,
-                dataEntryRepository,
-                teiRepository,
-                programRepository,
-                schedulers,
-                formRepository
+            enrollmentView,
+            d2,
+            enrollmentRepository,
+            dataEntryRepository,
+            teiRepository,
+            programRepository,
+            schedulers,
+            formRepository
         )
     }
 
     @Test
-    fun `Missing and errors fields should show mandatory fields dialog`(){
+    fun `Missing and errors fields should show mandatory fields dialog`() {
         val checkWthErrors = presenter.dataIntegrityCheck(mandatoryOk = false, hasError = true)
 
         Assert.assertFalse(checkWthErrors)
 
-        verify(enrollmentView,times(1)).showMissingMandatoryFieldsMessage()
+        verify(enrollmentView, times(1)).showMissingMandatoryFieldsMessage()
     }
 
     @Test
-    fun `Missing fields should show mandatory fields dialog`(){
+    fun `Missing fields should show mandatory fields dialog`() {
         val checkWthErrors = presenter.dataIntegrityCheck(mandatoryOk = false, hasError = false)
 
         Assert.assertFalse(checkWthErrors)
 
-        verify(enrollmentView,times(1)).showMissingMandatoryFieldsMessage()
+        verify(enrollmentView, times(1)).showMissingMandatoryFieldsMessage()
     }
 
     @Test
-    fun `Error fields should show mandatory fields dialog`(){
+    fun `Error fields should show mandatory fields dialog`() {
         val checkWthErrors = presenter.dataIntegrityCheck(mandatoryOk = true, hasError = true)
 
         Assert.assertFalse(checkWthErrors)
 
-        verify(enrollmentView,times(1)).showErrorFieldsMessage()
+        verify(enrollmentView, times(1)).showErrorFieldsMessage()
     }
-
 }
