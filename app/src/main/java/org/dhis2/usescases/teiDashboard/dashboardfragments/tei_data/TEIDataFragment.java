@@ -33,6 +33,7 @@ import org.dhis2.utils.Constants;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.DialogClickListener;
 import org.dhis2.utils.EventCreationType;
+import org.dhis2.utils.ObjectStyleUtils;
 import org.dhis2.utils.customviews.CategoryComboDialog;
 import org.dhis2.utils.customviews.CustomDialog;
 import org.hisp.dhis.android.core.category.CategoryCombo;
@@ -401,11 +402,15 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
     }
 
     @Override
-    public void showTeiImage(String filePath) {
+    public void showTeiImage(String filePath, String defaultIcon) {
         Glide.with(this)
                 .load(new File(filePath))
-                .placeholder(R.drawable.photo_temp_gray)
-                .error(R.drawable.photo_temp_gray)
+                .placeholder(
+                        ObjectStyleUtils.getIconResource(context, defaultIcon, R.drawable.photo_temp_gray)
+                )
+                .error(
+                        ObjectStyleUtils.getIconResource(context, defaultIcon, R.drawable.photo_temp_gray)
+                )
                 .transition(withCrossFade())
                 .transform(new CircleCrop())
                 .into(binding.cardFront.teiImage);
