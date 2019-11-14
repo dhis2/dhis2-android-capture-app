@@ -44,7 +44,7 @@ class AboutPresenter(
     private val userRepository: UserRepository,
     private val schedulerProvider: SchedulerProvider
 ) {
-    private var compositeDisposable = CompositeDisposable()
+    var compositeDisposable = CompositeDisposable()
 
     fun init() {
 
