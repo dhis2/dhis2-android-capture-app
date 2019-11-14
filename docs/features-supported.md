@@ -4,7 +4,7 @@ The following is a comprehensive list of all features available for Data Sets, P
 
 In the notes, ‘admin’ refers to someone who develops and configures a DHIS2 system, and ‘user’ refers to someone who uses apps to capture data, update it, and review reports.
 
-|legend|description|
+|Legend|Description|
 |:--:|:------|
 |✓|Feature implemented|
 |&ndash;|Feature not implemented&nbsp;(will be ignored)|
