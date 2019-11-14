@@ -17,10 +17,10 @@ public class TableCheckboxAdapter extends RecyclerView.Adapter<TableCheckboxView
 
     private final Context context;
     private int tablesCount;
-    private DataSetTableContract.Presenter presenter;
+    private DataSetTablePresenter presenter;
     private int selectedPosition;
 
-    public TableCheckboxAdapter(DataSetTableContract.Presenter presenter, Context context){
+    public TableCheckboxAdapter(DataSetTablePresenter presenter, Context context){
         this.tablesCount = 0;
         this.presenter = presenter;
         this.context = context;

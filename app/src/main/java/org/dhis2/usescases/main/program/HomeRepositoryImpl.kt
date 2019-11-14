@@ -56,18 +56,22 @@ internal class HomeRepositoryImpl(private val d2: D2, private val eventLabel: St
 
                 val possibleStates = repo.blockingGet().map { it.state() }.toMutableList()
 
-                possibleStates.addAll(d2.dataSetModule().dataSetCompleteRegistrations()
-                    .byDataSetUid().eq(dataSet.uid())
-                    .blockingGet().map { it.state() })
-
+                possibleStates.addAll(
+                    d2.dataSetModule().dataSetCompleteRegistrations()
+                        .byDataSetUid().eq(dataSet.uid())
+                        .blockingGet().map { it.state() }
+                )
 
                 val state = when {
                     possibleStates.contains(State.ERROR) ||
-                            possibleStates.contains(State.WARNING) -> State.WARNING
+                        possibleStates.contains(State.WARNING) ->
+                        State.WARNING
                     possibleStates.contains(State.SENT_VIA_SMS) ||
-                            possibleStates.contains(State.SYNCED_VIA_SMS) -> State.SENT_VIA_SMS
+                        possibleStates.contains(State.SYNCED_VIA_SMS) ->
+                        State.SENT_VIA_SMS
                     possibleStates.contains(State.TO_UPDATE) ||
-                            possibleStates.contains(State.TO_POST) -> State.TO_UPDATE
+                        possibleStates.contains(State.TO_POST) ->
+                        State.TO_UPDATE
                     else -> State.SYNCED
                 }
 
@@ -199,17 +203,17 @@ internal class HomeRepositoryImpl(private val d2: D2, private val eventLabel: St
                     } else if (
                         d2.eventModule().events()
                             .byProgramUid().eq(program.uid()).byState().`in`(
-                                State.SENT_VIA_SMS,
-                                State.SYNCED_VIA_SMS
-                            ).blockingGet().isNotEmpty()
+                            State.SENT_VIA_SMS,
+                            State.SYNCED_VIA_SMS
+                        ).blockingGet().isNotEmpty()
                     ) {
                         state = State.SENT_VIA_SMS
                     } else if (
                         d2.eventModule().events()
                             .byProgramUid().eq(program.uid()).byState().`in`(
-                                State.TO_UPDATE,
-                                State.TO_POST
-                            )
+                            State.TO_UPDATE,
+                            State.TO_POST
+                        )
                             .blockingGet().isNotEmpty() ||
                         d2.eventModule().events().byProgramUid().eq(program.uid())
                             .byDeleted().isTrue.blockingGet().isNotEmpty()
@@ -298,21 +302,21 @@ internal class HomeRepositoryImpl(private val d2: D2, private val eventLabel: St
                     }
 
                     if (d2.trackedEntityModule().trackedEntityInstances()
-                            .byProgramUids(programUids).byState().`in`(State.ERROR, State.WARNING)
-                            .blockingGet().isNotEmpty()
+                        .byProgramUids(programUids).byState().`in`(State.ERROR, State.WARNING)
+                        .blockingGet().isNotEmpty()
                     ) {
                         state = State.WARNING
                     } else if (d2.trackedEntityModule().trackedEntityInstances().byProgramUids(
-                            programUids
-                        ).byState().`in`(
+                        programUids
+                    ).byState().`in`(
                             State.SENT_VIA_SMS,
                             State.SYNCED_VIA_SMS
                         ).blockingGet().isNotEmpty()
                     ) {
                         state = State.SENT_VIA_SMS
                     } else if (d2.trackedEntityModule().trackedEntityInstances().byProgramUids(
-                            programUids
-                        ).byState().`in`(
+                        programUids
+                    ).byState().`in`(
                             State.TO_UPDATE,
                             State.TO_POST
                         ).blockingGet().isNotEmpty() ||
