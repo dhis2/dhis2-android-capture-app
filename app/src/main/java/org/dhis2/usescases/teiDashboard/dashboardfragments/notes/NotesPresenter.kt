@@ -16,18 +16,13 @@ class NotesPresenter(
     val d2: D2,
     val dashboardRepository: DashboardRepository,
     val schedulerProvider: SchedulerProvider,
-    val view: NotesContracts.View
+    val view: NotesView,
+    val programUid: String,
+    val teiUid: String
 ) {
 
     var compositeDisposable: CompositeDisposable = CompositeDisposable()
     var processor: FlowableProcessor<Boolean> = PublishProcessor.create()
-    private lateinit var programUid: String
-    private lateinit var teiUid: String
-
-    fun init(programUid: String, teiUid: String) {
-        this.programUid = programUid
-        this.teiUid = teiUid
-    }
 
     fun onDettach() = compositeDisposable.clear()
 

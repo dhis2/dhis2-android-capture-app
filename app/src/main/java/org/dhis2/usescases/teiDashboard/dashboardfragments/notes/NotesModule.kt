@@ -9,7 +9,11 @@ import org.hisp.dhis.android.core.D2
 
 @Module
 @PerFragment
-class NotesModule(private val view: NotesContracts.View) {
+class NotesModule(
+    private val view: NotesView,
+    private val programUid: String,
+    private val teiUid: String
+) {
 
     @Provides
     @PerFragment
@@ -18,6 +22,6 @@ class NotesModule(private val view: NotesContracts.View) {
         dashboardRepository: DashboardRepository,
         schedulerProvider: SchedulerProvider
     ): NotesPresenter {
-        return NotesPresenter(d2, dashboardRepository, schedulerProvider, view)
+        return NotesPresenter(d2, dashboardRepository, schedulerProvider, view, programUid, teiUid)
     }
 }

@@ -18,7 +18,7 @@ import org.dhis2.utils.analytics.CLICK
 import org.dhis2.utils.analytics.CREATE_NOTE
 import org.hisp.dhis.android.core.note.Note
 
-class NotesFragment : FragmentGlobalAbstract(), NotesContracts.View {
+class NotesFragment : FragmentGlobalAbstract(), NotesView {
 
     @Inject
     lateinit var presenter: NotesPresenter
@@ -32,9 +32,8 @@ class NotesFragment : FragmentGlobalAbstract(), NotesContracts.View {
         val activity = context as TeiDashboardMobileActivity
         if ((context.applicationContext as App).dashboardComponent() != null) {
             (context.applicationContext as App).dashboardComponent()!!
-                .plus(NotesModule(this))
+                .plus(NotesModule(this, activity.programUid, activity.teiUid))
                 .inject(this)
-            presenter.init(activity.programUid, activity.teiUid)
         }
     }
 

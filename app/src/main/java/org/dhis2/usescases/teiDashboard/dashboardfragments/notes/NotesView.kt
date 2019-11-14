@@ -3,9 +3,7 @@ package org.dhis2.usescases.teiDashboard.dashboardfragments.notes
 import org.dhis2.usescases.general.AbstractActivityContracts
 import org.hisp.dhis.android.core.note.Note
 
-class NotesContracts {
+interface NotesView : AbstractActivityContracts.View {
 
-    interface View : AbstractActivityContracts.View {
-        fun swapNotes(noteModules: List<Note>)
-    }
+    fun swapNotes(noteModules: List<Note>)
 }

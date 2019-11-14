@@ -11,8 +11,8 @@ import org.dhis2.data.schedulers.SchedulerProvider
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.dhis2.data.tuples.Pair
 import org.dhis2.usescases.teiDashboard.DashboardRepositoryImpl
-import org.dhis2.usescases.teiDashboard.dashboardfragments.notes.NotesContracts
 import org.dhis2.usescases.teiDashboard.dashboardfragments.notes.NotesPresenter
+import org.dhis2.usescases.teiDashboard.dashboardfragments.notes.NotesView
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.Access
 import org.hisp.dhis.android.core.common.DataAccess
@@ -20,6 +20,7 @@ import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
 import org.hisp.dhis.android.core.note.Note
 import org.hisp.dhis.android.core.note.NoteCreateProjection
 import org.hisp.dhis.android.core.program.Program
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
@@ -28,13 +29,13 @@ class NotesPresenterTest {
     private lateinit var notesPresenter: NotesPresenter
     private val dashboardRepository: DashboardRepositoryImpl = mock()
     private val schedulers: SchedulerProvider = TrampolineSchedulerProvider()
-    private val view: NotesContracts.View = mock()
+    private val view: NotesView = mock()
     private val d2: D2 = mock ()
 
     @Before
     fun setUp(){
-        notesPresenter = NotesPresenter(d2, dashboardRepository, schedulers, view)
-        notesPresenter.init("program_uid", "tei_uid")
+        notesPresenter = NotesPresenter(d2, dashboardRepository, schedulers,
+            view, "program_uid", "tei_uid")
     }
 
     @Test
@@ -45,22 +46,27 @@ class NotesPresenterTest {
 
         verify(view).displayMessage(message)
     }
-
     @Test
-    fun `Should return true or false if program has write permission`(){
-        whenever(d2.programModule()) doReturn mock()
-        whenever(d2.programModule().programs()) doReturn mock()
-        whenever(d2.programModule().programs().uid("program_uid")) doReturn mock()
+    fun `Should return true if program has write permission`(){
+        programModuleMock()
         whenever(d2.programModule().programs().uid("program_uid")
-                .blockingGet()) doReturn getProgramDefaultAccessTrue()
+            .blockingGet()) doReturn getProgramDefaultAccessTrue()
 
         assertTrue(notesPresenter.hasProgramWritePermission())
+    }
 
+    @Test
+    fun `Should return false if program has not write permission`(){
+        programModuleMock()
         whenever(d2.programModule().programs().uid("program_uid")
-                .blockingGet()) doReturn getProgramDefaultAccessFalse()
+            .blockingGet()) doReturn getProgramDefaultAccessFalse()
 
-        assertTrue(!notesPresenter.hasProgramWritePermission())
+        assertFalse(notesPresenter.hasProgramWritePermission())
+    }
 
+    @Test
+    fun `Should return true if program has null write permission`(){
+        programModuleMock()
         whenever(d2.programModule().programs().uid("program_uid")
                 .blockingGet()) doReturn getProgramDefaultAccessNull()
 
@@ -153,6 +159,12 @@ class NotesPresenterTest {
                 .enrollment("enroll_uid")
                 .value("message")
                 .build()
+    }
+
+    private fun programModuleMock(){
+        whenever(d2.programModule()) doReturn mock()
+        whenever(d2.programModule().programs()) doReturn mock()
+        whenever(d2.programModule().programs().uid("program_uid")) doReturn mock()
     }
 
     private fun mockEnrollmentByProgramTeiStatus(){
