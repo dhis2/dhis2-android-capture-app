@@ -337,8 +337,8 @@ class EnrollmentPresenterImpl(
 
         val fieldMap = fields.map { it.uid() to it }.toMap().toMutableMap()
 
-        RulesUtilsProviderImpl(CodeGeneratorImpl())
-            .applyRuleEffects(fieldMap, result, this)
+        RulesUtilsProviderImpl()
+                .applyRuleEffects(fieldMap, result, this)
 
         fieldMap.values.forEach {
             if (it is SpinnerViewModel) {
