@@ -54,7 +54,6 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.res.Resources;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteStatement;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -374,12 +373,34 @@ public class DashboardRepositoryImpl
     {
         if ( programUid != null )
             return briteDatabase
-                .createQuery( ATTRIBUTE_VALUES_TABLE, ATTRIBUTE_VALUES_QUERY, programUid, teiUid == null ? "" : teiUid )
-                .mapToList( cursor -> ValueUtils.transform( briteDatabase, cursor ) );
+                    .createQuery( ATTRIBUTE_VALUES_TABLE, ATTRIBUTE_VALUES_QUERY, programUid, teiUid == null ? "" : teiUid )
+                    .mapToList( cursor -> ValueUtils.transform( briteDatabase, cursor ) )
+                    .map(values -> {
+                        List<TrackedEntityAttributeValue> toRemove = new ArrayList<>();
+                        for (TrackedEntityAttributeValue value: values) {
+                            ValueType type = d2.trackedEntityModule().trackedEntityAttributes().uid(value.trackedEntityAttribute()).blockingGet().valueType();
+                            if (type == ValueType.IMAGE) {
+                                toRemove.add(value);
+                            }
+                        }
+                        values.removeAll(toRemove);
+                        return values;
+                    });
         else
             return briteDatabase
-                .createQuery( ATTRIBUTE_VALUES_TABLE, ATTRIBUTE_VALUES_NO_PROGRAM_QUERY, teiUid == null ? "" : teiUid )
-                .mapToList( cursor -> ValueUtils.transform( briteDatabase, cursor ) );
+                    .createQuery( ATTRIBUTE_VALUES_TABLE, ATTRIBUTE_VALUES_NO_PROGRAM_QUERY, teiUid == null ? "" : teiUid )
+                    .mapToList( cursor -> ValueUtils.transform( briteDatabase, cursor ) )
+                    .map(values -> {
+                        List<TrackedEntityAttributeValue> toRemove = new ArrayList<>();
+                        for (TrackedEntityAttributeValue value: values) {
+                            ValueType type = d2.trackedEntityModule().trackedEntityAttributes().uid(value.trackedEntityAttribute()).blockingGet().valueType();
+                            if (type == ValueType.IMAGE) {
+                                toRemove.add(value);
+                            }
+                        }
+                        values.removeAll(toRemove);
+                        return values;
+                    });
     }
 
     @Override

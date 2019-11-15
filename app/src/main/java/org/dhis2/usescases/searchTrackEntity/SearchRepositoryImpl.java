@@ -481,7 +481,9 @@ public class SearchRepositoryImpl implements SearchRepository {
                     attributes.moveToFirst();
                     for (int i = 0; i < attributes.getCount(); i++) {
                         if (searchTei != null)
-                            searchTei.addAttributeValue(ValueUtils.transform(briteDatabase, attributes));
+                            if(!attributes.getString(attributes.getColumnIndex("valueType")).equals(ValueType.IMAGE.name())) {
+                                searchTei.addAttributeValue(ValueUtils.transform(briteDatabase, attributes));
+                            }
                         attributes.moveToNext();
                     }
                 }
@@ -496,7 +498,9 @@ public class SearchRepositoryImpl implements SearchRepository {
                     attributes.moveToFirst();
                     for (int i = 0; i < attributes.getCount(); i++) {
                         if (searchTei != null)
-                            searchTei.addAttributeValue(ValueUtils.transform(briteDatabase, attributes));
+                            if(!attributes.getString(attributes.getColumnIndex("valueType")).equals(ValueType.IMAGE.name())) {
+                                searchTei.addAttributeValue(ValueUtils.transform(briteDatabase, attributes));
+                            }
                         attributes.moveToNext();
                     }
                 }
