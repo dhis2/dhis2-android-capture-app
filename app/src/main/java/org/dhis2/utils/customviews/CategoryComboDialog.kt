@@ -20,10 +20,6 @@ import java.util.HashMap
 
 import javax.inject.Inject
 
-/**
- * QUADRAM. Created by frodriguez on 5/4/2018.
- */
-
 class CategoryComboDialog(
         private val mContext: Context,
         private val categoryCombo: CategoryCombo,
