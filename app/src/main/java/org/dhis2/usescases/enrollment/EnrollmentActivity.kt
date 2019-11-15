@@ -16,6 +16,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import io.reactivex.Flowable
+import java.io.File
+import java.util.Calendar
+import java.util.Date
+import javax.inject.Inject
 import org.dhis2.App
 import org.dhis2.R
 import org.dhis2.data.forms.dataentry.DataEntryAdapter
@@ -50,10 +54,6 @@ import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityType
-import java.io.File
-import java.util.Calendar
-import java.util.Date
-import javax.inject.Inject
 
 class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
 

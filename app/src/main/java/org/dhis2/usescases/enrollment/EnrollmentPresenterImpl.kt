@@ -7,6 +7,17 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.functions.BiFunction
 import io.reactivex.processors.FlowableProcessor
 import io.reactivex.processors.PublishProcessor
+import java.io.File
+import java.util.Date
+import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
+import kotlin.collections.List
+import kotlin.collections.forEach
+import kotlin.collections.map
+import kotlin.collections.set
+import kotlin.collections.sortBy
+import kotlin.collections.toMap
+import kotlin.collections.toMutableMap
 import org.dhis2.R
 import org.dhis2.data.forms.dataentry.DataEntryRepository
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel
@@ -34,27 +45,16 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceObjectRepos
 import org.hisp.dhis.rules.models.RuleActionShowError
 import org.hisp.dhis.rules.models.RuleEffect
 import timber.log.Timber
-import java.io.File
-import java.util.*
-import kotlin.collections.ArrayList
-import kotlin.collections.HashMap
-import kotlin.collections.List
-import kotlin.collections.forEach
-import kotlin.collections.map
-import kotlin.collections.set
-import kotlin.collections.sortBy
-import kotlin.collections.toMap
-import kotlin.collections.toMutableMap
 
 class EnrollmentPresenterImpl(
-        val view: EnrollmentView,
-        val d2: D2,
-        private val enrollmentObjectRepository: EnrollmentObjectRepository,
-        private val dataEntryRepository: DataEntryRepository,
-        private val teiRepository: TrackedEntityInstanceObjectRepository,
-        private val programRepository: ReadOnlyOneObjectRepositoryFinalImpl<Program>,
-        private val schedulerProvider: SchedulerProvider,
-        val formRepository: EnrollmentFormRepository
+    val view: EnrollmentView,
+    val d2: D2,
+    private val enrollmentObjectRepository: EnrollmentObjectRepository,
+    private val dataEntryRepository: DataEntryRepository,
+    private val teiRepository: TrackedEntityInstanceObjectRepository,
+    private val programRepository: ReadOnlyOneObjectRepositoryFinalImpl<Program>,
+    private val schedulerProvider: SchedulerProvider,
+    val formRepository: EnrollmentFormRepository
 ) : RulesActionCallbacks {
 
     private val TAG = "EnrollmentPresenter"
@@ -69,242 +69,242 @@ class EnrollmentPresenterImpl(
         disposable = CompositeDisposable()
 
         disposable.add(
-                teiRepository.get()
-                        .flatMap { tei ->
-                            d2.trackedEntityModule().trackedEntityTypeAttributes()
-                                    .byTrackedEntityTypeUid().eq(tei.trackedEntityType()).get()
-                                    .map { list ->
-                                        list.sortBy { it.sortOrder() }
-                                        list.map {
-                                            it.trackedEntityAttribute()?.uid()
-                                        }
-                                    }
-                                    .flatMap {
-                                        d2.trackedEntityModule().trackedEntityAttributeValues()
-                                                .byTrackedEntityInstance().eq(tei.uid())
-                                                .byTrackedEntityAttribute().`in`(it)
-                                                .get()
-                                    }
-                        }
-                        .subscribeOn(schedulerProvider.io())
-                        .observeOn(schedulerProvider.ui())
-                        .subscribe(
-                                { view.displayTeiInfo(it) },
-                                { Timber.tag(TAG).e(it) }
-                        )
-        )
-
-        disposable.add(
-                programRepository.get()
-                        .map { it.access()?.data()?.write() }
-                        .subscribeOn(schedulerProvider.io())
-                        .observeOn(schedulerProvider.ui())
-                        .subscribe(
-                                { view.setAccess(it) },
-                                { Timber.tag(TAG).e(it) }
-                        )
-        )
-
-        disposable.add(
-                enrollmentObjectRepository.get()
-                        .map { it.status() }
-                        .subscribeOn(schedulerProvider.io())
-                        .observeOn(schedulerProvider.ui())
-                        .subscribe(
-                                { view.renderStatus(it!!) },
-                                { Timber.tag(TAG).e(it) }
-                        )
-        )
-
-        disposable.add(
-                enrollmentObjectRepository.get()
-                        .flatMap { enrollment ->
-                            d2.organisationUnitModule().organisationUnits().uid(
-                                    enrollment.organisationUnit()
-                            ).get()
-                        }
-                        .subscribeOn(schedulerProvider.io())
-                        .observeOn(schedulerProvider.ui())
-                        .subscribe(
-                                {
-                                    view.displayOrgUnit(it)
-                                },
-                                {
-                                    Timber.tag(TAG).e(it)
-                                }
-                        )
-        )
-
-        disposable.add(
-                programRepository.get()
-                        .subscribeOn(schedulerProvider.io())
-                        .observeOn(schedulerProvider.ui())
-                        .subscribe(
-                                { view.setDateLabels(it.enrollmentDateLabel(), it.incidentDateLabel()) },
-                                { Timber.tag(TAG).e(it) }
-                        )
-        )
-
-        disposable.add(
-                enrollmentObjectRepository.get()
-                        .subscribeOn(schedulerProvider.io())
-                        .observeOn(schedulerProvider.ui())
-                        .subscribe(
-                                { view.setUpEnrollmentDate(it.enrollmentDate()) },
-                                { Timber.tag(TAG).e(it) }
-                        )
-        )
-
-        disposable.add(
-                enrollmentObjectRepository.get()
-                        .flatMap { enrollment ->
-                            programRepository.get()
-                                    .filter { it.displayIncidentDate() ?: false }
-                                    .map {
-                                        enrollment.incidentDate()
-                                    }.toSingle()
-                        }
-                        .subscribeOn(schedulerProvider.io())
-                        .observeOn(schedulerProvider.ui())
-                        .subscribe(
-                                { view.setUpIncidentDate(it) },
-                                { Timber.tag(TAG).e(it) }
-                        )
-        )
-
-        disposable.add(
-                programRepository.get()
-                        .flatMap { program ->
-                            d2.programModule().programStages()
-                                    .byProgramUid().eq(program.uid())
-                                    .byAutoGenerateEvent().isTrue
-                                    .get()
-                        }
-                        .map { stages ->
-                            var blockEnrollmentDate = false
-                            var blockIncidentDate = false
-                            stages.forEach {
-                                if (it.reportDateToUse() != null &&
-                                        it.reportDateToUse().equals("enrollmentDate") ||
-                                        it.generatedByEnrollmentDate() == true
-                                ) {
-                                    blockEnrollmentDate = true
-                                } else {
-                                    blockIncidentDate = true
-                                }
-                            }
-                            Pair(blockEnrollmentDate, blockIncidentDate)
-                        }.map {
-                            if (getProgram().access()?.data()!!.write() == true) {
-                                it
-                            } else {
-                                Pair(first = true, second = true)
+            teiRepository.get()
+                .flatMap { tei ->
+                    d2.trackedEntityModule().trackedEntityTypeAttributes()
+                        .byTrackedEntityTypeUid().eq(tei.trackedEntityType()).get()
+                        .map { list ->
+                            list.sortBy { it.sortOrder() }
+                            list.map {
+                                it.trackedEntityAttribute()?.uid()
                             }
                         }
-                        .subscribeOn(schedulerProvider.io())
-                        .observeOn(schedulerProvider.ui())
-                        .subscribe(
-                                { view.blockDates(it.first, it.second) },
-                                { Timber.tag(TAG).e(it) }
-                        )
-        )
-
-        disposable.add(
-                Single.zip(
-                        programRepository.get(),
-                        enrollmentObjectRepository.get(),
-                        BiFunction<Program, Enrollment, Pair<Program, Enrollment>> { program, enrollment ->
-                            Pair(program, enrollment)
+                        .flatMap {
+                            d2.trackedEntityModule().trackedEntityAttributeValues()
+                                .byTrackedEntityInstance().eq(tei.uid())
+                                .byTrackedEntityAttribute().`in`(it)
+                                .get()
                         }
+                }
+                .subscribeOn(schedulerProvider.io())
+                .observeOn(schedulerProvider.ui())
+                .subscribe(
+                    { view.displayTeiInfo(it) },
+                    { Timber.tag(TAG).e(it) }
                 )
-                        .subscribeOn(schedulerProvider.io())
-                        .observeOn(schedulerProvider.ui())
-                        .subscribe(
-                                { view.displayEnrollmentCoordinates(it) },
-                                { Timber.tag(TAG).e(it) }
-                        )
         )
 
         disposable.add(
-                teiRepository.get()
-                        .flatMap { tei ->
-                            d2.trackedEntityModule().trackedEntityTypes().uid(tei.trackedEntityType()).get()
-                                    .map { Pair(it, tei) }
-                        }
-                        .subscribeOn(schedulerProvider.io())
-                        .observeOn(schedulerProvider.ui())
-                        .subscribe(
-                                { view.displayTeiCoordinates(it) },
-                                { Timber.tag(TAG).e(it) }
-                        )
+            programRepository.get()
+                .map { it.access()?.data()?.write() }
+                .subscribeOn(schedulerProvider.io())
+                .observeOn(schedulerProvider.ui())
+                .subscribe(
+                    { view.setAccess(it) },
+                    { Timber.tag(TAG).e(it) }
+                )
         )
 
         disposable.add(
-                view.rowActions().onBackpressureBuffer()
+            enrollmentObjectRepository.get()
+                .map { it.status() }
+                .subscribeOn(schedulerProvider.io())
+                .observeOn(schedulerProvider.ui())
+                .subscribe(
+                    { view.renderStatus(it!!) },
+                    { Timber.tag(TAG).e(it) }
+                )
+        )
+
+        disposable.add(
+            enrollmentObjectRepository.get()
+                .flatMap { enrollment ->
+                    d2.organisationUnitModule().organisationUnits().uid(
+                        enrollment.organisationUnit()
+                    ).get()
+                }
+                .subscribeOn(schedulerProvider.io())
+                .observeOn(schedulerProvider.ui())
+                .subscribe(
+                    {
+                        view.displayOrgUnit(it)
+                    },
+                    {
+                        Timber.tag(TAG).e(it)
+                    }
+                )
+        )
+
+        disposable.add(
+            programRepository.get()
+                .subscribeOn(schedulerProvider.io())
+                .observeOn(schedulerProvider.ui())
+                .subscribe(
+                    { view.setDateLabels(it.enrollmentDateLabel(), it.incidentDateLabel()) },
+                    { Timber.tag(TAG).e(it) }
+                )
+        )
+
+        disposable.add(
+            enrollmentObjectRepository.get()
+                .subscribeOn(schedulerProvider.io())
+                .observeOn(schedulerProvider.ui())
+                .subscribe(
+                    { view.setUpEnrollmentDate(it.enrollmentDate()) },
+                    { Timber.tag(TAG).e(it) }
+                )
+        )
+
+        disposable.add(
+            enrollmentObjectRepository.get()
+                .flatMap { enrollment ->
+                    programRepository.get()
+                        .filter { it.displayIncidentDate() ?: false }
                         .map {
-                            if (checkUniqueFilter(it.id(), it.value())) {
-                                val saved = saveValue(it.id(), it.value())
-                                if (saved) {
-                                    lastFocusItem = it.id()
-                                }
-                                Pair(saved, false)
-                            } else {
-                                Pair(first = false, second = true)
-                            }
-                        }
-                        .subscribeOn(schedulerProvider.io())
-                        .observeOn(schedulerProvider.ui())
-                        .subscribe(
-                                {
-                                    if (it.first) {
-                                        fieldsFlowable.onNext(true)
-                                    } else if (it.second) {
-                                        view.showInfoDialog(
-                                                view.context.getString(R.string.error),
-                                                view.context.getString(R.string.unique_warning)
-                                        )
-                                    }
-                                },
-                                { Timber.tag(TAG).e(it) }
-                        )
+                            enrollment.incidentDate()
+                        }.toSingle()
+                }
+                .subscribeOn(schedulerProvider.io())
+                .observeOn(schedulerProvider.ui())
+                .subscribe(
+                    { view.setUpIncidentDate(it) },
+                    { Timber.tag(TAG).e(it) }
+                )
         )
 
         disposable.add(
-                fieldsFlowable.startWith(true)
-                        .switchMap {
-                            Flowable.zip<List<FieldViewModel>, Result<RuleEffect>, List<FieldViewModel>>(
-                                    dataEntryRepository.list(),
-                                    formRepository.calculate(),
-                                    BiFunction { fields, result -> applyRuleEffects(fields, result) }
+            programRepository.get()
+                .flatMap { program ->
+                    d2.programModule().programStages()
+                        .byProgramUid().eq(program.uid())
+                        .byAutoGenerateEvent().isTrue
+                        .get()
+                }
+                .map { stages ->
+                    var blockEnrollmentDate = false
+                    var blockIncidentDate = false
+                    stages.forEach {
+                        if (it.reportDateToUse() != null &&
+                            it.reportDateToUse().equals("enrollmentDate") ||
+                            it.generatedByEnrollmentDate() == true
+                        ) {
+                            blockEnrollmentDate = true
+                        } else {
+                            blockIncidentDate = true
+                        }
+                    }
+                    Pair(blockEnrollmentDate, blockIncidentDate)
+                }.map {
+                if (getProgram().access()?.data()!!.write() == true) {
+                    it
+                } else {
+                    Pair(first = true, second = true)
+                }
+            }
+                .subscribeOn(schedulerProvider.io())
+                .observeOn(schedulerProvider.ui())
+                .subscribe(
+                    { view.blockDates(it.first, it.second) },
+                    { Timber.tag(TAG).e(it) }
+                )
+        )
+
+        disposable.add(
+            Single.zip(
+                programRepository.get(),
+                enrollmentObjectRepository.get(),
+                BiFunction<Program, Enrollment, Pair<Program, Enrollment>> { program, enrollment ->
+                    Pair(program, enrollment)
+                }
+            )
+                .subscribeOn(schedulerProvider.io())
+                .observeOn(schedulerProvider.ui())
+                .subscribe(
+                    { view.displayEnrollmentCoordinates(it) },
+                    { Timber.tag(TAG).e(it) }
+                )
+        )
+
+        disposable.add(
+            teiRepository.get()
+                .flatMap { tei ->
+                    d2.trackedEntityModule().trackedEntityTypes().uid(tei.trackedEntityType()).get()
+                        .map { Pair(it, tei) }
+                }
+                .subscribeOn(schedulerProvider.io())
+                .observeOn(schedulerProvider.ui())
+                .subscribe(
+                    { view.displayTeiCoordinates(it) },
+                    { Timber.tag(TAG).e(it) }
+                )
+        )
+
+        disposable.add(
+            view.rowActions().onBackpressureBuffer()
+                .map {
+                    if (checkUniqueFilter(it.id(), it.value())) {
+                        val saved = saveValue(it.id(), it.value())
+                        if (saved) {
+                            lastFocusItem = it.id()
+                        }
+                        Pair(saved, false)
+                    } else {
+                        Pair(first = false, second = true)
+                    }
+                }
+                .subscribeOn(schedulerProvider.io())
+                .observeOn(schedulerProvider.ui())
+                .subscribe(
+                    {
+                        if (it.first) {
+                            fieldsFlowable.onNext(true)
+                        } else if (it.second) {
+                            view.showInfoDialog(
+                                view.context.getString(R.string.error),
+                                view.context.getString(R.string.unique_warning)
                             )
                         }
-                        .subscribeOn(schedulerProvider.io())
-                        .observeOn(schedulerProvider.ui())
-                        .subscribe({
-                            view.showFields(it)
-                        }) {
-                            Timber.tag(TAG).e(it)
-                        }
+                    },
+                    { Timber.tag(TAG).e(it) }
+                )
+        )
+
+        disposable.add(
+            fieldsFlowable.startWith(true)
+                .switchMap {
+                    Flowable.zip<List<FieldViewModel>, Result<RuleEffect>, List<FieldViewModel>>(
+                        dataEntryRepository.list(),
+                        formRepository.calculate(),
+                        BiFunction { fields, result -> applyRuleEffects(fields, result) }
+                    )
+                }
+                .subscribeOn(schedulerProvider.io())
+                .observeOn(schedulerProvider.ui())
+                .subscribe({
+                    view.showFields(it)
+                }) {
+                    Timber.tag(TAG).e(it)
+                }
         )
     }
 
     fun finish(enrollmentMode: EnrollmentActivity.EnrollmentMode) {
         when (enrollmentMode) {
             EnrollmentActivity.EnrollmentMode.NEW -> disposable.add(
-                    formRepository.autoGenerateEvents()
-                            .flatMap { formRepository.useFirstStageDuringRegistration() }
-                            .subscribeOn(schedulerProvider.io())
-                            .observeOn(schedulerProvider.ui())
-                            .subscribe(
-                                    {
-                                        if (!isEmpty(it.second)) {
-                                            view.openEvent(it.second)
-                                        } else {
-                                            view.openDashboard(it.first)
-                                        }
-                                    },
-                                    { Timber.tag(TAG).e(it) }
-                            )
+                formRepository.autoGenerateEvents()
+                    .flatMap { formRepository.useFirstStageDuringRegistration() }
+                    .subscribeOn(schedulerProvider.io())
+                    .observeOn(schedulerProvider.ui())
+                    .subscribe(
+                        {
+                            if (!isEmpty(it.second)) {
+                                view.openEvent(it.second)
+                            } else {
+                                view.openDashboard(it.first)
+                            }
+                        },
+                        { Timber.tag(TAG).e(it) }
+                    )
             )
             EnrollmentActivity.EnrollmentMode.CHECK -> view.abstractActivity.finish()
         }
@@ -315,16 +315,16 @@ class EnrollmentPresenterImpl(
         val event = d2.eventModule().events().uid(eventUid).blockingGet()
         val stage = d2.programModule().programStages().uid(event.programStage()).blockingGet()
         val needsCatCombo = programRepository.blockingGet().categoryComboUid() != null &&
-                d2.categoryModule().categoryCombos().uid(catComboUid).blockingGet().isDefault == false
+            d2.categoryModule().categoryCombos().uid(catComboUid).blockingGet().isDefault == false
         val needsCoordinates =
-                stage.featureType() != null && stage.featureType() != FeatureType.NONE
+            stage.featureType() != null && stage.featureType() != FeatureType.NONE
 
         return needsCatCombo || needsCoordinates
     }
 
     private fun applyRuleEffects(
-            fields: List<FieldViewModel>,
-            result: Result<RuleEffect>
+        fields: List<FieldViewModel>,
+        result: Result<RuleEffect>
     ): List<FieldViewModel> {
         if (result.error() != null) {
             Timber.tag(TAG).e(result.error())
@@ -338,7 +338,7 @@ class EnrollmentPresenterImpl(
         val fieldMap = fields.map { it.uid() to it }.toMap().toMutableMap()
 
         RulesUtilsProviderImpl(CodeGeneratorImpl())
-                .applyRuleEffects(fieldMap, result, this)
+            .applyRuleEffects(fieldMap, result, this)
 
         fieldMap.values.forEach {
             if (it is SpinnerViewModel) {
@@ -361,7 +361,7 @@ class EnrollmentPresenterImpl(
 
     fun getOrgUnit(): OrganisationUnit {
         return d2.organisationUnitModule().organisationUnits()
-                .uid(getEnrollment().organisationUnit()).blockingGet()
+            .uid(getEnrollment().organisationUnit()).blockingGet()
     }
 
     fun updateEnrollmentStatus(newStatus: EnrollmentStatus): Boolean {
@@ -412,11 +412,11 @@ class EnrollmentPresenterImpl(
     private fun checkUniqueFilter(uid: String, value: String?): Boolean {
         return if (value != null && valueIsAttribute(uid)) {
             val isUnique =
-                    d2.trackedEntityModule().trackedEntityAttributes().uid(uid).blockingGet()!!.unique()
-                            ?: false
+                d2.trackedEntityModule().trackedEntityAttributes().uid(uid).blockingGet()!!.unique()
+                    ?: false
             val hasValue = !d2.trackedEntityModule().trackedEntityAttributeValues()
-                    .byTrackedEntityAttribute().eq(uid)
-                    .byValue().eq(value).blockingGet().isEmpty()
+                .byTrackedEntityAttribute().eq(uid)
+                .byValue().eq(value).blockingGet().isEmpty()
             if (isUnique) {
                 !hasValue
             } else {
@@ -437,11 +437,11 @@ class EnrollmentPresenterImpl(
 
     private fun saveAttribute(uid: String, value: String?): Boolean {
         val valueRepository = d2.trackedEntityModule().trackedEntityAttributeValues()
-                .value(uid, teiRepository.blockingGet().uid())
+            .value(uid, teiRepository.blockingGet().uid())
         var newValue = value
         if (d2.trackedEntityModule().trackedEntityAttributes().uid(uid).blockingGet().valueType() ==
-                ValueType.IMAGE &&
-                value != null
+            ValueType.IMAGE &&
+            value != null
         ) {
             newValue = getFileResource(value)
         }
@@ -468,11 +468,11 @@ class EnrollmentPresenterImpl(
         var newValue = value
         return if (eventUid != null) {
             val valueRepository = d2.trackedEntityModule().trackedEntityDataValues()
-                    .value(eventUid, uid)
+                .value(eventUid, uid)
 
             if (d2.dataElementModule().dataElements().uid(uid).blockingGet().valueType() ==
-                    ValueType.IMAGE &&
-                    value != null
+                ValueType.IMAGE &&
+                value != null
             ) {
                 newValue = getFileResource(value)
             }
@@ -505,12 +505,12 @@ class EnrollmentPresenterImpl(
 
     private fun getEventUid(dataElement: String): String? {
         val events = d2.eventModule().events().byEnrollmentUid().eq(getEnrollment().uid())
-                .byStatus().eq(EventStatus.ACTIVE)
-                .orderByEventDate(RepositoryScope.OrderByDirection.DESC).blockingGet().map { it.uid() }
+            .byStatus().eq(EventStatus.ACTIVE)
+            .orderByEventDate(RepositoryScope.OrderByDirection.DESC).blockingGet().map { it.uid() }
         val dataValues = d2.trackedEntityModule().trackedEntityDataValues()
-                .byDataElement().eq(dataElement)
-                .byEvent().`in`(events)
-                .blockingGet()
+            .byDataElement().eq(dataElement)
+            .byEvent().`in`(events)
+            .blockingGet()
 
         return if (dataValues != null && !dataValues.isEmpty()) {
             dataValues[0].event()!!
@@ -578,7 +578,7 @@ class EnrollmentPresenterImpl(
                 // TODO: CHECK THIS: Enrollments rules should not assign values to dataElements
 //                handleAssignToDataElement(uid, value)
             } else if (
-                    d2.trackedEntityModule().trackedEntityAttributes().uid(uid).blockingExists()
+                d2.trackedEntityModule().trackedEntityAttributes().uid(uid).blockingExists()
             ) {
                 handleAssignToAttribute(uid, value)
             }
@@ -590,26 +590,26 @@ class EnrollmentPresenterImpl(
     @Throws(D2Error::class)
     private fun handleAssignToDataElement(deUid: String, value: String?) {
         val eventUids = UidsHelper.getUidsList(
-                d2.eventModule().events()
-                        .byEnrollmentUid().eq(getEnrollment().uid())
-                        .byStatus().`in`(EventStatus.ACTIVE, EventStatus.COMPLETED)
-                        .blockingGet()
+            d2.eventModule().events()
+                .byEnrollmentUid().eq(getEnrollment().uid())
+                .byStatus().`in`(EventStatus.ACTIVE, EventStatus.COMPLETED)
+                .blockingGet()
         )
 
         for (eventUid in eventUids) {
             if (!isEmpty(value)) {
                 d2.trackedEntityModule().trackedEntityDataValues().value(
-                        eventUid,
-                        deUid
+                    eventUid,
+                    deUid
                 ).blockingSet(value)
             } else if (d2.trackedEntityModule().trackedEntityDataValues().value(
-                            eventUid,
-                            deUid
-                    ).blockingExists()
+                eventUid,
+                deUid
+            ).blockingExists()
             ) {
                 d2.trackedEntityModule().trackedEntityDataValues().value(
-                        eventUid,
-                        deUid
+                    eventUid,
+                    deUid
                 ).blockingDelete()
             }
         }
@@ -620,14 +620,14 @@ class EnrollmentPresenterImpl(
         val tei = teiRepository.blockingGet().uid()
         if (!isEmpty(value)) {
             d2.trackedEntityModule().trackedEntityAttributeValues().value(attributeUid, tei)
-                    .blockingSet(value)
+                .blockingSet(value)
         } else if (d2.trackedEntityModule().trackedEntityAttributeValues().value(
-                        attributeUid,
-                        tei
-                ).blockingExists()
+            attributeUid,
+            tei
+        ).blockingExists()
         ) {
             d2.trackedEntityModule().trackedEntityAttributeValues().value(attributeUid, tei)
-                    .blockingDelete()
+                .blockingDelete()
         }
     }
 
