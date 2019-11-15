@@ -416,10 +416,9 @@ public class DashboardRepositoryImpl
     }
 
     @Override
-    public Consumer<Pair<String, Boolean>> handleNote() {
-        return stringBooleanPair -> {
-            if (stringBooleanPair.val1()) {
-                
+    public void handleNote(Pair<String, Boolean> stringBooleanPair) {
+        if (stringBooleanPair.val1()) {
+            try {
                 d2.noteModule().notes().blockingAdd(
                         NoteCreateProjection.builder()
                                 .enrollment(d2.enrollmentModule().enrollments().byProgram().eq(programUid)
@@ -428,8 +427,10 @@ public class DashboardRepositoryImpl
                                 .value(stringBooleanPair.val0())
                                 .build()
                 );
+            } catch (D2Error d2Error) {
+                d2Error.printStackTrace();
             }
-        };
+        }
     }
 
     @Override

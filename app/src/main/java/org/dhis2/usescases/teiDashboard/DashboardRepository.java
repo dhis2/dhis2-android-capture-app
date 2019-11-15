@@ -51,7 +51,7 @@ public interface DashboardRepository {
 
     Flowable<List<Note>> getNotes(String programUid, String teUid);
 
-    Consumer<Pair<String, Boolean>> handleNote();
+    void handleNote(Pair<String, Boolean> stringBooleanPair);
 
     void setDashboardDetails(String teiUid, String programUid);
 
