@@ -210,8 +210,13 @@ sonarqube {
 
 dependencies {
     debugImplementation project(':core')
+    betaImplementation project(':core')
+
     implementation project(':customFab')
+
     debugImplementation project(':dhis2-rule-engine')
+    betaImplementation project(':dhis2-rule-engine')
+    
     implementation project(':viewpagerdotsindicator')
     implementation project(':tableview')
 
