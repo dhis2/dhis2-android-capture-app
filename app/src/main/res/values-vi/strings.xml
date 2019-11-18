@@ -1,8 +1,4 @@
 <resources>
-    <!--GENERAL-->
-    <string name="app_name">Dhis2</string>
-    <string name="logo_text">dhis</string>
-    <string name="logo_number">2</string>
     <!-- Warnings and error messages -->
     <string name="error">Lỗi</string>
     <string name="error_wrong_server_url">Sai đường dẫn đến máy chủ</string>
@@ -117,7 +113,6 @@
     <string name="event_date">Ngày xảy ra sự kiện</string>
     <string name="due_date">Ngày đến hạn</string>
     <string name="cat_combo">Tổ hợp phân loại</string>
-    <string name="date_default">DD/MM/YYYY</string>
     <string name="cancel">Hủy</string>
     <string name="delete">Xóa</string>
     <string name="delete_event">Xóa sự kiện</string>
@@ -372,7 +367,6 @@
     <string name="sms_bar_state_sending">Đang tiến hành</string>
     <string name="sms_bar_state_failed">KHÔNG THÀNH CÔNG</string>
 
-    <string name="polygon_captured">Polygon captured</string>
     <string name="polygon">Đa giác</string>
     <!--endregion-->
 </resources>
