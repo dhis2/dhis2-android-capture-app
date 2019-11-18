@@ -37,9 +37,8 @@ import org.dhis2.data.service.ReservedValuesWorker
 import org.dhis2.data.service.SyncDataWorker
 import org.dhis2.data.service.SyncGranularWorker
 import org.dhis2.data.service.SyncMetadataWorker
-import java.lang.IllegalArgumentException
 
-class WorkManagerControllerImpl(private val workManager: WorkManager): WorkManagerController {
+class WorkManagerControllerImpl(private val workManager: WorkManager) : WorkManagerController {
 
     override fun syncDataForWorker(workerType: WorkerType, tag: String) {
         val syncBuilder = when (workerType) {
