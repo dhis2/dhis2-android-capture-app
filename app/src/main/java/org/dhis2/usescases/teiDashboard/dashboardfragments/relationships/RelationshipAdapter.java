@@ -19,10 +19,10 @@ import java.util.List;
 
 public class RelationshipAdapter extends RecyclerView.Adapter<RelationshipViewHolder> {
 
-    private RelationshipPresenterImpl presenter;
+    private RelationshipPresenter presenter;
     private List<RelationshipViewModel> relationships;
 
-    public RelationshipAdapter(RelationshipPresenterImpl presenter) {
+    public RelationshipAdapter(RelationshipPresenter presenter) {
         this.presenter = presenter;
         this.relationships = new ArrayList<>();
     }

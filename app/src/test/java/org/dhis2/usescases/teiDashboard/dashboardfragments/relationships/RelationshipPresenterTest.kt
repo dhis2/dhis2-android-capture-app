@@ -63,12 +63,12 @@ class RelationshipPresenterTest {
     private val schedulers: SchedulerProvider = TrampolineSchedulerProvider()
     private val view: RelationshipView = mock()
     private val d2: D2 = Mockito.mock(D2::class.java, Mockito.RETURNS_DEEP_STUBS)
-    private lateinit var presenter: RelationshipPresenterImpl
+    private lateinit var presenter: RelationshipPresenter
 
     @Before
     fun setUp() {
         mockTrackedEntityInstanceTypeModule("tei_uid")
-        presenter = RelationshipPresenterImpl(
+        presenter = RelationshipPresenter(
             d2, "program_uid",
             "tei_uid", dashboardRepository, schedulers, view
         )
@@ -118,7 +118,7 @@ class RelationshipPresenterTest {
     fun `Should build a list of RelationshipViewModel with TO type`() {
         // Necessary set presenter again to change teiUid and test TO case
         mockTrackedEntityInstanceTypeModule("tei_from_uid")
-        presenter = RelationshipPresenterImpl(
+        presenter = RelationshipPresenter(
             d2, "program_uid",
             "tei_from_uid", dashboardRepository, schedulers, view
         )

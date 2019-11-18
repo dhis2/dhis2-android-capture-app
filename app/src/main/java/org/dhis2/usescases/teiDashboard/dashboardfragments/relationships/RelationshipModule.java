@@ -27,8 +27,8 @@ public class RelationshipModule {
 
     @Provides
     @PerFragment
-    RelationshipPresenterImpl providesPresenter(D2 d2, DashboardRepository dashboardRepository, SchedulerProvider schedulerProvider) {
-        return new RelationshipPresenterImpl(d2, programUid, teiUid, dashboardRepository, schedulerProvider, view);
+    RelationshipPresenter providesPresenter(D2 d2, DashboardRepository dashboardRepository, SchedulerProvider schedulerProvider) {
+        return new RelationshipPresenter(d2, programUid, teiUid, dashboardRepository, schedulerProvider, view);
     }
 
 }

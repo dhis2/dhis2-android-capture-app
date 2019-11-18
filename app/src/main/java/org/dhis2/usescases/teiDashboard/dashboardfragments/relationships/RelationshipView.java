@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * QUADRAM. Created by ppajuelo on 09/04/2019.
  */
-interface RelationshipView extends AbstractActivityContracts.View {
+public interface RelationshipView extends AbstractActivityContracts.View {
 
         void setRelationships(List<RelationshipViewModel> relationships);
 

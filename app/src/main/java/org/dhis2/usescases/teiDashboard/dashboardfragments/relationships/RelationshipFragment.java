@@ -47,7 +47,7 @@ import static android.app.Activity.RESULT_OK;
 public class RelationshipFragment extends FragmentGlobalAbstract implements RelationshipView {
 
     @Inject
-    RelationshipPresenterImpl presenter;
+    RelationshipPresenter presenter;
 
     private FragmentRelationshipsBinding binding;
 
