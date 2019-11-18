@@ -23,7 +23,6 @@ import org.dhis2.data.forms.dataentry.DataEntryRepository
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel
 import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel
 import org.dhis2.data.schedulers.SchedulerProvider
-import org.dhis2.utils.CodeGeneratorImpl
 import org.dhis2.utils.Result
 import org.dhis2.utils.RulesActionCallbacks
 import org.dhis2.utils.RulesUtilsProviderImpl
@@ -338,7 +337,7 @@ class EnrollmentPresenterImpl(
         val fieldMap = fields.map { it.uid() to it }.toMap().toMutableMap()
 
         RulesUtilsProviderImpl()
-                .applyRuleEffects(fieldMap, result, this)
+            .applyRuleEffects(fieldMap, result, this)
 
         fieldMap.values.forEach {
             if (it is SpinnerViewModel) {
