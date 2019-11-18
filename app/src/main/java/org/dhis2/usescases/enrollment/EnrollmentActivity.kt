@@ -465,7 +465,7 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
         enrollmentCoordinatesData: Pair<Program, Enrollment>?
     ) {
         binding.coordinatesView.visibility =
-            if (enrollmentCoordinatesData!!.first.featureType() != FeatureType.NONE) {
+            if (enrollmentCoordinatesData!!.first.featureType()!=null && enrollmentCoordinatesData.first.featureType() != FeatureType.NONE) {
                 View.VISIBLE
             } else {
                 View.GONE
