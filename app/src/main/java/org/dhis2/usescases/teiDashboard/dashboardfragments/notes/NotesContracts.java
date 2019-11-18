@@ -1,10 +1,10 @@
 package org.dhis2.usescases.teiDashboard.dashboardfragments.notes;
 
+import java.util.List;
+
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.usescases.general.AbstractActivityContracts;
-import org.hisp.dhis.android.core.enrollment.note.NoteModel;
-
-import java.util.List;
+import org.hisp.dhis.android.core.note.Note;
 
 import io.reactivex.Flowable;
 import io.reactivex.functions.Consumer;
@@ -16,7 +16,7 @@ public class NotesContracts {
 
     public interface View extends AbstractActivityContracts.View {
 
-        Consumer<List<NoteModel>> swapNotes();
+        Consumer<List<Note>> swapNotes();
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter {
@@ -28,6 +28,8 @@ public class NotesContracts {
         void subscribeToNotes();
 
         boolean hasProgramWritePermission();
+
+        void saveNote(String toString);
     }
 
 }

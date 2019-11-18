@@ -1,10 +1,8 @@
 package org.dhis2.usescases.teiDashboard.dashboardfragments.tei_data;
 
 import org.dhis2.data.dagger.PerFragment;
-import org.dhis2.data.metadata.MetadataRepository;
+import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.usescases.teiDashboard.DashboardRepository;
-import org.dhis2.usescases.teiDashboard.dashboardfragments.notes.NotesContracts;
-import org.dhis2.usescases.teiDashboard.dashboardfragments.notes.NotesPresenterImpl;
 import org.hisp.dhis.android.core.D2;
 
 import dagger.Module;
@@ -27,8 +25,8 @@ public class TEIDataModule {
 
     @Provides
     @PerFragment
-    TEIDataContracts.Presenter providesPresenter(D2 d2, DashboardRepository dashboardRepository, MetadataRepository metadataRepository) {
-        return new TEIDataPresenterImpl(d2, dashboardRepository,metadataRepository, programUid, teiUid);
+    TEIDataContracts.Presenter providesPresenter(D2 d2, DashboardRepository dashboardRepository, SchedulerProvider schedulerProvider) {
+        return new TEIDataPresenterImpl(d2, dashboardRepository, programUid, teiUid, schedulerProvider);
     }
 
 }

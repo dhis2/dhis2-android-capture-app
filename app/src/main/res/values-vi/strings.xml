@@ -123,6 +123,7 @@
     <string name="delete_event">Xóa sự kiện</string>
     <string name="confirm_delete_event">Bạn có chắc chắn muốn xóa sự kiện này?</string>
     <string name="event_was_deleted">Xóa sự kiện thành công</string>
+    <string name="total">Tổng số</string>
 
     <!--TEI Enrollment list-->
     <string name="enrollment_list">Danh sách ghi danh</string>
@@ -357,10 +358,21 @@
     <string name="skip">Bỏ qua</string>
     <string name="reschedule">Sửa lịch</string>
     <string name="event_overdue">Quá hạn</string>
+    <string name="table">Bảng</string>
     <string name="local_data_accept">Chấp nhận</string>
     <string name="login_server_info_title">Đường dẫn đến máy chủ</string>
     <string name="state_warning">Cảnh báo</string>
     <string name="action_close">Đóng lại</string>
+    <string name="data_set_closed">Đóng lại</string>
+    <string name="data_set_open">Mở</string>
+    <string name="unsupported_value_type">Không hỗ trợ kiểu giá trị này</string>
     <string name="data_every_day">Hàng ngày</string>
     <string name="data_every_week">Hàng tuần</string>
-    </resources>
+    <string name="sms_completed">Hoàn tất</string>
+    <string name="sms_bar_state_sending">Đang tiến hành</string>
+    <string name="sms_bar_state_failed">KHÔNG THÀNH CÔNG</string>
+
+    <string name="polygon_captured">Polygon captured</string>
+    <string name="polygon">Đa giác</string>
+    <!--endregion-->
+</resources>

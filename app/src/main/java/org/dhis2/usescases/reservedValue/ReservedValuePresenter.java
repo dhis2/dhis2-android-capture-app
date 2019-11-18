@@ -1,9 +1,9 @@
 package org.dhis2.usescases.reservedValue;
 
+import org.dhis2.data.schedulers.SchedulerProvider;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.maintenance.D2Error;
 
-import io.reactivex.Completable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.processors.FlowableProcessor;
@@ -11,51 +11,49 @@ import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
-public class ReservedValuePresenter implements ReservedValueContracts.Presenter {
+public class ReservedValuePresenter {
 
+    private final SchedulerProvider schedulerProvider;
     private ReservedValueContracts.View view;
-    private CompositeDisposable disposable;
+    CompositeDisposable disposable;
     private ReservedValueRepository repository;
     private D2 d2;
     private FlowableProcessor<Boolean> updateProcessor;
 
-    public ReservedValuePresenter(ReservedValueRepository repository, D2 d2) {
+    public ReservedValuePresenter(ReservedValueRepository repository, D2 d2, SchedulerProvider schedulerProvider, ReservedValueContracts.View view) {
         this.repository = repository;
         this.d2 = d2;
         this.updateProcessor = PublishProcessor.create();
+        this.schedulerProvider = schedulerProvider;
+        this.view = view;
+        this.disposable = new CompositeDisposable();
     }
 
-    @Override
-    public void init(ReservedValueContracts.View view) {
-        this.view = view;
-        disposable = new CompositeDisposable();
-
+    public void init() {
         disposable.add(
                 updateProcessor
                         .startWith(true)
                         .flatMap(update -> repository.getDataElements())
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
                         .subscribe(
                                 view::setDataElements,
                                 Timber::e
                         )
         );
-
     }
 
-    @Override
     public void onClickRefill(ReservedValueModel reservedValue) {
         disposable.add(
-                Completable.fromAction(() ->
-                        d2.trackedEntityModule()
-                                .reservedValueManager
-                                .syncReservedValues(reservedValue.uid(), reservedValue.orgUnitUid(), 100)
-                ).subscribeOn(Schedulers.io())
-                        .observeOn(Schedulers.io())
+                d2.trackedEntityModule()
+                        .reservedValueManager()
+                        .downloadReservedValues(reservedValue.uid(), 100)
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.io())
                         .subscribe(
-                                () -> updateProcessor.onNext(true),
-                                this::onReservedValuesError)
+                                d2Progress -> Timber.d("Rserved value manager: %s", d2Progress.percentage()),
+                                this::onReservedValuesError,
+                                () -> updateProcessor.onNext(true))
         );
     }
 
@@ -67,14 +65,16 @@ public class ReservedValuePresenter implements ReservedValueContracts.Presenter 
         }
     }
 
-    @Override
     public void onBackClick() {
         if (view != null)
             view.onBackClick();
     }
 
-    @Override
     public void onPause() {
         disposable.clear();
+    }
+
+    public CompositeDisposable getDisposable() {
+        return disposable;
     }
 }

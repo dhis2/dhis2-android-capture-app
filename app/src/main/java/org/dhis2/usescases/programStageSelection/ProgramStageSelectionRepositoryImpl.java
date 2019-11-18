@@ -9,14 +9,12 @@ import org.dhis2.utils.EventCreationType;
 import org.dhis2.utils.Result;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope;
-import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
-import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
-import org.hisp.dhis.android.core.event.Event;
+import org.hisp.dhis.android.core.enrollment.EnrollmentTableInfo;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.program.ProgramStage;
 import org.hisp.dhis.android.core.program.ProgramStageCollectionRepository;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueTableInfo;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValue;
 import org.hisp.dhis.rules.RuleEngine;
 import org.hisp.dhis.rules.RuleEngineContext;
@@ -33,13 +31,11 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Objects;
 
 import javax.annotation.Nonnull;
 
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
-import io.reactivex.Observable;
 import io.reactivex.Single;
 
 /**
@@ -86,7 +82,7 @@ public class ProgramStageSelectionRepositoryImpl implements ProgramStageSelectio
                         rulesRepository.rulesNew(programUid),
                         rulesRepository.ruleVariablesProgramStages(programUid),
                         ruleEvents(enrollmentUid),
-                        rulesRepository.getSuplementaryData(),
+                        rulesRepository.supplementaryData(),
                         rulesRepository.queryConstants(),
                         (rules, variables, ruleEvents, supplementaryData, constants) -> {
                             RuleEngine.Builder builder = RuleEngineContext.builder(evaluator)
@@ -104,11 +100,11 @@ public class ProgramStageSelectionRepositoryImpl implements ProgramStageSelectio
     }
 
     private Single<List<RuleEvent>> ruleEvents(String enrollmentUid) {
-        return d2.eventModule().events
+        return d2.eventModule().events()
                 .byEnrollmentUid().eq(enrollmentUid)
                 .byStatus().in(EventStatus.ACTIVE, EventStatus.COMPLETED)
                 .withTrackedEntityDataValues()
-                .orderByEventDate(RepositoryScope.OrderByDirection.DESC).getAsync()
+                .orderByEventDate(RepositoryScope.OrderByDirection.DESC).get()
                 .toFlowable().flatMapIterable(events -> events)
                 .map(event -> {
                     List<RuleDataValue> dataValues = new ArrayList<>();
@@ -120,27 +116,27 @@ public class ProgramStageSelectionRepositoryImpl implements ProgramStageSelectio
                     return RuleEvent.builder()
                             .event(event.uid())
                             .programStage(event.programStage())
-                            .programStageName(d2.programModule().programStages.uid(event.programStage()).get().displayName())
+                            .programStageName(d2.programModule().programStages().uid(event.programStage()).blockingGet().displayName())
                             .status(RuleEvent.Status.valueOf(event.status().name()))
                             .eventDate(event.eventDate() == null ? event.dueDate() : event.eventDate())
                             .dueDate(event.dueDate() != null ? event.dueDate() : event.eventDate())
                             .organisationUnit(event.organisationUnit())
-                            .organisationUnitCode(d2.organisationUnitModule().organisationUnits.uid(event.organisationUnit()).get().code())
+                            .organisationUnitCode(d2.organisationUnitModule().organisationUnits().uid(event.organisationUnit()).blockingGet().code())
                             .dataValues(dataValues)
                             .build();
                 }).toList();
     }
 
     private Flowable<RuleEnrollment> ruleEnrollment(String enrollmentUid) {
-        return briteDatabase.createQuery(Arrays.asList(EnrollmentModel.TABLE,
-                TrackedEntityAttributeValueModel.TABLE), QUERY_ATTRIBUTE_VALUES, enrollmentUid == null ? "" : enrollmentUid)
+        return briteDatabase.createQuery(Arrays.asList(EnrollmentTableInfo.TABLE_INFO.name(),
+                TrackedEntityAttributeValueTableInfo.TABLE_INFO.name()), QUERY_ATTRIBUTE_VALUES, enrollmentUid == null ? "" : enrollmentUid)
                 .mapToList(cursor -> RuleAttributeValue.create(
                         cursor.getString(0), cursor.getString(1))
                 ).toFlowable(BackpressureStrategy.LATEST)
                 .flatMap(attributeValues -> {
 
-                    Enrollment enrollment = d2.enrollmentModule().enrollments.byUid().eq(enrollmentUid == null ? "" : enrollmentUid).one().get();
-                    String programName = d2.programModule().programs.byUid().eq(enrollment.program()).one().get().displayName();
+                    Enrollment enrollment = d2.enrollmentModule().enrollments().byUid().eq(enrollmentUid == null ? "" : enrollmentUid).one().blockingGet();
+                    String programName = d2.programModule().programs().byUid().eq(enrollment.program()).one().blockingGet().displayName();
                     Date enrollmentDate = enrollment.enrollmentDate();
                     Date incidentDate = enrollment.incidentDate() == null ? enrollmentDate : enrollment.incidentDate();
                     RuleEnrollment.Status status = RuleEnrollment.Status.valueOf(enrollment.status().name());
@@ -160,52 +156,29 @@ public class ProgramStageSelectionRepositoryImpl implements ProgramStageSelectio
 
     @Nonnull
     private String getOrgUnitCode(String orgUnitUid) {
-        String ouCode = d2.organisationUnitModule().organisationUnits.byUid().eq(orgUnitUid).one().get().code();
+        String ouCode = d2.organisationUnitModule().organisationUnits().byUid().eq(orgUnitUid).one().blockingGet().code();
         return ouCode == null ? "" : ouCode;
     }
 
     @NonNull
     @Override
     public Flowable<List<ProgramStage>> enrollmentProgramStages(String programId, String enrollmentUid) {
-        return d2.eventModule().events.byEnrollmentUid().eq(enrollmentUid == null ? "" : enrollmentUid).byState().neq(State.TO_DELETE).getAsync()
+        return d2.eventModule().events().byEnrollmentUid().eq(enrollmentUid == null ? "" : enrollmentUid).byDeleted().isFalse().get()
                 .toFlowable().flatMapIterable(events -> events)
                 .map(event -> event.programStage())
                 .toList()
                 .flatMap(currentProgramStagesUids -> {
-                    ProgramStageCollectionRepository repository = d2.programModule().programStages.byProgramUid().eq(programId).withStyle();
+                    ProgramStageCollectionRepository repository = d2.programModule().programStages().byProgramUid().eq(programId);
                     if (eventCreationType.equals(EventCreationType.SCHEDULE.name()))
                         repository = repository.byHideDueDate().eq(false);
 
-                    return repository.getAsync().toFlowable().flatMapIterable(stages -> stages)
+                    return repository.get().toFlowable().flatMapIterable(stages -> stages)
                             .filter(programStage ->
                                     !currentProgramStagesUids.contains(programStage.uid()) ||
                                             programStage.repeatable())
                             .toList();
 
                 }).toFlowable();
-/*
-        List<String> currentProgramStages = new ArrayList<>();
-        List<ProgramStage> selectableStages = new ArrayList<>();
-        List<Event> events = d2.eventModule().events.byEnrollmentUid().eq(enrollmentUid == null ? "" : enrollmentUid).byState().neq(State.TO_DELETE).get();
-        for (Event event : events)
-            currentProgramStages.add(event.programStage());
-
-        return Observable.just(!Objects.equals(eventCreationType, EventCreationType.SCHEDULE.name()) ?
-                d2.programModule().programStages.byProgramUid().eq(programId).withStyle().get() :
-                d2.programModule().programStages.byProgramUid().eq(programId).withStyle().byHideDueDate().eq(false).get())
-                .map(programStages -> {
-                    boolean isSelectable;
-                    for (ProgramStage programStage : programStages) {
-                        isSelectable = true;
-                        for (String enrollmentStage : currentProgramStages)
-                            if (enrollmentStage.equals(programStage.uid()))
-                                isSelectable = programStage.repeatable();
-                        if (isSelectable)
-                            selectableStages.add(programStage);
-                    }
-                    return selectableStages;
-                })
-                .toFlowable(BackpressureStrategy.LATEST);*/
     }
 
     @Override
@@ -222,6 +195,6 @@ public class ProgramStageSelectionRepositoryImpl implements ProgramStageSelectio
 
     @Override
     public ProgramStage getStage(String programStageUid) {
-        return d2.programModule().programStages.uid(programStageUid).get();
+        return d2.programModule().programStages().uid(programStageUid).blockingGet();
     }
 }

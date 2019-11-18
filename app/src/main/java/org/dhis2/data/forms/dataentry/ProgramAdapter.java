@@ -14,7 +14,7 @@ import android.widget.ArrayAdapter;
 import org.dhis2.R;
 import org.dhis2.databinding.SpinnerProgramLayoutBinding;
 
-import org.hisp.dhis.android.core.program.ProgramModel;
+import org.hisp.dhis.android.core.program.Program;
 
 import java.util.List;
 
@@ -23,14 +23,14 @@ import java.util.List;
  * Created by ppajuelo on 07/11/2017-sdfghsdfh .
  */
 
-public class ProgramAdapter extends ArrayAdapter<ProgramModel> {
+public class ProgramAdapter extends ArrayAdapter<Program> {
 
-    private List<ProgramModel> options;
+    private List<Program> programs;
     private String trackedEntityName;
 
-    public ProgramAdapter(@NonNull Context context, int resource, int textViewResourceId, @NonNull List<ProgramModel> objects, String trackedEntityName) {
-        super(context, resource, textViewResourceId, objects);
-        this.options = objects;
+    public ProgramAdapter(@NonNull Context context, int resource, int textViewResourceId, @NonNull List<Program> programs, String trackedEntityName) {
+        super(context, resource, textViewResourceId, programs);
+        this.programs = programs;
         this.trackedEntityName = trackedEntityName;
     }
 
@@ -43,7 +43,7 @@ public class ProgramAdapter extends ArrayAdapter<ProgramModel> {
             SpinnerProgramLayoutBinding binding = DataBindingUtil.inflate(inflater, R.layout.spinner_program_layout, parent, false);
             convertView = binding.getRoot();
             if (position > 0)
-                binding.setProgram(options.get(position - 1));
+                binding.setProgram(programs.get(position - 1));
             binding.setProgramTitle(String.format(getContext().getString(R.string.all_tei_type), trackedEntityName));
             binding.spinnerText.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
             binding.spinnerText.setTextColor(ContextCompat.getColor(binding.spinnerText.getContext(), R.color.white_faf));
@@ -57,7 +57,7 @@ public class ProgramAdapter extends ArrayAdapter<ProgramModel> {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         SpinnerProgramLayoutBinding binding = DataBindingUtil.inflate(inflater, R.layout.spinner_program_layout, parent, false);
         if (position != 0)
-            binding.setProgram(options.get(position - 1));
+            binding.setProgram(programs.get(position - 1));
 
         binding.setProgramTitle(String.format(getContext().getString(R.string.all_tei_type), trackedEntityName));
         return binding.getRoot();

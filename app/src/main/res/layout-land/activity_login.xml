@@ -9,7 +9,7 @@
 
         <variable
             name="presenter"
-            type="org.dhis2.usescases.login.LoginContracts.Presenter" />
+            type="org.dhis2.usescases.login.LoginPresenter" />
 
         <variable
             name="loginModel"
@@ -36,6 +36,7 @@
                 android:background="?colorPrimary">
 
                 <ImageView
+                    android:id="@+id/logo_banner"
                     android:layout_width="200dp"
                     android:layout_height="100dp"
                     android:layout_marginStart="85dp"
@@ -53,10 +54,18 @@
                 android:gravity="center">
 
 
+                <ImageView
+                    android:id="@+id/logo_front"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:alpha=".3"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
                 <ImageButton
                     android:id="@+id/urlInfo"
                     style="@style/ActionIconNoPadding"
-                    android:onClick="@{presenter::onUrlInfoClick}"
+                    android:onClick="@{()-> presenter.onUrlInfoClick()}"
                     android:tint="#5C5C5C"
                     app:layout_constraintBottom_toBottomOf="@id/server_url"
                     app:layout_constraintStart_toEndOf="@id/server_url"
@@ -88,7 +97,7 @@
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintVertical_chainStyle="packed">
 
-                    <org.dhis2.utils.custom_views.TextInputAutoCompleteTextView
+                    <org.dhis2.utils.customviews.TextInputAutoCompleteTextView
                         android:id="@+id/server_url_edit"
                         android:layout_width="match_parent"
                         android:layout_height="50dp"
@@ -140,7 +149,7 @@
                     app:layout_constraintTop_toBottomOf="@+id/server_url"
                     app:layout_constraintVertical_chainStyle="spread">
 
-                    <org.dhis2.utils.custom_views.TextInputAutoCompleteTextView
+                    <org.dhis2.utils.customviews.TextInputAutoCompleteTextView
                         android:id="@+id/user_name_edit"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
@@ -208,7 +217,7 @@
                     android:layout_centerHorizontal="true"
                     android:layout_marginTop="15dp"
                     android:background="?attr/selectableItemBackgroundBorderless"
-                    android:onClick="@{()->presenter.onFingerprintClick()}"
+                    android:onClick="@{()-> presenter.onFingerprintClick()}"
                     android:tint="?colorPrimary"
                     android:visibility="gone"
                     app:layout_constraintBottom_toBottomOf="parent"

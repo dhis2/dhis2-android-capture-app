@@ -3,7 +3,7 @@ package org.dhis2.usescases.teiDashboard;
 import android.os.Bundle;
 
 import org.dhis2.usescases.general.AbstractActivityContracts;
-import org.hisp.dhis.android.core.program.ProgramModel;
+import org.hisp.dhis.android.core.program.Program;
 
 /**
  * QUADRAM. Created by ppajuelo on 30/11/2017.
@@ -18,8 +18,6 @@ public class TeiDashboardContracts {
         void setData(DashboardProgramModel program);
 
         void setDataWithOutProgram(DashboardProgramModel programModel);
-
-        String getToolbarTitle();
 
         void goToEnrollmentList(Bundle extras);
 
@@ -40,7 +38,7 @@ public class TeiDashboardContracts {
 
         void onEnrollmentSelectorClick();
 
-        void setProgram(ProgramModel program);
+        void setProgram(Program program);
 
         void onDettach();
 
@@ -48,7 +46,7 @@ public class TeiDashboardContracts {
 
         String getProgramUid();
 
-        void deteleteTei();
+        void deleteTei();
 
         void deleteEnrollment();
 

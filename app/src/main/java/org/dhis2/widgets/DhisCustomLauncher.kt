@@ -11,14 +11,16 @@ import org.dhis2.App
 import org.dhis2.R
 import org.dhis2.usescases.splash.SplashActivity
 
-
 /**
  * Implementation of App Widget functionality.
  */
 class DhisCustomLauncher : AppWidgetProvider() {
 
-    override fun onUpdate(context: Context, appWidgetManager: AppWidgetManager, appWidgetIds: IntArray) {
-
+    override fun onUpdate(
+        context: Context,
+        appWidgetManager: AppWidgetManager,
+        appWidgetIds: IntArray
+    ) {
         val remoteViews = RemoteViews(context.packageName, R.layout.dhis_custom_launcher)
         val configIntent = Intent(context, SplashActivity::class.java)
 
@@ -33,7 +35,6 @@ class DhisCustomLauncher : AppWidgetProvider() {
         }
     }
 
-
     override fun onEnabled(context: Context) {
         // Enter relevant functionality for when the first widget is created
     }
@@ -44,28 +45,34 @@ class DhisCustomLauncher : AppWidgetProvider() {
 
     companion object {
 
-        internal fun updateAppWidget(context: Context, appWidgetManager: AppWidgetManager,
-                                     appWidgetId: Int) {
-
+        internal fun updateAppWidget(
+            context: Context,
+            appWidgetManager: AppWidgetManager,
+            appWidgetId: Int
+        ) {
             var widgetImage = ""
             if ((context.applicationContext as App).serverComponent != null) {
                 val d2 = (context.applicationContext as App).serverComponent.userManager().d2
 
                 widgetImage = if (d2 != null) {
-                    val systemSetting = d2.systemSettingModule().systemSetting.flag().get()
-                    if (systemSetting != null)
+                    val systemSetting =
+                        d2.systemSettingModule().systemSetting().flag().blockingGet()
+                    if (systemSetting != null) {
                         systemSetting.value() ?: ""
-                    else
+                    } else {
                         ""
-                } else
+                    }
+                } else {
                     ""
+                }
             }
 
             val icon =
-                    if (!isEmpty(widgetImage)) {
-                        context.resources.getIdentifier(widgetImage, "drawable", context.packageName)
-                    } else
-                        R.drawable.ic_dhis
+                if (!isEmpty(widgetImage)) {
+                    context.resources.getIdentifier(widgetImage, "drawable", context.packageName)
+                } else {
+                    R.drawable.ic_dhis
+                }
 
             // Construct the RemoteViews object
             val views = RemoteViews(context.packageName, R.layout.dhis_custom_launcher)
@@ -83,6 +90,4 @@ class DhisCustomLauncher : AppWidgetProvider() {
             return PendingIntent.getActivity(context, 0, intent, 0)
         }
     }
-
 }
-

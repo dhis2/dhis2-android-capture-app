@@ -4,6 +4,7 @@ import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.GestureDetector;
 import android.view.Gravity;
@@ -23,6 +24,7 @@ import com.google.android.material.snackbar.Snackbar;
 import org.dhis2.App;
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
+import org.dhis2.data.tuples.Pair;
 import org.dhis2.databinding.ActivityEventCaptureBinding;
 import org.dhis2.databinding.WidgetDatepickerBinding;
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity;
@@ -31,10 +33,12 @@ import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.DialogClickListener;
-import org.dhis2.utils.custom_views.CustomDialog;
-import org.dhis2.utils.custom_views.FormBottomDialog;
-import org.dhis2.utils.custom_views.ProgressBarAnimation;
+import org.dhis2.utils.FileResourcesUtil;
+import org.dhis2.utils.customviews.CustomDialog;
+import org.dhis2.utils.customviews.FormBottomDialog;
+import org.hisp.dhis.android.core.arch.helpers.FileResourceDirectoryHelper;
 
+import java.io.File;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Calendar;
@@ -46,6 +50,9 @@ import io.reactivex.functions.Consumer;
 import timber.log.Timber;
 
 import static org.dhis2.utils.Constants.PROGRAM_UID;
+import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
+import static org.dhis2.utils.analytics.AnalyticsConstants.DELETE_EVENT;
+import static org.dhis2.utils.analytics.AnalyticsConstants.SHOW_HELP;
 
 /**
  * QUADRAM. Created by ppajuelo on 19/11/2018.
@@ -60,7 +67,6 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
     private ActivityEventCaptureBinding binding;
     @Inject
     EventCaptureContract.Presenter presenter;
-    private int completionPercentage = 0;
     private String programStageUid;
     private Boolean isEventCompleted = false;
 
@@ -114,26 +120,41 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
     }
 
     @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        switch (requestCode) {
+            case Constants.GALLERY_REQUEST:
+                if (resultCode == RESULT_OK) {
+                    Uri imageUri = data.getData();
+                    presenter.saveImage(uuid, FileResourcesUtil.getFileFromGallery(this, imageUri).getPath());
+                    presenter.nextCalculation(true);
+                }
+                break;
+            case Constants.CAMERA_REQUEST:
+                if (resultCode == RESULT_OK) {
+                    File file = new File(FileResourceDirectoryHelper.getFileResourceDirectory(this), "tempFile.png");
+                    if (file.exists()) {
+                        presenter.saveImage(uuid, file.getPath());
+                    } else
+                        presenter.saveImage(uuid, null);
+                    presenter.nextCalculation(true);
+                }
+                break;
+        }
+    }
+
+    @Override
     public void setUp() {
         if (binding.eventViewPager.getAdapter() == null)
             binding.eventViewPager.setAdapter(new EventCapturePagerAdapter(getSupportFragmentManager()));
     }
 
     @Override
-    public Consumer<Float> updatePercentage() {
-        return percentage -> {
-            int newPercentage = (int) (percentage * 100);
-
-            ProgressBarAnimation gainAnim = new ProgressBarAnimation(binding.progressGains, completionPercentage, 0, newPercentage, false,
-                    (lost, value) -> {
-                        String text = (int) value + "%";
-                        binding.progress.setText(text);
-                    });
-            gainAnim.setDuration(500);
-            binding.progressGains.startAnimation(gainAnim);
-
-            this.completionPercentage = (int) (percentage * 100);
-
+    public Consumer<Pair<Float, Float>> updatePercentage() {
+        return pair -> {
+            binding.completion.setCompletionPercentage(pair.val0());
+            binding.completion.setSecondaryPercentage(pair.val1());
         };
     }
 
@@ -147,6 +168,7 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
                 .setCanComplete(canComplete)
                 .setListener(this::setAction)
                 .setMessageOnComplete(completeMessage)
+                .setEmptyMandatoryFields(emptyMandatoryFields)
                 .setFieldsWithErrors(!errors.isEmpty())
                 .setMandatoryFields(!emptyMandatoryFields.isEmpty())
                 .show(getSupportFragmentManager(), "SHOW_OPTIONS");
@@ -190,9 +212,6 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
 
     @Override
     public void showRuleCalculation(Boolean shouldShow) {
-
-        Timber.tag("ADJUSTING").d(shouldShow ? "SHOW" : "HIDE");
-
         binding.calculationIndicator.getRoot().setVisibility(shouldShow ? View.VISIBLE : View.GONE);
     }
 
@@ -225,6 +244,11 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
                 finishDataEntry();
                 break;
         }
+    }
+
+    @Override
+    public void showErrorSnackBar() {
+        showSnackBar(R.string.fix_error);
     }
 
     private void reschedule() {
@@ -389,6 +413,7 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
         popupMenu.setOnMenuItemClickListener(item -> {
             switch (item.getItemId()) {
                 case R.id.showHelp:
+                    analyticsHelper().setEvent(SHOW_HELP, CLICK, SHOW_HELP);
                     showTutorial(false);
                     break;
                 case R.id.menu_delete:
@@ -431,6 +456,7 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
                 new DialogClickListener() {
                     @Override
                     public void onPositive() {
+                        analyticsHelper().setEvent(DELETE_EVENT, CLICK, DELETE_EVENT);
                         presenter.deleteEvent();
                     }
 

@@ -1,182 +1,105 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:showIn="@layout/activity_main"
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
 
         <variable
             name="presenter"
-            type="org.dhis2.usescases.main.program.ProgramContract.Presenter" />
+            type="org.dhis2.usescases.main.program.ProgramPresenter" />
+
     </data>
 
-    <androidx.drawerlayout.widget.DrawerLayout
-        android:id="@+id/drawer_layout"
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@drawable/ic_front_backdrop_bg"
         android:clipToPadding="false"
-        tools:openDrawer="end">
+        >
 
-        <LinearLayout
+        <TextView
+            android:id="@+id/emptyView"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:text="@string/empty_program_list"
+            android:textColor="@color/colorPrimary"
+            android:textSize="18sp"
+            android:visibility="gone" />
 
-            <LinearLayout
-                android:id="@+id/filter_layout"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/filter"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="8dp"
+            android:visibility="gone"
+            tools:visibility="visible">
+
+
+            <ImageView
+                android:id="@+id/clear_filter"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginEnd="26dp"
+                android:layout_marginBottom="8dp"
+                android:onClick="@{()->presenter.clearFilterClick()}"
+                android:tint="?colorPrimary"
+                app:layout_constraintBottom_toTopOf="@+id/view"
+                app:layout_constraintEnd_toStartOf="@id/close_filter"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/ic_refresh" />
+
+            <ImageView
+                android:id="@+id/close_filter"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginEnd="26dp"
+                android:layout_marginBottom="8dp"
+                android:onClick="@{()->presenter.showHideFilterClick()}"
+                android:tint="?colorPrimary"
+                app:layout_constraintBottom_toTopOf="@+id/view"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/ic_arrow_up" />
+
+            <View
+                android:id="@+id/view"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/greyish"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <RelativeLayout
+            android:id="@+id/progressLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/filter">
+
+            <ProgressBar
+                android:id="@+id/program_progress"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="7dp"
-                android:layout_marginBottom="7dp"
-                android:gravity="end"
-                android:visibility="gone">
+                android:layout_alignParentTop="true"
+                android:layout_centerInParent="true"
+                android:layout_margin="5dp"
+                app:progressColor="@{@color/colorPrimary}" />
+        </RelativeLayout>
 
-                <LinearLayout
-                    android:id="@+id/periodLayout"
-                    android:layout_width="wrap_content"
-                    android:layout_height="40dp"
-                    tools:ignore="UseCompoundDrawables">
-
-                    <ImageView
-                        android:id="@+id/button_time"
-                        android:layout_width="56dp"
-                        android:layout_height="match_parent"
-                        android:background="?attr/period_button"
-                        android:onClick="@{()->presenter.onTimeButtonClick()}"
-                        android:padding="7dp"
-                        android:tint="@color/colorGreyDefault"
-                        app:srcCompat="@drawable/ic_view_none"
-                        tools:ignore="ContentDescription" />
-
-                    <TextView
-                        android:id="@+id/button_period_text"
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:background="?attr/period_time_button"
-                        android:ellipsize="end"
-                        android:gravity="center"
-                        android:maxWidth="140dp"
-                        android:maxLines="1"
-                        android:minWidth="70dp"
-                        android:onClick="@{()->presenter.onDateRangeButtonClick()}"
-                        android:padding="7dp"
-                        android:text="@string/period"
-                        android:textColor="?colorAccent" />
-                </LinearLayout>
-
-                <Button
-                    android:id="@+id/button_org_unit"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="15dp"
-                    android:layout_marginEnd="5dp"
-                    android:background="?attr/selector_button_round_20"
-                    android:ellipsize="end"
-                    android:maxLines="1"
-                    android:minHeight="40dp"
-                    android:onClick="@{()->presenter.onOrgUnitButtonClick()}"
-                    android:paddingStart="15dp"
-                    android:paddingEnd="15dp"
-                    android:text="@string/org_unit"
-                    android:textAlignment="textStart"
-                    android:textAllCaps="false"
-                    android:textColor="?colorAccent"
-                    android:textSize="15sp" />
-            </LinearLayout>
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/program_recycler"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:clipToPadding="false"
-                    app:initGrid="@{true}"
-                    app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
-                    app:spanCount="@{3}" />
-
-                <ProgressBar
-                    android:id="@+id/program_progress"
-                    android:layout_width="100dp"
-                    android:layout_height="100dp"
-                    android:layout_centerInParent="true"
-                    app:progressColor="@{@color/colorPrimary}" />
-
-                <TextView
-                    android:id="@+id/emptyView"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_horizontal"
-                    android:text="@string/empty_program_list"
-                    android:textColor="@color/colorPrimary"
-                    android:textSize="18sp"
-                    android:visibility="gone" />
-
-            </RelativeLayout>
-
-        </LinearLayout>
-
-        <com.google.android.material.navigation.NavigationView
-            android:id="@+id/org_unit_view"
-            android:layout_width="wrap_content"
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/program_recycler"
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_gravity="end"
-            android:layout_marginStart="-50dp"
-            android:background="@color/white_faf"
-            app:itemTextColor="?colorPrimary">
+            android:layout_below="@+id/progressLayout"
+            android:clipToPadding="false"
+            app:initGrid="@{true}"
+            app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+            app:spanCount="@{3}" />
 
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical">
-                <Button
-                    android:id="@+id/org_unit_all"
-                    style="@style/TextButton"
-                    android:text="@string/select_all"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+    </RelativeLayout>
 
-                <Button
-                    android:id="@+id/org_unit_unselect_all"
-                    style="@style/TextButton"
-                    android:layout_marginEnd="@dimen/item_margin"
-                    android:text="@string/clear_all"
-                    app:layout_constraintEnd_toStartOf="@id/org_unit_all"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <Button
-                    android:id="@+id/org_unit_cancel"
-                    style="@style/TextButton"
-                    android:layout_marginEnd="@dimen/item_margin"
-                    android:text="@string/cancel"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@id/org_unit_apply" />
-
-                <Button
-                    android:id="@+id/org_unit_apply"
-                    style="@style/TextButton"
-                    android:text="@string/action_accept"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent" />
-
-                <RelativeLayout
-                    android:id="@+id/tree_view_container"
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    app:layout_constraintBottom_toTopOf="@id/org_unit_apply"
-                    app:layout_constraintTop_toBottomOf="@+id/org_unit_all">
-
-                    <ProgressBar
-                        android:id="@+id/orgUnitProgress"
-                        android:layout_width="100dp"
-                        android:layout_height="100dp"
-                        android:layout_centerInParent="true"
-                        android:visibility="gone"
-                        app:progressColor="@{@color/colorPrimary}" />
-                </RelativeLayout>
-            </androidx.constraintlayout.widget.ConstraintLayout>
-        </com.google.android.material.navigation.NavigationView>
-    </androidx.drawerlayout.widget.DrawerLayout>
 </layout>

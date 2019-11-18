@@ -26,6 +26,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:background="@color/white"
             android:orientation="vertical"
             android:paddingTop="8dp"
             android:paddingBottom="@dimen/default_top_margin">
@@ -46,8 +47,8 @@
                     android:id="@+id/dataRadioGroup"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="50dp"
-                    android:layout_marginTop="20dp"
+                    android:layout_marginStart="70dp"
+                    android:layout_marginTop="10dp"
                     android:visibility="gone"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -95,7 +96,7 @@
                     style="@style/TextButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="14dp"
+                    android:layout_marginTop="10dp"
                     android:layout_marginEnd="16dp"
                     android:fontFamily="@font/rubik_medium"
                     android:onClick='@{()->presenter.syncData()}'
@@ -112,7 +113,8 @@
                     android:layout_width="0dp"
                     android:layout_height="1dp"
                     android:layout_marginStart="72dp"
-                    android:background="#61333333"
+                    android:layout_marginTop="10dp"
+                    android:background="@color/gray_afa"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/buttonSyncData" />
@@ -134,8 +136,8 @@
                     android:id="@+id/metaRadioGroup"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="50dp"
-                    android:layout_marginTop="20dp"
+                    android:layout_marginStart="70dp"
+                    android:layout_marginTop="10dp"
                     android:visibility="gone"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -175,7 +177,7 @@
                     style="@style/TextButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="14dp"
+                    android:layout_marginTop="10dp"
                     android:layout_marginEnd="16dp"
                     android:fontFamily="@font/rubik_medium"
                     android:onClick='@{()->presenter.syncMeta()}'
@@ -192,7 +194,8 @@
                     android:layout_width="0dp"
                     android:layout_height="1dp"
                     android:layout_marginStart="72dp"
-                    android:background="#61333333"
+                    android:layout_marginTop="10dp"
+                    android:background="@color/gray_afa"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/buttonSyncMeta" />
@@ -218,6 +221,8 @@
                     android:layout_height="wrap_content"
                     android:paddingEnd="16dp"
                     android:visibility="gone"
+                    android:layout_marginStart="72dp"
+                    app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/parameterLayout"
                     tools:visibility="visible">
 
@@ -248,6 +253,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="55dp"
+                        android:layout_marginEnd="8dp"
                         app:layout_constraintTop_toBottomOf="@id/limitByProgram">
 
                         <TableRow android:layout_weight="1">
@@ -288,15 +294,17 @@
                             <TextView
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
+                                android:layout_marginEnd="16dp"
                                 android:layout_weight="1"
                                 android:text="@string/sync_events"
+                                android:textAlignment="textEnd"
                                 android:textColor="@color/black_de0" />
 
                             <EditText
                                 android:id="@+id/event_max_data"
                                 android:layout_width="52dp"
                                 android:layout_height="wrap_content"
-                                android:background="#61333333"
+                                android:background="@drawable/gray_border_gray_solid_box"
                                 android:gravity="center_horizontal"
                                 android:inputType="number"
                                 android:maxLines="1"
@@ -320,15 +328,17 @@
                             <TextView
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
+                                android:layout_marginEnd="16dp"
                                 android:layout_weight="1"
                                 android:text="@string/tei"
+                                android:textAlignment="textEnd"
                                 android:textColor="@color/black_de0" />
 
                             <EditText
                                 android:id="@+id/tei_max_data"
                                 android:layout_width="52dp"
                                 android:layout_height="wrap_content"
-                                android:background="#61333333"
+                                android:background="@drawable/gray_border_gray_solid_box"
                                 android:gravity="center_horizontal"
                                 android:inputType="number"
                                 android:maxLines="1"
@@ -366,7 +376,7 @@
                     android:layout_width="0dp"
                     android:layout_height="1dp"
                     android:layout_marginStart="72dp"
-                    android:background="#61333333"
+                    android:background="@color/gray_afa"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/parameterData" />
@@ -389,7 +399,7 @@
                     android:layout_width="0dp"
                     android:layout_height="1dp"
                     android:layout_marginStart="72dp"
-                    android:background="#61333333"
+                    android:background="@color/gray_afa"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/reservedValueLayout" />
@@ -412,7 +422,7 @@
                     android:layout_width="0dp"
                     android:layout_height="1dp"
                     android:layout_marginStart="72dp"
-                    android:background="#61333333"
+                    android:background="@color/gray_afa"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/errorLogLayout" />
@@ -452,7 +462,7 @@
                     android:layout_width="0dp"
                     android:layout_height="1dp"
                     android:layout_marginStart="72dp"
-                    android:background="#61333333"
+                    android:background="@color/gray_afa"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/deleteDataButton" />
@@ -492,11 +502,43 @@
                     android:layout_width="0dp"
                     android:layout_height="1dp"
                     android:layout_marginStart="72dp"
-                    android:background="#61333333"
+                    android:background="@color/gray_afa"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/resetButton" />
             </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/smsSettings"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:onClick="@{()->presenter.onItemClick(7)}">
+
+                <include
+                    android:id="@+id/smsLayout"
+                    layout="@layout/fragment_settings_item"
+                    app:icon="@{R.drawable.ic_setting_sms}"
+                    app:message="@{@string/settingsSms_descr}"
+                    app:title="@{@string/settingsSms}" />
+
+                <FrameLayout
+                    android:id="@+id/smsContent"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="72dp"
+                    android:layout_marginEnd="16dp"
+                    android:visibility="gone"
+                    app:layout_constraintTop_toBottomOf="@id/smsLayout"
+                    tools:visibility="visible">
+
+                    <include
+                        android:id="@+id/settings_sms"
+                        layout="@layout/settings_sms" />
+                </FrameLayout>
+
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>

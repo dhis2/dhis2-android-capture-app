@@ -11,6 +11,7 @@ import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.Row;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.databinding.CustomFormCoordinateBinding;
+import org.hisp.dhis.android.core.common.FeatureType;
 
 import io.reactivex.processors.FlowableProcessor;
 
@@ -28,25 +29,28 @@ public class CoordinateRow implements Row<CoordinateHolder, CoordinateViewModel>
     private final String renderType;
     private final MutableLiveData<String> currentSelection;
     private boolean isSearchMode = false;
+    private  FeatureType featureType;
 
     public CoordinateRow(@NonNull LayoutInflater layoutInflater,
-                         @NonNull FlowableProcessor<RowAction> processor, boolean isBgTransparent) {
+                         @NonNull FlowableProcessor<RowAction> processor, boolean isBgTransparent, FeatureType featureType) {
         this.inflater = layoutInflater;
         this.processor = processor;
         this.isBgTransparent = isBgTransparent;
         this.renderType = null;
         this.isSearchMode = true;
         this.currentSelection = null;
+        this.featureType = featureType;
     }
 
     public CoordinateRow(@NonNull LayoutInflater layoutInflater, @NonNull FlowableProcessor<RowAction> processor,
                          boolean isBgTransparent, String renderType,
-                         MutableLiveData<String> currentSelection) {
+                         MutableLiveData<String> currentSelection,  FeatureType featureType) {
         this.inflater = layoutInflater;
         this.processor = processor;
         this.isBgTransparent = isBgTransparent;
         this.renderType = renderType;
         this.currentSelection = currentSelection;
+        this.featureType = featureType;
     }
 
     @NonNull

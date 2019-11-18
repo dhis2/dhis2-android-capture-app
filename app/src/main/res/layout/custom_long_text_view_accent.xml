@@ -48,6 +48,17 @@
             android:layout_below="@id/renderImage"
             android:orientation="horizontal">
 
+
+            <ImageView
+                android:layout_gravity="center"
+                android:id="@+id/descIcon"
+                android:layout_width="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:layout_height="match_parent"
+                android:visibility="gone"
+                app:srcCompat="@drawable/ic_info_outline"
+                app:tint="?colorAccent"/>
+
             <com.google.android.material.textfield.TextInputLayout
                 style="@style/ValueType_LongText"
                 android:id="@+id/input_layout"
@@ -59,13 +70,14 @@
                 android:theme="@style/loginInputTextAccent"
                 tools:hint="this is the hint">
 
-                <org.dhis2.utils.custom_views.TextInputAutoCompleteTextView
+                <org.dhis2.utils.customviews.TextInputAutoCompleteTextView
                     android:id="@+id/input_editText"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:enabled="@{isEditable.get()}"
                     android:gravity="start"
                     android:imeOptions="actionNext"
+                    android:textIsSelectable="true"
                     android:maxLines="1"
                     android:textColor="?colorAccent"
                     android:textSize="15sp"

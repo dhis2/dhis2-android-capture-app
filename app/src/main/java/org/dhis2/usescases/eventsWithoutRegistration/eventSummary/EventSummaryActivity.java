@@ -16,15 +16,15 @@ import org.dhis2.App;
 import org.dhis2.R;
 import org.dhis2.data.forms.FormSectionViewModel;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
+import org.dhis2.data.forms.dataentry.fields.unsupported.UnsupportedViewModel;
 import org.dhis2.databinding.ActivityEventSummaryBinding;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.DialogClickListener;
 import org.dhis2.utils.HelpManager;
-import org.dhis2.utils.custom_views.CustomDialog;
-import org.dhis2.utils.custom_views.ProgressBarAnimation;
-import org.hisp.dhis.android.core.event.EventModel;
-import org.hisp.dhis.android.core.program.ProgramModel;
+import org.dhis2.utils.customviews.CustomDialog;
+import org.hisp.dhis.android.core.event.Event;
+import org.hisp.dhis.android.core.program.Program;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -41,7 +41,7 @@ import static android.text.TextUtils.isEmpty;
  * QUADRAM. Created by Cristian on 01/03/2018.
  */
 
-public class EventSummaryActivity extends ActivityGlobalAbstract implements EventSummaryContract.View, ProgressBarAnimation.OnUpdate {
+public class EventSummaryActivity extends ActivityGlobalAbstract implements EventSummaryContract.View {
 
     private static final int PROGRESS_TIME = 2000;
 
@@ -53,9 +53,9 @@ public class EventSummaryActivity extends ActivityGlobalAbstract implements Even
     @Inject
     EventSummaryContract.Presenter presenter;
     private ActivityEventSummaryBinding binding;
-    private int completionPercent;
     private int totalFields;
     private int totalCompletedFields;
+    private int unsupportedFields;
     private int fieldsToCompleteBeforeClosing;
     String eventId;
     String programId;
@@ -63,8 +63,8 @@ public class EventSummaryActivity extends ActivityGlobalAbstract implements Even
     private boolean canComplete = true;
     private CustomDialog dialog;
     private boolean fieldsWithErrors;
-    private EventModel eventModel;
-    private ProgramModel programModel;
+    private Event eventModel;
+    private Program program;
     private ArrayList<String> sectionsToHide;
 
     @Override
@@ -99,15 +99,9 @@ public class EventSummaryActivity extends ActivityGlobalAbstract implements Even
     }
 
     @Override
-    public void setProgram(@NonNull ProgramModel program) {
+    public void setProgram(@NonNull Program program) {
         binding.setName(program.displayName());
-        programModel = program;
-    }
-
-    @Override
-    public void onUpdate(boolean lost, float value) {
-        String text = String.valueOf((int) value) + "%";
-        binding.progress.setText(text);
+        this.program = program;
     }
 
     @Override
@@ -139,13 +133,13 @@ public class EventSummaryActivity extends ActivityGlobalAbstract implements Even
     }
 
     @Override
-    public void onStatusChanged(EventModel event) {
+    public void onStatusChanged(Event event) {
         Toast.makeText(this, getString(R.string.event_updated), Toast.LENGTH_SHORT).show();
         new Handler().postDelayed(this::finish, 1000);
     }
 
     @Override
-    public void setActionButton(EventModel eventModel) {
+    public void setActionButton(Event eventModel) {
         this.eventModel = eventModel;
 
     }
@@ -187,7 +181,7 @@ public class EventSummaryActivity extends ActivityGlobalAbstract implements Even
     @Override
     public void accessDataWrite(Boolean canWrite) {
 
-        if (DateUtils.getInstance().isEventExpired(null, eventModel.completedDate(), programModel.completeEventsExpiryDays())) {
+        if (DateUtils.getInstance().isEventExpired(null, eventModel.completedDate(), program.completeEventsExpiryDays())) {
             binding.actionButton.setVisibility(View.GONE);
         } else {
             switch (eventModel.status()) {
@@ -232,6 +226,7 @@ public class EventSummaryActivity extends ActivityGlobalAbstract implements Even
             int totalSectionFields = updates.size();
             totalFields = totalFields + totalSectionFields;
             totalCompletedFields = totalCompletedFields + completedSectionFields;
+            unsupportedFields = unsupportedFields + calculateUnsupportedFields(updates);
             fieldsToCompleteBeforeClosing = fieldsToCompleteBeforeClosing + calculateMandatoryUnansweredFields(updates);
             String completionText = completedSectionFields + "/" + totalSectionFields;
             ((TextView) sectionView.findViewById(R.id.section_percent)).setText(completionText);
@@ -271,11 +266,8 @@ public class EventSummaryActivity extends ActivityGlobalAbstract implements Even
         }
 
         binding.summaryHeader.setText(String.format(getString(R.string.event_summary_header), String.valueOf(totalCompletedFields), String.valueOf(totalFields)));
-        float completionPerone = (float) totalCompletedFields / (float) totalFields;
-        completionPercent = (int) (completionPerone * 100);
-        ProgressBarAnimation gainAnim = new ProgressBarAnimation(binding.progressGains, 0, completionPercent, false, this);
-        gainAnim.setDuration(PROGRESS_TIME);
-        binding.progressGains.startAnimation(gainAnim);
+        binding.completion.setCompletionPercentage((float) totalCompletedFields / (float) totalFields);
+        binding.completion.setSecondaryPercentage((float) unsupportedFields / (float) totalFields);
         checkButton();
     }
 
@@ -287,6 +279,15 @@ public class EventSummaryActivity extends ActivityGlobalAbstract implements Even
         int total = 0;
         for (FieldViewModel fieldViewModel : updates) {
             if (fieldViewModel.value() != null && !fieldViewModel.value().isEmpty())
+                total++;
+        }
+        return total;
+    }
+
+    private int calculateUnsupportedFields(@NonNull List<FieldViewModel> updates) {
+        int total = 0;
+        for (FieldViewModel fieldViewModel : updates) {
+            if (fieldViewModel instanceof UnsupportedViewModel)
                 total++;
         }
         return total;

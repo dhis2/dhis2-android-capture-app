@@ -16,9 +16,10 @@ import androidx.fragment.app.Fragment;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
-import org.dhis2.usescases.main.program.SyncStatusDialog;
+import org.dhis2.utils.granularsync.SyncStatusDialog;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.OnDialogClickListener;
+import org.dhis2.utils.analytics.AnalyticsHelper;
 
 import java.lang.reflect.Type;
 import java.util.List;
@@ -101,23 +102,6 @@ public abstract class FragmentGlobalAbstract extends Fragment implements Abstrac
     }
 
     @Override
-    public <T> void saveListToPreference(String key, List<T> list) {
-        Gson gson = new Gson();
-        String json = gson.toJson(list);
-        getSharedPreferences().edit().putString(key, json).apply();
-    }
-
-    @Override
-    public <T> List<T> getListFromPreference(String key) {
-        Gson gson = new Gson();
-        String json = getAbstracContext().getSharedPreferences(Constants.SHARE_PREFS, MODE_PRIVATE).getString(key, null);
-        Type type = new TypeToken<List<T>>() {
-        }.getType();
-
-        return gson.fromJson(json, type);
-    }
-
-    @Override
     public SharedPreferences getSharedPreferences() {
         return getAbstractActivity().getSharedPreferences();
     }
@@ -128,7 +112,12 @@ public abstract class FragmentGlobalAbstract extends Fragment implements Abstrac
     }
 
     @Override
-    public void showSyncDialog(String programUid, SyncStatusDialog.ConflictType conflictType) {
-        getAbstractActivity().showSyncDialog(programUid,conflictType);
+    public void showSyncDialog(SyncStatusDialog dialog) {
+        getAbstractActivity().showSyncDialog(dialog);
+    }
+
+    @Override
+    public AnalyticsHelper analyticsHelper() {
+        return getAbstractActivity().analyticsHelper();
     }
 }

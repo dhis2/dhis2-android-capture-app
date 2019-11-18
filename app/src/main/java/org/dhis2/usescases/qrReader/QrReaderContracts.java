@@ -5,8 +5,7 @@ import androidx.annotation.Nullable;
 
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Trio;
-
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueModel;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValue;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -31,9 +30,9 @@ public class QrReaderContracts {
 
         void promtForEventWORegistrationMoreQr();
 
-        void renderEventDataInfo(@NonNull List<Trio<TrackedEntityDataValueModel, String, Boolean>> data);
+        void renderEventDataInfo(@NonNull List<Trio<TrackedEntityDataValue, String, Boolean>> data);
 
-        void renderTeiEventDataInfo(@NonNull List<Trio<TrackedEntityDataValueModel, String, Boolean>> data);
+        void renderTeiEventDataInfo(@NonNull List<Trio<TrackedEntityDataValue, String, Boolean>> data);
 
         void renderAttrInfo(@NonNull List<Trio<String, String, Boolean>> attributes);
 

@@ -25,7 +25,7 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <org.dhis2.utils.custom_views.YesNoView
+        <org.dhis2.utils.customviews.YesNoView
             android:id="@+id/customYesNo"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

@@ -25,7 +25,6 @@ import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.usescases.main.MainActivity;
 import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.Constants;
-import org.hisp.dhis.android.core.D2;
 
 import javax.inject.Inject;
 
@@ -39,18 +38,11 @@ public class SyncActivity extends ActivityGlobalAbstract implements SyncContract
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        D2 d2 = ((App) getApplicationContext()).serverComponent().userManager().getD2();
-        SyncComponent syncComponent = ((App) getApplicationContext()).syncComponent();
-        if (syncComponent == null) {
-            // in case if we don't have cached presenter
-            syncComponent = ((App) getApplicationContext()).createSyncComponent();
-        }
-        syncComponent.inject(this);
+        ((App) getApplicationContext()).userComponent().plus(new SyncModule()).inject(this);
         super.onCreate(savedInstanceState);
-
         binding = DataBindingUtil.setContentView(this, R.layout.activity_synchronization);
         binding.setPresenter(presenter);
-        presenter.init(this,d2);
+        presenter.init(this);
         presenter.sync();
     }
 
@@ -92,8 +84,8 @@ public class SyncActivity extends ActivityGlobalAbstract implements SyncContract
             case SUCCEEDED:
                 binding.eventsText.setText(getString(R.string.data_ready));
                 Bindings.setDrawableEnd(binding.eventsText, AppCompatResources.getDrawable(this, R.drawable.animator_done));
-                presenter.scheduleSync(getSharedPreferences().getInt(Constants.TIME_META, Constants.TIME_DAILY),
-                        getSharedPreferences().getInt(Constants.TIME_DATA, Constants.TIME_DAILY));
+                /*presenter.scheduleSync(getSharedPreferences().getInt(Constants.TIME_META, Constants.TIME_DAILY),
+                        getSharedPreferences().getInt(Constants.TIME_DATA, Constants.TIME_15M));*/
                 presenter.syncReservedValues();
                 startMain();
                 break;
@@ -116,7 +108,6 @@ public class SyncActivity extends ActivityGlobalAbstract implements SyncContract
 
     @Override
     protected void onStop() {
-        ((App) getApplicationContext()).releaseSyncComponent();
         if (binding.lottieView != null) {
             binding.lottieView.cancelAnimation();
         }
@@ -163,7 +154,7 @@ public class SyncActivity extends ActivityGlobalAbstract implements SyncContract
 
 
     public void startMain() {
-        getSharedPreferences().edit().putBoolean(Preference.INITIAL_SYNC_DONE.name(), true).apply();
+        getSharedPreferences().edit().putBoolean(Preference.INITIAL_SYNC_DONE, true).apply();
         Intent intent = new Intent(this, MainActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);

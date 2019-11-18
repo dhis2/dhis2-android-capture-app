@@ -24,7 +24,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="5dp"
+        android:minHeight="70dp"
         android:padding="5dp">
 
         <View
@@ -50,6 +50,16 @@
             android:layout_below="@id/renderImage"
             android:orientation="horizontal">
 
+            <ImageView
+                android:layout_gravity="center"
+                android:id="@+id/descIcon"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginEnd="8dp"
+                android:visibility="gone"
+                tools:visibility="visible"
+                app:srcCompat="@drawable/ic_form_text" />
+
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/input_layout"
                 style="@style/ValueType_Text"
@@ -61,7 +71,7 @@
                 android:textColorHint="@color/text_black_808"
                 tools:hint="hint">
 
-                <org.dhis2.utils.custom_views.TextInputAutoCompleteTextView
+                <org.dhis2.utils.customviews.TextInputAutoCompleteTextView
                     android:id="@+id/input_editText"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
@@ -71,6 +81,7 @@
                     android:textAlignment="textStart"
                     android:textColor="@color/text_black_333"
                     android:textSize="15sp"
+                    android:textIsSelectable="true"
                     tools:text="hello" />
 
             </com.google.android.material.textfield.TextInputLayout>

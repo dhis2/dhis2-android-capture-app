@@ -11,11 +11,9 @@ import org.dhis2.data.dagger.PerActivity;
 import org.dhis2.data.forms.EventRepository;
 import org.dhis2.data.forms.FormRepository;
 import org.dhis2.data.forms.RulesRepository;
-import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.usescases.eventsWithoutRegistration.eventSummary.EventSummaryRepository;
 import org.dhis2.usescases.eventsWithoutRegistration.eventSummary.EventSummaryRepositoryImpl;
-import org.dhis2.utils.CodeGenerator;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.rules.RuleExpressionEvaluator;
 
@@ -46,10 +44,8 @@ public class EventInitialModule {
     @PerActivity
     EventInitialContract.Presenter providesPresenter(@NonNull EventSummaryRepository eventSummaryRepository,
                                                      @NonNull EventInitialRepository eventInitialRepository,
-                                                     @NonNull MetadataRepository metadataRepository,
-                                                     @NonNull SchedulerProvider schedulerProvider,
-                                                     @NonNull D2 d2) {
-        return new EventInitialPresenter(eventSummaryRepository, eventInitialRepository, metadataRepository, schedulerProvider, d2);
+                                                     @NonNull SchedulerProvider schedulerProvider) {
+        return new EventInitialPresenter(eventSummaryRepository, eventInitialRepository, schedulerProvider);
     }
 
 
@@ -71,12 +67,12 @@ public class EventInitialModule {
 
     @Provides
     RulesRepository rulesRepository(@NonNull BriteDatabase briteDatabase, @NonNull D2 d2) {
-        return new RulesRepository(briteDatabase, d2);
+        return new RulesRepository(d2);
     }
 
     @Provides
     @PerActivity
-    EventInitialRepository eventDetailRepository(@NonNull CodeGenerator codeGenerator, BriteDatabase briteDatabase, D2 d2) {
-        return new EventInitialRepositoryImpl(codeGenerator, briteDatabase, eventUid, d2);
+    EventInitialRepository eventDetailRepository(D2 d2) {
+        return new EventInitialRepositoryImpl(eventUid, d2);
     }
 }

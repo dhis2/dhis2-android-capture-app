@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <org.dhis2.utils.custom_views.CustomTextView
+    <org.dhis2.utils.customviews.CustomTextView
         android:id="@+id/custom_edittext"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />

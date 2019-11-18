@@ -1,6 +1,6 @@
 package org.dhis2.data.forms.dataentry.fields;
 
-import org.hisp.dhis.android.core.common.ObjectStyleModel;
+import org.hisp.dhis.android.core.common.ObjectStyle;
 
 import javax.annotation.Nonnull;
 
@@ -57,5 +57,8 @@ public abstract class FieldViewModel {
     public abstract FieldViewModel withEditMode(boolean isEditable);
 
     @NonNull
-    public abstract ObjectStyleModel objectStyle();
+    public abstract ObjectStyle objectStyle();
+
+    @Nullable
+    public abstract String fieldMask();
 }

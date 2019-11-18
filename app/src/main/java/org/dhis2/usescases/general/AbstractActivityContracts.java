@@ -9,8 +9,9 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityOptionsCompat;
 
-import org.dhis2.usescases.main.program.SyncStatusDialog;
+import org.dhis2.utils.granularsync.SyncStatusDialog;
 import org.dhis2.utils.OnDialogClickListener;
+import org.dhis2.utils.analytics.AnalyticsHelper;
 
 import java.util.List;
 
@@ -41,10 +42,6 @@ public class AbstractActivityContracts {
 
         void showTutorial(boolean shaked);
 
-        <T> void saveListToPreference(String key, List<T> list);
-
-        <T> List<T> getListFromPreference(String key);
-
         void hideKeyboard();
 
         void showToast(String message);
@@ -53,9 +50,14 @@ public class AbstractActivityContracts {
 
         void showDescription(String description);
 
+        @Deprecated
         SharedPreferences getSharedPreferences();
 
-        void showSyncDialog(String programUid, SyncStatusDialog.ConflictType conflictType);
+        @Deprecated
+        void showSyncDialog(SyncStatusDialog dialog);
+
+        @Deprecated
+        AnalyticsHelper analyticsHelper();
     }
 
     public interface Presenter {

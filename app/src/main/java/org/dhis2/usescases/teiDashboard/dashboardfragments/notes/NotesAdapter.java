@@ -1,20 +1,21 @@
 package org.dhis2.usescases.teiDashboard.dashboardfragments.notes;
 
-import android.view.LayoutInflater;
-import android.view.ViewGroup;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.dhis2.R;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.databinding.ItemNotesBinding;
-import org.hisp.dhis.android.core.enrollment.note.NoteModel;
+import org.hisp.dhis.android.core.note.Note;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.List;
+import android.view.LayoutInflater;
+import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.databinding.DataBindingUtil;
 import androidx.recyclerview.widget.RecyclerView;
+
 import io.reactivex.processors.FlowableProcessor;
 import io.reactivex.processors.PublishProcessor;
 
@@ -24,7 +25,7 @@ import io.reactivex.processors.PublishProcessor;
 
 public class NotesAdapter extends RecyclerView.Adapter<NotesViewholder> {
 
-    private List<NoteModel> notes;
+    private List<Note> notes;
     private final FlowableProcessor<Pair<String, Boolean>> processor;
 
     public NotesAdapter() {
@@ -50,10 +51,12 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesViewholder> {
     }
 
     public void addNote(String noteText) {
-        processor.onNext(Pair.create(noteText, true));
+        if(!noteText.isEmpty()) {
+            processor.onNext(Pair.create(noteText, true));
+        }
     }
 
-    public void setItems(List<NoteModel> notes) {
+    public void setItems(List<Note> notes) {
         this.notes = notes;
         notifyDataSetChanged();
     }

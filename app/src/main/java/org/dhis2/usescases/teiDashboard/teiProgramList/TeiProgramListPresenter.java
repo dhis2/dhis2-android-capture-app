@@ -3,6 +3,10 @@ package org.dhis2.usescases.teiDashboard.teiProgramList;
 import org.dhis2.R;
 import org.dhis2.usescases.main.program.ProgramViewModel;
 
+import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
+import static org.dhis2.utils.analytics.AnalyticsConstants.DESELECT_ENROLLMENT;
+import static org.dhis2.utils.analytics.AnalyticsConstants.ENROLL_FROM_LIST;
+
 /**
  * QUADRAM. Created by Cristian on 06/03/2018.
  */
@@ -32,8 +36,10 @@ public class TeiProgramListPresenter implements TeiProgramListContract.Presenter
 
     @Override
     public void onEnrollClick(ProgramViewModel program) {
-        if (program.accessDataWrite())
+        if (program.accessDataWrite()) {
+            view.analyticsHelper().setEvent(ENROLL_FROM_LIST, CLICK, ENROLL_FROM_LIST);
             interactor.enroll(program.id(), teiUid);
+        }
         else
             view.displayMessage(view.getContext().getString(R.string.search_access_error));
     }
@@ -50,6 +56,7 @@ public class TeiProgramListPresenter implements TeiProgramListContract.Presenter
 
     @Override
     public void onUnselectEnrollment() {
+        view.analyticsHelper().setEvent(DESELECT_ENROLLMENT, CLICK, DESELECT_ENROLLMENT);
         view.changeCurrentProgram(null);
     }
 

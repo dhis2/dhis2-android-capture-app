@@ -123,7 +123,6 @@
     <string name="delete_event">លុបចោលព្រឹត្តិការណ៏</string>
     <string name="confirm_delete_event">តើអ្នកច្បាស់ទេថាចង់លុបចោលព្រឹត្តិការណ៏នេះ?</string>
     <string name="event_was_deleted">ព្រឹត្តិការណ៏បានលុបជោគជ័យ</string>
-
     <!--TEI Enrollment list-->
     <string name="enrollment_list">បញ្ជីចុះឈ្មោះ</string>
     <string name="active_programs">កម្មវិធីដំណើរការ</string>
@@ -352,6 +351,10 @@
     <string name="local_data_accept">ទទួលយក</string>
     <string name="login_server_info_title">អាសយដ្ឋានរបស់ម៉ាស៊ីនមេ</string>
     <string name="action_close">បិទ</string>
+    <string name="data_set_closed">បិទ</string>
+    <string name="data_set_open">បើក</string>
     <string name="data_every_day">រាល់​ថ្ងៃ</string>
     <string name="data_every_week">រាល់​សប្ដាហ៍</string>
-    </resources>
+    <string name="sms_completed">បានបញ្ចប់</string>
+    <!--endregion-->
+</resources>

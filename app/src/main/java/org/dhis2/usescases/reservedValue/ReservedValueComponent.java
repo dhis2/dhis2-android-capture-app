@@ -7,5 +7,5 @@ import dagger.Subcomponent;
 @PerActivity
 @Subcomponent(modules = ReservedValueModule.class)
 public interface ReservedValueComponent {
-    void inject(ReservedValueActivity reservedValueActivity);
+    void inject(ReservedValueActivity activity);
 }

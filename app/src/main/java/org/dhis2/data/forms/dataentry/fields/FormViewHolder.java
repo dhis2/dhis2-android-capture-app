@@ -16,7 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import org.dhis2.R;
 import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.Constants;
-import org.dhis2.utils.custom_views.CustomDialog;
+import org.dhis2.utils.customviews.CustomDialog;
 import org.hisp.dhis.android.core.common.ObjectStyle;
 
 import java.util.Objects;
