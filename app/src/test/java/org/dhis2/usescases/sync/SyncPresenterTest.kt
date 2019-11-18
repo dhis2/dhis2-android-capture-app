@@ -1,12 +1,15 @@
 package org.dhis2.usescases.sync
 
-import androidx.work.WorkManager
+import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Single
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
+import org.dhis2.data.service.workManager.WorkManagerController
+import org.dhis2.data.service.workManager.WorkerType
+import org.dhis2.utils.Constants
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.settings.SystemSetting
 import org.junit.Before
@@ -21,18 +24,18 @@ class SyncPresenterTest {
     private val view: SyncView = mock()
     private val d2: D2 = Mockito.mock(D2::class.java, RETURNS_DEEP_STUBS)
     private val schedulers = TrampolineSchedulerProvider()
-    private val workManager: WorkManager = mock()
+    private val workManagerController: WorkManagerController = mock()
 
     @Before
     fun setUp() {
-        presenter = SyncPresenter(view, d2, schedulers, workManager)
+        presenter = SyncPresenter(view, d2, schedulers, workManagerController)
     }
 
     @Test
     fun `Should sync data and metadata values`() {
-        // TODO test this
-        presenter.syncReservedValues()
+        presenter.sync()
 
+        verify(workManagerController).syncDataForWorkers(any(), any(), any())
     }
 
     @Test
@@ -54,10 +57,12 @@ class SyncPresenterTest {
 
     @Test
     fun `Should sync reserved values`() {
-        // TODO test this thoroughly
+        val tag = Constants.RESERVED
+
         presenter.syncReservedValues()
 
-        verify(workManager).cancelAllWorkByTag("TAG_RV")
+        verify(workManagerController).cancelAllWorkByTag(any())
+        verify(workManagerController).syncDataForWorker(WorkerType.RESERVED, tag)
     }
 
     @Test
@@ -67,12 +72,12 @@ class SyncPresenterTest {
         assert(presenter.disposable.size() == 0)
     }
 
-   @Test
-   fun `Should display message`() {
-       val message = "message"
+    @Test
+    fun `Should display message`() {
+        val message = "message"
 
-       presenter.displayMessage(message)
+        presenter.displayMessage(message)
 
-       verify(view).displayMessage(message)
-   }
+        verify(view).displayMessage(message)
+    }
 }
