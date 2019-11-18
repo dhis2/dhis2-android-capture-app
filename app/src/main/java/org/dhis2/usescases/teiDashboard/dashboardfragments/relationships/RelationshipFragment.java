@@ -18,9 +18,11 @@ import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.databinding.FragmentRelationshipsBinding;
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
+import org.dhis2.usescases.searchTrackEntity.SearchTEActivity;
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity;
 import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.Constants;
+import org.dhis2.utils.OnDialogClickListener;
 import org.hisp.dhis.android.core.relationship.RelationshipType;
 import org.jetbrains.annotations.NotNull;
 
@@ -31,6 +33,7 @@ import javax.inject.Inject;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.databinding.DataBindingUtil;
 import io.reactivex.functions.Consumer;
@@ -41,10 +44,10 @@ import static android.app.Activity.RESULT_OK;
  * QUADRAM. Created by ppajuelo on 29/11/2017.
  */
 
-public class RelationshipFragment extends FragmentGlobalAbstract implements RelationshipContracts.View {
+public class RelationshipFragment extends FragmentGlobalAbstract implements RelationshipView {
 
     @Inject
-    RelationshipContracts.Presenter presenter;
+    RelationshipPresenterImpl presenter;
 
     private FragmentRelationshipsBinding binding;
 
@@ -59,7 +62,7 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
         if (((App) context.getApplicationContext()).dashboardComponent() != null)
             ((App) context.getApplicationContext())
                     .dashboardComponent()
-                    .plus(new RelationshipModule(activity.getProgramUid(), activity.getTeiUid()))
+                    .plus(new RelationshipModule(activity.getProgramUid(), activity.getTeiUid(), this))
                     .inject(this);
     }
 
@@ -75,7 +78,7 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
     @Override
     public void onResume() {
         super.onResume();
-        presenter.init(this);
+        presenter.init();
 
     }
 
@@ -86,28 +89,85 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
     }
 
     @Override
-    public Consumer<List<RelationshipViewModel>> setRelationships() {
-        return relationships -> {
-            if (relationshipAdapter != null) {
-                relationshipAdapter.addItems(relationships);
-            }
-            if (relationships != null && !relationships.isEmpty()) {
-                binding.emptyRelationships.setVisibility(View.GONE);
-            } else {
-                binding.emptyRelationships.setVisibility(View.VISIBLE);
-            }
-        };
+    public void setRelationships(List<RelationshipViewModel> relationships) {
+        if (relationshipAdapter != null) {
+            relationshipAdapter.addItems(relationships);
+        }
+        if (relationships != null && !relationships.isEmpty()) {
+            binding.emptyRelationships.setVisibility(View.GONE);
+        } else {
+            binding.emptyRelationships.setVisibility(View.VISIBLE);
+        }
     }
 
     @Override
-    public Consumer<List<Trio<RelationshipType, String, Integer>>> setRelationshipTypes() {
-        return this::initFab;
+    public void setRelationshipTypes(List<Trio<RelationshipType, String, Integer>> relationshipTypes) {
+         initFab(relationshipTypes);
     }
 
     @Override
-    public void goToAddRelationship(Intent intent) {
+    public void goToAddRelationship(String teiUid, String teiTypeToAdd) {
+        Intent intent = new Intent(getContext(), SearchTEActivity.class);
+        Bundle extras = new Bundle();
+        extras.putBoolean("FROM_RELATIONSHIP", true);
+        extras.putString("FROM_RELATIONSHIP_TEI", teiUid);
+        extras.putString("TRACKED_ENTITY_UID", teiTypeToAdd);
+        extras.putString("PROGRAM_UID", null);
+        intent.putExtras(extras);
         ((TeiDashboardMobileActivity) getActivity()).toRelationships();
         this.startActivityForResult(intent, Constants.REQ_ADD_RELATIONSHIP);
+    }
+
+    @Override
+    public void goToTeiDashboard(String teiUid){
+        Intent intent = new Intent(getContext(), TeiDashboardMobileActivity.class);
+        Bundle bundle = new Bundle();
+        bundle.putString("TEI_UID", teiUid);
+        bundle.putString("PROGRAM_UID", null);
+        intent.putExtras(bundle);
+        getAbstractActivity().startActivity(intent);
+    }
+
+    @Override
+    public void showDialogRelationshipWithoutEnrollment(String displayName) {
+        showInfoDialog(String.format(
+                        getContext().getString(R.string.resource_not_found),
+                        displayName),
+                getContext().getString(R.string.relationship_without_enrollment),
+                getContext().getString(R.string.ok),
+                getContext().getString(R.string.no),
+                new OnDialogClickListener() {
+                    @Override
+                    public void onPossitiveClick(AlertDialog alertDialog) {
+                        //not needed
+                    }
+
+                    @Override
+                    public void onNegativeClick(AlertDialog alertDialog) {
+                        //not needed
+                    }
+                }).show();
+    }
+
+    @Override
+    public void showDialogRelationshipNotFoundMessage(String displayName){
+        showInfoDialog(String.format(
+                    getContext().getString(R.string.resource_not_found),
+                    displayName),
+                getContext().getString(R.string.relationship_not_found_message),
+                getContext().getString(R.string.yes),
+                getContext().getString(R.string.no),
+                new OnDialogClickListener() {
+                    @Override
+                    public void onPossitiveClick(AlertDialog alertDialog) {
+                        back();
+                    }
+
+                    @Override
+                    public void onNegativeClick(AlertDialog alertDialog) {
+                        //not needed
+                    }
+                }).show();
     }
 
     @Override

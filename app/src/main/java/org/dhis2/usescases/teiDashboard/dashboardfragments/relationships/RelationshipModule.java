@@ -17,16 +17,18 @@ public class RelationshipModule {
 
     private final String programUid;
     private final String teiUid;
+    private final RelationshipView view;
 
-    public RelationshipModule(String programUid, String teiUid) {
+    public RelationshipModule(String programUid, String teiUid, RelationshipView view) {
         this.programUid = programUid;
         this.teiUid = teiUid;
+        this.view = view;
     }
 
     @Provides
     @PerFragment
-    RelationshipContracts.Presenter providesPresenter(D2 d2, DashboardRepository dashboardRepository, SchedulerProvider schedulerProvider) {
-        return new RelationshipPresenterImpl(d2, programUid, teiUid, dashboardRepository, schedulerProvider);
+    RelationshipPresenterImpl providesPresenter(D2 d2, DashboardRepository dashboardRepository, SchedulerProvider schedulerProvider) {
+        return new RelationshipPresenterImpl(d2, programUid, teiUid, dashboardRepository, schedulerProvider, view);
     }
 
 }
