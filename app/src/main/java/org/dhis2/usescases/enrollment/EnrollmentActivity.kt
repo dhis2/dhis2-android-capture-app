@@ -16,6 +16,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import io.reactivex.Flowable
+import java.io.File
+import java.util.Calendar
+import java.util.Date
+import javax.inject.Inject
 import org.dhis2.App
 import org.dhis2.R
 import org.dhis2.data.forms.dataentry.DataEntryAdapter
@@ -50,10 +54,6 @@ import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityType
-import java.io.File
-import java.util.Calendar
-import java.util.Date
-import javax.inject.Inject
 
 class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
 
@@ -64,6 +64,8 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
 
     lateinit var binding: EnrollmentActivityBinding
     lateinit var mode: EnrollmentMode
+
+    private lateinit var adapter: DataEntryAdapter
 
     companion object {
         const val ENROLLMENT_UID_EXTRA = "ENROLLMENT_UID_EXTRA"
@@ -87,8 +89,6 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
             return intent
         }
     }
-
-    private lateinit var adapter: DataEntryAdapter
 
     /*region LIFECYCLE*/
 
@@ -464,8 +464,11 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
     override fun displayEnrollmentCoordinates(
         enrollmentCoordinatesData: Pair<Program, Enrollment>?
     ) {
+        val featureType: FeatureType? = enrollmentCoordinatesData?.first?.featureType()
+        val geometry: Geometry? = enrollmentCoordinatesData?.second?.geometry()
+
         binding.coordinatesView.visibility =
-            if (enrollmentCoordinatesData!!.first.featureType()!=null && enrollmentCoordinatesData.first.featureType() != FeatureType.NONE) {
+            if (featureType != null && featureType != FeatureType.NONE) {
                 View.VISIBLE
             } else {
                 View.GONE
@@ -473,8 +476,8 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
 
         binding.coordinatesView.setLabel(getString(R.string.enrollment_coordinates))
 
-        binding.coordinatesView.featureType = enrollmentCoordinatesData.first.featureType()
-        binding.coordinatesView.updateLocation(enrollmentCoordinatesData.second.geometry())
+        binding.coordinatesView.featureType = featureType
+        binding.coordinatesView.updateLocation(geometry)
 
         binding.coordinatesView.setMapListener {
             startActivityForResult(
@@ -526,8 +529,9 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
         fields.filter {
             it !is DisplayViewModel
         }
-
+        val rvState = binding.fieldRecycler.layoutManager?.onSaveInstanceState()
         adapter.swap(fields)
+        binding.fieldRecycler.layoutManager?.onRestoreInstanceState(rvState)
     }
     /*endregion*/
 }
