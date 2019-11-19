@@ -104,6 +104,9 @@ class SyncActivity : ActivityGlobalAbstract(), SyncView {
                 presenter.getTheme()
             }
             else -> {
+                /* Empty block since other Work.Info States are not needed and `when` has to be
+                *  exhaustive
+                */
             }
         }
     }
@@ -128,6 +131,9 @@ class SyncActivity : ActivityGlobalAbstract(), SyncView {
                 startMain()
             }
             else -> {
+                /* Empty block since other Work.Info States are not needed and `when` has to be
+                *  exhaustive
+                */
             }
         }
     }
