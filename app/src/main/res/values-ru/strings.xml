@@ -2,7 +2,7 @@
     <!-- Warnings and error messages -->
     <string name="error">Ошибка</string>
     <string name="sync_metadata">Метаданные</string>
-    <string name="sync_events">Events</string>
+    <string name="sync_events">События</string>
     <string name="add_new">Добавить новое</string>
     <string name="add">Добавить</string>
     <string name="schedule_new">Распланировать новое</string>
@@ -34,7 +34,7 @@
     <string name="create">Создать</string>
     <string name="update">Обновить</string>
     <string name="date">Дата</string>
-    <string name="category_option">Category option</string>
+    <string name="category_option">Опции категории</string>
     <string name="latitude">Широта</string>
     <string name="longitude">Долгота</string>
     <string name="new_event">Новое событие</string>
@@ -74,7 +74,7 @@
     <string name="SAVE">Сохранить</string>
     <string name="button_ok">ОК</string>
     <string name="qr_attributes">Атрибуты</string>
-    <string name="qr_events">Events</string>
+    <string name="qr_events">События</string>
     <string name="qr_relationships">Зависимости</string>
     <string name="about">Об</string>
     <string name="share">Поделиться</string>
