@@ -407,10 +407,8 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
             }
 
             binding.date.setText(selectedDateString);
-            if(selectedOrgUnit == null)
+            if(selectedOrgUnit == null && eventUid == null)
                 presenter.initOrgunit(selectedDate);
-            else if (eventCreationType != EventCreationType.REFERAL)
-                binding.orgUnit.setEnabled(false);
 
         } else {
             if (!isEmpty(eventModel.enrollment()) && eventCreationType != EventCreationType.ADDNEW) {
