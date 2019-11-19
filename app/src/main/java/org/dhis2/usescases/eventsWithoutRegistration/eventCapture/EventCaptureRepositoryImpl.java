@@ -4,8 +4,6 @@ import android.content.Context;
 
 import androidx.annotation.NonNull;
 
-import com.squareup.sqlbrite2.BriteDatabase;
-
 import org.dhis2.Bindings.RuleExtensionsKt;
 import org.dhis2.R;
 import org.dhis2.data.forms.FormRepository;
@@ -319,6 +317,9 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                         ProgramStage stage = d2.programModule().programStages().uid(eventSingle.programStage()).blockingGet();
                         List<ProgramStageSection> stageSections = d2.programModule().programStageSections().byProgramStageUid().eq(stage.uid()).blockingGet();
                         if (stageSections.size() > 0) {
+                            Collections.sort(stageSections, (one, two) ->
+                                    one.sortOrder().compareTo(two.sortOrder()));
+
                             for (ProgramStageSection section :stageSections)
                                 formSection.add(FormSectionViewModel.createForSection(eventUid, section.uid(), section.displayName(),
                                         section.renderType().mobile() != null ? section.renderType().mobile().type().name() : null));
