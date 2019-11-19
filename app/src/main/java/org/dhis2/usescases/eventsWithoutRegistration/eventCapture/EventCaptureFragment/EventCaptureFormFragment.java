@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -178,7 +179,10 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract {
 
             if (!isEmpty(lastFocusItem))
                 dataEntryAdapter.setLastFocusItem(lastFocusItem);
+
+            Parcelable rvState = binding.formRecycler.getLayoutManager().onSaveInstanceState();
             dataEntryAdapter.swap(updates);
+            binding.formRecycler.getLayoutManager().onRestoreInstanceState(rvState);
 
             int completedValues = 0;
             HashMap<String, Boolean> fields = new HashMap<>();
