@@ -1,25 +1,3 @@
-package org.dhis2.usescases.teiDashboard.dashboardfragments.relationships
-
-import io.reactivex.Flowable
-import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.processors.PublishProcessor
-import org.dhis2.R
-import org.dhis2.data.schedulers.SchedulerProvider
-import org.dhis2.data.tuples.Trio
-import org.dhis2.usescases.teiDashboard.DashboardRepository
-import org.dhis2.utils.analytics.CLICK
-import org.dhis2.utils.analytics.DELETE_RELATIONSHIP
-import org.dhis2.utils.analytics.NEW_RELATIONSHIP
-import org.hisp.dhis.android.core.D2
-import org.hisp.dhis.android.core.common.State
-import org.hisp.dhis.android.core.maintenance.D2Error
-import org.hisp.dhis.android.core.relationship.Relationship
-import org.hisp.dhis.android.core.relationship.RelationshipHelper
-import org.hisp.dhis.android.core.relationship.RelationshipItem
-import org.hisp.dhis.android.core.relationship.RelationshipItemTrackedEntityInstance
-import org.hisp.dhis.android.core.relationship.RelationshipType
-import timber.log.Timber
-
 /*
  * Copyright (c) 2004-2019, University of Oslo
  * All rights reserved.
@@ -47,19 +25,42 @@ import timber.log.Timber
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+package org.dhis2.usescases.teiDashboard.dashboardfragments.relationships
+
+import io.reactivex.Flowable
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.processors.PublishProcessor
+import org.dhis2.R
+import org.dhis2.data.schedulers.SchedulerProvider
+import org.dhis2.data.tuples.Trio
+import org.dhis2.usescases.teiDashboard.DashboardRepository
+import org.dhis2.utils.analytics.AnalyticsHelper
+import org.dhis2.utils.analytics.CLICK
+import org.dhis2.utils.analytics.DELETE_RELATIONSHIP
+import org.dhis2.utils.analytics.NEW_RELATIONSHIP
+import org.hisp.dhis.android.core.D2
+import org.hisp.dhis.android.core.common.State
+import org.hisp.dhis.android.core.maintenance.D2Error
+import org.hisp.dhis.android.core.relationship.Relationship
+import org.hisp.dhis.android.core.relationship.RelationshipHelper
+import org.hisp.dhis.android.core.relationship.RelationshipItem
+import org.hisp.dhis.android.core.relationship.RelationshipItemTrackedEntityInstance
+import org.hisp.dhis.android.core.relationship.RelationshipType
+import timber.log.Timber
 
 class RelationshipPresenter(
     val d2: D2,
     val programUid: String?,
-    val teiUid: String?,
+    val teiUid: String,
     val dashboardRepository: DashboardRepository,
     private val schedulersProvider: SchedulerProvider,
-    var view: RelationshipView
+    var view: RelationshipView,
+    val analyticsHelper: AnalyticsHelper
 ) {
 
     private val teiType: String? = d2.trackedEntityModule()
         .trackedEntityInstances().byUid().eq(teiUid)
-        .withTrackedEntityAttributeValues().one().blockingGet().trackedEntityType()
+        .one().blockingGet().trackedEntityType()
     private val compositeDisposable = CompositeDisposable()
     val updateRelationships = PublishProcessor.create<Boolean>()
 
@@ -111,7 +112,6 @@ class RelationshipPresenter(
 
                         val tei = d2.trackedEntityModule()
                             .trackedEntityInstances()
-                            .withTrackedEntityAttributeValues()
                             .uid(relationshipTEIUid).blockingGet()
 
                         val typeAttributes =
@@ -139,7 +139,7 @@ class RelationshipPresenter(
 
                         return@map RelationshipViewModel.create(
                             relationship,
-                            relationshipType,
+                            relationshipType!!,
                             direction,
                             relationshipTEIUid,
                             attributesValues
@@ -183,8 +183,8 @@ class RelationshipPresenter(
 
     fun goToAddRelationship(teiTypeToAdd: String) {
         if (d2.programModule().programs().uid(programUid).blockingGet().access().data().write()) {
-            view.analyticsHelper().setEvent(NEW_RELATIONSHIP, CLICK, NEW_RELATIONSHIP)
-            view.goToAddRelationship(teiUid, teiTypeToAdd)
+            analyticsHelper.setEvent(NEW_RELATIONSHIP, CLICK, NEW_RELATIONSHIP)
+            view.goToAddRelationship(teiUid!!, teiTypeToAdd)
         } else {
             view.displayMessage(view.context.getString(R.string.search_access_error))
         }
@@ -227,13 +227,13 @@ class RelationshipPresenter(
             } else {
                 view.showDialogRelationshipWithoutEnrollment(
                     d2.trackedEntityModule()
-                        .trackedEntityTypes().uid(teiType).blockingGet().displayName()
+                        .trackedEntityTypes().uid(teiType).blockingGet().displayName()!!
                 )
             }
         } else {
             view.showDialogRelationshipNotFoundMessage(
                 d2.trackedEntityModule()
-                    .trackedEntityTypes().uid(teiType).blockingGet().displayName()
+                    .trackedEntityTypes().uid(teiType).blockingGet().displayName()!!
             )
         }
     }

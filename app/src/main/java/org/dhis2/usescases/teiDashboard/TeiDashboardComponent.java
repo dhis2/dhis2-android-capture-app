@@ -1,5 +1,7 @@
 package org.dhis2.usescases.teiDashboard;
 
+import androidx.annotation.NonNull;
+
 import org.dhis2.data.dagger.PerActivity;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.indicators.IndicatorsComponent;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.indicators.IndicatorsModule;
@@ -10,7 +12,6 @@ import org.dhis2.usescases.teiDashboard.dashboardfragments.relationships.Relatio
 import org.dhis2.usescases.teiDashboard.dashboardfragments.tei_data.TEIDataComponent;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.tei_data.TEIDataModule;
 
-import androidx.annotation.NonNull;
 import dagger.Subcomponent;
 
 /**
