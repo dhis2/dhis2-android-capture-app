@@ -1,35 +1,3 @@
-package org.dhis2.usescases.teiDashboard.dashboardfragments.relationships
-
-import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.verify
-import com.nhaarman.mockitokotlin2.whenever
-import io.reactivex.Observable
-import org.dhis2.data.schedulers.SchedulerProvider
-import org.dhis2.data.schedulers.TrampolineSchedulerProvider
-import org.dhis2.data.tuples.Pair
-import org.dhis2.data.tuples.Trio
-import org.dhis2.usescases.teiDashboard.DashboardRepositoryImpl
-import org.hisp.dhis.android.core.D2
-import org.hisp.dhis.android.core.common.Access
-import org.hisp.dhis.android.core.common.DataAccess
-import org.hisp.dhis.android.core.common.ObjectWithUid
-import org.hisp.dhis.android.core.common.State
-import org.hisp.dhis.android.core.enrollment.Enrollment
-import org.hisp.dhis.android.core.program.Program
-import org.hisp.dhis.android.core.relationship.Relationship
-import org.hisp.dhis.android.core.relationship.RelationshipHelper
-import org.hisp.dhis.android.core.relationship.RelationshipItem
-import org.hisp.dhis.android.core.relationship.RelationshipItemTrackedEntityInstance
-import org.hisp.dhis.android.core.relationship.RelationshipType
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityType
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityTypeAttribute
-import org.junit.Before
-import org.junit.Test
-import org.mockito.Mockito
-
 /*
  * Copyright (c) 2004-2019, University of Oslo
  * All rights reserved.
@@ -57,6 +25,38 @@ import org.mockito.Mockito
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+package org.dhis2.usescases.teiDashboard.dashboardfragments.relationships
+
+import com.nhaarman.mockitokotlin2.doReturn
+import com.nhaarman.mockitokotlin2.mock
+import com.nhaarman.mockitokotlin2.verify
+import com.nhaarman.mockitokotlin2.whenever
+import io.reactivex.Observable
+import org.dhis2.data.schedulers.SchedulerProvider
+import org.dhis2.data.schedulers.TrampolineSchedulerProvider
+import org.dhis2.data.tuples.Pair
+import org.dhis2.data.tuples.Trio
+import org.dhis2.usescases.teiDashboard.DashboardRepositoryImpl
+import org.dhis2.utils.analytics.AnalyticsHelper
+import org.hisp.dhis.android.core.D2
+import org.hisp.dhis.android.core.common.Access
+import org.hisp.dhis.android.core.common.DataAccess
+import org.hisp.dhis.android.core.common.ObjectWithUid
+import org.hisp.dhis.android.core.common.State
+import org.hisp.dhis.android.core.enrollment.Enrollment
+import org.hisp.dhis.android.core.program.Program
+import org.hisp.dhis.android.core.relationship.Relationship
+import org.hisp.dhis.android.core.relationship.RelationshipHelper
+import org.hisp.dhis.android.core.relationship.RelationshipItem
+import org.hisp.dhis.android.core.relationship.RelationshipItemTrackedEntityInstance
+import org.hisp.dhis.android.core.relationship.RelationshipType
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityType
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityTypeAttribute
+import org.junit.Before
+import org.junit.Test
+import org.mockito.Mockito
 
 class RelationshipPresenterTest {
     private val dashboardRepository: DashboardRepositoryImpl = mock()
@@ -64,13 +64,14 @@ class RelationshipPresenterTest {
     private val view: RelationshipView = mock()
     private val d2: D2 = Mockito.mock(D2::class.java, Mockito.RETURNS_DEEP_STUBS)
     private lateinit var presenter: RelationshipPresenter
+    private val analyticsHelper: AnalyticsHelper = mock()
 
     @Before
     fun setUp() {
         mockTrackedEntityInstanceTypeModule("tei_uid")
         presenter = RelationshipPresenter(
             d2, "program_uid",
-            "tei_uid", dashboardRepository, schedulers, view
+            "tei_uid", dashboardRepository, schedulers, view, analyticsHelper
         )
     }
 
@@ -84,7 +85,6 @@ class RelationshipPresenterTest {
 
         whenever(
             d2.trackedEntityModule().trackedEntityInstances()
-                .withTrackedEntityAttributeValues()
                 .uid("tei_from_uid").blockingGet()
         ) doReturn trackedEntityInstance("tei_from_uid")
 
@@ -120,7 +120,7 @@ class RelationshipPresenterTest {
         mockTrackedEntityInstanceTypeModule("tei_from_uid")
         presenter = RelationshipPresenter(
             d2, "program_uid",
-            "tei_from_uid", dashboardRepository, schedulers, view
+            "tei_from_uid", dashboardRepository, schedulers, view, analyticsHelper
         )
         mockRelationTrackedEntityTA()
         whenever(
@@ -130,7 +130,7 @@ class RelationshipPresenterTest {
 
         whenever(
             d2.trackedEntityModule().trackedEntityInstances()
-                .withTrackedEntityAttributeValues().uid("tei_to_uid")
+                .uid("tei_to_uid")
                 .blockingGet()
         ) doReturn trackedEntityInstance("tei_to_uid")
 
@@ -193,7 +193,6 @@ class RelationshipPresenterTest {
             d2.relationshipModule().relationships().withItems()
                 .uid("relationship_uid")
         ) doReturn mock()
-        whenever(view.analyticsHelper()) doReturn mock()
 
         val testSubscriber = presenter.updateRelationships.test()
         presenter.deleteRelationship(Relationship.builder().uid("relationship_uid").build())
@@ -224,7 +223,6 @@ class RelationshipPresenterTest {
             d2.programModule().programs().uid("program_uid")
                 .blockingGet()
         ) doReturn getProgramDefaultAccessTrue()
-        whenever(view.analyticsHelper()) doReturn mock()
 
         presenter.goToAddRelationship("type_add")
 
@@ -414,15 +412,11 @@ class RelationshipPresenterTest {
         ) doReturn mock()
         whenever(
             d2.trackedEntityModule().trackedEntityInstances().byUid()
-                .eq(tei).withTrackedEntityAttributeValues()
+                .eq(tei).one()
         ) doReturn mock()
         whenever(
             d2.trackedEntityModule().trackedEntityInstances().byUid()
-                .eq(tei).withTrackedEntityAttributeValues().one()
-        ) doReturn mock()
-        whenever(
-            d2.trackedEntityModule().trackedEntityInstances().byUid()
-                .eq(tei).withTrackedEntityAttributeValues().one()
+                .eq(tei).one()
                 .blockingGet()
         ) doReturn trackedEntityInstance(tei)
     }

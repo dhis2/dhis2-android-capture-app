@@ -197,7 +197,7 @@ class RelationshipPresenter(
         } catch (e: D2Error) {
             Timber.d(e)
         } finally {
-            view.analyticsHelper().setEvent(DELETE_RELATIONSHIP, CLICK, DELETE_RELATIONSHIP)
+            analyticsHelper.setEvent(DELETE_RELATIONSHIP, CLICK, DELETE_RELATIONSHIP)
             updateRelationships.onNext(true)
         }
     }
