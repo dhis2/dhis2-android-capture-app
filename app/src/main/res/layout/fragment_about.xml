@@ -6,7 +6,7 @@
 
         <variable
             name="presenter"
-            type="org.dhis2.usescases.about.AboutContracts.AboutPresenter" />
+            type="org.dhis2.usescases.about.AboutPresenter" />
     </data>
 
     <RelativeLayout
@@ -38,6 +38,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/about_app"
+                    app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <TextView
@@ -45,6 +46,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/about_sdk"
+                    app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/aboutApp" />
 
                 <TextView
@@ -53,8 +55,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="15dp"
                     android:text="@string/about_more"
-
                     android:textColorLink="?colorPrimary"
+                    app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/appSDK" />
 
                 <TextView
@@ -63,6 +65,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="15dp"
                     android:text="@string/about_connected"
+                    app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/aboutMore" />
 
                 <TextView
@@ -70,6 +73,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/about_user"
+                    app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/about_connected" />
 
                 <TextView
@@ -79,6 +83,7 @@
                     android:layout_marginTop="15dp"
                     android:text="@string/about_git"
                     android:textColorLink="?colorPrimary"
+                    app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/about_user" />
 
                 <TextView
@@ -88,6 +93,7 @@
                     android:layout_marginTop="15dp"
                     android:text="@string/about_dev"
                     android:textColorLink="?colorPrimary"
+                    app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/about_git" />
 
 
@@ -98,6 +104,7 @@
                     android:layout_marginTop="15dp"
                     android:text="@string/about_contact"
                     android:textColorLink="?colorPrimary"
+                    app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/about_dev" />
 
 
