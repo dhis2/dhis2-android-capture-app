@@ -288,7 +288,29 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
     @NonNull
     @Override
     public Observable<List<DataElement>> textTypeDataElements() {
-        return d2.dataElementModule().dataElements().byValueType().eq(ValueType.TEXT).get().toObservable();
+        //TODO: review this queries using rxjava in a better way
+        List<String> programStageUIds =
+                d2.programModule().programs().uid(programUid).get()
+                .flatMap(program -> d2.programModule().programStages().byProgramUid()
+                        .eq(program.uid()).get())
+                .toObservable().flatMap(programStages ->
+                Observable.fromIterable(programStages)
+                        .map(item -> item.uid())
+                        .toList().toObservable()).blockingFirst();
+
+        List<String> programStagesDataElementsUIds =
+                d2.programModule().programStageDataElements().byProgramStage().in(programStageUIds).get()
+                        .toObservable().flatMap(programStageDataElements ->
+                        Observable.fromIterable(programStageDataElements)
+                                .map(item -> item.dataElement().uid())
+                                .toList().toObservable()).blockingFirst();
+
+
+        return d2.dataElementModule().dataElements()
+                .byValueType().eq(ValueType.TEXT)
+                .byUid().in(programStagesDataElementsUIds)
+                .byOptionSetUid().isNull()
+                .get().toObservable();
     }
 
     @Override
