@@ -28,16 +28,18 @@ public class IndicatorsModule {
 
     private final String programUid;
     private final String teiUid;
+    private final IndicatorsView view;
 
-    public IndicatorsModule(String programUid, String teiUid) {
+    public IndicatorsModule(String programUid, String teiUid, IndicatorsView view) {
         this.programUid = programUid;
         this.teiUid = teiUid;
+        this.view = view;
     }
 
     @Provides
     @PerFragment
-    IndicatorsContracts.Presenter providesPresenter(D2 d2, DashboardRepository dashboardRepository, RuleEngineRepository ruleEngineRepository, SchedulerProvider schedulerProvider) {
-        return new IndicatorsPresenterImpl(d2, programUid, teiUid, dashboardRepository, ruleEngineRepository, schedulerProvider);
+    IndicatorsPresenterImpl providesPresenter(D2 d2, DashboardRepository dashboardRepository, RuleEngineRepository ruleEngineRepository, SchedulerProvider schedulerProvider) {
+        return new IndicatorsPresenterImpl(d2, programUid, teiUid, dashboardRepository, ruleEngineRepository, schedulerProvider, view);
     }
 
     @Provides

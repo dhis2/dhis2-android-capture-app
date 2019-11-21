@@ -29,10 +29,10 @@ import io.reactivex.functions.Consumer;
  * QUADRAM. Created by ppajuelo on 29/11/2017.
  */
 
-public class IndicatorsFragment extends FragmentGlobalAbstract implements IndicatorsContracts.View {
+public class IndicatorsFragment extends FragmentGlobalAbstract implements IndicatorsView {
 
     @Inject
-    IndicatorsContracts.Presenter presenter;
+    IndicatorsPresenterImpl presenter;
     private FragmentIndicatorsBinding binding;
     private IndicatorsAdapter adapter;
 
@@ -44,7 +44,8 @@ public class IndicatorsFragment extends FragmentGlobalAbstract implements Indica
         if (((App) context.getApplicationContext()).dashboardComponent() != null)
             ((App) context.getApplicationContext())
                     .dashboardComponent()
-                    .plus(new IndicatorsModule(activity.getProgramUid(), activity.getTeiUid()))
+                    .plus(new IndicatorsModule(activity.getProgramUid(),
+                            activity.getTeiUid(), this))
                     .inject(this);
     }
 
@@ -61,7 +62,7 @@ public class IndicatorsFragment extends FragmentGlobalAbstract implements Indica
     public void onResume() {
         super.onResume();
         binding.spinner.setVisibility(View.VISIBLE);
-        presenter.init(this);
+        presenter.init();
     }
 
     @Override

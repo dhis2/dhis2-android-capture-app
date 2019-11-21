@@ -11,17 +11,8 @@ import io.reactivex.functions.Consumer;
 /**
  * QUADRAM. Created by ppajuelo on 09/04/2019.
  */
-public class IndicatorsContracts {
+interface IndicatorsView extends AbstractActivityContracts.View {
 
-    public interface View extends AbstractActivityContracts.View {
-
-        Consumer<List<Trio<ProgramIndicator, String, String>>> swapIndicators();
-    }
-
-    public interface Presenter extends AbstractActivityContracts.Presenter {
-
-        void init(View view);
-
-    }
+    Consumer<List<Trio<ProgramIndicator, String, String>>> swapIndicators();
 
 }

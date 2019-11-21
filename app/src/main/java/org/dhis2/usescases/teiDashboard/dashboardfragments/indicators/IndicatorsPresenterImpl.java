@@ -7,6 +7,7 @@ import org.dhis2.data.tuples.Trio;
 import org.dhis2.usescases.teiDashboard.DashboardRepository;
 import org.dhis2.utils.Result;
 import org.hisp.dhis.android.core.D2;
+import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.android.core.enrollment.EnrollmentCollectionRepository;
 import org.hisp.dhis.android.core.program.ProgramIndicator;
 import org.hisp.dhis.rules.models.RuleAction;
@@ -29,7 +30,7 @@ import static android.text.TextUtils.isEmpty;
 /**
  * QUADRAM. Created by ppajuelo on 09/04/2019.
  */
-public class IndicatorsPresenterImpl implements IndicatorsContracts.Presenter {
+public class IndicatorsPresenterImpl {
 
     private final D2 d2;
     private final SchedulerProvider schedulerProvider;
@@ -38,28 +39,36 @@ public class IndicatorsPresenterImpl implements IndicatorsContracts.Presenter {
     private final String enrollmentUid;
     private final DashboardRepository dashboardRepository;
     private final RuleEngineRepository ruleEngineRepository;
-    private IndicatorsContracts.View view;
+    private IndicatorsView view;
 
 
     IndicatorsPresenterImpl(D2 d2, String programUid, String teiUid, DashboardRepository dashboardRepository,
-                            RuleEngineRepository ruleEngineRepository, SchedulerProvider schedulerProvider) {
+                            RuleEngineRepository ruleEngineRepository, SchedulerProvider schedulerProvider,
+                            IndicatorsView view) {
         this.d2 = d2;
         this.programUid = programUid;
         this.dashboardRepository = dashboardRepository;
         this.ruleEngineRepository = ruleEngineRepository;
         this.schedulerProvider = schedulerProvider;
-
-        EnrollmentCollectionRepository enrollmentRepository = d2.enrollmentModule().enrollments()
+        this.view = view;
+        /*EnrollmentCollectionRepository enrollmentRepository = d2.enrollmentModule().enrollments()
                 .byTrackedEntityInstance().eq(teiUid);
         if (!isEmpty(programUid))
             enrollmentRepository = enrollmentRepository.byProgram().eq(programUid);
 
-        enrollmentUid = enrollmentRepository.one().blockingGet() == null ? "" : enrollmentRepository.one().blockingGet().uid();
+        enrollmentUid = enrollmentRepository.one().blockingGet() == null ? "" : enrollmentRepository.one().blockingGet().uid();*/
+        Enrollment enrollment;
+        if(!isEmpty(programUid)){
+            enrollment = d2.enrollmentModule().enrollments()
+                    .byTrackedEntityInstance().eq(teiUid).byProgram().eq(programUid).one().blockingGet();
+        }else{
+            enrollment = d2.enrollmentModule().enrollments()
+                    .byTrackedEntityInstance().eq(teiUid).one().blockingGet();
+        }
+        enrollmentUid = enrollment == null ? "": enrollment.uid();
     }
 
-    @Override
-    public void init(IndicatorsContracts.View view) {
-        this.view = view;
+    public void init() {
         this.compositeDisposable = new CompositeDisposable();
 
         compositeDisposable.add(
@@ -128,12 +137,10 @@ public class IndicatorsPresenterImpl implements IndicatorsContracts.Presenter {
         return indicators;
     }
 
-    @Override
     public void onDettach() {
         compositeDisposable.clear();
     }
 
-    @Override
     public void displayMessage(String message) {
         view.displayMessage(message);
     }
