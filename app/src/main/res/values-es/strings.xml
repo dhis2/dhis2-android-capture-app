@@ -199,10 +199,13 @@
     <string name="refill_reserved_values">Recargar</string>
     <string name="settings_sms_module_title">Modulo SMS:</string>
     <string name="settings_sms_receiver_number">SMS gateway</string>
+    <string name="settings_sms_result_sender_number">Emisor del SMS de resultado</string>
+    <string name="settings_sms_result_timeout">Tiempo límite de respuesta</string>
     <string name="settings_sms_result_timeout_hint">segundos</string>
     <string name="settings_sms_result_sender_hint">numero</string>
     <string name="settings_sms_receiver_number_hint">numero</string>
     <string name="settings_sms_module_switch">Permitir envío por SMS</string>
+    <string name="settings_sms_response_wait_switch">Esperar confirmación por SMS</string>
     <!-- SEARCH TRACK ENTITY -->
 
     <!--region SETTINCS-->
@@ -514,6 +517,7 @@
     <string name="sms_receiver_number">Numero receptor</string>
     <string name="sms_amount_question">Quiere enviar %d SMS?</string>
     <string name="sms_sending">Enviando %1$d/%2$d</string>
+    <string name="sms_waiting_amount_confirm">Esperando confirmación - %d</string>
     <string name="sms_all_sent">Se han enviado todos los mensajes</string>
     <string name="sms_submission_completed">Envío completado con éxito</string>
     <string name="sms_waiting_confirmation">Esperando SMS de confirmación</string>
@@ -522,9 +526,23 @@
     <string name="sms_error">Fallo en el envío </string>
     <string name="sms_error_item_not_ready">Los datos no están listos para envío</string>
     <string name="sms_error_no_network">No hay red</string>
+    <string name="sms_error_no_check_network_permission">Permiso para comprobar la conexión no concedido</string>
+    <string name="sms_error_no_receive_sms_permission">Permiso para recibir sms no concedido</string>
+    <string name="sms_error_no_send_sms_permission">Permiso para enviar sms no concedido</string>
+    <string name="sms_error_no_gateway_set">Puerta de acceso no definida</string>
+    <string name="sms_error_no_user_login">El usuario no ha iniciado sesión</string>
     <string name="sms_error_module_disabled">Modulo SMS desabilitado</string>
+    <string name="sms_error_ongoing_sunmission">Se está enviando otro SMS en este momento</string>
     <string name="sms_metadata_empty">Modulo SMS no inicializado. No se encontraron los metadatos necesarios.</string>
     <string name="sms_completed">Completado</string>
+    <string name="sms_count_error">No se ha aceptado el número de SMS</string>
+    <string name="sms_state_started">Inicio del envío de sms</string>
+    <string name="sms_state_converted">Datos leídos y convertidos. Id de envío: 1%d</string>
+    <string name="sms_general_error">Error al enviar sms</string>
+    <string name="sms_title_enrollment">SMS para registro de TEI</string>
+    <string name="sms_title_event">SMS para evento</string>
+    <string name="sms_title_data_set">SMS para conjunto de datos</string>
+    <string name="sms_bar_state_starting">Iniciando</string>
     <string name="sms_bar_state_sending">En proceso</string>
     <string name="sms_bar_state_sent">Enviado</string>
     <string name="sms_bar_state_failed">Ha fallado</string>
@@ -545,13 +563,33 @@
     <string name="polygon_captured">Polígono guardado</string>
     <string name="polygon">Polígono</string>
     <string name="map_layers">Capas del Mapa</string>
+    <!--endregion-->
+
+    <string name="wrong_pattern">No tiene el formato correcto</string>
+    <string name="fingerprint_title">Huella dactilar</string>
+    <string name="fingerprint_message">Por favor, toque con el dedo el lector de huellas.</string>
+    <string name="security_title">Seguridad</string>
+    <string name="security_rooted_message">Por motivos de seguridad, esta versión de la aplicación no permite su uso en dispositivos root. Por favor use la versión de formación.</string>
+    <string name="fix_error">Hay algunos errores. Por favor corríjalos antes de continuar.</string>
+
+    <string name="filters_active">Filtros activos</string>
+    <string name="filters_disabled">Filtros desactivados</string>
     <string name="filters_title_period">Periodo</string>
+    <string name="filters_title_org_unit">Unidad Org.</string>
     <string name="filters_title_status">Estado</string>
+    <string name="filters_title_state">Estado</string>
     <string name="filter_period_today">Hoy</string>
     <string name="filter_period_yesterday">Ayer</string>
+    <string name="filter_period_tomorrow">Mañana</string>
     <string name="filter_period_this_week">Esta semana</string>
     <string name="filter_period_last_week">Última semana</string>
+    <string name="filter_perdior_next_week">La semana que viene</string>
     <string name="filter_period_this_month">Este mes</string>
     <string name="filter_period_last_month">Mes anterior</string>
+    <string name="filter_period_next_month">Mes siguiente</string>
+    <string name="filter_period_form_to">Desde - hasta</string>
     <string name="filter_period_other">Otro</string>
-    </resources>
+    <string name="filter_period_any">Cualquier momento</string>
+    <string name="data_values_error_sync_message">La sincronización falló. Comprueba los valores para tratar de resolver el problema e inténtelo otra vez. Si el fallo persiste contacta con su administrador del sistema.</string>
+    <string name="sms_synced_message">Los datos se han enviado al servidor pero no se puede garantizar que se hayan guardado</string>
+</resources>
