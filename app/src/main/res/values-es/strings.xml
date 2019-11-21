@@ -499,6 +499,7 @@
     <string name="data_every_hour">Cada hora</string>
     <string name="data_every_day">Diario</string>
     <string name="data_every_week">Semanal</string>
+    <string name="period_week">Semana</string>
     <string name="sync_setting">Parámetros de configuración: %s</string>
     <string name="relationship_without_enrollment">Este registro no tiene ninguna inscripción. No se puede acceder al dashboard.</string>
     <string name="formatting_error">Error de formato</string>
@@ -544,4 +545,13 @@
     <string name="polygon_captured">Polígono guardado</string>
     <string name="polygon">Polígono</string>
     <string name="map_layers">Capas del Mapa</string>
+    <string name="filters_title_period">Periodo</string>
+    <string name="filters_title_status">Estado</string>
+    <string name="filter_period_today">Hoy</string>
+    <string name="filter_period_yesterday">Ayer</string>
+    <string name="filter_period_this_week">Esta semana</string>
+    <string name="filter_period_last_week">Última semana</string>
+    <string name="filter_period_this_month">Este mes</string>
+    <string name="filter_period_last_month">Mes anterior</string>
+    <string name="filter_period_other">Otro</string>
     </resources>
