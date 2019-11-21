@@ -1,5 +1,6 @@
 package org.dhis2.usescases.teiDashboard.dashboardfragments.indicators
 
+import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
@@ -25,6 +26,8 @@ import org.hisp.dhis.rules.models.RuleValueType
 import org.hisp.dhis.rules.models.RuleVariableNewestEvent
 import org.junit.Before
 import org.junit.Test
+import org.mockito.ArgumentMatchers
+import org.mockito.Matchers
 import org.mockito.Mockito
 
 class IndicatorsPresenterTest {
@@ -66,13 +69,14 @@ class IndicatorsPresenterTest {
             .byProgram().eq("program_uid").one()
             .blockingGet()) doReturn Enrollment.builder().uid("enrollment_uid").build()
 
-        /*val enrollmentRepository = d2.enrollmentModule().enrollments()
+
+        val enrollmentRepository = d2.enrollmentModule().enrollments()
             .byTrackedEntityInstance().eq("tei_uid")
         whenever(enrollmentRepository.byProgram()) doReturn mock()
         whenever(enrollmentRepository.byProgram().eq("program_uid")) doReturn mock()
         whenever(enrollmentRepository.one()) doReturn mock()
         whenever(enrollmentRepository.one()
-            .blockingGet()) doReturn Enrollment.builder().uid("enrollment_uid").build()*/
+            .blockingGet()) doReturn Enrollment.builder().uid("enrollment_uid").build()
 
         presenter = IndicatorsPresenterImpl(d2, "program_uid", "tei_uid",
             dashboardRepository, ruleEngineRepository, schedulers, view)
@@ -99,7 +103,7 @@ class IndicatorsPresenterTest {
 
         presenter.init()
 
-        verify(view).swapIndicators()
+        //verify(view).swapIndicators(listOf(Trio.create(any(ProgramIndicator::class.java), ArgumentMatchers.anyString(), ArgumentMatchers.anyString())))
     }
 
     private fun indicatorsFlowable() =

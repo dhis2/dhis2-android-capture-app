@@ -72,8 +72,8 @@ public class IndicatorsFragment extends FragmentGlobalAbstract implements Indica
     }
 
     @Override
-    public Consumer<List<Trio<ProgramIndicator, String, String>>> swapIndicators() {
-        return indicators -> {
+    public void swapIndicators(List<Trio<ProgramIndicator, String, String>> indicators) {
+
             if (adapter != null) {
                 adapter.setIndicators(indicators);
             }
@@ -85,6 +85,6 @@ public class IndicatorsFragment extends FragmentGlobalAbstract implements Indica
             } else {
                 binding.emptyIndicators.setVisibility(View.VISIBLE);
             }
-        };
+
     }
 }

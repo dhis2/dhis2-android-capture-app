@@ -20,9 +20,7 @@ import java.util.List;
 
 import io.reactivex.Observable;
 import io.reactivex.Single;
-import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
 import static android.text.TextUtils.isEmpty;
@@ -51,12 +49,14 @@ public class IndicatorsPresenterImpl {
         this.ruleEngineRepository = ruleEngineRepository;
         this.schedulerProvider = schedulerProvider;
         this.view = view;
-        /*EnrollmentCollectionRepository enrollmentRepository = d2.enrollmentModule().enrollments()
+        EnrollmentCollectionRepository enrollmentRepository = d2.enrollmentModule().enrollments()
                 .byTrackedEntityInstance().eq(teiUid);
         if (!isEmpty(programUid))
             enrollmentRepository = enrollmentRepository.byProgram().eq(programUid);
 
-        enrollmentUid = enrollmentRepository.one().blockingGet() == null ? "" : enrollmentRepository.one().blockingGet().uid();*/
+        enrollmentUid = enrollmentRepository.one().blockingGet() == null ? "" : enrollmentRepository.one().blockingGet().uid();
+
+        /*
         Enrollment enrollment;
         if(!isEmpty(programUid)){
             enrollment = d2.enrollmentModule().enrollments()
@@ -65,7 +65,7 @@ public class IndicatorsPresenterImpl {
             enrollment = d2.enrollmentModule().enrollments()
                     .byTrackedEntityInstance().eq(teiUid).one().blockingGet();
         }
-        enrollmentUid = enrollment == null ? "": enrollment.uid();
+        enrollmentUid = enrollment == null ? "": enrollment.uid();*/
     }
 
     public void init() {
@@ -100,9 +100,9 @@ public class IndicatorsPresenterImpl {
                                 }))
                         .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.ui())
-                        .subscribe(
-                                view.swapIndicators(),
-                                Timber::d
+                        .subscribe(data -> {view.swapIndicators(data);},
+                                //view.swapIndicators(),
+                                Timber::e
                         )
         );
     }

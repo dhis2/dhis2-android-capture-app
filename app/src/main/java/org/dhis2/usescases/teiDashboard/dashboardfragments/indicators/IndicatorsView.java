@@ -13,6 +13,6 @@ import io.reactivex.functions.Consumer;
  */
 interface IndicatorsView extends AbstractActivityContracts.View {
 
-    Consumer<List<Trio<ProgramIndicator, String, String>>> swapIndicators();
+    void swapIndicators(List<Trio<ProgramIndicator, String, String>> indicators);
 
 }
