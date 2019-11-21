@@ -13,6 +13,7 @@ import org.dhis2.databinding.ItemFilterOrgUnitBinding;
 import org.dhis2.databinding.ItemFilterPeriodBinding;
 import org.dhis2.databinding.ItemFilterStateBinding;
 import org.dhis2.databinding.ItemFilterStatusBinding;
+import org.dhis2.databinding.ItemFilterValueBinding;
 import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryOptionCombo;
 import org.hisp.dhis.android.core.dataelement.DataElement;
@@ -50,6 +51,8 @@ public class FiltersAdapter extends RecyclerView.Adapter<FilterHolder> {
                 return new CatOptCombFilterHolder(ItemFilterCatOptCombBinding.inflate(inflater, parent, false), openedFilter, catCombData);
             case EVENT_STATUS:
                 return new StatusEventFilterHolder(ItemFilterStatusBinding.inflate(inflater, parent, false), openedFilter);
+            case TEXT_VALUE:
+                return new TextValueFilterHolder(ItemFilterValueBinding.inflate(inflater, parent, false), openedFilter, textTypeDataElements);
             default:
                 throw new IllegalArgumentException("Unsupported filter value");
         }
@@ -85,9 +88,9 @@ public class FiltersAdapter extends RecyclerView.Adapter<FilterHolder> {
         }
     }
 
-    public void addFilterByTextValue(List<DataElement> textTypeDataElements) {
-        if(!filtersList.contains(Filters.EVENT_STATUS)) {
-            filtersList.add(Filters.EVENT_STATUS);
+    public void addTextValueFilter(List<DataElement> textTypeDataElements) {
+        if(!filtersList.contains(Filters.TEXT_VALUE)) {
+            filtersList.add(Filters.TEXT_VALUE);
             this.textTypeDataElements = textTypeDataElements;
             notifyDataSetChanged();
         }

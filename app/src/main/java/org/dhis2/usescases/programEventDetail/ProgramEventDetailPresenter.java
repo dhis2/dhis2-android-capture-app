@@ -51,8 +51,6 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
 
     @Override
     public void init(ProgramEventDetailContract.View view) {
-        FilterManager.getInstance().setTexValueFilter(Pair.create("LJHNsKzZ8Mg", "Jorge"));
-        
         this.view = view;
         compositeDisposable = new CompositeDisposable();
 

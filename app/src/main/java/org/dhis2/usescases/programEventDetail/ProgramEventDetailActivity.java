@@ -137,7 +137,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
 
         filtersAdapter = new FiltersAdapter();
         filtersAdapter.addEventStatus();
-        //filtersAdapter.addFilterByTextValue();
+
         try {
             binding.filterLayout.setAdapter(filtersAdapter);
 
@@ -307,7 +307,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
 
     @Override
     public void setTextTypeDataElementsFilter(List<DataElement> textTypeDataElementsFilter) {
-
+        filtersAdapter.addTextValueFilter(textTypeDataElementsFilter);
     }
 
     @Override

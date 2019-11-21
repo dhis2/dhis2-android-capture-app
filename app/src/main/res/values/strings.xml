@@ -582,6 +582,7 @@
     <string name="filters_title_period">Period</string>
     <string name="filters_title_org_unit">Org. Unit</string>
     <string name="filters_title_status">Status</string>
+    <string name="filters_title_value">Value</string>
     <string name="filters_title_state">State</string>
     <string name="filter_period_today">Today</string>
     <string name="filter_period_yesterday">Yesterday</string>

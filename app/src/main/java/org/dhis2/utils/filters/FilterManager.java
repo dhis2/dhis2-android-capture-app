@@ -222,7 +222,15 @@ public class FilterManager {
 
     public Pair<String,String> getTexValueFilter(){ return textValueFilter; }
 
-    public void setTexValueFilter(Pair<String,String> filter){ textValueFilter = filter; }
+    public void setTexValueFilter(Pair<String,String> filter){
+        if (filter.val0().isEmpty() || filter.val1().isEmpty()){
+            clearTextValues();
+        } else {
+            textValueFilter = filter;
+            stateFiltersApplied.set(1);
+            filterProcessor.onNext(this);
+        }
+    }
 
     public void addPeriodRequest(PeriodRequest periodRequest) {
         periodRequestProcessor.onNext(periodRequest);
@@ -267,7 +275,7 @@ public class FilterManager {
     }
 
     public void clearTextValues() {
-        textValueFilter = null;
+        textValueFilter = Pair.create("","");
         eventStatusFiltersApplied.set(0);
         filterProcessor.onNext(this);
     }
