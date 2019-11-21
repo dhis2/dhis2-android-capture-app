@@ -31,6 +31,7 @@ package org.dhis2.usescases.sync
 import io.reactivex.disposables.CompositeDisposable
 import org.dhis2.data.schedulers.SchedulerProvider
 import org.dhis2.data.service.workManager.WorkManagerController
+import org.dhis2.data.service.workManager.WorkerItem
 import org.dhis2.data.service.workManager.WorkerType
 import org.dhis2.data.tuples.Pair
 import org.dhis2.utils.Constants
@@ -80,8 +81,9 @@ class SyncPresenter constructor(
     }
 
     fun syncReservedValues() {
-        workManagerController.cancelAllWorkByTag(Constants.RESERVED)
-        workManagerController.syncDataForWorker(WorkerType.RESERVED, Constants.RESERVED)
+        val workerItem = WorkerItem(Constants.RESERVED, WorkerType.RESERVED)
+        workManagerController.cancelAllWorkByTag(workerItem.workerName)
+        workManagerController.syncDataForWorker(workerItem)
     }
 
     fun onDettach() = disposable.clear()

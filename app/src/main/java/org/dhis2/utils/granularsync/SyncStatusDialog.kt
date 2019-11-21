@@ -179,9 +179,9 @@ class SyncStatusDialog private constructor(
                 } else if (conflictType == ConflictType.DATA_VALUES) {
                     setDataSetInstanceMessage()
                 }
-            State.SYNCED_VIA_SMS,State.SENT_VIA_SMS->
+            State.SYNCED_VIA_SMS, State.SENT_VIA_SMS ->
                 setNoConflictMessage(getString(R.string.sms_synced_message))
-            else -> {/*states not in use*/}
+            else -> { /*states not in use*/ }
         }
     }
 

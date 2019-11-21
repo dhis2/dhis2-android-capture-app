@@ -28,6 +28,7 @@
 
 package org.dhis2.data.service.workManager
 
+import android.content.Context
 import androidx.work.WorkManager
 import dagger.Module
 import dagger.Provides
@@ -36,6 +37,12 @@ import javax.inject.Singleton
 @Module
 @Singleton
 class WorkManagerModule {
+
+    @Provides
+    @Singleton
+    fun workManager(context: Context): WorkManager {
+        return WorkManager.getInstance(context)
+    }
 
     @Provides
     @Singleton

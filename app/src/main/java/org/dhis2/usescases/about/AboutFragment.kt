@@ -30,25 +30,20 @@ package org.dhis2.usescases.about
 
 import android.content.Context
 import android.content.pm.PackageManager
-import androidx.databinding.DataBindingUtil
 import android.os.Bundle
 import android.text.method.LinkMovementMethod
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-
+import androidx.databinding.DataBindingUtil
+import javax.inject.Inject
 import org.dhis2.BuildConfig
 import org.dhis2.Components
 import org.dhis2.R
 import org.dhis2.databinding.FragmentAboutBinding
 import org.dhis2.usescases.general.FragmentGlobalAbstract
 import org.hisp.dhis.android.core.user.UserCredentials
-
-import javax.inject.Inject
-
 import timber.log.Timber
-
-import org.dhis2.utils.analytics.ABOUT_FRAGMENT
 
 class AboutFragment : FragmentGlobalAbstract(), AboutView {
 
@@ -90,7 +85,6 @@ class AboutFragment : FragmentGlobalAbstract(), AboutView {
 
             val text = String.format(getString(R.string.about_app), versionName)
             aboutBinding.aboutApp.text = text
-
         } catch (e: PackageManager.NameNotFoundException) {
             Timber.e(e)
         }
