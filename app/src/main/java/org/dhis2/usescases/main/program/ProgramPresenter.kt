@@ -22,6 +22,8 @@ class ProgramPresenter internal constructor(
     private val programQueries = PublishProcessor.create<Pair<List<DatePeriod>, List<String>>>()
 
     fun init() {
+        FilterManager.getInstance().clearTextValues()
+
         val loadingProcessor = PublishProcessor.create<Boolean>()
 
         disposable.add(

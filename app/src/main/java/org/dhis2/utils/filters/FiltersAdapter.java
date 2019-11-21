@@ -15,6 +15,7 @@ import org.dhis2.databinding.ItemFilterStateBinding;
 import org.dhis2.databinding.ItemFilterStatusBinding;
 import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryOptionCombo;
+import org.hisp.dhis.android.core.dataelement.DataElement;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,6 +25,7 @@ public class FiltersAdapter extends RecyclerView.Adapter<FilterHolder> {
     private List<Filters> filtersList;
     private ObservableField<Filters> openedFilter;
     private Pair<CategoryCombo, List<CategoryOptionCombo>> catCombData;
+    private List<DataElement> textTypeDataElements;
 
     public FiltersAdapter() {
         this.filtersList = new ArrayList<>();
@@ -83,4 +85,11 @@ public class FiltersAdapter extends RecyclerView.Adapter<FilterHolder> {
         }
     }
 
+    public void addFilterByTextValue(List<DataElement> textTypeDataElements) {
+        if(!filtersList.contains(Filters.EVENT_STATUS)) {
+            filtersList.add(Filters.EVENT_STATUS);
+            this.textTypeDataElements = textTypeDataElements;
+            notifyDataSetChanged();
+        }
+    }
 }
