@@ -596,4 +596,5 @@
     <string name="filter_period_other">Other</string>
     <string name="filter_period_any">Anytime</string>
     <string name="data_values_error_sync_message">Sync failed. Sync failed. Check the data values to try to fix the problem and try again. If it keeps failing contact your system administrator</string>
+    <string name="sms_synced_message">This data has been sent to the server but it is not guaranteed to have been stored</string>
 </resources>
