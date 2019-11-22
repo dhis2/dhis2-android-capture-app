@@ -32,7 +32,7 @@ public class IndicatorsPresenterImpl {
 
     private final D2 d2;
     private final SchedulerProvider schedulerProvider;
-    private CompositeDisposable compositeDisposable;
+    CompositeDisposable compositeDisposable;
     private final String programUid;
     private final String enrollmentUid;
     private final DashboardRepository dashboardRepository;
@@ -49,28 +49,16 @@ public class IndicatorsPresenterImpl {
         this.ruleEngineRepository = ruleEngineRepository;
         this.schedulerProvider = schedulerProvider;
         this.view = view;
+        this.compositeDisposable = new CompositeDisposable();
         EnrollmentCollectionRepository enrollmentRepository = d2.enrollmentModule().enrollments()
                 .byTrackedEntityInstance().eq(teiUid);
         if (!isEmpty(programUid))
             enrollmentRepository = enrollmentRepository.byProgram().eq(programUid);
 
         enrollmentUid = enrollmentRepository.one().blockingGet() == null ? "" : enrollmentRepository.one().blockingGet().uid();
-
-        /*
-        Enrollment enrollment;
-        if(!isEmpty(programUid)){
-            enrollment = d2.enrollmentModule().enrollments()
-                    .byTrackedEntityInstance().eq(teiUid).byProgram().eq(programUid).one().blockingGet();
-        }else{
-            enrollment = d2.enrollmentModule().enrollments()
-                    .byTrackedEntityInstance().eq(teiUid).one().blockingGet();
-        }
-        enrollmentUid = enrollment == null ? "": enrollment.uid();*/
     }
 
     public void init() {
-        this.compositeDisposable = new CompositeDisposable();
-
         compositeDisposable.add(
                 dashboardRepository.getIndicators(programUid)
                         .filter(indicators -> !isEmpty(enrollmentUid))

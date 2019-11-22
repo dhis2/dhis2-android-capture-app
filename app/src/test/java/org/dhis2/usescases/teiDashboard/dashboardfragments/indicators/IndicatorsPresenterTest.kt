@@ -12,22 +12,19 @@ import org.dhis2.data.schedulers.SchedulerProvider
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.dhis2.data.tuples.Trio
 import org.dhis2.usescases.teiDashboard.DashboardRepository
-import org.dhis2.usescases.teiDashboard.DashboardRepositoryImpl
+import org.dhis2.utils.Result
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.program.ProgramIndicator
-import org.hisp.dhis.rules.RuleEngine
 import org.hisp.dhis.rules.RuleEngineContext
-import org.hisp.dhis.rules.RuleExpressionEvaluator
 import org.hisp.dhis.rules.models.Rule
-import org.hisp.dhis.rules.models.RuleAction
 import org.hisp.dhis.rules.models.RuleActionDisplayText
+import org.hisp.dhis.rules.models.RuleEffect
 import org.hisp.dhis.rules.models.RuleValueType
 import org.hisp.dhis.rules.models.RuleVariableNewestEvent
+import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
-import org.mockito.ArgumentMatchers
-import org.mockito.Matchers
 import org.mockito.Mockito
 
 class IndicatorsPresenterTest {
@@ -49,8 +46,6 @@ class IndicatorsPresenterTest {
         whenever(d2.enrollmentModule().enrollments()
             .byTrackedEntityInstance().eq("tei_uid").one()
             .blockingGet()) doReturn Enrollment.builder().uid("enrollment_uid").build()
-        whenever(d2.enrollmentModule().enrollments()
-            .byTrackedEntityInstance().eq("tei_uid")) doReturn mock()
 
         whenever(d2.enrollmentModule().enrollments()
             .byTrackedEntityInstance().eq("tei_uid")
@@ -67,15 +62,6 @@ class IndicatorsPresenterTest {
         whenever(d2.enrollmentModule().enrollments()
             .byTrackedEntityInstance().eq("tei_uid")
             .byProgram().eq("program_uid").one()
-            .blockingGet()) doReturn Enrollment.builder().uid("enrollment_uid").build()
-
-
-        val enrollmentRepository = d2.enrollmentModule().enrollments()
-            .byTrackedEntityInstance().eq("tei_uid")
-        whenever(enrollmentRepository.byProgram()) doReturn mock()
-        whenever(enrollmentRepository.byProgram().eq("program_uid")) doReturn mock()
-        whenever(enrollmentRepository.one()) doReturn mock()
-        whenever(enrollmentRepository.one()
             .blockingGet()) doReturn Enrollment.builder().uid("enrollment_uid").build()
 
         presenter = IndicatorsPresenterImpl(d2, "program_uid", "tei_uid",
@@ -101,9 +87,27 @@ class IndicatorsPresenterTest {
 
         whenever(ruleEngineRepository.updateRuleEngine()) doReturn ruleEngine()
 
+        whenever(ruleEngineRepository.reCalculate()) doReturn resultRuleEffect()
+
         presenter.init()
 
-        //verify(view).swapIndicators(listOf(Trio.create(any(ProgramIndicator::class.java), ArgumentMatchers.anyString(), ArgumentMatchers.anyString())))
+        verify(view).swapIndicators(any())
+    }
+
+    @Test
+    fun `Should clear disposables`() {
+        presenter.onDettach()
+
+        Assert.assertTrue(presenter.compositeDisposable.size() == 0)
+    }
+
+    @Test
+    fun `Should display message`() {
+        val message = "message"
+
+        presenter.displayMessage(message)
+
+        verify(view).displayMessage(message)
     }
 
     private fun indicatorsFlowable() =
@@ -126,5 +130,9 @@ class IndicatorsPresenterTest {
             .supplementaryData(hashMapOf(Pair("key", listOf("data"))))
             .constantsValue(hashMapOf(Pair("key", "constant")))
             .build().toEngineBuilder().build())
+
+    private fun resultRuleEffect() =
+        Flowable.just(Result.success(listOf(RuleEffect.create(
+            RuleActionDisplayText.createForIndicators("content", "data")))))
 
 }
