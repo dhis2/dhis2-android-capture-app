@@ -358,8 +358,8 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
 
     @Override
     public Observable<Program> getProgramWithId(String programUid) {
-        return d2.programModule().programs().withProgramIndicators().withProgramRuleVariables().withProgramSections()
-            .withProgramTrackedEntityAttributes().withTrackedEntityType().byUid().eq(programUid).one().get().toObservable();
+        return d2.programModule().programs()
+            .withTrackedEntityType().byUid().eq(programUid).one().get().toObservable();
     }
 
     @Override

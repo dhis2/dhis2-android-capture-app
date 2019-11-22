@@ -146,7 +146,7 @@ class LoginPresenter(
                         .map<Response<Any>> { user ->
                             run {
                                 with(preferenceProvider) {
-                                    setValue(USER, user.userCredentials()?.username())
+                                    setValue(USER, userManager.d2.userModule().userCredentials().blockingGet().username())
                                     setValue(SESSION_LOCKED, false)
                                     setValue(PIN, null)
                                 }

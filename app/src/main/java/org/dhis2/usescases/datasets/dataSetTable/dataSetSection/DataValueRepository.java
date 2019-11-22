@@ -12,6 +12,8 @@ import org.hisp.dhis.android.core.dataset.DataInputPeriod;
 import org.hisp.dhis.android.core.dataset.DataSet;
 import org.hisp.dhis.android.core.dataset.Section;
 import org.hisp.dhis.android.core.period.Period;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Map;
@@ -56,4 +58,6 @@ public interface DataValueRepository {
     List<CategoryOption> getCatOptionFromCatOptionCombo(CategoryOptionCombo categoryOptionCombo);
 
     Flowable<Boolean> canWriteAny();
+
+    @NotNull List<CategoryOptionCombo> getCatOptionComboFrom(@Nullable String catComboUid);
 }
