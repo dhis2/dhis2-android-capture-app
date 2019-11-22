@@ -104,7 +104,7 @@ public final class EnrollmentRuleEngineRepository
         Enrollment enrollment = d2.enrollmentModule().enrollments().uid( enrollmentUid ).blockingGet();
         OrganisationUnit ou = d2.organisationUnitModule().organisationUnits().uid( enrollment.organisationUnit() )
             .blockingGet();
-        Program program = d2.programModule().programs().withProgramRuleVariables().uid( enrollment.program() )
+        Program program = d2.programModule().programs().uid( enrollment.program() )
             .blockingGet();
 
         attrRuleVariableMap = new HashMap<>();
