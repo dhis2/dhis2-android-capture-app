@@ -180,9 +180,15 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract {
             if (!isEmpty(lastFocusItem))
                 dataEntryAdapter.setLastFocusItem(lastFocusItem);
 
-            Parcelable rvState = binding.formRecycler.getLayoutManager().onSaveInstanceState();
+            LinearLayoutManager myLayoutManager = (LinearLayoutManager) binding.formRecycler.getLayoutManager();
+            int myFirstPositionIndex = myLayoutManager.findFirstVisibleItemPosition();
+            View myFirstPositionView = myLayoutManager.findViewByPosition(myFirstPositionIndex);
+            int offset = 0;
+            if (myFirstPositionView != null){
+                offset = myFirstPositionView.getTop();
+            }
             dataEntryAdapter.swap(updates);
-            binding.formRecycler.getLayoutManager().onRestoreInstanceState(rvState);
+            myLayoutManager.scrollToPositionWithOffset(myFirstPositionIndex, offset);
 
             int completedValues = 0;
             HashMap<String, Boolean> fields = new HashMap<>();
