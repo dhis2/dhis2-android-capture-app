@@ -10,7 +10,7 @@
     <string name="error_unexpected_error">Erreur inattendue </string>
     <string name="error_internal_server_error">Erreur interne </string>
     <string name="yes">oui </string>
-    <string name="no">no</string>
+    <string name="no">non</string>
     <string name="no_value">pas de valeur</string>
     <string name="no_reserved_values">Il n\'y a plus de valeurs réservées. Veuillez contacter votre administrateur système.</string>
     <string name="no_reserved_values_connection">Il n\'y a plus de valeurs réservées. Veuillez vous connecter pour en obtenir d\'autres.</string>
@@ -62,7 +62,7 @@
     <string name="MONTHLY">Mensuel</string>
     <string name="YEARLY">Annuel</string>
     <string name="clear_filters">Effacer les filtres</string>
-    <string name="action_accept">Accept</string>
+    <string name="action_accept">Accepter</string>
     <string name="action_share_zero_items">Partager</string>
     <string name="action_share_single_item">Partager %d élément</string>
     <string name="action_share_multiple_item">Partager %d éléments</string>
@@ -135,15 +135,13 @@
     <!--Event Detail-->
     <string name="event_date">Datee d´événement</string>
     <string name="due_date">Date d\'échéance</string>
-    <string name="cat_combo">Cat combo</string>
-    <string name="date_default">DD/MM/YYYY</string>
+    <string name="cat_combo">Combinaison de catégories</string>
+    <string name="date_default">JJ/MM/AAAA</string>
     <string name="cancel">Annuler</string>
     <string name="delete">Supprimer</string>
     <string name="delete_event">Effacer l´événement</string>
     <string name="confirm_delete_event">Êtes-vous sûr vouloir effacer l´événement?</string>
     <string name="event_was_deleted">événement supprimé avec succès</string>
-    <string name="total">Total</string>
-
     <!--TEI Enrollment list-->
     <string name="enrollment_list">Liste d\'admission</string>
     <string name="active_programs">Programmes en cours</string>
@@ -185,7 +183,7 @@
     <string name="sync_max_parameters">Paramètres de synchronisation actuels</string>
     <string name="sync_default_parameters">Retour aux valeurs par défaut</string>
     <string name="wipe_data_meesage">La base de données sera supprimée.\nVous devez donc entrer de nouveau</string>
-    <string name="wipe_data_ok">Accept</string>
+    <string name="wipe_data_ok">Accepter</string>
     <string name="wipe_data_no">Annuler</string>
     <string name="SYNC_DATA">Synchroniser les données mainténant</string>
     <string name="SYNC_META">Synchroniser la configuration mainténant</string>
@@ -240,7 +238,7 @@
 
     <!--AGE CUSTOM VIEW-->
     <string name="hint_day">Jours</string>
-    <string name="hint_month">Months</string>
+    <string name="hint_month">Mois</string>
     <string name="hint_year">Années</string>
     <string name="week">Semaines</string>
     <string name="incident_date">Date d\'incident</string>
@@ -449,7 +447,7 @@ Veuillez les vérifier. </string>
     <string name="table">Tableau</string>
     <string name="login_https">https://</string>
     <string name="delete_local_data_message">Les données non synchronisées seront perdues. Voulez-vous vraiment continuer? </string>
-    <string name="local_data_accept">Accept</string>
+    <string name="local_data_accept">Accepter</string>
     <string name="delete_local_data_error">Les données n\'ont pu être supprimées. Veuillez ressayer. </string>
     <string name="delete_local_data_done">Suppression des données locales terminée avec succès. </string>
     <string name="org_unit_selection_warning">Au moins une unité d\'organisation doit être sélectionnée</string>
@@ -462,7 +460,7 @@ Veuillez les vérifier. </string>
     <string name="login_server_info_message">Saisissez l\'URL du serveur DHIS 2 de votre organisation tel que fourni par votre administrateur système.\n\nVous pouvez également scanner le code QR avec le lien URL du serveur</string>
     <string name="forgot_your_code">Oublié le code?</string>
     <string name="event_form_end_options_title">Que souhaitez-vous faire pour cet évènement?</string>
-    <string name="sectionSelectorEnd">END</string>
+    <string name="sectionSelectorEnd">FIN</string>
     <string name="resource_not_found">%s non trouvé</string>
     <string name="relationship_not_found_message">La donnée à laquelle vous essayez d\'accéder n\'est pas disponible. Voulez-vous la rechercher? </string>
     <string name="sync_by_sms">Synchronisé par SMS</string>
@@ -484,6 +482,7 @@ Veuillez les vérifier. </string>
     <string name="data_every_hour">Toutes les heures</string>
     <string name="data_every_day">Quotidien</string>
     <string name="data_every_week">Hebdomadaire</string>
+    <string name="period_week">Semaine</string>
     <string name="sync_setting">Paramètre de synchronisation: %s</string>
     <string name="relationship_without_enrollment">La donnée à laquelle vous essayer d\'acceéer n\'a pas d\'enrôlement. Vous ne pouvez pas accéder au tableau de bord.</string>
     <string name="formatting_error">Erreur de formattage</string>
@@ -501,5 +500,13 @@ Veuillez les vérifier. </string>
     <string name="sms_bar_state_failed">Echoué</string>
 
     <string name="polygon">Polygone</string>
-    <!--endregion-->
-</resources>
+    <string name="filters_title_period">Période</string>
+    <string name="filters_title_status">Statut</string>
+    <string name="filter_period_today">Aujourd\'hui</string>
+    <string name="filter_period_yesterday">Hier</string>
+    <string name="filter_period_this_week">Cette semaine</string>
+    <string name="filter_period_last_week">Semaine passée</string>
+    <string name="filter_period_this_month">Ce mois-ci</string>
+    <string name="filter_period_last_month">Le mois dernier</string>
+    <string name="filter_period_other">Autre</string>
+    </resources>
