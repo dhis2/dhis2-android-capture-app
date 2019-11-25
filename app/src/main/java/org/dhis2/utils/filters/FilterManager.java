@@ -72,7 +72,7 @@ public class FilterManager {
         periodFilters = null;
         catOptComboFilters = new ArrayList<>();
         eventStatusFilters = new ArrayList<>();
-        textValueFilter = null;
+        textValueFilter = Pair.create("","");
 
         ouFiltersApplied = new ObservableField<>(0);
         stateFiltersApplied = new ObservableField<>(0);
@@ -287,7 +287,7 @@ public class FilterManager {
         ouFilters.clear();
         periodFilters = null;
         periodIdSelected = 0;
-        textValueFilter = null;
+        textValueFilter = Pair.create("","");
 
         eventStatusFiltersApplied.set(eventStatusFilters.size());
         catOptCombFiltersApplied.set(catOptComboFilters.size());

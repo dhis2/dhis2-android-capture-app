@@ -62,6 +62,7 @@ class TextValueFilterHolder extends FilterHolder {
             }
         });
 
+        localBinding.filterValue.valueEditText.setText(FilterManager.getInstance().getTexValueFilter().val1());
         localBinding.filterValue.valueEditText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
