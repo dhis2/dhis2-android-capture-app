@@ -227,7 +227,7 @@ public class FilterManager {
             clearTextValues();
         } else {
             textValueFilter = filter;
-            stateFiltersApplied.set(1);
+            textValueFiltersApplied.set(1);
             filterProcessor.onNext(this);
         }
     }
@@ -276,7 +276,7 @@ public class FilterManager {
 
     public void clearTextValues() {
         textValueFilter = Pair.create("","");
-        eventStatusFiltersApplied.set(0);
+        textValueFiltersApplied.set(0);
         filterProcessor.onNext(this);
     }
 

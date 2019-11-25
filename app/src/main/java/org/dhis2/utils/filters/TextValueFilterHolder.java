@@ -29,7 +29,7 @@ class TextValueFilterHolder extends FilterHolder {
             ObservableField<Filters> openedFilter,
             List<DataElement> textDataElements) {
         super(binding, openedFilter);
-        filterType = Filters.CAT_OPT_COMB;
+        filterType = Filters.TEXT_VALUE;
         this.textDataElements = textDataElements;
     }
 
@@ -40,7 +40,6 @@ class TextValueFilterHolder extends FilterHolder {
         filterTitle.setText(R.string.filters_title_value);
 
         ItemFilterValueBinding localBinding = (ItemFilterValueBinding) binding;
-
 
         DataElementsAdapter dataElementsAdapter = new DataElementsAdapter(itemView.getContext(),
                 R.layout.spinner_layout,
