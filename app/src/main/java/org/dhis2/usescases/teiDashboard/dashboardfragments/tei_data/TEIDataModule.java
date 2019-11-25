@@ -17,8 +17,10 @@ public class TEIDataModule {
 
     private final String programUid;
     private final String teiUid;
+    private TEIDataContracts.View view;
 
-    public TEIDataModule(String programUid, String teiUid) {
+    public TEIDataModule(TEIDataContracts.View view, String programUid, String teiUid) {
+        this.view = view;
         this.programUid = programUid;
         this.teiUid = teiUid;
     }
@@ -26,7 +28,7 @@ public class TEIDataModule {
     @Provides
     @PerFragment
     TEIDataContracts.Presenter providesPresenter(D2 d2, DashboardRepository dashboardRepository, SchedulerProvider schedulerProvider) {
-        return new TEIDataPresenterImpl(d2, dashboardRepository, programUid, teiUid, schedulerProvider);
+        return new TEIDataPresenterImpl(view, d2, dashboardRepository, programUid, teiUid, schedulerProvider);
     }
 
 }
