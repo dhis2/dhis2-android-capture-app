@@ -19,15 +19,13 @@ import androidx.core.content.ContextCompat;
 public class DataElementsAdapter extends ArrayAdapter<DataElement> {
 
     private final List<DataElement> dataElements;
-    private @ColorRes int textColor;
-    private final String defaultText;
+    private @ColorRes
+    int textColor;
 
     public DataElementsAdapter(@NonNull Context context, int resource, int textViewResourceId,
-                           @NonNull List<DataElement> objects, String defaultText,
-                           @ColorRes int textColor) {
+            @NonNull List<DataElement> objects, @ColorRes int textColor) {
         super(context, resource, textViewResourceId, objects);
         this.dataElements = objects;
-        this.defaultText = defaultText;
         this.textColor = textColor;
     }
 
@@ -36,28 +34,28 @@ public class DataElementsAdapter extends ArrayAdapter<DataElement> {
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
 
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        SpinnerDataelementLayoutBinding binding = SpinnerDataelementLayoutBinding.inflate(inflater,parent,false);
-        if (position != 0)
-            binding.setDataElement(dataElements.get(position - 1));
-        //binding.setDefaultTitle(defaultText);
-        binding.spinnerText.setTextColor(ContextCompat.getColor(binding.spinnerText.getContext(), textColor));
+        SpinnerDataelementLayoutBinding binding = SpinnerDataelementLayoutBinding.inflate(inflater,
+                parent, false);
+        binding.setDataElement(dataElements.get(position));
+        binding.spinnerText.setTextColor(
+                ContextCompat.getColor(binding.spinnerText.getContext(), textColor));
         return binding.getRoot();
 
     }
 
     @Override
-    public View getDropDownView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+    public View getDropDownView(int position, @Nullable View convertView,
+            @NonNull ViewGroup parent) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        SpinnerDataelementLayoutBinding binding = SpinnerDataelementLayoutBinding.inflate(inflater, parent, false);
-        if (position != 0)
-            binding.setDataElement(dataElements.get(position - 1));
+        SpinnerDataelementLayoutBinding binding = SpinnerDataelementLayoutBinding.inflate(inflater,
+                parent, false);
+        binding.setDataElement(dataElements.get(position));
 
-        //binding.setDefaultTitle(defaultText);
         return binding.getRoot();
     }
 
     @Override
     public int getCount() {
-        return super.getCount() + 1;
+        return super.getCount();
     }
 }

@@ -46,18 +46,15 @@ class TextValueFilterHolder extends FilterHolder {
                 R.layout.spinner_layout,
                 R.id.spinner_text,
                 textDataElements,
-                "-",
                 R.color.white_faf);
 
         localBinding.filterValue.dataElementsSpinner.setAdapter(dataElementsAdapter);
         localBinding.filterValue.dataElementsSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int position, long l) {
-                if (position != 0) {
-                    DataElement dataelement = textDataElements.get(position - 1);
-                    textValueFilter = Pair.create(dataelement.uid(),textValueFilter.val1());
-                    FilterManager.getInstance().setTexValueFilter(textValueFilter);
-                }
+                DataElement dataelement = textDataElements.get(position);
+                textValueFilter = Pair.create(dataelement.uid(),textValueFilter.val1());
+                FilterManager.getInstance().setTexValueFilter(textValueFilter);
             }
 
             @Override
