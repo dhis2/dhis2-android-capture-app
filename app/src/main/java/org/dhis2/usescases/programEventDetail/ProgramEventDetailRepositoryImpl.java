@@ -67,10 +67,8 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
     @Override
     public LiveData<PagedList<ProgramEventViewModel>> filteredProgramEvents(List<DatePeriod> dateFilter, List<String> orgUnitFilter, List<CategoryOptionCombo> catOptCombList,
                                                                             List<EventStatus> eventStatus, List<State> states, Pair<String, String> valueFilter) {
-
-        List<String> uIds = getEventUIdsFilteredByValue(valueFilter);
-
         EventCollectionRepository eventRepo = d2.eventModule().events().byProgramUid().eq(programUid);
+
         if (!dateFilter.isEmpty())
             eventRepo = eventRepo.byEventDate().inDatePeriods(dateFilter);
         if (!orgUnitFilter.isEmpty())
@@ -81,8 +79,10 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
             eventRepo = eventRepo.byStatus().in(eventStatus);
         if (!states.isEmpty())
             eventRepo = eventRepo.byState().in(states);
-        if (!uIds.isEmpty())
+        if (valueFilter != null && !valueFilter.val0().isEmpty() && !valueFilter.val1().isEmpty()) {
+            List<String> uIds = getEventUIdsFilteredByValue(valueFilter);
             eventRepo = eventRepo.byUid().in(uIds);
+        }
 
         DataSource dataSource = eventRepo.orderByEventDate(RepositoryScope.OrderByDirection.DESC).withTrackedEntityDataValues().getDataSource().map(event -> transformToProgramEventModel(event));
 
@@ -100,24 +100,21 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
 
         List<String> uids = new ArrayList<>();
 
-        if (valueFilter != null && !valueFilter.val0().isEmpty() && !valueFilter.val1().isEmpty()) {
+        String QUERY = "SELECT Event.uid FROM Event " +
+        "LEFT OUTER JOIN TrackedEntityDataValue AS Value ON Value.event = Event.uid " +
+        "WHERE Value.dataElement = '" + valueFilter.val0() + "' AND Value.value like '%" +
+         valueFilter.val1()+ "%'";
 
-            String QUERY = "SELECT Event.uid FROM Event " +
-            "LEFT OUTER JOIN TrackedEntityDataValue AS Value ON Value.event = Event.uid " +
-            "WHERE Value.dataElement = '" + valueFilter.val0() + "' AND Value.value like '%" +
-             valueFilter.val1()+ "%'";
-
-            try (Cursor uIdsCursor = briteDatabase.query(QUERY)) {
-                if (uIdsCursor != null) {
-                    uIdsCursor.moveToFirst();
-                    for (int i = 0; i < uIdsCursor.getCount(); i++) {
-                        uids.add(uIdsCursor.getString(0));
-                        uIdsCursor.moveToNext();
-                    }
+        try (Cursor uIdsCursor = briteDatabase.query(QUERY)) {
+            if (uIdsCursor != null) {
+                uIdsCursor.moveToFirst();
+                for (int i = 0; i < uIdsCursor.getCount(); i++) {
+                    uids.add(uIdsCursor.getString(0));
+                    uIdsCursor.moveToNext();
                 }
-            } catch (Exception e) {
-                Timber.e(e);
             }
+        } catch (Exception e) {
+            Timber.e(e);
         }
 
         return uids;
