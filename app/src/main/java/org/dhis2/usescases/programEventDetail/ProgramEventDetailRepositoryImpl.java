@@ -306,6 +306,7 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
                 .byValueType().eq(ValueType.TEXT)
                 .byUid().in(programStagesDataElementsUIds)
                 .byOptionSetUid().isNull()
+                .orderByDisplayName(RepositoryScope.OrderByDirection.ASC)
                 .get().toObservable();
     }
 
