@@ -27,6 +27,8 @@ import org.hisp.dhis.android.core.dataset.Section;
 import org.hisp.dhis.android.core.datavalue.DataValueObjectRepository;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.period.Period;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -418,5 +420,10 @@ public class DataValueRepositoryImpl implements DataValueRepository {
                         return Flowable.just(false);
                 });
 
+    }
+
+    @Override
+    public @NotNull List<CategoryOptionCombo> getCatOptionComboFrom(@Nullable String catComboUid) {
+        return d2.categoryModule().categoryOptionCombos().byCategoryComboUid().eq(catComboUid).blockingGet();
     }
 }

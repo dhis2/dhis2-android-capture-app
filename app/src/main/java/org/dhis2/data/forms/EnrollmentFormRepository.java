@@ -443,7 +443,7 @@ public class EnrollmentFormRepository implements FormRepository {
     @Override
     public Observable<List<FieldViewModel>> fieldValues() {
         return d2.enrollmentModule().enrollments().uid(enrollmentUid).get()
-                .flatMap(enrollment -> d2.programModule().programs().withProgramTrackedEntityAttributes().uid(enrollment.program()).get()
+                .flatMap(enrollment -> d2.programModule().programs().uid(enrollment.program()).get()
                         .map(program -> {
                             List<FieldViewModel> fieldViewModelList = new ArrayList<>();
                             for (ProgramTrackedEntityAttribute ptea : d2.programModule().programTrackedEntityAttributes().byProgram().eq(programUid).blockingGet()) {
@@ -536,7 +536,7 @@ public class EnrollmentFormRepository implements FormRepository {
         return d2.enrollmentModule().enrollments().uid(enrollmentUid).get()
                 .flatMap(enrollment -> d2.programModule().programs().withTrackedEntityType().uid(enrollment.program()).get())
                 .flatMap(program -> d2.trackedEntityModule().trackedEntityTypes().withTrackedEntityTypeAttributes()
-                                        .uid(program.trackedEntityType().uid()).get());
+                        .uid(program.trackedEntityType().uid()).get());
     }
 
     @Override

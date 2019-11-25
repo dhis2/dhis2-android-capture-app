@@ -46,11 +46,11 @@ class EnrollmentFormRepositoryImpl(
     init {
         this.cachedRuleEngineFlowable =
             Single.zip<List<Rule>,
-                List<RuleVariable>,
-                List<RuleEvent>,
-                Map<String, String>,
-                Map<String, List<String>>,
-                RuleEngine>(
+                    List<RuleVariable>,
+                    List<RuleEvent>,
+                    Map<String, String>,
+                    Map<String, List<String>>,
+                    RuleEngine>(
                 rulesRepository.rulesNew(programUid).subscribeOn(Schedulers.io()),
                 rulesRepository.ruleVariables(programUid).subscribeOn(Schedulers.io()),
                 rulesRepository.enrollmentEvents(
@@ -108,12 +108,12 @@ class EnrollmentFormRepositoryImpl(
                     checkOpenAfterEnrollment()
                 }
             }.map {
-            if (!isEmpty(it.second)) {
-                checkEventToOpen(it)
-            } else {
-                it
+                if (!isEmpty(it.second)) {
+                    checkEventToOpen(it)
+                } else {
+                    it
+                }
             }
-        }
     }
 
     private fun getFirstStage(): Single<Pair<String, String>> {
@@ -252,7 +252,8 @@ class EnrollmentFormRepositoryImpl(
     private fun queryAttributes(): Flowable<List<RuleAttributeValue>> {
         return programRepository.get()
             .map { program ->
-                program.programTrackedEntityAttributes()!!.filter {
+                d2.programModule().programTrackedEntityAttributes().byProgram().eq(program.uid())
+                    .blockingGet().filter {
                     d2.trackedEntityModule().trackedEntityAttributeValues()
                         .value(
                             it.trackedEntityAttribute()!!.uid(),
