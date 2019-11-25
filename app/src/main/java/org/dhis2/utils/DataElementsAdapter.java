@@ -16,11 +16,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 
-/**
- * Created by ppajuelo on 12/02/2018.
- *
- */
-
 public class DataElementsAdapter extends ArrayAdapter<DataElement> {
 
     private final List<DataElement> dataElements;
