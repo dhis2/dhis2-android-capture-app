@@ -11,7 +11,7 @@ import io.reactivex.functions.Consumer;
 /**
  * QUADRAM. Created by ppajuelo on 09/04/2019.
  */
-interface IndicatorsView extends AbstractActivityContracts.View {
+public interface IndicatorsView extends AbstractActivityContracts.View {
 
     void swapIndicators(List<Trio<ProgramIndicator, String, String>> indicators);
 
