@@ -82,7 +82,7 @@ public abstract class FormViewHolder extends RecyclerView.ViewHolder {
 
     public void openKeyboard(View v) {
         InputMethodManager imm = (InputMethodManager) v.getContext().getSystemService(Activity.INPUT_METHOD_SERVICE);
-        boolean shown = imm.showSoftInput(v.findFocus(),InputMethodManager.SHOW_FORCED);
+        v.postDelayed(() -> imm.showSoftInput(v , InputMethodManager.SHOW_FORCED), 200);
        /* if (!imm.showSoftInput(v, 0))
             v.postDelayed(() -> openKeyboard(v), 500);*/
     }
@@ -99,5 +99,9 @@ public abstract class FormViewHolder extends RecyclerView.ViewHolder {
     public void setSelectedBackground(boolean isSarchMode) {
         if (!isSarchMode)
             currentUid.setValue(fieldUid);
+    }
+
+    public String getSelectedFieldUid() {
+        return currentUid.getValue();
     }
 }

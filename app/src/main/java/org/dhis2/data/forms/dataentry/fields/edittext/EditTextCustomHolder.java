@@ -22,7 +22,6 @@ import org.dhis2.utils.Constants;
 import org.dhis2.utils.Preconditions;
 import org.dhis2.utils.ValidationUtils;
 import org.dhis2.utils.customviews.TextInputAutoCompleteTextView;
-import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.common.ValueTypeDeviceRendering;
 import org.hisp.dhis.android.core.common.ValueTypeRenderingType;
 
@@ -41,7 +40,7 @@ import static java.lang.String.valueOf;
  * QUADRAM. Created by frodriguez on 18/01/2018..
  */
 
-final class EditTextCustomHolder extends FormViewHolder {
+public class EditTextCustomHolder extends FormViewHolder {
 
     private final FlowableProcessor<RowAction> processor;
     private final boolean isSearchMode;
@@ -57,18 +56,12 @@ final class EditTextCustomHolder extends FormViewHolder {
         this.currentUid = currentSelection;
 
         binding.customEdittext.setFocusChangedListener((v, hasFocus) -> {
-           /* if (hasFocus) {
-                openKeyboard(binding.customEdittext.getEditText());
-                setSelectedBackground(isSearchMode);
-            } else
-                clearBackground(isSearchMode);*/
-           if(!hasFocus){
-               clearBackground(isSearchMode);
-               binding.customEdittext.getEditText().setFocusable(false);
-           }
+            if (!hasFocus) {
+                clearBackground(isSearchMode);
+            }
 
             if (isSearchMode || (!hasFocus && editTextModel != null && editTextModel.editable())) {
-                if(valueHasChanged())
+                if (valueHasChanged())
                     sendAction();
                 else
                     closeKeyboard(binding.customEdittext.getEditText());
@@ -86,7 +79,6 @@ final class EditTextCustomHolder extends FormViewHolder {
             binding.customEdittext.getEditText().setFocusable(true);
             binding.customEdittext.getEditText().setFocusableInTouchMode(true);
             binding.customEdittext.getEditText().requestFocus();
-            openKeyboard(binding.customEdittext.getEditText());
         });
     }
 
@@ -136,6 +128,11 @@ final class EditTextCustomHolder extends FormViewHolder {
         initFieldFocus();
 
         setLongClick();
+
+        if (getSelectedFieldUid() != null && getSelectedFieldUid().equals(fieldUid)) {
+            binding.customEdittext.getEditText().requestFocus();
+            openKeyboard(binding.customEdittext.getEditText());
+        }
     }
 
     private void checkAutocompleteRendering() {

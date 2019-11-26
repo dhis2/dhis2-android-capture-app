@@ -212,8 +212,6 @@ public class CustomTextView extends FieldLayout implements View.OnFocusChangeLis
     }
 
     public void setEditable(Boolean editable) {
-        editText.setFocusable(false);
-        editText.setFocusableInTouchMode(false);
         editText.setClickable(editable);
         editText.setEnabled(editable);
     }
