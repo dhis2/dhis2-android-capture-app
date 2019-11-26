@@ -42,6 +42,7 @@ final class EditTextCellCustomHolder extends FormViewHolder {
 
     private TableView tableView;
     FlowableProcessor<RowAction> processor;
+    private static Integer selectedColumn;
 
     @SuppressLint("RxLeakedSubscription")
     EditTextCellCustomHolder(CustomTextViewCellBinding binding, FlowableProcessor<RowAction> processor,
@@ -53,15 +54,29 @@ final class EditTextCellCustomHolder extends FormViewHolder {
         this.tableView = tableView;
         this.processor = processor;
 
-        customBinding.inputEditText.setOnFocusChangeListener((v, hasFocus) -> {
-            if (editTextModel != null && editTextModel.editable() && !editText.getText().toString().equals(editTextModel.value())) {
-                if (validate())
-                    processor.onNext(RowAction.create(editTextModel.uid(), editText.getText().toString(), editTextModel.dataElement(), editTextModel.categoryOptionCombo(), editTextModel.catCombo(), editTextModel.row(), editTextModel.column()));
-            }
-            if (!hasFocus)
-                closeKeyboard(editText);
-            else
+        editText.setOnEditorActionListener((v, actionId, event) -> {
+            selectedColumn = editTextModel.column() + 1;
+            tableView.setSelectedCell(selectedColumn, editTextModel.row());
+            return false;
+        });
+
+        editText.setOnFocusChangeListener((v, hasFocus) -> {
+            if (hasFocus) {
                 tableView.setSelectedCell(editTextModel.column(), editTextModel.row());
+            } else if (editTextModel != null && editTextModel.editable() &&
+                    !editText.getText().toString().equals(editTextModel.value()) && validate()) {
+                processor.onNext(
+                        RowAction.create(
+                                editTextModel.uid(),
+                                editText.getText().toString(),
+                                editTextModel.dataElement(),
+                                editTextModel.categoryOptionCombo(),
+                                editTextModel.catCombo(),
+                                editTextModel.row(),
+                                editTextModel.column()
+                        )
+                );
+            }
         });
     }
 
@@ -94,6 +109,9 @@ final class EditTextCellCustomHolder extends FormViewHolder {
             customBinding.inputEditText.setImeOptions(EditorInfo.IME_ACTION_NEXT);
 
         customBinding.executePendingBindings();
+
+        if(selectedColumn != null && editTextModel.column() == selectedColumn)
+            setSelected(SelectionState.SELECTED);
     }
 
     private void setInputType(ValueType valueType) {
@@ -253,14 +271,13 @@ final class EditTextCellCustomHolder extends FormViewHolder {
 
     @Override
     public void dispose() {
-
+        selectedColumn = null;
     }
 
     @Override
     public void setSelected(SelectionState selectionState) {
         super.setSelected(selectionState);
         if (selectionState == SelectionState.SELECTED) {
-            editText.performClick();
             editText.requestFocus();
             editText.setSelection(editText.getText().length());
             if (editTextModel.editable())
