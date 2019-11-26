@@ -198,11 +198,6 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-       /* if (requestCode == REQ_DETAILS) {
-            if (resultCode == RESULT_OK) {
-                activity.getPresenter().getData();
-            }
-        }*/
         if (requestCode == REQ_EVENT && resultCode == RESULT_OK) {
             presenter.getTEIEvents();
             if (data != null) {

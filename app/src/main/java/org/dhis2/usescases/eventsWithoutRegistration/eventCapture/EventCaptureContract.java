@@ -75,7 +75,7 @@ public class EventCaptureContract {
 
         void clearLastFocusItem();
 
-        void init(EventCaptureContract.View view);
+        void init();
 
         void onBackClick();
 
@@ -112,10 +112,6 @@ public class EventCaptureContract {
         boolean canWrite();
 
         boolean hasExpired();
-
-        Observable<List<OrganisationUnitLevel>> getLevels();
-
-        DataEntryStore getDataEntryStore();
 
         void saveImage(String uuid, String filePath);
     }
