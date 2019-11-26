@@ -70,7 +70,7 @@ public class DataSetDetailActivity extends ActivityGlobalAbstract implements Dat
 
         adapter = new DataSetDetailAdapter(presenter);
 
-        filtersAdapter = new FiltersAdapter();
+        filtersAdapter = new FiltersAdapter(FiltersAdapter.ProgramType.DATASET);
 
         binding.filterLayout.setAdapter(filtersAdapter);
 

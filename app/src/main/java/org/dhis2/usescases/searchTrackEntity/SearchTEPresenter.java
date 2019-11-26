@@ -217,6 +217,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                                     selectedProgram, trackedEntityType,
                                     FilterManager.getInstance().getOrgUnitUidsFilters(),
                                     FilterManager.getInstance().getStateFilters(),
+                                    FilterManager.getInstance().getEventStatusFilters(),
                                     data, NetworkUtils.isOnline(view.getContext()));
                         })
                         .doOnError(this::handleError)
@@ -382,6 +383,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                                 selectedProgram, trackedEntityType,
                                 filterManager.getOrgUnitUidsFilters(),
                                 filterManager.getStateFilters(),
+                                filterManager.getEventStatusFilters(),
                                 queryData, NetworkUtils.isOnline(view.getContext())))
                         .subscribeOn(schedulerProvider.computation())
                         .observeOn(schedulerProvider.ui())

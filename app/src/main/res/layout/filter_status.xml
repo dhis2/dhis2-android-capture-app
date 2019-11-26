@@ -27,6 +27,37 @@
         android:visibility="@{currentFilter == filterType ? View.VISIBLE : View.GONE}"
         app:layout_constraintTop_toTopOf="parent">
 
+        <!--OPEN-->
+        <LinearLayout
+            android:id="@+id/layoutOpen"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:gravity="center_vertical">
+
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:tint="@color/white"
+                app:srcCompat="@drawable/ic_lock_open_white" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_weight="1"
+                android:gravity="center_vertical"
+                android:text="@string/filter_event_status_open"
+                android:textColor="@color/white"
+                android:textSize="12sp" />
+
+            <CheckBox
+                android:id="@+id/stateOpen"
+                style="@style/filterCheckBox"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
         <!--SCHEDULED-->
         <LinearLayout
             android:id="@+id/layoutScheduled"
@@ -47,7 +78,7 @@
                 android:layout_marginEnd="16dp"
                 android:layout_weight="1"
                 android:gravity="center_vertical"
-                android:text="Schedule"
+                android:text="@string/filter_event_status_schedule"
                 android:textColor="@color/white"
                 android:textSize="12sp" />
 
@@ -78,7 +109,7 @@
                 android:layout_marginEnd="16dp"
                 android:layout_weight="1"
                 android:gravity="center_vertical"
-                android:text="Overdue"
+                android:text="@string/filter_event_status_overdue"
                 android:textColor="@color/white"
                 android:textSize="12sp" />
 
@@ -110,7 +141,7 @@
                 android:layout_marginEnd="16dp"
                 android:layout_weight="1"
                 android:gravity="center_vertical"
-                android:text="Visited"
+                android:text="@string/filter_event_status_visited"
                 android:textColor="@color/white"
                 android:textSize="12sp" />
 
@@ -141,7 +172,7 @@
                 android:layout_marginEnd="16dp"
                 android:layout_weight="1"
                 android:gravity="center_vertical"
-                android:text="Completed"
+                android:text="@string/filter_event_status_completed"
                 android:textColor="@color/white"
                 android:textSize="12sp" />
 
@@ -171,7 +202,7 @@
                 android:layout_marginEnd="16dp"
                 android:layout_weight="1"
                 android:gravity="center_vertical"
-                android:text="Skipped"
+                android:text="@string/filter_event_status_skipped"
                 android:textColor="@color/white"
                 android:textSize="12sp" />
 
