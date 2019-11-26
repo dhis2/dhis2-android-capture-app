@@ -14,31 +14,24 @@ import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.event.EventStatus
 import org.hisp.dhis.android.core.program.ProgramRule
 import org.hisp.dhis.rules.models.*
+import timber.log.Timber
 import java.util.*
 
 class RulesRepository(private val d2: D2) {
 
     // ORG UNIT GROUPS
     // USER ROLES
-    fun supplementaryData(): Single<Map<String, List<String>>> {
+    fun supplementaryData(orgUnitUid: String): Single<Map<String, List<String>>> {
         return Single.fromCallable {
             val supData = HashMap<String, MutableList<String>>()
 
-            val cursor = d2.databaseAdapter().query("SELECT organisationUnitGroup, organisationUnit FROM OrganisationUnitOrganisationUnitGroupLink")
-            if (cursor != null && cursor.moveToFirst()) {
-                do {
-                    val orgUnitGroupUid = cursor.getString(0)
-                    val orgUnitUid = cursor.getString(1)
-
-                    if (!supData.containsKey(cursor.getString(0))) {
-                        supData[orgUnitGroupUid] = ArrayList()
+            d2.organisationUnitModule().organisationUnits().withOrganisationUnitGroups().uid(orgUnitUid).blockingGet()
+                    .let {orgUnit->
+                        orgUnit.organisationUnitGroups()?.map {
+                            supData[it.code()!!] = arrayListOf(orgUnit.uid())
+                            supData[it.uid()!!] = arrayListOf(orgUnit.uid())
+                        }
                     }
-
-                    supData[orgUnitGroupUid]!!.add(orgUnitUid)
-                } while (cursor.moveToNext())
-
-                cursor.close()
-            }
 
             val userRoleUids =
                     UidsHelper.getUidsList(d2.userModule().userRoles().blockingGet())

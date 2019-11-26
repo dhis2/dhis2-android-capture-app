@@ -77,12 +77,13 @@ public class ProgramStageSelectionRepositoryImpl implements ProgramStageSelectio
         this.enrollmentUid = enrollmentUid;
         this.eventCreationType = eventCreationType;
         this.d2 = d2;
+        String orgUnitUid = d2.enrollmentModule().enrollments().uid(enrollmentUid).blockingGet().organisationUnit();
         this.cachedRuleEngineFlowable =
                 Single.zip(
                         rulesRepository.rulesNew(programUid),
                         rulesRepository.ruleVariablesProgramStages(programUid),
                         ruleEvents(enrollmentUid),
-                        rulesRepository.supplementaryData(),
+                        rulesRepository.supplementaryData(orgUnitUid),
                         rulesRepository.queryConstants(),
                         (rules, variables, ruleEvents, supplementaryData, constants) -> {
                             RuleEngine.Builder builder = RuleEngineContext.builder(evaluator)

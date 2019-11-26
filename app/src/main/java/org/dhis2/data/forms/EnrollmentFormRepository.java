@@ -84,7 +84,7 @@ public class EnrollmentFormRepository implements FormRepository {
         this.enrollmentUid = enrollmentUid;
         this.rulesRepository = rulesRepository;
         this.expressionEvaluator = expressionEvaluator;
-
+        String orgUnit = d2.enrollmentModule().enrollments().uid(enrollmentUid).blockingGet().organisationUnit();
         // We don't want to rebuild RuleEngine on each request, since metadata of
         // the event is not changing throughout lifecycle of FormComponent.
         this.cachedRuleEngineFlowable = enrollmentProgram()
@@ -93,7 +93,7 @@ public class EnrollmentFormRepository implements FormRepository {
                         rulesRepository.ruleVariables(program).subscribeOn(Schedulers.io()),
                         rulesRepository.enrollmentEvents(enrollmentUid).subscribeOn(Schedulers.io()),
                         rulesRepository.queryConstants().subscribeOn(Schedulers.io()),
-                        rulesRepository.supplementaryData().subscribeOn(Schedulers.io()),
+                        rulesRepository.supplementaryData(orgUnit).subscribeOn(Schedulers.io()),
                         (rules, variables, events, constants, supplementaryData) -> {
                             RuleEngine.Builder builder = RuleEngineContext.builder(expressionEvaluator)
                                     .rules(rules)
@@ -111,13 +111,14 @@ public class EnrollmentFormRepository implements FormRepository {
 
     @Override
     public Flowable<RuleEngine> restartRuleEngine() {
+        String orgUnit = d2.enrollmentModule().enrollments().uid(enrollmentUid).blockingGet().organisationUnit();
         return this.cachedRuleEngineFlowable = enrollmentProgram()
                 .switchMap(program -> Single.zip(
                         rulesRepository.rulesNew(program),
                         rulesRepository.ruleVariables(program),
                         rulesRepository.enrollmentEvents(enrollmentUid),
                         rulesRepository.queryConstants(),
-                        rulesRepository.supplementaryData(),
+                        rulesRepository.supplementaryData(orgUnit),
                         (rules, variables, events, constants, supplementaryData) -> {
                             RuleEngine.Builder builder = RuleEngineContext.builder(expressionEvaluator)
                                     .rules(rules)

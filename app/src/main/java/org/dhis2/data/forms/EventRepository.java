@@ -24,6 +24,7 @@ import static android.text.TextUtils.isEmpty;
 public class EventRepository implements FormRepository {
 
     private final String programUid;
+    private final String orgUnit;
 
     @NonNull
     private Flowable<RuleEngine> cachedRuleEngineFlowable;
@@ -46,7 +47,7 @@ public class EventRepository implements FormRepository {
         this.rulesRepository = rulesRepository;
         this.evaluator = evaluator;
         this.programUid = eventUid != null ? d2.eventModule().events().uid(eventUid).blockingGet().program() : "";
-
+        this.orgUnit = d2.eventModule().events().uid(eventUid).blockingGet().organisationUnit();
         // We don't want to rebuild RuleEngine on each request, since metadata of
         // the event is not changing throughout lifecycle of FormComponent.
         this.cachedRuleEngineFlowable = Single.zip(
@@ -55,7 +56,7 @@ public class EventRepository implements FormRepository {
                 rulesRepository.otherEvents(this.eventUid),
                 rulesRepository.enrollment(this.eventUid),
                 rulesRepository.queryConstants(),
-                rulesRepository.supplementaryData(),
+                rulesRepository.supplementaryData(orgUnit),
                 (rules, variables, events, enrollment, constants, supplementaryData) -> {
 
                     RuleEngine.Builder builder = RuleEngineContext.builder(evaluator)
@@ -81,14 +82,13 @@ public class EventRepository implements FormRepository {
 
     @Override
     public Flowable<RuleEngine> restartRuleEngine() {
-
         return this.cachedRuleEngineFlowable = Single.zip(
                 rulesRepository.rulesNew(programUid).subscribeOn(Schedulers.io()),
                 rulesRepository.ruleVariables(programUid).subscribeOn(Schedulers.io()),
                 rulesRepository.otherEvents(eventUid).subscribeOn(Schedulers.io()),
                 rulesRepository.enrollment(eventUid).subscribeOn(Schedulers.io()),
                 rulesRepository.queryConstants().subscribeOn(Schedulers.io()),
-                rulesRepository.supplementaryData().subscribeOn(Schedulers.io()),
+                rulesRepository.supplementaryData(orgUnit).subscribeOn(Schedulers.io()),
                 (rules, variables, events, enrollment, constants, supplementaryData) -> {
 
                     RuleEngine.Builder builder = RuleEngineContext.builder(evaluator)

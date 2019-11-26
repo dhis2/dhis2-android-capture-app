@@ -51,13 +51,13 @@ class EnrollmentFormRepositoryImpl(
                     Map<String, String>,
                     Map<String, List<String>>,
                     RuleEngine>(
-                rulesRepository.rulesNew(programUid).subscribeOn(Schedulers.io()),
-                rulesRepository.ruleVariables(programUid).subscribeOn(Schedulers.io()),
+                rulesRepository.rulesNew(programUid),
+                rulesRepository.ruleVariables(programUid),
                 rulesRepository.enrollmentEvents(
                     enrollmentRepository.blockingGet().uid()
-                ).subscribeOn(Schedulers.io()),
-                rulesRepository.queryConstants().subscribeOn(Schedulers.io()),
-                rulesRepository.supplementaryData().subscribeOn(Schedulers.io()),
+                ),
+                rulesRepository.queryConstants(),
+                rulesRepository.supplementaryData(enrollmentRepository.blockingGet().organisationUnit()!!),
                 Function5 { rules, variables, events, constants, supplData ->
                     val builder = RuleEngineContext.builder(expressionEvaluator)
                         .rules(rules)
