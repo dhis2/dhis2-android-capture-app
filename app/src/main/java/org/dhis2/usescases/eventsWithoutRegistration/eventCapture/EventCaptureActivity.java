@@ -92,17 +92,6 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
         binding.calculationIndicator.text.setTextColor(ColorUtils.getContrastColor(ColorUtils.getPrimaryColor(this, ColorUtils.ColorType.PRIMARY_LIGHT)));
 
         binding.eventViewPager.setAdapter(new EventCapturePagerAdapter(getSupportFragmentManager()));
-
-//        presenter.init(this);
-
-    }
-
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        setUp();
-
     }
 
     @Override
@@ -145,10 +134,6 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
                 }
                 break;
         }
-    }
-
-    @Override
-    public void setUp() {
     }
 
     @Override

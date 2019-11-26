@@ -35,8 +35,6 @@ public class EventCaptureContract {
 
         EventCaptureContract.Presenter getPresenter();
 
-        void setUp();
-
         Consumer<Pair<Float, Float>> updatePercentage();
 
         void attemptToFinish(boolean canComplete);
