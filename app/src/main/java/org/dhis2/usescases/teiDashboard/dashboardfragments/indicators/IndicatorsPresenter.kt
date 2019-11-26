@@ -9,8 +9,13 @@ import org.dhis2.data.schedulers.SchedulerProvider
 import org.dhis2.data.tuples.Pair
 import org.dhis2.data.tuples.Trio
 import org.dhis2.usescases.teiDashboard.DashboardRepository
+import org.dhis2.utils.Result
 import org.hisp.dhis.android.core.D2
+import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.program.ProgramIndicator
+import org.hisp.dhis.rules.models.RuleActionDisplayKeyValuePair
+import org.hisp.dhis.rules.models.RuleActionDisplayText
+import org.hisp.dhis.rules.models.RuleEffect
 import timber.log.Timber
 
 class IndicatorsPresenter(val d2: D2,
@@ -22,7 +27,7 @@ class IndicatorsPresenter(val d2: D2,
                           val view: IndicatorsView) {
 
     private val compositeDisposable = CompositeDisposable()
-    private lateinit var enrollmentUid : String
+    private var enrollmentUid : String
 
     init {
         var enrollmentRepository = d2.enrollmentModule().enrollments()
@@ -58,14 +63,51 @@ class IndicatorsPresenter(val d2: D2,
                                     .getLegendColorForIndicator(pair.val0(), pair.val1()) }
                     .toList()
             }.flatMap { it.toFlowable() }
-            .flatMap { indicators -> ruleEngineRepository.updateRuleEngine()
+            .flatMap {
+                ruleEngineRepository.updateRuleEngine()
                 .flatMap { ruleEngineRepository.reCalculate() }
-                .map { this::ap }}
+                .map { this::applyRuleEffects }
+                .map {
+
+                }}
             .subscribeOn(schedulerProvider.io())
             .observeOn(schedulerProvider.ui())
             .subscribe(
                 {view::swapIndicators},
                 Timber::e
         ))
+    }
+
+    private fun applyRuleEffects(calcResult: Result<RuleEffect>):
+            List<Trio<ProgramIndicator, String, String>>{
+
+        var indicators: MutableList<Trio<ProgramIndicator, String, String>> = mutableListOf()
+
+        if(calcResult.error() != null){
+            Timber.e(calcResult.error())
+            return listOf()
+        }
+
+        calcResult.items().forEach { ruleEffect ->
+            val ruleAction = ruleEffect.ruleAction()
+            if(!ruleEffect.data().contains("#{")) { //Avoid display unavailable variables
+                if(ruleAction is RuleActionDisplayKeyValuePair){
+                    val indicator = Trio.create(
+                        ProgramIndicator.builder()
+                            .uid(ruleAction.content())
+                            .displayName(ruleAction.content())
+                            .build(),
+                        ruleEffect.data(), "")
+
+                    indicators.add(indicator)
+                }else if(ruleAction is RuleActionDisplayText){
+                    val indicator: Trio<ProgramIndicator, String, String> = Trio.create(null,
+                        ruleAction.content() + ruleEffect.data(), "")
+                    indicators.add(indicator)
+                }
+            }
+        }
+
+        return indicators
     }
 }
