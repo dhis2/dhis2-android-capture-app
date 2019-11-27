@@ -87,6 +87,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     private String lastFocusItem;
     private int unsupportedFields;
     private int totalFields;
+    private ConnectableFlowable<List<FieldViewModel>> fieldFlowable;
 
     @Override
     public String getLastFocusItem() {
@@ -232,7 +233,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                         )
         );
 
-        ConnectableFlowable<List<FieldViewModel>> fieldFlowable = getFieldFlowable();
+        fieldFlowable = getFieldFlowable();
 
         compositeDisposable.add(
                 eventCaptureRepository.eventSections()
@@ -284,6 +285,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                                     }
                                     return eventSectionModels;
                                 }))
+                        .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.ui())
                         .subscribe(data -> {
                                     sectionAdjustProcessor.onNext(new Unit());
@@ -330,8 +332,6 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                                 },
                                 Timber::e
                         ));
-
-        fieldFlowable.connect();
     }
 
     private ConnectableFlowable<List<FieldViewModel>> getFieldFlowable() {
@@ -339,9 +339,9 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                 .startWith(true)
                 .filter(newCalculation -> newCalculation)
                 .flatMap(newCalculation -> Flowable.zip(
-                        eventCaptureRepository.list().doOnNext(next->Timber.tag("TESTLOG").d("NEXT LIST")),
-                        eventCaptureRepository.calculate().doOnNext(next->Timber.tag("TESTLOG").d("NEXT EFFECTS")),
-                        this::applyEffects).doOnNext(next->Timber.tag("TESTLOG").d("NEXT ZIP"))
+                        eventCaptureRepository.list().doOnNext(next -> Timber.tag("TESTLOG").d("NEXT LIST")),
+                        eventCaptureRepository.calculate().doOnNext(next -> Timber.tag("TESTLOG").d("NEXT EFFECTS")),
+                        this::applyEffects).doOnNext(next -> Timber.tag("TESTLOG").d("NEXT ZIP"))
                 ).map(fields ->
                         {
                             emptyMandatoryFields = new HashMap<>();
@@ -351,7 +351,8 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                             }
                             return fields;
                         }
-                ).publish();
+                )
+                .publish();
 
     }
 
@@ -730,6 +731,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     public void initCompletionPercentage(FlowableProcessor<Pair<Float, Float>> completionPercentage) {
         compositeDisposable.add(
                 completionPercentage
+                        .doOnSubscribe(subs -> fieldFlowable.connect(compositeDisposable::add))
                         .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.ui())
                         .subscribe(

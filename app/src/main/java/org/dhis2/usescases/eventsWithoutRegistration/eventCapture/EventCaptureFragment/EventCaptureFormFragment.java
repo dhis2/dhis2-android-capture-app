@@ -107,10 +107,8 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract {
     @Override
     public void onResume() {
         super.onResume();
-        new Handler().post(() -> {
             activity.getPresenter().init();
             activity.getPresenter().initCompletionPercentage(sectionSelectorAdapter.completionPercentage());
-        });
     }
 
     @Override
