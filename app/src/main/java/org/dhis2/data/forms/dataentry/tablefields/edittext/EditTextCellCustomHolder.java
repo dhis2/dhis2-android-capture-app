@@ -42,7 +42,6 @@ final class EditTextCellCustomHolder extends FormViewHolder {
 
     private TableView tableView;
     FlowableProcessor<RowAction> processor;
-    private static Integer selectedColumn;
 
     @SuppressLint("RxLeakedSubscription")
     EditTextCellCustomHolder(CustomTextViewCellBinding binding, FlowableProcessor<RowAction> processor,
@@ -55,15 +54,12 @@ final class EditTextCellCustomHolder extends FormViewHolder {
         this.processor = processor;
 
         editText.setOnEditorActionListener((v, actionId, event) -> {
-            selectedColumn = editTextModel.column() + 1;
-            tableView.setSelectedCell(selectedColumn, editTextModel.row());
-            return false;
+            tableView.selectNext();
+            return true;
         });
 
         editText.setOnFocusChangeListener((v, hasFocus) -> {
-            if (hasFocus) {
-                tableView.setSelectedCell(editTextModel.column(), editTextModel.row());
-            } else if (editTextModel != null && editTextModel.editable() &&
+            if (!hasFocus  && editTextModel != null && editTextModel.editable() &&
                     !editText.getText().toString().equals(editTextModel.value()) && validate()) {
                 processor.onNext(
                         RowAction.create(
@@ -105,12 +101,9 @@ final class EditTextCellCustomHolder extends FormViewHolder {
                 customBinding.inputEditText.setActivated(true);
         }
 
-        if (editTextModel.column() != ((ArrayList) tableView.getAdapter().getCellRecyclerViewAdapter().getItems().get(0)).size() - (tableView.getAdapter().hasTotal() ? 2 : 1))
-            customBinding.inputEditText.setImeOptions(EditorInfo.IME_ACTION_NEXT);
-
         customBinding.executePendingBindings();
 
-        if(selectedColumn != null && editTextModel.column() == selectedColumn)
+        if(editTextModel.column() == tableView.getSelectedColumn() && editTextModel.row() == tableView.getSelectedRow())
             setSelected(SelectionState.SELECTED);
     }
 
@@ -271,17 +264,15 @@ final class EditTextCellCustomHolder extends FormViewHolder {
 
     @Override
     public void dispose() {
-        selectedColumn = null;
     }
 
     @Override
     public void setSelected(SelectionState selectionState) {
         super.setSelected(selectionState);
-        if (selectionState == SelectionState.SELECTED) {
+        if (selectionState == SelectionState.SELECTED && editTextModel.editable()) {
             editText.requestFocus();
             editText.setSelection(editText.getText().length());
-            if (editTextModel.editable())
-                openKeyboard(editText);
+            openKeyboard(editText);
         }
     }
 }
