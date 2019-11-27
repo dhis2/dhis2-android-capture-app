@@ -59,20 +59,19 @@ class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
     private CompositeDisposable compositeDisposable;
     private DashboardProgramModel dashboardModel;
 
-    public TEIDataPresenterImpl(D2 d2, DashboardRepository dashboardRepository,
+    public TEIDataPresenterImpl(TEIDataContracts.View view, D2 d2, DashboardRepository dashboardRepository,
                                 String programUid, String teiUid, SchedulerProvider schedulerProvider) {
+        this.view = view;
         this.d2 = d2;
         this.dashboardRepository = dashboardRepository;
         this.programUid = programUid;
         this.teiUid = teiUid;
         this.schedulerProvider = schedulerProvider;
+        this.compositeDisposable = new CompositeDisposable();
     }
 
     @Override
-    public void init(TEIDataContracts.View view) {
-        this.view = view;
-        this.compositeDisposable = new CompositeDisposable();
-
+    public void init() {
         compositeDisposable.add(
                 d2.trackedEntityModule().trackedEntityInstances().uid(teiUid).get()
                         .map(tei -> {
