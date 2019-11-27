@@ -261,10 +261,14 @@ public final class DataEntryAdapter extends Adapter {
 
         diffResult.dispatchUpdatesTo(this);
 
-        if (nextFocusPosition != -1 && currentFocusPosition == lastFocusPosition && nextFocusPosition < viewModels.size())
+        if (nextFocusPosition != -1 && currentFocusPosition == lastFocusPosition && nextFocusPosition < viewModels.size()) {
             currentFocusUid.setValue(viewModels.get(nextFocusPosition).uid());
-        else if (currentFocusPosition != -1 && currentFocusPosition < viewModels.size())
+        } else if (nextFocusPosition == viewModels.size()) {
+            currentFocusUid.setValue("");
+        } else if (currentFocusPosition != -1 && currentFocusPosition < viewModels.size()) {
             currentFocusUid.setValue(viewModels.get(currentFocusPosition).uid());
+        }
+
     }
 
     public void swapWithoutList() {
