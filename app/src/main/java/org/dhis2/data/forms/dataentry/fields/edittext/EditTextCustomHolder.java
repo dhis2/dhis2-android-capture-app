@@ -36,10 +36,6 @@ import static android.text.TextUtils.isEmpty;
 import static java.lang.String.valueOf;
 
 
-/**
- * QUADRAM. Created by frodriguez on 18/01/2018..
- */
-
 public class EditTextCustomHolder extends FormViewHolder {
 
     private final FlowableProcessor<RowAction> processor;
@@ -65,7 +61,10 @@ public class EditTextCustomHolder extends FormViewHolder {
                     sendAction();
                 else
                     closeKeyboard(binding.customEdittext.getEditText());
+            } else {
+                openKeyboard(binding.customEdittext.getEditText());
             }
+
             validateRegex();
         });
         binding.customEdittext.setOnEditorActionListener((v, actionId, event) -> {
@@ -129,9 +128,11 @@ public class EditTextCustomHolder extends FormViewHolder {
 
         setLongClick();
 
-        if (getSelectedFieldUid() != null && getSelectedFieldUid().equals(fieldUid)) {
-            binding.customEdittext.getEditText().requestFocus();
-            openKeyboard(binding.customEdittext.getEditText());
+        if(!isSearchMode) {
+            if (getSelectedFieldUid() != null && getSelectedFieldUid().equals(fieldUid)) {
+                binding.customEdittext.getEditText().requestFocus();
+                openKeyboard(binding.customEdittext.getEditText());
+            }
         }
     }
 
