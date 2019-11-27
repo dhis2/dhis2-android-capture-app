@@ -82,20 +82,63 @@ public class DevelopmentActivity extends ActivityGlobalAbstract {
         int iconResource_positive = getResources().getIdentifier(iconName + "_positive", "drawable", getPackageName());
         binding.iconInput.setError(null);
 
+        binding.iconImagePossitive.setImageDrawable(null);
+        binding.iconImageOutline.setImageDrawable(null);
+        binding.iconImageNegative.setImageDrawable(null);
+
+        binding.iconImagePossitiveTint.setImageDrawable(null);
+        binding.iconImageOutlineTint.setImageDrawable(null);
+        binding.iconImageNegativeTint.setImageDrawable(null);
+
         boolean hasError = false;
         try {
             binding.iconImagePossitive.setImageResource(iconResource_positive);
-            binding.iconImageOutline.setImageResource(iconResource_outline);
-            binding.iconImageNegative.setImageResource(iconResource_negative);
 
+        } catch (Exception e) {
+            e.printStackTrace();
+            hasError = true;
+        }
+
+        try {
+            binding.iconImageOutline.setImageResource(iconResource_outline);
+        } catch (Exception e) {
+            e.printStackTrace();
+            hasError = true;
+        }
+
+        try {
+            binding.iconImageNegative.setImageResource(iconResource_negative);
+        } catch (Exception e) {
+            e.printStackTrace();
+            hasError = true;
+        }
+
+        try {
             binding.iconImagePossitiveTint.setImageResource(iconResource_positive);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            hasError = true;
+        }
+
+        try {
+
             binding.iconImageOutlineTint.setImageResource(iconResource_outline);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            hasError = true;
+        }
+
+        try {
             binding.iconImageNegativeTint.setImageResource(iconResource_negative);
 
         } catch (Exception e) {
             e.printStackTrace();
             hasError = true;
         }
+
+
 
         if(hasError){
             binding.iconInput.setError("This drawable has errors");
@@ -106,8 +149,11 @@ public class DevelopmentActivity extends ActivityGlobalAbstract {
 
     private void nextDrawable(){
         count++;
-        if (count == iconNames.size())
+        if (count == iconNames.size()) {
             count = 0;
+            binding.automaticErrorCheck.setChecked(false);
+            return;
+        }
         renderIconForPosition(count);
     }
 }
