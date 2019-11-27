@@ -191,7 +191,7 @@ public class EventInitialPresenter
 
     @Override
     public void onShareClick(View mView) {
-        view.runSmsSubmission();
+        view.showQR();
     }
 
     @Override

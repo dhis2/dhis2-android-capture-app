@@ -214,8 +214,19 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
                     one.sortOrder().compareTo(two.sortOrder()));
 
             List<String> dataElementsOrder = new ArrayList<>();
-            for (ProgramStageSection section : stageSections) {
-                dataElementsOrder.addAll(UidsHelper.getUidsList(section.dataElements()));
+            if(stageSections.size() == 0){
+                List<ProgramStageDataElement> programStageDataElements =
+                        d2.programModule().programStageDataElements().byProgramStage()
+                        .eq(programStage).orderBySortOrder(RepositoryScope.OrderByDirection.ASC)
+                        .blockingGet();
+
+                for(ProgramStageDataElement programStageDataElement: programStageDataElements){
+                    dataElementsOrder.add(programStageDataElement.dataElement().uid());
+                }
+            }else {
+                for (ProgramStageSection section : stageSections) {
+                    dataElementsOrder.addAll(UidsHelper.getUidsList(section.dataElements()));
+                }
             }
 
             Collections.sort(dataValueList, (de1, de2) -> {
