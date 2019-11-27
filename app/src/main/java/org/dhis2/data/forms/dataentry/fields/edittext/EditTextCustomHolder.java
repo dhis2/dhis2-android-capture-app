@@ -36,10 +36,6 @@ import static android.text.TextUtils.isEmpty;
 import static java.lang.String.valueOf;
 
 
-/**
- * QUADRAM. Created by frodriguez on 18/01/2018..
- */
-
 public class EditTextCustomHolder extends FormViewHolder {
 
     private final FlowableProcessor<RowAction> processor;

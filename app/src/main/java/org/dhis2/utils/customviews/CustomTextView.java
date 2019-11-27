@@ -32,10 +32,6 @@ import java.util.regex.Pattern;
 
 import static android.text.TextUtils.isEmpty;
 
-/**
- * QUADRAM. Created by frodriguez on 1/17/2018.
- */
-
 public class CustomTextView extends FieldLayout implements View.OnFocusChangeListener {
 
     String urlStringPattern = "^(http:\\/\\/www\\.|https:\\/\\/www\\.|http:\\/\\/|https:\\/\\/)[a-z0-9]+([\\-\\.]{1}[a-z0-9]+)*\\.[a-z]{2,5}(:[0-9]{1,5})?(\\/.*)?$";
