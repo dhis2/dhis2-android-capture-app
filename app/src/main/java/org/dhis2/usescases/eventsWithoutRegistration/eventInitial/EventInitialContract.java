@@ -73,8 +73,6 @@ public class EventInitialContract {
 
         void renderObjectStyle(ObjectStyle objectStyle);
 
-        void runSmsSubmission();
-
         void setInitialOrgUnit(OrganisationUnit organisationUnit);
 
         EventCreationType eventcreateionType();
