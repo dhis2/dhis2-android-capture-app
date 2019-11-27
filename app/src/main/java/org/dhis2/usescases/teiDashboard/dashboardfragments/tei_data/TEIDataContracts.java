@@ -56,7 +56,7 @@ public class TEIDataContracts {
 
     public interface Presenter extends AbstractActivityContracts.Presenter {
 
-        void init(View view);
+        void init();
 
         void getTEIEvents();
 

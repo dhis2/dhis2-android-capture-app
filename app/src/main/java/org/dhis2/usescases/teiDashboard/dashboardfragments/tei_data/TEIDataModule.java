@@ -18,8 +18,10 @@ public class TEIDataModule {
 
     private final String programUid;
     private final String teiUid;
+    private TEIDataContracts.View view;
 
-    public TEIDataModule(String programUid, String teiUid) {
+    public TEIDataModule(TEIDataContracts.View view, String programUid, String teiUid) {
+        this.view = view;
         this.programUid = programUid;
         this.teiUid = teiUid;
     }
@@ -30,12 +32,14 @@ public class TEIDataModule {
                                                  DashboardRepository dashboardRepository,
                                                  SchedulerProvider schedulerProvider,
                                                  AnalyticsHelper analyticsHelper) {
-        return new TEIDataPresenterImpl(d2,
+        return new TEIDataPresenterImpl(view,
+                d2,
                 dashboardRepository,
                 programUid,
                 teiUid,
                 schedulerProvider,
                 analyticsHelper);
+
     }
 
 }
