@@ -18,6 +18,7 @@ import org.dhis2.usescases.teiDashboard.DashboardProgramModel;
 import org.dhis2.usescases.teiDashboard.DashboardRepository;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.EventCreationType;
+import org.dhis2.utils.analytics.AnalyticsHelper;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.event.Event;
@@ -44,6 +45,7 @@ class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
     private final D2 d2;
     private final DashboardRepository dashboardRepository;
     private final SchedulerProvider schedulerProvider;
+    private final AnalyticsHelper analyticsHelper;
     private String programUid;
     private final String teiUid;
     private TEIDataContracts.View view;
@@ -51,12 +53,14 @@ class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
     private DashboardProgramModel dashboardModel;
 
     public TEIDataPresenterImpl(D2 d2, DashboardRepository dashboardRepository,
-                                String programUid, String teiUid, SchedulerProvider schedulerProvider) {
+                                String programUid, String teiUid, SchedulerProvider schedulerProvider,
+                                AnalyticsHelper analyticsHelper) {
         this.d2 = d2;
         this.dashboardRepository = dashboardRepository;
         this.programUid = programUid;
         this.teiUid = teiUid;
         this.schedulerProvider = schedulerProvider;
+        this.analyticsHelper = analyticsHelper;
     }
 
     @Override
@@ -97,23 +101,6 @@ class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
                                 if (eventModel.status() == EventStatus.SCHEDULE && eventModel.dueDate() != null && eventModel.dueDate().before(DateUtils.getInstance().getToday())) { //If a schedule event dueDate is before today the event is skipped
                                     dashboardRepository.updateState(eventModel, EventStatus.SKIPPED);
                                 }
-                                /*TODO: CHECK HOW LONG IT TAKES FOR EVENTS WITH MANY RULES
-                                if (eventModel.eventDate() != null) {
-                                    RuleEffectResult effectResult = new RulesUtilsProviderImpl(new CodeGeneratorImpl()).evaluateEvent(eventModel.uid(),null);
-                                    List<String> newMandatoryFields = effectResult.getMandatoryFields();
-                                    List<ProgramStageDataElement> psDataElementList = d2.programModule().programStages().uid(eventModel.programStage())
-                                            .withAllChildren().blockingGet().programStageDataElements();
-                                    for (ProgramStageDataElement psDataElement : psDataElementList) {
-                                        if (psDataElement.compulsory())
-                                            newMandatoryFields.add(psDataElement.dataElement().uid());
-                                    }
-                                    boolean missingMandatories = !newMandatoryFields.isEmpty() && d2.trackedEntityModule().trackedEntityDataValues()
-                                            .byEvent().eq(eventModel.uid())
-                                            .byDataElement().in(newMandatoryFields)
-                                            .blockingCount() < newMandatoryFields.size();
-                                    if (missingMandatories)
-                                        Timber.tag("MISSING FIELDS").d("THERE ARE MISSING MANDATORY FIELDS IN EVENT %s", eventModel.uid());
-                                }*/
                             }
                             return eventModels;
                         })
@@ -205,7 +192,7 @@ class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
     @Override
     public void onFollowUp(DashboardProgramModel dashboardProgramModel) {
         boolean followup = dashboardRepository.setFollowUp(dashboardProgramModel.getCurrentEnrollment().uid());
-        view.analyticsHelper().setEvent(ACTIVE_FOLLOW_UP, Boolean.toString(followup), FOLLOW_UP);
+        analyticsHelper.setEvent(ACTIVE_FOLLOW_UP, Boolean.toString(followup), FOLLOW_UP);
         view.showToast(followup ?
                 view.getContext().getString(R.string.follow_up_enabled) :
                 view.getContext().getString(R.string.follow_up_disabled));
@@ -216,7 +203,7 @@ class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
 
     @Override
     public void onShareClick(View mView) {
-        view.analyticsHelper().setEvent(TYPE_SHARE, TYPE_QR, SHARE_TEI);
+        analyticsHelper.setEvent(TYPE_SHARE, TYPE_QR, SHARE_TEI);
         Intent intent = new Intent(view.getContext(), QrActivity.class);
         intent.putExtra("TEI_UID", teiUid);
         view.showQR(intent);
