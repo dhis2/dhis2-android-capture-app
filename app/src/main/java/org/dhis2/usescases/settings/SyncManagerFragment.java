@@ -24,7 +24,6 @@ import androidx.core.content.ContextCompat;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
 import androidx.work.WorkInfo;
-import androidx.work.WorkManager;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.jakewharton.rxbinding2.widget.RxCompoundButton;
@@ -32,6 +31,7 @@ import com.jakewharton.rxbinding2.widget.RxTextView;
 
 import org.dhis2.Components;
 import org.dhis2.R;
+import org.dhis2.data.service.workManager.WorkManagerController;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.databinding.FragmentSettingsBinding;
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
@@ -65,13 +65,14 @@ import static org.dhis2.utils.analytics.AnalyticsConstants.SYNC_DATA;
 import static org.dhis2.utils.analytics.AnalyticsConstants.SYNC_METADATA;
 import static org.dhis2.utils.analytics.AnalyticsConstants.TYPE_SYNC;
 
-/**
- * A simple {@link Fragment} subclass.
- */
+
 public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncManagerContracts.View {
 
     @Inject
     SyncManagerContracts.Presenter presenter;
+
+    @Inject
+    WorkManagerController workManagerController;
 
     private FragmentSettingsBinding binding;
     private SharedPreferences prefs;
@@ -110,7 +111,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
     @Override
     public void onResume() {
         super.onResume();
-        WorkManager.getInstance(context.getApplicationContext()).getWorkInfosByTagLiveData(META_NOW).observe(this, workStatuses -> {
+        workManagerController.getWorkInfosByTagLiveData(META_NOW).observe(this, workStatuses -> {
             if (!workStatuses.isEmpty() && workStatuses.get(0).getState() == WorkInfo.State.RUNNING) {
                 binding.syncMetaLayout.message.setTextColor(ContextCompat.getColor(context, R.color.text_black_333));
                 String metaText = metaSyncSettings().concat("\n").concat(context.getString(R.string.syncing_configuration));
@@ -122,7 +123,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
                 presenter.checkData();
             }
         });
-        WorkManager.getInstance(context.getApplicationContext()).getWorkInfosByTagLiveData(DATA_NOW).observe(this, workStatuses -> {
+        workManagerController.getWorkInfosByTagLiveData(DATA_NOW).observe(this, workStatuses -> {
             if (!workStatuses.isEmpty() && workStatuses.get(0).getState() == WorkInfo.State.RUNNING) {
                 String dataText = dataSyncSetting().concat("\n").concat(context.getString(R.string.syncing_data));
                 binding.syncDataLayout.message.setTextColor(ContextCompat.getColor(context, R.color.text_black_333));

@@ -32,7 +32,9 @@ import androidx.work.Constraints
 import androidx.work.ExistingWorkPolicy
 import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequest
+import androidx.work.PeriodicWorkRequest
 import androidx.work.WorkManager
+import java.util.concurrent.TimeUnit
 import org.dhis2.data.service.ReservedValuesWorker
 import org.dhis2.data.service.SyncDataWorker
 import org.dhis2.data.service.SyncGranularWorker
@@ -40,18 +42,14 @@ import org.dhis2.data.service.SyncMetadataWorker
 
 class WorkManagerControllerImpl(private val workManager: WorkManager) : WorkManagerController {
 
-    override fun syncDataForWorker(workerType: WorkerType, tag: String) {
-        val syncBuilder = when (workerType) {
-            WorkerType.METADATA -> OneTimeWorkRequest.Builder(SyncMetadataWorker::class.java)
-            WorkerType.DATA -> OneTimeWorkRequest.Builder(SyncDataWorker::class.java)
-            WorkerType.RESERVED -> OneTimeWorkRequest.Builder(ReservedValuesWorker::class.java)
-            WorkerType.GRANULAR -> OneTimeWorkRequest.Builder(SyncGranularWorker::class.java)
+    override fun syncDataForWorker(workerItem: WorkerItem) {
+        val syncBuilder = createOneTimeBuilder(workerItem).build()
+
+        workerItem.policy?.let {
+            workManager.enqueueUniqueWork(workerItem.workerName, it, syncBuilder)
+        } ?: run {
+            workManager.enqueue(syncBuilder)
         }
-        syncBuilder.addTag(tag)
-            .setConstraints(
-                Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build()
-            )
-        workManager.enqueue(syncBuilder.build())
     }
 
     override fun syncDataForWorkers(
@@ -79,11 +77,108 @@ class WorkManagerControllerImpl(private val workManager: WorkManager) : WorkMana
             .enqueue()
     }
 
+    override fun beginUniqueWork(workerItem: WorkerItem) {
+        val request = createOneTimeBuilder(workerItem).build()
+        workerItem.policy?.let {
+            workManager.beginUniqueWork(workerItem.workerName, it, request).enqueue()
+        }
+    }
+
+    override fun enqueuePeriodicWork(workerItem: WorkerItem) {
+        val request = createPeriodicBuilder(workerItem).build()
+        workerItem.periodicPolicy?.let {
+            workManager.enqueueUniquePeriodicWork(workerItem.workerName, it, request)
+        }
+    }
+
+    override fun getWorkInfosForUniqueWorkLiveData(workerName: String) =
+        workManager.getWorkInfosForUniqueWorkLiveData(workerName)
+
+    override fun getWorkInfosByTagLiveData(tag: String) =
+        workManager.getWorkInfosByTagLiveData(tag)
+
+    override fun cancelAllWork() {
+        workManager.cancelAllWork()
+    }
+
     override fun cancelAllWorkByTag(tag: String) {
         workManager.cancelAllWorkByTag(tag)
     }
 
     override fun cancelUniqueWork(workName: String) {
         workManager.cancelUniqueWork(workName)
+    }
+
+    override fun pruneWork() {
+        workManager.pruneWork()
+    }
+
+    private fun createOneTimeBuilder(workerItem: WorkerItem): OneTimeWorkRequest.Builder {
+        val syncBuilder = when (workerItem.workerType) {
+            WorkerType.METADATA -> OneTimeWorkRequest.Builder(SyncMetadataWorker::class.java)
+            WorkerType.DATA -> OneTimeWorkRequest.Builder(SyncDataWorker::class.java)
+            WorkerType.RESERVED -> OneTimeWorkRequest.Builder(ReservedValuesWorker::class.java)
+            WorkerType.GRANULAR -> OneTimeWorkRequest.Builder(SyncGranularWorker::class.java)
+        }
+
+        syncBuilder.apply {
+            addTag(workerItem.workerName)
+            setConstraints(
+                Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build()
+            )
+            workerItem.delayInSeconds?.let {
+                setInitialDelay(it, TimeUnit.SECONDS)
+            }
+            workerItem.data?.let {
+                setInputData(it)
+            }
+        }
+        return syncBuilder
+    }
+
+    private fun createPeriodicBuilder(workerItem: WorkerItem): PeriodicWorkRequest.Builder {
+        val seconds = workerItem.delayInSeconds ?: 0
+
+        val syncBuilder = when (workerItem.workerType) {
+            WorkerType.METADATA -> {
+                PeriodicWorkRequest.Builder(
+                    SyncMetadataWorker::class.java,
+                    seconds,
+                    TimeUnit.SECONDS
+                )
+            }
+            WorkerType.DATA -> {
+                PeriodicWorkRequest.Builder(
+                    SyncDataWorker::class.java,
+                    seconds,
+                    TimeUnit.SECONDS
+                )
+            }
+            WorkerType.RESERVED -> {
+                PeriodicWorkRequest.Builder(
+                    ReservedValuesWorker::class.java,
+                    seconds,
+                    TimeUnit.SECONDS
+                )
+            }
+            WorkerType.GRANULAR -> {
+                PeriodicWorkRequest.Builder(
+                    SyncGranularWorker::class.java,
+                    seconds,
+                    TimeUnit.SECONDS
+                )
+            }
+        }
+
+        syncBuilder.apply {
+            addTag(workerItem.workerName)
+            setConstraints(
+                Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build()
+            )
+            workerItem.data?.let {
+                setInputData(it)
+            }
+        }
+        return syncBuilder
     }
 }

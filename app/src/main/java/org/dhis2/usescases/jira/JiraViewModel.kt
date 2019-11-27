@@ -25,9 +25,6 @@ import retrofit2.http.Body
 import retrofit2.http.Header
 import retrofit2.http.POST
 
-/**
- * QUADRAM. Created by ppajuelo on 11/04/2019.
- */
 class JiraViewModel : ViewModel(), JiraActions {
 
     private lateinit var issueService: JiraIssueService
@@ -124,7 +121,6 @@ class JiraViewModel : ViewModel(), JiraActions {
         rememberCredentials.value = false
         isSessionOpen.set(false)
     }
-
 
     fun issueListResponse(): LiveData<Response<ResponseBody>> {
         return issueListResponse

@@ -3,7 +3,6 @@ package org.dhis2;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
-import androidx.work.WorkManager;
 
 import org.apache.commons.jexl2.JexlEngine;
 import org.dhis2.utils.CodeGenerator;
@@ -17,9 +16,6 @@ import javax.inject.Singleton;
 import dagger.Module;
 import dagger.Provides;
 
-/**
- * QUADRAM. Created by ppajuelo on 10/10/2017.
- */
 @Module
 public class AppModule {
 
@@ -51,12 +47,6 @@ public class AppModule {
     @Singleton
     RuleExpressionEvaluator ruleExpressionEvaluator(@NonNull JexlEngine jexlEngine) {
         return new ExpressionEvaluatorImpl(jexlEngine);
-    }
-
-    @Provides
-    @Singleton
-    WorkManager workManager(){
-        return WorkManager.getInstance(application.getApplicationContext());
     }
 
     @Provides

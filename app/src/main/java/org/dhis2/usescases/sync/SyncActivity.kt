@@ -37,7 +37,6 @@ import androidx.appcompat.content.res.AppCompatResources
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.work.WorkInfo
-import androidx.work.WorkManager
 import com.airbnb.lottie.LottieDrawable
 import javax.inject.Inject
 import org.dhis2.App
@@ -45,6 +44,7 @@ import org.dhis2.Bindings.Bindings
 import org.dhis2.R
 import org.dhis2.data.prefs.Preference
 import org.dhis2.data.prefs.PreferenceProvider
+import org.dhis2.data.service.workManager.WorkManagerController
 import org.dhis2.databinding.ActivitySynchronizationBinding
 import org.dhis2.usescases.general.ActivityGlobalAbstract
 import org.dhis2.usescases.main.MainActivity
@@ -59,7 +59,7 @@ class SyncActivity : ActivityGlobalAbstract(), SyncView {
     lateinit var presenter: SyncPresenter
 
     @Inject
-    lateinit var workManager: WorkManager
+    lateinit var workManagerController: WorkManagerController
 
     @Inject
     lateinit var preferences: PreferenceProvider
@@ -74,7 +74,7 @@ class SyncActivity : ActivityGlobalAbstract(), SyncView {
 
     override fun onResume() {
         super.onResume()
-        workManager.getWorkInfosForUniqueWorkLiveData(Constants.INITIAL_SYNC)
+        workManagerController.getWorkInfosForUniqueWorkLiveData(Constants.INITIAL_SYNC)
             .observe(
                 this,
                 Observer { workInfoList ->

@@ -28,14 +28,10 @@
 
 package org.dhis2.usescases.about
 
+import io.reactivex.disposables.CompositeDisposable
+import org.dhis2.data.schedulers.SchedulerProvider
 import org.dhis2.data.user.UserRepository
 import org.hisp.dhis.android.core.D2
-import org.hisp.dhis.android.core.systeminfo.SystemInfo
-
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.schedulers.Schedulers
-import org.dhis2.data.schedulers.SchedulerProvider
 import timber.log.Timber
 
 class AboutPresenter(
@@ -47,7 +43,6 @@ class AboutPresenter(
     var compositeDisposable = CompositeDisposable()
 
     fun init() {
-
         compositeDisposable.add(
             userRepository.credentials()
                 .cacheWithInitialCapacity(1)

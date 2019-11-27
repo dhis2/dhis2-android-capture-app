@@ -8,6 +8,7 @@ import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Single
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.dhis2.data.service.workManager.WorkManagerController
+import org.dhis2.data.service.workManager.WorkerItem
 import org.dhis2.data.service.workManager.WorkerType
 import org.dhis2.utils.Constants
 import org.hisp.dhis.android.core.D2
@@ -57,12 +58,12 @@ class SyncPresenterTest {
 
     @Test
     fun `Should sync reserved values`() {
-        val tag = Constants.RESERVED
+        val workerItem = WorkerItem(Constants.RESERVED, WorkerType.RESERVED)
 
         presenter.syncReservedValues()
 
         verify(workManagerController).cancelAllWorkByTag(any())
-        verify(workManagerController).syncDataForWorker(WorkerType.RESERVED, tag)
+        verify(workManagerController).syncDataForWorker(workerItem)
     }
 
     @Test

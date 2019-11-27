@@ -8,7 +8,7 @@ class CategoryComboDialogPresenter(val d2: D2, val uid: String) {
 
     fun getCatOptionCombo(categoryOptions: List<CategoryOption>): String {
         val catOptCombo = d2.categoryModule().categoryOptionCombos()
-                .byCategoryOptions(UidsHelper.getUidsList(categoryOptions)).one().blockingGet()
+            .byCategoryOptions(UidsHelper.getUidsList(categoryOptions)).one().blockingGet()
         return if (catOptCombo != null)
             catOptCombo.uid()
         else

@@ -5,9 +5,10 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.Window
-
 import com.google.android.material.textfield.TextInputEditText
-
+import java.util.ArrayList
+import java.util.HashMap
+import javax.inject.Inject
 import org.dhis2.App
 import org.dhis2.databinding.CatComboDialogNewBinding
 import org.dhis2.databinding.CategorySelectorBinding
@@ -15,17 +16,13 @@ import org.hisp.dhis.android.core.category.Category
 import org.hisp.dhis.android.core.category.CategoryCombo
 import org.hisp.dhis.android.core.category.CategoryOption
 
-import java.util.ArrayList
-import java.util.HashMap
-
-import javax.inject.Inject
-
 class CategoryComboDialog(
-        private val mContext: Context,
-        private val categoryCombo: CategoryCombo,
-        val requestCode: Int,
-        private val listenerNew: OnCatOptionComboSelected,
-        private val title: String? = categoryCombo.displayName()) : AlertDialog(mContext) {
+    private val mContext: Context,
+    private val categoryCombo: CategoryCombo,
+    val requestCode: Int,
+    private val listenerNew: OnCatOptionComboSelected,
+    private val title: String? = categoryCombo.displayName()
+) : AlertDialog(mContext) {
 
     @Inject
     lateinit var presenter: CategoryComboDialogPresenter
@@ -64,21 +61,22 @@ class CategoryComboDialog(
 
     private fun openSelector(category: Category, categoryEditText: TextInputEditText, anchor: View) {
         CategoryOptionPopUp.getInstance()
-                .setCategory(category)
-                .setOnClick { item ->
-                    if (item != null) {
-                        selectedCatOption[category.uid()] = item
-                    }else {
-                        selectedCatOption.remove(category.uid())
-                    }
-                    categoryEditText.setText(item?.displayName())
-                    if (selectedCatOption.size == categoryCombo.categories()!!.size) {
-                        listenerNew.onCatOptionComboSelected(
-                                presenter!!.getCatOptionCombo(ArrayList(selectedCatOption.values)))
-                        dismiss()
-                    }
+            .setCategory(category)
+            .setOnClick { item ->
+                if (item != null) {
+                    selectedCatOption[category.uid()] = item
+                } else {
+                    selectedCatOption.remove(category.uid())
                 }
-                .show(mContext, anchor)
+                categoryEditText.setText(item?.displayName())
+                if (selectedCatOption.size == categoryCombo.categories()!!.size) {
+                    listenerNew.onCatOptionComboSelected(
+                        presenter!!.getCatOptionCombo(ArrayList(selectedCatOption.values))
+                    )
+                    dismiss()
+                }
+            }
+            .show(mContext, anchor)
     }
 
     override fun dismiss() {

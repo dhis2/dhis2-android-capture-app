@@ -1,13 +1,11 @@
 package org.dhis2.utils.granularsync
 
-import androidx.work.WorkManager
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Single
-import java.util.Collections
-import java.util.Date
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
+import org.dhis2.data.service.workManager.WorkManagerController
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.`object`.ReadOnlyOneObjectRepositoryFinalImpl
 import org.hisp.dhis.android.core.common.Access
@@ -26,13 +24,15 @@ import org.junit.Test
 import org.mockito.BDDMockito.then
 import org.mockito.Mockito
 import org.mockito.Mockito.mock
+import java.util.Collections
+import java.util.Date
 
 class GranularSyncPresenterTest {
 
     private val d2 = mock(D2::class.java)
     private val view = mock(GranularSyncContracts.View::class.java)
     private val trampolineSchedulerProvider = TrampolineSchedulerProvider()
-    private val workManager = mock(WorkManager::class.java)
+    private val workManagerController = mock(WorkManagerController::class.java)
     private val programRepoMock = mock(ReadOnlyOneObjectRepositoryFinalImpl::class.java)
 
     private val testProgram = getProgram()
@@ -48,7 +48,7 @@ class GranularSyncPresenterTest {
             null,
             null,
             null,
-            workManager
+            workManagerController
         )
         Mockito.`when`(d2.programModule()).thenReturn(mock(ProgramModule::class.java))
         Mockito.`when`(d2.programModule().programs())
@@ -73,7 +73,7 @@ class GranularSyncPresenterTest {
             null,
             null,
             null,
-            workManager
+            workManagerController
         )
 
         whenever(d2.programModule()) doReturn mock()

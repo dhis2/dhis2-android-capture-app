@@ -1,6 +1,5 @@
 package org.dhis2.usescases.main
 
-import androidx.work.WorkManager
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
@@ -18,6 +17,7 @@ import org.dhis2.data.prefs.Preference.Companion.SESSION_LOCKED
 import org.dhis2.data.prefs.PreferenceProvider
 import org.dhis2.data.schedulers.SchedulerProvider
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
+import org.dhis2.data.service.workManager.WorkManagerController
 import org.dhis2.usescases.login.LoginActivity
 import org.dhis2.utils.filters.FilterManager
 import org.hisp.dhis.android.core.D2
@@ -28,10 +28,6 @@ import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 
-/**
- * Created by frodriguez on 10/22/2019.
- *
- */
 class MainPresenterTest {
 
     private lateinit var presenter: MainPresenter
@@ -39,12 +35,13 @@ class MainPresenterTest {
     private val view: MainView = mock()
     private val d2: D2 = mock()
     private val preferences: PreferenceProvider = mock()
-    private val workManger: WorkManager = mock()
+    private val workMangerController: WorkManagerController = mock()
     private val filterManager: FilterManager = mock()
 
     @Before
     fun setUp() {
-        presenter = MainPresenter(view, d2, schedulers, preferences, workManger, filterManager)
+        presenter =
+            MainPresenter(view, d2, schedulers, preferences, workMangerController, filterManager)
     }
 
     @Test
@@ -79,7 +76,7 @@ class MainPresenterTest {
 
         presenter.logOut()
 
-        verify(workManger).cancelAllWork()
+        verify(workMangerController).cancelAllWork()
         verify(view).startActivity(LoginActivity::class.java, null, true, true, null)
     }
 
@@ -91,7 +88,7 @@ class MainPresenterTest {
 
         verify(preferences).setValue(SESSION_LOCKED, true)
         verify(preferences).setValue(PIN, pin)
-        verify(workManger).cancelAllWork()
+        verify(workMangerController).cancelAllWork()
         verify(view).back()
     }
 
