@@ -22,14 +22,13 @@ import javax.inject.Inject;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
-import io.reactivex.functions.Consumer;
 
 
 /**
  * QUADRAM. Created by ppajuelo on 29/11/2017.
  */
 
-public class IndicatorsFragment extends FragmentGlobalAbstract implements IndicatorsView {
+public class IndicatorsFragmentOld extends FragmentGlobalAbstract implements IndicatorsView {
 
     @Inject
     IndicatorsPresenterImpl presenter;
@@ -72,19 +71,17 @@ public class IndicatorsFragment extends FragmentGlobalAbstract implements Indica
     }
 
     @Override
-    public void swapIndicators(List<Trio<ProgramIndicator, String, String>> indicators) {
+    public void swapIndicators(@NotNull List<? extends Trio<ProgramIndicator, String, String>> indicators) {
+        if (adapter != null) {
+            adapter.setIndicators(indicators);
+        }
 
-            if (adapter != null) {
-                adapter.setIndicators(indicators);
-            }
+        binding.spinner.setVisibility(View.GONE);
 
-            binding.spinner.setVisibility(View.GONE);
-
-            if (indicators != null && !indicators.isEmpty()) {
-                binding.emptyIndicators.setVisibility(View.GONE);
-            } else {
-                binding.emptyIndicators.setVisibility(View.VISIBLE);
-            }
-
+        if (indicators != null && !indicators.isEmpty()) {
+            binding.emptyIndicators.setVisibility(View.GONE);
+        } else {
+            binding.emptyIndicators.setVisibility(View.VISIBLE);
+        }
     }
 }
