@@ -25,7 +25,7 @@ class ProgramPresenter internal constructor(
         val applyFiler = PublishProcessor.create<FilterManager>()
 
         disposable.add(
-            applyFiler.startWith(filterManager)
+            applyFiler
                 .doOnNext { Timber.tag("INIT DATA").d("NEW FILTER") }
                 .switchMap { filterManager ->
                     homeRepository.programModels(
@@ -58,6 +58,7 @@ class ProgramPresenter internal constructor(
 
         disposable.add(
             filterManager.asFlowable()
+                .startWith(filterManager)
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
