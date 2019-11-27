@@ -47,7 +47,7 @@ public class EventRepository implements FormRepository {
         this.rulesRepository = rulesRepository;
         this.evaluator = evaluator;
         this.programUid = eventUid != null ? d2.eventModule().events().uid(eventUid).blockingGet().program() : "";
-        this.orgUnit = d2.eventModule().events().uid(eventUid).blockingGet().organisationUnit();
+        this.orgUnit = !this.eventUid.isEmpty() ? d2.eventModule().events().uid(eventUid).blockingGet().organisationUnit() : "";
         // We don't want to rebuild RuleEngine on each request, since metadata of
         // the event is not changing throughout lifecycle of FormComponent.
         this.cachedRuleEngineFlowable = Single.zip(
