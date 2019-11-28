@@ -33,7 +33,7 @@ User is able to lock the session using a 4 digit PIN. This allows to move to oth
 If the user forgets the PIN number, log in by entering the credentials is also available.
 
 ![](resources/images/image65.PNG){width=25%}
-![](resources/images/image63.PNG){width=25%}
+![](resources/images/image63.jpg){width=25%}
 
 ## Instructions/ information buttons
 
