@@ -12,6 +12,7 @@ import org.dhis2.usescases.main.program.ProgramView
 import org.dhis2.usescases.main.program.ProgramViewModel
 import org.dhis2.utils.Constants.PROGRAM_THEME
 import org.dhis2.utils.filters.FilterManager
+import org.hisp.dhis.android.core.common.State
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
@@ -160,7 +161,9 @@ class ProgramPresenterTest {
                 "programType",
                 "description",
                 onlyEnrollOnce = true,
-                accessDataWrite = true
+                accessDataWrite = true,
+                state = "Synced",
+                hasOverdueEvent = false
         )
     }
 }

@@ -134,7 +134,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
         binding.recycler.setAdapter(liveAdapter);
         binding.recycler.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
 
-        filtersAdapter = new FiltersAdapter();
+        filtersAdapter = new FiltersAdapter(FiltersAdapter.ProgramType.EVENT);
         filtersAdapter.addEventStatus();
         try {
             binding.filterLayout.setAdapter(filtersAdapter);

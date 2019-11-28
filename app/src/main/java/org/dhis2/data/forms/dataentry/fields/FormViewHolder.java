@@ -21,9 +21,6 @@ import org.hisp.dhis.android.core.common.ObjectStyle;
 
 import java.util.Objects;
 
-/**
- * QUADRAM. Created by ppajuelo on 06/11/2017.
- */
 
 public abstract class FormViewHolder extends RecyclerView.ViewHolder {
 
@@ -82,9 +79,7 @@ public abstract class FormViewHolder extends RecyclerView.ViewHolder {
 
     public void openKeyboard(View v) {
         InputMethodManager imm = (InputMethodManager) v.getContext().getSystemService(Activity.INPUT_METHOD_SERVICE);
-        boolean shown = imm.showSoftInput(v.findFocus(),InputMethodManager.SHOW_FORCED);
-       /* if (!imm.showSoftInput(v, 0))
-            v.postDelayed(() -> openKeyboard(v), 500);*/
+        v.postDelayed(() -> imm.showSoftInput(v , InputMethodManager.SHOW_FORCED), 200);
     }
 
     public void clearBackground(boolean isSarchMode) {
@@ -96,8 +91,12 @@ public abstract class FormViewHolder extends RecyclerView.ViewHolder {
         }
     }
 
-    public void setSelectedBackground(boolean isSarchMode) {
-        if (!isSarchMode)
+    public void setSelectedBackground(boolean isSearchMode) {
+        if (!isSearchMode)
             currentUid.setValue(fieldUid);
+    }
+
+    public String getSelectedFieldUid() {
+        return currentUid.getValue();
     }
 }

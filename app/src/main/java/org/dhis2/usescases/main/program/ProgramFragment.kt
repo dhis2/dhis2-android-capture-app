@@ -12,6 +12,7 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.SimpleItemAnimator
 import javax.inject.Inject
 import org.dhis2.App
 import org.dhis2.R
@@ -64,6 +65,7 @@ class ProgramFragment : FragmentGlobalAbstract(), ProgramView {
 
         return binding.apply {
             presenter = this@ProgramFragment.presenter
+            programRecycler.itemAnimator = null
             programRecycler.adapter = adapter
             programRecycler.addItemDecoration(
                 DividerItemDecoration(
