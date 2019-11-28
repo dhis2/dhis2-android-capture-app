@@ -1,11 +1,6 @@
 package org.dhis2.usecases.main.program
 
-import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.verify
-import com.nhaarman.mockitokotlin2.verifyZeroInteractions
-import com.nhaarman.mockitokotlin2.whenever
+import com.nhaarman.mockitokotlin2.*
 import io.reactivex.Flowable
 import io.reactivex.schedulers.TestScheduler
 import java.util.concurrent.TimeUnit
@@ -63,7 +58,7 @@ class ProgramPresenterTest {
         whenever(filterManager.asFlowable().startWith(filterManager)) doReturn filterManagerFlowable
 
         whenever(homeRepository.aggregatesModels(any(), any(),
-            any())) doReturn Flowable.error(Exception(""))
+                any())) doReturn Flowable.error(Exception(""))
         whenever(filterManager.ouTreeFlowable()) doReturn Flowable.just(true)
 
         presenter.init()
@@ -146,19 +141,26 @@ class ProgramPresenterTest {
         assertTrue(presenter.disposable.size() == 0)
     }
 
+    @Test
+    fun `Should refresh program list when granular sync finished`() {
+
+        presenter.updateProgramQueries()
+        verify(filterManager).publishData()
+    }
+
     private fun programViewModel(): ProgramViewModel {
         return ProgramViewModel.create(
-            "uid",
-            "displayName",
-            "#ffcdd2",
-            "icon",
-            1,
-            "type",
-            "typeName",
-            "programType",
-            "description",
-            onlyEnrollOnce = true,
-            accessDataWrite = true
+                "uid",
+                "displayName",
+                "#ffcdd2",
+                "icon",
+                1,
+                "type",
+                "typeName",
+                "programType",
+                "description",
+                onlyEnrollOnce = true,
+                accessDataWrite = true
         )
     }
 }
