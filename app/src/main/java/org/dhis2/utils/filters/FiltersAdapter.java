@@ -21,12 +21,17 @@ import java.util.List;
 
 public class FiltersAdapter extends RecyclerView.Adapter<FilterHolder> {
 
+    private final ProgramType programType;
+
+    public enum ProgramType {ALL,EVENT, TRACKER, DATASET}
+
     private List<Filters> filtersList;
     private ObservableField<Filters> openedFilter;
     private Pair<CategoryCombo, List<CategoryOptionCombo>> catCombData;
 
-    public FiltersAdapter() {
+    public FiltersAdapter(ProgramType programType) {
         this.filtersList = new ArrayList<>();
+        this.programType = programType;
         filtersList.add(Filters.PERIOD);
         filtersList.add(Filters.ORG_UNIT);
         filtersList.add(Filters.SYNC_STATE);
@@ -47,7 +52,7 @@ public class FiltersAdapter extends RecyclerView.Adapter<FilterHolder> {
             case CAT_OPT_COMB:
                 return new CatOptCombFilterHolder(ItemFilterCatOptCombBinding.inflate(inflater, parent, false), openedFilter, catCombData);
             case EVENT_STATUS:
-                return new StatusEventFilterHolder(ItemFilterStatusBinding.inflate(inflater, parent, false), openedFilter);
+                return new StatusEventFilterHolder(ItemFilterStatusBinding.inflate(inflater, parent, false), openedFilter,programType);
             default:
                 throw new IllegalArgumentException("Unsupported filter value");
         }
@@ -76,8 +81,8 @@ public class FiltersAdapter extends RecyclerView.Adapter<FilterHolder> {
         }
     }
 
-    public void addEventStatus(){
-        if(!filtersList.contains(Filters.EVENT_STATUS)) {
+    public void addEventStatus() {
+        if (!filtersList.contains(Filters.EVENT_STATUS)) {
             filtersList.add(Filters.EVENT_STATUS);
             notifyDataSetChanged();
         }

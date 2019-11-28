@@ -120,7 +120,9 @@ public class TeiProgramListRepositoryImpl implements TeiProgramListRepository {
                         program.programType().name(),
                         program.displayDescription(),
                         program.onlyEnrollOnce(),
-                        program.access().data().write()
+                        program.access().data().write(),
+                        State.SYNCED.name(),
+                        false
                 ))
                 .toList()
                 .toObservable();

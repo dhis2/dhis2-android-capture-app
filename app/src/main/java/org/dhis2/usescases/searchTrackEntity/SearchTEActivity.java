@@ -218,7 +218,8 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             return true;
         });
 
-        filtersAdapter = new FiltersAdapter();
+        filtersAdapter = new FiltersAdapter(FiltersAdapter.ProgramType.TRACKER);
+        filtersAdapter.addEventStatus();
         try {
             binding.filterLayout.setAdapter(filtersAdapter);
 

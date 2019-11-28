@@ -8,6 +8,7 @@ import androidx.paging.PagedList;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel;
 import org.hisp.dhis.android.core.common.State;
+import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute;
@@ -38,6 +39,7 @@ public interface SearchRepository {
                                                               @NonNull String trackedEntityType,
                                                               @NonNull List<String> orgUnits,
                                                               @Nonnull List<State> states,
+                                                              @NonNull List<EventStatus> statuses,
                                                               @Nullable HashMap<String, String> queryData,
                                                               boolean isOnline);
 
