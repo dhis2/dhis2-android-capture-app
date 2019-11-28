@@ -9,9 +9,10 @@ import org.dhis2.data.tuples.Trio
 import org.dhis2.databinding.ItemIndicatorBinding
 import org.hisp.dhis.android.core.program.ProgramIndicator
 
-class IndicatorsAdapter: RecyclerView.Adapter<IndicatorViewHolder>() {
+class IndicatorsAdapter : RecyclerView.Adapter<IndicatorViewHolder>() {
 
-    private var programIndicators: MutableList<Trio<ProgramIndicator, String, String>> = mutableListOf()
+    private var programIndicators:
+            MutableList<Trio<ProgramIndicator, String, String>> = mutableListOf()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): IndicatorViewHolder {
         val binding: ItemIndicatorBinding = DataBindingUtil.inflate(
@@ -28,10 +29,9 @@ class IndicatorsAdapter: RecyclerView.Adapter<IndicatorViewHolder>() {
         holder.bind(programIndicators[position])
     }
 
-
     override fun getItemCount() = programIndicators.size
 
-    fun setIndicators(indicators: List<Trio<ProgramIndicator, String, String>>){
+    fun setIndicators(indicators: List<Trio<ProgramIndicator, String, String>>) {
         programIndicators.clear()
         programIndicators.addAll(indicators)
         notifyDataSetChanged()

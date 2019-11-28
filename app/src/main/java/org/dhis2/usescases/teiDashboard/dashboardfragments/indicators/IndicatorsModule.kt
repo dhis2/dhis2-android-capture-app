@@ -14,36 +14,43 @@ import org.hisp.dhis.android.core.D2
 
 @PerFragment
 @Module
-class IndicatorsModule(val programUid: String,
-                       val teiUid: String,
-                       val view: IndicatorsView) {
+class IndicatorsModule(
+    val programUid: String,
+    val teiUid: String,
+    val view: IndicatorsView
+) {
 
     @Provides
     @PerFragment
-    fun providesPresenter(d2: D2,
-                          dashboardRepository: DashboardRepository,
-                          ruleEngineRepository: RuleEngineRepository,
-                          schedulerProvider: SchedulerProvider): IndicatorsPresenterImpl{
-        return IndicatorsPresenterImpl(d2,
+    fun providesPresenter(
+        d2: D2,
+        dashboardRepository: DashboardRepository,
+        ruleEngineRepository: RuleEngineRepository,
+        schedulerProvider: SchedulerProvider
+    ): IndicatorsPresenterImpl {
+        return IndicatorsPresenterImpl(
+            d2,
             programUid, teiUid,
             dashboardRepository,
             ruleEngineRepository,
-            schedulerProvider, view)
+            schedulerProvider, view
+        )
     }
 
     @Provides
     @PerFragment
-    fun ruleEngineRepository(@NonNull briteDatabase: BriteDatabase,
-                             @NonNull formRepository: FormRepository,
-                             d2: D2): RuleEngineRepository{
+    fun ruleEngineRepository(
+        @NonNull briteDatabase: BriteDatabase,
+        @NonNull formRepository: FormRepository,
+        d2: D2
+    ): RuleEngineRepository {
         var enrollmentRepository = d2.enrollmentModule()
             .enrollments().byTrackedEntityInstance().eq(teiUid)
-        if(programUid.isNotEmpty()){
+        if (programUid.isNotEmpty()) {
             enrollmentRepository = enrollmentRepository.byProgram().eq(programUid)
         }
 
         val uid = enrollmentRepository.one().blockingGet().uid()
         return EnrollmentRuleEngineRepository(briteDatabase, formRepository, uid, d2)
     }
-
 }

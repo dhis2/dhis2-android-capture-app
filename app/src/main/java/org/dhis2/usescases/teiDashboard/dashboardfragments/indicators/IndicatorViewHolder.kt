@@ -11,15 +11,15 @@ import org.dhis2.utils.Constants
 import org.dhis2.utils.customviews.CustomDialog
 import org.hisp.dhis.android.core.program.ProgramIndicator
 
-class IndicatorViewHolder(val binding: ItemIndicatorBinding):
+class IndicatorViewHolder(val binding: ItemIndicatorBinding) :
     RecyclerView.ViewHolder(binding.root) {
 
-    fun bind(programIndicatorModel: Trio<ProgramIndicator, String, String>){
-        if(programIndicatorModel.val0() == null){
+    fun bind(programIndicatorModel: Trio<ProgramIndicator, String, String>) {
+        if (programIndicatorModel.val0() == null) {
             val params = binding.guideline.layoutParams as ConstraintLayout.LayoutParams
             params.guidePercent = 0F
             binding.guideline.layoutParams = params
-        }else{
+        } else {
             binding.setVariable(BR.label, programIndicatorModel.val0()!!.displayName())
             binding.setVariable(BR.description, programIndicatorModel.val0()!!.displayDescription())
         }
@@ -38,7 +38,7 @@ class IndicatorViewHolder(val binding: ItemIndicatorBinding):
         }
     }
 
-    private fun showDescription(programIndicatorModel: ProgramIndicator){
+    private fun showDescription(programIndicatorModel: ProgramIndicator) {
         CustomDialog(
             itemView.context,
             programIndicatorModel.displayName()!!,
