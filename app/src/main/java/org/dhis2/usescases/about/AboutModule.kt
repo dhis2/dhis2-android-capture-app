@@ -28,14 +28,12 @@
 
 package org.dhis2.usescases.about
 
-import org.dhis2.data.dagger.PerFragment
-import org.dhis2.data.user.UserRepository
-import org.hisp.dhis.android.core.D2
-
 import dagger.Module
 import dagger.Provides
+import org.dhis2.data.dagger.PerFragment
 import org.dhis2.data.schedulers.SchedulerProvider
-import org.dhis2.usescases.datasets.datasetDetail.DataSetDetailView
+import org.dhis2.data.user.UserRepository
+import org.hisp.dhis.android.core.D2
 
 @Module
 class AboutModule(private val view: AboutView) {

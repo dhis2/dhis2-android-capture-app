@@ -28,21 +28,15 @@
 
 package org.dhis2.data.service.workManager
 
-import androidx.lifecycle.LiveData
-import androidx.work.WorkInfo
+import androidx.work.Data
+import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.ExistingWorkPolicy
 
-interface WorkManagerController {
-
-    fun syncDataForWorker(workerItem: WorkerItem)
-    fun syncDataForWorkers(metadataWorkerTag: String, dataWorkerTag: String, workName: String)
-    fun beginUniqueWork(workerItem: WorkerItem)
-    fun enqueuePeriodicWork(workerItem: WorkerItem)
-
-    fun getWorkInfosForUniqueWorkLiveData(workerName: String): LiveData<List<WorkInfo>>
-    fun getWorkInfosByTagLiveData(tag: String): LiveData<List<WorkInfo>>
-
-    fun cancelAllWork()
-    fun cancelAllWorkByTag(tag: String)
-    fun cancelUniqueWork(workName: String)
-    fun pruneWork()
-}
+data class WorkerItem(
+    val workerName: String,
+    val workerType: WorkerType,
+    val delayInSeconds: Long? = null,
+    val data: Data? = null,
+    val policy: ExistingWorkPolicy? = null,
+    val periodicPolicy: ExistingPeriodicWorkPolicy? = null
+)
