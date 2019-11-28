@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.Parcelable;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -99,9 +100,15 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract {
 
         });
 
-        activity.getPresenter().initCompletionPercentage(sectionSelectorAdapter.completionPercentage());
 
         return binding.getRoot();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+            activity.getPresenter().init();
+            activity.getPresenter().initCompletionPercentage(sectionSelectorAdapter.completionPercentage());
     }
 
     @Override

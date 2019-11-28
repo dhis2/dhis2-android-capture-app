@@ -19,20 +19,15 @@ import dagger.Provides;
 
 /**
  * Created by Cristian on 13/02/2018.
- *
  */
 @PerActivity
 @Module
 public class EventSummaryModule {
 
     @NonNull
-    private Context context;
-
-    @NonNull
     private String eventUid;
 
-    EventSummaryModule(@NonNull Context context, @NonNull String eventUid) {
-        this.context = context;
+    EventSummaryModule(@NonNull String eventUid) {
         this.eventUid = eventUid;
     }
 
@@ -59,20 +54,19 @@ public class EventSummaryModule {
     @PerActivity
     EventSummaryRepository eventSummaryRepository(@NonNull Context context,
                                                   @NonNull BriteDatabase briteDatabase,
-                                                  @NonNull FormRepository formRepository,D2 d2) {
-        return new EventSummaryRepositoryImpl(context, briteDatabase, formRepository, eventUid,d2);
+                                                  @NonNull FormRepository formRepository, D2 d2) {
+        return new EventSummaryRepositoryImpl(context, briteDatabase, formRepository, eventUid, d2);
     }
 
     @Provides
-    FormRepository formRepository(@NonNull BriteDatabase briteDatabase,
-                                  @NonNull RuleExpressionEvaluator evaluator,
+    FormRepository formRepository(@NonNull RuleExpressionEvaluator evaluator,
                                   @NonNull RulesRepository rulesRepository,
                                   @NonNull D2 d2) {
-        return new EventRepository(briteDatabase, evaluator, rulesRepository, eventUid,d2);
+        return new EventRepository(evaluator, rulesRepository, eventUid, d2);
     }
 
     @Provides
-    RulesRepository rulesRepository(@NonNull BriteDatabase briteDatabase,@NonNull D2 d2) {
+    RulesRepository rulesRepository(@NonNull D2 d2) {
         return new RulesRepository(d2);
     }
 }

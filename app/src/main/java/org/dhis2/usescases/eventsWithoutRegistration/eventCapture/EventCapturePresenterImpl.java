@@ -87,6 +87,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     private String lastFocusItem;
     private int unsupportedFields;
     private int totalFields;
+    private ConnectableFlowable<List<FieldViewModel>> fieldFlowable;
 
     @Override
     public String getLastFocusItem() {
@@ -98,7 +99,8 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
         this.lastFocusItem = null;
     }
 
-    public EventCapturePresenterImpl(String eventUid, EventCaptureContract.EventCaptureRepository eventCaptureRepository, RulesUtilsProvider rulesUtils, DataEntryStore dataEntryStore, SchedulerProvider schedulerProvider) {
+    public EventCapturePresenterImpl(EventCaptureContract.View view, String eventUid, EventCaptureContract.EventCaptureRepository eventCaptureRepository, RulesUtilsProvider rulesUtils, DataEntryStore dataEntryStore, SchedulerProvider schedulerProvider) {
+        this.view = view;
         this.eventUid = eventUid;
         this.eventCaptureRepository = eventCaptureRepository;
         this.rulesUtils = rulesUtils;
@@ -111,6 +113,8 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
         this.emptyMandatoryFields = new HashMap<>();
         this.canComplete = true;
         this.sectionList = new ArrayList<>();
+        this.compositeDisposable = new CompositeDisposable();
+
         currentSectionPosition = PublishProcessor.create();
         sectionProcessor = PublishProcessor.create();
         showCalculationProcessor = PublishProcessor.create();
@@ -121,9 +125,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     }
 
     @Override
-    public void init(EventCaptureContract.View view) {
-        this.compositeDisposable = new CompositeDisposable();
-        this.view = view;
+    public void init() {
 
         compositeDisposable.add(
                 showCalculationProcessor
@@ -164,6 +166,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                         )
         );
 
+
         compositeDisposable.add(
                 eventCaptureRepository.eventStatus()
                         .subscribeOn(schedulerProvider.io())
@@ -184,7 +187,6 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                         .subscribe(
                                 data -> {
                                     this.sectionList = data;
-                                    view.setUp();
                                 },
                                 Timber::e
                         )
@@ -231,7 +233,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                         )
         );
 
-        ConnectableFlowable<List<FieldViewModel>> fieldFlowable = getFieldFlowable();
+        fieldFlowable = getFieldFlowable();
 
         compositeDisposable.add(
                 eventCaptureRepository.eventSections()
@@ -283,6 +285,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                                     }
                                     return eventSectionModels;
                                 }))
+                        .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.ui())
                         .subscribe(data -> {
                                     sectionAdjustProcessor.onNext(new Unit());
@@ -329,27 +332,28 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                                 },
                                 Timber::e
                         ));
-
-        fieldFlowable.connect();
     }
 
     private ConnectableFlowable<List<FieldViewModel>> getFieldFlowable() {
         return showCalculationProcessor
                 .startWith(true)
-                .subscribeOn(schedulerProvider.io())
                 .filter(newCalculation -> newCalculation)
-                .switchMap(newCalculation -> Flowable.zip(
-                        eventCaptureRepository.list(),
-                        eventCaptureRepository.calculate(),
-                        this::applyEffects)
-                        .map(fields -> {
+                .flatMap(newCalculation -> Flowable.zip(
+                        eventCaptureRepository.list().doOnNext(next -> Timber.tag("TESTLOG").d("NEXT LIST")),
+                        eventCaptureRepository.calculate().doOnNext(next -> Timber.tag("TESTLOG").d("NEXT EFFECTS")),
+                        this::applyEffects).doOnNext(next -> Timber.tag("TESTLOG").d("NEXT ZIP"))
+                ).map(fields ->
+                        {
                             emptyMandatoryFields = new HashMap<>();
                             for (FieldViewModel fieldViewModel : fields) {
                                 if (fieldViewModel.mandatory() && isEmpty(fieldViewModel.value()) && !sectionsToHide.contains(fieldViewModel.programStageSection()))
                                     emptyMandatoryFields.put(fieldViewModel.uid(), fieldViewModel);
                             }
                             return fields;
-                        })).replay(1);
+                        }
+                )
+                .publish();
+
     }
 
     private void checkExpiration() {
@@ -444,7 +448,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                                     emptyMandatoryFields.remove(action.id());
                                 return dataEntryStore.save(action.id(), action.value());
                             }
-                    ).subscribe(result -> showCalculationProcessor.onNext(true),
+                    ).subscribe(result -> nextCalculation(true),
                             Timber::d)
             );
         }
@@ -465,7 +469,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
             return viewModels;
         }
 
-        //Reset effects
+        //Reset effectsT
         optionsToHide.clear();
         optionsGroupsToHide.clear();
         optionsGroupToShow.clear();
@@ -727,6 +731,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     public void initCompletionPercentage(FlowableProcessor<Pair<Float, Float>> completionPercentage) {
         compositeDisposable.add(
                 completionPercentage
+                        .doOnSubscribe(subs -> fieldFlowable.connect(compositeDisposable::add))
                         .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.ui())
                         .subscribe(
@@ -745,16 +750,6 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     @Override
     public void displayMessage(String message) {
         view.displayMessage(message);
-    }
-
-    @Override
-    public Observable<List<OrganisationUnitLevel>> getLevels() {
-        return eventCaptureRepository.getOrgUnitLevels();
-    }
-
-    @Override
-    public DataEntryStore getDataEntryStore() {
-        return dataEntryStore;
     }
 
     @Override

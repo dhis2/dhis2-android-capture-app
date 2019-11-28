@@ -478,14 +478,12 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                         ProgramStageSectionRenderingType renderingType = programStageSection != null && programStageSection.renderType() != null &&
                                 programStageSection.renderType().mobile() != null ?
                                 programStageSection.renderType().mobile().type() : null;
-                        Timber.tag("FIELD").d("Field %s took %s millis", displayName, System.currentTimeMillis() - init);
                         return fieldFactory.create(uid, formName == null ? displayName : formName,
                                 valueType, mandatory, optionSet, dataValue,
                                 programStageSection != null ? programStageSection.uid() : null, allowFurureDates,
                                 !isEventEditable,
                                 renderingType, description, fieldRendering, optionCount, objectStyle, de.fieldMask());
                     })
-                    .doOnNext(data -> Timber.tag("FIELD").d("Field %s is ready", data.label()))
                     .toList().toFlowable()
                     .map(data -> sectionFields = data)
                     .map(this::checkRenderType);

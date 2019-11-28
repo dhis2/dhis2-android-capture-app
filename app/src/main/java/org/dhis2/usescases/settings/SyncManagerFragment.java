@@ -220,8 +220,8 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
         return syncParameters -> {
             String eventMax = String.valueOf(prefs.getInt(Constants.EVENT_MAX, Constants.EVENT_MAX_DEFAULT));
             String teiMax = String.valueOf(prefs.getInt(Constants.TEI_MAX, Constants.TEI_MAX_DEFAULT));
-            String eventCurrent = String.valueOf(syncParameters.val0());
-            String teiCurrent = String.valueOf(syncParameters.val1());
+            String eventCurrent = String.valueOf(syncParameters.val1());
+            String teiCurrent = String.valueOf(syncParameters.val0());
             binding.eventMaxData.setText(eventMax);
             binding.teiMaxData.setText(teiMax);
             binding.eventCurrentData.setText(eventCurrent);
@@ -229,7 +229,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
             binding.limitByOrgUnit.setChecked(prefs.getBoolean(Constants.LIMIT_BY_ORG_UNIT, false));
             binding.limitByProgram.setChecked(prefs.getBoolean(Constants.LIMIT_BY_PROGRAM, false));
             binding.parameterLayout.message.setText(
-                    String.format("Events:%smax:%s%scurrent:%s\nTEI:%smax:%s%scurrent:%s",
+                    String.format(context.getString(R.string.event_tei_limits),
                             getString(R.string.tab), eventMax, getString(R.string.tab), eventCurrent,
                             getString(R.string.tab), teiMax, getString(R.string.tab), teiCurrent));
         };

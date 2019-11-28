@@ -42,27 +42,36 @@ class ProgramPresenterTest {
         val filterManagerFlowable = Flowable.just(filterManager)
         val programsFlowable = Flowable.just(programs)
 
-        whenever(filterManager.asFlowable()) doReturn filterManagerFlowable
+        whenever(filterManager.asFlowable()) doReturn mock()
+        whenever(filterManager.asFlowable().startWith(filterManager)) doReturn filterManagerFlowable
         whenever(filterManager.ouTreeFlowable()) doReturn Flowable.just(true)
         whenever(homeRepository.programModels(any(), any(), any())) doReturn programsFlowable
         whenever(homeRepository.aggregatesModels(any(), any(), any())) doReturn Flowable.empty()
 
         presenter.init()
         schedulers.io().advanceTimeBy(1, TimeUnit.SECONDS)
-
+        verify(view).showFilterProgress()
         verify(view).swapProgramModelData(programs)
         verify(view).openOrgUnitTreeSelector()
     }
 
     @Test
     fun `Should render error when there is a problem getting programs`() {
-        whenever(filterManager.asFlowable()) doReturn Flowable.error(Exception(""))
+        val filterManagerFlowable = Flowable.just(filterManager)
+
+        whenever(filterManager.asFlowable()) doReturn mock()
+        whenever(filterManager.asFlowable().startWith(filterManager)) doReturn filterManagerFlowable
+
+        whenever(homeRepository.aggregatesModels(any(), any(),
+            any())) doReturn Flowable.error(Exception(""))
         whenever(filterManager.ouTreeFlowable()) doReturn Flowable.just(true)
 
         presenter.init()
         schedulers.io().advanceTimeBy(1, TimeUnit.SECONDS)
 
+        verify(view).showFilterProgress()
         verify(view).renderError("")
+        verify(view).openOrgUnitTreeSelector()
     }
 
     @Test
