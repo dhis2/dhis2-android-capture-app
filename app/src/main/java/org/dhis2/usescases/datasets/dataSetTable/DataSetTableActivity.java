@@ -210,8 +210,8 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
 
     @Override
     public void isDataSetOpen(boolean dataSetIsOpen) {
-        binding.programLock.setImageResource(!dataSetIsOpen ? R.drawable.ic_lock_open_green : R.drawable.ic_lock_completed);
-        binding.programLockText.setText(!dataSetIsOpen ? getString(org.dhis2.R.string.data_set_open) : getString(org.dhis2.R.string.data_set_closed));
+        binding.programLock.setImageResource(!dataSetIsOpen ? R.drawable.ic_edit_green : R.drawable.ic_visibility);
+        binding.programLockText.setText(!dataSetIsOpen ? getString(org.dhis2.R.string.event_open) : getString(org.dhis2.R.string.completed));
         binding.programLockText.setTextColor(!dataSetIsOpen ? getResources().getColor(R.color.green_7ed) : getResources().getColor(R.color.gray_666));
     }
 
