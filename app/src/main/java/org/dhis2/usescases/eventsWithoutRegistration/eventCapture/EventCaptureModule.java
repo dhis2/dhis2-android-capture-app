@@ -1,5 +1,11 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventCapture;
 
+import android.content.Context;
+
+import androidx.annotation.NonNull;
+
+import com.squareup.sqlbrite2.BriteDatabase;
+
 import org.dhis2.data.dagger.PerActivity;
 import org.dhis2.data.forms.EventRepository;
 import org.dhis2.data.forms.FormRepository;
@@ -11,12 +17,6 @@ import org.dhis2.data.user.UserRepository;
 import org.dhis2.utils.RulesUtilsProvider;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.rules.RuleExpressionEvaluator;
-
-import com.squareup.sqlbrite2.BriteDatabase;
-
-import android.content.Context;
-
-import androidx.annotation.NonNull;
 
 import dagger.Module;
 import dagger.Provides;
@@ -31,11 +31,11 @@ public class EventCaptureModule {
 
 
     private final String eventUid;
-    private final String programUid;
+    private final EventCaptureContract.View view;
 
-    public EventCaptureModule(String eventUid, String programUid) {
+    public EventCaptureModule(EventCaptureContract.View view, String eventUid) {
+        this.view = view;
         this.eventUid = eventUid;
-        this.programUid = programUid;
     }
 
     @Provides
@@ -44,7 +44,7 @@ public class EventCaptureModule {
                                                     @NonNull RulesUtilsProvider ruleUtils,
                                                     @NonNull DataEntryStore dataEntryStore,
                                                     SchedulerProvider schedulerProvider) {
-        return new EventCapturePresenterImpl(eventUid, eventCaptureRepository, ruleUtils, dataEntryStore, schedulerProvider);
+        return new EventCapturePresenterImpl(view, eventUid, eventCaptureRepository, ruleUtils, dataEntryStore, schedulerProvider);
     }
 
     @Provides
@@ -62,11 +62,10 @@ public class EventCaptureModule {
 
     @Provides
     @PerActivity
-    FormRepository formRepository(@NonNull BriteDatabase briteDatabase,
-                                  @NonNull RuleExpressionEvaluator evaluator,
+    FormRepository formRepository(@NonNull RuleExpressionEvaluator evaluator,
                                   @NonNull RulesRepository rulesRepository,
                                   @NonNull D2 d2) {
-        return new EventRepository(briteDatabase, evaluator, rulesRepository, eventUid, d2);
+        return new EventRepository(evaluator, rulesRepository, eventUid, d2);
     }
 
     @Provides
@@ -74,7 +73,7 @@ public class EventCaptureModule {
     DataEntryStore dataValueStore(@NonNull BriteDatabase briteDatabase,
                                   @NonNull UserRepository userRepository,
                                   @NonNull D2 d2) {
-        return new DataValueStore(d2,briteDatabase, userRepository, eventUid);
+        return new DataValueStore(d2, briteDatabase, userRepository, eventUid);
     }
 
 }

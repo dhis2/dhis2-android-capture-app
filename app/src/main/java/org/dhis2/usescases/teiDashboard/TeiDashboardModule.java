@@ -54,17 +54,16 @@ public class TeiDashboardModule {
 
     @Provides
     @PerActivity
-    RulesRepository rulesRepository(@NonNull BriteDatabase briteDatabase, @NonNull D2 d2) {
+    RulesRepository rulesRepository(@NonNull D2 d2) {
         return new RulesRepository(d2);
     }
 
     @Provides
     @PerActivity
-    FormRepository formRepository(@NonNull BriteDatabase briteDatabase,
-                                  @NonNull RuleExpressionEvaluator evaluator,
-                                  @NonNull RulesRepository rulesRepository,
-                                  @NonNull CodeGenerator codeGenerator,
-                                  D2 d2) {
+    FormRepository formRepository(
+            @NonNull RuleExpressionEvaluator evaluator,
+            @NonNull RulesRepository rulesRepository,
+            D2 d2) {
         EnrollmentCollectionRepository enrollmentRepository = d2.enrollmentModule().enrollments()
                 .byTrackedEntityInstance().eq(teiUid);
         if (!isEmpty(programUid))
@@ -72,6 +71,6 @@ public class TeiDashboardModule {
 
         String uid = enrollmentRepository.one().blockingGet().uid();
 
-        return new EnrollmentFormRepository(briteDatabase, evaluator, rulesRepository, codeGenerator, uid, d2);
+        return new EnrollmentFormRepository(evaluator, rulesRepository, uid, d2);
     }
 }

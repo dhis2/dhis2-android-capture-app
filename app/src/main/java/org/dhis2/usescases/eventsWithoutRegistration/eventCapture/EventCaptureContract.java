@@ -35,8 +35,6 @@ public class EventCaptureContract {
 
         EventCaptureContract.Presenter getPresenter();
 
-        void setUp();
-
         Consumer<Pair<Float, Float>> updatePercentage();
 
         void attemptToFinish(boolean canComplete);
@@ -75,7 +73,7 @@ public class EventCaptureContract {
 
         void clearLastFocusItem();
 
-        void init(EventCaptureContract.View view);
+        void init();
 
         void onBackClick();
 
@@ -112,10 +110,6 @@ public class EventCaptureContract {
         boolean canWrite();
 
         boolean hasExpired();
-
-        Observable<List<OrganisationUnitLevel>> getLevels();
-
-        DataEntryStore getDataEntryStore();
 
         void saveImage(String uuid, String filePath);
     }

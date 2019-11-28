@@ -58,15 +58,14 @@ public class EventInitialModule {
     }
 
     @Provides
-    FormRepository formRepository(@NonNull BriteDatabase briteDatabase,
-                                  @NonNull RuleExpressionEvaluator evaluator,
+    FormRepository formRepository(@NonNull RuleExpressionEvaluator evaluator,
                                   @NonNull RulesRepository rulesRepository,
                                   @NonNull D2 d2) {
-        return new EventRepository(briteDatabase, evaluator, rulesRepository, eventUid, d2);
+        return new EventRepository(evaluator, rulesRepository, eventUid, d2);
     }
 
     @Provides
-    RulesRepository rulesRepository(@NonNull BriteDatabase briteDatabase, @NonNull D2 d2) {
+    RulesRepository rulesRepository(@NonNull D2 d2) {
         return new RulesRepository(d2);
     }
 
