@@ -19,7 +19,7 @@ There are two ways to access the application:
     > You are able to make an *offline* login only if using the same user as the last online session.
  
 ![](resources/images/image62.PNG){ width=25%}
-![](resources/images/image63.PNG){ width=25%}
+![](resources/images/image63.jpg){ width=25%}
  
 ## Account Recovery
 
