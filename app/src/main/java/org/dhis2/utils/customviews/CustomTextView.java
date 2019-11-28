@@ -32,9 +32,6 @@ import java.util.regex.Pattern;
 
 import static android.text.TextUtils.isEmpty;
 
-/**
- * QUADRAM. Created by frodriguez on 1/17/2018.
- */
 
 public class CustomTextView extends FieldLayout implements View.OnFocusChangeListener {
 
@@ -212,8 +209,6 @@ public class CustomTextView extends FieldLayout implements View.OnFocusChangeLis
     }
 
     public void setEditable(Boolean editable) {
-        editText.setFocusable(false);
-        editText.setFocusableInTouchMode(false);
         editText.setClickable(editable);
         editText.setEnabled(editable);
     }
@@ -350,7 +345,6 @@ public class CustomTextView extends FieldLayout implements View.OnFocusChangeLis
             return true;
         });
     }
-
 
     public void setObjectSyle(ObjectStyle objectStyle) {
         Bindings.setObjectStyle(icon, this, objectStyle);
