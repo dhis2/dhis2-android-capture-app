@@ -20,6 +20,7 @@
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/root"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="?attr/selectableItemBackground"
@@ -110,7 +111,7 @@
             android:textColor="@color/text_black_333"
             android:textSize="14sp"
             android:textStyle="bold"
-            app:layout_constraintEnd_toStartOf="@id/sync_status"
+            app:layout_constraintEnd_toStartOf="@id/overdueIcon"
             app:layout_constraintStart_toEndOf="@id/imageLayout"
             app:layout_constraintTop_toTopOf="parent"
             tools:text="Child Programgsdgfsdgsdfgsdfgs\nihgsfoidhjodfishlsdfgkjglikdsfjgolksjhgsdofjhgodfhgsiujhsdgf\njlkasdljksdaflkjsdf" />
@@ -127,5 +128,16 @@
             app:layout_constraintTop_toTopOf="parent"
             app:stateIcon="@{program.getState()}"
             tools:src="@drawable/ic_sync" />
+
+        <ImageView
+            android:id="@+id/overdueIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/sync_status"
+            app:layout_constraintTop_toTopOf="parent"
+            android:tint="?colorPrimary"
+            app:srcCompat="@drawable/ic_overdue"
+            android:visibility="@{program.hasOverdue()?View.VISIBLE:View.GONE}"/>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

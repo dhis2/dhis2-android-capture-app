@@ -38,7 +38,7 @@
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:tint="@color/white"
-                app:srcCompat="@drawable/ic_lock_open_white" />
+                app:srcCompat="@drawable/ic_edit" />
 
             <TextView
                 android:layout_width="0dp"
@@ -119,37 +119,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 tools:checked="true" />
-        </LinearLayout>
-
-        <!--OPEN-->
-        <LinearLayout
-            android:id="@+id/layoutVisited"
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:gravity="center_vertical">
-
-            <ImageView
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:tint="@color/white"
-                app:srcCompat="@drawable/ic_edit"/>
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="48dp"
-                android:layout_marginStart="16dp"
-                android:layout_marginEnd="16dp"
-                android:layout_weight="1"
-                android:gravity="center_vertical"
-                android:text="@string/filter_event_status_visited"
-                android:textColor="@color/white"
-                android:textSize="12sp" />
-
-            <CheckBox
-                android:id="@+id/stateVisited"
-                style="@style/filterCheckBox"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
         </LinearLayout>
 
         <!--COMPLETED-->
