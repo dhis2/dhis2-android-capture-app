@@ -57,10 +57,14 @@ public class EditTextCustomHolder extends FormViewHolder {
             }
 
             if (isSearchMode || (!hasFocus && editTextModel != null && editTextModel.editable())) {
-                if (valueHasChanged())
+                if (hasFocus) {
+                    openKeyboard(binding.customEdittext.getEditText());
+                }
+                if (valueHasChanged()) {
                     sendAction();
-                else
+                } else {
                     closeKeyboard(binding.customEdittext.getEditText());
+                }
             } else {
                 openKeyboard(binding.customEdittext.getEditText());
             }
