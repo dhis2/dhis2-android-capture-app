@@ -603,4 +603,5 @@
     <string name="filter_event_status_visited">Visited</string>
     <string name="filter_event_status_completed">Completed</string>
     <string name="filter_event_status_skipped">Skipped</string>
+    <string name="event_tei_limits">Events:%smax:%s%scurrent:%s TEI:%smax:%s%scurrent:%s</string>
 </resources>
