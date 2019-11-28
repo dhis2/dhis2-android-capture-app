@@ -19,9 +19,7 @@ import java.util.List;
 
 import io.reactivex.Observable;
 import io.reactivex.Single;
-import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
 import static android.text.TextUtils.isEmpty;
@@ -29,26 +27,28 @@ import static android.text.TextUtils.isEmpty;
 /**
  * QUADRAM. Created by ppajuelo on 09/04/2019.
  */
-public class IndicatorsPresenterImpl implements IndicatorsContracts.Presenter {
+public class IndicatorsPresenterImpl {
 
     private final D2 d2;
     private final SchedulerProvider schedulerProvider;
-    private CompositeDisposable compositeDisposable;
+    CompositeDisposable compositeDisposable;
     private final String programUid;
     private final String enrollmentUid;
     private final DashboardRepository dashboardRepository;
     private final RuleEngineRepository ruleEngineRepository;
-    private IndicatorsContracts.View view;
+    private IndicatorsView view;
 
 
     IndicatorsPresenterImpl(D2 d2, String programUid, String teiUid, DashboardRepository dashboardRepository,
-                            RuleEngineRepository ruleEngineRepository, SchedulerProvider schedulerProvider) {
+                            RuleEngineRepository ruleEngineRepository, SchedulerProvider schedulerProvider,
+                            IndicatorsView view) {
         this.d2 = d2;
         this.programUid = programUid;
         this.dashboardRepository = dashboardRepository;
         this.ruleEngineRepository = ruleEngineRepository;
         this.schedulerProvider = schedulerProvider;
-
+        this.view = view;
+        this.compositeDisposable = new CompositeDisposable();
         EnrollmentCollectionRepository enrollmentRepository = d2.enrollmentModule().enrollments()
                 .byTrackedEntityInstance().eq(teiUid);
         if (!isEmpty(programUid))
@@ -57,11 +57,7 @@ public class IndicatorsPresenterImpl implements IndicatorsContracts.Presenter {
         enrollmentUid = enrollmentRepository.one().blockingGet() == null ? "" : enrollmentRepository.one().blockingGet().uid();
     }
 
-    @Override
-    public void init(IndicatorsContracts.View view) {
-        this.view = view;
-        this.compositeDisposable = new CompositeDisposable();
-
+    public void init() {
         compositeDisposable.add(
                 dashboardRepository.getIndicators(programUid)
                         .filter(indicators -> !isEmpty(enrollmentUid))
@@ -91,9 +87,9 @@ public class IndicatorsPresenterImpl implements IndicatorsContracts.Presenter {
                                 }))
                         .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.ui())
-                        .subscribe(
-                                view.swapIndicators(),
-                                Timber::d
+                        .subscribe(data -> {view.swapIndicators(data);},
+                                //view.swapIndicators(),
+                                Timber::e
                         )
         );
     }
@@ -128,12 +124,10 @@ public class IndicatorsPresenterImpl implements IndicatorsContracts.Presenter {
         return indicators;
     }
 
-    @Override
     public void onDettach() {
         compositeDisposable.clear();
     }
 
-    @Override
     public void displayMessage(String message) {
         view.displayMessage(message);
     }
