@@ -902,13 +902,4 @@ public class TableView extends FrameLayout implements ITableView {
     public View getCornerView() {
         return getAdapter().getCornerView();
     }
-
-
-    public void selectNext() {
-        if(mColumnHeaderRecyclerViews.get(mColumnHeaderRecyclerViews.size()-1).getAdapter().getItemCount() > getSelectedColumn()+ 1) {
-            setSelectedCell(getSelectedColumn() + 1, getSelectedRow());
-        } else {
-            setSelectedCell(0, getSelectedRow() + 1);
-        }
-    }
 }

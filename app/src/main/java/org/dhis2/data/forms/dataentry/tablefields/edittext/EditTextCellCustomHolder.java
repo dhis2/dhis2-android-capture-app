@@ -7,13 +7,13 @@ import android.text.method.DigitsKeyListener;
 import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 
 import androidx.annotation.NonNull;
 import androidx.databinding.ObservableBoolean;
 
 import com.evrencoskun.tableview.TableView;
+import com.evrencoskun.tableview.handler.SelectionHandler;
 
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.tablefields.FieldViewModel;
@@ -23,8 +23,6 @@ import org.dhis2.databinding.CustomTextViewCellBinding;
 import org.dhis2.utils.DialogClickListener;
 import org.dhis2.utils.customviews.TableFieldDialog;
 import org.hisp.dhis.android.core.common.ValueType;
-
-import java.util.ArrayList;
 
 import io.reactivex.processors.FlowableProcessor;
 
@@ -54,7 +52,7 @@ final class EditTextCellCustomHolder extends FormViewHolder {
         this.processor = processor;
 
         editText.setOnEditorActionListener((v, actionId, event) -> {
-            tableView.selectNext();
+            selectNext();
             return true;
         });
 
@@ -103,7 +101,10 @@ final class EditTextCellCustomHolder extends FormViewHolder {
 
         customBinding.executePendingBindings();
 
-        if(editTextModel.column() == tableView.getSelectedColumn() && editTextModel.row() == tableView.getSelectedRow())
+        if(tableView.getSelectedRow() == SelectionHandler.UNSELECTED_POSITION){
+            closeKeyboard(editText);
+            editText.clearFocus();
+        } else if(editTextModel.column() == tableView.getSelectedColumn() && editTextModel.row() == tableView.getSelectedRow())
             setSelected(SelectionState.SELECTED);
     }
 
@@ -264,6 +265,19 @@ final class EditTextCellCustomHolder extends FormViewHolder {
 
     @Override
     public void dispose() {
+    }
+
+    public void selectNext() {
+        if (tableView.getColumnHeaderRecyclerView().get(tableView.getColumnHeaderRecyclerView().size() - 1).getAdapter().getItemCount() > tableView.getSelectedColumn() + 1) {
+            tableView.setSelectedCell(tableView.getSelectedColumn() + 1, tableView.getSelectedRow());
+        } else if (tableView.getRowHeaderRecyclerView().getAdapter().getItemCount() > tableView.getSelectedRow() + 1) {
+            tableView.setSelectedCell(0, tableView.getSelectedRow() + 1);
+        } else {
+            setSelected(SelectionState.UNSELECTED);
+            tableView.getSelectionHandler().clearSelection();
+            editText.clearFocus();
+            closeKeyboard(editText);
+        }
     }
 
     @Override

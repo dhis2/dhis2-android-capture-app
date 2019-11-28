@@ -424,9 +424,9 @@ public class SelectionHandler {
     }
 
     public void clearSelection() {
-        unselectedRowHeader();
         unselectedCellView();
-        unselectedColumnHeader();
+        mSelectedColumnPosition = UNSELECTED_POSITION;
+        mSelectedRowPosition= UNSELECTED_POSITION;
     }
 
     public void setSelectedRowPosition(int row) {
