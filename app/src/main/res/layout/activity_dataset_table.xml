@@ -99,7 +99,7 @@
                     app:layout_constraintBottom_toTopOf="@+id/program_lock_text"
                     app:layout_constraintEnd_toStartOf="@id/syncState"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:srcCompat="@drawable/ic_lock_open_green"
+                    app:srcCompat="@drawable/ic_edit_green"
                     tools:ignore="ContentDescription,MissingConstraints" />
 
                 <TextView
