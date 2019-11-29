@@ -123,6 +123,7 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
 
         binding.next.setOnClickListener {
             if (presenter.dataIntegrityCheck(adapter.mandatoryOk(), adapter.hasError())) {
+                binding.root.requestFocus()
                 analyticsHelper().setEvent(SAVE_ENROLL, CLICK, SAVE_ENROLL)
                 presenter.finish(mode)
             }
