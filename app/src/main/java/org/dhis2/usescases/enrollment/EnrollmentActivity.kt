@@ -141,6 +141,7 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
                 }
             }
         })
+        
     }
 
     override fun onResume() {
