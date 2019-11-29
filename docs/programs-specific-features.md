@@ -30,7 +30,7 @@ Two options will be presented:
 To complete or deactivate an enrollment, click on ‘See details’ and actions will be available in the ‘Lock’ icon on the top right corner of the screen. 
 
 ![](resources/images/image76.png){ width=25%}
-![](resources/images/image77.png){ width=25%}
+![](resources/images/image77.jpg){ width=25%}
 
 ### Reset Search Fields
 
@@ -108,11 +108,6 @@ To complete an event click on the 'END' button. Two options will be offered
 
 ![](resources/images/image82.png){ width=25%}
 ![](resources/images/image83.png){ width=25%}
-
-You can also complete by clicking on the three dots at the top right corner of the screen, then Details, then click on the percentage and select 'complete and close' button.
-
-![](resources/images/image84.png){ width=25%}
-
 
 > **Note**
 >
