@@ -261,6 +261,7 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
     override fun onBackPressed() {
         if (mode == EnrollmentMode.CHECK) {
             if (presenter.dataIntegrityCheck(adapter.mandatoryOk(), adapter.hasError())) {
+                binding.root.requestFocus()
                 super.onBackPressed()
             }
         } else {
