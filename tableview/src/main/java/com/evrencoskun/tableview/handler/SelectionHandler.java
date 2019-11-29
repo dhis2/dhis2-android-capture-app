@@ -67,6 +67,15 @@ public class SelectionHandler {
         this.mSelectedColumnPosition = column;
         this.mSelectedRowPosition = row;
 
+        this.mPreviousSelectedViewHolder = selectedViewHolder;
+
+        // Change color
+        if(mTableView != null && mPreviousSelectedViewHolder != null)
+            mPreviousSelectedViewHolder.setBackgroundColor(mTableView.getSelectedColor());
+        // Change state
+        if(mPreviousSelectedViewHolder != null)
+            mPreviousSelectedViewHolder.setSelected(SelectionState.SELECTED);
+
         if (shadowEnabled) {
             selectedCellView();
         }
@@ -123,15 +132,6 @@ public class SelectionHandler {
             // Change state
             oldViewHolder.setSelected(SelectionState.UNSELECTED);
         }
-
-        this.mPreviousSelectedViewHolder = viewHolder;
-
-        // Change color
-        if(mTableView != null && mPreviousSelectedViewHolder != null)
-            mPreviousSelectedViewHolder.setBackgroundColor(mTableView.getSelectedColor());
-        // Change state
-        if(mPreviousSelectedViewHolder != null)
-            mPreviousSelectedViewHolder.setSelected(SelectionState.SELECTED);
     }
 
 
@@ -424,9 +424,9 @@ public class SelectionHandler {
     }
 
     public void clearSelection() {
-        unselectedRowHeader();
         unselectedCellView();
-        unselectedColumnHeader();
+        mSelectedColumnPosition = UNSELECTED_POSITION;
+        mSelectedRowPosition= UNSELECTED_POSITION;
     }
 
     public void setSelectedRowPosition(int row) {
