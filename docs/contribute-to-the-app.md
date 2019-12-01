@@ -24,7 +24,7 @@ The steps to contribute to the translation of the app are:
 
 1. Create an account ( https://www.transifex.com/signin/?next=/hisp-uio/)
 2. Join Existing Organization
-3. Search for HISP UiO and select the organization not the projects (see image below)
+3. Search for HISP UiO and select the organization not the projects
 4. Select ANDROID: Capture project
 5. Join the team for the selected language
 
