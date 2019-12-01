@@ -105,15 +105,23 @@ In the Android App, the color will be rendered as background color for programs 
 >
 > Render type for sections will first be available in the Android app, followed in future releases by the new web-based Capture App UI.
 
-## Calendar (Tracker Program)
+## Calendar
 
-Now it is possible to use two different calendars when making a new enrollment. The one on the left is the first to appear but you can change it by clicking on the calendar icon on the lower left corner. 
+Now it is possible to use two different calendars. The one on the left is the first to appear but you can change it by clicking on the calendar icon on the lower left corner.
+
+This is available when:
+
+1. Making a new enrollment.
+
+2. Creating a new event (Programs with and without registration).
+
+3. Using period filters in data sets and programs with and without registration.
 
 ![](resources/images/image60.png){ width=25%}
 ![](resources/images/image61.png){ width=25%}
 
 > **Note**
-> [ANDROAPP 2191](https://jira.dhis2.org/browse/ANDROAPP-2191).
+> 
 > For Android versions 4.4,  5.1 and small devices, the Accept option is not visible in the second calendar view.
 
 
