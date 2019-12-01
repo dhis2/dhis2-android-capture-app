@@ -21,7 +21,7 @@ In the notes, ‘admin’ refers to someone who develops and configures a DHIS2 
 |Data input periods|Allows you to set a specific range of dates for a period's data-entry, and prevents data capture for periods outside of this date range.|✓ | |
 |Days after period to qualify for timely submission|Sets the deadline (days after period) after which DHIS2 treats data entry as 'late'.| ✓| |
 |[Attribute] category combination|Allows an admin to attach a Category (set of Options) to the Data Set, generating a separate data entry screen for each Option (This is called an Attribute Category Combination in DHIS2).| ✓| |
-|[Attribute] Category Combination option restrictions|If Attribute Category Combinations (see above) are used, then this features gives admins the ability to restrict which specific options are available in the drop-down.  Each option can be restricted to a particular range of dates and/or organisation units, and that option will not be shown if data is being captured outside of these dates or org units.| ✓| |
+|[Attribute] Category Combination option restrictions|If Attribute Category Combinations (see above) are used, then this features gives admins the ability to restrict which specific options are available in the drop-down.  Each option can be restricted to a particular range of dates and/or organisation units, and that option will not be shown if data is being captured outside of these dates or org units.| ✓| [ANDROAPP-1153](https://jira.dhis2.org/browse/ANDROAPP-1153) Restriction is only possible using dates.|
 |Complete notification recipients|Sends a DHIS2 message to the selected User Group when the Data Set is marked 'complete'.|&ndash;| |
 |Send notification to completing user|Sends a DHIS2 message to the data-entry user when the Data Set is marked 'complete'.|&ndash;| |
 |All fields for data elements required|Where one or more Categories are used to disaggregate a data element, this setting forces the user to either complete all disaggregations, or to leave them all empty.|✓ | |
@@ -47,12 +47,13 @@ In the notes, ‘admin’ refers to someone who develops and configures a DHIS2 
 |Data value pop-up: min/max ranges (also accessible via Data Administration app)|This enables users to set minimum and maximum expected values for a data element, enabling DHIS2 to highlight values outside this range during data entry (but it does not prevent saving or 'completing').  You can set min/max ranges automatically/in-bulk (via the Data Administration app) or manually/individually (via the Data Entry app).|&ndash;| |
 |Print form / print blank form|Enables printing of a data-entry form, to permit data capture on paper, and data-entry later.|&ndash;| |
 |Save data|Data entered into the screen is not captured until 'saved' - until then, it is only held in memory, and is lost if power is switched off etc.|✓| |
-|Complete data set|This enables user to mark data-entry for a period/org unit/etc as 'complete'.  Note that this is just for data-entry tracking and timeliness purposes, and does not lock the data set or prevent further edits.|&ndash;| |
+|Complete data set|This enables user to mark data-entry for a period/org unit/etc as 'complete'.  Note that this is just for data-entry tracking and timeliness purposes, and does not lock the data set or prevent further edits.|✓| |
 |Data elements: validation rules|Enables the creation of rules (at the data element level) to enforce data quality, based on comparing different values/collections of values.  (Eg number of patients seen in the month must be less than the number of visits for the month.)|&ndash;| |
 |Data sharing levels/Can capture data|Enables the user to add new values, edit values and delete values in the dataset.|✓ | |
-|Data sharing levels/Can view data|Enables the user to see values within the dataset.| | |
+|Data sharing levels/Can view data|Enables the user to see values within the dataset.|✓ | |
 |Data sharing levels/No access|The user won’t be able to see the dataset.|✓ | |
-|Data approval workflow|If an admin selects a pre-configured Data Approval Workflow, this will be used to enforce an ‘approval’ or ‘acceptance and approval’ cascade, enabling users to sign-off and lock data.|✓ | |
+|Data approval workflow|If an admin selects a pre-configured Data Approval Workflow, this will be used to enforce an ‘approval’ or ‘acceptance and approval’ cascade, enabling users to sign-off and lock data.|✓ | The process of the approval has to be done in web. Once a data set is approved, the data will not longe be editable in the app. |
+|Missing values requires comment on complete|Any missing values will require a comment to justify their absence.|-||
 
 ## Program features
 |Feature|Description of feature|Program with registration|Program without registration|Notes on implementation|
