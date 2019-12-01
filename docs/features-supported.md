@@ -52,7 +52,7 @@ In the notes, ‘admin’ refers to someone who develops and configures a DHIS2 
 |Data sharing levels/Can capture data|Enables the user to add new values, edit values and delete values in the dataset.|✓ | |
 |Data sharing levels/Can view data|Enables the user to see values within the dataset.|✓ | |
 |Data sharing levels/No access|The user won’t be able to see the dataset.|✓ | |
-|Data approval workflow|If an admin selects a pre-configured Data Approval Workflow, this will be used to enforce an ‘approval’ or ‘acceptance and approval’ cascade, enabling users to sign-off and lock data.|✓ | The process of the approval has to be done in web. Once a data set is approved, the data will not longe be editable in the app. |
+|Data approval workflow|If an admin selects a pre-configured Data Approval Workflow, this will be used to enforce an ‘approval’ or ‘acceptance and approval’ cascade, enabling users to sign-off and lock data.|✓ | The process of the approval has to be done in web. Once a data set is approved, the data will not longer be editable in the app. |
 |Missing values requires comment on complete|Any missing values will require a comment to justify their absence.|-||
 
 ## Program features
