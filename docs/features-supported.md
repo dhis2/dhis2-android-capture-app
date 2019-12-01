@@ -123,7 +123,7 @@ In the notes, ‘admin’ refers to someone who develops and configures a DHIS2 
 |Messaging|Enables users to send ad-hoc free-text messages to TEIs (e.g. patients) via SMS or email.|&ndash;||
 |Mark for follow-up (button with exclamation triangle)|Enables a user to mark a TEI (e.g. patient) as requiring follow-up.|✓||
 |Display TEI audit history|Enables a user to see a history of all edits to Attributes for this TEI (e.g. patient).|-||
-|Inline Program Indicators|If a program indicator "display in form" box is ticked, the indicator appears on the Tracker Capture dashboard, and is updated live as data capture occurs.|✓|<a href="https://www.google.com/url?q=https://jira.dhis2.org/browse/ANDROAPP-1723&amp;sa=D&amp;ust=1557433016354000">ANDROAPP-1723</a>: Some program indicators are not been shown even if display in form is selected||
+|Inline Program Indicators|If a program indicator "display in form" box is ticked, the indicator appears on the Tracker Capture dashboard, and is updated live as data capture occurs.|✓|||
 |Delete events|Enables the user to delete an event.|✓||
 |Schedule events|In the event generation dialogue, the user should also see the option to schedule an event. The process is like creating an event, but the user will be sent back to the TEI dashboard after the event is scheduled.|✓||
 |Referral of patients|In the event generation dialogue, the user should also see the option to refer a patient. The process is like creating/scheduling an event, but the user can change the org unit and has to specify if is a one-time or permanent referral. One time will just create the event in the specified OU.|✓||
