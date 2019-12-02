@@ -604,4 +604,8 @@
     <string name="filter_event_status_completed">Completed</string>
     <string name="filter_event_status_skipped">Skipped</string>
     <string name="event_tei_limits">Events:%smax:%s%scurrent:%s TEI:%smax:%s%scurrent:%s</string>
+    <string name="sms_enabled">SMS module enabled</string>
+    <string name="sms_disabled">SMS module disabled</string>
+    <string name="sms_downloading_data">Downloading data for SMS module. Please wait</string>
+    <string name="sms_empty_gateway">SMS gateway can\'t be empty</string>
 </resources>

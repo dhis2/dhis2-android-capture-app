@@ -204,32 +204,38 @@ public class SyncManagerPresenter
 
                     @Override
                     public void onError(Throwable e) {
-                        Timber.e(e);
+                        view.requestNoEmptySMSGateway();
                     }
                 }));
     }
 
     @Override
     public void smsSwitch(boolean isChecked) {
-        Completable completable;
-        if (isChecked)
-            completable = d2.smsModule().configCase().setModuleEnabled(true)
-                    .andThen(d2.smsModule().configCase().refreshMetadataIds());
-        else
-            completable = d2.smsModule().configCase().setModuleEnabled(false);
 
-        compositeDisposable
-                .add(completable.subscribeOn(schedulerProvider.io()).subscribeWith(new DisposableCompletableObserver() {
-                    @Override
-                    public void onComplete() {
-                        Timber.d("SMS module enabled: %s", isChecked);
-                    }
+        if(d2.smsModule().configCase().getSmsModuleConfig().blockingGet().isModuleEnabled() != isChecked) {
 
-                    @Override
-                    public void onError(Throwable e) {
-                        Timber.e(e);
-                    }
-                }));
+            Completable completable;
+            if (isChecked) {
+                view.displaySMSRefreshingData();
+                completable = d2.smsModule().configCase().setModuleEnabled(true)
+                        .andThen(d2.smsModule().configCase().refreshMetadataIds());
+            } else {
+                completable = d2.smsModule().configCase().setModuleEnabled(false);
+            }
+
+            compositeDisposable
+                    .add(completable.subscribeOn(schedulerProvider.io()).subscribeWith(new DisposableCompletableObserver() {
+                        @Override
+                        public void onComplete() {
+                            view.displaySMSEnabled(isChecked);
+                        }
+
+                        @Override
+                        public void onError(Throwable e) {
+                            Timber.e(e);
+                        }
+                    }));
+        }
     }
 
     @Override

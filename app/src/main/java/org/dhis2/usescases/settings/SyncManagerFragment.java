@@ -1,10 +1,12 @@
 package org.dhis2.usescases.settings;
 
 
+import android.Manifest;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -15,7 +17,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
+import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
@@ -37,6 +41,7 @@ import org.dhis2.databinding.FragmentSettingsBinding;
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.HelpManager;
+import org.dhis2.utils.NetworkUtils;
 import org.hisp.dhis.android.core.imports.TrackerImportConflict;
 import org.jetbrains.annotations.NotNull;
 
@@ -51,6 +56,7 @@ import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
+import static android.text.TextUtils.isEmpty;
 import static org.dhis2.utils.Constants.DATA_NOW;
 import static org.dhis2.utils.Constants.META_NOW;
 import static org.dhis2.utils.Constants.TIME_15M;
@@ -69,6 +75,7 @@ import static org.dhis2.utils.analytics.AnalyticsConstants.TYPE_SYNC;
  * A simple {@link Fragment} subclass.
  */
 public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncManagerContracts.View {
+    private final int SMS_PERMISSIONS_REQ_ID = 102;
 
     @Inject
     SyncManagerContracts.Presenter presenter;
@@ -152,45 +159,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
                         Timber::d
                 ));
 
-        listenerDisposable.add(RxTextView.textChanges(binding.settingsSms.findViewById(R.id.settings_sms_receiver))
-                .debounce(1000, TimeUnit.MILLISECONDS, Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        data -> presenter.smsNumberSet(data.toString()),
-                        Timber::d
-                ));
 
-        listenerDisposable.add(RxCompoundButton.checkedChanges(binding.settingsSms.findViewById(R.id.settings_sms_switch))
-                .debounce(1000, TimeUnit.MILLISECONDS, Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        isChecked -> presenter.smsSwitch(isChecked),
-                        Timber::d
-                ));
-
-        listenerDisposable.add(RxCompoundButton.checkedChanges(binding.settingsSms.findViewById(R.id.settings_sms_response_wait_switch))
-                .debounce(1000, TimeUnit.MILLISECONDS, Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        isChecked -> presenter.smsWaitForResponse(isChecked),
-                        Timber::d
-                ));
-
-        listenerDisposable.add(RxTextView.textChanges(binding.settingsSms.findViewById(R.id.settings_sms_result_sender))
-                .debounce(1000, TimeUnit.MILLISECONDS, Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        number -> presenter.smsResponseSenderSet(number.toString()),
-                        Timber::d
-                ));
-
-        listenerDisposable.add(RxTextView.textChanges(binding.settingsSms.findViewById(R.id.settings_sms_result_timeout))
-                .debounce(1000, TimeUnit.MILLISECONDS, Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        value -> presenter.smsWaitForResponseTimeout(Integer.valueOf(value.toString())),
-                        Timber::d
-                ));
         if (!getResources().getBoolean(R.bool.sms_enabled)) {
             binding.settingsSms.setVisibility(View.GONE);
         }
@@ -247,6 +216,68 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
                 .setText(responseSender);
         ((TextView) binding.settingsSms.findViewById(R.id.settings_sms_result_timeout))
                 .setText(Integer.toString(timeout));
+
+        boolean hasNetwork = NetworkUtils.isOnline(context);
+
+        binding.settingsSms.findViewById(R.id.settings_sms_switch).setEnabled(hasNetwork);
+        binding.settingsSms.findViewById(R.id.settings_sms_response_wait_switch).setEnabled(hasNetwork);
+        binding.settingsSms.findViewById(R.id.settings_sms_receiver).setEnabled(hasNetwork);
+        binding.settingsSms.findViewById(R.id.settings_sms_result_sender).setEnabled(hasNetwork);
+        binding.settingsSms.findViewById(R.id.settings_sms_result_timeout).setEnabled(hasNetwork);
+
+        if (NetworkUtils.isOnline(context)) {
+            setSMSListeners();
+        }
+    }
+
+    private void setSMSListeners() {
+
+        listenerDisposable.add(RxTextView.textChanges(binding.settingsSms.findViewById(R.id.settings_sms_receiver))
+                .debounce(1000, TimeUnit.MILLISECONDS, Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        data -> presenter.smsNumberSet(data.toString()),
+                        Timber::d
+                ));
+
+        listenerDisposable.add(RxCompoundButton.checkedChanges(binding.settingsSms.findViewById(R.id.settings_sms_switch))
+                .debounce(1000, TimeUnit.MILLISECONDS, Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        isChecked -> {
+                            if (!isChecked) {
+                                presenter.smsSwitch(false);
+                            } else if (NetworkUtils.isOnline(context) && isGatewaySet() && checkSMSPermissions(true)) {
+                                presenter.smsSwitch(true);
+                            }
+                        }
+                        ,
+                        Timber::d
+                ));
+
+        listenerDisposable.add(RxCompoundButton.checkedChanges(binding.settingsSms.findViewById(R.id.settings_sms_response_wait_switch))
+                .debounce(1000, TimeUnit.MILLISECONDS, Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        isChecked -> presenter.smsWaitForResponse(isChecked),
+                        Timber::d
+                ));
+
+        listenerDisposable.add(RxTextView.textChanges(binding.settingsSms.findViewById(R.id.settings_sms_result_sender))
+                .debounce(1000, TimeUnit.MILLISECONDS, Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        number -> presenter.smsResponseSenderSet(number.toString()),
+                        Timber::d
+                ));
+
+        listenerDisposable.add(RxTextView.textChanges(binding.settingsSms.findViewById(R.id.settings_sms_result_timeout))
+                .debounce(1000, TimeUnit.MILLISECONDS, Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        value -> presenter.smsWaitForResponseTimeout(Integer.valueOf(value.toString())),
+                        Timber::d
+                ));
     }
 
     private void setLastSyncDate() {
@@ -550,5 +581,78 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
         }
 
         return String.format(context.getString(R.string.sync_setting), setting);
+    }
+
+    @Override
+    public void requestNoEmptySMSGateway() {
+        Toast.makeText(context,
+                context.getString(R.string.sms_empty_gateway),
+                Toast.LENGTH_SHORT).show();
+        presenter.smsSwitch(false);
+    }
+
+    @Override
+    public void displaySMSRefreshingData() {
+        Snackbar.make(
+                binding.getRoot(),
+                R.string.sms_downloading_data,
+                Snackbar.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void displaySMSEnabled(boolean isChecked) {
+        Snackbar.make(
+                binding.getRoot(),
+                isChecked ? R.string.sms_enabled : R.string.sms_disabled,
+                Snackbar.LENGTH_SHORT).show();
+    }
+
+    private boolean isGatewaySet() {
+        boolean gatewaySet = !isEmpty(
+                ((EditText) binding.settingsSms.findViewById(R.id.settings_sms_receiver)).getText().toString()
+        );
+        if (!gatewaySet) {
+            requestNoEmptySMSGateway();
+        }
+        return gatewaySet;
+    }
+
+    private Boolean checkSMSPermissions(boolean requestPermission) {
+        // check permissions
+        String[] smsPermissions = new String[]{
+                Manifest.permission.ACCESS_NETWORK_STATE,
+                Manifest.permission.READ_PHONE_STATE,
+                Manifest.permission.SEND_SMS,
+                Manifest.permission.RECEIVE_SMS,
+                Manifest.permission.READ_SMS
+        };
+
+        if (!hasPermissions(smsPermissions)) {
+            if (requestPermission) {
+                requestPermissions(smsPermissions, SMS_PERMISSIONS_REQ_ID);
+            }
+            return false;
+        }
+        return true;
+    }
+
+    private Boolean hasPermissions(String[] permissions) {
+        for (String permission : permissions) {
+            if (ContextCompat.checkSelfPermission(context, permission)
+                    != PackageManager.PERMISSION_GRANTED) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (requestCode == SMS_PERMISSIONS_REQ_ID && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            if (checkSMSPermissions(false))
+                presenter.smsSwitch(true);
+        } else {
+            presenter.smsSwitch(false);
+        }
     }
 }
