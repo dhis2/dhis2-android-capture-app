@@ -12,31 +12,31 @@ import timber.log.Timber
  */
 
 class ProgramModelHolder(private val binding: ItemProgramModelBinding) :
-    RecyclerView.ViewHolder(binding.root) {
+        RecyclerView.ViewHolder(binding.root) {
 
     fun bind(presenter: ProgramPresenter, programViewModel: ProgramViewModel) {
         binding.program = programViewModel
         binding.presenter = presenter
 
         val color = ColorUtils.getColorFrom(
-            programViewModel.color(),
-            ColorUtils.getPrimaryColor(binding.programImage.context, ColorUtils.ColorType.PRIMARY)
+                programViewModel.color(),
+                ColorUtils.getPrimaryColor(binding.programImage.context, ColorUtils.ColorType.PRIMARY)
         )
         val icon = if (programViewModel.icon() != null) {
             val resources = binding.programImage.resources
             val iconName =
-                if (programViewModel.icon()!!.startsWith("ic_")) {
-                    programViewModel.icon()
-                } else {
-                    "ic_" + programViewModel.icon()!!
-                }
+                    if (programViewModel.icon()!!.startsWith("ic_")) {
+                        programViewModel.icon()
+                    } else {
+                        "ic_" + programViewModel.icon()!!
+                    }
             resources.getIdentifier(iconName, "drawable", binding.programImage.context.packageName)
         } else {
             R.drawable.ic_program_default
         }
         var iconImage = AppCompatResources.getDrawable(
-            binding.programImage.context,
-            R.drawable.ic_program_default
+                binding.programImage.context,
+                R.drawable.ic_program_default
         )
         try {
             iconImage = AppCompatResources.getDrawable(binding.programImage.context, icon)
@@ -53,6 +53,12 @@ class ProgramModelHolder(private val binding: ItemProgramModelBinding) :
         itemView.setOnClickListener { v ->
             val programTheme = ColorUtils.getThemeFromColor(programViewModel.color())
             presenter.onItemClick(programViewModel, programTheme)
+        }
+
+        binding.root.alpha = if (programViewModel.translucent()) {
+            0.5f
+        } else {
+            1.0f
         }
     }
 }

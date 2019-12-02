@@ -19,16 +19,6 @@
         android:clipToPadding="false"
         >
 
-        <TextView
-            android:id="@+id/emptyView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center_horizontal"
-            android:text="@string/empty_program_list"
-            android:textColor="@color/colorPrimary"
-            android:textSize="18sp"
-            android:visibility="gone" />
-
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/filter"
             android:layout_width="match_parent"
@@ -99,6 +89,17 @@
             app:initGrid="@{true}"
             app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
             app:spanCount="@{3}" />
+
+        <TextView
+            android:id="@+id/emptyView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/progressLayout"
+            android:gravity="center_horizontal"
+            android:text="@string/empty_program_list"
+            android:textColor="@color/colorPrimary"
+            android:textSize="18sp"
+            android:visibility="gone" />
 
     </RelativeLayout>
 

@@ -582,7 +582,7 @@
     <string name="filters_title_period">Period</string>
     <string name="filters_title_org_unit">Org. Unit</string>
     <string name="filters_title_status">Status</string>
-    <string name="filters_title_state">State</string>
+    <string name="filters_title_state">Sync</string>
     <string name="filter_period_today">Today</string>
     <string name="filter_period_yesterday">Yesterday</string>
     <string name="filter_period_tomorrow">Tomorrow</string>
@@ -597,5 +597,11 @@
     <string name="filter_period_any">Anytime</string>
     <string name="data_values_error_sync_message">Sync failed. Sync failed. Check the data values to try to fix the problem and try again. If it keeps failing contact your system administrator</string>
     <string name="sms_synced_message">This data has been sent to the server but it is not guaranteed to have been stored</string>
+    <string name="filter_event_status_open">Open</string>
+    <string name="filter_event_status_schedule">Schedule</string>
+    <string name="filter_event_status_overdue">Overdue</string>
+    <string name="filter_event_status_visited">Visited</string>
+    <string name="filter_event_status_completed">Completed</string>
+    <string name="filter_event_status_skipped">Skipped</string>
     <string name="event_tei_limits">Events:%smax:%s%scurrent:%s TEI:%smax:%s%scurrent:%s</string>
 </resources>
