@@ -123,6 +123,7 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
 
         binding.next.setOnClickListener {
             if (presenter.dataIntegrityCheck(adapter.mandatoryOk(), adapter.hasError())) {
+                binding.root.requestFocus()
                 analyticsHelper().setEvent(SAVE_ENROLL, CLICK, SAVE_ENROLL)
                 presenter.finish(mode)
             }
@@ -260,6 +261,7 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
     override fun onBackPressed() {
         if (mode == EnrollmentMode.CHECK) {
             if (presenter.dataIntegrityCheck(adapter.mandatoryOk(), adapter.hasError())) {
+                binding.root.requestFocus()
                 super.onBackPressed()
             }
         } else {
