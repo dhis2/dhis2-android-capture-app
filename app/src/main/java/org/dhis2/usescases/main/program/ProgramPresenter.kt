@@ -19,7 +19,6 @@ class ProgramPresenter internal constructor(
 ) {
 
     var disposable: CompositeDisposable = CompositeDisposable()
-    private val programQueries = PublishProcessor.create<Pair<List<DatePeriod>, List<String>>>()
 
     fun init() {
         val applyFiler = PublishProcessor.create<FilterManager>()
@@ -86,9 +85,7 @@ class ProgramPresenter internal constructor(
     }
 
     fun updateProgramQueries() {
-        programQueries.onNext(
-            Pair.create(filterManager.periodFilters, filterManager.orgUnitUidsFilters)
-        )
+        filterManager.publishData()
     }
 
     fun onItemClick(programModel: ProgramViewModel, programTheme: Int) {
