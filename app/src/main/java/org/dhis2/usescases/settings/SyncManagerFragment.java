@@ -217,7 +217,17 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
         ((TextView) binding.settingsSms.findViewById(R.id.settings_sms_result_timeout))
                 .setText(Integer.toString(timeout));
 
-        setSMSListeners();
+        boolean hasNetwork = NetworkUtils.isOnline(context);
+
+        binding.settingsSms.findViewById(R.id.settings_sms_switch).setEnabled(hasNetwork);
+        binding.settingsSms.findViewById(R.id.settings_sms_response_wait_switch).setEnabled(hasNetwork);
+        binding.settingsSms.findViewById(R.id.settings_sms_receiver).setEnabled(hasNetwork);
+        binding.settingsSms.findViewById(R.id.settings_sms_result_sender).setEnabled(hasNetwork);
+        binding.settingsSms.findViewById(R.id.settings_sms_result_timeout).setEnabled(hasNetwork);
+
+        if (NetworkUtils.isOnline(context)) {
+            setSMSListeners();
+        }
     }
 
     private void setSMSListeners() {
