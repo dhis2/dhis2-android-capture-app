@@ -17,6 +17,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -219,17 +220,13 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
         setSMSListeners();
     }
 
-    private void setSMSListeners(){
+    private void setSMSListeners() {
 
         listenerDisposable.add(RxTextView.textChanges(binding.settingsSms.findViewById(R.id.settings_sms_receiver))
                 .debounce(1000, TimeUnit.MILLISECONDS, Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                        data -> {
-                            if (!isEmpty(data)) {
-                                presenter.smsNumberSet(data.toString());
-                            }
-                        },
+                        data -> presenter.smsNumberSet(data.toString()),
                         Timber::d
                 ));
 
@@ -237,12 +234,14 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
                 .debounce(1000, TimeUnit.MILLISECONDS, Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                        isChecked ->
-                                presenter.smsSwitch(
-                                        NetworkUtils.isOnline(context) &&
-                                                isChecked &&
-                                                checkSMSPermissions()
-                                ),
+                        isChecked -> {
+                            if (!isChecked) {
+                                presenter.smsSwitch(false);
+                            } else if (NetworkUtils.isOnline(context) && isGatewaySet() && checkSMSPermissions(true)) {
+                                presenter.smsSwitch(true);
+                            }
+                        }
+                        ,
                         Timber::d
                 ));
 
@@ -598,7 +597,17 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
                 Snackbar.LENGTH_SHORT).show();
     }
 
-    private Boolean checkSMSPermissions() {
+    private boolean isGatewaySet() {
+        boolean gatewaySet = !isEmpty(
+                ((EditText) binding.settingsSms.findViewById(R.id.settings_sms_receiver)).getText().toString()
+        );
+        if (!gatewaySet) {
+            requestNoEmptySMSGateway();
+        }
+        return gatewaySet;
+    }
+
+    private Boolean checkSMSPermissions(boolean requestPermission) {
         // check permissions
         String[] smsPermissions = new String[]{
                 Manifest.permission.ACCESS_NETWORK_STATE,
@@ -609,7 +618,9 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
         };
 
         if (!hasPermissions(smsPermissions)) {
-            requestPermissions(smsPermissions, SMS_PERMISSIONS_REQ_ID);
+            if (requestPermission) {
+                requestPermissions(smsPermissions, SMS_PERMISSIONS_REQ_ID);
+            }
             return false;
         }
         return true;
@@ -628,7 +639,8 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (requestCode == SMS_PERMISSIONS_REQ_ID && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            presenter.smsSwitch(true);
+            if (checkSMSPermissions(false))
+                presenter.smsSwitch(true);
         } else {
             presenter.smsSwitch(false);
         }
