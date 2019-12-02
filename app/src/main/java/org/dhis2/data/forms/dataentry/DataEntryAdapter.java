@@ -164,6 +164,16 @@ public final class DataEntryAdapter extends Adapter {
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         rows.get(holder.getItemViewType()).onBind(holder,
                 viewModels.get(holder.getAdapterPosition()));
+
+     /*   if (position != 0 && position == nextFocusPosition && lastFocusPosition != nextFocusPosition && holder instanceof FormViewHolder) {
+            lastFocusPosition = position;
+            ((FormViewHolder) holder).performAction();
+            if (!(holder instanceof ImageHolder))
+                holder.itemView.setBackground(AppCompatResources.getDrawable(holder.itemView.getContext(), R.drawable.item_selected_bg));
+        } else if (!(holder instanceof ImageHolder)) {
+            holder.itemView.setBackgroundColor(Color.WHITE);
+        }*/
+
     }
 
     @Override
@@ -251,14 +261,27 @@ public final class DataEntryAdapter extends Adapter {
 
         diffResult.dispatchUpdatesTo(this);
 
-        if (nextFocusPosition != -1 && currentFocusPosition == lastFocusPosition && nextFocusPosition < viewModels.size()) {
+        if (nextFocusPosition != -1 && currentFocusPosition == lastFocusPosition && nextFocusPosition < viewModels.size())
             currentFocusUid.setValue(viewModels.get(nextFocusPosition).uid());
-        } else if (nextFocusPosition == viewModels.size()) {
-            currentFocusUid.setValue("");
-        } else if (currentFocusPosition != -1 && currentFocusPosition < viewModels.size()) {
+        else if (currentFocusPosition != -1 && currentFocusPosition < viewModels.size())
             currentFocusUid.setValue(viewModels.get(currentFocusPosition).uid());
+    }
+
+    public void swapWithoutList() {
+
+        if (lastFocusItem != null) {
+            nextFocusPosition = -1;
+            for (int i = 0; i < viewModels.size(); i++) {
+                if (viewModels.get(i).uid().equals(lastFocusItem))
+                    nextFocusPosition = i + 1;
+                if (i == nextFocusPosition && !viewModels.get(i).editable()) {
+                    nextFocusPosition++;
+                }
+            }
         }
 
+        if (nextFocusPosition != -1)
+            currentFocusUid.setValue(viewModels.get(nextFocusPosition).uid());
     }
 
     public boolean mandatoryOk() {
@@ -286,9 +309,23 @@ public final class DataEntryAdapter extends Adapter {
         return hasError;
     }
 
+    public String getErrorFieldNames() {
+        StringBuilder errorFieldNames = new StringBuilder();
+        for (FieldViewModel fieldViewModel : viewModels) {
+            if (fieldViewModel.error() != null) {
+                if (errorFieldNames.length() == 0)
+                    errorFieldNames.append(fieldViewModel.label());
+                else
+                    errorFieldNames.append(", ").append(fieldViewModel.label());
+            }
+        }
+        return errorFieldNames.toString();
+    }
+
     public void setLastFocusItem(String lastFocusItem) {
         currentFocusUid.setValue(lastFocusItem);
         this.nextFocusPosition = -1;
         this.lastFocusItem = lastFocusItem;
     }
+
 }

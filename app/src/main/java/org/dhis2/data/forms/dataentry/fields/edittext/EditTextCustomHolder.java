@@ -52,23 +52,22 @@ public class EditTextCustomHolder extends FormViewHolder {
         this.currentUid = currentSelection;
 
         binding.customEdittext.setFocusChangedListener((v, hasFocus) -> {
-            if (!hasFocus) {
+           /* if (hasFocus) {
+                openKeyboard(binding.customEdittext.getEditText());
+                setSelectedBackground(isSearchMode);
+            } else
+                clearBackground(isSearchMode);*/
+            if(!hasFocus){
                 clearBackground(isSearchMode);
+                binding.customEdittext.getEditText().setFocusable(false);
             }
 
             if (isSearchMode || (!hasFocus && editTextModel != null && editTextModel.editable())) {
-                if (hasFocus) {
-                    openKeyboard(binding.customEdittext.getEditText());
-                }
-                if (valueHasChanged()) {
+                if(valueHasChanged())
                     sendAction();
-                } else {
+                else
                     closeKeyboard(binding.customEdittext.getEditText());
-                }
-            } else {
-                openKeyboard(binding.customEdittext.getEditText());
             }
-
             validateRegex();
         });
         binding.customEdittext.setOnEditorActionListener((v, actionId, event) -> {
@@ -82,6 +81,7 @@ public class EditTextCustomHolder extends FormViewHolder {
             binding.customEdittext.getEditText().setFocusable(true);
             binding.customEdittext.getEditText().setFocusableInTouchMode(true);
             binding.customEdittext.getEditText().requestFocus();
+            openKeyboard(binding.customEdittext.getEditText());
         });
     }
 
@@ -131,13 +131,6 @@ public class EditTextCustomHolder extends FormViewHolder {
         initFieldFocus();
 
         setLongClick();
-
-        if(!isSearchMode) {
-            if (getSelectedFieldUid() != null && getSelectedFieldUid().equals(fieldUid)) {
-                binding.customEdittext.getEditText().requestFocus();
-                openKeyboard(binding.customEdittext.getEditText());
-            }
-        }
     }
 
     private void checkAutocompleteRendering() {
