@@ -46,6 +46,7 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
+import androidx.fragment.app.FragmentManager;
 import io.reactivex.functions.Consumer;
 import timber.log.Timber;
 
@@ -422,6 +423,9 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
                 case R.id.menu_overview:
                     goToInitialScreen();
                     break;
+                case R.id.menu_indicators:
+                    showIndicators();
+                    break;
                 default:
                     break;
             }
@@ -429,6 +433,19 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
         });
         popupMenu.getMenu().getItem(1).setVisible(presenter.canWrite() && presenter.isEnrollmentOpen());
         popupMenu.show();
+    }
+
+    public void showIndicators(View view) {
+        showIndicators();
+    }
+
+    public void showIndicators() {
+        FragmentManager fm = getSupportFragmentManager();
+
+        IndicatorsDialogFragment indicatorsDialogFragment =
+                IndicatorsDialogFragment.create();
+
+        indicatorsDialogFragment.show(fm);
     }
 
     @Override
