@@ -142,6 +142,8 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
             }
 
         }
+
+        binding.fieldRecycler.itemAnimator = null
     }
 
     override fun onResume() {
