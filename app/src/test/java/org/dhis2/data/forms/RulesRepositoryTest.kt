@@ -18,17 +18,20 @@ class RulesRepositoryTest {
 
     @Before
     fun setUp() {
-
         repository = RulesRepository(d2)
     }
 
     @Test
     fun `Should load supplementary data`() {
-
-        whenever(d2.organisationUnitModule().organisationUnits().withOrganisationUnitGroups().uid("org_unit_test").blockingGet()) doReturn getTestOrgUnit()
+        whenever(
+            d2.organisationUnitModule().organisationUnits()
+                .withOrganisationUnitGroups()
+                .uid("org_unit_test")
+                .blockingGet()
+        ) doReturn getTestOrgUnit()
         whenever(d2.userModule().userRoles().blockingGet()) doReturn getTestUserRoles()
         val testObserver = repository.supplementaryData("org_unit_test")
-                .test()
+            .test()
 
         testObserver.assertValueCount(1)
         testObserver.assertValue { supplData ->
@@ -36,40 +39,43 @@ class RulesRepositoryTest {
             supplData.containsKey("USER")
             supplData.containsKey("org_unit_group_test_code")
             supplData.containsKey("org_unit_group_test")
-            supplData.getOrElse("USER") { arrayListOf() }.contains("role1")
-            supplData.getOrElse("USER") { arrayListOf() }.contains("role2")
-            supplData.getOrElse("org_unit_group_test") { arrayListOf() }.contains("org_unit_test")
-            supplData.getOrElse("org_unit_group_test_code") { arrayListOf() }.contains("org_unit_test")
+            supplData.getOrElse("USER") { arrayListOf() }
+                .contains("role1")
+            supplData.getOrElse("USER") { arrayListOf() }
+                .contains("role2")
+            supplData.getOrElse("org_unit_group_test") { arrayListOf() }
+                .contains("org_unit_test")
+            supplData.getOrElse("org_unit_group_test_code") { arrayListOf() }
+                .contains("org_unit_test")
         }
-
     }
 
     private fun getTestUserRoles(): MutableList<UserRole>? {
         return arrayListOf(
-                UserRole.builder()
-                        .uid("role1")
-                        .name("roleName1")
-                        .code("roleCode1")
-                        .build(),
-                UserRole.builder()
-                        .uid("role2")
-                        .name("roleName2")
-                        .code("roleCode2")
-                        .build()
+            UserRole.builder()
+                .uid("role1")
+                .name("roleName1")
+                .code("roleCode1")
+                .build(),
+            UserRole.builder()
+                .uid("role2")
+                .name("roleName2")
+                .code("roleCode2")
+                .build()
         )
     }
 
     private fun getTestOrgUnit(): OrganisationUnit {
         return OrganisationUnit.builder()
-                .uid("org_unit_test")
-                .organisationUnitGroups(arrayListOf(getTestOrgUnitGroup()))
-                .build()
+            .uid("org_unit_test")
+            .organisationUnitGroups(arrayListOf(getTestOrgUnitGroup()))
+            .build()
     }
 
     private fun getTestOrgUnitGroup(): OrganisationUnitGroup? {
         return OrganisationUnitGroup.builder()
-                .uid("org_unit_group_test")
-                .code("org_unit_group_test_code")
-                .build()
+            .uid("org_unit_group_test")
+            .code("org_unit_group_test_code")
+            .build()
     }
 }

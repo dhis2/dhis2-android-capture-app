@@ -125,7 +125,6 @@ class JiraViewModel : ViewModel(), JiraActions {
         isSessionOpen.set(false)
     }
 
-
     fun issueListResponse(): LiveData<Response<ResponseBody>> {
         return issueListResponse
     }

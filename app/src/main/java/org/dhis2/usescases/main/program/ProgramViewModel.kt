@@ -75,55 +75,55 @@ abstract class ProgramViewModel : BaseObservable(), Serializable {
         }*/
 
         fun create(
-                uid: String,
-                displayName: String,
-                color: String?,
-                icon: String?,
-                count: Int,
-                type: String?,
-                typeName: String,
-                programType: String,
-                description: String?,
-                onlyEnrollOnce: Boolean,
-                accessDataWrite: Boolean,
-                state: String,
-                hasOverdueEvent: Boolean=false
+            uid: String,
+            displayName: String,
+            color: String?,
+            icon: String?,
+            count: Int,
+            type: String?,
+            typeName: String,
+            programType: String,
+            description: String?,
+            onlyEnrollOnce: Boolean,
+            accessDataWrite: Boolean,
+            state: String,
+            hasOverdueEvent: Boolean = false
         ): ProgramViewModel {
             return AutoValue_ProgramViewModel(
-                    uid,
-                    displayName,
-                    color,
-                    icon,
-                    count,
-                    type,
-                    typeName,
-                    programType,
-                    description,
-                    onlyEnrollOnce,
-                    accessDataWrite,
-                    state,
-                    false,
-                    hasOverdueEvent
+                uid,
+                displayName,
+                color,
+                icon,
+                count,
+                type,
+                typeName,
+                programType,
+                description,
+                onlyEnrollOnce,
+                accessDataWrite,
+                state,
+                false,
+                hasOverdueEvent
             )
         }
     }
 
-    fun setTranslucent(translucent: Boolean) : ProgramViewModel {
+    fun setTranslucent(translucent: Boolean): ProgramViewModel {
         return AutoValue_ProgramViewModel(
-                id(),
-                title(),
-                color(),
-                icon(),
-                count(),
-                type(),
-                typeName(),
-                programType(),
-                description(),
-                onlyEnrollOnce(),
-                accessDataWrite(),
-                state(),
-                translucent,
-                hasOverdue()
+            id(),
+            title(),
+            color(),
+            icon(),
+            count(),
+            type(),
+            typeName(),
+            programType(),
+            description(),
+            onlyEnrollOnce(),
+            accessDataWrite(),
+            state(),
+            translucent,
+            hasOverdue()
         )
     }
 }

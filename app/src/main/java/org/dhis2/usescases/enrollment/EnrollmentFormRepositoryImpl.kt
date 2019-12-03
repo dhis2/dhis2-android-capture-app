@@ -4,7 +4,6 @@ import android.text.TextUtils.isEmpty
 import io.reactivex.Flowable
 import io.reactivex.Single
 import io.reactivex.functions.Function5
-import io.reactivex.schedulers.Schedulers
 import java.util.Calendar
 import java.util.Date
 import org.dhis2.data.forms.RulesRepository
@@ -46,18 +45,20 @@ class EnrollmentFormRepositoryImpl(
     init {
         this.cachedRuleEngineFlowable =
             Single.zip<List<Rule>,
-                    List<RuleVariable>,
-                    List<RuleEvent>,
-                    Map<String, String>,
-                    Map<String, List<String>>,
-                    RuleEngine>(
+                List<RuleVariable>,
+                List<RuleEvent>,
+                Map<String, String>,
+                Map<String, List<String>>,
+                RuleEngine>(
                 rulesRepository.rulesNew(programUid),
                 rulesRepository.ruleVariables(programUid),
                 rulesRepository.enrollmentEvents(
                     enrollmentRepository.blockingGet().uid()
                 ),
                 rulesRepository.queryConstants(),
-                rulesRepository.supplementaryData(enrollmentRepository.blockingGet().organisationUnit()!!),
+                rulesRepository.supplementaryData(
+                    enrollmentRepository.blockingGet().organisationUnit()!!
+                ),
                 Function5 { rules, variables, events, constants, supplData ->
                     val builder = RuleEngineContext.builder(expressionEvaluator)
                         .rules(rules)
@@ -108,12 +109,12 @@ class EnrollmentFormRepositoryImpl(
                     checkOpenAfterEnrollment()
                 }
             }.map {
-                if (!isEmpty(it.second)) {
-                    checkEventToOpen(it)
-                } else {
-                    it
-                }
+            if (!isEmpty(it.second)) {
+                checkEventToOpen(it)
+            } else {
+                it
             }
+        }
     }
 
     private fun getFirstStage(): Single<Pair<String, String>> {
@@ -286,6 +287,8 @@ class EnrollmentFormRepositoryImpl(
                                 .options()
                                 .byOptionSetUid().eq(attr.optionSet()!!.uid())
                                 .byCode().eq(value.value()!!).one().blockingGet().name()!!
+                        } else if (attr.valueType()?.isNumeric!!) {
+                            value.value()?.toFloat().toString()
                         } else {
                             value.value()!!
                         }

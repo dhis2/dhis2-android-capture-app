@@ -1,4 +1,4 @@
-package org.dhis2.usecases.datasets.dataSetTable
+package org.dhis2.usescases.datasets.dataSetTable
 
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
@@ -6,9 +6,6 @@ import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Flowable
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
-import org.dhis2.usescases.datasets.dataSetTable.DataSetTableContract
-import org.dhis2.usescases.datasets.dataSetTable.DataSetTablePresenter
-import org.dhis2.usescases.datasets.dataSetTable.DataSetTableRepository
 import org.hisp.dhis.android.core.common.State
 import org.junit.Assert
 import org.junit.Before
@@ -28,21 +25,21 @@ class DataSetTablePresenterTest {
     }
 
     @Test
-    fun `Should go back when bakc button is clicked`(){
+    fun `Should go back when bakc button is clicked`() {
         presenter.onBackClick()
 
         verify(view).back()
     }
 
     @Test
-    fun `Should show syncDialog when button is clicked`(){
+    fun `Should show syncDialog when button is clicked`() {
         presenter.onSyncClick()
 
         verify(view).showSyncDialog()
     }
 
     @Test
-    fun `Should dispose of all disposables`(){
+    fun `Should dispose of all disposables`() {
         presenter.onDettach()
 
         val disposableSize = presenter.disposable.size()

@@ -1,12 +1,11 @@
 package org.dhis2.Bindings
 
+import java.util.Date
 import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.event.EventStatus
-import java.util.Date
 
-fun Event.primaryDate() : Date {
-
-    return when(status()){
+fun Event.primaryDate(): Date {
+    return when (status()) {
         EventStatus.ACTIVE -> eventDate()!!
         EventStatus.COMPLETED -> eventDate()!!
         EventStatus.SCHEDULE -> dueDate()!!
@@ -15,5 +14,4 @@ fun Event.primaryDate() : Date {
         EventStatus.OVERDUE -> dueDate()!!
         null -> Date()
     }
-
 }

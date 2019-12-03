@@ -82,7 +82,7 @@ public class ProgramStageSelectionRepositoryImpl implements ProgramStageSelectio
                 Single.zip(
                         rulesRepository.rulesNew(programUid),
                         rulesRepository.ruleVariablesProgramStages(programUid),
-                        ruleEvents(enrollmentUid),
+                        rulesRepository.enrollmentEvents(enrollmentUid),
                         rulesRepository.supplementaryData(orgUnitUid),
                         rulesRepository.queryConstants(),
                         (rules, variables, ruleEvents, supplementaryData, constants) -> {
@@ -99,35 +99,7 @@ public class ProgramStageSelectionRepositoryImpl implements ProgramStageSelectio
                         }).toFlowable()
                         .cacheWithInitialCapacity(1);
     }
-
-    private Single<List<RuleEvent>> ruleEvents(String enrollmentUid) {
-        return d2.eventModule().events()
-                .byEnrollmentUid().eq(enrollmentUid)
-                .byStatus().in(EventStatus.ACTIVE, EventStatus.COMPLETED)
-                .withTrackedEntityDataValues()
-                .orderByEventDate(RepositoryScope.OrderByDirection.DESC).get()
-                .toFlowable().flatMapIterable(events -> events)
-                .map(event -> {
-                    List<RuleDataValue> dataValues = new ArrayList<>();
-                    for (TrackedEntityDataValue dataValue : event.trackedEntityDataValues()) {
-                        dataValues.add(RuleDataValue.create(event.eventDate(), event.programStage(),
-                                dataValue.dataElement(), dataValue.value()));
-                    }
-
-                    return RuleEvent.builder()
-                            .event(event.uid())
-                            .programStage(event.programStage())
-                            .programStageName(d2.programModule().programStages().uid(event.programStage()).blockingGet().displayName())
-                            .status(RuleEvent.Status.valueOf(event.status().name()))
-                            .eventDate(event.eventDate() == null ? event.dueDate() : event.eventDate())
-                            .dueDate(event.dueDate() != null ? event.dueDate() : event.eventDate())
-                            .organisationUnit(event.organisationUnit())
-                            .organisationUnitCode(d2.organisationUnitModule().organisationUnits().uid(event.organisationUnit()).blockingGet().code())
-                            .dataValues(dataValues)
-                            .build();
-                }).toList();
-    }
-
+    
     private Flowable<RuleEnrollment> ruleEnrollment(String enrollmentUid) {
         return briteDatabase.createQuery(Arrays.asList(EnrollmentTableInfo.TABLE_INFO.name(),
                 TrackedEntityAttributeValueTableInfo.TABLE_INFO.name()), QUERY_ATTRIBUTE_VALUES, enrollmentUid == null ? "" : enrollmentUid)

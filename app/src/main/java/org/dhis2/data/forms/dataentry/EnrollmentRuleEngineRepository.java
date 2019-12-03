@@ -152,6 +152,8 @@ public final class EnrollmentRuleEngineRepository
                             value = option.displayName();
                     }
                 }
+            }else if(attr.valueType().isNumeric()){
+                value = Float.valueOf(value).toString();
             }
 
             attrValueMap.put( uid, value );
@@ -303,6 +305,8 @@ public final class EnrollmentRuleEngineRepository
                         value = option.displayName();
                 }
             }
+        }else if( value!= null && attr.valueType().isNumeric()){
+            value = Float.valueOf(value).toString();
         }
         if ( value != null )
         {

@@ -35,13 +35,13 @@ class DashboardRepositoryImplTest {
         whenever(d2.eventModule().events()) doReturn mock()
         whenever(d2.eventModule().events().uid("event_uid")) doReturn mock()
         whenever(d2.eventModule().events().uid("event_uid").get()) doReturn
-                Single.just(getMockSingleEvent())
+            Single.just(getMockSingleEvent())
 
         whenever(d2.programModule()) doReturn mock()
         whenever(d2.programModule().programStages()) doReturn mock()
         whenever(d2.programModule().programStages().uid("program_stage")) doReturn mock()
         whenever(d2.programModule().programStages().uid("program_stage").get()) doReturn
-                Single.just(getMockStage())
+            Single.just(getMockStage())
 
         val testObserver = repository.displayGenerateEvent("event_uid").test()
 
@@ -54,111 +54,133 @@ class DashboardRepositoryImplTest {
 
     @Test
     fun `event list should be order from newest to oldest`() {
-        whenever(d2.enrollmentModule().enrollments()
-                .byProgram().eq("programUid")) doReturn mock()
-        whenever(d2.enrollmentModule().enrollments()
+        whenever(
+            d2.enrollmentModule().enrollments()
                 .byProgram().eq("programUid")
-                .byTrackedEntityInstance()) doReturn mock()
-        whenever(d2.enrollmentModule().enrollments()
+        ) doReturn mock()
+        whenever(
+            d2.enrollmentModule().enrollments()
                 .byProgram().eq("programUid")
-                .byTrackedEntityInstance().eq("teiUid")) doReturn mock()
-        whenever(d2.enrollmentModule().enrollments()
-                .byProgram().eq("programUid")
-                .byTrackedEntityInstance().eq("teiUid")
-                .one()) doReturn mock()
-        whenever(d2.enrollmentModule().enrollments()
+                .byTrackedEntityInstance()
+        ) doReturn mock()
+        whenever(
+            d2.enrollmentModule().enrollments()
                 .byProgram().eq("programUid")
                 .byTrackedEntityInstance().eq("teiUid")
-                .one().get()) doReturn Single.just(getMockingEnrollment())
-        whenever(d2.eventModule().events()
-                .byEnrollmentUid().eq("enrollmentUid")) doReturn mock()
-        whenever(d2.eventModule().events()
+        ) doReturn mock()
+        whenever(
+            d2.enrollmentModule().enrollments()
+                .byProgram().eq("programUid")
+                .byTrackedEntityInstance().eq("teiUid")
+                .one()
+        ) doReturn mock()
+        whenever(
+            d2.enrollmentModule().enrollments()
+                .byProgram().eq("programUid")
+                .byTrackedEntityInstance().eq("teiUid")
+                .one().get()
+        ) doReturn Single.just(getMockingEnrollment())
+        whenever(
+            d2.eventModule().events()
                 .byEnrollmentUid().eq("enrollmentUid")
-                .byDeleted()) doReturn mock()
-        whenever(d2.eventModule().events()
+        ) doReturn mock()
+        whenever(
+            d2.eventModule().events()
                 .byEnrollmentUid().eq("enrollmentUid")
-                .byDeleted().isFalse) doReturn mock()
-        whenever(d2.eventModule().events()
+                .byDeleted()
+        ) doReturn mock()
+        whenever(
+            d2.eventModule().events()
                 .byEnrollmentUid().eq("enrollmentUid")
-                .byDeleted().isFalse.get()) doReturn Single.just(getMockingEventList())
+                .byDeleted().isFalse
+        ) doReturn mock()
+        whenever(
+            d2.eventModule().events()
+                .byEnrollmentUid().eq("enrollmentUid")
+                .byDeleted().isFalse.get()
+        ) doReturn Single.just(getMockingEventList())
 
-        whenever(d2.programModule().programs().uid("programUid").blockingGet()) doReturn getMockingProgram()
+        whenever(
+            d2.programModule().programs()
+                .uid("programUid").blockingGet()
+        ) doReturn getMockingProgram()
 
-        val testObserver = repository.getTEIEnrollmentEvents("programUid", "teiUid").test()
+        val testObserver = repository.getTEIEnrollmentEvents(
+            "programUid",
+            "teiUid"
+        ).test()
 
         testObserver.assertNoErrors()
         testObserver.assertValueCount(1)
         testObserver.assertValue { events ->
             events[0].uid() == "event_uid_4" &&
-                    events[1].uid() == "event_uid_2" &&
-                    events[2].uid() == "event_uid_3" &&
-                    events[3].uid() == "event_uid_1"
+                events[1].uid() == "event_uid_2" &&
+                events[2].uid() == "event_uid_3" &&
+                events[3].uid() == "event_uid_1"
         }
     }
 
     private fun getMockingProgram(): Program {
         return Program.builder()
-                .uid("programUid")
-                .ignoreOverdueEvents(true)
-                .build()
+            .uid("programUid")
+            .ignoreOverdueEvents(true)
+            .build()
     }
 
     private fun getMockingEventList(): MutableList<Event> {
         return arrayListOf(
-                Event.builder()
-                        .uid("event_uid_1")
-                        .programStage("program_stage")
-                        .program("program")
-                        .enrollment("enrollmentUid")
-                        .status(EventStatus.ACTIVE)
-                        .eventDate(DateUtils.uiDateFormat().parse("2019-06-01"))
-                        .build(),
-                Event.builder()
-                        .uid("event_uid_2")
-                        .programStage("program_stage")
-                        .program("program")
-                        .enrollment("enrollmentUid")
-                        .status(EventStatus.ACTIVE)
-                        .eventDate(DateUtils.uiDateFormat().parse("2019-06-05"))
-                        .build()
-                ,
-                Event.builder()
-                        .uid("event_uid_3")
-                        .programStage("program_stage")
-                        .program("program")
-                        .enrollment("enrollmentUid")
-                        .status(EventStatus.SCHEDULE)
-                        .dueDate(DateUtils.uiDateFormat().parse("2019-06-02"))
-                        .build()
-                ,
-                Event.builder()
-                        .uid("event_uid_4")
-                        .programStage("program_stage")
-                        .program("program")
-                        .enrollment("enrollmentUid")
-                        .status(EventStatus.ACTIVE)
-                        .eventDate(DateUtils.uiDateFormat().parse("2019-06-10"))
-                        .build()
+            Event.builder()
+                .uid("event_uid_1")
+                .programStage("program_stage")
+                .program("program")
+                .enrollment("enrollmentUid")
+                .status(EventStatus.ACTIVE)
+                .eventDate(DateUtils.uiDateFormat().parse("2019-06-01"))
+                .build(),
+            Event.builder()
+                .uid("event_uid_2")
+                .programStage("program_stage")
+                .program("program")
+                .enrollment("enrollmentUid")
+                .status(EventStatus.ACTIVE)
+                .eventDate(DateUtils.uiDateFormat().parse("2019-06-05"))
+                .build(),
+            Event.builder()
+                .uid("event_uid_3")
+                .programStage("program_stage")
+                .program("program")
+                .enrollment("enrollmentUid")
+                .status(EventStatus.SCHEDULE)
+                .dueDate(DateUtils.uiDateFormat().parse("2019-06-02"))
+                .build(),
+            Event.builder()
+                .uid("event_uid_4")
+                .programStage("program_stage")
+                .program("program")
+                .enrollment("enrollmentUid")
+                .status(EventStatus.ACTIVE)
+                .eventDate(DateUtils.uiDateFormat().parse("2019-06-10"))
+                .build()
         )
     }
 
     private fun getMockingEnrollment(): Enrollment {
         return Enrollment.builder()
-                .uid("enrollmentUid")
-                .build()
+            .uid("enrollmentUid")
+            .build()
     }
 
     private fun getMockSingleEvent(): Event {
         return Event.builder()
-                .uid("event_uid")
-                .programStage("program_stage")
-                .program("program")
-                .build()
+            .uid("event_uid")
+            .programStage("program_stage")
+            .program("program")
+            .build()
     }
 
     private fun getMockStage(): ProgramStage {
         return ProgramStage.builder()
-                .uid("program_stage")
-                .build()
+            .uid("program_stage")
+            .build()
     }
 }

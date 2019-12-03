@@ -614,6 +614,8 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
 
                                 if (de.valueType() == ValueType.AGE)
                                     value = value.split("T")[0];
+                            }else if(de.valueType().isNumeric()){
+                                value = Float.valueOf(value).toString();
                             }
 
                             return RuleDataValue.create(event.eventDate(), event.programStage(), de.uid(), value);
