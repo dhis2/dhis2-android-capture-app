@@ -15,6 +15,7 @@ import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.airbnb.lottie.LottieDrawable.INFINITE
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import io.reactivex.Flowable
@@ -58,7 +59,6 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityType
 
 class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
-
 
     enum class EnrollmentMode { NEW, CHECK }
 
@@ -557,5 +557,15 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
 
     override fun hideSaveButton() {
         binding.next.visibility = View.GONE
+    }
+
+    override fun showAdjustingForm() {
+        binding.clIndicatorProgress.root.visibility = View.VISIBLE
+        binding.clIndicatorProgress.lottieView.repeatCount = INFINITE
+    }
+
+    override fun hideAdjustingForm() {
+        binding.clIndicatorProgress.root.visibility = View.GONE
+        binding.clIndicatorProgress.lottieView.repeatCount = 0
     }
 }

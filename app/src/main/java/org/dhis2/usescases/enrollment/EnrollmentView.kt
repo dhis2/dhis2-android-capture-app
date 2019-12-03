@@ -27,6 +27,8 @@ interface EnrollmentView : AbstractActivityContracts.View {
 
     fun showSaveButton()
     fun hideSaveButton()
+    fun showAdjustingForm()
+    fun hideAdjustingForm()
 
     fun displayEnrollmentCoordinates(enrollmentCoordinatesData: Pair<Program, Enrollment>?)
     fun displayTeiCoordinates(

@@ -206,6 +206,10 @@
                     android:layout_height="wrap_content"
                     android:visibility="gone" />
 
+                <include layout="@layout/indicator_progress"
+                    android:visibility="gone"
+                    android:id="@+id/cl_indicator_progress" />
+
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/fieldRecycler"
                     android:layout_width="match_parent"

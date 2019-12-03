@@ -69,6 +69,8 @@ class EnrollmentPresenterImpl(
         disposable = CompositeDisposable()
 
         view.hideSaveButton()
+        view.showAdjustingForm()
+
         disposable.add(
                 teiRepository.get()
                         .flatMap { tei ->
@@ -284,8 +286,10 @@ class EnrollmentPresenterImpl(
                         .subscribe({
                             view.showFields(it)
                             view.showSaveButton()
+                            view.hideAdjustingForm()
                         }) {
                             Timber.tag(TAG).e(it)
+                            view.hideAdjustingForm()
                         }
         )
     }
