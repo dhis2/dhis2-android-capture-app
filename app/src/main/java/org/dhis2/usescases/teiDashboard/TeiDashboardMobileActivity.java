@@ -188,7 +188,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
             binding.sectionTitle.setText(tabletAdapter.getPageTitle(0));
             binding.teiPager.setAdapter(tabletAdapter);
             binding.tabLayout.setVisibility(View.GONE);
-            binding.dotsIndicator.setVisibility(View.VISIBLE);
+            binding.dotsIndicator.setVisibility(programUid != null ? View.VISIBLE : View.GONE);
             binding.dotsIndicator.setViewPager(binding.teiPager);
             if (fromRelationship)
                 binding.teiPager.setCurrentItem(1, false);

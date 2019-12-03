@@ -51,18 +51,22 @@ public class DashboardPagerTabletAdapter extends FragmentStatePagerAdapter {
 
     @Override
     public int getCount() {
-        return currentProgram != null ? MOBILE_DASHBOARD_SIZE : 1;
+        return currentProgram != null ? MOBILE_DASHBOARD_SIZE : 0;
     }
 
     @Override
     public CharSequence getPageTitle(int position) {
-        switch (position) {
-            default:
-                return context.getString(R.string.dashboard_indicators);
-            case 1:
-                return context.getString(R.string.dashboard_relationships);
-            case 2:
-                return context.getString(R.string.dashboard_notes);
+        if(currentProgram!=null) {
+            switch (position) {
+                default:
+                    return context.getString(R.string.dashboard_indicators);
+                case 1:
+                    return context.getString(R.string.dashboard_relationships);
+                case 2:
+                    return context.getString(R.string.dashboard_notes);
+            }
+        }else{
+            return null;
         }
     }
 }
