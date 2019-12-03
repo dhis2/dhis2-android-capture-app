@@ -40,7 +40,9 @@ interface SyncPresenter {
 
     Observable<D2Progress> syncGranularDataValues(String orgUnit, String attributeOptionCombo, String period, String[] catOptionCombos);
 
-    Observable<D2Progress> syncGranularDataSet(String dataSetUid, String orgUnit, String attributeOptionCombo, String period);
+    Observable<D2Progress> syncGranularDataSetComplete(String dataSetUid, String orgUnit, String attributeOptionCombo, String period);
+
+    Observable<D2Progress> syncGranularDataSetComplete(String dataSetUid);
 
     boolean checkSyncEventStatus(String uid);
 
