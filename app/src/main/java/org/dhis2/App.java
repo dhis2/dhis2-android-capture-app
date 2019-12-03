@@ -90,13 +90,10 @@ public class App extends MultiDexApplication implements Components {
 
         Mapbox.getInstance(this, BuildConfig.MAPBOX_ACCESS_TOKEN);
 
-        KujakuLibrary.setEnableMapDownloadResume(false);
+        KujakuLibrary.setEnableMapDownloadResume(true);
         KujakuLibrary.init(this);
 
         Fabric.with(this, new Crashlytics());
-
-
-//        setUpUserComponent();
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP)
             upgradeSecurityProviderSync();
