@@ -271,6 +271,7 @@ class EnrollmentPresenterImpl(
 
         disposable.add(
                 fieldsFlowable.startWith(true)
+                        .observeOn(schedulerProvider.io())
                         .switchMap {
                             Flowable.zip<List<FieldViewModel>, Result<RuleEffect>, List<FieldViewModel>>(
                                     dataEntryRepository.list(),
