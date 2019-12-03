@@ -1,4 +1,4 @@
-package org.dhis2.usecases.reservedValues
+package org.dhis2.usescases.reservedValues
 
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock

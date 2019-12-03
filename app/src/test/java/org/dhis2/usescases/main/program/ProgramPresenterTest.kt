@@ -1,20 +1,16 @@
-package org.dhis2.usecases.main.program
+package org.dhis2.usescases.main.program
 
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.whenever
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.verifyZeroInteractions
+import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Flowable
 import io.reactivex.schedulers.TestScheduler
 import java.util.concurrent.TimeUnit
 import org.dhis2.data.prefs.PreferenceProvider
 import org.dhis2.data.schedulers.TestSchedulerProvider
-import org.dhis2.usescases.main.program.HomeRepository
-import org.dhis2.usescases.main.program.ProgramPresenter
-import org.dhis2.usescases.main.program.ProgramView
-import org.dhis2.usescases.main.program.ProgramViewModel
 import org.dhis2.utils.Constants.PROGRAM_THEME
 import org.dhis2.utils.filters.FilterManager
 import org.junit.Assert.assertTrue
@@ -62,8 +58,12 @@ class ProgramPresenterTest {
         whenever(filterManager.asFlowable()) doReturn mock()
         whenever(filterManager.asFlowable().startWith(filterManager)) doReturn filterManagerFlowable
 
-        whenever(homeRepository.aggregatesModels(any(), any(),
-                any())) doReturn Flowable.error(Exception(""))
+        whenever(
+            homeRepository.aggregatesModels(
+                any(), any(),
+                any()
+            )
+        ) doReturn Flowable.error(Exception(""))
         whenever(filterManager.ouTreeFlowable()) doReturn Flowable.just(true)
 
         presenter.init()
@@ -148,26 +148,25 @@ class ProgramPresenterTest {
 
     @Test
     fun `Should refresh program list when granular sync finished`() {
-
         presenter.updateProgramQueries()
         verify(filterManager).publishData()
     }
 
     private fun programViewModel(): ProgramViewModel {
         return ProgramViewModel.create(
-                "uid",
-                "displayName",
-                "#ffcdd2",
-                "icon",
-                1,
-                "type",
-                "typeName",
-                "programType",
-                "description",
-                onlyEnrollOnce = true,
-                accessDataWrite = true,
-                state = "Synced",
-                hasOverdueEvent = false
+            "uid",
+            "displayName",
+            "#ffcdd2",
+            "icon",
+            1,
+            "type",
+            "typeName",
+            "programType",
+            "description",
+            onlyEnrollOnce = true,
+            accessDataWrite = true,
+            state = "Synced",
+            hasOverdueEvent = false
         )
     }
 }
