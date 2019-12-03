@@ -68,6 +68,9 @@ class EnrollmentPresenterImpl(
     fun init() {
         disposable = CompositeDisposable()
 
+        view.hideSaveButton()
+        view.showAdjustingForm()
+
         disposable.add(
             teiRepository.get()
                 .flatMap { tei ->
@@ -270,21 +273,25 @@ class EnrollmentPresenterImpl(
         )
 
         disposable.add(
-            fieldsFlowable.startWith(true)
-                .switchMap {
-                    Flowable.zip<List<FieldViewModel>, Result<RuleEffect>, List<FieldViewModel>>(
-                        dataEntryRepository.list(),
-                        formRepository.calculate(),
-                        BiFunction { fields, result -> applyRuleEffects(fields, result) }
-                    )
-                }
-                .subscribeOn(schedulerProvider.io())
-                .observeOn(schedulerProvider.ui())
-                .subscribe({
-                    view.showFields(it)
-                }) {
-                    Timber.tag(TAG).e(it)
-                }
+                fieldsFlowable.startWith(true)
+                        .observeOn(schedulerProvider.io())
+                        .switchMap {
+                            Flowable.zip<List<FieldViewModel>, Result<RuleEffect>, List<FieldViewModel>>(
+                                    dataEntryRepository.list(),
+                                    formRepository.calculate(),
+                                    BiFunction { fields, result -> applyRuleEffects(fields, result) }
+                            )
+                        }
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
+                        .subscribe({
+                            view.showFields(it)
+                            view.showSaveButton()
+                            view.hideAdjustingForm()
+                        }) {
+                            Timber.tag(TAG).e(it)
+                            view.hideAdjustingForm()
+                        }
         )
     }
 

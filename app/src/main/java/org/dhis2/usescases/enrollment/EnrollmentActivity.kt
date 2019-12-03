@@ -14,6 +14,7 @@ import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.airbnb.lottie.LottieDrawable.INFINITE
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import io.reactivex.Flowable
@@ -22,6 +23,7 @@ import java.util.Calendar
 import java.util.Date
 import javax.inject.Inject
 import org.dhis2.App
+import org.dhis2.Bindings.Bindings
 import org.dhis2.R
 import org.dhis2.data.forms.dataentry.DataEntryAdapter
 import org.dhis2.data.forms.dataentry.DataEntryArguments
@@ -128,19 +130,20 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
             }
         }
 
-        binding.fieldRecycler.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
-                if (newState == RecyclerView.SCROLL_STATE_DRAGGING) {
-                    adapter.setLastFocusItem(null)
-                    val imm = context!!.getSystemService(
-                        Activity.INPUT_METHOD_SERVICE
-                    ) as InputMethodManager
-                    imm.hideSoftInputFromWindow(recyclerView.windowToken, 0)
-                    binding.root.requestFocus()
-                    presenter.clearLastFocusItem()
-                }
+        binding.enrollmentDataButton.setOnClickListener {
+            if (binding.enrollmentData.visibility == View.GONE) {
+                binding.enrollmentDataText.text = getString(R.string.enrollment_data_hide)
+                binding.enrollmentData.visibility = View.VISIBLE
+                binding.enrollmentDataArrow.animate().scaleY(-1.0f).setDuration(200).start()
+            } else {
+                binding.enrollmentDataText.text = getString(R.string.enrollment_data_show)
+                binding.enrollmentData.visibility = View.GONE
+                binding.enrollmentDataArrow.animate().scaleY(1.0f).setDuration(200).start()
             }
-        })
+
+        }
+
+        binding.fieldRecycler.itemAnimator = null
     }
 
     override fun onResume() {
@@ -551,4 +554,22 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
         myLayoutManager.scrollToPositionWithOffset(myFirstPositionIndex, offset)
     }
     /*endregion*/
+
+    override fun showSaveButton() {
+        binding.next.visibility = View.VISIBLE
+    }
+
+    override fun hideSaveButton() {
+        binding.next.visibility = View.GONE
+    }
+
+    override fun showAdjustingForm() {
+        binding.clIndicatorProgress.root.visibility = View.VISIBLE
+        binding.clIndicatorProgress.lottieView.repeatCount = INFINITE
+    }
+
+    override fun hideAdjustingForm() {
+        binding.clIndicatorProgress.root.visibility = View.GONE
+        binding.clIndicatorProgress.lottieView.repeatCount = 0
+    }
 }
