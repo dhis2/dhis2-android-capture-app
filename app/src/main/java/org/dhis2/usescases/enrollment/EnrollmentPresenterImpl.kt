@@ -68,6 +68,9 @@ class EnrollmentPresenterImpl(
     fun init() {
         disposable = CompositeDisposable()
 
+        view.hideSaveButton()
+        view.showAdjustingForm()
+
         disposable.add(
                 teiRepository.get()
                         .flatMap { tei ->
@@ -283,8 +286,11 @@ class EnrollmentPresenterImpl(
                         .observeOn(schedulerProvider.ui())
                         .subscribe({
                             view.showFields(it)
+                            view.showSaveButton()
+                            view.hideAdjustingForm()
                         }) {
                             Timber.tag(TAG).e(it)
+                            view.hideAdjustingForm()
                         }
         )
     }

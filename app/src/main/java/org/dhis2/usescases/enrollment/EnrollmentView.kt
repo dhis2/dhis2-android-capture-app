@@ -25,6 +25,11 @@ interface EnrollmentView : AbstractActivityContracts.View {
 
     fun showFields(fields: List<FieldViewModel>)
 
+    fun showSaveButton()
+    fun hideSaveButton()
+    fun showAdjustingForm()
+    fun hideAdjustingForm()
+
     fun displayEnrollmentCoordinates(enrollmentCoordinatesData: Pair<Program, Enrollment>?)
     fun displayTeiCoordinates(
             teiCoordinatesData: Pair<TrackedEntityType, TrackedEntityInstance>?
