@@ -84,19 +84,16 @@ public class App extends MultiDexApplication implements Components {
     public void onCreate() {
         super.onCreate();
         Timber.plant(BuildConfig.DEBUG ? new DebugTree() : new ReleaseTree());
-        long startTime = System.currentTimeMillis();
         if (BuildConfig.DEBUG)
             Stetho.initializeWithDefaults(this);
 
         Mapbox.getInstance(this, BuildConfig.MAPBOX_ACCESS_TOKEN);
 
-        KujakuLibrary.setEnableMapDownloadResume(false);
+        KujakuLibrary.setEnableMapDownloadResume(true);
         KujakuLibrary.init(this);
 
         Fabric.with(this, new Crashlytics());
 
-
-//        setUpUserComponent();
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP)
             upgradeSecurityProviderSync();

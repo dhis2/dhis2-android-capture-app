@@ -24,6 +24,7 @@ import java.util.Calendar
 import java.util.Date
 import javax.inject.Inject
 import org.dhis2.App
+import org.dhis2.Bindings.Bindings
 import org.dhis2.R
 import org.dhis2.data.forms.dataentry.DataEntryAdapter
 import org.dhis2.data.forms.dataentry.DataEntryArguments
@@ -130,20 +131,20 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
             }
         }
 
-        binding.fieldRecycler.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
-                if (newState == RecyclerView.SCROLL_STATE_DRAGGING) {
-                    adapter.setLastFocusItem(null)
-                    val imm = context!!.getSystemService(
-                            Activity.INPUT_METHOD_SERVICE
-                    ) as InputMethodManager
-                    imm.hideSoftInputFromWindow(recyclerView.windowToken, 0)
-                    binding.root.requestFocus()
-                    presenter.clearLastFocusItem()
-                }
+        binding.enrollmentDataButton.setOnClickListener {
+            if (binding.enrollmentData.visibility == View.GONE) {
+                binding.enrollmentDataText.text = getString(R.string.enrollment_data_hide)
+                binding.enrollmentData.visibility = View.VISIBLE
+                binding.enrollmentDataArrow.animate().scaleY(-1.0f).setDuration(200).start()
+            } else {
+                binding.enrollmentDataText.text = getString(R.string.enrollment_data_show)
+                binding.enrollmentData.visibility = View.GONE
+                binding.enrollmentDataArrow.animate().scaleY(1.0f).setDuration(200).start()
             }
-        })
-        
+
+        }
+
+        binding.fieldRecycler.itemAnimator = null
     }
 
     override fun onResume() {
