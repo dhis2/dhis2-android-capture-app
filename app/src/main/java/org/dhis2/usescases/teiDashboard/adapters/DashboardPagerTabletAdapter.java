@@ -22,6 +22,7 @@ public class DashboardPagerTabletAdapter extends FragmentStatePagerAdapter {
     private static final int MOBILE_DASHBOARD_SIZE = 3;
     private final Context context;
     private String currentProgram;
+    private final int NO_FRAGMENT_DUE_TO_NO_PROGRAM_SELECTED = 0;
 
 
     public DashboardPagerTabletAdapter(Context context, FragmentManager fm, String program) {
@@ -51,18 +52,22 @@ public class DashboardPagerTabletAdapter extends FragmentStatePagerAdapter {
 
     @Override
     public int getCount() {
-        return currentProgram != null ? MOBILE_DASHBOARD_SIZE : 1;
+        return currentProgram != null ? MOBILE_DASHBOARD_SIZE : NO_FRAGMENT_DUE_TO_NO_PROGRAM_SELECTED;
     }
 
     @Override
     public CharSequence getPageTitle(int position) {
-        switch (position) {
-            default:
-                return context.getString(R.string.dashboard_indicators);
-            case 1:
-                return context.getString(R.string.dashboard_relationships);
-            case 2:
-                return context.getString(R.string.dashboard_notes);
+        if(currentProgram!=null) {
+            switch (position) {
+                default:
+                    return context.getString(R.string.dashboard_indicators);
+                case 1:
+                    return context.getString(R.string.dashboard_relationships);
+                case 2:
+                    return context.getString(R.string.dashboard_notes);
+            }
+        }else{
+            return null;
         }
     }
 }
