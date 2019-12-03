@@ -59,6 +59,7 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityType
 
 class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
 
+
     enum class EnrollmentMode { NEW, CHECK }
 
     @Inject
@@ -549,4 +550,12 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
         myLayoutManager.scrollToPositionWithOffset(myFirstPositionIndex, offset)
     }
     /*endregion*/
+
+    override fun showSaveButton() {
+        binding.next.visibility = View.VISIBLE
+    }
+
+    override fun hideSaveButton() {
+        binding.next.visibility = View.GONE
+    }
 }
