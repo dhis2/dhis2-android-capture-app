@@ -208,7 +208,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         compositeDisposable.add(
                 queryProcessor
                         .doOnNext(queryData -> {
-                            if (view.isMapVisible())
+                            if (view.isMapVisible() && selectedProgram != null)
                                 mapProcessor.onNext(new Unit());
                         })
                         .map(map -> {

@@ -354,8 +354,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     private void showMap(boolean showMap) {
         binding.scrollView.setVisibility(showMap ? View.GONE : View.VISIBLE);
         binding.mapView.setVisibility(showMap ? View.VISIBLE : View.GONE);
-        if (!showMap)
-            binding.mapLayerButton.setVisibility(View.GONE);
+        binding.mapLayerButton.setVisibility(showMap ? View.VISIBLE : View.GONE);
 
         if (showMap)
             presenter.getMapData();
@@ -408,6 +407,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                     liveAdapter.submitList(data.val0());
                     binding.progressLayout.setVisibility(View.GONE);
                 } else {
+                    showMap(false);
                     binding.progressLayout.setVisibility(View.GONE);
                     binding.messageContainer.setVisibility(View.VISIBLE);
                     binding.message.setText(data.val1());
