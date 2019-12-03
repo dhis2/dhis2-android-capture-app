@@ -22,6 +22,7 @@ public class DashboardPagerTabletAdapter extends FragmentStatePagerAdapter {
     private static final int MOBILE_DASHBOARD_SIZE = 3;
     private final Context context;
     private String currentProgram;
+    private final int NO_FRAGMENT_DUE_TO_NO_PROGRAM_SELECTED = 0;
 
 
     public DashboardPagerTabletAdapter(Context context, FragmentManager fm, String program) {
@@ -51,7 +52,7 @@ public class DashboardPagerTabletAdapter extends FragmentStatePagerAdapter {
 
     @Override
     public int getCount() {
-        return currentProgram != null ? MOBILE_DASHBOARD_SIZE : 0;
+        return currentProgram != null ? MOBILE_DASHBOARD_SIZE : NO_FRAGMENT_DUE_TO_NO_PROGRAM_SELECTED;
     }
 
     @Override
