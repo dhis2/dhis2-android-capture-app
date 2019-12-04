@@ -44,14 +44,14 @@ public class EventCaptureModule {
                                                     @NonNull RulesUtilsProvider ruleUtils,
                                                     @NonNull DataEntryStore dataEntryStore,
                                                     SchedulerProvider schedulerProvider) {
-        return new EventCapturePresenterImpl(eventUid, eventCaptureRepository, ruleUtils, dataEntryStore, schedulerProvider);
+        return new EventCapturePresenterImpl(eventUid,programUid, eventCaptureRepository, ruleUtils, dataEntryStore, schedulerProvider);
     }
 
     @Provides
     @PerActivity
-    EventCaptureContract.EventCaptureRepository provideRepository(Context context,
+    EventCaptureContract.EventCaptureRepository provideRepository(BriteDatabase briteDatabase, Context context,
                                                                   FormRepository formRepository, D2 d2) {
-        return new EventCaptureRepositoryImpl(context, formRepository, eventUid, d2);
+        return new EventCaptureRepositoryImpl(briteDatabase, context, formRepository, eventUid, d2);
     }
 
     @Provides

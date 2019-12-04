@@ -51,6 +51,8 @@ import timber.log.Timber;
 
 import static android.text.TextUtils.isEmpty;
 
+import com.squareup.sqlbrite2.BriteDatabase;
+
 /**
  * QUADRAM. Created by ppajuelo on 19/11/2018.
  */
@@ -60,6 +62,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     private final RulesUtilsProvider rulesUtils;
     private final DataEntryStore dataEntryStore;
     private final String eventUid;
+    private final String programUid;
     private final PublishProcessor<Unit> progressProcessor;
     private final PublishProcessor<Unit> sectionAdjustProcessor;
     private final PublishProcessor<Unit> formAdjustProcessor;
@@ -98,8 +101,9 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
         this.lastFocusItem = null;
     }
 
-    public EventCapturePresenterImpl(String eventUid, EventCaptureContract.EventCaptureRepository eventCaptureRepository, RulesUtilsProvider rulesUtils, DataEntryStore dataEntryStore, SchedulerProvider schedulerProvider) {
+    public EventCapturePresenterImpl(String eventUid, String programUid, EventCaptureContract.EventCaptureRepository eventCaptureRepository, RulesUtilsProvider rulesUtils, DataEntryStore dataEntryStore, SchedulerProvider schedulerProvider) {
         this.eventUid = eventUid;
+        this.programUid = programUid;
         this.eventCaptureRepository = eventCaptureRepository;
         this.rulesUtils = rulesUtils;
         this.dataEntryStore = dataEntryStore;
@@ -160,6 +164,22 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                         .observeOn(schedulerProvider.ui())
                         .subscribe(
                                 view::setProgramStage,
+                                Timber::e
+                        )
+        );
+
+        compositeDisposable.add(
+                eventCaptureRepository.getIndicators(programUid)
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
+                        .subscribe(
+                                data -> {
+                                    if (data.size()> 0){
+                                        view.showIndicatorsIcon();
+                                    } else {
+                                        view.hideIndicatorsIcon();
+                                    }
+                                },
                                 Timber::e
                         )
         );
