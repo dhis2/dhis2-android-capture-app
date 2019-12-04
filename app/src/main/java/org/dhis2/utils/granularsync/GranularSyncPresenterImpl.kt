@@ -105,11 +105,11 @@ class GranularSyncPresenterImpl(
                 )
         )
 
-        if (conflictType == PROGRAM || conflictType == EVENT) {
+        if (conflictType == TEI || conflictType == EVENT) {
             disposable.add(
                 Single.just(conflictType)
                     .flatMap {
-                        if (it == PROGRAM) {
+                        if (it == TEI) {
                             d2
                                 .importModule()
                                 .trackerImportConflicts()
