@@ -276,6 +276,8 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
     public void setEditable(Boolean editable) {
         latitude.setEnabled(editable);
         longitude.setEnabled(editable);
+        clearButton.setEnabled(editable);
+        clearButton.setVisibility(editable ? View.VISIBLE : View.GONE);
         findViewById(R.id.location1).setEnabled(editable);
         findViewById(R.id.location2).setEnabled(editable);
     }
