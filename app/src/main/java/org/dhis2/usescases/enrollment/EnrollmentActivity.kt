@@ -144,6 +144,10 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
         }
 
         binding.fieldRecycler.itemAnimator = null
+
+        binding.enrollmentDataText.text = getString(R.string.enrollment_data_hide)
+        binding.enrollmentData.visibility = View.VISIBLE
+        binding.enrollmentDataArrow.animate().scaleY(-1.0f).setDuration(0).start()
     }
 
     override fun onResume() {
