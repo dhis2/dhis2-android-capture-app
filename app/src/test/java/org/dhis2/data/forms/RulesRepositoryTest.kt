@@ -50,6 +50,36 @@ class RulesRepositoryTest {
         }
     }
 
+    @Test
+    fun `Supplementary data should not include option groups with null code`() {
+        whenever(
+            d2.organisationUnitModule().organisationUnits()
+                .withOrganisationUnitGroups()
+                .uid("org_unit_test")
+                .blockingGet()
+        ) doReturn getTestOrgUnitWithNullCodeGroup()
+        whenever(d2.userModule().userRoles().blockingGet()) doReturn getTestUserRoles()
+        val testObserver = repository.supplementaryData("org_unit_test")
+            .test()
+
+        testObserver.assertValueCount(1)
+        testObserver.assertValue { supplData ->
+
+            supplData.containsKey("USER")
+            !supplData.containsKey("org_unit_group_test_code")
+            supplData.containsKey("org_unit_group_test")
+            supplData.getOrElse("USER") { arrayListOf() }
+                .contains("role1")
+            supplData.getOrElse("USER") { arrayListOf() }
+                .contains("role2")
+            supplData.getOrElse("org_unit_group_test") { arrayListOf() }
+                .contains("org_unit_test")
+            supplData.getOrElse("org_unit_group_test_code") { arrayListOf() }
+                .isEmpty()
+        }
+
+    }
+
     private fun getTestUserRoles(): MutableList<UserRole>? {
         return arrayListOf(
             UserRole.builder()
@@ -68,14 +98,23 @@ class RulesRepositoryTest {
     private fun getTestOrgUnit(): OrganisationUnit {
         return OrganisationUnit.builder()
             .uid("org_unit_test")
+            .organisationUnitGroups(arrayListOf(getTestOrgUnitGroup("org_unit_group_test_code")))
+            .build()
+    }
+
+    private fun getTestOrgUnitWithNullCodeGroup(): OrganisationUnit {
+        return OrganisationUnit.builder()
+            .uid("org_unit_test")
             .organisationUnitGroups(arrayListOf(getTestOrgUnitGroup()))
             .build()
     }
 
-    private fun getTestOrgUnitGroup(): OrganisationUnitGroup? {
+    private fun getTestOrgUnitGroup(ouCode: String? = null): OrganisationUnitGroup? {
         return OrganisationUnitGroup.builder()
             .uid("org_unit_group_test")
-            .code("org_unit_group_test_code")
+            .code(ouCode)
             .build()
     }
+
+
 }
