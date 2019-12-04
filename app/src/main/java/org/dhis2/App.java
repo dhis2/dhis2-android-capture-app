@@ -43,7 +43,6 @@ import org.hisp.dhis.android.core.D2Manager;
 import javax.inject.Singleton;
 
 import io.fabric.sdk.android.Fabric;
-import io.ona.kujaku.KujakuLibrary;
 import io.reactivex.Scheduler;
 import io.reactivex.android.plugins.RxAndroidPlugins;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -89,11 +88,7 @@ public class App extends MultiDexApplication implements Components {
 
         Mapbox.getInstance(this, BuildConfig.MAPBOX_ACCESS_TOKEN);
 
-        KujakuLibrary.setEnableMapDownloadResume(true);
-        KujakuLibrary.init(this);
-
         Fabric.with(this, new Crashlytics());
-
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP)
             upgradeSecurityProviderSync();
@@ -105,7 +100,7 @@ public class App extends MultiDexApplication implements Components {
         RxAndroidPlugins.setInitMainThreadSchedulerHandler(schedulerCallable -> asyncMainThreadScheduler);
     }
 
-    private void upgradeSecurityProviderSync(){
+    private void upgradeSecurityProviderSync() {
         try {
             ProviderInstaller.installIfNeeded(this);
             Timber.e("New security provider installed.");
