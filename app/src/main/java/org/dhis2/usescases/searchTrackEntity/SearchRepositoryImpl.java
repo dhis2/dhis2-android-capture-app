@@ -519,26 +519,18 @@ public class SearchRepositoryImpl implements SearchRepository {
         String teiId = tei.getTei() != null && tei.getTei().uid() != null ? tei.getTei().uid() : "";
         List<Enrollment> enrollments = d2.enrollmentModule().enrollments().byTrackedEntityInstance().eq(teiId).blockingGet();
 
-        List<Event> scheduleButShouldOverdueEvents = d2.eventModule().events().byEnrollmentUid().in(UidsHelper.getUidsList(enrollments))
+        EventCollectionRepository scheduledEvents = d2.eventModule().events().byEnrollmentUid().in(UidsHelper.getUidsList(enrollments))
                 .byStatus().eq(EventStatus.SCHEDULE)
-                .byDueDate().before(new Date()).blockingGet();
+                .byDueDate().before(new Date());
 
-        for(Event eventToOverdue : scheduleButShouldOverdueEvents){
-            try {
-                d2.eventModule().events().uid(eventToOverdue.uid()).setStatus(EventStatus.OVERDUE);
-            } catch (D2Error d2Error) {
-                d2Error.printStackTrace();
-            }
-        }
-
-        EventCollectionRepository repo = d2.eventModule().events().byEnrollmentUid().in(UidsHelper.getUidsList(enrollments)).byStatus().eq(EventStatus.OVERDUE);
+        EventCollectionRepository overdueEvents = d2.eventModule().events().byEnrollmentUid().in(UidsHelper.getUidsList(enrollments)).byStatus().eq(EventStatus.OVERDUE);
 
         int count;
 
         if (selectedProgram == null)
-            count = repo.blockingCount();
+            count = overdueEvents.blockingCount() + scheduledEvents.blockingCount();
         else
-            count = repo.byProgramUid().eq(selectedProgram.uid()).blockingCount();
+            count = overdueEvents.byProgramUid().eq(selectedProgram.uid()).blockingCount() + scheduledEvents.byProgramUid().eq(selectedProgram.uid()).blockingCount();
 
         if (count > 0)
             tei.setHasOverdue(true);
@@ -617,18 +609,10 @@ public class SearchRepositoryImpl implements SearchRepository {
             while (iterator.hasNext()) {
                 TrackedEntityInstance tei = iterator.next();
 
-                List<Event> eventsToOverdue = d2.eventModule().events().byTrackedEntityInstanceUids(Collections.singletonList(tei.uid())).byStatus().eq(EventStatus.SCHEDULE)
-                        .byDueDate().before(new Date()).blockingGet();
-                for(Event event : eventsToOverdue){
-                    try {
-                        d2.eventModule().events().uid(event.uid()).setStatus(EventStatus.OVERDUE);
-                    } catch (D2Error d2Error) {
-                        d2Error.printStackTrace();
-                    }
-                }
-
                 boolean hasEventWithStatus = !d2.eventModule().events().byTrackedEntityInstanceUids(Collections.singletonList(tei.uid())).byStatus().in(eventStatuses).blockingIsEmpty();
-                if (!hasEventWithStatus)
+                boolean hasScheduledEvent = !d2.eventModule().events().byTrackedEntityInstanceUids(Collections.singletonList(tei.uid())).byStatus().eq(EventStatus.SCHEDULE)
+                        .byDueDate().before(new Date()).blockingIsEmpty();
+                if (!hasEventWithStatus && !hasScheduledEvent)
                     iterator.remove();
             }
 
