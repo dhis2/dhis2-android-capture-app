@@ -5,6 +5,7 @@ import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Single
+import junit.framework.Assert.assertTrue
 import java.util.Collections
 import java.util.Date
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
@@ -15,6 +16,9 @@ import org.hisp.dhis.android.core.common.DataAccess
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.ObjectWithUid
 import org.hisp.dhis.android.core.common.State
+import org.hisp.dhis.android.core.dataset.DataSetCompleteRegistration
+import org.hisp.dhis.android.core.dataset.DataSetInstance
+import org.hisp.dhis.android.core.period.PeriodType
 import org.hisp.dhis.android.core.program.AccessLevel
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.program.ProgramCollectionRepository
@@ -29,7 +33,7 @@ import org.mockito.Mockito.mock
 
 class GranularSyncPresenterTest {
 
-    private val d2 = mock(D2::class.java)
+    private val d2: D2 = mock(D2::class.java, Mockito.RETURNS_DEEP_STUBS)
     private val view = mock(GranularSyncContracts.View::class.java)
     private val trampolineSchedulerProvider = TrampolineSchedulerProvider()
     private val workManager = mock(WorkManager::class.java)
@@ -111,6 +115,133 @@ class GranularSyncPresenterTest {
         testSubscriber.assertSubscribed()
         testSubscriber.assertValueCount(1)
         testSubscriber.assertValue(State.ERROR)
+    }
+
+    @Test
+    fun `DataSet with ERROR completeRegistration should return ERROR from candidates`() {
+
+        whenever(
+            d2.dataSetModule().dataSetCompleteRegistrations()
+        ) doReturn mock()
+        whenever(
+            d2.dataSetModule().dataSetCompleteRegistrations()
+                .byDataSetUid()
+        ) doReturn mock()
+        whenever(
+            d2.dataSetModule().dataSetCompleteRegistrations()
+                .byDataSetUid().eq("data_set_uid")
+        ) doReturn mock()
+        whenever(
+            d2.dataSetModule().dataSetCompleteRegistrations()
+                .byDataSetUid().eq("data_set_uid").blockingGet()
+        ) doReturn getMockedCompleteRegistrations(State.ERROR)
+
+        val presenter = GranularSyncPresenterImpl(
+            d2,
+            trampolineSchedulerProvider,
+            SyncStatusDialog.ConflictType.DATA_SET,
+            "data_set_uid",
+            null,
+            null,
+            null,
+            workManager
+        )
+
+        val state = presenter.getStateFromCanditates(arrayListOf())
+
+        assertTrue(state == State.ERROR)
+    }
+
+    @Test
+    fun `DataSet with TO_POST completeRegistration should return TO_UPDATE from candidates`() {
+
+        whenever(
+            d2.dataSetModule().dataSetCompleteRegistrations()
+        ) doReturn mock()
+        whenever(
+            d2.dataSetModule().dataSetCompleteRegistrations()
+                .byDataSetUid()
+        ) doReturn mock()
+        whenever(
+            d2.dataSetModule().dataSetCompleteRegistrations()
+                .byDataSetUid().eq("data_set_uid")
+        ) doReturn mock()
+        whenever(
+            d2.dataSetModule().dataSetCompleteRegistrations()
+                .byDataSetUid().eq("data_set_uid").blockingGet()
+        ) doReturn getMockedCompleteRegistrations(State.TO_POST)
+
+        val presenter = GranularSyncPresenterImpl(
+            d2,
+            trampolineSchedulerProvider,
+            SyncStatusDialog.ConflictType.DATA_SET,
+            "data_set_uid",
+            null,
+            null,
+            null,
+            workManager
+        )
+
+        val state = presenter.getStateFromCanditates(arrayListOf())
+
+        assertTrue(state == State.TO_UPDATE)
+    }
+
+    @Test
+    fun `DataSet with TO_POST candidate should return TO_UPDATE from candidates`() {
+
+        whenever(
+            d2.dataSetModule().dataSetCompleteRegistrations()
+        ) doReturn mock()
+        whenever(
+            d2.dataSetModule().dataSetCompleteRegistrations()
+                .byDataSetUid()
+        ) doReturn mock()
+        whenever(
+            d2.dataSetModule().dataSetCompleteRegistrations()
+                .byDataSetUid().eq("data_set_uid")
+        ) doReturn mock()
+        whenever(
+            d2.dataSetModule().dataSetCompleteRegistrations()
+                .byDataSetUid().eq("data_set_uid").blockingGet()
+        ) doReturn arrayListOf()
+
+        val presenter = GranularSyncPresenterImpl(
+            d2,
+            trampolineSchedulerProvider,
+            SyncStatusDialog.ConflictType.DATA_SET,
+            "data_set_uid",
+            null,
+            null,
+            null,
+            workManager
+        )
+
+        val state = presenter.getStateFromCanditates(arrayListOf(State.TO_POST))
+
+        assertTrue(state == State.TO_UPDATE)
+    }
+
+    private fun getMockedCompleteRegistrations(testingState: State): MutableList<DataSetCompleteRegistration> {
+        return arrayListOf(
+            DataSetCompleteRegistration.builder()
+                .attributeOptionCombo("attr_opt_comb")
+                .dataSet("data_set_uid")
+                .date(Date())
+                .period("periodId")
+                .organisationUnit("org_unit")
+                .state(testingState)
+                .build()
+            ,
+            DataSetCompleteRegistration.builder()
+                .attributeOptionCombo("attr_opt_comb")
+                .dataSet("data_set_uid")
+                .date(Date())
+                .period("periodId")
+                .organisationUnit("org_unit")
+                .state(State.SYNCED)
+                .build()
+        )
     }
 
     private fun getListOfTEIsWithError(): MutableList<TrackedEntityInstance> {
