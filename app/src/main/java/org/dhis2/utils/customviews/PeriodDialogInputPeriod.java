@@ -65,13 +65,22 @@ public class PeriodDialogInputPeriod extends PeriodDialog {
                         getCurrentDate().before(inputPeriodModel.initialPeriodDate()))
                     break;
                 else
-                    previousPeriod();
+                    previousInputPeriod();
             } while (!isAllowed);
             if (isAllowed) break;
         }
 
         if (!isAllowed && !isEmpty) {
             binding.noPeriods.setText(getString(R.string.there_is_no_available_period));
+        } else if(isAllowed && !isEmpty) {
+            PeriodAdapter periodAdapter = new PeriodAdapter(
+                    getPeriod(),
+                    openFuturePeriods != null ? openFuturePeriods : 0,
+                    date -> {
+                        getPossitiveListener().onDateSet(date);
+                        return Unit.INSTANCE;
+                    }, true, inputPeriod);
+            binding.recyclerDate.setAdapter(periodAdapter);
         } else {
             PeriodAdapter periodAdapter = new PeriodAdapter(
                     getPeriod(),
@@ -79,7 +88,7 @@ public class PeriodDialogInputPeriod extends PeriodDialog {
                     date -> {
                         getPossitiveListener().onDateSet(date);
                         return Unit.INSTANCE;
-                    });
+                    }, false, inputPeriod);
             binding.recyclerDate.setAdapter(periodAdapter);
         }
         return binding.getRoot();
