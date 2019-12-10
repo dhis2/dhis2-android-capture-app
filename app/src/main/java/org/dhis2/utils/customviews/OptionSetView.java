@@ -141,8 +141,10 @@ public class OptionSetView extends FieldLayout implements OptionSetOnClickListen
         editText.setEnabled(isEditable);
         editText.setFocusable(false);
         editText.setClickable(isEditable);
-        delete.setEnabled(isEditable);
-        delete.setVisibility(isEditable ? View.VISIBLE : View.GONE);
+        if (delete != null) {
+            delete.setEnabled(isEditable);
+            delete.setVisibility(isEditable ? View.VISIBLE : View.GONE);
+        }
     }
 
     public void setValue(String value) {
