@@ -610,4 +610,6 @@
     <string name="sms_disabled">SMS module disabled</string>
     <string name="sms_downloading_data">Downloading data for SMS module. Please wait</string>
     <string name="sms_empty_gateway">SMS gateway can\'t be empty</string>
+    <string name="granular_sync_enrollments_empty">There are no enrollments to upload</string>
+    <string name="granular_sync_unsupported_task">This convertTask is not supported</string>
 </resources>
