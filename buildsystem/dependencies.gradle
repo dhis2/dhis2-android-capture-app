@@ -3,15 +3,15 @@ ext {
             sdk   : 28,
             tools : "28.0.3",
             minSdk: 19,
-            vCode: 52,
-            vName: "2.0.0 Beta"
+            vCode: 53,
+            vName: "2.0.0"
     ]
 
     libraries = [
             support          : "28.0.0",
             multidex         : "2.0.1",
             constraintlayout : "1.1.3",
-            dhis2sdk         : "0.17.5-SNAPSHOT",
+            dhis2sdk         : "1.0.0",
             ruleEngine       : "1.0.5.1-SNAPSHOT",
             atv              : "1.2.9",
             dagger           : "2.14.1",
