@@ -68,7 +68,7 @@ public class DataValueRepositoryImpl implements DataValueRepository {
         List<DataSetElement> dataSetElements = d2.dataSetModule().dataSets().withDataSetElements().uid(dataSetUid).blockingGet().dataSetElements();
 
         if (!sectionName.equals("NO_SECTION")) {
-            List<DataElement> dataElements = d2.dataSetModule().sections().withDataElements().byDataSetUid().eq(dataSetUid).byName().eq(sectionName).one().blockingGet().dataElements();
+            List<DataElement> dataElements = d2.dataSetModule().sections().withDataElements().byDataSetUid().eq(dataSetUid).byDisplayName().eq(sectionName).one().blockingGet().dataElements();
             for (DataSetElement dataSetElement : dataSetElements) {
                 for (DataElement dataElement : dataElements) {
 
@@ -188,7 +188,7 @@ public class DataValueRepositoryImpl implements DataValueRepository {
                     List<DataSetElement> dataElements = new ArrayList<>();
                     if (!sectionName.equals("NO_SECTION")) {
                         List<DataElement> dataElementSection = d2.dataSetModule().sections().withDataElements()
-                                .byDataSetUid().eq(dataSetUid).byName().eq(sectionName).one().blockingGet().dataElements();
+                                .byDataSetUid().eq(dataSetUid).byDisplayName().eq(sectionName).one().blockingGet().dataElements();
                         for (DataElement dataElement : dataElementSection) {
                             for (DataSetElement dataSetElement : dataSet.dataSetElements())
                                 if (dataSetElement.dataElement().uid().equals(dataElement.uid()))
@@ -237,7 +237,7 @@ public class DataValueRepositoryImpl implements DataValueRepository {
     @Override
     public Flowable<List<DataElementOperand>> getGreyFields(String sectionName) {
         if (!sectionName.isEmpty() && !sectionName.equals("NO_SECTION"))
-            return d2.dataSetModule().sections().withGreyedFields().byDataSetUid().eq(dataSetUid).byName().eq(sectionName).one().get()
+            return d2.dataSetModule().sections().withGreyedFields().byDataSetUid().eq(dataSetUid).byDisplayName().eq(sectionName).one().get()
                 .map(Section::greyedFields).toFlowable();
         else
             return Flowable.just(new ArrayList<>());
@@ -246,7 +246,7 @@ public class DataValueRepositoryImpl implements DataValueRepository {
     @Override
     public Flowable<Section> getSectionByDataSet(String section) {
         if (!section.isEmpty() && !section.equals("NO_SECTION"))
-            return Flowable.just(d2.dataSetModule().sections().byDataSetUid().eq(dataSetUid).byName().eq(section).one().blockingGet());
+            return Flowable.just(d2.dataSetModule().sections().byDataSetUid().eq(dataSetUid).byDisplayName().eq(section).one().blockingGet());
         else
             return Flowable.just(Section.builder().uid("").build());
 
@@ -345,7 +345,7 @@ public class DataValueRepositoryImpl implements DataValueRepository {
     @Override
     public Flowable<List<DataElement>> getDataElements(CategoryCombo categoryCombo, String sectionName) {
         if (!sectionName.equals("NO_SECTION")) {
-            List<DataElement> listDataElements = d2.dataSetModule().sections().withDataElements().byDataSetUid().eq(dataSetUid).byName().eq(sectionName).one().blockingGet().dataElements();
+            List<DataElement> listDataElements = d2.dataSetModule().sections().withDataElements().byDataSetUid().eq(dataSetUid).byDisplayName().eq(sectionName).one().blockingGet().dataElements();
             List<DataElement> dataElementsOverride = new ArrayList<>();
             List<DataSetElement> dataSetElements = d2.dataSetModule().dataSets().withDataSetElements().uid(dataSetUid).blockingGet().dataSetElements();
 
