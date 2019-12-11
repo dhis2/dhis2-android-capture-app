@@ -23,9 +23,7 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
-/**
- * QUADRAM. Created by ppajuelo on 20/02/2019.
- */
+
 public class OptionSetPopUp extends PopupMenu {
 
     private final D2 d2;
@@ -83,8 +81,7 @@ public class OptionSetPopUp extends PopupMenu {
                                 optionRepository = optionRepository
                                         .byUid().notIn(finalOptionsToHide);
 
-                            return optionRepository
-                                    .blockingGet();
+                            return optionRepository.blockingGet();
                         })
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())

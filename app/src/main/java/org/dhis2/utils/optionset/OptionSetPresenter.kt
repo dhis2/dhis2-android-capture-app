@@ -108,11 +108,14 @@ class OptionSetPresenter(
                         .dataSource
                         .mapByPage { it.sortedWith(compareBy { option -> option.sortOrder() }) }
 
-                    LivePagedListBuilder(object: DataSource.Factory<Option, Option>() {
-                        override fun create(): DataSource<Option, Option> {
-                            return  dataSource
-                        }
-                    }, 20).build()
+                    LivePagedListBuilder(
+                        object : DataSource.Factory<Option, Option>() {
+                            override fun create(): DataSource<Option, Option> {
+                                return dataSource
+                            }
+                        },
+                        20
+                    ).build()
                 }
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
