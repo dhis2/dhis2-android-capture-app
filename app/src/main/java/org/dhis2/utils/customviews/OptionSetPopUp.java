@@ -13,6 +13,7 @@ import org.hisp.dhis.android.core.arch.helpers.UidsHelper;
 import org.hisp.dhis.android.core.option.Option;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
@@ -82,7 +83,8 @@ public class OptionSetPopUp extends PopupMenu {
                                 optionRepository = optionRepository
                                         .byUid().notIn(finalOptionsToHide);
 
-                            return optionRepository.blockingGet();
+                            return optionRepository
+                                    .blockingGet();
                         })
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
@@ -96,6 +98,7 @@ public class OptionSetPopUp extends PopupMenu {
 
     public void setOptions(List<Option> options) {
         optionsMap = new HashMap<>();
+        Collections.sort(options, (option1, option2) -> option1.sortOrder().compareTo(option2.sortOrder()));
         for (Option option : options) {
             optionsMap.put(option.displayName(), option);
             getMenu().add(Menu.NONE, Menu.NONE, options.indexOf(option) + 1, option.displayName());
