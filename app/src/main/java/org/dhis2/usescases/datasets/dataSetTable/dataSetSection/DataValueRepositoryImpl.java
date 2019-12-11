@@ -8,6 +8,7 @@ import org.dhis2.data.tuples.Pair;
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableModel;
 import org.dhis2.utils.DateUtils;
 import org.hisp.dhis.android.core.D2;
+import org.hisp.dhis.android.core.arch.helpers.UidsHelper;
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope;
 import org.hisp.dhis.android.core.category.Category;
 import org.hisp.dhis.android.core.category.CategoryCombo;
@@ -423,7 +424,17 @@ public class DataValueRepositoryImpl implements DataValueRepository {
     }
 
     @Override
-    public @NotNull List<CategoryOptionCombo> getCatOptionComboFrom(@Nullable String catComboUid) {
-        return d2.categoryModule().categoryOptionCombos().byCategoryComboUid().eq(catComboUid).blockingGet();
+    public @NotNull List<CategoryOptionCombo> getCatOptionComboFrom(@Nullable String catComboUid,
+                                                                    List<List<CategoryOption>> catOptionsList) {
+        List<CategoryOptionCombo> catOptionCombos = new ArrayList<>();
+
+        for(List<CategoryOption> catOptions: catOptionsList){
+            catOptionCombos.addAll(d2.categoryModule().categoryOptionCombos()
+                    .byCategoryOptions(UidsHelper.getUidsList(catOptions))
+                    .byCategoryComboUid().eq(catComboUid)
+                    .blockingGet());
+        }
+
+        return catOptionCombos;
     }
 }
