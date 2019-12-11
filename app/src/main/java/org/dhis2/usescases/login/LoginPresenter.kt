@@ -275,7 +275,7 @@ class LoginPresenter(
                                 preferenceProvider.getString(SECURE_USER_NAME)!!,
                                 preferenceProvider.getString(SECURE_PASS)!!
                             )
-                        } else {
+                        } else if (it.getOrNull()?.type == Type.ERROR) {
                             view.showCredentialsData(
                                 Goldfinger.Type.ERROR,
                                 it.getOrNull()?.message!!

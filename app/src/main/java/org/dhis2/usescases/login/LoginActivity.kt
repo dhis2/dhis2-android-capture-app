@@ -333,10 +333,11 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
         (context.applicationContext as App).createUserComponent()
 
         if (presenter.canHandleBiometrics() == true &&
-            !BiometricStorage.areCredentialsSet() && !BiometricStorage.areSameCredentials(
+            !BiometricStorage.areCredentialsSet(context) && !BiometricStorage.areSameCredentials(
                 binding.serverUrlEdit.text?.toString(),
                 binding.userNameEdit.text?.toString(),
-                binding.userPassEdit.text?.toString()
+                binding.userPassEdit.text?.toString(),
+                context
             )
         ) {
             showInfoDialog(
@@ -347,7 +348,8 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
                         BiometricStorage.saveUserCredentials(
                             binding.serverUrlEdit.text?.toString(),
                             binding.userNameEdit.text?.toString(),
-                            binding.userPassEdit.text?.toString()
+                            binding.userPassEdit.text?.toString(),
+                            context
                         )
                         goToNextScreen()
                     }
