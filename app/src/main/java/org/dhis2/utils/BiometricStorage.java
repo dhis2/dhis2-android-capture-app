@@ -1,11 +1,8 @@
 package org.dhis2.utils;
 
-import android.content.Context;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import de.adorsys.android.securestoragelibrary.SecurePreferences;
-import de.adorsys.android.securestoragelibrary.SecureStorageException;
 
 import static android.text.TextUtils.isEmpty;
 
@@ -14,21 +11,23 @@ import static android.text.TextUtils.isEmpty;
  */
 public class BiometricStorage {
 
-    public static void saveUserCredentials(String serverUrl, String userName, String pass, Context context) throws SecureStorageException {
-        SecurePreferences.setValue(context, Constants.SECURE_CREDENTIALS, true);
-        SecurePreferences.setValue(context, Constants.SECURE_SERVER_URL, serverUrl);
-        SecurePreferences.setValue(context, Constants.SECURE_USER_NAME, userName);
-        SecurePreferences.setValue(context, Constants.SECURE_PASS, pass);
+    public static void saveUserCredentials(String serverUrl, String userName, String pass) {
+       /* SecurePreferences.setValue(Constants.SECURE_CREDENTIALS, true);
+        SecurePreferences.setValue(Constants.SECURE_SERVER_URL, serverUrl);
+        SecurePreferences.setValue(Constants.SECURE_USER_NAME, userName);
+        SecurePreferences.setValue(Constants.SECURE_PASS, pass);*/
     }
 
-    public static Boolean areCredentialsSet(Context context) {
-       return SecurePreferences.getBooleanValue(context, Constants.SECURE_CREDENTIALS, false);
+    public static Boolean areCredentialsSet() {
+//        return SecurePreferences.getBooleanValue(Constants.SECURE_CREDENTIALS, false);
+        return false;
     }
 
-    public static Boolean areSameCredentials(String serverUrl, String userName, String pass, Context context) {
-        return SecurePreferences.getStringValue(context, Constants.SECURE_SERVER_URL, "").equals(serverUrl) &&
-                SecurePreferences.getStringValue(context, Constants.SECURE_USER_NAME, "").equals(userName) &&
-                SecurePreferences.getStringValue(context, Constants.SECURE_PASS, "").equals(pass);
+    public static Boolean areSameCredentials(String serverUrl, String userName, String pass) {
+        return false;
+        /*return SecurePreferences.getStringValue(Constants.SECURE_SERVER_URL, "").equals(serverUrl) &&
+                SecurePreferences.getStringValue(Constants.SECURE_USER_NAME, "").equals(userName) &&
+                SecurePreferences.getStringValue(Constants.SECURE_PASS, "").equals(pass);*/
     }
 
     @NonNull

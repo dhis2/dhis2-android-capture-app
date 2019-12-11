@@ -246,6 +246,15 @@ class LoginPresenter(
         return canHandleBiometrics
     }
 
+    fun areSameCredentials(serverUrl: String, userName: String, pass: String): Boolean {
+        return preferenceProvider.areCredentialsSet() &&
+            preferenceProvider.areSameCredentials(serverUrl, userName, pass)
+    }
+
+    fun saveUserCredentials(serverUrl: String, userName: String, pass: String) {
+        preferenceProvider.saveUserCredentials(serverUrl, userName, pass)
+    }
+
     fun onFingerprintClick() {
         view.showFingerprintDialog()
         disposable.add(
