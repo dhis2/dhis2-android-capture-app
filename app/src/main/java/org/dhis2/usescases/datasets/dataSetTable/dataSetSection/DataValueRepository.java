@@ -59,5 +59,5 @@ public interface DataValueRepository {
 
     Flowable<Boolean> canWriteAny();
 
-    @NotNull List<CategoryOptionCombo> getCatOptionComboFrom(@Nullable String catComboUid);
+    @NotNull List<CategoryOptionCombo> getCatOptionComboFrom(@Nullable String catComboUid, List<List<CategoryOption>> catOptions);
 }
