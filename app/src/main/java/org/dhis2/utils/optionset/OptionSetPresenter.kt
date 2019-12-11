@@ -50,7 +50,7 @@ class OptionSetPresenter(
         getOptions()
     }
 
-    fun getOptions() {
+    private fun getOptions() {
         disposable.add(
             view.searchSource()
                 .debounce(500, TimeUnit.MILLISECONDS, schedulerProvider.io())
