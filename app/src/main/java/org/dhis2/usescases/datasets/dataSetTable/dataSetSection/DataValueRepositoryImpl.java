@@ -26,6 +26,7 @@ import org.hisp.dhis.android.core.dataset.DataSetCompleteRegistrationTableInfo;
 import org.hisp.dhis.android.core.dataset.DataSetElement;
 import org.hisp.dhis.android.core.dataset.Section;
 import org.hisp.dhis.android.core.datavalue.DataValueObjectRepository;
+import org.hisp.dhis.android.core.option.Option;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.period.Period;
 import org.jetbrains.annotations.NotNull;
@@ -40,6 +41,8 @@ import java.util.Map;
 
 import io.reactivex.Completable;
 import io.reactivex.Flowable;
+
+import static android.text.TextUtils.isEmpty;
 
 public class DataValueRepositoryImpl implements DataValueRepository {
 
@@ -221,9 +224,25 @@ public class DataValueRepositoryImpl implements DataValueRepository {
                     for (CategoryOption catOption : categoryOptions)
                         uidCatOptions.add(catOption.uid());
 
+                    DataElement dataElement = d2.dataElementModule()
+                            .dataElements()
+                            .uid(dataValue.dataElement())
+                            .blockingGet();
+
+                    String value = dataValue.value();
+
+                    if(dataElement.optionSetUid() != null &&
+                            !dataElement.optionSetUid().isEmpty() && !isEmpty(value)){
+                        Option option = d2.optionModule().options()
+                                .byOptionSetUid().eq(dataElement.optionSetUid())
+                                .byCode().eq(value).one().blockingGet();
+                        if(option != null){
+                            value = option.displayName();
+                        }
+                    }
                     return DataSetTableModel.create(dataValue.id(), dataValue.dataElement(), dataValue.period(),
                             dataValue.organisationUnit(), dataValue.categoryOptionCombo(), dataValue.attributeOptionCombo(),
-                            dataValue.value(), dataValue.storedBy(), "",//no used anywhere, remove this field
+                            value, dataValue.storedBy(), "",//no used anywhere, remove this field
                             uidCatOptions, mapDataElementCatCombo.get(dataValue.dataElement()));
 
                 }).toList().toFlowable();

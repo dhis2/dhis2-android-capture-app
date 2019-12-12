@@ -32,7 +32,7 @@ public class SpinnerHolder extends FormViewHolder {
         binding.optionSetView.setOnSelectedOptionListener((optionName, optionCode) -> {
 
             processor.onNext(
-                    RowAction.create(viewModel.uid(), optionCode, viewModel.dataElement(),
+                    RowAction.create(viewModel.uid(), optionCode, optionName, viewModel.dataElement(),
                             viewModel.categoryOptionCombo(), viewModel.catCombo(), viewModel.row(), viewModel.column())
             );
         });
