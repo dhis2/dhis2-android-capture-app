@@ -77,7 +77,6 @@ class RulesRepositoryTest {
             supplData.getOrElse("org_unit_group_test_code") { arrayListOf() }
                 .isEmpty()
         }
-
     }
 
     private fun getTestUserRoles(): MutableList<UserRole>? {
@@ -115,6 +114,4 @@ class RulesRepositoryTest {
             .code(ouCode)
             .build()
     }
-
-
 }

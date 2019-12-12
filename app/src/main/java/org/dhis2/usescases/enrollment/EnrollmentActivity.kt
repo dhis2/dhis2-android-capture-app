@@ -7,13 +7,11 @@ import android.os.Bundle
 import android.text.TextUtils.isEmpty
 import android.view.LayoutInflater
 import android.view.View
-import android.view.inputmethod.InputMethodManager
 import android.widget.DatePicker
 import android.widget.PopupMenu
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.airbnb.lottie.LottieDrawable.INFINITE
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -23,7 +21,6 @@ import java.util.Calendar
 import java.util.Date
 import javax.inject.Inject
 import org.dhis2.App
-import org.dhis2.Bindings.Bindings
 import org.dhis2.R
 import org.dhis2.data.forms.dataentry.DataEntryAdapter
 import org.dhis2.data.forms.dataentry.DataEntryArguments
@@ -140,7 +137,6 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
                 binding.enrollmentData.visibility = View.GONE
                 binding.enrollmentDataArrow.animate().scaleY(1.0f).setDuration(200).start()
             }
-
         }
 
         binding.fieldRecycler.itemAnimator = null

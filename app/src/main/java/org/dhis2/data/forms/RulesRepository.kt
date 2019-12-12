@@ -34,7 +34,7 @@ class RulesRepository(private val d2: D2) {
                 .withOrganisationUnitGroups().uid(orgUnitUid).blockingGet()
                 .let { orgUnit ->
                     orgUnit.organisationUnitGroups()?.map {
-                        if(it.code()!=null) {
+                        if (it.code() != null) {
                             supData[it.code()!!] = arrayListOf(orgUnit.uid())
                         }
                         supData[it.uid()!!] = arrayListOf(orgUnit.uid())
