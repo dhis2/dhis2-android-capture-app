@@ -283,8 +283,11 @@ class DataValuePresenter(
 
             for (
                 categoryOptionCombo in
-                getCatOptionComboOrder(repository.getCatOptionComboFrom(
-                    dataTableModel.catCombo()?.uid(), catOptionOrder))
+                getCatOptionComboOrder(
+                    repository.getCatOptionComboFrom(
+                        dataTableModel.catCombo()?.uid(), catOptionOrder
+                    )
+                )
             ) {
                 var editable = true
                 for (disabledDataElement in dataTableModel.dataElementDisabled()!!)

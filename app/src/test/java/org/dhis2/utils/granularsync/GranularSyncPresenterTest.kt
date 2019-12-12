@@ -5,9 +5,9 @@ import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Single
-import junit.framework.Assert.assertTrue
 import java.util.Collections
 import java.util.Date
+import junit.framework.Assert.assertTrue
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.`object`.ReadOnlyOneObjectRepositoryFinalImpl
@@ -17,8 +17,6 @@ import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.ObjectWithUid
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.dataset.DataSetCompleteRegistration
-import org.hisp.dhis.android.core.dataset.DataSetInstance
-import org.hisp.dhis.android.core.period.PeriodType
 import org.hisp.dhis.android.core.program.AccessLevel
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.program.ProgramCollectionRepository
@@ -119,7 +117,6 @@ class GranularSyncPresenterTest {
 
     @Test
     fun `DataSet with ERROR completeRegistration should return ERROR from candidates`() {
-
         whenever(
             d2.dataSetModule().dataSetCompleteRegistrations()
         ) doReturn mock()
@@ -154,7 +151,6 @@ class GranularSyncPresenterTest {
 
     @Test
     fun `DataSet with TO_POST completeRegistration should return TO_UPDATE from candidates`() {
-
         whenever(
             d2.dataSetModule().dataSetCompleteRegistrations()
         ) doReturn mock()
@@ -189,7 +185,6 @@ class GranularSyncPresenterTest {
 
     @Test
     fun `DataSet with TO_POST candidate should return TO_UPDATE from candidates`() {
-
         whenever(
             d2.dataSetModule().dataSetCompleteRegistrations()
         ) doReturn mock()
@@ -222,7 +217,9 @@ class GranularSyncPresenterTest {
         assertTrue(state == State.TO_UPDATE)
     }
 
-    private fun getMockedCompleteRegistrations(testingState: State): MutableList<DataSetCompleteRegistration> {
+    private fun getMockedCompleteRegistrations(
+        testingState: State
+    ): MutableList<DataSetCompleteRegistration> {
         return arrayListOf(
             DataSetCompleteRegistration.builder()
                 .attributeOptionCombo("attr_opt_comb")
@@ -231,8 +228,7 @@ class GranularSyncPresenterTest {
                 .period("periodId")
                 .organisationUnit("org_unit")
                 .state(testingState)
-                .build()
-            ,
+                .build(),
             DataSetCompleteRegistration.builder()
                 .attributeOptionCombo("attr_opt_comb")
                 .dataSet("data_set_uid")

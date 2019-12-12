@@ -250,8 +250,8 @@ class GranularSyncPresenterImpl(
                                 }
                             }
                         }.doOnComplete {
-                            reportState(SmsSendingService.State.RESULT_CONFIRMED, 0, 0)
-                        }
+                        reportState(SmsSendingService.State.RESULT_CONFIRMED, 0, 0)
+                    }
                 } else {
                     Completable.complete()
                 }
@@ -274,8 +274,8 @@ class GranularSyncPresenterImpl(
         if (statesList.isEmpty()) return false
         val last = statesList[statesList.size - 1]
         return last.state == SmsSendingService.State.SENDING &&
-                last.sent == sent &&
-                last.total == total
+            last.sent == sent &&
+            last.total == total
     }
 
     override fun reportState(state: SmsSendingService.State, sent: Int, total: Int) {
@@ -371,7 +371,7 @@ class GranularSyncPresenterImpl(
                 State.TO_UPDATE,
                 State.TO_POST
             ).blockingGet().isNotEmpty() ||
-                    teiRepository.byDeleted().isTrue.blockingGet().isNotEmpty() ->
+                teiRepository.byDeleted().isTrue.blockingGet().isNotEmpty() ->
                 State.TO_UPDATE
             else -> State.SYNCED
         }
@@ -393,7 +393,7 @@ class GranularSyncPresenterImpl(
                 State.TO_UPDATE,
                 State.TO_POST
             ).blockingGet().isNotEmpty() ||
-                    eventRepository.byDeleted().isTrue.blockingGet().isNotEmpty() ->
+                eventRepository.byDeleted().isTrue.blockingGet().isNotEmpty() ->
                 State.TO_UPDATE
             else -> State.SYNCED
         }
@@ -406,7 +406,7 @@ class GranularSyncPresenterImpl(
                     .byDataSetUid().eq(recordUid)
                     .blockingGet().map { it.state() }
             )
-        }else{
+        } else {
             stateCandidates.addAll(
                 d2.dataSetModule().dataSetCompleteRegistrations()
                     .byOrganisationUnitUid().eq(dvOrgUnit)
@@ -421,10 +421,10 @@ class GranularSyncPresenterImpl(
             stateCandidates.contains(State.ERROR) -> State.ERROR
             stateCandidates.contains(State.WARNING) -> State.WARNING
             stateCandidates.contains(State.SENT_VIA_SMS) ||
-                    stateCandidates.contains(State.SYNCED_VIA_SMS) ->
+                stateCandidates.contains(State.SYNCED_VIA_SMS) ->
                 State.SENT_VIA_SMS
             stateCandidates.contains(State.TO_POST) ||
-                    stateCandidates.contains(State.TO_UPDATE) ->
+                stateCandidates.contains(State.TO_UPDATE) ->
                 State.TO_UPDATE
             else -> State.SYNCED
         }
