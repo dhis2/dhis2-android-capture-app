@@ -32,7 +32,11 @@ import org.dhis2.utils.granularsync.SyncStatusDialog;
 import org.dhis2.utils.maps.GeometryUtils;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.common.FeatureType;
+import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.common.Unit;
+import org.hisp.dhis.android.core.enrollment.Enrollment;
+import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
+import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.maintenance.D2Error;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.Program;
@@ -462,6 +466,11 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     }
 
     @Override
+    public void refreshQuery(){
+        queryProcessor.onNext(queryData);
+    }
+
+    @Override
     public void onEnrollClick(View view) {
         if (selectedProgram != null)
             if (selectedProgram.access().data().write() != null && selectedProgram.access().data().write())
@@ -722,19 +731,10 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
     @Override
     public void onSyncIconClick(String teiUid) {
-        view.showSyncDialog(
-                new SyncStatusDialog.Builder()
-                        .setConflictType(SyncStatusDialog.ConflictType.TEI)
-                        .setUid(teiUid)
-                        .onDismissListener(hasChanged -> {
-                            if(hasChanged && view.isMapVisible())
-                                mapProcessor.onNext(new Unit());
-                            else if(hasChanged)
-                                queryProcessor.onNext(queryData);
-                        })
-                        .build()
-        );
+        view.showGranularSyncDialog(SyncStatusDialog.ConflictType.TEI,teiUid,teiUid);
     }
+
+
 
     @Override
     public void showFilter() {
@@ -805,5 +805,30 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
             return ColorUtils.parseColor(selectedProgram.style().color());
         else
             return -1;
+    }
+
+    @Override
+    public String hasEventsToSend(String teiUid) {
+        if(selectedProgram==null)
+            return "";
+
+        List<Enrollment> enrollment = d2.enrollmentModule().enrollments()
+                .byProgram().eq(selectedProgram.uid())
+                .byTrackedEntityInstance().eq(teiUid)
+                .byStatus().eq(EnrollmentStatus.ACTIVE)
+                .blockingGet();
+
+        if(enrollment.isEmpty())
+            return "";
+
+        List<Event>  eventsToSend = d2.eventModule().events()
+                .byEnrollmentUid().eq(enrollment.get(0).uid())
+                .byState().in(State.TO_POST,State.TO_UPDATE)
+                .blockingGet();
+
+        if(eventsToSend.isEmpty())
+            return "";
+        else
+            return eventsToSend.get(0).uid();
     }
 }

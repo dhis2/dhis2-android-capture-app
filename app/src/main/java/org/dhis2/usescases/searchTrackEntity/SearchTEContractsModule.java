@@ -15,6 +15,7 @@ import org.dhis2.data.tuples.Trio;
 import org.dhis2.usescases.general.AbstractActivityContracts;
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel;
 import org.dhis2.utils.filters.FilterManager;
+import org.dhis2.utils.granularsync.SyncStatusDialog;
 import org.hisp.dhis.android.core.arch.call.D2Progress;
 import org.hisp.dhis.android.core.common.FeatureType;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
@@ -80,6 +81,10 @@ public class SearchTEContractsModule {
         Consumer<D2Progress> downloadProgress();
 
         boolean isMapVisible();
+
+        void showGranularSyncDialog(SyncStatusDialog.ConflictType conflictType,
+                                    String teiUid,
+                                    String recordUid);
     }
 
     public interface Presenter {
@@ -95,6 +100,8 @@ public class SearchTEContractsModule {
         void onClearClick();
 
         void onFabClick(android.view.View view, boolean needsSearch);
+
+        void refreshQuery();
 
         void onEnrollClick(android.view.View view);
 
@@ -143,5 +150,7 @@ public class SearchTEContractsModule {
         int getTEIColor();
 
         int getEnrollmentColor();
+
+        String hasEventsToSend(String teiUid);
     }
 }

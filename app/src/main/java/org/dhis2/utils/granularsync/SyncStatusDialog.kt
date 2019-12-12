@@ -388,9 +388,19 @@ class SyncStatusDialog private constructor(
                 it.state.isError -> adapter!!.addItem(
                     StatusLogItem.create(Date(), getString(R.string.sms_bar_state_failed))
                 )
-                it.state.isCompleted -> adapter!!.addItem(
-                    StatusLogItem.create(Date(), getString(R.string.sms_bar_state_sent))
-                )
+                it.state.isCompleted -> {
+                    adapter!!.addItem(
+                        StatusLogItem.create(Date(), getString(R.string.sms_bar_state_sent))
+                    )
+                    if (conflictType == ConflictType.TEI) {
+                        adapter!!.addItem(
+                            StatusLogItem.create(
+                                Date(),
+                                getString(R.string.sms_sync_tracker_events)
+                            )
+                        )
+                    }
+                }
             }
         }
 
@@ -410,8 +420,13 @@ class SyncStatusDialog private constructor(
             SmsSendingService.State.ITEM_NOT_READY,
             SmsSendingService.State.COUNT_NOT_ACCEPTED,
             SmsSendingService.State.WAITING_RESULT_TIMEOUT,
-            SmsSendingService.State.ERROR,
+            SmsSendingService.State.ERROR -> {
+
+            }
             SmsSendingService.State.COMPLETED -> {
+                if (conflictType == ConflictType.TEI) {
+                    dismiss()
+                }
             }
         }
     }

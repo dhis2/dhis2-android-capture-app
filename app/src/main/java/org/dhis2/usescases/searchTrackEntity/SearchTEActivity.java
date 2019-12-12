@@ -80,11 +80,13 @@ import org.dhis2.utils.FileResourcesUtil;
 import org.dhis2.utils.HelpManager;
 import org.dhis2.utils.filters.FilterManager;
 import org.dhis2.utils.filters.FiltersAdapter;
+import org.dhis2.utils.granularsync.SyncStatusDialog;
 import org.dhis2.utils.maps.MapLayerDialog;
 import org.dhis2.utils.maps.MapLayerManager;
 import org.dhis2.utils.maps.MarkerUtils;
 import org.hisp.dhis.android.core.arch.call.D2Progress;
 import org.hisp.dhis.android.core.common.FeatureType;
+import org.hisp.dhis.android.core.common.Unit;
 import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute;
 
@@ -811,4 +813,30 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     }
 
     /*endregion*/
+
+    @Override
+    public void showGranularSyncDialog(SyncStatusDialog.ConflictType conflictType,
+                                       String teiUid,
+                                       String recordUid) {
+        new SyncStatusDialog.Builder()
+                .setConflictType(conflictType)
+                .setUid(recordUid)
+                .onDismissListener(hasChanged -> {
+                    if(hasChanged) {
+                        String eventToSend = presenter.hasEventsToSend(teiUid);
+                        if (eventToSend.isEmpty()) {
+                            if (isMapVisible())
+                                presenter.getMapData();
+                            else
+                                presenter.refreshQuery();
+                        } else {
+                            showGranularSyncDialog(SyncStatusDialog.ConflictType.EVENT,
+                                    teiUid,
+                                    eventToSend);
+                        }
+                    }
+                })
+                .build()
+                .show(getSupportFragmentManager(), recordUid);
+    }
 }
