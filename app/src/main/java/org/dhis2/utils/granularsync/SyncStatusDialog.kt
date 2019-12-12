@@ -74,12 +74,12 @@ class SyncStatusDialog private constructor(
     }
 
     class Builder {
-        internal lateinit var recordUid: String
-        internal lateinit var conflictType: ConflictType
-        internal var orgUnitDataValue: String? = null
-        internal var attributeComboDataValue: String? = null
-        internal var periodIdDataValue: String? = null
-        internal var dismissListener: GranularSyncContracts.OnDismissListener? = null
+        private lateinit var recordUid: String
+        private lateinit var conflictType: ConflictType
+        private var orgUnitDataValue: String? = null
+        private var attributeComboDataValue: String? = null
+        private var periodIdDataValue: String? = null
+        private var dismissListener: GranularSyncContracts.OnDismissListener? = null
 
         fun setUid(uid: String): Builder {
             this.recordUid = uid
@@ -114,10 +114,10 @@ class SyncStatusDialog private constructor(
         fun build(): SyncStatusDialog {
             if (conflictType == ConflictType.DATA_VALUES &&
                 (
-                        orgUnitDataValue == null ||
-                                attributeComboDataValue == null ||
-                                periodIdDataValue == null
-                        )
+                    orgUnitDataValue == null ||
+                        attributeComboDataValue == null ||
+                        periodIdDataValue == null
+                    )
             ) {
                 throw NullPointerException(
                     "DataSets require non null, orgUnit, attributeOptionCombo and periodId"
@@ -197,7 +197,10 @@ class SyncStatusDialog private constructor(
     private fun setNetworkMessage() {
         if (!NetworkUtils.isOnline(context)) {
             if (presenter.isSMSEnabled()) {
-                if (conflictType != ConflictType.PROGRAM && conflictType != ConflictType.DATA_SET) {
+                if (conflictType != ConflictType.PROGRAM &&
+                    conflictType != ConflictType.DATA_SET &&
+                    conflictType != ConflictType.TEI // FYI - Tei sms sync is temporary disabled
+                ) {
                     analyticsHelper.setEvent(SYNC_GRANULAR_SMS, CLICK, SYNC_GRANULAR)
                     binding!!.connectionMessage.setText(R.string.network_unavailable_sms)
                     binding!!.syncButton.setText(R.string.action_sync_sms)
@@ -356,10 +359,8 @@ class SyncStatusDialog private constructor(
 
     private fun hasPermissions(permissions: Array<String>): Boolean {
         for (permission in permissions) {
-            if (ContextCompat.checkSelfPermission(
-                    context!!,
-                    permission
-                ) != PackageManager.PERMISSION_GRANTED
+            if (ContextCompat.checkSelfPermission(context!!, permission) !=
+                PackageManager.PERMISSION_GRANTED
             ) {
                 return false
             }
