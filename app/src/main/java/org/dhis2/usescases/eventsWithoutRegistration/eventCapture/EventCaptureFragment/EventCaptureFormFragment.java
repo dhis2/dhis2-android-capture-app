@@ -19,6 +19,7 @@ import androidx.databinding.ObservableBoolean;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.SimpleItemAnimator;
 
 import org.dhis2.R;
 import org.dhis2.data.forms.FormSectionViewModel;
@@ -160,7 +161,10 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract {
         } else
             layoutManager = new LinearLayoutManager(activity,
                     RecyclerView.VERTICAL, false);
-
+        RecyclerView.ItemAnimator animator = binding.formRecycler.getItemAnimator();
+        if (animator instanceof SimpleItemAnimator) {
+            ((SimpleItemAnimator) animator).setSupportsChangeAnimations(false);
+        }
         binding.formRecycler.setLayoutManager(layoutManager);
         binding.formRecycler.setAdapter(dataEntryAdapter);
 
