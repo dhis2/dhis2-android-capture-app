@@ -3,6 +3,7 @@ package org.dhis2.usescases.datasets.dataSetTable;
 
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.View;
 
 import androidx.annotation.NonNull;
@@ -260,5 +261,16 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
 
     public void update() {
         presenter.init(orgUnitUid, periodTypeName, catOptCombo, periodInitialDate, periodId);
+    }
+
+    @Override
+    public void back() {
+        binding.getRoot().requestFocus();
+        new Handler().postDelayed(this::finish,500);
+    }
+
+    @Override
+    public void onBackPressed() {
+        back();
     }
 }
