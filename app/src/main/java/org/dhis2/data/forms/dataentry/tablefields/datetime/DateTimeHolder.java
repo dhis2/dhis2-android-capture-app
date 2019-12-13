@@ -30,6 +30,7 @@ public class DateTimeHolder extends FormViewHolder implements OnDateSelected {
     private final CompositeDisposable disposable;
     private final FlowableProcessor<RowAction> processor;
     private DateTimeViewModel dateTimeViewModel;
+    private Boolean isEditable;
 
     DateTimeHolder(ViewDataBinding binding, FlowableProcessor<RowAction> processor) {
         super(binding);
@@ -53,6 +54,7 @@ public class DateTimeHolder extends FormViewHolder implements OnDateSelected {
 
     public void update(DateTimeViewModel viewModel, boolean accessDataWrite, String value) {
         this.dateTimeViewModel = viewModel;
+        this.isEditable = accessDataWrite && viewModel.editable();
         descriptionText = viewModel.description();
         label = new StringBuilder(dateTimeViewModel.label());
         if (dateTimeViewModel.mandatory())
@@ -104,11 +106,11 @@ public class DateTimeHolder extends FormViewHolder implements OnDateSelected {
         }
 
         if (binding instanceof TableTimeTextBinding)
-            ((TableTimeTextBinding) binding).timeView.getEditText().setEnabled(accessDataWrite && viewModel.editable());
+            ((TableTimeTextBinding) binding).timeView.getEditText().setEnabled(isEditable);
         if (binding instanceof TableDateTextBinding)
-            ((TableDateTextBinding) binding).dateView.getEditText().setEnabled(accessDataWrite && viewModel.editable());
+            ((TableDateTextBinding) binding).dateView.getEditText().setEnabled(isEditable);
         if (binding instanceof TableDateTimeTextBinding)
-            ((TableDateTimeTextBinding) binding).dateTimeView.getEditText().setEnabled(accessDataWrite && viewModel.editable());
+            ((TableDateTimeTextBinding) binding).dateTimeView.getEditText().setEnabled(isEditable);
 
 
         if (dateTimeViewModel.mandatory()) {
@@ -147,7 +149,7 @@ public class DateTimeHolder extends FormViewHolder implements OnDateSelected {
     @Override
     public void setSelected(SelectionState selectionState) {
         super.setSelected(selectionState);
-        if (selectionState == SelectionState.SELECTED && dateTimeViewModel.editable()) {
+        if (selectionState == SelectionState.SELECTED && isEditable) {
             if (binding instanceof TableTimeTextBinding) {
                 ((TableTimeTextBinding) binding).timeView.getEditText().performClick();
             }
