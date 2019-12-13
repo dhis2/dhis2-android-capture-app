@@ -51,18 +51,12 @@ private class PeriodAdapter(
     }
 
     override fun onBindViewHolder(holder: DateViewHolder, position: Int) {
-        if (position == datePeriods.size) {
-            if(!withInputPeriod || (withInputPeriod && datePeriods.size == 10)) {
-                holder.bind(holder.itemView.context.getString(R.string.view_more))
-                holder.itemView.setOnClickListener {
-                    if (withInputPeriod) {
-                        setInputPeriod()
-                    } else {
-                        setDates()
-                    }
+        if (position == datePeriods.size && !withInputPeriod) {
+            holder.bind(holder.itemView.context.getString(R.string.view_more))
 
-                    notifyDataSetChanged()
-                }
+            holder.itemView.setOnClickListener {
+                setDates()
+                notifyDataSetChanged()
             }
         } else {
             holder.bind(
@@ -117,5 +111,6 @@ private class PeriodAdapter(
         }
     }
 
-    override fun getItemCount() = datePeriods.size + 1
+    override fun getItemCount() =
+        if (!withInputPeriod) datePeriods.size + 1 else datePeriods.size
 }
