@@ -83,17 +83,7 @@ private class PeriodAdapter(
         var isAllowed = false
         for (inputPeriodModel in inputPeriods) {
             do {
-                if ((currentDate.after(inputPeriodModel.initialPeriodDate()) || currentDate == inputPeriodModel.initialPeriodDate()) && currentDate.before(
-                        inputPeriodModel.endPeriodDate()
-                    )
-                    && (inputPeriodModel.openingDate() == null || inputPeriodModel.openingDate() != null && DateUtils.getInstance().today.after(
-                        inputPeriodModel.openingDate()
-                    )
-                            || DateUtils.getInstance().today == inputPeriodModel.openingDate())
-                    && (inputPeriodModel.closingDate() == null || inputPeriodModel.closingDate() != null && DateUtils.getInstance().today.before(
-                        inputPeriodModel.closingDate()
-                    ))
-                ) {
+                if (isTodayRightDayForInputPeriod(inputPeriodModel)) {
                     isAllowed = true
                     datePeriods.add(currentDate)
                     lastDate = currentDate
@@ -109,6 +99,20 @@ private class PeriodAdapter(
             } while (!isAllowed)
             isAllowed = false
         }
+    }
+
+    fun isTodayRightDayForInputPeriod(inputPeriodModel : DateRangeInputPeriodModel) : Boolean {
+        return ((currentDate.after(inputPeriodModel.initialPeriodDate()) || currentDate == inputPeriodModel.initialPeriodDate()) && currentDate.before(
+                inputPeriodModel.endPeriodDate()
+        )
+                && (inputPeriodModel.openingDate() == null || inputPeriodModel.openingDate() != null && DateUtils.getInstance().today.after(
+                inputPeriodModel.openingDate()
+        )
+                || DateUtils.getInstance().today == inputPeriodModel.openingDate())
+                && (inputPeriodModel.closingDate() == null || inputPeriodModel.closingDate() != null && DateUtils.getInstance().today.before(
+                inputPeriodModel.closingDate()
+        ))
+                )
     }
 
     override fun getItemCount() =
