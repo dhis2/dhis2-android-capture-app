@@ -273,25 +273,25 @@ class EnrollmentPresenterImpl(
         )
 
         disposable.add(
-                fieldsFlowable.startWith(true)
-                        .observeOn(schedulerProvider.io())
-                        .switchMap {
-                            Flowable.zip<List<FieldViewModel>, Result<RuleEffect>, List<FieldViewModel>>(
-                                    dataEntryRepository.list(),
-                                    formRepository.calculate(),
-                                    BiFunction { fields, result -> applyRuleEffects(fields, result) }
-                            )
-                        }
-                        .subscribeOn(schedulerProvider.io())
-                        .observeOn(schedulerProvider.ui())
-                        .subscribe({
-                            view.showFields(it)
-                            view.showSaveButton()
-                            view.hideAdjustingForm()
-                        }) {
-                            Timber.tag(TAG).e(it)
-                            view.hideAdjustingForm()
-                        }
+            fieldsFlowable.startWith(true)
+                .observeOn(schedulerProvider.io())
+                .switchMap {
+                    Flowable.zip<List<FieldViewModel>, Result<RuleEffect>, List<FieldViewModel>>(
+                        dataEntryRepository.list(),
+                        formRepository.calculate(),
+                        BiFunction { fields, result -> applyRuleEffects(fields, result) }
+                    )
+                }
+                .subscribeOn(schedulerProvider.io())
+                .observeOn(schedulerProvider.ui())
+                .subscribe({
+                    view.showFields(it)
+                    view.showSaveButton()
+                    view.hideAdjustingForm()
+                }) {
+                    Timber.tag(TAG).e(it)
+                    view.hideAdjustingForm()
+                }
         )
     }
 

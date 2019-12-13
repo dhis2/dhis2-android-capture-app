@@ -389,16 +389,13 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
     public void setEventInfo(Pair<ProgramEventViewModel, LatLng> eventInfo) {
         if (currentMarker != null) {
             markerViewManager.removeMarker(currentMarker);
-            markerViewManager = null;
         }
         InfoWindowEventBinding binding = InfoWindowEventBinding.inflate(LayoutInflater.from(this));
         binding.setEvent(eventInfo.val0());
         binding.setPresenter(presenter);
         View view = binding.getRoot();
-        view.setOnClickListener(viewClicked -> {
-            markerViewManager.removeMarker(currentMarker);
-            markerViewManager = null;
-        });
+        view.setOnClickListener(viewClicked ->
+                markerViewManager.removeMarker(currentMarker));
         view.setOnLongClickListener(view1 -> {
             presenter.onEventClick(eventInfo.val0().uid(), eventInfo.val0().orgUnitUid());
             return true;

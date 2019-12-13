@@ -18,6 +18,8 @@ import io.reactivex.processors.FlowableProcessor;
 
 public class ImageHolder extends FormViewHolder {
 
+    public static final String NAME_CODE_DELIMITATOR = "_op_";
+
     private final CompositeDisposable disposable;
     private final FormImageBinding binding;
     private final ObservableField<String> currentSelector;
@@ -36,7 +38,7 @@ public class ImageHolder extends FormViewHolder {
             if (isEditable) {
                 String value;
                 String[] uids = model.uid().split("\\.");
-                String[] labelAndCode = model.label().split("-");
+                String[] labelAndCode = model.label().split(NAME_CODE_DELIMITATOR);
                 String label = labelAndCode[0];
                 String code = labelAndCode[1];
                 if (imageSelector.get().equals(label)) {
@@ -58,7 +60,7 @@ public class ImageHolder extends FormViewHolder {
 
         this.isEditable = viewModel.editable();
         descriptionText = viewModel.description();
-        String[] labelAndCode = viewModel.label().split("-");
+        String[] labelAndCode = viewModel.label().split(NAME_CODE_DELIMITATOR);
         String labelName = labelAndCode[0];
         String code = labelAndCode[1];
         label = new StringBuilder(labelName);

@@ -109,7 +109,12 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
     }
 
     @Override
-    public void setTableData(DataTableModel dataTableModel, List<List<FieldViewModel>> fields, List<List<String>> cells, Boolean accessDataWrite){
+    public void setDataAccess(boolean accessDataWrite) {
+        binding.actionLayout.setVisibility(accessDataWrite ? View.VISIBLE : View.GONE);
+    }
+
+    @Override
+    public void setTableData(DataTableModel dataTableModel, List<List<FieldViewModel>> fields, List<List<String>> cells, Boolean accessDataWrite) {
         binding.programProgress.setVisibility(View.GONE);
 
         DataSetTableAdapter adapter = new DataSetTableAdapter(getAbstracContext(), presenterFragment.getProcessor(), presenterFragment.getProcessorOptionSet());
@@ -198,7 +203,7 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
                         TableView table = (TableView) binding.tableLayout.getChildAt(i);
                         DataSetTableAdapter adapter = (DataSetTableAdapter) table.getAdapter();
                         ImageView scaleImage = cornerView.findViewById(R.id.buttonScale);
-                        switch(adapter.getCurrentTableScale().get()){
+                        switch (adapter.getCurrentTableScale().get()) {
                             case DEFAULT:
                                 scaleImage.setImageDrawable(AppCompatResources.getDrawable(view.getContext(), R.drawable.ic_zoomx3));
                                 break;

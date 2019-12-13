@@ -114,6 +114,7 @@ class DataValuePresenter(
                         this.period = data.val3()
                         this.dataInputPeriodModel = data.val4()
                         this.isApproval = data.val5()
+                        view.setDataAccess(accessDataWrite)
                         view.setDataSet(dataSet)
                         view.setSection(section)
                         initTable()
@@ -283,7 +284,11 @@ class DataValuePresenter(
 
             for (
                 categoryOptionCombo in
-                repository.getCatOptionComboFrom(dataTableModel.catCombo()?.uid())
+                getCatOptionComboOrder(
+                    repository.getCatOptionComboFrom(
+                        dataTableModel.catCombo()?.uid(), catOptionOrder
+                    )
+                )
             ) {
                 var editable = true
                 for (disabledDataElement in dataTableModel.dataElementDisabled()!!)

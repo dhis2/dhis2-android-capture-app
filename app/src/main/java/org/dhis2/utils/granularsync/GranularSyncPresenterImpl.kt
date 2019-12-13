@@ -193,10 +193,14 @@ class GranularSyncPresenterImpl(
                     d2.enrollmentModule().enrollments().byTrackedEntityInstance().eq(recordUid)
                         .byState().`in`(State.TO_POST, State.TO_UPDATE).blockingGet()
                 )
-                smsSender.convertEnrollment(enrollmentUids[0])
+                if (enrollmentUids.isNotEmpty()) {
+                    smsSender.convertEnrollment(enrollmentUids[0])
+                } else {
+                    Single.error(Exception(view.emptyEnrollmentError()))
+                }
             }
             DATA_VALUES -> smsSender.convertDataSet(recordUid, dvOrgUnit, dvPeriodId, dvAttrCombo)
-            else -> Single.error(Exception("This convertTask is not supported"))
+            else -> Single.error(Exception(view.unsupportedTask()))
         }
 
         disposable.add(
@@ -396,11 +400,22 @@ class GranularSyncPresenterImpl(
     }
 
     fun getStateFromCanditates(stateCandidates: MutableList<State?>): State {
-        stateCandidates.addAll(
-            d2.dataSetModule().dataSetCompleteRegistrations()
-                .byDataSetUid().eq(recordUid)
-                .blockingGet().map { it.state() }
-        )
+        if (conflictType == DATA_SET) {
+            stateCandidates.addAll(
+                d2.dataSetModule().dataSetCompleteRegistrations()
+                    .byDataSetUid().eq(recordUid)
+                    .blockingGet().map { it.state() }
+            )
+        } else {
+            stateCandidates.addAll(
+                d2.dataSetModule().dataSetCompleteRegistrations()
+                    .byOrganisationUnitUid().eq(dvOrgUnit)
+                    .byPeriod().eq(dvPeriodId)
+                    .byAttributeOptionComboUid().eq(dvAttrCombo)
+                    .byDataSetUid().eq(recordUid).get()
+                    .blockingGet().map { it.state() }
+            )
+        }
 
         return when {
             stateCandidates.contains(State.ERROR) -> State.ERROR
