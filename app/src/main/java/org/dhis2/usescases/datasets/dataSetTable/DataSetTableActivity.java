@@ -46,6 +46,7 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
     DataSetTableContract.Presenter presenter;
     private ActivityDatasetTableBinding binding;
     private DataSetSectionAdapter viewPagerAdapter;
+    private boolean backPressed;
 
     public static Bundle getBundle(@NonNull String dataSetUid,
                                    @NonNull String orgUnitUid,
@@ -265,12 +266,21 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
 
     @Override
     public void back() {
-        binding.getRoot().requestFocus();
-        new Handler().postDelayed(this::finish,500);
+        if(getCurrentFocus() == null || backPressed)
+            super.back();
+        else {
+            backPressed = true;
+            binding.getRoot().requestFocus();
+            back();
+        }
     }
 
     @Override
     public void onBackPressed() {
         back();
+    }
+
+    public boolean isBackPressed() {
+        return backPressed;
     }
 }

@@ -17,6 +17,7 @@ import org.dhis2.data.tuples.Pair
 import org.dhis2.data.tuples.Quartet
 import org.dhis2.data.tuples.Sextet
 import org.dhis2.data.tuples.Trio
+import org.dhis2.usescases.datasets.dataSetTable.DataSetTableActivity
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableModel
 import org.dhis2.utils.DateUtils
 import org.dhis2.utils.analytics.AnalyticsHelper
@@ -664,6 +665,9 @@ class DataValuePresenter(
                             dataTableModel!!.dataValues()!!.add(dataSetTableModel)
                         }
                     }
+
+                    if((dataSetSectionFragment.activity as DataSetTableActivity).isBackPressed)
+                        dataSetSectionFragment.abstractActivity.back()
 
                     dataSetSectionFragment.updateData(rowAction, dataSetTableModel!!.catCombo())
                     repository.updateValue(dataSetTableModel).toFlowable<Any>()
