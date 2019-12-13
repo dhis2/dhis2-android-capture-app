@@ -3,6 +3,7 @@ package org.dhis2.usescases.datasets.dataSetTable;
 
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.View;
 
 import androidx.annotation.NonNull;
@@ -45,6 +46,7 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
     DataSetTableContract.Presenter presenter;
     private ActivityDatasetTableBinding binding;
     private DataSetSectionAdapter viewPagerAdapter;
+    private boolean backPressed;
 
     public static Bundle getBundle(@NonNull String dataSetUid,
                                    @NonNull String orgUnitUid,
@@ -261,5 +263,25 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
 
     public void update() {
         presenter.init(orgUnitUid, periodTypeName, catOptCombo, periodInitialDate, periodId);
+    }
+
+    @Override
+    public void back() {
+        if(getCurrentFocus() == null || backPressed)
+            super.back();
+        else {
+            backPressed = true;
+            binding.getRoot().requestFocus();
+            back();
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        back();
+    }
+
+    public boolean isBackPressed() {
+        return backPressed;
     }
 }
