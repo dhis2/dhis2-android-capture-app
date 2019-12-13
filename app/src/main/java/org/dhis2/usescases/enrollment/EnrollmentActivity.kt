@@ -499,8 +499,9 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
     override fun displayTeiCoordinates(
         teiCoordinatesData: Pair<TrackedEntityType, TrackedEntityInstance>?
     ) {
+        val featureType = teiCoordinatesData!!.first.featureType() ?: FeatureType.NONE
         binding.teiCoordinatesView.visibility =
-            if (teiCoordinatesData!!.first.featureType() != FeatureType.NONE) {
+            if (featureType != FeatureType.NONE) {
                 View.VISIBLE
             } else {
                 View.GONE
