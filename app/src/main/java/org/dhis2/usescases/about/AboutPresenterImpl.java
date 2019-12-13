@@ -2,6 +2,7 @@ package org.dhis2.usescases.about;
 
 import androidx.annotation.NonNull;
 
+import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.data.user.UserRepository;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.systeminfo.SystemInfo;
@@ -19,9 +20,13 @@ public class AboutPresenterImpl implements AboutContracts.AboutPresenter {
     private final D2 d2;
     private final UserRepository userRepository;
     private CompositeDisposable compositeDisposable;
+    private SchedulerProvider provider;
 
-    AboutPresenterImpl(@NonNull D2 d2, @NonNull UserRepository userRepository) {
+    AboutPresenterImpl(@NonNull D2 d2,
+                       SchedulerProvider provider,
+                       @NonNull UserRepository userRepository) {
         this.d2 = d2;
+        this.provider = provider;
         this.userRepository = userRepository;
     }
 
@@ -32,8 +37,8 @@ public class AboutPresenterImpl implements AboutContracts.AboutPresenter {
 
         compositeDisposable.add(userRepository.credentials()
                 .cacheWithInitialCapacity(1)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(provider.io())
+                .observeOn(provider.ui())
                 .subscribe(
                         view::renderUserCredentials,
                         Timber::e
@@ -42,8 +47,8 @@ public class AboutPresenterImpl implements AboutContracts.AboutPresenter {
         compositeDisposable.add(
                 d2.systemInfoModule().systemInfo().get().toObservable().map(SystemInfo::contextPath)
                 .cacheWithInitialCapacity(1)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(provider.io())
+                .observeOn(provider.ui())
                 .subscribe(
                         view::renderServerUrl,
                         Timber::e
