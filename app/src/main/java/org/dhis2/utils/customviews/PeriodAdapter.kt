@@ -89,10 +89,9 @@ private class PeriodAdapter(
                     lastDate = currentDate
                 }
                 else if (currentDate.before(inputPeriods[inputPeriods.size - 1].initialPeriodDate()) || currentDate.before(
-                        inputPeriodModel.initialPeriodDate()
-                    )
-                )
+                        inputPeriodModel.initialPeriodDate())){
                     break
+                }
                 else {
                     currentDate = DateUtils.getInstance().getNextPeriod(periodType, currentDate, -1)
                 }
