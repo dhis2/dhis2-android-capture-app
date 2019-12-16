@@ -2,6 +2,7 @@ package org.dhis2.usescases.about;
 
 import androidx.annotation.NonNull;
 
+import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.data.user.UserRepository;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.systeminfo.SystemInfo;
@@ -18,22 +19,23 @@ import timber.log.Timber;
 public class AboutPresenterImpl implements AboutContracts.AboutPresenter {
     private final D2 d2;
     private final UserRepository userRepository;
-    private CompositeDisposable compositeDisposable;
+    private final SchedulerProvider schedulerProvider;
+    public CompositeDisposable compositeDisposable;
 
-    AboutPresenterImpl(@NonNull D2 d2, @NonNull UserRepository userRepository) {
+    AboutPresenterImpl(@NonNull D2 d2, @NonNull UserRepository userRepository, SchedulerProvider schedulerProvider) {
         this.d2 = d2;
         this.userRepository = userRepository;
+        this.schedulerProvider = schedulerProvider;
+        this.compositeDisposable = new CompositeDisposable();
     }
 
     @Override
     public void init(AboutContracts.AboutView view) {
 
-        compositeDisposable = new CompositeDisposable();
-
         compositeDisposable.add(userRepository.credentials()
                 .cacheWithInitialCapacity(1)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(schedulerProvider.io())
+                .observeOn(schedulerProvider.ui())
                 .subscribe(
                         view::renderUserCredentials,
                         Timber::e
@@ -42,8 +44,8 @@ public class AboutPresenterImpl implements AboutContracts.AboutPresenter {
         compositeDisposable.add(
                 d2.systemInfoModule().systemInfo().get().toObservable().map(SystemInfo::contextPath)
                 .cacheWithInitialCapacity(1)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(schedulerProvider.io())
+                .observeOn(schedulerProvider.ui())
                 .subscribe(
                         view::renderServerUrl,
                         Timber::e
