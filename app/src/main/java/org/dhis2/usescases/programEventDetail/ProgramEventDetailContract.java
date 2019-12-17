@@ -59,10 +59,14 @@ public class ProgramEventDetailContract {
         void startNewEvent();
 
         boolean isMapVisible();
+
+        void navigateToEvent(String eventId, String orgUnit);
+
+        void showSyncDialog(String uid);
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter {
-        void init(View view);
+        void init();
 
         void addEvent();
 
