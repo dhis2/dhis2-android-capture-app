@@ -15,12 +15,14 @@ import org.hisp.dhis.android.core.systeminfo.SystemInfo
 import org.hisp.dhis.android.core.user.UserCredentials
 import org.junit.Before
 import org.junit.Test
+import org.mockito.Mockito
+import org.mockito.Mockito.RETURNS_DEEP_STUBS
 import java.util.*
 
 class AboutPresenterTest {
 
     private lateinit var aboutPresenter: AboutContracts.AboutPresenter
-    private val d2: D2 = mock()
+    private val d2: D2 = Mockito.mock(D2::class.java, Mockito.RETURNS_DEEP_STUBS)
     private val userRepository: UserRepository = mock()
     private val aboutView: AboutContracts.AboutView = mock()
     private val providesPresenterFactory = TrampolineSchedulerProvider()
@@ -41,8 +43,6 @@ class AboutPresenterTest {
         whenever(userRepository.credentials()) doReturn Flowable.just(userCredentials)
         val userName = SystemInfo.builder()
                 .contextPath("https://google.es").build()
-        whenever(d2.systemInfoModule()) doReturn mock()
-        whenever(d2.systemInfoModule().systemInfo()) doReturn mock()
         whenever(d2.systemInfoModule().systemInfo().get()) doReturn Single.just(userName)
 
         aboutPresenter.init(aboutView)
