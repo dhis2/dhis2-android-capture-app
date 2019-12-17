@@ -164,6 +164,7 @@ class SyncStatusDialog private constructor(
     override fun showTitle(displayName: String) {
         binding!!.programName.text = displayName
         //THIS IS JUST A TEST
+        
     }
 
     override fun setState(state: State) {
