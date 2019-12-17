@@ -18,6 +18,7 @@ import org.dhis2.data.prefs.Preference.Companion.SESSION_LOCKED
 import org.dhis2.data.prefs.PreferenceProvider
 import org.dhis2.data.schedulers.SchedulerProvider
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
+import org.dhis2.data.service.workManager.WorkManagerController
 import org.dhis2.usescases.login.LoginActivity
 import org.dhis2.utils.filters.FilterManager
 import org.hisp.dhis.android.core.D2
@@ -39,12 +40,12 @@ class MainPresenterTest {
     private val view: MainView = mock()
     private val d2: D2 = mock()
     private val preferences: PreferenceProvider = mock()
-    private val workManger: WorkManager = mock()
+    private val workManagerController: WorkManagerController = mock()
     private val filterManager: FilterManager = mock()
 
     @Before
     fun setUp() {
-        presenter = MainPresenter(view, d2, schedulers, preferences, workManger, filterManager)
+        presenter = MainPresenter(view, d2, schedulers, preferences, workManagerController, filterManager)
     }
 
     @Test
@@ -79,7 +80,7 @@ class MainPresenterTest {
 
         presenter.logOut()
 
-        verify(workManger).cancelAllWork()
+        verify(workManagerController).cancelAllWork()
         verify(view).startActivity(LoginActivity::class.java, null, true, true, null)
     }
 
@@ -91,7 +92,7 @@ class MainPresenterTest {
 
         verify(preferences).setValue(SESSION_LOCKED, true)
         verify(preferences).setValue(PIN, pin)
-        verify(workManger).cancelAllWork()
+        verify(workManagerController).cancelAllWork()
         verify(view).back()
     }
 

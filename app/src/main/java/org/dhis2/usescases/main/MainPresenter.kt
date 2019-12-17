@@ -10,6 +10,7 @@ import org.dhis2.data.prefs.Preference.Companion.PREF_DEFAULT_CAT_OPTION_COMBO
 import org.dhis2.data.prefs.Preference.Companion.SESSION_LOCKED
 import org.dhis2.data.prefs.PreferenceProvider
 import org.dhis2.data.schedulers.SchedulerProvider
+import org.dhis2.data.service.workManager.WorkManagerController
 import org.dhis2.usescases.login.LoginActivity
 import org.dhis2.utils.filters.FilterManager
 import org.hisp.dhis.android.core.D2
@@ -23,7 +24,7 @@ class MainPresenter(
     private val d2: D2,
     private val schedulerProvider: SchedulerProvider,
     private val preferences: PreferenceProvider,
-    private val workManger: WorkManager,
+    private val workManagerController: WorkManagerController,
     private val filterManager: FilterManager
 ) {
 
@@ -98,7 +99,7 @@ class MainPresenter(
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
                     {
-                        workManger.cancelAllWork()
+                        workManagerController.cancelAllWork()
                         view.startActivity(LoginActivity::class.java, null, true, true, null)
                     },
                     { Timber.e(it) }
@@ -109,7 +110,7 @@ class MainPresenter(
     fun blockSession(pin: String) {
         preferences.setValue(SESSION_LOCKED, true)
         preferences.setValue(PIN, pin)
-        workManger.cancelAllWork()
+        workManagerController.cancelAllWork()
         view.back()
     }
 
