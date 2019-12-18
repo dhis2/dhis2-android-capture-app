@@ -189,7 +189,6 @@ class EnrollmentPresenterImplTest {
 
     @Test
     fun `Save value when value is data value, dont exist the value, the event value is null, have the same value, and is image type`() {
-        // assert(mockValuesDataElement(existValue = false, eventValueIsNull = true, isSameValue = true, valueTypeIsImage = true) == true)
         val uid = ""
         val value: String? = "otherValue"
         mockValuesDataElement(
@@ -207,7 +206,6 @@ class EnrollmentPresenterImplTest {
 
     @Test
     fun `Save value when value is data value, exist the value, the event value is null, have the same value, and is image type`() {
-        // assert(mockValuesDataElement(existValue = true, eventValueIsNull = true, isSameValue = true, valueTypeIsImage = true) == true)
         val uid = ""
         val value: String? = "otherValue"
         mockValuesDataElement(
@@ -225,7 +223,6 @@ class EnrollmentPresenterImplTest {
 
     @Test
     fun `Save value when value is data value,dont exist the value, the event value is not null, have the same value, and is image type`() {
-        // assert(mockValuesDataElement(existValue = false, eventValueIsNull = false, isSameValue = true, valueTypeIsImage = true) == true)
         val uid = ""
         val value: String? = "otherValue"
         mockValuesDataElement(
@@ -236,14 +233,13 @@ class EnrollmentPresenterImplTest {
                 isSameValue = true,
                 valueTypeIsImage = true)
         val retValue = presenter.saveValue(uid, value)
-        verify(d2.trackedEntityModule().trackedEntityDataValues().value("eventName", uid), times(0)).blockingSet(value)
+        verify(d2.trackedEntityModule().trackedEntityDataValues().value("eventName", uid), times(1)).blockingSet(value)
         verify(d2.trackedEntityModule().trackedEntityDataValues().value("eventName", uid), times(0)).blockingDelete()
         assert(retValue)
     }
 
     @Test
     fun `Save value when value is data value, exist the value, the event value is not null, have the same value, and is image type`() {
-        // assert(mockValuesDataElement(existValue = true, eventValueIsNull = false, isSameValue = true, valueTypeIsImage = true) == true)
         val uid = ""
         val value: String? = "otherValue"
         mockValuesDataElement(
@@ -261,7 +257,6 @@ class EnrollmentPresenterImplTest {
 
     @Test
     fun `Save value when value is data value, dont exist the value, the event value is null, havent the same value, and is image type`() {
-        // assert(mockValuesDataElement(existValue = false, eventValueIsNull = true, isSameValue = false, valueTypeIsImage = true) == true)
         val uid = ""
         val value: String? = "otherValue"
         mockValuesDataElement(
@@ -279,7 +274,6 @@ class EnrollmentPresenterImplTest {
 
     @Test
     fun `Save value when value is data value, exist the value, the event value is null, havent the same value, and is image type`() {
-        // assert(mockValuesDataElement(existValue = true, eventValueIsNull = true, isSameValue = false, valueTypeIsImage = true) == true)
         val uid = ""
         val value: String? = "otherValue"
         mockValuesDataElement(
@@ -297,7 +291,6 @@ class EnrollmentPresenterImplTest {
 
     @Test
     fun `Save value when value is data value,dont exist the value, the event value is not null, havent the same value, and is image type`() {
-        // assert(mockValuesDataElement(existValue = false, eventValueIsNull = false, isSameValue = false, valueTypeIsImage = true) == true)
         val uid = ""
         val value: String? = "otherValue"
         mockValuesDataElement(
@@ -315,7 +308,6 @@ class EnrollmentPresenterImplTest {
 
     @Test
     fun `Save value when value is data value, exist the value, the event value is not null, havent the same value, and is image type`() {
-        // assert(mockValuesDataElement(existValue = true, eventValueIsNull = false, isSameValue = false, valueTypeIsImage = true) == true)
         val uid = ""
         val value: String? = "otherValue"
         mockValuesDataElement(
@@ -333,7 +325,6 @@ class EnrollmentPresenterImplTest {
 
     @Test
     fun `Save value when value is data value, dont exist the value, the event value is null, have the same value, and is not image type`() {
-        // assert(mockValuesDataElement(existValue = false, eventValueIsNull = true, isSameValue = true, valueTypeIsImage = false) == true)
         val uid = ""
         val value: String? = "otherValue"
         mockValuesDataElement(
@@ -351,7 +342,6 @@ class EnrollmentPresenterImplTest {
 
     @Test
     fun `Save value when value is data value, exist the value, the event value is null, have the same value, and is not image type`() {
-        // assert(mockValuesDataElement(existValue = true, eventValueIsNull = true, isSameValue = true, valueTypeIsImage = false) == true)
         val uid = ""
         val value: String? = "otherValue"
         mockValuesDataElement(
@@ -369,7 +359,6 @@ class EnrollmentPresenterImplTest {
 
     @Test
     fun `Save value when value is data value,dont exist the value, the event value is not null, have the same value, and is not image type`() {
-        // assert(mockValuesDataElement(existValue = false, eventValueIsNull = false, isSameValue = true, valueTypeIsImage = false) == true)
         val uid = ""
         val value: String? = "otherValue"
         mockValuesDataElement(
@@ -387,7 +376,6 @@ class EnrollmentPresenterImplTest {
 
     @Test
     fun `Save value when value is data value, exist the value, the event value is not null, have the same value, and is not image type`() {
-        // assert(mockValuesDataElement(existValue = true, eventValueIsNull = false, isSameValue = true, valueTypeIsImage = false) == true)
         val uid = ""
         val value: String? = "otherValue"
         mockValuesDataElement(
@@ -398,14 +386,13 @@ class EnrollmentPresenterImplTest {
                 isSameValue = true,
                 valueTypeIsImage = false)
         val retValue = presenter.saveValue(uid, value)
-        verify(d2.trackedEntityModule().trackedEntityDataValues().value("eventName", uid), times(1)).blockingSet(value)
+        verify(d2.trackedEntityModule().trackedEntityDataValues().value("eventName", uid), times(0)).blockingSet(value)
         verify(d2.trackedEntityModule().trackedEntityDataValues().value("eventName", uid), times(0)).blockingDelete()
-        assert(retValue)
+        Assert.assertFalse(retValue)
     }
 
     @Test
     fun `Save value when value is data value, dont exist the value, the event value is null, havent the same value, and is not image type`() {
-        // assert(mockValuesDataElement(existValue = false, eventValueIsNull = true, isSameValue = false, valueTypeIsImage = false) == true)
         val uid = ""
         val value: String? = "otherValue"
         mockValuesDataElement(
@@ -423,7 +410,6 @@ class EnrollmentPresenterImplTest {
 
     @Test
     fun `Save value when value is data value, exist the value, the event value is null, havent the same value, and is not image type`() {
-        // assert(mockValuesDataElement(existValue = true, eventValueIsNull = true, isSameValue = false, valueTypeIsImage = false) == true)
         val uid = ""
         val value: String? = "otherValue"
         mockValuesDataElement(
@@ -441,7 +427,6 @@ class EnrollmentPresenterImplTest {
 
     @Test
     fun `Save value when value is data value,dont exist the value, the event value is not null, havent the same value, and is not image type`() {
-        // assert(mockValuesDataElement(existValue = false, eventValueIsNull = false, isSameValue = false, valueTypeIsImage = false) == true)
         val uid = ""
         val value: String? = "otherValue"
         mockValuesDataElement(
