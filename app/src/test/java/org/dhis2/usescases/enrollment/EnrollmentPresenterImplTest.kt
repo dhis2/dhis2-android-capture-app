@@ -193,8 +193,8 @@ class EnrollmentPresenterImplTest {
         val uid = ""
         val value: String? = "otherValue"
         mockValuesDataElement(
-                uid = "",
-                value = "",
+                uid = uid,
+                value = value,
                 existValue = false,
                 eventValueIsNull = true,
                 isSameValue = true,
@@ -211,8 +211,8 @@ class EnrollmentPresenterImplTest {
         val uid = ""
         val value: String? = "otherValue"
         mockValuesDataElement(
-                uid = "",
-                value = "",
+                uid = uid,
+                value = value,
                 existValue = true,
                 eventValueIsNull = true,
                 isSameValue = true,
@@ -229,8 +229,8 @@ class EnrollmentPresenterImplTest {
         val uid = ""
         val value: String? = "otherValue"
         mockValuesDataElement(
-                uid = "",
-                value = "",
+                uid = uid,
+                value = value,
                 existValue = false,
                 eventValueIsNull = false,
                 isSameValue = true,
@@ -247,8 +247,8 @@ class EnrollmentPresenterImplTest {
         val uid = ""
         val value: String? = "otherValue"
         mockValuesDataElement(
-                uid = "",
-                value = "",
+                uid = uid,
+                value = value,
                 existValue = true,
                 eventValueIsNull = false,
                 isSameValue = true,
@@ -265,8 +265,8 @@ class EnrollmentPresenterImplTest {
         val uid = ""
         val value: String? = "otherValue"
         mockValuesDataElement(
-                uid = "",
-                value = "",
+                uid = uid,
+                value = value,
                 existValue = false,
                 eventValueIsNull = true,
                 isSameValue = false,
@@ -283,8 +283,8 @@ class EnrollmentPresenterImplTest {
         val uid = ""
         val value: String? = "otherValue"
         mockValuesDataElement(
-                uid = "",
-                value = "",
+                uid = uid,
+                value = value,
                 existValue = true,
                 eventValueIsNull = true,
                 isSameValue = false,
@@ -301,8 +301,8 @@ class EnrollmentPresenterImplTest {
         val uid = ""
         val value: String? = "otherValue"
         mockValuesDataElement(
-                uid = "",
-                value = "",
+                uid = uid,
+                value = value,
                 existValue = false,
                 eventValueIsNull = false,
                 isSameValue = false,
@@ -319,8 +319,8 @@ class EnrollmentPresenterImplTest {
         val uid = ""
         val value: String? = "otherValue"
         mockValuesDataElement(
-                uid = "",
-                value = "",
+                uid = uid,
+                value = value,
                 existValue = true,
                 eventValueIsNull = false,
                 isSameValue = false,
@@ -337,8 +337,8 @@ class EnrollmentPresenterImplTest {
         val uid = ""
         val value: String? = "otherValue"
         mockValuesDataElement(
-                uid = "",
-                value = "",
+                uid = uid,
+                value = value,
                 existValue = false,
                 eventValueIsNull = true,
                 isSameValue = true,
@@ -355,8 +355,8 @@ class EnrollmentPresenterImplTest {
         val uid = ""
         val value: String? = "otherValue"
         mockValuesDataElement(
-                uid = "",
-                value = "",
+                uid = uid,
+                value = value,
                 existValue = true,
                 eventValueIsNull = true,
                 isSameValue = true,
@@ -373,8 +373,8 @@ class EnrollmentPresenterImplTest {
         val uid = ""
         val value: String? = "otherValue"
         mockValuesDataElement(
-                uid = "",
-                value = "",
+                uid = uid,
+                value = value,
                 existValue = false,
                 eventValueIsNull = false,
                 isSameValue = true,
@@ -391,8 +391,8 @@ class EnrollmentPresenterImplTest {
         val uid = ""
         val value: String? = "otherValue"
         mockValuesDataElement(
-                uid = "",
-                value = "",
+                uid = uid,
+                value = value,
                 existValue = true,
                 eventValueIsNull = false,
                 isSameValue = true,
@@ -409,8 +409,8 @@ class EnrollmentPresenterImplTest {
         val uid = ""
         val value: String? = "otherValue"
         mockValuesDataElement(
-                uid = "",
-                value = "",
+                uid = uid,
+                value = value,
                 existValue = false,
                 eventValueIsNull = true,
                 isSameValue = false,
@@ -427,8 +427,8 @@ class EnrollmentPresenterImplTest {
         val uid = ""
         val value: String? = "otherValue"
         mockValuesDataElement(
-                uid = "",
-                value = "",
+                uid = uid,
+                value = value,
                 existValue = true,
                 eventValueIsNull = true,
                 isSameValue = false,
@@ -445,8 +445,8 @@ class EnrollmentPresenterImplTest {
         val uid = ""
         val value: String? = "otherValue"
         mockValuesDataElement(
-                uid = "",
-                value = "",
+                uid = uid,
+                value = value,
                 existValue = false,
                 eventValueIsNull = false,
                 isSameValue = false,
@@ -462,8 +462,8 @@ class EnrollmentPresenterImplTest {
         val uid = ""
         val value: String? = "otherValue"
         mockValuesDataElement(
-                uid = "",
-                value = "",
+                uid = uid,
+                value = value,
                 existValue = true,
                 eventValueIsNull = false,
                 isSameValue = false,
@@ -474,11 +474,27 @@ class EnrollmentPresenterImplTest {
         assert(retValue)
     }
 
+    @Test
+    fun `Save value when value is data value and is empty`() {
+        val uid = ""
+        val value: String? = ""
+        mockValuesDataElement(
+                uid = uid,
+                value = value,
+                existValue = true,
+                eventValueIsNull = false,
+                isSameValue = false,
+                valueTypeIsImage = false)
+        val retValue = presenter.saveValue(uid, value)
+        verify(d2.trackedEntityModule().trackedEntityDataValues().value("eventName", uid), times(0)).blockingSet(value)
+        verify(d2.trackedEntityModule().trackedEntityDataValues().value("eventName", uid), times(1)).blockingDelete()
+        assert(retValue)
+    }
 
 
     private fun mockValuesDataElement(
             uid: String,
-            value: String,
+            value: String?,
             existValue: Boolean,
             eventValueIsNull: Boolean,
             isSameValue: Boolean,
