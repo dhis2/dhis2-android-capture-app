@@ -78,15 +78,6 @@ android {
         exclude 'META-INF/rxjava.properties'
     }
 
-    signingConfigs {
-        release {
-            storeFile file('dhis_keystore.jks')
-            storePassword KEYSTORE_PASSWORD
-            keyAlias KEY_ALIAS
-            keyPassword KEYSTORE_PASSWORD
-        }
-    }
-
     buildTypes {
         debug {
             // custom application suffix which allows to
@@ -109,10 +100,8 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             ext.enableCrashlytics = true
-            signingConfig signingConfigs.release
 
             resValue "string", "content_provider", "com.dhis2.provider"
-
         }
 
         training {
