@@ -32,6 +32,8 @@ import androidx.work.WorkInfo;
 import androidx.work.WorkManager;
 
 import com.google.android.material.snackbar.Snackbar;
+import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 import com.jakewharton.rxbinding2.widget.RxCompoundButton;
 import com.jakewharton.rxbinding2.widget.RxTextView;
 
@@ -234,14 +236,13 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
     private void validatePhone(String str) {
         if (str.startsWith("+")
             && str.length() > 4) {
-            ((TextView) binding.settingsSms.findViewById(R.id.sms_error)).setVisibility(View.GONE);
+            ((TextInputLayout) binding.settingsSms.findViewById(R.id.settings_sms_receiver_layout)).setError(null);
         } else if (!str.startsWith("+") && str.length() > 1) {
-            ((TextView) binding.settingsSms.findViewById(R.id.sms_error)).setVisibility(View.VISIBLE);
-            ((TextView) binding.settingsSms.findViewById(R.id.sms_error))
-                    .setText(R.string.invalid_phone_number);
+            ((TextInputLayout) binding.settingsSms.findViewById(R.id.settings_sms_receiver_layout))
+                    .setError(binding.getRoot().getContext().getResources().getString(R.string.invalid_phone_number));
             ((SwitchCompat) binding.settingsSms.findViewById(R.id.settings_sms_switch)).setChecked(false);
         } else {
-            ((TextView) binding.settingsSms.findViewById(R.id.sms_error)).setVisibility(View.GONE);
+            ((TextInputLayout) binding.settingsSms.findViewById(R.id.settings_sms_receiver_layout)).setError(null);
         }
         presenter.smsNumberSet(str);
     }
@@ -605,9 +606,9 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
     @Override
     public void requestNoEmptySMSGateway() {
         ((SwitchCompat) binding.settingsSms.findViewById(R.id.settings_sms_switch)).setChecked(false);
-        ((TextView) binding.settingsSms.findViewById(R.id.sms_error)).setVisibility(View.VISIBLE);
-        ((TextView) binding.settingsSms.findViewById(R.id.sms_error))
-                .setText(R.string.sms_empty_gateway);
+        ((TextInputLayout) binding.settingsSms.findViewById(R.id.settings_sms_receiver_layout)).setError(
+                binding.getRoot().getContext().getResources().getString(R.string.sms_empty_gateway)
+        );
         presenter.smsSwitch(false);
     }
 
@@ -630,9 +631,13 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
     private boolean isGatewaySet() {
         String text = ((EditText) binding.settingsSms.findViewById(R.id.settings_sms_receiver)).getText().toString();
         boolean gatewaySet = !isEmpty(text) && text.startsWith("+");
-        if (!gatewaySet && text.length() > 1) {
-            requestNoEmptySMSGateway();
-        } 
+        if (!gatewaySet) {
+            if (!text.contains("+") && text.length() > 0) {
+                requestNoEmptySMSGateway();
+            } else {
+                ((SwitchCompat) binding.settingsSms.findViewById(R.id.settings_sms_switch)).setChecked(false);
+            }
+        }
         return gatewaySet;
     }
 
