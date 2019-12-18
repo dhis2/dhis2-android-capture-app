@@ -108,6 +108,8 @@ android {
             applicationIdSuffix = ".training"
             matchingFallbacks = ['release']
             signingConfig = signingConfigs.debug
+
+            resValue "string", "content_provider", "com.dhis2.training.provider"
         }
 
         experimental {
