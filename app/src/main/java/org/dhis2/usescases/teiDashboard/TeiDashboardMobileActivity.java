@@ -87,7 +87,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
             teiUid = getIntent().getStringExtra("TEI_UID");
             programUid = getIntent().getStringExtra("PROGRAM_UID");
         }
-        ((App) getApplicationContext()).createDashboardComponent(new TeiDashboardModule(teiUid, programUid)).inject(this);
+        ((App) getApplicationContext()).createDashboardComponent(new TeiDashboardModule(this, teiUid, programUid)).inject(this);
         super.onCreate(savedInstanceState);
         dashboardViewModel = ViewModelProviders.of(this).get(DashboardViewModel.class);
 
@@ -110,7 +110,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
 
         if (((App) getApplicationContext()).dashboardComponent() == null)
             ((App) getApplicationContext())
-                    .createDashboardComponent(new TeiDashboardModule(teiUid, programUid))
+                    .createDashboardComponent(new TeiDashboardModule(this, teiUid, programUid))
                     .inject(this);
 
         String prevDashboardProgram = getSharedPreferences(Constants.SHARE_PREFS, Context.MODE_PRIVATE)
@@ -144,11 +144,6 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
         outState.putString(Constants.TRACKED_ENTITY_INSTANCE, teiUid);
         outState.putString(Constants.PROGRAM_UID, programUid);
         super.onSaveInstanceState(outState);
-    }
-
-    @Override
-    public void init(String teiUid, String programUid) {
-        presenter.init(this, teiUid, programUid);
     }
 
     private void setViewpagerAdapter() {
@@ -237,7 +232,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
         this.currentAdapter = null;
         this.programUid = programUid;
         binding.teiPager.setAdapter(null);
-        presenter.init(this, teiUid, programUid);
+        presenter.init();
     }
 
     @Override
@@ -254,6 +249,11 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
             startActivity(TeiDashboardMobileActivity.class, bundle, true, false, null);
         } else
             finish();
+    }
+
+    @Override
+    public void authorityErrorMessage() {
+        displayMessage(getString(R.string.delete_authority_error));
     }
 
     @Override

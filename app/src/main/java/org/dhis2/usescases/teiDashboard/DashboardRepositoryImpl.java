@@ -1,6 +1,9 @@
 package org.dhis2.usescases.teiDashboard;
 
 import static android.text.TextUtils.isEmpty;
+import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
+import static org.dhis2.utils.analytics.AnalyticsConstants.DELETE_ENROLL;
+import static org.dhis2.utils.analytics.AnalyticsConstants.DELETE_TEI;
 import static org.hisp.dhis.android.core.arch.db.stores.internal.StoreUtils.sqLiteBind;
 
 import java.util.ArrayList;
@@ -18,6 +21,7 @@ import org.dhis2.Bindings.EventExtensionsKt;
 import org.dhis2.R;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Trio;
+import org.dhis2.utils.AuthorityException;
 import org.dhis2.utils.CodeGenerator;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.ValueUtils;
@@ -31,6 +35,7 @@ import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.android.core.enrollment.EnrollmentCollectionRepository;
+import org.hisp.dhis.android.core.enrollment.EnrollmentObjectRepository;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.event.EventStatus;
@@ -64,6 +69,7 @@ import androidx.annotation.Nullable;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
+import io.reactivex.Single;
 import io.reactivex.functions.Consumer;
 import timber.log.Timber;
 
@@ -137,14 +143,10 @@ public class DashboardRepositoryImpl
             "Legend", "LegendSet", "ProgramIndicator", "ProgramIndicator", "uid", "ProgramIndicatorLegendSetLink",
             "programIndicator", "ProgramIndicator", "uid", "Legend", "startValue", "Legend", "endValue");
 
-    public DashboardRepositoryImpl(CodeGenerator codeGenerator, BriteDatabase briteDatabase, D2 d2) {
+    public DashboardRepositoryImpl(CodeGenerator codeGenerator, BriteDatabase briteDatabase, D2 d2,  String teiUid, String programUid) {
         this.briteDatabase = briteDatabase;
         this.codeGenerator = codeGenerator;
         this.d2 = d2;
-    }
-
-    @Override
-    public void setDashboardDetails(String teiUid, String programUid) {
         this.teiUid = teiUid;
         this.programUid = programUid;
     }
@@ -511,6 +513,63 @@ public class DashboardRepositoryImpl
         event.put(EventTableInfo.Columns.ATTRIBUTE_OPTION_COMBO, catOptionComboUid);
         briteDatabase.update(EventTableInfo.TABLE_INFO.name(), event, EventTableInfo.Columns.UID + " = ?",
                 eventUid == null ? "" : eventUid);
+    }
+
+    @Override
+    public Single<Boolean> deleteTeiIfPossible() {
+        return Single.fromCallable(() -> {
+            boolean local = d2.trackedEntityModule()
+                    .trackedEntityInstances()
+                    .uid(teiUid)
+                    .blockingGet()
+                    .state() == State.TO_POST;
+            boolean hasAuthority = d2.userModule()
+                    .authorities()
+                    .byName().eq("F_TEI_CASCADE_DELETE")
+                    .one().blockingExists();
+            return local || hasAuthority;
+        }).flatMap(canDelete -> {
+            if (canDelete) {
+                return d2.trackedEntityModule()
+                        .trackedEntityInstances()
+                        .uid(teiUid)
+                        .delete()
+                        .andThen(Single.fromCallable(() -> true));
+            } else {
+                return Single.fromCallable(() -> false);
+            }
+        });
+    }
+
+    @Override
+    public Single<Boolean> deleteEnrollmentIfPossible(String enrollmentUid) {
+        return Single.fromCallable(() -> {
+            boolean local = d2.enrollmentModule()
+                    .enrollments()
+                    .uid(enrollmentUid)
+                    .blockingGet().state() == State.TO_POST;
+            boolean hasAuthority = d2.userModule()
+                    .authorities()
+                    .byName().eq("F_ENROLLMENT_CASCADE_DELETE")
+                    .one().blockingExists();
+            return local || hasAuthority;
+        }).flatMap(canDelete -> {
+            if (canDelete) {
+                return Single.fromCallable(() -> {
+                    EnrollmentObjectRepository enrollmentObjectRepository = d2.enrollmentModule()
+                            .enrollments().uid(enrollmentUid);
+                    enrollmentObjectRepository.setStatus(
+                            enrollmentObjectRepository.blockingGet().status()
+                    );
+                    enrollmentObjectRepository.blockingDelete();
+                    return !d2.enrollmentModule().enrollments().byTrackedEntityInstance().eq(teiUid)
+                            .byDeleted().isFalse()
+                            .byStatus().eq(EnrollmentStatus.ACTIVE).blockingGet().isEmpty();
+                });
+            } else {
+                return Single.error(new AuthorityException(null));
+            }
+        });
     }
 
     private void updateEnrollmentState(String enrollmentUid) {
