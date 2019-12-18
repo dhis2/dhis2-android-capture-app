@@ -235,7 +235,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
         if (str.startsWith("+")
             && str.length() > 4) {
             ((TextView) binding.settingsSms.findViewById(R.id.sms_error)).setVisibility(View.GONE);
-        } else if (!str.startsWith("+")) {
+        } else if (!str.startsWith("+") && str.length() > 1) {
             ((TextView) binding.settingsSms.findViewById(R.id.sms_error)).setVisibility(View.VISIBLE);
             ((TextView) binding.settingsSms.findViewById(R.id.sms_error))
                     .setText(R.string.invalid_phone_number);
@@ -630,9 +630,9 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
     private boolean isGatewaySet() {
         String text = ((EditText) binding.settingsSms.findViewById(R.id.settings_sms_receiver)).getText().toString();
         boolean gatewaySet = !isEmpty(text) && text.startsWith("+");
-        if (!gatewaySet) {
+        if (!gatewaySet && text.length() > 1) {
             requestNoEmptySMSGateway();
-        }
+        } 
         return gatewaySet;
     }
 
