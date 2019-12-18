@@ -170,6 +170,7 @@ class EnrollmentPresenterImplTest {
         val stringValue = String()
         mockValuesAttribute(newValue)
         val value = presenter.saveValue("", stringValue)
+        // Empty string is not valid
         verify(d2.trackedEntityModule().trackedEntityAttributeValues().value("", ""), times(0)).blockingSet(newValue)
         verify(d2.trackedEntityModule().trackedEntityAttributeValues().value("", ""), times(1)).blockingDelete()
         assert(value)
@@ -181,9 +182,9 @@ class EnrollmentPresenterImplTest {
         val stringValue = "newValue"
         mockValuesAttribute(newValue)
         val value = presenter.saveValue("", stringValue)
-        verify(d2.trackedEntityModule().trackedEntityAttributeValues().value("", ""), times(0)).blockingSet(newValue)
+        verify(d2.trackedEntityModule().trackedEntityAttributeValues().value("", ""), times(1)).blockingSet(newValue)
         verify(d2.trackedEntityModule().trackedEntityAttributeValues().value("", ""), times(0)).blockingDelete()
-        assert(!value)
+        assert(value)
     }
 
     @Test

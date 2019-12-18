@@ -26,7 +26,6 @@ import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import timber.log.Timber;
 
-import static android.text.TextUtils.isEmpty;
 
 public final class EnrollmentRepository implements DataEntryRepository {
 

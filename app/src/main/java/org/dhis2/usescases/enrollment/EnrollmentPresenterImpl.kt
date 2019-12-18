@@ -1,6 +1,5 @@
 package org.dhis2.usescases.enrollment
 
-import android.text.TextUtils.isEmpty
 import io.reactivex.Flowable
 import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
@@ -23,10 +22,7 @@ import org.dhis2.data.forms.dataentry.DataEntryRepository
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel
 import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel
 import org.dhis2.data.schedulers.SchedulerProvider
-import org.dhis2.utils.CodeGeneratorImpl
-import org.dhis2.utils.Result
-import org.dhis2.utils.RulesActionCallbacks
-import org.dhis2.utils.RulesUtilsProviderImpl
+import org.dhis2.utils.*
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper
 import org.hisp.dhis.android.core.arch.repositories.`object`.ReadOnlyOneObjectRepositoryFinalImpl
@@ -304,7 +300,7 @@ class EnrollmentPresenterImpl(
                     .observeOn(schedulerProvider.ui())
                     .subscribe(
                         {
-                            if (!isEmpty(it.second)) {
+                            if (!DhisTextUtils.isEmpty(it.second)) {
                                 view.openEvent(it.second)
                             } else {
                                 view.openDashboard(it.first)
@@ -459,7 +455,7 @@ class EnrollmentPresenterImpl(
             null
         }
         return if (currentValue != newValue) {
-            if (!isEmpty(value)) {
+            if (!DhisTextUtils.isEmpty(value)) {
                 valueRepository.blockingSet(newValue)
             } else {
                 valueRepository.blockingDelete()
@@ -491,7 +487,7 @@ class EnrollmentPresenterImpl(
             }
 
             if (currentValue != newValue) {
-                if (!isEmpty(value)) {
+                if (!DhisTextUtils.isEmpty(value)) {
                     valueRepository.blockingSet(newValue)
                 } else {
                     valueRepository.blockingDelete()
@@ -604,7 +600,7 @@ class EnrollmentPresenterImpl(
         )
 
         for (eventUid in eventUids) {
-            if (!isEmpty(value)) {
+            if (!DhisTextUtils.isEmpty(value)) {
                 d2.trackedEntityModule().trackedEntityDataValues().value(
                     eventUid,
                     deUid
@@ -625,7 +621,7 @@ class EnrollmentPresenterImpl(
     @Throws(D2Error::class)
     private fun handleAssignToAttribute(attributeUid: String, value: String?) {
         val tei = teiRepository.blockingGet().uid()
-        if (!isEmpty(value)) {
+        if (!DhisTextUtils.isEmpty(value)) {
             d2.trackedEntityModule().trackedEntityAttributeValues().value(attributeUid, tei)
                 .blockingSet(value)
         } else if (d2.trackedEntityModule().trackedEntityAttributeValues().value(
