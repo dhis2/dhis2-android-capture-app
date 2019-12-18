@@ -7,6 +7,7 @@ import androidx.annotation.NonNull;
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory;
+import org.dhis2.utils.DhisTextUtils;
 import org.dhis2.utils.FileResourcesUtil;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.common.ObjectStyle;
@@ -93,17 +94,17 @@ public final class EnrollmentRepository implements DataEntryRepository {
         String fieldMask = attribute.fieldMask();
 
 
-        if (valueType == ValueType.IMAGE && !isEmpty(dataValue)) {
+        if (valueType == ValueType.IMAGE && !DhisTextUtils.Companion.isEmpty(dataValue)) {
             FileResource fileResource = d2.fileResourceModule().fileResources().uid(dataValue).blockingGet();
             if (fileResource != null)
                 dataValue = fileResource.path();
         }
 
         int optionCount = 0;
-        if (!isEmpty(optionSet)) {
+        if (!DhisTextUtils.Companion.isEmpty(optionSet)) {
             optionCount = d2.optionModule().options().byOptionSetUid().eq(optionSet).blockingCount();
 
-            if (!isEmpty(dataValue)) {
+            if (!DhisTextUtils.Companion.isEmpty(dataValue)) {
                 dataValue = d2.optionModule().options()
                         .byOptionSetUid().eq(optionSet)
                         .byCode().eq(dataValue).one().blockingGet().displayName();
@@ -130,7 +131,7 @@ public final class EnrollmentRepository implements DataEntryRepository {
                             dataValue = d2.trackedEntityModule().reservedValueManager().blockingGetValue(uid, orgUnitUid);
                         }
 
-                    if (!isEmpty(dataValue)) {
+                    if (!DhisTextUtils.Companion.isEmpty(dataValue)) {
                         attrValueRepository.blockingSet(dataValue);
                     } else
                         mandatory = true;
@@ -147,7 +148,7 @@ public final class EnrollmentRepository implements DataEntryRepository {
 
         ObjectStyle objectStyle = attribute.style() != null ? attribute.style() : ObjectStyle.builder().build();
 
-        if (valueType == ValueType.ORGANISATION_UNIT && !isEmpty(dataValue)) {
+        if (valueType == ValueType.ORGANISATION_UNIT && !DhisTextUtils.Companion.isEmpty(dataValue)) {
             dataValue = dataValue + "_ou_" + d2.organisationUnitModule().organisationUnits().uid(dataValue).blockingGet().displayName();
         }
 

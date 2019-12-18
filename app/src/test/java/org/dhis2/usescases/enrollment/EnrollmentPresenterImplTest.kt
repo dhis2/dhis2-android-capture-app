@@ -557,4 +557,35 @@ class EnrollmentPresenterImplTest {
                 .value("value").build()
 
     }
+
+    @Test
+    fun `Check data integrity when mandatory is false and has error is false`() {
+        val result = presenter.dataIntegrityCheck(false, false)
+        verify(enrollmentView, times(1)).showMissingMandatoryFieldsMessage()
+        verify(enrollmentView, times(0)).showErrorFieldsMessage()
+        Assert.assertFalse(result)
+    }
+
+    @Test
+    fun `Check data integrity when mandatory is true and has error is false`() {
+        val result = presenter.dataIntegrityCheck(true, false)
+        verifyZeroInteractions(enrollmentView)
+        Assert.assertTrue(result)
+    }
+
+    @Test
+    fun `Check data integrity when mandatory is false and has error is true`() {
+        val result = presenter.dataIntegrityCheck(false, true)
+        verify(enrollmentView, times(1)).showMissingMandatoryFieldsMessage()
+        verify(enrollmentView, times(0)).showErrorFieldsMessage()
+        Assert.assertFalse(result)
+    }
+
+    @Test
+    fun `Check data integrity when mandatory is true and has error is true`() {
+        val result = presenter.dataIntegrityCheck(true, true)
+        verify(enrollmentView, times(0)).showMissingMandatoryFieldsMessage()
+        verify(enrollmentView, times(1)).showErrorFieldsMessage()
+        Assert.assertFalse(result)
+    }
 }

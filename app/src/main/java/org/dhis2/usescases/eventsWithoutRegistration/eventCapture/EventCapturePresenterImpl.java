@@ -20,6 +20,7 @@ import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Quartet;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureFragment.EventCaptureFormFragment;
 import org.dhis2.utils.AuthorityException;
+import org.dhis2.utils.DhisTextUtils;
 import org.dhis2.utils.Result;
 import org.dhis2.utils.RulesActionCallbacks;
 import org.dhis2.utils.RulesUtilsProvider;
@@ -262,7 +263,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
 
                                             HashMap<String, Boolean> finalFields = new HashMap<>();
                                             for (FieldViewModel fieldViewModel : fieldViewModels) {
-                                                finalFields.put(fieldViewModel.optionSet() == null ? fieldViewModel.uid() : fieldViewModel.optionSet(), !isEmpty(fieldViewModel.value()));
+                                                finalFields.put(fieldViewModel.optionSet() == null ? fieldViewModel.uid() : fieldViewModel.optionSet(), !DhisTextUtils.Companion.isEmpty(fieldViewModel.value()));
                                             }
                                             for (String key : finalFields.keySet())
                                                 if (finalFields.get(key))
@@ -273,7 +274,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                                             int cont = 0;
                                             HashMap<String, Boolean> finalFields = new HashMap<>();
                                             for (FieldViewModel fieldViewModel : fields) {
-                                                finalFields.put(fieldViewModel.optionSet() == null ? fieldViewModel.uid() : fieldViewModel.optionSet(), !isEmpty(fieldViewModel.value()));
+                                                finalFields.put(fieldViewModel.optionSet() == null ? fieldViewModel.uid() : fieldViewModel.optionSet(), !DhisTextUtils.Companion.isEmpty(fieldViewModel.value()));
                                             }
                                             for (String key : finalFields.keySet())
                                                 if (finalFields.get(key))
@@ -345,7 +346,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                         {
                             emptyMandatoryFields = new HashMap<>();
                             for (FieldViewModel fieldViewModel : fields) {
-                                if (fieldViewModel.mandatory() && isEmpty(fieldViewModel.value()) && !sectionsToHide.contains(fieldViewModel.programStageSection()))
+                                if (fieldViewModel.mandatory() && DhisTextUtils.Companion.isEmpty(fieldViewModel.value()) && !sectionsToHide.contains(fieldViewModel.programStageSection()))
                                     emptyMandatoryFields.put(fieldViewModel.uid(), fieldViewModel);
                             }
                             return fields;
@@ -443,7 +444,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                                     this.lastFocusItem = action.id();
                                 }
                                 eventCaptureRepository.setLastUpdated(action.id());
-                                if (emptyMandatoryFields.containsKey(action.id()) && !isEmpty(action.value()))
+                                if (emptyMandatoryFields.containsKey(action.id()) && !DhisTextUtils.Companion.isEmpty(action.value()))
                                     emptyMandatoryFields.remove(action.id());
                                 return dataEntryStore.save(action.id(), action.value());
                             }
@@ -500,7 +501,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
         }
 
         //Display the DisplayViewModels only in the last section
-        if (getFinalSections().size() > 1 && !isEmpty(currentSection.get()) && !currentSection.get().equals(sectionList.get(sectionList.size() - 1).sectionUid())) {
+        if (getFinalSections().size() > 1 && !DhisTextUtils.Companion.isEmpty(currentSection.get()) && !currentSection.get().equals(sectionList.get(sectionList.size() - 1).sectionUid())) {
             Iterator<Map.Entry<String, FieldViewModel>> iter = fieldViewModels.entrySet().iterator();
             while (iter.hasNext())
                 if (iter.next().getValue() instanceof DisplayViewModel)
