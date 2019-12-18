@@ -8,15 +8,6 @@
     android:gravity="end"
     android:orientation="vertical">
 
-    <androidx.appcompat.widget.SwitchCompat
-        android:id="@+id/settings_sms_switch"
-        android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:layout_marginTop="5dp"
-        android:text="@string/settings_sms_module_switch"
-        android:textSize="12sp"
-        app:switchPadding="15dp" />
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="48dp"
@@ -49,6 +40,24 @@
 
     </LinearLayout>
 
+
+    <TextView
+        android:id="@+id/sms_error"
+        tools:text="Esto sería el error"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/red_060"
+        android:textSize="12sp"/>
+
+
+    <androidx.appcompat.widget.SwitchCompat
+        android:id="@+id/settings_sms_switch"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_marginTop="5dp"
+        android:text="@string/settings_sms_module_switch"
+        android:textSize="12sp"
+        app:switchPadding="15dp" />
 
     <androidx.appcompat.widget.SwitchCompat
         android:id="@+id/settings_sms_response_wait_switch"

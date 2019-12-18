@@ -23,6 +23,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.widget.SwitchCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.core.content.ContextCompat;
 import androidx.databinding.DataBindingUtil;
@@ -216,7 +217,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
                 .setText(responseSender);
         ((TextView) binding.settingsSms.findViewById(R.id.settings_sms_result_timeout))
                 .setText(Integer.toString(timeout));
-
+        validatePhone(((TextView) binding.settingsSms.findViewById(R.id.settings_sms_receiver)).getText().toString());
         boolean hasNetwork = NetworkUtils.isOnline(context);
 
         binding.settingsSms.findViewById(R.id.settings_sms_switch).setEnabled(hasNetwork);
@@ -230,6 +231,21 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
         }
     }
 
+    private void validatePhone(String str) {
+        if (str.startsWith("+")
+            && str.length() > 4) {
+            ((TextView) binding.settingsSms.findViewById(R.id.sms_error)).setVisibility(View.GONE);
+        } else if (!str.startsWith("+")) {
+            ((TextView) binding.settingsSms.findViewById(R.id.sms_error)).setVisibility(View.VISIBLE);
+            ((TextView) binding.settingsSms.findViewById(R.id.sms_error))
+                    .setText(R.string.invalid_phone_number);
+            ((SwitchCompat) binding.settingsSms.findViewById(R.id.settings_sms_switch)).setChecked(false);
+        } else {
+            ((TextView) binding.settingsSms.findViewById(R.id.sms_error)).setVisibility(View.GONE);
+        }
+        presenter.smsNumberSet(str);
+    }
+
     private void setSMSListeners() {
 
         listenerDisposable.add(RxTextView.textChanges(binding.settingsSms.findViewById(R.id.settings_sms_receiver))
@@ -237,7 +253,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
                 .debounce(1000, TimeUnit.MILLISECONDS, Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                        data -> presenter.smsNumberSet(data.toString()),
+                        data -> validatePhone(data.toString()),
                         Timber::d
                 ));
 
@@ -248,7 +264,9 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
                         isChecked -> {
                             if (!isChecked) {
                                 presenter.smsSwitch(false);
-                            } else if (NetworkUtils.isOnline(context) && isGatewaySet() && checkSMSPermissions(true)) {
+                            } else if (NetworkUtils.isOnline(context) &&
+                                    isGatewaySet() &&
+                                    checkSMSPermissions(true)) {
                                 presenter.smsSwitch(true);
                             }
                         }
@@ -586,9 +604,10 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
 
     @Override
     public void requestNoEmptySMSGateway() {
-        Toast.makeText(context,
-                context.getString(R.string.sms_empty_gateway),
-                Toast.LENGTH_SHORT).show();
+        ((SwitchCompat) binding.settingsSms.findViewById(R.id.settings_sms_switch)).setChecked(false);
+        ((TextView) binding.settingsSms.findViewById(R.id.sms_error)).setVisibility(View.VISIBLE);
+        ((TextView) binding.settingsSms.findViewById(R.id.sms_error))
+                .setText(R.string.sms_empty_gateway);
         presenter.smsSwitch(false);
     }
 
@@ -609,9 +628,8 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
     }
 
     private boolean isGatewaySet() {
-        boolean gatewaySet = !isEmpty(
-                ((EditText) binding.settingsSms.findViewById(R.id.settings_sms_receiver)).getText().toString()
-        );
+        String text = ((EditText) binding.settingsSms.findViewById(R.id.settings_sms_receiver)).getText().toString();
+        boolean gatewaySet = !isEmpty(text) && text.startsWith("+");
         if (!gatewaySet) {
             requestNoEmptySMSGateway();
         }
