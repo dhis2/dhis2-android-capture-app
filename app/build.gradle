@@ -80,7 +80,7 @@ android {
 
     signingConfigs {
         release {
-            storeFile file('dhis_keystore.jks')
+            storeFile file('dhis_keystore.jksa')
             storePassword KEYSTORE_PASSWORD
             keyAlias KEY_ALIAS
             keyPassword KEYSTORE_PASSWORD
