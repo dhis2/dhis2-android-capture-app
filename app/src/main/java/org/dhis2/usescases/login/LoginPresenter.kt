@@ -178,9 +178,9 @@ class LoginPresenter(
         view.navigateToQRActivity()
     }
 
-    fun unlockSession(pin: String) {
+    fun unlockSession(pin: String, enable: Boolean = true) {
         if (preferenceProvider.getString(PIN, "") == pin) {
-            preferenceProvider.setValue(SESSION_LOCKED, false)
+            preferenceProvider.setValue(SESSION_LOCKED, enable)
             view.startActivity(MainActivity::class.java, null, true, true, null)
         }
     }

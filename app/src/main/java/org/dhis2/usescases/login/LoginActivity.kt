@@ -13,6 +13,7 @@ import android.view.View
 import android.view.WindowManager
 import android.webkit.URLUtil
 import android.widget.ArrayAdapter
+import android.widget.CheckBox
 import androidx.appcompat.app.AlertDialog
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
@@ -293,7 +294,7 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
         binding.pinLayout.pinLockView.setPinLockListener(object : PinLockListener {
             override fun onComplete(pin: String) {
                 analyticsHelper.setEvent(UNLOCK_SESSION, CLICK, UNLOCK_SESSION)
-                presenter.unlockSession(pin)
+                presenter.unlockSession(pin, !(binding.pinLayout.lockPin as CheckBox).isChecked ?: false)
             }
 
             override fun onEmpty() {
