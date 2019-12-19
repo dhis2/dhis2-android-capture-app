@@ -39,7 +39,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
     private String programUid;
 
     public CompositeDisposable compositeDisposable;
-    private DashboardProgramModel dashboardProgramModel;
+    public DashboardProgramModel dashboardProgramModel;
 
     private MutableLiveData<DashboardProgramModel> dashboardProgramModelLiveData = new MutableLiveData<>();
 
