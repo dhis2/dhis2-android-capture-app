@@ -1,22 +1,11 @@
 package org.dhis2.usescases.teiDashboard;
 
-import android.annotation.SuppressLint;
-import android.os.Bundle;
-
-import androidx.lifecycle.MutableLiveData;
-
-import org.dhis2.R;
 import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.utils.AuthorityException;
 import org.dhis2.utils.analytics.AnalyticsHelper;
-import org.hisp.dhis.android.core.D2;
-import org.hisp.dhis.android.core.common.State;
-import org.hisp.dhis.android.core.enrollment.EnrollmentObjectRepository;
-import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.program.Program;
 
 import io.reactivex.Observable;
-import io.reactivex.Single;
 import io.reactivex.disposables.CompositeDisposable;
 import timber.log.Timber;
 
@@ -36,12 +25,10 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
     private TeiDashboardContracts.View view;
 
     private String teiUid;
-    private String programUid;
+    public String programUid;
 
     public CompositeDisposable compositeDisposable;
     public DashboardProgramModel dashboardProgramModel;
-
-    private MutableLiveData<DashboardProgramModel> dashboardProgramModelLiveData = new MutableLiveData<>();
 
     public TeiDashboardPresenter(TeiDashboardContracts.View view,  String teiUid, String programUid, DashboardRepository dashboardRepository, SchedulerProvider schedulerProvider, AnalyticsHelper analyticsHelper) {
         this.view = view;
@@ -53,7 +40,6 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
         compositeDisposable = new CompositeDisposable();
     }
 
-    @SuppressLint({"CheckResult"})
     @Override
     public void init() {
         if (programUid != null)
@@ -72,8 +58,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
                     .subscribe(
                             dashboardModel -> {
                                 this.dashboardProgramModel = dashboardModel;
-                                this.dashboardProgramModelLiveData.setValue(dashboardModel);
-                                view.setData(dashboardProgramModel);
+                                view.setData(dashboardModel);
                             },
                             Timber::e
                     )
@@ -102,9 +87,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
 
     @Override
     public void onEnrollmentSelectorClick() {
-        Bundle extras = new Bundle();
-        extras.putString("TEI_UID", teiUid);
-        view.goToEnrollmentList(extras);
+        view.goToEnrollmentList();
     }
 
     @Override
@@ -112,21 +95,6 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
         this.programUid = program.uid();
         view.restoreAdapter(programUid);
         init();
-    }
-
-    @Override
-    public void onDettach() {
-        compositeDisposable.clear();
-    }
-
-    @Override
-    public void onBackPressed() {
-        view.back();
-    }
-
-    @Override
-    public String getProgramUid() {
-        return programUid;
     }
 
     @Override
@@ -170,6 +138,21 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
                                 }
                         )
         );
+    }
+
+    @Override
+    public void onDettach() {
+        compositeDisposable.clear();
+    }
+
+    @Override
+    public void onBackPressed() {
+        view.back();
+    }
+
+    @Override
+    public String getProgramUid() {
+        return programUid;
     }
 
     @Override

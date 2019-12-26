@@ -281,9 +281,9 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
     }
 
     @Override
-    public void goToEnrollmentList(Bundle extras) {
+    public void goToEnrollmentList() {
         Intent intent = new Intent(this, TeiProgramListActivity.class);
-        intent.putExtras(extras);
+        intent.putExtra("TEI_UID", teiUid);
         startActivityForResult(intent, Constants.RQ_ENROLLMENTS);
     }
 

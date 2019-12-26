@@ -1,7 +1,5 @@
 package org.dhis2.usescases.teiDashboard;
 
-import android.os.Bundle;
-
 import org.dhis2.usescases.general.AbstractActivityContracts;
 import org.hisp.dhis.android.core.program.Program;
 
@@ -17,7 +15,7 @@ public class TeiDashboardContracts {
 
         void setDataWithOutProgram(DashboardProgramModel programModel);
 
-        void goToEnrollmentList(Bundle extras);
+        void goToEnrollmentList();
 
         void restoreAdapter(String programUid);
 
