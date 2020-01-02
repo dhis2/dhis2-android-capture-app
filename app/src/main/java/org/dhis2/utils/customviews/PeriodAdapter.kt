@@ -11,13 +11,15 @@ import org.dhis2.R
 import org.dhis2.databinding.ItemDateBinding
 import org.dhis2.usescases.datasets.datasetInitial.DateRangeInputPeriodModel
 import org.dhis2.utils.DateUtils
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.period.PeriodType
 
 private class PeriodAdapter(
     private val periodType: PeriodType,
     openFuturePeriods: Int,
     val listener: (Date) -> Unit,
-    val withInputPeriod: Boolean,
+    var withInputPeriod: Boolean,
+    val organisationUnit: OrganisationUnit?,
     val inputPeriods: List<DateRangeInputPeriodModel>
 ) : RecyclerView.Adapter<DateViewHolder>() {
 
@@ -31,9 +33,12 @@ private class PeriodAdapter(
 
     init {
         datePeriods = ArrayList()
-        lastDate = DateUtils.getInstance()
-            .getNextPeriod(periodType, DateUtils.getInstance().today, openFuturePeriods - 1)
-        if(withInputPeriod){
+        lastDate = DateUtils.getInstance().getNextPeriod(
+            periodType,
+            organisationUnit?.closedDate() ?: DateUtils.getInstance().today,
+            openFuturePeriods - 1
+        )
+        if (withInputPeriod) {
             setInputPeriod()
         } else {
             setDates()
@@ -76,10 +81,14 @@ private class PeriodAdapter(
         repeat(DEFAULT_PERIODS_SIZE) {
             datePeriods.add(lastDate)
             lastDate = DateUtils.getInstance().getNextPeriod(periodType, lastDate, -1)
+            if (organisationUnit?.openingDate()?.after(lastDate) == true) {
+                withInputPeriod = true
+                return
+            }
         }
     }
 
-    fun setInputPeriod(){
+    fun setInputPeriod() {
         var isAllowed = false
         for (inputPeriodModel in inputPeriods) {
             do {
@@ -87,12 +96,12 @@ private class PeriodAdapter(
                     isAllowed = true
                     datePeriods.add(currentDate)
                     lastDate = currentDate
-                }
-                else if (currentDate.before(inputPeriods[inputPeriods.size - 1].initialPeriodDate()) || currentDate.before(
-                        inputPeriodModel.initialPeriodDate())){
+                } else if (
+                    currentDate.before(inputPeriods[inputPeriods.size - 1].initialPeriodDate()) ||
+                    currentDate.before(inputPeriodModel.initialPeriodDate())
+                ) {
                     break
-                }
-                else {
+                } else {
                     currentDate = DateUtils.getInstance().getNextPeriod(periodType, currentDate, -1)
                 }
             } while (!isAllowed)
@@ -100,18 +109,25 @@ private class PeriodAdapter(
         }
     }
 
-    fun isTodayRightDayForInputPeriod(inputPeriodModel : DateRangeInputPeriodModel) : Boolean {
-        return ((currentDate.after(inputPeriodModel.initialPeriodDate()) || currentDate == inputPeriodModel.initialPeriodDate()) && currentDate.before(
-                inputPeriodModel.endPeriodDate()
-        )
-                && (inputPeriodModel.openingDate() == null || inputPeriodModel.openingDate() != null && DateUtils.getInstance().today.after(
-                inputPeriodModel.openingDate()
-        )
-                || DateUtils.getInstance().today == inputPeriodModel.openingDate())
-                && (inputPeriodModel.closingDate() == null || inputPeriodModel.closingDate() != null && DateUtils.getInstance().today.before(
-                inputPeriodModel.closingDate()
-        ))
-                )
+    fun isTodayRightDayForInputPeriod(inputPeriodModel: DateRangeInputPeriodModel): Boolean {
+        return (
+            (
+                currentDate.after(inputPeriodModel.initialPeriodDate()) ||
+                    currentDate == inputPeriodModel.initialPeriodDate()
+                ) &&
+                currentDate.before(inputPeriodModel.endPeriodDate()) &&
+                (
+                    inputPeriodModel.openingDate() == null ||
+                        inputPeriodModel.openingDate() != null &&
+                        DateUtils.getInstance().today.after(inputPeriodModel.openingDate()) ||
+                        DateUtils.getInstance().today == inputPeriodModel.openingDate()
+                    ) &&
+                (
+                    inputPeriodModel.closingDate() == null ||
+                        inputPeriodModel.closingDate() != null &&
+                        DateUtils.getInstance().today.before(inputPeriodModel.closingDate())
+                    )
+            )
     }
 
     override fun getItemCount() =
