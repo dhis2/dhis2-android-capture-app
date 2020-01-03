@@ -50,7 +50,7 @@ public class SyncManagerContracts {
 
     public interface Presenter {
 
-        void validateGateway(String gateway);
+        void validateGatewayObservable(String gateway);
 
         void onItemClick(int itemPosition);
 
@@ -97,5 +97,7 @@ public class SyncManagerContracts {
         void smsWaitForResponse(boolean waitForResponse);
 
         void smsWaitForResponseTimeout(int timeout);
+
+        boolean isGatewaySetAndValid(String gateway);
     }
 }

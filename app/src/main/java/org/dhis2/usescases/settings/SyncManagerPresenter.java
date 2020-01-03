@@ -1,5 +1,6 @@
 package org.dhis2.usescases.settings;
 
+import static android.text.TextUtils.isEmpty;
 import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
 import static org.dhis2.utils.analytics.AnalyticsConstants.SYNC_DATA_NOW;
 import static org.dhis2.utils.analytics.AnalyticsConstants.SYNC_METADATA_NOW;
@@ -9,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import org.dhis2.R;
 import org.dhis2.data.prefs.PreferenceProvider;
 import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.data.service.SyncDataWorker;
@@ -25,6 +27,7 @@ import org.hisp.dhis.android.core.sms.domain.interactor.ConfigCase;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.widget.EditText;
 
 import androidx.work.Constraints;
 import androidx.work.ExistingPeriodicWorkPolicy;
@@ -110,15 +113,27 @@ public class SyncManagerPresenter
                 }));
     }
 
-    public void validateGateway(String gateway){
-        if (gatewayValidator.validate(gateway)){
+    public void validateGatewayObservable(String gateway){
+        if (!gateway.startsWith("+") && gateway.length() == 1) {
+            view.showInvalidGatewayError();
+        } else if (gatewayValidator.validate(gateway)){
             view.hideGatewayError();
             smsNumberSet(gateway);
-        } else {
-            view.showInvalidGatewayError();
+        } else if (gateway.isEmpty()){
+            view.requestNoEmptySMSGateway();
         }
     }
 
+    public boolean isGatewaySetAndValid(String gateway) {
+        if (gateway.isEmpty()){
+            view.requestNoEmptySMSGateway();
+            return false;
+        } else if (!gatewayValidator.validate(gateway)){
+            view.showInvalidGatewayError();
+            return false;
+        }
+        return true;
+    }
     /**
      * This method allows you to create a new periodic DATA sync work with an
      * interval defined by {@code seconds}. All scheduled works will be cancelled in

@@ -19,11 +19,9 @@ import android.view.ViewGroup;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.widget.SwitchCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.core.content.ContextCompat;
 import androidx.databinding.DataBindingUtil;
@@ -32,7 +30,6 @@ import androidx.work.WorkInfo;
 import androidx.work.WorkManager;
 
 import com.google.android.material.snackbar.Snackbar;
-import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.jakewharton.rxbinding2.widget.RxCompoundButton;
 import com.jakewharton.rxbinding2.widget.RxTextView;
@@ -232,7 +229,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
         ((TextView) binding.settingsSms.findViewById(R.id.settings_sms_result_timeout))
                 .setText(Integer.toString(timeout));
         if (!gateway.getText().toString().isEmpty()){
-            presenter.validateGateway(gateway.getText().toString());
+            presenter.validateGatewayObservable(gateway.getText().toString());
         }
         boolean hasNetwork = NetworkUtils.isOnline(context);
 
@@ -251,10 +248,10 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
 
         listenerDisposable.add(RxTextView.textChanges(binding.settingsSms.findViewById(R.id.settings_sms_receiver))
                 .skipInitialValue()
-                .debounce(1000, TimeUnit.MILLISECONDS, Schedulers.io())
+                .debounce(500, TimeUnit.MILLISECONDS, Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                        data -> presenter.validateGateway(data.toString()),
+                        data -> presenter.validateGatewayObservable(data.toString()),
                         Timber::d
                 ));
 
@@ -266,7 +263,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
                             if (!isChecked) {
                                 presenter.smsSwitch(false);
                             } else if (NetworkUtils.isOnline(context) &&
-                                    isGatewaySet() &&
+                                    isGatewaySetAndValid() &&
                                     checkSMSPermissions(true)) {
                                 presenter.smsSwitch(true);
                             }
@@ -626,14 +623,10 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
                 Snackbar.LENGTH_SHORT).show();
     }
 
-    private boolean isGatewaySet() {
-        boolean isGatewayEmpty = isEmpty(
-                ((EditText) binding.settingsSms.findViewById(R.id.settings_sms_receiver)).getText().toString()
-        );
-        if (isGatewayEmpty) {
-            requestNoEmptySMSGateway();
-        }
-        return !isGatewayEmpty;
+    private boolean isGatewaySetAndValid() {
+        String gateway =
+                ((EditText) binding.settingsSms.findViewById(R.id.settings_sms_receiver)).getText().toString();
+        return presenter.isGatewaySetAndValid(gateway);
     }
 
     private Boolean checkSMSPermissions(boolean requestPermission) {
