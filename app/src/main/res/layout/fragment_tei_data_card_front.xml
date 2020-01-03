@@ -195,7 +195,6 @@
                 android:background="@drawable/photo_temp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/ic_tei_default"
                 tools:ignore="ContentDescription" />
 
 
@@ -307,7 +306,6 @@
                     android:id="@+id/enrollment_date"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="10dp"
                     android:fontFamily="@font/rubik_medium"
                     android:gravity="end"
                     android:textColor="@color/text_black_4d4d4d"
@@ -315,6 +313,7 @@
                     android:visibility="@{dashboardModel.currentEnrollment.enrollmentDate()==null?View.GONE:View.VISIBLE}"
                     app:date="@{dashboardModel.currentEnrollment.enrollmentDate()}"
                     app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/enrollment_date_label"
                     app:layout_constraintTop_toTopOf="@id/enrollment_date_label"
                     tools:text="DD/MM/YYYY" />
 
@@ -322,13 +321,13 @@
                     android:id="@+id/org_unit"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="10dp"
                     android:fontFamily="@font/rubik_medium"
                     android:gravity="end"
                     android:text='@{dashboardModel.getCurrentOrgUnit().displayName(),default="OrgUnit"}'
                     android:textColor="@color/text_black_4d4d4d"
                     android:textSize="12sp"
                     app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/org_unit_label"
                     app:layout_constraintTop_toTopOf="@id/org_unit_label" />
             </androidx.constraintlayout.widget.ConstraintLayout>
         </com.google.android.flexbox.FlexboxLayout>

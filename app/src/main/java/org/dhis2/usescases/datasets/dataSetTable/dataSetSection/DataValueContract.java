@@ -46,6 +46,8 @@ public class DataValueContract {
         void setSection(Section section);
 
         void updateTabLayout(int count);
+
+        void setDataAccess(boolean accessDataWrite);
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter{

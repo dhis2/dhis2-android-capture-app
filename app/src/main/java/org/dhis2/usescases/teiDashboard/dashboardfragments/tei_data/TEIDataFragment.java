@@ -33,6 +33,7 @@ import org.dhis2.utils.Constants;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.DialogClickListener;
 import org.dhis2.utils.EventCreationType;
+import org.dhis2.utils.ObjectStyleUtils;
 import org.dhis2.utils.customviews.CategoryComboDialog;
 import org.dhis2.utils.customviews.CustomDialog;
 import org.hisp.dhis.android.core.category.CategoryCombo;
@@ -101,7 +102,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
         if (((App) context.getApplicationContext()).dashboardComponent() != null)
             ((App) context.getApplicationContext())
                     .dashboardComponent()
-                    .plus(new TEIDataModule(activity.getProgramUid(), activity.getTeiUid()))
+                    .plus(new TEIDataModule(this, activity.getProgramUid(), activity.getTeiUid()))
                     .inject(this);
     }
 
@@ -142,7 +143,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
     @Override
     public void onResume() {
         super.onResume();
-        presenter.init(this);
+        presenter.init();
         dashboardViewModel.dashboardModel().observe(this, this::setData);
         dashboardViewModel.eventUid().observe(this, this::displayGenerateEvent);
     }
@@ -197,11 +198,6 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-       /* if (requestCode == REQ_DETAILS) {
-            if (resultCode == RESULT_OK) {
-                activity.getPresenter().getData();
-            }
-        }*/
         if (requestCode == REQ_EVENT && resultCode == RESULT_OK) {
             presenter.getTEIEvents();
             if (data != null) {
@@ -350,8 +346,16 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
 
     @Override
     public void showCatComboDialog(String eventId, CategoryCombo categoryCombo, List<CategoryOptionCombo> categoryOptionCombos) {
-        CategoryComboDialog dialog = new CategoryComboDialog(getAbstracContext(), categoryCombo, categoryOptionCombos, 123,
-                selectedOption -> presenter.changeCatOption(eventId, selectedOption), categoryCombo.displayName());
+        CategoryComboDialog dialog = new CategoryComboDialog(
+                getAbstracContext(),
+                categoryCombo,
+                123,
+                selectedOption ->
+                        presenter.changeCatOption(
+                                eventId,
+                                selectedOption),
+                categoryCombo.displayName());
+
         dialog.setCancelable(false);
         dialog.setCanceledOnTouchOutside(false);
         dialog.show();
@@ -401,11 +405,15 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
     }
 
     @Override
-    public void showTeiImage(String filePath) {
+    public void showTeiImage(String filePath, String defaultIcon) {
         Glide.with(this)
                 .load(new File(filePath))
-                .placeholder(R.drawable.photo_temp_gray)
-                .error(R.drawable.photo_temp_gray)
+                .placeholder(
+                        ObjectStyleUtils.getIconResource(context, defaultIcon, R.drawable.photo_temp_gray)
+                )
+                .error(
+                        ObjectStyleUtils.getIconResource(context, defaultIcon, R.drawable.photo_temp_gray)
+                )
                 .transition(withCrossFade())
                 .transform(new CircleCrop())
                 .into(binding.cardFront.teiImage);

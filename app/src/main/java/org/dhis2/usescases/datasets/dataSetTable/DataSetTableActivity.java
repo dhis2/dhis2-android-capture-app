@@ -3,6 +3,7 @@ package org.dhis2.usescases.datasets.dataSetTable;
 
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.View;
 
 import androidx.annotation.NonNull;
@@ -45,6 +46,7 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
     DataSetTableContract.Presenter presenter;
     private ActivityDatasetTableBinding binding;
     private DataSetSectionAdapter viewPagerAdapter;
+    private boolean backPressed;
 
     public static Bundle getBundle(@NonNull String dataSetUid,
                                    @NonNull String orgUnitUid,
@@ -210,9 +212,10 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
 
     @Override
     public void isDataSetOpen(boolean dataSetIsOpen) {
-        binding.programLock.setImageResource(!dataSetIsOpen ? R.drawable.ic_lock_open_green : R.drawable.ic_lock_completed);
-        binding.programLockText.setText(!dataSetIsOpen ? getString(org.dhis2.R.string.data_set_open) : getString(org.dhis2.R.string.data_set_closed));
-        binding.programLockText.setTextColor(!dataSetIsOpen ? getResources().getColor(R.color.green_7ed) : getResources().getColor(R.color.gray_666));
+        boolean editStatus = !dataSetIsOpen && accessDataWrite;
+        binding.programLock.setImageResource(editStatus ? R.drawable.ic_edit_green : R.drawable.ic_visibility);
+        binding.programLockText.setText(!dataSetIsOpen ? getString(org.dhis2.R.string.event_open) : getString(org.dhis2.R.string.completed));
+        binding.programLockText.setTextColor(editStatus ? getResources().getColor(R.color.green_7ed) : getResources().getColor(R.color.gray_666));
     }
 
     @Override
@@ -260,5 +263,25 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
 
     public void update() {
         presenter.init(orgUnitUid, periodTypeName, catOptCombo, periodInitialDate, periodId);
+    }
+
+    @Override
+    public void back() {
+        if(getCurrentFocus() == null || backPressed)
+            super.back();
+        else {
+            backPressed = true;
+            binding.getRoot().requestFocus();
+            back();
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        back();
+    }
+
+    public boolean isBackPressed() {
+        return backPressed;
     }
 }

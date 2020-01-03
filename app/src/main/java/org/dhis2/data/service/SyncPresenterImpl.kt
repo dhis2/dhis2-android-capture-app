@@ -175,6 +175,7 @@ class SyncPresenterImpl(
 
     override fun blockSyncGranularDataSet(dataSetUid: String): ListenableWorker.Result {
         Completable.fromObservable(syncGranularDataSet(dataSetUid))
+            .andThen(Completable.fromObservable(syncGranularDataSetComplete(dataSetUid)))
             .blockingAwait()
         return if (!checkSyncDataSetStatus(dataSetUid)) {
             ListenableWorker.Result.failure()
@@ -195,7 +196,7 @@ class SyncPresenterImpl(
         )
             .andThen(
                 Completable.fromObservable(
-                    syncGranularDataSet(dataSetUid, orgUnitUid, attrOptionCombo, periodId)
+                    syncGranularDataSetComplete(dataSetUid, orgUnitUid, attrOptionCombo, periodId)
                 )
             )
             .blockingAwait()
@@ -249,7 +250,7 @@ class SyncPresenterImpl(
             .upload()
     }
 
-    override fun syncGranularDataSet(
+    override fun syncGranularDataSetComplete(
         dataSetUid: String,
         orgUnit: String,
         attributeOptionCombo: String,
@@ -260,6 +261,12 @@ class SyncPresenterImpl(
             .byAttributeOptionComboUid().eq(attributeOptionCombo)
             .byOrganisationUnitUid().eq(orgUnit)
             .byPeriod().eq(period).upload()
+    }
+
+    override fun syncGranularDataSetComplete(dataSetUid: String?): Observable<D2Progress> {
+        return d2.dataSetModule().dataSetCompleteRegistrations()
+            .byDataSetUid().eq(dataSetUid)
+            .upload()
     }
 
     override fun checkSyncEventStatus(uid: String): Boolean {

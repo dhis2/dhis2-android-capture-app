@@ -4,8 +4,6 @@ import android.content.Context;
 
 import androidx.annotation.NonNull;
 
-import com.squareup.sqlbrite2.BriteDatabase;
-
 import org.dhis2.Bindings.RuleExtensionsKt;
 import org.dhis2.R;
 import org.dhis2.data.forms.FormRepository;
@@ -13,6 +11,7 @@ import org.dhis2.data.forms.FormSectionViewModel;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactoryImpl;
+import org.dhis2.data.forms.dataentry.fields.image.ImageHolder;
 import org.dhis2.data.forms.dataentry.fields.image.ImageViewModel;
 import org.dhis2.data.forms.dataentry.fields.orgUnit.OrgUnitViewModel;
 import org.dhis2.data.forms.dataentry.fields.picture.PictureViewModel;
@@ -319,6 +318,9 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                         ProgramStage stage = d2.programModule().programStages().uid(eventSingle.programStage()).blockingGet();
                         List<ProgramStageSection> stageSections = d2.programModule().programStageSections().byProgramStageUid().eq(stage.uid()).blockingGet();
                         if (stageSections.size() > 0) {
+                            Collections.sort(stageSections, (one, two) ->
+                                    one.sortOrder().compareTo(two.sortOrder()));
+
                             for (ProgramStageSection section :stageSections)
                                 formSection.add(FormSectionViewModel.createForSection(eventUid, section.uid(), section.displayName(),
                                         section.renderType().mobile() != null ? section.renderType().mobile().type().name() : null));
@@ -351,6 +353,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
             if (!isEmpty(fieldViewModel.optionSet()) && renderingType != ProgramStageSectionRenderingType.LISTING) {
                 List<Option> options = d2.optionModule().options().byOptionSetUid().eq(fieldViewModel.optionSet() == null ? "" : fieldViewModel.optionSet())
                         .blockingGet();
+                Collections.sort(options, (one, two) -> one.sortOrder().compareTo(two.sortOrder()));
                 for (Option option : options) {
                     ValueTypeDeviceRendering fieldRendering = null;
 
@@ -363,7 +366,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
 
                     renderList.add(fieldFactory.create(
                             fieldViewModel.uid() + "." + option.uid(),
-                            option.displayName() + "-" + option.code(), ValueType.TEXT, false,
+                            option.displayName() + ImageHolder.NAME_CODE_DELIMITATOR + option.code(), ValueType.TEXT, false,
                             fieldViewModel.optionSet(), fieldViewModel.value(), fieldViewModel.programStageSection(),
                             fieldViewModel.allowFutureDate(), fieldViewModel.editable() == null ? false : fieldViewModel.editable(), renderingType, fieldViewModel.description(), fieldRendering, options.size(), objectStyle, fieldViewModel.fieldMask()));
 
@@ -477,14 +480,12 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                         ProgramStageSectionRenderingType renderingType = programStageSection != null && programStageSection.renderType() != null &&
                                 programStageSection.renderType().mobile() != null ?
                                 programStageSection.renderType().mobile().type() : null;
-                        Timber.tag("FIELD").d("Field %s took %s millis", displayName, System.currentTimeMillis() - init);
                         return fieldFactory.create(uid, formName == null ? displayName : formName,
                                 valueType, mandatory, optionSet, dataValue,
                                 programStageSection != null ? programStageSection.uid() : null, allowFurureDates,
                                 !isEventEditable,
                                 renderingType, description, fieldRendering, optionCount, objectStyle, de.fieldMask());
                     })
-                    .doOnNext(data -> Timber.tag("FIELD").d("Field %s is ready", data.label()))
                     .toList().toFlowable()
                     .map(data -> sectionFields = data)
                     .map(this::checkRenderType);
@@ -615,6 +616,8 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
 
                                 if (de.valueType() == ValueType.AGE)
                                     value = value.split("T")[0];
+                            }else if(de.valueType().isNumeric()){
+                                value = Float.valueOf(value).toString();
                             }
 
                             return RuleDataValue.create(event.eventDate(), event.programStage(), de.uid(), value);

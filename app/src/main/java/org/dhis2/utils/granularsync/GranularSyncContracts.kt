@@ -39,6 +39,8 @@ class GranularSyncContracts {
         fun closeDialog()
         fun setState(state: State)
         fun prepareConflictAdapter(conflicts: MutableList<TrackerImportConflict>)
+        fun emptyEnrollmentError(): String
+        fun unsupportedTask(): String
     }
 
     interface Presenter : AbstractActivityContracts.Presenter {

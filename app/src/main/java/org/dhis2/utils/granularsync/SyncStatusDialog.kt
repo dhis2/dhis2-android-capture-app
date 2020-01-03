@@ -74,12 +74,12 @@ class SyncStatusDialog private constructor(
     }
 
     class Builder {
-        internal lateinit var recordUid: String
-        internal lateinit var conflictType: ConflictType
-        internal var orgUnitDataValue: String? = null
-        internal var attributeComboDataValue: String? = null
-        internal var periodIdDataValue: String? = null
-        internal var dismissListener: GranularSyncContracts.OnDismissListener? = null
+        private lateinit var recordUid: String
+        private lateinit var conflictType: ConflictType
+        private var orgUnitDataValue: String? = null
+        private var attributeComboDataValue: String? = null
+        private var periodIdDataValue: String? = null
+        private var dismissListener: GranularSyncContracts.OnDismissListener? = null
 
         fun setUid(uid: String): Builder {
             this.recordUid = uid
@@ -172,14 +172,21 @@ class SyncStatusDialog private constructor(
         when (state) {
             State.TO_POST,
             State.TO_UPDATE -> setNoConflictMessage(getString(R.string.no_conflicts_update_message))
-            State.SYNCED -> setNoConflictMessage(getString(R.string.no_conflicts_synced_message))
+            State.SYNCED -> {
+                setNoConflictMessage(getString(R.string.no_conflicts_synced_message))
+                binding!!.syncButton.visibility = View.GONE
+                binding!!.connectionMessage.visibility = View.GONE
+            }
             State.WARNING, State.ERROR ->
                 if (conflictType == ConflictType.PROGRAM || conflictType == ConflictType.DATA_SET) {
                     setProgramConflictMessage(state)
                 } else if (conflictType == ConflictType.DATA_VALUES) {
                     setDataSetInstanceMessage()
                 }
-            else -> {}
+            State.SYNCED_VIA_SMS, State.SENT_VIA_SMS ->
+                setNoConflictMessage(getString(R.string.sms_synced_message))
+            else -> { /*states not in use*/
+            }
         }
     }
 
@@ -190,15 +197,22 @@ class SyncStatusDialog private constructor(
     private fun setNetworkMessage() {
         if (!NetworkUtils.isOnline(context)) {
             if (presenter.isSMSEnabled()) {
-                analyticsHelper.setEvent(SYNC_GRANULAR_SMS, CLICK, SYNC_GRANULAR)
-                binding!!.connectionMessage.setText(R.string.network_unavailable_sms)
-                binding!!.syncButton.setText(R.string.action_sync_sms)
-                binding!!.syncButton.visibility = View.VISIBLE
-                binding!!.syncButton.setOnClickListener { syncSMS() }
+                if (conflictType != ConflictType.PROGRAM &&
+                    conflictType != ConflictType.DATA_SET &&
+                    conflictType != ConflictType.TEI // FYI - Tei sms sync is temporary disabled
+                ) {
+                    analyticsHelper.setEvent(SYNC_GRANULAR_SMS, CLICK, SYNC_GRANULAR)
+                    binding!!.connectionMessage.setText(R.string.network_unavailable_sms)
+                    binding!!.syncButton.setText(R.string.action_sync_sms)
+                    binding!!.syncButton.visibility = View.VISIBLE
+                    binding!!.syncButton.setOnClickListener { syncSMS() }
+                } else {
+                    binding!!.syncButton.visibility = View.GONE
+                }
             } else {
                 analyticsHelper.setEvent(SYNC_GRANULAR_ONLINE, CLICK, SYNC_GRANULAR)
                 binding!!.connectionMessage.setText(R.string.network_unavailable)
-                binding!!.syncButton.visibility = View.INVISIBLE
+                binding!!.syncButton.visibility = View.GONE
                 binding!!.syncButton.setOnClickListener(null)
             }
         } else {
@@ -345,10 +359,8 @@ class SyncStatusDialog private constructor(
 
     private fun hasPermissions(permissions: Array<String>): Boolean {
         for (permission in permissions) {
-            if (ContextCompat.checkSelfPermission(
-                context!!,
-                permission
-            ) != PackageManager.PERMISSION_GRANTED
+            if (ContextCompat.checkSelfPermission(context!!, permission) !=
+                PackageManager.PERMISSION_GRANTED
             ) {
                 return false
             }
@@ -513,5 +525,13 @@ class SyncStatusDialog private constructor(
             else -> {
             }
         }
+    }
+
+    override fun emptyEnrollmentError(): String {
+        return getString(R.string.granular_sync_enrollments_empty)
+    }
+
+    override fun unsupportedTask(): String {
+        return getString(R.string.granular_sync_unsupported_task)
     }
 }

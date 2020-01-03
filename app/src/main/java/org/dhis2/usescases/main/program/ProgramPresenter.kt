@@ -4,10 +4,8 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.processors.PublishProcessor
 import org.dhis2.data.prefs.PreferenceProvider
 import org.dhis2.data.schedulers.SchedulerProvider
-import org.dhis2.data.tuples.Pair
 import org.dhis2.utils.Constants.PROGRAM_THEME
 import org.dhis2.utils.filters.FilterManager
-import org.hisp.dhis.android.core.period.DatePeriod
 import timber.log.Timber
 
 class ProgramPresenter internal constructor(
@@ -19,17 +17,14 @@ class ProgramPresenter internal constructor(
 ) {
 
     var disposable: CompositeDisposable = CompositeDisposable()
-    private val programQueries = PublishProcessor.create<Pair<List<DatePeriod>, List<String>>>()
 
     fun init() {
-        val loadingProcessor = PublishProcessor.create<Boolean>()
+        val applyFiler = PublishProcessor.create<FilterManager>()
 
         disposable.add(
-            filterManager.asFlowable()
-                .startWith(filterManager)
+            applyFiler
                 .doOnNext { Timber.tag("INIT DATA").d("NEW FILTER") }
                 .switchMap { filterManager ->
-                    loadingProcessor.onNext(true)
                     homeRepository.programModels(
                         filterManager.periodFilters,
                         filterManager.orgUnitUidsFilters,
@@ -59,11 +54,15 @@ class ProgramPresenter internal constructor(
         )
 
         disposable.add(
-            loadingProcessor
+            filterManager.asFlowable()
+                .startWith(filterManager)
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
-                    { view.showFilterProgress() },
+                    {
+                        view.showFilterProgress()
+                        applyFiler.onNext(filterManager)
+                    },
                     { Timber.e(it) }
                 )
         )
@@ -84,9 +83,7 @@ class ProgramPresenter internal constructor(
     }
 
     fun updateProgramQueries() {
-        programQueries.onNext(
-            Pair.create(filterManager.periodFilters, filterManager.orgUnitUidsFilters)
-        )
+        filterManager.publishData()
     }
 
     fun onItemClick(programModel: ProgramViewModel, programTheme: Int) {

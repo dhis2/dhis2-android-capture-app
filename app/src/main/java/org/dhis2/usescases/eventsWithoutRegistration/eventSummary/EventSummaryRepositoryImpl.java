@@ -163,7 +163,7 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
         boolean mandatory = stage.compulsory();
         String optionSet = dataElement.optionSetUid();
         String dataValue = value;
-        List<Option> option = d2.optionModule().options().byOptionSetUid().eq(optionSet).byCode().eq(dataValue).blockingGet();
+        List<Option> option = optionSet!=null?d2.optionModule().options().byOptionSetUid().eq(optionSet).byCode().eq(dataValue).blockingGet() : new ArrayList<>();
         boolean allowFurureDates = stage.allowFutureDate();
         String formName = dataElement.displayFormName();
         String description = dataElement.displayDescription();
@@ -272,8 +272,7 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
 
     @Override
     public Observable<Program> getProgramWithId(String programUid) {
-        return d2.programModule().programs().withTrackedEntityType().withProgramTrackedEntityAttributes().withProgramIndicators()
-                .withProgramRuleVariables().withProgramSections()
+        return d2.programModule().programs().withTrackedEntityType()
                 .uid(programUid).get().toObservable();
     }
 }

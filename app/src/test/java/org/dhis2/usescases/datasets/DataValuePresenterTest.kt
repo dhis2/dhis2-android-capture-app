@@ -1,4 +1,4 @@
-package org.dhis2.usecases.datasets
+package org.dhis2.usescases.datasets
 
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify

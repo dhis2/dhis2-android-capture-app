@@ -9,6 +9,15 @@ import io.reactivex.processors.FlowableProcessor
 import io.reactivex.processors.PublishProcessor
 import java.io.File
 import java.util.Date
+import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
+import kotlin.collections.List
+import kotlin.collections.forEach
+import kotlin.collections.map
+import kotlin.collections.set
+import kotlin.collections.sortBy
+import kotlin.collections.toMap
+import kotlin.collections.toMutableMap
 import org.dhis2.R
 import org.dhis2.data.forms.dataentry.DataEntryRepository
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel
@@ -38,6 +47,7 @@ import org.hisp.dhis.rules.models.RuleEffect
 import timber.log.Timber
 
 class EnrollmentPresenterImpl(
+    val view: EnrollmentView,
     val d2: D2,
     private val enrollmentObjectRepository: EnrollmentObjectRepository,
     private val dataEntryRepository: DataEntryRepository,
@@ -45,20 +55,21 @@ class EnrollmentPresenterImpl(
     private val programRepository: ReadOnlyOneObjectRepositoryFinalImpl<Program>,
     private val schedulerProvider: SchedulerProvider,
     val formRepository: EnrollmentFormRepository
-) : EnrollmentContract.Presenter, RulesActionCallbacks {
+) : RulesActionCallbacks {
 
     private val TAG = "EnrollmentPresenter"
     private lateinit var disposable: CompositeDisposable
-    private lateinit var view: EnrollmentContract.View
     private val optionsToHide = ArrayList<String>()
     private val optionsGroupsToHide = ArrayList<String>()
     private val optionsGroupToShow = HashMap<String, ArrayList<String>>()
     private val fieldsFlowable: FlowableProcessor<Boolean> = PublishProcessor.create()
     private var lastFocusItem: String? = null
 
-    override fun init(view: EnrollmentContract.View) {
-        this.view = view
+    fun init() {
         disposable = CompositeDisposable()
+
+        view.hideSaveButton()
+        view.showAdjustingForm()
 
         disposable.add(
             teiRepository.get()
@@ -263,6 +274,7 @@ class EnrollmentPresenterImpl(
 
         disposable.add(
             fieldsFlowable.startWith(true)
+                .observeOn(schedulerProvider.io())
                 .switchMap {
                     Flowable.zip<List<FieldViewModel>, Result<RuleEffect>, List<FieldViewModel>>(
                         dataEntryRepository.list(),
@@ -274,13 +286,16 @@ class EnrollmentPresenterImpl(
                 .observeOn(schedulerProvider.ui())
                 .subscribe({
                     view.showFields(it)
+                    view.showSaveButton()
+                    view.hideAdjustingForm()
                 }) {
                     Timber.tag(TAG).e(it)
+                    view.hideAdjustingForm()
                 }
         )
     }
 
-    override fun finish(enrollmentMode: EnrollmentActivity.EnrollmentMode) {
+    fun finish(enrollmentMode: EnrollmentActivity.EnrollmentMode) {
         when (enrollmentMode) {
             EnrollmentActivity.EnrollmentMode.NEW -> disposable.add(
                 formRepository.autoGenerateEvents()
@@ -302,7 +317,7 @@ class EnrollmentPresenterImpl(
         }
     }
 
-    override fun openInitial(eventUid: String): Boolean {
+    fun openInitial(eventUid: String): Boolean {
         val catComboUid = getProgram().categoryComboUid()
         val event = d2.eventModule().events().uid(eventUid).blockingGet()
         val stage = d2.programModule().programStages().uid(event.programStage()).blockingGet()
@@ -343,20 +358,20 @@ class EnrollmentPresenterImpl(
         return ArrayList(fieldMap.values)
     }
 
-    override fun getEnrollment(): Enrollment {
+    fun getEnrollment(): Enrollment {
         return enrollmentObjectRepository.blockingGet()
     }
 
-    override fun getProgram(): Program {
+    fun getProgram(): Program {
         return programRepository.blockingGet()
     }
 
-    override fun getOrgUnit(): OrganisationUnit {
+    fun getOrgUnit(): OrganisationUnit {
         return d2.organisationUnitModule().organisationUnits()
             .uid(getEnrollment().organisationUnit()).blockingGet()
     }
 
-    override fun updateEnrollmentStatus(newStatus: EnrollmentStatus): Boolean {
+    fun updateEnrollmentStatus(newStatus: EnrollmentStatus): Boolean {
         return try {
             if (getProgram().access()?.data()?.write() == true) {
                 enrollmentObjectRepository.setStatus(newStatus)
@@ -371,33 +386,33 @@ class EnrollmentPresenterImpl(
         }
     }
 
-    override fun updateEnrollmentDate(date: Date?) {
+    fun updateEnrollmentDate(date: Date?) {
         enrollmentObjectRepository.setEnrollmentDate(date)
         view.setUpEnrollmentDate(date)
     }
 
-    override fun updateIncidentDate(date: Date?) {
+    fun updateIncidentDate(date: Date?) {
         enrollmentObjectRepository.setIncidentDate(date)
         view.setUpIncidentDate(date)
     }
 
-    override fun saveEnrollmentGeometry(geometry: Geometry?) {
+    fun saveEnrollmentGeometry(geometry: Geometry?) {
         enrollmentObjectRepository.setGeometry(geometry)
     }
 
-    override fun saveTeiGeometry(geometry: Geometry?) {
+    fun saveTeiGeometry(geometry: Geometry?) {
         teiRepository.setGeometry(geometry)
     }
 
-    override fun deleteAllSavedData() {
+    fun deleteAllSavedData() {
         teiRepository.blockingDelete()
     }
 
-    override fun getLastFocusItem(): String? {
+    fun getLastFocusItem(): String? {
         return lastFocusItem
     }
 
-    override fun clearLastFocusItem() {
+    fun clearLastFocusItem() {
         lastFocusItem = null
     }
 
@@ -419,7 +434,7 @@ class EnrollmentPresenterImpl(
         }
     }
 
-    override fun saveValue(uid: String, value: String?): Boolean {
+    fun saveValue(uid: String, value: String?): Boolean {
         return if (valueIsAttribute(uid)) {
             saveAttribute(uid, value)
         } else {
@@ -515,11 +530,11 @@ class EnrollmentPresenterImpl(
         return d2.trackedEntityModule().trackedEntityAttributes().uid(uid).blockingExists()
     }
 
-    override fun onDettach() {
+    fun onDettach() {
         disposable.clear()
     }
 
-    override fun displayMessage(message: String?) {
+    fun displayMessage(message: String?) {
         view.displayMessage(message)
     }
 
@@ -620,6 +635,18 @@ class EnrollmentPresenterImpl(
         ) {
             d2.trackedEntityModule().trackedEntityAttributeValues().value(attributeUid, tei)
                 .blockingDelete()
+        }
+    }
+
+    fun dataIntegrityCheck(mandatoryOk: Boolean, hasError: Boolean): Boolean {
+        return if (!mandatoryOk) {
+            view.showMissingMandatoryFieldsMessage()
+            false
+        } else if (hasError) {
+            view.showErrorFieldsMessage()
+            false
+        } else {
+            true
         }
     }
 }

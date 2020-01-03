@@ -20,16 +20,6 @@
         android:clipToPadding="false"
         tools:openDrawer="end">
 
-        <TextView
-            android:id="@+id/emptyView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center_horizontal"
-            android:text="@string/empty_program_list"
-            android:textColor="@color/colorPrimary"
-            android:textSize="18sp"
-            android:visibility="gone" />
-
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/filter"
             android:layout_width="match_parent"
@@ -101,6 +91,18 @@
             app:spanCount="@{1}"
             tools:itemCount="4"
             tools:listitem="@layout/item_program_model" />
+
+
+        <TextView
+            android:id="@+id/emptyView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:layout_below="@id/progressLayout"
+            android:text="@string/empty_program_list"
+            android:textColor="@color/colorPrimary"
+            android:textSize="18sp"
+            android:visibility="gone" />
 
     </RelativeLayout>
 

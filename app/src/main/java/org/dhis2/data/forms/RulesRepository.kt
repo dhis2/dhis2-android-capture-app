@@ -2,10 +2,8 @@ package org.dhis2.data.forms
 
 import android.text.TextUtils.isEmpty
 import io.reactivex.Single
-import java.util.ArrayList
 import java.util.Calendar
 import java.util.Date
-import java.util.HashMap
 import java.util.Objects
 import org.dhis2.Bindings.toRuleDataValue
 import org.dhis2.Bindings.toRuleList
@@ -28,27 +26,21 @@ class RulesRepository(private val d2: D2) {
 
     // ORG UNIT GROUPS
     // USER ROLES
-    fun supplementaryData(): Single<Map<String, List<String>>> {
+    fun supplementaryData(orgUnitUid: String): Single<Map<String, List<String>>> {
         return Single.fromCallable {
             val supData = HashMap<String, MutableList<String>>()
-            for (ouGroup in d2.organisationUnitModule().organisationUnitGroups().blockingGet()) {
-                if (ouGroup.code() != null) {
-                    supData[ouGroup.code()!!] = ArrayList()
-                }
-            }
-            for (
-                ou in d2.organisationUnitModule().organisationUnits()
-                    .withOrganisationUnitGroups().blockingGet()
-            ) {
-                if (ou.organisationUnitGroups() != null) {
-                    for (ouGroup in ou.organisationUnitGroups()!!) {
-                        val groupOUs = supData[ouGroup.code()]
-                        if (groupOUs != null && !groupOUs.contains(ou.uid())) {
-                            groupOUs.add(ou.uid())
+
+            d2.organisationUnitModule().organisationUnits()
+                .withOrganisationUnitGroups().uid(orgUnitUid).blockingGet()
+                .let { orgUnit ->
+                    orgUnit.organisationUnitGroups()?.map {
+                        if (it.code() != null) {
+                            supData[it.code()!!] = arrayListOf(orgUnit.uid())
                         }
+                        supData[it.uid()!!] = arrayListOf(orgUnit.uid())
                     }
                 }
-            }
+
             val userRoleUids =
                 UidsHelper.getUidsList(d2.userModule().userRoles().blockingGet())
             supData["USER"] = userRoleUids
@@ -299,6 +291,8 @@ class RulesRepository(private val d2: D2) {
                         .byCode().eq(value)
                         .one().blockingGet()!!.name()
                 }
+            } else if (attribute.valueType()?.isNumeric!!) {
+                value = value?.toFloat().toString()
             }
             RuleAttributeValue.create(attributeValue.trackedEntityAttribute()!!, value!!)
         }

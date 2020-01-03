@@ -115,7 +115,11 @@ public class FilterManager {
             else if(!eventStatusFilters.contains(eventStatus))
                 eventStatusFilters.add(eventStatus);
         }
-        eventStatusFiltersApplied.set(eventStatusFilters.size());
+        if(eventStatusFilters.contains(EventStatus.ACTIVE)) {
+            eventStatusFiltersApplied.set(eventStatusFilters.size() - 1);
+        } else {
+            eventStatusFiltersApplied.set(eventStatusFilters.size());
+        }
         filterProcessor.onNext(this);
     }
 

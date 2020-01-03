@@ -64,6 +64,7 @@ class ProgramFragment : FragmentGlobalAbstract(), ProgramView {
 
         return binding.apply {
             presenter = this@ProgramFragment.presenter
+            programRecycler.itemAnimator = null
             programRecycler.adapter = adapter
             programRecycler.addItemDecoration(
                 DividerItemDecoration(

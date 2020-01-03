@@ -293,6 +293,8 @@ fun List<TrackedEntityDataValue>.toRuleDataValue(
                     optionRepository.byOptionSetUid().eq(de.optionSetUid()).byCode().eq(value).one()
                         .blockingGet().name()
             }
+        } else if (de.valueType()!!.isNumeric) {
+            value = value?.toFloat().toString()
         }
         RuleDataValue.create(
             event.eventDate()!!,

@@ -364,7 +364,13 @@ public class DataSetTableAdapter extends AbstractTableAdapter<CategoryOption, Da
                 changeCellItem(viewModels.get(0).size() - 1, viewModels.size() - 1, total + "", true);
             }
         }
-        changeCellItem(rowAction.columnPos(), rowAction.rowPos(), rowAction.value() != null ? rowAction.value() : "", false);
+        String value = rowAction.value();
+
+        if(rowAction.optionSetName() != null && !rowAction.optionSetName().isEmpty()){
+            value = rowAction.optionSetName();
+        }
+
+        changeCellItem(rowAction.columnPos(), rowAction.rowPos(), value != null ? value : "", false);
     }
 
     public void setShowRowTotal(Boolean showRowTotal) {

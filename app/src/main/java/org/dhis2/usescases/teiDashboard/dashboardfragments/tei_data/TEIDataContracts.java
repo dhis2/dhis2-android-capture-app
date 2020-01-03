@@ -51,12 +51,12 @@ public class TEIDataContracts {
 
         void openEventCapture(Intent intent);
 
-        void showTeiImage(String fileName);
+        void showTeiImage(String fileName,String defaultIcon);
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter {
 
-        void init(View view);
+        void init();
 
         void getTEIEvents();
 

@@ -28,6 +28,8 @@ public abstract class RowAction {
 
     public abstract int rowPos();
 
+    @Nullable
+    public abstract String optionSetName();
 
     public abstract int columnPos();
 
@@ -36,6 +38,12 @@ public abstract class RowAction {
     @NonNull
     public static RowAction create(@NonNull String id, @Nullable String value, @Nullable String dataElement, @Nullable String catOptComb, @Nullable String catCombo,
                                    int rowPos, int columnPos) {
-        return new AutoValue_RowAction(id, value, dataElement, null, catCombo, rowPos, columnPos, catOptComb);
+        return new AutoValue_RowAction(id, value, dataElement, null, catCombo, rowPos,null, columnPos, catOptComb);
+    }
+
+    @NonNull
+    public static RowAction create(@NonNull String id, @Nullable String value, @Nullable String optionSetName, @Nullable String dataElement, @Nullable String catOptComb, @Nullable String catCombo,
+                                   int rowPos, int columnPos) {
+        return new AutoValue_RowAction(id, value, dataElement, null, catCombo, rowPos,optionSetName, columnPos, catOptComb);
     }
 }

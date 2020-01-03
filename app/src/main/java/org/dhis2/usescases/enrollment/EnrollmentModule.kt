@@ -1,7 +1,6 @@
 package org.dhis2.usescases.enrollment
 
 import android.content.Context
-import com.squareup.sqlbrite2.BriteDatabase
 import dagger.Module
 import dagger.Provides
 import org.dhis2.R
@@ -19,7 +18,11 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceObjectRepos
 import org.hisp.dhis.rules.RuleExpressionEvaluator
 
 @Module
-class EnrollmentModule(val enrollmentUid: String, val programUid: String) {
+class EnrollmentModule(
+    val enrollmentView: EnrollmentView,
+    val enrollmentUid: String,
+    val programUid: String
+) {
 
     @Provides
     @PerActivity
@@ -40,7 +43,7 @@ class EnrollmentModule(val enrollmentUid: String, val programUid: String) {
     @Provides
     @PerActivity
     fun provideProgramRepository(d2: D2): ReadOnlyOneObjectRepositoryFinalImpl<Program> {
-        return d2.programModule().programs().withProgramTrackedEntityAttributes().uid(programUid)
+        return d2.programModule().programs().uid(programUid)
     }
 
     @Provides
@@ -70,8 +73,9 @@ class EnrollmentModule(val enrollmentUid: String, val programUid: String) {
         programRepository: ReadOnlyOneObjectRepositoryFinalImpl<Program>,
         schedulerProvider: SchedulerProvider,
         formRepository: EnrollmentFormRepository
-    ): EnrollmentContract.Presenter {
+    ): EnrollmentPresenterImpl {
         return EnrollmentPresenterImpl(
+            enrollmentView,
             d2,
             enrollmentObjectRepository,
             dataEntryRepository,
@@ -84,7 +88,7 @@ class EnrollmentModule(val enrollmentUid: String, val programUid: String) {
 
     @Provides
     @PerActivity
-    internal fun rulesRepository(briteDatabase: BriteDatabase, d2: D2): RulesRepository {
+    internal fun rulesRepository(d2: D2): RulesRepository {
         return RulesRepository(d2)
     }
 

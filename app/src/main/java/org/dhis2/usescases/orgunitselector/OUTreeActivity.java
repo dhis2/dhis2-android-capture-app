@@ -24,6 +24,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import io.reactivex.Flowable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.processors.FlowableProcessor;
@@ -69,6 +70,18 @@ public class OUTreeActivity extends ActivityGlobalAbstract implements OrgUnitSel
                                 .orderByDisplayName(RepositoryScope.OrderByDirection.ASC)
                                 .byRootOrganisationUnit(true)
                                 .get().toFlowable()
+                                .flatMap(orgUnits -> {
+                                            if (orgUnits.isEmpty()) {
+                                                return d2.organisationUnitModule().organisationUnits()
+                                                        .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE)
+                                                        .orderByDisplayName(RepositoryScope.OrderByDirection.ASC)
+                                                        .byRootOrganisationUnit(true)
+                                                        .get().toFlowable();
+                                            } else {
+                                                return Flowable.just(orgUnits);
+                                            }
+                                        }
+                                )
                                 .map(list -> {
                                     int minLevel = list.get(0).level();
                                     for (OrganisationUnit ou : list)
@@ -110,6 +123,18 @@ public class OUTreeActivity extends ActivityGlobalAbstract implements OrgUnitSel
                                         .byParentUid().eq(parentOu.val1().uid())
                                         .orderByDisplayName(RepositoryScope.OrderByDirection.ASC)
                                         .get().toFlowable()
+                                        .flatMap(orgUnits -> {
+                                                    if (orgUnits.isEmpty()) {
+                                                        return d2.organisationUnitModule().organisationUnits()
+                                                                .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE)
+                                                                .byParentUid().eq(parentOu.val1().uid())
+                                                                .orderByDisplayName(RepositoryScope.OrderByDirection.ASC)
+                                                                .get().toFlowable();
+                                                    } else {
+                                                        return Flowable.just(orgUnits);
+                                                    }
+                                                }
+                                        )
                                         .map(ouList -> Pair.create(parentOu.val0(), ouList)))
                         .filter(list -> binding.orgUnitRecycler.getAdapter() != null)
                         .map(organisationUnits -> {
@@ -142,7 +167,20 @@ public class OUTreeActivity extends ActivityGlobalAbstract implements OrgUnitSel
                                 .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_TEI_SEARCH)
                                 .byDisplayName().like("%" + name + "%")
                                 .orderByDisplayName(RepositoryScope.OrderByDirection.ASC)
-                                .get().toFlowable())
+                                .get().toFlowable()
+                                .flatMap(orgUnits -> {
+                                            if (orgUnits.isEmpty()) {
+                                                return d2.organisationUnitModule().organisationUnits()
+                                                        .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE)
+                                                        .byDisplayName().like("%" + name + "%")
+                                                        .orderByDisplayName(RepositoryScope.OrderByDirection.ASC)
+                                                        .get().toFlowable();
+                                            } else {
+                                                return Flowable.just(orgUnits);
+                                            }
+                                        }
+                                )
+                        )
                         .filter(name -> binding.orgUnitRecycler.getAdapter() != null)
                         .map(organisationUnits -> {
                             List<TreeNode> nodes = new ArrayList<>();
@@ -157,6 +195,11 @@ public class OUTreeActivity extends ActivityGlobalAbstract implements OrgUnitSel
                                 OrganisationUnit organisationUnitParent = d2.organisationUnitModule().organisationUnits()
                                         .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_TEI_SEARCH)
                                         .byUid().eq(str).one().blockingGet();
+                                if(organisationUnitParent == null){
+                                    organisationUnitParent = d2.organisationUnitModule().organisationUnits()
+                                            .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE)
+                                            .byUid().eq(str).one().blockingGet();
+                                }
                                 if (organisationUnitParent != null)
                                     nodes.add(
                                             new TreeNode(organisationUnitParent,

@@ -1,12 +1,8 @@
 package org.dhis2.usescases.teiDashboard.dashboardfragments.tei_data;
 
-import android.app.Activity;
 import android.content.Intent;
-import android.os.Bundle;
-import android.view.Menu;
 import android.view.View;
 
-import androidx.appcompat.widget.PopupMenu;
 import androidx.core.app.ActivityOptionsCompat;
 
 import org.dhis2.Bindings.ExtensionsKt;
@@ -18,13 +14,11 @@ import org.dhis2.usescases.events.ScheduledEventActivity;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity;
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity;
 import org.dhis2.usescases.qrCodes.QrActivity;
-import org.dhis2.usescases.sms.InputArguments;
-import org.dhis2.usescases.sms.SmsSubmitActivity;
 import org.dhis2.usescases.teiDashboard.DashboardProgramModel;
 import org.dhis2.usescases.teiDashboard.DashboardRepository;
-import org.dhis2.usescases.teiDashboard.nfc_data.NfcDataWriteActivity;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.EventCreationType;
+import org.dhis2.utils.analytics.AnalyticsHelper;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.event.Event;
@@ -40,10 +34,8 @@ import timber.log.Timber;
 import static org.dhis2.utils.analytics.AnalyticsConstants.ACTIVE_FOLLOW_UP;
 import static org.dhis2.utils.analytics.AnalyticsConstants.FOLLOW_UP;
 import static org.dhis2.utils.analytics.AnalyticsConstants.SHARE_TEI;
-import static org.dhis2.utils.analytics.AnalyticsConstants.TYPE_NFC;
 import static org.dhis2.utils.analytics.AnalyticsConstants.TYPE_QR;
 import static org.dhis2.utils.analytics.AnalyticsConstants.TYPE_SHARE;
-import static org.dhis2.utils.analytics.AnalyticsConstants.TYPE_SMS;
 
 /**
  * QUADRAM. Created by ppajuelo on 09/04/2019.
@@ -53,38 +45,52 @@ class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
     private final D2 d2;
     private final DashboardRepository dashboardRepository;
     private final SchedulerProvider schedulerProvider;
+    private final AnalyticsHelper analyticsHelper;
     private String programUid;
     private final String teiUid;
     private TEIDataContracts.View view;
     private CompositeDisposable compositeDisposable;
     private DashboardProgramModel dashboardModel;
 
-    public TEIDataPresenterImpl(D2 d2, DashboardRepository dashboardRepository,
-                                String programUid, String teiUid, SchedulerProvider schedulerProvider) {
+
+    public TEIDataPresenterImpl(TEIDataContracts.View view, D2 d2, DashboardRepository dashboardRepository,
+                                String programUid, String teiUid, SchedulerProvider schedulerProvider,
+                                AnalyticsHelper analyticsHelper) {
+        this.view = view;
         this.d2 = d2;
         this.dashboardRepository = dashboardRepository;
         this.programUid = programUid;
         this.teiUid = teiUid;
         this.schedulerProvider = schedulerProvider;
+        this.analyticsHelper = analyticsHelper;
+        this.compositeDisposable = new CompositeDisposable();
     }
 
     @Override
-    public void init(TEIDataContracts.View view) {
-        this.view = view;
-        this.compositeDisposable = new CompositeDisposable();
-
+    public void init() {
         compositeDisposable.add(
                 d2.trackedEntityModule().trackedEntityInstances().uid(teiUid).get()
-                        .map(tei -> ExtensionsKt.profilePicturePath(tei, d2, programUid))
+                        .map(tei -> {
+                                    String defaultIcon = d2.trackedEntityModule().trackedEntityTypes().uid(tei.trackedEntityType()).blockingGet().style().icon();
+                                    return Pair.create(
+                                            ExtensionsKt.profilePicturePath(tei, d2, programUid),
+                                            defaultIcon != null ? defaultIcon : ""
+                                    );
+                                }
+                        )
                         .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.ui())
                         .subscribe(
-                                view::showTeiImage,
+                                fileNameAndDefault -> view.showTeiImage(
+                                        fileNameAndDefault.val0(),
+                                        fileNameAndDefault.val1()
+                                ),
                                 Timber::e
                         )
         );
 
     }
+
 
     @Override
     public void getTEIEvents() {
@@ -95,23 +101,6 @@ class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
                                 if (eventModel.status() == EventStatus.SCHEDULE && eventModel.dueDate() != null && eventModel.dueDate().before(DateUtils.getInstance().getToday())) { //If a schedule event dueDate is before today the event is skipped
                                     dashboardRepository.updateState(eventModel, EventStatus.SKIPPED);
                                 }
-                                /*TODO: CHECK HOW LONG IT TAKES FOR EVENTS WITH MANY RULES
-                                if (eventModel.eventDate() != null) {
-                                    RuleEffectResult effectResult = new RulesUtilsProviderImpl(new CodeGeneratorImpl()).evaluateEvent(eventModel.uid(),null);
-                                    List<String> newMandatoryFields = effectResult.getMandatoryFields();
-                                    List<ProgramStageDataElement> psDataElementList = d2.programModule().programStages().uid(eventModel.programStage())
-                                            .withAllChildren().blockingGet().programStageDataElements();
-                                    for (ProgramStageDataElement psDataElement : psDataElementList) {
-                                        if (psDataElement.compulsory())
-                                            newMandatoryFields.add(psDataElement.dataElement().uid());
-                                    }
-                                    boolean missingMandatories = !newMandatoryFields.isEmpty() && d2.trackedEntityModule().trackedEntityDataValues()
-                                            .byEvent().eq(eventModel.uid())
-                                            .byDataElement().in(newMandatoryFields)
-                                            .blockingCount() < newMandatoryFields.size();
-                                    if (missingMandatories)
-                                        Timber.tag("MISSING FIELDS").d("THERE ARE MISSING MANDATORY FIELDS IN EVENT %s", eventModel.uid());
-                                }*/
                             }
                             return eventModels;
                         })
@@ -203,7 +192,7 @@ class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
     @Override
     public void onFollowUp(DashboardProgramModel dashboardProgramModel) {
         boolean followup = dashboardRepository.setFollowUp(dashboardProgramModel.getCurrentEnrollment().uid());
-        view.analyticsHelper().setEvent(ACTIVE_FOLLOW_UP, Boolean.toString(followup), FOLLOW_UP);
+        analyticsHelper.setEvent(ACTIVE_FOLLOW_UP, Boolean.toString(followup), FOLLOW_UP);
         view.showToast(followup ?
                 view.getContext().getString(R.string.follow_up_enabled) :
                 view.getContext().getString(R.string.follow_up_disabled));
@@ -214,43 +203,10 @@ class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
 
     @Override
     public void onShareClick(View mView) {
-        PopupMenu menu = new PopupMenu(view.getContext(), mView);
-
-        menu.getMenu().add(Menu.NONE, Menu.NONE, 0, "QR");
-        if (mView.getResources().getBoolean(R.bool.sms_enabled)) {
-            menu.getMenu().add(Menu.NONE, Menu.NONE, 2, "SMS");
-        }
-        menu.getMenu().add(Menu.NONE, Menu.NONE, 2, "NFC");
-
-        menu.setOnMenuItemClickListener(item -> {
-            switch (item.getOrder()) {
-                case 0:
-                    view.analyticsHelper().setEvent(TYPE_SHARE, TYPE_QR, SHARE_TEI);
-                    Intent intent = new Intent(view.getContext(), QrActivity.class);
-                    intent.putExtra("TEI_UID", teiUid);
-                    view.showQR(intent);
-                    return true;
-                case 1:
-                    view.analyticsHelper().setEvent(TYPE_SHARE, TYPE_SMS, SHARE_TEI);
-                    Activity activity = view.getAbstractActivity();
-                    Intent i = new Intent(activity, SmsSubmitActivity.class);
-                    Bundle args = new Bundle();
-                    InputArguments.setEnrollmentData(args, dashboardModel.getCurrentEnrollment().uid());
-                    i.putExtras(args);
-                    activity.startActivity(i);
-                    return true;
-                case 2:
-                    view.analyticsHelper().setEvent(TYPE_SHARE, TYPE_NFC, SHARE_TEI);
-                    Intent intentNfc = new Intent(view.getContext(), NfcDataWriteActivity.class);
-                    intentNfc.putExtra("TEI_UID", teiUid);
-                    view.showQR(intentNfc);
-                    return true;
-                default:
-                    return true;
-            }
-        });
-
-        menu.show();
+        analyticsHelper.setEvent(TYPE_SHARE, TYPE_QR, SHARE_TEI);
+        Intent intent = new Intent(view.getContext(), QrActivity.class);
+        intent.putExtra("TEI_UID", teiUid);
+        view.showQR(intent);
     }
 
     @Override
@@ -264,7 +220,7 @@ class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
 
     @Override
     public void onScheduleSelected(String uid, View sharedView) {
-        Intent intent = ScheduledEventActivity.Companion.getIntent(view.getContext(),uid);
+        Intent intent = ScheduledEventActivity.Companion.getIntent(view.getContext(), uid);
         ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(view.getAbstractActivity(), sharedView, "shared_view");
         view.openEventDetails(intent, options.toBundle());
     }

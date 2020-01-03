@@ -1,4 +1,4 @@
-package org.dhis2.usecases.main
+package org.dhis2.usescases.main
 
 import androidx.work.WorkManager
 import com.nhaarman.mockitokotlin2.any
@@ -19,8 +19,6 @@ import org.dhis2.data.prefs.PreferenceProvider
 import org.dhis2.data.schedulers.SchedulerProvider
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.dhis2.usescases.login.LoginActivity
-import org.dhis2.usescases.main.MainPresenter
-import org.dhis2.usescases.main.MainView
 import org.dhis2.utils.filters.FilterManager
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.category.CategoryCombo

@@ -81,8 +81,8 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         ((App) getApplicationContext()).userComponent().plus(
                 new EventCaptureModule(
-                        getIntent().getStringExtra(Constants.EVENT_UID),
-                        getIntent().getStringExtra(Constants.PROGRAM_UID)))
+                        this,
+                        getIntent().getStringExtra(Constants.EVENT_UID)))
                 .inject(this);
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_event_capture);
@@ -91,15 +91,7 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
 
         binding.calculationIndicator.text.setTextColor(ColorUtils.getContrastColor(ColorUtils.getPrimaryColor(this, ColorUtils.ColorType.PRIMARY_LIGHT)));
 
-        presenter.init(this);
-
-    }
-
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-
+        binding.eventViewPager.setAdapter(new EventCapturePagerAdapter(getSupportFragmentManager()));
     }
 
     @Override
@@ -142,12 +134,6 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
                 }
                 break;
         }
-    }
-
-    @Override
-    public void setUp() {
-        if (binding.eventViewPager.getAdapter() == null)
-            binding.eventViewPager.setAdapter(new EventCapturePagerAdapter(getSupportFragmentManager()));
     }
 
     @Override

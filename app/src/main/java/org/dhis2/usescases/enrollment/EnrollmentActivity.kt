@@ -7,12 +7,12 @@ import android.os.Bundle
 import android.text.TextUtils.isEmpty
 import android.view.LayoutInflater
 import android.view.View
-import android.view.inputmethod.InputMethodManager
 import android.widget.DatePicker
 import android.widget.PopupMenu
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
-import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.airbnb.lottie.LottieDrawable.INFINITE
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import io.reactivex.Flowable
@@ -55,12 +55,12 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityType
 
-class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentContract.View {
+class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
 
     enum class EnrollmentMode { NEW, CHECK }
 
     @Inject
-    lateinit var presenter: EnrollmentContract.Presenter
+    lateinit var presenter: EnrollmentPresenterImpl
 
     lateinit var binding: EnrollmentActivityBinding
     lateinit var mode: EnrollmentMode
@@ -95,6 +95,7 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentContract.View {
     override fun onCreate(savedInstanceState: Bundle?) {
         (applicationContext as App).userComponent()!!.plus(
             EnrollmentModule(
+                this,
                 intent.getStringExtra(ENROLLMENT_UID_EXTRA),
                 intent.getStringExtra(PROGRAM_UID_EXTRA)
             )
@@ -119,40 +120,35 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentContract.View {
         binding.fieldRecycler.adapter = adapter
 
         binding.next.setOnClickListener {
-            if (!adapter.mandatoryOk()) {
-                showInfoDialog(
-                    getString(R.string.unable_to_complete),
-                    getString(R.string.missing_mandatory_fields)
-                )
-            } else if (adapter.hasError()) {
-                showInfoDialog(
-                    getString(R.string.unable_to_complete),
-                    getString(R.string.field_errors)
-                )
-            } else {
+            if (presenter.dataIntegrityCheck(adapter.mandatoryOk(), adapter.hasError())) {
+                binding.root.requestFocus()
                 analyticsHelper().setEvent(SAVE_ENROLL, CLICK, SAVE_ENROLL)
                 presenter.finish(mode)
             }
         }
 
-        binding.fieldRecycler.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
-                if (newState == RecyclerView.SCROLL_STATE_DRAGGING) {
-                    adapter.setLastFocusItem(null)
-                    val imm = context!!.getSystemService(
-                        Activity.INPUT_METHOD_SERVICE
-                    ) as InputMethodManager
-                    imm.hideSoftInputFromWindow(recyclerView.windowToken, 0)
-                    binding.root.requestFocus()
-                    presenter.clearLastFocusItem()
-                }
+        binding.enrollmentDataButton.setOnClickListener {
+            if (binding.enrollmentData.visibility == View.GONE) {
+                binding.enrollmentDataText.text = getString(R.string.enrollment_data_hide)
+                binding.enrollmentData.visibility = View.VISIBLE
+                binding.enrollmentDataArrow.animate().scaleY(-1.0f).setDuration(200).start()
+            } else {
+                binding.enrollmentDataText.text = getString(R.string.enrollment_data_show)
+                binding.enrollmentData.visibility = View.GONE
+                binding.enrollmentDataArrow.animate().scaleY(1.0f).setDuration(200).start()
             }
-        })
+        }
+
+        binding.fieldRecycler.itemAnimator = null
+
+        binding.enrollmentDataText.text = getString(R.string.enrollment_data_hide)
+        binding.enrollmentData.visibility = View.VISIBLE
+        binding.enrollmentDataArrow.animate().scaleY(-1.0f).setDuration(0).start()
     }
 
     override fun onResume() {
         super.onResume()
-        presenter.init(this)
+        presenter.init()
     }
 
     override fun onPause() {
@@ -250,8 +246,29 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentContract.View {
         onBackPressed()
     }
 
+    override fun showMissingMandatoryFieldsMessage() {
+        showInfoDialog(
+            getString(R.string.unable_to_complete),
+            getString(R.string.missing_mandatory_fields)
+        )
+    }
+
+    override fun showErrorFieldsMessage() {
+        showInfoDialog(
+            getString(R.string.unable_to_complete),
+            getString(R.string.field_errors)
+        )
+    }
+
     override fun onBackPressed() {
-        if (mode == EnrollmentMode.CHECK) super.onBackPressed() else showDeleteDialog()
+        if (mode == EnrollmentMode.CHECK) {
+            if (presenter.dataIntegrityCheck(adapter.mandatoryOk(), adapter.hasError())) {
+                binding.root.requestFocus()
+                super.onBackPressed()
+            }
+        } else {
+            showDeleteDialog()
+        }
     }
 
     private fun showDeleteDialog() {
@@ -453,8 +470,11 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentContract.View {
     override fun displayEnrollmentCoordinates(
         enrollmentCoordinatesData: Pair<Program, Enrollment>?
     ) {
+        val featureType = enrollmentCoordinatesData?.first?.featureType()
+        val geometry = enrollmentCoordinatesData?.second?.geometry()
+
         binding.coordinatesView.visibility =
-            if (enrollmentCoordinatesData!!.first.featureType() != FeatureType.NONE) {
+            if (featureType != null && featureType != FeatureType.NONE) {
                 View.VISIBLE
             } else {
                 View.GONE
@@ -462,8 +482,8 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentContract.View {
 
         binding.coordinatesView.setLabel(getString(R.string.enrollment_coordinates))
 
-        binding.coordinatesView.featureType = enrollmentCoordinatesData.first.featureType()
-        binding.coordinatesView.updateLocation(enrollmentCoordinatesData.second.geometry())
+        binding.coordinatesView.featureType = featureType
+        binding.coordinatesView.updateLocation(geometry)
 
         binding.coordinatesView.setMapListener {
             startActivityForResult(
@@ -479,8 +499,9 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentContract.View {
     override fun displayTeiCoordinates(
         teiCoordinatesData: Pair<TrackedEntityType, TrackedEntityInstance>?
     ) {
+        val featureType = teiCoordinatesData!!.first.featureType() ?: FeatureType.NONE
         binding.teiCoordinatesView.visibility =
-            if (teiCoordinatesData!!.first.featureType() != FeatureType.NONE) {
+            if (featureType != FeatureType.NONE) {
                 View.VISIBLE
             } else {
                 View.GONE
@@ -495,7 +516,10 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentContract.View {
 
         binding.teiCoordinatesView.setMapListener {
             startActivityForResult(
-                MapSelectorActivity.create(this, it.featureType, it.currentCoordinates()),
+                MapSelectorActivity.create(
+                    this,
+                    it.featureType, it.currentCoordinates()
+                ),
                 RQ_INCIDENT_GEOMETRY
             )
         }
@@ -516,7 +540,37 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentContract.View {
             it !is DisplayViewModel
         }
 
+        val myLayoutManager: LinearLayoutManager =
+            binding.fieldRecycler.layoutManager as LinearLayoutManager
+        val myFirstPositionIndex = myLayoutManager.findFirstVisibleItemPosition()
+        val myFirstPositionView = myLayoutManager.findViewByPosition(myFirstPositionIndex)
+
+        var offset = 0
+        myFirstPositionView?.let {
+            offset = it.top
+        }
+
         adapter.swap(fields)
+
+        myLayoutManager.scrollToPositionWithOffset(myFirstPositionIndex, offset)
     }
     /*endregion*/
+
+    override fun showSaveButton() {
+        binding.next.visibility = View.VISIBLE
+    }
+
+    override fun hideSaveButton() {
+        binding.next.visibility = View.GONE
+    }
+
+    override fun showAdjustingForm() {
+        binding.clIndicatorProgress.root.visibility = View.VISIBLE
+        binding.clIndicatorProgress.lottieView.repeatCount = INFINITE
+    }
+
+    override fun hideAdjustingForm() {
+        binding.clIndicatorProgress.root.visibility = View.GONE
+        binding.clIndicatorProgress.lottieView.repeatCount = 0
+    }
 }
