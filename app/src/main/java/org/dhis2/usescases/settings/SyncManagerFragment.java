@@ -633,7 +633,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
         if (isGatewayEmpty) {
             requestNoEmptySMSGateway();
         }
-        return isGatewayEmpty;
+        return !isGatewayEmpty;
     }
 
     private Boolean checkSMSPermissions(boolean requestPermission) {
