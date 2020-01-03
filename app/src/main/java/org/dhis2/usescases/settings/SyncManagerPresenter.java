@@ -51,23 +51,20 @@ public class SyncManagerPresenter
         SyncManagerContracts.Presenter {
 
     private final D2 d2;
-
     private final SchedulerProvider schedulerProvider;
-
     private final PreferenceProvider preferenceProvider;
-
     private CompositeDisposable compositeDisposable;
-
     private SyncManagerContracts.View view;
-
     private FlowableProcessor<Boolean> checkData;
-
     private SharedPreferences prefs;
+    private GatewayValidator gatewayValidator;
 
-    SyncManagerPresenter(D2 d2, SchedulerProvider schedulerProvider, PreferenceProvider preferenceProvider) {
+    SyncManagerPresenter(D2 d2, SchedulerProvider schedulerProvider, GatewayValidator gatewayValidator
+            ,PreferenceProvider preferenceProvider) {
         this.d2 = d2;
         this.schedulerProvider = schedulerProvider;
         this.preferenceProvider = preferenceProvider;
+        this.gatewayValidator = gatewayValidator;
         checkData = PublishProcessor.create();
     }
 
@@ -111,6 +108,15 @@ public class SyncManagerPresenter
                         Timber.e(e);
                     }
                 }));
+    }
+
+    public void validateGateway(String gateway){
+        if (gatewayValidator.validate(gateway)){
+            view.hideGatewayError();
+            smsNumberSet(gateway);
+        } else {
+            view.showInvalidGatewayError();
+        }
     }
 
     /**

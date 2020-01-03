@@ -18,6 +18,10 @@ public class SyncManagerContracts {
 
         Consumer<Pair<Integer, Integer>> setSyncData();
 
+        void showInvalidGatewayError();
+
+        void hideGatewayError();
+
         void wipeDatabase();
 
         void deleteLocalData();
@@ -45,6 +49,8 @@ public class SyncManagerContracts {
     }
 
     public interface Presenter {
+
+        void validateGateway(String gateway);
 
         void onItemClick(int itemPosition);
 

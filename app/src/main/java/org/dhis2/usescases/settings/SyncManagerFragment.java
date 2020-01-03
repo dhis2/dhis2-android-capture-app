@@ -208,18 +208,32 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
     }
 
     @Override
+    public void showInvalidGatewayError() {
+        String error = getContext().getResources().getString(R.string.invalid_phone_number);
+        ((TextInputLayout) binding.settingsSms.findViewById(R.id.settings_sms_receiver_layout))
+                .setError(error);
+    }
+
+    @Override
+    public void hideGatewayError() {
+        ((TextInputLayout) binding.settingsSms.findViewById(R.id.settings_sms_receiver_layout)).setError(null);
+    }
+
+    @Override
     public void showSmsSettings(boolean enabled, String number, boolean waitForResponse, String responseSender, int timeout) {
         ((CompoundButton) binding.settingsSms.findViewById(R.id.settings_sms_switch))
                 .setChecked(enabled);
-        ((TextView) binding.settingsSms.findViewById(R.id.settings_sms_receiver))
-                .setText(number);
+        TextView gateway = binding.settingsSms.findViewById(R.id.settings_sms_receiver);
+        gateway.setText(number);
         ((CompoundButton) binding.settingsSms.findViewById(R.id.settings_sms_response_wait_switch))
                 .setChecked(waitForResponse);
         ((TextView) binding.settingsSms.findViewById(R.id.settings_sms_result_sender))
                 .setText(responseSender);
         ((TextView) binding.settingsSms.findViewById(R.id.settings_sms_result_timeout))
                 .setText(Integer.toString(timeout));
-        validatePhone(((TextView) binding.settingsSms.findViewById(R.id.settings_sms_receiver)).getText().toString());
+        if (!gateway.getText().toString().isEmpty()){
+            presenter.validateGateway(gateway.getText().toString());
+        }
         boolean hasNetwork = NetworkUtils.isOnline(context);
 
         binding.settingsSms.findViewById(R.id.settings_sms_switch).setEnabled(hasNetwork);
@@ -233,20 +247,6 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
         }
     }
 
-    private void validatePhone(String str) {
-        if (str.startsWith("+")
-            && str.length() > 4) {
-            ((TextInputLayout) binding.settingsSms.findViewById(R.id.settings_sms_receiver_layout)).setError(null);
-        } else if (!str.startsWith("+") && str.length() > 1) {
-            ((TextInputLayout) binding.settingsSms.findViewById(R.id.settings_sms_receiver_layout))
-                    .setError(binding.getRoot().getContext().getResources().getString(R.string.invalid_phone_number));
-            ((SwitchCompat) binding.settingsSms.findViewById(R.id.settings_sms_switch)).setChecked(false);
-        } else {
-            ((TextInputLayout) binding.settingsSms.findViewById(R.id.settings_sms_receiver_layout)).setError(null);
-        }
-        presenter.smsNumberSet(str);
-    }
-
     private void setSMSListeners() {
 
         listenerDisposable.add(RxTextView.textChanges(binding.settingsSms.findViewById(R.id.settings_sms_receiver))
@@ -254,7 +254,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
                 .debounce(1000, TimeUnit.MILLISECONDS, Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                        data -> validatePhone(data.toString()),
+                        data -> presenter.validateGateway(data.toString()),
                         Timber::d
                 ));
 
@@ -605,11 +605,9 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
 
     @Override
     public void requestNoEmptySMSGateway() {
-        ((SwitchCompat) binding.settingsSms.findViewById(R.id.settings_sms_switch)).setChecked(false);
         ((TextInputLayout) binding.settingsSms.findViewById(R.id.settings_sms_receiver_layout)).setError(
                 binding.getRoot().getContext().getResources().getString(R.string.sms_empty_gateway)
         );
-        presenter.smsSwitch(false);
     }
 
     @Override
@@ -629,16 +627,13 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
     }
 
     private boolean isGatewaySet() {
-        String text = ((EditText) binding.settingsSms.findViewById(R.id.settings_sms_receiver)).getText().toString();
-        boolean gatewaySet = !isEmpty(text) && text.startsWith("+");
-        if (!gatewaySet) {
-            if (!text.contains("+") && text.length() > 0) {
-                requestNoEmptySMSGateway();
-            } else {
-                ((SwitchCompat) binding.settingsSms.findViewById(R.id.settings_sms_switch)).setChecked(false);
-            }
+        boolean isGatewayEmpty = isEmpty(
+                ((EditText) binding.settingsSms.findViewById(R.id.settings_sms_receiver)).getText().toString()
+        );
+        if (isGatewayEmpty) {
+            requestNoEmptySMSGateway();
         }
-        return gatewaySet;
+        return isGatewayEmpty;
     }
 
     private Boolean checkSMSPermissions(boolean requestPermission) {
