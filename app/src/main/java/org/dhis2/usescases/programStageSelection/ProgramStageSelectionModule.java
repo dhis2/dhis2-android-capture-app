@@ -23,8 +23,10 @@ public class ProgramStageSelectionModule {
     private final String programUid;
     private final String enrollmentUid;
     private final String eventCreationType;
+    private final ProgramStageSelectionContract.View view;
 
-    public ProgramStageSelectionModule(String programId, String enrollmenId, String eventCreationType) {
+    public ProgramStageSelectionModule(ProgramStageSelectionContract.View view, String programId, String enrollmenId, String eventCreationType) {
+        this.view = view;
         this.programUid = programId;
         this.enrollmentUid = enrollmenId;
         this.eventCreationType = eventCreationType;
@@ -41,7 +43,7 @@ public class ProgramStageSelectionModule {
     ProgramStageSelectionContract.Presenter providesPresenter(@NonNull ProgramStageSelectionRepository programStageSelectionRepository,
                                                               @NonNull RulesUtilsProvider ruleUtils,
                                                               SchedulerProvider schedulerProvider) {
-        return new ProgramStageSelectionPresenter(programStageSelectionRepository, ruleUtils, schedulerProvider);
+        return new ProgramStageSelectionPresenter(view, programStageSelectionRepository, ruleUtils, schedulerProvider);
     }
 
     @Provides
