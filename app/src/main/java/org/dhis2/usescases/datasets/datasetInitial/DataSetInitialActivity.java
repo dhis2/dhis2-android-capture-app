@@ -12,6 +12,7 @@ import org.dhis2.App;
 import org.dhis2.R;
 import org.dhis2.databinding.ActivityDatasetInitialBinding;
 import org.dhis2.databinding.ItemCategoryComboBinding;
+import org.dhis2.usescases.datasets.dataSetTable.DataSetTableActivity;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.DateUtils;
@@ -48,7 +49,7 @@ public class DataSetInitialActivity extends ActivityGlobalAbstract implements Da
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         dataSetUid = getIntent().getStringExtra(Constants.DATA_SET_UID);
-        ((App) getApplicationContext()).userComponent().plus(new DataSetInitialModule(dataSetUid)).inject(this);
+        ((App) getApplicationContext()).userComponent().plus(new DataSetInitialModule(this, dataSetUid)).inject(this);
         super.onCreate(savedInstanceState);
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_dataset_initial);
@@ -58,7 +59,7 @@ public class DataSetInitialActivity extends ActivityGlobalAbstract implements Da
     @Override
     protected void onResume() {
         super.onResume();
-        presenter.init(this);
+        presenter.init();
     }
 
     @Override
@@ -216,6 +217,21 @@ public class DataSetInitialActivity extends ActivityGlobalAbstract implements Da
         selectedOrgUnit = organisationUnit;
         binding.dataSetOrgUnitEditText.setText(selectedOrgUnit.displayName());
         binding.dataSetOrgUnitEditText.setEnabled(false);
+    }
+
+    @Override
+    public void navigateToDataSetTable(String catOptionCombo, String periodId) {
+        Bundle bundle = DataSetTableActivity.getBundle(
+                dataSetUid,
+                selectedOrgUnit.uid(),
+                selectedOrgUnit.name(),
+                getPeriodType(),
+                DateUtils.getInstance().getPeriodUIString(binding.getDataSetModel().periodType(), selectedPeriod, Locale.getDefault()),
+                periodId,
+                catOptionCombo
+        );
+
+        startActivity(DataSetTableActivity.class, bundle, true, false, null);
     }
 
     private void checkActionVisivbility() {
