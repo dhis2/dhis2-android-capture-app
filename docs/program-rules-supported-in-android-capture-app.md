@@ -26,7 +26,6 @@ Any issues around using a particular feature with Android are highlighted with a
 |Calculated value|Calculated value.|✓|✓||
 
 ## Program rule Actions supported (Data element in current event)
-!<a href="https://www.google.com/url?q=https://jira.dhis2.org/browse/ANDROAPP-1793&amp;sa=D&amp;ust=1557433016465000">ANDROAPP-1793</a>&nbsp;Program Rules support names and codes for option sets variables from 1.2.1
 
 | Action| Description of action| Program with registration| Program without registration| Notes on implementation|
 |-|---|:-:|:-:|---|
@@ -50,8 +49,6 @@ Any issues around using a particular feature with Android are highlighted with a
 |Schedule Message|Schedule Message will schedule notification at date provided by Expression in the data field.|n/a|n/a|This feature is executed on the server side.||
 
 ## Program rule Actions supported (Other variables)
-
-!<a href="https://www.google.com/url?q=https://jira.dhis2.org/browse/ANDROAPP-1793&amp;sa=D&amp;ust=1557433016498000">ANDROAPP-1793</a> Program Rules support names and codes for option sets variables from 1.2.1
 
 | Action| Description of Action| Data Element from the Newest Event in the Current Program (with registration)|Data Element from the Newest Event in the Current Program (without registration)| Data Element from Previous Event (with registration) |Data Element from Previous Event (without registration)| Data Element from the Newest Event for a Program Stage (with registration)|Tracked Entity Atribute (with registration) |Notes on implementation|
 |-|---|:-:|:-:|:-:|:-:|:-:|:-:|---|

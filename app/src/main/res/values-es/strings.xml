@@ -12,7 +12,7 @@
     <string name="yes">sí</string>
     <string name="no">no</string>
     <string name="no_value">sin valor</string>
-    <string name="no_reserved_values">No quedan valores reservados. Contacta con el administrador del sistema.</string>
+    <string name="no_reserved_values">No quedan valores reservados. Contacta el administrador.</string>
     <string name="no_reserved_values_connection">No quedan valores reservados. Conéctate a internet para recargarlos.</string>
 
     <!-- SyncService strings: -->
@@ -29,7 +29,7 @@
 
     <string name="sync_error_title">Error en sincronizacion</string>
     <string name="sync_error_text">La sincronizacion ha fallado. Intentelo de nuevo.</string>
-    <string name="metadata_sync_error">ERROR: algo ha ido mal al sincronizar. Si tienes Internet, prueba de nuevo. Si sigue fallando, contacta al administrador del sistema.</string>
+    <string name="metadata_sync_error">ERROR: algo ha ido mal al sincronizar. Si tienes Internet, prueba de nuevo. Si sigue fallando, contacta al administrador.</string>
     <string name="data_sync_warning">WARNING: la mayoría de tus datos se han sincronizado, pero algunos generaron conflictos. Sincroniza tu configuración y prueba otra vez. Para revisar el estado de sincronización: los programas, TEIs y events con conflictos tienen el icono @ </string>
     <string name="data_sync_warning_program">WARNING: la mayoría de tus datos se han sincronizado, pero algunos generaron conflictos. Sincroniza tu configuración y prueba otra vez. Si el error persiste, revisa el estado de sincronización: los programas, TEIs y events con conflictos tienen el icono @</string>
     <string name="data_sync_error">ERROR: algunos de tus datos fallaron al sincronizar. Revisa su estado de sincronización: los programas con errores están marcados como @, TEIs y eventos como $  </string>
@@ -82,7 +82,7 @@
 
     <!-- Status -->
     <string name="program_completed">Programa Completado</string>
-    <string name="program_inactive">Programa suspendido</string>
+    <string name="program_inactive">Programo suspendido</string>
 
     <string name="event_open">Abrir</string>
     <string name="event_completed">Evento completado</string>
@@ -123,7 +123,7 @@
     <string name="latitude">Latitud</string>
     <string name="longitude">Longitud</string>
     <string name="new_event">Evento nuevo</string>
-    <string name="failed_insert_event">Error/Fallo al crear un nuevo evento</string>
+    <string name="failed_insert_event">Error/Falla al crear un nuevo evento</string>
     <string name="event_created">Evento creado</string>
     <string name="event_updated">Evento actualizado</string>
     <string name="one_time">Una vez</string>
@@ -216,7 +216,7 @@
     <string name="settingsReservedValues_descr">Aquí puedes ver el numero de valores disponibles offline y reservar nuevos</string>
     <string name="settingsErrorLog">Ver errores de sincronización</string>
     <string name="settingsErrorLog_descr">Aquí están todos los errores encontrados durante la sincronización de datos y metadatos.</string>
-    <string name="settingsDeleteLocalData">Borrar datos locales</string>
+    <string name="settingsDeleteLocalData">Borrar datos</string>
     <string name="settingsDeleteLocalData_descr">Se borrarán todos los datos guardados por la App. Los datos que no se hayan enviado al servidor se perderán.</string>
     <string name="settingsReset">Reiniciar app</string>
     <string name="settingsReset_descr">Se borrará la configuración y todos los datos guardados por la App. Tendrá que iniciar sesión de nuevo y los datos que no se hayan enviado al servidor se perderán.</string>
@@ -304,12 +304,12 @@
     <string name="qr_no_data">sin datos</string>
     <string name="qr_error_id">Código QR no válido</string>
     <string name="qr_error_attr">Este atributo no puede ser añadido</string>
-    <string name="qr_error_enrollment">Esta admisión no puede ser añadida</string>
+    <string name="qr_error_enrollment">Esta admisión no puede ser añadido</string>
     <string name="qr_error_event">Este evento no puede ser añadido</string>
 
     <string name="jira_report">Reportar problema en Jira</string>
     <string name="about">Acerca de</string>
-    <string name="programs_to_enroll">Programas disponibles para admisión</string>
+    <string name="programs_to_enroll">Programas disponibles para inscripción</string>
     <string name="select_all">Selecionar todo</string>
     <string name="clear_all">Borrar selección</string>
     <string name="empty_program_list">No hay información para los filtros seleccionados. Prueba modificándolos.</string>
@@ -330,7 +330,7 @@
     <string name="save">Guardar</string>
     <string name="reserved_value">Valores Reservados</string>
 
-    <string name="downloaded_confirm">Quieres añadir más información de códigos QR?</string>
+    <string name="downloaded_confirm">Quieres añadir más información de los QRs?</string>
 
     <!--ABOUT-->
     <string name="about_app">Versión de la app: %s</string>
@@ -386,7 +386,7 @@
     <string name="showHelp">Ver ayuda</string>
     <string name="tuto_settings_1">Sincroniza tus datos</string>
     <string name="tuto_settings_2">Sincroniza tu configuracion</string>
-    <string name="tuto_settings_3">Configura el almacenamiento local</string>
+    <string name="tuto_settings_3">configura el almacenamiento local</string>
     <string name="tuto_settings_reserved">Ver y gestionar cuantos valores reservados quedan</string>
     <string name="tuto_settings_errors">Compruebe si la conexión con el servidor ha fallado</string>
     <string name="tuto_settings_reset">Liberar memoria</string>
@@ -397,7 +397,7 @@
     <string name="tuto_search_4_v2">Click aquí para limpiar los campos y reiniciar la búsqueda.</string>
     <string name="tuto_dashboard_1">Este es el Dashboard de entidad</string>
     <string name="tuto_dashboard_2">Puedes ver la información de perfil</string>
-    <string name="tuto_dashboard_3">Compartir información via QR o SMS</string>
+    <string name="tuto_dashboard_3">Compartir información via QR</string>
     <string name="tuto_dashboard_4">O marcar una entidad para seguimiento</string>
     <string name="tuto_dashboard_5">Puedes crear o programar un evento, o referir a otra Org. Unit</string>
     <string name="tuto_dashboard_6">Aquí estan todos los eventos. Pulsa para ver los detalles.</string>
@@ -465,7 +465,7 @@
     <string name="biometrics_security_text">Usar huella dactilar para acceder con este usuario?</string>
     <string name="tab_tables">Tablas</string>
     <string name="table">Tabla</string>
-    <string name="login_https">https://</string>
+    <string name="login_https">https://|</string>
     <string name="delete_local_data_message">Los datos no sincronizados se perderán. Continuar?</string>
     <string name="local_data_accept">Aceptar</string>
     <string name="delete_local_data_error">Los datos no se pudieron borrar. Inténtelo de nuevo.</string>
@@ -507,7 +507,7 @@
     <string name="relationship_without_enrollment">Este registro no tiene ninguna inscripción. No se puede acceder al dashboard.</string>
     <string name="formatting_error">Error de formato</string>
     <string name="dashboard_menu_delete_tei">Borrar TEI</string>
-    <string name="dashboard_menu_delete_enrollment">Borrar solo la admisión </string>
+    <string name="dashboard_menu_delete_enrollment">Borrar solo la inscripción </string>
     <string name="delete_authority_error">No tienes permisos para borrar este registro</string>
     <string name="record_marked_for_deletion">Este registro ha sido borrado. No puede acceder a el</string>
     <string name="validation_url">La URL no es válida</string>
@@ -577,6 +577,7 @@
     <string name="filters_title_period">Periodo</string>
     <string name="filters_title_org_unit">Unidad Org.</string>
     <string name="filters_title_status">Estado</string>
+    <string name="filters_title_state">Estado</string>
     <string name="filter_period_today">Hoy</string>
     <string name="filter_period_yesterday">Ayer</string>
     <string name="filter_period_tomorrow">Mañana</string>
@@ -591,4 +592,4 @@
     <string name="filter_period_any">Cualquier momento</string>
     <string name="data_values_error_sync_message">La sincronización falló. Comprueba los valores para tratar de resolver el problema e inténtelo otra vez. Si el fallo persiste contacta con su administrador del sistema.</string>
     <string name="sms_synced_message">Los datos se han enviado al servidor pero no se puede garantizar que se hayan guardado</string>
-    </resources>
+</resources>
