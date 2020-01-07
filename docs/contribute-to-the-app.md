@@ -20,4 +20,12 @@ DHIS 2 and the new DHIS 2 Android App allows you to select icons for programs, d
 
 ## How to add translations
 
-You can contribute to the current translations of the App or add a new language. Just contact us (<android@dhis2.org>) and we will set up the translation server and send you instructions.
+The steps to contribute to the translation of the app are:
+
+1. Create an account ( https://www.transifex.com/signin/?next=/hisp-uio/)
+2. Join Existing Organization
+3. Search for HISP UiO and select the organization not the projects
+4. Select ANDROID: Capture project
+5. Join the team for the selected language
+
+Please let us know if it doesn't work well or if you need to add a new language by sending a message in the community to the user dhis2-android.
