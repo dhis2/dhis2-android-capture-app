@@ -17,6 +17,7 @@ import org.dhis2.data.tuples.Pair
 import org.dhis2.data.tuples.Quartet
 import org.dhis2.data.tuples.Sextet
 import org.dhis2.data.tuples.Trio
+import org.dhis2.usescases.datasets.dataSetTable.DataSetTableActivity
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableModel
 import org.dhis2.utils.DateUtils
 import org.dhis2.utils.analytics.AnalyticsHelper
@@ -114,6 +115,7 @@ class DataValuePresenter(
                         this.period = data.val3()
                         this.dataInputPeriodModel = data.val4()
                         this.isApproval = data.val5()
+                        view.setDataAccess(accessDataWrite)
                         view.setDataSet(dataSet)
                         view.setSection(section)
                         initTable()
@@ -283,7 +285,11 @@ class DataValuePresenter(
 
             for (
                 categoryOptionCombo in
-                getCatOptionComboOrder(dataTableModel.catCombo()!!.categoryOptionCombos())
+                getCatOptionComboOrder(
+                    repository.getCatOptionComboFrom(
+                        dataTableModel.catCombo()?.uid(), catOptionOrder
+                    )
+                )
             ) {
                 var editable = true
                 for (disabledDataElement in dataTableModel.dataElementDisabled()!!)
@@ -663,6 +669,9 @@ class DataValuePresenter(
                             dataTableModel!!.dataValues()!!.add(dataSetTableModel)
                         }
                     }
+
+                    if((dataSetSectionFragment.activity as DataSetTableActivity).isBackPressed)
+                        dataSetSectionFragment.abstractActivity.back()
 
                     dataSetSectionFragment.updateData(rowAction, dataSetTableModel!!.catCombo())
                     repository.updateValue(dataSetTableModel).toFlowable<Any>()

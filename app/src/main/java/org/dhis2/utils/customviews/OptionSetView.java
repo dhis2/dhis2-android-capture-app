@@ -78,9 +78,10 @@ public class OptionSetView extends FieldLayout implements OptionSetOnClickListen
         });
 
     }
-    public void setCellLayout(ObservableField<DataSetTableAdapter.TableScale> tableScale){
+
+    public void setCellLayout(ObservableField<DataSetTableAdapter.TableScale> tableScale) {
         binding = DataBindingUtil.inflate(inflater, R.layout.custom_cell_view, this, true);
-        ((CustomCellViewBinding)binding).setTableScale(tableScale);
+        ((CustomCellViewBinding) binding).setTableScale(tableScale);
         editText = findViewById(R.id.inputEditText);
         editText.setFocusable(false); //Makes editText not editable
         editText.setClickable(true);//  but clickable
@@ -103,7 +104,7 @@ public class OptionSetView extends FieldLayout implements OptionSetOnClickListen
 
     public void deleteSelectedOption() {
         setValueOption(null, null);
-        if(delete!=null)
+        if (delete != null)
             delete.setVisibility(View.GONE);
     }
 
@@ -120,7 +121,7 @@ public class OptionSetView extends FieldLayout implements OptionSetOnClickListen
 
         editText.setText(optionDisplayName);
 
-        if(delete!=null) {
+        if (delete != null) {
             if (optionDisplayName != null && !optionDisplayName.isEmpty()) {
                 delete.setVisibility(View.VISIBLE);
             } else {
@@ -140,6 +141,10 @@ public class OptionSetView extends FieldLayout implements OptionSetOnClickListen
         editText.setEnabled(isEditable);
         editText.setFocusable(false);
         editText.setClickable(isEditable);
+        if (delete != null) {
+            delete.setEnabled(isEditable);
+            delete.setVisibility(isEditable ? View.VISIBLE : View.GONE);
+        }
     }
 
     public void setValue(String value) {
@@ -148,7 +153,7 @@ public class OptionSetView extends FieldLayout implements OptionSetOnClickListen
 
         editText.setText(value);
 
-        if (delete!=null && editText.getText() != null && !editText.getText().toString().isEmpty()) {
+        if (delete != null && editText.getText() != null && !editText.getText().toString().isEmpty()) {
             delete.setVisibility(View.VISIBLE);
         }
     }

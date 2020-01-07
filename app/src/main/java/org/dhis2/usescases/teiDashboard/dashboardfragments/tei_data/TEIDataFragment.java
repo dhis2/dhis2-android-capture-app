@@ -102,7 +102,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
         if (((App) context.getApplicationContext()).dashboardComponent() != null)
             ((App) context.getApplicationContext())
                     .dashboardComponent()
-                    .plus(new TEIDataModule(activity.getProgramUid(), activity.getTeiUid()))
+                    .plus(new TEIDataModule(this, activity.getProgramUid(), activity.getTeiUid()))
                     .inject(this);
     }
 
@@ -143,7 +143,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
     @Override
     public void onResume() {
         super.onResume();
-        presenter.init(this);
+        presenter.init();
         dashboardViewModel.dashboardModel().observe(this, this::setData);
         dashboardViewModel.eventUid().observe(this, this::displayGenerateEvent);
     }
@@ -198,11 +198,6 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-       /* if (requestCode == REQ_DETAILS) {
-            if (resultCode == RESULT_OK) {
-                activity.getPresenter().getData();
-            }
-        }*/
         if (requestCode == REQ_EVENT && resultCode == RESULT_OK) {
             presenter.getTEIEvents();
             if (data != null) {

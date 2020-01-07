@@ -22,7 +22,7 @@ public class SpinnerHolder extends FormViewHolder {
     private final FlowableProcessor<Trio<String, String, Integer>> processorOptionSet;
 
     private SpinnerViewModel viewModel;
-
+    private boolean editable;
     SpinnerHolder(FormOptionSetBinding mBinding, FlowableProcessor<RowAction> processor, FlowableProcessor<Trio<String, String, Integer>> processorOptionSet, boolean isSearchMode) {
         super(mBinding);
         this.binding = mBinding;
@@ -32,7 +32,7 @@ public class SpinnerHolder extends FormViewHolder {
         binding.optionSetView.setOnSelectedOptionListener((optionName, optionCode) -> {
 
             processor.onNext(
-                    RowAction.create(viewModel.uid(), optionCode, viewModel.dataElement(),
+                    RowAction.create(viewModel.uid(), optionCode, optionName, viewModel.dataElement(),
                             viewModel.categoryOptionCombo(), viewModel.catCombo(), viewModel.row(), viewModel.column())
             );
         });
@@ -40,7 +40,9 @@ public class SpinnerHolder extends FormViewHolder {
 
     public void update(SpinnerViewModel viewModel, boolean accessDataWrite) {
         this.viewModel = viewModel;
-        binding.optionSetView.updateEditable(viewModel.editable() && accessDataWrite);
+        this.editable = viewModel.editable() && accessDataWrite;
+
+        binding.optionSetView.updateEditable(editable);
         binding.optionSetView.setValue(viewModel.value());
     }
 
@@ -50,7 +52,7 @@ public class SpinnerHolder extends FormViewHolder {
     @Override
     public void setSelected(SelectionState selectionState) {
         super.setSelected(selectionState);
-        if (selectionState == SelectionState.SELECTED) {
+        if (selectionState == SelectionState.SELECTED && editable) {
             closeKeyboard(binding.optionSetView);
 
             OptionSetDialog dialog = new OptionSetDialog();

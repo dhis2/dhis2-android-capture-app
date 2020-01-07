@@ -37,7 +37,6 @@ import org.dhis2.usescases.general.ActivityGlobalAbstract
 import org.dhis2.usescases.main.MainActivity
 import org.dhis2.usescases.qrScanner.QRActivity
 import org.dhis2.usescases.sync.SyncActivity
-import org.dhis2.utils.BiometricStorage
 import org.dhis2.utils.Constants
 import org.dhis2.utils.Constants.ACCOUNT_RECOVERY
 import org.dhis2.utils.Constants.RQ_QR_SCANNER
@@ -333,10 +332,10 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
         (context.applicationContext as App).createUserComponent()
 
         if (presenter.canHandleBiometrics() == true &&
-            !BiometricStorage.areCredentialsSet() && !BiometricStorage.areSameCredentials(
-                binding.serverUrlEdit.text?.toString(),
-                binding.userNameEdit.text?.toString(),
-                binding.userPassEdit.text?.toString()
+            !presenter.areSameCredentials(
+                binding.serverUrlEdit.text.toString(),
+                binding.userNameEdit.text.toString(),
+                binding.userPassEdit.text.toString()
             )
         ) {
             showInfoDialog(
@@ -344,10 +343,10 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
                 getString(R.string.biometrics_security_text),
                 object : OnDialogClickListener {
                     override fun onPossitiveClick(alertDialog: AlertDialog) {
-                        BiometricStorage.saveUserCredentials(
-                            binding.serverUrlEdit.text?.toString(),
-                            binding.userNameEdit.text?.toString(),
-                            binding.userPassEdit.text?.toString()
+                        presenter.saveUserCredentials(
+                            binding.serverUrlEdit.text.toString(),
+                            binding.userNameEdit.text.toString(),
+                            binding.userPassEdit.text.toString()
                         )
                         goToNextScreen()
                     }

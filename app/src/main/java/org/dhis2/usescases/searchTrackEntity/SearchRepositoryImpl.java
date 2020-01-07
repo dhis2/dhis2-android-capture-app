@@ -29,8 +29,10 @@ import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.android.core.enrollment.EnrollmentCreateProjection;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
+import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.event.EventCollectionRepository;
 import org.hisp.dhis.android.core.event.EventStatus;
+import org.hisp.dhis.android.core.maintenance.D2Error;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitMode;
 import org.hisp.dhis.android.core.period.DatePeriod;
@@ -140,6 +142,7 @@ public class SearchRepositoryImpl implements SearchRepository {
                                                                      @NonNull String trackedEntityType,
                                                                      @NonNull List<String> orgUnits,
                                                                      @Nonnull List<State> states,
+                                                                     @NonNull List<EventStatus> eventStatuses,
                                                                      @Nullable HashMap<String, String> queryData,
                                                                      boolean isOnline) {
 
@@ -200,6 +203,7 @@ public class SearchRepositoryImpl implements SearchRepository {
         if (isOnline && states.isEmpty()) {
             //TODO: SEARCH OFFLINEFIRST
             dataSource = trackedEntityInstanceQuery.offlineFirst().getDataSource()
+                    .mapByPage(list->filterByStatus(list,eventStatuses))
                     .mapByPage(this::filterDeleted)
                     .map(tei -> transform(tei, selectedProgram, true));
         } else {
@@ -207,6 +211,7 @@ public class SearchRepositoryImpl implements SearchRepository {
             dataSource = trackedEntityInstanceQuery.offlineOnly().getDataSource() //TODO: ASK SDK TO FILTER BY BOTH ENROLLMENT DATE AND EVENT DATES
                     .mapByPage(list -> filterByState(list, states))
                     .mapByPage(list -> filterByPeriod(list, periods))
+                    .mapByPage(list->filterByStatus(list,eventStatuses))
                     .mapByPage(this::filterDeleted)
                     .map(tei -> transform(tei, selectedProgram, true));
         }
@@ -513,13 +518,19 @@ public class SearchRepositoryImpl implements SearchRepository {
     private void setOverdueEvents(@NonNull SearchTeiModel tei, Program selectedProgram) {
         String teiId = tei.getTei() != null && tei.getTei().uid() != null ? tei.getTei().uid() : "";
         List<Enrollment> enrollments = d2.enrollmentModule().enrollments().byTrackedEntityInstance().eq(teiId).blockingGet();
-        EventCollectionRepository repo = d2.eventModule().events().byEnrollmentUid().in(UidsHelper.getUidsList(enrollments)).byStatus().eq(EventStatus.SKIPPED);
+
+        EventCollectionRepository scheduledEvents = d2.eventModule().events().byEnrollmentUid().in(UidsHelper.getUidsList(enrollments))
+                .byStatus().eq(EventStatus.SCHEDULE)
+                .byDueDate().before(new Date());
+
+        EventCollectionRepository overdueEvents = d2.eventModule().events().byEnrollmentUid().in(UidsHelper.getUidsList(enrollments)).byStatus().eq(EventStatus.OVERDUE);
+
         int count;
 
         if (selectedProgram == null)
-            count = repo.blockingCount();
+            count = overdueEvents.blockingCount() + scheduledEvents.blockingCount();
         else
-            count = repo.byProgramUid().eq(selectedProgram.uid()).blockingCount();
+            count = overdueEvents.byProgramUid().eq(selectedProgram.uid()).blockingCount() + scheduledEvents.byProgramUid().eq(selectedProgram.uid()).blockingCount();
 
         if (count > 0)
             tei.setHasOverdue(true);
@@ -587,6 +598,22 @@ public class SearchRepositoryImpl implements SearchRepository {
                 if (!hasEventsByDueDate && !hasEventsByEventDate)
                     iterator.remove();
 
+            }
+
+        return teis;
+    }
+
+    private List<TrackedEntityInstance> filterByStatus(List<TrackedEntityInstance> teis, List<EventStatus> eventStatuses) {
+        Iterator<TrackedEntityInstance> iterator = teis.iterator();
+        if (!eventStatuses.isEmpty())
+            while (iterator.hasNext()) {
+                TrackedEntityInstance tei = iterator.next();
+
+                boolean hasEventWithStatus = !d2.eventModule().events().byTrackedEntityInstanceUids(Collections.singletonList(tei.uid())).byStatus().in(eventStatuses).blockingIsEmpty();
+                boolean hasScheduledEvent = !d2.eventModule().events().byTrackedEntityInstanceUids(Collections.singletonList(tei.uid())).byStatus().eq(EventStatus.SCHEDULE)
+                        .byDueDate().before(new Date()).blockingIsEmpty();
+                if (!hasEventWithStatus && !hasScheduledEvent)
+                    iterator.remove();
             }
 
         return teis;

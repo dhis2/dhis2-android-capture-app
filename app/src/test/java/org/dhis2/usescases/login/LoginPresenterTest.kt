@@ -1,4 +1,4 @@
-package org.dhis2.usecases.login
+package org.dhis2.usescases.login
 
 import co.infinum.goldfinger.Goldfinger
 import com.nhaarman.mockitokotlin2.doReturn
@@ -17,8 +17,6 @@ import org.dhis2.data.prefs.PreferenceProvider
 import org.dhis2.data.schedulers.SchedulerProvider
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.dhis2.data.server.UserManager
-import org.dhis2.usescases.login.LoginContracts
-import org.dhis2.usescases.login.LoginPresenter
 import org.dhis2.usescases.main.MainActivity
 import org.dhis2.utils.Constants
 import org.dhis2.utils.TestingCredential

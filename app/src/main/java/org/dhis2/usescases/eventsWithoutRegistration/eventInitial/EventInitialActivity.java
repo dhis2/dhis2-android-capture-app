@@ -407,10 +407,8 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
             }
 
             binding.date.setText(selectedDateString);
-            if(selectedOrgUnit == null)
+            if(selectedOrgUnit == null && eventUid == null)
                 presenter.initOrgunit(selectedDate);
-            else if (eventCreationType != EventCreationType.REFERAL)
-                binding.orgUnit.setEnabled(false);
 
         } else {
             if (!isEmpty(eventModel.enrollment()) && eventCreationType != EventCreationType.ADDNEW) {
@@ -807,28 +805,6 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     @Override
     public EventCreationType eventcreateionType() {
         return eventCreationType;
-    }
-
-    @Override
-    public void runSmsSubmission() {
-        if (!getResources().getBoolean(R.bool.sms_enabled)) {
-            return;
-        }
-        if (eventModel == null) {
-            Timber.tag(EventInitialActivity.class.getSimpleName()).e("Pressed share button while event not loaded yet");
-            return;
-        }
-        analyticsHelper().setEvent(SHARE_EVENT, CLICK, SHARE_EVENT);
-        String enrollmentUid = eventModel.enrollment();
-        Intent intent = new Intent(this, SmsSubmitActivity.class);
-        Bundle args = new Bundle();
-        if (enrollmentUid != null && !enrollmentUid.isEmpty()) {
-            InputArguments.setTrackerEventData(args, eventModel.uid());
-        } else {
-            InputArguments.setSimpleEventData(args, eventModel.uid());
-        }
-        intent.putExtras(args);
-        startActivity(intent);
     }
 
     @Override

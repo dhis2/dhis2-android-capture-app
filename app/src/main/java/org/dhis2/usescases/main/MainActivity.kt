@@ -101,7 +101,7 @@ class MainActivity : ActivityGlobalAbstract(), MainView, ExporterListener {
             Constants.SHARE_PREFS, Context.MODE_PRIVATE
         )
 
-        adapter = FiltersAdapter()
+        adapter = FiltersAdapter(FiltersAdapter.ProgramType.ALL)
         binding.filterLayout.adapter = adapter
 
         binding.moreOptions.setOnLongClickListener {

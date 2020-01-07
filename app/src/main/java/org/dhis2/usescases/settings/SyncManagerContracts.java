@@ -36,6 +36,12 @@ public class SyncManagerContracts {
         void syncMeta();
 
         void openItem(int settingsItem);
+
+        void displaySMSRefreshingData();
+
+        void displaySMSEnabled(boolean isChecked);
+
+        void requestNoEmptySMSGateway();
     }
 
     public interface Presenter {

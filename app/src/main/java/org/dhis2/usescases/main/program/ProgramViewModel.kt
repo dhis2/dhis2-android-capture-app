@@ -35,36 +35,44 @@ abstract class ProgramViewModel : BaseObservable(), Serializable {
 
     abstract fun state(): String
 
+    abstract fun translucent(): Boolean
+
+    abstract fun hasOverdue(): Boolean
+
     companion object {
 
-        fun create(
-            uid: String,
-            displayName: String,
-            color: String?,
-            icon: String?,
-            count: Int,
-            type: String?,
-            typeName: String,
-            programType: String,
-            description: String?,
-            onlyEnrollOnce: Boolean,
-            accessDataWrite: Boolean
+        /*fun create(
+                uid: String,
+                displayName: String,
+                color: String?,
+                icon: String?,
+                count: Int,
+                type: String?,
+                typeName: String,
+                programType: String,
+                description: String?,
+                onlyEnrollOnce: Boolean,
+                accessDataWrite: Boolean,
+                hasOverdueEvent: Boolean
+
         ): ProgramViewModel {
             return AutoValue_ProgramViewModel(
-                uid,
-                displayName,
-                color,
-                icon,
-                count,
-                type,
-                typeName,
-                programType,
-                description,
-                onlyEnrollOnce,
-                accessDataWrite,
-                State.SYNCED.name
+                    uid,
+                    displayName,
+                    color,
+                    icon,
+                    count,
+                    type,
+                    typeName,
+                    programType,
+                    description,
+                    onlyEnrollOnce,
+                    accessDataWrite,
+                    State.SYNCED.name,
+                    false,
+                    hasOverdueEvent
             )
-        }
+        }*/
 
         fun create(
             uid: String,
@@ -78,7 +86,8 @@ abstract class ProgramViewModel : BaseObservable(), Serializable {
             description: String?,
             onlyEnrollOnce: Boolean,
             accessDataWrite: Boolean,
-            state: String
+            state: String,
+            hasOverdueEvent: Boolean = false
         ): ProgramViewModel {
             return AutoValue_ProgramViewModel(
                 uid,
@@ -92,8 +101,29 @@ abstract class ProgramViewModel : BaseObservable(), Serializable {
                 description,
                 onlyEnrollOnce,
                 accessDataWrite,
-                state
+                state,
+                false,
+                hasOverdueEvent
             )
         }
+    }
+
+    fun setTranslucent(translucent: Boolean): ProgramViewModel {
+        return AutoValue_ProgramViewModel(
+            id(),
+            title(),
+            color(),
+            icon(),
+            count(),
+            type(),
+            typeName(),
+            programType(),
+            description(),
+            onlyEnrollOnce(),
+            accessDataWrite(),
+            state(),
+            translucent,
+            hasOverdue()
+        )
     }
 }

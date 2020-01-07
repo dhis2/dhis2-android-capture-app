@@ -1,4 +1,4 @@
-package org.dhis2.usecases.main.program
+package org.dhis2.usescases.main.program
 
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doReturn
@@ -11,10 +11,6 @@ import io.reactivex.schedulers.TestScheduler
 import java.util.concurrent.TimeUnit
 import org.dhis2.data.prefs.PreferenceProvider
 import org.dhis2.data.schedulers.TestSchedulerProvider
-import org.dhis2.usescases.main.program.HomeRepository
-import org.dhis2.usescases.main.program.ProgramPresenter
-import org.dhis2.usescases.main.program.ProgramView
-import org.dhis2.usescases.main.program.ProgramViewModel
 import org.dhis2.utils.Constants.PROGRAM_THEME
 import org.dhis2.utils.filters.FilterManager
 import org.junit.Assert.assertTrue
@@ -42,27 +38,40 @@ class ProgramPresenterTest {
         val filterManagerFlowable = Flowable.just(filterManager)
         val programsFlowable = Flowable.just(programs)
 
-        whenever(filterManager.asFlowable()) doReturn filterManagerFlowable
+        whenever(filterManager.asFlowable()) doReturn mock()
+        whenever(filterManager.asFlowable().startWith(filterManager)) doReturn filterManagerFlowable
         whenever(filterManager.ouTreeFlowable()) doReturn Flowable.just(true)
         whenever(homeRepository.programModels(any(), any(), any())) doReturn programsFlowable
         whenever(homeRepository.aggregatesModels(any(), any(), any())) doReturn Flowable.empty()
 
         presenter.init()
         schedulers.io().advanceTimeBy(1, TimeUnit.SECONDS)
-
+        verify(view).showFilterProgress()
         verify(view).swapProgramModelData(programs)
         verify(view).openOrgUnitTreeSelector()
     }
 
     @Test
     fun `Should render error when there is a problem getting programs`() {
-        whenever(filterManager.asFlowable()) doReturn Flowable.error(Exception(""))
+        val filterManagerFlowable = Flowable.just(filterManager)
+
+        whenever(filterManager.asFlowable()) doReturn mock()
+        whenever(filterManager.asFlowable().startWith(filterManager)) doReturn filterManagerFlowable
+
+        whenever(
+            homeRepository.aggregatesModels(
+                any(), any(),
+                any()
+            )
+        ) doReturn Flowable.error(Exception(""))
         whenever(filterManager.ouTreeFlowable()) doReturn Flowable.just(true)
 
         presenter.init()
         schedulers.io().advanceTimeBy(1, TimeUnit.SECONDS)
 
+        verify(view).showFilterProgress()
         verify(view).renderError("")
+        verify(view).openOrgUnitTreeSelector()
     }
 
     @Test
@@ -137,6 +146,12 @@ class ProgramPresenterTest {
         assertTrue(presenter.disposable.size() == 0)
     }
 
+    @Test
+    fun `Should refresh program list when granular sync finished`() {
+        presenter.updateProgramQueries()
+        verify(filterManager).publishData()
+    }
+
     private fun programViewModel(): ProgramViewModel {
         return ProgramViewModel.create(
             "uid",
@@ -149,7 +164,9 @@ class ProgramPresenterTest {
             "programType",
             "description",
             onlyEnrollOnce = true,
-            accessDataWrite = true
+            accessDataWrite = true,
+            state = "Synced",
+            hasOverdueEvent = false
         )
     }
 }

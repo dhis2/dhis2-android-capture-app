@@ -3,6 +3,7 @@ package org.dhis2.usescases.programEventDetail;
 import static android.text.TextUtils.isEmpty;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -28,6 +29,7 @@ import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.period.DatePeriod;
 import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.program.ProgramStageDataElement;
+import org.hisp.dhis.android.core.program.ProgramStageSection;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValue;
 
 import com.mapbox.geojson.BoundingBox;
@@ -135,7 +137,8 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
             if (Boolean.TRUE.equals(programStageDataElement.displayInReports()))
                 showInReportsDataElements.add(programStageDataElement.dataElement().uid());
         }
-        List<Pair<String, String>> data = getData(event.trackedEntityDataValues(), showInReportsDataElements);
+        List<Pair<String, String>> data = getData(event.trackedEntityDataValues(),
+                showInReportsDataElements, event.programStage());
         boolean hasExpired = isExpired(event);
         boolean inOrgUnitRange = checkOrgUnitRange(event.organisationUnit(), event.eventDate());
         CategoryOptionCombo catOptComb = d2.categoryModule().categoryOptionCombos().uid(event.attributeOptionCombo()).blockingGet();
@@ -197,10 +200,41 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
         return d2.organisationUnitModule().organisationUnits().uid(orgUnitUid).blockingGet().displayName();
     }
 
-    private List<Pair<String, String>> getData(List<TrackedEntityDataValue> dataValueList, List<String> showInReportsDataElements) {
+    private List<Pair<String, String>> getData(List<TrackedEntityDataValue> dataValueList,
+                                               List<String> showInReportsDataElements,
+                                               String programStage) {
         List<Pair<String, String>> data = new ArrayList<>();
 
-        if (dataValueList != null)
+        if (dataValueList != null) {
+            List<ProgramStageSection> stageSections = d2.programModule().programStageSections()
+                    .byProgramStageUid().eq(programStage)
+                    .withDataElements()
+                    .blockingGet();
+            Collections.sort(stageSections, (one, two) ->
+                    one.sortOrder().compareTo(two.sortOrder()));
+
+            List<String> dataElementsOrder = new ArrayList<>();
+            if(stageSections.size() == 0){
+                List<ProgramStageDataElement> programStageDataElements =
+                        d2.programModule().programStageDataElements().byProgramStage()
+                        .eq(programStage).orderBySortOrder(RepositoryScope.OrderByDirection.ASC)
+                        .blockingGet();
+
+                for(ProgramStageDataElement programStageDataElement: programStageDataElements){
+                    dataElementsOrder.add(programStageDataElement.dataElement().uid());
+                }
+            }else {
+                for (ProgramStageSection section : stageSections) {
+                    dataElementsOrder.addAll(UidsHelper.getUidsList(section.dataElements()));
+                }
+            }
+
+            Collections.sort(dataValueList, (de1, de2) -> {
+                Integer pos1 = dataElementsOrder.indexOf(de1.dataElement());
+                Integer pos2 = dataElementsOrder.indexOf(de2.dataElement());
+                return pos1.compareTo(pos2);
+            });
+
             for (TrackedEntityDataValue dataValue : dataValueList) {
                 DataElement de = d2.dataElementModule().dataElements().uid(dataValue.dataElement()).blockingGet();
                 if (de != null && showInReportsDataElements.contains(de.uid())) {
@@ -215,6 +249,7 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
                     data.add(Pair.create(displayName, value));
                 }
             }
+        }
 
         return data;
     }

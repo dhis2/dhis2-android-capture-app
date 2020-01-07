@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Parcelable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +19,7 @@ import androidx.databinding.ObservableBoolean;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.SimpleItemAnimator;
 
 import org.dhis2.R;
 import org.dhis2.data.forms.FormSectionViewModel;
@@ -98,9 +101,15 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract {
 
         });
 
-        activity.getPresenter().initCompletionPercentage(sectionSelectorAdapter.completionPercentage());
 
         return binding.getRoot();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+            activity.getPresenter().init();
+            activity.getPresenter().initCompletionPercentage(sectionSelectorAdapter.completionPercentage());
     }
 
     @Override
@@ -152,7 +161,10 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract {
         } else
             layoutManager = new LinearLayoutManager(activity,
                     RecyclerView.VERTICAL, false);
-
+        RecyclerView.ItemAnimator animator = binding.formRecycler.getItemAnimator();
+        if (animator instanceof SimpleItemAnimator) {
+            ((SimpleItemAnimator) animator).setSupportsChangeAnimations(false);
+        }
         binding.formRecycler.setLayoutManager(layoutManager);
         binding.formRecycler.setAdapter(dataEntryAdapter);
 
@@ -178,7 +190,16 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract {
 
             if (!isEmpty(lastFocusItem))
                 dataEntryAdapter.setLastFocusItem(lastFocusItem);
+
+            LinearLayoutManager myLayoutManager = (LinearLayoutManager) binding.formRecycler.getLayoutManager();
+            int myFirstPositionIndex = myLayoutManager.findFirstVisibleItemPosition();
+            View myFirstPositionView = myLayoutManager.findViewByPosition(myFirstPositionIndex);
+            int offset = 0;
+            if (myFirstPositionView != null){
+                offset = myFirstPositionView.getTop();
+            }
             dataEntryAdapter.swap(updates);
+            myLayoutManager.scrollToPositionWithOffset(myFirstPositionIndex, offset);
 
             int completedValues = 0;
             HashMap<String, Boolean> fields = new HashMap<>();

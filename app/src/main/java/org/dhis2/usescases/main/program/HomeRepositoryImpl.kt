@@ -3,6 +3,8 @@ package org.dhis2.usescases.main.program
 import io.reactivex.Flowable
 import io.reactivex.parallel.ParallelFlowable
 import io.reactivex.schedulers.Schedulers
+import java.util.Date
+import kotlin.collections.ArrayList
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper
 import org.hisp.dhis.android.core.common.State
@@ -10,6 +12,7 @@ import org.hisp.dhis.android.core.dataset.DataSet
 import org.hisp.dhis.android.core.dataset.DataSetCollectionRepository
 import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
+import org.hisp.dhis.android.core.event.EventStatus
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.period.DatePeriod
 import org.hisp.dhis.android.core.program.ProgramCollectionRepository
@@ -56,18 +59,22 @@ internal class HomeRepositoryImpl(private val d2: D2, private val eventLabel: St
 
                 val possibleStates = repo.blockingGet().map { it.state() }.toMutableList()
 
-                possibleStates.addAll(d2.dataSetModule().dataSetCompleteRegistrations()
-                    .byDataSetUid().eq(dataSet.uid())
-                    .blockingGet().map { it.state() })
-
+                possibleStates.addAll(
+                    d2.dataSetModule().dataSetCompleteRegistrations()
+                        .byDataSetUid().eq(dataSet.uid())
+                        .blockingGet().map { it.state() }
+                )
 
                 val state = when {
                     possibleStates.contains(State.ERROR) ||
-                            possibleStates.contains(State.WARNING) -> State.WARNING
+                        possibleStates.contains(State.WARNING) ->
+                        State.WARNING
                     possibleStates.contains(State.SENT_VIA_SMS) ||
-                            possibleStates.contains(State.SYNCED_VIA_SMS) -> State.SENT_VIA_SMS
+                        possibleStates.contains(State.SYNCED_VIA_SMS) ->
+                        State.SENT_VIA_SMS
                     possibleStates.contains(State.TO_UPDATE) ||
-                            possibleStates.contains(State.TO_POST) -> State.TO_UPDATE
+                        possibleStates.contains(State.TO_POST) ->
+                        State.TO_UPDATE
                     else -> State.SYNCED
                 }
 
@@ -84,7 +91,18 @@ internal class HomeRepositoryImpl(private val d2: D2, private val eventLabel: St
                     dataSet.access().data().write()!!,
                     state.name
                 )
-            }.sequential().toList().toFlowable()
+            }.sequential()
+            .map { program ->
+                program.setTranslucent(
+                    (
+                        dateFilter.isNotEmpty() ||
+                            orgUnitFilter.isNotEmpty() ||
+                            statesFilter.isNotEmpty()
+                        ) &&
+                        program.count() == 0
+                )
+            }
+            .toList().toFlowable()
     }
 
     override fun programModels(
@@ -95,11 +113,7 @@ internal class HomeRepositoryImpl(private val d2: D2, private val eventLabel: St
         return getCaptureOrgUnits()
             .map { captureOrgUnits ->
                 this.captureOrgUnits = captureOrgUnits
-                if (orgUnitFilter.isNotEmpty()) {
-                    programRepository.byOrganisationUnitList(orgUnitFilter)
-                } else {
-                    programRepository.byOrganisationUnitList(captureOrgUnits)
-                }
+                programRepository.byOrganisationUnitList(captureOrgUnits)
             }
             .flatMap { programRepo ->
                 ParallelFlowable.from(Flowable.fromIterable(programRepo.blockingGet()))
@@ -130,7 +144,7 @@ internal class HomeRepositoryImpl(private val d2: D2, private val eventLabel: St
                     typeName = "DataSets"
                 }
 
-                val count: Int
+                var (count, hasOverdue) = Pair(0, false)
                 var state = State.SYNCED
                 if (program.programType() == WITHOUT_REGISTRATION) {
                     if (dateFilter.isNotEmpty()) {
@@ -199,17 +213,17 @@ internal class HomeRepositoryImpl(private val d2: D2, private val eventLabel: St
                     } else if (
                         d2.eventModule().events()
                             .byProgramUid().eq(program.uid()).byState().`in`(
-                                State.SENT_VIA_SMS,
-                                State.SYNCED_VIA_SMS
-                            ).blockingGet().isNotEmpty()
+                            State.SENT_VIA_SMS,
+                            State.SYNCED_VIA_SMS
+                        ).blockingGet().isNotEmpty()
                     ) {
                         state = State.SENT_VIA_SMS
                     } else if (
                         d2.eventModule().events()
                             .byProgramUid().eq(program.uid()).byState().`in`(
-                                State.TO_UPDATE,
-                                State.TO_POST
-                            )
+                            State.TO_UPDATE,
+                            State.TO_POST
+                        )
                             .blockingGet().isNotEmpty() ||
                         d2.eventModule().events().byProgramUid().eq(program.uid())
                             .byDeleted().isTrue.blockingGet().isNotEmpty()
@@ -258,7 +272,9 @@ internal class HomeRepositoryImpl(private val d2: D2, private val eventLabel: St
                                     .blockingGet()
                             }
                         }
-                        count = countEnrollment(enrollments)
+                        val (mCount, mOverdue) = countEnrollment(enrollments)
+                        count = mCount
+                        hasOverdue = mOverdue
                     } else if (orgUnitFilter.isNotEmpty()) {
                         val enrollments = if (statesFilter.isNotEmpty()) {
                             d2.enrollmentModule().enrollments()
@@ -277,7 +293,9 @@ internal class HomeRepositoryImpl(private val d2: D2, private val eventLabel: St
                                 .blockingGet()
                         }
 
-                        count = countEnrollment(enrollments)
+                        val (mCount, mOverdue) = countEnrollment(enrollments)
+                        count = mCount
+                        hasOverdue = mOverdue
                     } else {
                         val enrollments = if (statesFilter.isNotEmpty()) {
                             d2.enrollmentModule().enrollments()
@@ -294,25 +312,27 @@ internal class HomeRepositoryImpl(private val d2: D2, private val eventLabel: St
                                 .blockingGet()
                         }
 
-                        count = countEnrollment(enrollments)
+                        val (mCount, mOverdue) = countEnrollment(enrollments)
+                        count = mCount
+                        hasOverdue = mOverdue
                     }
 
                     if (d2.trackedEntityModule().trackedEntityInstances()
-                            .byProgramUids(programUids).byState().`in`(State.ERROR, State.WARNING)
-                            .blockingGet().isNotEmpty()
+                        .byProgramUids(programUids).byState().`in`(State.ERROR, State.WARNING)
+                        .blockingGet().isNotEmpty()
                     ) {
                         state = State.WARNING
                     } else if (d2.trackedEntityModule().trackedEntityInstances().byProgramUids(
-                            programUids
-                        ).byState().`in`(
+                        programUids
+                    ).byState().`in`(
                             State.SENT_VIA_SMS,
                             State.SYNCED_VIA_SMS
                         ).blockingGet().isNotEmpty()
                     ) {
                         state = State.SENT_VIA_SMS
                     } else if (d2.trackedEntityModule().trackedEntityInstances().byProgramUids(
-                            programUids
-                        ).byState().`in`(
+                        programUids
+                    ).byState().`in`(
                             State.TO_UPDATE,
                             State.TO_POST
                         ).blockingGet().isNotEmpty() ||
@@ -339,9 +359,20 @@ internal class HomeRepositoryImpl(private val d2: D2, private val eventLabel: St
                     program.displayDescription(),
                     onlyEnrollOnce = true,
                     accessDataWrite = true,
-                    state = state.name
+                    state = state.name,
+                    hasOverdueEvent = hasOverdue
                 )
-            }.toList().toFlowable()
+            }.map { program ->
+            program.setTranslucent(
+                (
+                    dateFilter.isNotEmpty() ||
+                        orgUnitFilter.isNotEmpty() ||
+                        statesFilter.isNotEmpty()
+                    ) &&
+                    program.count() == 0
+            )
+        }
+            .toList().toFlowable()
     }
 
     private fun getCaptureOrgUnits(): Flowable<List<String>> {
@@ -357,13 +388,23 @@ internal class HomeRepositoryImpl(private val d2: D2, private val eventLabel: St
         }
     }
 
-    private fun countEnrollment(enrollments: List<Enrollment>): Int {
+    private fun countEnrollment(enrollments: List<Enrollment>): Pair<Int, Boolean> {
         val teiUids = ArrayList<String>()
+        var hasOverdue = false
         for (enrollment in enrollments) {
             if (!teiUids.contains(enrollment.trackedEntityInstance())) {
                 teiUids.add(enrollment.trackedEntityInstance()!!)
             }
+            if (enrollment.status() == EnrollmentStatus.ACTIVE && !hasOverdue) {
+                hasOverdue = !d2.eventModule().events()
+                    .byEnrollmentUid().eq(enrollment.uid())
+                    .byStatus().eq(EventStatus.OVERDUE).blockingIsEmpty() ||
+                    !d2.eventModule().events()
+                        .byEnrollmentUid().eq(enrollment.uid())
+                        .byStatus().eq(EventStatus.SCHEDULE)
+                        .byDueDate().before(Date()).blockingIsEmpty()
+            }
         }
-        return teiUids.size
+        return Pair(teiUids.size, hasOverdue)
     }
 }

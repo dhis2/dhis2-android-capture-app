@@ -22,7 +22,6 @@ import org.dhis2.utils.Constants;
 import org.dhis2.utils.Preconditions;
 import org.dhis2.utils.ValidationUtils;
 import org.dhis2.utils.customviews.TextInputAutoCompleteTextView;
-import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.common.ValueTypeDeviceRendering;
 import org.hisp.dhis.android.core.common.ValueTypeRenderingType;
 
@@ -37,11 +36,7 @@ import static android.text.TextUtils.isEmpty;
 import static java.lang.String.valueOf;
 
 
-/**
- * QUADRAM. Created by frodriguez on 18/01/2018..
- */
-
-final class EditTextCustomHolder extends FormViewHolder {
+public class EditTextCustomHolder extends FormViewHolder {
 
     private final FlowableProcessor<RowAction> processor;
     private final boolean isSearchMode;
@@ -62,10 +57,10 @@ final class EditTextCustomHolder extends FormViewHolder {
                 setSelectedBackground(isSearchMode);
             } else
                 clearBackground(isSearchMode);*/
-           if(!hasFocus){
-               clearBackground(isSearchMode);
-               binding.customEdittext.getEditText().setFocusable(false);
-           }
+            if(!hasFocus){
+                clearBackground(isSearchMode);
+                binding.customEdittext.getEditText().setFocusable(false);
+            }
 
             if (isSearchMode || (!hasFocus && editTextModel != null && editTextModel.editable())) {
                 if(valueHasChanged())

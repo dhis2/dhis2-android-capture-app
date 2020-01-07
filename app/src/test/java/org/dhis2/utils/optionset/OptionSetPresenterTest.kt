@@ -25,8 +25,8 @@
 
 package org.dhis2.utils.optionset
 
-import androidx.lifecycle.LiveData
-import androidx.paging.PagedList
+import androidx.paging.ItemKeyedDataSource
+import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.times
@@ -45,14 +45,14 @@ import org.hisp.dhis.android.core.option.OptionGroup
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
+import org.mockito.Mockito
 
 class OptionSetPresenterTest {
 
     private lateinit var presenter: OptionSetPresenter
     private val testSchedulers: TestSchedulerProvider = TestSchedulerProvider(TestScheduler())
     private val view: OptionSetView = mock()
-    private val d2: D2 = mock()
-    private val optionLivePagedData: LiveData<PagedList<Option>> = mock()
+    private val d2: D2 = Mockito.mock(D2::class.java, Mockito.RETURNS_DEEP_STUBS)
 
     @Before
     fun setup() {
@@ -61,19 +61,15 @@ class OptionSetPresenterTest {
 
     @Test
     fun `Should show full list of options`() {
-        mockOptionRepository()
-        whenever(d2.optionModule().optionGroups()) doReturn mock()
-        whenever(d2.optionModule().optionGroups().withOptions()) doReturn mock()
+        val dataSource = OptionsDataSource()
+        whenever(d2.optionModule().options().byOptionSetUid().eq("optionSet")) doReturn mock()
         whenever(d2.optionModule().optionGroups().withOptions().uid("optionGroup")) doReturn mock()
         whenever(
             d2.optionModule().optionGroups().withOptions().uid("optionGroup").blockingGet()
         ) doReturn mockOptionGroupList()
         whenever(
-            d2.optionModule().optionGroups().withOptions().uid("optionGroup").blockingGet()
-        ) doReturn mockOptionGroupList()
-        whenever(
-            d2.optionModule().options().byOptionSetUid().eq("optionSet").getPaged(20)
-        ) doReturn optionLivePagedData
+            d2.optionModule().options().byOptionSetUid().eq("optionSet").dataSource
+        ) doReturn dataSource
 
         whenever(view.searchSource()) doReturn Observable.just("" as CharSequence)
 
@@ -82,12 +78,12 @@ class OptionSetPresenterTest {
         testSchedulers.io().advanceTimeBy(500, TimeUnit.MILLISECONDS)
         testSchedulers.io().triggerActions()
         testSchedulers.ui().triggerActions()
-        verify(view, times(1)).setLiveData(optionLivePagedData)
+        verify(view, times(1)).setLiveData(any())
     }
 
     @Test
     fun `Should return the number of options available`() {
-        mockOptionRepository()
+        whenever(d2.optionModule().options().byOptionSetUid().eq("optionSet")) doReturn mock()
         whenever(
             d2.optionModule().options().byOptionSetUid().eq("optionSet").blockingCount()
         ) doReturn 5
@@ -102,13 +98,6 @@ class OptionSetPresenterTest {
         presenter.onDetach()
         val disposableSize = presenter.disposable.size()
         assertTrue(disposableSize == 0)
-    }
-
-    private fun mockOptionRepository() {
-        whenever(d2.optionModule()) doReturn mock()
-        whenever(d2.optionModule().options()) doReturn mock()
-        whenever(d2.optionModule().options().byOptionSetUid()) doReturn mock()
-        whenever(d2.optionModule().options().byOptionSetUid().eq("optionSet")) doReturn mock()
     }
 
     private fun mockOptionGroupList(): OptionGroup {
@@ -141,5 +130,28 @@ class OptionSetPresenterTest {
             10,
             ObjectStyle.builder().build()
         )
+    }
+
+    inner class OptionsDataSource : ItemKeyedDataSource<Option, Option>() {
+        override fun loadInitial(p: LoadInitialParams<Option>, cb: LoadInitialCallback<Option>) {
+            val options = mockSortedOptions()
+            cb.onResult(options)
+        }
+
+        override fun loadAfter(params: LoadParams<Option>, callback: LoadCallback<Option>) {}
+
+        override fun loadBefore(params: LoadParams<Option>, callback: LoadCallback<Option>) {}
+
+        override fun getKey(item: Option) = item
+
+        private fun mockSortedOptions(): List<Option> {
+            val options = mutableListOf<Option>()
+            val index = 1
+            while (index <= 5) {
+                options.add(Option.builder().uid("option$index").sortOrder(index).build())
+                index + 1
+            }
+            return options
+        }
     }
 }

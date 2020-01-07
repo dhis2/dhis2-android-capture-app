@@ -140,8 +140,9 @@ public class CircularCompletionView extends View {
         paint.setStyle(Paint.Style.FILL);
         paint.setTextSize(textSize);
 
-        canvas.drawText((int) ((completionPercent + secondaryPercent) * 100) + "%", radius, radius+(paint.getTextSize()/2), paint);
-
+        int x = (getWidth() / 2);
+        int y = (int) ((getHeight() / 2) - ((paint.descent() + paint.ascent()) / 2));
+        canvas.drawText((int) ((completionPercent + secondaryPercent) * 100) + "%", x, y, paint);
     }
 
 }

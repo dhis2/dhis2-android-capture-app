@@ -40,6 +40,8 @@ import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.observers.DisposableCompletableObserver
 import io.reactivex.schedulers.Schedulers
+import java.util.Collections
+import java.util.Date
 import org.dhis2.data.schedulers.SchedulerProvider
 import org.dhis2.data.service.SyncGranularWorker
 import org.dhis2.usescases.sms.SmsSendingService
@@ -62,8 +64,6 @@ import org.hisp.dhis.android.core.program.ProgramType
 import org.hisp.dhis.android.core.sms.domain.interactor.SmsSubmitCase
 import org.hisp.dhis.android.core.sms.domain.repository.SmsRepository
 import timber.log.Timber
-import java.util.Collections
-import java.util.Date
 
 class GranularSyncPresenterImpl(
     val d2: D2,
@@ -105,11 +105,11 @@ class GranularSyncPresenterImpl(
                 )
         )
 
-        if (conflictType == PROGRAM || conflictType == EVENT) {
+        if (conflictType == TEI || conflictType == EVENT) {
             disposable.add(
                 Single.just(conflictType)
                     .flatMap {
-                        if (it == PROGRAM) {
+                        if (it == TEI) {
                             d2
                                 .importModule()
                                 .trackerImportConflicts()
@@ -193,10 +193,14 @@ class GranularSyncPresenterImpl(
                     d2.enrollmentModule().enrollments().byTrackedEntityInstance().eq(recordUid)
                         .byState().`in`(State.TO_POST, State.TO_UPDATE).blockingGet()
                 )
-                smsSender.convertEnrollment(enrollmentUids[0])
+                if (enrollmentUids.isNotEmpty()) {
+                    smsSender.convertEnrollment(enrollmentUids[0])
+                } else {
+                    Single.error(Exception(view.emptyEnrollmentError()))
+                }
             }
             DATA_VALUES -> smsSender.convertDataSet(recordUid, dvOrgUnit, dvPeriodId, dvAttrCombo)
-            else -> Single.error(Exception("This convertTask is not supported"))
+            else -> Single.error(Exception(view.unsupportedTask()))
         }
 
         disposable.add(
@@ -246,8 +250,8 @@ class GranularSyncPresenterImpl(
                                 }
                             }
                         }.doOnComplete {
-                            reportState(SmsSendingService.State.RESULT_CONFIRMED, 0, 0)
-                        }
+                        reportState(SmsSendingService.State.RESULT_CONFIRMED, 0, 0)
+                    }
                 } else {
                     Completable.complete()
                 }
@@ -270,8 +274,8 @@ class GranularSyncPresenterImpl(
         if (statesList.isEmpty()) return false
         val last = statesList[statesList.size - 1]
         return last.state == SmsSendingService.State.SENDING &&
-                last.sent == sent &&
-                last.total == total
+            last.sent == sent &&
+            last.total == total
     }
 
     override fun reportState(state: SmsSendingService.State, sent: Int, total: Int) {
@@ -361,12 +365,14 @@ class GranularSyncPresenterImpl(
             teiRepository.byState().`in`(State.ERROR).blockingGet().isNotEmpty() -> State.ERROR
             teiRepository.byState().`in`(State.WARNING).blockingGet().isNotEmpty() -> State.WARNING
             teiRepository.byState().`in`(State.SENT_VIA_SMS, State.SYNCED_VIA_SMS)
-                .blockingGet().isNotEmpty() -> State.SENT_VIA_SMS
+                .blockingGet().isNotEmpty() ->
+                State.SENT_VIA_SMS
             teiRepository.byState().`in`(
                 State.TO_UPDATE,
                 State.TO_POST
             ).blockingGet().isNotEmpty() ||
-                    teiRepository.byDeleted().isTrue.blockingGet().isNotEmpty() -> State.TO_UPDATE
+                teiRepository.byDeleted().isTrue.blockingGet().isNotEmpty() ->
+                State.TO_UPDATE
             else -> State.SYNCED
         }
     }
@@ -376,31 +382,50 @@ class GranularSyncPresenterImpl(
             d2.eventModule().events().byProgramUid().eq(programUid)
 
         return when {
-            eventRepository.byState().`in`(State.ERROR).blockingGet().isNotEmpty() -> State.ERROR
-            eventRepository.byState().`in`(State.WARNING).blockingGet().isNotEmpty() -> State.WARNING
+            eventRepository.byState().`in`(State.ERROR).blockingGet().isNotEmpty() ->
+                State.ERROR
+            eventRepository.byState().`in`(State.WARNING).blockingGet().isNotEmpty() ->
+                State.WARNING
             eventRepository.byState().`in`(State.SENT_VIA_SMS, State.SYNCED_VIA_SMS)
-                .blockingGet().isNotEmpty() -> State.SENT_VIA_SMS
+                .blockingGet().isNotEmpty() ->
+                State.SENT_VIA_SMS
             eventRepository.byState().`in`(
                 State.TO_UPDATE,
                 State.TO_POST
             ).blockingGet().isNotEmpty() ||
-                    eventRepository.byDeleted().isTrue.blockingGet().isNotEmpty() -> State.TO_UPDATE
+                eventRepository.byDeleted().isTrue.blockingGet().isNotEmpty() ->
+                State.TO_UPDATE
             else -> State.SYNCED
         }
     }
 
     fun getStateFromCanditates(stateCandidates: MutableList<State?>): State {
-        stateCandidates.addAll(d2.dataSetModule().dataSetCompleteRegistrations()
-            .byDataSetUid().eq(recordUid)
-            .blockingGet().map { it.state() })
+        if (conflictType == DATA_SET) {
+            stateCandidates.addAll(
+                d2.dataSetModule().dataSetCompleteRegistrations()
+                    .byDataSetUid().eq(recordUid)
+                    .blockingGet().map { it.state() }
+            )
+        } else {
+            stateCandidates.addAll(
+                d2.dataSetModule().dataSetCompleteRegistrations()
+                    .byOrganisationUnitUid().eq(dvOrgUnit)
+                    .byPeriod().eq(dvPeriodId)
+                    .byAttributeOptionComboUid().eq(dvAttrCombo)
+                    .byDataSetUid().eq(recordUid).get()
+                    .blockingGet().map { it.state() }
+            )
+        }
 
         return when {
             stateCandidates.contains(State.ERROR) -> State.ERROR
             stateCandidates.contains(State.WARNING) -> State.WARNING
             stateCandidates.contains(State.SENT_VIA_SMS) ||
-                    stateCandidates.contains(State.SYNCED_VIA_SMS) -> State.SENT_VIA_SMS
+                stateCandidates.contains(State.SYNCED_VIA_SMS) ->
+                State.SENT_VIA_SMS
             stateCandidates.contains(State.TO_POST) ||
-                    stateCandidates.contains(State.TO_UPDATE) -> State.TO_UPDATE
+                stateCandidates.contains(State.TO_UPDATE) ->
+                State.TO_UPDATE
             else -> State.SYNCED
         }
     }

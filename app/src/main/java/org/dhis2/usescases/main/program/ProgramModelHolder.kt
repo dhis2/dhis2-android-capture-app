@@ -54,5 +54,11 @@ class ProgramModelHolder(private val binding: ItemProgramModelBinding) :
             val programTheme = ColorUtils.getThemeFromColor(programViewModel.color())
             presenter.onItemClick(programViewModel, programTheme)
         }
+
+        binding.root.alpha = if (programViewModel.translucent()) {
+            0.5f
+        } else {
+            1.0f
+        }
     }
 }
