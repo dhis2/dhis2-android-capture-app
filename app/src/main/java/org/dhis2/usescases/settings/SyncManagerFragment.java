@@ -248,7 +248,6 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
 
         listenerDisposable.add(RxTextView.textChanges(binding.settingsSms.findViewById(R.id.settings_sms_receiver))
                 .skipInitialValue()
-                .debounce(500, TimeUnit.MILLISECONDS, Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         data -> presenter.validateGatewayObservable(data.toString()),

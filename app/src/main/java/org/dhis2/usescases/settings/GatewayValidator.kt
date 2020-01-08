@@ -9,6 +9,7 @@ class GatewayValidator : Validator {
     }
 
     companion object {
+        val max_size = 16
         val regex = Regex("^\\+[1-9][0-9]{3,16}\$")
     }
 }

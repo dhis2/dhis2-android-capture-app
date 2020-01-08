@@ -1,6 +1,5 @@
 package org.dhis2.usescases.settings;
 
-import static android.text.TextUtils.isEmpty;
 import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
 import static org.dhis2.utils.analytics.AnalyticsConstants.SYNC_DATA_NOW;
 import static org.dhis2.utils.analytics.AnalyticsConstants.SYNC_METADATA_NOW;
@@ -10,7 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import org.dhis2.R;
 import org.dhis2.data.prefs.PreferenceProvider;
 import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.data.service.SyncDataWorker;
@@ -27,7 +25,6 @@ import org.hisp.dhis.android.core.sms.domain.interactor.ConfigCase;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.widget.EditText;
 
 import androidx.work.Constraints;
 import androidx.work.ExistingPeriodicWorkPolicy;
@@ -114,14 +111,24 @@ public class SyncManagerPresenter
     }
 
     public void validateGatewayObservable(String gateway){
-        if (!gateway.startsWith("+") && gateway.length() == 1) {
+        if (plusIsMissingOrIsTooLong(gateway)) {
             view.showInvalidGatewayError();
-        } else if (gatewayValidator.validate(gateway)){
-            view.hideGatewayError();
-            smsNumberSet(gateway);
         } else if (gateway.isEmpty()){
             view.requestNoEmptySMSGateway();
+        } else if (isValidGateway(gateway)){
+            view.hideGatewayError();
+            smsNumberSet(gateway);
         }
+    }
+
+    private boolean isValidGateway(String gateway){
+        return gatewayValidator.validate(gateway) ||
+                (gateway.startsWith("+") && gateway.length() == 1);
+    }
+
+    private boolean plusIsMissingOrIsTooLong(String gateway){
+        return (!gateway.startsWith("+") && gateway.length() == 1) ||
+                (gateway.length() >= GatewayValidator.Companion.getMax_size());
     }
 
     public boolean isGatewaySetAndValid(String gateway) {
