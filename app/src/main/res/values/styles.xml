@@ -266,16 +266,30 @@
     <style name="dhisSwitch">
         <!-- colorPrimary is used for the default action bar background -->
         <item name="colorPrimary">?colorPrimary</item>
-
-        <!-- colorPrimaryDark is used for the status bar -->
-        <item name="colorPrimaryDark">?colorPrimaryDark</item>
-
-        <!-- colorAccent is used as the default value for colorControlActivated,
-             which is used to tint widgets -->
-        <item name="colorAccent">?colorPrimaryLight</item>
-
-        <!-- You can also set colorControlNormal, colorControlActivated
-             colorControlHighlight, and colorSwitchThumbNormal. -->
     </style>
+
+    <style name="ErrorText" parent="TextAppearance.AppCompat">
+        <item name="android:textColor">@color/red_060</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <style name="HintText" parent="TextAppearance.AppCompat">
+        <item name="android:textColor">@android:color/black</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+
+    <style name="TextInputLayoutAppearance" parent="Widget.Design.TextInputLayout">
+        <!-- reference our hint & error styles -->
+        <item name="hintTextAppearance">@style/HintText</item>
+        <item name="errorTextAppearance">@style/ErrorText</item>
+        <item name="android:textColor">@color/black_de0</item>
+        <item name="android:textColorHint">@color/gray_9b9</item>
+        <item name="colorControlNormal">@color/gray_9b9</item>
+        <item name="colorControlActivated">@color/black_de0</item>
+        <item name="colorControlHighlight">@color/gray_9b9</item>
+        <item name="android:layout_marginStart">-4dp</item>
+        <item name="android:layout_marginLeft">-4dp</item>
+    </style>
+
 
 </resources>
