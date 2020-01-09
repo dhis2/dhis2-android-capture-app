@@ -67,6 +67,9 @@ android {
 
     configurations.all*.exclude module: 'jsr305'
 
+    configurations {
+        compile.exclude group: "junit", module: "junit"
+    }
 
     packagingOptions {
         // excluding duplicate license files
