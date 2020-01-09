@@ -278,4 +278,9 @@
              colorControlHighlight, and colorSwitchThumbNormal. -->
     </style>
 
+    <style name="DialogPinTheme" parent="Base.ThemeOverlay.MaterialComponents.Dialog">
+        <item name="android:windowFullscreen">true</item>
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
+
 </resources>

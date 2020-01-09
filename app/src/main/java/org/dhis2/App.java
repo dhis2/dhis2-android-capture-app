@@ -36,9 +36,13 @@ import org.dhis2.usescases.teiDashboard.TeiDashboardComponent;
 import org.dhis2.usescases.teiDashboard.TeiDashboardModule;
 import org.dhis2.utils.UtilsModule;
 import org.dhis2.utils.analytics.AnalyticsModule;
+import org.dhis2.utils.session.PinModule;
+import org.dhis2.utils.session.PinPresenter;
+import org.dhis2.utils.session.SessionComponent;
 import org.dhis2.utils.timber.DebugTree;
 import org.dhis2.utils.timber.ReleaseTree;
 import org.hisp.dhis.android.core.D2Manager;
+import org.jetbrains.annotations.NotNull;
 
 import javax.inject.Singleton;
 
@@ -78,6 +82,9 @@ public class App extends MultiDexApplication implements Components {
     @Nullable
     @PerActivity
     private TeiDashboardComponent dashboardComponent;
+
+    @Nullable
+    private SessionComponent sessionComponent;
 
     @Override
     public void onCreate() {
@@ -243,6 +250,17 @@ public class App extends MultiDexApplication implements Components {
     public void releaseDashboardComponent() {
         dashboardComponent = null;
     }
+
+    @NotNull
+    public SessionComponent createSessionComponent(PinModule pinModule) {
+        return (sessionComponent = appComponent.plus(pinModule));
+    }
+
+    public void releaseSessionCOmponent(){
+        sessionComponent = null;
+    }
+
+
 
     ////////////////////////////////////////////////////////////////////////
     // AndroidInjector

@@ -50,6 +50,9 @@ import org.dhis2.utils.WebViewActivity.Companion.WEB_VIEW_URL
 import org.dhis2.utils.analytics.CLICK
 import org.dhis2.utils.analytics.FORGOT_CODE
 import org.dhis2.utils.analytics.UNLOCK_SESSION
+import org.dhis2.utils.session.PIN_DIALOG_TAG
+import org.dhis2.utils.session.PinDialog
+import org.dhis2.utils.session.TAGI
 import timber.log.Timber
 
 class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
@@ -154,8 +157,8 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
 
     private fun checkUrl(urlString: String): Boolean {
         return URLUtil.isValidUrl(urlString) &&
-            Patterns.WEB_URL.matcher(urlString).matches() &&
-            HttpUrl.parse(urlString) != null
+                Patterns.WEB_URL.matcher(urlString).matches() &&
+                HttpUrl.parse(urlString) != null
     }
 
     override fun setTestingCredentials() {
@@ -294,7 +297,10 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
         binding.pinLayout.pinLockView.setPinLockListener(object : PinLockListener {
             override fun onComplete(pin: String) {
                 analyticsHelper.setEvent(UNLOCK_SESSION, CLICK, UNLOCK_SESSION)
-                presenter.unlockSession(pin, !(binding.pinLayout.lockPin as CheckBox).isChecked ?: false)
+                presenter.unlockSession(
+                    pin,
+                    !(binding.pinLayout.lockPin as CheckBox).isChecked ?: false
+                )
             }
 
             override fun onEmpty() {
@@ -306,6 +312,9 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
         binding.pinLayout.title.text = getString(R.string.unblock_session)
         binding.pinLayout.root.visibility = View.VISIBLE
         isPinScreenVisible = true
+
+        PinDialog(PinDialog.Mode.ASK)
+            .show(supportFragmentManager, PIN_DIALOG_TAG)
     }
 
     override fun onLogoutClick(android: View) {
