@@ -19,7 +19,7 @@ import timber.log.Timber;
 public class AboutPresenterImpl implements AboutContracts.AboutPresenter {
     private final D2 d2;
     private final UserRepository userRepository;
-    private CompositeDisposable compositeDisposable;
+    public CompositeDisposable compositeDisposable;
     private SchedulerProvider provider;
 
     AboutPresenterImpl(@NonNull D2 d2,
@@ -28,12 +28,11 @@ public class AboutPresenterImpl implements AboutContracts.AboutPresenter {
         this.d2 = d2;
         this.provider = provider;
         this.userRepository = userRepository;
+        this.compositeDisposable = new CompositeDisposable();
     }
 
     @Override
     public void init(AboutContracts.AboutView view) {
-
-        compositeDisposable = new CompositeDisposable();
 
         compositeDisposable.add(userRepository.credentials()
                 .cacheWithInitialCapacity(1)
