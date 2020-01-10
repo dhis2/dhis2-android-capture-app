@@ -21,8 +21,8 @@ import java.util.*
 
 class AboutPresenterTest {
 
-    private lateinit var aboutPresenter: AboutContracts.AboutPresenter
-    private val d2: D2 = Mockito.mock(D2::class.java, Mockito.RETURNS_DEEP_STUBS)
+    private lateinit var aboutPresenter: AboutPresenterImpl
+    private val d2: D2 = Mockito.mock(D2::class.java, RETURNS_DEEP_STUBS)
     private val userRepository: UserRepository = mock()
     private val aboutView: AboutContracts.AboutView = mock()
     private val providesPresenterFactory = TrampolineSchedulerProvider()
@@ -52,9 +52,9 @@ class AboutPresenterTest {
     
     @Test
     fun `Should clear disposable`() {
-        presenter.onPause()
+        aboutPresenter.onPause()
 
-        assert(presenter.compositeDisposable.size() == 0)
+        assert(aboutPresenter.compositeDisposable.size() == 0)
     }
 
 }
