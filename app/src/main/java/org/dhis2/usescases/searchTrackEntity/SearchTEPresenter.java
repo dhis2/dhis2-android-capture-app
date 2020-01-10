@@ -24,6 +24,7 @@ import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel;
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity;
 import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.Constants;
+import org.dhis2.utils.DhisTextUtils;
 import org.dhis2.utils.NetworkUtils;
 import org.dhis2.utils.ObjectStyleUtils;
 import org.dhis2.utils.customviews.OrgUnitDialog;
@@ -55,7 +56,6 @@ import io.reactivex.processors.PublishProcessor;
 import timber.log.Timber;
 
 import static android.app.Activity.RESULT_OK;
-import static android.text.TextUtils.isEmpty;
 import static org.dhis2.utils.analytics.AnalyticsConstants.ADD_RELATIONSHIP;
 import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
 import static org.dhis2.utils.analytics.AnalyticsConstants.CREATE_ENROLL;
@@ -186,7 +186,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                 .subscribe(data -> {
                             Map<String, String> queryDataBU = new HashMap<>(queryData);
                             view.setFabIcon(true);
-                            if (!isEmpty(data.value())) {
+                            if (!DhisTextUtils.Companion.isEmpty(data.value())) {
                                 queryData.put(data.id(), data.value());
                                 if (data.requiresExactMatch())
                                     if (data.value().equals("null_os_null"))
@@ -196,7 +196,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                             }
 
                             if (!queryData.equals(queryDataBU)) { //Only when queryData has changed
-                                if (!isEmpty(data.value()))
+                                if (!DhisTextUtils.Companion.isEmpty(data.value()))
                                     queryData.put(data.id(), data.value());
                                 else
                                     queryData.remove(data.id());
