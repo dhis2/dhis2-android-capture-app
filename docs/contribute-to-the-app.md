@@ -22,7 +22,7 @@ DHIS 2 and the new DHIS 2 Android App allows you to select icons for programs, d
 
 The steps to contribute to the translation of the app are:
 
-1. Create an account ( https://www.transifex.com/signin/?next=/hisp-uio/)
+1. Create an account in [Transifex](https://www.transifex.com/signin/?next=/hisp-uio/)
 2. Join Existing Organization
 3. Search for HISP UiO and select the organization not the projects
 4. Select ANDROID: Capture project
