@@ -42,12 +42,19 @@ class AboutPresenterTest {
                 .build()
         whenever(userRepository.credentials()) doReturn Flowable.just(userCredentials)
         val userName = SystemInfo.builder()
-                .contextPath("https://google.es").build()
+                .contextPath("https://url.es").build()
         whenever(d2.systemInfoModule().systemInfo().get()) doReturn Single.just(userName)
 
         aboutPresenter.init(aboutView)
         verify(aboutView).renderUserCredentials(userCredentials)
         verify(aboutView).renderServerUrl(userName.contextPath())
+    }
+    
+    @Test
+    fun `Should clear disposable`() {
+        presenter.onPause()
+
+        assert(presenter.compositeDisposable.size() == 0)
     }
 
 }
