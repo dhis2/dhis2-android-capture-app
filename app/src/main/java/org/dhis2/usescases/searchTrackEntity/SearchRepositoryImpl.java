@@ -13,6 +13,7 @@ import androidx.paging.PagedList;
 import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.dhis2.Bindings.ExtensionsKt;
+import org.dhis2.Bindings.ValueExtensionsKt;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel;
@@ -651,7 +652,10 @@ public class SearchRepositoryImpl implements SearchRepository {
             if (tei.trackedEntityAttributeValues() != null) {
                 TrackedEntityAttributeValue.Builder attrValueBuilder = TrackedEntityAttributeValue.builder();
                 for (TrackedEntityAttributeValue attrValue : tei.trackedEntityAttributeValues()) {
-                    attrValueBuilder.value(attrValue.value())
+
+                    String friendlyValue = ValueExtensionsKt.userFriendlyValue(attrValue,d2);
+
+                    attrValueBuilder.value(friendlyValue)
                             .created(attrValue.created())
                             .lastUpdated(attrValue.lastUpdated())
                             .trackedEntityAttribute(attrValue.trackedEntityAttribute())
