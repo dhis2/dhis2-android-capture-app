@@ -11,22 +11,12 @@ class PinPresenter(
     fun unlockSession(pin: String, enable: Boolean = true): Boolean {
         return if (preferenceProvider.getString(Preference.PIN, "") == pin) {
             preferenceProvider.setValue(Preference.SESSION_LOCKED, enable)
+            if (!enable)
+                preferenceProvider.removeValue(Preference.PIN)
             true
         } else {
             false
         }
-    }
-
-    fun OnCloseDialog() {
-        view.closeDialog()
-    }
-
-    fun OnForgotPinClick() {
-        view.recoverPin()
-    }
-
-    fun setForgetPin() {
-
     }
 
     fun savePin(pin: String) {

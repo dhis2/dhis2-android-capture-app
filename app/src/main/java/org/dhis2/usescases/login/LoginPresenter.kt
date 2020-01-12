@@ -229,6 +229,7 @@ class LoginPresenter(
         if (throwable is D2Error && throwable.errorCode() == D2ErrorCode.ALREADY_AUTHENTICATED) {
             preferenceProvider.apply {
                 setValue(SESSION_LOCKED, false)
+
                 setValue(PIN, null)
             }
             view.alreadyAuthenticated()

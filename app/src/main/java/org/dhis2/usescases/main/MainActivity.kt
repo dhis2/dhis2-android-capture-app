@@ -40,6 +40,8 @@ import org.dhis2.utils.analytics.CLICK
 import org.dhis2.utils.analytics.CLOSE_SESSION
 import org.dhis2.utils.filters.FilterManager
 import org.dhis2.utils.filters.FiltersAdapter
+import org.dhis2.utils.session.PIN_DIALOG_TAG
+import org.dhis2.utils.session.PinDialog
 
 private const val FRAGMENT = "Fragment"
 private const val PERMISSION_REQUEST = 1987
@@ -76,7 +78,7 @@ class MainActivity : ActivityGlobalAbstract(), MainView, ExporterListener {
             false
         }
 
-        binding.pinLayout.pinLockView.attachIndicatorDots(binding.pinLayout.indicatorDots)
+       /* binding.pinLayout.pinLockView.attachIndicatorDots(binding.pinLayout.indicatorDots)
         binding.pinLayout.pinLockView.setPinLockListener(object : PinLockListener {
             override fun onComplete(pin: String) {
                 presenter.blockSession(pin)
@@ -85,7 +87,7 @@ class MainActivity : ActivityGlobalAbstract(), MainView, ExporterListener {
             override fun onEmpty() {}
 
             override fun onPinChange(pinLength: Int, intermediatePin: String) {}
-        })
+        })*/
 
         if (savedInstanceState != null) {
             val frag = savedInstanceState.getInt(FRAGMENT)
@@ -121,9 +123,9 @@ class MainActivity : ActivityGlobalAbstract(), MainView, ExporterListener {
         presenter.initFilters()
 
         if (ContextCompat.checkSelfPermission(
-            this,
-            Manifest.permission.WRITE_EXTERNAL_STORAGE
-        ) != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE
+            ) != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(
                 this,
                 Manifest.permission.CAMERA
             ) != PackageManager.PERMISSION_GRANTED
@@ -195,10 +197,14 @@ class MainActivity : ActivityGlobalAbstract(), MainView, ExporterListener {
     override fun onLockClick() {
         if (prefs!!.getString(Preference.PIN, null) == null) {
             binding.mainDrawerLayout.closeDrawers()
-            binding.pinLayout.root.visibility = View.VISIBLE
+//            binding.pinLayout.root.visibility = View.VISIBLE
+            PinDialog(PinDialog.Mode.SET,
+                { presenter.blockSession() },
+                {}
+            ).show(supportFragmentManager, PIN_DIALOG_TAG)
             isPinLayoutVisible = true
         } else {
-            presenter.blockSession(prefs!!.getString(Preference.PIN, "")!!)
+            presenter.blockSession()
         }
     }
 
@@ -207,8 +213,8 @@ class MainActivity : ActivityGlobalAbstract(), MainView, ExporterListener {
             fragId != R.id.menu_home -> changeFragment(R.id.menu_home)
             isPinLayoutVisible -> {
                 isPinLayoutVisible = false
-                startActivity(Intent(this@MainActivity, MainActivity::class.java))
-                finish()
+                /*startActivity(Intent(this@MainActivity, MainActivity::class.java))
+                finish()*/
             }
             else -> super.onBackPressed()
         }

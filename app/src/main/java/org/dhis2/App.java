@@ -256,7 +256,7 @@ public class App extends MultiDexApplication implements Components {
         return (sessionComponent = appComponent.plus(pinModule));
     }
 
-    public void releaseSessionCOmponent(){
+    public void releaseSessionComponent(){
         sessionComponent = null;
     }
 

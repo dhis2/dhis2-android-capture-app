@@ -2,23 +2,33 @@ package org.dhis2.utils.session
 
 import android.app.Dialog
 import android.os.Bundle
+import android.os.Handler
 import android.os.Process
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.Window
 import android.widget.CheckBox
+import android.widget.Toast
 import androidx.fragment.app.DialogFragment
 import org.dhis2.Bindings.app
 import org.dhis2.R
 import org.dhis2.databinding.DialogPinBinding
+import javax.inject.Inject
 
 const val PIN_DIALOG_TAG: String = "PINDIALOG"
-class PinDialog(val mode: Mode) : DialogFragment(), PinView {
 
+class PinDialog(
+    val mode: Mode,
+    private val unlockCallback: (Boolean) -> Unit,
+    private val forgotPinCallback: () -> Unit
+) : DialogFragment(), PinView {
+
+    private var forgetPin: Boolean = false
     private lateinit var binding: DialogPinBinding
 
-    private lateinit var presenter: PinPresenter
+    @Inject
+    lateinit var presenter: PinPresenter
 
     enum class Mode {
         SET, ASK
@@ -26,7 +36,7 @@ class PinDialog(val mode: Mode) : DialogFragment(), PinView {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setStyle(STYLE_NO_TITLE, android.R.style.Theme_DeviceDefault_Light_NoActionBar_Fullscreen)
+        setStyle(STYLE_NO_TITLE, android.R.style.Theme_DeviceDefault_Light_NoActionBar)
         app().createSessionComponent(PinModule(this)).inject(this)
     }
 
@@ -43,17 +53,26 @@ class PinDialog(val mode: Mode) : DialogFragment(), PinView {
         savedInstanceState: Bundle?
     ): View? {
         binding = DialogPinBinding.inflate(layoutInflater, container, false)
+        binding.closeButton.setOnClickListener { closeDialog() }
 
         when (mode) {
             Mode.ASK -> {
                 binding.title.text = getString(R.string.unblock_session)
-                binding.forgotCode.visibility = View.VISIBLE
+                binding.forgotCode.apply {
+                    visibility = View.VISIBLE
+                    setOnClickListener { recoverPin() }
+                }
                 binding.lockPin.visibility = View.VISIBLE
+                binding.lockPin.apply {
+                    visibility = View.VISIBLE
+                    setOnCheckedChangeListener { _, isChecked -> forgetPin = isChecked }
+                    isChecked = forgetPin
+                }
             }
             Mode.SET -> {
                 binding.title.text = getString(R.string.set_pin)
                 binding.forgotCode.visibility = View.GONE
-                binding.lockPin.visibility = View.VISIBLE
+                binding.lockPin.visibility = View.GONE
             }
         }
 
@@ -65,8 +84,10 @@ class PinDialog(val mode: Mode) : DialogFragment(), PinView {
                     blockSession()
                 }
                 Mode.ASK ->
-                    if (presenter.unlockSession(it, !(binding.lockPin as CheckBox).isChecked)) {
-                        //TODO: UNBLOCK SUCCEEDED
+                    if (presenter.unlockSession(it, !forgetPin)) {
+                        unlockCallback.invoke(true)
+                    }else{
+                        Toast.makeText(context,"Wrong pin",Toast.LENGTH_SHORT).show()
                     }
             }
         }
@@ -74,8 +95,11 @@ class PinDialog(val mode: Mode) : DialogFragment(), PinView {
         return binding.root
     }
 
-    fun blockSession() {
-        Process.killProcess(Process.myPid())
+    private fun blockSession() {
+        Handler().postDelayed(
+            { Process.killProcess(Process.myPid()) }, 1500
+        )
+
     }
 
     override fun closeDialog() {
@@ -83,11 +107,12 @@ class PinDialog(val mode: Mode) : DialogFragment(), PinView {
     }
 
     override fun dismiss() {
-        app().releaseSessionCOmponent()
+        app().releaseSessionComponent()
         super.dismiss()
     }
 
     override fun recoverPin() {
-
+        forgotPinCallback.invoke()
+        dismiss()
     }
 }
