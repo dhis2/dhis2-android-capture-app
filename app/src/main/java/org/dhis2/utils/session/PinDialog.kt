@@ -8,7 +8,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.Window
-import android.widget.CheckBox
 import android.widget.Toast
 import androidx.fragment.app.DialogFragment
 import org.dhis2.Bindings.app
@@ -44,6 +43,7 @@ class PinDialog(
         val dialog = super.onCreateDialog(savedInstanceState)
         dialog.window!!.requestFeature(Window.FEATURE_NO_TITLE)
         dialog.window!!.setBackgroundDrawableResource(android.R.color.transparent)
+        dialog.window!!.setWindowAnimations(R.style.pin_dialog_animation)
         return dialog
     }
 
@@ -62,17 +62,10 @@ class PinDialog(
                     visibility = View.VISIBLE
                     setOnClickListener { recoverPin() }
                 }
-                binding.lockPin.visibility = View.VISIBLE
-                binding.lockPin.apply {
-                    visibility = View.VISIBLE
-                    setOnCheckedChangeListener { _, isChecked -> forgetPin = isChecked }
-                    isChecked = forgetPin
-                }
             }
             Mode.SET -> {
                 binding.title.text = getString(R.string.set_pin)
                 binding.forgotCode.visibility = View.GONE
-                binding.lockPin.visibility = View.GONE
             }
         }
 

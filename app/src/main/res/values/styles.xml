@@ -278,9 +278,9 @@
              colorControlHighlight, and colorSwitchThumbNormal. -->
     </style>
 
-    <style name="DialogPinTheme" parent="Base.ThemeOverlay.MaterialComponents.Dialog">
-        <item name="android:windowFullscreen">true</item>
-        <item name="colorAccent">@color/colorAccent</item>
+    <style name="pin_dialog_animation">
+        <item name="android:windowEnterAnimation">@anim/fscv_fade_in</item>
+        <item name="android:windowExitAnimation">@anim/fscv_fade_out</item>
     </style>
 
 </resources>
