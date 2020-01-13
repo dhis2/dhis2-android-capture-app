@@ -23,7 +23,6 @@ class PinDialog(
     private val forgotPinCallback: () -> Unit
 ) : DialogFragment(), PinView {
 
-    private var forgetPin: Boolean = false
     private lateinit var binding: DialogPinBinding
 
     @Inject
@@ -77,10 +76,10 @@ class PinDialog(
                     blockSession()
                 }
                 Mode.ASK ->
-                    if (presenter.unlockSession(it, !forgetPin)) {
+                    if (presenter.unlockSession(it)) {
                         unlockCallback.invoke(true)
-                    }else{
-                        Toast.makeText(context,"Wrong pin",Toast.LENGTH_SHORT).show()
+                    } else {
+                        Toast.makeText(context, "Wrong pin", Toast.LENGTH_SHORT).show()
                     }
             }
         }

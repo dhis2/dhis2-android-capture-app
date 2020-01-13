@@ -8,11 +8,9 @@ class PinPresenter(
     val preferenceProvider: PreferenceProvider
 ) {
 
-    fun unlockSession(pin: String, enable: Boolean = true): Boolean {
+    fun unlockSession(pin: String): Boolean {
         return if (preferenceProvider.getString(Preference.PIN, "") == pin) {
-            preferenceProvider.setValue(Preference.SESSION_LOCKED, enable)
-            if (!enable)
-                preferenceProvider.removeValue(Preference.PIN)
+            preferenceProvider.setValue(Preference.SESSION_LOCKED, true)
             true
         } else {
             false
