@@ -18,6 +18,7 @@ import org.dhis2.data.tuples.Sextet;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.usescases.eventsWithoutRegistration.eventSummary.EventSummaryRepository;
 import org.dhis2.utils.DateUtils;
+import org.dhis2.utils.DhisTextUtils;
 import org.dhis2.utils.EventCreationType;
 import org.dhis2.utils.Result;
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper;
@@ -40,7 +41,6 @@ import com.google.android.gms.location.LocationServices;
 import android.Manifest;
 import android.app.DatePickerDialog;
 import android.content.pm.PackageManager;
-import android.text.TextUtils;
 import android.view.View;
 
 import androidx.annotation.NonNull;
@@ -225,7 +225,7 @@ public class EventInitialPresenter
     private void getProgramStages(String programUid, String programStageUid) {
 
         compositeDisposable
-                .add((TextUtils.isEmpty(programStageId) ? eventInitialRepository.programStage(programUid)
+                .add((DhisTextUtils.Companion.isEmpty(programStageId) ? eventInitialRepository.programStage(programUid)
                         : eventInitialRepository.programStageWithId(programStageUid)).subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.ui())
                         .subscribe(programStage -> view.setProgramStage(programStage),

@@ -78,14 +78,6 @@ android {
         exclude 'META-INF/rxjava.properties'
     }
 
-    signingConfigs {
-        release {
-            storeFile file('dhis_keystore.jks')
-            storePassword KEYSTORE_PASSWORD
-            keyAlias KEY_ALIAS
-            keyPassword KEYSTORE_PASSWORD
-        }
-    }
 
     buildTypes {
         debug {
@@ -109,7 +101,6 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             ext.enableCrashlytics = true
-            signingConfig signingConfigs.release
 
             resValue "string", "content_provider", "com.dhis2.provider"
 
@@ -240,7 +231,9 @@ dependencies {
         exclude group: "org.hisp.dhis", module: "core-rules"
     }
 
-    releaseImplementation "org.hisp.dhis.rules:rule-engine:${libraries.ruleEngine}"
+    releaseImplementation ("org.hisp.dhis.rules:rule-engine:${libraries.ruleEngine}"){
+        exclude group: "junit", module: "junit"
+    }
     //endregion
 
     //region UI LIBRARIES
@@ -322,9 +315,11 @@ dependencies {
     implementation 'com.google.firebase:firebase-messaging:20.0.0'
 
     //Test
+    testImplementation "android.arch.core:core-testing:2.0.0"
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
     androidTestImplementation "androidx.test:core:1.2.0"
+    testImplementation "androidx.test:core:1.2.0"
     androidTestImplementation 'androidx.test:rules:1.2.0'
     androidTestImplementation "androidx.test:core-ktx:1.2.0"
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'

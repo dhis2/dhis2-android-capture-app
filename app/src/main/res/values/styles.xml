@@ -266,16 +266,35 @@
     <style name="dhisSwitch">
         <!-- colorPrimary is used for the default action bar background -->
         <item name="colorPrimary">?colorPrimary</item>
+    </style>
 
-        <!-- colorPrimaryDark is used for the status bar -->
-        <item name="colorPrimaryDark">?colorPrimaryDark</item>
+    <style name="ErrorText" parent="TextAppearance.AppCompat">
+        <item name="android:textColor">@color/red_060</item>
+        <item name="android:textSize">16sp</item>
+    </style>
 
-        <!-- colorAccent is used as the default value for colorControlActivated,
-             which is used to tint widgets -->
-        <item name="colorAccent">?colorPrimaryLight</item>
+    <style name="HintText" parent="TextAppearance.AppCompat">
+        <item name="android:textColor">@android:color/black</item>
+        <item name="android:textSize">14sp</item>
+    </style>
 
-        <!-- You can also set colorControlNormal, colorControlActivated
-             colorControlHighlight, and colorSwitchThumbNormal. -->
+    <style name="TextInputLayoutAppearance" parent="Widget.Design.TextInputLayout">
+        <!-- reference our hint & error styles -->
+        <item name="hintTextAppearance">@style/HintText</item>
+        <item name="errorTextAppearance">@style/ErrorText</item>
+        <item name="android:textColor">@color/black_de0</item>
+        <item name="android:textColorHint">@color/gray_9b9</item>
+        <item name="colorControlNormal">@color/gray_9b9</item>
+        <item name="colorControlActivated">@color/black_de0</item>
+        <item name="colorControlHighlight">@color/gray_9b9</item>
+        <item name="android:layout_marginStart">-4dp</item>
+        <item name="android:layout_marginLeft">-4dp</item>
+    </style>
+
+    <style name="pin_dialog_animation">
+<!--        <item name="android:windowEnterAnimation">@anim/fscv_fade_in</item>-->
+        <item name="android:windowEnterAnimation">@anim/pin_dialog_anim_enter</item>
+        <item name="android:windowExitAnimation">@anim/pin_dialog_anim_exit</item>
     </style>
 
 </resources>

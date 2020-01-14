@@ -17,8 +17,14 @@ public final class SyncManagerModule {
     SyncManagerContracts.Presenter providePresenter(
             D2 d2,
             SchedulerProvider schedulerProvider,
+            GatewayValidator gatewayValidator,
             PreferenceProvider preferenceProvider,
             WorkManagerController workManagerController) {
-        return new SyncManagerPresenter(d2, schedulerProvider,preferenceProvider, workManagerController);
+        return new SyncManagerPresenter(d2, schedulerProvider, gatewayValidator, preferenceProvider, workManagerController);
+    }
+
+    @Provides @PerFragment
+    GatewayValidator providesGatewayValidator(){
+        return new GatewayValidator();
     }
 }

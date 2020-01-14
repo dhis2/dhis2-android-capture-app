@@ -1,6 +1,5 @@
 package org.dhis2.usescases.main
 
-import android.text.TextUtils.isEmpty
 import android.view.Gravity
 import androidx.work.WorkManager
 import io.reactivex.disposables.CompositeDisposable
@@ -107,9 +106,7 @@ class MainPresenter(
         )
     }
 
-    fun blockSession(pin: String) {
-        preferences.setValue(SESSION_LOCKED, true)
-        preferences.setValue(PIN, pin)
+    fun blockSession() {
         workManagerController.cancelAllWork()
         view.back()
     }
@@ -129,8 +126,8 @@ class MainPresenter(
     private fun username(user: User): String {
         return String.format(
             "%s %s",
-            if (isEmpty(user.firstName())) "" else user.firstName(),
-            if (isEmpty(user.surname())) "" else user.surname()
+            if (user.firstName().isNullOrEmpty()) "" else user.firstName(),
+            if (user.surname().isNullOrEmpty()) "" else user.surname()
         )
     }
 }

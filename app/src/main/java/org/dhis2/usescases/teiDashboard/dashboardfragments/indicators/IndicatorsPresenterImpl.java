@@ -5,6 +5,7 @@ import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.usescases.teiDashboard.DashboardRepository;
+import org.dhis2.utils.DhisTextUtils;
 import org.dhis2.utils.Result;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper;
@@ -25,7 +26,6 @@ import io.reactivex.Single;
 import io.reactivex.disposables.CompositeDisposable;
 import timber.log.Timber;
 
-import static android.text.TextUtils.isEmpty;
 
 /**
  * QUADRAM. Created by ppajuelo on 09/04/2019.
@@ -52,7 +52,7 @@ public class IndicatorsPresenterImpl implements IndicatorsContracts.Presenter {
 
         EnrollmentCollectionRepository enrollmentRepository = d2.enrollmentModule().enrollments()
                 .byTrackedEntityInstance().eq(teiUid);
-        if (!isEmpty(programUid))
+        if (!DhisTextUtils.Companion.isEmpty(programUid))
             enrollmentRepository = enrollmentRepository.byProgram().eq(programUid);
 
         enrollmentUid = enrollmentRepository.one().blockingGet() == null ? "" : enrollmentRepository.one().blockingGet().uid();
@@ -84,7 +84,7 @@ public class IndicatorsPresenterImpl implements IndicatorsContracts.Presenter {
 
     private Flowable<List<Trio<ProgramIndicator, String, String>>> getIndicators() {
         return dashboardRepository.getIndicators(programUid)
-                .filter(indicators -> !isEmpty(enrollmentUid))
+                .filter(indicators -> !DhisTextUtils.Companion.isEmpty(enrollmentUid))
                 .map(indicators ->
                         Observable.fromIterable(indicators)
                                 .filter(indicator -> indicator.displayInForm() != null && indicator.displayInForm())

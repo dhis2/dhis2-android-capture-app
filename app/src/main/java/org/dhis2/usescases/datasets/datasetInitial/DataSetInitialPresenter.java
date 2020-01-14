@@ -1,16 +1,12 @@
 package org.dhis2.usescases.datasets.datasetInitial;
 
-import android.os.Bundle;
-
 import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.data.tuples.Pair;
-import org.dhis2.usescases.datasets.dataSetTable.DataSetTableActivity;
-import org.dhis2.utils.DateUtils;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.period.PeriodType;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 import io.reactivex.Flowable;
 import io.reactivex.disposables.CompositeDisposable;
@@ -19,23 +15,23 @@ import timber.log.Timber;
 public class DataSetInitialPresenter implements DataSetInitialContract.Presenter {
 
     private final SchedulerProvider schedulerProvider;
-    private CompositeDisposable compositeDisposable;
+    public CompositeDisposable compositeDisposable;
     private DataSetInitialRepository dataSetInitialRepository;
     private DataSetInitialContract.View view;
     private String catCombo;
     private Integer openFuturePeriods = 0;
-    private List<OrganisationUnit> orgUnits;
+    private List<OrganisationUnit> orgUnits = new ArrayList<>();
 
-    public DataSetInitialPresenter(DataSetInitialRepository dataSetInitialRepository, SchedulerProvider schedulerProvider) {
+    public DataSetInitialPresenter(DataSetInitialContract.View view, DataSetInitialRepository dataSetInitialRepository, SchedulerProvider schedulerProvider) {
+        this.view = view;
         this.dataSetInitialRepository = dataSetInitialRepository;
         this.schedulerProvider = schedulerProvider;
+        compositeDisposable = new CompositeDisposable();
     }
 
 
     @Override
-    public void init(DataSetInitialContract.View view) {
-        this.view = view;
-        compositeDisposable = new CompositeDisposable();
+    public void init() {
 
         compositeDisposable.add(
                 dataSetInitialRepository.orgUnits()
@@ -103,28 +99,16 @@ public class DataSetInitialPresenter implements DataSetInitialContract.Presenter
     }
 
     @Override
-    public void onActionButtonClick() {
+    public void onActionButtonClick(PeriodType periodType) {
         compositeDisposable.add(
                 Flowable.zip(
                         dataSetInitialRepository.getCategoryOptionCombo(view.getSelectedCatOptions(), catCombo),
-                        dataSetInitialRepository.getPeriodId(PeriodType.valueOf(view.getPeriodType()), view.getSelectedPeriod()),
+                        dataSetInitialRepository.getPeriodId(periodType, view.getSelectedPeriod()),
                         Pair::create
                 )
                         .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.ui())
-                        .subscribe(response -> {
-                                    Bundle bundle = DataSetTableActivity.getBundle(
-                                            view.getDataSetUid(),
-                                            view.getSelectedOrgUnit().uid(),
-                                            view.getSelectedOrgUnit().name(),
-                                            view.getPeriodType(),
-                                            DateUtils.getInstance().getPeriodUIString(PeriodType.valueOf(view.getPeriodType()), view.getSelectedPeriod(), Locale.getDefault()),
-                                            response.val1(),
-                                            response.val0()
-                                    );
-
-                                    view.startActivity(DataSetTableActivity.class, bundle, true, false, null);
-                                },
+                        .subscribe(response -> view.navigateToDataSetTable(response.val0(), response.val1()),
                                 Timber::e
                         )
         );

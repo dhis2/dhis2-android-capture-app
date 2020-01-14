@@ -44,7 +44,7 @@ class SplashPresenter internal constructor(
                         {
                             view.goToNextScreen(
                                 it,
-                                preferenceProvider.getBoolean("SessionLocked", false),
+                                preferenceProvider.getBoolean(Preference.SESSION_LOCKED, false),
                                 preferenceProvider.getBoolean(Preference.INITIAL_SYNC_DONE, false)
                             )
                         },
