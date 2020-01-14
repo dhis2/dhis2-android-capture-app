@@ -154,7 +154,9 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity
                 },
                 () -> {
                     analyticsHelper.setEvent(AnalyticsConstants.FORGOT_CODE, AnalyticsConstants.CLICK, AnalyticsConstants.FORGOT_CODE);
-                    startActivity(LoginActivity.class,null,true,true,null);
+                    if (!(this instanceof LoginActivity)) {
+                        startActivity(LoginActivity.class, null, true, true, null);
+                    }
                     return null;
                 }
         ).show(getSupportFragmentManager(), PIN_DIALOG_TAG);
