@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import android.view.Window
 import android.widget.Toast
 import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.FragmentManager
 import org.dhis2.Bindings.app
 import org.dhis2.R
 import org.dhis2.databinding.DialogPinBinding
@@ -19,6 +20,7 @@ const val PIN_DIALOG_TAG: String = "PINDIALOG"
 
 class PinDialog(
     val mode: Mode,
+    private val canBeClosed: Boolean,
     private val unlockCallback: (Boolean) -> Unit,
     private val forgotPinCallback: () -> Unit
 ) : DialogFragment(), PinView {
@@ -40,9 +42,12 @@ class PinDialog(
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val dialog = super.onCreateDialog(savedInstanceState)
-        dialog.window!!.requestFeature(Window.FEATURE_NO_TITLE)
-        dialog.window!!.setBackgroundDrawableResource(android.R.color.transparent)
-        dialog.window!!.setWindowAnimations(R.style.pin_dialog_animation)
+        dialog.window!!.apply {
+            requestFeature(Window.FEATURE_NO_TITLE)
+            setBackgroundDrawableResource(android.R.color.transparent)
+            setWindowAnimations(R.style.pin_dialog_animation)
+            isCancelable = false
+        }
         return dialog
     }
 
@@ -52,7 +57,10 @@ class PinDialog(
         savedInstanceState: Bundle?
     ): View? {
         binding = DialogPinBinding.inflate(layoutInflater, container, false)
-        binding.closeButton.setOnClickListener { closeDialog() }
+        binding.closeButton.apply {
+            visibility = if (canBeClosed) View.VISIBLE else View.GONE
+            setOnClickListener { closeDialog() }
+        }
 
         when (mode) {
             Mode.ASK -> {
@@ -106,5 +114,11 @@ class PinDialog(
     override fun recoverPin() {
         forgotPinCallback.invoke()
         dismiss()
+    }
+
+    override fun show(manager: FragmentManager, tag: String?) {
+        if (manager.findFragmentByTag(tag) == null) {
+            super.show(manager, tag)
+        }
     }
 }

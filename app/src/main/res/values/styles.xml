@@ -292,8 +292,9 @@
     </style>
 
     <style name="pin_dialog_animation">
-        <item name="android:windowEnterAnimation">@anim/fscv_fade_in</item>
-        <item name="android:windowExitAnimation">@anim/fscv_fade_out</item>
+<!--        <item name="android:windowEnterAnimation">@anim/fscv_fade_in</item>-->
+        <item name="android:windowEnterAnimation">@anim/pin_dialog_anim_enter</item>
+        <item name="android:windowExitAnimation">@anim/pin_dialog_anim_exit</item>
     </style>
 
 </resources>

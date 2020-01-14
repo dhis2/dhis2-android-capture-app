@@ -7,6 +7,10 @@ import android.os.Looper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatDelegate;
+import androidx.lifecycle.Lifecycle;
+import androidx.lifecycle.LifecycleObserver;
+import androidx.lifecycle.OnLifecycleEvent;
+import androidx.lifecycle.ProcessLifecycleOwner;
 import androidx.multidex.MultiDex;
 import androidx.multidex.MultiDexApplication;
 
@@ -21,6 +25,7 @@ import org.dhis2.data.dagger.PerActivity;
 import org.dhis2.data.dagger.PerServer;
 import org.dhis2.data.dagger.PerUser;
 import org.dhis2.data.database.DbModule;
+import org.dhis2.data.prefs.Preference;
 import org.dhis2.data.prefs.PreferenceModule;
 import org.dhis2.data.schedulers.SchedulerModule;
 import org.dhis2.data.schedulers.SchedulersProviderImpl;
@@ -37,7 +42,6 @@ import org.dhis2.usescases.teiDashboard.TeiDashboardModule;
 import org.dhis2.utils.UtilsModule;
 import org.dhis2.utils.analytics.AnalyticsModule;
 import org.dhis2.utils.session.PinModule;
-import org.dhis2.utils.session.PinPresenter;
 import org.dhis2.utils.session.SessionComponent;
 import org.dhis2.utils.timber.DebugTree;
 import org.dhis2.utils.timber.ReleaseTree;
@@ -56,7 +60,7 @@ import timber.log.Timber;
  * QUADRAM. Created by ppajuelo on 27/09/2017.
  */
 
-public class App extends MultiDexApplication implements Components {
+public class App extends MultiDexApplication implements Components, LifecycleObserver {
     static {
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
     }
@@ -86,10 +90,14 @@ public class App extends MultiDexApplication implements Components {
     @Nullable
     private SessionComponent sessionComponent;
 
+    private boolean fromBackGround = false;
+
     @Override
     public void onCreate() {
         super.onCreate();
         Timber.plant(BuildConfig.DEBUG ? new DebugTree() : new ReleaseTree());
+        ProcessLifecycleOwner.get().getLifecycle().addObserver(this);
+
         if (BuildConfig.DEBUG)
             Stetho.initializeWithDefaults(this);
 
@@ -152,7 +160,6 @@ public class App extends MultiDexApplication implements Components {
     @NonNull
     protected AppComponent.Builder prepareAppComponent() {
         return DaggerAppComponent.builder()
-//                .dbModule(new DbModule(DATABASE_NAME))
                 .appModule(new AppModule(this))
                 .schedulerModule(new SchedulerModule(new SchedulersProviderImpl()))
                 .analyticsModule(new AnalyticsModule())
@@ -256,15 +263,24 @@ public class App extends MultiDexApplication implements Components {
         return (sessionComponent = appComponent.plus(pinModule));
     }
 
-    public void releaseSessionComponent(){
+    public void releaseSessionComponent() {
         sessionComponent = null;
     }
 
+    @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
+    public void onAppBackgrounded() {
+        Timber.tag("BG").d("App in background");
+    }
 
+    @OnLifecycleEvent(Lifecycle.Event.ON_START)
+    public void onAppForegrounded() {
+        Timber.tag("BG").d("App in foreground");
+        fromBackGround = true;
+    }
 
-    ////////////////////////////////////////////////////////////////////////
-    // AndroidInjector
-    ////////////////////////////////////////////////////////////////////////
-
-
+    public boolean isSessionBlocked() {
+        boolean shouldShowPinDialog = fromBackGround && appComponent().preferenceProvider().getBoolean(Preference.SESSION_LOCKED, false);
+        fromBackGround = false;
+        return shouldShowPinDialog;
+    }
 }

@@ -21,6 +21,7 @@ import com.andrognito.pinlockview.PinLockListener
 import com.android.dbexporterlibrary.ExporterListener
 import javax.inject.Inject
 import org.dhis2.App
+import org.dhis2.Bindings.app
 import org.dhis2.R
 import org.dhis2.data.prefs.Preference
 import org.dhis2.databinding.ActivityMainBinding
@@ -68,8 +69,7 @@ class MainActivity : ActivityGlobalAbstract(), MainView, ExporterListener {
     //region LIFECYCLE
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        (applicationContext as App).userComponent()?.plus(MainModule(this))!!.inject(this)
-
+        app().userComponent()?.plus(MainModule(this))!!.inject(this)
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
         binding.presenter = presenter
@@ -77,17 +77,6 @@ class MainActivity : ActivityGlobalAbstract(), MainView, ExporterListener {
             changeFragment(item.itemId)
             false
         }
-
-       /* binding.pinLayout.pinLockView.attachIndicatorDots(binding.pinLayout.indicatorDots)
-        binding.pinLayout.pinLockView.setPinLockListener(object : PinLockListener {
-            override fun onComplete(pin: String) {
-                presenter.blockSession(pin)
-            }
-
-            override fun onEmpty() {}
-
-            override fun onPinChange(pinLength: Int, intermediatePin: String) {}
-        })*/
 
         if (savedInstanceState != null) {
             val frag = savedInstanceState.getInt(FRAGMENT)
@@ -197,8 +186,8 @@ class MainActivity : ActivityGlobalAbstract(), MainView, ExporterListener {
     override fun onLockClick() {
         if (prefs!!.getString(Preference.PIN, null) == null) {
             binding.mainDrawerLayout.closeDrawers()
-//            binding.pinLayout.root.visibility = View.VISIBLE
             PinDialog(PinDialog.Mode.SET,
+                true,
                 { presenter.blockSession() },
                 {}
             ).show(supportFragmentManager, PIN_DIALOG_TAG)

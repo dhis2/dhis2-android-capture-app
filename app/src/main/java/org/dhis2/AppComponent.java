@@ -2,6 +2,7 @@ package org.dhis2;
 
 import org.dhis2.data.database.DbModule;
 import org.dhis2.data.prefs.PreferenceModule;
+import org.dhis2.data.prefs.PreferenceProvider;
 import org.dhis2.data.schedulers.SchedulerModule;
 import org.dhis2.data.server.ServerComponent;
 import org.dhis2.data.server.ServerModule;
@@ -42,6 +43,8 @@ public interface AppComponent {
 
         AppComponent build();
     }
+
+    PreferenceProvider preferenceProvider();
 
     //injection targets
     void inject(App app);
