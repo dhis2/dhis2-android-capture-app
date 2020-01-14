@@ -9,3 +9,4 @@
 ￼* Create a new folder under src/commonmark/en/content/(name) and add all the doc files there
 ￼* Create an index in the folder src/commonmark/en as (name)\_INDEX.md
 ￼* Create a new index file in the [DHIS2-doc](https://github.com/dhis2/dhis2-docs/tree/master/src/commonmark/en) poiting to the INDEX.md created
+
