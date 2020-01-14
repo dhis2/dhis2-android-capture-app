@@ -4,7 +4,7 @@ If you plan to deploy the DHIS2 Android App in the field, we strongly recommend 
 
 ## Mobile device specifications
 
-The Android App is compatible with DHIS 2 versions 2.29, 2.30 and 2.31.
+The Android App is compatible and supported for DHIS 2 versions 2.30, 2.31, 2.32, and 2.33. And has no breaking changes with 2.29.
 
 It requires a device that is running Android v4.4 or higher.
 
