@@ -48,15 +48,18 @@ import org.dhis2.R;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.databinding.ActivityProgramEventDetailBinding;
 import org.dhis2.databinding.InfoWindowEventBinding;
+import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity;
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.usescases.orgunitselector.OUTreeActivity;
 import org.dhis2.utils.ColorUtils;
+import org.dhis2.utils.Constants;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.HelpManager;
 import org.dhis2.utils.analytics.AnalyticsConstants;
 import org.dhis2.utils.filters.FilterManager;
 import org.dhis2.utils.filters.FiltersAdapter;
+import org.dhis2.utils.granularsync.SyncStatusDialog;
 import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryOptionCombo;
 import org.hisp.dhis.android.core.common.FeatureType;
@@ -75,6 +78,7 @@ import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.fillColor;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconAllowOverlap;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconOffset;
 import static org.dhis2.R.layout.activity_program_event_detail;
+import static org.dhis2.utils.Constants.ORG_UNIT;
 import static org.dhis2.utils.Constants.PROGRAM_UID;
 import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
 import static org.dhis2.utils.analytics.AnalyticsConstants.SHOW_HELP;
@@ -119,7 +123,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
     public void onCreate(@Nullable Bundle savedInstanceState) {
         this.programUid = getIntent().getStringExtra(EXTRA_PROGRAM_UID);
 
-        ((App) getApplicationContext()).userComponent().plus(new ProgramEventDetailModule(programUid)).inject(this);
+        ((App) getApplicationContext()).userComponent().plus(new ProgramEventDetailModule(this, programUid)).inject(this);
         super.onCreate(savedInstanceState);
 
         FilterManager.getInstance().clearCatOptCombo();
@@ -147,7 +151,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
     @Override
     protected void onResume() {
         super.onResume();
-        presenter.init(this);
+        presenter.init();
         binding.mapView.onResume();
         binding.addEventButton.setEnabled(true);
         binding.setTotalFilters(FilterManager.getInstance().getTotalFilters());
@@ -470,6 +474,31 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
     @Override
     public boolean isMapVisible() {
         return binding.mapView.getVisibility() == View.VISIBLE;
+    }
+
+    @Override
+    public void navigateToEvent(String eventId, String orgUnit) {
+        Bundle bundle = new Bundle();
+        bundle.putString(PROGRAM_UID, programUid);
+        bundle.putString(Constants.EVENT_UID, eventId);
+        bundle.putString(ORG_UNIT, orgUnit);
+        startActivity(EventCaptureActivity.class,
+                EventCaptureActivity.getActivityBundle(eventId, programUid),
+                false, false, null
+        );
+    }
+
+    @Override
+    public void showSyncDialog(String uid) {
+        new SyncStatusDialog.Builder()
+                .setConflictType(SyncStatusDialog.ConflictType.EVENT)
+                .setUid(uid)
+                .onDismissListener(hasChanged->{
+                    if(hasChanged)
+                        FilterManager.getInstance().publishData();
+
+                })
+                .build();
     }
 
     private void showMap(boolean showMap) {

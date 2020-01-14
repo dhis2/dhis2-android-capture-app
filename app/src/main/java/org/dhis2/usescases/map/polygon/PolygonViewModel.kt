@@ -5,34 +5,37 @@ import android.widget.Toast
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import com.google.gson.Gson
 import com.mapbox.geojson.Point
 import com.mapbox.mapboxsdk.style.layers.SymbolLayer
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource
 import java.util.UUID
 
-class PolygonViewModel(val app: Application) : AndroidViewModel(app) {
+class PolygonViewModel : ViewModel() {
 
     private var _response = MutableLiveData<MutableList<PolygonPoint>>()
     val response: LiveData<MutableList<PolygonPoint>>
         get() = _response
 
+    lateinit var onMessage: (str: String) ->  Unit
+
     init {
-        _response.value = mutableListOf()
+        _response.postValue(mutableListOf())
     }
 
     fun add(polygonPoint: PolygonPoint) {
         if (polygonPoint.point != null) {
             val list = _response.value
             list?.add(polygonPoint)
-            _response.value = list
+            _response.postValue(list)
         }
     }
 
     fun remove(polygonPoint: PolygonPoint) {
         val list = _response.value
         list?.remove(polygonPoint)
-        _response.value = list
+        _response.postValue(list)
     }
 
     fun createPolygonPoint(): PolygonPoint {
@@ -47,12 +50,12 @@ class PolygonViewModel(val app: Application) : AndroidViewModel(app) {
                 list[0].add(mutableListOf(point.longitude(), point.latitude()))
             }
         }
+
         return if (list[0].size > 2) {
             list[0].add(list[0][0]) // set last point same as first
             Gson().toJson(list)
         } else {
-            Toast.makeText(app, "Polygon must contains at least 4 points.", Toast.LENGTH_SHORT)
-                .show() // TODO: CHANGE TO SET STRING
+            onMessage("Polygon must contains at least 4 points.")
             null
         }
     }

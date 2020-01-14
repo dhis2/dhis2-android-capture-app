@@ -27,6 +27,7 @@ import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+import org.dhis2.Bindings.ExtensionsKt;
 import org.dhis2.BuildConfig;
 import org.dhis2.R;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity;
@@ -37,11 +38,13 @@ import org.dhis2.usescases.splash.SplashActivity;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.HelpManager;
 import org.dhis2.utils.OnDialogClickListener;
+import org.dhis2.utils.analytics.AnalyticsConstants;
 import org.dhis2.utils.analytics.AnalyticsHelper;
 import org.dhis2.utils.customviews.CoordinatesView;
 import org.dhis2.utils.customviews.CustomDialog;
 import org.dhis2.utils.customviews.PictureView;
 import org.dhis2.utils.granularsync.SyncStatusDialog;
+import org.dhis2.utils.session.PinDialog;
 import org.hisp.dhis.android.core.arch.helpers.GeometryHelper;
 import org.hisp.dhis.android.core.common.FeatureType;
 import org.hisp.dhis.android.core.common.Geometry;
@@ -59,6 +62,7 @@ import timber.log.Timber;
 
 import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
 import static org.dhis2.utils.analytics.AnalyticsConstants.SHOW_HELP;
+import static org.dhis2.utils.session.PinDialogKt.PIN_DIALOG_TAG;
 
 /**
  * QUADRAM. Created by Javi on 28/07/2017.
@@ -90,9 +94,6 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         FirebaseAnalytics mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
 
-        /*if (((App) getApplicationContext()).serverComponent() != null && analyticsHelper() != null)
-            analyticsHelper().setD2(((App) getApplicationContext()).serverComponent().userManager().getD2());*/
-
         if (!getResources().getBoolean(R.bool.is_tablet))
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT);
 
@@ -119,6 +120,9 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity
     protected void onResume() {
         super.onResume();
         lifeCycleObservable.onNext(Status.ON_RESUME);
+        if (ExtensionsKt.app(this).isSessionBlocked() && !(this instanceof SplashActivity)) {
+            showPinDialog();
+        }
     }
 
     @Override
@@ -139,6 +143,23 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity
     @Override
     public void setTutorial() {
 
+    }
+
+    public void showPinDialog() {
+        new PinDialog(PinDialog.Mode.ASK,
+                (this instanceof LoginActivity),
+                aBoolean -> {
+                    startActivity(MainActivity.class, null, true, true, null);
+                    return null;
+                },
+                () -> {
+                    analyticsHelper.setEvent(AnalyticsConstants.FORGOT_CODE, AnalyticsConstants.CLICK, AnalyticsConstants.FORGOT_CODE);
+                    if (!(this instanceof LoginActivity)) {
+                        startActivity(LoginActivity.class, null, true, true, null);
+                    }
+                    return null;
+                }
+        ).show(getSupportFragmentManager(), PIN_DIALOG_TAG);
     }
 
     @Override
@@ -381,7 +402,7 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity
     public void intentSelected(String uuid, Intent intent, int request, PictureView.OnPictureSelected onPictureSelected) {
         this.uuid = uuid;
         if (this instanceof EventCaptureActivity)
-            ((EventCaptureActivity)getContext()).startActivityForResult(intent, request);
+            ((EventCaptureActivity) getContext()).startActivityForResult(intent, request);
         else
             startActivityForResult(intent, request);
     }

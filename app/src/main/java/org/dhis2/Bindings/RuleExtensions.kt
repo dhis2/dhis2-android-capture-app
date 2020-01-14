@@ -283,7 +283,7 @@ fun List<TrackedEntityDataValue>.toRuleDataValue(
         var value = it.value()
         val de = dataElementRepository.uid(it.dataElement()).blockingGet()
         if (!de.optionSetUid().isNullOrEmpty()) {
-            if (!ruleVariableRepository
+            if (ruleVariableRepository
                 .byProgramUid().eq(event.program())
                 .byDataElementUid().eq(it.dataElement())
                 .byUseCodeForOptionSet().isTrue
