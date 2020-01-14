@@ -11,9 +11,10 @@ public interface DataEntryStore {
         ATTR, DATA_ELEMENT
     }
 
-    @NonNull
-    Flowable<Long> save(@NonNull String uid, @Nullable String value);
+    enum EntryMode {
+        DE, ATTR
+    }
 
     @NonNull
-    Flowable<Boolean> checkUnique(@NonNull String uid, @Nullable String value);
+    Flowable<Long> save(@NonNull String uid, @Nullable String value);
 }

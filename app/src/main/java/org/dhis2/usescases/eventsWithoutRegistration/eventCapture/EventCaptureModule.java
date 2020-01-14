@@ -70,10 +70,8 @@ public class EventCaptureModule {
 
     @Provides
     @PerActivity
-    DataEntryStore dataValueStore(@NonNull BriteDatabase briteDatabase,
-                                  @NonNull UserRepository userRepository,
-                                  @NonNull D2 d2) {
-        return new DataValueStore(d2, briteDatabase, userRepository, eventUid);
+    DataEntryStore dataValueStore(@NonNull D2 d2) {
+        return new DataValueStore(d2, eventUid);
     }
 
 }
