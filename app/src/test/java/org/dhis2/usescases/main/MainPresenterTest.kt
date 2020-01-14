@@ -85,12 +85,9 @@ class MainPresenterTest {
 
     @Test
     fun `Should block session`() {
-        val pin = "1234"
 
-        presenter.blockSession(pin)
+        presenter.blockSession()
 
-        verify(preferences).setValue(SESSION_LOCKED, true)
-        verify(preferences).setValue(PIN, pin)
         verify(workManger).cancelAllWork()
         verify(view).back()
     }

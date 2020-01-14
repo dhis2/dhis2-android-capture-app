@@ -2,7 +2,10 @@ package org.dhis2.Bindings
 
 import android.view.MotionEvent
 import android.widget.EditText
+import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
+import org.dhis2.App
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.event.Event
@@ -72,4 +75,12 @@ fun TrackedEntityInstance.profilePicturePath(d2: D2, programUid: String?): Strin
     }
 
     return path ?: ""
+}
+
+fun Fragment.app() : App {
+    return context?.applicationContext as App
+}
+
+fun AppCompatActivity.app() : App {
+    return applicationContext as App
 }
