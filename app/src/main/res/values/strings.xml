@@ -612,4 +612,6 @@
     <string name="sms_empty_gateway">SMS gateway can\'t be empty</string>
     <string name="granular_sync_enrollments_empty">There are no enrollments to upload</string>
     <string name="granular_sync_unsupported_task">This convertTask is not supported</string>
+    <string name="disable_pin_locked">Don´t show again lock screen</string>
+    <string name="set_pin">Set pin</string>
 </resources>

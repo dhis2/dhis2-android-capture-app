@@ -105,9 +105,7 @@ class MainPresenter(
         )
     }
 
-    fun blockSession(pin: String) {
-        preferences.setValue(SESSION_LOCKED, true)
-        preferences.setValue(PIN, pin)
+    fun blockSession() {
         workManger.cancelAllWork()
         view.back()
     }

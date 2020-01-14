@@ -51,23 +51,20 @@ public class SyncManagerPresenter
         SyncManagerContracts.Presenter {
 
     private final D2 d2;
-
     private final SchedulerProvider schedulerProvider;
-
     private final PreferenceProvider preferenceProvider;
-
     private CompositeDisposable compositeDisposable;
-
     private SyncManagerContracts.View view;
-
     private FlowableProcessor<Boolean> checkData;
-
     private SharedPreferences prefs;
+    private GatewayValidator gatewayValidator;
 
-    SyncManagerPresenter(D2 d2, SchedulerProvider schedulerProvider, PreferenceProvider preferenceProvider) {
+    SyncManagerPresenter(D2 d2, SchedulerProvider schedulerProvider, GatewayValidator gatewayValidator
+            ,PreferenceProvider preferenceProvider) {
         this.d2 = d2;
         this.schedulerProvider = schedulerProvider;
         this.preferenceProvider = preferenceProvider;
+        this.gatewayValidator = gatewayValidator;
         checkData = PublishProcessor.create();
     }
 
@@ -113,6 +110,37 @@ public class SyncManagerPresenter
                 }));
     }
 
+    public void validateGatewayObservable(String gateway){
+        if (plusIsMissingOrIsTooLong(gateway)) {
+            view.showInvalidGatewayError();
+        } else if (gateway.isEmpty()){
+            view.requestNoEmptySMSGateway();
+        } else if (isValidGateway(gateway)){
+            view.hideGatewayError();
+            smsNumberSet(gateway);
+        }
+    }
+
+    private boolean isValidGateway(String gateway){
+        return gatewayValidator.validate(gateway) ||
+                (gateway.startsWith("+") && gateway.length() == 1);
+    }
+
+    private boolean plusIsMissingOrIsTooLong(String gateway){
+        return (!gateway.startsWith("+") && gateway.length() == 1) ||
+                (gateway.length() >= GatewayValidator.Companion.getMax_size());
+    }
+
+    public boolean isGatewaySetAndValid(String gateway) {
+        if (gateway.isEmpty()){
+            view.requestNoEmptySMSGateway();
+            return false;
+        } else if (!gatewayValidator.validate(gateway)){
+            view.showInvalidGatewayError();
+            return false;
+        }
+        return true;
+    }
     /**
      * This method allows you to create a new periodic DATA sync work with an
      * interval defined by {@code seconds}. All scheduled works will be cancelled in

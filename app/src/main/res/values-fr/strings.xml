@@ -191,6 +191,9 @@
     <string name="last_data_sync_date">Dernière synchronisation sur: %s</string>
     <string name="last_metadata_sync_date">Dernière synchronisation sur: %s</string>
     <string name="refill_reserved_values">Remplir</string>
+    <string name="settings_sms_result_timeout_hint">secondes</string>
+    <string name="settings_sms_result_sender_hint">nombre</string>
+    <string name="settings_sms_receiver_number_hint">nombre</string>
     <!-- SEARCH TRACK ENTITY -->
 
     <!--region SETTINCS-->
@@ -427,7 +430,7 @@
     <string name="finish_add_new"><![CDATA[Terminer & ajouter nouveau]]></string>
     <string name="finish">Terminer</string>
     <string name="error_fields_title">Champs avec erreurs</string>
-    <string name="error_fields_events">Certains champs on des erreurs. Les valeurs n\'ont pas été enregistrées. 
+    <string name="error_fields_events">Certains champs on des erreurs. Les valeurs n\'ont pas été enregistrées.
 Veuillez les vérifier. </string>
     <string name="event_reopened">Cet evènement peut maintenant etre édité</string>
     <string name="unique_warning">La valeur doit être unique, une coincidence a été trouvée. Elle n\'a pas été sauvegardée. Veuillez vérifier. </string>
