@@ -11,7 +11,7 @@ import org.hisp.dhis.android.core.D2Manager;
 
 public class FakeServerModule extends ServerModule {
 
-    @Override
+ /*   @Override
     D2 sdk() {
         D2Manager.setUp(getD2Configuration()).blockingAwait();
         D2Manager.setServerUrl("https://play.dhis2.org/android-current/").andThen(D2Manager.instantiateD2()).blockingGet();
@@ -25,5 +25,5 @@ public class FakeServerModule extends ServerModule {
                 .networkInterceptors(Lists.newArrayList(new StethoInterceptor()))
                 .context(ApplicationProvider.getApplicationContext())
                 .build();
-    }
+    } */
 }

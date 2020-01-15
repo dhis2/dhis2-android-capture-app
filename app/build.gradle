@@ -43,8 +43,7 @@ android {
         targetSdkVersion versions.sdk
         versionCode versions.vCode
         versionName versions.vName
-//        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-        testInstrumentationRunner "org.dhis2.usescases.MockRunner"
+        testInstrumentationRunner "org.dhis2.Dhis2Runner"
         vectorDrawables.useSupportLibrary = true
         multiDexEnabled true
 
@@ -314,28 +313,7 @@ dependencies {
     implementation 'com.google.firebase:firebase-perf:19.0.0'
     implementation 'com.google.firebase:firebase-messaging:20.0.0'
 
-    //Test
-    testImplementation "android.arch.core:core-testing:2.0.0"
-    implementation fileTree(include: ['*.jar'], dir: 'libs')
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
-    androidTestImplementation "androidx.test:core:1.2.0"
-    testImplementation "androidx.test:core:1.2.0"
-    androidTestImplementation 'androidx.test:rules:1.2.0'
-    androidTestImplementation "androidx.test:core-ktx:1.2.0"
-    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
-    androidTestImplementation "androidx.test.ext:junit-ktx:1.1.1"
-
-    testImplementation 'junit:junit:4.12'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    testImplementation 'org.robolectric:robolectric:4.2.1'
-    testImplementation "org.robolectric:shadows-multidex:4.0.1"
-    androidTestImplementation 'org.mockito:mockito-android:2.28.2'
-    androidTestImplementation 'org.mockito:mockito-core:2.28.2'
-    testImplementation 'org.mockito:mockito-core:2.28.2'
-    testImplementation 'org.mockito:mockito-inline:2.13.0'
-    testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:2.1.0"
-
-    testImplementation 'com.google.truth:truth:0.43'
     implementation 'com.facebook.stetho:stetho:1.5.0'
     implementation 'com.facebook.stetho:stetho-okhttp3:1.5.0'
     implementation 'com.squareup.okhttp3:okhttp:3.12.0'
@@ -363,22 +341,42 @@ dependencies {
 
     //Paperwork
     implementation "hu.supercluster:paperwork:${libraries.paperwork}"
-
     implementation 'com.google.guava:guava:27.0.1-android'
-
     implementation 'cat.ereza:customactivityoncrash:2.2.0'
-
     implementation "com.google.android.gms:play-services-analytics:${libraries.analytics}"
-    //implementation 'com.github.pwittchen:rxbiometric:0.1.0'
     implementation 'co.infinum:goldfinger-rx:1.2.1'
     implementation "de.adorsys.android:securestoragelibrary:${libraries.latestSecureStorageVersion}"
-
-
     implementation 'com.github.prabhat1707:DbExporterHelper:v1.0'
 
     /*region SECURITY*/
     implementation 'com.scottyab:rootbeer-lib:0.0.7'
 
+    //Test
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+
+    testImplementation "android.arch.core:core-testing:2.0.0"
+    testImplementation "androidx.test:core:1.2.0"
+    testImplementation 'junit:junit:4.12'
+    testImplementation 'org.robolectric:robolectric:4.2.1'
+    testImplementation "org.robolectric:shadows-multidex:4.0.1"
+    testImplementation 'org.mockito:mockito-core:2.28.2'
+    testImplementation 'org.mockito:mockito-inline:2.13.0'
+    testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:2.1.0"
+    testImplementation 'com.google.truth:truth:0.43'
+
+   // androidTestImplementation 'com.squareup.rx.idler:rx2-idler:0.10.0'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+    androidTestImplementation 'androidx.test.espresso:espresso-intents:3.2.0'
+    androidTestImplementation "androidx.test:core:1.2.0"
+    androidTestImplementation 'androidx.test:rules:1.2.0'
+    androidTestImplementation "androidx.test:core-ktx:1.2.0"
+    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
+    androidTestImplementation "androidx.test.ext:junit-ktx:1.1.1"
+
+    androidTestImplementation "androidx.test:runner:1.2.0"
+
+    androidTestImplementation 'org.mockito:mockito-android:2.28.2'
+    androidTestImplementation 'org.mockito:mockito-core:2.28.2'
 }
 
 apply plugin: 'com.google.gms.google-services'
