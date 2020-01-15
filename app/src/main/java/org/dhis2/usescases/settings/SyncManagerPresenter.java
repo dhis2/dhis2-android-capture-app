@@ -13,6 +13,9 @@ import org.dhis2.data.prefs.PreferenceProvider;
 import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.data.service.SyncDataWorker;
 import org.dhis2.data.service.SyncMetadataWorker;
+import org.dhis2.data.service.workManager.WorkManagerController;
+import org.dhis2.data.service.workManager.WorkerItem;
+import org.dhis2.data.service.workManager.WorkerType;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.usescases.login.LoginActivity;
 import org.dhis2.usescases.reservedValue.ReservedValueActivity;
@@ -26,13 +29,8 @@ import org.hisp.dhis.android.core.sms.domain.interactor.ConfigCase;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import androidx.work.Constraints;
 import androidx.work.ExistingPeriodicWorkPolicy;
 import androidx.work.ExistingWorkPolicy;
-import androidx.work.NetworkType;
-import androidx.work.OneTimeWorkRequest;
-import androidx.work.PeriodicWorkRequest;
-import androidx.work.WorkManager;
 
 import io.reactivex.Completable;
 import io.reactivex.disposables.CompositeDisposable;
@@ -42,13 +40,8 @@ import io.reactivex.processors.FlowableProcessor;
 import io.reactivex.processors.PublishProcessor;
 import timber.log.Timber;
 
-/**
- * QUADRAM. Created by lmartin on 21/03/2018.
- */
 
-public class SyncManagerPresenter
-        implements
-        SyncManagerContracts.Presenter {
+public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
 
     private final D2 d2;
     private final SchedulerProvider schedulerProvider;
@@ -58,13 +51,19 @@ public class SyncManagerPresenter
     private FlowableProcessor<Boolean> checkData;
     private SharedPreferences prefs;
     private GatewayValidator gatewayValidator;
+    private WorkManagerController workManagerController;
 
-    SyncManagerPresenter(D2 d2, SchedulerProvider schedulerProvider, GatewayValidator gatewayValidator
-            ,PreferenceProvider preferenceProvider) {
+    SyncManagerPresenter(
+            D2 d2,
+            SchedulerProvider schedulerProvider,
+            GatewayValidator gatewayValidator,
+            PreferenceProvider preferenceProvider,
+            WorkManagerController workManagerController) {
         this.d2 = d2;
         this.schedulerProvider = schedulerProvider;
         this.preferenceProvider = preferenceProvider;
         this.gatewayValidator = gatewayValidator;
+        this.workManagerController = workManagerController;
         checkData = PublishProcessor.create();
     }
 
@@ -151,15 +150,9 @@ public class SyncManagerPresenter
      */
     @Override
     public void syncData(int seconds, String scheduleTag) {
-        WorkManager.getInstance(view.getContext().getApplicationContext()).cancelUniqueWork(scheduleTag);
-        PeriodicWorkRequest.Builder syncDataBuilder = new PeriodicWorkRequest.Builder(SyncDataWorker.class, seconds,
-                TimeUnit.SECONDS);
-        syncDataBuilder.addTag(scheduleTag);
-        syncDataBuilder
-                .setConstraints(new Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build());
-        PeriodicWorkRequest request = syncDataBuilder.build();
-        WorkManager.getInstance(view.getContext().getApplicationContext()).enqueueUniquePeriodicWork(scheduleTag,
-                ExistingPeriodicWorkPolicy.REPLACE, request);
+        workManagerController.cancelUniqueWork(scheduleTag);
+        WorkerItem workerItem = new WorkerItem(scheduleTag, WorkerType.DATA, (long) seconds, null, null, ExistingPeriodicWorkPolicy.REPLACE);
+        workManagerController.enqueuePeriodicWork(workerItem);
     }
 
     /**
@@ -172,15 +165,9 @@ public class SyncManagerPresenter
      */
     @Override
     public void syncMeta(int seconds, String scheduleTag) {
-        WorkManager.getInstance(view.getContext().getApplicationContext()).cancelUniqueWork(scheduleTag);
-        PeriodicWorkRequest.Builder syncDataBuilder = new PeriodicWorkRequest.Builder(SyncMetadataWorker.class,
-                seconds, TimeUnit.SECONDS);
-        syncDataBuilder.addTag(scheduleTag);
-        syncDataBuilder
-                .setConstraints(new Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build());
-        PeriodicWorkRequest request = syncDataBuilder.build();
-        WorkManager.getInstance(view.getContext().getApplicationContext()).enqueueUniquePeriodicWork(scheduleTag,
-                ExistingPeriodicWorkPolicy.REPLACE, request);
+        workManagerController.cancelUniqueWork(scheduleTag);
+        WorkerItem workerItem = new WorkerItem(scheduleTag, WorkerType.METADATA, (long) seconds, null, null, ExistingPeriodicWorkPolicy.REPLACE);
+        workManagerController.enqueuePeriodicWork(workerItem);
     }
 
     /**
@@ -188,16 +175,9 @@ public class SyncManagerPresenter
      */
     @Override
     public void syncData() {
-        view.syncData();
         view.analyticsHelper().setEvent(SYNC_DATA_NOW, CLICK, SYNC_DATA_NOW);
-        OneTimeWorkRequest.Builder syncDataBuilder = new OneTimeWorkRequest.Builder(SyncDataWorker.class);
-        syncDataBuilder.addTag(Constants.DATA_NOW);
-        syncDataBuilder
-                .setConstraints(new Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build());
-        OneTimeWorkRequest request = syncDataBuilder.build();
-
-        WorkManager.getInstance(view.getContext().getApplicationContext()).enqueueUniqueWork(Constants.DATA_NOW,
-                ExistingWorkPolicy.KEEP, request);
+        WorkerItem workerItem = new WorkerItem(Constants.DATA_NOW, WorkerType.DATA, null, null, ExistingWorkPolicy.KEEP, null);
+        workManagerController.syncDataForWorker(workerItem);
     }
 
     /**
@@ -207,18 +187,13 @@ public class SyncManagerPresenter
     public void syncMeta() {
         view.syncMeta();
         view.analyticsHelper().setEvent(SYNC_METADATA_NOW, CLICK, SYNC_METADATA_NOW);
-        OneTimeWorkRequest.Builder syncDataBuilder = new OneTimeWorkRequest.Builder(SyncMetadataWorker.class);
-        syncDataBuilder.addTag(Constants.META_NOW);
-        syncDataBuilder
-                .setConstraints(new Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build());
-        OneTimeWorkRequest request = syncDataBuilder.build();
-        WorkManager.getInstance(view.getContext().getApplicationContext())
-                .beginUniqueWork(Constants.META_NOW, ExistingWorkPolicy.KEEP, request).enqueue();
+        WorkerItem workerItem = new WorkerItem(Constants.META_NOW, WorkerType.METADATA, null, null, ExistingWorkPolicy.KEEP, null);
+        workManagerController.syncDataForWorker(workerItem);
     }
 
     @Override
     public void cancelPendingWork(String tag) {
-        WorkManager.getInstance(view.getContext().getApplicationContext()).cancelUniqueWork(tag);
+        workManagerController.cancelUniqueWork(tag);
     }
 
     @Override
@@ -356,8 +331,8 @@ public class SyncManagerPresenter
     @Override
     public void wipeDb() {
         try {
-            WorkManager.getInstance(view.getContext().getApplicationContext()).cancelAllWork();
-            WorkManager.getInstance(view.getContext().getApplicationContext()).pruneWork();
+            workManagerController.cancelAllWork();
+            workManagerController.pruneWork();
             d2.userModule().logOut().blockingAwait();
             d2.wipeModule().wipeEverything();
             // clearing cache data

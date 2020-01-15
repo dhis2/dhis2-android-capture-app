@@ -29,6 +29,7 @@ import androidx.work.WorkManager
 import dagger.Module
 import dagger.Provides
 import org.dhis2.data.schedulers.SchedulerProvider
+import org.dhis2.data.service.workManager.WorkManagerController
 import org.hisp.dhis.android.core.D2
 
 @Module
@@ -44,7 +45,7 @@ class GranularSyncModule(
     fun providesPresenter(
         d2: D2,
         schedulerProvider: SchedulerProvider,
-        workManager: WorkManager
+        workManagerController: WorkManagerController
     ): GranularSyncContracts.Presenter {
         return GranularSyncPresenterImpl(
             d2, schedulerProvider,
@@ -53,7 +54,7 @@ class GranularSyncModule(
             dvOrgUnit,
             dvAttrCombo,
             dvPeriodId,
-            workManager
+            workManagerController
         )
     }
 }
