@@ -1,4 +1,4 @@
-# DHIS 2 Android Caputre App - Documentation
+# DHIS 2 Android Capture App - Documentation
 
 This folder contains several subfolder related to the documentation of the DHIS 2 Android App. The main documentation of the Application is under the specific folder but other folders have been added to include documentation related to the Application. 
 
