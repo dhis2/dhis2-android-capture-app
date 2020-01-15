@@ -1,12 +1,9 @@
 package org.dhis2.usescases.main
 
 import android.view.Gravity
-import androidx.work.WorkManager
 import io.reactivex.disposables.CompositeDisposable
 import org.dhis2.data.prefs.Preference.Companion.DEFAULT_CAT_COMBO
-import org.dhis2.data.prefs.Preference.Companion.PIN
 import org.dhis2.data.prefs.Preference.Companion.PREF_DEFAULT_CAT_OPTION_COMBO
-import org.dhis2.data.prefs.Preference.Companion.SESSION_LOCKED
 import org.dhis2.data.prefs.PreferenceProvider
 import org.dhis2.data.schedulers.SchedulerProvider
 import org.dhis2.data.service.workManager.WorkManagerController
