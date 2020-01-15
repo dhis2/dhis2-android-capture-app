@@ -3,20 +3,16 @@ package org.dhis2.usescases.datasets.dataSetInitial
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
-import com.squareup.sqlbrite2.BriteDatabase
-import io.reactivex.Observable
 import io.reactivex.Single
 import org.dhis2.usescases.datasets.datasetInitial.DataSetInitialModel
 import org.dhis2.usescases.datasets.datasetInitial.DataSetInitialRepositoryImpl
 import org.dhis2.usescases.datasets.datasetInitial.DateRangeInputPeriodModel
-import org.dhis2.utils.CodeGenerator
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper
 import org.hisp.dhis.android.core.category.Category
 import org.hisp.dhis.android.core.category.CategoryCombo
 import org.hisp.dhis.android.core.category.CategoryOption
 import org.hisp.dhis.android.core.category.CategoryOptionCombo
-import org.hisp.dhis.android.core.category.CategoryOptionComboCollectionRepository
 import org.hisp.dhis.android.core.common.Access
 import org.hisp.dhis.android.core.common.DataAccess
 import org.hisp.dhis.android.core.common.ObjectWithUid
@@ -52,6 +48,16 @@ class DataSetInitialRepositoryImplTest {
         whenever(
             d2.dataSetModule().dataSets().withDataInputPeriods().uid(dataSetUid).get()
         ) doReturn Single.just(dataSet)
+
+        whenever(
+            d2.periodModule().periods()
+                .byPeriodId()
+        ) doReturn mock()
+
+        whenever(
+            d2.periodModule().periods()
+                .byPeriodId().eq(dataInputPeriod.period().uid())
+        ) doReturn mock()
 
         whenever(
             d2.periodModule().periods()
@@ -150,16 +156,37 @@ class DataSetInitialRepositoryImplTest {
     @Test
     fun `Should return category option combo for category combo and cat options`() {
         val categoryOptionCombo = dummyCategoryOptionCombo()
+        val categoryComboUid = categoryOptionCombo.categoryCombo()?.uid()
+
         whenever(
             d2.categoryModule().categoryOptionCombos()
                 .byCategoryOptions(UidsHelper.getUidsList(categoryOptionCombo.categoryOptions()))
-                .byCategoryComboUid().eq(categoryOptionCombo.categoryCombo()?.uid())
+                .byCategoryComboUid()
+        ) doReturn mock()
+
+        whenever(
+            d2.categoryModule().categoryOptionCombos()
+                .byCategoryOptions(UidsHelper.getUidsList(categoryOptionCombo.categoryOptions()))
+                .byCategoryComboUid().eq(categoryComboUid)
+        ) doReturn mock()
+
+        whenever(
+            d2.categoryModule().categoryOptionCombos()
+                .byCategoryOptions(UidsHelper.getUidsList(categoryOptionCombo.categoryOptions()))
+                .byCategoryComboUid().eq(categoryComboUid)
+                .one()
+        ) doReturn mock()
+
+        whenever(
+            d2.categoryModule().categoryOptionCombos()
+                .byCategoryOptions(UidsHelper.getUidsList(categoryOptionCombo.categoryOptions()))
+                .byCategoryComboUid().eq(categoryComboUid)
                 .one().get()
         ) doReturn Single.just(categoryOptionCombo)
 
         val testObserver = repository.getCategoryOptionCombo(
             UidsHelper.getUidsList(categoryOptionCombo.categoryOptions()),
-            categoryOptionCombo.categoryCombo()?.uid()
+            categoryComboUid
         ).test()
 
         testObserver.assertNoErrors()
