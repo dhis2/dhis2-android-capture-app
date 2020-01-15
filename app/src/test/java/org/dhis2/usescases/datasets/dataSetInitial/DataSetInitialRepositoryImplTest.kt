@@ -8,7 +8,6 @@ import org.dhis2.usescases.datasets.datasetInitial.DataSetInitialModel
 import org.dhis2.usescases.datasets.datasetInitial.DataSetInitialRepositoryImpl
 import org.dhis2.usescases.datasets.datasetInitial.DateRangeInputPeriodModel
 import org.hisp.dhis.android.core.D2
-import org.hisp.dhis.android.core.arch.helpers.UidsHelper
 import org.hisp.dhis.android.core.category.Category
 import org.hisp.dhis.android.core.category.CategoryCombo
 import org.hisp.dhis.android.core.category.CategoryOption
@@ -169,49 +168,6 @@ class DataSetInitialRepositoryImplTest {
         testObserver.assertNoErrors()
         testObserver.assertValueCount(1)
         testObserver.assertValue(listOf())
-
-        testObserver.dispose()
-    }
-
-    @Test
-    fun `Should return category option combo for category combo and cat options`() {
-        val categoryOptionCombo = dummyCategoryOptionCombo()
-        val categoryComboUid = categoryOptionCombo.categoryCombo()?.uid()
-
-        whenever(
-            d2.categoryModule().categoryOptionCombos()
-                .byCategoryOptions(UidsHelper.getUidsList(categoryOptionCombo.categoryOptions()))
-                .byCategoryComboUid()
-        ) doReturn mock()
-
-        whenever(
-            d2.categoryModule().categoryOptionCombos()
-                .byCategoryOptions(UidsHelper.getUidsList(categoryOptionCombo.categoryOptions()))
-                .byCategoryComboUid().eq(categoryComboUid)
-        ) doReturn mock()
-
-        whenever(
-            d2.categoryModule().categoryOptionCombos()
-                .byCategoryOptions(UidsHelper.getUidsList(categoryOptionCombo.categoryOptions()))
-                .byCategoryComboUid().eq(categoryComboUid)
-                .one()
-        ) doReturn mock()
-
-        whenever(
-            d2.categoryModule().categoryOptionCombos()
-                .byCategoryOptions(UidsHelper.getUidsList(categoryOptionCombo.categoryOptions()))
-                .byCategoryComboUid().eq(categoryComboUid)
-                .one().get()
-        ) doReturn Single.just(categoryOptionCombo)
-
-        val testObserver = repository.getCategoryOptionCombo(
-            UidsHelper.getUidsList(categoryOptionCombo.categoryOptions()),
-            categoryComboUid
-        ).test()
-
-        testObserver.assertNoErrors()
-        testObserver.assertValueCount(1)
-        testObserver.assertValue(categoryOptionCombo.uid())
 
         testObserver.dispose()
     }
