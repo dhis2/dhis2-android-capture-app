@@ -154,6 +154,26 @@ class DataSetInitialRepositoryImplTest {
     }
 
     @Test
+    fun `Should not return category combos for category with no access data write`() {
+        val category = dummyCategory().toBuilder()
+            .categoryOptions(mutableListOf(dummyCategoryOptionNoAccess()))
+            .build()
+        whenever(
+            d2.categoryModule().categories()
+                .withCategoryOptions().uid(category.uid())
+                .get()
+        ) doReturn Single.just(category)
+
+        val testObserver = repository.catCombo(category.uid()).test()
+
+        testObserver.assertNoErrors()
+        testObserver.assertValueCount(1)
+        testObserver.assertValue(listOf())
+
+        testObserver.dispose()
+    }
+
+    @Test
     fun `Should return category option combo for category combo and cat options`() {
         val categoryOptionCombo = dummyCategoryOptionCombo()
         val categoryComboUid = categoryOptionCombo.categoryCombo()?.uid()
@@ -262,5 +282,11 @@ class DataSetInitialRepositoryImplTest {
         CategoryOption.builder()
             .uid(UUID.randomUUID().toString())
             .access(Access.create(true, true, DataAccess.create(true, true)))
+            .build()
+
+    private fun dummyCategoryOptionNoAccess(): CategoryOption =
+        CategoryOption.builder()
+            .uid(UUID.randomUUID().toString())
+            .access(Access.create(true, true, DataAccess.create(false, false)))
             .build()
 }
