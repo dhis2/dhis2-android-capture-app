@@ -5,6 +5,7 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 
 import org.dhis2.Bindings.RuleExtensionsKt;
+import org.dhis2.Bindings.ValueExtensionsKt;
 import org.dhis2.R;
 import org.dhis2.data.forms.FormRepository;
 import org.dhis2.data.forms.FormSectionViewModel;
@@ -34,7 +35,6 @@ import org.hisp.dhis.android.core.fileresource.FileResource;
 import org.hisp.dhis.android.core.maintenance.D2Error;
 import org.hisp.dhis.android.core.option.Option;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
-import org.hisp.dhis.android.core.organisationunit.OrganisationUnitLevel;
 import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.program.ProgramRule;
 import org.hisp.dhis.android.core.program.ProgramRuleAction;
@@ -52,7 +52,6 @@ import org.hisp.dhis.rules.models.RuleDataValue;
 import org.hisp.dhis.rules.models.RuleEffect;
 import org.hisp.dhis.rules.models.RuleEvent;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -64,7 +63,6 @@ import java.util.Map;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
-import timber.log.Timber;
 
 import static android.text.TextUtils.isEmpty;
 
@@ -321,7 +319,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                             Collections.sort(stageSections, (one, two) ->
                                     one.sortOrder().compareTo(two.sortOrder()));
 
-                            for (ProgramStageSection section :stageSections)
+                            for (ProgramStageSection section : stageSections)
                                 formSection.add(FormSectionViewModel.createForSection(eventUid, section.uid(), section.displayName(),
                                         section.renderType().mobile() != null ? section.renderType().mobile().type().name() : null));
                         } else
@@ -391,19 +389,12 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                         String value = null;
                         if (valueRepository.blockingExists()) {
                             value = valueRepository.blockingGet().value();
+                            String friendlyValue = ValueExtensionsKt.userFriendlyValue(ValueExtensionsKt.blockingGetValueCheck(valueRepository, d2, uid), d2);
 
                             if (fieldViewModel instanceof OrgUnitViewModel && !isEmpty(value)) {
-                                value = value + "_ou_" + d2.organisationUnitModule().organisationUnits().uid(value).blockingGet().displayName();
-                            }
-
-                            if ((fieldViewModel instanceof SpinnerViewModel || fieldViewModel instanceof ImageViewModel) && !isEmpty(value)) {
-                                value = d2.optionModule().options().byOptionSetUid().eq(fieldViewModel.optionSet()).byCode().eq(value).one().blockingGet().displayName();
-                            }
-
-                            if (fieldViewModel instanceof PictureViewModel) {
-                                FileResource fileResource = d2.fileResourceModule().fileResources().uid(value).blockingGet();
-                                if (fileResource != null)
-                                    value = fileResource.path();
+                                value = value + "_ou_" + friendlyValue;
+                            } else {
+                                value = friendlyValue;
                             }
                         }
                         boolean editable = fieldViewModel.editable() != null ? fieldViewModel.editable() : true;
@@ -438,7 +429,6 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
             })
                     .flatMapIterable(list -> list)
                     .map(programStageDataElement -> {
-                        long init = System.currentTimeMillis();
                         DataElement de = d2.dataElementModule().dataElements().uid(programStageDataElement.dataElement().uid()).blockingGet();
                         TrackedEntityDataValueObjectRepository valueRepository = d2.trackedEntityModule().trackedEntityDataValues().value(eventUid, de.uid());
 
@@ -456,6 +446,8 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                         boolean mandatory = programStageDataElement.compulsory() != null ? programStageDataElement.compulsory() : false;
                         String optionSet = de.optionSetUid();
                         String dataValue = valueRepository.blockingExists() ? valueRepository.blockingGet().value() : null;
+                        String friendlyValue = dataValue != null ? ValueExtensionsKt.userFriendlyValue(ValueExtensionsKt.blockingGetValueCheck(valueRepository, d2, uid), d2) : null;
+
                         boolean allowFurureDates = programStageDataElement.allowFutureDate() != null ? programStageDataElement.allowFutureDate() : false;
                         String formName = de.displayFormName();
                         String description = de.displayDescription();
@@ -474,7 +466,9 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                         ObjectStyle objectStyle = de.style() != null ? de.style() : ObjectStyle.builder().build();
 
                         if (valueType == ValueType.ORGANISATION_UNIT && !isEmpty(dataValue)) {
-                            dataValue = dataValue + "_ou_" + d2.organisationUnitModule().organisationUnits().uid(dataValue).blockingGet().displayName();
+                            dataValue = dataValue + "_ou_" + friendlyValue;
+                        } else {
+                            dataValue = friendlyValue;
                         }
 
                         ProgramStageSectionRenderingType renderingType = programStageSection != null && programStageSection.renderType() != null &&
@@ -616,18 +610,12 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
 
                                 if (de.valueType() == ValueType.AGE)
                                     value = value.split("T")[0];
-                            }else if(de.valueType().isNumeric()){
+                            } else if (de.valueType().isNumeric()) {
                                 value = Float.valueOf(value).toString();
                             }
 
                             return RuleDataValue.create(event.eventDate(), event.programStage(), de.uid(), value);
                         }).toList()).toFlowable();
-    }
-
-
-    @Override
-    public Observable<List<OrganisationUnitLevel>> getOrgUnitLevels() {
-        return Observable.just(d2.organisationUnitModule().organisationUnitLevels().blockingGet());
     }
 
     @Override
@@ -673,64 +661,6 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
         return Observable.zip(d2.eventModule().events().uid(eventUid).get().toObservable(),
                 getExpiryDateFromEvent(eventUid),
                 ((event, program) -> DateUtils.getInstance().isEventExpired(null, event.completedDate(), program.completeEventsExpiryDays())));
-    }
-
-    @Override
-    public void assign(String uid, String value) {
-        try {
-            if (d2.dataElementModule().dataElements().uid(uid).blockingExists()) {
-                handleAssignToDataElement(uid, value);
-            } else if (d2.trackedEntityModule().trackedEntityAttributes().uid(uid).blockingExists()) {
-                handleAssignToAttribute(uid, value);
-            }
-        } catch (D2Error d2Error) {
-            Timber.e(d2Error.originalException());
-        }
-    }
-
-    @Override
-    public void saveImage(String uid, String filePath) {
-        String newFilePath = filePath;
-        TrackedEntityDataValueObjectRepository valueRepository = d2.trackedEntityModule().trackedEntityDataValues()
-                .value(eventUid, uid);
-        if (d2.dataElementModule().dataElements().uid(uid).blockingGet().valueType() == ValueType.IMAGE
-                && filePath != null) {
-            try {
-                newFilePath = getFileResource(filePath);
-            } catch (D2Error d2Error) {
-                d2Error.printStackTrace();
-            }
-        }
-        try {
-            if (!isEmpty(filePath))
-                valueRepository.blockingSet(newFilePath);
-            else
-                valueRepository.blockingDelete();
-        } catch (D2Error d2Error) {
-        }
-
-    }
-
-    private String getFileResource(String path) throws D2Error {
-        File file = new File(path);
-        return d2.fileResourceModule().fileResources().blockingAdd(file);
-    }
-
-    private void handleAssignToDataElement(String deUid, String value) throws D2Error {
-
-        if (!isEmpty(value)) {
-            d2.trackedEntityModule().trackedEntityDataValues().value(eventUid, deUid).blockingSet(value);
-        } else if (d2.trackedEntityModule().trackedEntityDataValues().value(eventUid, deUid).blockingExists()) {
-            d2.trackedEntityModule().trackedEntityDataValues().value(eventUid, deUid).blockingDelete();
-        }
-    }
-
-    private void handleAssignToAttribute(String attributeUid, String value) throws D2Error {
-        String tei = d2.enrollmentModule().enrollments().uid(currentEvent.enrollment()).blockingGet().trackedEntityInstance();
-        if (!isEmpty(value))
-            d2.trackedEntityModule().trackedEntityAttributeValues().value(attributeUid, tei).blockingSet(value);
-        else if (d2.trackedEntityModule().trackedEntityAttributeValues().value(attributeUid, tei).blockingExists())
-            d2.trackedEntityModule().trackedEntityAttributeValues().value(attributeUid, tei).blockingDelete();
     }
 }
 

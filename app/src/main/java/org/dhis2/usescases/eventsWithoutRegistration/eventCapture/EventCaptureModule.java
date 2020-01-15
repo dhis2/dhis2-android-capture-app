@@ -4,16 +4,14 @@ import android.content.Context;
 
 import androidx.annotation.NonNull;
 
-import com.squareup.sqlbrite2.BriteDatabase;
-
 import org.dhis2.data.dagger.PerActivity;
 import org.dhis2.data.forms.EventRepository;
 import org.dhis2.data.forms.FormRepository;
 import org.dhis2.data.forms.RulesRepository;
 import org.dhis2.data.forms.dataentry.DataEntryStore;
-import org.dhis2.data.forms.dataentry.DataValueStore;
+import org.dhis2.data.forms.dataentry.ValueStore;
+import org.dhis2.data.forms.dataentry.ValueStoreImpl;
 import org.dhis2.data.schedulers.SchedulerProvider;
-import org.dhis2.data.user.UserRepository;
 import org.dhis2.utils.RulesUtilsProvider;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.rules.RuleExpressionEvaluator;
@@ -42,9 +40,9 @@ public class EventCaptureModule {
     @PerActivity
     EventCaptureContract.Presenter providePresenter(@NonNull EventCaptureContract.EventCaptureRepository eventCaptureRepository,
                                                     @NonNull RulesUtilsProvider ruleUtils,
-                                                    @NonNull DataEntryStore dataEntryStore,
+                                                    @NonNull ValueStore valueStore,
                                                     SchedulerProvider schedulerProvider) {
-        return new EventCapturePresenterImpl(view, eventUid, eventCaptureRepository, ruleUtils, dataEntryStore, schedulerProvider);
+        return new EventCapturePresenterImpl(view, eventUid, eventCaptureRepository, ruleUtils, valueStore, schedulerProvider);
     }
 
     @Provides
@@ -70,8 +68,8 @@ public class EventCaptureModule {
 
     @Provides
     @PerActivity
-    DataEntryStore dataValueStore(@NonNull D2 d2) {
-        return new DataValueStore(d2, eventUid);
+    ValueStore valueStore(@NonNull D2 d2) {
+        return new ValueStoreImpl(d2, eventUid, DataEntryStore.EntryMode.DE);
     }
 
 }

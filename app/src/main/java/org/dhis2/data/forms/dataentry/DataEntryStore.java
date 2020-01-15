@@ -12,7 +12,7 @@ public interface DataEntryStore {
     }
 
     enum EntryMode {
-        DE, ATTR
+        DE, ATTR,DV
     }
 
     @NonNull

@@ -1,35 +1,66 @@
 package org.dhis2.Bindings
 
 import org.hisp.dhis.android.core.D2
-import org.hisp.dhis.android.core.arch.helpers.CoordinateHelper
-import org.hisp.dhis.android.core.common.Coordinates
-import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueObjectRepository
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValue
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueObjectRepository
 
 fun TrackedEntityAttributeValue.userFriendlyValue(d2: D2): String? {
-    val attribute = d2.trackedEntityModule()
-        .trackedEntityAttributes().uid(trackedEntityAttribute())
-        .blockingGet()
-
     if (value().isNullOrEmpty())
         return value()
 
-    attribute.optionSet()?.let {
-        val option = d2.optionModule().options()
-            .byOptionSetUid().eq(it.uid())
-            .byCode().eq(value()).one().blockingGet()
-        return if (option != null) {
-            option.displayName()
-        } else {
-            "Invalid value"
-        }
-    } ?: return when (attribute.valueType()) {
-        ValueType.ORGANISATION_UNIT -> d2.organisationUnitModule().organisationUnits()
-            .uid(value()).blockingGet().displayName()
-        else -> value()
+    val attribute = d2.trackedEntityModule().trackedEntityAttributes()
+        .uid(trackedEntityAttribute())
+        .blockingGet()
+
+    if (check(d2, attribute.valueType(), attribute.optionSet()?.uid(), value()!!)) {
+        attribute.optionSet()?.let {
+            return checkOptionSetValue(d2, it.uid(), value()!!)
+        } ?: return checkValueTypeValue(d2, attribute.valueType(), value()!!)
+    } else {
+        return null
+    }
+}
+
+fun TrackedEntityDataValue.userFriendlyValue(d2: D2): String? {
+    if (value().isNullOrEmpty())
+        return value()
+
+    val dataElement = d2.dataElementModule().dataElements()
+        .uid(dataElement())
+        .blockingGet()
+
+    if (check(d2, dataElement.valueType(), dataElement.optionSet()?.uid(), value()!!)) {
+        dataElement.optionSet()?.let {
+            return checkOptionSetValue(d2, it.uid(), value()!!)
+        } ?: return checkValueTypeValue(d2, dataElement.valueType(), value()!!)
+    } else {
+        return null
+    }
+}
+
+fun checkOptionSetValue(d2: D2, optionSetUid: String, code: String): String? {
+    return d2.optionModule().options()
+        .byOptionSetUid().eq(optionSetUid)
+        .byCode().eq(code).one().blockingGet()?.displayName()
+}
+
+fun checkValueTypeValue(d2: D2, valueType: ValueType?, value: String): String {
+    return when (valueType) {
+        ValueType.ORGANISATION_UNIT ->
+            d2.organisationUnitModule().organisationUnits()
+                .uid(value)
+                .blockingGet()
+                .displayName()!!
+        ValueType.IMAGE, ValueType.FILE_RESOURCE ->
+            if (d2.fileResourceModule().fileResources().uid(value).blockingExists()) {
+                d2.fileResourceModule().fileResources().uid(value).blockingGet().path()!!
+            } else {
+                ""
+            }
+        else -> value
     }
 }
 
@@ -49,14 +80,19 @@ fun TrackedEntityAttributeValueObjectRepository.blockingSetCheck(
     }
 }
 
-fun TrackedEntityAttributeValueObjectRepository.blockingGetValueCheck(
+fun TrackedEntityAttributeValueObjectRepository.blockingGetCheck(
     d2: D2,
-    attrUid: String,
-    value: String
-): String? {
+    attrUid: String
+): TrackedEntityAttributeValue? {
     return d2.trackedEntityModule().trackedEntityAttributes().uid(attrUid).blockingGet().let {
-        if (check(d2, it.valueType(), it.optionSet()?.uid(), value)) {
-            blockingGet().value()
+        if (blockingExists() && check(
+                d2,
+                it.valueType(),
+                it.optionSet()?.uid(),
+                blockingGet().value()!!
+            )
+        ) {
+            blockingGet()
         } else {
             blockingDelete()
             null
@@ -80,18 +116,23 @@ fun TrackedEntityDataValueObjectRepository.blockingSetCheck(
     }
 }
 
-fun TrackedEntityDataValueObjectRepository.blockingGetCheck(
+fun TrackedEntityDataValueObjectRepository.blockingGetValueCheck(
     d2: D2,
-    deUid: String,
-    value: String
-): Boolean {
+    deUid: String
+): TrackedEntityDataValue? {
     return d2.dataElementModule().dataElements().uid(deUid).blockingGet().let {
-        if (check(d2, it.valueType(), it.optionSet()?.uid(), value)) {
-            blockingSet(value)
-            true
+        if (blockingExists() && check(
+                d2,
+                it.valueType(),
+                it.optionSet()?.uid(),
+                blockingGet().value()!!
+            )
+        ) {
+            blockingGet()
         } else {
-            blockingDelete()
-            false
+            if (blockingExists())
+                blockingDelete()
+            null
         }
     }
 }
