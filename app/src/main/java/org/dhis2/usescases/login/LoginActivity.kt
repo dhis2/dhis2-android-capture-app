@@ -18,16 +18,12 @@ import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import co.infinum.goldfinger.Goldfinger
-import com.andrognito.pinlockview.PinLockListener
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import java.io.BufferedReader
-import java.io.InputStreamReader
-import java.io.StringWriter
-import javax.inject.Inject
 import okhttp3.HttpUrl
 import org.dhis2.App
+import org.dhis2.Bindings.app
 import org.dhis2.Bindings.onRightDrawableClicked
 import org.dhis2.R
 import org.dhis2.data.server.UserManager
@@ -48,8 +44,13 @@ import org.dhis2.utils.WebViewActivity
 import org.dhis2.utils.WebViewActivity.Companion.WEB_VIEW_URL
 import org.dhis2.utils.analytics.CLICK
 import org.dhis2.utils.analytics.FORGOT_CODE
-import org.dhis2.utils.analytics.UNLOCK_SESSION
+import org.dhis2.utils.session.PIN_DIALOG_TAG
+import org.dhis2.utils.session.PinDialog
 import timber.log.Timber
+import java.io.BufferedReader
+import java.io.InputStreamReader
+import java.io.StringWriter
+import javax.inject.Inject
 
 class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
 
@@ -71,7 +72,7 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
-        var loginComponent = (applicationContext as App).loginComponent()
+        var loginComponent = app().loginComponent()
         if (loginComponent == null) {
             // in case if we don't have cached presenter
             loginComponent = (applicationContext as App).createLoginComponent(this)
@@ -90,12 +91,6 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
         binding.presenter = presenter
         binding.loginModel = loginViewModel
         setLoginVisibility(false)
-
-        binding.pinLayout.forgotCode.visibility = View.VISIBLE
-        binding.pinLayout.forgotCode.setOnClickListener {
-            analyticsHelper.setEvent(FORGOT_CODE, CLICK, FORGOT_CODE)
-            binding.pinLayout.root.visibility = View.GONE
-        }
 
         loginViewModel.isDataComplete.observe(
             this,
@@ -153,8 +148,8 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
 
     private fun checkUrl(urlString: String): Boolean {
         return URLUtil.isValidUrl(urlString) &&
-            Patterns.WEB_URL.matcher(urlString).matches() &&
-            HttpUrl.parse(urlString) != null
+                Patterns.WEB_URL.matcher(urlString).matches() &&
+                HttpUrl.parse(urlString) != null
     }
 
     override fun setTestingCredentials() {
@@ -289,22 +284,14 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
     }
 
     override fun onUnlockClick(android: View) {
-        binding.pinLayout.pinLockView.attachIndicatorDots(binding.pinLayout.indicatorDots)
-        binding.pinLayout.pinLockView.setPinLockListener(object : PinLockListener {
-            override fun onComplete(pin: String) {
-                analyticsHelper.setEvent(UNLOCK_SESSION, CLICK, UNLOCK_SESSION)
-                presenter.unlockSession(pin)
-            }
-
-            override fun onEmpty() {
-            }
-
-            override fun onPinChange(pinLength: Int, intermediatePin: String) {
-            }
-        })
-        binding.pinLayout.title.text = getString(R.string.unblock_session)
-        binding.pinLayout.root.visibility = View.VISIBLE
-        isPinScreenVisible = true
+        PinDialog(PinDialog.Mode.ASK,
+            true,
+            {
+                startActivity(MainActivity::class.java, null, true, true, null)
+            }, {
+                analyticsHelper.setEvent(FORGOT_CODE, CLICK, FORGOT_CODE)
+            })
+            .show(supportFragmentManager, PIN_DIALOG_TAG)
     }
 
     override fun onLogoutClick(android: View) {

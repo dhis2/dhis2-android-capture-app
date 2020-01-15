@@ -102,4 +102,14 @@ public class AboutFragment extends FragmentGlobalAbstract implements AboutContra
         String text = String.format(getString(R.string.about_connected), serverUrl);
         aboutBinding.aboutConnected.setText(text);
     }
+
+    @Override
+    public String checkCredentials() {
+        return aboutBinding.aboutUser.getText().toString();
+    }
+
+    @Override
+    public String checkUrl() {
+        return aboutBinding.aboutConnected.getText().toString();
+    }
 }

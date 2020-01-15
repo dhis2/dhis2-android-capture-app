@@ -22,6 +22,7 @@ import org.dhis2.utils.Constants;
 import org.dhis2.utils.Preconditions;
 import org.dhis2.utils.ValidationUtils;
 import org.dhis2.utils.customviews.TextInputAutoCompleteTextView;
+import org.hisp.dhis.android.core.arch.handlers.internal.Handler;
 import org.hisp.dhis.android.core.common.ValueTypeDeviceRendering;
 import org.hisp.dhis.android.core.common.ValueTypeRenderingType;
 
@@ -52,11 +53,6 @@ public class EditTextCustomHolder extends FormViewHolder {
         this.currentUid = currentSelection;
 
         binding.customEdittext.setFocusChangedListener((v, hasFocus) -> {
-           /* if (hasFocus) {
-                openKeyboard(binding.customEdittext.getEditText());
-                setSelectedBackground(isSearchMode);
-            } else
-                clearBackground(isSearchMode);*/
             if(!hasFocus){
                 clearBackground(isSearchMode);
                 binding.customEdittext.getEditText().setFocusable(false);

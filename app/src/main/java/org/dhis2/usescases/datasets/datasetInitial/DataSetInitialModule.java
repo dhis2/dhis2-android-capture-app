@@ -14,8 +14,10 @@ import dagger.Provides;
 @Module
 public class DataSetInitialModule {
     private final String dataSetUid;
+    private final DataSetInitialContract.View view;
 
-    DataSetInitialModule(String dataSetUid) {
+    DataSetInitialModule(DataSetInitialContract.View view, String dataSetUid) {
+        this.view = view;
         this.dataSetUid = dataSetUid;
     }
 
@@ -28,7 +30,7 @@ public class DataSetInitialModule {
     @Provides
     @PerActivity
     DataSetInitialContract.Presenter providesPresenter(DataSetInitialRepository dataSetInitialRepository, SchedulerProvider schedulerProvider) {
-        return new DataSetInitialPresenter(dataSetInitialRepository, schedulerProvider);
+        return new DataSetInitialPresenter(view, dataSetInitialRepository, schedulerProvider);
     }
 
     @Provides

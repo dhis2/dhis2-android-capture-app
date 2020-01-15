@@ -2,7 +2,6 @@
     <!--GENERAL-->
     <string name="app_name">ລະບົບ DHIS2</string>
     <string name="logo_text">ລະບົບຂໍ້ມູນຂ່າວສານດ້ານສຸຂະພາບຂັ້ນເມືອງ</string>
-    <string name="logo_number">2</string>
     <!-- Warnings and error messages -->
     <string name="error">ເກີດການຜິດພາດ</string>
     <string name="error_wrong_server_url">ຄວາມຜິດພາດຈາກການເຊື່ອມຕໍ່ຂອງເຄື່ອງຄອມພີວເຕີໜ່ວຍແມ່</string>
@@ -79,7 +78,6 @@
     <string name="event_accepted">ກໍລະນີທີ່ຖືກຮັບຮອງແລ້ວ</string>
     <string name="event_approved">ກໍລະນີທີ່ໄດ້ຢັ້ງຢືນແລ້ວ</string>
     <string name="event_inactive">ກໍລະນີທີ່ບໍ່ໄດ້ຖືກນໍາໃຊ້</string>
-    <string name="read_only">Read only</string>
     <string name="complete">ສຳເລັດແລ້ວ</string>
     <string name="completed">ສໍາເລັດແລ້ວ</string>
     <string name="cancelled">ຍົກເລີກແລ້ວ</string>
@@ -97,8 +95,8 @@
     <string name="completion">ການສໍາເລັດ</string>
 
     <!--Event initial-->
-    <string name="create">Create</string>
-    <string name="update">Update</string>
+    <string name="create">ສ້າງ</string>
+    <string name="update">ປັບປຸງ</string>
     <string name="date">ວັນທີ່</string>
     <string name="org_unit">ສະຖານທີ່</string>
     <string name="category_option">Category Option</string>
@@ -115,11 +113,11 @@
     <string name="report_period">ຊ່ວງເວລາ ການລາຍງານ</string>
     <!--Event Detail-->
     <string name="event_date">ວັນທີເດືອນປີທີກໍລະນີນັ້ນເກີດຂື້ນ</string>
-    <string name="due_date">Due date</string>
+    <string name="due_date">ວັນທີຕ້ອງແລ້ວ</string>
     <string name="cat_combo">ລາຍການທີ່ໃຫ້ເລືອກ</string>
     <string name="date_default">ວ/ດ/ປ</string>
-    <string name="cancel">Cancel</string>
-    <string name="delete">Delete</string>
+    <string name="cancel">ຍົກເລີກ</string>
+    <string name="delete">ລົບ</string>
     <string name="delete_event">ລືບກໍລະນີອອກ</string>
     <string name="confirm_delete_event">ທ່ານໝັ້ນໃຈບໍ ວ່າທ່ານຕ້ອງການລືບກໍລະນີນີ້ອອກ?</string>
     <string name="event_was_deleted">ກໍລະນີນີ້ໄດ້ຖືກລືບອອກຮຽບຮ້ອຍແລ້ວ</string>
@@ -167,7 +165,7 @@
     <string name="sync_default_parameters">ປັບລະບົບໃຫ້ທໍາງານໃນຄ່າປົກະຕິ</string>
     <string name="wipe_data_meesage">ຖານຂໍ້ມູນຈະຖືກລືບ.\nທ່ານຈະໄດ້ເຂົ້າລະບົບໃໝ່</string>
     <string name="wipe_data_ok">​ການ​ຮັບ​ຮອງ</string>
-    <string name="wipe_data_no">Cancel</string>
+    <string name="wipe_data_no">ຍົກເລີກ</string>
     <string name="SYNC_DATA">ສົ່ງຂໍ້ມູນອອກດຽວນີ້</string>
     <string name="SYNC_META">ປັບການຕັ້ງຄ່າດຽວນີ້</string>
     <string name="SYNC_MANAGER">ຕັ້ງຄ່າ</string>
@@ -176,12 +174,12 @@
     <string name="settingsReset">ຕັ້ງຄ່າໂປຣແກຣມຄືນໃໝ່</string>
     <!--endregion-->
 
-    <string name="enrollmment_date">Enrollement date</string>
+    <string name="enrollmment_date">ວັນທີ່ລົງທະບຽນ</string>
 
     <!-- SEARCH OPTION SET -->
     <string name="search_optionset">ຄົນຫາ</string>
     <!--FORM FRAGMENT-->
-    <string name="report_date">Report date</string>
+    <string name="report_date">ວັນທີີລາຍງານ</string>
     <string name="add_file">ເອົາຟາຍຂໍ້ມູນເຂົ້າ</string>
     <string name="write_new_note">ຂຽນບົດບັນທຶກໃໝ່</string>
     <string name="clear">ຈັດມ້ຽນ</string>
@@ -200,10 +198,10 @@
     <string name="complete_and_close">ກົດສໍາເລັດ ແລະ ອອກ</string>
 
     <!--AGE CUSTOM VIEW-->
-    <string name="hint_day">Days</string>
-    <string name="hint_month">Months</string>
-    <string name="hint_year">Years</string>
-    <string name="week">Weeks</string>
+    <string name="hint_day">ມື້</string>
+    <string name="hint_month">ເດືອນ</string>
+    <string name="hint_year">ປີ</string>
+    <string name="week">ອາທິດ</string>
     <string name="incident_date">ວັນທີເດືອນປີທີ່ເຫດການເກີດຂື້ນ</string>
     <string name="local_results">ຜົນໄດ້ຮັບໃນໂທລະສັບ</string>
     <string name="online_results">ຜົນໄດ້ຮັບທາງອອນລາຍ</string>
@@ -233,10 +231,9 @@
 
     <!-- QR -->
     <string name="QR_SCANNER">ນໍາເອົາຂໍ້ມູນ QR ເຂົ້າ</string>
-    <string name="SAVE">Save</string>
+    <string name="SAVE">ບັນທຶກ</string>
     <string name="button_ok">​ຕົກ​ລົງ</string>
     <string name="qr_id">ເອກະລັກສ່ວນຕົວ</string>
-    <string name="qr_attributes">Attributes</string>
     <string name="qr_enrollment">ການຂື້ນທະບຽນ</string>
     <string name="qr_events">ເຫດການ</string>
     <string name="qr_relationships">ສາຍພົວພັນ</string>
@@ -257,16 +254,16 @@
     <string name="share_qr">ແບ່ງປັນລະຫັດ QR</string>
     <string name="teiType_search_online">ການຊອກຫາຕາມປະເພດແມ່ນເປັນໄປບໍ່ໄດ້ສໍາລັບການຄົ້ນຫາທາງອອນລາຍ\nກະລຸນາເລືອກໂປຣແກຣຈາກລາຍການ</string>
     <string name="max">ຄ່າໃຫ່ຍສຸດ</string>
-    <string name="current">Current</string>
+    <string name="current">ປະຈຸບັນ</string>
     <string name="tei">ຈໍານວນກໍລະນີທີ່ປ້ອນເຂົ້າ</string>
     <string name="limit_by_organisation_unit">ຄັດຈ້ອນຕາມສະຖານທີ</string>
     <string name="programs_list">ລາຍຊື່ຂອງໂປຣແກຣມ</string>
     <string name="wipe_data">ຕັ້ງຄ່າໂປຣແກຣມຄືນໃໝ່</string>
     <string name="add_relationship_error">ເປັນໄປບໍ່ໄດ້ທີ່ຈະຕື່ມສາຍພົວພັນນີ້ເຂົ້າໄປ</string>
     <string name="warning_error_on_complete_title">ກວດເບີ່ງອັນນີ້</string>
-    <string name="warning_on_complete_title">Warning</string>
+    <string name="warning_on_complete_title">ແຈ້ງເຕືອນ</string>
     <string name="error_on_complete_title">ເກີດການຜິດພາດ</string>
-    <string name="save">Save</string>
+    <string name="save">ບັນທຶກ</string>
     <string name="downloaded_confirm">ທ່ານຕ້ອງການເພີມຂໍ້ມູນຕື່ມຈາກລະຫັດ QR ນີ້ອີກບໍ?</string>
 
     <!--ABOUT-->
@@ -344,13 +341,12 @@
     <string name="tuto_main_9">ປິດໄລຍະການນໍາໃຊ້ດ້ວຍລະຫັດ4ໂຕ. ຢ່າລືມລະຫັດດັ່ງກ່າວ</string>
     <string name="tuto_main_10">Lອອກຈາກໂປຣແກຣມເພື່ອປ່ຽນຜູ້ໃຊ້ຫຼືທີ່ຢູ່ຂອງຄອມພີວເຕີໜ່ວຍແມ່. ທ່ານຈະສາມາດເຂົ້າໂປຣແກຣມຄືນໄດ້ເຖີງແມ່ນວ່າບໍ່ມີການເຊື່ອມຕໍ່ອີນເຕີແນັດກໍ່ຕາມ.</string>
     <string name="relationships">ສາຍພົວພັນ</string>
-    <string name="qr_data_values">Data values</string>
     <string name="dashboard_relationships">ສາຍພົວພັນ</string>
-    <string name="dashboard_indicators">Indicators</string>
+    <string name="dashboard_indicators">ຕົວຊີ້ວັດ</string>
     <string name="dashboard_notes">ບົດບັນທຶກ</string>
     <string name="event_overview">ລາຍລະອຽດ</string>
     <string name="event_event">ເຫດການ</string>
-    <string name="event_indicators">Indicators</string>
+    <string name="event_indicators">ຕົວຊີ້ວັດ</string>
     <string name="event_notes">ບົດບັນທຶກ</string>
     <string name="please_wait">ກະລຸນາລໍຖ້າ</string>
     <string name="skip">ຂ້າມ</string>
@@ -359,18 +355,26 @@
     <string name="table">ຕາຕະລາງຂໍ້ມູນ</string>
     <string name="local_data_accept">​ການ​ຮັບ​ຮອງ</string>
     <string name="login_server_info_title">ທີ່ຢູ່ຂອງເຄື່ອງຄອມພີວເຕີໜ່ວຍແມ່</string>
-    <string name="state_warning">Warning</string>
+    <string name="state_warning">ແຈ້ງເຕືອນ</string>
     <string name="action_close">ປິດ</string>
     <string name="data_set_closed">ປິດ</string>
     <string name="data_set_open">ເປີດ</string>
     <string name="unsupported_value_type">ປະເພດຄ່າບໍ່ຮອງຮັບ</string>
     <string name="data_every_day">ທຸກໆມື້</string>
     <string name="data_every_week">ເປັນອາທິດ</string>
+    <string name="period_week">ອາທິດ</string>
     <string name="sms_completed">ສໍາເລັດແລ້ວ</string>
     <string name="sms_bar_state_sending">ກໍາລັງດໍາເນີນການ</string>
-    <string name="sms_bar_state_sent">Sent</string>
     <string name="sms_bar_state_failed">Failed</string>
 
     <string name="polygon">Polygon</string>
-    <!--endregion-->
-</resources>
+    <string name="filters_title_period">ຊ່ວງເວລາ</string>
+    <string name="filters_title_status">ສະຖານະ</string>
+    <string name="filter_period_today">ມື້ນີ້</string>
+    <string name="filter_period_yesterday">ມື້ວານນີ</string>
+    <string name="filter_period_this_week">ທິດນີ້</string>
+    <string name="filter_period_last_week">ອາທິດທີ່ຜ່ານມາ</string>
+    <string name="filter_period_this_month">ເດືອນນີ້</string>
+    <string name="filter_period_last_month">ເດືອນຜ່ານມາ</string>
+    <string name="filter_period_other">ອື່ນໆ</string>
+    </resources>
