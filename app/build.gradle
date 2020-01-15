@@ -293,15 +293,12 @@ dependencies {
     implementation 'com.mapbox.mapboxsdk:mapbox-android-sdk:8.3.0'
     implementation 'com.mapbox.mapboxsdk:mapbox-android-plugin-markerview-v8:0.3.0'
 
-
     // Jake Wharton libraries
     //timber
     implementation "com.jakewharton.timber:timber:${libraries.timber}"
 
     //GSON
     implementation 'com.google.code.gson:gson:2.8.5'
-
-
 
     //CRASHLYTICS
     implementation('com.crashlytics.sdk.android:crashlytics:2.9.5@aar') {
@@ -364,7 +361,9 @@ dependencies {
     testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:2.1.0"
     testImplementation 'com.google.truth:truth:0.43'
 
-   // androidTestImplementation 'com.squareup.rx.idler:rx2-idler:0.10.0'
+    androidTestImplementation("com.squareup.rx.idler:rx2-idler:0.10.0"){
+        exclude group: "io.reactivex.rxjava2", module: "rxjava"
+    }
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
     androidTestImplementation 'androidx.test.espresso:espresso-intents:3.2.0'
     androidTestImplementation "androidx.test:core:1.2.0"
