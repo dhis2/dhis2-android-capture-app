@@ -55,6 +55,7 @@ import org.dhis2.usescases.orgunitselector.OUTreeActivity;
 import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.DateUtils;
+import org.dhis2.utils.EventMode;
 import org.dhis2.utils.HelpManager;
 import org.dhis2.utils.analytics.AnalyticsConstants;
 import org.dhis2.utils.filters.FilterManager;
@@ -483,7 +484,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
         bundle.putString(Constants.EVENT_UID, eventId);
         bundle.putString(ORG_UNIT, orgUnit);
         startActivity(EventCaptureActivity.class,
-                EventCaptureActivity.getActivityBundle(eventId, programUid),
+                EventCaptureActivity.getActivityBundle(eventId, programUid, EventMode.CHECK),
                 false, false, null
         );
     }

@@ -37,6 +37,7 @@ import org.dhis2.utils.Constants
 import org.dhis2.utils.DatePickerUtils
 import org.dhis2.utils.DateUtils
 import org.dhis2.utils.DialogClickListener
+import org.dhis2.utils.EventMode
 import org.dhis2.utils.FileResourcesUtil
 import org.dhis2.utils.analytics.CLICK
 import org.dhis2.utils.analytics.DELETE_AND_BACK
@@ -221,7 +222,7 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
         } else {
             val eventCreationIntent = Intent(abstracContext, EventCaptureActivity::class.java)
             eventCreationIntent.putExtras(
-                EventCaptureActivity.getActivityBundle(eventUid, presenter.getProgram().uid())
+                EventCaptureActivity.getActivityBundle(eventUid, presenter.getProgram().uid(), EventMode.CHECK)
             )
             eventCreationIntent.putExtra(
                 Constants.TRACKED_ENTITY_INSTANCE,
