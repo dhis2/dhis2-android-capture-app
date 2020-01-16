@@ -7,11 +7,9 @@ import java.util.List;
 public class ReservedValueContracts {
 
     public interface View extends AbstractActivityContracts.View {
-        void setDataElements(List<ReservedValueModel> reservedValueModels);
+        void setReservedValues(List<ReservedValueModel> reservedValueModels);
 
         void onBackClick();
-
-        void refreshAdapter();
 
         void showReservedValuesError();
     }

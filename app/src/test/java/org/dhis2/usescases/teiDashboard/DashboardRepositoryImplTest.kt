@@ -3,7 +3,6 @@ package org.dhis2.usescases.teiDashboard
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
-import com.squareup.sqlbrite2.BriteDatabase
 import io.reactivex.Single
 import org.dhis2.utils.CodeGenerator
 import org.dhis2.utils.DateUtils
@@ -20,13 +19,11 @@ import org.mockito.Mockito
 class DashboardRepositoryImplTest {
 
     private lateinit var repository: DashboardRepositoryImpl
-    private val codeGenerator: CodeGenerator = mock()
-    private val britedatabase: BriteDatabase = mock()
     private val d2: D2 = Mockito.mock(D2::class.java, Mockito.RETURNS_DEEP_STUBS)
 
     @Before
     fun setUp() {
-        repository = DashboardRepositoryImpl(codeGenerator, britedatabase, d2)
+        repository = DashboardRepositoryImpl(d2)
     }
 
     @Test

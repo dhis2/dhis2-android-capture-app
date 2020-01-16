@@ -37,7 +37,7 @@ public class ReservedValuePresenter {
                         .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.ui())
                         .subscribe(
-                                view::setDataElements,
+                                view::setReservedValues,
                                 Timber::e
                         )
         );

@@ -20,6 +20,7 @@ import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.EventCreationType;
 import org.dhis2.utils.analytics.AnalyticsHelper;
 import org.hisp.dhis.android.core.D2;
+import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.event.EventStatus;
@@ -172,14 +173,10 @@ class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
     @Override
     public void completeEnrollment() {
         if (d2.programModule().programs().uid(programUid).blockingGet().access().data().write()) {
-            Flowable<Long> flowable;
-            EnrollmentStatus newStatus = EnrollmentStatus.COMPLETED;
-
-            flowable = dashboardRepository.updateEnrollmentStatus(dashboardModel.getCurrentEnrollment().uid(), newStatus);
-            compositeDisposable.add(flowable
+            compositeDisposable.add(dashboardRepository.completeEnrollment(dashboardModel.getCurrentEnrollment().uid())
                     .subscribeOn(schedulerProvider.computation())
                     .observeOn(schedulerProvider.ui())
-                    .map(result -> newStatus)
+                    .map(Enrollment::status)
                     .subscribe(
                             view.enrollmentCompleted(),
                             Timber::d

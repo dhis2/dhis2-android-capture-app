@@ -5,8 +5,6 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.squareup.sqlbrite2.BriteDatabase;
-
 import org.dhis2.data.dagger.PerActivity;
 import org.dhis2.data.forms.EventRepository;
 import org.dhis2.data.forms.FormRepository;
@@ -52,9 +50,8 @@ public class EventInitialModule {
     @Provides
     @PerActivity
     EventSummaryRepository eventSummaryRepository(@NonNull Context context,
-                                                  @NonNull BriteDatabase briteDatabase,
                                                   @NonNull FormRepository formRepository, D2 d2) {
-        return new EventSummaryRepositoryImpl(context, briteDatabase, formRepository, eventUid, d2);
+        return new EventSummaryRepositoryImpl(context, formRepository, eventUid, d2);
     }
 
     @Provides

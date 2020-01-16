@@ -4,8 +4,6 @@ import android.content.Context;
 
 import androidx.annotation.NonNull;
 
-import com.squareup.sqlbrite2.BriteDatabase;
-
 import org.dhis2.data.dagger.PerActivity;
 import org.dhis2.data.forms.EventRepository;
 import org.dhis2.data.forms.FormRepository;
@@ -13,7 +11,6 @@ import org.dhis2.data.forms.RulesRepository;
 import org.dhis2.data.forms.dataentry.DataEntryStore;
 import org.dhis2.data.forms.dataentry.DataValueStore;
 import org.dhis2.data.schedulers.SchedulerProvider;
-import org.dhis2.data.user.UserRepository;
 import org.dhis2.utils.RulesUtilsProvider;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.rules.RuleExpressionEvaluator;
@@ -70,10 +67,8 @@ public class EventCaptureModule {
 
     @Provides
     @PerActivity
-    DataEntryStore dataValueStore(@NonNull BriteDatabase briteDatabase,
-                                  @NonNull UserRepository userRepository,
-                                  @NonNull D2 d2) {
-        return new DataValueStore(d2, briteDatabase, userRepository, eventUid);
+    DataEntryStore dataValueStore(@NonNull D2 d2) {
+        return new DataValueStore(d2, eventUid);
     }
 
 }

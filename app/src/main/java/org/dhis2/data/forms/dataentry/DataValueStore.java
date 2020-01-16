@@ -3,9 +3,6 @@ package org.dhis2.data.forms.dataentry;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.squareup.sqlbrite2.BriteDatabase;
-
-import org.dhis2.data.user.UserRepository;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.enrollment.EnrollmentObjectRepository;
 import org.hisp.dhis.android.core.event.EventObjectRepository;
@@ -33,8 +30,6 @@ public final class DataValueStore implements DataEntryStore {
     private final EnrollmentObjectRepository enrollmentRepository;
 
     public DataValueStore(@NonNull D2 d2,
-                          @NonNull BriteDatabase briteDatabase,
-                          @NonNull UserRepository userRepository,
                           @NonNull String eventUid) {
         this.d2 = d2;
         this.eventUid = eventUid;
