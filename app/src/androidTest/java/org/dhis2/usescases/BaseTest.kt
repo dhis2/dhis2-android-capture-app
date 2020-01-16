@@ -1,12 +1,14 @@
 package org.dhis2.usescases
 
 import android.content.Context
+import android.database.sqlite.SQLiteDatabase
 import android.os.Build
 import androidx.test.platform.app.InstrumentationRegistry
 import org.dhis2.DisableAnimations
 import org.junit.After
 import org.junit.Before
 import org.junit.ClassRule
+import java.io.*
 
 open class BaseTest {
 
@@ -37,34 +39,37 @@ open class BaseTest {
         }
     }
 
-  /*  private fun populateDatabaseFromAssetsIfNeeded() {
-        val db: SQLiteDatabase? = null
-
+    private fun populateDatabaseFromAssetsIfNeeded() {
         val databasePath = context?.applicationInfo?.dataDir + "/databases"
         val file = File("$databasePath/$DB_NAME")
 
         if (file.exists()) return
 
         try {
-            val aaaa = context?.assets?.open("$databasePath/$DB_NAME")
+            val input = context!!.assets.open("$databasePath/$DB_NAME")
+            val output = FileOutputStream("$databasePath/$DB_NAME")
+
+            writeExtractedFileToDisk(input, output)
         } catch (e: IOException) {
 
         }
-    } */
+    }
 
- /*   @Throws(IOException::class)
+    @Throws(IOException::class)
     fun writeExtractedFileToDisk(input: InputStream, outs: OutputStream) {
         val buffer = ByteArray(1024)
         var length: Int
 
-        while ((length = input.read(buffer)) > 0) {
+        length = input.read(buffer)
+        while (length > 0) {
             outs.write(buffer, 0, length)
+            length = input.read(buffer)
         }
 
         outs.flush()
         outs.close()
         input.close()
-    } */
+    }
 
 
 
