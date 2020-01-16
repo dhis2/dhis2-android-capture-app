@@ -11,11 +11,13 @@ import org.dhis2.data.forms.dataentry.fields.image.ImageViewModel;
 import org.dhis2.data.forms.dataentry.fields.orgUnit.OrgUnitViewModel;
 import org.dhis2.data.forms.dataentry.fields.picture.PictureViewModel;
 import org.dhis2.data.forms.dataentry.fields.radiobutton.RadioButtonViewModel;
+import org.dhis2.data.forms.dataentry.fields.scan.ScanTextViewModel;
 import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel;
 import org.dhis2.data.forms.dataentry.fields.unsupported.UnsupportedViewModel;
 import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.common.ValueTypeDeviceRendering;
+import org.hisp.dhis.android.core.common.ValueTypeRenderingType;
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
 
 import static android.text.TextUtils.isEmpty;
@@ -101,7 +103,13 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
             case INTEGER_ZERO_OR_POSITIVE:
             case UNIT_INTERVAL:
             case URL:
-                return EditTextViewModel.create(id, label, mandatory, value, hintEnterText, 1, type, section, editable, description, fieldRendering, objectStyle, fieldMask);
+                return ScanTextViewModel.create(id, label, mandatory, value, section, editable, description, objectStyle,
+                        ValueTypeDeviceRendering.builder().type(ValueTypeRenderingType.QR).build());
+                /*if(fieldRendering != null && fieldRendering.type().equals(ValueTypeRenderingType.QR)) {
+                    return ScanTextViewModel.create(id, label, mandatory, value, section, editable, description, objectStyle, fieldRendering);
+                } else {
+                    return EditTextViewModel.create(id, label, mandatory, value, hintEnterText, 1, type, section, editable, description, fieldRendering, objectStyle, fieldMask);
+                }*/
             case IMAGE:
                 return PictureViewModel.create(id, label, mandatory, value, section, editable, description, objectStyle);
             case TIME:
