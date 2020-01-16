@@ -11,14 +11,14 @@ The Testing Server will be the server where you can change the serveonfiguration
 
 DHIS 2 is licensed under [BSD](http://www.linfo.org/bsdlicense.html), an open source license and is free for everyone to install and use.  However, managing a DHIS 2 instance involves more than setting up owerful web server. Deploying a reliable and scalable system includet least these aspects:
 
-* Human resources with skills in relevant technologies such as web servers and database systems.
-* Reliable backup of your system including safe storage at a remote server.
-* Use of SSL (HTTPS / encryption) to keep private information like passwords secure.
-* Monitoring of server resources and application performance.
-* Stable and high*speed Internet connectivity.
-* Stable power supply including a backup power solution.
-* Secure server environment to avoid unauthorized access, theft and fire.
-* Powerful hardware with potential for scaling together with increased system usage.
+- Human resources with skills in relevant technologies such as web servers and database systems.
+- Reliable backup of your system including safe storage at a remote server.
+- Use of SSL (HTTPS / encryption) to keep private information like passwords secure.
+- Monitoring of server resources and application performance.
+- Stable and high-speed Internet connectivity.
+- Stable power supply including a backup power solution.
+- Secure server environment to avoid unauthorized access, theft and fire.
+- Powerful hardware with potential for scaling together with increased system usage.
 
 The DHIS 2 Capture Android App runs in mobile devices, includinmartphones, tablets and chromebooks. It is important to keep an eye ohe number of programs, number of data elements and number of prograules that are made available to a user on those mobile devices. Yohould also budget sufficient time for creating the necessarranslations for your metadata configuration. For the app dialogues, menus and other prompts, if the app is not translated to the languaghat you need, please send us a message in the [DHIS 2 community](https://community.dhis2.org) and we will let you know how to contribute to the app translations.
 

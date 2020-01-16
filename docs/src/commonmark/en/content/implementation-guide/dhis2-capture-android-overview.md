@@ -13,13 +13,13 @@ Server URL can be set via a QR code. The app will also remember previoused URLs 
 
 The appearance of the app, including icon and color is determined bour server configuration. You can create a shortcut to the app witour institutional logo in the home screen of the mobile device by usinhe App Widget.
 
-![](content/images/login.gif){ .center width=50% }
+![](resources/images/login.gif){ .center width=50% }
 
 ## Attractive, user friendly navigation
 
 All programs and datasets\* accessible to the logged user are integratento the new "Home" screen.. Each program or dataset will be, displayeith their associated icon and colour.
 
-![](content/images/user_friendly.gif){ .center width=50% }
+![](resources/images/user_friendly.gif){ .center width=50% }
 
 ## Fully functional while offline: intelligent sync
 
@@ -34,7 +34,7 @@ A local database in the mobile device keeps a synchronized copy of thHIS 2 progr
 
 DHIS 2’s powerful tracker data model has been fully implemented in thmall screen. The tracker dashboard incorporates feedback, relationships, indicators and notes.
 
-![](content/images/tracker_search.png){ .center width=50% }
+![](resources/images/tracker_search.png){ .center width=50% }
 
 The app implements tracker logic by supporting most program rules,
 giving the possibility to add, schedule or refer new events, dependinn the server configuration.
@@ -45,7 +45,7 @@ Before being able to add a new tracked entity, the app automaticallonduct a sear
 
 ## Pictorial Data Entry
 
-![](content/images/pictorial_entry.gif){ .center width=50% }
+![](resources/images/pictorial_entry.gif){ .center width=50% }
 
 Data Entry comes to life - icons and colors can be used to illustratuestions’ answers. Available for data elements with associated optionets in both, single event and tracker programs.
 

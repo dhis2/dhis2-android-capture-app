@@ -98,7 +98,7 @@ generate(){
 # format:
 #$> generate <doc name> <chapters subfolder> ["html","pdf","both"]
 #generate "dhis2_android_capture_app" ["pdf"]
-generate "dhis2_android_implementation_guideline" ["pdf"]
+generate "dhis2_android_implementation_guideline" ["html"]
 
 
 rm -rf $tmp
