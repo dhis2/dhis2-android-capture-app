@@ -3,6 +3,7 @@ package org.dhis2;
 import android.content.Context;
 import android.os.Build;
 import android.os.Looper;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -95,6 +96,8 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
     @Override
     public void onCreate() {
         super.onCreate();
+        Log.i("TEST","TESTINGAP");
+
         Timber.plant(BuildConfig.DEBUG ? new DebugTree() : new ReleaseTree());
         ProcessLifecycleOwner.get().getLifecycle().addObserver(this);
 
