@@ -324,7 +324,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
     public Consumer<EnrollmentStatus> enrollmentCompleted() {
         return enrollmentStatus -> {
             if (enrollmentStatus == EnrollmentStatus.COMPLETED)
-                activity.getPresenter().getData();
+                activity.getPresenter().init();
         };
     }
 
