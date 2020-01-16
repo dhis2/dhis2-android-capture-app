@@ -2,6 +2,7 @@ package org.dhis2.usescases.login
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
+import org.dhis2.usescases.main.MainActivity
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -10,7 +11,7 @@ import org.junit.runner.RunWith
 class LoginActivityTest {
 
     @get:Rule
-    val rule = ActivityTestRule(LoginActivity::class.java, false, false)
+    val rule = ActivityTestRule(MainActivity::class.java, false, false)
 
     @Test
     fun loginButtonShouldBeDisplayedWhenAllFieldsAreFilled() {

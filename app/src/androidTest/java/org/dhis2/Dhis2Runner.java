@@ -19,7 +19,7 @@ public class Dhis2Runner extends AndroidJUnitRunner {
     @Override public void onStart() {
         super.onStart();
         Log.i("DhisRunner", "onStart");
-        RxJavaPlugins.setInitIoSchedulerHandler(Rx2Idler.create("RxJava 2.x Io Scheduler"));
+        RxJavaPlugins.setInitComputationSchedulerHandler(Rx2Idler.create("RxJava 2.x Computation Scheduler"));
         RxJavaPlugins.setInitIoSchedulerHandler(Rx2Idler.create("RxJava 2.x IO Scheduler"));
     }
 }
