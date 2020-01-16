@@ -21,8 +21,8 @@ open class BaseTest {
     @Before
     @Throws(Exception::class)
     open fun setUp() {
-        populateDatabaseFromAssetsIfNeeded()
-        allowPermissions()
+     //   populateDatabaseFromAssetsIfNeeded()
+     //   allowPermissions()
         setupMockServerIfNeeded()
         injectDependencies()
     }
@@ -37,9 +37,36 @@ open class BaseTest {
         }
     }
 
-    private fun populateDatabaseFromAssetsIfNeeded(){
+  /*  private fun populateDatabaseFromAssetsIfNeeded() {
+        val db: SQLiteDatabase? = null
 
-    }
+        val databasePath = context?.applicationInfo?.dataDir + "/databases"
+        val file = File("$databasePath/$DB_NAME")
+
+        if (file.exists()) return
+
+        try {
+            val aaaa = context?.assets?.open("$databasePath/$DB_NAME")
+        } catch (e: IOException) {
+
+        }
+    } */
+
+ /*   @Throws(IOException::class)
+    fun writeExtractedFileToDisk(input: InputStream, outs: OutputStream) {
+        val buffer = ByteArray(1024)
+        var length: Int
+
+        while ((length = input.read(buffer)) > 0) {
+            outs.write(buffer, 0, length)
+        }
+
+        outs.flush()
+        outs.close()
+        input.close()
+    } */
+
+
 
     private fun injectDependencies() {
 
@@ -63,5 +90,6 @@ open class BaseTest {
         @ClassRule
         @JvmField
         val disableAnimationsTestRule = DisableAnimations()
+        const val DB_NAME = "dhis.db"
     }
 }

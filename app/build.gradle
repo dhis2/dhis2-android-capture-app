@@ -24,6 +24,7 @@ repositories {
 android {
 
     testOptions {
+        execution 'ANDROIDX_TEST_ORCHESTRATOR'
         unitTests {
             includeAndroidResources = true
             returnDefaultValues = true
@@ -51,7 +52,6 @@ android {
 
         buildConfigField "String", "SDK_VERSION", "\"" + libraries.dhis2sdk + "\""
         buildConfigField "String", "MAPBOX_ACCESS_TOKEN", "\"pk.eyJ1Ijoib3Jpa2dnIiwiYSI6ImNqdWpqb24zYTFsOXo0M2xwcXRseGx3aXkifQ.6N9aqvpqdrrSBwO9GyfjUw\""
-
 
         javaCompileOptions {
             annotationProcessorOptions {
@@ -364,6 +364,9 @@ dependencies {
     androidTestImplementation("com.squareup.rx.idler:rx2-idler:0.10.0"){
         exclude group: "io.reactivex.rxjava2", module: "rxjava"
     }
+
+    androidTestUtil 'androidx.test:orchestrator:1.2.0'
+    androidTestImplementation "androidx.test:runner:1.2.0"
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
     androidTestImplementation 'androidx.test.espresso:espresso-intents:3.2.0'
     androidTestImplementation 'androidx.test.espresso:espresso-contrib:3.2.0'
@@ -375,9 +378,6 @@ dependencies {
     androidTestImplementation "androidx.test:core-ktx:1.2.0"
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation "androidx.test.ext:junit-ktx:1.1.1"
-
-    androidTestImplementation "androidx.test:runner:1.2.0"
-
     androidTestImplementation 'org.mockito:mockito-android:2.28.2'
     androidTestImplementation 'org.mockito:mockito-core:2.28.2'
 }
