@@ -27,6 +27,7 @@ import java.util.List;
 
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
+import io.reactivex.Single;
 import io.reactivex.functions.Consumer;
 
 /**
@@ -50,8 +51,6 @@ public interface DashboardRepository {
     boolean setFollowUp(String enrollmentUid);
 
     Consumer<Pair<String, Boolean>> handleNote();
-
-    void setDashboardDetails(String teiUid, String programUid);
 
     Observable<List<TrackedEntityAttributeValue>> mainTrackedEntityAttributes(String teiUid);
 
@@ -85,4 +84,8 @@ public interface DashboardRepository {
     Observable<List<Enrollment>> getTEIEnrollments(String teiUid);
 
     void saveCatOption(String eventUid, String catOptionComboUid);
+
+    Single<Boolean> deleteTeiIfPossible();
+
+    Single<Boolean> deleteEnrollmentIfPossible(String enrollmentUid);
 }

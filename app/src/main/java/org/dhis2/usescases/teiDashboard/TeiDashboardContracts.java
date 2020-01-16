@@ -1,7 +1,5 @@
 package org.dhis2.usescases.teiDashboard;
 
-import android.os.Bundle;
-
 import org.dhis2.usescases.general.AbstractActivityContracts;
 import org.hisp.dhis.android.core.program.Program;
 
@@ -13,24 +11,24 @@ public class TeiDashboardContracts {
 
     public interface View extends AbstractActivityContracts.View {
 
-        void init(String teUid, String programUid);
-
         void setData(DashboardProgramModel program);
 
         void setDataWithOutProgram(DashboardProgramModel programModel);
 
-        void goToEnrollmentList(Bundle extras);
+        void goToEnrollmentList();
 
         void restoreAdapter(String programUid);
 
         void handleTEIdeletion();
 
         void handleEnrollmentDeletion(Boolean hasMoreEnrollments);
+
+        void authorityErrorMessage();
     }
 
     public interface Presenter {
 
-        void init(View view, String uid, String programUid);
+        void init();
 
         void showDescription(String description);
 
@@ -41,8 +39,6 @@ public class TeiDashboardContracts {
         void setProgram(Program program);
 
         void onDettach();
-
-        void getData();
 
         String getProgramUid();
 

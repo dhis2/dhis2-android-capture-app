@@ -10,6 +10,7 @@ import org.dhis2.Bindings.EventExtensionsKt;
 import org.dhis2.R;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Trio;
+import org.dhis2.utils.AuthorityException;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.ValueUtils;
 import org.hisp.dhis.android.core.D2;
@@ -18,9 +19,11 @@ import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope;
 import org.hisp.dhis.android.core.category.Category;
 import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryOptionCombo;
+import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.android.core.enrollment.EnrollmentCollectionRepository;
+import org.hisp.dhis.android.core.enrollment.EnrollmentObjectRepository;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.event.EventStatus;
@@ -41,13 +44,11 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityType;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
+import io.reactivex.Single;
 import io.reactivex.functions.Consumer;
 import timber.log.Timber;
 
@@ -66,12 +67,8 @@ public class DashboardRepositoryImpl
     private String programUid;
 
 
-    public DashboardRepositoryImpl(D2 d2) {
+    public DashboardRepositoryImpl(D2 d2,String teiUid, String programUid) {
         this.d2 = d2;
-    }
-
-    @Override
-    public void setDashboardDetails(String teiUid, String programUid) {
         this.teiUid = teiUid;
         this.programUid = programUid;
     }
@@ -400,5 +397,62 @@ public class DashboardRepositoryImpl
         } catch (D2Error d2Error) {
             Timber.e(d2Error);
         }
+    }
+
+    @Override
+    public Single<Boolean> deleteTeiIfPossible() {
+        return Single.fromCallable(() -> {
+            boolean local = d2.trackedEntityModule()
+                    .trackedEntityInstances()
+                    .uid(teiUid)
+                    .blockingGet()
+                    .state() == State.TO_POST;
+            boolean hasAuthority = d2.userModule()
+                    .authorities()
+                    .byName().eq("F_TEI_CASCADE_DELETE")
+                    .one().blockingExists();
+            return local || hasAuthority;
+        }).flatMap(canDelete -> {
+            if (canDelete) {
+                return d2.trackedEntityModule()
+                        .trackedEntityInstances()
+                        .uid(teiUid)
+                        .delete()
+                        .andThen(Single.fromCallable(() -> true));
+            } else {
+                return Single.fromCallable(() -> false);
+            }
+        });
+    }
+
+    @Override
+    public Single<Boolean> deleteEnrollmentIfPossible(String enrollmentUid) {
+        return Single.fromCallable(() -> {
+            boolean local = d2.enrollmentModule()
+                    .enrollments()
+                    .uid(enrollmentUid)
+                    .blockingGet().state() == State.TO_POST;
+            boolean hasAuthority = d2.userModule()
+                    .authorities()
+                    .byName().eq("F_ENROLLMENT_CASCADE_DELETE")
+                    .one().blockingExists();
+            return local || hasAuthority;
+        }).flatMap(canDelete -> {
+            if (canDelete) {
+                return Single.fromCallable(() -> {
+                    EnrollmentObjectRepository enrollmentObjectRepository = d2.enrollmentModule()
+                            .enrollments().uid(enrollmentUid);
+                    enrollmentObjectRepository.setStatus(
+                            enrollmentObjectRepository.blockingGet().status()
+                    );
+                    enrollmentObjectRepository.blockingDelete();
+                    return !d2.enrollmentModule().enrollments().byTrackedEntityInstance().eq(teiUid)
+                            .byDeleted().isFalse()
+                            .byStatus().eq(EnrollmentStatus.ACTIVE).blockingGet().isEmpty();
+                });
+            } else {
+                return Single.error(new AuthorityException(null));
+            }
+        });
     }
 }

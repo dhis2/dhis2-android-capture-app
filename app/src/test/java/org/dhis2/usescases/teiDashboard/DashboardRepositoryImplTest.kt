@@ -4,7 +4,6 @@ import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Single
-import org.dhis2.utils.CodeGenerator
 import org.dhis2.utils.DateUtils
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.enrollment.Enrollment
@@ -23,7 +22,7 @@ class DashboardRepositoryImplTest {
 
     @Before
     fun setUp() {
-        repository = DashboardRepositoryImpl(d2)
+        repository = DashboardRepositoryImpl(d2, "teiUid", "programUid")
     }
 
     @Test
@@ -32,13 +31,13 @@ class DashboardRepositoryImplTest {
         whenever(d2.eventModule().events()) doReturn mock()
         whenever(d2.eventModule().events().uid("event_uid")) doReturn mock()
         whenever(d2.eventModule().events().uid("event_uid").get()) doReturn
-            Single.just(getMockSingleEvent())
+                Single.just(getMockSingleEvent())
 
         whenever(d2.programModule()) doReturn mock()
         whenever(d2.programModule().programStages()) doReturn mock()
         whenever(d2.programModule().programStages().uid("program_stage")) doReturn mock()
         whenever(d2.programModule().programStages().uid("program_stage").get()) doReturn
-            Single.just(getMockStage())
+                Single.just(getMockStage())
 
         val testObserver = repository.displayGenerateEvent("event_uid").test()
 
@@ -111,9 +110,9 @@ class DashboardRepositoryImplTest {
         testObserver.assertValueCount(1)
         testObserver.assertValue { events ->
             events[0].uid() == "event_uid_4" &&
-                events[1].uid() == "event_uid_2" &&
-                events[2].uid() == "event_uid_3" &&
-                events[3].uid() == "event_uid_1"
+                    events[1].uid() == "event_uid_2" &&
+                    events[2].uid() == "event_uid_3" &&
+                    events[3].uid() == "event_uid_1"
         }
     }
 
