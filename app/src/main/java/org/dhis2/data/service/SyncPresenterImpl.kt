@@ -1,18 +1,10 @@
 package org.dhis2.data.service
 
-import androidx.work.Constraints
 import androidx.work.Data
 import androidx.work.ExistingWorkPolicy
 import androidx.work.ListenableWorker
-import androidx.work.NetworkType
-import androidx.work.OneTimeWorkRequest
-import androidx.work.WorkManager
 import io.reactivex.Completable
 import io.reactivex.Observable
-import java.util.ArrayList
-import java.util.Calendar
-import java.util.concurrent.TimeUnit
-import kotlin.math.ceil
 import org.dhis2.data.prefs.Preference.Companion.DATA
 import org.dhis2.data.prefs.Preference.Companion.EVENT_MAX
 import org.dhis2.data.prefs.Preference.Companion.EVENT_MAX_DEFAULT
@@ -25,6 +17,9 @@ import org.dhis2.data.prefs.Preference.Companion.TIME_DAILY
 import org.dhis2.data.prefs.Preference.Companion.TIME_DATA
 import org.dhis2.data.prefs.Preference.Companion.TIME_META
 import org.dhis2.data.prefs.PreferenceProvider
+import org.dhis2.data.service.workManager.WorkManagerController
+import org.dhis2.data.service.workManager.WorkerItem
+import org.dhis2.data.service.workManager.WorkerType
 import org.dhis2.utils.DateUtils
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.call.D2Progress
@@ -32,11 +27,14 @@ import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.imports.TrackerImportConflict
 import org.hisp.dhis.android.core.program.ProgramType
 import timber.log.Timber
+import java.util.ArrayList
+import java.util.Calendar
+import kotlin.math.ceil
 
 class SyncPresenterImpl(
     private val d2: D2,
     private val preferences: PreferenceProvider,
-    private val workManager: WorkManager
+    private val workManagerController: WorkManagerController
 ) : SyncPresenter {
 
     override fun syncAndDownloadEvents() {
@@ -341,35 +339,33 @@ class SyncPresenterImpl(
 
     override fun startPeriodicDataWork() {
         val seconds = preferences.getInt(TIME_DATA, TIME_DAILY)
-        workManager.cancelUniqueWork(DATA)
+        workManagerController.cancelUniqueWork(DATA)
 
         if (seconds != 0) {
-            val syncDataWorkRequest = OneTimeWorkRequest.Builder(SyncDataWorker::class.java)
-                .addTag(DATA)
-                .setInitialDelay(seconds.toLong(), TimeUnit.SECONDS)
-                .setConstraints(
-                    Constraints.Builder()
-                        .setRequiredNetworkType(NetworkType.CONNECTED)
-                        .build()
-                ).build()
-            workManager.enqueueUniqueWork(DATA, ExistingWorkPolicy.REPLACE, syncDataWorkRequest)
+            val workerItem = WorkerItem(
+                DATA,
+                WorkerType.DATA,
+                seconds.toLong(),
+                policy = ExistingWorkPolicy.REPLACE
+            )
+
+            workManagerController.syncDataForWorker(workerItem)
         }
     }
 
     override fun startPeriodicMetaWork() {
         val seconds = preferences.getInt(TIME_META, TIME_DAILY)
-        workManager.cancelUniqueWork(META)
+        workManagerController.cancelUniqueWork(META)
 
         if (seconds != 0) {
-            val syncMetaWorkRequest = OneTimeWorkRequest.Builder(SyncMetadataWorker::class.java)
-                .addTag(META)
-                .setInitialDelay(seconds.toLong(), TimeUnit.SECONDS)
-                .setConstraints(
-                    Constraints.Builder()
-                        .setRequiredNetworkType(NetworkType.CONNECTED)
-                        .build()
-                ).build()
-            workManager.enqueueUniqueWork(META, ExistingWorkPolicy.REPLACE, syncMetaWorkRequest)
+            val workerItem = WorkerItem(
+                META,
+                WorkerType.METADATA,
+                seconds.toLong(),
+                policy = ExistingWorkPolicy.REPLACE
+            )
+
+            workManagerController.syncDataForWorker(workerItem)
         }
     }
 }

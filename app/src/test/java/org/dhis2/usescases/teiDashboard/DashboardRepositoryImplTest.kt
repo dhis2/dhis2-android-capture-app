@@ -26,7 +26,7 @@ class DashboardRepositoryImplTest {
 
     @Before
     fun setUp() {
-        repository = DashboardRepositoryImpl(codeGenerator, britedatabase, d2)
+        repository = DashboardRepositoryImpl(codeGenerator, britedatabase, d2, "teiUid", "programUid")
     }
 
     @Test

@@ -367,7 +367,6 @@
     <string name="sms_bar_state_sending">ກໍາລັງດໍາເນີນການ</string>
     <string name="sms_bar_state_failed">Failed</string>
 
-    <string name="polygon">Polygon</string>
     <string name="filters_title_period">ຊ່ວງເວລາ</string>
     <string name="filters_title_status">ສະຖານະ</string>
     <string name="filter_period_today">ມື້ນີ້</string>

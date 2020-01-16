@@ -6,7 +6,7 @@ import org.dhis2.data.prefs.PreferenceProvider;
 import org.dhis2.data.schedulers.SchedulerModule;
 import org.dhis2.data.server.ServerComponent;
 import org.dhis2.data.server.ServerModule;
-import org.dhis2.data.service.SyncGranularRxModule;
+import org.dhis2.data.service.workManager.WorkManagerModule;
 import org.dhis2.usescases.login.LoginComponent;
 import org.dhis2.usescases.login.LoginModule;
 import org.dhis2.usescases.splash.SplashComponent;
@@ -25,7 +25,7 @@ import dagger.Component;
  */
 @Singleton
 @Component(modules = {
-        AppModule.class, SchedulerModule.class, UtilsModule.class, AnalyticsModule.class, PreferenceModule.class
+        AppModule.class, SchedulerModule.class, UtilsModule.class, AnalyticsModule.class, PreferenceModule.class, WorkManagerModule.class
 })
 public interface AppComponent {
 
@@ -40,6 +40,8 @@ public interface AppComponent {
         Builder analyticsModule(AnalyticsModule module);
 
         Builder preferenceModule(PreferenceModule preferenceModule);
+
+        Builder workManagerController(WorkManagerModule workManagerModule);
 
         AppComponent build();
     }
