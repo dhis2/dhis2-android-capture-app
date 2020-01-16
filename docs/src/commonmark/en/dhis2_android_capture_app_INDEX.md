@@ -1,6 +1,7 @@
 ---
 title: 'DHIS 2 configuration guide for the Android capture app'
 ---
+
 !INCLUDE "content/common/about-this-android-guide.md"
 !INCLUDE "content/capture-app/introduction.md"
 !INCLUDE "content/capture-app/recommendations-for-a-dhis2-mobile-deployment.md"
