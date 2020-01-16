@@ -19,7 +19,8 @@ Before you start with the installation of the new DHIS 2 Capture Android App in 
 2. Download and install the new DHIS 2 Android Capture App
 3. Login using your credentials.
 
-*NOTE: Deleting the app without syncing can cause information loss.*
+> **NOTE:**
+> Deleting the app without syncing can cause information loss.
 
 ## Login into the app
 

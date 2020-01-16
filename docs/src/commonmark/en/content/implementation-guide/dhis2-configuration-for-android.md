@@ -65,7 +65,7 @@ We include here some SOP Best Practices taken from the [<span class="underline">
 9. Have the CHWs explain the data capture guidelines. This teach-back method is an effective adult learning practice. By explaining the data capture guidelines, this elevates the CHW’s credibility with the health committee.
 10. Produce, simple-to-use, local language guidelines. CHWs and facility staff need guides and instructions on what to do. Consider making posters or small laminated portable data capture guidelines for CHWs and facilities to put on the wall or carry with them that outline their role and responsibilities based upon the data capture guidelines.
 11. Have CHWs, facility, district staff and national staff sign guidelines. This is a symbolic “commitment” measure. The aim is that they have read it, understand their reporting responsibilities as defined in the data capture guidelines, and will carry out these responsibilities.
-12. > Produce simple videos or audio and upload them to phones. Responsibilities and actions for every event are made easier with a simple, local-language videos or audio guides that facility staff and CHWs can refer to.
+12. Produce simple videos or audio and upload them to phones. Responsibilities and actions for every event are made easier with a simple, local-language videos or audio guides that facility staff and CHWs can refer to.
 
 
 ### Practical Data Security Guidelines
@@ -112,7 +112,7 @@ There are three types of organisation unit assignment:
 - **Search Org. Units:** Expands TEI search (when online) across further Org Units. Individual records can be downloaded for offline use.
 	- When configuring search org. units, make sure that your capture org. units are contained in your search org.units, to do that capture org. units have to be selected as well as search org. units.
 
-![](resources/images/image39.png)
+![](resources/images/image39.png){ .center width=80% }
 
 ## Visual configuration: Understanding what renders and why
 
@@ -126,80 +126,25 @@ Here is an example of how to assign icons and colors to metadata:
 
 The following table shows where you can use icons today:
 
-<table>
-<thead>
-<tr class="header">
-<th></th>
-<th>**Assign**</th>
-<th>**Android Rendering**</th>
-<th>**Web Rendering**</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>TrackedEntityType</td>
-<td>✅ 2.30</td>
-<td>soon</td>
-<td></td>
-</tr>
-<tr>
-<td>Program</td>
-<td>✅ 2.30</td>
-<td>✅</td>
-<td>✅(simple events, 2.30)</td>
-</tr>
-<tr>
-<td>Program Stage</td>
-<td>✅ 2.30</td>
-<td>✅</td>
-<td>✅(simple events, 2.30)</td>
-</tr>
-<tr>
-<td>DataSet</td>
-<td>✅ 2.31</td>
-<td>soon</td>
-<td></td>
-</tr>
-<tr>
-<td>Data Element</td>
-<td>✅ 2.30</td>
-<td>-</td>
-<td></td>
-</tr>
-<tr>
-<td>Attribute</td>
-<td>✅ 2.30</td>
-<td>-</td>
-<td></td>
-</tr>
-<tr>
-<td>Indicator</td>
-<td>✅ 2.32</td>
-<td>soon</td>
-<td></td>
-</tr>
-<tr>
-<td>Prg Indicator</td>
-<td>✅ 2.32</td>
-<td>soon</td>
-<td></td>
-</tr>
-<tr>
-<td>Option Set</td>
-<td>✅ 2.30</td>
-<td>✅</td>
-<td>✅(simple events, 2.31)</td>
-</tr>
-</tbody>
-</table>
+| | **Asign** | **Android Rendering** | **Web Rendering** |
+|---|:---:|:---:|:---:|
+| TrackedEntityType | ✅ 2.30 | soon | |
+| Program | ✅ 2.30 | ✅ | ✅(simple events, 2.30) | 
+| Program Stage | ✅ 2.30 | ✅ | ✅(simple events, 2.30) | 
+| DataSet | ✅ 2.31 | soon | |  
+| Data Element | ✅ 2.30 | - | | 
+| Attribute | ✅ 2.30 | - | | 
+| Indicator | ✅ 2.32 | soon | 
+| Prg Indicator | ✅ 2.32 | soon | | 
+| Option Set | ✅ 2.30 | ✅ | ✅(simple events, 2.31) | 
 
 For program stages, sections can be rendered in three modes: Listing, Sequential and Matrix. The results of these modes are shown below:
 
-![](resources/images/image4.png)
+![](resources/images/image4.png){ .center }
 
 A System Administrator can decide the best way to render the information in each program stage section by setting up the mobile rendering type, as shown on the screenshot below.
 
-![](resources/images/image15.png)
+![](resources/images/image15.png){ .center }
 
 ### Setting up the Program Rules
 
@@ -211,11 +156,11 @@ The first thing you need to do when setting up the program rules is to define th
 
 Once the context and priority have been defined, it is time to write the program rule expression using built-in variables, variables (TEI attributes / PS data elements) and functions. Variables have to be defined by the administrator to be able to evaluate information entered for a TEI attribute or a program stage data element.
 
-![](resources/images/image40.png)
+![](resources/images/image40.png){ .center }
 
 Then we need to decide on the action or actions to be executed when the program rule expression is true
 
-![](resources/images/image38.png)
+![](resources/images/image38.png){ .center }
 
 When setting up your program rules you should be aware of what is supported by the DHIS 2 Android app. You can check the updated list in the [<span class="underline">complete documentation</span>](https://www.dhis2.org/android-documentation).
 
@@ -225,7 +170,7 @@ Indicators to be displayed in the App, can be calculated with the data from the 
 
 Aggregation types are not available, only Last Value can be used in the calculation of the indicator. All DE and constants can be used in the calculations. Variables are supported according to the following table:
 
-![](resources/images/image37.png)
+![](resources/images/image37.png){ .center }
 
 You can check the updated information of what is supported when using program indicators in the [<span class="underline">complete documentation</span>](https://www.dhis2.org/android-documentation). Analytic period boundaries are not supported, neither planned for future support, as they apply to multiple TEI’s.
 
@@ -238,8 +183,8 @@ Once you have designed your indicator, you can assign a legend to it. In your DH
 <table>
 <tbody>
 <tr>
-<td width="50%">![](resources/images/image9.png)</td>
-<td width="50%">![](resources/images/image16.png)</td>
+<td width="60%">![](resources/images/image9.png)</td>
+<td width="40%">![](resources/images/image16.png)</td>
 </tr>
 </tbody>
 </table>
@@ -285,13 +230,12 @@ On the App, the user can also check the available values and refill them in the 
 <table>
 <tbody><tr>
 <td width="50%">
-![](resources/images/image14.jpg){ .center }
+![](resources/images/image14.jpg){ .center width=50%}
 </td>
 <td width="50%">
-![](resources/images/image22.jpg){ .center }
+![](resources/images/image22.jpg){ .center width=50%}
 </td>
 </tr>
 </tbody></table>
 
 When the app runs out of values and the server cannot provide more, the user will receive a message on the data entry form saying that there are no more available values. Your should fix that on the server side.
-

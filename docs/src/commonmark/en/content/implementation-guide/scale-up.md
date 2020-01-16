@@ -10,7 +10,7 @@ Now that you have performed all your testing and your pilot project, you are rea
 
 **Purchasing of devices vs BYOD (bring your own device)**
 
-Initially you should buy different devices to allow users to evaluate them and provide you with feedback. Once the device that you will be using is decided upon, you should only buy 10 or less units, or whatever is needed for the testing and the pilot phases. Only when the pilot is coming to completion, you should buy equipment for the next 6 months roll-out. Some very large projects will take years for a national roll-out, and your hardware adquisicion plan should expand across years. Recommendations on the technical specs for devices are in the chapter [<span class="underline">‘Mobile devices specifications’</span>](#mobile-device-specifications).
+Initially you should buy different devices to allow users to evaluate them and provide you with feedback. Once the device that you will be using is decided upon, you should only buy 10 or less units, or whatever is needed for the testing and the pilot phases. Only when the pilot is coming to completion, you should buy equipment for the next 6 months roll-out. Some very large projects will take years for a national roll-out, and your hardware adquisicion plan should expand across years. Recommendations on the technical specs for devices are in the chapter [Mobile devices specifications](#mobile-device-specifications).
 
 You should consider the feasibility of using a BYOD policy - this format allows users to bring their own devices, as long as they satisfy a minimum technical standard, which you will define for your project. You will normally offer some sort of incentive, likely to be in the form of eCash or airtime. The advantages of this approach are obvious: it avoids the large initial cost for acquisition, as well as it reduces the administration costs and logistics considerations. On the other hand, you will have the challenge of a very heterogeneous hardware environment, meaning different devices and Android OS versions. This mainly affects the debugging process.
 
@@ -20,11 +20,11 @@ DHIS 2 Android app has a new release every couple of weeks. Each new release con
 
 Once you complete your testing and training materials, and start your rollout, you don’t want the application version to change for any of the users, unless you have re-tested the new version. Version changes could include a modified UI, erroneous behaviours, or an incompatibility with your DHIS 2 server version. You want to thoroughly test new versions before pushing them to your users, so you can ensure that the new version doesn’t cause any problems to your configuration, requires retraining, on requires changes to your configuration.
 
-In summary, for any installation that involves a significant number of devices you should avoid the use of Google Play, and instead use a Mobile Device Management (MDM) solution, which we discuss in [<span class="underline">this chapter</span>](#mobile-device-management). If you don’t have access to this option, you could consider using Google Play, but you should disable auto-update for the DHIS 2 android application. The procedure on how to do this changes by Android OS version - please google ‘how to disable android auto update by application in Andrid X.X’.
+In summary, for any installation that involves a significant number of devices you should avoid the use of Google Play, and instead use a Mobile Device Management (MDM) solution, which we discuss in [this chapter](#mobile-device-management). If you don’t have access to this option, you could consider using Google Play, but you should disable auto-update for the DHIS 2 android application. The procedure on how to do this changes by Android OS version - please google ‘how to disable android auto update by application in Andrid X.X’.
 
 **Telecommunication contracts**
 
-If your installation plans to include the use of SMS for transmitting selected records via SMS when mobile data is not available, you will need to establish a contract with a local aggregator which can provide you with an incoming number to receive the SMS. You should configure your server to receive & send SMSs - please see [<span class="underline">DHIS 2</span> <span class="underline">documentation</span>](https://docs.dhis2.org/master/en/user/html/mobile_sms_service.html#) on SMS connections. You will need to estimate the number of messages per month to be able to forecast the monthly cost.
+If your installation plans to include the use of SMS for transmitting selected records via SMS when mobile data is not available, you will need to establish a contract with a local aggregator which can provide you with an incoming number to receive the SMS. You should configure your server to receive & send SMSs - please see [DHIS 2 documentation](https://docs.dhis2.org/master/en/user/html/mobile_sms_service.html#) on SMS connections. You will need to estimate the number of messages per month to be able to forecast the monthly cost.
 
 The process of selecting and signing a contract with an SMS provider varies by country and it depends on the procurement procedures of your organization.
 
@@ -87,7 +87,7 @@ If the training is done with pre-synched data and configuration, at the end of t
 
 ### Training Budget
 
-Following, there are some guidelines on preparing the budget which are taken from the DHIS 2 Community Health Information System Guidelines [<span class="underline">document</span>](https://s3-eu-west-1.amazonaws.com/content.dhis2.org/Publications/CHISGuidelines_version_August29.pdf) published by the University of Oslo:
+Following, there are some guidelines on preparing the budget which are taken from the DHIS 2 Community Health Information System Guidelines [document](https://s3-eu-west-1.amazonaws.com/content.dhis2.org/Publications/CHISGuidelines_version_August29.pdf) published by the University of Oslo:
 
 - Follow organizational policies in using approved budget templates and rates (indirect, DSAs, etc.) for all expenses including:
   - Travel (e.g. fuel, car hire, lodging)
@@ -100,7 +100,7 @@ Following, there are some guidelines on preparing the budget which are taken fro
 
 ### Training Agenda
 
-The [<span class="underline">DHIS 2</span> <span class="underline">Community Health Information System Guidelines</span>](https://s3-eu-west-1.amazonaws.com/content.dhis2.org/Publications/CHISGuidelines_version_August29.pdf) document written by the University of Oslo recommends that you consider:
+The [DHIS 2 Community Health Information System Guidelines](https://s3-eu-west-1.amazonaws.com/content.dhis2.org/Publications/CHISGuidelines_version_August29.pdf) document written by the University of Oslo recommends that you consider:
 
 1. The type of seating you require (round table, individual desks, etc.).
 2. Technological requirements (computers for all, Wi-Fi bandwidth, etc.),
