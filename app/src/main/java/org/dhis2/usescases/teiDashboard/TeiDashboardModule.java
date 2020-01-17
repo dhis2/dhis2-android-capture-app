@@ -2,14 +2,12 @@ package org.dhis2.usescases.teiDashboard;
 
 import androidx.annotation.NonNull;
 
-import com.squareup.sqlbrite2.BriteDatabase;
-
 import org.dhis2.data.dagger.PerActivity;
 import org.dhis2.data.forms.EnrollmentFormRepository;
 import org.dhis2.data.forms.FormRepository;
 import org.dhis2.data.forms.RulesRepository;
 import org.dhis2.data.schedulers.SchedulerProvider;
-import org.dhis2.utils.CodeGenerator;
+import org.dhis2.utils.analytics.AnalyticsHelper;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.enrollment.EnrollmentCollectionRepository;
 import org.hisp.dhis.rules.RuleExpressionEvaluator;
@@ -28,8 +26,10 @@ public class TeiDashboardModule {
 
     public final String programUid;
     public final String teiUid;
+    private final TeiDashboardContracts.View view;
 
-    public TeiDashboardModule(String teiUid, String programUid) {
+    public TeiDashboardModule(TeiDashboardContracts.View view, String teiUid, String programUid) {
+        this.view = view;
         this.teiUid = teiUid;
         this.programUid = programUid;
     }
@@ -42,14 +42,14 @@ public class TeiDashboardModule {
 
     @Provides
     @PerActivity
-    TeiDashboardContracts.Presenter providePresenter(D2 d2, DashboardRepository dashboardRepository, SchedulerProvider schedulerProvider) {
-        return new TeiDashboardPresenter(d2, dashboardRepository, schedulerProvider);
+    TeiDashboardContracts.Presenter providePresenter(DashboardRepository dashboardRepository, SchedulerProvider schedulerProvider, AnalyticsHelper analyticsHelper) {
+        return new TeiDashboardPresenter(view, teiUid, programUid, dashboardRepository, schedulerProvider, analyticsHelper);
     }
 
     @Provides
     @PerActivity
-    DashboardRepository dashboardRepository(CodeGenerator codeGenerator, BriteDatabase briteDatabase, D2 d2) {
-        return new DashboardRepositoryImpl(codeGenerator, briteDatabase, d2);
+    DashboardRepository dashboardRepository(D2 d2) {
+        return new DashboardRepositoryImpl(d2, teiUid, programUid);
     }
 
     @Provides

@@ -40,12 +40,11 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureAc
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.usescases.map.MapSelectorActivity;
 import org.dhis2.usescases.qrCodes.eventsworegistration.QrEventsWORegistrationActivity;
-import org.dhis2.usescases.sms.InputArguments;
-import org.dhis2.usescases.sms.SmsSubmitActivity;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.DialogClickListener;
 import org.dhis2.utils.EventCreationType;
+import org.dhis2.utils.EventMode;
 import org.dhis2.utils.HelpManager;
 import org.dhis2.utils.analytics.AnalyticsConstants;
 import org.dhis2.utils.customviews.CategoryOptionPopUp;
@@ -102,7 +101,6 @@ import static org.dhis2.utils.Constants.TRACKED_ENTITY_INSTANCE;
 import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
 import static org.dhis2.utils.analytics.AnalyticsConstants.CREATE_EVENT;
 import static org.dhis2.utils.analytics.AnalyticsConstants.DELETE_EVENT;
-import static org.dhis2.utils.analytics.AnalyticsConstants.SHARE_EVENT;
 import static org.dhis2.utils.analytics.AnalyticsConstants.SHOW_HELP;
 
 
@@ -485,7 +483,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     public void onEventCreated(String eventUid) {
         showToast(getString(R.string.event_created));
         if (eventCreationType != EventCreationType.SCHEDULE && eventCreationType != EventCreationType.REFERAL) {
-            startFormActivity(eventUid);
+            startFormActivity(eventUid, true);
         } else {
             finish();
         }
@@ -493,13 +491,13 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
     @Override
     public void onEventUpdated(String eventUid) {
-        startFormActivity(eventUid);
+        startFormActivity(eventUid, false);
     }
 
-    private void startFormActivity(String eventUid) {
+    private void startFormActivity(String eventUid, boolean isNew) {
         Intent intent = new Intent(this, EventCaptureActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_FORWARD_RESULT);
-        intent.putExtras(EventCaptureActivity.getActivityBundle(eventUid, programUid));
+        intent.putExtras(EventCaptureActivity.getActivityBundle(eventUid, programUid, isNew ? EventMode.NEW : EventMode.CHECK));
         startActivity(intent);
         finish();
     }
@@ -666,10 +664,6 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         }
 
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(getContext(), R.style.DatePickerTheme);
-                /*.setPositiveButton(R.string.action_accept, (dialog, which) -> {
-                    listener.onDateSet(datePicker, datePicker.getYear(), datePicker.getMonth(), datePicker.getDayOfMonth());
-                })
-                .setNeutralButton(getContext().getResources().getString(R.string.change_calendar), (dialog, which) -> showNativeCalendar(listener));*/
 
         alertDialog.setView(widgetBinding.getRoot());
         Dialog dialog = alertDialog.create();

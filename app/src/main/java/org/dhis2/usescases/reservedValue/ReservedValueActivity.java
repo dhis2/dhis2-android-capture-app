@@ -35,7 +35,7 @@ public class ReservedValueActivity extends ActivityGlobalAbstract implements Res
     }
 
     @Override
-    public void setDataElements(List<ReservedValueModel> reservedValueModels) {
+    public void setReservedValues(List<ReservedValueModel> reservedValueModels) {
         if (reservedBinding.recycler.getAdapter() == null) {
             reservedBinding.recycler.setAdapter(adapter);
         }
@@ -57,11 +57,6 @@ public class ReservedValueActivity extends ActivityGlobalAbstract implements Res
     @Override
     public void onBackClick() {
         super.onBackPressed();
-    }
-
-    @Override
-    public void refreshAdapter() {
-        adapter.notifyDataSetChanged();
     }
 
     @Override

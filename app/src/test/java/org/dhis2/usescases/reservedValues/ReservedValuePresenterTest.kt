@@ -45,7 +45,7 @@ class ReservedValuePresenterTest {
 
         reservedValuePresenter.init()
 
-        verify(view).setDataElements(dataElements?.blockingFirst())
+        verify(view).setReservedValues(dataElements?.blockingFirst())
     }
 
     @Test
