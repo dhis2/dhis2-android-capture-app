@@ -1,5 +1,6 @@
 package org.dhis2.usescases.datasets.datasetDetail
 
+import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
@@ -13,6 +14,7 @@ import org.hisp.dhis.android.core.common.Access
 import org.hisp.dhis.android.core.common.DataAccess
 import org.hisp.dhis.android.core.common.ObjectWithUid
 import org.hisp.dhis.android.core.dataset.DataSet
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
@@ -110,6 +112,80 @@ class DataSetDetailRepositoryTest {
         }
     }
 
+    @Test
+    fun `Should return false if the user does not have orgUnits of type 'data_capture'`() {
+        val dataSet = dummyDataSet()
+        val categoryOptionCombos = dummyCategoryOptionsCombos(true)
+        val orgUnits = mutableListOf<OrganisationUnit>()
+
+        whenever(d2.dataSetModule().dataSets().uid(dataSetUid).get()) doReturn Single.just(dataSet)
+        whenever(
+            d2.categoryModule().categoryOptionCombos().withCategoryOptions().byCategoryComboUid()
+        ) doReturn mock()
+        whenever(
+            d2.categoryModule()
+                .categoryOptionCombos().withCategoryOptions()
+                .byCategoryComboUid().eq("categoryCombo")
+        ) doReturn mock()
+        whenever(
+            d2.categoryModule()
+                .categoryOptionCombos().withCategoryOptions()
+                .byCategoryComboUid().eq("categoryCombo")
+                .get()
+        ) doReturn Single.just(categoryOptionCombos)
+        whenever(
+            d2.organisationUnitModule()
+                .organisationUnits().byDataSetUids(listOf(dataSetUid))
+                .byOrganisationUnitScope(any()).blockingGet()
+        ) doReturn orgUnits
+
+        val testObserver = repository.canWriteAny().test()
+
+        testObserver.assertValueCount(1)
+        testObserver.assertNoErrors()
+        testObserver.assertValueAt(0) {
+            Assert.assertEquals(it, false)
+            true
+        }
+    }
+
+    @Test
+    fun `Should return true when user has all write permissions and orgUnits with correct scope`() {
+        val dataSet = dummyDataSet()
+        val categoryOptionCombos = dummyCategoryOptionsCombos(true)
+        val orgUnits = dummyOrgUnits()
+
+        whenever(d2.dataSetModule().dataSets().uid(dataSetUid).get()) doReturn Single.just(dataSet)
+        whenever(
+            d2.categoryModule().categoryOptionCombos().withCategoryOptions().byCategoryComboUid()
+        ) doReturn mock()
+        whenever(
+            d2.categoryModule()
+                .categoryOptionCombos().withCategoryOptions()
+                .byCategoryComboUid().eq("categoryCombo")
+        ) doReturn mock()
+        whenever(
+            d2.categoryModule()
+                .categoryOptionCombos().withCategoryOptions()
+                .byCategoryComboUid().eq("categoryCombo")
+                .get()
+        ) doReturn Single.just(categoryOptionCombos)
+        whenever(
+            d2.organisationUnitModule()
+                .organisationUnits().byDataSetUids(listOf(dataSetUid))
+                .byOrganisationUnitScope(any()).blockingGet()
+        ) doReturn orgUnits
+
+        val testObserver = repository.canWriteAny().test()
+
+        testObserver.assertValueCount(1)
+        testObserver.assertNoErrors()
+        testObserver.assertValueAt(0) {
+            Assert.assertEquals(it, true)
+            true
+        }
+    }
+
     private fun dummyDataSet(canWrite: Boolean = true) =
         DataSet.builder()
             .uid(dataSetUid)
@@ -153,4 +229,8 @@ class DataSetDetailRepositoryTest {
             )
         return categoryOptions
     }
+    
+    private fun dummyOrgUnits() =
+        mutableListOf(OrganisationUnit.builder().uid("orgUnit").build())
+
 }
