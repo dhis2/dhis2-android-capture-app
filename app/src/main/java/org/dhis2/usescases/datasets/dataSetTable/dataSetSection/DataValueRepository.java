@@ -23,8 +23,6 @@ import io.reactivex.Flowable;
 import io.reactivex.Single;
 
 public interface DataValueRepository {
-    Completable updateValue(DataSetTableModel dataValue);
-
     Flowable<DataSet> getDataSet();
 
     Flowable<List<CategoryCombo>> getCatCombo(String section);

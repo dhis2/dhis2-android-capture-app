@@ -28,37 +28,37 @@
 
 package org.dhis2.usescases.datasets.datasetDetail;
 
-import org.dhis2.data.dagger.PerActivity;
-import org.dhis2.data.schedulers.SchedulerProvider;
+import org.dhis2.data.tuples.Pair;
+import org.dhis2.usescases.general.AbstractActivityContracts;
 import org.dhis2.utils.filters.FilterManager;
-import org.hisp.dhis.android.core.D2;
+import org.hisp.dhis.android.core.category.CategoryCombo;
+import org.hisp.dhis.android.core.category.CategoryOptionCombo;
 
-import dagger.Module;
-import dagger.Provides;
+import java.util.List;
 
-@PerActivity
-@Module
-public class DataSetDetailModule {
+interface DataSetDetailView extends AbstractActivityContracts.View {
 
-    private DataSetDetailView view;
-    private final String dataSetUid;
+    void setData(List<DataSetDetailModel> dataSetDetailModels);
 
-    public DataSetDetailModule(DataSetDetailView view, String dataSetUid) {
-        this.view = view;
-        this.dataSetUid = dataSetUid;
-    }
+    void renderError(String message);
 
-    @Provides
-    @PerActivity
-    DataSetDetailPresenter providesPresenter(DataSetDetailRepository dataSetDetailRepository,
-                                             SchedulerProvider schedulerProvider,
-                                             FilterManager filterManager) {
-        return new DataSetDetailPresenter(view, dataSetDetailRepository, schedulerProvider, filterManager);
-    }
+    void showHideFilter();
 
-    @Provides
-    @PerActivity
-    DataSetDetailRepository eventDetailRepository(D2 d2) {
-        return new DataSetDetailRepositoryImpl(dataSetUid, d2);
-    }
+    void clearFilters();
+
+    void updateFilters(int totalFilters);
+
+    void openOrgUnitTreeSelector();
+
+    void showPeriodRequest(FilterManager.PeriodRequest periodRequest);
+
+    void setCatOptionComboFilter(Pair<CategoryCombo, List<CategoryOptionCombo>> categoryOptionCombos);
+
+    void setWritePermission(Boolean canWrite);
+
+    void startNewDataSet();
+
+    void openDataSet(DataSetDetailModel dataSet);
+
+    void showSyncDialog(DataSetDetailModel dataSet);
 }
