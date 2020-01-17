@@ -43,11 +43,13 @@ import org.dhis2.utils.analytics.AnalyticsHelper;
 import org.dhis2.utils.customviews.CoordinatesView;
 import org.dhis2.utils.customviews.CustomDialog;
 import org.dhis2.utils.customviews.PictureView;
+import org.dhis2.utils.customviews.ScanTextView;
 import org.dhis2.utils.granularsync.SyncStatusDialog;
 import org.dhis2.utils.session.PinDialog;
 import org.hisp.dhis.android.core.arch.helpers.GeometryHelper;
 import org.hisp.dhis.android.core.common.FeatureType;
 import org.hisp.dhis.android.core.common.Geometry;
+import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -70,13 +72,14 @@ import static org.dhis2.utils.session.PinDialogKt.PIN_DIALOG_TAG;
 
 public abstract class ActivityGlobalAbstract extends AppCompatActivity
         implements AbstractActivityContracts.View, CoordinatesView.OnMapPositionClick,
-        PictureView.OnIntentSelected {
+        PictureView.OnIntentSelected, ScanTextView.OnScanClick {
 
     private BehaviorSubject<Status> lifeCycleObservable = BehaviorSubject.create();
     private CoordinatesView coordinatesView;
     public String uuid;
     @Inject
     public AnalyticsHelper analyticsHelper;
+    public ScanTextView scanTextView;
 
     public enum Status {
         ON_PAUSE,
@@ -405,6 +408,12 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity
             ((EventCaptureActivity) getContext()).startActivityForResult(intent, request);
         else
             startActivityForResult(intent, request);
+    }
+
+    @Override
+    public void onsScanClicked(Intent intent, @NotNull ScanTextView scanTextView) {
+        this.scanTextView = scanTextView;
+        startActivityForResult(intent, Constants.RQ_QR_SCANNER);
     }
 
     @Override

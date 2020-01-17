@@ -35,7 +35,8 @@
         android:layout_margin="5dp"
         android:clickable="true"
         android:focusable="true"
-        android:padding="5dp">
+        android:padding="5dp"
+        tools:background="?attr/colorPrimary">
 
         <ImageView
             android:id="@+id/renderImage"
@@ -59,6 +60,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_marginEnd="8dp"
+                app:tint="?colorAccent"
                 tools:srcCompat="@drawable/ic_form_barcode" />
 
             <com.google.android.material.textfield.TextInputLayout
@@ -66,18 +68,17 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:theme="@style/loginInputText"
+                android:theme="@style/loginInputTextAccent"
                 tools:hint="hint">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/input_editText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:drawableTint="?colorPrimary"
                     android:imeOptions="actionNext"
                     android:maxLines="4"
                     android:textAlignment="textStart"
-                    android:textColor="@color/text_black_333"
+                    android:textColor="?colorAccent"
                     android:textSize="15sp" />
 
             </com.google.android.material.textfield.TextInputLayout>
@@ -87,15 +88,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:visibility="gone"
-                app:srcCompat="@drawable/ic_close"
-                app:tint="@color/colorGreyDefault" />
+                app:srcCompat="@drawable/ic_clear" />
 
             <ImageView
                 android:id="@+id/descriptionLabel"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 app:srcCompat="@drawable/ic_info_outline"
-                app:tint="?colorPrimary" />
+                app:tint="?colorAccent" />
         </LinearLayout>
     </RelativeLayout>
 </layout>

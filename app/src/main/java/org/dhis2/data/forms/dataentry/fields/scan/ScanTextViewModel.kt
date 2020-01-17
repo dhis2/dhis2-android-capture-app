@@ -21,7 +21,7 @@ abstract class ScanTextViewModel : FieldViewModel() {
             editable: Boolean?,
             description: String?,
             objectStyle: ObjectStyle?,
-            fieldRendering : ValueTypeDeviceRendering?
+            fieldRendering: ValueTypeDeviceRendering?
         ): FieldViewModel =
             AutoValue_ScanTextViewModel(
                 id,

@@ -7,16 +7,16 @@ import org.dhis2.databinding.FormScanBinding
 import org.dhis2.utils.customviews.ScanTextView
 
 class ScanTextHolder(
-    binding : FormScanBinding,
+    binding: FormScanBinding,
     val processor: FlowableProcessor<RowAction>
 ) : FormViewHolder(binding) {
-
 
     private lateinit var model: ScanTextViewModel
     private var scanTextView: ScanTextView = binding.scanTextView
 
     fun update(viewModel: ScanTextViewModel) {
         this.model = viewModel
+        label = StringBuilder().append(viewModel.label())
         scanTextView.run {
             setText(model.value())
             setRenderingType(model.fieldRendering?.type())

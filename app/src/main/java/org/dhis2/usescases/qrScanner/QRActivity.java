@@ -43,6 +43,7 @@ public class QRActivity extends ActivityGlobalAbstract implements ZXingScannerVi
         mScannerView.setAutoFocus(true);
         ArrayList<BarcodeFormat> formats = new ArrayList<>();
         formats.add(BarcodeFormat.QR_CODE);
+        formats.add(BarcodeFormat.CODE_128);
         mScannerView.setFormats(formats);
     }
 

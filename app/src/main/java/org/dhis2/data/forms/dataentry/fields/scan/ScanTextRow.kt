@@ -33,5 +33,4 @@ class ScanTextRow(
     override fun deAttach(viewHolder: ScanTextHolder) {
         viewHolder.dispose()
     }
-
 }
