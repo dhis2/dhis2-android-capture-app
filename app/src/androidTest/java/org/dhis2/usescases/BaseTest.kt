@@ -3,6 +3,7 @@ package org.dhis2.usescases
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.os.Build
+import android.util.Log
 import androidx.test.platform.app.InstrumentationRegistry
 import org.dhis2.DisableAnimations
 import org.junit.After
@@ -23,7 +24,7 @@ open class BaseTest {
     @Before
     @Throws(Exception::class)
     open fun setUp() {
-     //   populateDatabaseFromAssetsIfNeeded()
+        populateDatabaseFromAssetsIfNeeded()
      //   allowPermissions()
         setupMockServerIfNeeded()
         injectDependencies()
@@ -43,10 +44,13 @@ open class BaseTest {
         val databasePath = context?.applicationInfo?.dataDir + "/databases"
         val file = File("$databasePath/$DB_NAME")
 
-        if (file.exists()) return
+     /*   if (file.exists()){
+            Log.i("TEST","DB ALREADY LOADED")
+            return
+        } */
 
         try {
-            val input = context!!.assets.open("$databasePath/$DB_NAME")
+            val input = context!!.assets.open("databases/$DB_NAME")
             val output = FileOutputStream("$databasePath/$DB_NAME")
 
             writeExtractedFileToDisk(input, output)
