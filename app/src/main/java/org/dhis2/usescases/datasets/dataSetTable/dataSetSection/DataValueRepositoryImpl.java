@@ -97,28 +97,11 @@ public class DataValueRepositoryImpl implements DataValueRepository {
         }
         return d2.categoryModule().categoryCombos().byUid().in(categoryCombos).withCategories().withCategoryOptionCombos().orderByDisplayName(RepositoryScope.OrderByDirection.ASC).get().toFlowable();
 
-}
+    }
 
     @Override
     public Flowable<DataSet> getDataSet() {
         return Flowable.fromCallable(() -> d2.dataSetModule().dataSets().byUid().eq(dataSetUid).one().blockingGet());
-
-    }
-
-    public Completable updateValue(DataSetTableModel dataValue) {
-
-        DataValueObjectRepository dataValueObject = d2.dataValueModule().dataValues().value(
-                dataValue.period(),
-                dataValue.organisationUnit(),
-                dataValue.dataElement(),
-                dataValue.categoryOptionCombo(),
-                dataValue.attributeOptionCombo()
-        );
-
-        if (dataValue.value() != null && !dataValue.value().isEmpty())
-            return dataValueObject.set(dataValue.value());
-        else
-            return dataValueObject.delete();
 
     }
 
@@ -231,12 +214,12 @@ public class DataValueRepositoryImpl implements DataValueRepository {
 
                     String value = dataValue.value();
 
-                    if(dataElement.optionSetUid() != null &&
-                            !dataElement.optionSetUid().isEmpty() && !isEmpty(value)){
+                    if (dataElement.optionSetUid() != null &&
+                            !dataElement.optionSetUid().isEmpty() && !isEmpty(value)) {
                         Option option = d2.optionModule().options()
                                 .byOptionSetUid().eq(dataElement.optionSetUid())
                                 .byCode().eq(value).one().blockingGet();
-                        if(option != null){
+                        if (option != null) {
                             value = option.displayName();
                         }
                     }
@@ -258,7 +241,7 @@ public class DataValueRepositoryImpl implements DataValueRepository {
     public Flowable<List<DataElementOperand>> getGreyFields(String sectionName) {
         if (!sectionName.isEmpty() && !sectionName.equals("NO_SECTION"))
             return d2.dataSetModule().sections().withGreyedFields().byDataSetUid().eq(dataSetUid).byDisplayName().eq(sectionName).one().get()
-                .map(Section::greyedFields).toFlowable();
+                    .map(Section::greyedFields).toFlowable();
         else
             return Flowable.just(new ArrayList<>());
     }
@@ -283,7 +266,7 @@ public class DataValueRepositoryImpl implements DataValueRepository {
 
         ContentValues contentValues = new ContentValues();
         contentValues.put(DataSetCompleteRegistrationTableInfo.Columns.STATE,
-                completeRegistration!= null? State.TO_UPDATE.name(): State.TO_POST.name());
+                completeRegistration != null ? State.TO_UPDATE.name() : State.TO_POST.name());
         contentValues.put(DataSetCompleteRegistrationTableInfo.Columns.DELETED, false);
         String completeDate = DateUtils.databaseDateFormat().format(Calendar.getInstance().getTime());
         contentValues.put("date", completeDate);
@@ -316,7 +299,7 @@ public class DataValueRepositoryImpl implements DataValueRepository {
                 .byDataSetUid().eq(dataSetUid)
                 .one().blockingGet();
 
-        if(completeRegistration != null && (completeRegistration.state().equals(State.SYNCED) ||
+        if (completeRegistration != null && (completeRegistration.state().equals(State.SYNCED) ||
                 completeRegistration.state().equals(State.TO_UPDATE))) {
             String where = "period = ? AND dataSet = ? AND attributeOptionCombo = ? and organisationUnit = ? ";
             String[] values = {periodInitialDate, dataSetUid, catCombo, orgUnitUid};
@@ -328,7 +311,7 @@ public class DataValueRepositoryImpl implements DataValueRepository {
             contentValues.put("date", completeDate);
 
             return Flowable.just(briteDatabase.update(DataSetCompleteRegistration.class.getSimpleName(), contentValues, where, values) > 0);
-        }else {
+        } else {
             String where = "period = ? AND dataSet = ? AND attributeOptionCombo = ? and organisationUnit = ? ";
             String[] values = {periodInitialDate, dataSetUid, catCombo, orgUnitUid};
 
@@ -369,29 +352,29 @@ public class DataValueRepositoryImpl implements DataValueRepository {
             List<DataElement> dataElementsOverride = new ArrayList<>();
             List<DataSetElement> dataSetElements = d2.dataSetModule().dataSets().withDataSetElements().uid(dataSetUid).blockingGet().dataSetElements();
 
-            for(DataElement de: listDataElements) {
+            for (DataElement de : listDataElements) {
                 DataElement override = transformDataElement(de, dataSetElements);
-                if(override.categoryComboUid().equals(categoryCombo.uid()))
+                if (override.categoryComboUid().equals(categoryCombo.uid()))
                     dataElementsOverride.add(override);
             }
 
             return Flowable.just(dataElementsOverride);
-        }else {
+        } else {
             List<String> dataElementUids = new ArrayList<>();
             List<DataSetElement> dataSetElements = d2.dataSetModule().dataSets().withDataSetElements().byUid().eq(dataSetUid).one().blockingGet().dataSetElements();
             for (DataSetElement dataSetElement : dataSetElements) {
-                if(dataSetElement.categoryCombo() != null && categoryCombo.uid().equals(dataSetElement.categoryCombo().uid()))
+                if (dataSetElement.categoryCombo() != null && categoryCombo.uid().equals(dataSetElement.categoryCombo().uid()))
                     dataElementUids.add(dataSetElement.dataElement().uid());
-                else{
+                else {
                     String uid = d2.dataElementModule().dataElements().uid(dataSetElement.dataElement().uid()).blockingGet().categoryComboUid();
-                    if(categoryCombo.uid().equals(uid))
+                    if (categoryCombo.uid().equals(uid))
                         dataElementUids.add(dataSetElement.dataElement().uid());
                 }
             }
             return d2.dataElementModule().dataElements()
-                        .byUid().in(dataElementUids)
-                        .orderByName(RepositoryScope.OrderByDirection.ASC)
-                        .get().toFlowable();
+                    .byUid().in(dataElementUids)
+                    .orderByName(RepositoryScope.OrderByDirection.ASC)
+                    .get().toFlowable();
         }
     }
 
@@ -447,7 +430,7 @@ public class DataValueRepositoryImpl implements DataValueRepository {
                                                                     List<List<CategoryOption>> catOptionsList) {
         List<CategoryOptionCombo> catOptionCombos = new ArrayList<>();
 
-        for(List<CategoryOption> catOptions: catOptionsList){
+        for (List<CategoryOption> catOptions : catOptionsList) {
             catOptionCombos.addAll(d2.categoryModule().categoryOptionCombos()
                     .byCategoryOptions(UidsHelper.getUidsList(catOptions))
                     .byCategoryComboUid().eq(catComboUid)

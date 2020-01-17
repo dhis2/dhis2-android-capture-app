@@ -4,6 +4,7 @@ import android.text.TextUtils.isEmpty
 import io.reactivex.Flowable
 import io.reactivex.Single
 import io.reactivex.functions.Function5
+import org.dhis2.Bindings.blockingGetCheck
 import java.util.Calendar
 import java.util.Date
 import org.dhis2.data.forms.RulesRepository
@@ -45,11 +46,11 @@ class EnrollmentFormRepositoryImpl(
     init {
         this.cachedRuleEngineFlowable =
             Single.zip<List<Rule>,
-                List<RuleVariable>,
-                List<RuleEvent>,
-                Map<String, String>,
-                Map<String, List<String>>,
-                RuleEngine>(
+                    List<RuleVariable>,
+                    List<RuleEvent>,
+                    Map<String, String>,
+                    Map<String, List<String>>,
+                    RuleEngine>(
                 rulesRepository.rulesNew(programUid),
                 rulesRepository.ruleVariables(programUid),
                 rulesRepository.enrollmentEvents(
@@ -109,12 +110,12 @@ class EnrollmentFormRepositoryImpl(
                     checkOpenAfterEnrollment()
                 }
             }.map {
-            if (!isEmpty(it.second)) {
-                checkEventToOpen(it)
-            } else {
-                it
+                if (!isEmpty(it.second)) {
+                    checkEventToOpen(it)
+                } else {
+                    it
+                }
             }
-        }
     }
 
     private fun getFirstStage(): Single<Pair<String, String>> {
@@ -255,46 +256,47 @@ class EnrollmentFormRepositoryImpl(
             .map { program ->
                 d2.programModule().programTrackedEntityAttributes().byProgram().eq(program.uid())
                     .blockingGet().filter {
-                    d2.trackedEntityModule().trackedEntityAttributeValues()
-                        .value(
-                            it.trackedEntityAttribute()!!.uid(),
-                            enrollmentRepository.blockingGet().trackedEntityInstance()
-                        )
-                        .blockingExists()
-                }.map {
-                    val value = d2.trackedEntityModule().trackedEntityAttributeValues()
-                        .value(
-                            it.trackedEntityAttribute()!!.uid(),
-                            enrollmentRepository.blockingGet().trackedEntityInstance()
-                        )
-                        .blockingGet()
-                    val attr = d2.trackedEntityModule().trackedEntityAttributes()
-                        .uid(it.trackedEntityAttribute()!!.uid())
-                        .blockingGet()
-                    val variable = d2.programModule().programRuleVariables()
-                        .byProgramUid().eq(programUid)
-                        .byTrackedEntityAttributeUid().eq(attr.uid())
-                        .one()
-                        .blockingGet()
+                        d2.trackedEntityModule().trackedEntityAttributeValues()
+                            .value(
+                                it.trackedEntityAttribute()!!.uid(),
+                                enrollmentRepository.blockingGet().trackedEntityInstance()
+                            )
+                            .blockingExists()
+                    }.mapNotNull {
+                        d2.trackedEntityModule().trackedEntityAttributeValues()
+                            .value(
+                                it.trackedEntityAttribute()!!.uid(),
+                                enrollmentRepository.blockingGet().trackedEntityInstance()
+                            )
+                            .blockingGetCheck(d2, it.trackedEntityAttribute()!!.uid())
+                    }
+                    .map {
+                        val attr = d2.trackedEntityModule().trackedEntityAttributes()
+                            .uid(it.trackedEntityAttribute())
+                            .blockingGet()
+                        val variable = d2.programModule().programRuleVariables()
+                            .byProgramUid().eq(programUid)
+                            .byTrackedEntityAttributeUid().eq(attr.uid())
+                            .one()
+                            .blockingGet()
 
-                    val finalValue =
-                        if (variable != null &&
-                            variable.useCodeForOptionSet() != true &&
-                            attr.optionSet() != null
-                        ) {
-                            d2
-                                .optionModule()
-                                .options()
-                                .byOptionSetUid().eq(attr.optionSet()!!.uid())
-                                .byCode().eq(value.value()!!).one().blockingGet().name()!!
-                        } else if (attr.valueType()?.isNumeric!!) {
-                            value.value()?.toFloat().toString()
-                        } else {
-                            value.value()!!
-                        }
+                        val finalValue =
+                            if (variable != null &&
+                                variable.useCodeForOptionSet() != true &&
+                                attr.optionSet() != null
+                            ) {
+                                d2.optionModule()
+                                    .options()
+                                    .byOptionSetUid().eq(attr.optionSet()!!.uid())
+                                    .byCode().eq(it.value()!!).one().blockingGet().name()!!
+                            } else if (attr.valueType()?.isNumeric!!) {
+                                it.value()?.toFloat().toString()
+                            } else {
+                                it.value()!!
+                            }
 
-                    RuleAttributeValue.create(attr.uid(), finalValue)
-                }
+                        RuleAttributeValue.create(attr.uid(), finalValue)
+                    }
             }.toFlowable()
     }
 }
