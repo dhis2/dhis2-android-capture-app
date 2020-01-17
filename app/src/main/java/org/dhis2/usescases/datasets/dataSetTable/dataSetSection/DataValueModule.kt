@@ -1,6 +1,5 @@
 package org.dhis2.usescases.datasets.dataSetTable.dataSetSection
 
-import com.squareup.sqlbrite2.BriteDatabase
 import dagger.Module
 import dagger.Provides
 import org.dhis2.data.dagger.PerFragment
@@ -42,8 +41,8 @@ class DataValueModule(
 
     @Provides
     @PerFragment
-    internal fun DataValueRepository(d2: D2, briteDatabase: BriteDatabase): DataValueRepository {
-        return DataValueRepositoryImpl(d2, briteDatabase, dataSetUid)
+    internal fun DataValueRepository(d2: D2): DataValueRepository {
+        return DataValueRepositoryImpl(d2, dataSetUid)
     }
 
     @Provides

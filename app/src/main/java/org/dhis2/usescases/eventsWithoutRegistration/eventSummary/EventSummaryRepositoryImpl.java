@@ -1,12 +1,9 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventSummary;
 
 import android.content.Context;
-import android.database.Cursor;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
-import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.dhis2.R;
 import org.dhis2.data.forms.FormRepository;
@@ -53,9 +50,6 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
     private final FieldViewModelFactory fieldFactory;
 
     @NonNull
-    private final BriteDatabase briteDatabase;
-
-    @NonNull
     private final FormRepository formRepository;
 
     @Nullable
@@ -64,11 +58,9 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
     private final D2 d2;
 
     public EventSummaryRepositoryImpl(@NonNull Context context,
-                                      @NonNull BriteDatabase briteDatabase,
                                       @NonNull FormRepository formRepository,
                                       @Nullable String eventUid,
                                       @NonNull D2 d2) {
-        this.briteDatabase = briteDatabase;
         this.formRepository = formRepository;
         this.eventUid = eventUid;
         this.d2 = d2;

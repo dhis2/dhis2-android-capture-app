@@ -1,8 +1,6 @@
 package org.dhis2.usescases.qrReader;
 
 import org.dhis2.data.dagger.PerFragment;
-import com.squareup.sqlbrite2.BriteDatabase;
-
 import org.dhis2.data.schedulers.SchedulerProvider;
 import org.hisp.dhis.android.core.D2;
 
@@ -18,7 +16,7 @@ public class QrReaderModule {
 
     @Provides
     @PerFragment
-    QrReaderContracts.Presenter providePresenter(BriteDatabase briteDatabase, D2 d2, SchedulerProvider schedulerProvider) {
-        return new QrReaderPresenterImpl(briteDatabase, d2, schedulerProvider);
+    QrReaderContracts.Presenter providePresenter(D2 d2, SchedulerProvider schedulerProvider) {
+        return new QrReaderPresenterImpl(d2, schedulerProvider);
     }
 }

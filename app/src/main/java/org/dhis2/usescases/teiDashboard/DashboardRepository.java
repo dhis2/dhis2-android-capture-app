@@ -50,22 +50,17 @@ public interface DashboardRepository {
 
     boolean setFollowUp(String enrollmentUid);
 
-    Flowable<List<Note>> getNotes(String programUid, String teUid);
-
     Consumer<Pair<String, Boolean>> handleNote();
 
     Observable<List<TrackedEntityAttributeValue>> mainTrackedEntityAttributes(String teiUid);
 
     Event updateState(Event event, EventStatus newStatus);
 
-    Flowable<Long> updateEnrollmentStatus(@NonNull String uid, @NonNull EnrollmentStatus value);
+    Flowable<Enrollment> completeEnrollment(@NonNull String enrollmentUid);
 
     Observable<ProgramStage> displayGenerateEvent(String eventUid);
 
     Observable<Trio<ProgramIndicator, String, String>> getLegendColorForIndicator(ProgramIndicator programIndicator, String value);
-
-
-    void updateTeiState();
 
     Integer getObjectStyle(Context context, String uid);
 
@@ -76,8 +71,6 @@ public interface DashboardRepository {
     Observable<List<CategoryOptionCombo>> catOptionCombos(String catComboUid);
 
     void setDefaultCatOptCombToEvent(String eventUid);
-
-    Observable<String> getAttributeImage(String uid);
 
     // FROM METADATA REPOSITORY
     Observable<TrackedEntityInstance> getTrackedEntityInstance(String teiUid);
