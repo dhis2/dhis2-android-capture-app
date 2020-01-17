@@ -1,7 +1,7 @@
 ---
 title: 'DHIS 2 Android App Implementation Guidelines'
 ---
-
+!INCLUDE "content/common/about-this-android-guide.md"
 !INCLUDE "content/implementation-guide/executive-summary.md"
 !INCLUDE "content/implementation-guide/document-map.md"
 !INCLUDE "content/implementation-guide/dhis2-capture-android-overview.md"
