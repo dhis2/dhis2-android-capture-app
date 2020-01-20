@@ -121,10 +121,10 @@ public class DataSetDetailRepositoryImpl implements DataSetDetailRepository {
 
                                     if (canWriteCatOption) {
 
-                                        List<OrganisationUnit> organisationUnits = d2.organisationUnitModule().organisationUnits().byDataSetUids(Collections.singletonList(dataSetUid))
-                                                .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE).blockingGet();
+                                        int countOrgUnits = d2.organisationUnitModule().organisationUnits().byDataSetUids(Collections.singletonList(dataSetUid))
+                                                .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE).blockingCount();
 
-                                        canWriteOrgUnit = !organisationUnits.isEmpty();
+                                        canWriteOrgUnit = countOrgUnits != 0;
 
                                     }
 

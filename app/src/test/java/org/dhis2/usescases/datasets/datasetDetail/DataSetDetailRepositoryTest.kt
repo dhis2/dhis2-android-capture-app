@@ -14,7 +14,10 @@ import org.hisp.dhis.android.core.common.Access
 import org.hisp.dhis.android.core.common.DataAccess
 import org.hisp.dhis.android.core.common.ObjectWithUid
 import org.hisp.dhis.android.core.dataset.DataSet
+import org.hisp.dhis.android.core.dataset.DataSetInstance
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
+import org.hisp.dhis.android.core.period.Period
+import org.hisp.dhis.android.core.period.PeriodType
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
@@ -116,7 +119,6 @@ class DataSetDetailRepositoryTest {
     fun `Should return false if the user does not have orgUnits of type 'data_capture'`() {
         val dataSet = dummyDataSet()
         val categoryOptionCombos = dummyCategoryOptionsCombos(true)
-        val orgUnits = mutableListOf<OrganisationUnit>()
 
         whenever(d2.dataSetModule().dataSets().uid(dataSetUid).get()) doReturn Single.just(dataSet)
         whenever(
@@ -136,8 +138,8 @@ class DataSetDetailRepositoryTest {
         whenever(
             d2.organisationUnitModule()
                 .organisationUnits().byDataSetUids(listOf(dataSetUid))
-                .byOrganisationUnitScope(any()).blockingGet()
-        ) doReturn orgUnits
+                .byOrganisationUnitScope(any()).blockingCount()
+        ) doReturn 0
 
         val testObserver = repository.canWriteAny().test()
 
@@ -153,7 +155,6 @@ class DataSetDetailRepositoryTest {
     fun `Should return true when user has all write permissions and orgUnits with correct scope`() {
         val dataSet = dummyDataSet()
         val categoryOptionCombos = dummyCategoryOptionsCombos(true)
-        val orgUnits = dummyOrgUnits()
 
         whenever(d2.dataSetModule().dataSets().uid(dataSetUid).get()) doReturn Single.just(dataSet)
         whenever(
@@ -173,8 +174,8 @@ class DataSetDetailRepositoryTest {
         whenever(
             d2.organisationUnitModule()
                 .organisationUnits().byDataSetUids(listOf(dataSetUid))
-                .byOrganisationUnitScope(any()).blockingGet()
-        ) doReturn orgUnits
+                .byOrganisationUnitScope(any()).blockingCount()
+        ) doReturn 1
 
         val testObserver = repository.canWriteAny().test()
 
@@ -229,7 +230,23 @@ class DataSetDetailRepositoryTest {
             )
         return categoryOptions
     }
-    
+
+    private fun dummyDataSetInstance() =
+        DataSetInstance.builder()
+            .dataSetUid(dataSetUid)
+            .dataSetDisplayName("dataSetName")
+            .organisationUnitUid("orgUnit")
+            .attributeOptionComboUid("attrOptionCombo")
+            .period("period")
+            .organisationUnitDisplayName("orgUnitName")
+            .attributeOptionComboDisplayName("attrOptionComboName")
+            .valueCount(1)
+            .completed(true)
+            .periodType(PeriodType.Daily)
+            .build()
+
+    private fun dummyPeriod() = Period.builder().periodId("periodId").build()
+
     private fun dummyOrgUnits() =
         mutableListOf(OrganisationUnit.builder().uid("orgUnit").build())
 
