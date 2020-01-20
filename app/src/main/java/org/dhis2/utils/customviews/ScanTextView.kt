@@ -138,15 +138,7 @@ class ScanTextView : FieldLayout {
     }
 
     fun setRenderingType(type: ValueTypeRenderingType?) {
-        when (type) {
-            ValueTypeRenderingType.BAR_CODE -> {
-                descIcon.setImageResource(R.drawable.ic_form_barcode)
-            }
-            ValueTypeRenderingType.QR -> {
-                descIcon.setImageResource(R.drawable.ic_form_qr)
-            }
-            else -> {}
-        }
+        //TODO: Change descIcon depending on type
     }
     interface OnScanClick {
         fun onsScanClicked(intent: Intent, scanTextView: ScanTextView)
