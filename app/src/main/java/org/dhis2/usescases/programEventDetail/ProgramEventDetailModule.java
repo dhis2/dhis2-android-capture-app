@@ -2,8 +2,6 @@ package org.dhis2.usescases.programEventDetail;
 
 import androidx.annotation.NonNull;
 
-import com.squareup.sqlbrite2.BriteDatabase;
-
 import org.dhis2.data.dagger.PerActivity;
 import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.utils.filters.FilterManager;
@@ -49,7 +47,7 @@ public class ProgramEventDetailModule {
 
     @Provides
     @PerActivity
-    ProgramEventDetailRepository eventDetailRepository(BriteDatabase briteDatabase, D2 d2) {
-        return new ProgramEventDetailRepositoryImpl(programUid,briteDatabase, d2);
+    ProgramEventDetailRepository eventDetailRepository(D2 d2) {
+        return new ProgramEventDetailRepositoryImpl(programUid, d2);
     }
 }

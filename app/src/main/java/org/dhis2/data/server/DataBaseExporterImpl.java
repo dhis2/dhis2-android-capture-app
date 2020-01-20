@@ -33,7 +33,7 @@ public class DataBaseExporterImpl implements DataBaseExporter {
         return Flowable.just(dataJson)
                 .flatMap(jsonObject ->
                         Flowable.fromCallable(() -> {
-                            Cursor cursor = D2Manager.getD2().databaseAdapter().database().rawQuery("SELECT name FROM sqlite_master WHERE type='table'", null);
+                            Cursor cursor = D2Manager.getD2().databaseAdapter().rawQuery("SELECT name FROM sqlite_master WHERE type='table'", null);
                             cursor.moveToFirst();
                             List<String> tableNames = new ArrayList<>();
                             while (!cursor.isAfterLast()) {
@@ -45,7 +45,7 @@ public class DataBaseExporterImpl implements DataBaseExporter {
                         })
                                 .flatMapIterable(tableNames -> tableNames)
                                 .map(table -> {
-                                    Cursor cursor = D2Manager.getD2().databaseAdapter().database().rawQuery("SELECT * FROM " + table, null);
+                                    Cursor cursor = D2Manager.getD2().databaseAdapter().rawQuery("SELECT * FROM " + table, null);
                                     cursor.moveToFirst();
                                     JSONArray result = new JSONArray();
                                     while (!cursor.isAfterLast()) {

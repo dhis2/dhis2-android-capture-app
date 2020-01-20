@@ -24,7 +24,6 @@ import com.mapbox.mapboxsdk.Mapbox;
 import org.dhis2.data.dagger.PerActivity;
 import org.dhis2.data.dagger.PerServer;
 import org.dhis2.data.dagger.PerUser;
-import org.dhis2.data.database.DbModule;
 import org.dhis2.data.prefs.Preference;
 import org.dhis2.data.prefs.PreferenceModule;
 import org.dhis2.data.schedulers.SchedulerModule;
@@ -32,7 +31,6 @@ import org.dhis2.data.schedulers.SchedulersProviderImpl;
 import org.dhis2.data.server.ServerComponent;
 import org.dhis2.data.server.ServerModule;
 import org.dhis2.data.server.UserManager;
-import org.dhis2.data.service.workManager.WorkManagerController;
 import org.dhis2.data.service.workManager.WorkManagerModule;
 import org.dhis2.data.user.UserComponent;
 import org.dhis2.data.user.UserModule;
@@ -141,7 +139,7 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
     protected void setUpServerComponent() {
         boolean isLogged = D2Manager.blockingInstantiateD2(ServerModule.getD2Configuration(this)).userModule().isLogged().blockingGet();
 
-        serverComponent = appComponent.plus(new ServerModule(), new DbModule(DATABASE_NAME));
+        serverComponent = appComponent.plus(new ServerModule());
 
         if (isLogged)
             setUpUserComponent();
@@ -204,7 +202,7 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
     @Override
     public ServerComponent createServerComponent() {
         if (serverComponent == null)
-            serverComponent = appComponent.plus(new ServerModule(), new DbModule(DATABASE_NAME));
+            serverComponent = appComponent.plus(new ServerModule());
         return serverComponent;
 
     }

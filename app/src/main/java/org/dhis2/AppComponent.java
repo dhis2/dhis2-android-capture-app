@@ -1,6 +1,5 @@
 package org.dhis2;
 
-import org.dhis2.data.database.DbModule;
 import org.dhis2.data.prefs.PreferenceModule;
 import org.dhis2.data.prefs.PreferenceProvider;
 import org.dhis2.data.schedulers.SchedulerModule;
@@ -52,7 +51,7 @@ public interface AppComponent {
     void inject(App app);
 
     //sub-components
-    ServerComponent plus(ServerModule serverModule, DbModule dbModule);
+    ServerComponent plus(ServerModule serverModule);
 
     SplashComponent plus(SplashModule module);
 

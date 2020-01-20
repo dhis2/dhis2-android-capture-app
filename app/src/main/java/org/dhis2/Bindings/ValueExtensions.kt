@@ -24,20 +24,24 @@ fun TrackedEntityAttributeValue.userFriendlyValue(d2: D2): String? {
     }
 }
 
-fun TrackedEntityDataValue.userFriendlyValue(d2: D2): String? {
-    if (value().isNullOrEmpty())
-        return value()
-
-    val dataElement = d2.dataElementModule().dataElements()
-        .uid(dataElement())
-        .blockingGet()
-
-    if (check(d2, dataElement.valueType(), dataElement.optionSet()?.uid(), value()!!)) {
-        dataElement.optionSet()?.let {
-            return checkOptionSetValue(d2, it.uid(), value()!!)
-        } ?: return checkValueTypeValue(d2, dataElement.valueType(), value()!!)
-    } else {
+fun TrackedEntityDataValue?.userFriendlyValue(d2: D2): String? {
+    if (this == null) {
         return null
+    } else {
+        if (value().isNullOrEmpty())
+            return value()
+
+        val dataElement = d2.dataElementModule().dataElements()
+            .uid(dataElement())
+            .blockingGet()
+
+        if (check(d2, dataElement.valueType(), dataElement.optionSet()?.uid(), value()!!)) {
+            dataElement.optionSet()?.let {
+                return checkOptionSetValue(d2, it.uid(), value()!!)
+            } ?: return checkValueTypeValue(d2, dataElement.valueType(), value()!!)
+        } else {
+            return null
+        }
     }
 }
 
