@@ -445,7 +445,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     public void onFabClick(View view, boolean needsSearch) {
         if (!needsSearch)
             onEnrollClick(view);
-        else {
+        else if (!queryData.isEmpty()){
             this.view.analyticsHelper().setEvent(SEARCH_TEI, CLICK, SEARCH_TEI);
             this.view.clearData();
             this.view.setFabIcon(false);
