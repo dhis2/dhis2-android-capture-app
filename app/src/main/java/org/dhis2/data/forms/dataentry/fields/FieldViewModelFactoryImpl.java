@@ -80,14 +80,11 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
                                  @Nullable String description, @Nullable ValueTypeDeviceRendering fieldRendering, @Nullable Integer optionCount, ObjectStyle objectStyle, @Nullable String fieldMask) {
         isNull(type, "type must be supplied");
 
-        fieldRendering = ValueTypeDeviceRendering.builder().type(ValueTypeRenderingType.BAR_CODE).build();
         if (!isEmpty(optionSet)) {
             if (renderingType == null || renderingType == ProgramStageSectionRenderingType.LISTING){
-                if(fieldRendering != null && fieldRendering.type().equals(ValueTypeRenderingType.QR) || fieldRendering.type().equals(ValueTypeRenderingType.BAR_CODE)) {
-                    return ScanTextViewModel.create(id, label, mandatory, value, section, editable, description, objectStyle, fieldRendering);
-                } else {
-                    return SpinnerViewModel.create(id, label, hintFilterOptions, mandatory, optionSet, value, section, editable, description, optionCount, objectStyle);
-                }
+                //TODO: Check if fieldRendering.type() is equal to QR or BARCODE to return a ScanTextViewModel
+                return SpinnerViewModel.create(id, label, hintFilterOptions, mandatory, optionSet, value, section, editable, description, optionCount, objectStyle);
+
             } else
                 return ImageViewModel.create(id, label, optionSet, value, section, editable, mandatory, description, objectStyle); //transforms option set into image option selector
         }
@@ -108,11 +105,8 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
             case INTEGER_ZERO_OR_POSITIVE:
             case UNIT_INTERVAL:
             case URL:
-                if(fieldRendering != null && fieldRendering.type().equals(ValueTypeRenderingType.QR) || fieldRendering.type().equals(ValueTypeRenderingType.BAR_CODE)) {
-                    return ScanTextViewModel.create(id, label, mandatory, value, section, editable, description, objectStyle, fieldRendering);
-                } else {
-                    return EditTextViewModel.create(id, label, mandatory, value, hintEnterText, 1, type, section, editable, description, fieldRendering, objectStyle, fieldMask);
-                }
+                //TODO: Check if fieldRendering.type() is equal to QR or BARCODE to return a ScanTextViewModel
+                return EditTextViewModel.create(id, label, mandatory, value, hintEnterText, 1, type, section, editable, description, fieldRendering, objectStyle, fieldMask);
             case IMAGE:
                 return PictureViewModel.create(id, label, mandatory, value, section, editable, description, objectStyle);
             case TIME:
