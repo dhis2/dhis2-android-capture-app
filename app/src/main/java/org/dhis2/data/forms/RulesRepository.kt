@@ -18,6 +18,7 @@ import org.hisp.dhis.rules.models.RuleAttributeValue
 import org.hisp.dhis.rules.models.RuleEnrollment
 import org.hisp.dhis.rules.models.RuleEvent
 import org.hisp.dhis.rules.models.RuleVariable
+import timber.log.Timber
 import java.util.Calendar
 import java.util.Date
 import java.util.Objects
@@ -288,13 +289,26 @@ class RulesRepository(private val d2: D2) {
                     .eq(enrollment.program()).byTrackedEntityAttributeUid().eq(attribute.uid())
                     .byUseCodeForOptionSet().isTrue.blockingIsEmpty()
                 if (!useOptionCode) {
-                    value = d2.optionModule().options()
-                        .byOptionSetUid().eq(attribute.optionSet()!!.uid())
-                        .byCode().eq(value)
-                        .one().blockingGet()?.name()
+                    value = if (d2.optionModule().options()
+                            .byOptionSetUid().eq(attribute.optionSet()!!.uid())
+                            .byCode().eq(value)
+                            .one().blockingExists()
+                    ) {
+                        d2.optionModule().options()
+                            .byOptionSetUid().eq(attribute.optionSet()!!.uid())
+                            .byCode().eq(value)
+                            .one().blockingGet()?.name()
+                    } else {
+                        ""
+                    }
                 }
             } else if (attribute.valueType()?.isNumeric!!) {
-                value = value?.toFloat().toString()
+                value = try {
+                    value?.toFloat().toString()
+                } catch (e: Exception) {
+                    Timber.e(e)
+                    ""
+                }
             }
             RuleAttributeValue.create(attributeValue.trackedEntityAttribute()!!, value!!)
         }

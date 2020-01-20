@@ -78,7 +78,7 @@ fun TrackedEntityAttributeValueObjectRepository.blockingSetCheck(
             blockingSet(value)
             true
         } else {
-            blockingDelete()
+            blockingDeleteIfExist()
             false
         }
     }
@@ -98,7 +98,7 @@ fun TrackedEntityAttributeValueObjectRepository.blockingGetCheck(
         ) {
             blockingGet()
         } else {
-            blockingDelete()
+            blockingDeleteIfExist()
             null
         }
     }
@@ -114,7 +114,7 @@ fun TrackedEntityDataValueObjectRepository.blockingSetCheck(
             blockingSet(value)
             true
         } else {
-            blockingDelete()
+            blockingDeleteIfExist()
             false
         }
     }
@@ -134,8 +134,7 @@ fun TrackedEntityDataValueObjectRepository.blockingGetValueCheck(
         ) {
             blockingGet()
         } else {
-            if (blockingExists())
-                blockingDelete()
+            blockingDeleteIfExist()
             null
         }
     }
@@ -150,15 +149,25 @@ private fun check(
     return when {
         optionSetUid != null ->
             d2.optionModule().options().byOptionSetUid().eq(optionSetUid).byCode().eq(value).one().blockingExists()
-        valueType != null ->
-            when (valueType) {
-                ValueType.FILE_RESOURCE, ValueType.IMAGE ->
-                    d2.fileResourceModule().fileResources().byUid().eq(value).one().blockingExists()
-                ValueType.ORGANISATION_UNIT -> d2.organisationUnitModule().organisationUnits().uid(
-                    value
-                ).blockingExists()
-                else -> true
+        valueType != null -> {
+            if (valueType.isNumeric) {
+                try {
+                    value.toFloat().toString()
+                    true
+                } catch (e: Exception) {
+                    false
+                }
+            } else {
+                when (valueType) {
+                    ValueType.FILE_RESOURCE, ValueType.IMAGE ->
+                        d2.fileResourceModule().fileResources().byUid().eq(value).one().blockingExists()
+                    ValueType.ORGANISATION_UNIT -> d2.organisationUnitModule().organisationUnits().uid(
+                        value
+                    ).blockingExists()
+                    else -> true
+                }
             }
+        }
         else -> false
     }
 }
