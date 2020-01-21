@@ -168,6 +168,7 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
                 if(resultCode == RESULT_OK) {
                     scanTextView.updateScanResult(data.getStringExtra(Constants.EXTRA_DATA));
                 }
+                break;
         }
     }
 

@@ -22,7 +22,11 @@ import org.dhis2.usescases.qrScanner.QRActivity
 import org.hisp.dhis.android.core.common.ObjectStyle
 import org.hisp.dhis.android.core.common.ValueTypeRenderingType
 
-class ScanTextView : FieldLayout {
+class ScanTextView @JvmOverloads constructor(
+    context: Context,
+    attrs: AttributeSet? = null,
+    defStyle: Int = 0
+) : FieldLayout(context, attrs, defStyle) {
 
     private lateinit var iconView: ImageView
     private lateinit var editText: TextInputEditText
@@ -32,19 +36,7 @@ class ScanTextView : FieldLayout {
     private lateinit var onScanClick: OnScanClick
     private lateinit var onScanResult: (String?) -> Unit
 
-    constructor(context: Context) : super(context) {
-        init(context)
-    }
-
-    constructor(context: Context, attrs: AttributeSet) : super(context, attrs) {
-        init(context)
-    }
-
-    constructor(context: Context, attrs: AttributeSet, defStyle: Int) : super(
-        context,
-        attrs,
-        defStyle
-    ) {
+    init {
         init(context)
     }
 
