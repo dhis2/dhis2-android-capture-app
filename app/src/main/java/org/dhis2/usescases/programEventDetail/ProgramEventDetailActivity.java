@@ -491,7 +491,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
 
     @Override
     public void showSyncDialog(String uid) {
-        new SyncStatusDialog.Builder()
+        SyncStatusDialog dialog = new SyncStatusDialog.Builder()
                 .setConflictType(SyncStatusDialog.ConflictType.EVENT)
                 .setUid(uid)
                 .onDismissListener(hasChanged->{
@@ -500,6 +500,8 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
 
                 })
                 .build();
+
+        dialog.show(getSupportFragmentManager(), dialog.getDialogTag());
     }
 
     private void showMap(boolean showMap) {
