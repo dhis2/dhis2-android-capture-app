@@ -20,6 +20,7 @@ import org.dhis2.App;
 import org.dhis2.Bindings.Bindings;
 import org.dhis2.R;
 import org.dhis2.data.prefs.Preference;
+import org.dhis2.data.service.workManager.WorkManagerController;
 import org.dhis2.databinding.ActivitySynchronizationBinding;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.usescases.main.MainActivity;
@@ -36,6 +37,9 @@ public class SyncActivity extends ActivityGlobalAbstract implements SyncContract
     @Inject
     SyncContracts.Presenter presenter;
 
+    @Inject
+    WorkManagerController workManagerController;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         ((App) getApplicationContext()).userComponent().plus(new SyncModule()).inject(this);
@@ -49,7 +53,7 @@ public class SyncActivity extends ActivityGlobalAbstract implements SyncContract
     @Override
     protected void onResume() {
         super.onResume();
-        WorkManager.getInstance(getApplicationContext()).getWorkInfosForUniqueWorkLiveData(Constants.INITIAL_SYNC).observe(this, workInfoList -> {
+        workManagerController.getWorkInfosForUniqueWorkLiveData(Constants.INITIAL_SYNC).observe(this, workInfoList -> {
             for (WorkInfo wi : workInfoList) {
                 if (wi.getTags().contains(Constants.META_NOW))
                     handleMetaState(wi.getState());

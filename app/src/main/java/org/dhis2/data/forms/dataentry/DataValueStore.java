@@ -3,9 +3,6 @@ package org.dhis2.data.forms.dataentry;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.squareup.sqlbrite2.BriteDatabase;
-
-import org.dhis2.data.user.UserRepository;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.enrollment.EnrollmentObjectRepository;
 import org.hisp.dhis.android.core.event.EventObjectRepository;
@@ -33,8 +30,6 @@ public final class DataValueStore implements DataEntryStore {
     private final EnrollmentObjectRepository enrollmentRepository;
 
     public DataValueStore(@NonNull D2 d2,
-                          @NonNull BriteDatabase briteDatabase,
-                          @NonNull UserRepository userRepository,
                           @NonNull String eventUid) {
         this.d2 = d2;
         this.eventUid = eventUid;
@@ -63,7 +58,7 @@ public final class DataValueStore implements DataEntryStore {
                     }
                 });
     }
-
+/*
     @NonNull
     @Override
     public Flowable<Boolean> checkUnique(@NonNull String uid, @Nullable String value) {
@@ -78,7 +73,7 @@ public final class DataValueStore implements DataEntryStore {
                 return Flowable.just(true);
         } else
             return Flowable.just(true);
-    }
+    }*/
 
 
     private long update(@NonNull String uid, @Nullable String value, valueType valueType) {
@@ -140,6 +135,8 @@ public final class DataValueStore implements DataEntryStore {
             }
         } else {
             try {
+                d2.trackedEntityModule().trackedEntityDataValues().value(eventUid, eventUid)
+                        .blockingSet(value);
                 d2.trackedEntityModule().trackedEntityDataValues().value(eventUid, eventUid)
                         .blockingSet(value);
                 return 1;

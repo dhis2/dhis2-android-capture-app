@@ -30,7 +30,7 @@ public class DataSetInitialRepositoryImpl implements DataSetInitialRepository {
 
     @Override
     public Flowable<List<DateRangeInputPeriodModel>> getDataInputPeriod() {
-        return Flowable.just(d2.dataSetModule().dataSets().withDataInputPeriods().byUid().eq(dataSetUid).one().blockingGet())
+        return d2.dataSetModule().dataSets().withDataInputPeriods().uid(dataSetUid).get().toFlowable()
                 .flatMapIterable(dataSet -> dataSet.dataInputPeriods())
                 .flatMap(dataInputPeriod ->
                         Flowable.just(d2.periodModule().periods().byPeriodId().eq(dataInputPeriod.period().uid()).blockingGet())
@@ -49,21 +49,23 @@ public class DataSetInitialRepositoryImpl implements DataSetInitialRepository {
     @NonNull
     @Override
     public Observable<DataSetInitialModel> dataSet() {
-        return Observable.just(d2.dataSetModule().dataSets().byUid().eq(dataSetUid).one().blockingGet())
+        return d2.dataSetModule().dataSets().uid(dataSetUid).get()
                 .map(dataSet -> {
-                    String categoryComboDisplayName = d2.categoryModule().categoryCombos().byUid().eq(dataSet.categoryCombo().uid()).one().blockingGet().displayName();
-                    CategoryCombo categoryCombos = d2.categoryModule().categoryCombos().withCategories().byUid().eq(dataSet.categoryCombo().uid()).one().blockingGet();
+                    CategoryCombo categoryCombos = d2.categoryModule()
+                            .categoryCombos().withCategories()
+                            .uid(dataSet.categoryCombo().uid())
+                            .blockingGet();
 
                     return DataSetInitialModel.create(
                             dataSet.displayName(),
                             dataSet.description(),
                             dataSet.categoryCombo().uid(),
-                            categoryComboDisplayName,
+                            categoryCombos.displayName(),
                             dataSet.periodType(),
                             categoryCombos.categories(),
                             dataSet.openFuturePeriods()
                     );
-                });
+                }).toObservable();
     }
 
     @NonNull
@@ -78,7 +80,7 @@ public class DataSetInitialRepositoryImpl implements DataSetInitialRepository {
     @NonNull
     @Override
     public Observable<List<CategoryOption>> catCombo(String categoryUid) {
-        return Observable.just(d2.categoryModule().categories().withCategoryOptions().byUid().eq(categoryUid).one().blockingGet())
+        return d2.categoryModule().categories().withCategoryOptions().uid(categoryUid).get()
                 .map(Category::categoryOptions)
                 .map(list -> {
                     Iterator<CategoryOption> iterator = list.iterator();
@@ -87,7 +89,7 @@ public class DataSetInitialRepositoryImpl implements DataSetInitialRepository {
                             iterator.remove();
 
                     return list;
-                });
+                }).toObservable();
     }
 
     @NonNull
