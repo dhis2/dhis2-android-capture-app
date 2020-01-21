@@ -80,10 +80,9 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
                                  @Nullable String description, @Nullable ValueTypeDeviceRendering fieldRendering, @Nullable Integer optionCount, ObjectStyle objectStyle, @Nullable String fieldMask) {
         isNull(type, "type must be supplied");
 
-        fieldRendering = ValueTypeDeviceRendering.builder().type(ValueTypeRenderingType.BAR_CODE).build();
         if (!isEmpty(optionSet)) {
             if (renderingType == null || renderingType == ProgramStageSectionRenderingType.LISTING){
-                if(fieldRendering != null && fieldRendering.type().equals(ValueTypeRenderingType.QR) || fieldRendering.type().equals(ValueTypeRenderingType.BAR_CODE)) {
+                if(fieldRendering != null && (fieldRendering.type().equals(ValueTypeRenderingType.QR_CODE) || fieldRendering.type().equals(ValueTypeRenderingType.BAR_CODE))) {
                     return ScanTextViewModel.create(id, label, mandatory, value, section, editable, description, objectStyle, fieldRendering);
                 } else {
                     return SpinnerViewModel.create(id, label, hintFilterOptions, mandatory, optionSet, value, section, editable, description, optionCount, objectStyle);
@@ -108,7 +107,7 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
             case INTEGER_ZERO_OR_POSITIVE:
             case UNIT_INTERVAL:
             case URL:
-                if(fieldRendering != null && fieldRendering.type().equals(ValueTypeRenderingType.QR) || fieldRendering.type().equals(ValueTypeRenderingType.BAR_CODE)) {
+                if(fieldRendering != null && (fieldRendering.type().equals(ValueTypeRenderingType.QR_CODE) || fieldRendering.type().equals(ValueTypeRenderingType.BAR_CODE))) {
                     return ScanTextViewModel.create(id, label, mandatory, value, section, editable, description, objectStyle, fieldRendering);
                 } else {
                     return EditTextViewModel.create(id, label, mandatory, value, hintEnterText, 1, type, section, editable, description, fieldRendering, objectStyle, fieldMask);

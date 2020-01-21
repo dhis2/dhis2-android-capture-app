@@ -142,7 +142,7 @@ class ScanTextView : FieldLayout {
             ValueTypeRenderingType.BAR_CODE -> {
                 descIcon.setImageResource(R.drawable.ic_form_barcode)
             }
-            ValueTypeRenderingType.QR -> {
+            ValueTypeRenderingType.QR_CODE -> {
                 descIcon.setImageResource(R.drawable.ic_form_qr)
             }
             else -> {}
