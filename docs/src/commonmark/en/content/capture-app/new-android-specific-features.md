@@ -20,7 +20,12 @@ There are two ways to access the application:
  
 ![](resources/images/image62.PNG){ width=25%}
 ![](resources/images/image63.jpg){ width=25%}
- 
+
+> **Warning**
+> 
+> If a user attemps an on-line login and their account has been disabled as explained in the [DHIS 2 Manual - Disable User](https://docs.dhis2.org/master/en/user/html/dhis2_user_manual_en_full.html#disable_user) all the data will be wiped from the phone. Make sure that before disabling a user all the data has been synced or that you are using this feature to remotely wipe sensitive data in case of a device getting lost.
+
+
 ## Account Recovery
 
 The users will be able to restore their own password if they have the setting enabled: Enabled User Account Recovery.
