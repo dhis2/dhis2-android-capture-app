@@ -84,33 +84,17 @@
 
         <com.google.android.material.tabs.TabLayout
             android:id="@+id/eventTabLayout"
+            style="@style/DhisTabLayout"
             android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:background="?colorPrimaryDark"
-            android:visibility="gone"
+            android:layout_height="wrap_content"
+            android:clipToPadding="false"
+            android:elevation="8dp"
+            app:elevation="8dp"
+            app:tabPaddingEnd="16dp"
+            app:tabPaddingStart="16dp"
+            app:tabTextAppearance="@style/DhisTabText"
             app:layout_constraintTop_toBottomOf="@id/activityToolbar"
-            app:tabTextAppearance="@style/EventTabStyle"
             tools:visibility="visible">
-
-            <com.google.android.material.tabs.TabItem
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/event_overview" />
-
-            <com.google.android.material.tabs.TabItem
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/event_event" />
-
-            <com.google.android.material.tabs.TabItem
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/event_indicators" />
-
-            <com.google.android.material.tabs.TabItem
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/event_notes" />
         </com.google.android.material.tabs.TabLayout>
 
         <androidx.viewpager.widget.ViewPager

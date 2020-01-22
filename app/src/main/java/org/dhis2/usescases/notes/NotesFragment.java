@@ -1,4 +1,4 @@
-package org.dhis2.usescases.teiDashboard.dashboardfragments.notes;
+package org.dhis2.usescases.notes;
 
 import static android.text.TextUtils.isEmpty;
 import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
@@ -13,6 +13,7 @@ import org.dhis2.R;
 import org.dhis2.databinding.FragmentNotesBinding;
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity;
+import org.dhis2.utils.Constants;
 import org.hisp.dhis.android.core.note.Note;
 
 import android.content.Context;
@@ -36,20 +37,48 @@ import io.reactivex.functions.Consumer;
 public class NotesFragment extends FragmentGlobalAbstract implements NotesContracts.View {
 
     @Inject
-    NotesContracts.Presenter presenter;
+    NotesPresenter presenter;
 
     FragmentNotesBinding binding;
     private NotesAdapter noteAdapter;
+    private static NotesFragment instance;
+
+    private String programUid;
+    private String eventUid;
+    private String teiUid;
+
+    public static NotesFragment getEventInstance(String programUid, String eventUid) {
+        if (instance == null) {
+            instance = new NotesFragment();
+        }
+        Bundle args = new Bundle();
+        args.putString(Constants.PROGRAM_UID, programUid);
+        args.putString(Constants.EVENT_UID, eventUid);
+        instance.setArguments(args);
+        return instance;
+    }
+
+    public static NotesFragment getTrackerInstance(String programUid, String teiUid) {
+        if (instance == null) {
+            instance = new NotesFragment();
+        }
+        Bundle args = new Bundle();
+        args.putString(Constants.PROGRAM_UID, programUid);
+        args.putString(Constants.TRACKED_ENTITY_UID, teiUid);
+        instance.setArguments(args);
+        return instance;
+    }
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        TeiDashboardMobileActivity activity = (TeiDashboardMobileActivity) context;
-        if (((App) context.getApplicationContext()).dashboardComponent() != null)
-            ((App) context.getApplicationContext())
-                    .dashboardComponent()
-                    .plus(new NotesModule(activity.getProgramUid(), activity.getTeiUid()))
-                    .inject(this);
+        programUid = getArguments().getString(Constants.PROGRAM_UID);
+        eventUid = getArguments().getString(Constants.EVENT_UID);
+        teiUid = getArguments().getString(Constants.TRACKED_ENTITY_UID);
+        ((App) context.getApplicationContext())
+                .userComponent()
+                .plus(new NotesModule(this, programUid, teiUid, eventUid))
+                .inject(this);
     }
 
     @Nullable
@@ -82,14 +111,12 @@ public class NotesFragment extends FragmentGlobalAbstract implements NotesContra
     @Override
     public void onResume() {
         super.onResume();
-        presenter.init(this);
-        presenter.setNoteProcessor(noteAdapter.asFlowable());
         presenter.subscribeToNotes();
     }
 
     @Override
     public void onPause() {
-        presenter.onDettach();
+        presenter.onDetach();
         super.onPause();
     }
 

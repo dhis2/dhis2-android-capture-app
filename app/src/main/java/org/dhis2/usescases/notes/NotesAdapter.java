@@ -1,4 +1,4 @@
-package org.dhis2.usescases.teiDashboard.dashboardfragments.notes;
+package org.dhis2.usescases.notes;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,12 +48,6 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesViewholder> {
     @Override
     public int getItemCount() {
         return notes.size();
-    }
-
-    public void addNote(String noteText) {
-        if(!noteText.isEmpty()) {
-            processor.onNext(Pair.create(noteText, true));
-        }
     }
 
     public void setItems(List<Note> notes) {

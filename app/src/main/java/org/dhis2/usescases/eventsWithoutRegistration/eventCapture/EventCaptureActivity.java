@@ -20,6 +20,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.databinding.DataBindingUtil;
 
 import com.google.android.material.snackbar.Snackbar;
+import com.google.android.material.tabs.TabLayout;
 
 import org.dhis2.App;
 import org.dhis2.R;
@@ -97,7 +98,14 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
 
         binding.calculationIndicator.text.setTextColor(ColorUtils.getContrastColor(ColorUtils.getPrimaryColor(this, ColorUtils.ColorType.PRIMARY_LIGHT)));
 
-        binding.eventViewPager.setAdapter(new EventCapturePagerAdapter(getSupportFragmentManager()));
+        binding.eventTabLayout.setupWithViewPager(binding.eventViewPager);
+        binding.eventTabLayout.setTabMode(TabLayout.MODE_FIXED);
+        binding.eventViewPager.setAdapter(new EventCapturePagerAdapter(
+                getSupportFragmentManager(),
+                getContext(),
+                getIntent().getStringExtra(PROGRAM_UID),
+                getIntent().getStringExtra(Constants.EVENT_UID)
+        ));
     }
 
     @Override

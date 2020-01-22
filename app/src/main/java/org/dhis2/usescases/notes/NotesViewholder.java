@@ -1,4 +1,4 @@
-package org.dhis2.usescases.teiDashboard.dashboardfragments.notes;
+package org.dhis2.usescases.notes;
 
 import android.text.TextUtils;
 

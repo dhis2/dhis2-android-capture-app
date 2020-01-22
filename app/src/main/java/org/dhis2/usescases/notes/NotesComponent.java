@@ -1,4 +1,4 @@
-package org.dhis2.usescases.teiDashboard.dashboardfragments.notes;
+package org.dhis2.usescases.notes;
 
 import org.dhis2.data.dagger.PerFragment;
 

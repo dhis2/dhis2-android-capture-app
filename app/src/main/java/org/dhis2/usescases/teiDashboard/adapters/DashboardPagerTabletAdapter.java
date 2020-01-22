@@ -9,7 +9,7 @@ import androidx.fragment.app.FragmentStatePagerAdapter;
 
 import org.dhis2.R;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.indicators.IndicatorsFragment;
-import org.dhis2.usescases.teiDashboard.dashboardfragments.notes.NotesFragment;
+import org.dhis2.usescases.notes.NotesFragment;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.relationships.RelationshipFragment;
 import org.jetbrains.annotations.NotNull;
 
