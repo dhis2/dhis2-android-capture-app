@@ -17,7 +17,6 @@ class MainTest : BaseTest() {
     fun loginButtonShouldBeDisplayedWhenAllFieldsAreFilled() {
         startActivity()
         Thread.sleep(5000)
-
     }
 
     @Test

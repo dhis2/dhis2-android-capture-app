@@ -69,8 +69,8 @@ class MainActivity : ActivityGlobalAbstract(), MainView, ExporterListener {
     //region LIFECYCLE
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        app().userComponent()?.plus(MainModule(this))!!.inject(this)
         super.onCreate(savedInstanceState)
+        app().userComponent()?.plus(MainModule(this))!!.inject(this)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
         binding.presenter = presenter
         binding.navView.setNavigationItemSelectedListener { item ->

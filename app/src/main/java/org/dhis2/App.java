@@ -48,6 +48,8 @@ import org.dhis2.utils.session.PinModule;
 import org.dhis2.utils.session.SessionComponent;
 import org.dhis2.utils.timber.DebugTree;
 import org.dhis2.utils.timber.ReleaseTree;
+import org.hisp.dhis.android.core.D2;
+import org.hisp.dhis.android.core.D2Configuration;
 import org.hisp.dhis.android.core.D2Manager;
 import org.jetbrains.annotations.NotNull;
 
@@ -69,6 +71,7 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
     }
 
     protected static final String DATABASE_NAME = "dhis.db";
+    protected boolean isTesting = false;
 
     @NonNull
     @Singleton
@@ -98,7 +101,7 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
     @Override
     public void onCreate() {
         super.onCreate();
-        Log.i("TEST","TESTINGAP");
+
 
         Timber.plant(BuildConfig.DEBUG ? new DebugTree() : new ReleaseTree());
         ProcessLifecycleOwner.get().getLifecycle().addObserver(this);
@@ -114,10 +117,19 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
             upgradeSecurityProviderSync();
 
         setUpAppComponent();
+        if (isTesting) {
+            populateDBIfNeeded();
+        }
+
         setUpServerComponent();
 
         Scheduler asyncMainThreadScheduler = AndroidSchedulers.from(Looper.getMainLooper(), true);
         RxAndroidPlugins.setInitMainThreadSchedulerHandler(schedulerCallable -> asyncMainThreadScheduler);
+    }
+
+    private void populateDBIfNeeded() {
+        DBTestLoader dbTestLoader = new DBTestLoader(getApplicationContext());
+        dbTestLoader.populateDatabaseFromAssetsIfNeeded();
     }
 
     private void upgradeSecurityProviderSync() {
@@ -142,8 +154,10 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
     }
 
     protected void setUpServerComponent() {
-        boolean isLogged = D2Manager.blockingInstantiateD2(ServerModule.getD2Configuration(this)).userModule().isLogged().blockingGet();
+        D2 d2Configuration = D2Manager.blockingInstantiateD2(ServerModule.getD2Configuration(this));
+    //  boolean isLogged = d2Configuration.userModule().isLogged().blockingGet();
 
+        boolean isLogged = true;
         serverComponent = appComponent.plus(new ServerModule(), new DbModule(DATABASE_NAME));
 
         if (isLogged)
@@ -154,7 +168,9 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
     protected void setUpUserComponent() {
         UserManager userManager = serverComponent == null
                 ? null : serverComponent.userManager();
-        if (userManager != null && userManager.isUserLoggedIn().blockingFirst()) {
+        boolean isLogged = true;
+        //userManager.isUserLoggedIn().blockingFirst()
+        if (userManager != null && isLogged) {
             userComponent = serverComponent.plus(new UserModule());
         }
     }

@@ -5,10 +5,12 @@ import android.database.sqlite.SQLiteDatabase
 import android.os.Build
 import android.util.Log
 import androidx.test.platform.app.InstrumentationRegistry
+import org.dhis2.AppTest
 import org.dhis2.DisableAnimations
 import org.junit.After
 import org.junit.Before
 import org.junit.ClassRule
+import timber.log.Timber
 import java.io.*
 
 open class BaseTest {
@@ -24,7 +26,6 @@ open class BaseTest {
     @Before
     @Throws(Exception::class)
     open fun setUp() {
-        populateDatabaseFromAssetsIfNeeded()
      //   allowPermissions()
         setupMockServerIfNeeded()
         injectDependencies()
@@ -39,42 +40,6 @@ open class BaseTest {
             }
         }
     }
-
-    private fun populateDatabaseFromAssetsIfNeeded() {
-        val databasePath = context?.applicationInfo?.dataDir + "/databases"
-        val file = File("$databasePath/$DB_NAME")
-
-     /*   if (file.exists()){
-            Log.i("TEST","DB ALREADY LOADED")
-            return
-        } */
-
-        try {
-            val input = context!!.assets.open("databases/$DB_NAME")
-            val output = FileOutputStream("$databasePath/$DB_NAME")
-
-            writeExtractedFileToDisk(input, output)
-        } catch (e: IOException) {
-
-        }
-    }
-
-    @Throws(IOException::class)
-    fun writeExtractedFileToDisk(input: InputStream, outs: OutputStream) {
-        val buffer = ByteArray(1024)
-        var length: Int
-
-        length = input.read(buffer)
-        while (length > 0) {
-            outs.write(buffer, 0, length)
-            length = input.read(buffer)
-        }
-
-        outs.flush()
-        outs.close()
-        input.close()
-    }
-
 
 
     private fun injectDependencies() {
@@ -99,6 +64,5 @@ open class BaseTest {
         @ClassRule
         @JvmField
         val disableAnimationsTestRule = DisableAnimations()
-        const val DB_NAME = "dhis.db"
     }
 }
