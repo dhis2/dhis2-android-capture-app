@@ -120,7 +120,6 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
         if (isTesting) {
             populateDBIfNeeded();
         }
-
         setUpServerComponent();
 
         Scheduler asyncMainThreadScheduler = AndroidSchedulers.from(Looper.getMainLooper(), true);
@@ -155,9 +154,8 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
 
     protected void setUpServerComponent() {
         D2 d2Configuration = D2Manager.blockingInstantiateD2(ServerModule.getD2Configuration(this));
-    //  boolean isLogged = d2Configuration.userModule().isLogged().blockingGet();
+        boolean isLogged = d2Configuration.userModule().isLogged().blockingGet();
 
-        boolean isLogged = true;
         serverComponent = appComponent.plus(new ServerModule(), new DbModule(DATABASE_NAME));
 
         if (isLogged)
@@ -168,9 +166,7 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
     protected void setUpUserComponent() {
         UserManager userManager = serverComponent == null
                 ? null : serverComponent.userManager();
-        boolean isLogged = true;
-        //userManager.isUserLoggedIn().blockingFirst()
-        if (userManager != null && isLogged) {
+        if (userManager != null && userManager.isUserLoggedIn().blockingFirst()) {
             userComponent = serverComponent.plus(new UserModule());
         }
     }
