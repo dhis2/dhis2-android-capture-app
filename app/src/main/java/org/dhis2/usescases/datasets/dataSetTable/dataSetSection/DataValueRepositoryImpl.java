@@ -18,7 +18,6 @@ import org.hisp.dhis.android.core.dataset.DataSet;
 import org.hisp.dhis.android.core.dataset.DataSetCompleteRegistration;
 import org.hisp.dhis.android.core.dataset.DataSetElement;
 import org.hisp.dhis.android.core.dataset.Section;
-import org.hisp.dhis.android.core.datavalue.DataValueObjectRepository;
 import org.hisp.dhis.android.core.option.Option;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.period.Period;
@@ -31,7 +30,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import io.reactivex.Completable;
 import io.reactivex.Flowable;
 
 import static android.text.TextUtils.isEmpty;
@@ -60,30 +58,31 @@ public class DataValueRepositoryImpl implements DataValueRepository {
 
         List<String> categoryCombos = new ArrayList<>();
         List<DataSetElement> dataSetElements = d2.dataSetModule().dataSets().withDataSetElements().uid(dataSetUid).blockingGet().dataSetElements();
-
+        Map<String, String> deCatComboOverride = new HashMap<>();
+        for (DataSetElement dataSetElement : dataSetElements) {
+            if (dataSetElement.categoryCombo() != null) {
+                deCatComboOverride.put(
+                        dataSetElement.dataElement().uid(),
+                        dataSetElement.categoryCombo().uid()
+                );
+            } else {
+                deCatComboOverride.put(
+                        dataSetElement.dataElement().uid(),
+                        d2.dataElementModule().dataElements().uid(dataSetElement.dataElement().uid()).blockingGet().categoryComboUid()
+                );
+            }
+        }
         if (!sectionName.equals("NO_SECTION")) {
             List<DataElement> dataElements = d2.dataSetModule().sections().withDataElements().byDataSetUid().eq(dataSetUid).byDisplayName().eq(sectionName).one().blockingGet().dataElements();
-            for (DataSetElement dataSetElement : dataSetElements) {
-                for (DataElement dataElement : dataElements) {
-
-                    if (dataSetElement.dataElement().uid().equals(dataElement.uid()))
-
-                        if (dataSetElement.categoryCombo() != null && !categoryCombos.contains(dataSetElement.categoryCombo().uid()))
-                            categoryCombos.add(dataSetElement.categoryCombo().uid());
-
-                        else if (dataElement.categoryCombo() != null && !categoryCombos.contains(dataElement.categoryComboUid()))
-                            categoryCombos.add(dataElement.categoryComboUid());
-                }
+            for (DataElement dataElement : dataElements) {
+                if (deCatComboOverride.containsKey(dataElement.uid()) && !categoryCombos.contains(deCatComboOverride.get(dataElement.uid()))) {
+                    categoryCombos.add(deCatComboOverride.get(dataElement.uid()));
+                } else if (dataElement.categoryCombo() != null && !categoryCombos.contains(dataElement.categoryComboUid()))
+                    categoryCombos.add(dataElement.categoryComboUid());
             }
+
         } else {
-            for (DataSetElement dataSetElement : dataSetElements) {
-                if (dataSetElement.categoryCombo() != null)
-                    categoryCombos.add(dataSetElement.categoryCombo().uid());
-                else {
-                    DataElement dataElement = d2.dataElementModule().dataElements().uid(dataSetElement.dataElement().uid()).blockingGet();
-                    categoryCombos.add(dataElement.categoryCombo().uid());
-                }
-            }
+            categoryCombos.addAll(deCatComboOverride.values());
         }
         return d2.categoryModule().categoryCombos().byUid().in(categoryCombos).withCategories().withCategoryOptionCombos().orderByDisplayName(RepositoryScope.OrderByDirection.ASC).get().toFlowable();
 

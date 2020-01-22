@@ -1,20 +1,21 @@
 package org.dhis2.usescases.datasets.dataSetTable.dataSetSection;
 
 import android.content.Context;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.content.ContextCompat;
-import androidx.core.widget.NestedScrollView;
 import androidx.databinding.DataBindingUtil;
+import androidx.databinding.ObservableField;
 import androidx.lifecycle.MutableLiveData;
+import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.evrencoskun.tableview.TableView;
 import com.evrencoskun.tableview.adapter.recyclerview.CellRecyclerView;
@@ -23,18 +24,15 @@ import com.google.android.material.snackbar.Snackbar;
 
 import org.dhis2.App;
 import org.dhis2.R;
-import org.dhis2.data.forms.dataentry.tablefields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.tablefields.RowAction;
-import org.dhis2.data.tuples.Trio;
 import org.dhis2.databinding.FragmentDatasetSectionBinding;
+import org.dhis2.databinding.TableViewCornerLayoutBinding;
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableActivity;
-import org.dhis2.usescases.datasets.dataSetTable.DataSetTableContract;
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
-import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.Constants;
-import org.hisp.dhis.android.core.category.CategoryOption;
 import org.hisp.dhis.android.core.dataset.DataSet;
 import org.hisp.dhis.android.core.dataset.Section;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,7 +40,6 @@ import java.util.List;
 import javax.inject.Inject;
 
 import io.reactivex.Flowable;
-import io.reactivex.processors.FlowableProcessor;
 
 import static com.evrencoskun.tableview.adapter.recyclerview.holder.AbstractViewHolder.SelectionState.UNSELECTED;
 import static org.dhis2.utils.analytics.AnalyticsConstants.LEVEL_ZOOM;
@@ -54,17 +51,17 @@ import static org.dhis2.utils.analytics.AnalyticsConstants.ZOOM_TABLE;
 
 public class DataSetSectionFragment extends FragmentGlobalAbstract implements DataValueContract.View {
 
-    FragmentDatasetSectionBinding binding;
-    private DataSetTableContract.Presenter presenter;
+    private FragmentDatasetSectionBinding binding;
     private DataSetTableActivity activity;
-    private List<DataSetTableAdapter> adapters = new ArrayList<>();
     private String sectionName;
     private String dataSetUid;
+    private TableRecyclerAdapter tableAdapter;
+    private final ObservableField<DataSetTableAdapter.TableScale> currentTableScale =
+            new ObservableField<>(DataSetTableAdapter.TableScale.DEFAULT);
 
     @Inject
     DataValuePresenter presenterFragment;
 
-    private ArrayList<Integer> heights = new ArrayList<>();
     private MutableLiveData<Integer> currentTablePosition = new MutableLiveData<>();
     private DataSet dataSet;
     private Section section;
@@ -82,10 +79,10 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
     }
 
     @Override
-    public void onAttach(Context context) {
+    public void onAttach(@NotNull Context context) {
         super.onAttach(context);
         activity = (DataSetTableActivity) context;
-        dataSetUid = getArguments().getString(Constants.DATA_SET_UID, dataSetUid);
+        dataSetUid = requireArguments().getString(Constants.DATA_SET_UID, dataSetUid);
         ((App) context.getApplicationContext()).userComponent().plus(new DataValueModule(dataSetUid, this)).inject(this);
     }
 
@@ -95,17 +92,22 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_dataset_section, container, false);
         currentTablePosition.observe(this, this::loadHeader);
         binding.setPresenter(presenterFragment);
-        presenter = activity.getPresenter();
-        sectionName = getArguments().getString(Constants.DATA_SET_SECTION);
-        presenterFragment.init(this, presenter.getOrgUnitUid(), presenter.getPeriodTypeName(),
-                presenter.getPeriodFinalDate(), presenter.getCatCombo(), sectionName, presenter.getPeriodId());
+        sectionName = requireArguments().getString(Constants.DATA_SET_SECTION);
+        presenterFragment.init(
+                this,
+                activity.getPresenter().getOrgUnitUid(),
+                activity.getPresenter().getPeriodTypeName(),
+                activity.getPresenter().getPeriodFinalDate(),
+                activity.getPresenter().getCatCombo(),
+                sectionName,
+                activity.getPresenter().getPeriodId());
         return binding.getRoot();
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        presenterFragment.onDettach();
+        presenterFragment.onDetach();
     }
 
     @Override
@@ -113,59 +115,38 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
         binding.actionLayout.setVisibility(accessDataWrite ? View.VISIBLE : View.GONE);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
-    public void setTableData(DataTableModel dataTableModel, List<List<FieldViewModel>> fields, List<List<String>> cells, Boolean accessDataWrite) {
-        binding.programProgress.setVisibility(View.GONE);
+    public void setTableData(DataSetTable dataSetTable) {
+        if (tableAdapter == null) {
+            tableAdapter = new TableRecyclerAdapter(getAbstracContext(), dataSet, section, new ArrayList<>(), new ArrayList<>());
+            binding.tableRecycler.setAdapter(tableAdapter);
+        }
 
-        DataSetTableAdapter adapter = new DataSetTableAdapter(getAbstracContext(), presenterFragment.getProcessor(), presenterFragment.getProcessorOptionSet());
-        adapters.add(adapter);
-        adapter.setShowColumnTotal(section.uid().isEmpty() ? false : section.showColumnTotals());
-        adapter.setShowRowTotal(section.uid().isEmpty() ? false : section.showRowTotals());
-        TableView tableView = new TableView(getContext());
-        tableView.setHasFixedWidth(true);
+        DataSetTableAdapter adapter = new DataSetTableAdapter(
+                getAbstracContext(),
+                presenterFragment.getProcessor(),
+                presenterFragment.getProcessorOptionSet(),
+                currentTableScale
+        );
 
+        tableAdapter.addTable(dataSetTable, adapter);
 
-        List<List<CategoryOption>> columnHeaders = dataTableModel.header();
-        adapter.setCatCombo(dataTableModel.catCombo().uid());
-        adapter.setTableView(tableView);
-        adapter.initializeRows(accessDataWrite);
-        adapter.setDataElementDecoration(dataSet.dataElementDecoration());
+        if (tableAdapter.getAdapterList().size() == 1) {
+            presenterFragment.initializeProcessor(this);
 
-        binding.tableLayout.addView(tableView);
+            binding.tableRecycler.setOnScrollChangeListener((v, scrollX, scrollY, oldScrollX, oldScrollY) -> {
+                int position = ((LinearLayoutManager) binding.tableRecycler.getLayoutManager()).findFirstVisibleItemPosition();
+                if (position != -1 && currentTablePosition.getValue() != position)
+                    currentTablePosition.setValue(position);
+            });
+        }
+    }
 
-        View view = new View(getContext());
-        view.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 15));
-        view.setBackgroundColor(tableView.getSeparatorColor());
-        binding.tableLayout.addView(view);
-
-        tableView.setAdapter(adapter);
-        tableView.setHeaderCount(columnHeaders.size());
-        tableView.setShadowColor(ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.PRIMARY));
-
-        adapter.swap(fields);
-
-        adapter.setAllItems(
-                columnHeaders,
-                dataTableModel.rows(),
-                cells,
-                adapter.getShowRowTotal());
-
-
-        presenterFragment.initializeProcessor(this);
-
-
-        binding.scroll.setOnScrollChangeListener((NestedScrollView.OnScrollChangeListener) (v, scrollX, scrollY, oldScrollX, oldScrollY) -> {
-            int position = -1;
-            if (checkTableHeights())
-                for (int i = 0; i < heights.size(); i++) {
-                    if (scrollY < heights.get(i))
-                        position = position == -1 ? i : position;
-                }
-
-            if (position != -1 && currentTablePosition.getValue() != position)
-                currentTablePosition.setValue(position);
-        });
-        currentTablePosition.setValue(0);
+    @Override
+    public void finishTableLoading() {
+//        binding.programProgress.setVisibility(View.GONE);
+        tableAdapter.finishLoading();
     }
 
     @Override
@@ -185,75 +166,68 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
     }
 
     private void loadHeader(int position) {
-        TableView tableView = (TableView) ((LinearLayout) binding.scroll.getChildAt(0)).getChildAt(position * 2);
+        TableView tableView = tableAdapter.getTables().get(position);
+
         if (tableView != null) {
             List<CellRecyclerView> rvs = tableView.getBackupHeaders();
             binding.headerContainer.removeAllViews();
             for (CellRecyclerView crv : rvs)
                 binding.headerContainer.addView(crv);
 
-            View cornerView = LayoutInflater.from(getContext()).inflate(R.layout.table_view_corner_layout, null);
-            cornerView.setLayoutParams(new ViewGroup.LayoutParams(
+            TableViewCornerLayoutBinding cornerViewBinding =
+                    TableViewCornerLayoutBinding.inflate(
+                            LayoutInflater.from(getContext()),
+                            null,
+                            false);
+            cornerViewBinding.getRoot().setLayoutParams(new ViewGroup.LayoutParams(
                     tableView.getAdapter().getRowHeaderWidth(),
                     binding.headerContainer.getChildAt(0).getLayoutParams().height
             ));
-            cornerView.findViewById(R.id.buttonScale).setOnClickListener(view -> {
-                for (int i = 0; i < binding.tableLayout.getChildCount(); i++) {
-                    if (binding.tableLayout.getChildAt(i) instanceof TableView) {
-                        TableView table = (TableView) binding.tableLayout.getChildAt(i);
+            setUpZoomViewImage(cornerViewBinding);
+            cornerViewBinding.buttonScale.setOnClickListener(view -> {
+
+                DataSetTableAdapter.TableScale nextTableScale = currentTableScale.get().getNext();
+                currentTableScale.set(nextTableScale);
+                setUpZoomViewImage(cornerViewBinding);
+
+                for (int i = 0; i < tableAdapter.getTables().size(); i++) {
+                    if (tableAdapter.getTables().get(i) instanceof TableView) {
+                        TableView table = tableAdapter.getTables().get(i);
                         DataSetTableAdapter adapter = (DataSetTableAdapter) table.getAdapter();
-                        ImageView scaleImage = cornerView.findViewById(R.id.buttonScale);
-                        switch (adapter.getCurrentTableScale().get()) {
-                            case DEFAULT:
-                                scaleImage.setImageDrawable(AppCompatResources.getDrawable(view.getContext(), R.drawable.ic_zoomx3));
-                                break;
-                            case LARGE:
-                                scaleImage.setImageDrawable(AppCompatResources.getDrawable(view.getContext(), R.drawable.ic_zoomx1));
-                                break;
-                            case SMALL:
-                                scaleImage.setImageDrawable(AppCompatResources.getDrawable(view.getContext(), R.drawable.ic_zoomx2));
-                                break;
-                        }
-                        DataSetTableAdapter.TableScale tableScale = adapter.scale();
-                        analyticsHelper().setEvent(LEVEL_ZOOM, tableScale.name(), ZOOM_TABLE);
+                        adapter.scale();
                     }
                 }
+                analyticsHelper().setEvent(LEVEL_ZOOM, currentTableScale.get().name(), ZOOM_TABLE);
             });
-            binding.headerContainer.addView(cornerView);
+            binding.headerContainer.addView(cornerViewBinding.getRoot());
         }
     }
 
-    private boolean checkTableHeights() {
-        if (heights.isEmpty()) {
-            heights = new ArrayList<>();
-
-            for (int i = 0; i < ((LinearLayout) binding.scroll.getChildAt(0)).getChildCount(); i++) {
-                View view = ((LinearLayout) binding.scroll.getChildAt(0)).getChildAt(i);
-                if (view instanceof TableView) {
-                    if (i == ((LinearLayout) binding.scroll.getChildAt(0)).getChildCount() - 1)
-                        heights.add(i != 0 ? heights.get(heights.size() - 1) + view.getHeight() : view.getHeight());
-                    else {
-                        View separator = ((LinearLayout) binding.scroll.getChildAt(0)).getChildAt(i + 1);
-                        heights.add(i / 2 != 0 ? heights.get(i / 2 - 1) + view.getHeight() + separator.getHeight() : view.getHeight() + separator.getHeight());
-                    }
-                }
-            }
-
+    private void setUpZoomViewImage(TableViewCornerLayoutBinding cornerViewBinding) {
+        int zoomImageResource = -1;
+        switch (currentTableScale.get()) {
+            case LARGE:
+                zoomImageResource = R.drawable.ic_zoomx3;
+                break;
+            case SMALL:
+                zoomImageResource = R.drawable.ic_zoomx1;
+                break;
+            case DEFAULT:
+                zoomImageResource = R.drawable.ic_zoomx2;
+                break;
         }
-        return !heights.isEmpty();
+        cornerViewBinding.buttonScale.setImageDrawable(AppCompatResources.getDrawable(
+                cornerViewBinding.getRoot().getContext(),
+                zoomImageResource));
     }
 
     @NonNull
     public Flowable<RowAction> rowActions() {
-        return adapters.get(0).asFlowable();
-    }
-
-    public FlowableProcessor<Trio<String, String, Integer>> optionSetActions() {
-        return adapters.get(0).asFlowableOptionSet();
+        return tableAdapter.getAdapterList().get(0).asFlowable();
     }
 
     public void updateData(RowAction rowAction, String catCombo) {
-        for (DataSetTableAdapter adapter : adapters)
+        for (DataSetTableAdapter adapter : tableAdapter.getAdapterList())
             if (adapter.getCatCombo().equals(catCombo))
                 adapter.updateValue(rowAction);
     }
@@ -266,7 +240,7 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
 
     @Override
     public void goToTable(int numTable) {
-        binding.scroll.scrollTo(0, binding.tableLayout.getChildAt(numTable * 2).getTop());
+        binding.tableRecycler.smoothScrollToPosition(numTable);
     }
 
     public int currentNumTables() {
@@ -293,7 +267,7 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
 
     @Override
     public void highligthHeaderRow(int table, int row, boolean mandatory) {
-        AbstractViewHolder columnHeader = (AbstractViewHolder) adapters.get(table).getTableView().getRowHeaderRecyclerView()
+        AbstractViewHolder columnHeader = (AbstractViewHolder) tableAdapter.getAdapterList().get(table).getTableView().getRowHeaderRecyclerView()
                 .findViewHolderForAdapterPosition(row);
 
         if (columnHeader != null) {

@@ -51,10 +51,6 @@ import java.util.List;
 
 import io.reactivex.processors.FlowableProcessor;
 
-/**
- * QUADRAM. Created by ppajuelo on 02/10/2018.
- */
-
 public class DataSetTableAdapter extends AbstractTableAdapter<CategoryOption, DataElement, String> {
     private static final int EDITTEXT = 0;
     private static final int BUTTON = 1;
@@ -85,33 +81,44 @@ public class DataSetTableAdapter extends AbstractTableAdapter<CategoryOption, Da
     private Boolean showColumnTotal = false;
     private final FlowableProcessor<Trio<String, String, Integer>> processorOptionSet;
 
-    private int currentWidth = 300;
+    private int currentWidth;
     private int currentHeight;
 
     private String catCombo;
     private Boolean dataElementDecoration;
 
     public enum TableScale {
-        SMALL, DEFAULT, LARGE
+        SMALL(200, 24),
+        DEFAULT(300, 36),
+        LARGE(400, 48);
+
+        private final int width;
+        private final int height;
+
+        TableScale(final int width, final int height) {
+            this.height = height;
+            this.width = width;
+        }
+
+        public int getWidth() {
+            return width;
+        }
+
+        public int getHeight() {
+            return height;
+        }
+
+        public TableScale getNext() {
+            return TableScale.values()[(ordinal()+1) % TableScale.values().length];
+        }
     }
 
-    private ObservableField<TableScale> currentTableScale = new ObservableField<>();
+    private ObservableField<TableScale> currentTableScale;
 
-    public TableScale scale() {
-        if (currentWidth == 200) {
-            currentWidth = 300;
-            currentHeight = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 36, context.getResources().getDisplayMetrics());
-            currentTableScale.set(TableScale.DEFAULT);
-        } else if (currentWidth == 300) {
-            currentWidth = 400;
-            currentHeight = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 48, context.getResources().getDisplayMetrics());
-            currentTableScale.set(TableScale.LARGE);
-        } else if (currentWidth == 400) {
-            currentWidth = 200;
-            currentHeight = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 24, context.getResources().getDisplayMetrics());
-            currentTableScale.set(TableScale.SMALL);
+    TableScale scale() {
 
-        }
+        currentWidth = currentTableScale.get().getWidth();
+        currentHeight = calculateHeight();
 
         onScaleListener.scaleTo(currentWidth, currentHeight);
 
@@ -119,21 +126,26 @@ public class DataSetTableAdapter extends AbstractTableAdapter<CategoryOption, Da
         return currentTableScale.get();
     }
 
-    public ObservableField<TableScale> getCurrentTableScale() {
-        return currentTableScale;
-    }
-
-
-    public DataSetTableAdapter(Context context, @NotNull FlowableProcessor<RowAction> processor, FlowableProcessor<Trio<String, String, Integer>> processorOptionSet) {
+    public DataSetTableAdapter(
+            Context context,
+            @NotNull FlowableProcessor<RowAction> processor,
+            FlowableProcessor<Trio<String, String, Integer>> processorOptionSet,
+            ObservableField<TableScale> currentTableScale) {
         super(context);
-        this.currentHeight = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 36, context.getResources().getDisplayMetrics());
-        this.currentTableScale.set(TableScale.DEFAULT);
+
         this.context = context;
+        this.currentTableScale = currentTableScale;
+        this.currentHeight = calculateHeight();
+        this.currentWidth = currentTableScale.get().getWidth();
         rows = new ArrayList<>();
         this.processor = processor;
         this.processorOptionSet = processorOptionSet;
         layoutInflater = LayoutInflater.from(context);
         viewModels = new ArrayList<>();
+    }
+
+    private int calculateHeight() {
+        return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, currentTableScale.get().getHeight(), context.getResources().getDisplayMetrics());
     }
 
     public void initializeRows(Boolean accessDataWrite) {
@@ -335,10 +347,6 @@ public class DataSetTableAdapter extends AbstractTableAdapter<CategoryOption, Da
         return processor;
     }
 
-    public FlowableProcessor<Trio<String, String, Integer>> asFlowableOptionSet() {
-        return processorOptionSet;
-    }
-
     public void updateValue(RowAction rowAction) {
         if (showRowTotal || showColumnTotal) {
             int oldValue = 0;
@@ -366,7 +374,7 @@ public class DataSetTableAdapter extends AbstractTableAdapter<CategoryOption, Da
         }
         String value = rowAction.value();
 
-        if(rowAction.optionSetName() != null && !rowAction.optionSetName().isEmpty()){
+        if (rowAction.optionSetName() != null && !rowAction.optionSetName().isEmpty()) {
             value = rowAction.optionSetName();
         }
 

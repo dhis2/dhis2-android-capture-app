@@ -14,10 +14,6 @@ import org.hisp.dhis.android.core.dataelement.DataElement;
 
 import static android.text.TextUtils.isEmpty;
 
-/**
- * QUADRAM. Created by ppajuelo on 02/10/2018.
- */
-
 public class DataSetRowHeader extends AbstractViewHolder {
 
     public ItemDatasetRowBinding binding;

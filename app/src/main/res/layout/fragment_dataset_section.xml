@@ -14,25 +14,15 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-
-        <androidx.core.widget.NestedScrollView
-            android:id="@+id/scroll"
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/tableRecycler"
             android:layout_width="match_parent"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             android:layout_height="0dp"
             android:layout_marginTop="5dp"
             android:background="@color/table_view_default_separator_color"
             app:layout_constraintBottom_toTopOf="@+id/action_layout"
-            app:layout_constraintTop_toTopOf="parent">
-
-            <LinearLayout
-                android:id="@+id/tableLayout"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical">
-
-            </LinearLayout>
-
-        </androidx.core.widget.NestedScrollView>
+            app:layout_constraintTop_toTopOf="parent"/>
 
 
         <FrameLayout
@@ -73,7 +63,7 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <ProgressBar
+        <!--<ProgressBar
             android:id="@+id/program_progress"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -81,7 +71,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/headerContainer"
-            app:progressColor="@{@color/colorPrimary}" />
+            app:progressColor="@{@color/colorPrimary}" />-->
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

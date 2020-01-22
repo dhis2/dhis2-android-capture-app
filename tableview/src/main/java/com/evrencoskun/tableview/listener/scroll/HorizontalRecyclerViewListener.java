@@ -298,7 +298,8 @@ public class HorizontalRecyclerViewListener extends RecyclerView.OnScrollListene
             }
         }
 
-        mScrollPositionOffset = layoutManager.findViewByPosition(mScrollPosition).getLeft();
+        mScrollPositionOffset = layoutManager.findViewByPosition(mScrollPosition) != null ?
+                layoutManager.findViewByPosition(mScrollPosition).getLeft() : 0;
     }
 
     /**

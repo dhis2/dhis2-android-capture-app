@@ -6,8 +6,6 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.functions.Function6
 import io.reactivex.processors.FlowableProcessor
 import io.reactivex.processors.PublishProcessor
-import java.util.ArrayList
-import java.util.HashMap
 import org.dhis2.R
 import org.dhis2.data.forms.dataentry.ValueStore
 import org.dhis2.data.forms.dataentry.ValueStoreImpl
@@ -37,6 +35,8 @@ import org.hisp.dhis.android.core.dataset.DataSet
 import org.hisp.dhis.android.core.dataset.Section
 import org.hisp.dhis.android.core.period.Period
 import timber.log.Timber
+import java.util.ArrayList
+import java.util.HashMap
 
 class DataValuePresenter(
     private val view: DataValueContract.View,
@@ -151,25 +151,8 @@ class DataValuePresenter(
         disposable.add(
             repository.getCatCombo(sectionName)
                 .flatMapIterable<CategoryCombo> { categoryCombos -> categoryCombos }
-                .map<Sextet<CategoryCombo,
-                        List<DataElement>,
-                        Map<String, List<List<Pair<CategoryOption, Category>>>>,
-                        List<DataSetTableModel>,
-                        List<DataElementOperand>,
-                        List<DataElementOperand>>>
-                { categoryCombo ->
-                    Flowable.zip<CategoryCombo,
-                            List<DataElement>,
-                            Map<String, List<List<Pair<CategoryOption, Category>>>>,
-                            List<DataSetTableModel>,
-                            List<DataElementOperand>,
-                            List<DataElementOperand>,
-                            Sextet<CategoryCombo,
-                                    List<DataElement>,
-                                    Map<String, List<List<Pair<CategoryOption, Category>>>>,
-                                    List<DataSetTableModel>,
-                                    List<DataElementOperand>,
-                                    List<DataElementOperand>>>(
+                .map { categoryCombo ->
+                    Flowable.zip(
                         Flowable.just<CategoryCombo>(categoryCombo),
                         repository.getDataElements(categoryCombo, sectionName),
                         repository.getCatOptions(sectionName, categoryCombo.uid()),
@@ -229,13 +212,16 @@ class DataValuePresenter(
                 .subscribe(
                     { quartet ->
                         view.setTableData(
-                            quartet.val0(),
-                            quartet.val1(),
-                            quartet.val2(),
-                            quartet.val3()
+                            DataSetTable(
+                                quartet.val0(),
+                                quartet.val1(),
+                                quartet.val2(),
+                                quartet.val3()
+                            )
                         )
                     },
-                    { Timber.e(it) }
+                    { Timber.e(it) },
+                    { view.finishTableLoading() }
                 )
         )
     }
@@ -366,8 +352,8 @@ class DataValuePresenter(
                 fields.add(fieldViewModel)
                 values.add(fieldViewModel.value().toString())
 
-                if (!section!!.uid().isEmpty() && section!!.showRowTotals()!! &&
-                    isNumber && !fieldViewModel.value()!!.isEmpty()
+                if (section!!.uid().isNotEmpty() && section!!.showRowTotals()!! &&
+                    isNumber && fieldViewModel.value()!!.isNotEmpty()
                 ) {
                     totalRow += Integer.parseInt(fieldViewModel.value()!!)
                 }
@@ -384,7 +370,7 @@ class DataValuePresenter(
                         fields[fields.indexOf(fieldViewModel)] = fieldViewModel.setMandatory()
                     }
 
-            if (!section!!.uid().isEmpty() && section!!.showRowTotals()!! && isNumber) {
+            if (section!!.uid().isNotEmpty() && section!!.showRowTotals()!! && isNumber) {
                 setTotalRow(totalRow, fields, values, row, column)
             }
 
@@ -421,11 +407,8 @@ class DataValuePresenter(
 
         val isEditable = accessDataWrite &&
                 !isExpired(dataSet) &&
-                dataInputPeriodModel.isEmpty() || (
-                checkHasInputPeriod() != null && DateUtils.getInstance().isInsideInputPeriod(
-                    checkHasInputPeriod()
-                )
-                ) &&
+                dataInputPeriodModel.isEmpty() ||
+                DateUtils.getInstance().isInsideInputPeriod(checkHasInputPeriod()) &&
                 !isApproval
 
         return Quartet.create(dataTableModel, listFields, cells, isEditable)
@@ -630,9 +613,8 @@ class DataValuePresenter(
         return mandatoryOk
     }
 
-    fun onDettach() {}
-
-    fun displayMessage(message: String) {
+    fun onDetach() {
+        disposable.clear()
     }
 
     fun initializeProcessor(dataSetSectionFragment: DataSetSectionFragment) {
@@ -655,7 +637,7 @@ class DataValuePresenter(
 
                     if (dataSetTableModel == null &&
                         rowAction.value() != null &&
-                        !rowAction.value()!!.isEmpty()
+                        rowAction.value()!!.isNotEmpty()
                     ) {
                         dataSetTableModel = DataSetTableModel.create(
                             java.lang.Long.parseLong("0"),
@@ -721,9 +703,9 @@ class DataValuePresenter(
         listCategories: List<List<Pair<CategoryOption, Category>>>,
         rowPosition: Int,
         catComboUidList: MutableList<List<String>>,
-        currentCatComboIds: MutableList<String>?
+        catComboIds: MutableList<String>?
     ): List<List<String>> {
-        var currentCatComboIds = currentCatComboIds
+        var currentCatComboIds = catComboIds
         if (rowPosition == listCategories.size) {
             val resultHelp = ArrayList(currentCatComboIds!!)
             catComboUidList.add(resultHelp)
@@ -753,13 +735,7 @@ class DataValuePresenter(
     }
 
     fun checkHasInputPeriod(): DataInputPeriod? {
-        var inputPeriodModel: DataInputPeriod? = null
-        for (inputPeriod in dataInputPeriodModel) {
-            if (inputPeriod.period().uid() == periodId) {
-                inputPeriodModel = inputPeriod
-            }
-        }
-        return inputPeriodModel
+        return dataInputPeriodModel.firstOrNull { it.period().uid() == periodId }
     }
 
     fun getProcessor(): FlowableProcessor<RowAction> {

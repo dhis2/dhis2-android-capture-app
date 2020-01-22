@@ -119,6 +119,10 @@ public class TableView extends FrameLayout implements ITableView {
     private List<CellRecyclerView> mBackupHeaders = new ArrayList<>();
     private AbstractTableAdapter.OnScale scaleListener;
 
+    private RecyclerView.RecycledViewPool headerPool;
+    private RecyclerView.RecycledViewPool rowPool;
+    private RecyclerView.RecycledViewPool cellPool;
+
     public TableView(@NonNull Context context) {
         super(context);
         initialDefaultValues(null);
@@ -153,6 +157,11 @@ public class TableView extends FrameLayout implements ITableView {
                 .table_view_default_shadow_background_color);
         mHeadersColor = ContextCompat.getColor(getContext(), R.color
                 .table_view_default_header_background_color);
+
+        //RecyclerView pools
+        headerPool = new RecyclerView.RecycledViewPool();
+        cellPool = new RecyclerView.RecycledViewPool();
+        rowPool = new RecyclerView.RecycledViewPool();
 
         if (attrs == null) {
             // That means TableView is created programmatically.
@@ -262,6 +271,7 @@ public class TableView extends FrameLayout implements ITableView {
 
     protected CellRecyclerView createColumnHeaderRecyclerView(int header) {
         CellRecyclerView recyclerView = new CellRecyclerView(getContext());
+        recyclerView.setRecycledViewPool(headerPool);
 
         // Set layout manager
         recyclerView.setLayoutManager(getColumnHeaderLayoutManager(header));
@@ -286,10 +296,10 @@ public class TableView extends FrameLayout implements ITableView {
 
         for (int i = 0; i < mColumnHeaderLayoutManagers.size(); i++) {
             CellRecyclerView recyclerView = new CellRecyclerView(getContext());
-
+            //Set pool
+            recyclerView.setRecycledViewPool(headerPool);
             // Set layout manager
             recyclerView.setLayoutManager(new ColumnHeaderLayoutManager(getContext(), this));
-
             // Set layout params
             LayoutParams layoutParams = new LayoutParams(LayoutParams.WRAP_CONTENT, mHeaderHeight);
             layoutParams.leftMargin = mRowHeaderWidth;
@@ -312,7 +322,8 @@ public class TableView extends FrameLayout implements ITableView {
     protected CellRecyclerView createRowHeaderRecyclerView() {
         if (mRowHeaderRecyclerView == null) {
             mRowHeaderRecyclerView = new CellRecyclerView(getContext());
-
+            //Set pool
+            mRowHeaderRecyclerView.setRecycledViewPool(rowPool);
             // Set layout manager
             mRowHeaderRecyclerView.setLayoutManager(getRowHeaderLayoutManager());
 
@@ -337,7 +348,8 @@ public class TableView extends FrameLayout implements ITableView {
     protected CellRecyclerView createCellRecyclerView() {
         if (mCellRecyclerView == null) {
             mCellRecyclerView = new CellRecyclerView(getContext());
-
+            //set Pool
+            mCellRecyclerView.setRecycledViewPool(cellPool);
             // Disable multitouch
             mCellRecyclerView.setMotionEventSplittingEnabled(false);
 

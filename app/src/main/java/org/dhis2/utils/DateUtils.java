@@ -1169,6 +1169,10 @@ public class DateUtils {
     }
 
     public Boolean isInsideInputPeriod(DataInputPeriod dataInputPeriodModel) {
+        if(dataInputPeriodModel == null){
+            return false;
+        }
+
         if (dataInputPeriodModel.openingDate() == null && dataInputPeriodModel.closingDate() != null)
             return Calendar.getInstance().getTime().getTime() < dataInputPeriodModel.closingDate().getTime();
 

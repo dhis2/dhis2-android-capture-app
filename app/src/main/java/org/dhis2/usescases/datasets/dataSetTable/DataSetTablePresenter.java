@@ -95,7 +95,7 @@ public class DataSetTablePresenter implements DataSetTableContract.Presenter {
 
     @Override
     public void onDettach() {
-        disposable.dispose();
+        disposable.clear();
     }
 
     @Override

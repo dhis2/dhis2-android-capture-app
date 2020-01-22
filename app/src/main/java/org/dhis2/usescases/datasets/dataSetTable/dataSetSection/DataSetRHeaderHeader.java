@@ -6,10 +6,6 @@ import org.dhis2.databinding.ItemDatasetHeaderBinding;
 
 import androidx.databinding.ObservableField;
 
-/**
- * QUADRAM. Created by ppajuelo on 02/10/2018.
- */
-
 public class DataSetRHeaderHeader extends AbstractViewHolder {
 
     protected ItemDatasetHeaderBinding binding;
