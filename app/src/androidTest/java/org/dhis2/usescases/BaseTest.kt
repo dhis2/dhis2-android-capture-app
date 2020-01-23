@@ -17,11 +17,8 @@ import java.io.*
 open class BaseTest {
 
     @JvmField
-    protected var context: Context? = InstrumentationRegistry.getInstrumentation().targetContext
+    protected var context: Context = InstrumentationRegistry.getInstrumentation().targetContext
     private var isIntentsEnable = false
-
-   // @Rule
-   // var rule: ActivityTestRule<*> = getActivityTestRule()
 
     protected open fun getPermissionsToBeAccepted() = arrayOf<String>()
 
@@ -38,7 +35,7 @@ open class BaseTest {
             getPermissionsToBeAccepted().forEach {
                 InstrumentationRegistry.getInstrumentation()
                         .uiAutomation
-                        .executeShellCommand("pm grant ${context?.packageName} $it")
+                        .executeShellCommand("pm grant ${context.packageName} $it")
             }
         }
     }
