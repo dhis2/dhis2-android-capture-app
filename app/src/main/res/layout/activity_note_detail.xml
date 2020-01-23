@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context="org.dhis2.usescases.notes.noteDetail.NoteDetailActivity">
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/startGuideline"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            app:layout_constraintGuide_begin="16dp"/>
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/endGuideline"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            app:layout_constraintGuide_end="16dp"/>
+
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?android:attr/actionBarSize"
+            android:background="?bgTransparent"
+            android:gravity="center_vertical"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageView
+                android:id="@+id/menu"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginStart="16dp"
+                android:onClick="@{()->presenter.onBackClick()}"
+                app:layout_constraintStart_toStartOf="parent"
+                app:srcCompat="@drawable/ic_arrow_back"
+                android:tint="@color/black_de0"
+                tools:ignore="ContentDescription" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <TextView
+            android:id="@+id/noteLabel"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:layout_marginTop="10dp"
+            android:textColor="#DE333333"
+            app:layout_constraintTop_toBottomOf="@id/toolbar"
+            app:layout_constraintBottom_toTopOf="@id/inputLayout"
+            app:layout_constraintStart_toEndOf="@id/startGuideline"
+            app:layout_constraintEnd_toStartOf="@id/endGuideline"
+            tools:text="New Note"/>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/inputLayout"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:hint="Write a new notes"
+            app:boxStrokeWidth="0dp"
+            app:layout_constraintTop_toBottomOf="@id/noteLabel"
+            app:layout_constraintStart_toEndOf="@id/startGuideline"
+            app:layout_constraintEnd_toStartOf="@id/endGuideline" >
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/noteText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/clearButton"
+            style="@style/Widget.MaterialComponents.Button.TextButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/clear"
+            android:layout_marginEnd="4dp"
+            android:layout_marginBottom="8dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/saveButton"
+            />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/saveButton"
+            style="@style/Widget.MaterialComponents.Button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:text="@string/save"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/endGuideline"
+            />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
