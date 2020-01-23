@@ -2,9 +2,6 @@ package org.dhis2.usescases.teiDashboard.dashboardfragments.indicators;
 
 import androidx.annotation.NonNull;
 
-import com.squareup.sqlbrite2.BriteDatabase;
-
-import org.dhis2.data.dagger.PerActivity;
 import org.dhis2.data.dagger.PerFragment;
 import org.dhis2.data.forms.FormRepository;
 import org.dhis2.data.forms.dataentry.EnrollmentRuleEngineRepository;
@@ -42,8 +39,7 @@ public class IndicatorsModule {
 
     @Provides
     @PerFragment
-    RuleEngineRepository ruleEngineRepository(@NonNull BriteDatabase briteDatabase,
-                                              @NonNull FormRepository formRepository,
+    RuleEngineRepository ruleEngineRepository(@NonNull FormRepository formRepository,
                                               D2 d2) {
         EnrollmentCollectionRepository enrollmentRepository = d2.enrollmentModule().enrollments()
                 .byTrackedEntityInstance().eq(teiUid);
@@ -51,7 +47,7 @@ public class IndicatorsModule {
             enrollmentRepository = enrollmentRepository.byProgram().eq(programUid);
 
         String uid = enrollmentRepository.one().blockingGet().uid();
-        return new EnrollmentRuleEngineRepository(briteDatabase, formRepository, uid, d2);
+        return new EnrollmentRuleEngineRepository(formRepository, uid, d2);
     }
 
 }

@@ -274,11 +274,6 @@ dependencies {
     kapt "com.ryanharter.auto.value:auto-value-parcel:${libraries.autovalueparcel}"
     //endregion
 
-    //region BRITEDATABASE
-    //square
-    implementation "com.squareup.sqlbrite3:sqlbrite:${libraries.sqlbrite}"
-    implementation 'com.github.lykmapipo:sqlbrite-migrations:v1.0.1'
-
     //endregion
 
     //region PLAY SERVICES

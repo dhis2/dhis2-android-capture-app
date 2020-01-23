@@ -10,30 +10,26 @@ import androidx.paging.DataSource;
 import androidx.paging.LivePagedListBuilder;
 import androidx.paging.PagedList;
 
-import com.squareup.sqlbrite2.BriteDatabase;
-
 import org.dhis2.Bindings.ExtensionsKt;
 import org.dhis2.Bindings.ValueExtensionsKt;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel;
-import org.dhis2.utils.CodeGenerator;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.ValueUtils;
 import org.dhis2.utils.filters.FilterManager;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper;
+import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope;
 import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.android.core.enrollment.EnrollmentCreateProjection;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
-import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.event.EventCollectionRepository;
 import org.hisp.dhis.android.core.event.EventStatus;
-import org.hisp.dhis.android.core.maintenance.D2Error;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitMode;
 import org.hisp.dhis.android.core.period.DatePeriod;
@@ -71,8 +67,6 @@ import static android.text.TextUtils.isEmpty;
 
 public class SearchRepositoryImpl implements SearchRepository {
 
-    private final BriteDatabase briteDatabase;
-
     private final String PROGRAM_TRACKED_ENTITY_ATTRIBUTES_VALUES_PROGRAM_QUERY = String.format(
             "SELECT %s.*, %s.%s, %s.%s FROM %s " +
                     "JOIN %s ON %s.%s = %s.%s " +
@@ -103,8 +97,7 @@ public class SearchRepositoryImpl implements SearchRepository {
     private final D2 d2;
 
 
-    SearchRepositoryImpl(CodeGenerator codeGenerator, BriteDatabase briteDatabase, String teiType, D2 d2) {
-        this.briteDatabase = briteDatabase;
+    SearchRepositoryImpl(String teiType, D2 d2) {
         this.teiType = teiType;
         this.d2 = d2;
     }
@@ -113,7 +106,7 @@ public class SearchRepositoryImpl implements SearchRepository {
     @NonNull
     @Override
     public Observable<List<TrackedEntityAttribute>> programAttributes(String programId) {
-        return d2.programModule().programTrackedEntityAttributes().byProgram().eq(programId).get().toObservable()
+        return d2.programModule().programTrackedEntityAttributes().byProgram().eq(programId).orderBySortOrder(RepositoryScope.OrderByDirection.ASC).get().toObservable()
                 .flatMap(attributes -> {
                     List<String> uids = new ArrayList<>();
                     for (ProgramTrackedEntityAttribute pteAttribute : attributes) {
@@ -204,7 +197,7 @@ public class SearchRepositoryImpl implements SearchRepository {
         if (isOnline && states.isEmpty()) {
             //TODO: SEARCH OFFLINEFIRST
             dataSource = trackedEntityInstanceQuery.offlineFirst().getDataSource()
-                    .mapByPage(list->filterByStatus(list,eventStatuses))
+                    .mapByPage(list -> filterByStatus(list, eventStatuses))
                     .mapByPage(this::filterDeleted)
                     .map(tei -> transform(tei, selectedProgram, true));
         } else {
@@ -212,7 +205,7 @@ public class SearchRepositoryImpl implements SearchRepository {
             dataSource = trackedEntityInstanceQuery.offlineOnly().getDataSource() //TODO: ASK SDK TO FILTER BY BOTH ENROLLMENT DATE AND EVENT DATES
                     .mapByPage(list -> filterByState(list, states))
                     .mapByPage(list -> filterByPeriod(list, periods))
-                    .mapByPage(list->filterByStatus(list,eventStatuses))
+                    .mapByPage(list -> filterByStatus(list, eventStatuses))
                     .mapByPage(this::filterDeleted)
                     .map(tei -> transform(tei, selectedProgram, true));
         }
@@ -481,14 +474,19 @@ public class SearchRepositoryImpl implements SearchRepository {
     private void setAttributesInfo(SearchTeiModel searchTei, Program selectedProgram) {
         if (selectedProgram == null) {
             String id = searchTei != null && searchTei.getTei() != null && searchTei.getTei().uid() != null ? searchTei.getTei().uid() : "";
-            try (Cursor attributes = briteDatabase.query(PROGRAM_TRACKED_ENTITY_ATTRIBUTES_VALUES_QUERY,
-                    id)) {
+            try (Cursor attributes = d2.databaseAdapter().rawQuery(PROGRAM_TRACKED_ENTITY_ATTRIBUTES_VALUES_QUERY,
+                    new String[]{id})) {
                 if (attributes != null) {
                     attributes.moveToFirst();
                     for (int i = 0; i < attributes.getCount(); i++) {
                         if (searchTei != null)
-                            if(!attributes.getString(attributes.getColumnIndex("valueType")).equals(ValueType.IMAGE.name())) {
-                                searchTei.addAttributeValue(ValueUtils.transform(briteDatabase, attributes));
+                            if (!attributes.getString(attributes.getColumnIndex("valueType")).equals(ValueType.IMAGE.name())) {
+                                TrackedEntityAttributeValue attributeValue = TrackedEntityAttributeValue.create(attributes);
+                                TrackedEntityAttribute attribute = d2.trackedEntityModule().trackedEntityAttributes().uid(attributeValue.trackedEntityAttribute()).blockingGet();
+                                searchTei.addAttributeValue(
+                                        ValueUtils.transform(
+                                                d2, attributeValue, attribute.valueType(), attribute.optionSet() != null ? attribute.optionSet().uid() : null)
+                                );
                             }
                         attributes.moveToNext();
                     }
@@ -497,22 +495,24 @@ public class SearchRepositoryImpl implements SearchRepository {
         } else {
             String teiId = searchTei != null && searchTei.getTei() != null && searchTei.getTei().uid() != null ? searchTei.getTei().uid() : "";
             String progId = selectedProgram.uid() != null ? selectedProgram.uid() : "";
-            try (Cursor attributes = briteDatabase.query(PROGRAM_TRACKED_ENTITY_ATTRIBUTES_VALUES_PROGRAM_QUERY,
-                    progId,
-                    teiId)) {
+            try (Cursor attributes = d2.databaseAdapter().rawQuery(PROGRAM_TRACKED_ENTITY_ATTRIBUTES_VALUES_PROGRAM_QUERY, new String[]{progId, teiId})) {
                 if (attributes != null) {
                     attributes.moveToFirst();
                     for (int i = 0; i < attributes.getCount(); i++) {
                         if (searchTei != null)
-                            if(!attributes.getString(attributes.getColumnIndex("valueType")).equals(ValueType.IMAGE.name())) {
-                                searchTei.addAttributeValue(ValueUtils.transform(briteDatabase, attributes));
+                            if (!attributes.getString(attributes.getColumnIndex("valueType")).equals(ValueType.IMAGE.name())) {
+                                TrackedEntityAttributeValue attributeValue = TrackedEntityAttributeValue.create(attributes);
+                                TrackedEntityAttribute attribute = d2.trackedEntityModule().trackedEntityAttributes().uid(attributeValue.trackedEntityAttribute()).blockingGet();
+                                searchTei.addAttributeValue(
+                                        ValueUtils.transform(
+                                                d2, attributeValue, attribute.valueType(), attribute.optionSet() != null ? attribute.optionSet().uid() : null)
+                                );
                             }
                         attributes.moveToNext();
                     }
                 }
             }
         }
-
     }
 
 
@@ -570,7 +570,7 @@ public class SearchRepositoryImpl implements SearchRepository {
 
     private List<TrackedEntityInstance> filterByState(List<TrackedEntityInstance> teis, List<State> states) {
         Iterator<TrackedEntityInstance> iterator = teis.iterator();
-        if(!states.isEmpty()) {
+        if (!states.isEmpty()) {
             while (iterator.hasNext()) {
                 if (!states.contains(iterator.next().state()))
                     iterator.remove();
@@ -653,7 +653,7 @@ public class SearchRepositoryImpl implements SearchRepository {
                 TrackedEntityAttributeValue.Builder attrValueBuilder = TrackedEntityAttributeValue.builder();
                 for (TrackedEntityAttributeValue attrValue : tei.trackedEntityAttributeValues()) {
 
-                    String friendlyValue = ValueExtensionsKt.userFriendlyValue(attrValue,d2);
+                    String friendlyValue = ValueExtensionsKt.userFriendlyValue(attrValue, d2);
 
                     attrValueBuilder.value(friendlyValue)
                             .created(attrValue.created())
