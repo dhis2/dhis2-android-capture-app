@@ -198,6 +198,7 @@ public class DataSetTableAdapter extends AbstractTableAdapter<CategoryOption, Da
         rows.get(holder.getItemViewType()).onBind(holder, viewModels.get(rowPosition).get(columnPosition).withValue(cellItemModel.toString()), cellItemModel.toString());
         holder.itemView.getLayoutParams().width = currentWidth;
         holder.itemView.getLayoutParams().height = currentHeight;
+        holder.itemView.requestLayout();
     }
 
     public void swap(List<List<FieldViewModel>> viewModels) {

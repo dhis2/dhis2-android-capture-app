@@ -63,35 +63,38 @@ class TableRecyclerAdapter(
     }
 
     private fun bindTableViewHolder(holder: TableViewHolder, position: Int) {
-        tables[position] = holder.tableView
+        if(tables[position]==null) {
+            tables[position] = holder.tableView
 
-        val dataSetTable = tableList[position]
-        val dataTableModel = dataSetTable.dataTableModel
-        val accessDataWrite = dataSetTable.accessDataWrite
+            val dataSetTable = tableList[position]
+            val dataTableModel = dataSetTable.dataTableModel
+            val accessDataWrite = dataSetTable.accessDataWrite
 
-        val adapter = adapterList[position]
+            val adapter = adapterList[position]
 
-        adapter.showColumnTotal = if (section.uid().isEmpty()) false else section.showColumnTotals()
-        adapter.showRowTotal = if (section.uid().isEmpty()) false else section.showRowTotals()
+            adapter.showColumnTotal =
+                if (section.uid().isEmpty()) false else section.showColumnTotals()
+            adapter.showRowTotal = if (section.uid().isEmpty()) false else section.showRowTotals()
 
 
-        val columnHeaders: MutableList<MutableList<CategoryOption>>? = dataTableModel.header()
-        adapter.catCombo = dataTableModel.catCombo()?.uid()
-        adapter.setTableView(holder.tableView)
-        adapter.initializeRows(accessDataWrite)
-        adapter.setDataElementDecoration(dataSet.dataElementDecoration())
+            val columnHeaders: MutableList<MutableList<CategoryOption>>? = dataTableModel.header()
+            adapter.catCombo = dataTableModel.catCombo()?.uid()
+            adapter.setTableView(holder.tableView)
+            adapter.initializeRows(accessDataWrite)
+            adapter.setDataElementDecoration(dataSet.dataElementDecoration())
 
-        holder.tableView.adapter = adapter
-        holder.tableView.headerCount = columnHeaders?.size!!
+            holder.tableView.adapter = adapter
+            holder.tableView.headerCount = columnHeaders?.size!!
 
-        adapter.swap(dataSetTable.fields)
+            adapter.swap(dataSetTable.fields)
 
-        adapter.setAllItems(
-            columnHeaders,
-            dataTableModel.rows(),
-            dataSetTable.cells,
-            adapter.showRowTotal
-        )
+            adapter.setAllItems(
+                columnHeaders,
+                dataTableModel.rows(),
+                dataSetTable.cells,
+                adapter.showRowTotal
+            )
+        }
     }
 
     private fun bindProgressViewHolder(holder:ProgressViewHolder){

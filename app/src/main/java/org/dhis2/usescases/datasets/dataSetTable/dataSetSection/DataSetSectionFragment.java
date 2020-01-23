@@ -62,7 +62,7 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
     @Inject
     DataValuePresenter presenterFragment;
 
-    private MutableLiveData<Integer> currentTablePosition = new MutableLiveData<>();
+    private MutableLiveData<Integer> currentTablePosition = new MutableLiveData<>(0);
     private DataSet dataSet;
     private Section section;
     private int tablesCount;
@@ -166,6 +166,9 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
     }
 
     private void loadHeader(int position) {
+        if(tableAdapter==null || tableAdapter.getTables().isEmpty()){
+            return;
+        }
         TableView tableView = tableAdapter.getTables().get(position);
 
         if (tableView != null) {
