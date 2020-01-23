@@ -1,7 +1,6 @@
 package org.dhis2
 
 import org.dhis2.common.preferences.PreferencesTestingModule
-import org.dhis2.data.database.DbModule
 import org.dhis2.data.schedulers.SchedulerModule
 import org.dhis2.data.schedulers.SchedulersProviderImpl
 import org.dhis2.data.server.ServerModule
@@ -22,7 +21,7 @@ class AppTest : App() {
     @Override
     override fun setUpServerComponent() {
         D2Manager.blockingInstantiateD2(ServerModule.getD2Configuration(this))
-        serverComponent = appComponent.plus(ServerModule(), DbModule(DATABASE_NAME))
+        serverComponent = appComponent.plus(ServerModule())
         setUpUserComponent()
     }
 
