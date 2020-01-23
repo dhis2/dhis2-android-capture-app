@@ -33,7 +33,6 @@ class LoginTest : BaseTest() {
     //    onView(withId(R.id.login)).check(matches(isDisplayed()))
     }
 
-
     @Test
     fun loginButtonShouldBeDisplayedWhenAllFieldsAreFilled2() {
         startActivity()

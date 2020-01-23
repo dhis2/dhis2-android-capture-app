@@ -1,7 +1,9 @@
 package org.dhis2.usescases.main
 
+import android.Manifest
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
+import org.dhis2.common.matchers.RecyclerviewMatchers
 import org.dhis2.usescases.BaseTest
 import org.junit.Rule
 import org.junit.Test
@@ -13,10 +15,15 @@ class MainTest : BaseTest() {
     @get:Rule
     val rule = ActivityTestRule(MainActivity::class.java, false, false)
 
+    override fun getPermissionsToBeAccepted(): Array<String> {
+        return arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA)
+    }
+
     @Test
     fun loginButtonShouldBeDisplayedWhenAllFieldsAreFilled() {
         startActivity()
         Thread.sleep(5000)
+
     }
 
     @Test

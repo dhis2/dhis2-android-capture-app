@@ -4,6 +4,7 @@ import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.os.Build
 import android.util.Log
+import androidx.test.espresso.intent.Intents
 import androidx.test.platform.app.InstrumentationRegistry
 import org.dhis2.AppTest
 import org.dhis2.DisableAnimations
@@ -17,6 +18,7 @@ open class BaseTest {
 
     @JvmField
     protected var context: Context? = InstrumentationRegistry.getInstrumentation().targetContext
+    private var isIntentsEnable = false
 
    // @Rule
    // var rule: ActivityTestRule<*> = getActivityTestRule()
@@ -26,7 +28,7 @@ open class BaseTest {
     @Before
     @Throws(Exception::class)
     open fun setUp() {
-     //   allowPermissions()
+        allowPermissions()
         setupMockServerIfNeeded()
         injectDependencies()
     }
@@ -41,7 +43,6 @@ open class BaseTest {
         }
     }
 
-
     private fun injectDependencies() {
 
     }
@@ -53,7 +54,22 @@ open class BaseTest {
     @After
     @Throws(Exception::class)
     open fun teardown() {
+        disableIntents()
         cleanPreferences()
+    }
+
+    fun enableIntents() {
+        if (!isIntentsEnable){
+            Intents.init()
+            isIntentsEnable = true
+        }
+    }
+
+    private fun disableIntents() {
+        if (isIntentsEnable){
+            Intents.release()
+            isIntentsEnable = false
+        }
     }
 
     private fun cleanPreferences() {
