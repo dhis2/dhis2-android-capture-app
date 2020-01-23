@@ -32,7 +32,7 @@ public class EventCapturePagerAdapter extends FragmentStatePagerAdapter {
             default:
                 return EventCaptureFormFragment.getInstance();
             case 1:
-                return NotesFragment.getEventInstance(programUid, eventUid);
+                return NotesFragment.newEventInstance(programUid, eventUid);
         }
     }
 

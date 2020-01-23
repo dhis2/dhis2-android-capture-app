@@ -88,7 +88,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:clipToPadding="false"
-            android:elevation="8dp"
             app:elevation="8dp"
             app:tabPaddingEnd="16dp"
             app:tabPaddingStart="16dp"

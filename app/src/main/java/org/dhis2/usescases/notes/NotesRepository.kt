@@ -20,16 +20,7 @@ class NotesRepository(private val d2: D2, val programUid: String) {
                 .one().blockingGet().uid()
         ).get()
 
-    fun getEventNotes(eventUid: String) = Single.just(
-        listOf<Note>(
-            Note.builder()
-                .uid("uid")
-                .storedBy("The dude")
-                .storedDate(DateUtils.databaseDateFormat().format(Date()))
-                .value("Take it easy")
-                .build()
-        )
-    )
+    fun getEventNotes(eventUid: String) = Single.just(listOf<Note>())
 
     fun hasProgramWritePermission(): Boolean =
         d2.programModule().programs().uid(programUid).blockingGet().access().data().write()

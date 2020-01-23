@@ -58,7 +58,7 @@ public class DashboardPagerAdapter extends FragmentStatePagerAdapter {
                 }
                 return relationshipFragment;
             case 3:
-               return NotesFragment.getTrackerInstance(currentProgram, teiUid);
+               return NotesFragment.newTrackerInstance(currentProgram, teiUid);
             default:
                 if (teiDataFragment == null) {
                     teiDataFragment = new TEIDataFragment();
