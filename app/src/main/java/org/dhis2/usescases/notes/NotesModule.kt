@@ -31,7 +31,6 @@ import dagger.Module
 import dagger.Provides
 import org.dhis2.data.dagger.PerFragment
 import org.dhis2.data.schedulers.SchedulerProvider
-import org.dhis2.usescases.teiDashboard.DashboardRepository
 import org.hisp.dhis.android.core.D2
 
 @PerFragment
@@ -63,6 +62,4 @@ class NotesModule(
     internal fun providesNotesRepository(d2: D2): NotesRepository {
         return NotesRepository(d2, programUid)
     }
-
-
 }
