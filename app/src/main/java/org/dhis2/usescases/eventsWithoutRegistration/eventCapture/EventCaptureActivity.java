@@ -120,6 +120,7 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
 
     @Override
     public void onBackPressed() {
+        clearFocus();
         if (eventMode == EventMode.NEW) {
             new CustomDialog(
                     this,
