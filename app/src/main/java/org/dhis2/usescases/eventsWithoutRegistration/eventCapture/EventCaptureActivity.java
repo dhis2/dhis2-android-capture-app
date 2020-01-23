@@ -164,6 +164,11 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
                     presenter.nextCalculation(true);
                 }
                 break;
+            case Constants.RQ_QR_SCANNER:
+                if(resultCode == RESULT_OK) {
+                    scanTextView.updateScanResult(data.getStringExtra(Constants.EXTRA_DATA));
+                }
+                break;
         }
     }
 
