@@ -1,15 +1,17 @@
 package org.dhis2.usescases.programEventDetail;
 
-import static android.text.TextUtils.isEmpty;
+import androidx.annotation.NonNull;
+import androidx.lifecycle.LiveData;
+import androidx.paging.DataSource;
+import androidx.paging.LivePagedListBuilder;
+import androidx.paging.PagedList;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import com.mapbox.geojson.BoundingBox;
+import com.mapbox.geojson.FeatureCollection;
 
+import org.dhis2.Bindings.ValueExtensionsKt;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.utils.DateUtils;
-import org.dhis2.utils.ValueUtils;
 import org.dhis2.utils.maps.GeometryUtils;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper;
@@ -20,7 +22,6 @@ import org.hisp.dhis.android.core.category.CategoryOption;
 import org.hisp.dhis.android.core.category.CategoryOptionCombo;
 import org.hisp.dhis.android.core.common.FeatureType;
 import org.hisp.dhis.android.core.common.State;
-import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.dataelement.DataElement;
 import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.event.EventCollectionRepository;
@@ -32,19 +33,16 @@ import org.hisp.dhis.android.core.program.ProgramStageDataElement;
 import org.hisp.dhis.android.core.program.ProgramStageSection;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValue;
 
-import com.mapbox.geojson.BoundingBox;
-import com.mapbox.geojson.FeatureCollection;
-import com.squareup.sqlbrite2.BriteDatabase;
-
-import androidx.annotation.NonNull;
-import androidx.lifecycle.LiveData;
-import androidx.paging.DataSource;
-import androidx.paging.LivePagedListBuilder;
-import androidx.paging.PagedList;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
 
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
+
+import static android.text.TextUtils.isEmpty;
 
 /**
  * QUADRAM. Created by ppajuelo on 02/11/2017.
@@ -52,13 +50,11 @@ import io.reactivex.Single;
 
 public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepository {
 
-    private final BriteDatabase briteDatabase;
     private final String programUid;
     private D2 d2;
 
-    ProgramEventDetailRepositoryImpl(String programUid, BriteDatabase briteDatabase, D2 d2) {
+    ProgramEventDetailRepositoryImpl(String programUid, D2 d2) {
         this.programUid = programUid;
-        this.briteDatabase = briteDatabase;
         this.d2 = d2;
     }
 
@@ -149,7 +145,7 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
                 event.organisationUnit(),
                 orgUnitName,
                 event.eventDate(),
-                event.state()!=null?event.state():State.TO_UPDATE,
+                event.state() != null ? event.state() : State.TO_UPDATE,
                 data,
                 event.status(),
                 hasExpired || !inOrgUnitRange,
@@ -214,16 +210,16 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
                     one.sortOrder().compareTo(two.sortOrder()));
 
             List<String> dataElementsOrder = new ArrayList<>();
-            if(stageSections.size() == 0){
+            if (stageSections.size() == 0) {
                 List<ProgramStageDataElement> programStageDataElements =
                         d2.programModule().programStageDataElements().byProgramStage()
-                        .eq(programStage).orderBySortOrder(RepositoryScope.OrderByDirection.ASC)
-                        .blockingGet();
+                                .eq(programStage).orderBySortOrder(RepositoryScope.OrderByDirection.ASC)
+                                .blockingGet();
 
-                for(ProgramStageDataElement programStageDataElement: programStageDataElements){
+                for (ProgramStageDataElement programStageDataElement : programStageDataElements) {
                     dataElementsOrder.add(programStageDataElement.dataElement().uid());
                 }
-            }else {
+            } else {
                 for (ProgramStageSection section : stageSections) {
                     dataElementsOrder.addAll(UidsHelper.getUidsList(section.dataElements()));
                 }
@@ -239,13 +235,7 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
                 DataElement de = d2.dataElementModule().dataElements().uid(dataValue.dataElement()).blockingGet();
                 if (de != null && showInReportsDataElements.contains(de.uid())) {
                     String displayName = !isEmpty(de.displayFormName()) ? de.displayFormName() : de.displayName();
-                    String value = dataValue.value();
-                    if (de.optionSet() != null)
-                        value = ValueUtils.optionSetCodeToDisplayName(briteDatabase, de.optionSet().uid(), value);
-                    else if (de.valueType().equals(ValueType.ORGANISATION_UNIT))
-                        value = ValueUtils.orgUnitUidToDisplayName(briteDatabase, value);
-
-                    //TODO: Would be good to check other value types to render value (coordinates)
+                    String value = ValueExtensionsKt.userFriendlyValue(dataValue, d2);
                     data.add(Pair.create(displayName, value));
                 }
             }

@@ -33,6 +33,7 @@ import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.DialogClickListener;
+import org.dhis2.utils.EventMode;
 import org.dhis2.utils.FileResourcesUtil;
 import org.dhis2.utils.customviews.CustomDialog;
 import org.dhis2.utils.customviews.FormBottomDialog;
@@ -59,6 +60,8 @@ import static org.dhis2.utils.analytics.AnalyticsConstants.SHOW_HELP;
  */
 public class EventCaptureActivity extends ActivityGlobalAbstract implements EventCaptureContract.View, View.OnTouchListener, GestureDetector.OnGestureListener {
 
+    private static final int RQ_GO_BACK = 1202;
+
     private static final int SWIPE_THRESHOLD = 100;
     private static final int SWIPE_VELOCITY_THRESHOLD = 100;
 
@@ -69,11 +72,13 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
     EventCaptureContract.Presenter presenter;
     private String programStageUid;
     private Boolean isEventCompleted = false;
+    private EventMode eventMode;
 
-    public static Bundle getActivityBundle(@NonNull String eventUid, @NonNull String programUid) {
+    public static Bundle getActivityBundle(@NonNull String eventUid, @NonNull String programUid, @NonNull EventMode eventMode) {
         Bundle bundle = new Bundle();
         bundle.putString(Constants.EVENT_UID, eventUid);
         bundle.putString(Constants.PROGRAM_UID, programUid);
+        bundle.putSerializable(Constants.EVENT_MODE, eventMode);
         return bundle;
     }
 
@@ -87,6 +92,7 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_event_capture);
         binding.setPresenter(presenter);
+        eventMode = (EventMode) getIntent().getSerializableExtra(Constants.EVENT_MODE);
         gestureScanner = new GestureDetector(this, this);
 
         binding.calculationIndicator.text.setTextColor(ColorUtils.getContrastColor(ColorUtils.getPrimaryColor(this, ColorUtils.ColorType.PRIMARY_LIGHT)));
@@ -112,6 +118,31 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
     }
 
     @Override
+    public void onBackPressed() {
+        if(eventMode == EventMode.NEW) {
+            new CustomDialog(
+                    this,
+                    getString(R.string.title_delete_go_back),
+                    getString(R.string.delete_go_back),
+                    getString(R.string.cancel),
+                    getString(R.string.missing_mandatory_fields_go_back),
+                    RQ_GO_BACK,
+                    new DialogClickListener() {
+                        @Override
+                        public void onPositive() { }
+
+                        @Override
+                        public void onNegative() {
+                            presenter.deleteEvent();
+                        }
+                    }
+            ).show();
+        } else {
+            finishDataEntry();
+        }
+    }
+
+    @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
@@ -131,6 +162,11 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
                     } else
                         presenter.saveImage(uuid, null);
                     presenter.nextCalculation(true);
+                }
+                break;
+            case Constants.RQ_QR_SCANNER:
+                if(resultCode == RESULT_OK) {
+                    scanTextView.updateScanResult(data.getStringExtra(Constants.EXTRA_DATA));
                 }
                 break;
         }
@@ -522,6 +558,6 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
 
     @Override
     public void back() {
-        finishDataEntry();
+        onBackPressed();
     }
 }

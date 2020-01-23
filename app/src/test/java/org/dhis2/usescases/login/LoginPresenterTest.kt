@@ -103,26 +103,6 @@ class LoginPresenterTest {
     }
 
     @Test
-    fun `Should unlock session`() {
-        whenever((preferenceProvider.getString(PIN, ""))) doReturn "123"
-
-        loginPresenter.unlockSession("123")
-
-        verify(preferenceProvider).setValue(SESSION_LOCKED, false)
-        verify(view).startActivity(MainActivity::class.java, null, true, true, null)
-    }
-
-    @Test
-    fun `Should not unlock session`() {
-        whenever((preferenceProvider.getString(PIN, ""))) doReturn "333"
-
-        loginPresenter.unlockSession("123")
-
-        verify(preferenceProvider, times(0)).setValue(SESSION_LOCKED, false)
-        verify(view, times(0)).startActivity(MainActivity::class.java, null, true, true, null)
-    }
-
-    @Test
     fun `Should show alert when URL info is clicked`() {
         loginPresenter.onUrlInfoClick()
 

@@ -1,5 +1,6 @@
 package org.dhis2.utils.customviews;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.text.InputFilter;
@@ -76,6 +77,7 @@ public class CustomTextView extends FieldLayout implements View.OnFocusChangeLis
         inflater = LayoutInflater.from(context);
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     private void setLayout() {
         if (isBgTransparent && !isLongText)
             binding = DataBindingUtil.inflate(inflater, R.layout.custom_text_view, this, true);
@@ -92,8 +94,9 @@ public class CustomTextView extends FieldLayout implements View.OnFocusChangeLis
         descriptionLabel = binding.getRoot().findViewById(R.id.descriptionLabel);
         dummy = findViewById(R.id.dummyFocusView);
 
-        editText.setOnClickListener(v -> {
+        editText.setOnTouchListener((v, event) -> {
             activate();
+            return true;
         });
         descIcon = findViewById(R.id.descIcon);
 
@@ -212,8 +215,8 @@ public class CustomTextView extends FieldLayout implements View.OnFocusChangeLis
     }
 
     public void setEditable(Boolean editable) {
-        editText.setFocusable(false);
-        editText.setFocusableInTouchMode(false);
+        editText.setFocusable(editable);
+        editText.setFocusableInTouchMode(editable);
         editText.setClickable(editable);
         editText.setEnabled(editable);
     }

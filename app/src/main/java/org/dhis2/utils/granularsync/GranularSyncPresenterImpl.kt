@@ -44,6 +44,9 @@ import java.util.Collections
 import java.util.Date
 import org.dhis2.data.schedulers.SchedulerProvider
 import org.dhis2.data.service.SyncGranularWorker
+import org.dhis2.data.service.workManager.WorkManagerController
+import org.dhis2.data.service.workManager.WorkerItem
+import org.dhis2.data.service.workManager.WorkerType
 import org.dhis2.usescases.sms.SmsSendingService
 import org.dhis2.utils.Constants.ATTRIBUTE_OPTION_COMBO
 import org.dhis2.utils.Constants.CATEGORY_OPTION_COMBO
@@ -73,7 +76,7 @@ class GranularSyncPresenterImpl(
     private val dvOrgUnit: String?,
     private val dvAttrCombo: String?,
     private val dvPeriodId: String?,
-    private val workManager: WorkManager
+    private val workManagerController: WorkManagerController
 ) : GranularSyncContracts.Presenter {
 
     private var disposable: CompositeDisposable = CompositeDisposable()
@@ -135,13 +138,7 @@ class GranularSyncPresenterImpl(
         return d2.smsModule().configCase().smsModuleConfig.blockingGet().isModuleEnabled
     }
 
-    override fun initGranularSync(): LiveData<MutableList<WorkInfo>> {
-        val syncGranularEventBuilder = OneTimeWorkRequest.Builder(SyncGranularWorker::class.java)
-        syncGranularEventBuilder.setConstraints(
-            Constraints.Builder()
-                .setRequiredNetworkType(NetworkType.CONNECTED)
-                .build()
-        )
+    override fun initGranularSync(): LiveData<List<WorkInfo>> {
 
         var conflictTypeData: SyncStatusDialog.ConflictType? = null
         var dataToDataValues: Data? = null
@@ -164,20 +161,24 @@ class GranularSyncPresenterImpl(
         }
         var uid = recordUid
         if (dataToDataValues == null) {
-            syncGranularEventBuilder.setInputData(
-                Data.Builder().putString(
-                    UID,
-                    recordUid
-                ).putString(CONFLICT_TYPE, conflictTypeData!!.name).build()
-            )
+            dataToDataValues = Data.Builder()
+                .putString(UID, recordUid)
+                .putString(CONFLICT_TYPE, conflictTypeData!!.name)
+                .build()
         } else {
-            syncGranularEventBuilder.setInputData(dataToDataValues)
             uid = dvOrgUnit + "_" + dvPeriodId + "_" + dvAttrCombo
         }
-        val request = syncGranularEventBuilder.build()
-        workManager.beginUniqueWork(uid, ExistingWorkPolicy.KEEP, request).enqueue()
 
-        return workManager.getWorkInfosForUniqueWorkLiveData(uid)
+        val workerItem =
+            WorkerItem(
+                uid,
+                WorkerType.GRANULAR,
+                data = dataToDataValues,
+                policy = ExistingWorkPolicy.KEEP
+            )
+
+        workManagerController.beginUniqueWork(workerItem)
+        return workManagerController.getWorkInfosForUniqueWorkLiveData(uid)
     }
 
     override fun initSMSSync(): LiveData<List<SmsSendingService.SendingStatus>> {

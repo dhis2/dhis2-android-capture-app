@@ -37,6 +37,7 @@ import org.dhis2.utils.Constants
 import org.dhis2.utils.DatePickerUtils
 import org.dhis2.utils.DateUtils
 import org.dhis2.utils.DialogClickListener
+import org.dhis2.utils.EventMode
 import org.dhis2.utils.FileResourcesUtil
 import org.dhis2.utils.analytics.CLICK
 import org.dhis2.utils.analytics.DELETE_AND_BACK
@@ -174,7 +175,7 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
                 if (resultCode == Activity.RESULT_OK) {
                     try {
                         val imageUri = data?.data
-                        presenter.saveValue(
+                        presenter.saveFile(
                             uuid,
                             FileResourcesUtil.getFileFromGallery(this, imageUri).path
                         )
@@ -190,11 +191,7 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
                         FileResourceDirectoryHelper.getFileResourceDirectory(this),
                         "tempFile.png"
                     )
-                    if (file.exists()) {
-                        presenter.saveValue(uuid, file.path)
-                    } else {
-                        presenter.saveValue(uuid, null)
-                    }
+                    presenter.saveFile(uuid, if (file.exists()) file.path else null)
                 }
             }
             RQ_EVENT -> openDashboard(presenter.getEnrollment().uid()!!)
@@ -221,7 +218,7 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
         } else {
             val eventCreationIntent = Intent(abstracContext, EventCaptureActivity::class.java)
             eventCreationIntent.putExtras(
-                EventCaptureActivity.getActivityBundle(eventUid, presenter.getProgram().uid())
+                EventCaptureActivity.getActivityBundle(eventUid, presenter.getProgram().uid(), EventMode.CHECK)
             )
             eventCreationIntent.putExtra(
                 Constants.TRACKED_ENTITY_INSTANCE,

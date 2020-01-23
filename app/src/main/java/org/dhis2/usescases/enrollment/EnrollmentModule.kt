@@ -7,7 +7,10 @@ import org.dhis2.R
 import org.dhis2.data.dagger.PerActivity
 import org.dhis2.data.forms.RulesRepository
 import org.dhis2.data.forms.dataentry.DataEntryRepository
+import org.dhis2.data.forms.dataentry.DataEntryStore
 import org.dhis2.data.forms.dataentry.EnrollmentRepository
+import org.dhis2.data.forms.dataentry.ValueStore
+import org.dhis2.data.forms.dataentry.ValueStoreImpl
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactoryImpl
 import org.dhis2.data.schedulers.SchedulerProvider
 import org.hisp.dhis.android.core.D2
@@ -72,7 +75,8 @@ class EnrollmentModule(
         teiRepository: TrackedEntityInstanceObjectRepository,
         programRepository: ReadOnlyOneObjectRepositoryFinalImpl<Program>,
         schedulerProvider: SchedulerProvider,
-        formRepository: EnrollmentFormRepository
+        formRepository: EnrollmentFormRepository,
+        valueStore: ValueStore
     ): EnrollmentPresenterImpl {
         return EnrollmentPresenterImpl(
             enrollmentView,
@@ -82,7 +86,18 @@ class EnrollmentModule(
             teiRepository,
             programRepository,
             schedulerProvider,
-            formRepository
+            formRepository,
+            valueStore
+        )
+    }
+
+    @Provides
+    @PerActivity
+    fun valueStore(d2: D2, enrollmentRepository: EnrollmentObjectRepository): ValueStore {
+        return ValueStoreImpl(
+            d2,
+            enrollmentRepository.blockingGet().trackedEntityInstance()!!,
+            DataEntryStore.EntryMode.ATTR
         )
     }
 

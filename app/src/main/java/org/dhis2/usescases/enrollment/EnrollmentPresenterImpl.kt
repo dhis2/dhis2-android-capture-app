@@ -1,43 +1,31 @@
 package org.dhis2.usescases.enrollment
 
-import android.text.TextUtils.isEmpty
+import android.annotation.SuppressLint
 import io.reactivex.Flowable
 import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.functions.BiFunction
 import io.reactivex.processors.FlowableProcessor
 import io.reactivex.processors.PublishProcessor
-import java.io.File
-import java.util.Date
-import kotlin.collections.ArrayList
-import kotlin.collections.HashMap
-import kotlin.collections.List
-import kotlin.collections.forEach
-import kotlin.collections.map
-import kotlin.collections.set
-import kotlin.collections.sortBy
-import kotlin.collections.toMap
-import kotlin.collections.toMutableMap
 import org.dhis2.R
 import org.dhis2.data.forms.dataentry.DataEntryRepository
+import org.dhis2.data.forms.dataentry.ValueStore
+import org.dhis2.data.forms.dataentry.ValueStoreImpl
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel
 import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel
 import org.dhis2.data.schedulers.SchedulerProvider
 import org.dhis2.utils.CodeGeneratorImpl
+import org.dhis2.utils.DhisTextUtils
 import org.dhis2.utils.Result
 import org.dhis2.utils.RulesActionCallbacks
 import org.dhis2.utils.RulesUtilsProviderImpl
 import org.hisp.dhis.android.core.D2
-import org.hisp.dhis.android.core.arch.helpers.UidsHelper
 import org.hisp.dhis.android.core.arch.repositories.`object`.ReadOnlyOneObjectRepositoryFinalImpl
-import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.Geometry
-import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.enrollment.EnrollmentObjectRepository
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
-import org.hisp.dhis.android.core.event.EventStatus
 import org.hisp.dhis.android.core.maintenance.D2Error
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.program.Program
@@ -45,6 +33,8 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceObjectRepos
 import org.hisp.dhis.rules.models.RuleActionShowError
 import org.hisp.dhis.rules.models.RuleEffect
 import timber.log.Timber
+import java.util.Date
+import kotlin.collections.set
 
 class EnrollmentPresenterImpl(
     val view: EnrollmentView,
@@ -54,7 +44,8 @@ class EnrollmentPresenterImpl(
     private val teiRepository: TrackedEntityInstanceObjectRepository,
     private val programRepository: ReadOnlyOneObjectRepositoryFinalImpl<Program>,
     private val schedulerProvider: SchedulerProvider,
-    val formRepository: EnrollmentFormRepository
+    val formRepository: EnrollmentFormRepository,
+    private val valueStore: ValueStore
 ) : RulesActionCallbacks {
 
     private val TAG = "EnrollmentPresenter"
@@ -198,12 +189,12 @@ class EnrollmentPresenterImpl(
                     }
                     Pair(blockEnrollmentDate, blockIncidentDate)
                 }.map {
-                if (getProgram().access()?.data()!!.write() == true) {
-                    it
-                } else {
-                    Pair(first = true, second = true)
+                    if (getProgram().access()?.data()!!.write() == true) {
+                        it
+                    } else {
+                        Pair(first = true, second = true)
+                    }
                 }
-            }
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
@@ -244,28 +235,27 @@ class EnrollmentPresenterImpl(
 
         disposable.add(
             view.rowActions().onBackpressureBuffer()
-                .map {
-                    if (checkUniqueFilter(it.id(), it.value())) {
-                        val saved = saveValue(it.id(), it.value())
-                        if (saved) {
-                            lastFocusItem = it.id()
-                        }
-                        Pair(saved, false)
-                    } else {
-                        Pair(first = false, second = true)
-                    }
+                .flatMap { rowAction ->
+                    valueStore.save(rowAction.id(), rowAction.value())
                 }
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
                     {
-                        if (it.first) {
-                            fieldsFlowable.onNext(true)
-                        } else if (it.second) {
-                            view.showInfoDialog(
-                                view.context.getString(R.string.error),
-                                view.context.getString(R.string.unique_warning)
-                            )
+                        when (it.valueStoreResult) {
+                            ValueStoreImpl.ValueStoreResult.VALUE_CHANGED -> {
+                                lastFocusItem = it.uid
+                                fieldsFlowable.onNext(true)
+                            }
+                            ValueStoreImpl.ValueStoreResult.VALUE_HAS_NOT_CHANGED -> {
+                                /*Do nothing*/
+                            }
+                            ValueStoreImpl.ValueStoreResult.VALUE_NOT_UNIQUE -> {
+                                view.showInfoDialog(
+                                    view.context.getString(R.string.error),
+                                    view.context.getString(R.string.unique_warning)
+                                )
+                            }
                         }
                     },
                     { Timber.tag(TAG).e(it) }
@@ -304,7 +294,7 @@ class EnrollmentPresenterImpl(
                     .observeOn(schedulerProvider.ui())
                     .subscribe(
                         {
-                            if (!isEmpty(it.second)) {
+                            if (!DhisTextUtils.isEmpty(it.second)) {
                                 view.openEvent(it.second)
                             } else {
                                 view.openDashboard(it.first)
@@ -322,7 +312,7 @@ class EnrollmentPresenterImpl(
         val event = d2.eventModule().events().uid(eventUid).blockingGet()
         val stage = d2.programModule().programStages().uid(event.programStage()).blockingGet()
         val needsCatCombo = programRepository.blockingGet().categoryComboUid() != null &&
-            d2.categoryModule().categoryCombos().uid(catComboUid).blockingGet().isDefault == false
+                d2.categoryModule().categoryCombos().uid(catComboUid).blockingGet().isDefault == false
         val needsCoordinates =
             stage.featureType() != null && stage.featureType() != FeatureType.NONE
 
@@ -412,122 +402,9 @@ class EnrollmentPresenterImpl(
         return lastFocusItem
     }
 
-    fun clearLastFocusItem() {
-        lastFocusItem = null
-    }
-
-    private fun checkUniqueFilter(uid: String, value: String?): Boolean {
-        return if (value != null && valueIsAttribute(uid)) {
-            val isUnique =
-                d2.trackedEntityModule().trackedEntityAttributes().uid(uid).blockingGet()!!.unique()
-                    ?: false
-            val hasValue = !d2.trackedEntityModule().trackedEntityAttributeValues()
-                .byTrackedEntityAttribute().eq(uid)
-                .byValue().eq(value).blockingGet().isEmpty()
-            if (isUnique) {
-                !hasValue
-            } else {
-                true
-            }
-        } else {
-            true
-        }
-    }
-
-    fun saveValue(uid: String, value: String?): Boolean {
-        return if (valueIsAttribute(uid)) {
-            saveAttribute(uid, value)
-        } else {
-            saveDataElement(uid, value)
-        }
-    }
-
-    private fun saveAttribute(uid: String, value: String?): Boolean {
-        val valueRepository = d2.trackedEntityModule().trackedEntityAttributeValues()
-            .value(uid, teiRepository.blockingGet().uid())
-        var newValue = value
-        if (d2.trackedEntityModule().trackedEntityAttributes().uid(uid).blockingGet().valueType() ==
-            ValueType.IMAGE &&
-            value != null
-        ) {
-            newValue = getFileResource(value)
-        }
-
-        val currentValue = if (valueRepository.blockingExists()) {
-            valueRepository.blockingGet().value()
-        } else {
-            null
-        }
-        return if (currentValue != newValue) {
-            if (!isEmpty(value)) {
-                valueRepository.blockingSet(newValue)
-            } else {
-                valueRepository.blockingDelete()
-            }
-            true
-        } else {
-            false
-        }
-    }
-
-    private fun saveDataElement(uid: String, value: String?): Boolean {
-        val eventUid = getEventUid(uid)
-        var newValue = value
-        return if (eventUid != null) {
-            val valueRepository = d2.trackedEntityModule().trackedEntityDataValues()
-                .value(eventUid, uid)
-
-            if (d2.dataElementModule().dataElements().uid(uid).blockingGet().valueType() ==
-                ValueType.IMAGE &&
-                value != null
-            ) {
-                newValue = getFileResource(value)
-            }
-
-            val currentValue = if (valueRepository.blockingExists()) {
-                valueRepository.blockingGet().value()
-            } else {
-                null
-            }
-
-            if (currentValue != newValue) {
-                if (!isEmpty(value)) {
-                    valueRepository.blockingSet(newValue)
-                } else {
-                    valueRepository.blockingDelete()
-                }
-                true
-            } else {
-                false
-            }
-        } else {
-            false
-        }
-    }
-
-    private fun getFileResource(path: String): String {
-        val file = File(path)
-        return d2.fileResourceModule().fileResources().blockingAdd(file)
-    }
-
-    private fun getEventUid(dataElement: String): String? {
-        val events = d2.eventModule().events().byEnrollmentUid().eq(getEnrollment().uid())
-            .byStatus().eq(EventStatus.ACTIVE)
-            .orderByEventDate(RepositoryScope.OrderByDirection.DESC).blockingGet().map { it.uid() }
-        val dataValues = d2.trackedEntityModule().trackedEntityDataValues()
-            .byDataElement().eq(dataElement)
-            .byEvent().`in`(events)
-            .blockingGet()
-
-        return if (dataValues != null && !dataValues.isEmpty()) {
-            dataValues[0].event()!!
-        } else {
-            null
-        }
-    }
-
-    private fun valueIsAttribute(uid: String): Boolean {
-        return d2.trackedEntityModule().trackedEntityAttributes().uid(uid).blockingExists()
+    @SuppressLint("CheckResult")
+    fun saveFile(attributeUid: String, value: String?) {
+        valueStore.save(attributeUid, value).blockingFirst()
     }
 
     fun onDettach() {
@@ -583,58 +460,13 @@ class EnrollmentPresenterImpl(
         try {
             if (d2.dataElementModule().dataElements().uid(uid).blockingExists()) {
                 // TODO: CHECK THIS: Enrollments rules should not assign values to dataElements
-//                handleAssignToDataElement(uid, value)
             } else if (
                 d2.trackedEntityModule().trackedEntityAttributes().uid(uid).blockingExists()
             ) {
-                handleAssignToAttribute(uid, value)
+                valueStore.save(uid, value).blockingFirst()
             }
         } catch (d2Error: D2Error) {
             Timber.e(d2Error.originalException())
-        }
-    }
-
-    @Throws(D2Error::class)
-    private fun handleAssignToDataElement(deUid: String, value: String?) {
-        val eventUids = UidsHelper.getUidsList(
-            d2.eventModule().events()
-                .byEnrollmentUid().eq(getEnrollment().uid())
-                .byStatus().`in`(EventStatus.ACTIVE, EventStatus.COMPLETED)
-                .blockingGet()
-        )
-
-        for (eventUid in eventUids) {
-            if (!isEmpty(value)) {
-                d2.trackedEntityModule().trackedEntityDataValues().value(
-                    eventUid,
-                    deUid
-                ).blockingSet(value)
-            } else if (d2.trackedEntityModule().trackedEntityDataValues().value(
-                eventUid,
-                deUid
-            ).blockingExists()
-            ) {
-                d2.trackedEntityModule().trackedEntityDataValues().value(
-                    eventUid,
-                    deUid
-                ).blockingDelete()
-            }
-        }
-    }
-
-    @Throws(D2Error::class)
-    private fun handleAssignToAttribute(attributeUid: String, value: String?) {
-        val tei = teiRepository.blockingGet().uid()
-        if (!isEmpty(value)) {
-            d2.trackedEntityModule().trackedEntityAttributeValues().value(attributeUid, tei)
-                .blockingSet(value)
-        } else if (d2.trackedEntityModule().trackedEntityAttributeValues().value(
-            attributeUid,
-            tei
-        ).blockingExists()
-        ) {
-            d2.trackedEntityModule().trackedEntityAttributeValues().value(attributeUid, tei)
-                .blockingDelete()
         }
     }
 

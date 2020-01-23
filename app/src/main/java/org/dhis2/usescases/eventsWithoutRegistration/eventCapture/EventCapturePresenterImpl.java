@@ -1,5 +1,6 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventCapture;
 
+import android.annotation.SuppressLint;
 import android.os.Handler;
 
 import androidx.annotation.NonNull;
@@ -9,7 +10,7 @@ import androidx.databinding.ObservableField;
 import org.dhis2.R;
 import org.dhis2.data.forms.FormSectionViewModel;
 import org.dhis2.data.forms.dataentry.DataEntryArguments;
-import org.dhis2.data.forms.dataentry.DataEntryStore;
+import org.dhis2.data.forms.dataentry.ValueStore;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.display.DisplayViewModel;
 import org.dhis2.data.forms.dataentry.fields.image.ImageViewModel;
@@ -20,12 +21,12 @@ import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Quartet;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureFragment.EventCaptureFormFragment;
 import org.dhis2.utils.AuthorityException;
+import org.dhis2.utils.DhisTextUtils;
 import org.dhis2.utils.Result;
 import org.dhis2.utils.RulesActionCallbacks;
 import org.dhis2.utils.RulesUtilsProvider;
 import org.hisp.dhis.android.core.common.Unit;
 import org.hisp.dhis.android.core.event.EventStatus;
-import org.hisp.dhis.android.core.organisationunit.OrganisationUnitLevel;
 import org.hisp.dhis.rules.models.RuleActionShowError;
 import org.hisp.dhis.rules.models.RuleEffect;
 import org.jetbrains.annotations.NotNull;
@@ -41,7 +42,6 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Flowable;
-import io.reactivex.Observable;
 import io.reactivex.Single;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.flowables.ConnectableFlowable;
@@ -49,7 +49,6 @@ import io.reactivex.processors.FlowableProcessor;
 import io.reactivex.processors.PublishProcessor;
 import timber.log.Timber;
 
-import static android.text.TextUtils.isEmpty;
 
 /**
  * QUADRAM. Created by ppajuelo on 19/11/2018.
@@ -58,12 +57,12 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
 
     private final EventCaptureContract.EventCaptureRepository eventCaptureRepository;
     private final RulesUtilsProvider rulesUtils;
-    private final DataEntryStore dataEntryStore;
     private final String eventUid;
     private final PublishProcessor<Unit> progressProcessor;
     private final PublishProcessor<Unit> sectionAdjustProcessor;
     private final PublishProcessor<Unit> formAdjustProcessor;
     private final SchedulerProvider schedulerProvider;
+    private final ValueStore valueStore;
     private CompositeDisposable compositeDisposable;
     private EventCaptureContract.View view;
     private int currentPosition;
@@ -99,12 +98,15 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
         this.lastFocusItem = null;
     }
 
-    public EventCapturePresenterImpl(EventCaptureContract.View view, String eventUid, EventCaptureContract.EventCaptureRepository eventCaptureRepository, RulesUtilsProvider rulesUtils, DataEntryStore dataEntryStore, SchedulerProvider schedulerProvider) {
+    public EventCapturePresenterImpl(EventCaptureContract.View view, String eventUid,
+                                     EventCaptureContract.EventCaptureRepository eventCaptureRepository,
+                                     RulesUtilsProvider rulesUtils,
+                                     ValueStore valueStore, SchedulerProvider schedulerProvider) {
         this.view = view;
         this.eventUid = eventUid;
         this.eventCaptureRepository = eventCaptureRepository;
         this.rulesUtils = rulesUtils;
-        this.dataEntryStore = dataEntryStore;
+        this.valueStore = valueStore;
         this.schedulerProvider = schedulerProvider;
         this.currentPosition = 0;
         this.sectionsToHide = new ArrayList<>();
@@ -263,7 +265,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
 
                                             HashMap<String, Boolean> finalFields = new HashMap<>();
                                             for (FieldViewModel fieldViewModel : fieldViewModels) {
-                                                finalFields.put(fieldViewModel.optionSet() == null ? fieldViewModel.uid() : fieldViewModel.optionSet(), !isEmpty(fieldViewModel.value()));
+                                                finalFields.put(fieldViewModel.optionSet() == null ? fieldViewModel.uid() : fieldViewModel.optionSet(), !DhisTextUtils.Companion.isEmpty(fieldViewModel.value()));
                                             }
                                             for (String key : finalFields.keySet())
                                                 if (finalFields.get(key))
@@ -274,7 +276,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                                             int cont = 0;
                                             HashMap<String, Boolean> finalFields = new HashMap<>();
                                             for (FieldViewModel fieldViewModel : fields) {
-                                                finalFields.put(fieldViewModel.optionSet() == null ? fieldViewModel.uid() : fieldViewModel.optionSet(), !isEmpty(fieldViewModel.value()));
+                                                finalFields.put(fieldViewModel.optionSet() == null ? fieldViewModel.uid() : fieldViewModel.optionSet(), !DhisTextUtils.Companion.isEmpty(fieldViewModel.value()));
                                             }
                                             for (String key : finalFields.keySet())
                                                 if (finalFields.get(key))
@@ -339,14 +341,14 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                 .startWith(true)
                 .filter(newCalculation -> newCalculation)
                 .flatMap(newCalculation -> Flowable.zip(
-                        eventCaptureRepository.list().doOnNext(next -> Timber.tag("TESTLOG").d("NEXT LIST")),
-                        eventCaptureRepository.calculate().doOnNext(next -> Timber.tag("TESTLOG").d("NEXT EFFECTS")),
-                        this::applyEffects).doOnNext(next -> Timber.tag("TESTLOG").d("NEXT ZIP"))
+                        eventCaptureRepository.list(),
+                        eventCaptureRepository.calculate(),
+                        this::applyEffects)
                 ).map(fields ->
                         {
                             emptyMandatoryFields = new HashMap<>();
                             for (FieldViewModel fieldViewModel : fields) {
-                                if (fieldViewModel.mandatory() && isEmpty(fieldViewModel.value()) && !sectionsToHide.contains(fieldViewModel.programStageSection()))
+                                if (fieldViewModel.mandatory() && DhisTextUtils.Companion.isEmpty(fieldViewModel.value()) && !sectionsToHide.contains(fieldViewModel.programStageSection()))
                                     emptyMandatoryFields.put(fieldViewModel.uid(), fieldViewModel);
                             }
                             return fields;
@@ -444,9 +446,9 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                                     this.lastFocusItem = action.id();
                                 }
                                 eventCaptureRepository.setLastUpdated(action.id());
-                                if (emptyMandatoryFields.containsKey(action.id()) && !isEmpty(action.value()))
+                                if (emptyMandatoryFields.containsKey(action.id()) && !DhisTextUtils.Companion.isEmpty(action.value()))
                                     emptyMandatoryFields.remove(action.id());
-                                return dataEntryStore.save(action.id(), action.value());
+                                return valueStore.save(action.id(), action.value());
                             }
                     ).subscribe(result -> nextCalculation(true),
                             Timber::d)
@@ -501,7 +503,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
         }
 
         //Display the DisplayViewModels only in the last section
-        if (getFinalSections().size() > 1 && !isEmpty(currentSection.get()) && !currentSection.get().equals(sectionList.get(sectionList.size() - 1).sectionUid())) {
+        if (getFinalSections().size() > 1 && !DhisTextUtils.Companion.isEmpty(currentSection.get()) && !currentSection.get().equals(sectionList.get(sectionList.size() - 1).sectionUid())) {
             Iterator<Map.Entry<String, FieldViewModel>> iter = fieldViewModels.entrySet().iterator();
             while (iter.hasNext())
                 if (iter.next().getValue() instanceof DisplayViewModel)
@@ -752,9 +754,10 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
         view.displayMessage(message);
     }
 
+    @SuppressLint("CheckResult")
     @Override
     public void saveImage(String uuid, String filePath) {
-        eventCaptureRepository.saveImage(uuid, filePath);
+        valueStore.save(uuid, filePath).blockingFirst();
     }
 
     //region ruleActions
@@ -776,12 +779,12 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
         Timber.d(view.getContext().getString(R.string.unsupported_program_rule));
     }
 
+    @SuppressLint("CheckResult")
     @Override
     public void save(@NotNull @NonNull String uid, @Nullable String value) {
         if (value == null || !sectionsToHide.contains(eventCaptureRepository.getSectionFor(uid))) {
-            eventCaptureRepository.assign(uid, value);
+            valueStore.saveWithTypeCheck(uid, value).blockingFirst();
         }
-//            EventCaptureFormFragment.getInstance().dataEntryFlowable().onNext(RowAction.create(uid, value));
     }
 
     @Override

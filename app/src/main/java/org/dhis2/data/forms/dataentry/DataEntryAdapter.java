@@ -34,6 +34,8 @@ import org.dhis2.data.forms.dataentry.fields.picture.PictureRow;
 import org.dhis2.data.forms.dataentry.fields.picture.PictureViewModel;
 import org.dhis2.data.forms.dataentry.fields.radiobutton.RadioButtonRow;
 import org.dhis2.data.forms.dataentry.fields.radiobutton.RadioButtonViewModel;
+import org.dhis2.data.forms.dataentry.fields.scan.ScanTextRow;
+import org.dhis2.data.forms.dataentry.fields.scan.ScanTextViewModel;
 import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerRow;
 import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel;
 import org.dhis2.data.forms.dataentry.fields.unsupported.UnsupportedRow;
@@ -66,6 +68,7 @@ public final class DataEntryAdapter extends Adapter {
     private static final int LONG_TEXT = 13;
     private static final int DISPLAY = 14;
     private static final int PICTURE = 15;
+    private static final int SCAN_CODE = 16;
 
 
     @NonNull
@@ -118,6 +121,7 @@ public final class DataEntryAdapter extends Adapter {
         rows.add(LONG_TEXT, new EditTextRow(layoutInflater, processor, true, dataEntryArguments.renderType(), true, currentFocusUid));
         rows.add(DISPLAY, new DisplayRow(layoutInflater));
         rows.add(PICTURE, new PictureRow(layoutInflater, processor, true));
+        rows.add(SCAN_CODE, new ScanTextRow(layoutInflater, processor, true));
     }
 
     public DataEntryAdapter(@NonNull LayoutInflater layoutInflater,
@@ -149,6 +153,7 @@ public final class DataEntryAdapter extends Adapter {
         rows.add(LONG_TEXT, new EditTextRow(layoutInflater, processor, true, dataEntryArguments.renderType(), true, currentFocusUid));
         rows.add(DISPLAY, new DisplayRow(layoutInflater));
         rows.add(PICTURE, new PictureRow(layoutInflater, processor, true));
+        rows.add(SCAN_CODE, new ScanTextRow(layoutInflater, processor, true));
     }
 
     @NonNull
@@ -218,6 +223,8 @@ public final class DataEntryAdapter extends Adapter {
             return DISPLAY;
         }else if (viewModel instanceof PictureViewModel) {
             return PICTURE;
+        }else if (viewModel instanceof ScanTextViewModel) {
+            return SCAN_CODE;
         } else {
             throw new IllegalStateException("Unsupported view model type: "
                     + viewModel.getClass());

@@ -3,14 +3,14 @@
 
 ## Meta data sync error
 
-In case of errors during the sync process, a message is displayed in the home screen which takes you to the sync error log. The sync error log gives details about the error and is prepared to be shared with admins.
+In case of errors during the sync process, a message is displayed in the settings menu ('Sync data' or 'Sync configuration' section). Also, a red sync icon is displayed next to the program in the Home screen. The sync error log gives details about the error and is prepared to be shared with admins.
 
-![](resources/images/image43.png){ width=25%}
+![](resources/images/image43.jpg){ width=25%}
 ![](resources/images/image11.png){ width=25%}
 
 You can also open the sync errors log from **Settings**:
 
-![](resources/images/image15.png){ width=25%}
+![](resources/images/image15.jpg){ width=25%}
 
 
 ## Personalize your Icon
@@ -18,7 +18,7 @@ You can also open the sync errors log from **Settings**:
 
 You can set your icon in the wallpaper using the DHIS 2 App Widget. The icon will be the flag configured in your server.
 
-![](resources/images/image32.png){ width=25%}
+![](resources/images/image32.jpg){ width=25%}
 
 > **Note**
 >
@@ -67,8 +67,8 @@ Icons can be associated to programs, stages, data elements and the options of an
 
 In the Android App icons render in the home screen to illustrate all the programs available to a user, or while adding an stage. For data elements and options, the icons render for single event programs, when a section contains a single DE, showing the option set as a matrix or sequence of images.
 
-![](resources/images/image19.png){ width=25%}
-![](resources/images/image26.png){ width=25%}
+![](resources/images/image19.jpg){ width=25%}
+![](resources/images/image26.jpg){ width=25%}
 
 > **Note**
 >
@@ -85,8 +85,8 @@ Tracker and Event capture now have the ability to render colours for programs, s
 
 In the Android App, the color will be rendered as background color for programs and stages combined with an icon (if selected). For options it renders as the background colour during data entry form for single event programs. When the user selects a program with an assigned colour, that colour becomes the background theme for all screens in the domain of the program.
 
-![](resources/images/image19.png){ width=25%}
-![](resources/images/image2.PNG){ width=25%}
+![](resources/images/image19.jpg){ width=25%}
+![](resources/images/image2.jpg){ width=25%}
 
 > **Note**
 >
@@ -98,22 +98,30 @@ In the Android App, the color will be rendered as background color for programs 
 
 **Program Section**: when used in combination with icons, a Program Section with a single data element and associated Option Set can render the options in sequential or matrix layout (see screenshots).
 
-![](resources/images/image26.png){ width=25%}
-![](resources/images/image36.PNG){ width=25%}
+![](resources/images/image26.jpg){ width=25%}
+![](resources/images/image36.jpg){ width=25%}
 
 > **Note**
 >
 > Render type for sections will first be available in the Android app, followed in future releases by the new web-based Capture App UI.
 
-## Calendar (Tracker Program)
+## Calendar
 
-Now it is possible to use two different calendars when making a new enrollment. The one on the left is the first to appear but you can change it by clicking on the calendar icon on the lower left corner. 
+Now it is possible to use two different calendars. The one on the left is the first to appear but you can change it by clicking on the calendar icon on the lower left corner.
+
+This is available when:
+
+1. Making a new enrollment.
+
+2. Creating a new event (Programs with and without registration).
+
+3. Using period filters in data sets and programs with and without registration.
 
 ![](resources/images/image60.png){ width=25%}
 ![](resources/images/image61.png){ width=25%}
 
 > **Note**
-> [ANDROAPP 2191](https://jira.dhis2.org/browse/ANDROAPP-2191).
+> 
 > For Android versions 4.4,  5.1 and small devices, the Accept option is not visible in the second calendar view.
 
 
