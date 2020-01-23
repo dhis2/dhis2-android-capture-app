@@ -19,6 +19,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.databinding.DataBindingUtil;
 
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 
 import org.dhis2.App;
@@ -119,7 +120,7 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
 
     @Override
     public void onBackPressed() {
-        if(eventMode == EventMode.NEW) {
+        if (eventMode == EventMode.NEW) {
             new CustomDialog(
                     this,
                     getString(R.string.title_delete_go_back),
@@ -129,7 +130,8 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
                     RQ_GO_BACK,
                     new DialogClickListener() {
                         @Override
-                        public void onPositive() { }
+                        public void onPositive() {
+                        }
 
                         @Override
                         public void onNegative() {
@@ -165,7 +167,7 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
                 }
                 break;
             case Constants.RQ_QR_SCANNER:
-                if(resultCode == RESULT_OK) {
+                if (resultCode == RESULT_OK) {
                     scanTextView.updateScanResult(data.getStringExtra(Constants.EXTRA_DATA));
                 }
                 break;
@@ -559,5 +561,16 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
     @Override
     public void back() {
         onBackPressed();
+    }
+
+    @Override
+    public void showEventIntegrityAlert() {
+        new MaterialAlertDialogBuilder(this, R.style.DhisMaterialDialog)
+                .setTitle(R.string.conflict)
+                .setMessage(R.string.event_date_in_future_message)
+                .setPositiveButton(R.string.change_event_date, (dialogInterface, i) -> goToInitialScreen())
+                .setNegativeButton(R.string.go_back, (dialogInterface, i) -> back())
+                .setCancelable(false)
+                .show();
     }
 }
