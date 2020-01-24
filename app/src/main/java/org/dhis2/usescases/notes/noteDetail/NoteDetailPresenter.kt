@@ -1,18 +1,51 @@
 package org.dhis2.usescases.notes.noteDetail
 
+import io.reactivex.disposables.CompositeDisposable
+import org.dhis2.data.schedulers.SchedulerProvider
+import timber.log.Timber
 
 class NoteDetailPresenter(
-    view: NoteDetailView,
-    noteId: String?,
-    repository: NoteDetailRepository) {
+    private val view: NoteDetailView,
+    private val scheduler: SchedulerProvider,
+    private val noteId: String?,
+    private val repository: NoteDetailRepository) {
 
+    val disposable = CompositeDisposable()
 
-    fun init(){}
+    fun init(){
+        disposable.add(
+            repository.getNote(noteId ?: "")
+                .subscribeOn(scheduler.io())
+                .observeOn(scheduler.ui())
+                .subscribe(
+                    view::setNote,
+                    Timber::d
+                )
+        )
+    }
 
-    fun save(){}
+    fun save(){
+        val data = view.getNewNote()
+        val noteType = data.val0() ?: throw IllegalArgumentException("")
+        val uid = data.val1()!!
+        val message = data.val2()!!
+        disposable.add(
+            repository.saveNote(noteType, uid, message)
+                .subscribeOn(scheduler.io())
+                .observeOn(scheduler.ui())
+                .subscribe(
+                    { view.noteSaved() },
+                    Timber::d
+                )
+        )
+    }
 
-    fun back(){}
+    fun back(){
+        view.back()
+    }
 
-    fun clear(){}
+    fun clear(){
+        view.showDiscardDialog()
+    }
 
 }

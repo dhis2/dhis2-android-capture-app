@@ -1,13 +1,33 @@
 package org.dhis2.usescases.notes.noteDetail
 
+import io.reactivex.Single
 import org.hisp.dhis.android.core.D2
+import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
+import org.hisp.dhis.android.core.note.Note
+import org.hisp.dhis.android.core.note.NoteCreateProjection
 
-class NoteDetailRepositoryImpl(d2: D2): NoteDetailRepository {
-    override fun getNote(): String {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+class NoteDetailRepositoryImpl(private val d2: D2): NoteDetailRepository {
+
+    override fun getNote(noteId: String): Single<Note> {
+        return d2.noteModule().notes().uid(noteId).get()
     }
 
-    override fun saveNote() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    override fun saveNote(type: NoteType, uid: String, message:String): Single<String> {
+        return if (type == NoteType.ENROLLMENT){
+            d2.noteModule().notes().add(
+                NoteCreateProjection.builder()
+                    .enrollment(
+                        d2.enrollmentModule().enrollments()
+                            .byProgram().eq("") //TODO: Needs program Uid
+                            .byTrackedEntityInstance().eq(uid)
+                            .byStatus().eq(EnrollmentStatus.ACTIVE)
+                            .one().blockingGet().uid()
+                    )
+                    .value(message)
+                    .build()
+            )
+        } else {
+            Single.just("")
+        }
     }
 }
