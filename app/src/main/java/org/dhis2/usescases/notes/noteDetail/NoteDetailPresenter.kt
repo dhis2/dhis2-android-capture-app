@@ -14,7 +14,7 @@ class NoteDetailPresenter(
 
     fun init(){
         disposable.add(
-            repository.getNote(noteId ?: "")
+            repository.getNote(noteId!!)
                 .subscribeOn(scheduler.io())
                 .observeOn(scheduler.ui())
                 .subscribe(
