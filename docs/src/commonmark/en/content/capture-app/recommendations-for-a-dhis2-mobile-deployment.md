@@ -24,7 +24,7 @@ If you are ready for deploying the new Android App in the field and your users a
 
 1.  Sync data of the current app you are using
 
-    > **Caution**
+    > **Warning**
     >
     > Deleting the app without syncing can cause information loss.
     
