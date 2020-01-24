@@ -44,7 +44,7 @@ import org.dhis2.utils.analytics.CLICK
 import org.dhis2.utils.analytics.CREATE_NOTE
 import org.hisp.dhis.android.core.note.Note
 
-class NotesFragment : FragmentGlobalAbstract(), NotesContracts.View {
+class NotesFragment : FragmentGlobalAbstract(), NotesView {
 
     @Inject
     lateinit var presenter: NotesPresenter
@@ -97,7 +97,7 @@ class NotesFragment : FragmentGlobalAbstract(), NotesContracts.View {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_notes, container, false)
         noteAdapter = NotesAdapter()
         binding.notesRecycler.adapter = noteAdapter
-        binding.addNoteButton.setOnClickListener { this.addNote(it) }
+        binding.addNoteButton.setOnClickListener { }
         return binding.root
     }
 
@@ -109,20 +109,6 @@ class NotesFragment : FragmentGlobalAbstract(), NotesContracts.View {
     override fun onPause() {
         presenter.onDetach()
         super.onPause()
-    }
-
-    fun addNote(view: View) {
-        if (presenter.hasProgramWritePermission()) {
-            analyticsHelper().setEvent(CREATE_NOTE, CLICK, CREATE_NOTE)
-            // presenter.saveNote(binding.editNote.text!!.toString())
-            clearNote(view)
-        } else {
-            displayMessage(getString(R.string.search_access_error))
-        }
-    }
-
-    fun clearNote(view: View) {
-        // binding.editNote.text!!.clear()
     }
 
     override fun swapNotes(): Consumer<List<Note>> {

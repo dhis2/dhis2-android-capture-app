@@ -36,7 +36,7 @@ import org.hisp.dhis.android.core.D2
 @PerFragment
 @Module
 class NotesModule(
-    private val view: NotesContracts.View,
+    private val view: NotesView,
     private val programUid: String,
     private val teiUid: String?,
     private val eventUid: String?
