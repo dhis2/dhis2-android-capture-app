@@ -24,7 +24,14 @@ class NoteDetailActivity : ActivityGlobalAbstract(), NoteDetailView {
         app().userComponent()?.plus(NoteDetailModule(this, noteId))?.inject(this)
         noteId?.let { isNewNote.set(false) }
         binding = DataBindingUtil.setContentView(this, R.layout.activity_note_detail)
-        binding.isForm = isNewNote
+        binding.apply {
+            isForm = isNewNote
+            presenter = presenter
+        }
+
+        if (!isNewNote.get()) {
+            presenter.init()
+        }
     }
 
     override fun showDiscardDialog() {
