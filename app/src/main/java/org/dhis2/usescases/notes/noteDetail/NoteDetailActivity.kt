@@ -26,10 +26,11 @@ class NoteDetailActivity : ActivityGlobalAbstract(), NoteDetailView {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val noteId: String? = intent.getStringExtra(Constants.NOTE_ID)
+        val programUid = intent.getStringExtra(Constants.PROGRAM_UID)
         noteType = intent.getSerializableExtra(Constants.NOTE_TYPE) as NoteType
         uid = intent.getStringExtra(Constants.UID)
 
-        app().userComponent()?.plus(NoteDetailModule(this, noteId))?.inject(this)
+        app().userComponent()?.plus(NoteDetailModule(this, noteId, programUid))?.inject(this)
         noteId?.let { isNewNote.set(false) }
         binding = DataBindingUtil.setContentView(this, R.layout.activity_note_detail)
         binding.apply {
@@ -58,7 +59,9 @@ class NoteDetailActivity : ActivityGlobalAbstract(), NoteDetailView {
     }
 
     override fun noteSaved() {
-        // Show toast and finish activity with RESULT_OK
+        showToast(getString(R.string.note_saved))
+        setResult(RESULT_OK)
+        finish()
     }
 
     override fun back() {

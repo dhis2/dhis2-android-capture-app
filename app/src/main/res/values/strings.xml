@@ -615,4 +615,5 @@
     <string name="disable_pin_locked">Don´t show again lock screen</string>
     <string name="set_pin">Set pin</string>
     <string name="new_note">New note</string>
+    <string name="note_saved">Note saved</string>
 </resources>
