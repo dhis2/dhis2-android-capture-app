@@ -86,23 +86,38 @@ figcaption{
 }
 
 .Note{
-  background-image: url(../images/admon/note.png);
+  background-image: url(../images/admin/note.png);
 }
 
 .Tip, .Truc {
-  background-image: url(../images/admon/tip.png);
+  background-image: url(../images/admin/tip.png);
 }
 
 .Important{
-  background-image: url(../images/admon/important.png);
+  background-image: url(../images/admin/important.png);
 }
 
 .Caution, .Prudence{
-  background-image: url(../images/admon/caution.png);
+  background-image: url(../images/admin/caution.png);
 }
 
 .Warning, .Attention, .Danger{
-  background-image: url(../images/admon/warning.png);
+  background-image: url(../images/admin/warning.png);
+}
+
+.Complete{
+  background-image: url(../images/admin/icon-complete.png);
+}
+
+.Incomplete{
+  background-image: url(../images/admin/icon-incomplete.png);
+}
+
+.Not_applicable{
+  background-image: url(../images/admin/icon-na.png);
+}
+.Work_in_progress{
+  background-image: url(../images/admin/icon-wip.png);
 }
 
 .thanks{
