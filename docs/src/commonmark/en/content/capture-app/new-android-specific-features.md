@@ -119,7 +119,7 @@ The user can now enter aggregate data for an organisation Unit, a period and a s
 
 ## Differentiating Data Sets, Tracker and Event programs
 
-![](resources/images/image87.PNG){ width=25%}
+![](resources/images/image87.png){ width=25%}
 
 > **Tip**
 >
