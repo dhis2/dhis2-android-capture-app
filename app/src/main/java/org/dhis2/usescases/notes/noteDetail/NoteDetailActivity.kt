@@ -2,34 +2,29 @@ package org.dhis2.usescases.notes.noteDetail
 
 import android.os.Bundle
 import androidx.databinding.DataBindingUtil
-import androidx.databinding.ViewDataBinding
-import kotlinx.android.synthetic.main.activity_add_note.view.noteText
-import kotlinx.android.synthetic.main.activity_login.view.userIcon
-import kotlinx.android.synthetic.main.activity_login.view.user_name
-import kotlinx.android.synthetic.main.activity_note_detail.view.note
-import kotlinx.android.synthetic.main.activity_note_detail.view.userName
-import kotlinx.android.synthetic.main.activity_note_detail.view.user_image
+import androidx.databinding.ObservableBoolean
 import org.dhis2.Bindings.app
 import org.dhis2.R
+import org.dhis2.databinding.ActivityNoteDetailBinding
 import org.dhis2.usescases.general.ActivityGlobalAbstract
 import javax.inject.Inject
 
 class NoteDetailActivity : ActivityGlobalAbstract(), NoteDetailView {
 
-    private lateinit var binding: ViewDataBinding
+    private lateinit var binding: ActivityNoteDetailBinding
 
     @Inject
     lateinit var presenter: NoteDetailPresenter
 
+    private val isNewNote: ObservableBoolean = ObservableBoolean(true)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val noteId: String? = intent.getStringExtra("NOTES_ID")
+        val noteId: String? = intent.getStringExtra("NOTE_ID")
         app().userComponent()?.plus(NoteDetailModule(this, noteId))?.inject(this)
-        binding = if (noteId.isNullOrEmpty()) {
-            DataBindingUtil.setContentView(this, R.layout.activity_add_note)
-        } else {
-            DataBindingUtil.setContentView(this, R.layout.activity_note_detail)
-        }
+        noteId?.let { isNewNote.set(false) }
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_note_detail)
+        binding.isForm = isNewNote
     }
 
     override fun showDiscardDialog() {
@@ -38,11 +33,12 @@ class NoteDetailActivity : ActivityGlobalAbstract(), NoteDetailView {
 
     override fun setNote(note: String) {
         // TODO: Change to correct note values
-        binding.root.userName.text = "User Name"
-        binding.root.note.text = note
+        binding.userName.text = "User Name"
+        binding.noteTime.text = "1 min ago"
+        binding.note.text = note
     }
 
     override fun getNoteMessage(): String {
-        return binding.root.noteText.text.toString()
+        return binding.noteText.text.toString()
     }
 }

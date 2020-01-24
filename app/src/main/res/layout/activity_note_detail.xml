@@ -4,7 +4,11 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+        <import type="android.view.View" />
 
+        <variable
+            name="isForm"
+            type="androidx.databinding.ObservableBoolean"/>
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -46,16 +50,17 @@
                 android:tint="@color/black_de0"
                 tools:ignore="ContentDescription" />
 
-            </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <ImageView
-            android:id="@+id/user_image"
+            android:id="@+id/userImage"
             android:layout_width="56dp"
             android:layout_height="56dp"
             android:layout_marginTop="10dp"
+            android:visibility="@{isForm ? View.GONE : View.VISIBLE}"
+            app:srcCompat="@drawable/ic_person"
             app:layout_constraintStart_toEndOf="@id/startGuideline"
             app:layout_constraintTop_toBottomOf="@id/toolbar"
-            app:srcCompat="@drawable/ic_person"
             tools:background="@drawable/photo_temp_gray"
             tools:ignore="ContentDescription" />
 
@@ -64,11 +69,24 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:textSize="16sp"
-            android:layout_marginStart="8dp"
+            android:layout_marginStart="16dp"
             android:textColor="#DE333333"
-            app:layout_constraintTop_toTopOf="@id/user_image"
-            app:layout_constraintBottom_toTopOf="@id/note"
-            app:layout_constraintStart_toEndOf="@id/user_image"
+            android:visibility="@{isForm ? View.GONE : View.VISIBLE}"
+            app:layout_constraintTop_toTopOf="@id/userImage"
+            app:layout_constraintStart_toEndOf="@id/userImage"
+            app:layout_constraintEnd_toStartOf="@id/endGuideline"
+            tools:text="User Name"/>
+
+        <TextView
+            android:id="@+id/noteTime"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textSize="12sp"
+            android:layout_marginStart="16dp"
+            android:textColor="#DE333333"
+            android:visibility="@{isForm ? View.GONE : View.VISIBLE}"
+            app:layout_constraintTop_toBottomOf="@id/userName"
+            app:layout_constraintStart_toEndOf="@id/userImage"
             app:layout_constraintEnd_toStartOf="@id/endGuideline"
             tools:text="User Name"/>
 
@@ -76,14 +94,77 @@
             android:id="@+id/note"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:layout_marginTop="6dp"
+            android:layout_marginTop="16dp"
             android:layout_marginBottom="8dp"
-            app:layout_constraintTop_toBottomOf="@id/user_image"
+            android:visibility="@{isForm ? View.GONE : View.VISIBLE}"
+            app:layout_constraintTop_toBottomOf="@id/userImage"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@id/startGuideline"
             app:layout_constraintEnd_toStartOf="@id/endGuideline" />
 
 
+        <TextView
+            android:id="@+id/newNoteLabel"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:text="@string/new_note"
+            android:layout_marginTop="10dp"
+            android:textColor="#DE333333"
+            android:visibility="@{isForm ? View.VISIBLE : View.GONE}"
+            app:layout_constraintTop_toBottomOf="@id/toolbar"
+            app:layout_constraintBottom_toTopOf="@id/inputLayout"
+            app:layout_constraintStart_toEndOf="@id/startGuideline"
+            app:layout_constraintEnd_toStartOf="@id/endGuideline"
+            tools:text="New Note"
+            tools:visibility="gone"/>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/inputLayout"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:hint="@string/write_new_note"
+            android:visibility="@{isForm ? View.VISIBLE : View.GONE}"
+            app:boxStrokeWidth="0dp"
+            app:layout_constraintTop_toBottomOf="@id/newNoteLabel"
+            app:layout_constraintStart_toEndOf="@id/startGuideline"
+            app:layout_constraintEnd_toStartOf="@id/endGuideline"
+            tools:hint="@string/write_new_note"
+            tools:visibility="gone">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/noteText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/clearButton"
+            style="@style/Widget.MaterialComponents.Button.TextButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/clear"
+            android:layout_marginEnd="4dp"
+            android:layout_marginBottom="8dp"
+            android:visibility="@{isForm ? View.VISIBLE : View.GONE}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/saveButton"
+            />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/saveButton"
+            style="@style/Widget.MaterialComponents.Button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:text="@string/save"
+            android:visibility="@{isForm ? View.VISIBLE : View.GONE}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/endGuideline"
+            />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
