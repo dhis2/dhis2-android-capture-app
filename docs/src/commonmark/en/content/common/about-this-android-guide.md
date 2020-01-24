@@ -44,10 +44,26 @@ conventions used in the document are explained below.
 > Information contained in these sections, if not heeded, could result
 > in permanent data loss or affect the overall usability of the system.
 
-> **Work_In_Progress**
+> **Complete**
 >
 > Information contained in these sections, will indicate that these 
-> are issues or errors we are currently working on.
+> are issues that have been fully implemented.
+
+> **Incomplete**
+>
+> Information contained in these sections, will indicate that these 
+> are issues that are not implemented and will be ignored.
+
+> **Not_applicable**
+>
+> Information contained in these sections, will indicate that these 
+> are issues not applicable.
+
+> **Work_in_progress**
+>
+> Information contained in these sections, will indicate that these 
+> are issues or freatures not completely implemented or with unexpected
+> behaviour already reported.
 
     Program listings usually contain some type of computer code.
     They will be displayed with a shaded background and a different font.
