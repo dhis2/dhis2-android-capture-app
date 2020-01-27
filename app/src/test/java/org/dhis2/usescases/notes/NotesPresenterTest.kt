@@ -6,9 +6,11 @@ import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Flowable
 import io.reactivex.Single
+import io.reactivex.processors.BehaviorProcessor
 import io.reactivex.processors.FlowableProcessor
 import io.reactivex.schedulers.TestScheduler
 import org.dhis2.data.schedulers.TestSchedulerProvider
+import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.Access
 import org.hisp.dhis.android.core.common.DataAccess
@@ -27,14 +29,17 @@ class NotesPresenterTest {
     private lateinit var presenter: NotesPresenter
     private val view: NotesView = mock()
     private val repository: NotesRepository = mock()
-    private val noteProcessor: FlowableProcessor<Boolean> = mock()
-    private val scheduler = TestSchedulerProvider(TestScheduler())
-    private var eventUid = UUID.randomUUID().toString()
-    private var teiUid = UUID.randomUUID().toString()
+    private val noteProcessor: FlowableProcessor<Boolean> = BehaviorProcessor.create()
+    private val scheduler = TrampolineSchedulerProvider()
+    private var uid: String = UUID.randomUUID().toString()
 
     @Before
-    fun setUp() {
-        presenter = NotesPresenter(view, repository, eventUid, teiUid, scheduler)
+    fun setUpForEnrollment() {
+        presenter = NotesPresenter(view, repository, uid, NoteType.ENROLLMENT, scheduler)
+    }
+
+    private fun setUpForEvent() {
+        presenter = NotesPresenter(view, repository, uid, NoteType.EVENT, scheduler)
     }
 
     @Test
@@ -56,40 +61,6 @@ class NotesPresenterTest {
     }
 
     @Test
-    fun `Should subscribe to notes for events`() {
-        val notes = listOf(dummyNote(), dummyNote())
-        teiUid = null.toString()
-
-        whenever(
-            noteProcessor.startWith(true)
-        ) doReturn Flowable.just(true)
-        whenever(
-            repository.getEventNotes(eventUid)
-        ) doReturn Single.just(notes)
-
-        presenter.subscribeToNotes()
-
-        verify(view).swapNotes()
-    }
-
-    @Test
-    fun `Should subscribe to notes for TEI enrollment`() {
-        val notes = listOf(dummyNote(), dummyNote())
-        eventUid = null.toString()
-
-        whenever(
-            noteProcessor.startWith(true)
-        ) doReturn Flowable.just(true)
-        whenever(
-            repository.getEnrollmentNotes(teiUid)
-        ) doReturn Single.just(notes)
-
-        presenter.subscribeToNotes()
-
-        verify(view).swapNotes()
-    }
-
-    @Test
     fun `Should check program write permission`() {
         whenever(
             repository.hasProgramWritePermission()
@@ -99,29 +70,68 @@ class NotesPresenterTest {
     }
 
     @Test
-    fun `Should save note to event`() {
-        teiUid = null.toString()
-        val message = "note"
-        val newNoteUID = UUID.randomUUID().toString()
+    fun `Should subscribe to notes for TEI enrollment`() {
+        val notes = listOf(dummyNote(), dummyNote())
 
         whenever(
-            repository.addEventNote(eventUid, message)
-        ) doReturn Single.just(newNoteUID)
+            repository.getEnrollmentNotes(uid)
+        ) doReturn Single.just(notes)
 
-       verify(noteProcessor).onNext(true)
+        noteProcessor.onNext(true)
+        presenter.subscribeToNotes()
+
+        verify(view).swapNotes(notes)
     }
 
     @Test
     fun `Should save note to TEI enrollment`() {
-        eventUid = null.toString()
         val message = "note"
         val newNoteUID = UUID.randomUUID().toString()
 
         whenever(
-            repository.addEnrollmentNote(teiUid, message)
+            repository.addEnrollmentNote(uid, message)
         ) doReturn Single.just(newNoteUID)
 
-        verify(noteProcessor).onNext(true)
+        val testSubscriber = presenter.noteProcessor.test()
+
+        presenter.saveNote(message)
+
+        testSubscriber.assertValueCount(1)
+        testSubscriber.assertValue(true)
+    }
+
+
+    @Test
+    fun `Should subscribe to notes for events`() {
+        setUpForEvent()
+        val notes = listOf(dummyNote(), dummyNote())
+
+        whenever(
+            repository.getEventNotes(uid)
+        ) doReturn Single.just(notes)
+
+        noteProcessor.onNext(true)
+        presenter.subscribeToNotes()
+
+        verify(view).swapNotes(notes)
+    }
+
+    @Test
+    fun `Should save note to event`() {
+        setUpForEvent()
+        val message = "note"
+        val newNoteUID = UUID.randomUUID().toString()
+
+        whenever(
+            repository.addEventNote(uid, message)
+        ) doReturn Single.just(newNoteUID)
+
+        val testSubscriber = presenter.noteProcessor.test()
+
+        presenter.saveNote(message)
+
+        testSubscriber.assertValueCount(1)
+        testSubscriber.assertValue(true)
     }
 
     private fun dummyNote(): Note =

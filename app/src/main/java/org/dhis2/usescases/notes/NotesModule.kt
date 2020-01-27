@@ -38,8 +38,8 @@ import org.hisp.dhis.android.core.D2
 class NotesModule(
     private val view: NotesView,
     private val programUid: String,
-    private val teiUid: String?,
-    private val eventUid: String?
+    private val uid: String,
+    private val noteType: NoteType
 ) {
 
     @Provides
@@ -51,8 +51,8 @@ class NotesModule(
         return NotesPresenter(
             view,
             notesRepository,
-            teiUid,
-            eventUid,
+            uid,
+            noteType,
             schedulerProvider
         )
     }

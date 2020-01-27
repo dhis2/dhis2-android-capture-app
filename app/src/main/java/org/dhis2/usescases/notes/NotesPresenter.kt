@@ -28,7 +28,6 @@
 package org.dhis2.usescases.notes
 
 import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.functions.Consumer
 import io.reactivex.processors.FlowableProcessor
 import io.reactivex.processors.PublishProcessor
 import org.dhis2.data.schedulers.SchedulerProvider
@@ -38,13 +37,13 @@ import timber.log.Timber
 class NotesPresenter(
     private val view: NotesView,
     private val notesRepository: NotesRepository,
-    private val teiUid: String?,
-    private val eventUid: String?,
+    private val uid: String,
+    private val noteType: NoteType,
     private val schedulerProvider: SchedulerProvider
 ) {
 
     var compositeDisposable = CompositeDisposable()
-    private val noteProcessor: FlowableProcessor<Boolean> = PublishProcessor.create()
+    val noteProcessor: FlowableProcessor<Boolean> = PublishProcessor.create()
 
     fun onDetach() {
         compositeDisposable.clear()
@@ -58,17 +57,16 @@ class NotesPresenter(
         compositeDisposable.add(
             noteProcessor.startWith(true)
                 .flatMapSingle<List<Note>> {
-                    eventUid?.let {
-                        notesRepository.getEventNotes(eventUid)
-                    } ?: teiUid?.let {
-                        notesRepository.getEnrollmentNotes(teiUid)
+                    when (noteType) {
+                        NoteType.EVENT -> notesRepository.getEventNotes(uid)
+                        NoteType.ENROLLMENT -> notesRepository.getEnrollmentNotes(uid)
                     }
                 }
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
-                    view.swapNotes(),
-                    Consumer<Throwable> { Timber.d(it) }
+                    view::swapNotes,
+                    Timber::e
                 )
         )
     }
@@ -76,9 +74,10 @@ class NotesPresenter(
     fun hasProgramWritePermission(): Boolean = notesRepository.hasProgramWritePermission()
 
     fun saveNote(message: String) {
-        val addNote = eventUid?.let {
-            notesRepository.addEventNote(eventUid, message)
-        } ?: notesRepository.addEnrollmentNote(teiUid!!, message)
+        val addNote = when (noteType) {
+            NoteType.EVENT -> notesRepository.addEventNote(uid, message)
+            NoteType.ENROLLMENT -> notesRepository.addEnrollmentNote(uid, message)
+        }
 
         compositeDisposable.add(
             addNote

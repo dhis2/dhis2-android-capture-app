@@ -33,15 +33,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
-import io.reactivex.functions.Consumer
 import javax.inject.Inject
 import org.dhis2.App
 import org.dhis2.R
 import org.dhis2.databinding.FragmentNotesBinding
 import org.dhis2.usescases.general.FragmentGlobalAbstract
 import org.dhis2.utils.Constants
-import org.dhis2.utils.analytics.CLICK
-import org.dhis2.utils.analytics.CREATE_NOTE
 import org.hisp.dhis.android.core.note.Note
 
 class NotesFragment : FragmentGlobalAbstract(), NotesView {
@@ -53,8 +50,8 @@ class NotesFragment : FragmentGlobalAbstract(), NotesView {
     private lateinit var noteAdapter: NotesAdapter
 
     private var programUid: String? = null
-    private var eventUid: String? = null
-    private var teiUid: String? = null
+    private lateinit var uid: String
+    private lateinit var noteType: NoteType
 
     companion object {
         @JvmStatic
@@ -62,7 +59,8 @@ class NotesFragment : FragmentGlobalAbstract(), NotesView {
             val instance = NotesFragment()
             val args = Bundle()
             args.putString(Constants.PROGRAM_UID, programUid)
-            args.putString(Constants.EVENT_UID, eventUid)
+            args.putString(Constants.UID, eventUid)
+            args.putSerializable(Constants.NOTE_TYPE, NoteType.EVENT)
             instance.arguments = args
             return instance
         }
@@ -72,7 +70,8 @@ class NotesFragment : FragmentGlobalAbstract(), NotesView {
             val instance = NotesFragment()
             val args = Bundle()
             args.putString(Constants.PROGRAM_UID, programUid)
-            args.putString(Constants.TRACKED_ENTITY_UID, teiUid)
+            args.putString(Constants.UID, teiUid)
+            args.putSerializable(Constants.NOTE_TYPE, NoteType.ENROLLMENT)
             instance.arguments = args
             return instance
         }
@@ -81,11 +80,11 @@ class NotesFragment : FragmentGlobalAbstract(), NotesView {
     override fun onAttach(context: Context) {
         super.onAttach(context)
         programUid = arguments?.getString(Constants.PROGRAM_UID)
-        eventUid = arguments?.getString(Constants.EVENT_UID)
-        teiUid = arguments?.getString(Constants.TRACKED_ENTITY_UID)
+        uid = arguments?.getString(Constants.UID) as String
+        noteType = arguments?.getSerializable(Constants.NOTE_TYPE) as NoteType
         (context.applicationContext as App)
             .userComponent()!!
-            .plus(NotesModule(this, programUid!!, teiUid, eventUid))
+            .plus(NotesModule(this, programUid!!, uid, noteType))
             .inject(this)
     }
 
@@ -97,7 +96,13 @@ class NotesFragment : FragmentGlobalAbstract(), NotesView {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_notes, container, false)
         noteAdapter = NotesAdapter()
         binding.notesRecycler.adapter = noteAdapter
-        binding.addNoteButton.setOnClickListener { }
+        binding.addNoteButton.setOnClickListener {
+            val args = Bundle()
+            args.putString(Constants.PROGRAM_UID, programUid)
+            args.putString(Constants.UID, uid)
+            args.putSerializable(Constants.NOTE_TYPE, noteType)
+            // TODO: startActivity with args
+        }
         return binding.root
     }
 
@@ -111,7 +116,7 @@ class NotesFragment : FragmentGlobalAbstract(), NotesView {
         super.onPause()
     }
 
-    override fun swapNotes(): Consumer<List<Note>> {
-        return Consumer { noteModels -> noteAdapter.setItems(noteModels) }
+    override fun swapNotes(noteModules: List<Note>) {
+        noteAdapter.setItems(noteModules)
     }
 }

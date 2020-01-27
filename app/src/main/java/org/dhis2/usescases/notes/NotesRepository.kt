@@ -1,8 +1,6 @@
 package org.dhis2.usescases.notes
 
 import io.reactivex.Single
-import java.util.Date
-import org.dhis2.utils.DateUtils
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
 import org.hisp.dhis.android.core.note.Note
@@ -20,8 +18,8 @@ class NotesRepository(private val d2: D2, val programUid: String) {
                 .one().blockingGet().uid()
         ).get()
 
-    fun getEventNotes(eventUid: String) : Single<List<Note>> {
-        //TODO: Implement when sdk can get event notes
+    fun getEventNotes(eventUid: String): Single<List<Note>> {
+        // TODO: Implement when sdk can get event notes
         return Single.just(listOf())
     }
 
