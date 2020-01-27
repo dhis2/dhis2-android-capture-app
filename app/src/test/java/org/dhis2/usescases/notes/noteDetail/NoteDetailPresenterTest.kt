@@ -5,7 +5,6 @@ import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.verifyNoMoreInteractions
-import com.nhaarman.mockitokotlin2.verifyZeroInteractions
 import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Single
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
@@ -13,7 +12,6 @@ import org.dhis2.data.tuples.Trio
 import org.hisp.dhis.android.core.note.Note
 import org.junit.Before
 import org.junit.Test
-
 
 class NoteDetailPresenterTest {
 
@@ -24,12 +22,11 @@ class NoteDetailPresenterTest {
 
     @Before
     fun setUp() {
-        presenter = NoteDetailPresenter(view, scheduler, null, repository)
+        presenter = NoteDetailPresenter(view, scheduler, "noteUid", repository)
     }
 
     @Test
     fun init() {
-        presenter = NoteDetailPresenter(view, scheduler, "noteUid", repository)
         val note = dummyNote()
 
         whenever(repository.getNote(any())) doReturn Single.just(note)
