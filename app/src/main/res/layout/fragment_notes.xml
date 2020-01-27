@@ -10,52 +10,16 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingStart="16dp"
-        android:paddingTop="8dp"
-        android:paddingEnd="16dp">
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/noteInputLayout"
-            style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.Dense"
-            android:layout_width="match_parent"
-            android:layout_height="140dp"
-            android:gravity="top"
-            android:hint="@string/write_new_note"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/editNote"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:gravity="start"
-                android:scrollbars="vertical"
-                android:textSize="12sp"
-                tools:text="@tools:sample/lorem/random" />
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <ImageButton
-            android:id="@+id/buttonDelete"
-            style="@style/ActionIcon"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintEnd_toEndOf="@id/noteInputLayout"
-            app:layout_constraintTop_toTopOf="@id/noteInputLayout"
-            app:srcCompat="@drawable/ic_clear"
-            android:tint="#5C5C5C"
-            android:visibility="gone"
-            />
+        android:padding="8dp">
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/notes_recycler"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_marginTop="24dp"
-            android:background="@android:color/white"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/noteInputLayout"
-            tools:listitem="@layout/item_notes" />
+            app:layout_constraintTop_toTopOf="parent"
+            tools:listitem="@layout/item_note" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/addNoteButton"

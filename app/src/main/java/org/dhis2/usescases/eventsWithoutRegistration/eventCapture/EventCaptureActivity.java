@@ -21,6 +21,7 @@ import androidx.databinding.DataBindingUtil;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.android.material.tabs.TabLayout;
 
 import org.dhis2.App;
 import org.dhis2.R;
@@ -98,7 +99,15 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
 
         binding.calculationIndicator.text.setTextColor(ColorUtils.getContrastColor(ColorUtils.getPrimaryColor(this, ColorUtils.ColorType.PRIMARY_LIGHT)));
 
-        binding.eventViewPager.setAdapter(new EventCapturePagerAdapter(getSupportFragmentManager()));
+        binding.eventTabLayout.setupWithViewPager(binding.eventViewPager);
+        binding.eventTabLayout.setTabMode(TabLayout.MODE_FIXED);
+        binding.eventViewPager.setOnTouchListener((v, event) -> true);
+        binding.eventViewPager.setAdapter(new EventCapturePagerAdapter(
+                getSupportFragmentManager(),
+                getContext(),
+                getIntent().getStringExtra(PROGRAM_UID),
+                getIntent().getStringExtra(Constants.EVENT_UID)
+        ));
     }
 
     @Override
@@ -185,18 +194,19 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
 
     @Override
     public void showCompleteActions(boolean canComplete, String completeMessage, Map<String, String> errors, Map<String, FieldViewModel> emptyMandatoryFields) {
-
-        FormBottomDialog.getInstance()
-                .setAccessDataWrite(presenter.canWrite())
-                .setIsEnrollmentOpen(presenter.isEnrollmentOpen())
-                .setIsExpired(presenter.hasExpired())
-                .setCanComplete(canComplete)
-                .setListener(this::setAction)
-                .setMessageOnComplete(completeMessage)
-                .setEmptyMandatoryFields(emptyMandatoryFields)
-                .setFieldsWithErrors(!errors.isEmpty())
-                .setMandatoryFields(!emptyMandatoryFields.isEmpty())
-                .show(getSupportFragmentManager(), "SHOW_OPTIONS");
+        if(binding.eventTabLayout.getSelectedTabPosition() == 0) {
+            FormBottomDialog.getInstance()
+                    .setAccessDataWrite(presenter.canWrite())
+                    .setIsEnrollmentOpen(presenter.isEnrollmentOpen())
+                    .setIsExpired(presenter.hasExpired())
+                    .setCanComplete(canComplete)
+                    .setListener(this::setAction)
+                    .setMessageOnComplete(completeMessage)
+                    .setEmptyMandatoryFields(emptyMandatoryFields)
+                    .setFieldsWithErrors(!errors.isEmpty())
+                    .setMandatoryFields(!emptyMandatoryFields.isEmpty())
+                    .show(getSupportFragmentManager(), "SHOW_OPTIONS");
+        }
     }
 
     @Override
@@ -237,7 +247,9 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
 
     @Override
     public void showRuleCalculation(Boolean shouldShow) {
-        binding.calculationIndicator.getRoot().setVisibility(shouldShow ? View.VISIBLE : View.GONE);
+        if(binding.eventTabLayout.getSelectedTabPosition() == 0) {
+            binding.calculationIndicator.getRoot().setVisibility(shouldShow ? View.VISIBLE : View.GONE);
+        }
     }
 
     private void setAction(FormBottomDialog.ActionType actionType) {
