@@ -1,6 +1,16 @@
 ---
 title: 'DHIS 2 Android App Implementation Guidelines'
+author: 'DHIS 2'
+date:
+year: 2020
+month: January
+keywords: [DHIS2, Android]
+commit:
+version: master
+applicable_txt: 'Applicable to version 2.0.0'
 ---
+<!--DHIS2-SECTION-ID:index-->
+
 !INCLUDE "content/common/about-this-android-guide.md"
 !INCLUDE "content/implementation-guide/executive-summary.md"
 !INCLUDE "content/implementation-guide/document-map.md"
