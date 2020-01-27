@@ -61,26 +61,21 @@ class NotesPresenterTest {
     }
 
     @Test
-    fun `Should check program write permission`() {
-        whenever(
-            repository.hasProgramWritePermission()
-        ) doReturn true
-
-        assert(presenter.hasProgramWritePermission())
-    }
-
-    @Test
     fun `Should subscribe to notes for TEI enrollment`() {
         val notes = listOf(dummyNote(), dummyNote())
 
         whenever(
             repository.getEnrollmentNotes(uid)
         ) doReturn Single.just(notes)
+        whenever(
+            repository.hasProgramWritePermission()
+        ) doReturn true
 
         noteProcessor.onNext(true)
         presenter.subscribeToNotes()
 
         verify(view).swapNotes(notes)
+        verify(view).setWritePermission(true)
     }
 
     @Test
@@ -109,11 +104,15 @@ class NotesPresenterTest {
         whenever(
             repository.getEventNotes(uid)
         ) doReturn Single.just(notes)
+        whenever(
+            repository.hasProgramWritePermission()
+        ) doReturn false
 
         noteProcessor.onNext(true)
         presenter.subscribeToNotes()
 
         verify(view).swapNotes(notes)
+        verify(view).setWritePermission(false)
     }
 
     @Test

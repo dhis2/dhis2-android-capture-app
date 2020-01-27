@@ -27,6 +27,7 @@
  */
 package org.dhis2.usescases.notes
 
+import io.reactivex.Flowable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.processors.FlowableProcessor
 import io.reactivex.processors.PublishProcessor
@@ -69,9 +70,19 @@ class NotesPresenter(
                     Timber::e
                 )
         )
-    }
 
-    fun hasProgramWritePermission(): Boolean = notesRepository.hasProgramWritePermission()
+        compositeDisposable.add(
+            Flowable.just(notesRepository.hasProgramWritePermission())
+                .subscribeOn(schedulerProvider.computation())
+                .observeOn(schedulerProvider.ui())
+                .subscribe(
+                    {
+                        view.setWritePermission(it)
+                    },
+                    Timber::e
+                )
+        )
+    }
 
     fun saveNote(message: String) {
         val addNote = when (noteType) {

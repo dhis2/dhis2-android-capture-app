@@ -119,4 +119,12 @@ class NotesFragment : FragmentGlobalAbstract(), NotesView {
     override fun swapNotes(noteModules: List<Note>) {
         noteAdapter.setItems(noteModules)
     }
+
+    override fun setWritePermission(writePermission: Boolean) {
+        binding.addNoteButton.visibility =
+            when (writePermission) {
+                true -> View.VISIBLE
+                false -> View.GONE
+            }
+    }
 }

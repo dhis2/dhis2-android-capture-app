@@ -29,6 +29,7 @@ package org.dhis2.usescases.notes
 
 import androidx.recyclerview.widget.RecyclerView
 import java.text.ParseException
+import org.dhis2.Bindings.initials
 import org.dhis2.databinding.ItemNoteBinding
 import org.dhis2.utils.DateUtils
 import org.hisp.dhis.android.core.note.Note
@@ -49,17 +50,7 @@ class NotesViewHolder(private val binding: ItemNoteBinding) :
         }
         binding.noteText.text = note.value()
         binding.storeBy.text = note.storedBy()
-        val userName = note.storedBy()
-            ?.split(" ".toRegex())
-            ?.dropLastWhile { it.isEmpty() }
-            ?.toTypedArray()
-
-        var userInit = ""
-        userName?.forEachIndexed { index, word ->
-            if (index > 1) return
-            userInit += word.first()
-        }
-        binding.userInit.text = userInit
+        binding.userInit.text = note.storedBy().initials
         binding.executePendingBindings()
     }
 }
