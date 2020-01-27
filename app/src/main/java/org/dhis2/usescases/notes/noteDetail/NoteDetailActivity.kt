@@ -3,6 +3,7 @@ package org.dhis2.usescases.notes.noteDetail
 import android.os.Bundle
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ObservableBoolean
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import org.dhis2.Bindings.app
 import org.dhis2.R
 import org.dhis2.data.tuples.Trio
@@ -44,7 +45,14 @@ class NoteDetailActivity : ActivityGlobalAbstract(), NoteDetailView {
     }
 
     override fun showDiscardDialog() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        val dialog = MaterialAlertDialogBuilder(this)
+            .setMessage(R.string.discard_note)
+            .setPositiveButton(R.string.yes) { _, _ ->
+                setResult(RESULT_CANCELED)
+                finish()
+            }
+            .setNegativeButton(R.string.no, null)
+        dialog.show()
     }
 
     override fun setNote(note: Note) {

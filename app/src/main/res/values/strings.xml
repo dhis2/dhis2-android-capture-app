@@ -616,4 +616,5 @@
     <string name="set_pin">Set pin</string>
     <string name="new_note">New note</string>
     <string name="note_saved">Note saved</string>
+    <string name="discard_note">Discard note?</string>
 </resources>
