@@ -155,7 +155,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
         binding.teiPager.invalidate();
 
         if (orientation == Configuration.ORIENTATION_PORTRAIT) {
-            adapter = new DashboardPagerAdapter(this, getSupportFragmentManager(), programUid);
+            adapter = new DashboardPagerAdapter(this, getSupportFragmentManager(), programUid, teiUid);
             currentAdapter = adapter;
             binding.teiPager.setAdapter(adapter);
             binding.tabLayout.setVisibility(View.VISIBLE);
