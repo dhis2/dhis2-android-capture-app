@@ -1,6 +1,7 @@
 package org.dhis2.usescases.notes.noteDetail
 
 import io.reactivex.Single
+import org.dhis2.usescases.notes.NoteType
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
 import org.hisp.dhis.android.core.note.Note
