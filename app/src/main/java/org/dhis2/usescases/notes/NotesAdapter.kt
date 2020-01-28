@@ -39,7 +39,7 @@ import org.dhis2.data.tuples.Pair
 import org.dhis2.databinding.ItemNoteBinding
 import org.hisp.dhis.android.core.note.Note
 
-class NotesAdapter : RecyclerView.Adapter<NotesViewHolder>() {
+class NotesAdapter(private val listener: NoteItemClickListener) : RecyclerView.Adapter<NotesViewHolder>() {
 
     private var notes: List<Note> = ArrayList()
     private val processor: FlowableProcessor<Pair<String, Boolean>>
@@ -59,7 +59,7 @@ class NotesAdapter : RecyclerView.Adapter<NotesViewHolder>() {
     }
 
     override fun onBindViewHolder(holder: NotesViewHolder, position: Int) {
-        holder.bind(notes[position])
+        holder.bind(notes[position], listener)
     }
 
     override fun getItemCount(): Int = notes.size

@@ -5,12 +5,17 @@ import androidx.databinding.DataBindingUtil
 import androidx.databinding.ObservableBoolean
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import org.dhis2.Bindings.app
+import org.dhis2.Bindings.initials
+import org.dhis2.Bindings.placeHolder
 import org.dhis2.R
 import org.dhis2.data.tuples.Trio
 import org.dhis2.databinding.ActivityNoteDetailBinding
 import org.dhis2.usescases.general.ActivityGlobalAbstract
+import org.dhis2.usescases.notes.NoteType
 import org.dhis2.utils.Constants
+import org.dhis2.utils.DateUtils
 import org.hisp.dhis.android.core.note.Note
+import java.text.ParseException
 import javax.inject.Inject
 
 class NoteDetailActivity : ActivityGlobalAbstract(), NoteDetailView {
@@ -36,19 +41,20 @@ class NoteDetailActivity : ActivityGlobalAbstract(), NoteDetailView {
         binding = DataBindingUtil.setContentView(this, R.layout.activity_note_detail)
         binding.apply {
             isForm = isNewNote
-            presenter = presenter
+            presenter = this@NoteDetailActivity.presenter
         }
 
         if (!isNewNote.get()) {
             presenter.init()
+        } else {
+            binding.noteText.placeHolder(getString(R.string.write_new_note))
         }
     }
 
     override fun showDiscardDialog() {
-        val dialog = MaterialAlertDialogBuilder(this)
+        val dialog = MaterialAlertDialogBuilder(this, R.style.DhisMaterialDialog)
             .setMessage(R.string.discard_note)
             .setPositiveButton(R.string.yes) { _, _ ->
-                setResult(RESULT_CANCELED)
                 finish()
             }
             .setNegativeButton(R.string.no, null)
@@ -56,10 +62,20 @@ class NoteDetailActivity : ActivityGlobalAbstract(), NoteDetailView {
     }
 
     override fun setNote(note: Note) {
-        // TODO: Change to correct note values
-        binding.userName.text = note.storedBy()
-        binding.noteTime.text = note.storedDate() // TODO: needs to be formatted
+        binding.userInit.text = note.storedBy().initials
+        binding.storeBy.text = note.storedBy()
         binding.note.text = note.value()
+        note.storedDate()?.let {
+            val formattedDate = try {
+                val date = DateUtils.databaseDateFormat().parse(note.storedDate())
+                DateUtils.uiDateFormat().format(date)
+            } catch (e: ParseException) {
+                e.printStackTrace()
+                note.storedDate()
+            }
+            binding.noteTime.text = formattedDate
+        }
+        binding.executePendingBindings()
     }
 
     override fun getNewNote(): Trio<NoteType, String, String> {
@@ -68,15 +84,15 @@ class NoteDetailActivity : ActivityGlobalAbstract(), NoteDetailView {
 
     override fun noteSaved() {
         showToast(getString(R.string.note_saved))
-        setResult(RESULT_OK)
         finish()
     }
 
     override fun back() {
-        if (isNewNote.get()) {
-            setResult(RESULT_CANCELED)
+        if (isNewNote.get() && binding.noteText.text.toString().isNotEmpty() ) {
+            showDiscardDialog()
+        } else {
+            finish()
         }
-        finish()
     }
 
     override fun onBackPressed() {

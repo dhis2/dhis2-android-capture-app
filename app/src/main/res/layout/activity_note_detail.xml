@@ -40,7 +40,7 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?android:attr/actionBarSize"
-            android:background="?bgTransparent"
+            android:background="@android:color/transparent"
             android:gravity="center_vertical"
             app:layout_constraintTop_toTopOf="parent">
 
@@ -59,18 +59,32 @@
 
         <ImageView
             android:id="@+id/userImage"
-            android:layout_width="56dp"
-            android:layout_height="56dp"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
             android:layout_marginTop="10dp"
+            android:tint="?colorPrimary"
             android:visibility="@{isForm ? View.GONE : View.VISIBLE}"
             app:layout_constraintStart_toEndOf="@id/startGuideline"
             app:layout_constraintTop_toBottomOf="@id/toolbar"
-            app:srcCompat="@drawable/ic_person"
-            tools:background="@drawable/photo_temp_gray"
-            tools:ignore="ContentDescription" />
+            app:srcCompat="@drawable/photo_temp_gray"
+            tools:visibility="visible"/>
 
         <TextView
-            android:id="@+id/userName"
+            android:id="@+id/userInit"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:gravity="center"
+            android:textAllCaps="true"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            android:visibility="@{isForm ? View.GONE : View.VISIBLE}"
+            app:layout_constraintStart_toStartOf="@id/userImage"
+            app:layout_constraintTop_toTopOf="@id/userImage"
+            tools:text="MF"
+            tools:visibility="visible"/>
+
+        <TextView
+            android:id="@+id/storeBy"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
@@ -80,7 +94,8 @@
             app:layout_constraintEnd_toStartOf="@id/endGuideline"
             app:layout_constraintStart_toEndOf="@id/userImage"
             app:layout_constraintTop_toTopOf="@id/userImage"
-            tools:text="User Name" />
+            tools:text="Marcos Fernando"
+            tools:visibility="visible"/>
 
         <TextView
             android:id="@+id/noteTime"
@@ -92,8 +107,9 @@
             android:visibility="@{isForm ? View.GONE : View.VISIBLE}"
             app:layout_constraintEnd_toStartOf="@id/endGuideline"
             app:layout_constraintStart_toEndOf="@id/userImage"
-            app:layout_constraintTop_toBottomOf="@id/userName"
-            tools:text="User Name" />
+            app:layout_constraintTop_toBottomOf="@id/storeBy"
+            tools:text="2019/06/10"
+            tools:visibility="visible"/>
 
         <TextView
             android:id="@+id/note"
@@ -105,7 +121,8 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/endGuideline"
             app:layout_constraintStart_toEndOf="@id/startGuideline"
-            app:layout_constraintTop_toBottomOf="@id/userImage" />
+            app:layout_constraintTop_toBottomOf="@id/userImage"
+            tools:text="@string/lorem" />
 
 
         <TextView
@@ -114,7 +131,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:text="@string/new_note"
-            android:textColor="#DE333333"
+            android:textColor="@color/text_black_333"
             android:textSize="16sp"
             android:visibility="@{isForm ? View.VISIBLE : View.GONE}"
             app:layout_constraintBottom_toTopOf="@id/inputLayout"
@@ -130,9 +147,9 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="6dp"
-            android:hint="@string/write_new_note"
             android:visibility="@{isForm ? View.VISIBLE : View.GONE}"
             app:boxStrokeWidth="0dp"
+            app:boxStrokeWidthFocused="0dp"
             app:layout_constraintEnd_toStartOf="@id/endGuideline"
             app:layout_constraintStart_toEndOf="@id/startGuideline"
             app:layout_constraintTop_toBottomOf="@id/newNoteLabel"
@@ -142,7 +159,9 @@
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/noteText"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:paddingStart="0dp"
+                android:paddingEnd="0dp"/>
 
         </com.google.android.material.textfield.TextInputLayout>
 
