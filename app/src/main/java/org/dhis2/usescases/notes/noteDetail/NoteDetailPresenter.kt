@@ -48,4 +48,8 @@ class NoteDetailPresenter(
         view.showDiscardDialog()
     }
 
+    fun onDetach() {
+        disposable.clear()
+    }
+
 }

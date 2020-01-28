@@ -51,6 +51,11 @@ class NoteDetailActivity : ActivityGlobalAbstract(), NoteDetailView {
         }
     }
 
+    override fun onPause() {
+        presenter.onDetach()
+        super.onPause()
+    }
+
     override fun showDiscardDialog() {
         val dialog = MaterialAlertDialogBuilder(this, R.style.DhisMaterialDialog)
             .setMessage(R.string.discard_note)

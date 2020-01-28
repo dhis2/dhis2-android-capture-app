@@ -9,7 +9,9 @@ import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Single
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.dhis2.data.tuples.Trio
+import org.dhis2.usescases.notes.NoteType
 import org.hisp.dhis.android.core.note.Note
+import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 
@@ -26,7 +28,7 @@ class NoteDetailPresenterTest {
     }
 
     @Test
-    fun init() {
+    fun `Should set set note`() {
         val note = dummyNote()
 
         whenever(repository.getNote(any())) doReturn Single.just(note)
@@ -37,7 +39,7 @@ class NoteDetailPresenterTest {
     }
 
     @Test
-    fun save() {
+    fun `Should get message from form and save the note`() {
         val data = Trio.create(NoteType.ENROLLMENT, "enrollmentUid", "Note Message")
 
         whenever(view.getNewNote()) doReturn data
@@ -51,7 +53,7 @@ class NoteDetailPresenterTest {
     }
 
     @Test
-    fun back() {
+    fun `Should perfom back action`() {
         presenter.back()
 
         verify(view).back()
@@ -59,11 +61,20 @@ class NoteDetailPresenterTest {
     }
 
     @Test
-    fun clear() {
+    fun `Should show dialog when pressing clear`() {
         presenter.clear()
 
         verify(view).showDiscardDialog()
         verifyNoMoreInteractions(view)
+    }
+
+    @Test
+    fun `Should dispose of the disposables`() {
+        presenter.onDetach()
+
+        val result = presenter.disposable.size()
+
+        Assert.assertTrue(result == 0)
     }
 
     private fun dummyNote() =
