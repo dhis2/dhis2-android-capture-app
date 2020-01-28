@@ -227,15 +227,8 @@ A value is considered as "expired" when one of the following conditions is true:
 
 On the App, the user can also check the available values and refill them in the settings menu.
 
-<table>
-<tbody><tr>
-<td width="50%">
-![](resources/images/image14.jpg){ .center width=50%}
-</td>
-<td width="50%">
-![](resources/images/image22.jpg){ .center width=50%}
-</td>
-</tr>
-</tbody></table>
+|||
+|---|---|
+|![](resources/images/image14.jpg){ .center width=50%}|![](resources/images/image22.jpg){ .center width=50%}|
 
 When the app runs out of values and the server cannot provide more, the user will receive a message on the data entry form saying that there are no more available values. Your should fix that on the server side.
