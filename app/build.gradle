@@ -356,9 +356,9 @@ dependencies {
     testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:2.1.0"
     testImplementation 'com.google.truth:truth:0.43'
 
-    androidTestImplementation("com.squareup.rx.idler:rx2-idler:0.10.0"){
-        exclude group: "io.reactivex.rxjava2", module: "rxjava"
-    }
+ //   androidTestImplementation("com.squareup.rx.idler:rx2-idler:0.10.0"){
+ //       exclude group: "io.reactivex.rxjava2", module: "rxjava"
+ //   }
 
     androidTestUtil 'androidx.test:orchestrator:1.2.0'
     androidTestImplementation "androidx.test:runner:1.2.0"

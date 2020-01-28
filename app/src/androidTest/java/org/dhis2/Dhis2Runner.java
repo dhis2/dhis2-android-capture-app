@@ -4,9 +4,8 @@ import android.app.Application;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.StrictMode;
-import android.util.Log;
 import androidx.test.runner.AndroidJUnitRunner;
-import com.squareup.rx2.idler.Rx2Idler;
+import org.dhis2.common.idlingresources.Rx2Idler;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public class Dhis2Runner extends AndroidJUnitRunner {
@@ -18,10 +17,9 @@ public class Dhis2Runner extends AndroidJUnitRunner {
     }
 
     @Override public void onStart() {
-        super.onStart();
-        Log.i("DhisRunner", "onStart");
         RxJavaPlugins.setInitComputationSchedulerHandler(Rx2Idler.create("RxJava 2.x Computation Scheduler"));
         RxJavaPlugins.setInitIoSchedulerHandler(Rx2Idler.create("RxJava 2.x IO Scheduler"));
+        super.onStart();
     }
 
     @Override
