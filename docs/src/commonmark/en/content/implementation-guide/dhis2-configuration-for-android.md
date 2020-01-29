@@ -180,29 +180,15 @@ In order to display a program indicator in the App, you must select the checkbox
 
 Once you have designed your indicator, you can assign a legend to it. In your DHIS 2 Server go to Maintenance > Others > Legends to create an new legend.
 
-<table>
-<tbody>
-<tr>
-<td width="60%">![](resources/images/image9.png)</td>
-<td width="40%">![](resources/images/image16.png)</td>
-</tr>
-</tbody>
-</table>
+|||
+|------|----|
+| ![](resources/images/image9.png) { .center } | ![](resources/images/image16.png) { .center } |
 
 Once you have created the legend you can assign it to the indicator. Alternatively, you can assign an already existing legend. Right underneath the checkbox to display the indicator in the App, you will find the section to search and assign the legend.
 
-<table>
-<tbody>
-<tr>
-<td width="60%">
-	![](resources/images/image32.png){ .center }
-</td>
-<td width="40%">
-	![](resources/images/image26.png){ .center }
-</td>
-</tr>
-</tbody>
-</table>
+|||
+|------|----|
+| ![](resources/images/image32.png){ .center } | ![](resources/images/image26.png){ .center } |
 
 ## Reserved IDs 
 
@@ -227,15 +213,8 @@ A value is considered as "expired" when one of the following conditions is true:
 
 On the App, the user can also check the available values and refill them in the settings menu.
 
-<table>
-<tbody><tr>
-<td width="50%">
-![](resources/images/image14.jpg){ .center width=50%}
-</td>
-<td width="50%">
-![](resources/images/image22.jpg){ .center width=50%}
-</td>
-</tr>
-</tbody></table>
+|||
+|---|----|
+| ![](resources/images/image14.jpg){ .center width=50%} | ![](resources/images/image22.jpg){ .center width=50%} |
 
 When the app runs out of values and the server cannot provide more, the user will receive a message on the data entry form saying that there are no more available values. Your should fix that on the server side.
