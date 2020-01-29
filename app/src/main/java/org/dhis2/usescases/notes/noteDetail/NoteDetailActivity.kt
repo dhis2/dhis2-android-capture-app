@@ -56,9 +56,9 @@ class NoteDetailActivity : ActivityGlobalAbstract(), NoteDetailView, TextWatcher
         }
     }
 
-    override fun onPause() {
+    override fun onStop() {
         presenter.onDetach()
-        super.onPause()
+        super.onStop()
     }
 
     override fun showDiscardDialog() {
