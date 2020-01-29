@@ -24,7 +24,6 @@ class NoteDetailRepositoryImpl(
                         d2.enrollmentModule().enrollments()
                             .byProgram().eq(programUid)
                             .byTrackedEntityInstance().eq(uid)
-                            .byStatus().eq(EnrollmentStatus.ACTIVE)
                             .one().blockingGet().uid()
                     )
                     .value(message)

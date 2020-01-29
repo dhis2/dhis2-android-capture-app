@@ -53,7 +53,7 @@ class NoteDetailPresenterTest {
     }
 
     @Test
-    fun `Should perfom back action`() {
+    fun `Should perform back action`() {
         presenter.back()
 
         verify(view).back()

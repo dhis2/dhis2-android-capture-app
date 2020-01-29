@@ -106,26 +106,12 @@ class NoteDetailRepositoryTest {
             d2.enrollmentModule().enrollments()
                 .byProgram().eq(programUid)
                 .byTrackedEntityInstance().eq(teiUid)
-                .byStatus()
-        ) doReturn mock()
-        whenever(
-            d2.enrollmentModule().enrollments()
-                .byProgram().eq(programUid)
-                .byTrackedEntityInstance().eq(teiUid)
-                .byStatus().eq(EnrollmentStatus.ACTIVE)
-        ) doReturn mock()
-        whenever(
-            d2.enrollmentModule().enrollments()
-                .byProgram().eq(programUid)
-                .byTrackedEntityInstance().eq(teiUid)
-                .byStatus().eq(EnrollmentStatus.ACTIVE)
                 .one()
         ) doReturn mock()
         whenever(
             d2.enrollmentModule().enrollments()
                 .byProgram().eq(programUid)
                 .byTrackedEntityInstance().eq(teiUid)
-                .byStatus().eq(EnrollmentStatus.ACTIVE)
                 .one().blockingGet()
         ) doReturn Enrollment.builder().uid("EnrollmentUid").build()
     }
