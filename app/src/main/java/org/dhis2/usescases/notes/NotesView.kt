@@ -8,4 +8,6 @@ interface NotesView : AbstractActivityContracts.View {
     fun swapNotes(notes: List<Note>)
 
     fun setWritePermission(writePermission: Boolean)
+
+    fun setEmptyNotes()
 }

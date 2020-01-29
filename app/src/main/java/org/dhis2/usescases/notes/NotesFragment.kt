@@ -117,14 +117,15 @@ class NotesFragment : FragmentGlobalAbstract(), NotesView {
     }
 
     override fun swapNotes(notes: List<Note>) {
-        if (notes.isEmpty()) {
-            binding.noNotesLayout.visibility = View.VISIBLE
-            binding.notesRecycler.visibility = View.GONE
-        } else {
-            binding.noNotesLayout.visibility = View.GONE
-            binding.notesRecycler.visibility = View.VISIBLE
-            noteAdapter.setItems(notes)
-        }
+        binding.noNotesLayout.visibility = View.GONE
+        binding.notesRecycler.visibility = View.VISIBLE
+        noteAdapter.setItems(notes)
+
+    }
+
+    override fun setEmptyNotes() {
+        binding.noNotesLayout.visibility = View.VISIBLE
+        binding.notesRecycler.visibility = View.GONE
     }
 
     override fun setWritePermission(writePermission: Boolean) {

@@ -75,7 +75,6 @@ class NotesPresenterTest {
         presenter.subscribeToNotes()
 
         verify(view).swapNotes(notes)
-        verify(view).setWritePermission(true)
     }
 
 
@@ -95,6 +94,37 @@ class NotesPresenterTest {
         presenter.subscribeToNotes()
 
         verify(view).swapNotes(notes)
+    }
+
+    @Test
+    fun `Should set no notes layout when notes are empty`() {
+        whenever(
+            repository.getEnrollmentNotes(uid)
+        ) doReturn Single.just(listOf())
+        whenever(
+            repository.hasProgramWritePermission()
+        ) doReturn true
+
+        noteProcessor.onNext(true)
+        presenter.subscribeToNotes()
+
+        verify(view).setEmptyNotes()
+    }
+
+    @Test
+    fun `Should set write permission to false`() {
+        val notes = listOf(dummyNote(), dummyNote())
+
+        whenever(
+            repository.getEnrollmentNotes(uid)
+        ) doReturn Single.just(notes)
+        whenever(
+            repository.hasProgramWritePermission()
+        ) doReturn false
+
+        noteProcessor.onNext(true)
+        presenter.subscribeToNotes()
+
         verify(view).setWritePermission(false)
     }
 
