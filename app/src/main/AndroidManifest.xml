@@ -127,6 +127,9 @@
             android:configChanges="keyboardHidden|orientation|screenSize"/>
         <activity android:name=".usescases.events.ScheduledEventActivity" />
 
+        <activity android:name=".usescases.notes.noteDetail.NoteDetailActivity"
+            android:windowSoftInputMode="adjustResize" />
+
         <service
             android:name=".data.notifications.DhisFirebaseMessagingService"
             android:exported="false">

@@ -1,7 +1,5 @@
 package org.dhis2.utils;
 
-import org.jetbrains.annotations.Nullable;
-
 /**
  * QUADRAM. Created by ppajuelo on 15/01/2018.
  */
@@ -127,8 +125,10 @@ public class Constants {
 
     public static final String RESERVED = "TAG_RV";
 
-    //Note
+    // Note
+    public static final String NOTE_ID = "NOTE_ID";
     public static final String NOTE_TYPE = "NOTE_TYPE";
+
 
     private Constants() {
         // hide public constructor
