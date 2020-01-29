@@ -373,6 +373,8 @@
     <color name="sms_sync_last_event">#504eba</color>
     <color name="sms_sync_title_bar">#dee7ee</color>
     <color name="sms_sync_title_bar_error">#ffd9d9</color>
+
+    <color name="placeholder">#61333333</color>
     <!--endregion-->
 
 </resources>

@@ -1,11 +1,6 @@
 package org.dhis2.usescases.datasets.datasetDetail;
 
 
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.utils.DateUtils;
 import org.hisp.dhis.android.core.D2;
@@ -20,6 +15,11 @@ import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.period.DatePeriod;
 import org.hisp.dhis.android.core.period.Period;
 import org.hisp.dhis.android.core.period.PeriodType;
+
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
 
 import io.reactivex.Flowable;
 import io.reactivex.Single;
@@ -121,10 +121,10 @@ public class DataSetDetailRepositoryImpl implements DataSetDetailRepository {
 
                                     if (canWriteCatOption) {
 
-                                        List<OrganisationUnit> organisationUnits = d2.organisationUnitModule().organisationUnits().byDataSetUids(Collections.singletonList(dataSetUid))
-                                                .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE).blockingGet();
+                                        int countOrgUnits = d2.organisationUnitModule().organisationUnits().byDataSetUids(Collections.singletonList(dataSetUid))
+                                                .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE).blockingCount();
 
-                                        canWriteOrgUnit = !organisationUnits.isEmpty();
+                                        canWriteOrgUnit = countOrgUnits != 0;
 
                                     }
 
