@@ -8,24 +8,10 @@ There is an initial set of tests that should be conducted internally with smalle
 
 The following graphs show that the next steps are iterative in nature, including new server configurations based on the results of the testing. You will most likely do several rounds of testing and reconfiguring before you are ready for scale up and roll out.
 
-<table>
-<tr>
-<td width="50%">
-	![](resources/images/image35.png){ .center }
-</td>
-<td width="50%">
-	![](resources/images/image7.png){ .center }
-</td>
-</tr>
-<tr>
-<td width="50%">
-	![](resources/images/image36.png){ .center }
-</td>
-<td width="50%">
-	![](resources/images/image5.png){ .center }
-</td>
-</tr>
-</table>
+|||
+|---|---|
+| ![](resources/images/image35.png){ .center } | ![](resources/images/image7.png){ .center } |
+| ![](resources/images/image36.png){ .center } | ![](resources/images/image5.png){ .center } |
 
 ## General Recommendations for Testing an Android App
 
