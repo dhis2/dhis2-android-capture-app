@@ -80,39 +80,6 @@ class NotesRepositoryTest {
         assert(repository.hasProgramWritePermission())
     }
 
-    @Test
-    fun `Should add note to TEI enrollment`() {
-        val teiUid = UUID.randomUUID().toString()
-        val enrollmentUid = UUID.randomUUID().toString()
-        val message = "note"
-        val newNoteUID = UUID.randomUUID().toString()
-
-        mockEnrollment(teiUid, enrollmentUid)
-
-        whenever(
-            d2.noteModule().notes().add(
-                NoteCreateProjection.builder()
-                    .enrollment(enrollmentUid)
-                    .value(message)
-                    .build()
-            )
-        ) doReturn Single.just(newNoteUID)
-
-        val testObserver = repository.addEnrollmentNote(teiUid, message).test()
-
-        testObserver.assertNoErrors()
-        testObserver.assertValueCount(1)
-        testObserver.assertValue(newNoteUID)
-
-        testObserver.dispose()
-    }
-
-    @Test
-    fun `Should add note to event`() {
-        //TODO: Implement test for addEventNote(eventUid, message)
-    }
-
-
     private fun dummyNote(): Note =
         Note.builder()
             .uid(UUID.randomUUID().toString())
@@ -138,26 +105,12 @@ class NotesRepositoryTest {
             d2.enrollmentModule().enrollments()
                 .byProgram().eq(programUid)
                 .byTrackedEntityInstance().eq(teiUid)
-                .byStatus()
-        ) doReturn mock()
-        whenever(
-            d2.enrollmentModule().enrollments()
-                .byProgram().eq(programUid)
-                .byTrackedEntityInstance().eq(teiUid)
-                .byStatus().eq(EnrollmentStatus.ACTIVE)
-        ) doReturn mock()
-        whenever(
-            d2.enrollmentModule().enrollments()
-                .byProgram().eq(programUid)
-                .byTrackedEntityInstance().eq(teiUid)
-                .byStatus().eq(EnrollmentStatus.ACTIVE)
                 .one()
         ) doReturn mock()
         whenever(
             d2.enrollmentModule().enrollments()
                 .byProgram().eq(programUid)
                 .byTrackedEntityInstance().eq(teiUid)
-                .byStatus().eq(EnrollmentStatus.ACTIVE)
                 .one().blockingGet()
         ) doReturn Enrollment.builder().uid(enrollmentUid).build()
     }

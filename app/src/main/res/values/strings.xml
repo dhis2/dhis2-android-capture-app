@@ -618,6 +618,8 @@
     <string name="event_date_in_future_message">This event can\'t have a date in the future. Please change it.</string>
     <string name="change_event_date">Change date</string>
     <string name="go_back">Go back</string>
+    <string name="no_notes">No notes</string>
+    <string name="no_add_notes">No more notes can be added</string>
     <string name="new_note">New note</string>
     <string name="note_saved">Note saved</string>
     <string name="discard_note">Discard note?</string>
