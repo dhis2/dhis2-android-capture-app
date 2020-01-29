@@ -1,6 +1,8 @@
 package org.dhis2.usescases.notes.noteDetail
 
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ObservableBoolean
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -18,7 +20,7 @@ import org.hisp.dhis.android.core.note.Note
 import java.text.ParseException
 import javax.inject.Inject
 
-class NoteDetailActivity : ActivityGlobalAbstract(), NoteDetailView {
+class NoteDetailActivity : ActivityGlobalAbstract(), NoteDetailView, TextWatcher {
 
     private lateinit var binding: ActivityNoteDetailBinding
 
@@ -26,6 +28,7 @@ class NoteDetailActivity : ActivityGlobalAbstract(), NoteDetailView {
     lateinit var presenter: NoteDetailPresenter
 
     private val isNewNote: ObservableBoolean = ObservableBoolean(true)
+    private val showButtons: ObservableBoolean = ObservableBoolean(false)
     private lateinit var noteType: NoteType
     private lateinit var uid: String
 
@@ -41,6 +44,7 @@ class NoteDetailActivity : ActivityGlobalAbstract(), NoteDetailView {
         binding = DataBindingUtil.setContentView(this, R.layout.activity_note_detail)
         binding.apply {
             isForm = isNewNote
+            showButtons = this@NoteDetailActivity.showButtons
             presenter = this@NoteDetailActivity.presenter
         }
 
@@ -48,6 +52,7 @@ class NoteDetailActivity : ActivityGlobalAbstract(), NoteDetailView {
             presenter.init()
         } else {
             binding.noteText.placeHolder(getString(R.string.write_new_note))
+            binding.noteText.addTextChangedListener(this)
         }
     }
 
@@ -104,4 +109,13 @@ class NoteDetailActivity : ActivityGlobalAbstract(), NoteDetailView {
         back()
     }
 
+    override fun afterTextChanged(editable: Editable?) {
+        if(!editable.toString().isNullOrEmpty()){
+            showButtons.set(true)
+        }
+    }
+
+    override fun onTextChanged(text: CharSequence?, start: Int, before: Int, count: Int) {}
+
+    override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
 }

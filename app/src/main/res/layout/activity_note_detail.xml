@@ -12,6 +12,10 @@
             type="androidx.databinding.ObservableBoolean" />
 
         <variable
+            name="showButtons"
+            type="androidx.databinding.ObservableBoolean" />
+
+        <variable
             name="presenter"
             type="org.dhis2.usescases.notes.noteDetail.NoteDetailPresenter" />
     </data>
@@ -174,7 +178,7 @@
             android:layout_marginBottom="8dp"
             android:onClick="@{ ()-> presenter.clear() }"
             android:text="@string/clear"
-            android:visibility="@{ isForm ? View.VISIBLE : View.GONE }"
+            android:visibility="@{ showButtons ? View.VISIBLE : View.GONE }"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/saveButton" />
 
@@ -186,7 +190,7 @@
             android:layout_marginBottom="8dp"
             android:onClick="@{ ()-> presenter.save() }"
             android:text="@string/save"
-            android:visibility="@{isForm ? View.VISIBLE : View.GONE}"
+            android:visibility="@{showButtons ? View.VISIBLE : View.GONE}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/endGuideline" />
 
