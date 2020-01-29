@@ -1,4 +1,4 @@
-package org.dhis2.usescases.settings
+package org.dhis2.usescases.pin
 
 import android.Manifest
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -11,7 +11,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
-class SettingsTest : BaseTest() {
+class PinTest : BaseTest() {
 
     private lateinit var mainRobot: MainRobot
 
@@ -22,16 +22,11 @@ class SettingsTest : BaseTest() {
         return arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA)
     }
 
-    override fun setUp() {
-        super.setUp()
-        mainRobot = MainRobot(context)
-    }
-
     @Test
-    fun openSettings() {
+    fun openPin() {
         startActivity()
         mainRobot.clickOnNavigationDrawerMenu()
-                .clickOnSettings()
+                .clickOnPin()
     }
 
     fun startActivity(){

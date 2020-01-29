@@ -12,12 +12,14 @@ import org.junit.runner.RunWith
 class LoginTest : BaseTest() {
 
     @get:Rule
-    val rule = ActivityTestRule(LoginActivity::class.java, false, false)
+    val ruleLogin = ActivityTestRule(LoginActivity::class.java, false, false)
+
+    @get:Rule
+    val mainRule = ActivityTestRule(MainActivity::class.java, false, false)
 
     @Test
     fun loginButtonShouldBeDisplayedWhenAllFieldsAreFilled() {
-        startActivity()
-        Thread.sleep(5000)
+        startMainActivity()
 
         //  onView(withId(R.id.login)).check(matches(not(isDisplayed())))
         //  onView(withId(R.id.server_url_edit)).perform(replaceText(TEST_URL), pressImeActionButton())
@@ -35,8 +37,7 @@ class LoginTest : BaseTest() {
 
     @Test
     fun loginButtonShouldBeDisplayedWhenAllFieldsAreFilled2() {
-        startActivity()
-        Thread.sleep(5000)
+        startMainActivity()
 
         //  onView(withId(R.id.login)).check(matches(not(isDisplayed())))
         //  onView(withId(R.id.server_url_edit)).perform(replaceText(TEST_URL), pressImeActionButton())
@@ -52,7 +53,18 @@ class LoginTest : BaseTest() {
         //    onView(withId(R.id.login)).check(matches(isDisplayed()))
     }
 
-    fun startActivity(){
-        rule.launchActivity(null)
+    @Test
+    fun shouldLogout() {
+        // startMainActivity()
+        //   mainRobot.clickOnNavigationDrawerMenu()
+        //           .clickOnLogout()
+    }
+
+    fun startMainActivity(){
+        mainRule.launchActivity(null)
+    }
+
+    fun startLoginActivity(){
+        ruleLogin.launchActivity(null)
     }
 }

@@ -1,18 +1,13 @@
 package org.dhis2.usescases
 
 import android.content.Context
-import android.database.sqlite.SQLiteDatabase
 import android.os.Build
-import android.util.Log
 import androidx.test.espresso.intent.Intents
 import androidx.test.platform.app.InstrumentationRegistry
-import org.dhis2.AppTest
 import org.dhis2.DisableAnimations
 import org.junit.After
 import org.junit.Before
 import org.junit.ClassRule
-import timber.log.Timber
-import java.io.*
 
 open class BaseTest {
 

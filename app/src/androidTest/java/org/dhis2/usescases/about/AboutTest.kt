@@ -1,4 +1,4 @@
-package org.dhis2.usescases.settings
+package org.dhis2.usescases.about
 
 import android.Manifest
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -11,7 +11,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
-class SettingsTest : BaseTest() {
+class AboutTest : BaseTest() {
 
     private lateinit var mainRobot: MainRobot
 
@@ -27,14 +27,15 @@ class SettingsTest : BaseTest() {
         mainRobot = MainRobot(context)
     }
 
+
     @Test
-    fun openSettings() {
+    fun openAbout() {
         startActivity()
         mainRobot.clickOnNavigationDrawerMenu()
-                .clickOnSettings()
+                .clickAbout()
     }
 
-    fun startActivity(){
+    private fun startActivity(){
         rule.launchActivity(null)
     }
 }
