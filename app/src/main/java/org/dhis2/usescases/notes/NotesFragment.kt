@@ -116,15 +116,21 @@ class NotesFragment : FragmentGlobalAbstract(), NotesView {
         super.onPause()
     }
 
-    override fun swapNotes(noteModules: List<Note>) {
-        noteAdapter.setItems(noteModules)
+    override fun swapNotes(notes: List<Note>) {
+        if (notes.isEmpty()) {
+            binding.noNotesLayout.visibility = View.VISIBLE
+            binding.notesRecycler.visibility = View.GONE
+        } else {
+            binding.noNotesLayout.visibility = View.GONE
+            binding.notesRecycler.visibility = View.VISIBLE
+            noteAdapter.setItems(notes)
+        }
     }
 
     override fun setWritePermission(writePermission: Boolean) {
-        binding.addNoteButton.visibility =
-            when (writePermission) {
-                true -> View.VISIBLE
-                false -> View.GONE
-            }
+        if (!writePermission) {
+            binding.noPermissionLayout.visibility = View.VISIBLE
+            binding.addNoteButton.visibility = View.GONE
+        }
     }
 }

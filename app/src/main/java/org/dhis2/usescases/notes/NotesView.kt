@@ -5,7 +5,7 @@ import org.hisp.dhis.android.core.note.Note
 
 interface NotesView : AbstractActivityContracts.View {
 
-    fun swapNotes(noteModules: List<Note>)
+    fun swapNotes(notes: List<Note>)
 
     fun setWritePermission(writePermission: Boolean)
 }

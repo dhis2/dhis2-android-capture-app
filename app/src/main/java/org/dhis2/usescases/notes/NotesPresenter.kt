@@ -83,23 +83,4 @@ class NotesPresenter(
                 )
         )
     }
-
-    fun saveNote(message: String) {
-        val addNote = when (noteType) {
-            NoteType.EVENT -> notesRepository.addEventNote(uid, message)
-            NoteType.ENROLLMENT -> notesRepository.addEnrollmentNote(uid, message)
-        }
-
-        compositeDisposable.add(
-            addNote
-                .subscribeOn(schedulerProvider.io())
-                .observeOn(schedulerProvider.ui())
-                .subscribe(
-                    {
-                        noteProcessor.onNext(true)
-                    },
-                    Timber::e
-                )
-        )
-    }
 }

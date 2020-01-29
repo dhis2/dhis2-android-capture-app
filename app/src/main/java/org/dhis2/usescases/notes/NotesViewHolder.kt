@@ -49,7 +49,7 @@ class NotesViewHolder(private val binding: ItemNoteBinding) :
             binding.date.text = formattedDate
         }
         binding.noteText.text = note.value()
-        binding.storeBy.text = note.storedBy()
+        binding.storeBy.text = "@${note.storedBy()}"
         binding.userInit.text = note.storedBy().initials
         binding.executePendingBindings()
     }
