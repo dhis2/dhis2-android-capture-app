@@ -112,6 +112,8 @@ class NoteDetailActivity : ActivityGlobalAbstract(), NoteDetailView, TextWatcher
     override fun afterTextChanged(editable: Editable?) {
         if(!editable.toString().isNullOrEmpty()){
             showButtons.set(true)
+        } else {
+            showButtons.set(false)
         }
     }
 
