@@ -1,5 +1,10 @@
 package org.dhis2.common.preferences
 
-class PreferencesRobot {
+import org.dhis2.data.prefs.PreferenceProvider
 
+class PreferencesRobot(val preferences: PreferenceProvider) {
+
+    fun cleanPreferences(){
+        preferences.clear()
+    }
 }
