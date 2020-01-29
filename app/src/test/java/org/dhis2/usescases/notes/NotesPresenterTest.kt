@@ -78,23 +78,6 @@ class NotesPresenterTest {
         verify(view).setWritePermission(true)
     }
 
-    @Test
-    fun `Should save note to TEI enrollment`() {
-        val message = "note"
-        val newNoteUID = UUID.randomUUID().toString()
-
-        whenever(
-            repository.addEnrollmentNote(uid, message)
-        ) doReturn Single.just(newNoteUID)
-
-        val testSubscriber = presenter.noteProcessor.test()
-
-        presenter.saveNote(message)
-
-        testSubscriber.assertValueCount(1)
-        testSubscriber.assertValue(true)
-    }
-
 
     @Test
     fun `Should subscribe to notes for events`() {
@@ -113,24 +96,6 @@ class NotesPresenterTest {
 
         verify(view).swapNotes(notes)
         verify(view).setWritePermission(false)
-    }
-
-    @Test
-    fun `Should save note to event`() {
-        setUpForEvent()
-        val message = "note"
-        val newNoteUID = UUID.randomUUID().toString()
-
-        whenever(
-            repository.addEventNote(uid, message)
-        ) doReturn Single.just(newNoteUID)
-
-        val testSubscriber = presenter.noteProcessor.test()
-
-        presenter.saveNote(message)
-
-        testSubscriber.assertValueCount(1)
-        testSubscriber.assertValue(true)
     }
 
     private fun dummyNote(): Note =
