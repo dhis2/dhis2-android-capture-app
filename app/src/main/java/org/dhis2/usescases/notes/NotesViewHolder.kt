@@ -37,7 +37,7 @@ import org.hisp.dhis.android.core.note.Note
 class NotesViewHolder(private val binding: ItemNoteBinding) :
     RecyclerView.ViewHolder(binding.root) {
 
-    fun bind(note: Note) {
+    fun bind(note: Note, listener: NoteItemClickListener) {
         note.storedDate()?.let {
             val formattedDate = try {
                 val date = DateUtils.databaseDateFormat().parse(note.storedDate())
@@ -49,8 +49,9 @@ class NotesViewHolder(private val binding: ItemNoteBinding) :
             binding.date.text = formattedDate
         }
         binding.noteText.text = note.value()
-        binding.storeBy.text = note.storedBy()
+        binding.storeBy.text = "@${note.storedBy()}"
         binding.userInit.text = note.storedBy().initials
+        itemView.setOnClickListener { listener.onNoteClick(note) }
         binding.executePendingBindings()
     }
 }

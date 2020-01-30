@@ -2,10 +2,8 @@ package org.dhis2.usescases.searchTrackEntity;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.content.res.Configuration;
@@ -141,13 +139,6 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     private int switchOpenClose = 2;
     private FiltersAdapter filtersAdapter;
 
-    private BroadcastReceiver networkReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-
-        }
-    };
-
     ObservableBoolean needsSearch = new ObservableBoolean(true);
 
     private SearchTeiLiveAdapter liveAdapter;
@@ -232,25 +223,23 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
         binding.executePendingBindings();
         showHideFilter();
+
+        presenter.init(this, tEType, initialProgram);
+        presenter.initSearch(this);
+        updateFiltersSearch(presenter.getQueryData().size());
+        binding.setTotalFilters(FilterManager.getInstance().getTotalFilters());
+        filtersAdapter.notifyDataSetChanged();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         binding.mapView.onResume();
-        presenter.init(this, tEType, initialProgram);
-        presenter.initSearch(this);
-        updateFiltersSearch(presenter.getQueryData().size());
-        registerReceiver(networkReceiver, new IntentFilter("android.net.conn.CONNECTIVITY_CHANGE"));
-        binding.setTotalFilters(FilterManager.getInstance().getTotalFilters());
-        filtersAdapter.notifyDataSetChanged();
     }
 
     @Override
     protected void onPause() {
         binding.mapView.onPause();
-        presenter.onDestroy();
-        unregisterReceiver(networkReceiver);
         super.onPause();
     }
 
@@ -262,6 +251,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         if (symbolManager != null)
             symbolManager.onDestroy();
         MapLayerManager.Companion.onDestroy();
+        presenter.onDestroy();
         super.onDestroy();
     }
 

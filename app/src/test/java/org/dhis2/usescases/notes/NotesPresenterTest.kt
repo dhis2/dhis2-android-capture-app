@@ -75,24 +75,6 @@ class NotesPresenterTest {
         presenter.subscribeToNotes()
 
         verify(view).swapNotes(notes)
-        verify(view).setWritePermission(true)
-    }
-
-    @Test
-    fun `Should save note to TEI enrollment`() {
-        val message = "note"
-        val newNoteUID = UUID.randomUUID().toString()
-
-        whenever(
-            repository.addEnrollmentNote(uid, message)
-        ) doReturn Single.just(newNoteUID)
-
-        val testSubscriber = presenter.noteProcessor.test()
-
-        presenter.saveNote(message)
-
-        testSubscriber.assertValueCount(1)
-        testSubscriber.assertValue(true)
     }
 
 
@@ -112,25 +94,38 @@ class NotesPresenterTest {
         presenter.subscribeToNotes()
 
         verify(view).swapNotes(notes)
-        verify(view).setWritePermission(false)
     }
 
     @Test
-    fun `Should save note to event`() {
-        setUpForEvent()
-        val message = "note"
-        val newNoteUID = UUID.randomUUID().toString()
+    fun `Should set no notes layout when notes are empty`() {
+        whenever(
+            repository.getEnrollmentNotes(uid)
+        ) doReturn Single.just(listOf())
+        whenever(
+            repository.hasProgramWritePermission()
+        ) doReturn true
+
+        noteProcessor.onNext(true)
+        presenter.subscribeToNotes()
+
+        verify(view).setEmptyNotes()
+    }
+
+    @Test
+    fun `Should set write permission to false`() {
+        val notes = listOf(dummyNote(), dummyNote())
 
         whenever(
-            repository.addEventNote(uid, message)
-        ) doReturn Single.just(newNoteUID)
+            repository.getEnrollmentNotes(uid)
+        ) doReturn Single.just(notes)
+        whenever(
+            repository.hasProgramWritePermission()
+        ) doReturn false
 
-        val testSubscriber = presenter.noteProcessor.test()
+        noteProcessor.onNext(true)
+        presenter.subscribeToNotes()
 
-        presenter.saveNote(message)
-
-        testSubscriber.assertValueCount(1)
-        testSubscriber.assertValue(true)
+        verify(view).setWritePermission(false)
     }
 
     private fun dummyNote(): Note =

@@ -252,10 +252,9 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
 
     public void getLocation() {
         if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-
-            ActivityCompat.requestPermissions((ActivityGlobalAbstract) getContext(),
-                    new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
-                    ACCESS_COARSE_LOCATION_PERMISSION_REQUEST);
+            if(this.getContext() instanceof ActivityGlobalAbstract){
+                ((ActivityGlobalAbstract)this.getContext()).requestLocationPermission(this);
+            }
         } else {
 
             mFusedLocationClient.getLastLocation().

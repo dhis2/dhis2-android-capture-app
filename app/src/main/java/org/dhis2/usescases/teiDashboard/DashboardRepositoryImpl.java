@@ -247,8 +247,8 @@ public class DashboardRepositoryImpl
                     .map(programTrackedEntityAttributes -> {
                         List<TrackedEntityAttributeValue> attributeValues = new ArrayList<>();
                         for (ProgramTrackedEntityAttribute programAttribute : programTrackedEntityAttributes) {
-                            if (d2.trackedEntityModule().trackedEntityAttributeValues().value(programAttribute.uid(), teiUid).blockingExists()) {
-                                TrackedEntityAttributeValue attributeValue = d2.trackedEntityModule().trackedEntityAttributeValues().value(programAttribute.uid(), teiUid).blockingGet();
+                            if (d2.trackedEntityModule().trackedEntityAttributeValues().value(programAttribute.trackedEntityAttribute().uid(), teiUid).blockingExists()) {
+                                TrackedEntityAttributeValue attributeValue = d2.trackedEntityModule().trackedEntityAttributeValues().value(programAttribute.trackedEntityAttribute().uid(), teiUid).blockingGet();
                                 TrackedEntityAttribute attribute = d2.trackedEntityModule().trackedEntityAttributes().uid(programAttribute.trackedEntityAttribute().uid()).blockingGet();
                                 if(attribute.valueType() != ValueType.IMAGE) {
                                     attributeValues.add(

@@ -28,6 +28,7 @@
 package org.dhis2.usescases.notes
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -38,10 +39,11 @@ import org.dhis2.App
 import org.dhis2.R
 import org.dhis2.databinding.FragmentNotesBinding
 import org.dhis2.usescases.general.FragmentGlobalAbstract
+import org.dhis2.usescases.notes.noteDetail.NoteDetailActivity
 import org.dhis2.utils.Constants
 import org.hisp.dhis.android.core.note.Note
 
-class NotesFragment : FragmentGlobalAbstract(), NotesView {
+class NotesFragment : FragmentGlobalAbstract(), NotesView, NoteItemClickListener {
 
     @Inject
     lateinit var presenter: NotesPresenter
@@ -94,16 +96,27 @@ class NotesFragment : FragmentGlobalAbstract(), NotesView {
         savedInstanceState: Bundle?
     ): View? {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_notes, container, false)
-        noteAdapter = NotesAdapter()
+        noteAdapter = NotesAdapter(this)
         binding.notesRecycler.adapter = noteAdapter
         binding.addNoteButton.setOnClickListener {
-            val args = Bundle()
-            args.putString(Constants.PROGRAM_UID, programUid)
-            args.putString(Constants.UID, uid)
-            args.putSerializable(Constants.NOTE_TYPE, noteType)
-            // TODO: startActivity with args
+            val intent = Intent(activity, NoteDetailActivity::class.java).apply {
+                putExtra(Constants.PROGRAM_UID, programUid)
+                putExtra(Constants.UID, uid)
+                putExtra(Constants.NOTE_TYPE, noteType)
+            }
+            startActivity(intent)
         }
         return binding.root
+    }
+
+    override fun onNoteClick(note: Note) {
+        val intent = Intent(activity, NoteDetailActivity::class.java).apply {
+            putExtra(Constants.NOTE_ID, note.uid())
+            putExtra(Constants.PROGRAM_UID, programUid)
+            putExtra(Constants.UID, uid)
+            putExtra(Constants.NOTE_TYPE, noteType)
+        }
+        startActivity(intent)
     }
 
     override fun onResume() {
@@ -116,15 +129,22 @@ class NotesFragment : FragmentGlobalAbstract(), NotesView {
         super.onPause()
     }
 
-    override fun swapNotes(noteModules: List<Note>) {
-        noteAdapter.setItems(noteModules)
+    override fun swapNotes(notes: List<Note>) {
+        binding.noNotesLayout.visibility = View.GONE
+        binding.notesRecycler.visibility = View.VISIBLE
+        noteAdapter.setItems(notes)
+
+    }
+
+    override fun setEmptyNotes() {
+        binding.noNotesLayout.visibility = View.VISIBLE
+        binding.notesRecycler.visibility = View.GONE
     }
 
     override fun setWritePermission(writePermission: Boolean) {
-        binding.addNoteButton.visibility =
-            when (writePermission) {
-                true -> View.VISIBLE
-                false -> View.GONE
-            }
+        if (!writePermission) {
+            binding.noPermissionLayout.visibility = View.VISIBLE
+            binding.addNoteButton.visibility = View.GONE
+        }
     }
 }
