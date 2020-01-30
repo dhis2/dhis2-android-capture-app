@@ -3,10 +3,10 @@ package org.dhis2.utils.analytics
 import android.annotation.SuppressLint
 import android.os.Bundle
 import com.google.firebase.analytics.FirebaseAnalytics
-import javax.inject.Inject
 import org.dhis2.data.prefs.PreferenceProvider
 import org.dhis2.utils.Constants
 import org.hisp.dhis.android.core.D2Manager
+import javax.inject.Inject
 
 class AnalyticsHelper @Inject constructor(
     val analytics: FirebaseAnalytics,
@@ -37,6 +37,7 @@ class AnalyticsHelper @Inject constructor(
                 USER_PROPERTY_SERVER,
                 d2.systemInfoModule().systemInfo().blockingGet().contextPath()
             )
+            analytics.setUserId(d2.userModule().user().blockingGet().uid())
         }
         params.entries.forEach { bundle.putString(it.key, it.value) }
         logEvent(event, bundle)
