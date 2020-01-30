@@ -66,6 +66,8 @@ public class EventCaptureContract {
         void showRuleCalculation(Boolean shouldShow);
 
         void showErrorSnackBar();
+
+        void showEventIntegrityAlert();
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter {
@@ -115,6 +117,8 @@ public class EventCaptureContract {
     }
 
     public interface EventCaptureRepository {
+
+        Flowable<Boolean> eventIntegrityCheck();
 
         Flowable<String> programStageName();
 

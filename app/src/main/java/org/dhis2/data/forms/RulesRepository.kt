@@ -151,6 +151,7 @@ class RulesRepository(private val d2: D2) {
                 .byEnrollmentUid().eq(eventToEvaluate.enrollment())
                 .byUid().notIn(eventToEvaluate.uid())
                 .byStatus().notIn(EventStatus.SCHEDULE, EventStatus.SKIPPED, EventStatus.OVERDUE)
+                .byEventDate().before(Date())
                 .withTrackedEntityDataValues()
                 .orderByEventDate(RepositoryScope.OrderByDirection.DESC)
                 .get()
@@ -160,6 +161,7 @@ class RulesRepository(private val d2: D2) {
                 .byProgramStageUid().eq(eventToEvaluate.programStage())
                 .byOrganisationUnitUid().eq(eventToEvaluate.organisationUnit())
                 .byStatus().notIn(EventStatus.SCHEDULE, EventStatus.SKIPPED, EventStatus.OVERDUE)
+                .byEventDate().before(Date())
                 .withTrackedEntityDataValues()
                 .orderByEventDate(RepositoryScope.OrderByDirection.DESC)
                 .get().map { list ->
@@ -195,6 +197,7 @@ class RulesRepository(private val d2: D2) {
     fun enrollmentEvents(enrollmentUid: String): Single<List<RuleEvent>> {
         return d2.eventModule().events().byEnrollmentUid().eq(enrollmentUid)
             .byStatus().notIn(EventStatus.SCHEDULE, EventStatus.SKIPPED, EventStatus.OVERDUE)
+            .byEventDate().before(Date())
             .withTrackedEntityDataValues()
             .get()
             .toFlowable().flatMapIterable { events -> events }

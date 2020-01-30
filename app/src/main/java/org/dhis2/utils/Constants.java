@@ -125,6 +125,11 @@ public class Constants {
 
     public static final String RESERVED = "TAG_RV";
 
+    // Note
+    public static final String NOTE_ID = "NOTE_ID";
+    public static final String NOTE_TYPE = "NOTE_TYPE";
+
+
     private Constants() {
         // hide public constructor
     }

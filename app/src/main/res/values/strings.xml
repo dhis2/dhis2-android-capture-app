@@ -614,4 +614,13 @@
     <string name="granular_sync_unsupported_task">This convertTask is not supported</string>
     <string name="disable_pin_locked">Don´t show again lock screen</string>
     <string name="set_pin">Set pin</string>
+    <string name="conflict">Conflict</string>
+    <string name="event_date_in_future_message">This event can\'t have a date in the future. Please change it.</string>
+    <string name="change_event_date">Change date</string>
+    <string name="go_back">Go back</string>
+    <string name="no_notes">No notes</string>
+    <string name="no_add_notes">No more notes can be added</string>
+    <string name="new_note">New note</string>
+    <string name="note_saved">Note saved</string>
+    <string name="discard_note">Discard note?</string>
 </resources>
