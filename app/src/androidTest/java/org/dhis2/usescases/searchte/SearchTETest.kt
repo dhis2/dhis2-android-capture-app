@@ -2,7 +2,6 @@ package org.dhis2.usescases.searchte
 
 import android.content.Intent
 import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.contrib.RecyclerViewActions
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -31,9 +30,11 @@ class SearchTETest : BaseTest(){
         }.also { rule.launchActivity(it) }
 
         //Working on it
-        onView(withId(R.id.scrollView))
-                .perform(RecyclerViewActions.actionOnItemAtPosition<SearchTEViewHolder>(0, click()))
+   //     onView(withId(R.id.scrollView))
+   //             .perform(RecyclerViewActions.actionOnItemAtPosition<SearchTEViewHolder>(0, click()))
 
+       // onView(withRecyclerView(R.id.scrollView)).perform(RecyclerViewActions.scrollToPosition<SearchTEViewHolder>(15))
+    //    RecyclerViewActions.scrollToPosition<SearchTEViewHolder>(15)
         Thread.sleep(2000)
     }
 
