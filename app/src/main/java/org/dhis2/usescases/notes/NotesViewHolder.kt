@@ -51,7 +51,7 @@ class NotesViewHolder(private val binding: ItemNoteBinding) :
         binding.noteText.text = note.value()
         binding.storeBy.text = "@${note.storedBy()}"
         binding.userInit.text = note.storedBy().initials
-        itemView.setOnClickListener { listener.onNoteClick(note) }
+        itemView.setOnClickListener { listener.onNoteClick(itemView, note) }
         binding.executePendingBindings()
     }
 }

@@ -16,7 +16,8 @@
         app:contentPaddingBottom="8dp"
         app:cardUseCompatPadding="true"
         app:cardElevation="0dp"
-        app:cardCornerRadius="4dp">
+        app:cardCornerRadius="4dp"
+        android:transitionName="note">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"

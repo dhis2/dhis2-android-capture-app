@@ -27,12 +27,17 @@
  */
 package org.dhis2.usescases.notes
 
+import android.app.ActivityOptions
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
+import android.util.Pair
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.RequiresApi
+import androidx.core.app.ActivityOptionsCompat
 import androidx.databinding.DataBindingUtil
 import javax.inject.Inject
 import org.dhis2.App
@@ -109,14 +114,15 @@ class NotesFragment : FragmentGlobalAbstract(), NotesView, NoteItemClickListener
         return binding.root
     }
 
-    override fun onNoteClick(note: Note) {
+    override fun onNoteClick(view: View, note: Note) {
         val intent = Intent(activity, NoteDetailActivity::class.java).apply {
             putExtra(Constants.NOTE_ID, note.uid())
             putExtra(Constants.PROGRAM_UID, programUid)
             putExtra(Constants.UID, uid)
             putExtra(Constants.NOTE_TYPE, noteType)
         }
-        startActivity(intent)
+        val options = ActivityOptionsCompat.makeSceneTransitionAnimation(abstractActivity, view, "note")
+        startActivity(intent, options.toBundle())
     }
 
     override fun onResume() {

@@ -85,7 +85,7 @@ class NotesPresenter(
         )
     }
 
-    fun handleNotes(notes: List<Note>) {
+    private fun handleNotes(notes: List<Note>) {
         when {
             notes.isEmpty() -> view.setEmptyNotes()
             else -> view.swapNotes(notes)
