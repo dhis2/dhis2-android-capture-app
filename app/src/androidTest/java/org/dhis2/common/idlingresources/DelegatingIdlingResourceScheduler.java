@@ -95,8 +95,6 @@ final class DelegatingIdlingResourceScheduler extends IdlingResourceScheduler {
         if (work.decrementAndGet() == 0 && callback != null) {
             callback.onTransitionToIdle();
         }
-
-
     }
 
     ScheduledWork createWork(Runnable action, long delay, long period) {
