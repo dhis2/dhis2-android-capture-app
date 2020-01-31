@@ -8,7 +8,6 @@ import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory;
 import org.dhis2.utils.DhisTextUtils;
-import org.dhis2.utils.FileResourcesUtil;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.common.ValueType;
@@ -105,9 +104,13 @@ public final class EnrollmentRepository implements DataEntryRepository {
             optionCount = d2.optionModule().options().byOptionSetUid().eq(optionSet).blockingCount();
 
             if (!DhisTextUtils.Companion.isEmpty(dataValue)) {
-                dataValue = d2.optionModule().options()
-                        .byOptionSetUid().eq(optionSet)
-                        .byCode().eq(dataValue).one().blockingGet().displayName();
+                if (d2.optionModule().options()
+                        .byOptionSetUid().eq(optionSet).byCode().eq(dataValue)
+                        .one().blockingExists()) {
+                    dataValue = d2.optionModule().options()
+                            .byOptionSetUid().eq(optionSet)
+                            .byCode().eq(dataValue).one().blockingGet().displayName();
+                }
             }
         }
         String warning = null;
