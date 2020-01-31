@@ -28,21 +28,25 @@
 package org.dhis2.usescases.notes
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
+import android.view.animation.TranslateAnimation
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
 import io.reactivex.processors.FlowableProcessor
 import io.reactivex.processors.PublishProcessor
-import java.util.ArrayList
 import org.dhis2.R
 import org.dhis2.data.tuples.Pair
 import org.dhis2.databinding.ItemNoteBinding
 import org.hisp.dhis.android.core.note.Note
+import java.util.ArrayList
 
-class NotesAdapter(private val listener: NoteItemClickListener) : RecyclerView.Adapter<NotesViewHolder>() {
+class NotesAdapter(private val listener: NoteItemClickListener) :
+    RecyclerView.Adapter<NotesViewHolder>() {
 
-    private var notes: List<Note> = ArrayList()
+    private var notes: MutableList<Note> = ArrayList()
     private val processor: FlowableProcessor<Pair<String, Boolean>>
+    private var addedNewNote = false
 
     init {
         this.processor = PublishProcessor.create()
@@ -60,13 +64,24 @@ class NotesAdapter(private val listener: NoteItemClickListener) : RecyclerView.A
 
     override fun onBindViewHolder(holder: NotesViewHolder, position: Int) {
         holder.bind(notes[position], listener)
+        if(addedNewNote && position == 0) {
+            runEnterAnimation(holder.itemView)
+        }
     }
 
     override fun getItemCount(): Int = notes.size
 
     fun setItems(notes: List<Note>) {
-        this.notes = notes
+        val newNotes = notes.reversed().toMutableList()
+        addedNewNote = itemCount != 0 && itemCount < notes.size
+        this.notes = newNotes
         notifyDataSetChanged()
+    }
+
+    private fun runEnterAnimation(view: View) {
+        val translateAnimation = TranslateAnimation(0f,0f,-200f,0f)
+        translateAnimation.duration = 500
+        view.startAnimation(translateAnimation)
     }
 
     fun asFlowable(): FlowableProcessor<Pair<String, Boolean>> = processor

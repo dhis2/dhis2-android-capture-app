@@ -33,6 +33,10 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
+import android.widget.TextView
+import androidx.core.app.ActivityOptionsCompat
+import androidx.core.util.Pair
 import androidx.databinding.DataBindingUtil
 import javax.inject.Inject
 import org.dhis2.App
@@ -109,14 +113,37 @@ class NotesFragment : FragmentGlobalAbstract(), NotesView, NoteItemClickListener
         return binding.root
     }
 
-    override fun onNoteClick(note: Note) {
+    override fun onNoteClick(view: View, note: Note) {
         val intent = Intent(activity, NoteDetailActivity::class.java).apply {
             putExtra(Constants.NOTE_ID, note.uid())
             putExtra(Constants.PROGRAM_UID, programUid)
             putExtra(Constants.UID, uid)
             putExtra(Constants.NOTE_TYPE, noteType)
         }
-        startActivity(intent)
+        val pairStoredBy = Pair.create<View, String>(
+            view.findViewById<TextView>(R.id.storeBy), getString(R.string.transitionElement_storeBy)
+        )
+        val pairNoteText = Pair.create<View, String>(
+            view.findViewById<TextView>(R.id.note_text), getString(R.string.transitionElement_note_text)
+        )
+        val pairUserImage = Pair.create<View, String>(
+            view.findViewById<ImageView>(R.id.userImage), getString(R.string.transitionElement_userImage)
+        )
+        val pairUserInit = Pair.create<View, String>(
+            view.findViewById<ImageView>(R.id.userInit), getString(R.string.transitionElement_userInit)
+        )
+        val pairDate = Pair.create<View, String>(
+            view.findViewById<ImageView>(R.id.date), getString(R.string.transitionElement_date)
+        )
+        val options = ActivityOptionsCompat.makeSceneTransitionAnimation(
+            abstractActivity,
+            pairNoteText,
+            pairStoredBy,
+            pairUserImage,
+            pairUserInit,
+            pairDate
+        )
+        startActivity(intent, options.toBundle())
     }
 
     override fun onResume() {
@@ -133,7 +160,6 @@ class NotesFragment : FragmentGlobalAbstract(), NotesView, NoteItemClickListener
         binding.noNotesLayout.visibility = View.GONE
         binding.notesRecycler.visibility = View.VISIBLE
         noteAdapter.setItems(notes)
-
     }
 
     override fun setEmptyNotes() {
