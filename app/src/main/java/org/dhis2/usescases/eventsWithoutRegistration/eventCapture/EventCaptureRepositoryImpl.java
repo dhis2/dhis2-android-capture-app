@@ -640,5 +640,12 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                 getExpiryDateFromEvent(eventUid),
                 ((event, program) -> DateUtils.getInstance().isEventExpired(null, event.completedDate(), program.completeEventsExpiryDays())));
     }
+
+    @Override
+    public Flowable<Boolean> eventIntegrityCheck() {
+        return d2.eventModule().events().uid(eventUid).get()
+                .map(event -> event.status() == EventStatus.ACTIVE && event.eventDate() != null && !event.eventDate().after(new Date()))
+                .toFlowable();
+    }
 }
 

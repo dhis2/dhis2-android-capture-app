@@ -130,6 +130,17 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     public void init() {
 
         compositeDisposable.add(
+                eventCaptureRepository.eventIntegrityCheck()
+                        .filter(check -> !check)
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
+                        .subscribe(
+                                checkDidNotPass -> view.showEventIntegrityAlert(),
+                                Timber::e
+                        )
+        );
+
+        compositeDisposable.add(
                 showCalculationProcessor
                         .startWith(true)
                         .switchMap(shouldShow -> Flowable.just(shouldShow).delay(shouldShow ? 1 : 0, TimeUnit.SECONDS, schedulerProvider.io()))
@@ -375,11 +386,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
 
     @Override
     public void onBackClick() {
-        view.clearFocus();
-
-        new Handler().postDelayed(
-                () -> view.back(),
-                1000);
+       view.back();
     }
 
     @Override

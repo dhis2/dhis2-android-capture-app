@@ -53,7 +53,7 @@ public final class EnrollmentRepository implements DataEntryRepository {
     public Flowable<List<FieldViewModel>> list() {
 
         return d2.enrollmentModule().enrollments().uid(enrollmentUid).get()
-                .flatMap(enrollment -> d2.programModule().programTrackedEntityAttributes().byProgram().eq(enrollment.program()).get()).toFlowable()
+                .flatMap(enrollment -> d2.programModule().programTrackedEntityAttributes().withRenderType().byProgram().eq(enrollment.program()).get()).toFlowable()
                 .flatMapIterable(programTrackedEntityAttributes -> programTrackedEntityAttributes)
                 .map(this::transform).toList().toFlowable();
     }
@@ -145,7 +145,6 @@ public final class EnrollmentRepository implements DataEntryRepository {
                 mandatory = true;
             }
         }
-
         ValueTypeDeviceRendering fieldRendering = programTrackedEntityAttribute.renderType() != null ?
                 programTrackedEntityAttribute.renderType().mobile() : null;
 

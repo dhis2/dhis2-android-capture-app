@@ -41,9 +41,7 @@ public class QRActivity extends ActivityGlobalAbstract implements ZXingScannerVi
         binding = DataBindingUtil.setContentView(this, R.layout.activity_qr);
         mScannerView = binding.scannerView;
         mScannerView.setAutoFocus(true);
-        ArrayList<BarcodeFormat> formats = new ArrayList<>();
-        formats.add(BarcodeFormat.QR_CODE);
-        mScannerView.setFormats(formats);
+        mScannerView.setFormats(ZXingScannerView.ALL_FORMATS);
     }
 
     @Override

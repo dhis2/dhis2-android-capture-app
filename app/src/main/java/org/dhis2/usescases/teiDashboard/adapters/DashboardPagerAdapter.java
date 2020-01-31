@@ -9,7 +9,7 @@ import androidx.fragment.app.FragmentStatePagerAdapter;
 
 import org.dhis2.R;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.indicators.IndicatorsFragment;
-import org.dhis2.usescases.teiDashboard.dashboardfragments.notes.NotesFragment;
+import org.dhis2.usescases.notes.NotesFragment;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.relationships.RelationshipFragment;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.tei_data.TEIDataFragment;
 import org.jetbrains.annotations.NotNull;
@@ -22,13 +22,15 @@ public class DashboardPagerAdapter extends FragmentStatePagerAdapter {
 
     private static final int MOBILE_DASHBOARD_SIZE = 4;
     private String currentProgram;
+    private final String teiUid;
     private Context context;
 
 
-    public DashboardPagerAdapter(Context context, FragmentManager fm, String program) {
+    public DashboardPagerAdapter(Context context, FragmentManager fm, String program, String teiUid) {
         super(fm, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
         this.context = context;
         this.currentProgram = program;
+        this.teiUid = teiUid;
     }
 
     @Override
@@ -39,7 +41,6 @@ public class DashboardPagerAdapter extends FragmentStatePagerAdapter {
 
     private IndicatorsFragment indicatorsFragment;
     private RelationshipFragment relationshipFragment;
-    private NotesFragment notesFragment;
     private TEIDataFragment teiDataFragment;
 
     @NotNull
@@ -57,10 +58,7 @@ public class DashboardPagerAdapter extends FragmentStatePagerAdapter {
                 }
                 return relationshipFragment;
             case 3:
-                if (notesFragment == null) {
-                    notesFragment = new NotesFragment();
-                }
-                return notesFragment;
+               return NotesFragment.newTrackerInstance(currentProgram, teiUid);
             default:
                 if (teiDataFragment == null) {
                     teiDataFragment = new TEIDataFragment();

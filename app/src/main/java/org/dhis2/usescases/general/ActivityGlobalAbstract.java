@@ -1,5 +1,6 @@
 package org.dhis2.usescases.general;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -19,6 +20,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 import androidx.core.app.ActivityOptionsCompat;
 import androidx.core.content.ContextCompat;
 
@@ -43,11 +45,13 @@ import org.dhis2.utils.analytics.AnalyticsHelper;
 import org.dhis2.utils.customviews.CoordinatesView;
 import org.dhis2.utils.customviews.CustomDialog;
 import org.dhis2.utils.customviews.PictureView;
+import org.dhis2.utils.customviews.ScanTextView;
 import org.dhis2.utils.granularsync.SyncStatusDialog;
 import org.dhis2.utils.session.PinDialog;
 import org.hisp.dhis.android.core.arch.helpers.GeometryHelper;
 import org.hisp.dhis.android.core.common.FeatureType;
 import org.hisp.dhis.android.core.common.Geometry;
+import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -60,6 +64,8 @@ import rx.Observable;
 import rx.subjects.BehaviorSubject;
 import timber.log.Timber;
 
+import static android.content.pm.PackageManager.PERMISSION_GRANTED;
+import static org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialPresenter.ACCESS_COARSE_LOCATION_PERMISSION_REQUEST;
 import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
 import static org.dhis2.utils.analytics.AnalyticsConstants.SHOW_HELP;
 import static org.dhis2.utils.session.PinDialogKt.PIN_DIALOG_TAG;
@@ -70,13 +76,21 @@ import static org.dhis2.utils.session.PinDialogKt.PIN_DIALOG_TAG;
 
 public abstract class ActivityGlobalAbstract extends AppCompatActivity
         implements AbstractActivityContracts.View, CoordinatesView.OnMapPositionClick,
-        PictureView.OnIntentSelected {
+        PictureView.OnIntentSelected, ScanTextView.OnScanClick {
 
     private BehaviorSubject<Status> lifeCycleObservable = BehaviorSubject.create();
     private CoordinatesView coordinatesView;
     public String uuid;
     @Inject
     public AnalyticsHelper analyticsHelper;
+    public ScanTextView scanTextView;
+
+    public void requestLocationPermission(CoordinatesView coordinatesView) {
+        this.coordinatesView = coordinatesView;
+        ActivityCompat.requestPermissions((ActivityGlobalAbstract) getContext(),
+                new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
+                ACCESS_COARSE_LOCATION_PERMISSION_REQUEST);
+    }
 
     public enum Status {
         ON_PAUSE,
@@ -134,6 +148,18 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity
     @Override
     protected void onDestroy() {
         super.onDestroy();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case ACCESS_COARSE_LOCATION_PERMISSION_REQUEST:
+                if (grantResults[0] == PERMISSION_GRANTED) {
+                    coordinatesView.getLocation();
+                }
+                this.coordinatesView = null;
+                break;
+        }
     }
 
     //****************
@@ -405,6 +431,12 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity
             ((EventCaptureActivity) getContext()).startActivityForResult(intent, request);
         else
             startActivityForResult(intent, request);
+    }
+
+    @Override
+    public void onsScanClicked(Intent intent, @NotNull ScanTextView scanTextView) {
+        this.scanTextView = scanTextView;
+        startActivityForResult(intent, Constants.RQ_QR_SCANNER);
     }
 
     @Override

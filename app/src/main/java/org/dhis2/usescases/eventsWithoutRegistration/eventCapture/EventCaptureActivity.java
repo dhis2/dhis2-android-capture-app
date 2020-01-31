@@ -19,7 +19,9 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.databinding.DataBindingUtil;
 
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.android.material.tabs.TabLayout;
 
 import org.dhis2.App;
 import org.dhis2.R;
@@ -97,7 +99,15 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
 
         binding.calculationIndicator.text.setTextColor(ColorUtils.getContrastColor(ColorUtils.getPrimaryColor(this, ColorUtils.ColorType.PRIMARY_LIGHT)));
 
-        binding.eventViewPager.setAdapter(new EventCapturePagerAdapter(getSupportFragmentManager()));
+        binding.eventTabLayout.setupWithViewPager(binding.eventViewPager);
+        binding.eventTabLayout.setTabMode(TabLayout.MODE_FIXED);
+        binding.eventViewPager.setOnTouchListener((v, event) -> true);
+        binding.eventViewPager.setAdapter(new EventCapturePagerAdapter(
+                getSupportFragmentManager(),
+                getContext(),
+                getIntent().getStringExtra(PROGRAM_UID),
+                getIntent().getStringExtra(Constants.EVENT_UID)
+        ));
     }
 
     @Override
@@ -119,7 +129,8 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
 
     @Override
     public void onBackPressed() {
-        if(eventMode == EventMode.NEW) {
+        clearFocus();
+        if (eventMode == EventMode.NEW) {
             new CustomDialog(
                     this,
                     getString(R.string.title_delete_go_back),
@@ -129,7 +140,8 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
                     RQ_GO_BACK,
                     new DialogClickListener() {
                         @Override
-                        public void onPositive() { }
+                        public void onPositive() {
+                        }
 
                         @Override
                         public void onNegative() {
@@ -164,6 +176,11 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
                     presenter.nextCalculation(true);
                 }
                 break;
+            case Constants.RQ_QR_SCANNER:
+                if (resultCode == RESULT_OK) {
+                    scanTextView.updateScanResult(data.getStringExtra(Constants.EXTRA_DATA));
+                }
+                break;
         }
     }
 
@@ -177,18 +194,19 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
 
     @Override
     public void showCompleteActions(boolean canComplete, String completeMessage, Map<String, String> errors, Map<String, FieldViewModel> emptyMandatoryFields) {
-
-        FormBottomDialog.getInstance()
-                .setAccessDataWrite(presenter.canWrite())
-                .setIsEnrollmentOpen(presenter.isEnrollmentOpen())
-                .setIsExpired(presenter.hasExpired())
-                .setCanComplete(canComplete)
-                .setListener(this::setAction)
-                .setMessageOnComplete(completeMessage)
-                .setEmptyMandatoryFields(emptyMandatoryFields)
-                .setFieldsWithErrors(!errors.isEmpty())
-                .setMandatoryFields(!emptyMandatoryFields.isEmpty())
-                .show(getSupportFragmentManager(), "SHOW_OPTIONS");
+        if(binding.eventTabLayout.getSelectedTabPosition() == 0) {
+            FormBottomDialog.getInstance()
+                    .setAccessDataWrite(presenter.canWrite())
+                    .setIsEnrollmentOpen(presenter.isEnrollmentOpen())
+                    .setIsExpired(presenter.hasExpired())
+                    .setCanComplete(canComplete)
+                    .setListener(this::setAction)
+                    .setMessageOnComplete(completeMessage)
+                    .setEmptyMandatoryFields(emptyMandatoryFields)
+                    .setFieldsWithErrors(!errors.isEmpty())
+                    .setMandatoryFields(!emptyMandatoryFields.isEmpty())
+                    .show(getSupportFragmentManager(), "SHOW_OPTIONS");
+        }
     }
 
     @Override
@@ -229,7 +247,9 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
 
     @Override
     public void showRuleCalculation(Boolean shouldShow) {
-        binding.calculationIndicator.getRoot().setVisibility(shouldShow ? View.VISIBLE : View.GONE);
+        if(binding.eventTabLayout.getSelectedTabPosition() == 0) {
+            binding.calculationIndicator.getRoot().setVisibility(shouldShow ? View.VISIBLE : View.GONE);
+        }
     }
 
     private void setAction(FormBottomDialog.ActionType actionType) {
@@ -554,5 +574,16 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
     @Override
     public void back() {
         onBackPressed();
+    }
+
+    @Override
+    public void showEventIntegrityAlert() {
+        new MaterialAlertDialogBuilder(this, R.style.DhisMaterialDialog)
+                .setTitle(R.string.conflict)
+                .setMessage(R.string.event_date_in_future_message)
+                .setPositiveButton(R.string.change_event_date, (dialogInterface, i) -> goToInitialScreen())
+                .setNegativeButton(R.string.go_back, (dialogInterface, i) -> back())
+                .setCancelable(false)
+                .show();
     }
 }

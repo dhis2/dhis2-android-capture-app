@@ -145,16 +145,13 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
         binding.enrollmentDataText.text = getString(R.string.enrollment_data_hide)
         binding.enrollmentData.visibility = View.VISIBLE
         binding.enrollmentDataArrow.animate().scaleY(-1.0f).setDuration(0).start()
-    }
 
-    override fun onResume() {
-        super.onResume()
         presenter.init()
     }
 
-    override fun onPause() {
-        super.onPause()
+    override fun onDestroy() {
         presenter.onDettach()
+        super.onDestroy()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -192,6 +189,11 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
                         "tempFile.png"
                     )
                     presenter.saveFile(uuid, if (file.exists()) file.path else null)
+                }
+            }
+            Constants.RQ_QR_SCANNER -> {
+                if (resultCode == RESULT_OK) {
+                    scanTextView.updateScanResult(data!!.getStringExtra(Constants.EXTRA_DATA))
                 }
             }
             RQ_EVENT -> openDashboard(presenter.getEnrollment().uid()!!)
