@@ -30,7 +30,6 @@ class TableRecyclerAdapter(
         return when (viewType) {
             TABLE_TYPE -> {
                 val tableView = TableView(parent.context)
-                tableView.setRowHeaderWidth(500)
                 tableView.setHasFixedWidth(true)
                 tableView.shadowColor = ColorUtils.getPrimaryColor(
                     context,
