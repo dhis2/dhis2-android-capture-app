@@ -121,8 +121,7 @@ class NotesFragment : FragmentGlobalAbstract(), NotesView, NoteItemClickListener
             putExtra(Constants.UID, uid)
             putExtra(Constants.NOTE_TYPE, noteType)
         }
-        val options = ActivityOptionsCompat.makeSceneTransitionAnimation(abstractActivity, view, "note")
-        startActivity(intent, options.toBundle())
+        startActivity(intent)
     }
 
     override fun onResume() {
