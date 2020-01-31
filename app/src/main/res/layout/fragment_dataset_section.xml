@@ -62,16 +62,5 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
-
-        <!--<ProgressBar
-            android:id="@+id/program_progress"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintBottom_toTopOf="@+id/action_layout"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/headerContainer"
-            app:progressColor="@{@color/colorPrimary}" />-->
-
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

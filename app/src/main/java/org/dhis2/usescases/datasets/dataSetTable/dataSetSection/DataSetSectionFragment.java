@@ -145,7 +145,6 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
 
     @Override
     public void finishTableLoading() {
-//        binding.programProgress.setVisibility(View.GONE);
         tableAdapter.finishLoading();
     }
 
