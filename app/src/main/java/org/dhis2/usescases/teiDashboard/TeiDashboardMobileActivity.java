@@ -119,7 +119,9 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
             finish();
         } else {
             orientation = Resources.getSystem().getConfiguration().orientation;
-            restoreAdapter(programUid);
+            if(currentAdapter == null) {
+                restoreAdapter(programUid);
+            }
         }
     }
 

@@ -376,7 +376,10 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
 
     @Override
     public void restoreAdapter(String programUid) {
-        activity.restoreAdapter(programUid);
+        Bundle bundle = new Bundle();
+        bundle.putString("PROGRAM_UID", programUid);
+        bundle.putString("TEI_UID", activity.getTeiUid());
+        startActivity(TeiDashboardMobileActivity.class, bundle, true, false, null);
     }
 
     @Override
