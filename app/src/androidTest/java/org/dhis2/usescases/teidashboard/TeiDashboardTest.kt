@@ -22,7 +22,7 @@ class TeiDashboardTest : BaseTest() {
     }
 
     @Test
-    fun openSettings() {
+    fun openTeiDashboard() {
         prepareTeiProgrammeIntentAndLaunchActivity()
     }
 
@@ -31,7 +31,6 @@ class TeiDashboardTest : BaseTest() {
             putExtra(CHILD_PROGRAM_UID, CHILD_PROGRAM_UID_VALUE)
             putExtra(TEI_UID, TEI_UID_VALUE)
         }.also { rule.launchActivity(it) }
-
     }
 
 
