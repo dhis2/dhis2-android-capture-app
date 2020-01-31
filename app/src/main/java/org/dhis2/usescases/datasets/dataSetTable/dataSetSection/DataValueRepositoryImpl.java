@@ -105,23 +105,6 @@ public class DataValueRepositoryImpl implements DataValueRepository {
 
     }
 
-    public Completable updateValue(DataSetTableModel dataValue) {
-
-        DataValueObjectRepository dataValueObject = d2.dataValueModule().dataValues().value(
-                dataValue.period(),
-                dataValue.organisationUnit(),
-                dataValue.dataElement(),
-                dataValue.categoryOptionCombo(),
-                dataValue.attributeOptionCombo()
-        );
-
-        if (dataValue.value() != null && !dataValue.value().isEmpty())
-            return dataValueObject.set(dataValue.value());
-        else
-            return dataValueObject.delete();
-
-    }
-
     @Override
     public Flowable<Map<String, List<List<Pair<CategoryOption, Category>>>>> getCatOptions(String sectionName, String catCombo) {
         Map<String, List<List<Pair<CategoryOption, Category>>>> map = new HashMap<>();

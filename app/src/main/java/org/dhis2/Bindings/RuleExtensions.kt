@@ -26,6 +26,7 @@
 package org.dhis2.Bindings
 
 import org.dhis2.data.forms.RuleActionUnsupported
+import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.dataelement.DataElementCollectionRepository
 import org.hisp.dhis.android.core.event.Event
@@ -66,6 +67,7 @@ import org.hisp.dhis.rules.models.RuleVariableCurrentEvent
 import org.hisp.dhis.rules.models.RuleVariableNewestEvent
 import org.hisp.dhis.rules.models.RuleVariableNewestStageEvent
 import org.hisp.dhis.rules.models.RuleVariablePreviousEvent
+import timber.log.Timber
 
 fun List<ProgramRule>.toRuleList(): List<Rule> {
     return map {
@@ -280,7 +282,7 @@ fun List<TrackedEntityDataValue>.toRuleDataValue(
     optionRepository: OptionCollectionRepository
 ): List<RuleDataValue> {
     return map {
-        var value = it.value()
+        var value = if (it.value() != null) it.value() else ""
         val de = dataElementRepository.uid(it.dataElement()).blockingGet()
         if (!de.optionSetUid().isNullOrEmpty()) {
             if (ruleVariableRepository
@@ -290,11 +292,21 @@ fun List<TrackedEntityDataValue>.toRuleDataValue(
                 .blockingIsEmpty()
             ) {
                 value =
-                    optionRepository.byOptionSetUid().eq(de.optionSetUid()).byCode().eq(value).one()
-                        .blockingGet().name()
+                    if (optionRepository.byOptionSetUid().eq(de.optionSetUid()).byCode().eq(value).one().blockingExists()) {
+                        optionRepository.byOptionSetUid().eq(de.optionSetUid()).byCode().eq(value)
+                            .one()
+                            .blockingGet().name()
+                    } else {
+                        ""
+                    }
             }
         } else if (de.valueType()!!.isNumeric) {
-            value = value?.toFloat().toString()
+            value = try {
+                value?.toFloat().toString()
+            } catch (e: Exception) {
+                Timber.e(e)
+                ""
+            }
         }
         RuleDataValue.create(
             event.eventDate()!!,
@@ -302,12 +314,46 @@ fun List<TrackedEntityDataValue>.toRuleDataValue(
             it.dataElement()!!,
             value!!
         )
-    }
+    }.filter { it.value().isNotEmpty() }
 }
 
-fun List<TrackedEntityAttributeValue>.toRuleAttributeValue(): List<RuleAttributeValue> {
-    return filter { it.trackedEntityAttribute() != null && it.value() != null }
-        .map {
-            RuleAttributeValue.create(it.trackedEntityAttribute()!!, it.value()!!)
+fun List<TrackedEntityAttributeValue>.toRuleAttributeValue(
+    d2: D2,
+    program: String
+): List<RuleAttributeValue> {
+    return map {
+        var value = if (it.value() != null) it.value() else ""
+        val attr =
+            d2.trackedEntityModule().trackedEntityAttributes().uid(it.trackedEntityAttribute())
+                .blockingGet()
+        if (!attr.optionSet()?.uid().isNullOrEmpty()) {
+            if (d2.programModule().programRuleVariables()
+                    .byProgramUid().eq(program)
+                    .byDataElementUid().eq(it.trackedEntityAttribute())
+                    .byUseCodeForOptionSet().isTrue
+                    .blockingIsEmpty()
+            ) {
+                value =
+                    if (d2.optionModule().options().byOptionSetUid().eq(attr.optionSet()?.uid())
+                            .byCode().eq(value)
+                            .one().blockingExists()
+                    ) {
+                        d2.optionModule().options().byOptionSetUid().eq(attr.optionSet()?.uid())
+                            .byCode().eq(value)
+                            .one()
+                            .blockingGet().name()!!
+                    } else {
+                        ""
+                    }
+            }
+        } else if (attr.valueType()!!.isNumeric) {
+            value = try {
+                value?.toFloat().toString()
+            } catch (e: Exception) {
+                Timber.e(e)
+                ""
+            }
         }
+        RuleAttributeValue.create(it.trackedEntityAttribute()!!, value!!)
+    }.filter { it.value().isNotEmpty() }
 }

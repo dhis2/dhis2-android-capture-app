@@ -4,6 +4,8 @@ import android.text.TextUtils.isEmpty
 import io.reactivex.Flowable
 import io.reactivex.Single
 import io.reactivex.functions.Function5
+import org.dhis2.Bindings.blockingGetCheck
+import org.dhis2.Bindings.toRuleAttributeValue
 import java.util.Calendar
 import java.util.Date
 import org.dhis2.data.forms.RulesRepository
@@ -255,46 +257,20 @@ class EnrollmentFormRepositoryImpl(
             .map { program ->
                 d2.programModule().programTrackedEntityAttributes().byProgram().eq(program.uid())
                     .blockingGet().filter {
-                    d2.trackedEntityModule().trackedEntityAttributeValues()
-                        .value(
-                            it.trackedEntityAttribute()!!.uid(),
-                            enrollmentRepository.blockingGet().trackedEntityInstance()
-                        )
-                        .blockingExists()
-                }.map {
-                    val value = d2.trackedEntityModule().trackedEntityAttributeValues()
-                        .value(
-                            it.trackedEntityAttribute()!!.uid(),
-                            enrollmentRepository.blockingGet().trackedEntityInstance()
-                        )
-                        .blockingGet()
-                    val attr = d2.trackedEntityModule().trackedEntityAttributes()
-                        .uid(it.trackedEntityAttribute()!!.uid())
-                        .blockingGet()
-                    val variable = d2.programModule().programRuleVariables()
-                        .byProgramUid().eq(programUid)
-                        .byTrackedEntityAttributeUid().eq(attr.uid())
-                        .one()
-                        .blockingGet()
-
-                    val finalValue =
-                        if (variable != null &&
-                            variable.useCodeForOptionSet() != true &&
-                            attr.optionSet() != null
-                        ) {
-                            d2
-                                .optionModule()
-                                .options()
-                                .byOptionSetUid().eq(attr.optionSet()!!.uid())
-                                .byCode().eq(value.value()!!).one().blockingGet().name()!!
-                        } else if (attr.valueType()?.isNumeric!!) {
-                            value.value()?.toFloat().toString()
-                        } else {
-                            value.value()!!
-                        }
-
-                    RuleAttributeValue.create(attr.uid(), finalValue)
-                }
+                        d2.trackedEntityModule().trackedEntityAttributeValues()
+                            .value(
+                                it.trackedEntityAttribute()!!.uid(),
+                                enrollmentRepository.blockingGet().trackedEntityInstance()
+                            )
+                            .blockingExists()
+                    }.mapNotNull {
+                        d2.trackedEntityModule().trackedEntityAttributeValues()
+                            .value(
+                                it.trackedEntityAttribute()!!.uid(),
+                                enrollmentRepository.blockingGet().trackedEntityInstance()
+                            )
+                            .blockingGetCheck(d2, it.trackedEntityAttribute()!!.uid())
+                    }.toRuleAttributeValue(d2, program.uid())
             }.toFlowable()
     }
 }

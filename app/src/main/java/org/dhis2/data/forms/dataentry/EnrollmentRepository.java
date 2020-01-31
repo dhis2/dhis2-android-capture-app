@@ -105,9 +105,13 @@ public final class EnrollmentRepository implements DataEntryRepository {
             optionCount = d2.optionModule().options().byOptionSetUid().eq(optionSet).blockingCount();
 
             if (!isEmpty(dataValue)) {
-                dataValue = d2.optionModule().options()
-                        .byOptionSetUid().eq(optionSet)
-                        .byCode().eq(dataValue).one().blockingGet().displayName();
+                if (d2.optionModule().options()
+                        .byOptionSetUid().eq(optionSet).byCode().eq(dataValue)
+                        .one().blockingExists()) {
+                    dataValue = d2.optionModule().options()
+                            .byOptionSetUid().eq(optionSet)
+                            .byCode().eq(dataValue).one().blockingGet().displayName();
+                }
             }
         }
         String warning = null;
