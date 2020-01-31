@@ -121,19 +121,19 @@ class NotesFragment : FragmentGlobalAbstract(), NotesView, NoteItemClickListener
             putExtra(Constants.NOTE_TYPE, noteType)
         }
         val pairStoredBy = Pair.create<View, String>(
-            view.findViewById<TextView>(R.id.storeBy), "storeBy"
+            view.findViewById<TextView>(R.id.storeBy), getString(R.string.transitionElement_storeBy)
         )
         val pairNoteText = Pair.create<View, String>(
-            view.findViewById<TextView>(R.id.note_text), "note_text"
+            view.findViewById<TextView>(R.id.note_text), getString(R.string.transitionElement_note_text)
         )
         val pairUserImage = Pair.create<View, String>(
-            view.findViewById<ImageView>(R.id.userImage), "userImage"
+            view.findViewById<ImageView>(R.id.userImage), getString(R.string.transitionElement_userImage)
         )
         val pairUserInit = Pair.create<View, String>(
-            view.findViewById<ImageView>(R.id.userInit), "userInit"
+            view.findViewById<ImageView>(R.id.userInit), getString(R.string.transitionElement_userInit)
         )
         val pairDate = Pair.create<View, String>(
-            view.findViewById<ImageView>(R.id.date), "date"
+            view.findViewById<ImageView>(R.id.date), getString(R.string.transitionElement_date)
         )
         val options = ActivityOptionsCompat.makeSceneTransitionAnimation(
             abstractActivity,
