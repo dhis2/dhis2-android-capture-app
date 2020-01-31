@@ -103,7 +103,7 @@ class NoteDetailActivity : ActivityGlobalAbstract(), NoteDetailView, TextWatcher
         if (isNewNote.get() && binding.noteText.text.toString().isNotEmpty()) {
             showDiscardDialog()
         } else {
-            finish()
+            supportFinishAfterTransition()
         }
     }
 
