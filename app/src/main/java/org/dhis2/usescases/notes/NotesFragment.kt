@@ -27,17 +27,16 @@
  */
 package org.dhis2.usescases.notes
 
-import android.app.ActivityOptions
 import android.content.Context
 import android.content.Intent
-import android.os.Build
 import android.os.Bundle
-import android.util.Pair
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.annotation.RequiresApi
+import android.widget.ImageView
+import android.widget.TextView
 import androidx.core.app.ActivityOptionsCompat
+import androidx.core.util.Pair
 import androidx.databinding.DataBindingUtil
 import javax.inject.Inject
 import org.dhis2.App
@@ -121,7 +120,30 @@ class NotesFragment : FragmentGlobalAbstract(), NotesView, NoteItemClickListener
             putExtra(Constants.UID, uid)
             putExtra(Constants.NOTE_TYPE, noteType)
         }
-        startActivity(intent)
+        val pairStoredBy = Pair.create<View, String>(
+            view.findViewById<TextView>(R.id.storeBy), "storeBy"
+        )
+        val pairNoteText = Pair.create<View, String>(
+            view.findViewById<TextView>(R.id.note_text), "note_text"
+        )
+        val pairUserImage = Pair.create<View, String>(
+            view.findViewById<ImageView>(R.id.userImage), "userImage"
+        )
+        val pairUserInit = Pair.create<View, String>(
+            view.findViewById<ImageView>(R.id.userInit), "userInit"
+        )
+        val pairDate = Pair.create<View, String>(
+            view.findViewById<ImageView>(R.id.date), "date"
+        )
+        val options = ActivityOptionsCompat.makeSceneTransitionAnimation(
+            abstractActivity,
+            pairNoteText,
+            pairStoredBy,
+            pairUserImage,
+            pairUserInit,
+            pairDate
+        )
+        startActivity(intent, options.toBundle())
     }
 
     override fun onResume() {
@@ -138,7 +160,6 @@ class NotesFragment : FragmentGlobalAbstract(), NotesView, NoteItemClickListener
         binding.noNotesLayout.visibility = View.GONE
         binding.notesRecycler.visibility = View.VISIBLE
         noteAdapter.setItems(notes)
-
     }
 
     override fun setEmptyNotes() {
