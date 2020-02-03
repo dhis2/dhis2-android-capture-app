@@ -1,12 +1,12 @@
 package org.dhis2.data.forms.dataentry
 
 import io.reactivex.Flowable
+import java.io.File
 import org.dhis2.Bindings.blockingSetCheck
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableModel
 import org.dhis2.utils.DhisTextUtils
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.ValueType
-import java.io.File
 
 class ValueStoreImpl(
     private val d2: D2,
@@ -25,7 +25,10 @@ class ValueStoreImpl(
         return when (entryMode) {
             DataEntryStore.EntryMode.DE -> saveDataElement(uid, value)
             DataEntryStore.EntryMode.ATTR -> saveAttribute(uid, value)
-            DataEntryStore.EntryMode.DV -> throw IllegalArgumentException("DavaValues can't be saved using these arguments. Use the other one.")
+            DataEntryStore.EntryMode.DV ->
+                throw IllegalArgumentException(
+                    "DataValues can't be saved using these arguments. Use the other one."
+                )
         }
     }
 
@@ -39,7 +42,9 @@ class ValueStoreImpl(
         )
 
         return if (!dataValue.value().isNullOrEmpty()) {
-            if (dataValueObject.blockingExists() && dataValueObject.blockingGet().value() == dataValue.value()) {
+            if (dataValueObject.blockingExists() &&
+                dataValueObject.blockingGet().value() == dataValue.value()
+            ) {
                 Flowable.just(StoreResult("", ValueStoreResult.VALUE_HAS_NOT_CHANGED))
             } else {
                 dataValueObject.set(dataValue.value())
@@ -53,20 +58,15 @@ class ValueStoreImpl(
 
     override fun saveWithTypeCheck(uid: String, value: String?): Flowable<StoreResult> {
         return when {
-            d2.dataElementModule().dataElements().uid(uid).blockingExists() -> saveDataElement(
-                uid,
-                value
-            )
-            d2.trackedEntityModule().trackedEntityAttributes().uid(uid).blockingExists() -> saveAttribute(
-                uid,
-                value
-            )
+            d2.dataElementModule().dataElements().uid(uid).blockingExists() ->
+                saveDataElement(uid, value)
+            d2.trackedEntityModule().trackedEntityAttributes().uid(uid).blockingExists() ->
+                saveAttribute(uid, value)
             else -> Flowable.just(StoreResult(uid, ValueStoreResult.UID_IS_NOT_DE_OR_ATTR))
         }
     }
 
     private fun saveAttribute(uid: String, value: String?): Flowable<StoreResult> {
-
         if (!checkUniqueFilter(uid, value)) {
             return Flowable.just(StoreResult(uid, ValueStoreResult.VALUE_NOT_UNIQUE))
         }
@@ -150,5 +150,4 @@ class ValueStoreImpl(
         val file = File(path)
         return d2.fileResourceModule().fileResources().blockingAdd(file)
     }
-
 }

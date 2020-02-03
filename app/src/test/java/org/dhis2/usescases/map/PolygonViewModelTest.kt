@@ -62,5 +62,4 @@ class PolygonViewModelTest {
         polygonViewModel.response.observeForever {}
         assert(polygonViewModel.getPointAsString() == null)
     }
-
 }

@@ -101,7 +101,8 @@ class LoginPresenter(
 
     private fun getSystemInfoIfUserIsLogged(userManager: UserManager): SystemInfo {
         return if (userManager.isUserLoggedIn.blockingFirst() &&
-                userManager.d2.systemInfoModule().systemInfo().blockingGet() != null) {
+            userManager.d2.systemInfoModule().systemInfo().blockingGet() != null
+        ) {
             userManager.d2.systemInfoModule().systemInfo().blockingGet()
         } else {
             SystemInfo.builder().build()

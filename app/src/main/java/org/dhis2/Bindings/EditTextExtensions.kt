@@ -7,7 +7,6 @@ import androidx.core.content.ContextCompat
 import com.google.android.material.textfield.TextInputEditText
 import org.dhis2.R
 
-
 fun EditText.onRightDrawableClicked(onClicked: (view: EditText) -> Unit) {
     this.setOnTouchListener { v, event ->
         var hasConsumed = false
@@ -23,7 +22,7 @@ fun EditText.onRightDrawableClicked(onClicked: (view: EditText) -> Unit) {
     }
 }
 
-fun TextInputEditText.placeHolder(placeholder: String){
+fun TextInputEditText.placeHolder(placeholder: String) {
     this.setHintTextColor(ContextCompat.getColor(context, R.color.placeholder))
     this.hint = placeholder
 
@@ -32,5 +31,4 @@ fun TextInputEditText.placeHolder(placeholder: String){
             this.hint = ""
         }
     }
-
 }

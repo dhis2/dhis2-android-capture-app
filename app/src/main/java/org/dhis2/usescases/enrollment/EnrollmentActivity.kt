@@ -220,7 +220,11 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
         } else {
             val eventCreationIntent = Intent(abstracContext, EventCaptureActivity::class.java)
             eventCreationIntent.putExtras(
-                EventCaptureActivity.getActivityBundle(eventUid, presenter.getProgram().uid(), EventMode.CHECK)
+                EventCaptureActivity.getActivityBundle(
+                    eventUid,
+                    presenter.getProgram().uid(),
+                    EventMode.CHECK
+                )
             )
             eventCreationIntent.putExtra(
                 Constants.TRACKED_ENTITY_INSTANCE,

@@ -3,6 +3,7 @@ package org.dhis2.utils
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
+import java.util.ArrayList
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactoryImpl
@@ -27,8 +28,6 @@ import org.hisp.dhis.rules.models.RuleEffect
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
-import java.util.ArrayList
-
 
 /**
  * QUADRAM. Created by ppajuelo on 07/11/2018.
@@ -180,7 +179,6 @@ class RulesUtilsProviderImplTest {
         Assert.assertTrue(testFieldViewModels.containsKey("content"))
         Assert.assertTrue(testFieldViewModels["content"] is DisplayViewModel)
         Assert.assertEquals(testFieldViewModels["content"]!!.value(), "content data")
-
     }
 
     @Test
@@ -207,7 +205,6 @@ class RulesUtilsProviderImplTest {
         Assert.assertEquals(testFieldViewModels["content"]!!.value(), "data")
 
         verify(actionCallbacks, times(1)).setDisplayKeyValue("content", "data")
-
     }
 
     @Test
@@ -252,7 +249,6 @@ class RulesUtilsProviderImplTest {
         verify(actionCallbacks, times(1)).save(testingUid, "data")
         Assert.assertTrue(testFieldViewModels[testingUid]!!.value().equals("data"))
         Assert.assertFalse(testFieldViewModels[testingUid]!!.editable()!!)
-
     }
 
     @Test
@@ -285,7 +281,6 @@ class RulesUtilsProviderImplTest {
         Assert.assertTrue(testFieldViewModels[testingUid2]!!.value().equals("test"))
         Assert.assertFalse(testFieldViewModels[testingUid]!!.editable()!!)
         Assert.assertFalse(testFieldViewModels[testingUid]!!.editable()!!)
-
     }
 
     @Test
@@ -304,7 +299,6 @@ class RulesUtilsProviderImplTest {
         )
 
         verify(actionCallbacks, times(1)).setCalculatedValue("content", "data")
-
     }
 
     @Test
@@ -346,7 +340,6 @@ class RulesUtilsProviderImplTest {
 
         Assert.assertEquals(testFieldViewModels[testingUid]!!.warning(), "content data")
         verify(actionCallbacks, times(1)).setMessageOnComplete("content", true)
-
     }
 
     @Test
@@ -368,7 +361,6 @@ class RulesUtilsProviderImplTest {
 
         Assert.assertEquals(testFieldViewModels[testingUid]!!.warning(), "content data")
         verify(actionCallbacks, times(1)).setMessageOnComplete("content", false)
-
     }
 
     @Test
@@ -392,7 +384,6 @@ class RulesUtilsProviderImplTest {
 
     @Test
     fun `RuleActionHideProgramStage should remove stage from possible selections`() {
-
     }
 
     @Test
@@ -448,5 +439,4 @@ class RulesUtilsProviderImplTest {
 
         verify(actionCallbacks, times(1)).setOptionGroupToHide("optionGroupUid", false, "field")
     }
-
 }

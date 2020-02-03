@@ -31,13 +31,13 @@ class DashboardRepositoryImplTest {
         whenever(d2.eventModule().events()) doReturn mock()
         whenever(d2.eventModule().events().uid("event_uid")) doReturn mock()
         whenever(d2.eventModule().events().uid("event_uid").get()) doReturn
-                Single.just(getMockSingleEvent())
+            Single.just(getMockSingleEvent())
 
         whenever(d2.programModule()) doReturn mock()
         whenever(d2.programModule().programStages()) doReturn mock()
         whenever(d2.programModule().programStages().uid("program_stage")) doReturn mock()
         whenever(d2.programModule().programStages().uid("program_stage").get()) doReturn
-                Single.just(getMockStage())
+            Single.just(getMockStage())
 
         val testObserver = repository.displayGenerateEvent("event_uid").test()
 
@@ -110,9 +110,9 @@ class DashboardRepositoryImplTest {
         testObserver.assertValueCount(1)
         testObserver.assertValue { events ->
             events[0].uid() == "event_uid_4" &&
-                    events[1].uid() == "event_uid_2" &&
-                    events[2].uid() == "event_uid_3" &&
-                    events[3].uid() == "event_uid_1"
+                events[1].uid() == "event_uid_2" &&
+                events[2].uid() == "event_uid_3" &&
+                events[3].uid() == "event_uid_1"
         }
     }
 
