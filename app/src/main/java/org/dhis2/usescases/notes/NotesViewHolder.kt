@@ -28,10 +28,9 @@
 package org.dhis2.usescases.notes
 
 import androidx.recyclerview.widget.RecyclerView
-import java.text.ParseException
 import org.dhis2.Bindings.initials
+import org.dhis2.Bindings.setDateInterval
 import org.dhis2.databinding.ItemNoteBinding
-import org.dhis2.utils.DateUtils
 import org.hisp.dhis.android.core.note.Note
 
 class NotesViewHolder(private val binding: ItemNoteBinding) :
@@ -39,6 +38,8 @@ class NotesViewHolder(private val binding: ItemNoteBinding) :
 
     fun bind(note: Note, listener: NoteItemClickListener) {
         note.storedDate()?.let {
+            binding.date.setDateInterval(it)
+/*
             val formattedDate = try {
                 val date = DateUtils.databaseDateFormat().parse(note.storedDate())
                 DateUtils.uiDateFormat().format(date)
@@ -46,8 +47,9 @@ class NotesViewHolder(private val binding: ItemNoteBinding) :
                 e.printStackTrace()
                 note.storedDate()
             }
-            binding.date.text = formattedDate
+            binding.date.text = formattedDate*/
         }
+
         binding.noteText.text = note.value()
         val storedBy = "@${note.storedBy()}"
         binding.storeBy.text = storedBy
