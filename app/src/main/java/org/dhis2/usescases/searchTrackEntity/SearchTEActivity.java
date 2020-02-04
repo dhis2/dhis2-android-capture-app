@@ -83,6 +83,8 @@ import org.dhis2.utils.maps.MapLayerManager;
 import org.dhis2.utils.maps.MarkerUtils;
 import org.hisp.dhis.android.core.arch.call.D2Progress;
 import org.hisp.dhis.android.core.common.FeatureType;
+import org.hisp.dhis.android.core.common.ValueTypeDeviceRendering;
+import org.hisp.dhis.android.core.common.ValueTypeRenderingType;
 import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute;
 
@@ -263,6 +265,19 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        switch (requestCode) {
+            case FilterManager.OU_TREE:
+                if (resultCode == Activity.RESULT_OK) {
+                    filtersAdapter.notifyDataSetChanged();
+                    updateFilters(FilterManager.getInstance().getTotalFilters());
+                }
+                break;
+            case Constants.RQ_QR_SCANNER:
+                if (resultCode == RESULT_OK) {
+                    scanTextView.updateScanResult(data.getStringExtra(Constants.EXTRA_DATA));
+                }
+                break;
+        }
         if (requestCode == FilterManager.OU_TREE && resultCode == Activity.RESULT_OK) {
             filtersAdapter.notifyDataSetChanged();
             updateFilters(FilterManager.getInstance().getTotalFilters());
@@ -351,13 +366,14 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     }
 
     @Override
-    public void setForm(List<TrackedEntityAttribute> trackedEntityAttributes, @Nullable Program program, HashMap<String, String> queryData) {
+    public void setForm(List<TrackedEntityAttribute> trackedEntityAttributes, @Nullable Program program, HashMap<String, String> queryData,
+                        List<ValueTypeDeviceRendering> renderingTypes) {
 
         //TODO: refreshData for recycler
 
         //Form has been set.
         FormAdapter formAdapter = (FormAdapter) binding.formRecycler.getAdapter();
-        formAdapter.setList(trackedEntityAttributes, program, queryData);
+        formAdapter.setList(trackedEntityAttributes, program, queryData, renderingTypes);
         updateFiltersSearch(queryData.size());
     }
 
