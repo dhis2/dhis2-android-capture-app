@@ -87,6 +87,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     private int unsupportedFields;
     private int totalFields;
     private ConnectableFlowable<List<FieldViewModel>> fieldFlowable;
+    private PublishProcessor<Unit> notesCounterProcessor;
 
     @Override
     public String getLastFocusItem() {
@@ -123,7 +124,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
         progressProcessor = PublishProcessor.create();
         sectionAdjustProcessor = PublishProcessor.create();
         formAdjustProcessor = PublishProcessor.create();
-
+        notesCounterProcessor = PublishProcessor.create();
     }
 
     @Override
@@ -386,7 +387,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
 
     @Override
     public void onBackClick() {
-       view.back();
+        view.back();
     }
 
     @Override
@@ -833,4 +834,29 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     }
 
     //endregion
+
+    @Override
+    public void initNoteCounter() {
+        if (!notesCounterProcessor.hasSubscribers()) {
+            compositeDisposable.add(
+                    notesCounterProcessor.startWith(new Unit())
+                            .flatMapSingle(unit ->
+                                    eventCaptureRepository.getNoteCount())
+                            .subscribeOn(schedulerProvider.io())
+                            .observeOn(schedulerProvider.ui())
+                            .subscribe(
+                                    numberOfNotes ->
+                                            view.updateNoteBadge(numberOfNotes),
+                                    Timber::e
+                            )
+            );
+        } else {
+            notesCounterProcessor.onNext(new Unit());
+        }
+    }
+
+    @Override
+    public void refreshTabCounters() {
+        initNoteCounter();
+    }
 }

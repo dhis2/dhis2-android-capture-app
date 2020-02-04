@@ -28,6 +28,7 @@ import java.util.List;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 
 /**
@@ -88,4 +89,6 @@ public interface DashboardRepository {
     Single<Boolean> deleteTeiIfPossible();
 
     Single<Boolean> deleteEnrollmentIfPossible(String enrollmentUid);
+
+    Single<Integer> getNoteCount();
 }

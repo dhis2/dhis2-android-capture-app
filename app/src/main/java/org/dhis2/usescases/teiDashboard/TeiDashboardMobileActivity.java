@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -25,6 +26,7 @@ import androidx.fragment.app.FragmentStatePagerAdapter;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.viewpager.widget.ViewPager;
 
+import com.google.android.material.badge.BadgeDrawable;
 import com.google.android.material.tabs.TabLayout;
 
 import org.dhis2.App;
@@ -108,10 +110,10 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
     protected void onResume() {
         super.onResume();
 
-        if (((App) getApplicationContext()).dashboardComponent() == null)
+        /*if (((App) getApplicationContext()).dashboardComponent() == null)
             ((App) getApplicationContext())
                     .createDashboardComponent(new TeiDashboardModule(this, teiUid, programUid))
-                    .inject(this);
+                    .inject(this);*/
 
         String prevDashboardProgram = getSharedPreferences(Constants.SHARE_PREFS, Context.MODE_PRIVATE)
                 .getString(Constants.PREVIOUS_DASHBOARD_PROGRAM, null);
@@ -119,10 +121,12 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
             finish();
         } else {
             orientation = Resources.getSystem().getConfiguration().orientation;
-            if(currentAdapter == null) {
+            if (currentAdapter == null) {
                 restoreAdapter(programUid);
             }
         }
+
+        presenter.refreshTabCounters();
     }
 
     @Override
@@ -190,7 +194,6 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
             if (fromRelationship)
                 binding.teiPager.setCurrentItem(1, false);
         }
-
     }
 
     @Override
@@ -225,6 +228,8 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
         Boolean enrollmentStatus = program.getCurrentEnrollment() != null && program.getCurrentEnrollment().status() == EnrollmentStatus.ACTIVE;
         if (getIntent().getStringExtra(Constants.EVENT_UID) != null && enrollmentStatus)
             dashboardViewModel.updateEventUid(getIntent().getStringExtra(Constants.EVENT_UID));
+
+        presenter.initNoteCounter();
     }
 
     @Override
@@ -445,5 +450,15 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
 
         });
         popupMenu.show();
+    }
+
+    @Override
+    public void updateNoteBadge(int numberOfNotes) {
+        BadgeDrawable badge = binding.tabLayout.getTabAt(binding.tabLayout.getTabCount() - 1).getOrCreateBadge();
+        badge.setVisible(numberOfNotes > 0);
+        badge.setBackgroundColor(Color.WHITE);
+        badge.setBadgeTextColor(ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.PRIMARY));
+        badge.setNumber(numberOfNotes);
+        badge.setMaxCharacterCount(3);
     }
 }

@@ -166,6 +166,7 @@ class NotesFragment : FragmentGlobalAbstract(), NotesView, NoteItemClickListener
     }
 
     override fun setEmptyNotes() {
+        binding.swiperefresh.isRefreshing = false
         binding.noNotesLayout.visibility = View.VISIBLE
         binding.notesRecycler.visibility = View.GONE
     }

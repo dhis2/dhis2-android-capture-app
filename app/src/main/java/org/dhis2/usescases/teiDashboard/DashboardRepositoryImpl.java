@@ -67,7 +67,7 @@ public class DashboardRepositoryImpl
     private String programUid;
 
 
-    public DashboardRepositoryImpl(D2 d2,String teiUid, String programUid) {
+    public DashboardRepositoryImpl(D2 d2, String teiUid, String programUid) {
         this.d2 = d2;
         this.teiUid = teiUid;
         this.programUid = programUid;
@@ -250,7 +250,7 @@ public class DashboardRepositoryImpl
                             if (d2.trackedEntityModule().trackedEntityAttributeValues().value(programAttribute.trackedEntityAttribute().uid(), teiUid).blockingExists()) {
                                 TrackedEntityAttributeValue attributeValue = d2.trackedEntityModule().trackedEntityAttributeValues().value(programAttribute.trackedEntityAttribute().uid(), teiUid).blockingGet();
                                 TrackedEntityAttribute attribute = d2.trackedEntityModule().trackedEntityAttributes().uid(programAttribute.trackedEntityAttribute().uid()).blockingGet();
-                                if(attribute.valueType() != ValueType.IMAGE) {
+                                if (attribute.valueType() != ValueType.IMAGE) {
                                     attributeValues.add(
                                             ValueUtils.transform(d2, attributeValue, attribute.valueType(), attribute.optionSet() != null ? attribute.optionSet().uid() : null)
                                     );
@@ -260,13 +260,13 @@ public class DashboardRepositoryImpl
                         return attributeValues;
                     }).toObservable();
 
-        }else{
+        } else {
             return d2.trackedEntityModule().trackedEntityAttributeValues().byTrackedEntityInstance().eq(teiUid).get()
                     .map(attributeValueList -> {
                         List<TrackedEntityAttributeValue> attributeValues = new ArrayList<>();
-                        for(TrackedEntityAttributeValue attributeValue : attributeValueList){
+                        for (TrackedEntityAttributeValue attributeValue : attributeValueList) {
                             TrackedEntityAttribute attribute = d2.trackedEntityModule().trackedEntityAttributes().uid(attributeValue.trackedEntityAttribute()).blockingGet();
-                            if(attribute.valueType()!=ValueType.IMAGE){
+                            if (attribute.valueType() != ValueType.IMAGE) {
                                 attributeValues.add(
                                         ValueUtils.transform(d2, attributeValue, attribute.valueType(), attribute.optionSet() != null ? attribute.optionSet().uid() : null)
                                 );
@@ -454,5 +454,16 @@ public class DashboardRepositoryImpl
                 return Single.error(new AuthorityException(null));
             }
         });
+    }
+
+    @Override
+    public Single<Integer> getNoteCount() {
+        return d2.enrollmentModule().enrollments()
+                .byProgram().eq(programUid)
+                .byTrackedEntityInstance().eq(teiUid)
+                .withNotes()
+                .one()
+                .get()
+                .map(enrollment -> enrollment.notes() != null ? enrollment.notes().size() : 0);
     }
 }

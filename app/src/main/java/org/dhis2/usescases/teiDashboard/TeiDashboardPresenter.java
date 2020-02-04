@@ -3,10 +3,12 @@ package org.dhis2.usescases.teiDashboard;
 import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.utils.AuthorityException;
 import org.dhis2.utils.analytics.AnalyticsHelper;
+import org.hisp.dhis.android.core.common.Unit;
 import org.hisp.dhis.android.core.program.Program;
 
 import io.reactivex.Observable;
 import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.processors.PublishProcessor;
 import timber.log.Timber;
 
 import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
@@ -29,8 +31,10 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
 
     public CompositeDisposable compositeDisposable;
     public DashboardProgramModel dashboardProgramModel;
+    private PublishProcessor<Unit> notesCounterProcessor;
 
-    public TeiDashboardPresenter(TeiDashboardContracts.View view,  String teiUid, String programUid, DashboardRepository dashboardRepository, SchedulerProvider schedulerProvider, AnalyticsHelper analyticsHelper) {
+
+    public TeiDashboardPresenter(TeiDashboardContracts.View view, String teiUid, String programUid, DashboardRepository dashboardRepository, SchedulerProvider schedulerProvider, AnalyticsHelper analyticsHelper) {
         this.view = view;
         this.teiUid = teiUid;
         this.programUid = programUid;
@@ -38,6 +42,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
         this.dashboardRepository = dashboardRepository;
         this.schedulerProvider = schedulerProvider;
         compositeDisposable = new CompositeDisposable();
+        notesCounterProcessor = PublishProcessor.create();
     }
 
     @Override
@@ -105,7 +110,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
                         .observeOn(schedulerProvider.ui())
                         .subscribe(
                                 canDelete -> {
-                                    if(canDelete){
+                                    if (canDelete) {
                                         analyticsHelper.setEvent(DELETE_TEI, CLICK, DELETE_TEI);
                                         view.handleTEIdeletion();
                                     } else {
@@ -160,4 +165,28 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
         view.showDescription(description);
     }
 
+    @Override
+    public void initNoteCounter() {
+        if (!notesCounterProcessor.hasSubscribers()){
+            compositeDisposable.add(
+                    notesCounterProcessor.startWith(new Unit())
+                            .flatMapSingle(unit ->
+                                    dashboardRepository.getNoteCount())
+                            .subscribeOn(schedulerProvider.io())
+                            .observeOn(schedulerProvider.ui())
+                            .subscribe(
+                                    numberOfNotes ->
+                                            view.updateNoteBadge(numberOfNotes),
+                                    Timber::e
+                            )
+            );
+        }else{
+            notesCounterProcessor.onNext(new Unit());
+        }
+    }
+
+    @Override
+    public void refreshTabCounters() {
+        initNoteCounter();
+    }
 }
