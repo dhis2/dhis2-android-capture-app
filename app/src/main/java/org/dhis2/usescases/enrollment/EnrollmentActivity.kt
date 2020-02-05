@@ -176,6 +176,7 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
                             uuid,
                             FileResourcesUtil.getFileFromGallery(this, imageUri).path
                         )
+                        presenter.updateFields()
                     } catch (e: Exception) {
                         e.printStackTrace()
                         Toast.makeText(this, "Something went wrong", Toast.LENGTH_LONG).show()
@@ -189,6 +190,7 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
                         "tempFile.png"
                     )
                     presenter.saveFile(uuid, if (file.exists()) file.path else null)
+                    presenter.updateFields()
                 }
             }
             Constants.RQ_QR_SCANNER -> {
