@@ -98,22 +98,50 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
 
         binding.tabLayout.setupWithViewPager(binding.teiPager);
         binding.tabLayout.setTabMode(TabLayout.MODE_SCROLLABLE);
+        binding.tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                if (tab.getPosition() == binding.tabLayout.getTabCount() - 1) {
+                    BadgeDrawable badge = tab.getOrCreateBadge();
+                    if (badge.hasNumber() && badge.getNumber() > 0) {
+                        badge.setBackgroundColor(Color.WHITE);
+                    }
+                }
+            }
+
+        @Override
+        public void onTabUnselected (TabLayout.Tab tab){
+            if (tab.getPosition() == binding.tabLayout.getTabCount() - 1) {
+                BadgeDrawable badge = tab.getOrCreateBadge();
+                if (badge.hasNumber() && badge.getNumber() > 0) {
+                    badge.setBackgroundColor(Color.parseColor("#B3FFFFFF"));
+                }
+            }
+        }
+
+        @Override
+        public void onTabReselected (TabLayout.Tab tab){
+            /**/
+        }
+    });
         binding.toolbarTitle.setLines(1);
         binding.toolbarTitle.setEllipsize(TextUtils.TruncateAt.END);
 
-        getSharedPreferences(Constants.SHARE_PREFS, Context.MODE_PRIVATE)
-                .edit().putString(Constants.PREVIOUS_DASHBOARD_PROGRAM, programUid).apply();
-    }
+    getSharedPreferences(Constants.SHARE_PREFS, Context.MODE_PRIVATE)
+                .
+
+    edit().
+
+    putString(Constants.PREVIOUS_DASHBOARD_PROGRAM, programUid).
+
+    apply();
+
+}
 
 
     @Override
     protected void onResume() {
         super.onResume();
-
-        /*if (((App) getApplicationContext()).dashboardComponent() == null)
-            ((App) getApplicationContext())
-                    .createDashboardComponent(new TeiDashboardModule(this, teiUid, programUid))
-                    .inject(this);*/
 
         String prevDashboardProgram = getSharedPreferences(Constants.SHARE_PREFS, Context.MODE_PRIVATE)
                 .getString(Constants.PREVIOUS_DASHBOARD_PROGRAM, null);

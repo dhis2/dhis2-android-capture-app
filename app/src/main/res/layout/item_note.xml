@@ -11,9 +11,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:cardCornerRadius="4dp"
+        android:minHeight="72dp"
         app:cardElevation="0dp"
         app:cardBackgroundColor="@color/white"
-        app:cardUseCompatPadding="true">
+        app:cardUseCompatPadding="false">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
