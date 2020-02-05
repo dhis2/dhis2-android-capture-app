@@ -1,8 +1,6 @@
 package org.dhis2.usescases.teiDashboard;
 
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
@@ -74,14 +72,13 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
     protected DashboardPagerTabletAdapter tabletAdapter;
     protected FragmentStatePagerAdapter currentAdapter;
     private int orientation;
-    private boolean changingProgram;
 
     private DashboardViewModel dashboardViewModel;
     private boolean fromRelationship;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
-        setTheme(getSharedPreferences().getInt(Constants.PROGRAM_THEME, getSharedPreferences().getInt(Constants.THEME, R.style.AppTheme)));
+
         if (savedInstanceState != null && savedInstanceState.containsKey(Constants.TRACKED_ENTITY_INSTANCE)) {
             teiUid = savedInstanceState.getString(Constants.TRACKED_ENTITY_INSTANCE);
             programUid = savedInstanceState.getString(Constants.PROGRAM_UID);
@@ -90,6 +87,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
             programUid = getIntent().getStringExtra("PROGRAM_UID");
         }
         ((App) getApplicationContext()).createDashboardComponent(new TeiDashboardModule(this, teiUid, programUid)).inject(this);
+        setTheme(presenter.getProgramTheme(R.style.AppTheme));
         super.onCreate(savedInstanceState);
         dashboardViewModel = ViewModelProviders.of(this).get(DashboardViewModel.class);
 
@@ -101,7 +99,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
         binding.tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
-                if (tab.getPosition() == binding.tabLayout.getTabCount() - 1) {
+                if (tab.getPosition() == getLastTabPosition()) {
                     BadgeDrawable badge = tab.getOrCreateBadge();
                     if (badge.hasNumber() && badge.getNumber() > 0) {
                         badge.setBackgroundColor(Color.WHITE);
@@ -109,49 +107,37 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
                 }
             }
 
-        @Override
-        public void onTabUnselected (TabLayout.Tab tab){
-            if (tab.getPosition() == binding.tabLayout.getTabCount() - 1) {
-                BadgeDrawable badge = tab.getOrCreateBadge();
-                if (badge.hasNumber() && badge.getNumber() > 0) {
-                    badge.setBackgroundColor(Color.parseColor("#B3FFFFFF"));
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+                if (tab.getPosition() == getLastTabPosition()) {
+                    BadgeDrawable badge = tab.getOrCreateBadge();
+                    if (badge.hasNumber() && badge.getNumber() > 0) {
+                        badge.setBackgroundColor(Color.parseColor("#B3FFFFFF"));
+                    }
                 }
             }
-        }
 
-        @Override
-        public void onTabReselected (TabLayout.Tab tab){
-            /**/
-        }
-    });
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+                /**/
+            }
+        });
         binding.toolbarTitle.setLines(1);
         binding.toolbarTitle.setEllipsize(TextUtils.TruncateAt.END);
 
-    getSharedPreferences(Constants.SHARE_PREFS, Context.MODE_PRIVATE)
-                .
-
-    edit().
-
-    putString(Constants.PREVIOUS_DASHBOARD_PROGRAM, programUid).
-
-    apply();
-
-}
+        presenter.prefSaveCurrentProgram(programUid);
+    }
 
 
     @Override
     protected void onResume() {
         super.onResume();
 
-        String prevDashboardProgram = getSharedPreferences(Constants.SHARE_PREFS, Context.MODE_PRIVATE)
-                .getString(Constants.PREVIOUS_DASHBOARD_PROGRAM, null);
-        if (!changingProgram && prevDashboardProgram != null && !prevDashboardProgram.equals(programUid)) {
-            finish();
-        } else {
-            orientation = Resources.getSystem().getConfiguration().orientation;
-            if (currentAdapter == null) {
-                restoreAdapter(programUid);
-            }
+        String prevDashboardProgram = presenter.getPreviousDashboard();
+
+        orientation = Resources.getSystem().getConfiguration().orientation;
+        if (currentAdapter == null) {
+            restoreAdapter(programUid);
         }
 
         presenter.refreshTabCounters();
@@ -160,8 +146,13 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
     @Override
     protected void onPause() {
         presenter.onDettach();
-        ((App) getApplicationContext()).releaseDashboardComponent();
         super.onPause();
+    }
+
+    @Override
+    protected void onDestroy() {
+        ((App) getApplicationContext()).releaseDashboardComponent();
+        super.onDestroy();
     }
 
     @Override
@@ -339,11 +330,10 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
             }
 
             if (data.hasExtra("CHANGE_PROGRAM")) {
-                programUid = data.getStringExtra("CHANGE_PROGRAM");
-                adapter = null;
-                tabletAdapter = null;
-                currentAdapter = null;
-                changingProgram = true;
+                Bundle bundle = new Bundle();
+                bundle.putString("TEI_UID", teiUid);
+                bundle.putString("PROGRAM_UID", data.getStringExtra("CHANGE_PROGRAM"));
+                startActivity(TeiDashboardMobileActivity.class, bundle, true, false, null);
             }
 
         }
@@ -360,7 +350,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
 
     @Override
     public void showTutorial(boolean shaked) {
-        if (binding.tabLayout.getSelectedTabPosition() == 0 && !changingProgram)
+        if (binding.tabLayout.getSelectedTabPosition() == 0)
             setTutorial();
         else
             showToast(getString(R.string.no_intructions));
@@ -388,11 +378,8 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
         int programTheme = ColorUtils.getThemeFromColor(color);
         int programColor = ColorUtils.getColorFrom(color, ColorUtils.getPrimaryColor(this, ColorUtils.ColorType.PRIMARY));
 
-
-        SharedPreferences prefs = getAbstracContext().getSharedPreferences(
-                Constants.SHARE_PREFS, Context.MODE_PRIVATE);
         if (programTheme != -1) {
-            prefs.edit().putInt(Constants.PROGRAM_THEME, programTheme).apply();
+            presenter.saveProgramTheme(programTheme);
             binding.toolbar.setBackgroundColor(programColor);
             binding.tabLayout.setBackgroundColor(programColor);
             if (getOrientation() == Configuration.ORIENTATION_LANDSCAPE)
@@ -401,12 +388,9 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
                     binding.dotsIndicator.setStrokeDotsIndicatorColor(programColor);
                 }
         } else {
-            prefs.edit().remove(Constants.PROGRAM_THEME).apply();
+            presenter.removeProgramTheme();
             int colorPrimary;
-            switch (prefs.getInt(Constants.THEME, R.style.AppTheme)) {
-                case R.style.AppTheme:
-                    colorPrimary = R.color.colorPrimary;
-                    break;
+            switch (presenter.getProgramTheme(R.style.AppTheme)) {
                 case R.style.RedTheme:
                     colorPrimary = R.color.colorPrimaryRed;
                     break;
@@ -416,6 +400,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
                 case R.style.GreenTheme:
                     colorPrimary = R.color.colorPrimaryGreen;
                     break;
+                case R.style.AppTheme:
                 default:
                     colorPrimary = R.color.colorPrimary;
                     break;
@@ -430,7 +415,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
         }
 
         binding.executePendingBindings();
-        setTheme(prefs.getInt(Constants.PROGRAM_THEME, prefs.getInt(Constants.THEME, R.style.AppTheme)));
+        setTheme(presenter.getProgramTheme(R.style.AppTheme));
 
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP) {
             Window window = getWindow();
@@ -482,11 +467,17 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
 
     @Override
     public void updateNoteBadge(int numberOfNotes) {
-        BadgeDrawable badge = binding.tabLayout.getTabAt(binding.tabLayout.getTabCount() - 1).getOrCreateBadge();
-        badge.setVisible(numberOfNotes > 0);
-        badge.setBackgroundColor(Color.WHITE);
-        badge.setBadgeTextColor(ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.PRIMARY));
-        badge.setNumber(numberOfNotes);
-        badge.setMaxCharacterCount(3);
+        if (binding.tabLayout.getTabCount() > 0) {
+            BadgeDrawable badge = binding.tabLayout.getTabAt(getLastTabPosition()).getOrCreateBadge();
+            badge.setVisible(numberOfNotes > 0);
+            badge.setBackgroundColor(Color.WHITE);
+            badge.setBadgeTextColor(ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.PRIMARY));
+            badge.setNumber(numberOfNotes);
+            badge.setMaxCharacterCount(3);
+        }
+    }
+
+    private int getLastTabPosition() {
+        return binding.tabLayout.getTabCount() - 1;
     }
 }
