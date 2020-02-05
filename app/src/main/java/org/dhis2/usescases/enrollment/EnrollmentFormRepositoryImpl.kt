@@ -5,6 +5,7 @@ import io.reactivex.Flowable
 import io.reactivex.Single
 import io.reactivex.functions.Function5
 import org.dhis2.Bindings.blockingGetCheck
+import org.dhis2.Bindings.toRuleAttributeValue
 import java.util.Calendar
 import java.util.Date
 import org.dhis2.data.forms.RulesRepository
@@ -255,7 +256,8 @@ class EnrollmentFormRepositoryImpl(
         return programRepository.get()
             .map { program ->
                 d2.programModule().programTrackedEntityAttributes().byProgram().eq(program.uid())
-                    .blockingGet().filter {
+                    .blockingGet()
+                    .filter {
                         d2.trackedEntityModule().trackedEntityAttributeValues()
                             .value(
                                 it.trackedEntityAttribute()!!.uid(),
@@ -269,34 +271,7 @@ class EnrollmentFormRepositoryImpl(
                                 enrollmentRepository.blockingGet().trackedEntityInstance()
                             )
                             .blockingGetCheck(d2, it.trackedEntityAttribute()!!.uid())
-                    }
-                    .map {
-                        val attr = d2.trackedEntityModule().trackedEntityAttributes()
-                            .uid(it.trackedEntityAttribute())
-                            .blockingGet()
-                        val variable = d2.programModule().programRuleVariables()
-                            .byProgramUid().eq(programUid)
-                            .byTrackedEntityAttributeUid().eq(attr.uid())
-                            .one()
-                            .blockingGet()
-
-                        val finalValue =
-                            if (variable != null &&
-                                variable.useCodeForOptionSet() != true &&
-                                attr.optionSet() != null
-                            ) {
-                                d2.optionModule()
-                                    .options()
-                                    .byOptionSetUid().eq(attr.optionSet()!!.uid())
-                                    .byCode().eq(it.value()!!).one().blockingGet().name()!!
-                            } else if (attr.valueType()?.isNumeric!!) {
-                                it.value()?.toFloat().toString()
-                            } else {
-                                it.value()!!
-                            }
-
-                        RuleAttributeValue.create(attr.uid(), finalValue)
-                    }
+                    }.toRuleAttributeValue(d2, program.uid())
             }.toFlowable()
     }
 }

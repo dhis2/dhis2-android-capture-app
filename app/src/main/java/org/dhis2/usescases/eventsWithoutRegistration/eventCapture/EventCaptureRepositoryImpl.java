@@ -455,7 +455,9 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                         int optionCount = 0;
                         if (!isEmpty(optionSet)) {
                             if (!isEmpty(dataValue)) {
-                                dataValue = d2.optionModule().options().byOptionSetUid().eq(optionSet).byCode().eq(dataValue).one().blockingGet().displayName();
+                                if (d2.optionModule().options().byOptionSetUid().eq(optionSet).byCode().eq(dataValue).one().blockingExists()) {
+                                    dataValue = d2.optionModule().options().byOptionSetUid().eq(optionSet).byCode().eq(dataValue).one().blockingGet().displayName();
+                                }
                             }
                             optionCount = d2.optionModule().options().byOptionSetUid().eq(optionSet).blockingCount();
                         }
@@ -591,31 +593,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
     private Flowable<List<RuleDataValue>> queryDataValues(String eventUid) {
         return d2.eventModule().events().uid(eventUid).get()
                 .flatMap(event -> d2.trackedEntityModule().trackedEntityDataValues().byEvent().eq(eventUid).byValue().isNotNull().get()
-                        .toFlowable()
-                        .flatMapIterable(values -> values)
-                        .map(trackedEntityDataValue -> {
-                            DataElement de = d2.dataElementModule().dataElements().uid(trackedEntityDataValue.dataElement()).blockingGet();
-                            String value = trackedEntityDataValue.value();
-                            if (de.optionSetUid() != null) {
-                                ProgramRuleVariable variable = d2.programModule().programRuleVariables()
-                                        .byDataElementUid().eq(de.uid())
-                                        .byProgramUid().eq(event.program())
-                                        .one().blockingGet();
-                                Option option = d2.optionModule().options().byOptionSetUid().eq(de.optionSetUid())
-                                        .byCode().eq(value).one().blockingGet();
-                                if (variable == null || variable.useCodeForOptionSet() != null && variable.useCodeForOptionSet())
-                                    value = option.code();
-                                else
-                                    value = option.name();
-
-                                if (de.valueType() == ValueType.AGE)
-                                    value = value.split("T")[0];
-                            } else if (de.valueType().isNumeric()) {
-                                value = Float.valueOf(value).toString();
-                            }
-
-                            return RuleDataValue.create(event.eventDate(), event.programStage(), de.uid(), value);
-                        }).toList()).toFlowable();
+                        .map(values -> RuleExtensionsKt.toRuleDataValue(values, event, d2.dataElementModule().dataElements(), d2.programModule().programRuleVariables(), d2.optionModule().options()))).toFlowable();
     }
 
     @Override

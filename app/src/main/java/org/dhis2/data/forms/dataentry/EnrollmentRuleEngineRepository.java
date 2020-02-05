@@ -185,41 +185,8 @@ public final class EnrollmentRuleEngineRepository
         return d2.enrollmentModule().enrollments().uid(enrollmentUid).get()
                 .flatMap(enrollment -> d2.trackedEntityModule().trackedEntityAttributeValues()
                         .byTrackedEntityInstance().eq(enrollment.trackedEntityInstance()).get()
-                        .map(list -> {
-                            List<RuleAttributeValue> ruleAttributeValues = new ArrayList<>();
-                            for (TrackedEntityAttributeValue attributeValue : list) {
-                                TrackedEntityAttribute attribute = d2.trackedEntityModule().trackedEntityAttributes()
-                                        .uid(attributeValue.trackedEntityAttribute()).blockingGet();
-                                String value = attributeValue.value();
-                                if (attribute.optionSet() != null && !isEmpty(attribute.optionSet().uid())) {
-                                    boolean useOptionCode = d2.programModule().programRuleVariables()
-                                            .byProgramUid().eq(enrollment.program())
-                                            .byTrackedEntityAttributeUid().eq(attribute.uid())
-                                            .byUseCodeForOptionSet().isTrue()
-                                            .blockingIsEmpty();
-                                    if (!useOptionCode) {
-                                        try {
-                                            value = d2.optionModule().options()
-                                                    .byOptionSetUid().eq(attribute.optionSet().uid())
-                                                    .byCode().eq(value)
-                                                    .one().blockingGet().name();
-                                        } catch (Exception e) {
-                                            Timber.e(e);
-                                        }
-                                    }
-                                } else if (attribute.valueType().isNumeric()) {
-                                    try {
-                                        value = Float.valueOf(value).toString();
-                                    } catch (Exception e) {
-
-                                    }
-                                }
-                                ruleAttributeValues.add(
-                                        RuleAttributeValue.create(attribute.uid(), value)
-                                );
-                            }
-                            return ruleAttributeValues;
-                        })).toFlowable();
+                        .map(list ->
+                                RuleExtensionsKt.toRuleAttributeValue(list, d2, enrollment.program()))).toFlowable();
     }
 }
 

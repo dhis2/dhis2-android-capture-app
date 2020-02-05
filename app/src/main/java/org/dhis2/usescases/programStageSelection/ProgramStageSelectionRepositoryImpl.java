@@ -90,8 +90,9 @@ public class ProgramStageSelectionRepositoryImpl implements ProgramStageSelectio
                                         RuleEnrollment.Status.valueOf(enrollment.status().name()),
                                         enrollment.organisationUnit(),
                                         getOrgUnitCode(enrollment.organisationUnit()),
-                                        RuleExtensionsKt.toRuleAttributeValue(attributeValues),
-                                        d2.programModule().programs().uid(enrollment.program()).blockingGet().displayName()
+                                        RuleExtensionsKt.toRuleAttributeValue(attributeValues, d2, enrollment.program()),
+                                        d2.programModule().programs().uid(enrollment.program()).blockingGet().name()
+
 
                                 ))).toFlowable();
     }
