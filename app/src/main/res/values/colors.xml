@@ -312,6 +312,9 @@
     <color name="text_black_333">#333333</color>
     <color name="text_black_808">#808080</color>
     <color name="text_black_4d4d4d">#4d4d4d</color>
+    <color name="text_black_C4C">#C4C4C4</color>
+    <color name="text_black_8A3">#8A333333</color>
+    <color name="text_black_DE3">#DE333333</color>
     <color name="bg_black_e6e">#e6e6e6</color>
     <color name="bg_white_fdf">#fdfdfe</color>
     <color name="bg_gray_ccc">#cccccc</color>
@@ -373,6 +376,8 @@
     <color name="sms_sync_last_event">#504eba</color>
     <color name="sms_sync_title_bar">#dee7ee</color>
     <color name="sms_sync_title_bar_error">#ffd9d9</color>
+
+    <color name="placeholder">#61333333</color>
     <!--endregion-->
 
 </resources>

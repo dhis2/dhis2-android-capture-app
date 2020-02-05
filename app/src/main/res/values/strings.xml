@@ -620,4 +620,14 @@
     <string name="change_event_date">Change date</string>
     <string name="go_back">Go back</string>
     <string name="data_sets">Data sets</string>
+    <string name="no_notes">No notes</string>
+    <string name="no_add_notes">No more notes can be added</string>
+    <string name="new_note">New note</string>
+    <string name="note_saved">Note saved</string>
+    <string name="discard_note">Discard note?</string>
+    <string name="transitionElement_storeBy" translatable="false">storeBy</string>
+    <string name="transitionElement_note_text" translatable="false">note_text</string>
+    <string name="transitionElement_userImage" translatable="false">userImage</string>
+    <string name="transitionElement_userInit" translatable="false">userInit</string>
+    <string name="transitionElement_date" translatable="false">date</string>
 </resources>

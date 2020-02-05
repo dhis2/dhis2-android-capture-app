@@ -88,10 +88,11 @@ public class ProgramStageSelectionRepositoryImpl implements ProgramStageSelectio
                                         enrollment.incidentDate() == null ? enrollment.enrollmentDate() : enrollment.incidentDate(),
                                         enrollment.enrollmentDate(),
                                         RuleEnrollment.Status.valueOf(enrollment.status().name()),
-                                        null,
+                                        enrollment.organisationUnit(),
                                         getOrgUnitCode(enrollment.organisationUnit()),
-                                        RuleExtensionsKt.toRuleAttributeValue(attributeValues),
-                                        null
+                                        RuleExtensionsKt.toRuleAttributeValue(attributeValues, d2, enrollment.program()),
+                                        d2.programModule().programs().uid(enrollment.program()).blockingGet().name()
+
 
                                 ))).toFlowable();
     }

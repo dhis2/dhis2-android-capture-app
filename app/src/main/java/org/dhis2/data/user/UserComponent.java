@@ -37,6 +37,10 @@ import org.dhis2.usescases.main.MainComponent;
 import org.dhis2.usescases.main.MainModule;
 import org.dhis2.usescases.main.program.ProgramComponent;
 import org.dhis2.usescases.main.program.ProgramModule;
+import org.dhis2.usescases.notes.NotesComponent;
+import org.dhis2.usescases.notes.NotesModule;
+import org.dhis2.usescases.notes.noteDetail.NoteDetailComponent;
+import org.dhis2.usescases.notes.noteDetail.NoteDetailModule;
 import org.dhis2.usescases.programEventDetail.ProgramEventDetailComponent;
 import org.dhis2.usescases.programEventDetail.ProgramEventDetailModule;
 import org.dhis2.usescases.programStageSelection.ProgramStageSelectionComponent;
@@ -165,4 +169,10 @@ public interface UserComponent {
 
     @NonNull
     OptionSetComponent plus(OptionSetModule optionSetModule);
+
+    @NonNull
+    NotesComponent plus(NotesModule notesModule);
+
+    @NonNull
+    NoteDetailComponent plus(NoteDetailModule noteDetailModule);
 }

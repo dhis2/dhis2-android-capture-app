@@ -77,13 +77,7 @@ class LoginPresenter(
     fun checkServerInfoAndShowBiometricButton() {
         userManager?.let { userManager ->
             disposable.add(
-                Observable.just(
-                    if (userManager.d2.systemInfoModule().systemInfo().blockingGet() != null) {
-                        userManager.d2.systemInfoModule().systemInfo().blockingGet()
-                    } else {
-                        SystemInfo.builder().build()
-                    }
-                )
+                Observable.just(getSystemInfoIfUserIsLogged(userManager))
                     .subscribeOn(schedulers.io())
                     .observeOn(schedulers.ui())
                     .subscribe(
@@ -103,6 +97,15 @@ class LoginPresenter(
         } ?: view.setUrl(view.context.getString(R.string.login_https))
 
         showBiometricButtonIfVersionIsGreaterThanM(view)
+    }
+
+    private fun getSystemInfoIfUserIsLogged(userManager: UserManager): SystemInfo {
+        return if (userManager.isUserLoggedIn.blockingFirst() &&
+                userManager.d2.systemInfoModule().systemInfo().blockingGet() != null) {
+            userManager.d2.systemInfoModule().systemInfo().blockingGet()
+        } else {
+            SystemInfo.builder().build()
+        }
     }
 
     private fun showBiometricButtonIfVersionIsGreaterThanM(view: LoginContracts.View) {

@@ -8,7 +8,6 @@ import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory;
 import org.dhis2.utils.DhisTextUtils;
-import org.dhis2.utils.FileResourcesUtil;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.common.ValueType;
@@ -54,7 +53,7 @@ public final class EnrollmentRepository implements DataEntryRepository {
     public Flowable<List<FieldViewModel>> list() {
 
         return d2.enrollmentModule().enrollments().uid(enrollmentUid).get()
-                .flatMap(enrollment -> d2.programModule().programTrackedEntityAttributes().byProgram().eq(enrollment.program()).get()).toFlowable()
+                .flatMap(enrollment -> d2.programModule().programTrackedEntityAttributes().withRenderType().byProgram().eq(enrollment.program()).get()).toFlowable()
                 .flatMapIterable(programTrackedEntityAttributes -> programTrackedEntityAttributes)
                 .map(this::transform).toList().toFlowable();
     }
@@ -105,9 +104,13 @@ public final class EnrollmentRepository implements DataEntryRepository {
             optionCount = d2.optionModule().options().byOptionSetUid().eq(optionSet).blockingCount();
 
             if (!DhisTextUtils.Companion.isEmpty(dataValue)) {
-                dataValue = d2.optionModule().options()
-                        .byOptionSetUid().eq(optionSet)
-                        .byCode().eq(dataValue).one().blockingGet().displayName();
+                if (d2.optionModule().options()
+                        .byOptionSetUid().eq(optionSet).byCode().eq(dataValue)
+                        .one().blockingExists()) {
+                    dataValue = d2.optionModule().options()
+                            .byOptionSetUid().eq(optionSet)
+                            .byCode().eq(dataValue).one().blockingGet().displayName();
+                }
             }
         }
         String warning = null;
@@ -142,7 +145,6 @@ public final class EnrollmentRepository implements DataEntryRepository {
                 mandatory = true;
             }
         }
-
         ValueTypeDeviceRendering fieldRendering = programTrackedEntityAttribute.renderType() != null ?
                 programTrackedEntityAttribute.renderType().mobile() : null;
 
