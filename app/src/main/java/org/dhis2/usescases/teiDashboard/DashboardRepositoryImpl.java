@@ -67,7 +67,7 @@ public class DashboardRepositoryImpl
     private String programUid;
 
 
-    public DashboardRepositoryImpl(D2 d2,String teiUid, String programUid) {
+    public DashboardRepositoryImpl(D2 d2, String teiUid, String programUid) {
         this.d2 = d2;
         this.teiUid = teiUid;
         this.programUid = programUid;
@@ -186,9 +186,16 @@ public class DashboardRepositoryImpl
                                 .map(relationshipTypes -> {
                                     List<Pair<RelationshipType, String>> relTypeList = new ArrayList<>();
                                     for (RelationshipType relationshipType : relationshipTypes) {
-                                        if (relationshipType.fromConstraint().trackedEntityType() != null &&
+                                        if (relationshipType.fromConstraint() != null && relationshipType.fromConstraint().trackedEntityType() != null &&
                                                 relationshipType.fromConstraint().trackedEntityType().uid().equals(teType)) {
-                                            relTypeList.add(Pair.create(relationshipType, relationshipType.toConstraint().trackedEntityType().uid()));
+                                            if (relationshipType.toConstraint() != null && relationshipType.toConstraint().trackedEntityType() != null) {
+                                                relTypeList.add(Pair.create(relationshipType, relationshipType.toConstraint().trackedEntityType().uid()));
+                                            }
+                                        } else if (relationshipType.bidirectional() && relationshipType.toConstraint() != null && relationshipType.toConstraint().trackedEntityType() != null &&
+                                                relationshipType.toConstraint().trackedEntityType().uid().equals(teType)) {
+                                            if (relationshipType.fromConstraint() != null && relationshipType.fromConstraint().trackedEntityType() != null) {
+                                                relTypeList.add(Pair.create(relationshipType, relationshipType.fromConstraint().trackedEntityType().uid()));
+                                            }
                                         }
                                     }
                                     return relTypeList;
@@ -250,7 +257,7 @@ public class DashboardRepositoryImpl
                             if (d2.trackedEntityModule().trackedEntityAttributeValues().value(programAttribute.trackedEntityAttribute().uid(), teiUid).blockingExists()) {
                                 TrackedEntityAttributeValue attributeValue = d2.trackedEntityModule().trackedEntityAttributeValues().value(programAttribute.trackedEntityAttribute().uid(), teiUid).blockingGet();
                                 TrackedEntityAttribute attribute = d2.trackedEntityModule().trackedEntityAttributes().uid(programAttribute.trackedEntityAttribute().uid()).blockingGet();
-                                if(attribute.valueType() != ValueType.IMAGE) {
+                                if (attribute.valueType() != ValueType.IMAGE) {
                                     attributeValues.add(
                                             ValueUtils.transform(d2, attributeValue, attribute.valueType(), attribute.optionSet() != null ? attribute.optionSet().uid() : null)
                                     );
@@ -260,13 +267,13 @@ public class DashboardRepositoryImpl
                         return attributeValues;
                     }).toObservable();
 
-        }else{
+        } else {
             return d2.trackedEntityModule().trackedEntityAttributeValues().byTrackedEntityInstance().eq(teiUid).get()
                     .map(attributeValueList -> {
                         List<TrackedEntityAttributeValue> attributeValues = new ArrayList<>();
-                        for(TrackedEntityAttributeValue attributeValue : attributeValueList){
+                        for (TrackedEntityAttributeValue attributeValue : attributeValueList) {
                             TrackedEntityAttribute attribute = d2.trackedEntityModule().trackedEntityAttributes().uid(attributeValue.trackedEntityAttribute()).blockingGet();
-                            if(attribute.valueType()!=ValueType.IMAGE){
+                            if (attribute.valueType() != ValueType.IMAGE) {
                                 attributeValues.add(
                                         ValueUtils.transform(d2, attributeValue, attribute.valueType(), attribute.optionSet() != null ? attribute.optionSet().uid() : null)
                                 );

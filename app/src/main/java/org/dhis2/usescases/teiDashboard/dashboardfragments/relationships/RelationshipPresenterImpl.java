@@ -169,9 +169,21 @@ public class RelationshipPresenterImpl implements RelationshipContracts.Presente
     }
 
     @Override
-    public void addRelationship(String trackEntityInstance_A, String relationshipType) {
+    public void addRelationship(String trackEntityInstance_A, String relationshipTypeUid) {
+        RelationshipType relationshipType = d2.relationshipModule().relationshipTypes().withConstraints().uid(relationshipTypeUid).blockingGet();
+
+        String fromTei;
+        String toTei;
+        if(relationshipType.bidirectional() && relationshipType.toConstraint().trackedEntityType().uid().equals(teiType)){
+            fromTei = trackEntityInstance_A;
+            toTei = teiUid;
+        }else{
+            fromTei = teiUid;
+            toTei = trackEntityInstance_A;
+        }
+
         try {
-            Relationship relationship = RelationshipHelper.teiToTeiRelationship(teiUid, trackEntityInstance_A, relationshipType);
+            Relationship relationship = RelationshipHelper.teiToTeiRelationship(fromTei, toTei, relationshipTypeUid);
             d2.relationshipModule().relationships().blockingAdd(relationship);
         } catch (D2Error e) {
             view.displayMessage(e.errorDescription());
