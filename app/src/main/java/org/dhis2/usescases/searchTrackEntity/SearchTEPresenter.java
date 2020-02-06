@@ -360,7 +360,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
-                        data -> view.setForm(data, selectedProgram, queryData),
+                        data -> view.setForm(data, selectedProgram, queryData, null),
                         Timber::d)
         );
     }
@@ -370,7 +370,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
-                        data -> view.setForm(data, selectedProgram, queryData),
+                        data -> view.setForm(data.getTrackedEntityAttributes(), selectedProgram, queryData, data.getRendering()),
                         Timber::d)
         );
     }
@@ -728,9 +728,9 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                         .setConflictType(SyncStatusDialog.ConflictType.TEI)
                         .setUid(teiUid)
                         .onDismissListener(hasChanged -> {
-                            if(hasChanged && view.isMapVisible())
+                            if (hasChanged && view.isMapVisible())
                                 mapProcessor.onNext(new Unit());
-                            else if(hasChanged)
+                            else if (hasChanged)
                                 queryProcessor.onNext(queryData);
                         })
                         .build()
