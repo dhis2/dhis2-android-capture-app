@@ -307,6 +307,10 @@ class EnrollmentPresenterImpl(
         }
     }
 
+    fun updateFields(){
+        fieldsFlowable.onNext(true)
+    }
+
     fun openInitial(eventUid: String): Boolean {
         val catComboUid = getProgram().categoryComboUid()
         val event = d2.eventModule().events().uid(eventUid).blockingGet()

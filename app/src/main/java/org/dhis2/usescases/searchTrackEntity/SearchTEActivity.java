@@ -83,6 +83,8 @@ import org.dhis2.utils.maps.MapLayerManager;
 import org.dhis2.utils.maps.MarkerUtils;
 import org.hisp.dhis.android.core.arch.call.D2Progress;
 import org.hisp.dhis.android.core.common.FeatureType;
+import org.hisp.dhis.android.core.common.ValueTypeDeviceRendering;
+import org.hisp.dhis.android.core.common.ValueTypeRenderingType;
 import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute;
 
@@ -108,6 +110,7 @@ import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconOffset;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.lineColor;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.lineWidth;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.textAllowOverlap;
+import static org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialPresenter.ACCESS_COARSE_LOCATION_PERMISSION_REQUEST;
 import static org.dhis2.utils.analytics.AnalyticsConstants.CHANGE_PROGRAM;
 import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
 import static org.dhis2.utils.analytics.AnalyticsConstants.SHOW_HELP;
@@ -147,6 +150,8 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     private MapboxMap map;
     private MarkerViewManager markerViewManager;
     private SymbolManager symbolManager;
+
+    private boolean initSearchNeeded = true;
     //---------------------------------------------------------------------------------------------
 
     //region LIFECYCLE
@@ -224,8 +229,6 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         binding.executePendingBindings();
         showHideFilter();
 
-        presenter.init(this, tEType, initialProgram);
-        presenter.initSearch(this);
         updateFiltersSearch(presenter.getQueryData().size());
         binding.setTotalFilters(FilterManager.getInstance().getTotalFilters());
         filtersAdapter.notifyDataSetChanged();
@@ -234,6 +237,12 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     @Override
     protected void onResume() {
         super.onResume();
+        if (initSearchNeeded) {
+            presenter.init(this, tEType, initialProgram);
+            presenter.initSearch(this);
+        } else {
+            initSearchNeeded = true;
+        }
         binding.mapView.onResume();
     }
 
@@ -263,11 +272,32 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        switch (requestCode) {
+            case FilterManager.OU_TREE:
+                if (resultCode == Activity.RESULT_OK) {
+                    filtersAdapter.notifyDataSetChanged();
+                    updateFilters(FilterManager.getInstance().getTotalFilters());
+                }
+                break;
+            case Constants.RQ_QR_SCANNER:
+                if (resultCode == RESULT_OK) {
+                    scanTextView.updateScanResult(data.getStringExtra(Constants.EXTRA_DATA));
+                }
+                break;
+        }
         if (requestCode == FilterManager.OU_TREE && resultCode == Activity.RESULT_OK) {
             filtersAdapter.notifyDataSetChanged();
             updateFilters(FilterManager.getInstance().getTotalFilters());
         }
         super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == ACCESS_COARSE_LOCATION_PERMISSION_REQUEST) {
+            initSearchNeeded = false;
+        }
     }
 
     @Override
@@ -351,13 +381,14 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     }
 
     @Override
-    public void setForm(List<TrackedEntityAttribute> trackedEntityAttributes, @Nullable Program program, HashMap<String, String> queryData) {
+    public void setForm(List<TrackedEntityAttribute> trackedEntityAttributes, @Nullable Program program, HashMap<String, String> queryData,
+                        List<ValueTypeDeviceRendering> renderingTypes) {
 
         //TODO: refreshData for recycler
 
         //Form has been set.
         FormAdapter formAdapter = (FormAdapter) binding.formRecycler.getAdapter();
-        formAdapter.setList(trackedEntityAttributes, program, queryData);
+        formAdapter.setList(trackedEntityAttributes, program, queryData, renderingTypes);
         updateFiltersSearch(queryData.size());
     }
 
