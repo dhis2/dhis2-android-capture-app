@@ -2,6 +2,7 @@ package org.dhis2.usescases.enrollment
 
 import com.nhaarman.mockitokotlin2.*
 import io.reactivex.Flowable
+import io.reactivex.processors.PublishProcessor
 import org.dhis2.data.forms.dataentry.DataEntryRepository
 import org.dhis2.data.forms.dataentry.StoreResult
 import org.dhis2.data.forms.dataentry.ValueStore
@@ -336,5 +337,17 @@ class EnrollmentPresenterImplTest {
         verify(enrollmentView, times(0)).showMissingMandatoryFieldsMessage()
         verify(enrollmentView, times(1)).showErrorFieldsMessage()
         Assert.assertFalse(result)
+    }
+
+    @Test
+    fun `Should update the fields flowable`() {
+        val processor = PublishProcessor.create<Boolean>()
+        val testSubscriber = processor.test()
+
+        presenter.updateFields()
+        processor.onNext(true)
+
+        testSubscriber.assertValueAt(0, true)
+
     }
 }
