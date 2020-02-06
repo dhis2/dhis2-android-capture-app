@@ -59,23 +59,6 @@ public final class AttributeValueStore implements DataEntryStore {
                 });
     }
 
-    @NonNull
-    @Override
-    public Flowable<Boolean> checkUnique(@NonNull String uid, @Nullable String value) {
-        if (value != null && getValueType(uid) == ATTR) {
-            boolean isUnique = Boolean.TRUE.equals(d2.trackedEntityModule().trackedEntityAttributes().uid(uid).blockingGet().unique());
-            if (isUnique && !d2.trackedEntityModule().trackedEntityAttributeValues()
-                    .byTrackedEntityAttribute().eq(uid)
-                    .byValue().eq(value).blockingGet().isEmpty()) {
-                delete(uid, ATTR);
-                return Flowable.just(false);
-            } else
-                return Flowable.just(true);
-        } else
-            return Flowable.just(true);
-    }
-
-
     private long update(@NonNull String attribute, @Nullable String value, valueType valueType) {
         if (valueType == ATTR) {
             try {

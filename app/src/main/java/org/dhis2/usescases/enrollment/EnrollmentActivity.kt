@@ -195,7 +195,7 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
                 if (resultCode == Activity.RESULT_OK) {
                     try {
                         val imageUri = data?.data
-                        presenter.saveValue(
+                        presenter.saveFile(
                             uuid,
                             FileResourcesUtil.getFileFromGallery(this, imageUri).path
                         )
@@ -211,11 +211,7 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
                         FileResourceDirectoryHelper.getFileResourceDirectory(this),
                         "tempFile.png"
                     )
-                    if (file.exists()) {
-                        presenter.saveValue(uuid, file.path)
-                    } else {
-                        presenter.saveValue(uuid, null)
-                    }
+                    presenter.saveFile(uuid, if (file.exists()) file.path else null)
                 }
             }
             RQ_EVENT -> openDashboard(presenter.getEnrollment().uid()!!)

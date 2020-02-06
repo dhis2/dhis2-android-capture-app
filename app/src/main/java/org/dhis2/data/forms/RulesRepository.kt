@@ -21,6 +21,7 @@ import org.hisp.dhis.rules.models.RuleAttributeValue
 import org.hisp.dhis.rules.models.RuleEnrollment
 import org.hisp.dhis.rules.models.RuleEvent
 import org.hisp.dhis.rules.models.RuleVariable
+import timber.log.Timber
 
 class RulesRepository(private val d2: D2) {
 
@@ -151,6 +152,7 @@ class RulesRepository(private val d2: D2) {
                 .byEnrollmentUid().eq(eventToEvaluate.enrollment())
                 .byUid().notIn(eventToEvaluate.uid())
                 .byStatus().notIn(EventStatus.SCHEDULE, EventStatus.SKIPPED, EventStatus.OVERDUE)
+                .byEventDate().before(Date())
                 .withTrackedEntityDataValues()
                 .orderByEventDate(RepositoryScope.OrderByDirection.DESC)
                 .get()
@@ -160,6 +162,7 @@ class RulesRepository(private val d2: D2) {
                 .byProgramStageUid().eq(eventToEvaluate.programStage())
                 .byOrganisationUnitUid().eq(eventToEvaluate.organisationUnit())
                 .byStatus().notIn(EventStatus.SCHEDULE, EventStatus.SKIPPED, EventStatus.OVERDUE)
+                .byEventDate().before(Date())
                 .withTrackedEntityDataValues()
                 .orderByEventDate(RepositoryScope.OrderByDirection.DESC)
                 .get().map { list ->
@@ -195,6 +198,7 @@ class RulesRepository(private val d2: D2) {
     fun enrollmentEvents(enrollmentUid: String): Single<List<RuleEvent>> {
         return d2.eventModule().events().byEnrollmentUid().eq(enrollmentUid)
             .byStatus().notIn(EventStatus.SCHEDULE, EventStatus.SKIPPED, EventStatus.OVERDUE)
+            .byEventDate().before(Date())
             .withTrackedEntityDataValues()
             .get()
             .toFlowable().flatMapIterable { events -> events }
@@ -286,13 +290,26 @@ class RulesRepository(private val d2: D2) {
                     .eq(enrollment.program()).byTrackedEntityAttributeUid().eq(attribute.uid())
                     .byUseCodeForOptionSet().isTrue.blockingIsEmpty()
                 if (!useOptionCode) {
-                    value = d2.optionModule().options()
-                        .byOptionSetUid().eq(attribute.optionSet()!!.uid())
-                        .byCode().eq(value)
-                        .one().blockingGet()!!.name()
+                    value = if (d2.optionModule().options()
+                            .byOptionSetUid().eq(attribute.optionSet()!!.uid())
+                            .byCode().eq(value)
+                            .one().blockingExists()
+                    ) {
+                        d2.optionModule().options()
+                            .byOptionSetUid().eq(attribute.optionSet()!!.uid())
+                            .byCode().eq(value)
+                            .one().blockingGet()?.name()
+                    } else {
+                        ""
+                    }
                 }
             } else if (attribute.valueType()?.isNumeric!!) {
-                value = value?.toFloat().toString()
+                value = try {
+                    value?.toFloat().toString()
+                } catch (e: Exception) {
+                    Timber.e(e)
+                    ""
+                }
             }
             RuleAttributeValue.create(attributeValue.trackedEntityAttribute()!!, value!!)
         }

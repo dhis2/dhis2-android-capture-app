@@ -353,15 +353,10 @@ public final class EnrollmentRuleEngineRepository
     @NonNull
     private Flowable<List<RuleAttributeValue>> queryAttributeValues()
     {
-        return briteDatabase.createQuery( Arrays.asList( "Enrollment", "TrackedEntityAttributeValue" ),
-            QUERY_ATTRIBUTE_VALUES, enrollmentUid ).mapToList( cursor -> {
-                String value = cursor.getString( 1 );
-                boolean useCode = cursor.getInt( 2 ) == 1;
-                String optionCode = cursor.getString( 3 );
-                String optionName = cursor.getString( 4 );
-                if ( !isEmpty( optionCode ) && !isEmpty( optionName ) )
-                    value = useCode ? optionCode : optionName;
-                return RuleAttributeValue.create( cursor.getString( 0 ), value );
-            } ).toFlowable( BackpressureStrategy.LATEST );
+        return d2.enrollmentModule().enrollments().uid(enrollmentUid).get()
+                .flatMap(enrollment -> d2.trackedEntityModule().trackedEntityAttributeValues()
+                        .byTrackedEntityInstance().eq(enrollment.trackedEntityInstance()).get()
+                        .map(list ->
+                                RuleExtensionsKt.toRuleAttributeValue(list, d2, enrollment.program()))).toFlowable();
     }
 }
