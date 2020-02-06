@@ -251,6 +251,16 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
         compositeDisposable.add(
                 eventCaptureRepository.eventSections()
                         .flatMap(sectionList -> fieldFlowable
+                                .map(fields->{
+                                    Iterator<FieldViewModel> iterator = fields.iterator();
+                                    while (iterator.hasNext()){
+                                        FieldViewModel field = iterator.next();
+                                        if(field instanceof DisplayViewModel){
+                                            iterator.remove();
+                                        }
+                                    }
+                                    return fields;
+                                })
                                 .map(fields -> {
                                     totalFields = fields.size();
                                     unsupportedFields = 0;
