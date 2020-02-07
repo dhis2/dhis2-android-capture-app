@@ -110,6 +110,7 @@ import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconOffset;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.lineColor;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.lineWidth;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.textAllowOverlap;
+import static org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialPresenter.ACCESS_COARSE_LOCATION_PERMISSION_REQUEST;
 import static org.dhis2.utils.analytics.AnalyticsConstants.CHANGE_PROGRAM;
 import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
 import static org.dhis2.utils.analytics.AnalyticsConstants.SHOW_HELP;
@@ -149,6 +150,8 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     private MapboxMap map;
     private MarkerViewManager markerViewManager;
     private SymbolManager symbolManager;
+
+    private boolean initSearchNeeded = true;
     //---------------------------------------------------------------------------------------------
 
     //region LIFECYCLE
@@ -226,8 +229,6 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         binding.executePendingBindings();
         showHideFilter();
 
-        presenter.init(this, tEType, initialProgram);
-        presenter.initSearch(this);
         updateFiltersSearch(presenter.getQueryData().size());
         binding.setTotalFilters(FilterManager.getInstance().getTotalFilters());
         filtersAdapter.notifyDataSetChanged();
@@ -236,6 +237,12 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     @Override
     protected void onResume() {
         super.onResume();
+        if (initSearchNeeded) {
+            presenter.init(this, tEType, initialProgram);
+            presenter.initSearch(this);
+        } else {
+            initSearchNeeded = true;
+        }
         binding.mapView.onResume();
     }
 
@@ -283,6 +290,14 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             updateFilters(FilterManager.getInstance().getTotalFilters());
         }
         super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == ACCESS_COARSE_LOCATION_PERMISSION_REQUEST) {
+            initSearchNeeded = false;
+        }
     }
 
     @Override

@@ -7,6 +7,7 @@ import androidx.annotation.Nullable;
 
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Trio;
+import org.dhis2.usescases.teiDashboard.dashboardfragments.relationships.RelationshipViewModel;
 import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryOptionCombo;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
@@ -62,7 +63,7 @@ public interface DashboardRepository {
 
     Observable<Trio<ProgramIndicator, String, String>> getLegendColorForIndicator(ProgramIndicator programIndicator, String value);
 
-    Integer getObjectStyle(Context context, String uid);
+    Integer getObjectStyle(String uid);
 
     Observable<List<Pair<RelationshipType, String>>> relationshipsForTeiType(String teType);
 
@@ -88,4 +89,6 @@ public interface DashboardRepository {
     Single<Boolean> deleteTeiIfPossible();
 
     Single<Boolean> deleteEnrollmentIfPossible(String enrollmentUid);
+
+    Flowable<List<RelationshipViewModel>> listTeiRelationships();
 }
