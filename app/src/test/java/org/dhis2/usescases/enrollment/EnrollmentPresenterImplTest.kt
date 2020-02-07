@@ -383,6 +383,5 @@ class EnrollmentPresenterImplTest {
         processor.onNext(true)
 
         testSubscriber.assertValueAt(0, true)
-
     }
 }
