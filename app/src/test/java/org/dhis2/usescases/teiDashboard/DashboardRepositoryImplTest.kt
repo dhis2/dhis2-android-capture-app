@@ -1,10 +1,12 @@
 package org.dhis2.usescases.teiDashboard
 
+import android.content.res.Resources
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Single
 import org.dhis2.utils.DateUtils
+import org.dhis2.utils.resources.ResourceManager
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.event.Event
@@ -19,10 +21,10 @@ class DashboardRepositoryImplTest {
 
     private lateinit var repository: DashboardRepositoryImpl
     private val d2: D2 = Mockito.mock(D2::class.java, Mockito.RETURNS_DEEP_STUBS)
-
+    private val resources: ResourceManager = mock()
     @Before
     fun setUp() {
-        repository = DashboardRepositoryImpl(d2, "teiUid", "programUid")
+        repository = DashboardRepositoryImpl(d2, "teiUid", "programUid", resources)
     }
 
     @Test
