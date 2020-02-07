@@ -2,7 +2,6 @@ package org.dhis2.usescases.teiDashboard.dashboardfragments.indicators
 
 import io.reactivex.Flowable
 import io.reactivex.Observable
-import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.functions.BiFunction
 import org.dhis2.data.forms.dataentry.RuleEngineRepository
@@ -21,13 +20,15 @@ import org.hisp.dhis.rules.models.RuleActionDisplayText
 import org.hisp.dhis.rules.models.RuleEffect
 import timber.log.Timber
 
-class IndicatorsPresenter(val d2: D2,
-                          val programUid: String,
-                          val teiUid: String,
-                          val dashboardRepository: DashboardRepository,
-                          private val ruleEngineRepository: RuleEngineRepository,
-                          val schedulerProvider: SchedulerProvider,
-                          val view: IndicatorsView) {
+class IndicatorsPresenter(
+    val d2: D2,
+    val programUid: String,
+    val teiUid: String,
+    val dashboardRepository: DashboardRepository,
+    private val ruleEngineRepository: RuleEngineRepository,
+    val schedulerProvider: SchedulerProvider,
+    val view: IndicatorsView
+) {
 
     var compositeDisposable: CompositeDisposable = CompositeDisposable()
     private var enrollmentUid: String
@@ -39,18 +40,18 @@ class IndicatorsPresenter(val d2: D2,
             enrollmentRepository = enrollmentRepository.byProgram().eq(programUid)
         }
 
-        enrollmentUid = if(enrollmentRepository.one().blockingGet() == null){
+        enrollmentUid = if (enrollmentRepository.one().blockingGet() == null) {
             ""
-        }else{
+        } else {
             enrollmentRepository.one().blockingGet().uid()
         }
     }
 
-    fun init(){
+    fun init() {
         compositeDisposable.add(
             Flowable.zip<List<Trio<ProgramIndicator, String, String>>?,
-                    List<Trio<ProgramIndicator, String, String>>?,
-                    List<Trio<ProgramIndicator, String, String>>>(
+                List<Trio<ProgramIndicator, String, String>>?,
+                List<Trio<ProgramIndicator, String, String>>>(
                 getIndicators(),
                 getRulesIndicators(),
                 BiFunction { indicators, ruleIndicators ->
@@ -61,60 +62,69 @@ class IndicatorsPresenter(val d2: D2,
                         }
                     }
                     return@BiFunction indicatorsMutable.toList()
-                })
+                }
+            )
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
-                .subscribe({view.swapIndicators(it)},
-                    {Timber.d(it)})
+                .subscribe(
+                    { view.swapIndicators(it) },
+                    { Timber.d(it) }
+                )
         )
     }
 
-    private fun getIndicators():Flowable<List<Trio<ProgramIndicator, String, String>>>{
+    private fun getIndicators(): Flowable<List<Trio<ProgramIndicator, String, String>>> {
         return dashboardRepository.getIndicators(programUid)
-            .filter {!DhisTextUtils.isEmpty(enrollmentUid)}
-            .map{
+            .filter { !DhisTextUtils.isEmpty(enrollmentUid) }
+            .map {
                 indicators ->
-                    Observable.fromIterable(indicators)
-                        .filter { it.displayInForm() != null && it.displayInForm()!! }
-                        .map {indicator ->
-                            val indicatorValue = d2.programModule()
-                                .programIndicatorEngine().getProgramIndicatorValue(
-                                enrollmentUid,
-                                null,
-                                indicator.uid())
-                            return@map Pair.create(indicator, indicatorValue?:"")
-                        }.filter { !it.val1().isEmpty() }
-                        .flatMap { dashboardRepository
-                            .getLegendColorForIndicator(it.val0(), it.val1()) }
-                        .toList()
+                Observable.fromIterable(indicators)
+                    .filter { it.displayInForm() != null && it.displayInForm()!! }
+                    .map { indicator ->
+                        val indicatorValue = d2.programModule()
+                            .programIndicatorEngine().getProgramIndicatorValue(
+                            enrollmentUid,
+                            null,
+                            indicator.uid()
+                        )
+                        return@map Pair.create(indicator, indicatorValue ?: "")
+                    }.filter { !it.val1().isEmpty() }
+                    .flatMap {
+                        dashboardRepository
+                            .getLegendColorForIndicator(it.val0(), it.val1())
+                    }
+                    .toList()
             }.flatMap { it.toFlowable() }
     }
 
     private fun getRulesIndicators(): Flowable<List<Trio<ProgramIndicator, String, String>>> =
         d2.programModule().programRules().byProgramUid().eq(programUid).get()
             .map { UidsHelper.getUidsList(it) }
-            .flatMap { d2.programModule().programRuleActions()
-                .byProgramRuleUid().`in`(it)
-                .byProgramRuleActionType().`in`(
+            .flatMap {
+                d2.programModule().programRuleActions()
+                    .byProgramRuleUid().`in`(it)
+                    .byProgramRuleActionType().`in`(
                     ProgramRuleActionType.DISPLAYKEYVALUEPAIR,
-                    ProgramRuleActionType.DISPLAYTEXT)
-                .get() }
+                    ProgramRuleActionType.DISPLAYTEXT
+                )
+                    .get()
+            }
             .flatMapPublisher { ruleAction ->
                 if (ruleAction.isEmpty()) {
                     return@flatMapPublisher Flowable.just<List<Trio<ProgramIndicator,
-                            String, String>>>(listOf())
+                                String, String>>>(listOf())
                 } else {
                     return@flatMapPublisher ruleEngineRepository.updateRuleEngine()
-                        .flatMap{ ruleEngineRepository.reCalculate()}
-                    .map{
-                        applyRuleEffects(it)//Restart rule engine to take into account value changes
-                    }
+                        .flatMap { ruleEngineRepository.reCalculate() }
+                        .map {
+                            // Restart rule engine to take into account value changes
+                            applyRuleEffects(it)
+                        }
                 }
             }
 
-
     private fun applyRuleEffects(calcResult: Result<RuleEffect>):
-            List<Trio<ProgramIndicator, String, String>>{
+    List<Trio<ProgramIndicator, String, String>> {
         val indicators = arrayListOf<Trio<ProgramIndicator, String, String>>()
 
         if (calcResult.error() != null) {
@@ -122,10 +132,10 @@ class IndicatorsPresenter(val d2: D2,
             return arrayListOf()
         }
 
-        for(ruleEffect in calcResult.items()){
+        for (ruleEffect in calcResult.items()) {
             val ruleAction = ruleEffect.ruleAction()
-            if(!ruleEffect.data().contains("#{")){
-                if(ruleAction is RuleActionDisplayKeyValuePair){
+            if (!ruleEffect.data().contains("#{")) {
+                if (ruleAction is RuleActionDisplayKeyValuePair) {
                     val indicator = Trio.create(
                         ProgramIndicator.builder()
                             .uid((ruleAction).content())
@@ -135,13 +145,14 @@ class IndicatorsPresenter(val d2: D2,
                     )
 
                     indicators.add(indicator)
-                }else if(ruleAction is RuleActionDisplayText){
-                    val indicator: Trio<ProgramIndicator, String, String> = Trio.create(null,
-                        ruleAction.content() + ruleEffect.data(), "")
+                } else if (ruleAction is RuleActionDisplayText) {
+                    val indicator: Trio<ProgramIndicator, String, String> = Trio.create(
+                        null,
+                        ruleAction.content() + ruleEffect.data(), ""
+                    )
 
                     indicators.add(indicator)
                 }
-
             }
         }
 

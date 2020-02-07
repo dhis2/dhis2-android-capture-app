@@ -12,7 +12,7 @@ import org.hisp.dhis.android.core.program.ProgramIndicator
 class IndicatorsAdapter : RecyclerView.Adapter<IndicatorViewHolder>() {
 
     private var programIndicators:
-            MutableList<Trio<ProgramIndicator, String, String>> = mutableListOf()
+    MutableList<Trio<ProgramIndicator, String, String>> = mutableListOf()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): IndicatorViewHolder {
         val binding: ItemIndicatorBinding = DataBindingUtil.inflate(
