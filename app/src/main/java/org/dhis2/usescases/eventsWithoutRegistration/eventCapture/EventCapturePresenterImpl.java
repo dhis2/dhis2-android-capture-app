@@ -251,6 +251,16 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
         compositeDisposable.add(
                 eventCaptureRepository.eventSections()
                         .flatMap(sectionList -> fieldFlowable
+                                .map(fields->{
+                                    Iterator<FieldViewModel> iterator = fields.iterator();
+                                    while (iterator.hasNext()){
+                                        FieldViewModel field = iterator.next();
+                                        if(field instanceof DisplayViewModel){
+                                            iterator.remove();
+                                        }
+                                    }
+                                    return fields;
+                                })
                                 .map(fields -> {
                                     totalFields = fields.size();
                                     unsupportedFields = 0;
@@ -276,7 +286,10 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
 
                                             HashMap<String, Boolean> finalFields = new HashMap<>();
                                             for (FieldViewModel fieldViewModel : fieldViewModels) {
-                                                finalFields.put(fieldViewModel.optionSet() == null ? fieldViewModel.uid() : fieldViewModel.optionSet(), !DhisTextUtils.Companion.isEmpty(fieldViewModel.value()));
+                                                finalFields.put(fieldViewModel.optionSet() == null ?
+                                                        fieldViewModel.uid() :
+                                                        fieldViewModel.uid().concat("_").concat(fieldViewModel.optionSet()),
+                                                        !DhisTextUtils.Companion.isEmpty(fieldViewModel.value()));
                                             }
                                             for (String key : finalFields.keySet())
                                                 if (finalFields.get(key))
@@ -287,7 +300,10 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                                             int cont = 0;
                                             HashMap<String, Boolean> finalFields = new HashMap<>();
                                             for (FieldViewModel fieldViewModel : fields) {
-                                                finalFields.put(fieldViewModel.optionSet() == null ? fieldViewModel.uid() : fieldViewModel.optionSet(), !DhisTextUtils.Companion.isEmpty(fieldViewModel.value()));
+                                                finalFields.put(fieldViewModel.optionSet() == null ?
+                                                        fieldViewModel.uid() :
+                                                        fieldViewModel.uid().concat("_").concat(fieldViewModel.optionSet()),
+                                                        !DhisTextUtils.Companion.isEmpty(fieldViewModel.value()));
                                             }
                                             for (String key : finalFields.keySet())
                                                 if (finalFields.get(key))
