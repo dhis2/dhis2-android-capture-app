@@ -22,6 +22,7 @@ class LoginTest : BaseTest() {
     @Test
     fun loginButtonShouldBeDisplayedWhenAllFieldsAreFilled() {
         startLoginActivity()
+        Thread.sleep(10000)
 
         //  onView(withId(R.id.login)).check(matches(not(isDisplayed())))
         //  onView(withId(R.id.server_url_edit)).perform(replaceText(TEST_URL), pressImeActionButton())
@@ -40,6 +41,7 @@ class LoginTest : BaseTest() {
     @Test
     fun loginButtonShouldBeDisplayedWhenAllFieldsAreFilled2() {
         startMainActivity()
+        Thread.sleep(10000)
 
         //  onView(withId(R.id.login)).check(matches(not(isDisplayed())))
         //  onView(withId(R.id.server_url_edit)).perform(replaceText(TEST_URL), pressImeActionButton())

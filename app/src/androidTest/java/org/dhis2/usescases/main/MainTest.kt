@@ -31,13 +31,13 @@ class MainTest : BaseTest() {
     @Test
     fun loginButtonShouldBeDisplayedWhenAllFieldsAreFilled() {
         startActivity()
-        Thread.sleep(2000)
+        Thread.sleep(10000)
     }
 
     @Test
     fun loginButtonShouldBeDisplayedWhenAllFieldsAreFilled2() {
-        startActivity()
-        Thread.sleep(2000)
+    //    startActivity()
+     //   Thread.sleep(2000)
 
         //  onView(withId(R.id.login)).check(matches(not(isDisplayed())))
         //  onView(withId(R.id.server_url_edit)).perform(replaceText(TEST_URL), pressImeActionButton())
@@ -55,8 +55,8 @@ class MainTest : BaseTest() {
 
     @Test
     fun loginButtonShouldBeDisplayedWhenAllFieldsAreFilled3() {
-        startActivity()
-        Thread.sleep(2000)
+    //    startActivity()
+    //    Thread.sleep(2000)
     }
 
     fun startActivity(){

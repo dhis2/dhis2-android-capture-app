@@ -3,7 +3,6 @@ package org.dhis2;
 import android.content.Context;
 import android.os.Build;
 import android.os.Looper;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -47,7 +46,6 @@ import org.dhis2.utils.session.SessionComponent;
 import org.dhis2.utils.timber.DebugTree;
 import org.dhis2.utils.timber.ReleaseTree;
 import org.hisp.dhis.android.core.D2;
-import org.hisp.dhis.android.core.D2Configuration;
 import org.hisp.dhis.android.core.D2Manager;
 import org.jetbrains.annotations.NotNull;
 
@@ -126,7 +124,7 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
 
     private void populateDBIfNeeded() {
         DBTestLoader dbTestLoader = new DBTestLoader(getApplicationContext());
-        dbTestLoader.populateDatabaseFromAssetsIfNeeded();
+        dbTestLoader.copyDatabaseFromAssetsIfNeeded();
     }
 
     private void upgradeSecurityProviderSync() {

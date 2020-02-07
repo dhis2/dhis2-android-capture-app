@@ -6,16 +6,16 @@ import java.io.*
 
 class DBTestLoader(private val context: Context) {
 
-     fun populateDatabaseFromAssetsIfNeeded() {
+     fun copyDatabaseFromAssetsIfNeeded() {
         val databasePath = context.applicationInfo?.dataDir + "/databases"
         val file = File("$databasePath/${DB_NAME}")
 
         if (file.exists()){
-            Timber.i("Database won't be populated, already exits")
+            Timber.i("Database won't be copy, it already exits")
             return
         }
         try {
-            val input = context.assets.open("databases/${DB_NAME}")
+            val input = context.assets.open("databases/${DB_NAME_TEST}")
             val output = FileOutputStream("$databasePath/${DB_NAME}")
             writeExtractedFileToDisk(input, output)
         } catch (e: IOException) {
@@ -40,6 +40,7 @@ class DBTestLoader(private val context: Context) {
     }
 
     companion object {
+        const val DB_NAME_TEST = "dhis_test.db"
         const val DB_NAME = "dhis.db"
     }
 }

@@ -123,7 +123,6 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
         progressProcessor = PublishProcessor.create();
         sectionAdjustProcessor = PublishProcessor.create();
         formAdjustProcessor = PublishProcessor.create();
-
     }
 
     @Override

@@ -31,8 +31,9 @@ class AboutTest : BaseTest() {
     @Test
     fun openAbout() {
         startActivity()
-        mainRobot.clickOnNavigationDrawerMenu()
-                .clickAbout()
+        Thread.sleep(15000)
+    //    mainRobot.clickOnNavigationDrawerMenu()
+    //            .clickAbout()
     }
 
     private fun startActivity(){

@@ -1,5 +1,8 @@
 package org.dhis2
 
+import org.dhis2.common.KeyStoreRobot.Companion.PASSWORD
+import org.dhis2.common.KeyStoreRobot.Companion.USERNAME
+import org.dhis2.common.di.TestingInjector
 import org.dhis2.common.preferences.PreferencesTestingModule
 import org.dhis2.data.schedulers.SchedulerModule
 import org.dhis2.data.schedulers.SchedulersProviderImpl
@@ -20,7 +23,13 @@ class AppTest : App() {
 
     @Override
     override fun setUpServerComponent() {
+        val keyStoreRobot = TestingInjector.createKeyStoreRobot(baseContext)
+        keyStoreRobot.apply {
+            setData(USERNAME,"android")
+            setData(PASSWORD,"Android123")
+        }
         D2Manager.blockingInstantiateD2(ServerModule.getD2Configuration(this))
+
         serverComponent = appComponent.plus(ServerModule())
         setUpUserComponent()
     }
