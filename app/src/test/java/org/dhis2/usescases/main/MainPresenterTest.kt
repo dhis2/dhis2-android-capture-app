@@ -1,6 +1,5 @@
 package org.dhis2.usescases.main
 
-import androidx.work.WorkManager
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
@@ -12,9 +11,7 @@ import io.reactivex.Single
 import io.reactivex.processors.BehaviorProcessor
 import io.reactivex.processors.FlowableProcessor
 import org.dhis2.data.prefs.Preference.Companion.DEFAULT_CAT_COMBO
-import org.dhis2.data.prefs.Preference.Companion.PIN
 import org.dhis2.data.prefs.Preference.Companion.PREF_DEFAULT_CAT_OPTION_COMBO
-import org.dhis2.data.prefs.Preference.Companion.SESSION_LOCKED
 import org.dhis2.data.prefs.PreferenceProvider
 import org.dhis2.data.schedulers.SchedulerProvider
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
@@ -45,7 +42,8 @@ class MainPresenterTest {
 
     @Before
     fun setUp() {
-        presenter = MainPresenter(view, d2, schedulers, preferences, workManagerController, filterManager)
+        presenter =
+            MainPresenter(view, d2, schedulers, preferences, workManagerController, filterManager)
     }
 
     @Test
@@ -86,7 +84,6 @@ class MainPresenterTest {
 
     @Test
     fun `Should block session`() {
-
         presenter.blockSession()
 
         verify(workManagerController).cancelAllWork()

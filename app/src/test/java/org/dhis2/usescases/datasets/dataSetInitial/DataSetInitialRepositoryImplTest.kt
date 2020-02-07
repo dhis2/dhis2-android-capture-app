@@ -4,6 +4,8 @@ import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Single
+import java.util.Date
+import java.util.UUID
 import org.dhis2.usescases.datasets.datasetInitial.DataSetInitialModel
 import org.dhis2.usescases.datasets.datasetInitial.DataSetInitialRepositoryImpl
 import org.dhis2.usescases.datasets.datasetInitial.DateRangeInputPeriodModel
@@ -23,8 +25,6 @@ import org.hisp.dhis.android.core.period.PeriodType
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito
-import java.util.Date
-import java.util.UUID
 
 class DataSetInitialRepositoryImplTest {
 
@@ -114,7 +114,6 @@ class DataSetInitialRepositoryImplTest {
         testObserver.dispose()
     }
 
-
     @Test
     fun `Should return organization units for dataSet`() {
         val orgUnits = listOf(dummyOrganisationUnit(), dummyOrganisationUnit())
@@ -189,7 +188,7 @@ class DataSetInitialRepositoryImplTest {
 
         testObserver.dispose()
     }
-    private fun dummyDataSet() : DataSet =
+    private fun dummyDataSet(): DataSet =
         DataSet.builder()
             .uid(UUID.randomUUID().toString())
             .displayName("dataSet")
@@ -197,7 +196,7 @@ class DataSetInitialRepositoryImplTest {
             .categoryCombo(ObjectWithUid.create(UUID.randomUUID().toString()))
             .build()
 
-    private fun dummyDataInputPeriod() : DataInputPeriod =
+    private fun dummyDataInputPeriod(): DataInputPeriod =
         DataInputPeriod.builder()
             .period(ObjectWithUid.create(UUID.randomUUID().toString()))
             .openingDate(Date())
@@ -228,7 +227,7 @@ class DataSetInitialRepositoryImplTest {
             .uid(UUID.randomUUID().toString())
             .build()
 
-    private fun dummyCategory() : Category =
+    private fun dummyCategory(): Category =
         Category.builder()
             .uid(UUID.randomUUID().toString())
             .categoryOptions(listOf(dummyCategoryOption(), dummyCategoryOption()))

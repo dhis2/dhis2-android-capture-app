@@ -1,6 +1,12 @@
 package org.dhis2.usescases.enrollment
 
-import com.nhaarman.mockitokotlin2.*
+import com.nhaarman.mockitokotlin2.any
+import com.nhaarman.mockitokotlin2.doReturn
+import com.nhaarman.mockitokotlin2.mock
+import com.nhaarman.mockitokotlin2.times
+import com.nhaarman.mockitokotlin2.verify
+import com.nhaarman.mockitokotlin2.verifyZeroInteractions
+import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Flowable
 import org.dhis2.data.forms.dataentry.DataEntryRepository
 import org.dhis2.data.forms.dataentry.StoreResult
@@ -12,7 +18,11 @@ import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.`object`.ReadOnlyOneObjectRepositoryFinalImpl
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
 import org.hisp.dhis.android.core.category.CategoryCombo
-import org.hisp.dhis.android.core.common.*
+import org.hisp.dhis.android.core.common.Access
+import org.hisp.dhis.android.core.common.DataAccess
+import org.hisp.dhis.android.core.common.FeatureType
+import org.hisp.dhis.android.core.common.ObjectWithUid
+import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.enrollment.EnrollmentObjectRepository
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
@@ -121,13 +131,16 @@ class EnrollmentPresenterImplTest {
         whenever(d2.programModule()) doReturn mock()
         whenever(d2.programModule().programStages()) doReturn mock()
         whenever(d2.programModule().programStages().uid("")) doReturn mock()
-        whenever(d2.programModule().programStages().uid("").blockingGet()) doReturn ProgramStage
-            .builder().uid("").featureType(featureType).build()
+        whenever(
+            d2.programModule().programStages().uid("").blockingGet()
+        ) doReturn ProgramStage.builder().uid("").featureType(featureType).build()
 
         whenever(d2.categoryModule()) doReturn mock()
         whenever(d2.categoryModule().categoryCombos()) doReturn mock()
         whenever(d2.categoryModule().categoryCombos().uid("")) doReturn mock()
-        whenever(d2.categoryModule().categoryCombos().uid("").blockingGet()) doReturn CategoryCombo.builder()
+        whenever(
+            d2.categoryModule().categoryCombos().uid("").blockingGet()
+        ) doReturn CategoryCombo.builder()
             .isDefault(catCombo)
             .uid("")
             .build()
@@ -175,7 +188,6 @@ class EnrollmentPresenterImplTest {
         verify(valueStore, times(1)).save("uid", "fileValue")
     }
 
-
     private fun mockValuesDataElement(
         uid: String,
         value: String?,
@@ -184,22 +196,33 @@ class EnrollmentPresenterImplTest {
         isSameValue: Boolean,
         valueTypeIsImage: Boolean
     ) {
-
         val sameValue = if (isSameValue) {
             value
         } else {
             "other_value"
         }
         whenever(d2.trackedEntityModule().trackedEntityAttributes().uid("")) doReturn mock()
-        whenever(d2.trackedEntityModule().trackedEntityAttributes().uid("").blockingExists()) doReturn false
+        whenever(
+            d2.trackedEntityModule().trackedEntityAttributes().uid("").blockingExists()
+        ) doReturn false
 
-        whenever(enrollmentRepository.blockingGet()) doReturn Enrollment.builder().uid("").build()
+        whenever(
+            enrollmentRepository.blockingGet()
+        ) doReturn Enrollment.builder().uid("").build()
 
         whenever(d2.eventModule().events().byEnrollmentUid().eq("")) doReturn mock()
-        whenever(d2.eventModule().events().byEnrollmentUid().eq("").byStatus()) doReturn mock()
-        whenever(d2.eventModule().events().byEnrollmentUid().eq("").byStatus().eq(EventStatus.ACTIVE)) doReturn mock()
         whenever(
-            d2.eventModule().events().byEnrollmentUid().eq("").byStatus().eq(EventStatus.ACTIVE).orderByEventDate(
+            d2.eventModule().events().byEnrollmentUid().eq("").byStatus()
+        ) doReturn mock()
+        whenever(
+            d2.eventModule().events()
+                .byEnrollmentUid().eq("")
+                .byStatus().eq(EventStatus.ACTIVE)
+        ) doReturn mock()
+        whenever(
+            d2.eventModule().events()
+                .byEnrollmentUid().eq("")
+                .byStatus().eq(EventStatus.ACTIVE).orderByEventDate(
                 RepositoryScope.OrderByDirection.DESC
             )
         ) doReturn mock()
@@ -211,26 +234,31 @@ class EnrollmentPresenterImplTest {
             Event.builder().uid("id").build()
         )
 
-
-        whenever(d2.trackedEntityModule().trackedEntityDataValues().byDataElement().eq(uid)) doReturn mock()
-        whenever(d2.trackedEntityModule().trackedEntityDataValues().byDataElement().eq(uid).byEvent()) doReturn mock()
-        val retList = listOf("id")
         whenever(
-            d2.trackedEntityModule().trackedEntityDataValues().byDataElement().eq(uid).byEvent().`in`(
-                retList
-            )
+            d2.trackedEntityModule().trackedEntityDataValues().byDataElement().eq(uid)
+        ) doReturn mock()
+        whenever(
+            d2.trackedEntityModule().trackedEntityDataValues().byDataElement().eq(uid).byEvent()
+        ) doReturn mock()
+
+        val retList = listOf("id")
+
+        whenever(
+            d2.trackedEntityModule().trackedEntityDataValues()
+                .byDataElement().eq(uid)
+                .byEvent().`in`(retList)
         ) doReturn mock()
         if (eventValueIsNull) {
             whenever(
-                d2.trackedEntityModule().trackedEntityDataValues().byDataElement().eq(uid).byEvent().`in`(
-                    retList
-                ).blockingGet()
+                d2.trackedEntityModule().trackedEntityDataValues()
+                    .byDataElement().eq(uid)
+                    .byEvent().`in`(retList).blockingGet()
             ) doReturn listOf()
         } else {
             whenever(
-                d2.trackedEntityModule().trackedEntityDataValues().byDataElement().eq(uid).byEvent().`in`(
-                    retList
-                ).blockingGet()
+                d2.trackedEntityModule().trackedEntityDataValues()
+                    .byDataElement().eq(uid)
+                    .byEvent().`in`(retList).blockingGet()
             ) doReturn listOf(
                 TrackedEntityDataValue.builder()
                     .event("eventName")
@@ -262,9 +290,13 @@ class EnrollmentPresenterImplTest {
         whenever(d2.dataElementModule().dataElements().uid(uid)) doReturn mock()
         whenever(d2.dataElementModule().dataElements().uid(uid).blockingGet()) doReturn mock()
         if (valueTypeIsImage) {
-            whenever(d2.dataElementModule().dataElements().uid(uid).blockingGet().valueType()) doReturn ValueType.IMAGE
+            whenever(
+                d2.dataElementModule().dataElements().uid(uid).blockingGet().valueType()
+            ) doReturn ValueType.IMAGE
         } else {
-            whenever(d2.dataElementModule().dataElements().uid(uid).blockingGet().valueType()) doReturn ValueType.BOOLEAN
+            whenever(
+                d2.dataElementModule().dataElements().uid(uid).blockingGet().valueType()
+            ) doReturn ValueType.BOOLEAN
         }
 
         whenever(d2.fileResourceModule().fileResources().blockingAdd(any())) doReturn sameValue
@@ -272,7 +304,9 @@ class EnrollmentPresenterImplTest {
 
     private fun mockValuesAttribute(newValue: String) {
         whenever(d2.trackedEntityModule().trackedEntityAttributes().uid("")) doReturn mock()
-        whenever(d2.trackedEntityModule().trackedEntityAttributes().uid("").blockingExists()) doReturn true
+        whenever(
+            d2.trackedEntityModule().trackedEntityAttributes().uid("").blockingExists()
+        ) doReturn true
 
         whenever(teiRepository.blockingGet()) doReturn mock()
         whenever(teiRepository.blockingGet().uid()) doReturn ""
@@ -284,7 +318,9 @@ class EnrollmentPresenterImplTest {
             )
         ) doReturn mock()
 
-        whenever(d2.trackedEntityModule().trackedEntityAttributes().uid("").blockingGet()) doReturn TrackedEntityAttribute.builder()
+        whenever(
+            d2.trackedEntityModule().trackedEntityAttributes().uid("").blockingGet()
+        ) doReturn TrackedEntityAttribute.builder()
             .valueType(ValueType.IMAGE)
             .uid("")
             .build()
@@ -304,7 +340,6 @@ class EnrollmentPresenterImplTest {
             ).blockingGet()
         ) doReturn TrackedEntityAttributeValue.builder()
             .value("value").build()
-
     }
 
     @Test

@@ -5,6 +5,9 @@ import androidx.work.ExistingWorkPolicy
 import androidx.work.ListenableWorker
 import io.reactivex.Completable
 import io.reactivex.Observable
+import java.util.ArrayList
+import java.util.Calendar
+import kotlin.math.ceil
 import org.dhis2.data.prefs.Preference.Companion.DATA
 import org.dhis2.data.prefs.Preference.Companion.EVENT_MAX
 import org.dhis2.data.prefs.Preference.Companion.EVENT_MAX_DEFAULT
@@ -27,9 +30,6 @@ import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.imports.TrackerImportConflict
 import org.hisp.dhis.android.core.program.ProgramType
 import timber.log.Timber
-import java.util.ArrayList
-import java.util.Calendar
-import kotlin.math.ceil
 
 class SyncPresenterImpl(
     private val d2: D2,

@@ -90,7 +90,7 @@ class DataValuePresenter(
 
         disposable.add(
             Flowable.zip<Boolean, DataSet, Section, Period, List<DataInputPeriod>,
-                    Boolean, Sextet<Boolean, DataSet, Section, Period, List<DataInputPeriod>, Boolean>>(
+                Boolean, Sextet<Boolean, DataSet, Section, Period, List<DataInputPeriod>, Boolean>>(
                 repository.canWriteAny(),
                 repository.dataSet,
                 repository.getSectionByDataSet(sectionName),
@@ -159,17 +159,17 @@ class DataValuePresenter(
                         List<DataElementOperand>>>
                 { categoryCombo ->
                     Flowable.zip<CategoryCombo,
+                        List<DataElement>,
+                        Map<String, List<List<Pair<CategoryOption, Category>>>>,
+                        List<DataSetTableModel>,
+                        List<DataElementOperand>,
+                        List<DataElementOperand>,
+                        Sextet<CategoryCombo,
                             List<DataElement>,
                             Map<String, List<List<Pair<CategoryOption, Category>>>>,
                             List<DataSetTableModel>,
                             List<DataElementOperand>,
-                            List<DataElementOperand>,
-                            Sextet<CategoryCombo,
-                                    List<DataElement>,
-                                    Map<String, List<List<Pair<CategoryOption, Category>>>>,
-                                    List<DataSetTableModel>,
-                                    List<DataElementOperand>,
-                                    List<DataElementOperand>>>(
+                            List<DataElementOperand>>>(
                         Flowable.just<CategoryCombo>(categoryCombo),
                         repository.getDataElements(categoryCombo, sectionName),
                         repository.getCatOptions(sectionName, categoryCombo.uid()),
@@ -183,17 +183,17 @@ class DataValuePresenter(
                         repository.getGreyFields(sectionName),
                         repository.compulsoryDataElements,
                         Function6<CategoryCombo,
+                            List<DataElement>,
+                            Map<String, List<List<Pair<CategoryOption, Category>>>>,
+                            List<DataSetTableModel>,
+                            List<DataElementOperand>,
+                            List<DataElementOperand>,
+                            Sextet<CategoryCombo,
                                 List<DataElement>,
                                 Map<String, List<List<Pair<CategoryOption, Category>>>>,
                                 List<DataSetTableModel>,
                                 List<DataElementOperand>,
-                                List<DataElementOperand>,
-                                Sextet<CategoryCombo,
-                                        List<DataElement>,
-                                        Map<String, List<List<Pair<CategoryOption, Category>>>>,
-                                        List<DataSetTableModel>,
-                                        List<DataElementOperand>,
-                                        List<DataElementOperand>>>
+                                List<DataElementOperand>>>
                         { val0, val1, val2, val3, val4, val5 ->
                             Sextet.create(
                                 val0,
@@ -253,15 +253,15 @@ class DataValuePresenter(
     }
 
     private fun getCatOptionComboOrder(catOptionCombos: List<CategoryOptionCombo>?):
-            List<CategoryOptionCombo> {
+    List<CategoryOptionCombo> {
         val categoryOptionCombosOrder = ArrayList<CategoryOptionCombo>()
         for (catOptions in catOptionOrder!!) {
             for (categoryOptionCombo in catOptionCombos!!) {
                 if (catOptions.containsAll(
-                        repository.getCatOptionFromCatOptionCombo(
-                            categoryOptionCombo
-                        )
+                    repository.getCatOptionFromCatOptionCombo(
+                        categoryOptionCombo
                     )
+                )
                 ) {
                     categoryOptionCombosOrder.add(categoryOptionCombo)
                 }
@@ -271,7 +271,7 @@ class DataValuePresenter(
     }
 
     private fun setTableData(dataTableModel: DataTableModel):
-            Quartet<DataTableModel, List<List<FieldViewModel>>, ArrayList<List<String>>, Boolean> {
+    Quartet<DataTableModel, List<List<FieldViewModel>>, ArrayList<List<String>>, Boolean> {
         val cells = ArrayList<List<String>>()
         val listFields = ArrayList<List<FieldViewModel>>()
         var row = 0
@@ -283,16 +283,16 @@ class DataValuePresenter(
             val fields = ArrayList<FieldViewModel>()
             var totalRow = 0
             isNumber = dataElement.valueType() == ValueType.NUMBER ||
-                    dataElement.valueType() == ValueType.INTEGER
+                dataElement.valueType() == ValueType.INTEGER
             val fieldFactory = FieldViewModelFactoryImpl("", "")
 
             for (
-            categoryOptionCombo in
-            getCatOptionComboOrder(
-                repository.getCatOptionComboFrom(
-                    dataTableModel.catCombo()?.uid(), catOptionOrder
+                categoryOptionCombo in
+                getCatOptionComboOrder(
+                    repository.getCatOptionComboFrom(
+                        dataTableModel.catCombo()?.uid(), catOptionOrder
+                    )
                 )
-            )
             ) {
                 var editable = true
                 for (disabledDataElement in dataTableModel.dataElementDisabled()!!)
@@ -306,8 +306,8 @@ class DataValuePresenter(
                     }
 
                 for (
-                categoryOption in
-                repository.getCatOptionFromCatOptionCombo(categoryOptionCombo)
+                    categoryOption in
+                    repository.getCatOptionFromCatOptionCombo(categoryOptionCombo)
                 )
                     if (!categoryOption.access().data().write()) {
                         editable = false
@@ -420,13 +420,13 @@ class DataValuePresenter(
         }
 
         val isEditable = accessDataWrite &&
-                !isExpired(dataSet) &&
-                dataInputPeriodModel.isEmpty() || (
-                checkHasInputPeriod() != null && DateUtils.getInstance().isInsideInputPeriod(
-                    checkHasInputPeriod()
-                )
-                ) &&
-                !isApproval
+            !isExpired(dataSet) &&
+            dataInputPeriodModel.isEmpty() || (
+            checkHasInputPeriod() != null && DateUtils.getInstance().isInsideInputPeriod(
+                checkHasInputPeriod()
+            )
+            ) &&
+            !isApproval
 
         return Quartet.create(dataTableModel, listFields, cells, isEditable)
     }
@@ -524,13 +524,13 @@ class DataValuePresenter(
             analyticsHelper.setEvent(COMPLETE_REOPEN, CLICK, COMPLETE_REOPEN)
             if (view.isOpenOrReopen) {
                 if ((
-                            !dataSet!!.fieldCombinationRequired()!! ||
-                                    checkAllFieldRequired(
-                                        tableCells,
-                                        dataTableModel?.dataValues()
-                                    ) &&
-                                    dataSet!!.fieldCombinationRequired()!!
-                            ) &&
+                    !dataSet!!.fieldCombinationRequired()!! ||
+                        checkAllFieldRequired(
+                        tableCells,
+                        dataTableModel?.dataValues()
+                    ) &&
+                        dataSet!!.fieldCombinationRequired()!!
+                    ) &&
                     checkMandatoryField(tableCells, dataTableModel?.dataValues())
                 ) {
                     disposable.add(
@@ -612,8 +612,8 @@ class DataValuePresenter(
                     val fieldWithValue = dataValues
                         ?.filter { dataSetTableModel ->
                             dataSetTableModel.dataElement() == field.dataElement() &&
-                                    dataSetTableModel.categoryOptionCombo() ==
-                                    field.categoryOptionCombo()
+                                dataSetTableModel.categoryOptionCombo() ==
+                                field.categoryOptionCombo()
                         }
 
                     if (field.editable()!! && field.mandatory() && fieldWithValue.isNullOrEmpty()) {
@@ -676,8 +676,9 @@ class DataValuePresenter(
                         }
                     }
 
-                    if ((dataSetSectionFragment.activity as DataSetTableActivity).isBackPressed)
+                    if ((dataSetSectionFragment.activity as DataSetTableActivity).isBackPressed) {
                         dataSetSectionFragment.abstractActivity.back()
+                    }
 
                     dataSetSectionFragment.updateData(rowAction, dataSetTableModel!!.catCombo())
                     valueStore.save(dataSetTableModel)
@@ -686,16 +687,18 @@ class DataValuePresenter(
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
                     { storeResult ->
-                        if (storeResult.valueStoreResult == ValueStoreImpl.ValueStoreResult.VALUE_CHANGED) {
+                        val valueChange = ValueStoreImpl.ValueStoreResult.VALUE_CHANGED
+                        if (storeResult.valueStoreResult == valueChange) {
                             view.showSnackBar()
                         }
                     },
-                    { Timber.e(it) })
+                    { Timber.e(it) }
+                )
         )
     }
 
     fun transformCategories(map: Map<String, List<List<Pair<CategoryOption, Category>>>>):
-            Map<String, List<List<CategoryOption>>> {
+    Map<String, List<List<CategoryOption>>> {
         val mapTransform = HashMap<String, MutableList<List<CategoryOption>>>()
         for ((key) in map) {
             mapTransform[key] = mutableListOf()
