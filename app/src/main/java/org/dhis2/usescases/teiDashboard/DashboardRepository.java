@@ -1,19 +1,16 @@
 package org.dhis2.usescases.teiDashboard;
 
-import android.content.Context;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Trio;
+import org.dhis2.usescases.teiDashboard.dashboardfragments.relationships.RelationshipViewModel;
 import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryOptionCombo;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
-import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.event.EventStatus;
-import org.hisp.dhis.android.core.note.Note;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.program.ProgramIndicator;
@@ -28,7 +25,6 @@ import java.util.List;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
-import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 
 /**
@@ -63,7 +59,7 @@ public interface DashboardRepository {
 
     Observable<Trio<ProgramIndicator, String, String>> getLegendColorForIndicator(ProgramIndicator programIndicator, String value);
 
-    Integer getObjectStyle(Context context, String uid);
+    Integer getObjectStyle(String uid);
 
     Observable<List<Pair<RelationshipType, String>>> relationshipsForTeiType(String teType);
 
@@ -89,6 +85,8 @@ public interface DashboardRepository {
     Single<Boolean> deleteTeiIfPossible();
 
     Single<Boolean> deleteEnrollmentIfPossible(String enrollmentUid);
+
+    Flowable<List<RelationshipViewModel>> listTeiRelationships();
 
     Single<Integer> getNoteCount();
 }
