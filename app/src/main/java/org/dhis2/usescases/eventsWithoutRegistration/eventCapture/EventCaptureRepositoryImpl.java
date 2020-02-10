@@ -59,6 +59,7 @@ import java.util.Map;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
+import kotlin.random.Random;
 
 import static android.text.TextUtils.isEmpty;
 
@@ -645,6 +646,12 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                                 event.status() == EventStatus.ACTIVE) &&
                                 event.eventDate() != null && !event.eventDate().after(new Date())
                 ).toFlowable();
+    }
+
+    @Override
+    public Single<Integer> getNoteCount() {
+        //TODO: EVENT NOTES
+        return Single.just(Random.Default.nextInt(0,100));
     }
 }
 

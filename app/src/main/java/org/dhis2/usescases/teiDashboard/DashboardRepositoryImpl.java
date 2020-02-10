@@ -503,4 +503,15 @@ public class DashboardRepositoryImpl
                 })
                 .toList().toFlowable();
     }
+
+    @Override
+    public Single<Integer> getNoteCount() {
+        return d2.enrollmentModule().enrollments()
+                .byProgram().eq(programUid)
+                .byTrackedEntityInstance().eq(teiUid)
+                .withNotes()
+                .one()
+                .get()
+                .map(enrollment -> enrollment.notes() != null ? enrollment.notes().size() : 0);
+    }
 }

@@ -21,6 +21,7 @@ import java.util.Map;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
+import io.reactivex.SingleSource;
 import io.reactivex.functions.Consumer;
 import io.reactivex.processors.FlowableProcessor;
 
@@ -68,6 +69,8 @@ public class EventCaptureContract {
         void showErrorSnackBar();
 
         void showEventIntegrityAlert();
+
+        void updateNoteBadge(int numberOfNotes);
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter {
@@ -114,6 +117,10 @@ public class EventCaptureContract {
         boolean hasExpired();
 
         void saveImage(String uuid, String filePath);
+
+        void initNoteCounter();
+
+        void refreshTabCounters();
     }
 
     public interface EventCaptureRepository {
@@ -167,6 +174,8 @@ public class EventCaptureContract {
         Single<Boolean> canReOpenEvent();
 
         Observable<Boolean> isCompletedEventExpired(String eventUid);
+
+        Single<Integer> getNoteCount();
     }
 
 }

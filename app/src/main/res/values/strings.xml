@@ -630,4 +630,8 @@
     <string name="transitionElement_userImage" translatable="false">userImage</string>
     <string name="transitionElement_userInit" translatable="false">userInit</string>
     <string name="transitionElement_date" translatable="false">date</string>
+    <string name="interval_now">now</string>
+    <string name="interval_minute_ago">%d min. ago</string>
+    <string name="interval_hour_ago">%d hours ago</string>
+    <string name="interval_yesterday">Yesterday</string>
 </resources>
