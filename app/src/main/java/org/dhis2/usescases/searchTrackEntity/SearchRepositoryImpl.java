@@ -573,6 +573,7 @@ public class SearchRepositoryImpl implements SearchRepository {
         return Observable.fromCallable(() -> d2.trackedEntityModule().trackedEntityTypes().withTrackedEntityTypeAttributes().byUid().eq(teiType).one().blockingGet().trackedEntityTypeAttributes())
                 .flatMap(attributes -> {
                     List<String> uids = new ArrayList<>();
+                    Collections.sort(attributes, (one, two) -> one.sortOrder().compareTo(two.sortOrder()));
                     for (TrackedEntityTypeAttribute tetAttribute : attributes) {
                         if (tetAttribute.searchable())
                             uids.add(tetAttribute.trackedEntityAttribute().uid());
