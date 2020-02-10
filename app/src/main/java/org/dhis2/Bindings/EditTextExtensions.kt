@@ -3,6 +3,7 @@ package org.dhis2.Bindings
 import android.view.MotionEvent
 import android.view.View
 import android.widget.EditText
+import android.widget.TextView
 import androidx.core.content.ContextCompat
 import com.google.android.material.textfield.TextInputEditText
 import org.dhis2.R
@@ -23,7 +24,7 @@ fun EditText.onRightDrawableClicked(onClicked: (view: EditText) -> Unit) {
     }
 }
 
-fun TextInputEditText.placeHolder(placeholder: String){
+fun TextInputEditText.placeHolder(placeholder: String) {
     this.setHintTextColor(ContextCompat.getColor(context, R.color.placeholder))
     this.hint = placeholder
 
@@ -33,4 +34,8 @@ fun TextInputEditText.placeHolder(placeholder: String){
         }
     }
 
+}
+
+fun TextView.setDateInterval(string: String?) {
+    text = string?.toDateSpan(context)
 }

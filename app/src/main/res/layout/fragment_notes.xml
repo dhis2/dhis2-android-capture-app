@@ -9,8 +9,7 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:padding="8dp">
+        android:layout_height="match_parent">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/no_permission_layout"
@@ -21,16 +20,17 @@
             android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toTopOf="parent"
+            tools:visibility="visible">
 
             <TextView
                 android:id="@+id/no_permission"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/no_add_notes"
+                android:textAlignment="center"
                 android:textColor="@color/text_black_808"
                 android:textSize="14sp"
-                android:textAlignment="center"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -39,24 +39,32 @@
                 android:id="@+id/reason"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:text="@string/permission_denied"
+                android:textAlignment="center"
                 android:textColor="@color/text_black_808"
                 android:textSize="12sp"
-                android:textAlignment="center"
-                android:text="@string/permission_denied"
                 app:layout_constraintEnd_toEndOf="@+id/no_permission"
                 app:layout_constraintStart_toStartOf="@+id/no_permission"
                 app:layout_constraintTop_toBottomOf="@+id/no_permission" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/notes_recycler"
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            android:id="@+id/swiperefresh"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/no_permission_layout"
-            tools:listitem="@layout/item_note" />
+            app:layout_constraintTop_toBottomOf="@id/no_permission_layout">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/notes_recycler"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:paddingBottom="50dp"
+                android:clipToPadding="false"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                tools:listitem="@layout/item_note" />
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -89,6 +97,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/image_no_notes" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
+
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/addNoteButton"
             android:layout_width="wrap_content"

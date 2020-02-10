@@ -1,7 +1,5 @@
 package org.dhis2.usescases.teiDashboard;
 
-import android.content.Context;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -11,10 +9,8 @@ import org.dhis2.usescases.teiDashboard.dashboardfragments.relationships.Relatio
 import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryOptionCombo;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
-import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.event.EventStatus;
-import org.hisp.dhis.android.core.note.Note;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.program.ProgramIndicator;
@@ -91,4 +87,6 @@ public interface DashboardRepository {
     Single<Boolean> deleteEnrollmentIfPossible(String enrollmentUid);
 
     Flowable<List<RelationshipViewModel>> listTeiRelationships();
+
+    Single<Integer> getNoteCount();
 }
