@@ -44,6 +44,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/ic_info_outline"
+            tools:visibility="visible"
             app:tint="@color/table_view_default_text_color" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

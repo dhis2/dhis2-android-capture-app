@@ -19,13 +19,26 @@ package com.evrencoskun.tableview;
 
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Parcelable;
 import android.util.AttributeSet;
+import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
+
+import androidx.annotation.AttrRes;
+import androidx.annotation.ColorInt;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.evrencoskun.tableview.adapter.AbstractTableAdapter;
 import com.evrencoskun.tableview.adapter.recyclerview.CellRecyclerView;
@@ -53,20 +66,11 @@ import com.evrencoskun.tableview.sort.SortState;
 import java.util.ArrayList;
 import java.util.List;
 
-import androidx.annotation.AttrRes;
-import androidx.annotation.ColorInt;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
-import androidx.recyclerview.widget.DividerItemDecoration;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 /**
  * Created by evrencoskun on 11/06/2017.
  */
 
-public class TableView extends FrameLayout implements ITableView {
+public class TableView extends FrameLayout implements ITableView{
 
     private static final String LOG_TAG = TableView.class.getSimpleName();
 
@@ -122,6 +126,9 @@ public class TableView extends FrameLayout implements ITableView {
     private RecyclerView.RecycledViewPool headerPool;
     private RecyclerView.RecycledViewPool rowPool;
     private RecyclerView.RecycledViewPool cellPool;
+    private ImageView rowHeaderWidthSelector;
+    private boolean changingWidth;
+    private float currentDx = 0f;
 
     public TableView(@NonNull Context context) {
         super(context);
@@ -211,6 +218,7 @@ public class TableView extends FrameLayout implements ITableView {
         }
         addView(mRowHeaderRecyclerView);
         addView(mCellRecyclerView);
+        addView(createRowHeaderWidthSelector());
 
         // Create Handlers
         mSelectionHandler = new SelectionHandler(this);
@@ -267,6 +275,38 @@ public class TableView extends FrameLayout implements ITableView {
             mBackupHeaders.get(i).addOnLayoutChangeListener(layoutChangeListener);
         }
         mCellRecyclerView.addOnLayoutChangeListener(layoutChangeListener);
+
+        rowHeaderWidthSelector.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+
+        rowHeaderWidthSelector.setOnTouchListener(new OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                float x = event.getRawX();
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        changingWidth = true;
+                        Log.d("WIDTH_CHANGE", "STARTED");
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        changingWidth = false;
+                        Log.d("WIDTH_CHANGE", "FINISHED");
+                        break;
+                    case MotionEvent.ACTION_MOVE:
+                        float dx = x - mRowHeaderWidth;
+                        if (changingWidth && Math.abs(dx) != Math.abs(currentDx) && Math.abs(dx) > 16) {
+                            setRowHeaderWidth(mRowHeaderWidth + (int) dx);
+                            currentDx = dx;
+                        }
+                        break;
+                }
+                return true;
+            }
+        });
     }
 
     protected CellRecyclerView createColumnHeaderRecyclerView(int header) {
@@ -371,6 +411,20 @@ public class TableView extends FrameLayout implements ITableView {
         return mCellRecyclerView;
     }
 
+    protected ImageView createRowHeaderWidthSelector() {
+        if (rowHeaderWidthSelector == null) {
+            rowHeaderWidthSelector = new ImageView(getContext());
+            rowHeaderWidthSelector.setImageResource(R.drawable.ic_chevron_right_black_24dp);
+            rowHeaderWidthSelector.setBackgroundColor(Color.GRAY);
+        } else {
+            LayoutParams layoutParams = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams
+                    .WRAP_CONTENT);
+            layoutParams.leftMargin = mRowHeaderWidth - 12;
+            layoutParams.topMargin = mHeaderHeight * mHeaderCount;
+            rowHeaderWidthSelector.setLayoutParams(layoutParams);
+        }
+        return rowHeaderWidthSelector;
+    }
 
     public void setAdapter(AbstractTableAdapter tableAdapter) {
         if (tableAdapter != null) {
@@ -430,7 +484,7 @@ public class TableView extends FrameLayout implements ITableView {
                     scrollToColumnPosition(0);
 
                     //Corner
-                    if(getAdapter().getCornerView()!=null) {
+                    if (getAdapter().getCornerView() != null) {
                         FrameLayout.LayoutParams mCornerHeaderParams = ((FrameLayout.LayoutParams) getAdapter().getCornerView().getLayoutParams());
                         mCornerHeaderParams.height = height * mHeaderCount;
                     }
@@ -875,6 +929,31 @@ public class TableView extends FrameLayout implements ITableView {
             layoutParams.leftMargin = rowHeaderWidth;
             mCellRecyclerView.setLayoutParams(layoutParams);
             mCellRecyclerView.requestLayout();
+        }
+
+        if (rowHeaderWidthSelector != null) {
+            LayoutParams layoutParams = (LayoutParams) rowHeaderWidthSelector.getLayoutParams();
+            layoutParams.leftMargin = rowHeaderWidth-12;
+            rowHeaderWidthSelector.setLayoutParams(layoutParams);
+            rowHeaderWidthSelector.requestLayout();
+        }
+
+        if (mColumnHeaderRecyclerViews != null) {
+            for (CellRecyclerView cellRecyclerView : mColumnHeaderRecyclerViews) {
+                LayoutParams layoutParams = (LayoutParams) cellRecyclerView.getLayoutParams();
+                layoutParams.leftMargin = rowHeaderWidth;
+                cellRecyclerView.setLayoutParams(layoutParams);
+                cellRecyclerView.requestLayout();
+            }
+        }
+
+        if (mBackupHeaders != null) {
+            for (CellRecyclerView cellRecyclerView : mBackupHeaders) {
+                LayoutParams layoutParams = (LayoutParams) cellRecyclerView.getLayoutParams();
+                layoutParams.leftMargin = rowHeaderWidth;
+                cellRecyclerView.setLayoutParams(layoutParams);
+                cellRecyclerView.requestLayout();
+            }
         }
 
         if (getAdapter() != null) {

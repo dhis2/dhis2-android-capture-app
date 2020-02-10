@@ -1,10 +1,14 @@
 package org.dhis2.usescases.datasets.dataSetTable.dataSetSection
 
 import android.content.Context
+import android.content.res.Resources
+import android.graphics.Typeface
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.evrencoskun.tableview.TableView
+import org.dhis2.Bindings.getMaxWidth
+import org.dhis2.Bindings.px
 import org.dhis2.databinding.ItemProgressBinding
 import org.dhis2.utils.ColorUtils
 import org.dhis2.utils.ProgressViewHolder
@@ -62,12 +66,25 @@ class TableRecyclerAdapter(
     }
 
     private fun bindTableViewHolder(holder: TableViewHolder, position: Int) {
-        if(tables[position]==null) {
+        if (tables[position] == null) {
             tables[position] = holder.tableView
 
             val dataSetTable = tableList[position]
             val dataTableModel = dataSetTable.dataTableModel
             val accessDataWrite = dataSetTable.accessDataWrite
+
+            val list = dataTableModel.rows()?.map { it.displayName() ?: "" }
+            val desiredWidth = list.getMaxWidth(
+                13.px.toFloat(),
+                Typeface.DEFAULT
+            ) + 10.px + 18.px
+            holder.tableView.setRowHeaderWidth(
+                if (desiredWidth < Resources.getSystem().displayMetrics.widthPixels / 3) {
+                    desiredWidth
+                } else {
+                    Resources.getSystem().displayMetrics.widthPixels / 3
+                }
+            )
 
             val adapter = adapterList[position]
 
@@ -96,7 +113,7 @@ class TableRecyclerAdapter(
         }
     }
 
-    private fun bindProgressViewHolder(holder:ProgressViewHolder){
+    private fun bindProgressViewHolder(holder: ProgressViewHolder) {
         //Not in use
     }
 
