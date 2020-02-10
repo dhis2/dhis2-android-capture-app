@@ -17,6 +17,8 @@ import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel;
 import org.dhis2.utils.filters.FilterManager;
 import org.hisp.dhis.android.core.arch.call.D2Progress;
 import org.hisp.dhis.android.core.common.FeatureType;
+import org.hisp.dhis.android.core.common.ValueTypeDeviceRendering;
+import org.hisp.dhis.android.core.common.ValueTypeRenderingType;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute;
@@ -37,7 +39,10 @@ import kotlin.Pair;
 public class SearchTEContractsModule {
 
     public interface View extends AbstractActivityContracts.View {
-        void setForm(List<TrackedEntityAttribute> trackedEntityAttributes, @Nullable Program program, HashMap<String, String> queryData);
+        void setForm(List<TrackedEntityAttribute> trackedEntityAttributes,
+                     @Nullable Program program,
+                     HashMap<String, String> queryData,
+                     List<ValueTypeDeviceRendering> renderingTypes);
 
         void setPrograms(List<Program> programModels);
 

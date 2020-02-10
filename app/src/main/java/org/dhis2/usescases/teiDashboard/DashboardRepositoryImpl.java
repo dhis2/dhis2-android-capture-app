@@ -1,7 +1,6 @@
 package org.dhis2.usescases.teiDashboard;
 
 import android.content.Context;
-import android.content.res.Resources;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -10,9 +9,11 @@ import org.dhis2.Bindings.EventExtensionsKt;
 import org.dhis2.R;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Trio;
+import org.dhis2.usescases.teiDashboard.dashboardfragments.relationships.RelationshipViewModel;
 import org.dhis2.utils.AuthorityException;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.ValueUtils;
+import org.dhis2.utils.resources.ResourceManager;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper;
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope;
@@ -36,12 +37,15 @@ import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.program.ProgramIndicator;
 import org.hisp.dhis.android.core.program.ProgramStage;
 import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttribute;
+import org.hisp.dhis.android.core.relationship.RelationshipItem;
+import org.hisp.dhis.android.core.relationship.RelationshipItemTrackedEntityInstance;
 import org.hisp.dhis.android.core.relationship.RelationshipType;
 import org.hisp.dhis.android.core.systeminfo.SystemInfo;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityType;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityTypeAttribute;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -61,16 +65,18 @@ public class DashboardRepositoryImpl
         DashboardRepository {
 
     private final D2 d2;
+    private final ResourceManager resources;
 
     private String teiUid;
 
     private String programUid;
 
 
-    public DashboardRepositoryImpl(D2 d2,String teiUid, String programUid) {
+    public DashboardRepositoryImpl(D2 d2, String teiUid, String programUid, ResourceManager resources) {
         this.d2 = d2;
         this.teiUid = teiUid;
         this.programUid = programUid;
+        this.resources = resources;
     }
 
     @Override
@@ -160,16 +166,12 @@ public class DashboardRepositoryImpl
     }
 
     @Override
-    public Integer getObjectStyle(Context context, String uid) {
+    public Integer getObjectStyle(String uid) {
         TrackedEntityType teType = d2.trackedEntityModule().trackedEntityTypes().uid(uid).blockingGet();
-
-        if (teType.style() != null && teType.style().icon() != null) {
-            String iconName = teType.style().icon();
-            Resources resources = context.getResources();
-            iconName = iconName.startsWith("ic_") ? iconName : "ic_" + iconName;
-            return resources.getIdentifier(iconName, "drawable", context.getPackageName());
-        } else
-            return R.drawable.ic_person;
+        return resources.getObjectStyleDrawableResource(
+                teType.style() != null ? teType.style().icon() : null,
+                R.drawable.ic_person
+        );
     }
 
     @Override
@@ -186,9 +188,16 @@ public class DashboardRepositoryImpl
                                 .map(relationshipTypes -> {
                                     List<Pair<RelationshipType, String>> relTypeList = new ArrayList<>();
                                     for (RelationshipType relationshipType : relationshipTypes) {
-                                        if (relationshipType.fromConstraint().trackedEntityType() != null &&
+                                        if (relationshipType.fromConstraint() != null && relationshipType.fromConstraint().trackedEntityType() != null &&
                                                 relationshipType.fromConstraint().trackedEntityType().uid().equals(teType)) {
-                                            relTypeList.add(Pair.create(relationshipType, relationshipType.toConstraint().trackedEntityType().uid()));
+                                            if (relationshipType.toConstraint() != null && relationshipType.toConstraint().trackedEntityType() != null) {
+                                                relTypeList.add(Pair.create(relationshipType, relationshipType.toConstraint().trackedEntityType().uid()));
+                                            }
+                                        } else if (relationshipType.bidirectional() && relationshipType.toConstraint() != null && relationshipType.toConstraint().trackedEntityType() != null &&
+                                                relationshipType.toConstraint().trackedEntityType().uid().equals(teType)) {
+                                            if (relationshipType.fromConstraint() != null && relationshipType.fromConstraint().trackedEntityType() != null) {
+                                                relTypeList.add(Pair.create(relationshipType, relationshipType.fromConstraint().trackedEntityType().uid()));
+                                            }
                                         }
                                     }
                                     return relTypeList;
@@ -250,7 +259,7 @@ public class DashboardRepositoryImpl
                             if (d2.trackedEntityModule().trackedEntityAttributeValues().value(programAttribute.trackedEntityAttribute().uid(), teiUid).blockingExists()) {
                                 TrackedEntityAttributeValue attributeValue = d2.trackedEntityModule().trackedEntityAttributeValues().value(programAttribute.trackedEntityAttribute().uid(), teiUid).blockingGet();
                                 TrackedEntityAttribute attribute = d2.trackedEntityModule().trackedEntityAttributes().uid(programAttribute.trackedEntityAttribute().uid()).blockingGet();
-                                if(attribute.valueType() != ValueType.IMAGE) {
+                                if (attribute.valueType() != ValueType.IMAGE) {
                                     attributeValues.add(
                                             ValueUtils.transform(d2, attributeValue, attribute.valueType(), attribute.optionSet() != null ? attribute.optionSet().uid() : null)
                                     );
@@ -260,13 +269,13 @@ public class DashboardRepositoryImpl
                         return attributeValues;
                     }).toObservable();
 
-        }else{
+        } else {
             return d2.trackedEntityModule().trackedEntityAttributeValues().byTrackedEntityInstance().eq(teiUid).get()
                     .map(attributeValueList -> {
                         List<TrackedEntityAttributeValue> attributeValues = new ArrayList<>();
-                        for(TrackedEntityAttributeValue attributeValue : attributeValueList){
+                        for (TrackedEntityAttributeValue attributeValue : attributeValueList) {
                             TrackedEntityAttribute attribute = d2.trackedEntityModule().trackedEntityAttributes().uid(attributeValue.trackedEntityAttribute()).blockingGet();
-                            if(attribute.valueType()!=ValueType.IMAGE){
+                            if (attribute.valueType() != ValueType.IMAGE) {
                                 attributeValues.add(
                                         ValueUtils.transform(d2, attributeValue, attribute.valueType(), attribute.optionSet() != null ? attribute.optionSet().uid() : null)
                                 );
@@ -454,5 +463,55 @@ public class DashboardRepositoryImpl
                 return Single.error(new AuthorityException(null));
             }
         });
+    }
+
+    @Override
+    public Flowable<List<RelationshipViewModel>> listTeiRelationships() {
+        return Flowable.fromIterable(
+                d2.relationshipModule().relationships().getByItem(
+                        RelationshipItem.builder().trackedEntityInstance(
+                                RelationshipItemTrackedEntityInstance.builder().trackedEntityInstance(teiUid).build()).build()
+                ))
+                .map(relationship -> {
+                    RelationshipType relationshipType = null;
+                    for (RelationshipType type : d2.relationshipModule().relationshipTypes().blockingGet())
+                        if (type.uid().equals(relationship.relationshipType()))
+                            relationshipType = type;
+
+                    String relationshipTEIUid;
+                    RelationshipViewModel.RelationshipDirection direction;
+                    if (!teiUid.equals(relationship.from().trackedEntityInstance().trackedEntityInstance())) {
+                        relationshipTEIUid = relationship.from().trackedEntityInstance().trackedEntityInstance();
+                        direction = RelationshipViewModel.RelationshipDirection.FROM;
+                    } else {
+                        relationshipTEIUid = relationship.to().trackedEntityInstance().trackedEntityInstance();
+                        direction = RelationshipViewModel.RelationshipDirection.TO;
+                    }
+
+                    TrackedEntityInstance tei = d2.trackedEntityModule().trackedEntityInstances().withTrackedEntityAttributeValues().uid(relationshipTEIUid).blockingGet();
+                    List<TrackedEntityTypeAttribute> typeAttributes = d2.trackedEntityModule().trackedEntityTypeAttributes()
+                            .byTrackedEntityTypeUid().eq(tei.trackedEntityType())
+                            .byDisplayInList().isTrue()
+                            .blockingGet();
+                    List<String> attributeUids = new ArrayList<>();
+                    for (TrackedEntityTypeAttribute typeAttribute : typeAttributes)
+                        attributeUids.add(typeAttribute.trackedEntityAttribute().uid());
+                    List<TrackedEntityAttributeValue> attributeValues = d2.trackedEntityModule().trackedEntityAttributeValues().byTrackedEntityInstance().eq(tei.uid())
+                            .byTrackedEntityAttribute().in(attributeUids).blockingGet();
+
+                    return RelationshipViewModel.create(relationship, relationshipType, direction, relationshipTEIUid, attributeValues);
+                })
+                .toList().toFlowable();
+    }
+
+    @Override
+    public Single<Integer> getNoteCount() {
+        return d2.enrollmentModule().enrollments()
+                .byProgram().eq(programUid)
+                .byTrackedEntityInstance().eq(teiUid)
+                .withNotes()
+                .one()
+                .get()
+                .map(enrollment -> enrollment.notes() != null ? enrollment.notes().size() : 0);
     }
 }

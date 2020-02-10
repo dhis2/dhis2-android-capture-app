@@ -8,6 +8,7 @@ import androidx.paging.PagedList;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel;
 import org.hisp.dhis.android.core.common.State;
+import org.hisp.dhis.android.core.common.ValueTypeRenderingType;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.Program;
@@ -30,7 +31,7 @@ import io.reactivex.Observable;
 public interface SearchRepository {
 
     @NonNull
-    Observable<List<TrackedEntityAttribute>> programAttributes(String programId);
+    Observable<SearchProgramAttributes> programAttributes(String programId);
 
     Observable<List<Program>> programsWithRegistration(String programTypeId);
 

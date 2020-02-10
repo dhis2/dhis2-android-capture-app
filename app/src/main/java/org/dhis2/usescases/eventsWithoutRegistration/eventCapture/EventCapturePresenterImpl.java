@@ -87,6 +87,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     private int unsupportedFields;
     private int totalFields;
     private ConnectableFlowable<List<FieldViewModel>> fieldFlowable;
+    private PublishProcessor<Unit> notesCounterProcessor;
 
     @Override
     public String getLastFocusItem() {
@@ -123,7 +124,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
         progressProcessor = PublishProcessor.create();
         sectionAdjustProcessor = PublishProcessor.create();
         formAdjustProcessor = PublishProcessor.create();
-
+        notesCounterProcessor = PublishProcessor.create();
     }
 
     @Override
@@ -251,6 +252,16 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
         compositeDisposable.add(
                 eventCaptureRepository.eventSections()
                         .flatMap(sectionList -> fieldFlowable
+                                .map(fields->{
+                                    Iterator<FieldViewModel> iterator = fields.iterator();
+                                    while (iterator.hasNext()){
+                                        FieldViewModel field = iterator.next();
+                                        if(field instanceof DisplayViewModel){
+                                            iterator.remove();
+                                        }
+                                    }
+                                    return fields;
+                                })
                                 .map(fields -> {
                                     totalFields = fields.size();
                                     unsupportedFields = 0;
@@ -276,7 +287,10 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
 
                                             HashMap<String, Boolean> finalFields = new HashMap<>();
                                             for (FieldViewModel fieldViewModel : fieldViewModels) {
-                                                finalFields.put(fieldViewModel.optionSet() == null ? fieldViewModel.uid() : fieldViewModel.optionSet(), !DhisTextUtils.Companion.isEmpty(fieldViewModel.value()));
+                                                finalFields.put(fieldViewModel.optionSet() == null ?
+                                                        fieldViewModel.uid() :
+                                                        fieldViewModel.uid().concat("_").concat(fieldViewModel.optionSet()),
+                                                        !DhisTextUtils.Companion.isEmpty(fieldViewModel.value()));
                                             }
                                             for (String key : finalFields.keySet())
                                                 if (finalFields.get(key))
@@ -287,7 +301,10 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                                             int cont = 0;
                                             HashMap<String, Boolean> finalFields = new HashMap<>();
                                             for (FieldViewModel fieldViewModel : fields) {
-                                                finalFields.put(fieldViewModel.optionSet() == null ? fieldViewModel.uid() : fieldViewModel.optionSet(), !DhisTextUtils.Companion.isEmpty(fieldViewModel.value()));
+                                                finalFields.put(fieldViewModel.optionSet() == null ?
+                                                        fieldViewModel.uid() :
+                                                        fieldViewModel.uid().concat("_").concat(fieldViewModel.optionSet()),
+                                                        !DhisTextUtils.Companion.isEmpty(fieldViewModel.value()));
                                             }
                                             for (String key : finalFields.keySet())
                                                 if (finalFields.get(key))
@@ -386,7 +403,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
 
     @Override
     public void onBackClick() {
-       view.back();
+        view.back();
     }
 
     @Override
@@ -833,4 +850,29 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     }
 
     //endregion
+
+    @Override
+    public void initNoteCounter() {
+        if (!notesCounterProcessor.hasSubscribers()) {
+            compositeDisposable.add(
+                    notesCounterProcessor.startWith(new Unit())
+                            .flatMapSingle(unit ->
+                                    eventCaptureRepository.getNoteCount())
+                            .subscribeOn(schedulerProvider.io())
+                            .observeOn(schedulerProvider.ui())
+                            .subscribe(
+                                    numberOfNotes ->
+                                            view.updateNoteBadge(numberOfNotes),
+                                    Timber::e
+                            )
+            );
+        } else {
+            notesCounterProcessor.onNext(new Unit());
+        }
+    }
+
+    @Override
+    public void refreshTabCounters() {
+        initNoteCounter();
+    }
 }

@@ -24,6 +24,8 @@ public class TeiDashboardContracts {
         void handleEnrollmentDeletion(Boolean hasMoreEnrollments);
 
         void authorityErrorMessage();
+
+        void updateNoteBadge(int numberOfNotes);
     }
 
     public interface Presenter {
@@ -46,5 +48,18 @@ public class TeiDashboardContracts {
 
         void deleteEnrollment();
 
+        void initNoteCounter();
+
+        void refreshTabCounters();
+
+        int getProgramTheme(int appTheme);
+
+        void prefSaveCurrentProgram(String programUid);
+
+        String getPreviousDashboard();
+
+        void saveProgramTheme(int programTheme);
+
+        void removeProgramTheme();
     }
 }

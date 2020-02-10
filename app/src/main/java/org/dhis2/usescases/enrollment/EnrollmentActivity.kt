@@ -34,6 +34,9 @@ import org.dhis2.usescases.general.ActivityGlobalAbstract
 import org.dhis2.usescases.map.MapSelectorActivity
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity
 import org.dhis2.utils.Constants
+import org.dhis2.utils.Constants.CAMERA_REQUEST
+import org.dhis2.utils.Constants.GALLERY_REQUEST
+import org.dhis2.utils.Constants.RQ_QR_SCANNER
 import org.dhis2.utils.DatePickerUtils
 import org.dhis2.utils.DateUtils
 import org.dhis2.utils.DialogClickListener
@@ -145,24 +148,21 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
         binding.enrollmentDataText.text = getString(R.string.enrollment_data_hide)
         binding.enrollmentData.visibility = View.VISIBLE
         binding.enrollmentDataArrow.animate().scaleY(-1.0f).setDuration(0).start()
-    }
 
-    override fun onResume() {
-        super.onResume()
         presenter.init()
     }
 
-    override fun onPause() {
-        super.onPause()
+    override fun onDestroy() {
         presenter.onDettach()
+        super.onDestroy()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
-        when (requestCode) {
-            RQ_INCIDENT_GEOMETRY, RQ_ENROLLMENT_GEOMETRY -> {
-                if (resultCode == Activity.RESULT_OK) {
+        if(resultCode == Activity.RESULT_OK) {
+            when (requestCode) {
+                RQ_INCIDENT_GEOMETRY, RQ_ENROLLMENT_GEOMETRY -> {
                     handleGeometry(
                         FeatureType.valueOfFeatureType(
                             data!!.getStringExtra(MapSelectorActivity.LOCATION_TYPE_EXTRA)
@@ -170,31 +170,32 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
                         data.getStringExtra(MapSelectorActivity.DATA_EXTRA), requestCode
                     )
                 }
-            }
-            Constants.GALLERY_REQUEST -> {
-                if (resultCode == Activity.RESULT_OK) {
+                GALLERY_REQUEST -> {
                     try {
                         val imageUri = data?.data
                         presenter.saveFile(
                             uuid,
                             FileResourcesUtil.getFileFromGallery(this, imageUri).path
                         )
+                        presenter.updateFields()
                     } catch (e: Exception) {
                         e.printStackTrace()
                         Toast.makeText(this, "Something went wrong", Toast.LENGTH_LONG).show()
                     }
                 }
-            }
-            Constants.CAMERA_REQUEST -> {
-                if (resultCode == Activity.RESULT_OK) {
+                CAMERA_REQUEST -> {
                     val file = File(
                         FileResourceDirectoryHelper.getFileResourceDirectory(this),
                         "tempFile.png"
                     )
                     presenter.saveFile(uuid, if (file.exists()) file.path else null)
+                    presenter.updateFields()
                 }
+                RQ_QR_SCANNER -> {
+                    scanTextView.updateScanResult(data!!.getStringExtra(Constants.EXTRA_DATA))
+                }
+                RQ_EVENT -> openDashboard(presenter.getEnrollment().uid()!!)
             }
-            RQ_EVENT -> openDashboard(presenter.getEnrollment().uid()!!)
         }
     }
 
@@ -311,8 +312,14 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
 
         if (geometry != null) {
             when (requestCode) {
-                RQ_ENROLLMENT_GEOMETRY -> presenter.saveEnrollmentGeometry(geometry)
-                RQ_INCIDENT_GEOMETRY -> presenter.saveTeiGeometry(geometry)
+                RQ_ENROLLMENT_GEOMETRY -> {
+                    presenter.saveEnrollmentGeometry(geometry)
+                    binding.coordinatesView.updateLocation(geometry)
+                }
+                RQ_INCIDENT_GEOMETRY -> {
+                    presenter.saveTeiGeometry(geometry)
+                    binding.teiCoordinatesView.updateLocation(geometry)
+                }
             }
         }
     }

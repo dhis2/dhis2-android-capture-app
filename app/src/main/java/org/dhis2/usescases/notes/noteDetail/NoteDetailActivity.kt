@@ -3,12 +3,16 @@ package org.dhis2.usescases.notes.noteDetail
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import androidx.core.app.ActivityCompat
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ObservableBoolean
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import java.text.ParseException
+import javax.inject.Inject
 import org.dhis2.Bindings.app
 import org.dhis2.Bindings.initials
 import org.dhis2.Bindings.placeHolder
+import org.dhis2.Bindings.toDateSpan
 import org.dhis2.R
 import org.dhis2.data.tuples.Trio
 import org.dhis2.databinding.ActivityNoteDetailBinding
@@ -17,8 +21,6 @@ import org.dhis2.usescases.notes.NoteType
 import org.dhis2.utils.Constants
 import org.dhis2.utils.DateUtils
 import org.hisp.dhis.android.core.note.Note
-import java.text.ParseException
-import javax.inject.Inject
 
 class NoteDetailActivity : ActivityGlobalAbstract(), NoteDetailView, TextWatcher {
 
@@ -72,18 +74,12 @@ class NoteDetailActivity : ActivityGlobalAbstract(), NoteDetailView, TextWatcher
     }
 
     override fun setNote(note: Note) {
+        val storedBy = "@${note.storedBy()}"
         binding.userInit.text = note.storedBy().initials
-        binding.storeBy.text = note.storedBy()
+        binding.storeBy.text = storedBy
         binding.note.text = note.value()
         note.storedDate()?.let {
-            val formattedDate = try {
-                val date = DateUtils.databaseDateFormat().parse(note.storedDate())
-                DateUtils.uiDateFormat().format(date)
-            } catch (e: ParseException) {
-                e.printStackTrace()
-                note.storedDate()
-            }
-            binding.noteTime.text = formattedDate
+            binding.noteTime.text = it.toDateSpan(this)
         }
         binding.executePendingBindings()
     }
@@ -94,14 +90,14 @@ class NoteDetailActivity : ActivityGlobalAbstract(), NoteDetailView, TextWatcher
 
     override fun noteSaved() {
         showToast(getString(R.string.note_saved))
-        finish()
+        ActivityCompat.finishAfterTransition(this)
     }
 
     override fun back() {
-        if (isNewNote.get() && binding.noteText.text.toString().isNotEmpty() ) {
+        if (isNewNote.get() && binding.noteText.text.toString().isNotEmpty()) {
             showDiscardDialog()
         } else {
-            finish()
+            supportFinishAfterTransition()
         }
     }
 
@@ -110,7 +106,7 @@ class NoteDetailActivity : ActivityGlobalAbstract(), NoteDetailView, TextWatcher
     }
 
     override fun afterTextChanged(editable: Editable?) {
-        if(!editable.toString().isNullOrEmpty()){
+        if (!editable.toString().isNullOrEmpty()) {
             showButtons.set(true)
         } else {
             showButtons.set(false)
