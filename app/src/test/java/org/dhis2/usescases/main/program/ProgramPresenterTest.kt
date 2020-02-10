@@ -41,8 +41,8 @@ class ProgramPresenterTest {
         whenever(filterManager.asFlowable()) doReturn mock()
         whenever(filterManager.asFlowable().startWith(filterManager)) doReturn filterManagerFlowable
         whenever(filterManager.ouTreeFlowable()) doReturn Flowable.just(true)
-        whenever(homeRepository.programModels(any(), any(), any())) doReturn programsFlowable
-        whenever(homeRepository.aggregatesModels(any(), any(), any())) doReturn Flowable.empty()
+        whenever(homeRepository.programModels(any(), any(), any(), any())) doReturn programsFlowable
+        whenever(homeRepository.aggregatesModels(any(), any(), any(), any())) doReturn Flowable.empty()
 
         presenter.init()
         schedulers.io().advanceTimeBy(1, TimeUnit.SECONDS)
@@ -57,13 +57,19 @@ class ProgramPresenterTest {
 
         whenever(filterManager.asFlowable()) doReturn mock()
         whenever(filterManager.asFlowable().startWith(filterManager)) doReturn filterManagerFlowable
-
+        whenever(
+            homeRepository.programModels(
+                any(), any(),
+                any(), any()
+            )
+        ) doReturn Flowable.error(Exception(""))
         whenever(
             homeRepository.aggregatesModels(
                 any(), any(),
-                any()
+                any(), any()
             )
-        ) doReturn Flowable.error(Exception(""))
+        )doReturn mock()
+
         whenever(filterManager.ouTreeFlowable()) doReturn Flowable.just(true)
 
         presenter.init()

@@ -562,7 +562,7 @@
     <string name="image_selected">Image selected</string>
     <string name="show_in_map">Show in map</string>
     <string name="show_list">Show list</string>
-
+    
     <!--region TRACKER IMPORT CONFLICT MESSAGES-->
     <string name="value_required_but_not_provided">%s is mandatory but has not been provided.</string>
     <string name="polygon_captured">Polygon captured</string>
@@ -583,6 +583,7 @@
     <string name="filters_title_org_unit">Org. Unit</string>
     <string name="filters_title_status">Status</string>
     <string name="filters_title_state">Sync</string>
+    <string name="filters_title_assigned">Assigned to me</string>
     <string name="filter_period_today">Today</string>
     <string name="filter_period_yesterday">Yesterday</string>
     <string name="filter_period_tomorrow">Tomorrow</string>
@@ -618,6 +619,7 @@
     <string name="event_date_in_future_message">This event can\'t have a date in the future. Please change it.</string>
     <string name="change_event_date">Change date</string>
     <string name="go_back">Go back</string>
+    <string name="data_sets">Data sets</string>
     <string name="no_notes">No notes</string>
     <string name="no_add_notes">No more notes can be added</string>
     <string name="new_note">New note</string>
