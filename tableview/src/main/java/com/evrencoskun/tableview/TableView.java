@@ -121,7 +121,6 @@ public class TableView extends FrameLayout implements ITableView{
     private boolean mIsSortable;
     private int mHeaderCount = 1;
     private List<CellRecyclerView> mBackupHeaders = new ArrayList<>();
-    private AbstractTableAdapter.OnScale scaleListener;
 
     private RecyclerView.RecycledViewPool headerPool;
     private RecyclerView.RecycledViewPool rowPool;
@@ -129,6 +128,7 @@ public class TableView extends FrameLayout implements ITableView{
     private ImageView rowHeaderWidthSelector;
     private boolean changingWidth;
     private float currentDx = 0f;
+    private OnWidthSelectorListener headerWidthSelectorListener;
 
     public TableView(@NonNull Context context) {
         super(context);
@@ -283,28 +283,13 @@ public class TableView extends FrameLayout implements ITableView{
             }
         });
 
-        rowHeaderWidthSelector.setOnTouchListener(new OnTouchListener() {
+        rowHeaderWidthSelector.setOnClickListener(new OnClickListener() {
             @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                float x = event.getRawX();
-                switch (event.getAction()) {
-                    case MotionEvent.ACTION_DOWN:
-                        changingWidth = true;
-                        Log.d("WIDTH_CHANGE", "STARTED");
-                        break;
-                    case MotionEvent.ACTION_UP:
-                        changingWidth = false;
-                        Log.d("WIDTH_CHANGE", "FINISHED");
-                        break;
-                    case MotionEvent.ACTION_MOVE:
-                        float dx = x - mRowHeaderWidth;
-                        if (changingWidth && Math.abs(dx) != Math.abs(currentDx) && Math.abs(dx) > 16) {
-                            setRowHeaderWidth(mRowHeaderWidth + (int) dx);
-                            currentDx = dx;
-                        }
-                        break;
+            public void onClick(View v) {
+                if(headerWidthSelectorListener!=null) {
+                    rowHeaderWidthSelector.setVisibility(View.GONE);
+                    headerWidthSelectorListener.OnWidthSelectorClick(TableView.this);
                 }
-                return true;
             }
         });
     }
@@ -414,13 +399,12 @@ public class TableView extends FrameLayout implements ITableView{
     protected ImageView createRowHeaderWidthSelector() {
         if (rowHeaderWidthSelector == null) {
             rowHeaderWidthSelector = new ImageView(getContext());
-            rowHeaderWidthSelector.setImageResource(R.drawable.ic_chevron_right_black_24dp);
-            rowHeaderWidthSelector.setBackgroundColor(Color.GRAY);
+            rowHeaderWidthSelector.setImageResource(R.drawable.ic_swap_horizontal);
         } else {
-            LayoutParams layoutParams = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams
-                    .WRAP_CONTENT);
-            layoutParams.leftMargin = mRowHeaderWidth - 12;
-            layoutParams.topMargin = mHeaderHeight * mHeaderCount;
+            float widthInDp = 24 * (getContext().getResources().getDisplayMetrics().density);
+            LayoutParams layoutParams = new LayoutParams((int)widthInDp, (int)widthInDp);
+            layoutParams.leftMargin = mRowHeaderWidth - (int)widthInDp/2;
+            layoutParams.topMargin = mHeaderHeight * mHeaderCount- (int)widthInDp/2;
             rowHeaderWidthSelector.setLayoutParams(layoutParams);
         }
         return rowHeaderWidthSelector;
@@ -899,6 +883,10 @@ public class TableView extends FrameLayout implements ITableView{
         return mHeaderWidth;
     }
 
+    public int getRowHeaderWidth(){
+        return mRowHeaderWidth;
+    }
+
     /**
      * set RowHeaderWidth
      *
@@ -956,10 +944,19 @@ public class TableView extends FrameLayout implements ITableView{
             }
         }
 
+        if(rowHeaderWidthSelector!=null){
+            LayoutParams layoutParams = (LayoutParams) rowHeaderWidthSelector.getLayoutParams();
+            layoutParams.leftMargin = mRowHeaderWidth - layoutParams.width/2;
+            rowHeaderWidthSelector.setLayoutParams(layoutParams);
+            rowHeaderWidthSelector.requestLayout();
+        }
+
         if (getAdapter() != null) {
             // update CornerView size
             getAdapter().setRowHeaderWidth(rowHeaderWidth);
         }
+
+        rowHeaderWidthSelector.setVisibility(VISIBLE);
     }
 
     public void setColumnWidth(int columnPosition, int width) {
@@ -992,5 +989,13 @@ public class TableView extends FrameLayout implements ITableView{
 
     public View getCornerView() {
         return getAdapter().getCornerView();
+    }
+
+    public void addOnWidthSelectorListener(OnWidthSelectorListener headerWidthSelectorListener){
+        this.headerWidthSelectorListener = headerWidthSelectorListener;
+    }
+
+    public interface OnWidthSelectorListener{
+        void OnWidthSelectorClick(TableView tableView);
     }
 }

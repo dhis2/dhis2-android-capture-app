@@ -24,7 +24,8 @@ class TableRecyclerAdapter(
     private val dataSet: DataSet,
     private val section: Section,
     private var tableList: MutableList<DataSetTable> = ArrayList(),
-    var adapterList: MutableList<DataSetTableAdapter> = ArrayList()
+    var adapterList: MutableList<DataSetTableAdapter> = ArrayList(),
+    private val widthSelectorListener: TableView.OnWidthSelectorListener
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private var isLoading = true
@@ -39,6 +40,7 @@ class TableRecyclerAdapter(
                     context,
                     ColorUtils.ColorType.PRIMARY
                 )
+                tableView.addOnWidthSelectorListener(widthSelectorListener)
                 TableViewHolder(tableView)
             }
             else ->
@@ -79,10 +81,16 @@ class TableRecyclerAdapter(
                 Typeface.DEFAULT
             ) + 10.px + 18.px
             holder.tableView.setRowHeaderWidth(
-                if (desiredWidth < Resources.getSystem().displayMetrics.widthPixels / 3) {
-                    desiredWidth
-                } else {
-                    Resources.getSystem().displayMetrics.widthPixels / 3
+                when {
+                    desiredWidth < Resources.getSystem().displayMetrics.widthPixels / 3 -> {
+                        desiredWidth
+                    }
+                    desiredWidth / 2 < Resources.getSystem().displayMetrics.widthPixels / 3 -> {
+                        desiredWidth / 2
+                    }
+                    else -> {
+                        Resources.getSystem().displayMetrics.widthPixels / 3
+                    }
                 }
             )
 

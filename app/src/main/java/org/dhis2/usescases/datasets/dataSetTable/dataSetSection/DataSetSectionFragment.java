@@ -1,9 +1,11 @@
 package org.dhis2.usescases.datasets.dataSetTable.dataSetSection;
 
 import android.content.Context;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -30,6 +32,7 @@ import org.dhis2.databinding.TableViewCornerLayoutBinding;
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableActivity;
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
 import org.dhis2.utils.Constants;
+import org.dhis2.utils.Dhis2LinearLayoutManager;
 import org.hisp.dhis.android.core.dataset.DataSet;
 import org.hisp.dhis.android.core.dataset.Section;
 import org.jetbrains.annotations.NotNull;
@@ -49,7 +52,7 @@ import static org.dhis2.utils.analytics.AnalyticsConstants.ZOOM_TABLE;
  * QUADRAM. Created by ppajuelo on 02/10/2018.
  */
 
-public class DataSetSectionFragment extends FragmentGlobalAbstract implements DataValueContract.View {
+public class DataSetSectionFragment extends FragmentGlobalAbstract implements DataValueContract.View, TableView.OnWidthSelectorListener {
 
     private FragmentDatasetSectionBinding binding;
     private DataSetTableActivity activity;
@@ -66,6 +69,8 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
     private DataSet dataSet;
     private Section section;
     private int tablesCount;
+    private float currentDx;
+    private float currentWidthPosition;
 
     @NonNull
     public static DataSetSectionFragment create(@NonNull String sectionUid, boolean accessDataWrite, String dataSetUid) {
@@ -90,6 +95,7 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_dataset_section, container, false);
+        binding.tableRecycler.setLayoutManager(new Dhis2LinearLayoutManager(activity));
         currentTablePosition.observe(this, this::loadHeader);
         binding.setPresenter(presenterFragment);
         sectionName = requireArguments().getString(Constants.DATA_SET_SECTION);
@@ -119,7 +125,7 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
     @Override
     public void setTableData(DataSetTable dataSetTable) {
         if (tableAdapter == null) {
-            tableAdapter = new TableRecyclerAdapter(getAbstracContext(), dataSet, section, new ArrayList<>(), new ArrayList<>());
+            tableAdapter = new TableRecyclerAdapter(getAbstracContext(), dataSet, section, new ArrayList<>(), new ArrayList<>(), this);
             binding.tableRecycler.setAdapter(tableAdapter);
         }
 
@@ -165,7 +171,7 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
     }
 
     private void loadHeader(int position) {
-        if(tableAdapter==null || tableAdapter.getTables().isEmpty()){
+        if (tableAdapter == null || tableAdapter.getTables().isEmpty()) {
             return;
         }
         TableView tableView = tableAdapter.getTables().get(position);
@@ -285,5 +291,43 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
         if (modified) {
             activity.update();
         }
+    }
+
+    @Override
+    public void OnWidthSelectorClick(TableView tableView) {
+        binding.widthSelector.setVisibility(View.VISIBLE);
+        ((Dhis2LinearLayoutManager)binding.tableRecycler.getLayoutManager()).setScrollEnabled(false);
+        activity.setViewPagerScrolling(false);
+        binding.tableRecycler.setForeground(new ColorDrawable(ContextCompat.getColor(getContext(), R.color.colorAccentAlpha)));
+        binding.widthSelector.post(() -> showWidthEditorAt(tableView, tableView.getRowHeaderWidth()));
+
+    }
+
+    private void showWidthEditorAt(TableView tableView, int widthEditorPosition) {
+        binding.widthSelector.setX(widthEditorPosition - binding.widthSelector.getMeasuredWidth() / 2);
+        currentDx = 0;
+        currentWidthPosition = widthEditorPosition;
+        binding.widthSelector.setOnTouchListener((v, event) -> {
+            float x = event.getRawX();
+            switch (event.getAction()) {
+                case MotionEvent.ACTION_UP:
+                    tableView.setRowHeaderWidth((int) currentWidthPosition + binding.widthSelector.getMeasuredWidth() / 2);
+                    binding.widthSelector.setVisibility(View.GONE);
+                    activity.setViewPagerScrolling(true);
+                    binding.tableRecycler.setForeground(null);
+                    ((Dhis2LinearLayoutManager)binding.tableRecycler.getLayoutManager()).setScrollEnabled(true);
+                    break;
+                case MotionEvent.ACTION_MOVE:
+                    float dx = x - currentWidthPosition;
+                    if (Math.abs(dx) != Math.abs(currentDx) && Math.abs(dx) > 16) {
+                        float nextPosition = currentWidthPosition + (int) dx;
+                        binding.widthSelector.setX(nextPosition);
+                        currentWidthPosition = nextPosition;
+                        currentDx = dx;
+                    }
+                    break;
+            }
+            return true;
+        });
     }
 }

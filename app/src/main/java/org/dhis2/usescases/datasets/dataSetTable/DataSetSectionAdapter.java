@@ -6,9 +6,11 @@ import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.ImageSpan;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentStatePagerAdapter;
+import androidx.viewpager2.adapter.FragmentStateAdapter;
 
 import org.dhis2.R;
 import org.dhis2.usescases.datasets.dataSetTable.dataSetSection.DataSetSectionFragment;
@@ -20,21 +22,23 @@ import java.util.List;
  * QUADRAM. Created by ppajuelo on 02/10/2018.
  */
 
-public final class DataSetSectionAdapter extends FragmentStatePagerAdapter {
+public final class DataSetSectionAdapter extends FragmentStateAdapter {
 
     private List<String> sections;
     private boolean accessDataWrite;
     private String dataSetUid;
-    private Context context;
     private List<DataSetSectionFragment> fragments;
 
-    DataSetSectionAdapter(FragmentManager fm, boolean accessDataWrite, String dataSetUid, Context context) {
-        super(fm,BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
+    DataSetSectionAdapter(FragmentActivity activity, boolean accessDataWrite, String dataSetUid) {
+        super(activity);
         fragments = new ArrayList<>();
         sections = new ArrayList<>();
         this.accessDataWrite = accessDataWrite;
         this.dataSetUid = dataSetUid;
-        this.context = context;
+    }
+
+    public boolean hasFragmentAt(int position){
+        return position < fragments.size();
     }
 
     public DataSetSectionFragment getCurrentItem(int position) {
@@ -42,7 +46,7 @@ public final class DataSetSectionAdapter extends FragmentStatePagerAdapter {
     }
 
     @Override
-    public Fragment getItem(int position) {
+    public Fragment createFragment(int position) {
         DataSetSectionFragment fragment = DataSetSectionFragment.create(sections.get(position), accessDataWrite, dataSetUid);
         fragments.add(fragment);
         return fragment;
@@ -54,22 +58,7 @@ public final class DataSetSectionAdapter extends FragmentStatePagerAdapter {
     }
 
     @Override
-    public int getCount() {
+    public int getItemCount() {
         return sections.size();
     }
-
-    @Override
-    public CharSequence getPageTitle(int position) {
-        SpannableString sb = new SpannableString(sections.get(position) + "  ");
-
-        if (fragments.size() > position && (fragments.get(position).currentNumTables()  > 1)) {
-            Drawable image = context.getResources().getDrawable(R.drawable.ic_arrow_down_white);
-            image.setBounds(0, 0, image.getIntrinsicWidth(), image.getIntrinsicHeight());
-            ImageSpan imageSpan = new ImageSpan(image, ImageSpan.ALIGN_BOTTOM);
-            sb.setSpan(imageSpan, sb.length() - 1, sb.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        }
-        return sb;
-    }
-
-
 }
