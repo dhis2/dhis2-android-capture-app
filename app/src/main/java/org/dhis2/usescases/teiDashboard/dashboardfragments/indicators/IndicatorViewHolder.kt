@@ -11,7 +11,9 @@ import org.dhis2.utils.Constants
 import org.dhis2.utils.customviews.CustomDialog
 import org.hisp.dhis.android.core.program.ProgramIndicator
 
-class IndicatorViewHolder(val binding: ItemIndicatorBinding) : RecyclerView.ViewHolder(binding.root) {
+class IndicatorViewHolder(
+    val binding: ItemIndicatorBinding
+) : RecyclerView.ViewHolder(binding.root) {
 
     fun bind(programIndicatorModel: Trio<ProgramIndicator, String, String>) {
         if (programIndicatorModel.val0() == null) {

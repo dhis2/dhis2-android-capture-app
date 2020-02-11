@@ -306,7 +306,7 @@ class EnrollmentPresenterImpl(
         }
     }
 
-    fun updateFields(){
+    fun updateFields() {
         fieldsFlowable.onNext(true)
     }
 
