@@ -23,14 +23,10 @@ class AppTest : App() {
 
     @Override
     override fun setUpServerComponent() {
-        val keyStoreRobot = TestingInjector.createKeyStoreRobot(baseContext)
-        keyStoreRobot.apply {
-            setData(USERNAME,"android")
-            setData(PASSWORD,"Android123")
-        }
         D2Manager.blockingInstantiateD2(ServerModule.getD2Configuration(this))
 
         serverComponent = appComponent.plus(ServerModule())
+
         setUpUserComponent()
     }
 
@@ -45,6 +41,16 @@ class AppTest : App() {
 
         if (userManager != null) {
             userComponent = serverComponent!!.plus(UserModule())
+        }
+
+          val keyStoreRobot = TestingInjector.createKeyStoreRobot(baseContext)
+            keyStoreRobot.apply {
+                setData(USERNAME,"android")
+                setData(PASSWORD,"Android123")
+            }
+        serverComponent?.let {
+            val userManager = it.userManager()
+            userManager.logIn("android","Android123","any")
         }
     }
 

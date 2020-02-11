@@ -34,8 +34,8 @@ class MainTest : BaseTest() {
         Thread.sleep(10000)
     }
 
-    @Test
-    fun loginButtonShouldBeDisplayedWhenAllFieldsAreFilled2() {
+//    @Test
+//    fun loginButtonShouldBeDisplayedWhenAllFieldsAreFilled2() {
     //    startActivity()
      //   Thread.sleep(2000)
 
@@ -51,13 +51,8 @@ class MainTest : BaseTest() {
         // )
 
         //    onView(withId(R.id.login)).check(matches(isDisplayed()))
-    }
+ //   }
 
-    @Test
-    fun loginButtonShouldBeDisplayedWhenAllFieldsAreFilled3() {
-    //    startActivity()
-    //    Thread.sleep(2000)
-    }
 
     fun startActivity(){
         rule.launchActivity(null)
