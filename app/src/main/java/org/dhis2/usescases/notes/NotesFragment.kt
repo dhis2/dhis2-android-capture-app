@@ -100,6 +100,8 @@ class NotesFragment : FragmentGlobalAbstract(), NotesView, NoteItemClickListener
         savedInstanceState: Bundle?
     ): View? {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_notes, container, false)
+
+        binding.swiperefresh.setOnRefreshListener { presenter.noteProcessor.onNext(true) }
         noteAdapter = NotesAdapter(this)
         binding.notesRecycler.adapter = noteAdapter
         binding.addNoteButton.setOnClickListener {
@@ -163,12 +165,14 @@ class NotesFragment : FragmentGlobalAbstract(), NotesView, NoteItemClickListener
     }
 
     override fun swapNotes(notes: List<Note>) {
+        binding.swiperefresh.isRefreshing = false
         binding.noNotesLayout.visibility = View.GONE
         binding.notesRecycler.visibility = View.VISIBLE
         noteAdapter.setItems(notes)
     }
 
     override fun setEmptyNotes() {
+        binding.swiperefresh.isRefreshing = false
         binding.noNotesLayout.visibility = View.VISIBLE
         binding.notesRecycler.visibility = View.GONE
     }

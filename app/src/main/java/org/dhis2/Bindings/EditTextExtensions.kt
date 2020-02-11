@@ -3,6 +3,7 @@ package org.dhis2.Bindings
 import android.view.MotionEvent
 import android.view.View
 import android.widget.EditText
+import android.widget.TextView
 import androidx.core.content.ContextCompat
 import com.google.android.material.textfield.TextInputEditText
 import org.dhis2.R
@@ -31,4 +32,8 @@ fun TextInputEditText.placeHolder(placeholder: String) {
             this.hint = ""
         }
     }
+}
+
+fun TextView.setDateInterval(string: String?) {
+    text = string?.toDateSpan(context)
 }

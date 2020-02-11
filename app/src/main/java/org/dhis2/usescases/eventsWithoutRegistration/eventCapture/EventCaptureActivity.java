@@ -4,6 +4,7 @@ import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.GestureDetector;
@@ -19,6 +20,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.databinding.DataBindingUtil;
 
+import com.google.android.material.badge.BadgeDrawable;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.tabs.TabLayout;
@@ -108,6 +110,13 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
                 getIntent().getStringExtra(PROGRAM_UID),
                 getIntent().getStringExtra(Constants.EVENT_UID)
         ));
+        presenter.initNoteCounter();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        presenter.refreshTabCounters();
     }
 
     @Override
@@ -585,5 +594,15 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
                 .setNegativeButton(R.string.go_back, (dialogInterface, i) -> back())
                 .setCancelable(false)
                 .show();
+    }
+
+    @Override
+    public void updateNoteBadge(int numberOfNotes) {
+        BadgeDrawable badge = binding.eventTabLayout.getTabAt(binding.eventTabLayout.getTabCount() - 1).getOrCreateBadge();
+        badge.setVisible(numberOfNotes > 0);
+        badge.setBackgroundColor(Color.WHITE);
+        badge.setBadgeTextColor(ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.PRIMARY));
+        badge.setNumber(numberOfNotes);
+        badge.setMaxCharacterCount(3);
     }
 }

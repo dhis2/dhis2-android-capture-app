@@ -1,12 +1,17 @@
 package org.dhis2.usescases.teiDashboard;
 
+import org.dhis2.data.prefs.PreferenceProvider;
 import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.utils.AuthorityException;
+import org.dhis2.utils.Constants;
 import org.dhis2.utils.analytics.AnalyticsHelper;
+import org.hisp.dhis.android.core.common.Unit;
+import org.hisp.dhis.android.core.constant.Constant;
 import org.hisp.dhis.android.core.program.Program;
 
 import io.reactivex.Observable;
 import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.processors.PublishProcessor;
 import timber.log.Timber;
 
 import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
@@ -22,6 +27,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
     private final DashboardRepository dashboardRepository;
     private final SchedulerProvider schedulerProvider;
     private final AnalyticsHelper analyticsHelper;
+    private final PreferenceProvider preferenceProvider;
     private TeiDashboardContracts.View view;
 
     private String teiUid;
@@ -29,15 +35,19 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
 
     public CompositeDisposable compositeDisposable;
     public DashboardProgramModel dashboardProgramModel;
+    private PublishProcessor<Unit> notesCounterProcessor;
 
-    public TeiDashboardPresenter(TeiDashboardContracts.View view,  String teiUid, String programUid, DashboardRepository dashboardRepository, SchedulerProvider schedulerProvider, AnalyticsHelper analyticsHelper) {
+
+    public TeiDashboardPresenter(TeiDashboardContracts.View view, String teiUid, String programUid, DashboardRepository dashboardRepository, SchedulerProvider schedulerProvider, AnalyticsHelper analyticsHelper, PreferenceProvider preferenceProvider) {
         this.view = view;
         this.teiUid = teiUid;
         this.programUid = programUid;
         this.analyticsHelper = analyticsHelper;
         this.dashboardRepository = dashboardRepository;
         this.schedulerProvider = schedulerProvider;
+        this.preferenceProvider = preferenceProvider;
         compositeDisposable = new CompositeDisposable();
+        notesCounterProcessor = PublishProcessor.create();
     }
 
     @Override
@@ -105,7 +115,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
                         .observeOn(schedulerProvider.ui())
                         .subscribe(
                                 canDelete -> {
-                                    if(canDelete){
+                                    if (canDelete) {
                                         analyticsHelper.setEvent(DELETE_TEI, CLICK, DELETE_TEI);
                                         view.handleTEIdeletion();
                                     } else {
@@ -160,4 +170,53 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
         view.showDescription(description);
     }
 
+    @Override
+    public void initNoteCounter() {
+        if (!notesCounterProcessor.hasSubscribers()) {
+            compositeDisposable.add(
+                    notesCounterProcessor.startWith(new Unit())
+                            .flatMapSingle(unit ->
+                                    dashboardRepository.getNoteCount())
+                            .subscribeOn(schedulerProvider.io())
+                            .observeOn(schedulerProvider.ui())
+                            .subscribe(
+                                    numberOfNotes ->
+                                            view.updateNoteBadge(numberOfNotes),
+                                    Timber::e
+                            )
+            );
+        } else {
+            notesCounterProcessor.onNext(new Unit());
+        }
+    }
+
+    @Override
+    public void refreshTabCounters() {
+        initNoteCounter();
+    }
+
+    @Override
+    public int getProgramTheme(int appTheme) {
+        return preferenceProvider.getInt(Constants.PROGRAM_THEME, preferenceProvider.getInt(Constants.THEME, appTheme));
+    }
+
+    @Override
+    public void prefSaveCurrentProgram(String programUid) {
+        preferenceProvider.setValue(Constants.PREVIOUS_DASHBOARD_PROGRAM, programUid);
+    }
+
+    @Override
+    public String getPreviousDashboard() {
+        return preferenceProvider.getString(Constants.PREVIOUS_DASHBOARD_PROGRAM, null);
+    }
+
+    @Override
+    public void saveProgramTheme(int programTheme) {
+        preferenceProvider.setValue(Constants.PROGRAM_THEME,programTheme);
+    }
+
+    @Override
+    public void removeProgramTheme() {
+        preferenceProvider.removeValue(Constants.PROGRAM_THEME);
+    }
 }

@@ -22,9 +22,12 @@ import org.dhis2.utils.filters.FilterManager;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper;
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope;
+import org.hisp.dhis.android.core.common.AssignedUserMode;
 import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.common.ValueType;
+import org.hisp.dhis.android.core.common.ValueTypeDeviceRendering;
+import org.hisp.dhis.android.core.common.ValueTypeRenderingType;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.android.core.enrollment.EnrollmentCreateProjection;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
@@ -105,17 +108,35 @@ public class SearchRepositoryImpl implements SearchRepository {
 
     @NonNull
     @Override
-    public Observable<List<TrackedEntityAttribute>> programAttributes(String programId) {
-        return d2.programModule().programTrackedEntityAttributes().byProgram().eq(programId).orderBySortOrder(RepositoryScope.OrderByDirection.ASC).get().toObservable()
-                .flatMap(attributes -> {
-                    List<String> uids = new ArrayList<>();
-                    for (ProgramTrackedEntityAttribute pteAttribute : attributes) {
-                        if (pteAttribute.searchable())
-                            uids.add(pteAttribute.trackedEntityAttribute().uid());
-                        else if (d2.trackedEntityModule().trackedEntityAttributes().byUid().eq(pteAttribute.trackedEntityAttribute().uid()).one().blockingGet().unique())
-                            uids.add(pteAttribute.trackedEntityAttribute().uid());
+    public Observable<SearchProgramAttributes> programAttributes(String programId) {
+        return d2.programModule().programTrackedEntityAttributes()
+                .withRenderType()
+                .byProgram().eq(programId)
+                .orderBySortOrder(RepositoryScope.OrderByDirection.ASC).get().toObservable()
+                .map(programAttributes -> {
+                    List<TrackedEntityAttribute> attributes = new ArrayList<>();
+                    List<ValueTypeDeviceRendering> renderings = new ArrayList<>();
+
+                    for (ProgramTrackedEntityAttribute pteAttribute : programAttributes) {
+                        String trackedEntityAttribyteUid = pteAttribute.trackedEntityAttribute().uid();
+                        ValueTypeDeviceRendering deviceRendering = null;
+                        if (pteAttribute.renderType() != null && pteAttribute.renderType().mobile() != null) {
+                            deviceRendering = pteAttribute.renderType().mobile();
+                        }
+                        boolean isSearcheable = pteAttribute.searchable();
+                        boolean isUnique = d2.trackedEntityModule().trackedEntityAttributes()
+                                .uid(trackedEntityAttribyteUid)
+                                .blockingGet().unique() == Boolean.TRUE;
+
+                        if (isSearcheable || isUnique) {
+                            attributes.add(
+                                    d2.trackedEntityModule().trackedEntityAttributes().uid(
+                                            trackedEntityAttribyteUid)
+                                            .blockingGet());
+                            renderings.add(deviceRendering);
+                        }
                     }
-                    return Observable.just(d2.trackedEntityModule().trackedEntityAttributes().byUid().in(uids).blockingGet());
+                    return new SearchProgramAttributes(attributes, renderings);
                 });
     }
 
@@ -138,6 +159,7 @@ public class SearchRepositoryImpl implements SearchRepository {
                                                                      @Nonnull List<State> states,
                                                                      @NonNull List<EventStatus> eventStatuses,
                                                                      @Nullable HashMap<String, String> queryData,
+                                                                     boolean assignedToMe,
                                                                      boolean isOnline) {
 
         TrackedEntityInstanceQueryCollectionRepository trackedEntityInstanceQuery = d2.trackedEntityModule().trackedEntityInstanceQuery();
@@ -194,14 +216,16 @@ public class SearchRepositoryImpl implements SearchRepository {
                 trackedEntityInstanceQuery = trackedEntityInstanceQuery.byAttribute(dataId).like(dataValue);
         }
 
+        if(assignedToMe){
+            trackedEntityInstanceQuery = trackedEntityInstanceQuery.byAssignedUserMode().eq(AssignedUserMode.CURRENT);
+        }
+
         if (isOnline && states.isEmpty()) {
-            //TODO: SEARCH OFFLINEFIRST
             dataSource = trackedEntityInstanceQuery.offlineFirst().getDataSource()
                     .mapByPage(list -> filterByStatus(list, eventStatuses))
                     .mapByPage(this::filterDeleted)
                     .map(tei -> transform(tei, selectedProgram, true));
         } else {
-            //TODO: OFFLINE
             dataSource = trackedEntityInstanceQuery.offlineOnly().getDataSource() //TODO: ASK SDK TO FILTER BY BOTH ENROLLMENT DATE AND EVENT DATES
                     .mapByPage(list -> filterByState(list, states))
                     .mapByPage(list -> filterByPeriod(list, periods))
@@ -553,6 +577,7 @@ public class SearchRepositoryImpl implements SearchRepository {
         return Observable.fromCallable(() -> d2.trackedEntityModule().trackedEntityTypes().withTrackedEntityTypeAttributes().byUid().eq(teiType).one().blockingGet().trackedEntityTypeAttributes())
                 .flatMap(attributes -> {
                     List<String> uids = new ArrayList<>();
+                    Collections.sort(attributes, (one, two) -> one.sortOrder().compareTo(two.sortOrder()));
                     for (TrackedEntityTypeAttribute tetAttribute : attributes) {
                         if (tetAttribute.searchable())
                             uids.add(tetAttribute.trackedEntityAttribute().uid());

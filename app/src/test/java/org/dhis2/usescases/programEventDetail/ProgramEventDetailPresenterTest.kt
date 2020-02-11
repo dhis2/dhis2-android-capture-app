@@ -72,10 +72,10 @@ class ProgramEventDetailPresenterTest {
         whenever(repository.program()) doReturn Observable.just(program)
         whenever(repository.catOptionCombos()) doReturn Single.just(catOptionComboPair)
         whenever(
-            repository.filteredProgramEvents(any(), any(), any(), any(), any())
+            repository.filteredProgramEvents(any(), any(), any(), any(), any(), any())
         ) doReturn events
         whenever(
-            repository.filteredEventsForMap(any(), any(), any(), any(), any())
+            repository.filteredEventsForMap(any(), any(), any(), any(), any(), any())
         ) doReturn Flowable.just(mapEvents)
         presenter.init()
         verify(view).setFeatureType()
