@@ -42,7 +42,9 @@ class ProgramPresenterTest {
         whenever(filterManager.asFlowable().startWith(filterManager)) doReturn filterManagerFlowable
         whenever(filterManager.ouTreeFlowable()) doReturn Flowable.just(true)
         whenever(homeRepository.programModels(any(), any(), any(), any())) doReturn programsFlowable
-        whenever(homeRepository.aggregatesModels(any(), any(), any(), any())) doReturn Flowable.empty()
+        whenever(
+            homeRepository.aggregatesModels(any(), any(), any(), any())
+        ) doReturn Flowable.empty()
 
         presenter.init()
         schedulers.io().advanceTimeBy(1, TimeUnit.SECONDS)
