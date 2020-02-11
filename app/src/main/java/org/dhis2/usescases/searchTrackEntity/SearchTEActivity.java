@@ -248,6 +248,9 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
     @Override
     protected void onPause() {
+        if (initSearchNeeded) {
+            presenter.onDestroy();
+        }
         binding.mapView.onPause();
         super.onPause();
     }
