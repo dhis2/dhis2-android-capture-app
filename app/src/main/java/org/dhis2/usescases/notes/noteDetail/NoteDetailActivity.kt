@@ -12,6 +12,7 @@ import javax.inject.Inject
 import org.dhis2.Bindings.app
 import org.dhis2.Bindings.initials
 import org.dhis2.Bindings.placeHolder
+import org.dhis2.Bindings.toDateSpan
 import org.dhis2.R
 import org.dhis2.data.tuples.Trio
 import org.dhis2.databinding.ActivityNoteDetailBinding
@@ -78,14 +79,7 @@ class NoteDetailActivity : ActivityGlobalAbstract(), NoteDetailView, TextWatcher
         binding.storeBy.text = storedBy
         binding.note.text = note.value()
         note.storedDate()?.let {
-            val formattedDate = try {
-                val date = DateUtils.databaseDateFormat().parse(note.storedDate())
-                DateUtils.uiDateFormat().format(date)
-            } catch (e: ParseException) {
-                e.printStackTrace()
-                note.storedDate()
-            }
-            binding.noteTime.text = formattedDate
+            binding.noteTime.text = it.toDateSpan(this)
         }
         binding.executePendingBindings()
     }
