@@ -48,8 +48,8 @@ public class CellRecyclerView extends RecyclerView {
         // These are for better scrolling process.
         this.setItemViewCacheSize(context.getResources().getInteger(R.integer
                 .default_item_cache_size));
-        this.setDrawingCacheEnabled(true);
-        this.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
+       /* this.setDrawingCacheEnabled(true);
+        this.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);*/
     }
 
     @Override

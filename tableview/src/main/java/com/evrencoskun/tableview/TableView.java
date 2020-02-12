@@ -19,13 +19,10 @@ package com.evrencoskun.tableview;
 
 import android.content.Context;
 import android.content.res.TypedArray;
-import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Parcelable;
 import android.util.AttributeSet;
-import android.util.Log;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -70,7 +67,7 @@ import java.util.List;
  * Created by evrencoskun on 11/06/2017.
  */
 
-public class TableView extends FrameLayout implements ITableView{
+public class TableView extends FrameLayout implements ITableView {
 
     private static final String LOG_TAG = TableView.class.getSimpleName();
 
@@ -286,7 +283,7 @@ public class TableView extends FrameLayout implements ITableView{
         rowHeaderWidthSelector.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(headerWidthSelectorListener!=null) {
+                if (headerWidthSelectorListener != null) {
                     rowHeaderWidthSelector.setVisibility(View.GONE);
                     headerWidthSelectorListener.OnWidthSelectorClick(TableView.this);
                 }
@@ -402,9 +399,9 @@ public class TableView extends FrameLayout implements ITableView{
             rowHeaderWidthSelector.setImageResource(R.drawable.ic_swap_horizontal);
         } else {
             float widthInDp = 24 * (getContext().getResources().getDisplayMetrics().density);
-            LayoutParams layoutParams = new LayoutParams((int)widthInDp, (int)widthInDp);
-            layoutParams.leftMargin = mRowHeaderWidth - (int)widthInDp/2;
-            layoutParams.topMargin = mHeaderHeight * mHeaderCount- (int)widthInDp/2;
+            LayoutParams layoutParams = new LayoutParams((int) widthInDp, (int) widthInDp);
+            layoutParams.leftMargin = mRowHeaderWidth - (int) widthInDp / 2;
+            layoutParams.topMargin = mHeaderHeight * mHeaderCount - (int) widthInDp / 2;
             rowHeaderWidthSelector.setLayoutParams(layoutParams);
         }
         return rowHeaderWidthSelector;
@@ -883,7 +880,7 @@ public class TableView extends FrameLayout implements ITableView{
         return mHeaderWidth;
     }
 
-    public int getRowHeaderWidth(){
+    public int getRowHeaderWidth() {
         return mRowHeaderWidth;
     }
 
@@ -921,7 +918,7 @@ public class TableView extends FrameLayout implements ITableView{
 
         if (rowHeaderWidthSelector != null) {
             LayoutParams layoutParams = (LayoutParams) rowHeaderWidthSelector.getLayoutParams();
-            layoutParams.leftMargin = rowHeaderWidth-12;
+            layoutParams.leftMargin = rowHeaderWidth - 12;
             rowHeaderWidthSelector.setLayoutParams(layoutParams);
             rowHeaderWidthSelector.requestLayout();
         }
@@ -944,9 +941,9 @@ public class TableView extends FrameLayout implements ITableView{
             }
         }
 
-        if(rowHeaderWidthSelector!=null){
+        if (rowHeaderWidthSelector != null) {
             LayoutParams layoutParams = (LayoutParams) rowHeaderWidthSelector.getLayoutParams();
-            layoutParams.leftMargin = mRowHeaderWidth - layoutParams.width/2;
+            layoutParams.leftMargin = mRowHeaderWidth - layoutParams.width / 2;
             rowHeaderWidthSelector.setLayoutParams(layoutParams);
             rowHeaderWidthSelector.requestLayout();
         }
@@ -991,11 +988,21 @@ public class TableView extends FrameLayout implements ITableView{
         return getAdapter().getCornerView();
     }
 
-    public void addOnWidthSelectorListener(OnWidthSelectorListener headerWidthSelectorListener){
+    public void addOnWidthSelectorListener(OnWidthSelectorListener headerWidthSelectorListener) {
         this.headerWidthSelectorListener = headerWidthSelectorListener;
     }
 
-    public interface OnWidthSelectorListener{
+    public interface OnWidthSelectorListener {
         void OnWidthSelectorClick(TableView tableView);
+    }
+
+    @Override
+    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+        super.onSizeChanged(w, h, oldw, oldh);
+        /*if(w < getResources().getDisplayMetrics().widthPixels){
+            setRowHeaderWidth(
+                    mRowHeaderWidth + getResources().getDisplayMetrics().widthPixels - w
+            );
+        }*/
     }
 }

@@ -18,6 +18,7 @@ import androidx.databinding.DataBindingUtil;
 import androidx.databinding.ObservableField;
 import androidx.lifecycle.MutableLiveData;
 import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.evrencoskun.tableview.TableView;
 import com.evrencoskun.tableview.adapter.recyclerview.CellRecyclerView;
@@ -32,7 +33,6 @@ import org.dhis2.databinding.TableViewCornerLayoutBinding;
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableActivity;
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
 import org.dhis2.utils.Constants;
-import org.dhis2.utils.Dhis2LinearLayoutManager;
 import org.hisp.dhis.android.core.dataset.DataSet;
 import org.hisp.dhis.android.core.dataset.Section;
 import org.jetbrains.annotations.NotNull;
@@ -95,7 +95,6 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_dataset_section, container, false);
-        binding.tableRecycler.setLayoutManager(new Dhis2LinearLayoutManager(activity));
         currentTablePosition.observe(this, this::loadHeader);
         binding.setPresenter(presenterFragment);
         sectionName = requireArguments().getString(Constants.DATA_SET_SECTION);
@@ -236,7 +235,7 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
 
     public void updateData(RowAction rowAction, String catCombo) {
         for (DataSetTableAdapter adapter : tableAdapter.getAdapterList())
-            if (adapter.getCatCombo().equals(catCombo))
+            if (adapter.getCatCombo()!=null && adapter.getCatCombo().equals(catCombo))
                 adapter.updateValue(rowAction);
     }
 
@@ -296,7 +295,6 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
     @Override
     public void OnWidthSelectorClick(TableView tableView) {
         binding.widthSelector.setVisibility(View.VISIBLE);
-        ((Dhis2LinearLayoutManager)binding.tableRecycler.getLayoutManager()).setScrollEnabled(false);
         activity.setViewPagerScrolling(false);
         binding.tableRecycler.setForeground(new ColorDrawable(ContextCompat.getColor(getContext(), R.color.colorAccentAlpha)));
         binding.widthSelector.post(() -> showWidthEditorAt(tableView, tableView.getRowHeaderWidth()));
@@ -315,7 +313,6 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
                     binding.widthSelector.setVisibility(View.GONE);
                     activity.setViewPagerScrolling(true);
                     binding.tableRecycler.setForeground(null);
-                    ((Dhis2LinearLayoutManager)binding.tableRecycler.getLayoutManager()).setScrollEnabled(true);
                     break;
                 case MotionEvent.ACTION_MOVE:
                     float dx = x - currentWidthPosition;

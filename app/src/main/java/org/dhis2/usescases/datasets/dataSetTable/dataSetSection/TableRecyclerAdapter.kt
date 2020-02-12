@@ -18,6 +18,7 @@ import org.hisp.dhis.android.core.dataset.Section
 
 const val TABLE_TYPE = 0
 const val LOADING_TYPE = 1
+const val progressId = 1987L
 
 class TableRecyclerAdapter(
     private val context: Context,
@@ -30,6 +31,10 @@ class TableRecyclerAdapter(
 
     private var isLoading = true
     var tables: MutableMap<Int, TableView> = mutableMapOf()
+
+    init {
+        setHasStableIds(true)
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return when (viewType) {
@@ -75,7 +80,7 @@ class TableRecyclerAdapter(
             val dataTableModel = dataSetTable.dataTableModel
             val accessDataWrite = dataSetTable.accessDataWrite
 
-            val list = dataTableModel.rows()?.map { it.displayName() ?: "" }
+            val list = dataTableModel.rows.map { it.displayName() ?: "" }
             val desiredWidth = list.getMaxWidth(
                 13.px.toFloat(),
                 Typeface.DEFAULT
@@ -101,8 +106,8 @@ class TableRecyclerAdapter(
             adapter.showRowTotal = if (section.uid().isEmpty()) false else section.showRowTotals()
 
 
-            val columnHeaders: MutableList<MutableList<CategoryOption>>? = dataTableModel.header()
-            adapter.catCombo = dataTableModel.catCombo()?.uid()
+            val columnHeaders: MutableList<MutableList<CategoryOption>>? = dataTableModel.header
+            adapter.catCombo = dataTableModel.catCombo.uid()
             adapter.setTableView(holder.tableView)
             adapter.initializeRows(accessDataWrite)
             adapter.setDataElementDecoration(dataSet.dataElementDecoration())
@@ -114,7 +119,7 @@ class TableRecyclerAdapter(
 
             adapter.setAllItems(
                 columnHeaders,
-                dataTableModel.rows(),
+                dataTableModel.rows,
                 dataSetTable.cells,
                 adapter.showRowTotal
             )
@@ -131,6 +136,14 @@ class TableRecyclerAdapter(
             LOADING_TYPE
         } else {
             TABLE_TYPE
+        }
+    }
+
+    override fun getItemId(position: Int): Long {
+        return if (isLoading && position == itemCount - 1) {
+            progressId
+        } else {
+            tableList[position].dataTableModel.catCombo.uid().hashCode().toLong()
         }
     }
 
