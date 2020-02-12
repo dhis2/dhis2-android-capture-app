@@ -1,39 +1,19 @@
 package org.dhis2.usescases.orgunitselector
 
-import android.annotation.SuppressLint
 import android.app.Activity
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
 import androidx.databinding.DataBindingUtil
-
+import javax.inject.Inject
 import org.dhis2.App
 import org.dhis2.R
 import org.dhis2.data.tuples.Pair
 import org.dhis2.databinding.OuTreeActivityBinding
 import org.dhis2.usescases.general.ActivityGlobalAbstract
-import org.dhis2.utils.filters.FilterManager
-import org.hisp.dhis.android.core.D2
-import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
-import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
-
-import java.util.ArrayList
-import java.util.concurrent.TimeUnit
-
-import javax.inject.Inject
-
-import io.reactivex.Flowable
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.processors.FlowableProcessor
-import io.reactivex.processors.PublishProcessor
-import io.reactivex.schedulers.Schedulers
-import timber.log.Timber
 
 class OUTreeActivity : ActivityGlobalAbstract(), OUTreeView, OrgUnitSelectorAdapter.OnOrgUnitClick {
-
-
 
     @Inject
     lateinit var presenter: OUTreePresenter
@@ -44,9 +24,13 @@ class OUTreeActivity : ActivityGlobalAbstract(), OUTreeView, OrgUnitSelectorAdap
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.ou_tree_activity)
 
+        (applicationContext as App).userComponent()!!
+            .plus(OUTreeModule(this))
+            .inject(this)
+
         binding.search.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
-                //Not used
+                // Not used
             }
 
             override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
@@ -58,10 +42,9 @@ class OUTreeActivity : ActivityGlobalAbstract(), OUTreeView, OrgUnitSelectorAdap
             }
 
             override fun afterTextChanged(s: Editable) {
-                //Not used
+                // Not used
             }
         })
-        presenter.onStartSearch.onNext(true)
         binding.clearAll.setOnClickListener {
             if (binding.orgUnitRecycler.adapter != null) {
                 (binding.orgUnitRecycler.adapter as OrgUnitSelectorAdapter).clearAll()
@@ -95,12 +78,6 @@ class OUTreeActivity : ActivityGlobalAbstract(), OUTreeView, OrgUnitSelectorAdap
     override fun addOrgUnits(location: Int, organisationUnits: List<TreeNode>) {
         (binding.orgUnitRecycler.adapter as OrgUnitSelectorAdapter)
             .addOrgUnits(location, organisationUnits)
-    }
-
-    fun addToArray(list: MutableList<String>, uuid: String): MutableList<String> {
-        if (!list.contains(uuid))
-            list.add(uuid)
-        return list
     }
 
     companion object {
