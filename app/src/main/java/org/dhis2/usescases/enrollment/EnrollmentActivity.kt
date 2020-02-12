@@ -561,11 +561,11 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
     /*endregion*/
 
     override fun showSaveButton() {
-        binding.next.visibility = View.VISIBLE
+        binding.next.show()
     }
 
     override fun hideSaveButton() {
-        binding.next.visibility = View.GONE
+        binding.next.hide()
     }
 
     override fun showAdjustingForm() {

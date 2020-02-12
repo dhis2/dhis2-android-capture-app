@@ -18,254 +18,259 @@
             type="org.hisp.dhis.android.core.enrollment.EnrollmentStatus" />
     </data>
 
-
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="?android:attr/actionBarSize"
-            android:background="?colorPrimary"
-            android:elevation="8dp"
-            android:gravity="center_vertical"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
-
-            <ImageView
-                android:id="@+id/menu"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:onClick="@{()->view.goBack()}"
-                android:padding="@dimen/default_start_margin"
-                app:layout_constraintStart_toStartOf="parent"
-                app:srcCompat="@drawable/ic_arrow_back"
-                tools:ignore="ContentDescription" />
-
-            <TextView
-                android:id="@+id/title"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:gravity="center_vertical"
-                android:textColor="?colorAccent"
-                android:textSize="20sp"
-                app:layout_constraintEnd_toStartOf="@id/program_lock_layout"
-                app:layout_constraintStart_toEndOf="@id/menu"
-                tools:text="TEI NAME" />
+            android:layout_height="match_parent">
 
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/program_lock_layout"
-                android:layout_width="wrap_content"
-                android:layout_height="0dp"
-                android:layout_marginTop="8dp"
-                android:background="@drawable/bg_rounded_top_left"
-                android:onClick="@{()->view.showStatusOptions(enrollmentStatus)}"
-                android:paddingStart="16dp"
-                android:paddingEnd="16dp"
-                app:layout_constraintBottom_toBottomOf="parent"
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?android:attr/actionBarSize"
+                android:background="?colorPrimary"
+                android:elevation="8dp"
+                android:gravity="center_vertical"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
 
                 <ImageView
-                    android:id="@+id/program_lock"
+                    android:id="@+id/menu"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:onClick="@{()->view.goBack()}"
+                    android:padding="@dimen/default_start_margin"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:srcCompat="@drawable/ic_arrow_back"
+                    tools:ignore="ContentDescription" />
+
+                <TextView
+                    android:id="@+id/title"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical"
+                    android:textColor="?colorAccent"
+                    android:textSize="20sp"
+                    app:layout_constraintEnd_toStartOf="@id/program_lock_layout"
+                    app:layout_constraintStart_toEndOf="@id/menu"
+                    tools:text="TEI NAME" />
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/program_lock_layout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/bg_rounded_top_left"
+                    android:onClick="@{()->view.showStatusOptions(enrollmentStatus)}"
+                    android:paddingStart="16dp"
+                    android:paddingEnd="16dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <ImageView
+                        android:id="@+id/program_lock"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:enrolmentIcon='@{enrollmentStatus}'
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:srcCompat="@drawable/ic_lock_open_green"
+                        tools:ignore="ContentDescription,MissingConstraints"
+                        tools:layout_editor_absoluteY="5dp" />
+
+                    <TextView
+                        android:id="@+id/program_lock_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="sans-serif"
+                        android:gravity="center_horizontal"
+                        android:maxWidth="60dp"
+                        android:textColor="#787878"
+                        android:textSize="14sp"
+                        android:textStyle="normal"
+                        app:enrolmentText='@{enrollmentStatus}'
+                        app:layout_constraintBottom_toBottomOf="@id/program_lock"
+                        app:layout_constraintEnd_toStartOf="@id/program_lock"
+                        app:layout_constraintTop_toTopOf="@id/program_lock"
+                        tools:text="Abierto" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/enrollmentDataButton"
+                android:layout_width="match_parent"
+                android:layout_height="36dp"
+                android:background="?colorPrimaryLight"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                app:layout_constraintTop_toBottomOf="@id/enrollmentData">
+
+                <TextView
+                    android:id="@+id/enrollmentDataText"
+                    style="@style/TextPrimary"
+                    android:layout_width="wrap_content"
+                    android:layout_height="36dp"
+                    android:gravity="center_vertical"
+                    android:text="@string/enrollment_data_show"
+                    android:textColor="?colorPrimaryDark"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <ImageView
+                    android:id="@+id/enrollmentDataArrow"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    app:enrolmentIcon='@{enrollmentStatus}'
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:srcCompat="@drawable/ic_lock_open_green"
-                    tools:ignore="ContentDescription,MissingConstraints"
-                    tools:layout_editor_absoluteY="5dp" />
-
-                <TextView
-                    android:id="@+id/program_lock_text"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="sans-serif"
-                    android:gravity="center_horizontal"
-                    android:maxWidth="60dp"
-                    android:textColor="#787878"
-                    android:textSize="14sp"
-                    android:textStyle="normal"
-                    app:enrolmentText='@{enrollmentStatus}'
-                    app:layout_constraintBottom_toBottomOf="@id/program_lock"
-                    app:layout_constraintEnd_toStartOf="@id/program_lock"
-                    app:layout_constraintTop_toTopOf="@id/program_lock"
-                    tools:text="Abierto" />
+                    app:srcCompat="@drawable/ic_arrow_down_white" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/enrollmentDataButton"
-            android:layout_width="match_parent"
-            android:layout_height="36dp"
-            android:background="?colorPrimaryLight"
-            android:paddingStart="16dp"
-            android:paddingEnd="16dp"
-            app:layout_constraintTop_toBottomOf="@id/enrollmentData">
-
-            <TextView
-                android:id="@+id/enrollmentDataText"
-                style="@style/TextPrimary"
-                android:layout_width="wrap_content"
-                android:layout_height="36dp"
-                android:gravity="center_vertical"
-                android:text="@string/enrollment_data_show"
-                android:textColor="?colorPrimaryDark"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <ImageView
-                android:id="@+id/enrollmentDataArrow"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/ic_arrow_down_white" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-        <LinearLayout
-            android:id="@+id/enrollmentData"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/gray_d7d"
-            android:focusableInTouchMode="true"
-            android:orientation="vertical"
-            android:visibility="gone"
-            app:layout_constraintTop_toBottomOf="@id/toolbar"
-            tools:visibility="visible">
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/report_date_layout"
+            <LinearLayout
+                android:id="@+id/enrollmentData"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="8dp"
-                android:hint="@string/report_date"
-                android:textColorHint="@drawable/edit_text_hint_primary"
-                android:theme="@style/loginInputText"
-                tools:hint="Report Date">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/report_date"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:background="@android:color/transparent"
-                    android:clickable="true"
-                    android:cursorVisible="false"
-                    android:focusable="false"
-                    android:focusableInTouchMode="false"
-                    android:onClick="@{()->view.onReportDateClick()}"
-                    android:padding="8dp"
-                    android:textAlignment="textStart"
-                    android:textColor="@color/text_black_333"
-                    android:textSize="16sp"
-                    tools:text="2018-04-04" />
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/incident_date_layout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="8dp"
-                android:textColorHint="@drawable/edit_text_hint_primary"
-                android:theme="@style/loginInputTextAccent"
+                android:background="@color/gray_d7d"
+                android:focusableInTouchMode="true"
+                android:orientation="vertical"
                 android:visibility="gone"
-                tools:hint="Incident Date">
+                app:layout_constraintTop_toBottomOf="@id/toolbar"
+                tools:visibility="visible">
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/incident_date_text"
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/report_date_layout"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:background="@android:color/transparent"
-                    android:clickable="true"
-                    android:cursorVisible="false"
-                    android:focusable="false"
-                    android:focusableInTouchMode="false"
-                    android:onClick="@{()->view.onIncidentDateClick()}"
-                    android:padding="8dp"
-                    android:textAlignment="textStart"
-                    android:textColor="@color/text_black_333"
-                    android:textSize="16sp"
-                    tools:text="2018-04-04" />
-            </com.google.android.material.textfield.TextInputLayout>
+                    android:layout_height="wrap_content"
+                    android:layout_margin="8dp"
+                    android:hint="@string/report_date"
+                    android:textColorHint="@drawable/edit_text_hint_primary"
+                    android:theme="@style/loginInputText"
+                    tools:hint="Report Date">
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/orgUnitLayout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="8dp"
-                android:hint="@string/enrolling_ou"
-                android:textColorHint="@drawable/edit_text_hint_primary"
-                android:theme="@style/loginInputTextAccent">
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/report_date"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@android:color/transparent"
+                        android:clickable="true"
+                        android:cursorVisible="false"
+                        android:focusable="false"
+                        android:focusableInTouchMode="false"
+                        android:onClick="@{()->view.onReportDateClick()}"
+                        android:padding="8dp"
+                        android:textAlignment="textStart"
+                        android:textColor="@color/text_black_333"
+                        android:textSize="16sp"
+                        tools:text="2018-04-04" />
+                </com.google.android.material.textfield.TextInputLayout>
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/orgUnitText"
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/incident_date_layout"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:background="@android:color/transparent"
-                    android:clickable="true"
-                    android:cursorVisible="false"
-                    android:focusable="false"
-                    android:focusableInTouchMode="false"
-                    android:padding="8dp"
-                    android:textAlignment="textStart"
-                    android:textColor="@color/text_black_333"
-                    android:textSize="16sp"
-                    tools:text="OU Test" />
-            </com.google.android.material.textfield.TextInputLayout>
+                    android:layout_height="wrap_content"
+                    android:layout_margin="8dp"
+                    android:textColorHint="@drawable/edit_text_hint_primary"
+                    android:theme="@style/loginInputTextAccent"
+                    android:visibility="gone"
+                    tools:hint="Incident Date">
 
-            <org.dhis2.utils.customviews.CoordinatesView
-                android:id="@+id/tei_coordinates_view"
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/incident_date_text"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@android:color/transparent"
+                        android:clickable="true"
+                        android:cursorVisible="false"
+                        android:focusable="false"
+                        android:focusableInTouchMode="false"
+                        android:onClick="@{()->view.onIncidentDateClick()}"
+                        android:padding="8dp"
+                        android:textAlignment="textStart"
+                        android:textColor="@color/text_black_333"
+                        android:textSize="16sp"
+                        tools:text="2018-04-04" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/orgUnitLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="8dp"
+                    android:hint="@string/enrolling_ou"
+                    android:textColorHint="@drawable/edit_text_hint_primary"
+                    android:theme="@style/loginInputTextAccent">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/orgUnitText"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@android:color/transparent"
+                        android:clickable="true"
+                        android:cursorVisible="false"
+                        android:focusable="false"
+                        android:focusableInTouchMode="false"
+                        android:padding="8dp"
+                        android:textAlignment="textStart"
+                        android:textColor="@color/text_black_333"
+                        android:textSize="16sp"
+                        tools:text="OU Test" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <org.dhis2.utils.customviews.CoordinatesView
+                    android:id="@+id/tei_coordinates_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone" />
+
+                <org.dhis2.utils.customviews.CoordinatesView
+                    android:id="@+id/coordinates_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone" />
+            </LinearLayout>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/fieldRecycler"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:clipToPadding="false"
+                android:paddingBottom="100dp"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/enrollmentDataButton"
+                tools:listitem="@layout/form_unsupported" />
+
+            <include
+                android:id="@+id/cl_indicator_progress"
+                layout="@layout/indicator_progress"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:visibility="gone" />
+                android:layout_marginStart="0dp"
+                android:visibility="gone"
+                app:layout_constraintTop_toBottomOf="@id/enrollmentDataButton"
+                tools:visibility="visible" />
 
-            <org.dhis2.utils.customviews.CoordinatesView
-                android:id="@+id/coordinates_view"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:visibility="gone" />
-        </LinearLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/fieldRecycler"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:clipToPadding="false"
-            android:paddingBottom="100dp"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/enrollmentDataButton"
-            tools:listitem="@layout/form_unsupported" />
-
-        <include
-            android:id="@+id/cl_indicator_progress"
-            layout="@layout/indicator_progress"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="0dp"
-            android:visibility="gone"
-            app:layout_constraintTop_toBottomOf="@id/enrollmentDataButton"
-            tools:visibility="visible" />
-
-        <Button
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/next"
-            style="@style/ButtonRoundedGrey"
-            android:layout_gravity="end|bottom"
+            style="@style/Widget.MaterialComponents.FloatingActionButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_margin="16dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginBottom="8dp"
-            android:elevation="8dp"
-            android:text="@string/save"
-            app:elevation="8dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            android:layout_gravity="end|bottom"
+            app:backgroundTint="?colorPrimary"
+            app:srcCompat="@drawable/ic_save_alt"
+            app:tint="@color/white"
+            />
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
 </layout>
