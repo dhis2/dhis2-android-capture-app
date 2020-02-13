@@ -26,19 +26,11 @@ class OUTreePresenter(
                 .startWith(true)
                 .flatMap {
                     repository.orgUnits().toFlowable()
-                }.map { list ->
-                var minLevel = list[0].level()
-                for (ou in list)
-                    minLevel = if (ou.level()!! < minLevel!!) ou.level() else minLevel
-                val it = list.iterator()
-                while (it.hasNext()) {
-                    if (it.next().level()!! > minLevel!!) {
-                        it.remove()
+                }.map { orgUnits ->
+                    orgUnits.filter { orgUnit ->
+                        orgUnit.level() == orgUnits.minBy { it.level()!! }?.level()
                     }
-                }
-                list
-            }
-                .map { organisationUnits ->
+                }.map { organisationUnits ->
                     val nodes = ArrayList<TreeNode>()
                     organisationUnits.forEach { org ->
                         nodes.add(

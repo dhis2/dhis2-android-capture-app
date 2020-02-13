@@ -87,8 +87,9 @@ class OUTreeActivity : ActivityGlobalAbstract(), OUTreeView, OrgUnitSelectorAdap
         ): Bundle {
             val bundle = Bundle()
 
-            if (programUid != null)
+            if (programUid != null) {
                 bundle.putString("PROGRAM", programUid)
+            }
             return bundle
         }
     }
