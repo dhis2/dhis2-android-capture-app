@@ -1,5 +1,6 @@
 package org.dhis2.data.forms.dataentry;
 
+import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
@@ -36,6 +37,9 @@ import org.dhis2.data.forms.dataentry.fields.radiobutton.RadioButtonRow;
 import org.dhis2.data.forms.dataentry.fields.radiobutton.RadioButtonViewModel;
 import org.dhis2.data.forms.dataentry.fields.scan.ScanTextRow;
 import org.dhis2.data.forms.dataentry.fields.scan.ScanTextViewModel;
+import org.dhis2.data.forms.dataentry.fields.section.SectionHolder;
+import org.dhis2.data.forms.dataentry.fields.section.SectionRow;
+import org.dhis2.data.forms.dataentry.fields.section.SectionViewModel;
 import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerRow;
 import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel;
 import org.dhis2.data.forms.dataentry.fields.unsupported.UnsupportedRow;
@@ -43,6 +47,7 @@ import org.dhis2.data.forms.dataentry.fields.unsupported.UnsupportedViewModel;
 import org.dhis2.data.tuples.Trio;
 import org.hisp.dhis.android.core.common.FeatureType;
 import org.hisp.dhis.android.core.common.ValueType;
+import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,6 +57,8 @@ import io.reactivex.processors.PublishProcessor;
 import timber.log.Timber;
 
 public final class DataEntryAdapter extends Adapter {
+
+    private static final int SECTION = 17;
     private static final int EDITTEXT = 0;
     private static final int BUTTON = 1;
     private static final int CHECKBOX = 2;
@@ -84,6 +91,8 @@ public final class DataEntryAdapter extends Adapter {
     private final List<Row> rows;
 
     private final FlowableProcessor<Trio<String, String, Integer>> processorOptionSet;
+    private final ObservableField<String> selectedSection;
+    private final FlowableProcessor<String> sectionProcessor;
 
     private MutableLiveData<String> currentFocusUid;
 
@@ -97,7 +106,9 @@ public final class DataEntryAdapter extends Adapter {
         rows = new ArrayList<>();
         viewModels = new ArrayList<>();
         processor = PublishProcessor.create();
+        sectionProcessor = PublishProcessor.create();
         imageSelector = new ObservableField<>("");
+        selectedSection = new ObservableField<>("");
         this.processorOptionSet = PublishProcessor.create();
         this.currentFocusUid = new MutableLiveData<>();
 
@@ -122,18 +133,22 @@ public final class DataEntryAdapter extends Adapter {
         rows.add(DISPLAY, new DisplayRow(layoutInflater));
         rows.add(PICTURE, new PictureRow(layoutInflater, processor, true));
         rows.add(SCAN_CODE, new ScanTextRow(layoutInflater, processor, true));
+        rows.add(SECTION, new SectionRow(layoutInflater, selectedSection, sectionProcessor));
     }
 
     public DataEntryAdapter(@NonNull LayoutInflater layoutInflater,
                             @NonNull FragmentManager fragmentManager,
                             @NonNull DataEntryArguments dataEntryArguments,
                             @NonNull FlowableProcessor<RowAction> processor,
+                            @NonNull FlowableProcessor<String> sectionProcessor,
                             @NonNull FlowableProcessor<Trio<String, String, Integer>> processorOptSet) {
         setHasStableIds(true);
         rows = new ArrayList<>();
         viewModels = new ArrayList<>();
         this.processor = processor;
+        this.sectionProcessor = sectionProcessor;
         imageSelector = new ObservableField<>("");
+        selectedSection = new ObservableField<>("");
         this.processorOptionSet = processorOptSet;
         this.currentFocusUid = new MutableLiveData<>();
 
@@ -154,6 +169,7 @@ public final class DataEntryAdapter extends Adapter {
         rows.add(DISPLAY, new DisplayRow(layoutInflater));
         rows.add(PICTURE, new PictureRow(layoutInflater, processor, true));
         rows.add(SCAN_CODE, new ScanTextRow(layoutInflater, processor, true));
+        rows.add(SECTION, new SectionRow(layoutInflater, selectedSection, sectionProcessor));
     }
 
     @NonNull
@@ -169,16 +185,14 @@ public final class DataEntryAdapter extends Adapter {
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         rows.get(holder.getItemViewType()).onBind(holder,
                 viewModels.get(holder.getAdapterPosition()));
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            if (!(holder instanceof SectionHolder)) {
 
-     /*   if (position != 0 && position == nextFocusPosition && lastFocusPosition != nextFocusPosition && holder instanceof FormViewHolder) {
-            lastFocusPosition = position;
-            ((FormViewHolder) holder).performAction();
-            if (!(holder instanceof ImageHolder))
-                holder.itemView.setBackground(AppCompatResources.getDrawable(holder.itemView.getContext(), R.drawable.item_selected_bg));
-        } else if (!(holder instanceof ImageHolder)) {
-            holder.itemView.setBackgroundColor(Color.WHITE);
-        }*/
-
+                holder.itemView.setElevation(0f);
+            } else {
+                holder.itemView.setElevation(5f);
+            }
+        }
     }
 
     @Override
@@ -221,10 +235,12 @@ public final class DataEntryAdapter extends Adapter {
             return UNSUPPORTED;
         } else if (viewModel instanceof DisplayViewModel) {
             return DISPLAY;
-        }else if (viewModel instanceof PictureViewModel) {
+        } else if (viewModel instanceof PictureViewModel) {
             return PICTURE;
-        }else if (viewModel instanceof ScanTextViewModel) {
+        } else if (viewModel instanceof ScanTextViewModel) {
             return SCAN_CODE;
+        } else if (viewModel instanceof SectionViewModel) {
+            return SECTION;
         } else {
             throw new IllegalStateException("Unsupported view model type: "
                     + viewModel.getClass());
@@ -239,6 +255,11 @@ public final class DataEntryAdapter extends Adapter {
     @NonNull
     public FlowableProcessor<RowAction> asFlowable() {
         return processor;
+    }
+
+    @NonNull
+    public FlowableProcessor<String> sectionFlowable() {
+        return sectionProcessor;
     }
 
     public void swap(@NonNull List<FieldViewModel> updates) {
@@ -335,4 +356,35 @@ public final class DataEntryAdapter extends Adapter {
         this.lastFocusItem = lastFocusItem;
     }
 
+    public int getItemSpan(int position) {
+        List<Integer> sectionPositions = new ArrayList<>();
+        String rendering = null;
+        for (FieldViewModel fieldViewModel : viewModels) {
+            if (fieldViewModel instanceof SectionViewModel) {
+                sectionPositions.add(viewModels.indexOf(fieldViewModel));
+                if (((SectionViewModel) fieldViewModel).isOpen()) {
+                    rendering = ((SectionViewModel) fieldViewModel).rendering();
+                }
+            }
+        }
+
+        if (sectionPositions.contains(position)) {
+            return 2;
+        } else if (rendering != null) {
+            switch (ProgramStageSectionRenderingType.valueOf(rendering)) {
+                case MATRIX:
+                    return 1;
+                case LISTING:
+                default:
+                case SEQUENTIAL:
+                    return 2;
+            }
+        } else {
+            return 2;
+        }
+    }
+
+    public boolean isSection(int position){
+        return getItemViewType(position) == SECTION;
+    }
 }

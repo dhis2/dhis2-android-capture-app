@@ -7,10 +7,8 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
-import android.view.GestureDetector;
 import android.view.Gravity;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.DatePicker;
 import android.widget.PopupMenu;
@@ -62,14 +60,9 @@ import static org.dhis2.utils.analytics.AnalyticsConstants.SHOW_HELP;
 /**
  * QUADRAM. Created by ppajuelo on 19/11/2018.
  */
-public class EventCaptureActivity extends ActivityGlobalAbstract implements EventCaptureContract.View, View.OnTouchListener, GestureDetector.OnGestureListener {
+public class EventCaptureActivity extends ActivityGlobalAbstract implements EventCaptureContract.View {
 
     private static final int RQ_GO_BACK = 1202;
-
-    private static final int SWIPE_THRESHOLD = 100;
-    private static final int SWIPE_VELOCITY_THRESHOLD = 100;
-
-    private GestureDetector gestureScanner;
 
     private ActivityEventCaptureBinding binding;
     @Inject
@@ -97,9 +90,8 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
         binding = DataBindingUtil.setContentView(this, R.layout.activity_event_capture);
         binding.setPresenter(presenter);
         eventMode = (EventMode) getIntent().getSerializableExtra(Constants.EVENT_MODE);
-        gestureScanner = new GestureDetector(this, this);
 
-        binding.calculationIndicator.text.setTextColor(ColorUtils.getContrastColor(ColorUtils.getPrimaryColor(this, ColorUtils.ColorType.PRIMARY_LIGHT)));
+//        binding.calculationIndicator.text.setTextColor(ColorUtils.getContrastColor(ColorUtils.getPrimaryColor(this, ColorUtils.ColorType.PRIMARY_LIGHT)));
 
         binding.eventTabLayout.setupWithViewPager(binding.eventViewPager);
         binding.eventTabLayout.setTabMode(TabLayout.MODE_FIXED);
@@ -203,7 +195,7 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
 
     @Override
     public void showCompleteActions(boolean canComplete, String completeMessage, Map<String, String> errors, Map<String, FieldViewModel> emptyMandatoryFields) {
-        if(binding.eventTabLayout.getSelectedTabPosition() == 0) {
+        if (binding.eventTabLayout.getSelectedTabPosition() == 0) {
             FormBottomDialog.getInstance()
                     .setAccessDataWrite(presenter.canWrite())
                     .setIsEnrollmentOpen(presenter.isEnrollmentOpen())
@@ -256,8 +248,8 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
 
     @Override
     public void showRuleCalculation(Boolean shouldShow) {
-        if(binding.eventTabLayout.getSelectedTabPosition() == 0) {
-            binding.calculationIndicator.getRoot().setVisibility(shouldShow ? View.VISIBLE : View.GONE);
+        if (binding.eventTabLayout.getSelectedTabPosition() == 0) {
+//            binding.calculationIndicator.getRoot().setVisibility(shouldShow ? View.VISIBLE : View.GONE);
         }
     }
 
@@ -512,72 +504,6 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
                     }
                 }
         ).show();
-    }
-
-    @Override
-    public boolean dispatchTouchEvent(MotionEvent ev) {
-        super.dispatchTouchEvent(ev);
-        return gestureScanner.onTouchEvent(ev);
-    }
-
-    @Override
-    public boolean onTouchEvent(MotionEvent me) {
-        return gestureScanner.onTouchEvent(me);
-    }
-
-    public boolean onDown(MotionEvent e) {
-        return true;
-    }
-
-    public boolean onFling(MotionEvent e1, MotionEvent e2, float
-            velocityX, float velocityY) {
-        boolean result = false;
-        try {
-            float diffY = e2.getY() - e1.getY();
-            float diffX = e2.getX() - e1.getX();
-            if (Math.abs(diffX) > Math.abs(diffY)) {
-                if (Math.abs(diffX) > SWIPE_THRESHOLD && Math.abs(velocityX) > SWIPE_VELOCITY_THRESHOLD) {
-                    if (diffX > 0) {
-                        onSwipeRight();
-                    } else {
-                        onSwipeLeft();
-                    }
-                }
-            }
-        } catch (Exception exception) {
-            Timber.e(exception);
-        }
-        return result;
-    }
-
-    public void onLongPress(MotionEvent e) {
-        // nothing
-    }
-
-    public boolean onScroll(MotionEvent e1, MotionEvent e2, float
-            distanceX, float distanceY) {
-        return true;
-    }
-
-    public void onShowPress(MotionEvent e) {
-        // nothing
-    }
-
-    public boolean onSingleTapUp(MotionEvent e) {
-        return true;
-    }
-
-    @Override
-    public boolean onTouch(View v, MotionEvent event) {
-        return gestureScanner.onTouchEvent(event);
-    }
-
-    public void onSwipeRight() {
-        presenter.onPreviousSection();
-    }
-
-    public void onSwipeLeft() {
-        presenter.onNextSection();
     }
 
     @Override

@@ -18,6 +18,7 @@
             layout="@layout/item_section_selector"
             android:layout_width="0dp"
             android:layout_height="@dimen/itemSectionSelectorHeight"
+            android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -47,6 +48,7 @@
             layout="@layout/section_selector"
             android:layout_width="0dp"
             android:layout_height="@dimen/sectionSelectorHeight"
+            android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -60,8 +62,7 @@
             app:cardElevation="4dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:visibility="visible">
+            app:layout_constraintTop_toTopOf="parent">
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/sectionRecycler"
@@ -83,6 +84,19 @@
             app:layout_constraintTop_toTopOf="parent"
             app:progressColor="@{@color/colorPrimary}"
             tools:visibility="visible" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/actionButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="16dp"
+            app:backgroundTint="?colorPrimary"
+            app:fabSize="normal"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:srcCompat="@drawable/ic_save_alt"
+            app:tint="?colorAccent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

@@ -292,6 +292,12 @@
     <!--endregion-->
     <!--endregion-->
 
+    <!--Widget colors-->
+    <color name="form_field_background">#FAFAFA</color>
+    <color name="form_field_background_shadow_start">#99FAFAFA</color>
+    <color name="form_field_background_shadow_center">#80FAFAFA</color>
+    <color name="form_field_background_shadow_end">#66FAFAFA</color>
+
 
     <!-- region OTHER COLORS-->
 
