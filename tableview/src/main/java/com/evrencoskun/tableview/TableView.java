@@ -23,6 +23,7 @@ import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Parcelable;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -101,6 +102,7 @@ public class TableView extends FrameLayout implements ITableView {
     private ColumnWidthHandler mColumnWidthHandler;
 
     private int mRowHeaderWidth;
+    private int originalRowHeaderWidth = 0;
     private int mColumnHeaderHeight;
     private int mHeaderHeight;
     private int mHeaderWidth;
@@ -438,6 +440,8 @@ public class TableView extends FrameLayout implements ITableView {
 
                 // Create Filter Handler
                 mFilterHandler = new FilterHandler(this);
+            }else{
+                Log.d("TABLEVIEW", "CellRecyclerView is null");
             }
 
 
@@ -880,6 +884,10 @@ public class TableView extends FrameLayout implements ITableView {
         return mHeaderWidth;
     }
 
+    public int getHeaderHeight() {
+        return mHeaderHeight;
+    }
+
     public int getRowHeaderWidth() {
         return mRowHeaderWidth;
     }
@@ -892,6 +900,9 @@ public class TableView extends FrameLayout implements ITableView {
     @Override
     public void setRowHeaderWidth(int rowHeaderWidth) {
         this.mRowHeaderWidth = rowHeaderWidth;
+        if (originalRowHeaderWidth == 0) {
+            originalRowHeaderWidth = rowHeaderWidth;
+        }
         if (mRowHeaderRecyclerView != null) {
             // Update RowHeader layout width
             ViewGroup.LayoutParams layoutParams = mRowHeaderRecyclerView.getLayoutParams();
@@ -992,17 +1003,12 @@ public class TableView extends FrameLayout implements ITableView {
         this.headerWidthSelectorListener = headerWidthSelectorListener;
     }
 
-    public interface OnWidthSelectorListener {
-        void OnWidthSelectorClick(TableView tableView);
+    @Override
+    public void hideWidthSelector(boolean hide) {
+        rowHeaderWidthSelector.setVisibility(hide ? GONE : VISIBLE);
     }
 
-    @Override
-    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
-        super.onSizeChanged(w, h, oldw, oldh);
-        /*if(w < getResources().getDisplayMetrics().widthPixels){
-            setRowHeaderWidth(
-                    mRowHeaderWidth + getResources().getDisplayMetrics().widthPixels - w
-            );
-        }*/
+    public interface OnWidthSelectorListener {
+        void OnWidthSelectorClick(TableView tableView);
     }
 }

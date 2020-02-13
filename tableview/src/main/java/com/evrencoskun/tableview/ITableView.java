@@ -164,4 +164,5 @@ public interface ITableView {
 
     List<CellRecyclerView> getBackupHeaders();
 
+    void hideWidthSelector(boolean hide);
 }

@@ -124,6 +124,8 @@ class TableRecyclerAdapter(
                 adapter.showRowTotal
             )
         }
+
+        holder.tableView.requestLayout()
     }
 
     private fun bindProgressViewHolder(holder: ProgressViewHolder) {

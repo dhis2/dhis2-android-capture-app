@@ -1,13 +1,15 @@
 package org.dhis2.usescases.datasets.dataSetTable.dataSetSection;
 
 import android.content.Context;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -18,7 +20,6 @@ import androidx.databinding.DataBindingUtil;
 import androidx.databinding.ObservableField;
 import androidx.lifecycle.MutableLiveData;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.evrencoskun.tableview.TableView;
 import com.evrencoskun.tableview.adapter.recyclerview.CellRecyclerView;
@@ -65,12 +66,13 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
     @Inject
     DataValuePresenter presenterFragment;
 
-    private MutableLiveData<Integer> currentTablePosition = new MutableLiveData<>(0);
+    private MutableLiveData<Integer> currentTablePosition = new MutableLiveData<>(-1);
     private DataSet dataSet;
     private Section section;
     private int tablesCount;
     private float currentDx;
     private float currentWidthPosition;
+    private ImageView widthSelector;
 
     @NonNull
     public static DataSetSectionFragment create(@NonNull String sectionUid, boolean accessDataWrite, String dataSetUid) {
@@ -178,9 +180,9 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
         if (tableView != null) {
             List<CellRecyclerView> rvs = tableView.getBackupHeaders();
             binding.headerContainer.removeAllViews();
-            for (CellRecyclerView crv : rvs)
+            for (CellRecyclerView crv : rvs) {
                 binding.headerContainer.addView(crv);
-
+            }
             TableViewCornerLayoutBinding cornerViewBinding =
                     TableViewCornerLayoutBinding.inflate(
                             LayoutInflater.from(getContext()),
@@ -188,11 +190,11 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
                             false);
             cornerViewBinding.getRoot().setLayoutParams(new ViewGroup.LayoutParams(
                     tableView.getAdapter().getRowHeaderWidth(),
-                    binding.headerContainer.getChildAt(0).getLayoutParams().height
+                    tableView.getHeaderHeight() * rvs.size()
             ));
+
             setUpZoomViewImage(cornerViewBinding);
             cornerViewBinding.buttonScale.setOnClickListener(view -> {
-
                 DataSetTableAdapter.TableScale nextTableScale = currentTableScale.get().getNext();
                 currentTableScale.set(nextTableScale);
                 setUpZoomViewImage(cornerViewBinding);
@@ -207,6 +209,20 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
                 analyticsHelper().setEvent(LEVEL_ZOOM, currentTableScale.get().name(), ZOOM_TABLE);
             });
             binding.headerContainer.addView(cornerViewBinding.getRoot());
+
+            widthSelector = new ImageView(getContext());
+            widthSelector.setImageResource(R.drawable.ic_swap_horizontal);
+            widthSelector.setOnClickListener(v -> {
+                tableView.hideWidthSelector(true);
+                widthSelector.setVisibility(View.GONE);
+                OnWidthSelectorClick(tableView);
+            });
+            float widthInDp = 24 * (getContext().getResources().getDisplayMetrics().density);
+            FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams((int) widthInDp, (int) widthInDp);
+            layoutParams.leftMargin = tableView.getRowHeaderWidth() - (int) widthInDp / 2;
+            layoutParams.topMargin = tableView.getHeaderHeight() * rvs.size() - (int) widthInDp / 2;
+            binding.headerContainer.addView(widthSelector, layoutParams);
+            tableView.hideWidthSelector(false);
         }
     }
 
@@ -235,7 +251,7 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
 
     public void updateData(RowAction rowAction, String catCombo) {
         for (DataSetTableAdapter adapter : tableAdapter.getAdapterList())
-            if (adapter.getCatCombo()!=null && adapter.getCatCombo().equals(catCombo))
+            if (adapter.getCatCombo() != null && adapter.getCatCombo().equals(catCombo))
                 adapter.updateValue(rowAction);
     }
 
@@ -295,24 +311,27 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
     @Override
     public void OnWidthSelectorClick(TableView tableView) {
         binding.widthSelector.setVisibility(View.VISIBLE);
-        activity.setViewPagerScrolling(false);
-        binding.tableRecycler.setForeground(new ColorDrawable(ContextCompat.getColor(getContext(), R.color.colorAccentAlpha)));
+        binding.foregroundSelector.setVisibility(View.VISIBLE);
         binding.widthSelector.post(() -> showWidthEditorAt(tableView, tableView.getRowHeaderWidth()));
 
     }
 
     private void showWidthEditorAt(TableView tableView, int widthEditorPosition) {
         binding.widthSelector.setX(widthEditorPosition - binding.widthSelector.getMeasuredWidth() / 2);
+        float widthInDp = 24 * (getContext().getResources().getDisplayMetrics().density);
+        binding.widthSelectorMarker.setY(tableView.getTop() + tableView.getHeaderHeight() * tableView.getBackupHeaders().size() - (int) widthInDp / 2);
         currentDx = 0;
         currentWidthPosition = widthEditorPosition;
-        binding.widthSelector.setOnTouchListener((v, event) -> {
+        binding.foregroundSelector.setOnTouchListener((v, event) -> {
             float x = event.getRawX();
             switch (event.getAction()) {
                 case MotionEvent.ACTION_UP:
+                case MotionEvent.ACTION_CANCEL:
                     tableView.setRowHeaderWidth((int) currentWidthPosition + binding.widthSelector.getMeasuredWidth() / 2);
+                    tableView.requestLayout();
                     binding.widthSelector.setVisibility(View.GONE);
-                    activity.setViewPagerScrolling(true);
-                    binding.tableRecycler.setForeground(null);
+                    binding.foregroundSelector.setVisibility(View.GONE);
+                    loadHeader(currentTablePosition.getValue());
                     break;
                 case MotionEvent.ACTION_MOVE:
                     float dx = x - currentWidthPosition;

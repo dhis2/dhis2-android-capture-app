@@ -152,4 +152,10 @@ public class CellRecyclerView extends RecyclerView {
         //velocityY *= 0.6;
         return super.fling(velocityX, velocityY);
     }
+
+    @Override
+    protected void onLayout(boolean changed, int l, int t, int r, int b) {
+        super.onLayout(changed, l, t, r, b);
+        Log.e(LOG_TAG, "Has changed: "+changed+ String.format("%s %s %s %s",l,t,r,b));
+    }
 }

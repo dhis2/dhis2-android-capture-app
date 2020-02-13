@@ -19,6 +19,8 @@ package com.evrencoskun.tableview.adapter.recyclerview;
 
 import android.content.Context;
 import androidx.recyclerview.widget.RecyclerView;
+
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -112,6 +114,8 @@ public class CellRecyclerViewAdapter<C> extends AbstractRecyclerViewAdapter<C> {
 
         // Set the list to the adapter
         viewAdapter.setItems(rowList);
+
+        Log.d("CELL", "CELL AT POSTITION "+yPosition);
     }
 
     @Override

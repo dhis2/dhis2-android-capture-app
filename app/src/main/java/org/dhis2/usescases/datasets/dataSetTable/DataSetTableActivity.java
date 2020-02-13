@@ -2,13 +2,7 @@ package org.dhis2.usescases.datasets.dataSetTable;
 
 
 import android.content.pm.ActivityInfo;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.os.Handler;
-import android.text.Spannable;
-import android.text.SpannableString;
-import android.text.style.ImageSpan;
-import android.view.KeyEvent;
 import android.view.View;
 
 import androidx.annotation.NonNull;
@@ -19,7 +13,6 @@ import com.google.android.flexbox.FlexDirection;
 import com.google.android.flexbox.FlexboxLayoutManager;
 import com.google.android.flexbox.JustifyContent;
 import com.google.android.material.tabs.TabLayout;
-import com.google.android.material.tabs.TabLayoutMediator;
 
 import org.dhis2.App;
 import org.dhis2.R;
@@ -105,9 +98,9 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
     }
 
     private void setViewPager() {
-        viewPagerAdapter = new DataSetSectionAdapter(this, accessDataWrite, getIntent().getStringExtra(Constants.DATA_SET_UID));
+        viewPagerAdapter = new DataSetSectionAdapter(getSupportFragmentManager(), accessDataWrite, getIntent().getStringExtra(Constants.DATA_SET_UID), this);
         binding.viewPager.setAdapter(viewPagerAdapter);
-
+        binding.tabLayout.setupWithViewPager(binding.viewPager);
         binding.tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
@@ -121,8 +114,7 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
 
             @Override
             public void onTabReselected(TabLayout.Tab tab) {
-                int position = binding.tabLayout.getSelectedTabPosition();
-                if (viewPagerAdapter.hasFragmentAt(position) && viewPagerAdapter.getCurrentItem(position).currentNumTables() > 1) {
+                if (viewPagerAdapter.getCurrentItem(binding.tabLayout.getSelectedTabPosition()).currentNumTables() > 1) {
                     if (tableSelectorVisible)
                         binding.selectorLayout.setVisibility(View.GONE);
                     else {
@@ -147,20 +139,6 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
         this.sections = sections;
         if (sections.contains("NO_SECTION") && sections.size() > 1)
             sections.remove("NO_SECTION");
-
-        new TabLayoutMediator(binding.tabLayout, binding.viewPager, (tab, position) -> {
-            SpannableString sb = new SpannableString(sections.get(position) + "  ");
-
-            if (viewPagerAdapter.getItemCount() > position && (viewPagerAdapter.hasFragmentAt(position) && viewPagerAdapter.getCurrentItem(position).currentNumTables() > 1)) {
-                Drawable image = getResources().getDrawable(R.drawable.ic_arrow_down_white);
-                image.setBounds(0, 0, image.getIntrinsicWidth(), image.getIntrinsicHeight());
-                ImageSpan imageSpan = new ImageSpan(image, ImageSpan.ALIGN_BOTTOM);
-                sb.setSpan(imageSpan, sb.length() - 1, sb.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-            }
-
-            tab.setText(sb);
-        }).attach();
-
         viewPagerAdapter.swapData(sections);
     }
 
@@ -242,7 +220,7 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
     @Override
     public void setDataSetState(State state) {
         int syncIconRes;
-        switch (state){
+        switch (state) {
 
             case ERROR:
                 syncIconRes = R.drawable.ic_sync_problem_red;
@@ -274,7 +252,7 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
                 .setPeriodId(periodId)
                 .setAttributeOptionCombo(catOptCombo)
                 .onDismissListener(hasChanged -> {
-                    if(hasChanged){
+                    if (hasChanged) {
                         presenter.updateState();
                     }
                 })
@@ -288,7 +266,7 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
 
     @Override
     public void back() {
-        if(getCurrentFocus() == null || backPressed)
+        if (getCurrentFocus() == null || backPressed)
             super.back();
         else {
             backPressed = true;
@@ -304,9 +282,5 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
 
     public boolean isBackPressed() {
         return backPressed;
-    }
-
-    public void setViewPagerScrolling(boolean enablePageScrolling) {
-        binding.viewPager.setUserInputEnabled(enablePageScrolling);
     }
 }
