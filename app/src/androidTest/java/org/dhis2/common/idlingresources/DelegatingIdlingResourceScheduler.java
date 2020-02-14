@@ -10,6 +10,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static androidx.annotation.RestrictTo.Scope.LIBRARY;
 
+//From:  https://github.com/square/RxIdler
 @RestrictTo(LIBRARY)
 final class DelegatingIdlingResourceScheduler extends IdlingResourceScheduler {
     private final Scheduler delegate;
