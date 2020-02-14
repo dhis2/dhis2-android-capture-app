@@ -1,7 +1,7 @@
 package org.dhis2
 
-import org.dhis2.common.KeyStoreRobot.Companion.PASSWORD
-import org.dhis2.common.KeyStoreRobot.Companion.USERNAME
+import org.dhis2.common.keystore.KeyStoreRobot.Companion.PASSWORD
+import org.dhis2.common.keystore.KeyStoreRobot.Companion.USERNAME
 import org.dhis2.common.di.TestingInjector
 import org.dhis2.common.preferences.PreferencesTestingModule
 import org.dhis2.data.schedulers.SchedulerModule
@@ -43,14 +43,19 @@ class AppTest : App() {
             userComponent = serverComponent!!.plus(UserModule())
         }
 
-          val keyStoreRobot = TestingInjector.createKeyStoreRobot(baseContext)
-            keyStoreRobot.apply {
-                setData(USERNAME,"android")
-                setData(PASSWORD,"Android123")
-            }
+        logInUser()
+
         serverComponent?.let {
             val userManager = it.userManager()
             userManager.logIn("android","Android123","any")
+        }
+    }
+
+    private fun logInUser() {
+        val keyStoreRobot = TestingInjector.providesKeyStoreRobot(baseContext)
+        keyStoreRobot.apply {
+            setData(USERNAME, "android")
+            setData(PASSWORD, "Android123")
         }
     }
 

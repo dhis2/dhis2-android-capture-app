@@ -4,7 +4,8 @@ import android.content.Intent
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
 import org.dhis2.usescases.BaseTest
-import org.dhis2.usescases.teidashboard.TeiDashboardTest
+import org.dhis2.usescases.searchTrackEntity.SearchTEActivity
+import org.dhis2.usescases.searchte.SearchTETest
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -13,7 +14,10 @@ import org.junit.runner.RunWith
 class EnrollmentTest : BaseTest(){
 
     @get:Rule
-    val rule = ActivityTestRule(EnrollmentActivity::class.java, false, false)
+    val ruleSearch = ActivityTestRule(SearchTEActivity::class.java, false, false)
+
+    @get:Rule
+    val ruleEnrollment = ActivityTestRule(EnrollmentActivity::class.java, false, false)
 
     override fun setUp() {
         super.setUp()
@@ -22,23 +26,14 @@ class EnrollmentTest : BaseTest(){
 
     @Test
     fun openEnrollment() {
-        prepareEnrollmentIntentAndLaunchActivity()
-        Thread.sleep(2000)
+        prepareSearchIntentAndLaunchActivity()
+        Thread.sleep(10000)
     }
 
-    private fun prepareEnrollmentIntentAndLaunchActivity() {
+    private fun prepareSearchIntentAndLaunchActivity() {
         Intent().apply {
-            putExtra(ENROLLMENT_UID_EXTRA, ENROLLMENT_UID_EXTRA_VALUE)
-            putExtra(PROGRAM_UID_EXTRA, PROGRAM_UID_EXTRA_VALUE)
-            putExtra(MODE_EXTRA, EnrollmentActivity.EnrollmentMode.NEW)
-        }.also { rule.launchActivity(it) }
-    }
-
-    companion object {
-        const val ENROLLMENT_UID_EXTRA = "ENROLLMENT_UID_EXTRA"
-        const val ENROLLMENT_UID_EXTRA_VALUE = "GqLKN5AKh0M"
-        const val PROGRAM_UID_EXTRA = "PROGRAM_UID_EXTRA"
-        const val PROGRAM_UID_EXTRA_VALUE = "IpHINAT79UW"
-        const val MODE_EXTRA = "MODE_EXTRA"
+            putExtra(SearchTETest.CHILD_PROGRAM_UID, SearchTETest.CHILD_PROGRAM_UID_VALUE)
+            putExtra(SearchTETest.CHILD_TE_TYPE, SearchTETest.CHILD_TE_TYPE_VALUE)
+        }.also { ruleSearch.launchActivity(it) }
     }
 }

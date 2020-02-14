@@ -4,10 +4,14 @@ import android.content.Context
 import android.os.Build
 import androidx.test.espresso.intent.Intents
 import androidx.test.platform.app.InstrumentationRegistry
+import org.dhis2.DaggerAppComponent
 import org.dhis2.DisableAnimations
-import org.dhis2.common.KeyStoreRobot
-import org.dhis2.common.KeyStoreRobot.Companion.PASSWORD
-import org.dhis2.common.KeyStoreRobot.Companion.USERNAME
+import org.dhis2.common.di.BaseTestComponent
+import org.dhis2.common.di.TestingInjector
+import org.dhis2.common.keystore.KeyStoreRobot
+import org.dhis2.common.keystore.KeyStoreRobot.Companion.PASSWORD
+import org.dhis2.common.keystore.KeyStoreRobot.Companion.USERNAME
+import org.dhis2.common.preferences.PreferencesRobot
 import org.junit.After
 import org.junit.Before
 import org.junit.ClassRule
@@ -18,6 +22,7 @@ open class BaseTest {
     protected var context: Context = InstrumentationRegistry.getInstrumentation().targetContext
     private var isIntentsEnable = false
     private lateinit var keyStoreRobot: KeyStoreRobot
+    private lateinit var preferencesRobot: PreferencesRobot
 
     protected open fun getPermissionsToBeAccepted() = arrayOf<String>()
 
@@ -41,7 +46,10 @@ open class BaseTest {
     }
 
     private fun injectDependencies() {
-      //  keyStoreRobot = TestingInjector.createKeyStoreRobot(context)
+        TestingInjector.apply {
+            keyStoreRobot = providesKeyStoreRobot(context)
+            preferencesRobot = providesPreferencesRobot(context)
+        }
     }
 
     private fun setupMockServerIfNeeded() {
@@ -59,8 +67,8 @@ open class BaseTest {
     @Throws(Exception::class)
     open fun teardown() {
         disableIntents()
-    //    cleanPreferences()
-//      cleanKeystore()
+        cleanPreferences()
+        cleanKeystore()
     }
 
 
@@ -78,7 +86,11 @@ open class BaseTest {
         }
     }
 
-    private fun cleanPreferences() {
+    private fun cleanPreferences(){
+        preferencesRobot.cleanPreferences()
+    }
+
+    private fun cleanKeystore() {
         keyStoreRobot.apply {
             removeData(USERNAME)
             removeData(PASSWORD)

@@ -1,4 +1,4 @@
-package org.dhis2.common
+package org.dhis2.common.keystore
 
 import org.hisp.dhis.android.core.arch.storage.internal.AndroidSecureStore
 

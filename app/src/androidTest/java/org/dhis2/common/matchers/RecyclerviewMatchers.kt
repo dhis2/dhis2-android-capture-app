@@ -37,23 +37,6 @@ class RecyclerviewMatchers {
             }
         }
 
-        fun atPosition(position: Int, @NonNull resourceId: Int): Matcher<View> {
-            return object : BoundedMatcher<View, RecyclerView>(RecyclerView::class.java) {
-                 override  fun describeTo(description: Description) {
-                    description.appendText("has item in recyclerview at position $position")
-                }
-
-                override fun matchesSafely(view: RecyclerView): Boolean {
-                    val viewHolder = view.findViewHolderForAdapterPosition(position) ?: return false
-                    val viewById = viewHolder.itemView.findViewById<View>(resourceId)
-                    val matchesDescendant = hasDescendant(withId(resourceId)).matches(viewHolder.itemView)
-                    val matchesDisplay = isDisplayed().matches(viewById)
-
-                    return matchesDescendant && matchesDisplay
-                }
-            }
-        }
-
         fun atPosition(position: Int,
                        @NonNull itemMatcher: Matcher<View>): Matcher<View> {
             return object : BoundedMatcher<View, RecyclerView>(RecyclerView::class.java) {
