@@ -188,12 +188,12 @@ class EnrollmentPresenterImpl(
                     }
                     Pair(blockEnrollmentDate, blockIncidentDate)
                 }.map {
-                if (getProgram().access()?.data()!!.write() == true) {
-                    it
-                } else {
-                    Pair(first = true, second = true)
+                    if (getProgram().access()?.data()!!.write() == true) {
+                        it
+                    } else {
+                        Pair(first = true, second = true)
+                    }
                 }
-            }
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(

@@ -224,8 +224,8 @@ class EnrollmentPresenterImplTest {
             d2.eventModule().events()
                 .byEnrollmentUid().eq("")
                 .byStatus().eq(EventStatus.ACTIVE).orderByEventDate(
-                RepositoryScope.OrderByDirection.DESC
-            )
+                    RepositoryScope.OrderByDirection.DESC
+                )
         ) doReturn mock()
         whenever(
             d2.eventModule().events().byEnrollmentUid().eq("").byStatus()

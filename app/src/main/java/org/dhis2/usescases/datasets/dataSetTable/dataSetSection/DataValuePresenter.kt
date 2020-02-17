@@ -253,78 +253,101 @@ class DataValuePresenter(
     }
 
     private fun getCatOptionComboOrder(catOptionCombos: List<CategoryOptionCombo>?):
-    List<CategoryOptionCombo> {
-        val categoryOptionCombosOrder = ArrayList<CategoryOptionCombo>()
-        for (catOptions in catOptionOrder!!) {
-            for (categoryOptionCombo in catOptionCombos!!) {
-                if (catOptions.containsAll(
-                    repository.getCatOptionFromCatOptionCombo(
-                        categoryOptionCombo
+        List<CategoryOptionCombo> {
+            val categoryOptionCombosOrder = ArrayList<CategoryOptionCombo>()
+            for (catOptions in catOptionOrder!!) {
+                for (categoryOptionCombo in catOptionCombos!!) {
+                    if (catOptions.containsAll(
+                        repository.getCatOptionFromCatOptionCombo(
+                            categoryOptionCombo
+                        )
                     )
-                )
-                ) {
-                    categoryOptionCombosOrder.add(categoryOptionCombo)
+                    ) {
+                        categoryOptionCombosOrder.add(categoryOptionCombo)
+                    }
                 }
             }
+            return categoryOptionCombosOrder
         }
-        return categoryOptionCombosOrder
-    }
 
     private fun setTableData(dataTableModel: DataTableModel):
-    Quartet<DataTableModel, List<List<FieldViewModel>>, ArrayList<List<String>>, Boolean> {
-        val cells = ArrayList<List<String>>()
-        val listFields = ArrayList<List<FieldViewModel>>()
-        var row = 0
-        var column = 0
-        var isNumber = false
+        Quartet<DataTableModel, List<List<FieldViewModel>>, ArrayList<List<String>>, Boolean> {
+            val cells = ArrayList<List<String>>()
+            val listFields = ArrayList<List<FieldViewModel>>()
+            var row = 0
+            var column = 0
+            var isNumber = false
 
-        for (dataElement in dataTableModel.rows()!!) {
-            val values = ArrayList<String>()
-            val fields = ArrayList<FieldViewModel>()
-            var totalRow = 0
-            isNumber = dataElement.valueType() == ValueType.NUMBER ||
-                dataElement.valueType() == ValueType.INTEGER
-            val fieldFactory = FieldViewModelFactoryImpl("", "")
-
-            for (
-                categoryOptionCombo in
-                getCatOptionComboOrder(
-                    repository.getCatOptionComboFrom(
-                        dataTableModel.catCombo()?.uid(), catOptionOrder
-                    )
-                )
-            ) {
-                var editable = true
-                for (disabledDataElement in dataTableModel.dataElementDisabled()!!)
-                    if (disabledDataElement.categoryOptionCombo() != null &&
-                        disabledDataElement.categoryOptionCombo()!!.uid()
-                        == categoryOptionCombo.uid() &&
-                        disabledDataElement.dataElement()!!.uid() == dataElement.uid() ||
-                        disabledDataElement.dataElement()!!.uid() == dataElement.uid()
-                    ) {
-                        editable = false
-                    }
+            for (dataElement in dataTableModel.rows()!!) {
+                val values = ArrayList<String>()
+                val fields = ArrayList<FieldViewModel>()
+                var totalRow = 0
+                isNumber = dataElement.valueType() == ValueType.NUMBER ||
+                    dataElement.valueType() == ValueType.INTEGER
+                val fieldFactory = FieldViewModelFactoryImpl("", "")
 
                 for (
-                    categoryOption in
-                    repository.getCatOptionFromCatOptionCombo(categoryOptionCombo)
-                )
-                    if (!categoryOption.access().data().write()) {
-                        editable = false
-                    }
+                    categoryOptionCombo in
+                    getCatOptionComboOrder(
+                        repository.getCatOptionComboFrom(
+                            dataTableModel.catCombo()?.uid(), catOptionOrder
+                        )
+                    )
+                ) {
+                    var editable = true
+                    for (disabledDataElement in dataTableModel.dataElementDisabled()!!)
+                        if (disabledDataElement.categoryOptionCombo() != null &&
+                            disabledDataElement.categoryOptionCombo()!!.uid()
+                            == categoryOptionCombo.uid() &&
+                            disabledDataElement.dataElement()!!.uid() == dataElement.uid() ||
+                            disabledDataElement.dataElement()!!.uid() == dataElement.uid()
+                        ) {
+                            editable = false
+                        }
 
-                var fieldViewModel: FieldViewModel? = null
-                for (dataValue in dataTableModel.dataValues()!!)
-                    if (dataValue.dataElement() == dataElement.uid() &&
-                        dataValue.categoryOptionCombo() == categoryOptionCombo.uid()
-                    ) {
+                    for (
+                        categoryOption in
+                        repository.getCatOptionFromCatOptionCombo(categoryOptionCombo)
+                    )
+                        if (!categoryOption.access().data().write()) {
+                            editable = false
+                        }
+
+                    var fieldViewModel: FieldViewModel? = null
+                    for (dataValue in dataTableModel.dataValues()!!)
+                        if (dataValue.dataElement() == dataElement.uid() &&
+                            dataValue.categoryOptionCombo() == categoryOptionCombo.uid()
+                        ) {
+                            fieldViewModel = fieldFactory.create(
+                                dataValue.id()!!.toString(),
+                                dataElement.displayFormName()!!,
+                                dataElement.valueType()!!,
+                                false,
+                                dataElement.optionSetUid(),
+                                dataValue.value(),
+                                sectionName,
+                                true,
+                                editable,
+                                null,
+                                categoryOptionCombo.displayName(),
+                                dataElement.uid(),
+                                ArrayList(),
+                                "android",
+                                row,
+                                column,
+                                dataValue.categoryOptionCombo(),
+                                dataValue.catCombo()
+                            )
+                        }
+
+                    if (fieldViewModel == null) {
                         fieldViewModel = fieldFactory.create(
-                            dataValue.id()!!.toString(),
+                            "",
                             dataElement.displayFormName()!!,
                             dataElement.valueType()!!,
                             false,
                             dataElement.optionSetUid(),
-                            dataValue.value(),
+                            "",
                             sectionName,
                             true,
                             editable,
@@ -335,101 +358,79 @@ class DataValuePresenter(
                             "android",
                             row,
                             column,
-                            dataValue.categoryOptionCombo(),
-                            dataValue.catCombo()
+                            categoryOptionCombo.uid(),
+                            dataTableModel.catCombo()!!.uid()
                         )
                     }
 
-                if (fieldViewModel == null) {
-                    fieldViewModel = fieldFactory.create(
-                        "",
-                        dataElement.displayFormName()!!,
-                        dataElement.valueType()!!,
-                        false,
-                        dataElement.optionSetUid(),
-                        "",
-                        sectionName,
-                        true,
-                        editable,
-                        null,
-                        categoryOptionCombo.displayName(),
-                        dataElement.uid(),
-                        ArrayList(),
-                        "android",
-                        row,
-                        column,
-                        categoryOptionCombo.uid(),
-                        dataTableModel.catCombo()!!.uid()
-                    )
-                }
+                    fields.add(fieldViewModel)
+                    values.add(fieldViewModel.value().toString())
 
-                fields.add(fieldViewModel)
-                values.add(fieldViewModel.value().toString())
-
-                if (!section!!.uid().isEmpty() && section!!.showRowTotals()!! &&
-                    isNumber && !fieldViewModel.value()!!.isEmpty()
-                ) {
-                    totalRow += Integer.parseInt(fieldViewModel.value()!!)
-                }
-
-                column++
-            }
-
-            for (fieldViewModel in fields)
-                for (compulsoryDataElement in dataTableModel.compulsoryCells()!!)
-                    if (compulsoryDataElement.categoryOptionCombo()!!.uid() ==
-                        fieldViewModel.categoryOptionCombo() &&
-                        compulsoryDataElement.dataElement()!!.uid() == fieldViewModel.dataElement()
+                    if (!section!!.uid().isEmpty() && section!!.showRowTotals()!! &&
+                        isNumber && !fieldViewModel.value()!!.isEmpty()
                     ) {
-                        fields[fields.indexOf(fieldViewModel)] = fieldViewModel.setMandatory()
+                        totalRow += Integer.parseInt(fieldViewModel.value()!!)
                     }
 
-            if (!section!!.uid().isEmpty() && section!!.showRowTotals()!! && isNumber) {
-                setTotalRow(totalRow, fields, values, row, column)
+                    column++
+                }
+
+                for (fieldViewModel in fields)
+                    for (compulsoryDataElement in dataTableModel.compulsoryCells()!!)
+                        if (compulsoryDataElement.categoryOptionCombo()!!.uid() ==
+                            fieldViewModel.categoryOptionCombo() &&
+                            compulsoryDataElement.dataElement()!!.uid() ==
+                            fieldViewModel.dataElement()
+                        ) {
+                            fields[fields.indexOf(fieldViewModel)] = fieldViewModel.setMandatory()
+                        }
+
+                if (!section!!.uid().isEmpty() && section!!.showRowTotals()!! && isNumber) {
+                    setTotalRow(totalRow, fields, values, row, column)
+                }
+
+                listFields.add(fields)
+                cells.add(values)
+                column = 0
+                row++
             }
 
-            listFields.add(fields)
-            cells.add(values)
-            column = 0
-            row++
-        }
+            tableCells.add(listFields)
 
-        tableCells.add(listFields)
-
-        if (isNumber) {
-            if (section!!.uid().isNotEmpty() && section!!.showColumnTotals()!!) {
-                setTotalColumn(listFields, cells, dataTableModel.rows()!!, row, column)
-            }
-            if (section!!.uid().isNotEmpty() && section!!.showRowTotals()!!) {
-                for (i in 0 until dataTableModel.header()!!.size) {
-                    if (i == dataTableModel.header()!!.size - 1) {
-                        dataTableModel.header()!![i].add(
-                            CategoryOption.builder().uid("").displayName(
-                                "Total"
-                            ).build()
-                        )
-                    } else {
-                        dataTableModel.header()!![i].add(
-                            CategoryOption.builder().uid("").displayName(
-                                ""
-                            ).build()
-                        )
+            if (isNumber) {
+                if (section!!.uid().isNotEmpty() && section!!.showColumnTotals()!!) {
+                    setTotalColumn(listFields, cells, dataTableModel.rows()!!, row, column)
+                }
+                if (section!!.uid().isNotEmpty() && section!!.showRowTotals()!!) {
+                    for (i in 0 until dataTableModel.header()!!.size) {
+                        if (i == dataTableModel.header()!!.size - 1) {
+                            dataTableModel.header()!![i].add(
+                                CategoryOption.builder().uid("").displayName(
+                                    "Total"
+                                ).build()
+                            )
+                        } else {
+                            dataTableModel.header()!![i].add(
+                                CategoryOption.builder().uid("").displayName(
+                                    ""
+                                ).build()
+                            )
+                        }
                     }
                 }
             }
+
+            val isEditable = accessDataWrite &&
+                !isExpired(dataSet) &&
+                dataInputPeriodModel.isEmpty() || (
+                checkHasInputPeriod() != null && DateUtils.getInstance().isInsideInputPeriod(
+                    checkHasInputPeriod()
+                )
+                ) &&
+                !isApproval
+
+            return Quartet.create(dataTableModel, listFields, cells, isEditable)
         }
-
-        val isEditable = accessDataWrite &&
-            !isExpired(dataSet) &&
-            dataInputPeriodModel.isEmpty() || (
-            checkHasInputPeriod() != null && DateUtils.getInstance().isInsideInputPeriod(
-                checkHasInputPeriod()
-            )
-            ) &&
-            !isApproval
-
-        return Quartet.create(dataTableModel, listFields, cells, isEditable)
-    }
 
     private fun isExpired(dataSet: DataSet?): Boolean {
         return if (0 == dataSet?.expiryDays()) {
@@ -698,27 +699,27 @@ class DataValuePresenter(
     }
 
     fun transformCategories(map: Map<String, List<List<Pair<CategoryOption, Category>>>>):
-    Map<String, List<List<CategoryOption>>> {
-        val mapTransform = HashMap<String, MutableList<List<CategoryOption>>>()
-        for ((key) in map) {
-            mapTransform[key] = mutableListOf()
-            var repeat = 1
-            var nextCategory = 0
-            for (list in map.getValue(key)) {
-                val catOptions = ArrayList<CategoryOption>()
-                for (x in 0 until repeat) {
-                    for (pair in list) {
-                        catOptions.add(pair.val0())
-                        nextCategory++
+        Map<String, List<List<CategoryOption>>> {
+            val mapTransform = HashMap<String, MutableList<List<CategoryOption>>>()
+            for ((key) in map) {
+                mapTransform[key] = mutableListOf()
+                var repeat = 1
+                var nextCategory = 0
+                for (list in map.getValue(key)) {
+                    val catOptions = ArrayList<CategoryOption>()
+                    for (x in 0 until repeat) {
+                        for (pair in list) {
+                            catOptions.add(pair.val0())
+                            nextCategory++
+                        }
                     }
+                    repeat = nextCategory
+                    nextCategory = 0
+                    mapTransform[key]?.add(catOptions)
                 }
-                repeat = nextCategory
-                nextCategory = 0
-                mapTransform[key]?.add(catOptions)
             }
+            return mapTransform
         }
-        return mapTransform
-    }
 
     fun getCatOptionCombos(
         listCategories: List<List<Pair<CategoryOption, Category>>>,

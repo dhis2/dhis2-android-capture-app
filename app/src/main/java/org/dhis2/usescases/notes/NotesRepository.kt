@@ -10,11 +10,11 @@ class NotesRepository(private val d2: D2, val programUid: String) {
     fun getEnrollmentNotes(teiUid: String): Single<List<Note>> =
         d2.noteModule().notes()
             .byEnrollmentUid().eq(
-            d2.enrollmentModule().enrollments()
-                .byProgram().eq(programUid)
-                .byTrackedEntityInstance().eq(teiUid)
-                .one().blockingGet().uid()
-        ).get()
+                d2.enrollmentModule().enrollments()
+                    .byProgram().eq(programUid)
+                    .byTrackedEntityInstance().eq(teiUid)
+                    .one().blockingGet().uid()
+            ).get()
             .map { notes ->
                 notes.sortedWith(
                     Comparator { note1, note2 ->

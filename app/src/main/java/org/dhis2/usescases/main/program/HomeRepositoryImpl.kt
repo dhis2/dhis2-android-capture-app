@@ -181,16 +181,16 @@ internal class HomeRepositoryImpl(
                     hasOverdueEvent = hasOverdue
                 )
             }.map { program ->
-            program.setTranslucent(
-                (
-                    dateFilter.isNotEmpty() ||
-                        orgUnitFilter.isNotEmpty() ||
-                        statesFilter.isNotEmpty() ||
-                        assignedToUser == true
-                    ) &&
-                    program.count() == 0
-            )
-        }
+                program.setTranslucent(
+                    (
+                        dateFilter.isNotEmpty() ||
+                            orgUnitFilter.isNotEmpty() ||
+                            statesFilter.isNotEmpty() ||
+                            assignedToUser == true
+                        ) &&
+                        program.count() == 0
+                )
+            }
             .toList().toFlowable()
     }
 
@@ -335,17 +335,17 @@ internal class HomeRepositoryImpl(
         } else if (
             d2.eventModule().events()
                 .byProgramUid().eq(program.uid()).byState().`in`(
-                State.SENT_VIA_SMS,
-                State.SYNCED_VIA_SMS
-            ).blockingGet().isNotEmpty()
+                    State.SENT_VIA_SMS,
+                    State.SYNCED_VIA_SMS
+                ).blockingGet().isNotEmpty()
         ) {
             State.SENT_VIA_SMS
         } else if (
             d2.eventModule().events()
                 .byProgramUid().eq(program.uid()).byState().`in`(
-                State.TO_UPDATE,
-                State.TO_POST
-            )
+                    State.TO_UPDATE,
+                    State.TO_POST
+                )
                 .blockingGet().isNotEmpty() ||
             d2.eventModule().events().byProgramUid().eq(program.uid())
                 .byDeleted().isTrue.blockingGet().isNotEmpty()

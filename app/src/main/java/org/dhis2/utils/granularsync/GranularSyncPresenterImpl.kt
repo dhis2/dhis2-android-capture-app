@@ -245,8 +245,8 @@ class GranularSyncPresenterImpl(
                                 }
                             }
                         }.doOnComplete {
-                        reportState(SmsSendingService.State.RESULT_CONFIRMED, 0, 0)
-                    }
+                            reportState(SmsSendingService.State.RESULT_CONFIRMED, 0, 0)
+                        }
                 } else {
                     Completable.complete()
                 }

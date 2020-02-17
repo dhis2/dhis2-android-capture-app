@@ -166,32 +166,32 @@ class RulesRepository(private val d2: D2) {
                 .withTrackedEntityDataValues()
                 .orderByEventDate(RepositoryScope.OrderByDirection.DESC)
                 .get().map { list ->
-                var currentEventIndex = -1
-                var index = 0
-                do {
-                    if (list[index].uid() == eventToEvaluate.uid()) {
-                        currentEventIndex = index
-                    } else {
-                        index++
+                    var currentEventIndex = -1
+                    var index = 0
+                    do {
+                        if (list[index].uid() == eventToEvaluate.uid()) {
+                            currentEventIndex = index
+                        } else {
+                            index++
+                        }
+                    } while (currentEventIndex == -1)
+
+                    var newEvents = list.subList(0, currentEventIndex)
+                    var previousEvents = list.subList(currentEventIndex + 1, list.size)
+
+                    if (newEvents.size > 10) {
+                        newEvents = newEvents.subList(0, 10)
                     }
-                } while (currentEventIndex == -1)
+                    if (previousEvents.size > 10) {
+                        previousEvents = previousEvents.subList(0, 10)
+                    }
 
-                var newEvents = list.subList(0, currentEventIndex)
-                var previousEvents = list.subList(currentEventIndex + 1, list.size)
+                    val finalList = ArrayList<Event>()
+                    finalList.addAll(newEvents)
+                    finalList.addAll(previousEvents)
 
-                if (newEvents.size > 10) {
-                    newEvents = newEvents.subList(0, 10)
+                    finalList
                 }
-                if (previousEvents.size > 10) {
-                    previousEvents = previousEvents.subList(0, 10)
-                }
-
-                val finalList = ArrayList<Event>()
-                finalList.addAll(newEvents)
-                finalList.addAll(previousEvents)
-
-                finalList
-            }
         }
     }
 
