@@ -23,14 +23,12 @@ public class ImageRow implements Row<ImageHolder, ImageViewModel> {
 
     @NonNull
     private final FlowableProcessor<RowAction> processor;
-    private final String renderType;
     private final LayoutInflater inflater;
 
     public ImageRow(LayoutInflater layoutInflater, @NonNull FlowableProcessor<RowAction> processor,
                     String renderType) {
         this.inflater = layoutInflater;
         this.processor = processor;
-        this.renderType = renderType;
     }
 
     @NonNull
@@ -40,15 +38,15 @@ public class ImageRow implements Row<ImageHolder, ImageViewModel> {
         return new ImageHolder(binding, processor, null);
     }
 
-    public ImageHolder onCreate(@NonNull ViewGroup parent, int count, ObservableField<String> imageSelector) {
+    public ImageHolder onCreate(@NonNull ViewGroup parent, int count, ObservableField<String> imageSelector,String sectionRendering) {
 
         FormImageBinding binding = DataBindingUtil.inflate(inflater, R.layout.form_image, parent, false);
 
         Integer height = null;
         Integer parentHeight = parent.getMeasuredHeight() != 0 ? parent.getMeasuredHeight() : parent.getHeight();
-        if (renderType!=null && renderType.equals(ProgramStageSectionRenderingType.SEQUENTIAL.name())) {
+        if (sectionRendering!=null && sectionRendering.equals(ProgramStageSectionRenderingType.SEQUENTIAL.name())) {
             height = parentHeight / (count > 2 ? 3 : count);
-        } else if (renderType!=null && renderType.equals(ProgramStageSectionRenderingType.MATRIX.name())) {
+        } else if (sectionRendering!=null && sectionRendering.equals(ProgramStageSectionRenderingType.MATRIX.name())) {
             height = parentHeight / (count > 2 ? 2 : count);
         }
 

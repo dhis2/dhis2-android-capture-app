@@ -2,6 +2,7 @@ package org.dhis2.data.forms.dataentry;
 
 import android.os.Build;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
@@ -48,6 +49,7 @@ import org.dhis2.data.tuples.Trio;
 import org.hisp.dhis.android.core.common.FeatureType;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -98,6 +100,10 @@ public final class DataEntryAdapter extends Adapter {
 
     private String lastFocusItem;
     private int nextFocusPosition = -1;
+
+    List<Integer> sectionPositions;
+    private String rendering = ProgramStageSectionRenderingType.LISTING.name();
+    private Integer totalFields = 0;
 
     public DataEntryAdapter(@NonNull LayoutInflater layoutInflater,
                             @NonNull FragmentManager fragmentManager,
@@ -176,23 +182,24 @@ public final class DataEntryAdapter extends Adapter {
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         if (viewType == IMAGE)
-            return ((ImageRow) rows.get(IMAGE)).onCreate(parent, getItemCount(), imageSelector);
+            return ((ImageRow) rows.get(IMAGE)).onCreate(parent, totalFields, imageSelector, rendering);
         else
             return rows.get(viewType).onCreate(parent);
     }
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        rows.get(holder.getItemViewType()).onBind(holder,
-                viewModels.get(holder.getAdapterPosition()));
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             if (!(holder instanceof SectionHolder)) {
-
                 holder.itemView.setElevation(0f);
             } else {
                 holder.itemView.setElevation(5f);
             }
         }
+
+        rows.get(holder.getItemViewType()).onBind(holder,
+                viewModels.get(holder.getAdapterPosition()));
     }
 
     @Override
@@ -263,6 +270,18 @@ public final class DataEntryAdapter extends Adapter {
     }
 
     public void swap(@NonNull List<FieldViewModel> updates) {
+        sectionPositions = new ArrayList<>();
+        rendering = null;
+        for (FieldViewModel fieldViewModel : updates) {
+            if (fieldViewModel instanceof SectionViewModel) {
+                sectionPositions.add(viewModels.indexOf(fieldViewModel));
+                if (((SectionViewModel) fieldViewModel).isOpen()) {
+                    rendering = ((SectionViewModel) fieldViewModel).rendering();
+                    totalFields = ((SectionViewModel) fieldViewModel).totalFields();
+                }
+            }
+        }
+
         DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(
                 new DataEntryDiffCallback(viewModels, updates));
 
@@ -295,23 +314,6 @@ public final class DataEntryAdapter extends Adapter {
             currentFocusUid.setValue(viewModels.get(currentFocusPosition).uid());
     }
 
-    public void swapWithoutList() {
-
-        if (lastFocusItem != null) {
-            nextFocusPosition = -1;
-            for (int i = 0; i < viewModels.size(); i++) {
-                if (viewModels.get(i).uid().equals(lastFocusItem))
-                    nextFocusPosition = i + 1;
-                if (i == nextFocusPosition && !viewModels.get(i).editable()) {
-                    nextFocusPosition++;
-                }
-            }
-        }
-
-        if (nextFocusPosition != -1)
-            currentFocusUid.setValue(viewModels.get(nextFocusPosition).uid());
-    }
-
     public boolean mandatoryOk() {
         boolean isOk = true;
         for (FieldViewModel fieldViewModel : viewModels) {
@@ -337,19 +339,6 @@ public final class DataEntryAdapter extends Adapter {
         return hasError;
     }
 
-    public String getErrorFieldNames() {
-        StringBuilder errorFieldNames = new StringBuilder();
-        for (FieldViewModel fieldViewModel : viewModels) {
-            if (fieldViewModel.error() != null) {
-                if (errorFieldNames.length() == 0)
-                    errorFieldNames.append(fieldViewModel.label());
-                else
-                    errorFieldNames.append(", ").append(fieldViewModel.label());
-            }
-        }
-        return errorFieldNames.toString();
-    }
-
     public void setLastFocusItem(String lastFocusItem) {
         currentFocusUid.setValue(lastFocusItem);
         this.nextFocusPosition = -1;
@@ -357,20 +346,10 @@ public final class DataEntryAdapter extends Adapter {
     }
 
     public int getItemSpan(int position) {
-        List<Integer> sectionPositions = new ArrayList<>();
-        String rendering = null;
-        for (FieldViewModel fieldViewModel : viewModels) {
-            if (fieldViewModel instanceof SectionViewModel) {
-                sectionPositions.add(viewModels.indexOf(fieldViewModel));
-                if (((SectionViewModel) fieldViewModel).isOpen()) {
-                    rendering = ((SectionViewModel) fieldViewModel).rendering();
-                }
-            }
-        }
 
-        if (sectionPositions.contains(position)) {
+        if (getItemViewType(position) == SECTION || rendering == null) {
             return 2;
-        } else if (rendering != null) {
+        } else {
             switch (ProgramStageSectionRenderingType.valueOf(rendering)) {
                 case MATRIX:
                     return 1;
@@ -379,12 +358,14 @@ public final class DataEntryAdapter extends Adapter {
                 case SEQUENTIAL:
                     return 2;
             }
-        } else {
-            return 2;
         }
     }
 
-    public boolean isSection(int position){
-        return getItemViewType(position) == SECTION;
+    public SectionViewModel getSectionAt(int position) {
+        return (SectionViewModel)viewModels.get(position);
+    }
+
+    public void setCurrentSection(String currentSection){
+        selectedSection.set(currentSection);
     }
 }

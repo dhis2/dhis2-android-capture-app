@@ -201,7 +201,7 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
     public void setInitialValue(String initialValue) {
         if (featureType == null)
             throw new NullPointerException("use setFeatureType before setting an initial value");
-        updateLocation(
+        setCoordinatesValue(
                 Geometry.builder()
                         .coordinates(initialValue)
                         .type(featureType)
@@ -306,6 +306,15 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
     @SuppressLint("MissingPermission")
     public void updateLocation(Geometry geometry) {
 
+        setCoordinatesValue(geometry);
+
+        this.currentGeometry = geometry;
+        if (listener2 != null)
+            listener2.onCurrentLocationClick(geometry);
+        invalidate();
+    }
+
+    private void setCoordinatesValue(Geometry geometry){
         if (geometry != null && geometry.type() != null) {
             if (geometry.type() == FeatureType.POINT) {
                 try {
@@ -323,11 +332,6 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
             }
             this.clearButton.setVisibility(VISIBLE);
         }
-
-        this.currentGeometry = geometry;
-        if (listener2 != null)
-            listener2.onCurrentLocationClick(geometry);
-        invalidate();
     }
 
     private void startRequestingLocation() {

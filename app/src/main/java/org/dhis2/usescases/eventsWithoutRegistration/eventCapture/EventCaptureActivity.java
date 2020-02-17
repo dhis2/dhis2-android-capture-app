@@ -23,10 +23,9 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.tabs.TabLayout;
 
-import org.dhis2.App;
+import org.dhis2.Bindings.ExtensionsKt;
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
-import org.dhis2.data.tuples.Pair;
 import org.dhis2.databinding.ActivityEventCaptureBinding;
 import org.dhis2.databinding.WidgetDatepickerBinding;
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity;
@@ -49,7 +48,6 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
-import io.reactivex.functions.Consumer;
 import timber.log.Timber;
 
 import static org.dhis2.utils.Constants.PROGRAM_UID;
@@ -70,6 +68,7 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
     private String programStageUid;
     private Boolean isEventCompleted = false;
     private EventMode eventMode;
+    public EventCaptureComponent eventCaptureComponent;
 
     public static Bundle getActivityBundle(@NonNull String eventUid, @NonNull String programUid, @NonNull EventMode eventMode) {
         Bundle bundle = new Bundle();
@@ -81,21 +80,18 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
-        ((App) getApplicationContext()).userComponent().plus(
+        eventCaptureComponent = (ExtensionsKt.app(this)).userComponent().plus(
                 new EventCaptureModule(
                         this,
-                        getIntent().getStringExtra(Constants.EVENT_UID)))
-                .inject(this);
+                        getIntent().getStringExtra(Constants.EVENT_UID)));
+        eventCaptureComponent.inject(this);
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_event_capture);
         binding.setPresenter(presenter);
         eventMode = (EventMode) getIntent().getSerializableExtra(Constants.EVENT_MODE);
 
-//        binding.calculationIndicator.text.setTextColor(ColorUtils.getContrastColor(ColorUtils.getPrimaryColor(this, ColorUtils.ColorType.PRIMARY_LIGHT)));
-
         binding.eventTabLayout.setupWithViewPager(binding.eventViewPager);
         binding.eventTabLayout.setTabMode(TabLayout.MODE_FIXED);
-        binding.eventViewPager.setOnTouchListener((v, event) -> true);
         binding.eventViewPager.setAdapter(new EventCapturePagerAdapter(
                 getSupportFragmentManager(),
                 getContext(),
@@ -103,23 +99,13 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
                 getIntent().getStringExtra(Constants.EVENT_UID)
         ));
         presenter.initNoteCounter();
+        presenter.init();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         presenter.refreshTabCounters();
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-    }
-
-    @Override
-    protected void onStop() {
-
-        super.onStop();
     }
 
     @Override
@@ -186,11 +172,9 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
     }
 
     @Override
-    public Consumer<Pair<Float, Float>> updatePercentage() {
-        return pair -> {
-            binding.completion.setCompletionPercentage(pair.val0());
-            binding.completion.setSecondaryPercentage(pair.val1());
-        };
+    public void updatePercentage(float primaryValue, float secondaryValue) {
+        binding.completion.setCompletionPercentage(primaryValue);
+        binding.completion.setSecondaryPercentage(secondaryValue);
     }
 
     @Override
@@ -349,11 +333,6 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
     }
 
     @Override
-    public View getSnackbarAnchor() {
-        return binding.getRoot();
-    }
-
-    @Override
     public void clearFocus() {
         binding.root.requestFocus();
     }
@@ -374,49 +353,6 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
         setResult(RESULT_OK, intent);
         finish();
     }
-
-    @Override
-    public void setShowError(Map<String, String> errors) {
-        new CustomDialog(
-                getAbstracContext(),
-                getAbstracContext().getString(R.string.error_fields_title),
-                getAbstracContext().getString(R.string.error_fields_events),
-                getAbstracContext().getString(R.string.button_ok),
-                getString(R.string.check_mandatory_field),
-                Constants.RQ_MANDATORY_EVENTS,
-                new DialogClickListener() {
-                    @Override
-                    public void onPositive() {
-                        showCompleteActions(false, null, errors, null);
-                    }
-
-                    @Override
-                    public void onNegative() {
-                        presenter.goToSection(errors.entrySet().iterator().next().getKey());
-                    }
-                })
-                .show();
-    }
-
-    @Override
-    public void showMessageOnComplete(boolean canComplete, String completeMessage) {
-        String title = canComplete ?
-                getString(R.string.warning_on_complete_title) :
-                getString(R.string.error_on_complete_title);
-        showInfoDialog(title, completeMessage);
-    }
-
-    @Override
-    public void attemptToFinish(boolean canComplete) {
-        FormBottomDialog.getInstance()
-                .setAccessDataWrite(presenter.canWrite())
-                .setIsExpired(presenter.hasExpired())
-                .setMandatoryFields(canComplete)
-                .setCanComplete(canComplete)
-                .setListener(this::setAction)
-                .show(getSupportFragmentManager(), "SHOW_OPTIONS");
-    }
-
 
     @Override
     public void renderInitialInfo(String stageName, String eventDate, String orgUnit, String catOption) {
