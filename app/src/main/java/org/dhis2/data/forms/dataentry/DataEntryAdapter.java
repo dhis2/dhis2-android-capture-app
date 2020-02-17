@@ -1,8 +1,6 @@
 package org.dhis2.data.forms.dataentry;
 
-import android.os.Build;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
@@ -38,7 +36,6 @@ import org.dhis2.data.forms.dataentry.fields.radiobutton.RadioButtonRow;
 import org.dhis2.data.forms.dataentry.fields.radiobutton.RadioButtonViewModel;
 import org.dhis2.data.forms.dataentry.fields.scan.ScanTextRow;
 import org.dhis2.data.forms.dataentry.fields.scan.ScanTextViewModel;
-import org.dhis2.data.forms.dataentry.fields.section.SectionHolder;
 import org.dhis2.data.forms.dataentry.fields.section.SectionRow;
 import org.dhis2.data.forms.dataentry.fields.section.SectionViewModel;
 import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerRow;
@@ -49,7 +46,6 @@ import org.dhis2.data.tuples.Trio;
 import org.hisp.dhis.android.core.common.FeatureType;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -189,15 +185,6 @@ public final class DataEntryAdapter extends Adapter {
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            if (!(holder instanceof SectionHolder)) {
-                holder.itemView.setElevation(0f);
-            } else {
-                holder.itemView.setElevation(5f);
-            }
-        }
-
         rows.get(holder.getItemViewType()).onBind(holder,
                 viewModels.get(holder.getAdapterPosition()));
     }
@@ -362,10 +349,10 @@ public final class DataEntryAdapter extends Adapter {
     }
 
     public SectionViewModel getSectionAt(int position) {
-        return (SectionViewModel)viewModels.get(position);
+        return (SectionViewModel) viewModels.get(position);
     }
 
-    public void setCurrentSection(String currentSection){
+    public void setCurrentSection(String currentSection) {
         selectedSection.set(currentSection);
     }
 }

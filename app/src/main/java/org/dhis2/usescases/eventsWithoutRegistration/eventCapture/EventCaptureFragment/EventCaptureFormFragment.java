@@ -193,9 +193,11 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
             headerBinding = FormSectionBinding.inflate(LayoutInflater.from(binding.header.getContext()), binding.header, false);
             headerBinding.getRoot().setOnClickListener(view -> {
                 if(!sectionViewModel.isOpen()) {
+                    sectionViewModel.setOpen(true);
                     dataEntryAdapter.setCurrentSection(sectionViewModel.uid());
                     sectionProcessor.onNext(sectionViewModel.uid());
                 }else{
+                    sectionViewModel.setOpen(false);
                     dataEntryAdapter.setCurrentSection("");
                     sectionProcessor.onNext("");
                 }

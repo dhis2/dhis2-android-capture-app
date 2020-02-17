@@ -6,8 +6,10 @@ import androidx.databinding.Observable
 import androidx.databinding.Observable.OnPropertyChangedCallback
 import androidx.databinding.ObservableField
 import io.reactivex.processors.FlowableProcessor
+import org.dhis2.R
 import org.dhis2.data.forms.dataentry.fields.FormViewHolder
 import org.dhis2.databinding.FormSectionBinding
+import org.dhis2.utils.customviews.CustomDialog
 
 class SectionHolder(
     private val formBinding: FormSectionBinding,
@@ -40,15 +42,33 @@ class SectionHolder(
                 viewModel.totalFields()
             )
         }
+
+        formBinding.descriptionIcon.visibility = if (viewModel.description().isNullOrEmpty()) {
+            View.GONE
+        } else {
+            View.VISIBLE
+        }
+
+        formBinding.descriptionIcon.setOnClickListener {
+            CustomDialog(
+                itemView.context,
+                viewModel.label(),
+                viewModel.description() ?: "",
+                itemView.context.getString(R.string.action_close),
+                null,
+                201,
+                null
+            ).show()
+        }
     }
 
     override fun dispose() {}
 
     override fun onClick(v: View) {
-        if(!viewModel.isOpen) {
+        if (!viewModel.isOpen) {
             selectedSection.set(viewModel.uid())
             sectionProcessor.onNext(viewModel.uid())
-        }else{
+        } else {
             selectedSection.set("")
             sectionProcessor.onNext("")
         }

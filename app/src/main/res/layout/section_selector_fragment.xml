@@ -32,19 +32,12 @@
             app:layout_constraintTop_toTopOf="parent"
             tools:listitem="@layout/custom_text_view" />
 
-        <androidx.cardview.widget.CardView
+
+        <FrameLayout
+            android:id="@+id/header"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            tools:layout_width="match_parent"
-            tools:layout_height="48dp"
-            app:cardUseCompatPadding="false"
-            app:cardCornerRadius="0dp"
-            app:cardElevation="7dp">
-            <FrameLayout
-                android:id="@+id/header"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
-        </androidx.cardview.widget.CardView>
+            app:layout_constraintTop_toTopOf="parent"/>
 
 
         <ProgressBar
