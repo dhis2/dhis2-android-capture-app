@@ -218,7 +218,9 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                                     FilterManager.getInstance().getOrgUnitUidsFilters(),
                                     FilterManager.getInstance().getStateFilters(),
                                     FilterManager.getInstance().getEventStatusFilters(),
-                                    data, NetworkUtils.isOnline(view.getContext()));
+                                    data,
+                                    FilterManager.getInstance().getAssignedFilter(),
+                                    NetworkUtils.isOnline(view.getContext()));
                         })
                         .doOnError(this::handleError)
                         .subscribeOn(schedulerProvider.io())
@@ -360,7 +362,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
-                        data -> view.setForm(data, selectedProgram, queryData),
+                        data -> view.setForm(data, selectedProgram, queryData, null),
                         Timber::d)
         );
     }
@@ -370,7 +372,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
-                        data -> view.setForm(data, selectedProgram, queryData),
+                        data -> view.setForm(data.getTrackedEntityAttributes(), selectedProgram, queryData, data.getRendering()),
                         Timber::d)
         );
     }
@@ -384,7 +386,9 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                                 filterManager.getOrgUnitUidsFilters(),
                                 filterManager.getStateFilters(),
                                 filterManager.getEventStatusFilters(),
-                                queryData, NetworkUtils.isOnline(view.getContext())))
+                                queryData,
+                                filterManager.getAssignedFilter(),
+                                NetworkUtils.isOnline(view.getContext())))
                         .subscribeOn(schedulerProvider.computation())
                         .observeOn(schedulerProvider.ui())
                         .subscribe(
@@ -728,9 +732,9 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                         .setConflictType(SyncStatusDialog.ConflictType.TEI)
                         .setUid(teiUid)
                         .onDismissListener(hasChanged -> {
-                            if(hasChanged && view.isMapVisible())
+                            if (hasChanged && view.isMapVisible())
                                 mapProcessor.onNext(new Unit());
-                            else if(hasChanged)
+                            else if (hasChanged)
                                 queryProcessor.onNext(queryData);
                         })
                         .build()

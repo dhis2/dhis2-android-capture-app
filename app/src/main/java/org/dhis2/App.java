@@ -91,6 +91,7 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
     private SessionComponent sessionComponent;
 
     private boolean fromBackGround = false;
+    private boolean recreated;
 
     @Override
     public void onCreate() {
@@ -247,7 +248,11 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
     ////////////////////////////////////////////////////////////////////////
     @NonNull
     public TeiDashboardComponent createDashboardComponent(@NonNull TeiDashboardModule dashboardModule) {
-        return (dashboardComponent = userComponent.plus(dashboardModule));
+        if (dashboardComponent != null) {
+            this.recreated = true;
+        }
+        dashboardComponent = userComponent.plus(dashboardModule);
+        return dashboardComponent;
     }
 
     @Nullable
@@ -256,7 +261,11 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
     }
 
     public void releaseDashboardComponent() {
-        dashboardComponent = null;
+        if(!this.recreated) {
+            dashboardComponent = null;
+        }else{
+            recreated = false;
+        }
     }
 
     @NotNull

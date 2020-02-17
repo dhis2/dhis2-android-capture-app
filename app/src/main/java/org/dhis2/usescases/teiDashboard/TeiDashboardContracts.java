@@ -51,5 +51,15 @@ public class TeiDashboardContracts {
         void initNoteCounter();
 
         void refreshTabCounters();
+
+        int getProgramTheme(int appTheme);
+
+        void prefSaveCurrentProgram(String programUid);
+
+        String getPreviousDashboard();
+
+        void saveProgramTheme(int programTheme);
+
+        void removeProgramTheme();
     }
 }

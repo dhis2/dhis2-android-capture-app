@@ -652,8 +652,11 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
     @Override
     public Flowable<Boolean> eventIntegrityCheck() {
         return d2.eventModule().events().uid(eventUid).get()
-                .map(event -> event.status() == EventStatus.ACTIVE && event.eventDate() != null && !event.eventDate().after(new Date()))
-                .toFlowable();
+                .map(event ->
+                        (event.status() == EventStatus.COMPLETED ||
+                                event.status() == EventStatus.ACTIVE) &&
+                                event.eventDate() != null && !event.eventDate().after(new Date())
+                ).toFlowable();
     }
 
     @Override

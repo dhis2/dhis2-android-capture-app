@@ -6,8 +6,10 @@ import org.dhis2.data.dagger.PerActivity;
 import org.dhis2.data.forms.EnrollmentFormRepository;
 import org.dhis2.data.forms.FormRepository;
 import org.dhis2.data.forms.RulesRepository;
+import org.dhis2.data.prefs.PreferenceProvider;
 import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.utils.analytics.AnalyticsHelper;
+import org.dhis2.utils.resources.ResourceManager;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.enrollment.EnrollmentCollectionRepository;
 import org.hisp.dhis.rules.RuleExpressionEvaluator;
@@ -42,14 +44,23 @@ public class TeiDashboardModule {
 
     @Provides
     @PerActivity
-    TeiDashboardContracts.Presenter providePresenter(DashboardRepository dashboardRepository, SchedulerProvider schedulerProvider, AnalyticsHelper analyticsHelper) {
-        return new TeiDashboardPresenter(view, teiUid, programUid, dashboardRepository, schedulerProvider, analyticsHelper);
+    TeiDashboardContracts.Presenter providePresenter(DashboardRepository dashboardRepository,
+                                                     SchedulerProvider schedulerProvider,
+                                                     AnalyticsHelper analyticsHelper,
+                                                     PreferenceProvider preferenceProvider) {
+        return new TeiDashboardPresenter(view,
+                teiUid,
+                programUid,
+                dashboardRepository,
+                schedulerProvider,
+                analyticsHelper,
+                preferenceProvider);
     }
 
     @Provides
     @PerActivity
-    DashboardRepository dashboardRepository(D2 d2) {
-        return new DashboardRepositoryImpl(d2, teiUid, programUid);
+    DashboardRepository dashboardRepository(D2 d2, ResourceManager resources) {
+        return new DashboardRepositoryImpl(d2, teiUid, programUid, resources);
     }
 
     @Provides

@@ -6,6 +6,7 @@ import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Observable
 import io.reactivex.Single
+import org.dhis2.data.prefs.PreferenceProvider
 import org.dhis2.data.schedulers.SchedulerProvider
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.dhis2.utils.AuthorityException
@@ -31,6 +32,7 @@ class TeiDashboardPresenterTest {
     private val schedulers: SchedulerProvider = TrampolineSchedulerProvider()
     private val view: TeiDashboardContracts.View = mock()
     private val analyticsHelper: AnalyticsHelper = mock()
+    private val preferenceProvider: PreferenceProvider = mock()
     private val programUid = "programUid"
     private val teiUid = "teiUid"
 
@@ -43,7 +45,8 @@ class TeiDashboardPresenterTest {
             programUid,
             repository,
             schedulers,
-            analyticsHelper
+            analyticsHelper,
+            preferenceProvider
         )
     }
 

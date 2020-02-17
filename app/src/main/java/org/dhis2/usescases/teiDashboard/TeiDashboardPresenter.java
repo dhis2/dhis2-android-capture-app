@@ -1,9 +1,12 @@
 package org.dhis2.usescases.teiDashboard;
 
+import org.dhis2.data.prefs.PreferenceProvider;
 import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.utils.AuthorityException;
+import org.dhis2.utils.Constants;
 import org.dhis2.utils.analytics.AnalyticsHelper;
 import org.hisp.dhis.android.core.common.Unit;
+import org.hisp.dhis.android.core.constant.Constant;
 import org.hisp.dhis.android.core.program.Program;
 
 import io.reactivex.Observable;
@@ -24,6 +27,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
     private final DashboardRepository dashboardRepository;
     private final SchedulerProvider schedulerProvider;
     private final AnalyticsHelper analyticsHelper;
+    private final PreferenceProvider preferenceProvider;
     private TeiDashboardContracts.View view;
 
     private String teiUid;
@@ -34,13 +38,14 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
     private PublishProcessor<Unit> notesCounterProcessor;
 
 
-    public TeiDashboardPresenter(TeiDashboardContracts.View view, String teiUid, String programUid, DashboardRepository dashboardRepository, SchedulerProvider schedulerProvider, AnalyticsHelper analyticsHelper) {
+    public TeiDashboardPresenter(TeiDashboardContracts.View view, String teiUid, String programUid, DashboardRepository dashboardRepository, SchedulerProvider schedulerProvider, AnalyticsHelper analyticsHelper, PreferenceProvider preferenceProvider) {
         this.view = view;
         this.teiUid = teiUid;
         this.programUid = programUid;
         this.analyticsHelper = analyticsHelper;
         this.dashboardRepository = dashboardRepository;
         this.schedulerProvider = schedulerProvider;
+        this.preferenceProvider = preferenceProvider;
         compositeDisposable = new CompositeDisposable();
         notesCounterProcessor = PublishProcessor.create();
     }
@@ -167,7 +172,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
 
     @Override
     public void initNoteCounter() {
-        if (!notesCounterProcessor.hasSubscribers()){
+        if (!notesCounterProcessor.hasSubscribers()) {
             compositeDisposable.add(
                     notesCounterProcessor.startWith(new Unit())
                             .flatMapSingle(unit ->
@@ -180,7 +185,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
                                     Timber::e
                             )
             );
-        }else{
+        } else {
             notesCounterProcessor.onNext(new Unit());
         }
     }
@@ -188,5 +193,30 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
     @Override
     public void refreshTabCounters() {
         initNoteCounter();
+    }
+
+    @Override
+    public int getProgramTheme(int appTheme) {
+        return preferenceProvider.getInt(Constants.PROGRAM_THEME, preferenceProvider.getInt(Constants.THEME, appTheme));
+    }
+
+    @Override
+    public void prefSaveCurrentProgram(String programUid) {
+        preferenceProvider.setValue(Constants.PREVIOUS_DASHBOARD_PROGRAM, programUid);
+    }
+
+    @Override
+    public String getPreviousDashboard() {
+        return preferenceProvider.getString(Constants.PREVIOUS_DASHBOARD_PROGRAM, null);
+    }
+
+    @Override
+    public void saveProgramTheme(int programTheme) {
+        preferenceProvider.setValue(Constants.PROGRAM_THEME,programTheme);
+    }
+
+    @Override
+    public void removeProgramTheme() {
+        preferenceProvider.removeValue(Constants.PROGRAM_THEME);
     }
 }

@@ -29,10 +29,10 @@ import io.reactivex.Single;
 public interface ProgramEventDetailRepository {
 
     @NonNull
-    LiveData<PagedList<ProgramEventViewModel>> filteredProgramEvents(List<DatePeriod> dateFilter, List<String> orgUnitFilter, List<CategoryOptionCombo> catOptionComboUid, List<EventStatus> eventStatus, List<State> states);
+    LiveData<PagedList<ProgramEventViewModel>> filteredProgramEvents(List<DatePeriod> dateFilter, List<String> orgUnitFilter, List<CategoryOptionCombo> catOptionComboUid, List<EventStatus> eventStatus, List<State> states, boolean assignedToUser);
 
     @NonNull
-    Flowable<kotlin.Pair<FeatureCollection, BoundingBox>> filteredEventsForMap(List<DatePeriod> dateFilter, List<String> orgUnitFilter, List<CategoryOptionCombo> catOptionComboUid, List<EventStatus> eventStatus, List<State> states);
+    Flowable<kotlin.Pair<FeatureCollection, BoundingBox>> filteredEventsForMap(List<DatePeriod> dateFilter, List<String> orgUnitFilter, List<CategoryOptionCombo> catOptionComboUid, List<EventStatus> eventStatus, List<State> states, boolean assignedToUser);
 
     @NonNull
     Observable<Program> program();
