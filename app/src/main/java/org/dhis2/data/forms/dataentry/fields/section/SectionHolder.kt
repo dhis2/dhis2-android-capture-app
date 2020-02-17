@@ -25,6 +25,7 @@ class SectionHolder(
                 sender: Observable,
                 propertyId: Int
             ) {
+                setShadows()
                 animateArrow()
             }
         })
@@ -71,6 +72,16 @@ class SectionHolder(
         } else {
             selectedSection.set("")
             sectionProcessor.onNext("")
+        }
+    }
+
+    private fun setShadows(){
+        val isSelected = selectedSection.get() == viewModel.uid()
+        if(isSelected){
+            formBinding.shadowBottom.visibility = View.GONE
+            formBinding.shadowTop.visibility = View.VISIBLE
+        }else{
+            formBinding.shadowTop.visibility = View.GONE
         }
     }
 

@@ -21,6 +21,7 @@ import org.dhis2.data.forms.dataentry.DataEntryAdapter;
 import org.dhis2.data.forms.dataentry.DataEntryArguments;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
+import org.dhis2.data.forms.dataentry.fields.section.SectionHolder;
 import org.dhis2.data.forms.dataentry.fields.section.SectionViewModel;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.databinding.FormSectionBinding;
@@ -52,6 +53,7 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
     private FlowableProcessor<String> sectionProcessor;
     private FlowableProcessor<Trio<String, String, Integer>> flowableOptions;
     private FormSectionBinding headerBinding;
+    private SectionHolder headerHolder;
 
     public static EventCaptureFormFragment newInstance(String eventUid) {
         EventCaptureFormFragment fragment = new EventCaptureFormFragment();
@@ -188,31 +190,14 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
 
     }
 
-    private FormSectionBinding createHeader(SectionViewModel sectionViewModel) {
+    private void createHeader(SectionViewModel sectionViewModel) {
         if (headerBinding == null) {
             headerBinding = FormSectionBinding.inflate(LayoutInflater.from(binding.header.getContext()), binding.header, false);
-            headerBinding.getRoot().setOnClickListener(view -> {
-                if(!sectionViewModel.isOpen()) {
-                    sectionViewModel.setOpen(true);
-                    dataEntryAdapter.setCurrentSection(sectionViewModel.uid());
-                    sectionProcessor.onNext(sectionViewModel.uid());
-                }else{
-                    sectionViewModel.setOpen(false);
-                    dataEntryAdapter.setCurrentSection("");
-                    sectionProcessor.onNext("");
-                }
-            });
+            headerHolder = dataEntryAdapter.createHeader(headerBinding);
             binding.header.removeAllViews();
-            binding.header.addView(headerBinding.getRoot());
+            binding.header.addView(headerHolder.itemView);
         }
-        headerBinding.sectionName.setText(sectionViewModel.label());
-        headerBinding.sectionFieldsInfo.setText(String.format(
-                "%s/%s",
-                sectionViewModel.completedFields(),
-                sectionViewModel.totalFields()
-        ));
-        headerBinding.openIndicator.setVisibility(sectionViewModel.isOpen() ? View.VISIBLE : View.GONE);
-        return headerBinding;
+        headerHolder.update(sectionViewModel);
     }
 
     private void checkLastItem() {
