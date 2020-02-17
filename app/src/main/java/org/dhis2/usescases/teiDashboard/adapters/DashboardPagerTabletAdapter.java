@@ -21,14 +21,16 @@ public class DashboardPagerTabletAdapter extends FragmentStatePagerAdapter {
 
     private static final int MOBILE_DASHBOARD_SIZE = 3;
     private final Context context;
+    private final String teiUid;
     private String currentProgram;
     private final int NO_FRAGMENT_DUE_TO_NO_PROGRAM_SELECTED = 0;
 
 
-    public DashboardPagerTabletAdapter(Context context, FragmentManager fm, String program) {
+    public DashboardPagerTabletAdapter(Context context, FragmentManager fm, String program, String teiUid) {
         super(fm, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
         this.currentProgram = program;
         this.context = context;
+        this.teiUid = teiUid;
     }
 
     @Override
@@ -46,7 +48,7 @@ public class DashboardPagerTabletAdapter extends FragmentStatePagerAdapter {
             case 1:
                 return new RelationshipFragment();
             case 2:
-                return new NotesFragment();
+                return NotesFragment.newTrackerInstance(currentProgram, teiUid);
         }
     }
 
