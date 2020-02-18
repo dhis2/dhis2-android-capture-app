@@ -123,9 +123,8 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
         binding.fieldRecycler.isNestedScrollingEnabled = true
         binding.fieldRecycler.adapter = adapter
 
-        binding.next.setOnClickListener {
+        binding.save.setOnClickListener {
             if (presenter.dataIntegrityCheck(adapter.mandatoryOk(), adapter.hasError())) {
-                binding.root.requestFocus()
                 analyticsHelper().setEvent(SAVE_ENROLL, CLICK, SAVE_ENROLL)
                 presenter.finish(mode)
             }
@@ -342,7 +341,7 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
         binding.coordinatesView.setEditable(access)
         binding.teiCoordinatesView.setEditable(access)
         if (access == false) {
-            binding.next.visibility = View.GONE
+            binding.save.visibility = View.GONE
         }
     }
     /*endregion*/
@@ -561,11 +560,11 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
     /*endregion*/
 
     override fun showSaveButton() {
-        binding.next.show()
+        binding.save.show()
     }
 
     override fun hideSaveButton() {
-        binding.next.hide()
+        binding.save.hide()
     }
 
     override fun showAdjustingForm() {
