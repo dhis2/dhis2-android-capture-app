@@ -197,8 +197,10 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
     }
 
     private void checkFirstItem() {
-        GridLayoutManager layoutManager = (GridLayoutManager) binding.formRecycler.getLayoutManager();
+
+        LinearLayoutManager layoutManager = (GridLayoutManager) binding.formRecycler.getLayoutManager();
         int position = layoutManager.findFirstVisibleItemPosition();
+
         try {
             while (position >= 0 && dataEntryAdapter.getItemViewType(position) != 17) {
                 position--;
@@ -211,8 +213,6 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
         } catch (Exception e) {
             Timber.tag(EventCaptureFormFragment.class.getName()).e(e);
         }
-
-
     }
 
     private void createHeader(SectionViewModel sectionViewModel) {
