@@ -303,7 +303,7 @@ class EnrollmentPresenterImpl(
                         { Timber.tag(TAG).e(it) }
                     )
             )
-            EnrollmentActivity.EnrollmentMode.CHECK -> view.serResultAndFinish()
+            EnrollmentActivity.EnrollmentMode.CHECK -> view.setResultAndFinish()
         }
     }
 

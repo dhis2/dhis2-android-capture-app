@@ -324,7 +324,7 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
         }
     }
 
-    override fun serResultAndFinish() {
+    override fun setResultAndFinish() {
         setResult(RESULT_OK)
         finish()
     }
