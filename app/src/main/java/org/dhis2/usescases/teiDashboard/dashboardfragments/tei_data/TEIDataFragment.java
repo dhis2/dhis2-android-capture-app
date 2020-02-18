@@ -69,7 +69,7 @@ import static org.dhis2.utils.analytics.AnalyticsConstants.TYPE_EVENT_TEI;
 
 public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataContracts.View {
 
-    public static final int REQ_DETAILS = 1001;
+    private static final int REQ_DETAILS = 1001;
     private static final int REQ_EVENT = 2001;
 
     private static final int RC_GENERATE_EVENT = 1501;
