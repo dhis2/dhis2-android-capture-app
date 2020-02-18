@@ -123,8 +123,7 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
         binding.fieldRecycler.adapter = adapter
 
         binding.next.setOnClickListener {
-            if (
-                presenter.dataIntegrityCheck(adapter.emptyMandatoryFields(), adapter.errorFields())
+            if (presenter.dataIntegrityCheck(adapter.emptyMandatoryFields(), adapter.errorFields())
             ) {
                 binding.root.requestFocus()
                 analyticsHelper().setEvent(SAVE_ENROLL, CLICK, SAVE_ENROLL)
@@ -220,7 +219,11 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
         } else {
             val eventCreationIntent = Intent(abstracContext, EventCaptureActivity::class.java)
             eventCreationIntent.putExtras(
-                EventCaptureActivity.getActivityBundle(eventUid, presenter.getProgram().uid(), EventMode.CHECK)
+                EventCaptureActivity.getActivityBundle(
+                    eventUid,
+                    presenter.getProgram().uid(),
+                    EventMode.CHECK
+                )
             )
             eventCreationIntent.putExtra(
                 Constants.TRACKED_ENTITY_INSTANCE,

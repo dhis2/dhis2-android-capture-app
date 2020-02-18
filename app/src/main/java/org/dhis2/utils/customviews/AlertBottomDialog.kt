@@ -20,32 +20,23 @@ class AlertBottomDialog : BottomSheetDialogFragment() {
             get() = AlertBottomDialog()
     }
 
-    fun setTitle(title: String): AlertBottomDialog {
-        this.title = title
-        return this
-    }
+    fun setTitle(title: String) = apply { this.title = title }
 
-    fun setMessage(message: String): AlertBottomDialog {
-        this.message = message
-        return this
-    }
+    fun setMessage(message: String) = apply { this.message = message }
 
-    fun setPositiveButton(text: String? = null, onClick: (() -> Unit)? = null): AlertBottomDialog {
+    fun setPositiveButton(text: String? = null, onClick: (() -> Unit)? = null) = apply {
         this.positiveText = text
         this.positiveOnclick = onClick
-        return this
     }
 
-    fun setNegativeButton(text: String? = null, onClick: (() -> Unit)? = null): AlertBottomDialog {
+    fun setNegativeButton(text: String? = null, onClick: (() -> Unit)? = null) = apply {
         this.showNegative = true
         this.negativeText = text
         this.negativeOnclick = onClick
-        return this
     }
 
-    fun setEmptyMandatoryFields(emptyMandatoryFields: List<String>): AlertBottomDialog {
+    fun setEmptyMandatoryFields(emptyMandatoryFields: List<String>) = apply {
         this.emptyMandatoryFields = emptyMandatoryFields
-        return this
     }
 
     private var emptyMandatoryFields: List<String>? = null
