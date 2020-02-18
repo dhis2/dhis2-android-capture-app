@@ -274,30 +274,35 @@ public final class DataEntryAdapter extends ListAdapter<FieldViewModel, ViewHold
 
         totalFields = imageFields;
 
-        int currentFocusPosition = -1;
-        int lastFocusPosition = -1;
 
-        if (lastFocusItem != null) {
-            nextFocusPosition = -1;
-            for (int i = 0; i < updates.size(); i++) {
-                if (updates.get(i).uid().equals(lastFocusItem)) {
-                    lastFocusPosition = i;
-                    nextFocusPosition = i + 1;
+        submitList(updates, () -> {
+            int currentFocusPosition = -1;
+            int lastFocusPosition = -1;
+
+            if (lastFocusItem != null) {
+                nextFocusPosition = -1;
+                for (int i = 0; i < updates.size(); i++) {
+                    if (updates.get(i).uid().equals(lastFocusItem)) {
+                        lastFocusPosition = i;
+                        nextFocusPosition = i + 1;
+                    }
+                    if (i == nextFocusPosition && !updates.get(i).editable() && !(updates.get(i) instanceof SectionViewModel)) {
+                        nextFocusPosition++;
+                    }
+                    if (updates.get(i).uid().equals(currentFocusUid.getValue()))
+                        currentFocusPosition = i;
                 }
-                if (i == nextFocusPosition && !updates.get(i).editable() && !(updates.get(i) instanceof SectionViewModel)) {
-                    nextFocusPosition++;
-                }
-                if (updates.get(i).uid().equals(currentFocusUid.getValue()))
-                    currentFocusPosition = i;
             }
-        }
 
-        submitList(updates, commitCallback);
+            if (nextFocusPosition != -1 && currentFocusPosition == lastFocusPosition && nextFocusPosition < updates.size())
+                currentFocusUid.setValue(getItem(nextFocusPosition).uid());
+            else if (currentFocusPosition != -1 && currentFocusPosition < updates.size())
+                currentFocusUid.setValue(getItem(currentFocusPosition).uid());
 
-        if (nextFocusPosition != -1 && currentFocusPosition == lastFocusPosition && nextFocusPosition < updates.size())
-            currentFocusUid.setValue(getItem(nextFocusPosition).uid());
-        else if (currentFocusPosition != -1 && currentFocusPosition < updates.size())
-            currentFocusUid.setValue(getItem(currentFocusPosition).uid());
+            commitCallback.run();
+        });
+
+
     }
 
     public boolean mandatoryOk() {
