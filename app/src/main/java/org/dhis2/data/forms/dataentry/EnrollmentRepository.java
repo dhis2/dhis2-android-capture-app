@@ -83,11 +83,6 @@ public final class EnrollmentRepository implements DataEntryRepository {
                             }
                         })
                 ).toFlowable();
-
-     /*   return d2.enrollmentModule().enrollments().uid(enrollmentUid).get()
-                .flatMap(enrollment -> d2.programModule().programTrackedEntityAttributes().withRenderType().byProgram().eq(enrollment.program()).get()).toFlowable()
-                .flatMapIterable(programTrackedEntityAttributes -> programTrackedEntityAttributes)
-                .map(this::transform).toList().toFlowable();*/
     }
 
     @Override

@@ -7,7 +7,6 @@ import androidx.annotation.NonNull;
 import androidx.databinding.ObservableField;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.MutableLiveData;
-import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 
@@ -55,7 +54,6 @@ import java.util.List;
 
 import io.reactivex.processors.FlowableProcessor;
 import io.reactivex.processors.PublishProcessor;
-import timber.log.Timber;
 
 public final class DataEntryAdapter extends ListAdapter<FieldViewModel, ViewHolder> /*implements StickyHeaderListener*/ {
 
@@ -117,10 +115,6 @@ public final class DataEntryAdapter extends ListAdapter<FieldViewModel, ViewHold
         selectedSection = new ObservableField<>("");
         this.processorOptionSet = PublishProcessor.create();
         this.currentFocusUid = new MutableLiveData<>();
-
-        currentFocusUid.observeForever(newValue -> {
-            Timber.tag("UID").d("NEW UID %s", newValue);
-        });
 
         rows.add(EDITTEXT, new EditTextRow(layoutInflater, processor, true, dataEntryArguments.renderType(), false, currentFocusUid));
         rows.add(BUTTON, new FileRow(layoutInflater, processor, true, dataEntryArguments.renderType(), currentFocusUid));
@@ -194,13 +188,11 @@ public final class DataEntryAdapter extends ListAdapter<FieldViewModel, ViewHold
                 getItem(holder.getAdapterPosition()));
         if (!(holder instanceof SectionHolder)) {
             holder.itemView.setBackgroundResource(R.color.form_field_background);
+        } else {
+            ((SectionHolder) holder).setBottonShadow(
+                    position > 0 && getItemViewType(position - 1) != SECTION);
         }
     }
-/*
-    @Override
-    public int getItemCount() {
-        return viewModels.size();
-    }*/
 
     @Override
     public int getItemViewType(int position) {
@@ -264,7 +256,7 @@ public final class DataEntryAdapter extends ListAdapter<FieldViewModel, ViewHold
         return sectionProcessor;
     }
 
-    public void swap(@NonNull List<FieldViewModel> updates) {
+    public void swap(@NonNull List<FieldViewModel> updates, Runnable commitCallback) {
         sectionPositions = new ArrayList<>();
         rendering = null;
         int imageFields = 0;
@@ -282,12 +274,6 @@ public final class DataEntryAdapter extends ListAdapter<FieldViewModel, ViewHold
 
         totalFields = imageFields;
 
-       /* DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(
-                new DataEntryDiffCallback(viewModels, updates));
-
-        viewModels.clear();
-        viewModels.addAll(updates);*/
-
         int currentFocusPosition = -1;
         int lastFocusPosition = -1;
 
@@ -298,7 +284,7 @@ public final class DataEntryAdapter extends ListAdapter<FieldViewModel, ViewHold
                     lastFocusPosition = i;
                     nextFocusPosition = i + 1;
                 }
-                if (i == nextFocusPosition && !updates.get(i).editable()) {
+                if (i == nextFocusPosition && !updates.get(i).editable() && !(updates.get(i) instanceof SectionViewModel)) {
                     nextFocusPosition++;
                 }
                 if (updates.get(i).uid().equals(currentFocusUid.getValue()))
@@ -306,13 +292,11 @@ public final class DataEntryAdapter extends ListAdapter<FieldViewModel, ViewHold
             }
         }
 
-//        diffResult.dispatchUpdatesTo(this);
+        submitList(updates, commitCallback);
 
-        submitList(updates);
-
-        if (nextFocusPosition != -1 && currentFocusPosition == lastFocusPosition && nextFocusPosition < viewModels.size())
+        if (nextFocusPosition != -1 && currentFocusPosition == lastFocusPosition && nextFocusPosition < updates.size())
             currentFocusUid.setValue(getItem(nextFocusPosition).uid());
-        else if (currentFocusPosition != -1 && currentFocusPosition < viewModels.size())
+        else if (currentFocusPosition != -1 && currentFocusPosition < updates.size())
             currentFocusUid.setValue(getItem(currentFocusPosition).uid());
     }
 
@@ -356,8 +340,8 @@ public final class DataEntryAdapter extends ListAdapter<FieldViewModel, ViewHold
                 case MATRIX:
                     return 1;
                 case LISTING:
-                default:
                 case SEQUENTIAL:
+                default:
                     return 2;
             }
         }

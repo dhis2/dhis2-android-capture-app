@@ -10,11 +10,12 @@ import org.dhis2.R
 import org.dhis2.data.forms.dataentry.fields.FormViewHolder
 import org.dhis2.databinding.FormSectionBinding
 import org.dhis2.utils.customviews.CustomDialog
+import org.jetbrains.annotations.NotNull
 
 class SectionHolder(
-    private val formBinding: FormSectionBinding,
-    private val selectedSection: ObservableField<String>,
-    private val sectionProcessor: FlowableProcessor<String>
+    private val formBinding: @NotNull FormSectionBinding,
+    private val selectedSection: @NotNull ObservableField<String>,
+    private val sectionProcessor: @NotNull FlowableProcessor<String>
 ) : FormViewHolder(formBinding), View.OnClickListener {
 
     private lateinit var viewModel: SectionViewModel
@@ -61,6 +62,8 @@ class SectionHolder(
                 null
             ).show()
         }
+
+        setShadows()
     }
 
     override fun dispose() {}
@@ -75,12 +78,11 @@ class SectionHolder(
         }
     }
 
-    private fun setShadows(){
-        val isSelected = selectedSection.get() == viewModel.uid()
-        if(isSelected){
-            formBinding.shadowBottom.visibility = View.GONE
+    private fun setShadows() {
+        val isSelected = viewModel.isOpen
+        if (isSelected) {
             formBinding.shadowTop.visibility = View.VISIBLE
-        }else{
+        } else {
             formBinding.shadowTop.visibility = View.GONE
         }
     }
@@ -108,5 +110,7 @@ class SectionHolder(
             .start()
     }
 
-
+    fun setBottonShadow(showShadow: Boolean) {
+        formBinding.shadowBottom.visibility = if (showShadow) View.VISIBLE else View.GONE
+    }
 }

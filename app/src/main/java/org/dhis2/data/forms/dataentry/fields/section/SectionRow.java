@@ -6,6 +6,7 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.databinding.DataBindingUtil;
 import androidx.databinding.ObservableField;
+import androidx.lifecycle.LiveData;
 
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.Row;

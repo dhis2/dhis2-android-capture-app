@@ -222,7 +222,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                 eventCaptureRepository.eventSections()
                         .flatMap(sectionList ->
                                 sectionProcessor.startWith(sectionList.get(0).sectionUid())
-                                        .flatMap(section -> fieldFlowable
+                                        .switchMap(section -> fieldFlowable
                                                 .map(fields -> {
                                                     totalFields = fields.size();
                                                     unsupportedFields = 0;
@@ -288,17 +288,6 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                                                                     cont++;
 
                                                             eventSectionModels.add(EventSectionModel.create("NO_SECTION", "no_section", cont, finalFields.keySet().size()));
-
-                                                            finalFieldList.add(
-                                                                    SectionViewModel.create(
-                                                                            sectionModel.sectionUid(),
-                                                                            sectionModel.label(),
-                                                                            "",
-                                                                            true,
-                                                                            finalFields.keySet().size(),
-                                                                            cont,
-                                                                            sectionModel.renderType()
-                                                                    ));
                                                             finalFieldList.addAll(fieldMap.get(sectionModel.sectionUid()));
                                                         }
                                                     }

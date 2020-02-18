@@ -3,6 +3,7 @@ package org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureF
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -38,6 +39,7 @@ import javax.inject.Inject;
 
 import io.reactivex.processors.FlowableProcessor;
 import io.reactivex.processors.PublishProcessor;
+import timber.log.Timber;
 
 import static android.text.TextUtils.isEmpty;
 
@@ -129,8 +131,10 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
             createDataEntry();
         }
 
-        dataEntryAdapter.swap(updates);
+        dataEntryAdapter.swap(updates, this::checkFirstItem);
+
         myLayoutManager.scrollToPositionWithOffset(myFirstPositionIndex, offset);
+
     }
 
     @Override
@@ -172,21 +176,42 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
                     imm.hideSoftInputFromWindow(recyclerView.getWindowToken(), 0);
                     binding.dummyFocusView.requestFocus();
                 }
-                checkFirstItem();
-                checkLastItem();
+
             }
         });
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            binding.formRecycler.setOnScrollChangeListener((v, scrollX, scrollY, oldScrollX, oldScrollY) -> {
+                checkFirstItem();
+                checkLastItem();
+            });
+        } else {
+            binding.formRecycler.setOnScrollListener(new RecyclerView.OnScrollListener() {
+                @Override
+                public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                    checkFirstItem();
+                    checkLastItem();
+                }
+            });
+        }
     }
 
     private void checkFirstItem() {
         GridLayoutManager layoutManager = (GridLayoutManager) binding.formRecycler.getLayoutManager();
         int position = layoutManager.findFirstVisibleItemPosition();
-        while (dataEntryAdapter.getItemViewType(position) != 17 && position >= 0) {
-            position--;
-        }
-        SectionViewModel sectionViewModel = dataEntryAdapter.getSectionAt(position);
+        try {
+            while (position >= 0 && dataEntryAdapter.getItemViewType(position) != 17) {
+                position--;
+            }
+            if (position >= 0) {
+                SectionViewModel sectionViewModel = dataEntryAdapter.getSectionAt(position);
 
-        createHeader(sectionViewModel);
+                createHeader(sectionViewModel);
+            }
+        } catch (Exception e) {
+            Timber.tag(EventCaptureFormFragment.class.getName()).e(e);
+        }
+
 
     }
 
@@ -207,7 +232,6 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
                 lastVisiblePosition == dataEntryAdapter.getItemCount() - 1 ||
                         dataEntryAdapter.getItemViewType(lastVisiblePosition) == 17;
         animateFabButton(shouldShowFab);
-
     }
 
     private void animateFabButton(boolean sectionIsVisible) {

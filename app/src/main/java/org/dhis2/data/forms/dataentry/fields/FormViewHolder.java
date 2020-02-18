@@ -65,7 +65,7 @@ public abstract class FormViewHolder extends RecyclerView.ViewHolder {
                     if (objectStyle != null && objectStyle.color() != null)
                         itemView.setBackgroundColor(ColorUtils.parseColor(objectStyle.color()));
                     else
-                        itemView.setBackgroundColor(Color.WHITE);
+                        itemView.setBackgroundResource(R.color.form_field_background);
                 }
             });
 
@@ -89,7 +89,7 @@ public abstract class FormViewHolder extends RecyclerView.ViewHolder {
             if (objectStyle != null && objectStyle.color() != null)
                 itemView.setBackgroundColor(ColorUtils.parseColor(objectStyle.color()));
             else
-                itemView.setBackgroundColor(Color.WHITE);
+                itemView.setBackgroundResource(R.color.form_field_background);
         }
     }
 

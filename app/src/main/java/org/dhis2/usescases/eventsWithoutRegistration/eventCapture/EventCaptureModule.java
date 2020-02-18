@@ -16,14 +16,8 @@ import org.dhis2.utils.RulesUtilsProvider;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.rules.RuleExpressionEvaluator;
 
-import javax.inject.Singleton;
-
 import dagger.Module;
 import dagger.Provides;
-
-/**
- * QUADRAM. Created by ppajuelo on 19/11/2018.
- */
 
 @PerActivity
 @Module
