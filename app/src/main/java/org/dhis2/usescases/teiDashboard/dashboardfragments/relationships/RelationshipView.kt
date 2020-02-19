@@ -1,6 +1,5 @@
 package org.dhis2.usescases.teiDashboard.dashboardfragments.relationships
 
-import io.reactivex.functions.Consumer
 import org.dhis2.data.tuples.Trio
 import org.dhis2.usescases.general.AbstractActivityContracts
 import org.hisp.dhis.android.core.relationship.RelationshipType
@@ -15,5 +14,3 @@ interface RelationshipView : AbstractActivityContracts.View {
     fun showRelationshipNotFoundError(teiTypeName: String)
     fun initFab(relationshipTypes: MutableList<Trio<RelationshipType, String, Int>>)
 }
-
-

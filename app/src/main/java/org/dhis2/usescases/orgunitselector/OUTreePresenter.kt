@@ -62,20 +62,20 @@ class OUTreePresenter(
                     repository.orgUnits(parent.second.uid()).toFlowable()
                         .map { ouList -> Pair(parent.first, ouList) }
                 }.map { organisationUnits ->
-                val nodes = ArrayList<TreeNode>()
-                organisationUnits.second.forEach { org ->
-                    nodes.add(
-                        TreeNode(
-                            org,
-                            false,
-                            repository.orgUnitHasChildren(org.uid()),
-                            filterManager.orgUnitFilters.contains(org),
-                            org.level()!!
+                    val nodes = ArrayList<TreeNode>()
+                    organisationUnits.second.forEach { org ->
+                        nodes.add(
+                            TreeNode(
+                                org,
+                                false,
+                                repository.orgUnitHasChildren(org.uid()),
+                                filterManager.orgUnitFilters.contains(org),
+                                org.level()!!
+                            )
                         )
-                    )
+                    }
+                    Pair(organisationUnits.first, nodes)
                 }
-                Pair(organisationUnits.first, nodes)
-            }
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
@@ -93,40 +93,40 @@ class OUTreePresenter(
                 .flatMap { name ->
                     repository.orgUnits(name = name).toFlowable()
                 }.map { organisationUnits ->
-                val nodes = ArrayList<TreeNode>()
-                val orderedList = mutableListOf<String>()
-                organisationUnits.forEach { org ->
-                    org.path()?.split("/")
-                        ?.filter { it.isNotEmpty() }
-                        ?.forEach { str ->
-                            when {
-                                !orderedList.contains(str) -> orderedList.add(str)
+                    val nodes = ArrayList<TreeNode>()
+                    val orderedList = mutableListOf<String>()
+                    organisationUnits.forEach { org ->
+                        org.path()?.split("/")
+                            ?.filter { it.isNotEmpty() }
+                            ?.forEach { str ->
+                                when {
+                                    !orderedList.contains(str) -> orderedList.add(str)
+                                }
                             }
+                        when {
+                            !orderedList.contains(org.uid()) -> orderedList.add(org.uid())
                         }
-                    when {
-                        !orderedList.contains(org.uid()) -> orderedList.add(org.uid())
                     }
-                }
-                orderedList.forEach { ouUid ->
-                    val organisationUnitParent = repository.orgUnit(ouUid)
-                    organisationUnitParent?.let {
-                        nodes.add(
-                            TreeNode(
-                                it,
-                                false,
-                                repository.orgUnitHasChildren(it.uid()),
-                                filterManager.orgUnitFilters.contains(it),
-                                it.level()!!
+                    orderedList.forEach { ouUid ->
+                        val organisationUnitParent = repository.orgUnit(ouUid)
+                        organisationUnitParent?.let {
+                            nodes.add(
+                                TreeNode(
+                                    it,
+                                    false,
+                                    repository.orgUnitHasChildren(it.uid()),
+                                    filterManager.orgUnitFilters.contains(it),
+                                    it.level()!!
+                                )
                             )
-                        )
+                        }
                     }
+                    (1 until nodes.size)
+                        .asSequence()
+                        .filter { nodes[it].level > nodes[it - 1].level }
+                        .forEach { nodes[it - 1].isOpen = true }
+                    nodes
                 }
-                (1 until nodes.size)
-                    .asSequence()
-                    .filter { nodes[it].level > nodes[it - 1].level }
-                    .forEach { nodes[it - 1].isOpen = true }
-                nodes
-            }
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(

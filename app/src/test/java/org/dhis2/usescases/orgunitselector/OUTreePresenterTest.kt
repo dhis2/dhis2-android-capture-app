@@ -4,27 +4,13 @@ import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
-import io.reactivex.Flowable
 import io.reactivex.Single
-import io.reactivex.processors.BehaviorProcessor
-import io.reactivex.processors.FlowableProcessor
-import io.reactivex.schedulers.TestScheduler
-import org.dhis2.data.schedulers.TestSchedulerProvider
+import java.util.UUID
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.dhis2.utils.filters.FilterManager
-import org.hisp.dhis.android.core.D2
-import org.hisp.dhis.android.core.common.Access
-import org.hisp.dhis.android.core.common.DataAccess
-import org.hisp.dhis.android.core.enrollment.Enrollment
-import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
-import org.hisp.dhis.android.core.note.Note
-import org.hisp.dhis.android.core.note.NoteCreateProjection
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
-import org.hisp.dhis.android.core.program.Program
 import org.junit.Before
 import org.junit.Test
-import org.mockito.Mockito
-import java.util.UUID
 
 class OUTreePresenterTest {
 
@@ -82,7 +68,7 @@ class OUTreePresenterTest {
         ) doReturn listOf()
 
         presenter.init()
-        presenter.ouChildListener.onNext(Pair(2,parent))
+        presenter.ouChildListener.onNext(Pair(2, parent))
 
         verify(view).addOrgUnits(2, listOf(treeNode(orgUnits[0]), treeNode(orgUnits[1])))
     }

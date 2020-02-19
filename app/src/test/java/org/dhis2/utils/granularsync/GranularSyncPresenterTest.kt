@@ -1,6 +1,5 @@
 package org.dhis2.utils.granularsync
 
-import androidx.work.WorkManager
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever

@@ -125,15 +125,21 @@ class NotesFragment : FragmentGlobalAbstract(), NotesView, NoteItemClickListener
         val pairStoredBy = Pair.create<View, String>(
             view.findViewById<TextView>(R.id.storeBy), getString(R.string.transitionElement_storeBy)
         )
-        val pairNoteText = Pair.create<View, String>(
-            view.findViewById<TextView>(R.id.note_text), getString(R.string.transitionElement_note_text)
-        )
-        val pairUserImage = Pair.create<View, String>(
-            view.findViewById<ImageView>(R.id.userImage), getString(R.string.transitionElement_userImage)
-        )
-        val pairUserInit = Pair.create<View, String>(
-            view.findViewById<ImageView>(R.id.userInit), getString(R.string.transitionElement_userInit)
-        )
+        val pairNoteText =
+            Pair.create<View, String>(
+                view.findViewById<TextView>(R.id.note_text),
+                getString(R.string.transitionElement_note_text)
+            )
+        val pairUserImage =
+            Pair.create<View, String>(
+                view.findViewById<ImageView>(R.id.userImage),
+                getString(R.string.transitionElement_userImage)
+            )
+        val pairUserInit =
+            Pair.create<View, String>(
+                view.findViewById<ImageView>(R.id.userInit),
+                getString(R.string.transitionElement_userInit)
+            )
         val pairDate = Pair.create<View, String>(
             view.findViewById<ImageView>(R.id.date), getString(R.string.transitionElement_date)
         )

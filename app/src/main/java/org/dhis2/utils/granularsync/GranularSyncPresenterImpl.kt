@@ -28,13 +28,9 @@ package org.dhis2.utils.granularsync
 import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.work.Constraints
 import androidx.work.Data
 import androidx.work.ExistingWorkPolicy
-import androidx.work.NetworkType
-import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkInfo
-import androidx.work.WorkManager
 import io.reactivex.Completable
 import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
@@ -43,7 +39,6 @@ import io.reactivex.schedulers.Schedulers
 import java.util.Collections
 import java.util.Date
 import org.dhis2.data.schedulers.SchedulerProvider
-import org.dhis2.data.service.SyncGranularWorker
 import org.dhis2.data.service.workManager.WorkManagerController
 import org.dhis2.data.service.workManager.WorkerItem
 import org.dhis2.data.service.workManager.WorkerType
@@ -139,7 +134,6 @@ class GranularSyncPresenterImpl(
     }
 
     override fun initGranularSync(): LiveData<List<WorkInfo>> {
-
         var conflictTypeData: SyncStatusDialog.ConflictType? = null
         var dataToDataValues: Data? = null
         when (conflictType) {
@@ -251,8 +245,8 @@ class GranularSyncPresenterImpl(
                                 }
                             }
                         }.doOnComplete {
-                        reportState(SmsSendingService.State.RESULT_CONFIRMED, 0, 0)
-                    }
+                            reportState(SmsSendingService.State.RESULT_CONFIRMED, 0, 0)
+                        }
                 } else {
                     Completable.complete()
                 }
