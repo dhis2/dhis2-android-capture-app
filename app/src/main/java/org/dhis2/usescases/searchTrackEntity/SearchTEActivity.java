@@ -248,6 +248,9 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
     @Override
     protected void onPause() {
+        if (initSearchNeeded) {
+            presenter.onDestroy();
+        }
         binding.mapView.onPause();
         super.onPause();
     }
@@ -659,7 +662,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     @Override
     public void openOrgUnitTreeSelector() {
         Intent ouTreeIntent = new Intent(this, OUTreeActivity.class);
-        Bundle bundle = OUTreeActivity.getBundle(initialProgram);
+        Bundle bundle = OUTreeActivity.Companion.getBundle(initialProgram);
         ouTreeIntent.putExtras(bundle);
         startActivityForResult(ouTreeIntent, FilterManager.OU_TREE);
     }
