@@ -8,6 +8,12 @@ import androidx.test.espresso.matcher.ViewMatchers.*
 import org.dhis2.R
 import org.dhis2.common.BaseRobot
 
+fun MainRobot.screen(robotBody: MainRobot.() -> Unit){
+    this.run {
+        robotBody
+    }
+}
+
 class MainRobot(context: Context) : BaseRobot(context){
 
     fun clickOnNavigationDrawerMenu() = apply {
