@@ -55,7 +55,6 @@ public class EditTextCustomHolder extends FormViewHolder {
         binding.customEdittext.setFocusChangedListener((v, hasFocus) -> {
             if(!hasFocus){
                 clearBackground(isSearchMode);
-                binding.customEdittext.getEditText().setFocusable(false);
             }
 
             if (isSearchMode || (!hasFocus && editTextModel != null && editTextModel.editable())) {
