@@ -4,12 +4,12 @@ The following is a comprehensive list of all Program rule components (variable t
 
 Any issues around using a particular feature with Android are highlighted with an exclamation mark \!.
 
-||||
-| :-: | :------ |
-| ![](resources/images/../../admin/icon-complete.png) | Value type implemented |
-| ![](resources/images/../../admin/icon-incomplete.png) | Value type not implemented, but will be safely ignored (if not compulsory) |
-| ![](resources/images/../../admin/icon-na.png) | Non-applicable|
-| ![](resources/images/../../admin/icon-wip.png) | Work in progress. Feature not completely implemented yet or with unexpected behavior already reported |
+|legend|description|
+|:--:|:------|
+|![](resources/images/../../admin/icon-complete.png)|Value type implemented|
+|![](resources/images/../../admin/icon-incomplete.png)|Value type not implemented, but will be safely ignored (if not compulsory) |
+|![](resources/images/../../admin/icon-na.png)|Not applicable|
+|![](resources/images/../../admin/icon-wip.png)|Work in progress. Feature not completely implemented yet or with unexpected behavior already reported |
 
 
 ## Program rule Variable source types supported
