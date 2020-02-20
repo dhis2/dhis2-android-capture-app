@@ -502,14 +502,11 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
         return queryDataValues(eventUid)
                 .switchMap(dataValues ->
                         formRepository.ruleEngine()
-                                .flatMap(ruleEngine -> {
-                                    if (isEmpty(lastUpdatedUid))
-                                        return Flowable.fromCallable(ruleEngine.evaluate(eventBuilder.dataValues(dataValues).build()));
-                                    else if (dataElementRules.containsKey(lastUpdatedUid))
-                                        return Flowable.fromCallable(ruleEngine.evaluate(eventBuilder.dataValues(dataValues).build(), dataElementRules.get(lastUpdatedUid)));
-                                    else
-                                        return Flowable.fromCallable(ruleEngine.evaluate(eventBuilder.dataValues(dataValues).build(), finalMandatoryRules));
-                                })
+                                .flatMap(ruleEngine ->
+                                        Flowable.fromCallable(
+                                                ruleEngine.evaluate(
+                                                        eventBuilder.dataValues(dataValues).build()
+                                                )))
                                 .map(Result::success)
                 )
                 .doOnError(error -> Result.failure(new Exception(error)));
