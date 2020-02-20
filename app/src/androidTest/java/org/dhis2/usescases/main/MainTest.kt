@@ -34,6 +34,8 @@ class MainTest : BaseTest() {
 
     }
 
+    //Create tests
+
 //    @Test
 //    fun loginButtonShouldBeDisplayedWhenAllFieldsAreFilled2() {
     //    startActivity()

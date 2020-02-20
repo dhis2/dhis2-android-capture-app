@@ -38,6 +38,10 @@ class AboutTest : BaseTest() {
     @Test
     fun checkVersionNames() {
         startActivity()
+
+        val appVersion = getAppVersionName()
+        val sdkVersion = getSDKVersionName()
+
         mainRobot.clickOnNavigationDrawerMenu()
                 .clickAbout()
         //Assert versionName
@@ -58,6 +62,6 @@ class AboutTest : BaseTest() {
         return ""
     }
 
-    fun getSDKVersion() =
+    fun getSDKVersionName() =
          String.format(context.getString(R.string.about_sdk), BuildConfig.SDK_VERSION)
 }
