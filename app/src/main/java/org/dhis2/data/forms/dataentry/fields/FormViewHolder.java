@@ -12,7 +12,6 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.dhis2.R;
-import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.customviews.CustomDialog;
 import org.hisp.dhis.android.core.common.ObjectStyle;
@@ -78,10 +77,7 @@ public abstract class FormViewHolder extends RecyclerView.ViewHolder {
 
     public void clearBackground(boolean isSarchMode) {
         if (!isSarchMode) {
-            if (objectStyle != null && objectStyle.color() != null)
-                itemView.setBackgroundColor(ColorUtils.parseColor(objectStyle.color()));
-            else
-                itemView.setBackgroundResource(R.color.form_field_background);
+            itemView.setBackgroundResource(R.color.form_field_background);
         }
     }
 
