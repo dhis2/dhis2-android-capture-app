@@ -224,10 +224,10 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                                 sectionProcessor.startWith(sectionList.get(0).sectionUid())
                                         .switchMap(section -> fieldFlowable
                                                 .map(fields -> {
-                                                    totalFields = fields.size();
+                                                    totalFields = 0;
                                                     unsupportedFields = 0;
                                                     HashMap<String, List<FieldViewModel>> fieldMap = new HashMap<>();
-
+                                                    List<String> optionSets = new ArrayList<>();
                                                     for (FieldViewModel fieldViewModel : fields) {
                                                         String fieldSection = fieldViewModel.programStageSection() != null ?
                                                                 fieldViewModel.programStageSection() :
@@ -237,6 +237,12 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                                                         }
                                                         fieldMap.get(fieldSection).add(fieldViewModel);
 
+                                                        if (fieldViewModel.optionSet() == null || !(fieldViewModel instanceof ImageViewModel)) {
+                                                            totalFields++;
+                                                        } else if (!optionSets.contains(fieldViewModel.optionSet())){
+                                                            optionSets.add(fieldViewModel.optionSet());
+                                                            totalFields++;
+                                                        }
                                                         if (fieldViewModel instanceof UnsupportedViewModel)
                                                             unsupportedFields++;
                                                     }
@@ -254,7 +260,10 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
 
                                                             HashMap<String, Boolean> finalFields = new HashMap<>();
                                                             for (FieldViewModel fieldViewModel : fieldViewModels) {
-                                                                finalFields.put(fieldViewModel.optionSet() == null ? fieldViewModel.uid() : fieldViewModel.optionSet(), !DhisTextUtils.Companion.isEmpty(fieldViewModel.value()));
+                                                                finalFields.put(fieldViewModel.optionSet() == null || !(fieldViewModel instanceof ImageViewModel)?
+                                                                                fieldViewModel.uid() :
+                                                                                fieldViewModel.optionSet(),
+                                                                        !DhisTextUtils.Companion.isEmpty(fieldViewModel.value()));
                                                             }
                                                             for (String key : finalFields.keySet())
                                                                 if (finalFields.get(key))
@@ -281,7 +290,10 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                                                             int cont = 0;
                                                             HashMap<String, Boolean> finalFields = new HashMap<>();
                                                             for (FieldViewModel fieldViewModel : fields) {
-                                                                finalFields.put(fieldViewModel.optionSet() == null ? fieldViewModel.uid() : fieldViewModel.optionSet(), !DhisTextUtils.Companion.isEmpty(fieldViewModel.value()));
+                                                                finalFields.put(fieldViewModel.optionSet() == null || !(fieldViewModel instanceof ImageViewModel)?
+                                                                                fieldViewModel.uid() :
+                                                                                fieldViewModel.optionSet(),
+                                                                        !DhisTextUtils.Companion.isEmpty(fieldViewModel.value()));
                                                             }
                                                             for (String key : finalFields.keySet())
                                                                 if (finalFields.get(key))
