@@ -4,13 +4,13 @@ import android.content.Context
 import android.os.Build
 import androidx.test.espresso.intent.Intents
 import androidx.test.platform.app.InstrumentationRegistry
-import org.dhis2.DaggerAppComponent
 import org.dhis2.DisableAnimations
 import org.dhis2.common.di.BaseTestComponent
 import org.dhis2.common.di.TestingInjector
 import org.dhis2.common.keystore.KeyStoreRobot
 import org.dhis2.common.keystore.KeyStoreRobot.Companion.PASSWORD
 import org.dhis2.common.keystore.KeyStoreRobot.Companion.USERNAME
+import org.dhis2.common.mockwebserver.MockWebServerRobot
 import org.dhis2.common.preferences.PreferencesRobot
 import org.junit.After
 import org.junit.Before
@@ -23,6 +23,8 @@ open class BaseTest {
     private var isIntentsEnable = false
     private lateinit var keyStoreRobot: KeyStoreRobot
     private lateinit var preferencesRobot: PreferencesRobot
+    private lateinit var mockWebServerRobot: MockWebServerRobot
+
 
     protected open fun getPermissionsToBeAccepted() = arrayOf<String>()
 
@@ -31,7 +33,6 @@ open class BaseTest {
     open fun setUp() {
         injectDependencies()
         allowPermissions()
-        setupMockServerIfNeeded()
         forceLogInForUsingDB()
     }
 
@@ -49,11 +50,12 @@ open class BaseTest {
         TestingInjector.apply {
             keyStoreRobot = providesKeyStoreRobot(context)
             preferencesRobot = providesPreferencesRobot(context)
+            mockWebServerRobot = providesMockWebserverRobot()
         }
     }
 
-    private fun setupMockServerIfNeeded() {
-
+    fun setupMockServer() {
+        mockWebServerRobot.start()
     }
 
     private fun forceLogInForUsingDB() {
@@ -69,6 +71,7 @@ open class BaseTest {
         disableIntents()
         cleanPreferences()
         cleanKeystore()
+        stopMockServer()
     }
 
 
@@ -95,6 +98,10 @@ open class BaseTest {
             removeData(USERNAME)
             removeData(PASSWORD)
         }
+    }
+
+    private fun stopMockServer(){
+        mockWebServerRobot.shutdown()
     }
 
     companion object {
