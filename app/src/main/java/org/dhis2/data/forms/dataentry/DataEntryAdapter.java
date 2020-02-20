@@ -55,7 +55,7 @@ import java.util.List;
 import io.reactivex.processors.FlowableProcessor;
 import io.reactivex.processors.PublishProcessor;
 
-public final class DataEntryAdapter extends ListAdapter<FieldViewModel, ViewHolder> /*implements StickyHeaderListener*/ {
+public final class DataEntryAdapter extends ListAdapter<FieldViewModel, ViewHolder> {
 
     private static final int SECTION = 17;
     private static final int EDITTEXT = 0;

@@ -3,6 +3,7 @@ package org.dhis2.data.forms.dataentry;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
 
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
@@ -62,27 +63,40 @@ public final class EnrollmentRepository implements DataEntryRepository {
                 .flatMap(program -> d2.programModule().programSections().byProgramUid().eq(program.uid()).withAttributes().get()
                         .flatMap(programSections -> {
                             if (programSections.isEmpty()) {
-                                return d2.programModule().programTrackedEntityAttributes().withRenderType().byProgram().eq(program.uid()).get().toFlowable()
-                                        .flatMapIterable(programTrackedEntityAttributes -> programTrackedEntityAttributes)
-                                        .map(this::transform).toList();
+                                return getFieldsForSingleSection(program.uid());
                             } else {
-                                List<FieldViewModel> fields = new ArrayList<>();
-                                for (ProgramSection section : programSections) {
-                                    fields.add(transformSection(section));
-                                    for (TrackedEntityAttribute attribute : section.attributes()) {
-                                        ProgramTrackedEntityAttribute programTrackedEntityAttribute =
-                                                d2.programModule().programTrackedEntityAttributes()
-                                                        .withRenderType()
-                                                        .byProgram().eq(program.uid())
-                                                        .byTrackedEntityAttribute().eq(attribute.uid())
-                                                        .one().blockingGet();
-                                        fields.add(transform(programTrackedEntityAttribute));
-                                    }
-                                }
-                                return Single.just(fields);
+                                return getFieldsForMultipleSections(programSections, program.uid());
                             }
                         })
                 ).toFlowable();
+    }
+
+    @VisibleForTesting()
+    public Single<List<FieldViewModel>> getFieldsForSingleSection(String programUid) {
+        return d2.programModule().programTrackedEntityAttributes().withRenderType()
+                .byProgram().eq(programUid).get()
+                .toFlowable()
+                .flatMapIterable(programTrackedEntityAttributes -> programTrackedEntityAttributes)
+                .map(this::transform)
+                .toList();
+    }
+
+    @VisibleForTesting()
+    public Single<List<FieldViewModel>> getFieldsForMultipleSections(List<ProgramSection> programSections, String programUid) {
+        List<FieldViewModel> fields = new ArrayList<>();
+        for (ProgramSection section : programSections) {
+            fields.add(transformSection(section));
+            for (TrackedEntityAttribute attribute : section.attributes()) {
+                ProgramTrackedEntityAttribute programTrackedEntityAttribute =
+                        d2.programModule().programTrackedEntityAttributes()
+                                .withRenderType()
+                                .byProgram().eq(programUid)
+                                .byTrackedEntityAttribute().eq(attribute.uid())
+                                .one().blockingGet();
+                fields.add(transform(programTrackedEntityAttribute));
+            }
+        }
+        return Single.just(fields);
     }
 
     @Override

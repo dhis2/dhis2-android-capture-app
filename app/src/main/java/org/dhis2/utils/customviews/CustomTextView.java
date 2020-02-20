@@ -94,10 +94,6 @@ public class CustomTextView extends FieldLayout implements View.OnFocusChangeLis
         descriptionLabel = binding.getRoot().findViewById(R.id.descriptionLabel);
         dummy = findViewById(R.id.dummyFocusView);
 
-       /* editText.setOnTouchListener((v, event) -> {
-            activate();
-            return true;
-        });*/
         descIcon = findViewById(R.id.descIcon);
 
         editText.setOnFocusChangeListener(this);

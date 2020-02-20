@@ -139,18 +139,6 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
         );
 
         compositeDisposable.add(
-                showCalculationProcessor
-                        .startWith(true)
-                        .switchMap(shouldShow -> Flowable.just(shouldShow).delay(shouldShow ? 1 : 0, TimeUnit.SECONDS, schedulerProvider.io()))
-                        .subscribeOn(schedulerProvider.io())
-                        .observeOn(schedulerProvider.ui())
-                        .subscribe(
-                                view::showRuleCalculation,
-                                Timber::e
-                        )
-        );
-
-        compositeDisposable.add(
                 Flowable.zip(
                         eventCaptureRepository.programStageName(),
                         eventCaptureRepository.eventDate(),
