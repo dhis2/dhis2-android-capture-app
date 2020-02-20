@@ -558,7 +558,7 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
             offset = it.top
         }
 
-        adapter.swap(fields)
+        adapter.swap(fields, {  })
 
         myLayoutManager.scrollToPositionWithOffset(myFirstPositionIndex, offset)
     }

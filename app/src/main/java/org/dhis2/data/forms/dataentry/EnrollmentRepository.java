@@ -3,10 +3,12 @@ package org.dhis2.data.forms.dataentry;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
 
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory;
+import org.dhis2.data.forms.dataentry.fields.section.SectionViewModel;
 import org.dhis2.utils.DhisTextUtils;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.common.ObjectStyle;
@@ -16,14 +18,18 @@ import org.hisp.dhis.android.core.enrollment.EnrollmentObjectRepository;
 import org.hisp.dhis.android.core.fileresource.FileResource;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitLevel;
+import org.hisp.dhis.android.core.program.ProgramSection;
+import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
 import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttribute;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueObjectRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
+import io.reactivex.Single;
 import timber.log.Timber;
 
 
@@ -53,9 +59,44 @@ public final class EnrollmentRepository implements DataEntryRepository {
     public Flowable<List<FieldViewModel>> list() {
 
         return d2.enrollmentModule().enrollments().uid(enrollmentUid).get()
-                .flatMap(enrollment -> d2.programModule().programTrackedEntityAttributes().withRenderType().byProgram().eq(enrollment.program()).get()).toFlowable()
+                .flatMap(enrollment -> d2.programModule().programs().uid(enrollment.program()).get())
+                .flatMap(program -> d2.programModule().programSections().byProgramUid().eq(program.uid()).withAttributes().get()
+                        .flatMap(programSections -> {
+                            if (programSections.isEmpty()) {
+                                return getFieldsForSingleSection(program.uid());
+                            } else {
+                                return getFieldsForMultipleSections(programSections, program.uid());
+                            }
+                        })
+                ).toFlowable();
+    }
+
+    @VisibleForTesting()
+    public Single<List<FieldViewModel>> getFieldsForSingleSection(String programUid) {
+        return d2.programModule().programTrackedEntityAttributes().withRenderType()
+                .byProgram().eq(programUid).get()
+                .toFlowable()
                 .flatMapIterable(programTrackedEntityAttributes -> programTrackedEntityAttributes)
-                .map(this::transform).toList().toFlowable();
+                .map(this::transform)
+                .toList();
+    }
+
+    @VisibleForTesting()
+    public Single<List<FieldViewModel>> getFieldsForMultipleSections(List<ProgramSection> programSections, String programUid) {
+        List<FieldViewModel> fields = new ArrayList<>();
+        for (ProgramSection section : programSections) {
+            fields.add(transformSection(section));
+            for (TrackedEntityAttribute attribute : section.attributes()) {
+                ProgramTrackedEntityAttribute programTrackedEntityAttribute =
+                        d2.programModule().programTrackedEntityAttributes()
+                                .withRenderType()
+                                .byProgram().eq(programUid)
+                                .byTrackedEntityAttribute().eq(attribute.uid())
+                                .one().blockingGet();
+                fields.add(transform(programTrackedEntityAttribute));
+            }
+        }
+        return Single.just(fields);
     }
 
     @Override
@@ -164,5 +205,16 @@ public final class EnrollmentRepository implements DataEntryRepository {
                     label, valueType, mandatory, optionSet, dataValue, null, allowFutureDates,
                     !generated, null, description, fieldRendering, optionCount, objectStyle, fieldMask);
         }
+    }
+
+    private FieldViewModel transformSection(ProgramSection programSection) {
+        return SectionViewModel.create(
+                programSection.uid(),
+                programSection.displayName(),
+                programSection.description(),
+                false,
+                0,
+                0,
+                ProgramStageSectionRenderingType.LISTING.name());
     }
 }
