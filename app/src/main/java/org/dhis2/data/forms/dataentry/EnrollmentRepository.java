@@ -8,21 +8,28 @@ import androidx.annotation.VisibleForTesting;
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory;
+import org.dhis2.data.forms.dataentry.fields.coordinate.CoordinateViewModel;
+import org.dhis2.data.forms.dataentry.fields.datetime.DateTimeViewModel;
+import org.dhis2.data.forms.dataentry.fields.orgUnit.OrgUnitViewModel;
 import org.dhis2.data.forms.dataentry.fields.section.SectionViewModel;
+import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.DhisTextUtils;
 import org.hisp.dhis.android.core.D2;
+import org.hisp.dhis.android.core.common.FeatureType;
 import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.common.ValueTypeDeviceRendering;
 import org.hisp.dhis.android.core.enrollment.EnrollmentObjectRepository;
 import org.hisp.dhis.android.core.fileresource.FileResource;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
-import org.hisp.dhis.android.core.organisationunit.OrganisationUnitLevel;
+import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.program.ProgramSection;
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
 import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttribute;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueObjectRepository;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,6 +50,13 @@ public final class EnrollmentRepository implements DataEntryRepository {
     private final Context context;
     private final D2 d2;
     private final EnrollmentObjectRepository enrollmentRepository;
+    
+    public static final String ENROLLMENT_DATA_SECTION_UID = "ENROLLMENT_DATA_SECTION_UID";
+    public static final String ENROLLMENT_DATE_UID = "enrollmentDateUid";
+    public static final String INCIDENT_DATE_UID = "incidentDateUid";
+    public static final String ORG_UNIT_UID = "orgUnitUid";
+    public static final String TEI_COORDINATES_UID = "teiCoordinatesUid";
+    public static final String ENROLLMENT_COORDINATES_UID = "enrollmentCoordinatesUid";
 
     public EnrollmentRepository(@NonNull Context context,
                                 @NonNull FieldViewModelFactory fieldFactory,
@@ -63,10 +77,19 @@ public final class EnrollmentRepository implements DataEntryRepository {
                 .flatMap(program -> d2.programModule().programSections().byProgramUid().eq(program.uid()).withAttributes().get()
                         .flatMap(programSections -> {
                             if (programSections.isEmpty()) {
-                                return getFieldsForSingleSection(program.uid());
+                                return getFieldsForSingleSection(program.uid())
+                                        .map(singleSectionList -> {
+                                            List<FieldViewModel> list = getSingleSection();
+                                            list.addAll(singleSectionList);
+                                            return list;
+                                        });
                             } else {
                                 return getFieldsForMultipleSections(programSections, program.uid());
                             }
+                        }).map(list -> {
+                            List<FieldViewModel> fields = getEnrollmentData(program);
+                            fields.addAll(list);
+                            return fields;
                         })
                 ).toFlowable();
     }
@@ -97,11 +120,6 @@ public final class EnrollmentRepository implements DataEntryRepository {
             }
         }
         return Single.just(fields);
-    }
-
-    @Override
-    public Observable<List<OrganisationUnitLevel>> getOrgUnitLevels() {
-        return Observable.just(d2.organisationUnitModule().organisationUnitLevels().blockingGet());
     }
 
     @Override
@@ -192,7 +210,7 @@ public final class EnrollmentRepository implements DataEntryRepository {
         ObjectStyle objectStyle = attribute.style() != null ? attribute.style() : ObjectStyle.builder().build();
 
         if (valueType == ValueType.ORGANISATION_UNIT && !DhisTextUtils.Companion.isEmpty(dataValue)) {
-            dataValue = dataValue + "_ou_" + d2.organisationUnitModule().organisationUnits().uid(dataValue).blockingGet().displayName();
+            dataValue = getOrgUnitValue(dataValue);
         }
 
         if (warning != null) {
@@ -207,6 +225,131 @@ public final class EnrollmentRepository implements DataEntryRepository {
         }
     }
 
+    private List<FieldViewModel> getSingleSection() {
+        List<FieldViewModel> singleSectionList = new ArrayList<>();
+        singleSectionList.add(
+                SectionViewModel.create(
+                        "singleSection",
+                        "Enrollment form",
+                        null,
+                        false,
+                        0,
+                        0,
+                        ProgramStageSectionRenderingType.LISTING.name())
+        );
+
+        return singleSectionList;
+    }
+
+    private List<FieldViewModel> getEnrollmentData(Program program) {
+        List<FieldViewModel> enrollmendDataList = new ArrayList<>();
+        enrollmendDataList.add(getEnrollmentDataSection(program.description()));
+        enrollmendDataList.add(getEnrollmentDateField(program.enrollmentDateLabel(), program.selectEnrollmentDatesInFuture(), false)); //TODO: CHECK IF CAN BE EDITED
+        if (program.displayIncidentDate()) {
+            enrollmendDataList.add(getIncidentDateField(program.incidentDateLabel(), program.selectIncidentDatesInFuture(), false)); //TODO: CHECK IF CAN BE EDITED
+        }
+        enrollmendDataList.add(getOrgUnitField("enrolling Org. Unit", false)); //TODO: CHECK IF CAN BE EDITED
+
+        TrackedEntityType teiType = d2.trackedEntityModule().trackedEntityTypes().uid(program.trackedEntityType().uid()).blockingGet();
+        if (teiType.featureType() != null && teiType.featureType() != FeatureType.NONE) {
+            enrollmendDataList.add(getTeiCoordinatesField("tei coordinates", teiType.featureType()));
+        }
+
+        if (program.featureType() != null && program.featureType() != FeatureType.NONE) {
+            enrollmendDataList.add(getEnrollmentCoordinatesField("enrollment coordinates", program.featureType()));
+        }
+
+        return enrollmendDataList;
+    }
+
+    private FieldViewModel getEnrollmentDataSection(String description) {
+        return SectionViewModel.create(
+                ENROLLMENT_DATA_SECTION_UID,
+                "Enrollment data",
+                description,
+                false,
+                0,
+                0,
+                ProgramStageSectionRenderingType.LISTING.name()
+        );
+    }
+
+    private FieldViewModel getEnrollmentDateField(String enrollmentDateLabel, Boolean allowFutureDates, Boolean editable) {
+        return DateTimeViewModel.create(
+                ENROLLMENT_DATE_UID,
+                enrollmentDateLabel,
+                true,
+                ValueType.DATE,
+                DateUtils.databaseDateFormat().format(enrollmentRepository.blockingGet().enrollmentDate()),
+                ENROLLMENT_DATA_SECTION_UID,
+                allowFutureDates,
+                editable,
+                null,
+                ObjectStyle.builder().build()
+        );
+    }
+
+    private FieldViewModel getIncidentDateField(String incidentDateLabel, Boolean allowFutureDates, boolean editable) {
+        return DateTimeViewModel.create(
+                INCIDENT_DATE_UID,
+                incidentDateLabel,
+                true,
+                ValueType.DATE,
+                DateUtils.databaseDateFormat().format(enrollmentRepository.blockingGet().incidentDate()),
+                ENROLLMENT_DATA_SECTION_UID,
+                allowFutureDates,
+                editable,
+                null,
+                ObjectStyle.builder().build()
+        );
+    }
+
+    private FieldViewModel getOrgUnitField(String enrollmentOrgUnitLabel, boolean editable) {
+        return OrgUnitViewModel.create(
+                ORG_UNIT_UID,
+                enrollmentOrgUnitLabel,
+                true,
+                getOrgUnitValue(enrollmentRepository.blockingGet().organisationUnit()),
+                ENROLLMENT_DATA_SECTION_UID,
+                editable,
+                null,
+                ObjectStyle.builder().build()
+        );
+    }
+
+    private FieldViewModel getTeiCoordinatesField(String teiCoordinatesLabel, FeatureType featureType) {
+        TrackedEntityInstance tei = d2.trackedEntityModule().trackedEntityInstances()
+                .uid(
+                        enrollmentRepository.blockingGet().trackedEntityInstance()
+                ).blockingGet();
+        return CoordinateViewModel.create(
+                TEI_COORDINATES_UID,
+                teiCoordinatesLabel,
+                false,
+                tei.geometry() != null ? tei.geometry().coordinates() : null,
+                ENROLLMENT_DATA_SECTION_UID,
+                true,
+                null,
+                ObjectStyle.builder().build(),
+                featureType
+        );
+    }
+
+    private FieldViewModel getEnrollmentCoordinatesField(String enrollmentCoordinatesLabel, FeatureType featureType) {
+        return CoordinateViewModel.create(
+                ENROLLMENT_COORDINATES_UID,
+                enrollmentCoordinatesLabel,
+                false,
+                enrollmentRepository.blockingGet().geometry() != null ?
+                        enrollmentRepository.blockingGet().geometry().coordinates() : null,
+                ENROLLMENT_DATA_SECTION_UID,
+                true,
+                null,
+                ObjectStyle.builder().build(),
+                featureType
+        );
+    }
+
     private FieldViewModel transformSection(ProgramSection programSection) {
         return SectionViewModel.create(
                 programSection.uid(),
@@ -216,5 +359,13 @@ public final class EnrollmentRepository implements DataEntryRepository {
                 0,
                 0,
                 ProgramStageSectionRenderingType.LISTING.name());
+    }
+
+    private String getOrgUnitValue(String currentValueUid) {
+        if (currentValueUid != null) {
+            return currentValueUid + "_ou_" + d2.organisationUnitModule().organisationUnits().uid(currentValueUid).blockingGet().displayName();
+        } else {
+            return null;
+        }
     }
 }

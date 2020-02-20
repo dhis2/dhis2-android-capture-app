@@ -7,10 +7,11 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.functions.BiFunction
 import io.reactivex.processors.FlowableProcessor
 import io.reactivex.processors.PublishProcessor
-import java.util.Date
-import kotlin.collections.set
+import org.dhis2.Bindings.toDate
 import org.dhis2.R
 import org.dhis2.data.forms.dataentry.DataEntryRepository
+import org.dhis2.data.forms.dataentry.EnrollmentRepository
+import org.dhis2.data.forms.dataentry.StoreResult
 import org.dhis2.data.forms.dataentry.ValueStore
 import org.dhis2.data.forms.dataentry.ValueStoreImpl
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel
@@ -34,6 +35,8 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceObjectRepos
 import org.hisp.dhis.rules.models.RuleActionShowError
 import org.hisp.dhis.rules.models.RuleEffect
 import timber.log.Timber
+import java.util.Date
+import kotlin.collections.set
 
 class EnrollmentPresenterImpl(
     val view: EnrollmentView,
@@ -235,7 +238,65 @@ class EnrollmentPresenterImpl(
         disposable.add(
             view.rowActions().onBackpressureBuffer()
                 .flatMap { rowAction ->
-                    valueStore.save(rowAction.id(), rowAction.value())
+                    when (rowAction.id()) {
+                        EnrollmentRepository.ENROLLMENT_DATE_UID -> {
+                            updateEnrollmentDate(rowAction.value()?.toDate())
+                            Flowable.just(
+                                StoreResult(
+                                    "",
+                                    ValueStoreImpl.ValueStoreResult.VALUE_CHANGED
+                                )
+                            )
+                        }
+                        EnrollmentRepository.INCIDENT_DATE_UID -> {
+                            updateIncidentDate(rowAction.value()?.toDate())
+                            Flowable.just(
+                                StoreResult(
+                                    "",
+                                    ValueStoreImpl.ValueStoreResult.VALUE_CHANGED
+                                )
+                            )
+                        }
+                        EnrollmentRepository.ORG_UNIT_UID -> {
+                            Flowable.just(
+                                StoreResult(
+                                    "",
+                                    ValueStoreImpl.ValueStoreResult.VALUE_CHANGED
+                                )
+                            )
+                        }
+                        EnrollmentRepository.TEI_COORDINATES_UID -> {
+                            val geometry = rowAction.extraData()?.let {
+                                Geometry.builder()
+                                    .coordinates(rowAction.value())
+                                    .type(FeatureType.valueOf(it))
+                                    .build()
+                            }
+                            saveTeiGeometry(geometry)
+                            Flowable.just(
+                                StoreResult(
+                                    "",
+                                    ValueStoreImpl.ValueStoreResult.VALUE_CHANGED
+                                )
+                            )
+                        }
+                        EnrollmentRepository.ENROLLMENT_COORDINATES_UID -> {
+                            val geometry = rowAction.extraData()?.let {
+                                Geometry.builder()
+                                    .coordinates(rowAction.value())
+                                    .type(FeatureType.valueOf(it))
+                                    .build()
+                            }
+                            saveEnrollmentGeometry(geometry)
+                            Flowable.just(
+                                StoreResult(
+                                    "",
+                                    ValueStoreImpl.ValueStoreResult.VALUE_CHANGED
+                                )
+                            )
+                        }
+                        else -> valueStore.save(rowAction.id(), rowAction.value())
+                    }
                 }
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
@@ -315,7 +376,7 @@ class EnrollmentPresenterImpl(
         val event = d2.eventModule().events().uid(eventUid).blockingGet()
         val stage = d2.programModule().programStages().uid(event.programStage()).blockingGet()
         val needsCatCombo = programRepository.blockingGet().categoryComboUid() != null &&
-            d2.categoryModule().categoryCombos().uid(catComboUid).blockingGet().isDefault == false
+                d2.categoryModule().categoryCombos().uid(catComboUid).blockingGet().isDefault == false
         val needsCoordinates =
             stage.featureType() != null && stage.featureType() != FeatureType.NONE
 

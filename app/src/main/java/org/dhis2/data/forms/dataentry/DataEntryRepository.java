@@ -17,6 +17,4 @@ public interface DataEntryRepository {
     Flowable<List<FieldViewModel>> list();
 
     Observable<List<OrganisationUnit>> getOrgUnits();
-
-    Observable<List<OrganisationUnitLevel>> getOrgUnitLevels();
 }

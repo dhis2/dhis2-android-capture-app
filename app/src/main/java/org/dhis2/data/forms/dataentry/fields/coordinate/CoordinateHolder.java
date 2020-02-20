@@ -9,7 +9,6 @@ import org.dhis2.data.forms.dataentry.fields.FormViewHolder;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.databinding.CustomFormCoordinateBinding;
 import org.dhis2.utils.customviews.CoordinatesView;
-import org.hisp.dhis.android.core.common.FeatureType;
 
 import io.reactivex.processors.FlowableProcessor;
 
@@ -50,7 +49,7 @@ public class CoordinateHolder extends FormViewHolder {
     }
 
     void update(CoordinateViewModel coordinateViewModel) {
-        binding.formCoordinates.setFeatureType(FeatureType.POINT);
+        binding.formCoordinates.setFeatureType(coordinateViewModel.featureType());
         model = coordinateViewModel;
         fieldUid = coordinateViewModel.uid();
 
