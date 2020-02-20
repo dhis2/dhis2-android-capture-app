@@ -29,9 +29,9 @@ class MainTest : BaseTest() {
     }
 
     @Test
-    fun loginButtonShouldBeDisplayedWhenAllFieldsAreFilled() {
+    fun checkHomeScreenRecyclerviewHasElements() {
         startActivity()
-        Thread.sleep(10000)
+
     }
 
 //    @Test

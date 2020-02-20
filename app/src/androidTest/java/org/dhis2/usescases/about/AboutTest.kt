@@ -9,6 +9,13 @@ import org.dhis2.usescases.main.MainRobot
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import android.content.pm.PackageManager
+import android.R.attr.versionName
+import android.content.pm.PackageInfo
+import android.provider.Settings.Global.getString
+import org.dhis2.BuildConfig
+import org.dhis2.R
+
 
 @RunWith(AndroidJUnit4::class)
 class AboutTest : BaseTest() {
@@ -29,14 +36,28 @@ class AboutTest : BaseTest() {
 
 
     @Test
-    fun openAbout() {
+    fun checkVersionNames() {
         startActivity()
-        Thread.sleep(15000)
-    //    mainRobot.clickOnNavigationDrawerMenu()
-    //            .clickAbout()
+        mainRobot.clickOnNavigationDrawerMenu()
+                .clickAbout()
+        //Assert versionName
+        //Assert SDK version
     }
 
     private fun startActivity(){
         rule.launchActivity(null)
     }
+
+    fun getAppVersionName() : String {
+        try {
+            val pInfo = context.packageManager.getPackageInfo(context.packageName, 0)
+            return pInfo.versionName
+        } catch (e: PackageManager.NameNotFoundException) {
+            e.printStackTrace()
+        }
+        return ""
+    }
+
+    fun getSDKVersion() =
+         String.format(context.getString(R.string.about_sdk), BuildConfig.SDK_VERSION)
 }
