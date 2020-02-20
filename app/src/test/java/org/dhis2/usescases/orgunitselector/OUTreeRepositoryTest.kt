@@ -4,20 +4,13 @@ import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Single
+import java.util.UUID
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
-import org.hisp.dhis.android.core.common.Access
-import org.hisp.dhis.android.core.common.DataAccess
-import org.hisp.dhis.android.core.enrollment.Enrollment
-import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
-import org.hisp.dhis.android.core.note.Note
-import org.hisp.dhis.android.core.note.NoteCreateProjection
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
-import org.hisp.dhis.android.core.program.Program
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito
-import java.util.UUID
 
 class OUTreeRepositoryTest {
 
@@ -97,7 +90,6 @@ class OUTreeRepositoryTest {
                 .orderByDisplayName(RepositoryScope.OrderByDirection.ASC)
                 .byParentUid()
         ) doReturn mock()
-
 
         whenever(
             d2.organisationUnitModule().organisationUnits()

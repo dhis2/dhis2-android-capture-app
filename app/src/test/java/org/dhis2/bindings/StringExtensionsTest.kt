@@ -17,7 +17,6 @@ class StringExtensionsTest {
         assert(user.initials == "RS")
     }
 
-
     @Test
     fun `Should return two initials for a string with three words`() {
         val user = "Rick Sanchez Rodriguez"
