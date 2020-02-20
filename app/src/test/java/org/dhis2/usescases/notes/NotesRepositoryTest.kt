@@ -4,18 +4,16 @@ import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Single
+import java.util.UUID
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.Access
 import org.hisp.dhis.android.core.common.DataAccess
 import org.hisp.dhis.android.core.enrollment.Enrollment
-import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
 import org.hisp.dhis.android.core.note.Note
-import org.hisp.dhis.android.core.note.NoteCreateProjection
 import org.hisp.dhis.android.core.program.Program
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito
-import java.util.UUID
 
 class NotesRepositoryTest {
 
@@ -34,11 +32,11 @@ class NotesRepositoryTest {
         val teiUid = UUID.randomUUID().toString()
         val enrollmentUid = UUID.randomUUID().toString()
 
-       mockEnrollment(teiUid, enrollmentUid)
+        mockEnrollment(teiUid, enrollmentUid)
 
         whenever(
             d2.noteModule().notes()
-            .byEnrollmentUid().eq(enrollmentUid)
+                .byEnrollmentUid().eq(enrollmentUid)
         ) doReturn mock()
         whenever(
             d2.noteModule().notes()
@@ -56,7 +54,7 @@ class NotesRepositoryTest {
 
     @Test
     fun `Should return notes for event`() {
-        //TODO: Implement test for getEventNotes(eventUid)
+        // TODO: Implement test for getEventNotes(eventUid)
     }
 
     @Test
@@ -86,7 +84,7 @@ class NotesRepositoryTest {
             .value("Note")
             .build()
 
-    private fun mockEnrollment(teiUid: String, enrollmentUid: String){
+    private fun mockEnrollment(teiUid: String, enrollmentUid: String) {
         whenever(
             d2.enrollmentModule().enrollments()
                 .byProgram().eq(programUid)
