@@ -384,6 +384,7 @@
     <color name="sms_sync_title_bar_error">#ffd9d9</color>
 
     <color name="placeholder">#61333333</color>
+    <color name="default_field_icon_color">#5C5C5C</color>
     <!--endregion-->
 
 </resources>
