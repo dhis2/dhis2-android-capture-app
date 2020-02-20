@@ -359,9 +359,9 @@ dependencies {
 
 
    // androidTestImplementation "com.google.dagger:dagger:${libraries.dagger}"
-    kaptTest "com.google.dagger:dagger-compiler:${libraries.dagger}"
-    kaptAndroidTest "com.google.dagger:dagger-compiler:${libraries.dagger}"
-    androidTestImplementation "com.google.dagger:dagger:${libraries.dagger}"
+   // kaptTest "com.google.dagger:dagger-compiler:${libraries.dagger}"
+   // kaptAndroidTest "com.google.dagger:dagger-compiler:${libraries.dagger}"
+   // androidTestImplementation "com.google.dagger:dagger:${libraries.dagger}"
 
     androidTestUtil 'androidx.test:orchestrator:1.2.0'
     androidTestImplementation "androidx.test:runner:1.2.0"
