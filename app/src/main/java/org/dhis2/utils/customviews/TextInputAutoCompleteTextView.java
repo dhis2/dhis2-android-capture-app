@@ -45,9 +45,13 @@ public class TextInputAutoCompleteTextView extends AppCompatAutoCompleteTextView
 
     @Override
     public boolean onKeyPreIme(int keyCode, KeyEvent event) {
+        clearFocusWhenKeyboardIsDismissed(keyCode);
+        return super.onKeyPreIme(keyCode, event);
+    }
+
+    private void clearFocusWhenKeyboardIsDismissed(int keyCode) {
         if(keyCode == KeyEvent.KEYCODE_BACK){
             this.clearFocus();
         }
-        return super.onKeyPreIme(keyCode, event);
     }
 }

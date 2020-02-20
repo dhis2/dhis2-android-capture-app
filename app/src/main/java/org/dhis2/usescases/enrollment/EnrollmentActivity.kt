@@ -123,13 +123,6 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
         binding.fieldRecycler.isNestedScrollingEnabled = true
         binding.fieldRecycler.adapter = adapter
 
-        binding.save.setOnClickListener {
-            if (presenter.dataIntegrityCheck(adapter.mandatoryOk(), adapter.hasError())) {
-                analyticsHelper().setEvent(SAVE_ENROLL, CLICK, SAVE_ENROLL)
-                presenter.finish(mode)
-            }
-        }
-
         binding.enrollmentDataButton.setOnClickListener {
             if (binding.enrollmentData.visibility == View.GONE) {
                 binding.enrollmentDataText.text = getString(R.string.enrollment_data_hide)
@@ -149,6 +142,7 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
         binding.enrollmentDataArrow.animate().scaleY(-1.0f).setDuration(0).start()
 
         presenter.init()
+        presenter.subscribeToBackButton()
     }
 
     override fun onDestroy() {
@@ -244,7 +238,7 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
     }
 
     override fun goBack() {
-        onBackPressed()
+        presenter.backIsClicked()
     }
 
     override fun showMissingMandatoryFieldsMessage() {
@@ -263,10 +257,7 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
 
     override fun onBackPressed() {
         if (mode == EnrollmentMode.CHECK) {
-            if (presenter.dataIntegrityCheck(adapter.mandatoryOk(), adapter.hasError())) {
-                binding.root.requestFocus()
-                super.onBackPressed()
-            }
+            presenter.backIsClicked()
         } else {
             showDeleteDialog()
         }
@@ -579,5 +570,16 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
     override fun hideAdjustingForm() {
         binding.clIndicatorProgress.root.visibility = View.GONE
         binding.clIndicatorProgress.lottieView.repeatCount = 0
+    }
+
+    override fun requestFocus() {
+        binding.root.requestFocus()
+    }
+
+    override fun performSaveClick() {
+        if (presenter.dataIntegrityCheck(adapter.mandatoryOk(), adapter.hasError())) {
+            analyticsHelper().setEvent(SAVE_ENROLL, CLICK, SAVE_ENROLL)
+            presenter.finish(mode)
+        }
     }
 }

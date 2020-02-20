@@ -34,6 +34,7 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceObjectRepos
 import org.hisp.dhis.rules.models.RuleActionShowError
 import org.hisp.dhis.rules.models.RuleEffect
 import timber.log.Timber
+import java.util.concurrent.TimeUnit
 
 class EnrollmentPresenterImpl(
     val view: EnrollmentView,
@@ -54,6 +55,7 @@ class EnrollmentPresenterImpl(
     private val optionsGroupToShow = HashMap<String, ArrayList<String>>()
     private val fieldsFlowable: FlowableProcessor<Boolean> = PublishProcessor.create()
     private var lastFocusItem: String? = null
+    private val backButtonProcessor: FlowableProcessor<Boolean> = PublishProcessor.create()
 
     fun init() {
         disposable = CompositeDisposable()
@@ -284,6 +286,18 @@ class EnrollmentPresenterImpl(
         )
     }
 
+    fun subscribeToBackButton(){
+        disposable.add(backButtonProcessor
+            .doOnNext { view.requestFocus() }
+            .debounce(1, TimeUnit.SECONDS, schedulerProvider.io())
+            .observeOn(schedulerProvider.ui())
+            .subscribe(
+                { view.performSaveClick() },
+                { t -> Timber.e(t) }
+            )
+        )
+    }
+
     fun finish(enrollmentMode: EnrollmentActivity.EnrollmentMode) {
         when (enrollmentMode) {
             EnrollmentActivity.EnrollmentMode.NEW -> disposable.add(
@@ -308,6 +322,10 @@ class EnrollmentPresenterImpl(
 
     fun updateFields() {
         fieldsFlowable.onNext(true)
+    }
+
+    fun backIsClicked() {
+        backButtonProcessor.onNext(true)
     }
 
     fun openInitial(eventUid: String): Boolean {
