@@ -160,7 +160,7 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
-        if(resultCode == Activity.RESULT_OK) {
+        if (resultCode == Activity.RESULT_OK) {
             when (requestCode) {
                 RQ_INCIDENT_GEOMETRY, RQ_ENROLLMENT_GEOMETRY -> {
                     handleGeometry(
@@ -219,7 +219,11 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
         } else {
             val eventCreationIntent = Intent(abstracContext, EventCaptureActivity::class.java)
             eventCreationIntent.putExtras(
-                EventCaptureActivity.getActivityBundle(eventUid, presenter.getProgram().uid(), EventMode.CHECK)
+                EventCaptureActivity.getActivityBundle(
+                    eventUid,
+                    presenter.getProgram().uid(),
+                    EventMode.CHECK
+                )
             )
             eventCreationIntent.putExtra(
                 Constants.TRACKED_ENTITY_INSTANCE,
@@ -561,11 +565,11 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
     /*endregion*/
 
     override fun showSaveButton() {
-        binding.next.visibility = View.VISIBLE
+        binding.next.show()
     }
 
     override fun hideSaveButton() {
-        binding.next.visibility = View.GONE
+        binding.next.hide()
     }
 
     override fun showAdjustingForm() {

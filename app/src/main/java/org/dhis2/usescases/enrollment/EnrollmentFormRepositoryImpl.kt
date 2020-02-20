@@ -4,10 +4,10 @@ import android.text.TextUtils.isEmpty
 import io.reactivex.Flowable
 import io.reactivex.Single
 import io.reactivex.functions.Function5
-import org.dhis2.Bindings.blockingGetCheck
-import org.dhis2.Bindings.toRuleAttributeValue
 import java.util.Calendar
 import java.util.Date
+import org.dhis2.Bindings.blockingGetCheck
+import org.dhis2.Bindings.toRuleAttributeValue
 import org.dhis2.data.forms.RulesRepository
 import org.dhis2.utils.Constants
 import org.dhis2.utils.DateUtils
@@ -47,11 +47,11 @@ class EnrollmentFormRepositoryImpl(
     init {
         this.cachedRuleEngineFlowable =
             Single.zip<List<Rule>,
-                    List<RuleVariable>,
-                    List<RuleEvent>,
-                    Map<String, String>,
-                    Map<String, List<String>>,
-                    RuleEngine>(
+                List<RuleVariable>,
+                List<RuleEvent>,
+                Map<String, String>,
+                Map<String, List<String>>,
+                RuleEngine>(
                 rulesRepository.rulesNew(programUid),
                 rulesRepository.ruleVariables(programUid),
                 rulesRepository.enrollmentEvents(
