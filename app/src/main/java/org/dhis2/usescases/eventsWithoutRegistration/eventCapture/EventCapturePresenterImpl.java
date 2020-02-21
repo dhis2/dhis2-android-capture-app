@@ -9,7 +9,9 @@ import androidx.databinding.ObservableField;
 
 import org.dhis2.R;
 import org.dhis2.data.forms.FormSectionViewModel;
+import org.dhis2.data.forms.dataentry.StoreResult;
 import org.dhis2.data.forms.dataentry.ValueStore;
+import org.dhis2.data.forms.dataentry.ValueStoreImpl;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.display.DisplayViewModel;
 import org.dhis2.data.forms.dataentry.fields.image.ImageViewModel;
@@ -90,6 +92,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     private ConnectableFlowable<List<FieldViewModel>> fieldFlowable;
     private PublishProcessor<Unit> notesCounterProcessor;
     private BehaviorSubject<List<FieldViewModel>> formFieldsProcessor;
+    private boolean assignedValueChanged;
 
 
     public EventCapturePresenterImpl(EventCaptureContract.View view, String eventUid,
@@ -131,18 +134,6 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                         .observeOn(schedulerProvider.ui())
                         .subscribe(
                                 checkDidNotPass -> view.showEventIntegrityAlert(),
-                                Timber::e
-                        )
-        );
-
-        compositeDisposable.add(
-                showCalculationProcessor
-                        .startWith(true)
-                        .switchMap(shouldShow -> Flowable.just(shouldShow).delay(shouldShow ? 1 : 0, TimeUnit.SECONDS, schedulerProvider.io()))
-                        .subscribeOn(schedulerProvider.io())
-                        .observeOn(schedulerProvider.ui())
-                        .subscribe(
-                                view::showRuleCalculation,
                                 Timber::e
                         )
         );
@@ -309,15 +300,19 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                         .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.ui())
                         .subscribe(sectionsAndFields -> {
-                                    formFieldsProcessor.onNext(sectionsAndFields.val1());
-                                    formAdjustProcessor.onNext(new Unit());
-                                    int completedFields = 0;
-                                    for (EventSectionModel sectionModel : sectionsAndFields.val0()) {
-                                        completedFields += sectionModel.numberOfCompletedFields();
+                                    if (assignedValueChanged) {
+                                        nextCalculation(true);
+                                    } else {
+                                        formFieldsProcessor.onNext(sectionsAndFields.val1());
+                                        formAdjustProcessor.onNext(new Unit());
+                                        int completedFields = 0;
+                                        for (EventSectionModel sectionModel : sectionsAndFields.val0()) {
+                                            completedFields += sectionModel.numberOfCompletedFields();
+                                        }
+                                        view.updatePercentage(
+                                                calculateCompletionPercentage(completedFields, totalFields),
+                                                calculateCompletionPercentage(unsupportedFields, totalFields));
                                     }
-                                    view.updatePercentage(
-                                            calculateCompletionPercentage(completedFields, totalFields),
-                                            calculateCompletionPercentage(unsupportedFields, totalFields));
                                 },
                                 Timber::e
                         ));
@@ -408,6 +403,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
         }
 
         //Reset effectsT
+        assignedValueChanged = false;
         optionsToHide.clear();
         optionsGroupsToHide.clear();
         optionsGroupToShow.clear();
@@ -696,7 +692,10 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     @Override
     public void save(@NotNull @NonNull String uid, @Nullable String value) {
         if (value == null || !sectionsToHide.contains(eventCaptureRepository.getSectionFor(uid))) {
-            valueStore.saveWithTypeCheck(uid, value).blockingFirst();
+            StoreResult result = valueStore.saveWithTypeCheck(uid, value).blockingFirst();
+            if(result.component2() == ValueStoreImpl.ValueStoreResult.VALUE_CHANGED){
+                assignedValueChanged = true;
+            }
         }
     }
 

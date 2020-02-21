@@ -230,13 +230,6 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
         this.programStageUid = programStageUid;
     }
 
-    @Override
-    public void showRuleCalculation(Boolean shouldShow) {
-        if (binding.eventTabLayout.getSelectedTabPosition() == 0) {
-//            binding.calculationIndicator.getRoot().setVisibility(shouldShow ? View.VISIBLE : View.GONE);
-        }
-    }
-
     private void setAction(FormBottomDialog.ActionType actionType) {
         switch (actionType) {
             case COMPLETE:

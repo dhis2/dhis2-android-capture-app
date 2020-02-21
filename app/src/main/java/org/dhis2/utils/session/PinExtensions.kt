@@ -3,8 +3,8 @@ package org.dhis2.utils.session
 import com.andrognito.pinlockview.PinLockListener
 import com.andrognito.pinlockview.PinLockView
 
-inline fun PinLockView.onPinSet(crossinline continuation: (String)->Unit){
-    setPinLockListener(object : PinLockListener{
+inline fun PinLockView.onPinSet(crossinline continuation: (String) -> Unit) {
+    setPinLockListener(object : PinLockListener {
         override fun onEmpty() {
         }
 

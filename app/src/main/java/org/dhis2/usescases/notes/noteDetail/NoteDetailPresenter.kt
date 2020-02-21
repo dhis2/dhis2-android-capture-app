@@ -8,11 +8,12 @@ class NoteDetailPresenter(
     private val view: NoteDetailView,
     private val scheduler: SchedulerProvider,
     private val noteId: String?,
-    private val repository: NoteDetailRepository) {
+    private val repository: NoteDetailRepository
+) {
 
     val disposable = CompositeDisposable()
 
-    fun init(){
+    fun init() {
         disposable.add(
             repository.getNote(noteId!!)
                 .subscribeOn(scheduler.io())
@@ -24,7 +25,7 @@ class NoteDetailPresenter(
         )
     }
 
-    fun save(){
+    fun save() {
         val data = view.getNewNote()
         val noteType = data.val0() ?: throw IllegalArgumentException("")
         val uid = data.val1()!!
@@ -40,16 +41,15 @@ class NoteDetailPresenter(
         )
     }
 
-    fun back(){
+    fun back() {
         view.back()
     }
 
-    fun clear(){
+    fun clear() {
         view.showDiscardDialog()
     }
 
     fun onDetach() {
         disposable.clear()
     }
-
 }

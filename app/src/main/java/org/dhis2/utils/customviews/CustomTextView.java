@@ -3,6 +3,7 @@ package org.dhis2.utils.customviews;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.ColorStateList;
+import android.graphics.drawable.Drawable;
 import android.text.InputFilter;
 import android.text.InputType;
 import android.text.TextUtils;
@@ -16,6 +17,7 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.databinding.DataBindingUtil;
 import androidx.databinding.ViewDataBinding;
@@ -23,8 +25,8 @@ import androidx.databinding.ViewDataBinding;
 import com.google.android.material.textfield.TextInputLayout;
 
 import org.dhis2.BR;
-import org.dhis2.Bindings.Bindings;
 import org.dhis2.R;
+import org.dhis2.utils.ObjectStyleUtils;
 import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
@@ -37,7 +39,7 @@ import static android.text.TextUtils.isEmpty;
  * QUADRAM. Created by frodriguez on 1/17/2018.
  */
 
-public class CustomTextView extends FieldLayout implements View.OnFocusChangeListener {
+public class CustomTextView extends FieldLayout {
 
     String urlStringPattern = "^(http:\\/\\/www\\.|https:\\/\\/www\\.|http:\\/\\/|https:\\/\\/)[a-z0-9]+([\\-\\.]{1}[a-z0-9]+)*\\.[a-z]{2,5}(:[0-9]{1,5})?(\\/.*)?$";
     Pattern urlPattern = Pattern.compile(urlStringPattern);
@@ -50,7 +52,7 @@ public class CustomTextView extends FieldLayout implements View.OnFocusChangeLis
     private ValueType valueType;
     private ViewDataBinding binding;
 
-    private OnFocusChangeListener listener;
+    private OnFocusChangeListener focusListener;
 
     private LayoutInflater inflater;
     private TextInputLayout inputLayout;
@@ -94,13 +96,16 @@ public class CustomTextView extends FieldLayout implements View.OnFocusChangeLis
         descriptionLabel = binding.getRoot().findViewById(R.id.descriptionLabel);
         dummy = findViewById(R.id.dummyFocusView);
 
-       /* editText.setOnTouchListener((v, event) -> {
-            activate();
-            return true;
-        });*/
         descIcon = findViewById(R.id.descIcon);
 
-        editText.setOnFocusChangeListener(this);
+        editText.setOnFocusChangeListener((v, hasFocus) -> {
+            if (hasFocus) {
+                activate();
+            } else if (focusListener != null && validate()) {
+                dummy.requestFocus();
+                focusListener.onFocusChange(v, hasFocus);
+            }
+        });
     }
 
     public void setDescription(String description) {
@@ -127,7 +132,8 @@ public class CustomTextView extends FieldLayout implements View.OnFocusChangeLis
                 case EMAIL:
                     editText.setInputType(InputType.TYPE_CLASS_TEXT |
                             InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
-                    descIcon.setVisibility(GONE);
+                    descIcon.setVisibility(VISIBLE);
+                    descIcon.setImageResource(R.drawable.ic_form_email);
                     break;
                 case TEXT:
                     editText.setInputType(InputType.TYPE_CLASS_TEXT);
@@ -147,7 +153,8 @@ public class CustomTextView extends FieldLayout implements View.OnFocusChangeLis
                     editText.setOverScrollMode(View.OVER_SCROLL_ALWAYS);
                     editText.setSingleLine(false);
                     editText.setImeOptions(EditorInfo.IME_FLAG_NO_ENTER_ACTION);
-                    descIcon.setVisibility(GONE);
+                    descIcon.setVisibility(VISIBLE);
+                    descIcon.setImageResource(R.drawable.ic_form_text);
                     break;
                 case LETTER:
                     editText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS);
@@ -184,6 +191,8 @@ public class CustomTextView extends FieldLayout implements View.OnFocusChangeLis
                     editText.setKeyListener(DigitsKeyListener.getInstance(false, false));
                     break;
                 case UNIT_INTERVAL:
+                    descIcon.setVisibility(VISIBLE);
+                    descIcon.setImageResource(R.drawable.ic_form_number);
                     editText.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
                     break;
                 case PERCENTAGE:
@@ -261,16 +270,7 @@ public class CustomTextView extends FieldLayout implements View.OnFocusChangeLis
     }
 
     public void setFocusChangedListener(OnFocusChangeListener listener) {
-        this.listener = listener;
-    }
-
-    @Override
-    public void onFocusChange(View v, boolean hasFocus) {
-        if (listener != null && validate()) {
-            if(!hasFocus)
-                dummy.requestFocus();
-            listener.onFocusChange(v, hasFocus);
-        }
+        this.focusListener = listener;
     }
 
     private boolean validate() {
@@ -355,12 +355,15 @@ public class CustomTextView extends FieldLayout implements View.OnFocusChangeLis
     }
 
 
-    public void setObjectSyle(ObjectStyle objectStyle) {
-        Bindings.setObjectStyle(icon, this, objectStyle);
+    public void setObjectStyle(ObjectStyle objectStyle) {
+        Drawable styleIcon = ObjectStyleUtils.getIconResource(editText.getContext(), objectStyle.icon(), -1);
+        icon.setImageDrawable(styleIcon);
+        int colorResource = ObjectStyleUtils.getColorResource(editText.getContext(), objectStyle.color(), R.color.default_field_icon_color);
+        descIcon.setColorFilter(colorResource);
     }
 
-    public void setOnLongActionListener(View.OnLongClickListener listener){
-        if(!editText.isFocusable())
+    public void setOnLongActionListener(View.OnLongClickListener listener) {
+        if (!editText.isFocusable())
             editText.setOnLongClickListener(listener);
     }
 }

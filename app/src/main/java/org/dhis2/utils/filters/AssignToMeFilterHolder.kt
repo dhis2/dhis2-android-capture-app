@@ -3,7 +3,6 @@ package org.dhis2.utils.filters
 import android.view.View
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.databinding.ObservableField
-
 import org.dhis2.R
 import org.dhis2.databinding.ItemFilterAssignedBinding
 

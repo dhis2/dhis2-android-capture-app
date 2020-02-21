@@ -54,10 +54,8 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
     private FusedLocationProviderClient mFusedLocationClient;
     private LocationCallback locationCallback;
     private ImageButton location1;
-    private OnMapPositionClick listener;
-    private OnCurrentLocationClick listener2;
-    private FlowableProcessor<RowAction> processor;
-    private String uid;
+    private OnMapPositionClick mapLocationListener;
+    private OnCurrentLocationClick currentLocationListener;
     private TextView errorView;
     private View clearButton;
     private View polygonInputLayout;
@@ -119,7 +117,7 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
             if (validateCoordinates()) {
                 Double latitudeValue = isEmpty(latitude.getText().toString()) ? null : Double.valueOf(latitude.getText().toString());
                 Double longitudeValue = isEmpty(longitude.getText().toString()) ? null : Double.valueOf(longitude.getText().toString());
-                listener2.onCurrentLocationClick(GeometryHelper.createPointGeometry(longitudeValue, latitudeValue));
+                currentLocationListener.onCurrentLocationClick(GeometryHelper.createPointGeometry(longitudeValue, latitudeValue));
             } else {
                 longitude.requestFocus();
                 longitude.performClick();
@@ -131,7 +129,7 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
             if (validateCoordinates()) {
                 Double latitudeValue = isEmpty(latitude.getText().toString()) ? null : Double.valueOf(latitude.getText().toString());
                 Double longitudeValue = isEmpty(longitude.getText().toString()) ? null : Double.valueOf(longitude.getText().toString());
-                listener2.onCurrentLocationClick(GeometryHelper.createPointGeometry(longitudeValue, latitudeValue));
+                currentLocationListener.onCurrentLocationClick(GeometryHelper.createPointGeometry(longitudeValue, latitudeValue));
             } else {
                 latitude.requestFocus();
                 latitude.performClick();
@@ -163,12 +161,12 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
                 (isEmpty(latitude.getText()) && isEmpty(longitude.getText()));
     }
 
-    public void setMapListener(OnMapPositionClick listener) {
-        this.listener = listener;
+    public void setMapListener(OnMapPositionClick mapLocationListener) {
+        this.mapLocationListener = mapLocationListener;
     }
 
-    public void setCurrentLocationListener(OnCurrentLocationClick listener) {
-        this.listener2 = listener;
+    public void setCurrentLocationListener(OnCurrentLocationClick currentLocationListener) {
+        this.currentLocationListener = currentLocationListener;
     }
 
     public void setLabel(String label) {
@@ -238,8 +236,8 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
                 getLocation();
                 break;
             case R.id.location2:
-                if (listener != null)
-                    listener.onMapPositionClick(this);
+                if (mapLocationListener != null)
+                    mapLocationListener.onMapPositionClick(this);
                 else
                     ((OnMapPositionClick) getContext()).onMapPositionClick(this);
                 break;
@@ -281,11 +279,6 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
         findViewById(R.id.location2).setEnabled(editable);
     }
 
-    public void setProcessor(String uid, FlowableProcessor<RowAction> processor) {
-        this.processor = processor;
-        this.uid = uid;
-    }
-
     @Override
     public void onFocusChange(View v, boolean hasFocus) {
         if (hasFocus) {
@@ -309,8 +302,8 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
         setCoordinatesValue(geometry);
 
         this.currentGeometry = geometry;
-        if (listener2 != null)
-            listener2.onCurrentLocationClick(geometry);
+        if (currentLocationListener != null)
+            currentLocationListener.onCurrentLocationClick(geometry);
         invalidate();
     }
 

@@ -29,7 +29,6 @@ class EventCaptureFormPresenter(
                     if (action.lastFocusPosition() != null && action.lastFocusPosition() >= 0) {
                         this.lastFocusItem = action.id()
                     }
-                    //TODO: REMOVE FROM EMPTY MANDATORY FIELDS IF EXIST
                     valueStore.save(action.id(), action.value())
                 }
                 .subscribe(

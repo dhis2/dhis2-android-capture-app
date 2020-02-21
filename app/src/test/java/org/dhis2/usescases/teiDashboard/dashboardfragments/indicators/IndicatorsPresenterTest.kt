@@ -41,83 +41,126 @@ class IndicatorsPresenterTest {
     private lateinit var presenter: IndicatorsPresenter
 
     @Before
-    fun setUp(){
-        whenever(d2.enrollmentModule().enrollments()
-            .byTrackedEntityInstance().eq("tei_uid")) doReturn mock()
+    fun setUp() {
+        whenever(
+            d2.enrollmentModule().enrollments()
+                .byTrackedEntityInstance().eq("tei_uid")
+        ) doReturn mock()
 
-        whenever(d2.enrollmentModule().enrollments()
-            .byTrackedEntityInstance().eq("tei_uid").one()) doReturn mock()
-        whenever(d2.enrollmentModule().enrollments()
-            .byTrackedEntityInstance().eq("tei_uid").one()
-            .blockingGet()) doReturn Enrollment.builder().uid("enrollment_uid").build()
+        whenever(
+            d2.enrollmentModule().enrollments()
+                .byTrackedEntityInstance().eq("tei_uid").one()
+        ) doReturn mock()
+        whenever(
+            d2.enrollmentModule().enrollments()
+                .byTrackedEntityInstance().eq("tei_uid").one()
+                .blockingGet()
+        ) doReturn Enrollment.builder().uid("enrollment_uid").build()
 
-        whenever(d2.enrollmentModule().enrollments()
-            .byTrackedEntityInstance().eq("tei_uid")
-            .byProgram()) doReturn mock()
+        whenever(
+            d2.enrollmentModule().enrollments()
+                .byTrackedEntityInstance().eq("tei_uid")
+                .byProgram()
+        ) doReturn mock()
 
-        whenever(d2.enrollmentModule().enrollments()
-            .byTrackedEntityInstance().eq("tei_uid")
-            .byProgram().eq("program_uid")) doReturn mock()
+        whenever(
+            d2.enrollmentModule().enrollments()
+                .byTrackedEntityInstance().eq("tei_uid")
+                .byProgram().eq("program_uid")
+        ) doReturn mock()
 
-        whenever(d2.enrollmentModule().enrollments()
-            .byTrackedEntityInstance().eq("tei_uid")
-            .byProgram().eq("program_uid").one()) doReturn mock()
+        whenever(
+            d2.enrollmentModule().enrollments()
+                .byTrackedEntityInstance().eq("tei_uid")
+                .byProgram().eq("program_uid").one()
+        ) doReturn mock()
 
-        whenever(d2.enrollmentModule().enrollments()
-            .byTrackedEntityInstance().eq("tei_uid")
-            .byProgram().eq("program_uid").one()
-            .blockingGet()) doReturn Enrollment.builder().uid("enrollment_uid").build()
+        whenever(
+            d2.enrollmentModule().enrollments()
+                .byTrackedEntityInstance().eq("tei_uid")
+                .byProgram().eq("program_uid").one()
+                .blockingGet()
+        ) doReturn Enrollment.builder().uid("enrollment_uid").build()
 
-        presenter = IndicatorsPresenter(d2, "program_uid", "tei_uid",
-            dashboardRepository, ruleEngineRepository, schedulers, view)
+        presenter = IndicatorsPresenter(
+            d2, "program_uid", "tei_uid",
+            dashboardRepository, ruleEngineRepository, schedulers, view
+        )
     }
 
     @Test
-    fun `Should get indicators`(){
-        whenever(dashboardRepository
-            .getIndicators("program_uid")) doReturn indicatorsFlowable()
+    fun `Should get indicators`() {
+        whenever(
+            dashboardRepository
+                .getIndicators("program_uid")
+        ) doReturn indicatorsFlowable()
 
-        whenever(d2.programModule().programRules().byProgramUid()
-            .eq("program_uid")) doReturn mock()
+        whenever(
+            d2.programModule().programRules().byProgramUid()
+                .eq("program_uid")
+        ) doReturn mock()
 
-        whenever(d2.programModule().programRules().byProgramUid()
-            .eq("program_uid").get()) doReturn programRulesProgramFlowable()
+        whenever(
+            d2.programModule().programRules().byProgramUid()
+                .eq("program_uid").get()
+        ) doReturn programRulesProgramFlowable()
 
         whenever(d2.programModule().programRuleActions()) doReturn mock()
 
-        whenever(d2.programModule().programRuleActions()
-            .byProgramRuleUid()) doReturn mock()
+        whenever(
+            d2.programModule().programRuleActions()
+                .byProgramRuleUid()
+        ) doReturn mock()
 
-        whenever(d2.programModule().programRuleActions()
-            .byProgramRuleUid().`in`(listOf("programrule_uid"))) doReturn mock()
+        whenever(
+            d2.programModule().programRuleActions()
+                .byProgramRuleUid().`in`(listOf("programrule_uid"))
+        ) doReturn mock()
 
-        whenever(d2.programModule().programRuleActions()
-            .byProgramRuleUid().`in`(listOf("programrule_uid"))
-            .byProgramRuleActionType()) doReturn mock()
+        whenever(
+            d2.programModule().programRuleActions()
+                .byProgramRuleUid().`in`(listOf("programrule_uid"))
+                .byProgramRuleActionType()
+        ) doReturn mock()
 
-        whenever(d2.programModule().programRuleActions()
-            .byProgramRuleUid().`in`(listOf("programrule_uid"))
-            .byProgramRuleActionType()
-            .`in`(ProgramRuleActionType.DISPLAYKEYVALUEPAIR,
-                ProgramRuleActionType.DISPLAYTEXT)) doReturn mock()
+        whenever(
+            d2.programModule().programRuleActions()
+                .byProgramRuleUid().`in`(listOf("programrule_uid"))
+                .byProgramRuleActionType()
+                .`in`(
+                    ProgramRuleActionType.DISPLAYKEYVALUEPAIR,
+                    ProgramRuleActionType.DISPLAYTEXT
+                )
+        ) doReturn mock()
 
-        whenever(d2.programModule().programRuleActions()
-            .byProgramRuleUid().`in`(listOf("programrule_uid"))
-            .byProgramRuleActionType()
-            .`in`(ProgramRuleActionType.DISPLAYKEYVALUEPAIR,
-                ProgramRuleActionType.DISPLAYTEXT).get()) doReturn programRulesActionFlowable()
+        whenever(
+            d2.programModule().programRuleActions()
+                .byProgramRuleUid().`in`(listOf("programrule_uid"))
+                .byProgramRuleActionType()
+                .`in`(
+                    ProgramRuleActionType.DISPLAYKEYVALUEPAIR,
+                    ProgramRuleActionType.DISPLAYTEXT
+                ).get()
+        ) doReturn programRulesActionFlowable()
 
-        whenever(d2.programModule().programIndicatorEngine()
-            .getProgramIndicatorValue(
-                "enrollment_uid",
-                null,
-                "indicator_uid")) doReturn "indicator_value"
+        whenever(
+            d2.programModule().programIndicatorEngine()
+                .getProgramIndicatorValue(
+                    "enrollment_uid",
+                    null,
+                    "indicator_uid"
+                )
+        ) doReturn "indicator_value"
 
-        whenever(dashboardRepository
-            .getLegendColorForIndicator(
-                indicators()[0],
-                "indicator_value")) doReturn Observable.just(
-            Trio.create(indicators()[0], "indicator_value", "0"))
+        whenever(
+            dashboardRepository
+                .getLegendColorForIndicator(
+                    indicators()[0],
+                    "indicator_value"
+                )
+        ) doReturn Observable.just(
+            Trio.create(indicators()[0], "indicator_value", "0")
+        )
 
         whenever(ruleEngineRepository.updateRuleEngine()) doReturn ruleEngine()
 
@@ -145,45 +188,79 @@ class IndicatorsPresenterTest {
     }
 
     private fun indicatorsFlowable() =
-        Flowable.just(listOf(ProgramIndicator.builder().uid("indicator_uid")
-            .displayInForm(true).build()))
+        Flowable.just(
+            listOf(
+                ProgramIndicator.builder().uid("indicator_uid")
+                    .displayInForm(true).build()
+            )
+        )
 
-    private fun programRulesProgramFlowable()=
-        Single.just(listOf<ProgramRule>(
-            ProgramRule.builder()
-                .uid("programrule_uid")
-                .programRuleActions(listOf(
-                        ProgramRuleAction.builder()
-                            .uid("programruleaction_uid")
-                            .programRuleActionType(ProgramRuleActionType.DISPLAYTEXT)
-                            .build())).build()))
+    private fun programRulesProgramFlowable() =
+        Single.just(
+            listOf<ProgramRule>(
+                ProgramRule.builder()
+                    .uid("programrule_uid")
+                    .programRuleActions(
+                        listOf(
+                            ProgramRuleAction.builder()
+                                .uid("programruleaction_uid")
+                                .programRuleActionType(ProgramRuleActionType.DISPLAYTEXT)
+                                .build()
+                        )
+                    ).build()
+            )
+        )
 
-    private fun programRulesActionFlowable()=
-        Single.just(listOf<ProgramRuleAction>(
-            ProgramRuleAction.builder()
-                .uid("programruleaction_uid")
-                .programRuleActionType(ProgramRuleActionType.DISPLAYTEXT)
-                .build()))
+    private fun programRulesActionFlowable() =
+        Single.just(
+            listOf<ProgramRuleAction>(
+                ProgramRuleAction.builder()
+                    .uid("programruleaction_uid")
+                    .programRuleActionType(ProgramRuleActionType.DISPLAYTEXT)
+                    .build()
+            )
+        )
 
     private fun indicators() =
-        listOf(ProgramIndicator.builder().uid("indicator_uid")
-            .displayInForm(true).build())
+        listOf(
+            ProgramIndicator.builder().uid("indicator_uid")
+                .displayInForm(true).build()
+        )
 
     private fun ruleEngine() =
-        Flowable.just(RuleEngineContext.builder {"expression"}
-            .rules(listOf(Rule.create(
-                "programstage", 0,"condition",
-                listOf(RuleActionDisplayText.createForIndicators("content", "data")),
-                "name")))
-            .ruleVariables(listOf(RuleVariableNewestEvent.create("name", "dataElement",
-                RuleValueType.TEXT)))
-            .calculatedValueMap(HashMap())
-            .supplementaryData(hashMapOf(Pair("key", listOf("data"))))
-            .constantsValue(hashMapOf(Pair("key", "constant")))
-            .build().toEngineBuilder().build())
+        Flowable.just(
+            RuleEngineContext.builder { "expression" }
+                .rules(
+                    listOf(
+                        Rule.create(
+                            "programstage", 0, "condition",
+                            listOf(RuleActionDisplayText.createForIndicators("content", "data")),
+                            "name"
+                        )
+                    )
+                )
+                .ruleVariables(
+                    listOf(
+                        RuleVariableNewestEvent.create(
+                            "name", "dataElement",
+                            RuleValueType.TEXT
+                        )
+                    )
+                )
+                .calculatedValueMap(HashMap())
+                .supplementaryData(hashMapOf(Pair("key", listOf("data"))))
+                .constantsValue(hashMapOf(Pair("key", "constant")))
+                .build().toEngineBuilder().build()
+        )
 
     private fun resultRuleEffect() =
-        Flowable.just(Result.success(listOf(RuleEffect.create(
-            RuleActionDisplayText.createForIndicators("content", "data")))))
-
+        Flowable.just(
+            Result.success(
+                listOf(
+                    RuleEffect.create(
+                        RuleActionDisplayText.createForIndicators("content", "data")
+                    )
+                )
+            )
+        )
 }

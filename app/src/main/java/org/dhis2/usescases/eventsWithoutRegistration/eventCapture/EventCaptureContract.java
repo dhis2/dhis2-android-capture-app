@@ -58,8 +58,6 @@ public class EventCaptureContract {
 
         void setProgramStage(String programStageUid);
 
-        void showRuleCalculation(Boolean shouldShow);
-
         void showErrorSnackBar();
 
         void showEventIntegrityAlert();

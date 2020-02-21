@@ -7,7 +7,6 @@ import android.nfc.tech.MifareClassic
 import android.nfc.tech.MifareClassic.KEY_DEFAULT
 import android.nfc.tech.MifareClassic.KEY_MIFARE_APPLICATION_DIRECTORY
 import android.nfc.tech.MifareClassic.KEY_NFC_FORUM
-import androidx.annotation.NonNull
 import io.reactivex.Flowable
 import io.reactivex.processors.FlowableProcessor
 import io.reactivex.processors.PublishProcessor
@@ -60,7 +59,7 @@ class NFCManager internal constructor(private val context: Context) {
         initProcessor?.onNext(false)
     }
 
-    fun writeTag(tag: Tag?, sector: Int, block: Int, @NonNull subData: ByteArray): Boolean {
+    fun writeTag(tag: Tag?, sector: Int, block: Int, subData: ByteArray): Boolean {
         if (tag != null) {
             try {
                 val mifareTag = MifareClassic.get(tag)
