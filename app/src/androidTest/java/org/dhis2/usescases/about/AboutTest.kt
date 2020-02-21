@@ -21,6 +21,7 @@ import org.dhis2.R
 class AboutTest : BaseTest() {
 
     private lateinit var mainRobot: MainRobot
+    private lateinit var aboutRobot: AboutRobot
 
     @get:Rule
     val rule = ActivityTestRule(MainActivity::class.java, false, false)
@@ -32,6 +33,7 @@ class AboutTest : BaseTest() {
     override fun setUp() {
         super.setUp()
         mainRobot = MainRobot(context)
+        aboutRobot = AboutRobot(context)
     }
 
 
@@ -44,6 +46,7 @@ class AboutTest : BaseTest() {
 
         mainRobot.clickOnNavigationDrawerMenu()
                 .clickAbout()
+        aboutRobot.checkVersionNames(appVersion, sdkVersion)
         //Assert versionName
         //Assert SDK version
     }

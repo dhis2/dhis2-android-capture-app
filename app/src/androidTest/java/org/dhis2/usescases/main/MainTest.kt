@@ -31,7 +31,7 @@ class MainTest : BaseTest() {
     @Test
     fun checkHomeScreenRecyclerviewHasElements() {
         startActivity()
-
+        mainRobot.checkViewIsNotEmpty()
     }
 
     //Create tests
