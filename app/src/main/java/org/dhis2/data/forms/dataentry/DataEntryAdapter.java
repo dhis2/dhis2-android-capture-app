@@ -305,14 +305,13 @@ public final class DataEntryAdapter extends ListAdapter<FieldViewModel, ViewHold
 
     }
 
-    public boolean mandatoryOk() {
-        boolean isOk = true;
+    public List<String> emptyMandatoryFields(){
+        List<String> emptyMandatoryFields = new ArrayList<>();
         for (FieldViewModel fieldViewModel : viewModels) {
             if (fieldViewModel.mandatory() && (fieldViewModel.value() == null || fieldViewModel.value().isEmpty()))
-                isOk = false;
+                emptyMandatoryFields.add(fieldViewModel.label());
         }
-
-        return isOk;
+        return emptyMandatoryFields;
     }
 
     @Override
@@ -320,14 +319,13 @@ public final class DataEntryAdapter extends ListAdapter<FieldViewModel, ViewHold
         rows.get(holder.getItemViewType()).deAttach(holder);
     }
 
-    public boolean hasError() {
-        boolean hasError = false;
+    public List<String> errorFields() {
+        List<String> errorFields = new ArrayList<>();
         for (FieldViewModel fieldViewModel : viewModels) {
             if (fieldViewModel.error() != null)
-                hasError = true;
+                errorFields.add(fieldViewModel.label());
         }
-
-        return hasError;
+        return errorFields;
     }
 
     public void setLastFocusItem(String lastFocusItem) {
