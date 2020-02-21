@@ -49,7 +49,7 @@ class EnrollmentPresenterImpl(
 ) : RulesActionCallbacks {
 
     private val TAG = "EnrollmentPresenter"
-    private lateinit var disposable: CompositeDisposable
+    private val disposable = CompositeDisposable()
     private val optionsToHide = ArrayList<String>()
     private val optionsGroupsToHide = ArrayList<String>()
     private val optionsGroupToShow = HashMap<String, ArrayList<String>>()
@@ -58,8 +58,6 @@ class EnrollmentPresenterImpl(
     private val backButtonProcessor: FlowableProcessor<Boolean> = PublishProcessor.create()
 
     fun init() {
-        disposable = CompositeDisposable()
-
         view.hideSaveButton()
         view.showAdjustingForm()
 
