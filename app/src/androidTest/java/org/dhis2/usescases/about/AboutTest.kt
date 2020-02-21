@@ -34,7 +34,6 @@ class AboutTest : BaseTest() {
         mainRobot = MainRobot(context)
     }
 
-
     @Test
     fun checkVersionNames() {
         startActivity()

@@ -10,6 +10,7 @@ import org.dhis2.common.di.TestingInjector
 import org.dhis2.common.keystore.KeyStoreRobot
 import org.dhis2.common.keystore.KeyStoreRobot.Companion.PASSWORD
 import org.dhis2.common.keystore.KeyStoreRobot.Companion.USERNAME
+import org.dhis2.common.mockwebserver.MockWebServerRobot
 import org.dhis2.common.preferences.PreferencesRobot
 import org.junit.After
 import org.junit.Before
@@ -22,7 +23,7 @@ open class BaseTest {
     private var isIntentsEnable = false
     private lateinit var keyStoreRobot: KeyStoreRobot
     private lateinit var preferencesRobot: PreferencesRobot
-//    private lateinit var mockWebServerRobot: MockWebServerRobot
+    private lateinit var mockWebServerRobot: MockWebServerRobot
 
 
     protected open fun getPermissionsToBeAccepted() = arrayOf<String>()
@@ -49,12 +50,12 @@ open class BaseTest {
         TestingInjector.apply {
             keyStoreRobot = providesKeyStoreRobot(context)
             preferencesRobot = providesPreferencesRobot(context)
-      //      mockWebServerRobot = providesMockWebserverRobot()
+            mockWebServerRobot = providesMockWebserverRobot()
         }
     }
 
     fun setupMockServer() {
-     //   mockWebServerRobot.start()
+        mockWebServerRobot.start()
     }
 
     private fun forceLogInForUsingDB() {
@@ -100,7 +101,7 @@ open class BaseTest {
     }
 
     private fun stopMockServer(){
-    //    mockWebServerRobot.shutdown()
+        mockWebServerRobot.shutdown()
     }
 
     companion object {
