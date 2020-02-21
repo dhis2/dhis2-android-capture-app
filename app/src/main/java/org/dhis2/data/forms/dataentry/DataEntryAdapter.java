@@ -274,6 +274,8 @@ public final class DataEntryAdapter extends ListAdapter<FieldViewModel, ViewHold
 
         totalFields = imageFields;
 
+        viewModels.clear();
+        viewModels.addAll(updates);
 
         submitList(updates, () -> {
             int currentFocusPosition = -1;
