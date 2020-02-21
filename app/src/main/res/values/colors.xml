@@ -292,6 +292,12 @@
     <!--endregion-->
     <!--endregion-->
 
+    <!--Widget colors-->
+    <color name="form_field_background">#FAFAFA</color>
+    <color name="form_field_background_shadow_start">#99FAFAFA</color>
+    <color name="form_field_background_shadow_center">#80FAFAFA</color>
+    <color name="form_field_background_shadow_end">#66FAFAFA</color>
+
 
     <!-- region OTHER COLORS-->
 
@@ -333,6 +339,7 @@
     <color name="gray_afa">#afafaf</color>
     <color name="gray_b2b">#b2b2b2</color>
     <color name="gray_dfe">#dfe0df</color>
+    <color name="gray_990">#99000000</color>
     <color name="green_7ed">#7ed321</color>
     <color name="green_transparent">#A47ED321</color>
     <color name="red_060">#e06060</color>
@@ -378,6 +385,7 @@
     <color name="sms_sync_title_bar_error">#ffd9d9</color>
 
     <color name="placeholder">#61333333</color>
+    <color name="default_field_icon_color">#5C5C5C</color>
     <!--endregion-->
 
 </resources>

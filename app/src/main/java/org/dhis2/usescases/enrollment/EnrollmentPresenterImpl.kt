@@ -491,15 +491,17 @@ class EnrollmentPresenterImpl(
         }
     }
 
-    fun dataIntegrityCheck(mandatoryOk: Boolean, hasError: Boolean): Boolean {
-        return if (!mandatoryOk) {
-            view.showMissingMandatoryFieldsMessage()
-            false
-        } else if (hasError) {
-            view.showErrorFieldsMessage()
-            false
-        } else {
-            true
+    fun dataIntegrityCheck(emptyMandatoryFields: List<String>, errorFields: List<String>): Boolean {
+        return when {
+            emptyMandatoryFields.isNotEmpty() -> {
+                view.showMissingMandatoryFieldsMessage(emptyMandatoryFields)
+                false
+            }
+            errorFields.isNotEmpty() -> {
+                view.showErrorFieldsMessage(errorFields)
+                false
+            }
+            else -> true
         }
     }
 }

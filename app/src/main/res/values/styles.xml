@@ -49,7 +49,7 @@
         <item name="tabIndicatorHeight">2dp</item>
         <item name="tabTextAppearance">@style/DhisTabText</item>
         <item name="tabSelectedTextColor">?colorAccent</item>
-        <item name="android:background">?colorPrimary</item>
+        <item name="android:background">?colorPrimaryDark</item>
     </style>
 
     <style name="DhisTabText" parent="TextAppearance.Design.Tab">
