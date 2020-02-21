@@ -21,6 +21,8 @@
     <attr name="toast_bg" format="reference"/>
 
     <declare-styleable name="CircularCompletionView">
+        <attr name="initialPercentage" format="float"/>
+        <attr name="initialSecondaryPercentage" format="float"/>
         <attr name="percentageSize" format="dimension" />
         <attr name="strokeSize" format="dimension" />
         <attr name="completionColor" format="color" />

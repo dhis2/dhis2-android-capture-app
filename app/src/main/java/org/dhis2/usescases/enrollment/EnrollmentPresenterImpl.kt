@@ -7,6 +7,8 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.functions.BiFunction
 import io.reactivex.processors.FlowableProcessor
 import io.reactivex.processors.PublishProcessor
+import java.util.Date
+import kotlin.collections.set
 import org.dhis2.R
 import org.dhis2.data.forms.dataentry.DataEntryRepository
 import org.dhis2.data.forms.dataentry.ValueStore
@@ -14,7 +16,6 @@ import org.dhis2.data.forms.dataentry.ValueStoreImpl
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel
 import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel
 import org.dhis2.data.schedulers.SchedulerProvider
-import org.dhis2.utils.CodeGeneratorImpl
 import org.dhis2.utils.DhisTextUtils
 import org.dhis2.utils.Result
 import org.dhis2.utils.RulesActionCallbacks
@@ -33,8 +34,6 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceObjectRepos
 import org.hisp.dhis.rules.models.RuleActionShowError
 import org.hisp.dhis.rules.models.RuleEffect
 import timber.log.Timber
-import java.util.Date
-import kotlin.collections.set
 
 class EnrollmentPresenterImpl(
     val view: EnrollmentView,
@@ -307,7 +306,7 @@ class EnrollmentPresenterImpl(
         }
     }
 
-    fun updateFields(){
+    fun updateFields() {
         fieldsFlowable.onNext(true)
     }
 
@@ -316,7 +315,7 @@ class EnrollmentPresenterImpl(
         val event = d2.eventModule().events().uid(eventUid).blockingGet()
         val stage = d2.programModule().programStages().uid(event.programStage()).blockingGet()
         val needsCatCombo = programRepository.blockingGet().categoryComboUid() != null &&
-                d2.categoryModule().categoryCombos().uid(catComboUid).blockingGet().isDefault == false
+            d2.categoryModule().categoryCombos().uid(catComboUid).blockingGet().isDefault == false
         val needsCoordinates =
             stage.featureType() != null && stage.featureType() != FeatureType.NONE
 

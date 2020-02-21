@@ -19,10 +19,6 @@ import org.hisp.dhis.rules.RuleExpressionEvaluator;
 import dagger.Module;
 import dagger.Provides;
 
-/**
- * QUADRAM. Created by ppajuelo on 19/11/2018.
- */
-
 @PerActivity
 @Module
 public class EventCaptureModule {

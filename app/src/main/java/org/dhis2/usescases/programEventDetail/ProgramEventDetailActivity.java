@@ -323,7 +323,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
     @Override
     public void openOrgUnitTreeSelector() {
         Intent ouTreeIntent = new Intent(this, OUTreeActivity.class);
-        Bundle bundle = OUTreeActivity.getBundle(programUid);
+        Bundle bundle = OUTreeActivity.Companion.getBundle(programUid);
         ouTreeIntent.putExtras(bundle);
         startActivityForResult(ouTreeIntent, FilterManager.OU_TREE);
     }

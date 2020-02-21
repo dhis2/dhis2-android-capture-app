@@ -13,10 +13,7 @@ import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactoryImpl;
 import org.dhis2.data.forms.dataentry.fields.image.ImageHolder;
-import org.dhis2.data.forms.dataentry.fields.image.ImageViewModel;
 import org.dhis2.data.forms.dataentry.fields.orgUnit.OrgUnitViewModel;
-import org.dhis2.data.forms.dataentry.fields.picture.PictureViewModel;
-import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.Result;
 import org.hisp.dhis.android.core.D2;
@@ -31,7 +28,6 @@ import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.event.EventStatus;
-import org.hisp.dhis.android.core.fileresource.FileResource;
 import org.hisp.dhis.android.core.maintenance.D2Error;
 import org.hisp.dhis.android.core.option.Option;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
@@ -321,10 +317,21 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                                     one.sortOrder().compareTo(two.sortOrder()));
 
                             for (ProgramStageSection section : stageSections)
-                                formSection.add(FormSectionViewModel.createForSection(eventUid, section.uid(), section.displayName(),
-                                        section.renderType().mobile() != null ? section.renderType().mobile().type().name() : null));
-                        } else
-                            formSection.add(FormSectionViewModel.createForProgramStageWithLabel(eventUid, stage.displayName(), stage.uid()));
+                                formSection.add(FormSectionViewModel.createForSection(
+                                        eventUid,
+                                        section.uid(),
+                                        section.displayName(),
+                                        section.renderType().mobile() != null ?
+                                                section.renderType().mobile().type().name() :
+                                                null)
+                                );
+                        } else {
+                            formSection.add(FormSectionViewModel.createForSection(
+                                    eventUid,
+                                    "",
+                                    "",
+                                    ProgramStageSectionRenderingType.LISTING.name()));
+                        }
                     }
                     return formSection;
                 }).toFlowable();
@@ -495,14 +502,11 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
         return queryDataValues(eventUid)
                 .switchMap(dataValues ->
                         formRepository.ruleEngine()
-                                .flatMap(ruleEngine -> {
-                                    if (isEmpty(lastUpdatedUid))
-                                        return Flowable.fromCallable(ruleEngine.evaluate(eventBuilder.dataValues(dataValues).build()));
-                                    else if (dataElementRules.containsKey(lastUpdatedUid))
-                                        return Flowable.fromCallable(ruleEngine.evaluate(eventBuilder.dataValues(dataValues).build(), dataElementRules.get(lastUpdatedUid)));
-                                    else
-                                        return Flowable.fromCallable(ruleEngine.evaluate(eventBuilder.dataValues(dataValues).build(), finalMandatoryRules));
-                                })
+                                .flatMap(ruleEngine ->
+                                        Flowable.fromCallable(
+                                                ruleEngine.evaluate(
+                                                        eventBuilder.dataValues(dataValues).build()
+                                                )))
                                 .map(Result::success)
                 )
                 .doOnError(error -> Result.failure(new Exception(error)));
@@ -645,15 +649,17 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
     @Override
     public Flowable<Boolean> eventIntegrityCheck() {
         return d2.eventModule().events().uid(eventUid).get()
-                .map(event -> (event.status() == EventStatus.ACTIVE ||
-                        event.status() == EventStatus.COMPLETED) && event.eventDate() != null && !event.eventDate().after(new Date()))
-                .toFlowable();
+                .map(event ->
+                        (event.status() == EventStatus.COMPLETED ||
+                                event.status() == EventStatus.ACTIVE) &&
+                                event.eventDate() != null && !event.eventDate().after(new Date())
+                ).toFlowable();
     }
 
     @Override
     public Single<Integer> getNoteCount() {
         //TODO: EVENT NOTES
-        return Single.just(Random.Default.nextInt(0,100));
+        return Single.just(Random.Default.nextInt(0, 100));
     }
 }
 

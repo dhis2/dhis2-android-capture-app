@@ -8,7 +8,6 @@ import androidx.core.content.ContextCompat
 import com.google.android.material.textfield.TextInputEditText
 import org.dhis2.R
 
-
 fun EditText.onRightDrawableClicked(onClicked: (view: EditText) -> Unit) {
     this.setOnTouchListener { v, event ->
         var hasConsumed = false
@@ -33,7 +32,6 @@ fun TextInputEditText.placeHolder(placeholder: String) {
             this.hint = ""
         }
     }
-
 }
 
 fun TextView.setDateInterval(string: String?) {

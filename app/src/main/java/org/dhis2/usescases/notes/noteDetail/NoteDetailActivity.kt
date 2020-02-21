@@ -7,7 +7,6 @@ import androidx.core.app.ActivityCompat
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ObservableBoolean
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import java.text.ParseException
 import javax.inject.Inject
 import org.dhis2.Bindings.app
 import org.dhis2.Bindings.initials
@@ -19,7 +18,6 @@ import org.dhis2.databinding.ActivityNoteDetailBinding
 import org.dhis2.usescases.general.ActivityGlobalAbstract
 import org.dhis2.usescases.notes.NoteType
 import org.dhis2.utils.Constants
-import org.dhis2.utils.DateUtils
 import org.hisp.dhis.android.core.note.Note
 
 class NoteDetailActivity : ActivityGlobalAbstract(), NoteDetailView, TextWatcher {

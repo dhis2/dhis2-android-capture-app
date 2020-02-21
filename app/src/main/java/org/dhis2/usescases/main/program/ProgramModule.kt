@@ -38,7 +38,9 @@ class ProgramModule(private val view: ProgramView) {
     @PerFragment
     internal fun homeRepository(d2: D2, context: Context): HomeRepository {
         val eventsLabel = context.getString(R.string.events)
-        return HomeRepositoryImpl(d2, eventsLabel)
+        val dataSetLabel = context.getString(R.string.data_sets)
+        val teiLabel = context.getString(R.string.tei)
+        return HomeRepositoryImpl(d2, eventsLabel, dataSetLabel, teiLabel)
     }
 
     @Provides

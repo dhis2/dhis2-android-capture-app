@@ -55,7 +55,6 @@ public class EditTextCustomHolder extends FormViewHolder {
         binding.customEdittext.setFocusChangedListener((v, hasFocus) -> {
             if(!hasFocus){
                 clearBackground(isSearchMode);
-                binding.customEdittext.getEditText().setFocusable(false);
             }
 
             if (isSearchMode || (!hasFocus && editTextModel != null && editTextModel.editable())) {
@@ -103,7 +102,7 @@ public class EditTextCustomHolder extends FormViewHolder {
 
         binding.customEdittext.setValueType(editTextModel.valueType());
 
-        binding.customEdittext.setObjectSyle(model.objectStyle());
+        binding.customEdittext.setObjectStyle(model.objectStyle());
         if (model.objectStyle() != null) {
             objectStyle = model.objectStyle();
         }

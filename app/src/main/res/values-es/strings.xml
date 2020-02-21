@@ -557,7 +557,7 @@
     <string name="image_selected">Imagen seleccionada</string>
     <string name="show_in_map">Mostrar en el Mapa</string>
     <string name="show_list">Mostrar lista</string>
-
+    
     <!--region TRACKER IMPORT CONFLICT MESSAGES-->
     <string name="value_required_but_not_provided">%s es obligatorio y no tiene valor</string>
     <string name="polygon_captured">Polígono guardado</string>
