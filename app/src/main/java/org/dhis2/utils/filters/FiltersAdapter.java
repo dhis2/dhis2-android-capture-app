@@ -8,7 +8,6 @@ import androidx.databinding.ObservableField;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.dhis2.data.tuples.Pair;
-import org.dhis2.databinding.ItemFilterAssignedBinding;
 import org.dhis2.databinding.ItemFilterCatOptCombBinding;
 import org.dhis2.databinding.ItemFilterOrgUnitBinding;
 import org.dhis2.databinding.ItemFilterPeriodBinding;
@@ -24,7 +23,7 @@ public class FiltersAdapter extends RecyclerView.Adapter<FilterHolder> {
 
     private final ProgramType programType;
 
-    public enum ProgramType {ALL, EVENT, TRACKER, DATASET}
+    public enum ProgramType {ALL,EVENT, TRACKER, DATASET}
 
     private List<Filters> filtersList;
     private ObservableField<Filters> openedFilter;
@@ -36,7 +35,6 @@ public class FiltersAdapter extends RecyclerView.Adapter<FilterHolder> {
         filtersList.add(Filters.PERIOD);
         filtersList.add(Filters.ORG_UNIT);
         filtersList.add(Filters.SYNC_STATE);
-        filtersList.add(Filters.ASSIGNED_TO_ME);
         openedFilter = new ObservableField<>();
     }
 
@@ -54,9 +52,7 @@ public class FiltersAdapter extends RecyclerView.Adapter<FilterHolder> {
             case CAT_OPT_COMB:
                 return new CatOptCombFilterHolder(ItemFilterCatOptCombBinding.inflate(inflater, parent, false), openedFilter, catCombData);
             case EVENT_STATUS:
-                return new StatusEventFilterHolder(ItemFilterStatusBinding.inflate(inflater, parent, false), openedFilter, programType);
-            case ASSIGNED_TO_ME:
-                return new AssignToMeFilterHolder(ItemFilterAssignedBinding.inflate(inflater, parent, false), openedFilter);
+                return new StatusEventFilterHolder(ItemFilterStatusBinding.inflate(inflater, parent, false), openedFilter,programType);
             default:
                 throw new IllegalArgumentException("Unsupported filter value");
         }

@@ -10,8 +10,7 @@ import org.hisp.dhis.android.core.D2
 class NoteDetailModule(
     val view: NoteDetailView,
     private val noteId: String? = null,
-    private val programUid: String
-) {
+    private val programUid: String) {
 
     @Provides
     @PerActivity

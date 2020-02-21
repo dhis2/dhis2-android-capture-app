@@ -11,22 +11,15 @@ import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.dataset.DataSet
 import org.hisp.dhis.android.core.dataset.DataSetCollectionRepository
 import org.hisp.dhis.android.core.enrollment.Enrollment
-import org.hisp.dhis.android.core.enrollment.EnrollmentCollectionRepository
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
 import org.hisp.dhis.android.core.event.EventStatus
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.period.DatePeriod
-import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.program.ProgramCollectionRepository
 import org.hisp.dhis.android.core.program.ProgramType.WITHOUT_REGISTRATION
 import org.hisp.dhis.android.core.program.ProgramType.WITH_REGISTRATION
 
-internal class HomeRepositoryImpl(
-    private val d2: D2,
-    private val eventLabel: String,
-    private val dataSetLabel: String,
-    private val teiLabel: String
-) :
+internal class HomeRepositoryImpl(private val d2: D2, private val eventLabel: String) :
     HomeRepository {
     private val dataSetRepository: DataSetCollectionRepository = d2.dataSetModule().dataSets()
         .withDataSetElements()
@@ -38,8 +31,7 @@ internal class HomeRepositoryImpl(
     override fun aggregatesModels(
         dateFilter: List<DatePeriod>,
         orgUnitFilter: List<String>,
-        statesFilter: List<State>,
-        assignedToUser: Boolean?
+        statesFilter: List<State>
     ): Flowable<List<ProgramViewModel>> {
         return ParallelFlowable.from<DataSet>(
             Flowable.fromIterable<DataSet>(dataSetRepository.blockingGet())
@@ -105,8 +97,7 @@ internal class HomeRepositoryImpl(
                     (
                         dateFilter.isNotEmpty() ||
                             orgUnitFilter.isNotEmpty() ||
-                            statesFilter.isNotEmpty() ||
-                            assignedToUser == true
+                            statesFilter.isNotEmpty()
                         ) &&
                         program.count() == 0
                 )
@@ -117,8 +108,7 @@ internal class HomeRepositoryImpl(
     override fun programModels(
         dateFilter: List<DatePeriod>,
         orgUnitFilter: List<String>,
-        statesFilter: List<State>,
-        assignedToUser: Boolean?
+        statesFilter: List<State>
     ): Flowable<List<ProgramViewModel>> {
         return getCaptureOrgUnits()
             .map { captureOrgUnits ->
@@ -131,34 +121,226 @@ internal class HomeRepositoryImpl(
                     .sequential()
             }
             .map { program ->
-                val typeName = getProgramTypeName(program)
+                var typeName: String?
+                if (program.programType() == WITH_REGISTRATION) {
+                    typeName =
+                        if (program.trackedEntityType() != null) {
+                            program.trackedEntityType()!!.displayName()
+                        } else {
+                            "TEI"
+                        }
+                    if (typeName == null) {
+                        typeName =
+                            d2
+                                .trackedEntityModule()
+                                .trackedEntityTypes()
+                                .uid(program.trackedEntityType()!!.uid())
+                                .blockingGet()!!
+                                .displayName()
+                    }
+                } else if (program.programType() == WITHOUT_REGISTRATION) {
+                    typeName = eventLabel
+                } else {
+                    typeName = "DataSets"
+                }
 
                 var (count, hasOverdue) = Pair(0, false)
-                val state: State
-
+                var state = State.SYNCED
                 if (program.programType() == WITHOUT_REGISTRATION) {
-                    count = getCountForProgramWithoutRegistration(
-                        program,
-                        dateFilter,
-                        statesFilter,
-                        orgUnitFilter,
-                        assignedToUser
-                    )
+                    if (dateFilter.isNotEmpty()) {
+                        if (orgUnitFilter.isNotEmpty()) {
+                            count = if (statesFilter.isNotEmpty()) {
+                                d2.eventModule().events()
+                                    .byProgramUid().eq(program.uid())
+                                    .byEventDate().inDatePeriods(dateFilter)
+                                    .byOrganisationUnitUid().`in`(orgUnitFilter)
+                                    .byState().`in`(statesFilter)
+                                    .blockingCount()
+                            } else {
+                                d2.eventModule().events()
+                                    .byProgramUid().eq(program.uid())
+                                    .byEventDate().inDatePeriods(dateFilter)
+                                    .byOrganisationUnitUid().`in`(orgUnitFilter)
+                                    .blockingCount()
+                            }
+                        } else {
+                            count = if (statesFilter.isNotEmpty()) {
+                                d2.eventModule().events()
+                                    .byProgramUid().eq(program.uid())
+                                    .byEventDate().inDatePeriods(dateFilter)
+                                    .byState().`in`(statesFilter)
+                                    .blockingCount()
+                            } else {
+                                d2.eventModule().events()
+                                    .byProgramUid().eq(program.uid())
+                                    .byEventDate().inDatePeriods(dateFilter)
+                                    .blockingCount()
+                            }
+                        }
+                    } else if (orgUnitFilter.isNotEmpty()) {
+                        count = if (statesFilter.isNotEmpty()) {
+                            d2.eventModule().events()
+                                .byProgramUid().eq(program.uid())
+                                .byOrganisationUnitUid().`in`(orgUnitFilter)
+                                .byState().`in`(statesFilter)
+                                .blockingCount()
+                        } else {
+                            d2.eventModule().events()
+                                .byProgramUid().eq(program.uid())
+                                .byOrganisationUnitUid().`in`(orgUnitFilter)
+                                .blockingCount()
+                        }
+                    } else {
+                        count = if (statesFilter.isNotEmpty()) {
+                            d2.eventModule().events()
+                                .byProgramUid().eq(program.uid())
+                                .byState().`in`(statesFilter)
+                                .blockingCount()
+                        } else {
+                            d2.eventModule().events()
+                                .byProgramUid().eq(program.uid())
+                                .blockingCount()
+                        }
+                    }
 
-                    state = getStateForProgramWithoutRegistration(program)
+                    if (
+                        d2.eventModule().events().byProgramUid().eq(program.uid()).byState().`in`(
+                            State.ERROR,
+                            State.WARNING
+                        ).blockingGet().isNotEmpty()
+                    ) {
+                        state = State.WARNING
+                    } else if (
+                        d2.eventModule().events()
+                            .byProgramUid().eq(program.uid()).byState().`in`(
+                            State.SENT_VIA_SMS,
+                            State.SYNCED_VIA_SMS
+                        ).blockingGet().isNotEmpty()
+                    ) {
+                        state = State.SENT_VIA_SMS
+                    } else if (
+                        d2.eventModule().events()
+                            .byProgramUid().eq(program.uid()).byState().`in`(
+                            State.TO_UPDATE,
+                            State.TO_POST
+                        )
+                            .blockingGet().isNotEmpty() ||
+                        d2.eventModule().events().byProgramUid().eq(program.uid())
+                            .byDeleted().isTrue.blockingGet().isNotEmpty()
+                    ) {
+                        state = State.TO_UPDATE
+                    }
                 } else {
-                    val (mCount, mOverdue) = getCountForProgramWithRegistration(
-                        program,
-                        dateFilter,
-                        statesFilter,
-                        orgUnitFilter,
-                        assignedToUser
-                    )
+                    val programUids = ArrayList<String>()
+                    programUids.add(program.uid())
+                    if (dateFilter.isNotEmpty()) {
+                        val enrollments: List<Enrollment>
+                        if (orgUnitFilter.isNotEmpty()) {
+                            if (statesFilter.isNotEmpty()) {
+                                enrollments = d2.enrollmentModule().enrollments()
+                                    .byProgram().`in`(programUids)
+                                    .byEnrollmentDate().inDatePeriods(dateFilter)
+                                    .byOrganisationUnit().`in`(orgUnitFilter)
+                                    .byStatus().eq(EnrollmentStatus.ACTIVE)
+                                    .byDeleted().isFalse
+                                    .byState().`in`(statesFilter)
+                                    .blockingGet()
+                            } else {
+                                enrollments = d2.enrollmentModule().enrollments()
+                                    .byProgram().`in`(programUids)
+                                    .byEnrollmentDate().inDatePeriods(dateFilter)
+                                    .byOrganisationUnit().`in`(orgUnitFilter)
+                                    .byStatus().eq(EnrollmentStatus.ACTIVE)
+                                    .byDeleted().isFalse
+                                    .blockingGet()
+                            }
+                        } else {
+                            enrollments = if (statesFilter.isNotEmpty()) {
+                                d2.enrollmentModule().enrollments()
+                                    .byProgram().`in`(programUids)
+                                    .byEnrollmentDate().inDatePeriods(dateFilter)
+                                    .byStatus().eq(EnrollmentStatus.ACTIVE)
+                                    .byDeleted().isFalse
+                                    .byState().`in`(statesFilter)
+                                    .blockingGet()
+                            } else {
+                                d2.enrollmentModule().enrollments()
+                                    .byProgram().`in`(programUids)
+                                    .byEnrollmentDate().inDatePeriods(dateFilter)
+                                    .byStatus().eq(EnrollmentStatus.ACTIVE)
+                                    .byDeleted().isFalse
+                                    .blockingGet()
+                            }
+                        }
+                        val (mCount, mOverdue) = countEnrollment(enrollments)
+                        count = mCount
+                        hasOverdue = mOverdue
+                    } else if (orgUnitFilter.isNotEmpty()) {
+                        val enrollments = if (statesFilter.isNotEmpty()) {
+                            d2.enrollmentModule().enrollments()
+                                .byProgram().`in`(programUids)
+                                .byOrganisationUnit().`in`(orgUnitFilter)
+                                .byStatus().eq(EnrollmentStatus.ACTIVE)
+                                .byDeleted().isFalse
+                                .byState().`in`(statesFilter)
+                                .blockingGet()
+                        } else {
+                            d2.enrollmentModule().enrollments()
+                                .byProgram().`in`(programUids)
+                                .byOrganisationUnit().`in`(orgUnitFilter)
+                                .byStatus().eq(EnrollmentStatus.ACTIVE)
+                                .byDeleted().isFalse
+                                .blockingGet()
+                        }
 
-                    count = mCount
-                    hasOverdue = mOverdue
+                        val (mCount, mOverdue) = countEnrollment(enrollments)
+                        count = mCount
+                        hasOverdue = mOverdue
+                    } else {
+                        val enrollments = if (statesFilter.isNotEmpty()) {
+                            d2.enrollmentModule().enrollments()
+                                .byProgram().`in`(programUids)
+                                .byStatus().eq(EnrollmentStatus.ACTIVE)
+                                .byDeleted().isFalse
+                                .byState().`in`(statesFilter)
+                                .blockingGet()
+                        } else {
+                            d2.enrollmentModule().enrollments()
+                                .byProgram().`in`(programUids)
+                                .byStatus().eq(EnrollmentStatus.ACTIVE)
+                                .byDeleted().isFalse
+                                .blockingGet()
+                        }
 
-                    state = getStateForProgramWithRegistration(program)
+                        val (mCount, mOverdue) = countEnrollment(enrollments)
+                        count = mCount
+                        hasOverdue = mOverdue
+                    }
+
+                    if (d2.trackedEntityModule().trackedEntityInstances()
+                        .byProgramUids(programUids).byState().`in`(State.ERROR, State.WARNING)
+                        .blockingGet().isNotEmpty()
+                    ) {
+                        state = State.WARNING
+                    } else if (d2.trackedEntityModule().trackedEntityInstances().byProgramUids(
+                        programUids
+                    ).byState().`in`(
+                            State.SENT_VIA_SMS,
+                            State.SYNCED_VIA_SMS
+                        ).blockingGet().isNotEmpty()
+                    ) {
+                        state = State.SENT_VIA_SMS
+                    } else if (d2.trackedEntityModule().trackedEntityInstances().byProgramUids(
+                        programUids
+                    ).byState().`in`(
+                            State.TO_UPDATE,
+                            State.TO_POST
+                        ).blockingGet().isNotEmpty() ||
+                        d2.trackedEntityModule().trackedEntityInstances().byProgramUids(programUids)
+                            .byDeleted().isTrue.blockingGet().isNotEmpty()
+                    ) {
+                        state = State.TO_UPDATE
+                    }
                 }
 
                 ProgramViewModel.create(
@@ -172,7 +354,7 @@ internal class HomeRepositoryImpl(
                     } else {
                         null
                     },
-                    typeName,
+                    typeName!!,
                     program.programType()!!.name,
                     program.displayDescription(),
                     onlyEnrollOnce = true,
@@ -181,193 +363,16 @@ internal class HomeRepositoryImpl(
                     hasOverdueEvent = hasOverdue
                 )
             }.map { program ->
-                program.setTranslucent(
-                    (
-                        dateFilter.isNotEmpty() ||
-                            orgUnitFilter.isNotEmpty() ||
-                            statesFilter.isNotEmpty() ||
-                            assignedToUser == true
-                        ) &&
-                        program.count() == 0
-                )
-            }
-            .toList().toFlowable()
-    }
-
-    private fun getStateForProgramWithRegistration(program: Program): State {
-        return if (d2.trackedEntityModule().trackedEntityInstances()
-            .byProgramUids(arrayListOf(program.uid())).byState().`in`(
-                State.ERROR,
-                State.WARNING
+            program.setTranslucent(
+                (
+                    dateFilter.isNotEmpty() ||
+                        orgUnitFilter.isNotEmpty() ||
+                        statesFilter.isNotEmpty()
+                    ) &&
+                    program.count() == 0
             )
-            .blockingGet().isNotEmpty()
-        ) {
-            State.WARNING
-        } else if (d2.trackedEntityModule().trackedEntityInstances()
-            .byProgramUids(arrayListOf(program.uid()))
-            .byState().`in`(
-                State.SENT_VIA_SMS,
-                State.SYNCED_VIA_SMS
-            ).blockingGet().isNotEmpty()
-        ) {
-            State.SENT_VIA_SMS
-        } else if (d2.trackedEntityModule().trackedEntityInstances()
-            .byProgramUids(arrayListOf(program.uid()))
-            .byState().`in`(
-                State.TO_UPDATE,
-                State.TO_POST
-            ).blockingGet().isNotEmpty() ||
-            d2.trackedEntityModule().trackedEntityInstances()
-                .byProgramUids(arrayListOf(program.uid()))
-                .byDeleted().isTrue.blockingGet().isNotEmpty()
-        ) {
-            State.TO_UPDATE
-        } else {
-            State.SYNCED
         }
-    }
-
-    private fun getCountForProgramWithRegistration(
-        program: Program,
-        dateFilter: List<DatePeriod>,
-        statesFilter: List<State>,
-        orgUnitFilter: List<String>,
-        assignedToUser: Boolean?
-    ): Pair<Int, Boolean> {
-        var enrollmentRepository = d2.enrollmentModule().enrollments()
-            .byProgram().`in`(arrayListOf(program.uid()))
-            .byStatus().eq(EnrollmentStatus.ACTIVE)
-        if (dateFilter.isNotEmpty()) {
-            enrollmentRepository = enrollmentRepository
-                .byEnrollmentDate().inDatePeriods(dateFilter)
-        }
-        if (statesFilter.isNotEmpty()) {
-            enrollmentRepository = enrollmentRepository
-                .byState().`in`(statesFilter)
-        }
-        if (orgUnitFilter.isNotEmpty()) {
-            enrollmentRepository = enrollmentRepository
-                .byOrganisationUnit().`in`(orgUnitFilter)
-        }
-        assignedToUser?.let {
-            if (assignedToUser) {
-                enrollmentRepository = enrollmentRepository
-                    .byUid()
-                    .`in`(getEnrollmentsWithAssignedEvents(enrollmentRepository))
-            }
-        }
-
-        val enrollments = enrollmentRepository.blockingGet()
-        return countEnrollment(enrollments)
-    }
-
-    private fun getProgramTypeName(program: Program): String {
-        var typeName: String?
-        if (program.programType() == WITH_REGISTRATION) {
-            typeName =
-                if (program.trackedEntityType() != null) {
-                    program.trackedEntityType()!!.displayName()
-                } else {
-                    teiLabel
-                }
-            if (typeName == null) {
-                typeName =
-                    d2.trackedEntityModule()
-                        .trackedEntityTypes()
-                        .uid(program.trackedEntityType()!!.uid())
-                        .blockingGet()!!
-                        .displayName()
-            }
-        } else if (program.programType() == WITHOUT_REGISTRATION) {
-            typeName = eventLabel
-        } else {
-            typeName = dataSetLabel
-        }
-
-        return typeName!!
-    }
-
-    private fun getCurrentUser(): String {
-        return d2.userModule().user().blockingGet().uid()
-    }
-
-    private fun getCountForProgramWithoutRegistration(
-        program: Program,
-        dateFilter: List<DatePeriod>,
-        statesFilter: List<State>,
-        orgUnitFilter: List<String>,
-        assignedToUser: Boolean?
-    ): Int {
-        var eventRepository = d2.eventModule().events()
-            .byProgramUid().eq(program.uid())
-
-        if (dateFilter.isNotEmpty()) {
-            eventRepository = eventRepository
-                .byEventDate().inDatePeriods(dateFilter)
-        }
-        if (statesFilter.isNotEmpty()) {
-            eventRepository = eventRepository
-                .byState().`in`(statesFilter)
-        }
-        if (orgUnitFilter.isNotEmpty()) {
-            eventRepository = eventRepository
-                .byOrganisationUnitUid().`in`(orgUnitFilter)
-        }
-        assignedToUser?.let {
-            if (assignedToUser) {
-                eventRepository = eventRepository
-                    .byAssignedUser().eq(getCurrentUser())
-            }
-        }
-        return eventRepository.blockingCount()
-    }
-
-    private fun getStateForProgramWithoutRegistration(
-        program: Program
-    ): State {
-        return if (
-            d2.eventModule().events().byProgramUid().eq(program.uid()).byState().`in`(
-                State.ERROR,
-                State.WARNING
-            ).blockingGet().isNotEmpty()
-        ) {
-            State.WARNING
-        } else if (
-            d2.eventModule().events()
-                .byProgramUid().eq(program.uid()).byState().`in`(
-                    State.SENT_VIA_SMS,
-                    State.SYNCED_VIA_SMS
-                ).blockingGet().isNotEmpty()
-        ) {
-            State.SENT_VIA_SMS
-        } else if (
-            d2.eventModule().events()
-                .byProgramUid().eq(program.uid()).byState().`in`(
-                    State.TO_UPDATE,
-                    State.TO_POST
-                )
-                .blockingGet().isNotEmpty() ||
-            d2.eventModule().events().byProgramUid().eq(program.uid())
-                .byDeleted().isTrue.blockingGet().isNotEmpty()
-        ) {
-            State.TO_UPDATE
-        } else {
-            State.SYNCED
-        }
-    }
-
-    private fun getEnrollmentsWithAssignedEvents(
-        enrollmentRepository: EnrollmentCollectionRepository
-    ): List<String> {
-        val currentEnrollments = enrollmentRepository.blockingGet()
-            .map { it.uid() }
-
-        return d2.eventModule().events()
-            .byAssignedUser().eq(getCurrentUser())
-            .byEnrollmentUid().`in`(currentEnrollments)
-            .blockingGet()
-            .distinctBy { it.enrollment() }
-            .mapNotNull { it.enrollment() }
+            .toList().toFlowable()
     }
 
     private fun getCaptureOrgUnits(): Flowable<List<String>> {

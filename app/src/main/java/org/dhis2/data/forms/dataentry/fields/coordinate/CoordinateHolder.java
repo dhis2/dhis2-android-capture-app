@@ -50,6 +50,7 @@ public class CoordinateHolder extends FormViewHolder {
     }
 
     void update(CoordinateViewModel coordinateViewModel) {
+        binding.formCoordinates.setProcessor(coordinateViewModel.uid(), processor);
         binding.formCoordinates.setFeatureType(FeatureType.POINT);
         model = coordinateViewModel;
         fieldUid = coordinateViewModel.uid();

@@ -57,11 +57,11 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
         this.programUid = programUid;
         this.d2 = d2;
     }
-    
+
     @NonNull
     @Override
     public LiveData<PagedList<ProgramEventViewModel>> filteredProgramEvents(List<DatePeriod> dateFilter, List<String> orgUnitFilter, List<CategoryOptionCombo> catOptCombList,
-                                                                            List<EventStatus> eventStatus, List<State> states, boolean assignedToUser) {
+                                                                            List<EventStatus> eventStatus, List<State> states) {
         EventCollectionRepository eventRepo = d2.eventModule().events().byProgramUid().eq(programUid);
         if (!dateFilter.isEmpty())
             eventRepo = eventRepo.byEventDate().inDatePeriods(dateFilter);
@@ -73,9 +73,6 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
             eventRepo = eventRepo.byStatus().in(eventStatus);
         if (!states.isEmpty())
             eventRepo = eventRepo.byState().in(states);
-        if (assignedToUser)
-            eventRepo = eventRepo.byAssignedUser().eq(getCurrentUser());
-
         DataSource dataSource = eventRepo.orderByEventDate(RepositoryScope.OrderByDirection.DESC).withTrackedEntityDataValues().getDataSource().map(event -> transformToProgramEventModel(event));
 
         return new LivePagedListBuilder(new DataSource.Factory() {
@@ -88,11 +85,8 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
 
     @NonNull
     @Override
-    public Flowable<kotlin.Pair<FeatureCollection, BoundingBox>> filteredEventsForMap(
-            List<DatePeriod> dateFilter, List<String> orgUnitFilter,
-            List<CategoryOptionCombo> catOptCombList, List<EventStatus> eventStatus,
-            List<State> states, boolean assignedToUser
-    ) {
+    public Flowable<kotlin.Pair<FeatureCollection, BoundingBox>> filteredEventsForMap(List<DatePeriod> dateFilter, List<String> orgUnitFilter, List<CategoryOptionCombo> catOptCombList,
+                                                                                      List<EventStatus> eventStatus, List<State> states) {
         EventCollectionRepository eventRepo = d2.eventModule().events().byProgramUid().eq(programUid);
         if (!dateFilter.isEmpty())
             eventRepo = eventRepo.byEventDate().inDatePeriods(dateFilter);
@@ -104,8 +98,6 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
             eventRepo = eventRepo.byStatus().in(eventStatus);
         if (!states.isEmpty())
             eventRepo = eventRepo.byState().in(states);
-        if (assignedToUser)
-            eventRepo = eventRepo.byAssignedUser().eq(getCurrentUser());
 
         return eventRepo.byDeleted().isFalse().orderByEventDate(RepositoryScope.OrderByDirection.DESC).withTrackedEntityDataValues().get()
                 .map(GeometryUtils.INSTANCE::getSourceFromEvent)
@@ -130,10 +122,6 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
                     else
                         return FeatureType.NONE;
                 });
-    }
-
-    private String getCurrentUser() {
-        return d2.userModule().user().blockingGet().uid();
     }
 
     private ProgramEventViewModel transformToProgramEventModel(Event event) {

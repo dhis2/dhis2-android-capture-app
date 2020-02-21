@@ -28,8 +28,7 @@ class ProgramPresenter internal constructor(
                     homeRepository.programModels(
                         filterManager.periodFilters,
                         filterManager.orgUnitUidsFilters,
-                        filterManager.stateFilters,
-                        filterManager.assignedFilter
+                        filterManager.stateFilters
                     )
                         .mergeWith(
                             homeRepository.aggregatesModels(

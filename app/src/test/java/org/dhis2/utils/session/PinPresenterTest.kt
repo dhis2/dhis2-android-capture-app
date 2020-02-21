@@ -24,9 +24,10 @@ class PinPresenterTest {
 
     @Test
     fun `Should return true if pin is correct`() {
+
         val testPin = "testPin"
 
-        whenever(preferenceProvider.getString(Preference.PIN, "")) doReturn testPin
+        whenever(preferenceProvider.getString(Preference.PIN,"")) doReturn testPin
         val isUnlocked = presenter.unlockSession(testPin)
 
         verify(preferenceProvider, times(1)).setValue(Preference.SESSION_LOCKED, true)
@@ -38,7 +39,7 @@ class PinPresenterTest {
         val testPin = "testPin"
         val wrongPin = "wrongPin"
 
-        whenever(preferenceProvider.getString(Preference.PIN, "")) doReturn testPin
+        whenever(preferenceProvider.getString(Preference.PIN,"")) doReturn testPin
         val isUnlocked = presenter.unlockSession(wrongPin)
 
         assertFalse(isUnlocked)
@@ -49,7 +50,7 @@ class PinPresenterTest {
         val testPin = "testPin"
 
         presenter.savePin(testPin)
-        verify(preferenceProvider, times(1)).setValue(Preference.PIN, testPin)
-        verify(preferenceProvider, times(1)).setValue(Preference.SESSION_LOCKED, true)
+        verify(preferenceProvider,times(1)).setValue(Preference.PIN, testPin)
+        verify(preferenceProvider,times(1)).setValue(Preference.SESSION_LOCKED, true)
     }
 }

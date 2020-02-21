@@ -36,6 +36,7 @@ class TeiDashboardPresenterTest {
     private val programUid = "programUid"
     private val teiUid = "teiUid"
 
+
     @Before
     fun setup() {
         presenter = TeiDashboardPresenter(
@@ -229,6 +230,7 @@ class TeiDashboardPresenterTest {
         verify(view).handleTEIdeletion()
     }
 
+
     @Test
     fun `Should clear disposable`() {
         presenter.onDettach()
@@ -249,4 +251,8 @@ class TeiDashboardPresenterTest {
 
         verify(view).showDescription("description")
     }
+
+
+
+
 }

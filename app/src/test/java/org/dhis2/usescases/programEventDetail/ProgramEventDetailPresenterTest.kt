@@ -14,8 +14,9 @@ import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.Single
-import java.util.Date
+import io.reactivex.schedulers.TestScheduler
 import junit.framework.Assert.assertTrue
+import org.dhis2.data.schedulers.TestSchedulerProvider
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.dhis2.data.tuples.Pair
 import org.dhis2.utils.filters.FilterManager
@@ -27,6 +28,7 @@ import org.hisp.dhis.android.core.event.EventStatus
 import org.hisp.dhis.android.core.program.Program
 import org.junit.Before
 import org.junit.Test
+import java.util.Date
 
 class ProgramEventDetailPresenterTest {
 
@@ -58,13 +60,10 @@ class ProgramEventDetailPresenterTest {
             "attr"
         )
         val events =
-            MutableLiveData<PagedList<ProgramEventViewModel>>().also {
-                it.value?.add(programEventViewModel)
-            }
-
+            MutableLiveData<PagedList<ProgramEventViewModel>>().also { it.value?.add(programEventViewModel) }
         val mapEvents = Pair<FeatureCollection, BoundingBox>(
             FeatureCollection.fromFeature(Feature.fromGeometry(null)),
-            BoundingBox.fromLngLats(0.0, 0.0, 0.0, 0.0)
+            BoundingBox.fromLngLats(0.0, 0.0,0.0,0.0)
         )
         whenever(repository.featureType()) doReturn Single.just(FeatureType.POINT)
         whenever(repository.accessDataWrite) doReturn true
@@ -72,10 +71,10 @@ class ProgramEventDetailPresenterTest {
         whenever(repository.program()) doReturn Observable.just(program)
         whenever(repository.catOptionCombos()) doReturn Single.just(catOptionComboPair)
         whenever(
-            repository.filteredProgramEvents(any(), any(), any(), any(), any(), any())
+            repository.filteredProgramEvents(any(), any(), any(), any(), any())
         ) doReturn events
         whenever(
-            repository.filteredEventsForMap(any(), any(), any(), any(), any(), any())
+            repository.filteredEventsForMap(any(), any(), any(), any(), any())
         ) doReturn Flowable.just(mapEvents)
         presenter.init()
         verify(view).setFeatureType()
@@ -84,7 +83,7 @@ class ProgramEventDetailPresenterTest {
         verify(view).setProgram(program)
         verify(view).setCatOptionComboFilter(catOptionComboPair)
         verify(view).setLiveData(events)
-        // verify(view).setMap()
+        //verify(view).setMap()
     }
 
     @Test
@@ -96,9 +95,9 @@ class ProgramEventDetailPresenterTest {
 
     @Test
     fun `Should navigate to event`() {
-        presenter.onEventClick("eventId", "orgUnit")
+        presenter.onEventClick("eventId","orgUnit")
 
-        verify(view).navigateToEvent("eventId", "orgUnit")
+        verify(view).navigateToEvent("eventId","orgUnit")
     }
     @Test
     fun `Should start new event`() {
@@ -144,6 +143,7 @@ class ProgramEventDetailPresenterTest {
         assertTrue(filterManager.totalFilters == 0)
         verify(view).clearFilters()
     }
+
 
     private fun dummyCategoryCombo() = CategoryCombo.builder().uid("uid").build()
 

@@ -6,8 +6,6 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.functions.Function6
 import io.reactivex.processors.FlowableProcessor
 import io.reactivex.processors.PublishProcessor
-import java.util.ArrayList
-import java.util.HashMap
 import org.dhis2.R
 import org.dhis2.data.forms.dataentry.ValueStore
 import org.dhis2.data.forms.dataentry.ValueStoreImpl
@@ -16,8 +14,6 @@ import org.dhis2.data.forms.dataentry.tablefields.FieldViewModelFactoryImpl
 import org.dhis2.data.forms.dataentry.tablefields.RowAction
 import org.dhis2.data.schedulers.SchedulerProvider
 import org.dhis2.data.tuples.Pair
-import org.dhis2.data.tuples.Quartet
-import org.dhis2.data.tuples.Sextet
 import org.dhis2.data.tuples.Trio
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableActivity
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableModel
@@ -37,6 +33,8 @@ import org.hisp.dhis.android.core.dataset.DataSet
 import org.hisp.dhis.android.core.dataset.Section
 import org.hisp.dhis.android.core.period.Period
 import timber.log.Timber
+import java.util.ArrayList
+import java.util.HashMap
 
 class DataValuePresenter(
     private val view: DataValueContract.View,
@@ -67,7 +65,7 @@ class DataValuePresenter(
     private var dataSet: DataSet? = null
     private var section: Section? = null
     private var catOptionOrder: List<List<CategoryOption>>? = null
-    private var transformCategories: MutableList<List<CategoryOption>>? = null
+    private var transformCategories: MutableList<MutableList<CategoryOption>>? = null
 
     fun init(
         view: DataValueContract.View,
@@ -90,7 +88,7 @@ class DataValuePresenter(
 
         disposable.add(
             Flowable.zip<Boolean, DataSet, Section, Period, List<DataInputPeriod>,
-                Boolean, Sextet<Boolean, DataSet, Section, Period, List<DataInputPeriod>, Boolean>>(
+                    Boolean, Unit>(
                 repository.canWriteAny(),
                 repository.dataSet,
                 repository.getSectionByDataSet(sectionName),
@@ -98,26 +96,18 @@ class DataValuePresenter(
                 repository.dataInputPeriod,
                 repository.isApproval(orgUnitUid, periodId, attributeOptionCombo),
                 Function6 { canWrite, dataSet, section, period, dataInputPeriod, isApproval ->
-                    Sextet.create(
-                        canWrite,
-                        dataSet,
-                        section,
-                        period,
-                        dataInputPeriod,
-                        isApproval
-                    )
+                    this.accessDataWrite = canWrite
+                    this.dataSet = dataSet
+                    this.section = section
+                    this.period = period
+                    this.dataInputPeriodModel = dataInputPeriod
+                    this.isApproval = isApproval
                 }
             )
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
-                    { data ->
-                        this.accessDataWrite = data.val0()
-                        this.dataSet = data.val1()
-                        this.section = data.val2()
-                        this.period = data.val3()
-                        this.dataInputPeriodModel = data.val4()
-                        this.isApproval = data.val5()
+                    {
                         view.setDataAccess(accessDataWrite)
                         view.setDataSet(dataSet)
                         view.setSection(section)
@@ -128,7 +118,8 @@ class DataValuePresenter(
         )
 
         disposable.add(
-            repository.getCatCombo(sectionName).map { it.size }
+            repository.getCatCombo(sectionName)
+                .map { it.size }
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
@@ -151,25 +142,8 @@ class DataValuePresenter(
         disposable.add(
             repository.getCatCombo(sectionName)
                 .flatMapIterable<CategoryCombo> { categoryCombos -> categoryCombos }
-                .map<Sextet<CategoryCombo,
-                        List<DataElement>,
-                        Map<String, List<List<Pair<CategoryOption, Category>>>>,
-                        List<DataSetTableModel>,
-                        List<DataElementOperand>,
-                        List<DataElementOperand>>>
-                { categoryCombo ->
-                    Flowable.zip<CategoryCombo,
-                        List<DataElement>,
-                        Map<String, List<List<Pair<CategoryOption, Category>>>>,
-                        List<DataSetTableModel>,
-                        List<DataElementOperand>,
-                        List<DataElementOperand>,
-                        Sextet<CategoryCombo,
-                            List<DataElement>,
-                            Map<String, List<List<Pair<CategoryOption, Category>>>>,
-                            List<DataSetTableModel>,
-                            List<DataElementOperand>,
-                            List<DataElementOperand>>>(
+                .flatMap { categoryCombo ->
+                    Flowable.zip(
                         Flowable.just<CategoryCombo>(categoryCombo),
                         repository.getDataElements(categoryCombo, sectionName),
                         repository.getCatOptions(sectionName, categoryCombo.uid()),
@@ -183,59 +157,43 @@ class DataValuePresenter(
                         repository.getGreyFields(sectionName),
                         repository.compulsoryDataElements,
                         Function6<CategoryCombo,
-                            List<DataElement>,
-                            Map<String, List<List<Pair<CategoryOption, Category>>>>,
-                            List<DataSetTableModel>,
-                            List<DataElementOperand>,
-                            List<DataElementOperand>,
-                            Sextet<CategoryCombo,
                                 List<DataElement>,
                                 Map<String, List<List<Pair<CategoryOption, Category>>>>,
                                 List<DataSetTableModel>,
                                 List<DataElementOperand>,
-                                List<DataElementOperand>>>
-                        { val0, val1, val2, val3, val4, val5 ->
-                            Sextet.create(
-                                val0,
-                                val1,
-                                val2,
-                                val3,
-                                val4,
-                                val5
+                                List<DataElementOperand>,
+                                DataSetTable>
+                        { catCombo, dataElements, catOptionCatPair, dataSetTableModels, greyedFields, compulsoryDataElements ->
+
+                            var options: List<List<String>> = ArrayList()
+                            for ((_, value) in catOptionCatPair) {
+                                options = getCatOptionCombos(value, 0, ArrayList(), null)
+                            }
+                            transformCategories = ArrayList()
+                            catOptionOrder = getCatOptionOrder(options)
+                            for ((_, value) in transformCategories(catOptionCatPair)) {
+                                transformCategories!!.addAll(value)
+                            }
+
+                            dataTableModel = DataTableModel(
+                                rows = dataElements.toMutableList(),
+                                dataValues = dataSetTableModels.toMutableList(),
+                                dataElementDisabled = greyedFields,
+                                compulsoryCells = compulsoryDataElements,
+                                catCombo = catCombo,
+                                header = transformCategories
                             )
+
+                            setTableData(dataTableModel!!)
                         }
-                    ).toObservable().blockingFirst()
-                }
-                .map { data ->
-                    var options: List<List<String>> = ArrayList()
-                    for ((_, value) in data.val2()) {
-                        options = getCatOptionCombos(value, 0, ArrayList(), null)
-                    }
-                    transformCategories = ArrayList()
-                    catOptionOrder = getCatOptionOrder(options)
-                    for ((_, value) in transformCategories(data.val2())) {
-                        transformCategories!!.addAll(value)
-                    }
-
-                    dataTableModel = DataTableModel.create(
-                        data.val1(), data.val3(), data.val4(),
-                        data.val5(), data.val0(), transformCategories
                     )
-
-                    setTableData(dataTableModel!!)
                 }
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
-                    { quartet ->
-                        view.setTableData(
-                            quartet.val0(),
-                            quartet.val1(),
-                            quartet.val2(),
-                            quartet.val3()
-                        )
-                    },
-                    { Timber.e(it) }
+                    { dataSetTable -> view.setTableData(dataSetTable) },
+                    { Timber.e(it) },
+                    { view.finishTableLoading() }
                 )
         )
     }
@@ -253,121 +211,101 @@ class DataValuePresenter(
     }
 
     private fun getCatOptionComboOrder(catOptionCombos: List<CategoryOptionCombo>?):
-        List<CategoryOptionCombo> {
-            val categoryOptionCombosOrder = ArrayList<CategoryOptionCombo>()
-            for (catOptions in catOptionOrder!!) {
-                for (categoryOptionCombo in catOptionCombos!!) {
-                    if (catOptions.containsAll(
+            List<CategoryOptionCombo> {
+        val categoryOptionCombosOrder = ArrayList<CategoryOptionCombo>()
+        for (catOptions in catOptionOrder!!) {
+            for (categoryOptionCombo in catOptionCombos!!) {
+                if (catOptions.containsAll(
                         repository.getCatOptionFromCatOptionCombo(
                             categoryOptionCombo
                         )
                     )
-                    ) {
-                        categoryOptionCombosOrder.add(categoryOptionCombo)
-                    }
+                ) {
+                    categoryOptionCombosOrder.add(categoryOptionCombo)
                 }
             }
-            return categoryOptionCombosOrder
         }
+        return categoryOptionCombosOrder
+    }
 
     private fun setTableData(dataTableModel: DataTableModel):
-        Quartet<DataTableModel, List<List<FieldViewModel>>, ArrayList<List<String>>, Boolean> {
-            val cells = ArrayList<List<String>>()
-            val listFields = ArrayList<List<FieldViewModel>>()
-            var row = 0
-            var column = 0
-            var isNumber = false
+            DataSetTable {
+        val cells = ArrayList<List<String>>()
+        val listFields = ArrayList<List<FieldViewModel>>()
+        var row = 0
+        var column = 0
+        var isNumber = false
 
-            for (dataElement in dataTableModel.rows()!!) {
-                val values = ArrayList<String>()
-                val fields = ArrayList<FieldViewModel>()
-                var totalRow = 0
-                isNumber = dataElement.valueType() == ValueType.NUMBER ||
-                    dataElement.valueType() == ValueType.INTEGER
-                val fieldFactory = FieldViewModelFactoryImpl("", "")
+        for (dataElement in dataTableModel.rows) {
+            val values = ArrayList<String>()
+            val fields = ArrayList<FieldViewModel>()
+            var totalRow = 0
+            isNumber = dataElement.valueType()?.isNumeric ?: false
+            val fieldFactory = FieldViewModelFactoryImpl("", "")
 
-                for (
-                    categoryOptionCombo in
-                    getCatOptionComboOrder(
-                        repository.getCatOptionComboFrom(
-                            dataTableModel.catCombo()?.uid(), catOptionOrder
-                        )
-                    )
-                ) {
-                    var editable = true
-                    for (disabledDataElement in dataTableModel.dataElementDisabled()!!)
-                        if (disabledDataElement.categoryOptionCombo() != null &&
-                            disabledDataElement.categoryOptionCombo()!!.uid()
-                            == categoryOptionCombo.uid() &&
-                            disabledDataElement.dataElement()!!.uid() == dataElement.uid() ||
-                            disabledDataElement.dataElement()!!.uid() == dataElement.uid()
-                        ) {
-                            editable = false
+            getCatOptionComboOrder(repository.getCatOptionComboFrom(dataTableModel.catCombo.uid(), catOptionOrder))
+                .forEach { categoryOptionCombo ->
+                    val editable = dataTableModel.dataElementDisabled
+                        .none { disabledDataElement ->
+                            disabledDataElement.categoryOptionCombo() != null &&
+                                    disabledDataElement.categoryOptionCombo()!!.uid() == categoryOptionCombo.uid() &&
+                                    disabledDataElement.dataElement()!!.uid() == dataElement.uid() ||
+                                    disabledDataElement.dataElement()!!.uid() == dataElement.uid()
+                        } &&
+                            repository.getCatOptionFromCatOptionCombo(categoryOptionCombo)
+                                .none { categoryOption ->
+                                    !categoryOption.access().data().write()
+                                }
+
+
+                    val dataValue = dataTableModel.dataValues
+                        .firstOrNull { dataValue ->
+                            dataValue.dataElement() == dataElement.uid() &&
+                                    dataValue.categoryOptionCombo() == categoryOptionCombo.uid()
                         }
 
-                    for (
-                        categoryOption in
-                        repository.getCatOptionFromCatOptionCombo(categoryOptionCombo)
-                    )
-                        if (!categoryOption.access().data().write()) {
-                            editable = false
-                        }
-
-                    var fieldViewModel: FieldViewModel? = null
-                    for (dataValue in dataTableModel.dataValues()!!)
-                        if (dataValue.dataElement() == dataElement.uid() &&
-                            dataValue.categoryOptionCombo() == categoryOptionCombo.uid()
-                        ) {
-                            fieldViewModel = fieldFactory.create(
-                                dataValue.id()!!.toString(),
-                                dataElement.displayFormName()!!,
-                                dataElement.valueType()!!,
-                                false,
-                                dataElement.optionSetUid(),
-                                dataValue.value(),
-                                sectionName,
-                                true,
-                                editable,
-                                null,
-                                categoryOptionCombo.displayName(),
-                                dataElement.uid(),
-                                ArrayList(),
-                                "android",
-                                row,
-                                column,
-                                dataValue.categoryOptionCombo(),
-                                dataValue.catCombo()
-                            )
-                        }
-
-                    if (fieldViewModel == null) {
-                        fieldViewModel = fieldFactory.create(
-                            "",
-                            dataElement.displayFormName()!!,
-                            dataElement.valueType()!!,
-                            false,
-                            dataElement.optionSetUid(),
-                            "",
-                            sectionName,
-                            true,
-                            editable,
-                            null,
-                            categoryOptionCombo.displayName(),
-                            dataElement.uid(),
-                            ArrayList(),
-                            "android",
-                            row,
-                            column,
-                            categoryOptionCombo.uid(),
-                            dataTableModel.catCombo()!!.uid()
-                        )
+                    val id:String
+                    val value:String?
+                    val categoryOptCombo:String?
+                    val categoryCombo : String?
+                    if(dataValue != null){
+                        id =dataValue.id()!!.toString()
+                        value = dataValue.value()
+                        categoryOptCombo = dataValue.categoryOptionCombo()
+                        categoryCombo = dataValue.catCombo()
+                    }else{
+                        id =""
+                        value = ""
+                        categoryOptCombo = categoryOptionCombo.uid()
+                        categoryCombo = dataTableModel.catCombo.uid()
                     }
+
+                    val fieldViewModel = fieldFactory.create(
+                        id,
+                        dataElement.displayFormName()!!,
+                        dataElement.valueType()!!,
+                        false,
+                        dataElement.optionSetUid(),
+                        value,
+                        sectionName,
+                        true,
+                        editable,
+                        null,
+                        categoryOptionCombo.displayName(),
+                        dataElement.uid(),
+                        ArrayList(),
+                        "android",
+                        row,
+                        column,
+                        categoryOptCombo,
+                        categoryCombo
+                    )
 
                     fields.add(fieldViewModel)
                     values.add(fieldViewModel.value().toString())
 
-                    if (!section!!.uid().isEmpty() && section!!.showRowTotals()!! &&
-                        isNumber && !fieldViewModel.value()!!.isEmpty()
+                    if (section!!.uid().isNotEmpty() && section!!.showRowTotals()!! &&
+                        isNumber && fieldViewModel.value()!!.isNotEmpty()
                     ) {
                         totalRow += Integer.parseInt(fieldViewModel.value()!!)
                     }
@@ -375,62 +313,73 @@ class DataValuePresenter(
                     column++
                 }
 
-                for (fieldViewModel in fields)
-                    for (compulsoryDataElement in dataTableModel.compulsoryCells()!!)
-                        if (compulsoryDataElement.categoryOptionCombo()!!.uid() ==
+            val finalFields = fields.map { fieldViewModel->
+                val isMandatory =  dataTableModel.compulsoryCells.firstOrNull {compulsoryDataElement->
+                    compulsoryDataElement.categoryOptionCombo()!!.uid() ==
                             fieldViewModel.categoryOptionCombo() &&
-                            compulsoryDataElement.dataElement()!!.uid() ==
-                            fieldViewModel.dataElement()
-                        ) {
-                            fields[fields.indexOf(fieldViewModel)] = fieldViewModel.setMandatory()
-                        }
-
-                if (!section!!.uid().isEmpty() && section!!.showRowTotals()!! && isNumber) {
-                    setTotalRow(totalRow, fields, values, row, column)
+                            compulsoryDataElement.dataElement()!!.uid() == fieldViewModel.dataElement()
+                } != null
+                if(isMandatory){
+                    fieldViewModel.setMandatory()
+                }else{
+                    fieldViewModel
                 }
+            }.toMutableList()
 
-                listFields.add(fields)
-                cells.add(values)
-                column = 0
-                row++
+            /* for (fieldViewModel in fields) {
+                 for (compulsoryDataElement in dataTableModel.compulsoryCells) {
+                     if (compulsoryDataElement.categoryOptionCombo()!!.uid() ==
+                         fieldViewModel.categoryOptionCombo() &&
+                         compulsoryDataElement.dataElement()!!.uid() == fieldViewModel.dataElement()
+                     ) {
+                         fields[fields.indexOf(fieldViewModel)] = fieldViewModel.setMandatory()
+                     }
+                 }
+             }*/
+
+            if (section!!.uid().isNotEmpty() && section!!.showRowTotals()!! && isNumber) {
+                setTotalRow(totalRow, finalFields, values, row, column)
             }
 
-            tableCells.add(listFields)
+            listFields.add(finalFields)
+            cells.add(values)
+            column = 0
+            row++
+        }
 
-            if (isNumber) {
-                if (section!!.uid().isNotEmpty() && section!!.showColumnTotals()!!) {
-                    setTotalColumn(listFields, cells, dataTableModel.rows()!!, row, column)
-                }
-                if (section!!.uid().isNotEmpty() && section!!.showRowTotals()!!) {
-                    for (i in 0 until dataTableModel.header()!!.size) {
-                        if (i == dataTableModel.header()!!.size - 1) {
-                            dataTableModel.header()!![i].add(
-                                CategoryOption.builder().uid("").displayName(
-                                    "Total"
-                                ).build()
-                            )
-                        } else {
-                            dataTableModel.header()!![i].add(
-                                CategoryOption.builder().uid("").displayName(
-                                    ""
-                                ).build()
-                            )
-                        }
+        tableCells.add(listFields)
+
+        if (isNumber) {
+            if (section!!.uid().isNotEmpty() && section!!.showColumnTotals()!!) {
+                setTotalColumn(listFields, cells, dataTableModel.rows, row, column)
+            }
+            if (section!!.uid().isNotEmpty() && section!!.showRowTotals()!!) {
+                for (i in 0 until dataTableModel.header!!.size) {
+                    if (i == dataTableModel.header.size - 1) {
+                        dataTableModel.header[i].add(
+                            CategoryOption.builder().uid("").displayName(
+                                "Total"
+                            ).build()
+                        )
+                    } else {
+                        dataTableModel.header[i].add(
+                            CategoryOption.builder().uid("").displayName(
+                                ""
+                            ).build()
+                        )
                     }
                 }
             }
+        }
 
-            val isEditable = accessDataWrite &&
+        val isEditable = accessDataWrite &&
                 !isExpired(dataSet) &&
-                dataInputPeriodModel.isEmpty() || (
-                checkHasInputPeriod() != null && DateUtils.getInstance().isInsideInputPeriod(
-                    checkHasInputPeriod()
-                )
-                ) &&
+                dataInputPeriodModel.isEmpty() ||
+                DateUtils.getInstance().isInsideInputPeriod(checkHasInputPeriod()) &&
                 !isApproval
 
-            return Quartet.create(dataTableModel, listFields, cells, isEditable)
-        }
+        return DataSetTable(dataTableModel, listFields, cells, isEditable)
+    }
 
     private fun isExpired(dataSet: DataSet?): Boolean {
         return if (0 == dataSet?.expiryDays()) {
@@ -441,8 +390,8 @@ class DataValuePresenter(
 
     private fun setTotalRow(
         totalRow: Int,
-        fields: ArrayList<FieldViewModel>,
-        values: ArrayList<String>,
+        fields: MutableList<FieldViewModel>,
+        values: MutableList<String>,
         row: Int,
         column: Int
     ) {
@@ -525,14 +474,14 @@ class DataValuePresenter(
             analyticsHelper.setEvent(COMPLETE_REOPEN, CLICK, COMPLETE_REOPEN)
             if (view.isOpenOrReopen) {
                 if ((
-                    !dataSet!!.fieldCombinationRequired()!! ||
-                        checkAllFieldRequired(
-                        tableCells,
-                        dataTableModel?.dataValues()
-                    ) &&
-                        dataSet!!.fieldCombinationRequired()!!
-                    ) &&
-                    checkMandatoryField(tableCells, dataTableModel?.dataValues())
+                            !dataSet!!.fieldCombinationRequired()!! ||
+                                    checkAllFieldRequired(
+                                        tableCells,
+                                        dataTableModel?.dataValues
+                                    ) &&
+                                    dataSet!!.fieldCombinationRequired()!!
+                            ) &&
+                    checkMandatoryField(tableCells, dataTableModel?.dataValues)
                 ) {
                     disposable.add(
                         repository.completeDataSet(orgUnitUid, periodId, attributeOptionCombo)
@@ -546,7 +495,7 @@ class DataValuePresenter(
                                 { Timber.e(it) }
                             )
                     )
-                } else if (!checkMandatoryField(tableCells, dataTableModel?.dataValues())) {
+                } else if (!checkMandatoryField(tableCells, dataTableModel?.dataValues)) {
                     view.showAlertDialog(
                         view.context.getString(R.string.missing_mandatory_fields_title),
                         view.context.resources.getString(R.string.field_mandatory)
@@ -613,8 +562,8 @@ class DataValuePresenter(
                     val fieldWithValue = dataValues
                         ?.filter { dataSetTableModel ->
                             dataSetTableModel.dataElement() == field.dataElement() &&
-                                dataSetTableModel.categoryOptionCombo() ==
-                                field.categoryOptionCombo()
+                                    dataSetTableModel.categoryOptionCombo() ==
+                                    field.categoryOptionCombo()
                         }
 
                     if (field.editable()!! && field.mandatory() && fieldWithValue.isNullOrEmpty()) {
@@ -631,9 +580,8 @@ class DataValuePresenter(
         return mandatoryOk
     }
 
-    fun onDettach() {}
-
-    fun displayMessage(message: String) {
+    fun onDetach() {
+        disposable.clear()
     }
 
     fun initializeProcessor(dataSetSectionFragment: DataSetSectionFragment) {
@@ -643,20 +591,20 @@ class DataValuePresenter(
 
                     var dataSetTableModel: DataSetTableModel? = null
 
-                    for (dataValue in dataTableModel!!.dataValues()!!) {
+                    for (dataValue in dataTableModel!!.dataValues) {
                         if (dataValue.dataElement() == rowAction.dataElement() &&
                             dataValue.categoryOptionCombo() == rowAction.catOptCombo()
                         ) {
                             dataSetTableModel = dataValue.setValue(rowAction.value())
                             if (rowAction.value().isNullOrEmpty()) {
-                                dataTableModel!!.dataValues()?.remove(dataValue)
+                                dataTableModel!!.dataValues.remove(dataValue)
                             }
                         }
                     }
 
                     if (dataSetTableModel == null &&
                         rowAction.value() != null &&
-                        !rowAction.value()!!.isEmpty()
+                        rowAction.value()!!.isNotEmpty()
                     ) {
                         dataSetTableModel = DataSetTableModel.create(
                             java.lang.Long.parseLong("0"),
@@ -673,13 +621,12 @@ class DataValuePresenter(
                         )
 
                         if (!rowAction.value().isNullOrEmpty()) {
-                            dataTableModel!!.dataValues()!!.add(dataSetTableModel)
+                            dataTableModel!!.dataValues.add(dataSetTableModel)
                         }
                     }
 
-                    if ((dataSetSectionFragment.activity as DataSetTableActivity).isBackPressed) {
+                    if ((dataSetSectionFragment.activity as DataSetTableActivity).isBackPressed)
                         dataSetSectionFragment.abstractActivity.back()
-                    }
 
                     dataSetSectionFragment.updateData(rowAction, dataSetTableModel!!.catCombo())
                     valueStore.save(dataSetTableModel)
@@ -688,46 +635,44 @@ class DataValuePresenter(
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
                     { storeResult ->
-                        val valueChange = ValueStoreImpl.ValueStoreResult.VALUE_CHANGED
-                        if (storeResult.valueStoreResult == valueChange) {
+                        if (storeResult.valueStoreResult == ValueStoreImpl.ValueStoreResult.VALUE_CHANGED) {
                             view.showSnackBar()
                         }
                     },
-                    { Timber.e(it) }
-                )
+                    { Timber.e(it) })
         )
     }
 
-    fun transformCategories(map: Map<String, List<List<Pair<CategoryOption, Category>>>>):
-        Map<String, List<List<CategoryOption>>> {
-            val mapTransform = HashMap<String, MutableList<List<CategoryOption>>>()
-            for ((key) in map) {
-                mapTransform[key] = mutableListOf()
-                var repeat = 1
-                var nextCategory = 0
-                for (list in map.getValue(key)) {
-                    val catOptions = ArrayList<CategoryOption>()
-                    for (x in 0 until repeat) {
-                        for (pair in list) {
-                            catOptions.add(pair.val0())
-                            nextCategory++
-                        }
+    private fun transformCategories(map: Map<String, List<List<Pair<CategoryOption, Category>>>>):
+            Map<String, MutableList<MutableList<CategoryOption>>> {
+        val mapTransform = HashMap<String, MutableList<MutableList<CategoryOption>>>()
+        for ((key) in map) {
+            mapTransform[key] = mutableListOf()
+            var repeat = 1
+            var nextCategory = 0
+            for (list in map.getValue(key)) {
+                val catOptions = ArrayList<CategoryOption>()
+                for (x in 0 until repeat) {
+                    for (pair in list) {
+                        catOptions.add(pair.val0())
+                        nextCategory++
                     }
-                    repeat = nextCategory
-                    nextCategory = 0
-                    mapTransform[key]?.add(catOptions)
                 }
+                repeat = nextCategory
+                nextCategory = 0
+                mapTransform[key]?.add(catOptions)
             }
-            return mapTransform
         }
+        return mapTransform
+    }
 
-    fun getCatOptionCombos(
+    private fun getCatOptionCombos(
         listCategories: List<List<Pair<CategoryOption, Category>>>,
         rowPosition: Int,
         catComboUidList: MutableList<List<String>>,
-        currentCatComboIds: MutableList<String>?
+        catComboIds: MutableList<String>?
     ): List<List<String>> {
-        var currentCatComboIds = currentCatComboIds
+        var currentCatComboIds = catComboIds
         if (rowPosition == listCategories.size) {
             val resultHelp = ArrayList(currentCatComboIds!!)
             catComboUidList.add(resultHelp)
@@ -756,14 +701,8 @@ class DataValuePresenter(
         }
     }
 
-    fun checkHasInputPeriod(): DataInputPeriod? {
-        var inputPeriodModel: DataInputPeriod? = null
-        for (inputPeriod in dataInputPeriodModel) {
-            if (inputPeriod.period().uid() == periodId) {
-                inputPeriodModel = inputPeriod
-            }
-        }
-        return inputPeriodModel
+    private fun checkHasInputPeriod(): DataInputPeriod? {
+        return dataInputPeriodModel.firstOrNull { it.period().uid() == periodId }
     }
 
     fun getProcessor(): FlowableProcessor<RowAction> {

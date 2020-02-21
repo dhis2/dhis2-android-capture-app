@@ -42,7 +42,6 @@ public interface SearchRepository {
                                                               @Nonnull List<State> states,
                                                               @NonNull List<EventStatus> statuses,
                                                               @Nullable HashMap<String, String> queryData,
-                                                              boolean assignedToMe,
                                                               boolean isOnline);
 
     @NonNull

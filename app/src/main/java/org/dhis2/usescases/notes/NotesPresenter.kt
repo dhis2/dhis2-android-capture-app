@@ -27,6 +27,7 @@
  */
 package org.dhis2.usescases.notes
 
+import android.view.View
 import io.reactivex.Flowable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.processors.FlowableProcessor

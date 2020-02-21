@@ -9,14 +9,12 @@ internal interface HomeRepository {
     fun programModels(
         dateFilter: List<DatePeriod>,
         orgUnitFilter: List<String>,
-        statesFilter: List<State>,
-        assignedToUser: Boolean? = false
+        statesFilter: List<State>
     ): Flowable<List<ProgramViewModel>>
 
     fun aggregatesModels(
         dateFilter: List<DatePeriod>,
         orgUnitFilter: List<String>,
-        statesFilter: List<State>,
-        assignedToUser: Boolean? = false
+        statesFilter: List<State>
     ): Flowable<List<ProgramViewModel>>
 }

@@ -187,7 +187,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
             if (fromRelationship)
                 binding.teiPager.setCurrentItem(2, false);
         } else {
-            tabletAdapter = new DashboardPagerTabletAdapter(this, getSupportFragmentManager(), programUid, teiUid);
+            tabletAdapter = new DashboardPagerTabletAdapter(this, getSupportFragmentManager(), programUid);
             currentAdapter = tabletAdapter;
             binding.teiPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
                 @Override

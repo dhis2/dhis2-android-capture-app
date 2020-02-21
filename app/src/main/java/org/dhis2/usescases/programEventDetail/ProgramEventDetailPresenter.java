@@ -112,8 +112,7 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
                                 filterManager.getOrgUnitUidsFilters(),
                                 filterManager.getCatOptComboFilters(),
                                 filterManager.getEventStatusFilters(),
-                                filterManager.getStateFilters(),
-                                filterManager.getAssignedFilter()
+                                filterManager.getStateFilters()
                         ))
                         .subscribeOn(schedulerProvider.computation())
                         .observeOn(schedulerProvider.ui())
@@ -132,8 +131,7 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
                                                 filterManager.getOrgUnitUidsFilters(),
                                                 filterManager.getCatOptComboFilters(),
                                                 filterManager.getEventStatusFilters(),
-                                                filterManager.getStateFilters(),
-                                                filterManager.getAssignedFilter()
+                                                filterManager.getStateFilters()
                                         )))
                         .subscribeOn(schedulerProvider.computation())
                         .observeOn(schedulerProvider.ui())

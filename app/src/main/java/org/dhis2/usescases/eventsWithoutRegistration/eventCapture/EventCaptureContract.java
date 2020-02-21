@@ -13,7 +13,6 @@ import org.dhis2.utils.RulesActionCallbacks;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitLevel;
 import org.hisp.dhis.rules.models.RuleEffect;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.Date;
 import java.util.List;
@@ -25,7 +24,6 @@ import io.reactivex.Single;
 import io.reactivex.SingleSource;
 import io.reactivex.functions.Consumer;
 import io.reactivex.processors.FlowableProcessor;
-import io.reactivex.subjects.BehaviorSubject;
 
 /**
  * QUADRAM. Created by ppajuelo on 19/11/2018.
@@ -38,7 +36,9 @@ public class EventCaptureContract {
 
         EventCaptureContract.Presenter getPresenter();
 
-        void updatePercentage(float primaryValue, float secondaryValue);
+        Consumer<Pair<Float, Float>> updatePercentage();
+
+        void attemptToFinish(boolean canComplete);
 
         void showCompleteActions(boolean canComplete, String completeMessage, Map<String, String> errors, Map<String, FieldViewModel> emptyMandatoryFields);
 
@@ -46,9 +46,15 @@ public class EventCaptureContract {
 
         void finishDataEntry();
 
+        void setShowError(Map<String, String> errors);
+
+        void showMessageOnComplete(boolean canComplete, String completeMessage);
+
         void attemptToReopen();
 
         void showSnackBar(int messageId);
+
+        android.view.View getSnackbarAnchor();
 
         void clearFocus();
 
@@ -58,6 +64,8 @@ public class EventCaptureContract {
 
         void setProgramStage(String programStageUid);
 
+        void showRuleCalculation(Boolean shouldShow);
+
         void showErrorSnackBar();
 
         void showEventIntegrityAlert();
@@ -66,22 +74,29 @@ public class EventCaptureContract {
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter {
+        String getLastFocusItem();
+
+        void clearLastFocusItem();
 
         void init();
 
-        BehaviorSubject<List<FieldViewModel>> formFieldsFlowable();
-
         void onBackClick();
+
+        void subscribeToSection();
 
         void nextCalculation(boolean doNextCalculation);
 
         void onNextSection();
 
-        void attempFinish();
-
         void onPreviousSection();
 
+        ObservableField<String> getCurrentSection();
+
         boolean isEnrollmentOpen();
+
+        void onSectionSelectorClick(boolean isCurrentSection, int position, String sectionUid);
+
+        void initCompletionPercentage(FlowableProcessor<Pair<Float, Float>> integerFlowableProcessor);
 
         void goToSection(String sectionUid);
 
@@ -106,8 +121,6 @@ public class EventCaptureContract {
         void initNoteCounter();
 
         void refreshTabCounters();
-
-        void setLastUpdatedUid(@NotNull String lastUpdatedUid);
     }
 
     public interface EventCaptureRepository {

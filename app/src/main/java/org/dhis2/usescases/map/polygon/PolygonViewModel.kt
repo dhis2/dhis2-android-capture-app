@@ -1,5 +1,8 @@
 package org.dhis2.usescases.map.polygon
 
+import android.app.Application
+import android.widget.Toast
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -15,7 +18,7 @@ class PolygonViewModel : ViewModel() {
     val response: LiveData<MutableList<PolygonPoint>>
         get() = _response
 
-    lateinit var onMessage: (str: String) -> Unit
+    lateinit var onMessage: (str: String) ->  Unit
 
     init {
         _response.postValue(mutableListOf())
