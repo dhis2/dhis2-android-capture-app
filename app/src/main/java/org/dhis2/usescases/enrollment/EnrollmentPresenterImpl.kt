@@ -2,8 +2,8 @@ package org.dhis2.usescases.enrollment
 
 import android.annotation.SuppressLint
 import io.reactivex.Flowable
-import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.flowables.ConnectableFlowable
 import io.reactivex.functions.BiFunction
 import io.reactivex.processors.FlowableProcessor
 import io.reactivex.processors.PublishProcessor
@@ -15,6 +15,7 @@ import org.dhis2.data.forms.dataentry.StoreResult
 import org.dhis2.data.forms.dataentry.ValueStore
 import org.dhis2.data.forms.dataentry.ValueStoreImpl
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel
+import org.dhis2.data.forms.dataentry.fields.section.SectionViewModel
 import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel
 import org.dhis2.data.schedulers.SchedulerProvider
 import org.dhis2.utils.DhisTextUtils
@@ -29,14 +30,14 @@ import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.enrollment.EnrollmentObjectRepository
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
 import org.hisp.dhis.android.core.maintenance.D2Error
-import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceObjectRepository
 import org.hisp.dhis.rules.models.RuleActionShowError
 import org.hisp.dhis.rules.models.RuleEffect
 import timber.log.Timber
-import java.util.Date
 import kotlin.collections.set
+
+private const val TAG = "EnrollmentPresenter"
 
 class EnrollmentPresenterImpl(
     val view: EnrollmentView,
@@ -50,7 +51,6 @@ class EnrollmentPresenterImpl(
     private val valueStore: ValueStore
 ) : RulesActionCallbacks {
 
-    private val TAG = "EnrollmentPresenter"
     private lateinit var disposable: CompositeDisposable
     private val optionsToHide = ArrayList<String>()
     private val optionsGroupsToHide = ArrayList<String>()
@@ -61,8 +61,7 @@ class EnrollmentPresenterImpl(
     fun init() {
         disposable = CompositeDisposable()
 
-        view.hideSaveButton()
-        view.showAdjustingForm()
+        view.setSaveButtonVisible(false)
 
         disposable.add(
             teiRepository.get()
@@ -113,134 +112,11 @@ class EnrollmentPresenterImpl(
         )
 
         disposable.add(
-            enrollmentObjectRepository.get()
-                .flatMap { enrollment ->
-                    d2.organisationUnitModule().organisationUnits().uid(
-                        enrollment.organisationUnit()
-                    ).get()
-                }
-                .subscribeOn(schedulerProvider.io())
-                .observeOn(schedulerProvider.ui())
-                .subscribe(
-                    {
-                        view.displayOrgUnit(it)
-                    },
-                    {
-                        Timber.tag(TAG).e(it)
-                    }
-                )
-        )
-
-        disposable.add(
-            programRepository.get()
-                .subscribeOn(schedulerProvider.io())
-                .observeOn(schedulerProvider.ui())
-                .subscribe(
-                    { view.setDateLabels(it.enrollmentDateLabel(), it.incidentDateLabel()) },
-                    { Timber.tag(TAG).e(it) }
-                )
-        )
-
-        disposable.add(
-            enrollmentObjectRepository.get()
-                .subscribeOn(schedulerProvider.io())
-                .observeOn(schedulerProvider.ui())
-                .subscribe(
-                    { view.setUpEnrollmentDate(it.enrollmentDate()) },
-                    { Timber.tag(TAG).e(it) }
-                )
-        )
-
-        disposable.add(
-            enrollmentObjectRepository.get()
-                .flatMap { enrollment ->
-                    programRepository.get()
-                        .filter { it.displayIncidentDate() ?: false }
-                        .map {
-                            enrollment.incidentDate()
-                        }.toSingle()
-                }
-                .subscribeOn(schedulerProvider.io())
-                .observeOn(schedulerProvider.ui())
-                .subscribe(
-                    { view.setUpIncidentDate(it) },
-                    { Timber.tag(TAG).e(it) }
-                )
-        )
-
-        disposable.add(
-            programRepository.get()
-                .flatMap { program ->
-                    d2.programModule().programStages()
-                        .byProgramUid().eq(program.uid())
-                        .byAutoGenerateEvent().isTrue
-                        .get()
-                }
-                .map { stages ->
-                    var blockEnrollmentDate = false
-                    var blockIncidentDate = false
-                    stages.forEach {
-                        if (it.reportDateToUse() != null &&
-                            it.reportDateToUse().equals("enrollmentDate") ||
-                            it.generatedByEnrollmentDate() == true
-                        ) {
-                            blockEnrollmentDate = true
-                        } else {
-                            blockIncidentDate = true
-                        }
-                    }
-                    Pair(blockEnrollmentDate, blockIncidentDate)
-                }.map {
-                    if (getProgram().access()?.data()!!.write() == true) {
-                        it
-                    } else {
-                        Pair(first = true, second = true)
-                    }
-                }
-                .subscribeOn(schedulerProvider.io())
-                .observeOn(schedulerProvider.ui())
-                .subscribe(
-                    { view.blockDates(it.first, it.second) },
-                    { Timber.tag(TAG).e(it) }
-                )
-        )
-
-        disposable.add(
-            Single.zip(
-                programRepository.get(),
-                enrollmentObjectRepository.get(),
-                BiFunction<Program, Enrollment, Pair<Program, Enrollment>> { program, enrollment ->
-                    Pair(program, enrollment)
-                }
-            )
-                .subscribeOn(schedulerProvider.io())
-                .observeOn(schedulerProvider.ui())
-                .subscribe(
-                    { view.displayEnrollmentCoordinates(it) },
-                    { Timber.tag(TAG).e(it) }
-                )
-        )
-
-        disposable.add(
-            teiRepository.get()
-                .flatMap { tei ->
-                    d2.trackedEntityModule().trackedEntityTypes().uid(tei.trackedEntityType()).get()
-                        .map { Pair(it, tei) }
-                }
-                .subscribeOn(schedulerProvider.io())
-                .observeOn(schedulerProvider.ui())
-                .subscribe(
-                    { view.displayTeiCoordinates(it) },
-                    { Timber.tag(TAG).e(it) }
-                )
-        )
-
-        disposable.add(
             view.rowActions().onBackpressureBuffer()
                 .flatMap { rowAction ->
                     when (rowAction.id()) {
                         EnrollmentRepository.ENROLLMENT_DATE_UID -> {
-                            updateEnrollmentDate(rowAction.value()?.toDate())
+                            enrollmentObjectRepository.setEnrollmentDate(rowAction.value()?.toDate())
                             Flowable.just(
                                 StoreResult(
                                     "",
@@ -249,7 +125,7 @@ class EnrollmentPresenterImpl(
                             )
                         }
                         EnrollmentRepository.INCIDENT_DATE_UID -> {
-                            updateIncidentDate(rowAction.value()?.toDate())
+                            enrollmentObjectRepository.setIncidentDate(rowAction.value()?.toDate())
                             Flowable.just(
                                 StoreResult(
                                     "",
@@ -322,27 +198,83 @@ class EnrollmentPresenterImpl(
                 )
         )
 
+        val fields = getFieldFlowable()
+
         disposable.add(
-            fieldsFlowable.startWith(true)
-                .observeOn(schedulerProvider.io())
-                .switchMap {
-                    Flowable.zip<List<FieldViewModel>, Result<RuleEffect>, List<FieldViewModel>>(
-                        dataEntryRepository.list(),
-                        formRepository.calculate(),
-                        BiFunction { fields, result -> applyRuleEffects(fields, result) }
-                    )
+            dataEntryRepository.enrollmentSectionUids()
+                .flatMap { sectionList ->
+                    view.sectionFlowable().startWith(sectionList[0])
+                        .switchMap { section ->
+                            fields.map { fieldList ->
+                                val finalList = fieldList.toMutableList()
+                                val iterator = finalList.listIterator()
+                                while (iterator.hasNext()) {
+                                    val field = iterator.next()
+                                    if (field is SectionViewModel) {
+                                        var sectionViewModel: SectionViewModel = field
+                                        val (values, totals) = getValueCount(
+                                            fieldList,
+                                            sectionViewModel.uid()
+                                        )
+                                        sectionViewModel = sectionViewModel
+                                            .setOpen(field.uid() == section)
+                                            .setCompletedFields(values)
+                                            .setTotalFields(totals)
+                                        iterator.set(sectionViewModel)
+                                    } else if (!field.programStageSection().equals(section)) {
+                                        iterator.remove()
+                                    }
+                                }
+                                finalList
+                            }
+                        }
                 }
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe({
                     view.showFields(it)
-                    view.showSaveButton()
-                    view.hideAdjustingForm()
+                    view.setSaveButtonVisible(true)
                 }) {
                     Timber.tag(TAG).e(it)
-                    view.hideAdjustingForm()
                 }
         )
+
+        disposable.add(
+            view.sectionFlowable()
+                .subscribeOn(schedulerProvider.io())
+                .observeOn(schedulerProvider.io())
+                .subscribe(
+                    { fieldsFlowable.onNext(true) },
+                    { Timber.tag(TAG).e(it) }
+                )
+        )
+
+        fields.connect()
+    }
+
+    fun getValueCount(fields: List<FieldViewModel>, sectionUid: String): Pair<Int, Int> {
+        var total = 0
+        var values = 0
+        fields.filter { it.programStageSection().equals(sectionUid) && it !is SectionViewModel }
+            .forEach {
+                total++
+                if (!it.value().isNullOrEmpty()) {
+                    values++
+                }
+            }
+        return Pair(values, total)
+    }
+
+    fun getFieldFlowable(): ConnectableFlowable<List<FieldViewModel>> {
+        return fieldsFlowable.startWith(true)
+            .observeOn(schedulerProvider.io())
+            .flatMap {
+                Flowable.zip<List<FieldViewModel>, Result<RuleEffect>, List<FieldViewModel>>(
+                    dataEntryRepository.list(),
+                    formRepository.calculate(),
+                    BiFunction { fields, result -> applyRuleEffects(fields, result) }
+                )
+            }.publish()
     }
 
     fun finish(enrollmentMode: EnrollmentActivity.EnrollmentMode) {
@@ -420,11 +352,6 @@ class EnrollmentPresenterImpl(
         return programRepository.blockingGet()
     }
 
-    fun getOrgUnit(): OrganisationUnit {
-        return d2.organisationUnitModule().organisationUnits()
-            .uid(getEnrollment().organisationUnit()).blockingGet()
-    }
-
     fun updateEnrollmentStatus(newStatus: EnrollmentStatus): Boolean {
         return try {
             if (getProgram().access()?.data()?.write() == true) {
@@ -438,16 +365,6 @@ class EnrollmentPresenterImpl(
         } catch (error: D2Error) {
             false
         }
-    }
-
-    fun updateEnrollmentDate(date: Date?) {
-        enrollmentObjectRepository.setEnrollmentDate(date)
-        view.setUpEnrollmentDate(date)
-    }
-
-    fun updateIncidentDate(date: Date?) {
-        enrollmentObjectRepository.setIncidentDate(date)
-        view.setUpIncidentDate(date)
     }
 
     fun saveEnrollmentGeometry(geometry: Geometry?) {

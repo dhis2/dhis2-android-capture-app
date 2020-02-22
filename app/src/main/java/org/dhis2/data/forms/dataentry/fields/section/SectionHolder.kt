@@ -110,7 +110,7 @@ class SectionHolder(
             .start()
     }
 
-    fun setBottonShadow(showShadow: Boolean) {
+    fun setBottomShadow(showShadow: Boolean) {
         formBinding.shadowBottom.visibility = if (showShadow) View.VISIBLE else View.GONE
     }
 }

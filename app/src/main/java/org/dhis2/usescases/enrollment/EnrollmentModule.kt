@@ -22,9 +22,10 @@ import org.hisp.dhis.rules.RuleExpressionEvaluator
 
 @Module
 class EnrollmentModule(
-    val enrollmentView: EnrollmentView,
+    private val enrollmentView: EnrollmentView,
     val enrollmentUid: String,
-    val programUid: String
+    val programUid: String,
+    val enrollmentMode: EnrollmentActivity.EnrollmentMode
 ) {
 
     @Provides
@@ -63,7 +64,24 @@ class EnrollmentModule(
             context.getString(R.string.filter_options),
             context.getString(R.string.choose_date)
         )
-        return EnrollmentRepository(context, modelFactory, enrollmentUid, d2)
+        val enrollmentDataSectionLabel = context.getString(R.string.enrollment_data_section_label)
+        val singleSectionLabel = context.getString(R.string.enrollment_single_section_label)
+        val enrollmentOrgUnitLabel = context.getString(R.string.enrolling_ou)
+        val teiCoordinatesLabel = context.getString(R.string.tei_coordinates)
+        val enrollmentCoordinatesLabel = context.getString(R.string.enrollment_coordinates)
+        val reservedValueWarning = context.getString(R.string.no_reserved_values)
+        return EnrollmentRepository(
+            modelFactory,
+            enrollmentUid,
+            d2,
+            enrollmentMode,
+            enrollmentDataSectionLabel,
+            singleSectionLabel,
+            enrollmentOrgUnitLabel,
+            teiCoordinatesLabel,
+            enrollmentCoordinatesLabel,
+            reservedValueWarning
+        )
     }
 
     @Provides

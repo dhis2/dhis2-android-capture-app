@@ -7,19 +7,12 @@ import android.os.Bundle
 import android.text.TextUtils.isEmpty
 import android.view.LayoutInflater
 import android.view.View
-import android.widget.DatePicker
-import android.widget.PopupMenu
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.airbnb.lottie.LottieDrawable.INFINITE
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import io.reactivex.Flowable
-import java.io.File
-import java.util.Calendar
-import java.util.Date
-import javax.inject.Inject
 import org.dhis2.App
 import org.dhis2.R
 import org.dhis2.data.forms.dataentry.DataEntryAdapter
@@ -37,27 +30,22 @@ import org.dhis2.utils.Constants
 import org.dhis2.utils.Constants.CAMERA_REQUEST
 import org.dhis2.utils.Constants.GALLERY_REQUEST
 import org.dhis2.utils.Constants.RQ_QR_SCANNER
-import org.dhis2.utils.DatePickerUtils
-import org.dhis2.utils.DateUtils
 import org.dhis2.utils.DialogClickListener
 import org.dhis2.utils.EventMode
 import org.dhis2.utils.FileResourcesUtil
 import org.dhis2.utils.analytics.CLICK
 import org.dhis2.utils.analytics.DELETE_AND_BACK
 import org.dhis2.utils.analytics.SAVE_ENROLL
-import org.dhis2.utils.analytics.STATUS_ENROLLMENT
 import org.dhis2.utils.customviews.CustomDialog
+import org.dhis2.utils.recyclers.StickyHeaderItemDecoration
 import org.hisp.dhis.android.core.arch.helpers.FileResourceDirectoryHelper
 import org.hisp.dhis.android.core.arch.helpers.GeometryHelper
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.Geometry
-import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
-import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
-import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityType
+import java.io.File
+import javax.inject.Inject
 
 class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
 
@@ -101,7 +89,8 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
             EnrollmentModule(
                 this,
                 intent.getStringExtra(ENROLLMENT_UID_EXTRA),
-                intent.getStringExtra(PROGRAM_UID_EXTRA)
+                intent.getStringExtra(PROGRAM_UID_EXTRA),
+                EnrollmentMode.valueOf(intent.getStringExtra(MODE_EXTRA))
             )
         ).inject(this)
         super.onCreate(savedInstanceState)
@@ -110,17 +99,23 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
 
         mode = EnrollmentMode.valueOf(intent.getStringExtra(MODE_EXTRA))
 
-        binding.programLockLayout.visibility =
-            if (mode == EnrollmentMode.NEW) View.GONE else View.VISIBLE
-
-        binding.coordinatesView.setIsBgTransparent(true)
-        binding.teiCoordinatesView.setIsBgTransparent(true)
-
         adapter = DataEntryAdapter(
-            LayoutInflater.from(this), supportFragmentManager,
+            LayoutInflater.from(this),
+            supportFragmentManager,
             DataEntryArguments.forEnrollment(intent.getStringExtra(ENROLLMENT_UID_EXTRA))
         )
-        binding.fieldRecycler.isNestedScrollingEnabled = true
+        binding.fieldRecycler.addItemDecoration(
+            StickyHeaderItemDecoration(binding.fieldRecycler,
+                false,
+                { itemPosition ->
+                    itemPosition >= 0 &&
+                            itemPosition < adapter.itemCount &&
+                            adapter.getItemViewType(itemPosition) == 17
+                },
+                { sectionUid ->
+                    adapter.sectionFlowable().onNext(sectionUid)
+                })
+        )
         binding.fieldRecycler.adapter = adapter
 
         binding.next.setOnClickListener {
@@ -130,24 +125,6 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
                 presenter.finish(mode)
             }
         }
-
-        binding.enrollmentDataButton.setOnClickListener {
-            if (binding.enrollmentData.visibility == View.GONE) {
-                binding.enrollmentDataText.text = getString(R.string.enrollment_data_hide)
-                binding.enrollmentData.visibility = View.VISIBLE
-                binding.enrollmentDataArrow.animate().scaleY(-1.0f).setDuration(200).start()
-            } else {
-                binding.enrollmentDataText.text = getString(R.string.enrollment_data_show)
-                binding.enrollmentData.visibility = View.GONE
-                binding.enrollmentDataArrow.animate().scaleY(1.0f).setDuration(200).start()
-            }
-        }
-
-        binding.fieldRecycler.itemAnimator = null
-
-        binding.enrollmentDataText.text = getString(R.string.enrollment_data_hide)
-        binding.enrollmentData.visibility = View.VISIBLE
-        binding.enrollmentDataArrow.animate().scaleY(-1.0f).setDuration(0).start()
 
         presenter.init()
     }
@@ -197,6 +174,10 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
                 RQ_EVENT -> openDashboard(presenter.getEnrollment().uid()!!)
             }
         }
+    }
+
+    override fun sectionFlowable(): Flowable<String> {
+        return adapter.sectionFlowable()
     }
 
     override fun openEvent(eventUid: String) {
@@ -318,11 +299,9 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
             when (requestCode) {
                 RQ_ENROLLMENT_GEOMETRY -> {
                     presenter.saveEnrollmentGeometry(geometry)
-                    binding.coordinatesView.updateLocation(geometry)
                 }
                 RQ_INCIDENT_GEOMETRY -> {
                     presenter.saveTeiGeometry(geometry)
-                    binding.teiCoordinatesView.updateLocation(geometry)
                 }
             }
         }
@@ -343,8 +322,6 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
     /*region ACCESS*/
 
     override fun setAccess(access: Boolean?) {
-        binding.coordinatesView.setEditable(access)
-        binding.teiCoordinatesView.setEditable(access)
         if (access == false) {
             binding.next.visibility = View.GONE
         }
@@ -358,185 +335,11 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
     }
 
     override fun showStatusOptions(currentStatus: EnrollmentStatus) {
-        val popup = PopupMenu(this, binding.programLockLayout)
-        popup.setOnMenuItemClickListener { item ->
-            val newStatus = when (item.itemId) {
-                R.id.deactivate -> EnrollmentStatus.CANCELLED
-                R.id.complete -> EnrollmentStatus.COMPLETED
-                R.id.activate -> EnrollmentStatus.ACTIVE
-                R.id.reOpen -> EnrollmentStatus.ACTIVE
-                else -> throw IllegalArgumentException("Can't have other option")
-            }
-            analyticsHelper().setEvent(STATUS_ENROLLMENT, newStatus.name, STATUS_ENROLLMENT)
-            presenter.updateEnrollmentStatus(newStatus)
-        }
 
-        val menuId = when (currentStatus) {
-            EnrollmentStatus.ACTIVE -> R.menu.tei_detail_options_active
-            EnrollmentStatus.CANCELLED -> R.menu.tei_detail_options_cancelled
-            EnrollmentStatus.COMPLETED -> R.menu.tei_detail_options_completed
-        }
-        popup.menuInflater.inflate(menuId, popup.menu)
-        popup.show()
     }
 
     /*endregion*/
 
-    /*region ORG UNIT*/
-
-    override fun displayOrgUnit(ou: OrganisationUnit) {
-        binding.orgUnitText.setText(ou.displayName())
-        binding.orgUnitText.isEnabled = false
-    }
-
-    /*endregion*/
-
-    /*region DATES*/
-
-    override fun setDateLabels(enrollmentDateLabel: String?, indicendDateLabel: String?) {
-        binding.incidentDateLayout.hint = indicendDateLabel ?: getString(R.string.incident_date)
-        binding.reportDateLayout.hint = enrollmentDateLabel ?: getString(R.string.report_date)
-    }
-
-    override fun setUpIncidentDate(incidentDate: Date?) {
-        binding.incidentDateLayout.visibility = View.VISIBLE
-        binding.incidentDateText.setText(DateUtils.uiDateFormat().format(incidentDate))
-    }
-
-    override fun setUpEnrollmentDate(enrollmentDate: Date?) {
-        binding.reportDate.setText(DateUtils.uiDateFormat().format(enrollmentDate))
-    }
-
-    override fun blockDates(blockEnrollmentDate: Boolean, blockIncidentDate: Boolean) {
-        if (mode != EnrollmentMode.NEW) {
-            binding.reportDate.isEnabled = !blockEnrollmentDate
-            binding.incidentDateText.isEnabled = !blockIncidentDate
-        }
-    }
-
-    override fun onReportDateClick() {
-        showCalendar(
-            presenter.getEnrollment().enrollmentDate(),
-            presenter.getOrgUnit().openingDate(),
-            presenter.getOrgUnit().closedDate(),
-            binding.reportDateLayout.hint.toString(),
-            presenter.getProgram().selectEnrollmentDatesInFuture() ?: false,
-            object : DatePickerUtils.OnDatePickerClickListener {
-                override fun onNegativeClick() {
-                    val date = Date()
-                    presenter.updateEnrollmentDate(date)
-                }
-
-                override fun onPositiveClick(datePicker: DatePicker) {
-                    val calendar = Calendar.getInstance()
-                    calendar.set(datePicker.year, datePicker.month, datePicker.dayOfMonth)
-                    presenter.updateEnrollmentDate(calendar.time)
-                }
-            }
-        )
-    }
-
-    override fun onIncidentDateClick() {
-        showCalendar(
-            presenter.getEnrollment().incidentDate(),
-            presenter.getOrgUnit().openingDate(),
-            presenter.getOrgUnit().closedDate(),
-            binding.incidentDateLayout.hint.toString(),
-            presenter.getProgram().selectIncidentDatesInFuture() ?: false,
-            object : DatePickerUtils.OnDatePickerClickListener {
-                override fun onNegativeClick() {
-                    val date = Date()
-                    presenter.updateIncidentDate(date)
-                }
-
-                override fun onPositiveClick(datePicker: DatePicker) {
-                    val calendar = Calendar.getInstance()
-                    calendar.set(datePicker.year, datePicker.month, datePicker.dayOfMonth)
-                    presenter.updateIncidentDate(calendar.time)
-                }
-            }
-        )
-    }
-
-    override fun showCalendar(
-        date: Date?,
-        minDate: Date?,
-        maxDate: Date?,
-        label: String,
-        allowFuture: Boolean,
-        listener: DatePickerUtils.OnDatePickerClickListener
-    ) {
-        DatePickerUtils.getDatePickerDialog(
-            this, label, date, minDate, maxDate, allowFuture,
-            listener
-        ).show()
-    }
-
-    /*endregion*/
-
-    /*region GEOMETRY*/
-    override fun displayEnrollmentCoordinates(
-        enrollmentCoordinatesData: Pair<Program, Enrollment>?
-    ) {
-        val featureType = enrollmentCoordinatesData?.first?.featureType()
-        val geometry = enrollmentCoordinatesData?.second?.geometry()
-
-        binding.coordinatesView.visibility =
-            if (featureType != null && featureType != FeatureType.NONE) {
-                View.VISIBLE
-            } else {
-                View.GONE
-            }
-
-        binding.coordinatesView.setLabel(getString(R.string.enrollment_coordinates))
-
-        binding.coordinatesView.featureType = featureType
-        binding.coordinatesView.updateLocation(geometry)
-
-        binding.coordinatesView.setMapListener {
-            startActivityForResult(
-                MapSelectorActivity.create(this, it.featureType, it.currentCoordinates()),
-                RQ_ENROLLMENT_GEOMETRY
-            )
-        }
-        binding.coordinatesView.setCurrentLocationListener {
-            presenter.saveEnrollmentGeometry(it)
-        }
-    }
-
-    override fun displayTeiCoordinates(
-        teiCoordinatesData: Pair<TrackedEntityType, TrackedEntityInstance>?
-    ) {
-        val featureType = teiCoordinatesData!!.first.featureType() ?: FeatureType.NONE
-        binding.teiCoordinatesView.visibility =
-            if (featureType != FeatureType.NONE) {
-                View.VISIBLE
-            } else {
-                View.GONE
-            }
-
-        binding.teiCoordinatesView.setLabel(
-            "${getString(R.string.tei_coordinates)} ${teiCoordinatesData.first.displayName()}"
-        )
-
-        binding.teiCoordinatesView.featureType = teiCoordinatesData.first.featureType()
-        binding.teiCoordinatesView.updateLocation(teiCoordinatesData.second.geometry())
-
-        binding.teiCoordinatesView.setMapListener {
-            startActivityForResult(
-                MapSelectorActivity.create(
-                    this,
-                    it.featureType, it.currentCoordinates()
-                ),
-                RQ_INCIDENT_GEOMETRY
-            )
-        }
-        binding.teiCoordinatesView.setCurrentLocationListener {
-            presenter.saveTeiGeometry(it)
-        }
-    }
-
-    /*endregion*/
 
     /*region DATA ENTRY*/
     override fun showFields(fields: List<FieldViewModel>) {
@@ -558,27 +361,18 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
             offset = it.top
         }
 
-        adapter.swap(fields, {  })
+        adapter.swap(fields, { })
 
         myLayoutManager.scrollToPositionWithOffset(myFirstPositionIndex, offset)
     }
     /*endregion*/
 
-    override fun showSaveButton() {
-        binding.next.show()
+    override fun setSaveButtonVisible(visible: Boolean) {
+        if (visible) {
+            binding.next.show()
+        } else {
+            binding.next.hide()
+        }
     }
 
-    override fun hideSaveButton() {
-        binding.next.hide()
-    }
-
-    override fun showAdjustingForm() {
-        binding.clIndicatorProgress.root.visibility = View.VISIBLE
-        binding.clIndicatorProgress.lottieView.repeatCount = INFINITE
-    }
-
-    override fun hideAdjustingForm() {
-        binding.clIndicatorProgress.root.visibility = View.GONE
-        binding.clIndicatorProgress.lottieView.repeatCount = 0
-    }
 }

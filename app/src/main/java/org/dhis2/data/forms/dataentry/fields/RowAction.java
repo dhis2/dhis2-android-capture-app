@@ -44,6 +44,11 @@ public abstract class RowAction {
     }
 
     @NonNull
+    public static RowAction create(@NonNull String id, @Nullable String value, int lastFocusPosition,String extraData) {
+        return new AutoValue_RowAction(id, value, false, null, null, lastFocusPosition, extraData);
+    }
+
+    @NonNull
     public static RowAction create(@NonNull String id, @Nullable String value, @NonNull Boolean requieresExactMatch) {
         return new AutoValue_RowAction(id, value, requieresExactMatch, null, null, -1, null);
     }

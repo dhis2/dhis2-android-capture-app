@@ -185,11 +185,11 @@ public final class DataEntryAdapter extends ListAdapter<FieldViewModel, ViewHold
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         rows.get(holder.getItemViewType()).onBind(holder,
-                getItem(holder.getAdapterPosition()));
+                getItem(position));
         if (!(holder instanceof SectionHolder)) {
             holder.itemView.setBackgroundResource(R.color.form_field_background);
         } else {
-            ((SectionHolder) holder).setBottonShadow(
+            ((SectionHolder) holder).setBottomShadow(
                     position > 0 && getItemViewType(position - 1) != SECTION);
         }
     }
@@ -307,9 +307,14 @@ public final class DataEntryAdapter extends ListAdapter<FieldViewModel, ViewHold
 
     public boolean mandatoryOk() {
         boolean isOk = true;
-        for (FieldViewModel fieldViewModel : viewModels) {
-            if (fieldViewModel.mandatory() && (fieldViewModel.value() == null || fieldViewModel.value().isEmpty()))
+        for (int position = 0; position < getItemCount(); position++) {
+            FieldViewModel fieldViewModel = getItem(position);
+            boolean isSection = fieldViewModel instanceof SectionViewModel;
+            boolean isMandatory = fieldViewModel.mandatory();
+            boolean valueIsEmpty = fieldViewModel.value() == null || fieldViewModel.value().isEmpty();
+            if (!isSection && isMandatory && valueIsEmpty) {
                 isOk = false;
+            }
         }
 
         return isOk;

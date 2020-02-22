@@ -16,27 +16,22 @@ import static android.text.TextUtils.isEmpty;
 
 public class CoordinateHolder extends FormViewHolder {
 
-    private final FlowableProcessor<RowAction> processor;
     private CustomFormCoordinateBinding binding;
     private CoordinateViewModel model;
 
     @SuppressLint("CheckResult")
     CoordinateHolder(CustomFormCoordinateBinding binding, FlowableProcessor<RowAction> processor, boolean isSearchMode, MutableLiveData<String> currentSelection) {
         super(binding);
-        this.processor = processor;
         this.binding = binding;
         this.currentUid = currentSelection;
 
-        binding.formCoordinates.setCurrentLocationListener((geometry) -> {
+        binding.formCoordinates.setCurrentLocationListener(geometry -> {
                     closeKeyboard(binding.formCoordinates);
-                    if (geometry == null) {
-                        processor.onNext(
-                                RowAction.create(model.uid(), null, getAdapterPosition()));
-                    } else
-                        processor.onNext(
-                                RowAction.create(model.uid(),
-                                        geometry.coordinates(),
-                                        getAdapterPosition()));
+                    processor.onNext(
+                            RowAction.create(model.uid(),
+                                    geometry == null ? null : geometry.coordinates(),
+                                    getAdapterPosition(),
+                                    model.featureType().name()));
                     clearBackground(isSearchMode);
                 }
         );
