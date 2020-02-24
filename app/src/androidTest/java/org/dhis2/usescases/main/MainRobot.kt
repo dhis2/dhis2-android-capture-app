@@ -9,6 +9,7 @@ import androidx.test.espresso.matcher.ViewMatchers.*
 import org.dhis2.R
 import org.dhis2.common.BaseRobot
 import org.dhis2.common.matchers.RecyclerviewMatchers.Companion.isNotEmpty
+import org.hamcrest.CoreMatchers.allOf
 
 fun MainRobot.screen(robotBody: MainRobot.() -> Unit){
     this.run {
@@ -43,9 +44,15 @@ class MainRobot(context: Context) : BaseRobot(context){
     }
 
     fun checkViewIsNotEmpty() {
-        // not sure if it needs to both validations (displayed and empty)
         onView(withId(R.id.program_recycler))
-                .check(matches(isDisplayed()))
-        onView(withId(R.id.program_recycler)).check(matches(isNotEmpty()))
+                .check(matches(allOf(isDisplayed(),isNotEmpty())))
     }
+
+    fun filterByPeriodToday() {
+        // click on filter, find PERIOD filter and click, today and click
+        onView(withId(R.id.filter)).perform(click())
+        onView(withId(R.id.filterLayout))
+        onView(withId(R.id.today)).perform(click())
+    }
+
 }

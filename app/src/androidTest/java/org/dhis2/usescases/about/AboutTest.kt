@@ -46,8 +46,6 @@ class AboutTest : BaseTest() {
         mainRobot.clickOnNavigationDrawerMenu()
                 .clickAbout()
         aboutRobot.checkVersionNames(appVersion, sdkVersion)
-        //Assert versionName
-        //Assert SDK version
     }
 
     private fun startActivity(){
