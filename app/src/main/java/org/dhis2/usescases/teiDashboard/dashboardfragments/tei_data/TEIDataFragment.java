@@ -34,6 +34,7 @@ import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.DialogClickListener;
 import org.dhis2.utils.EventCreationType;
 import org.dhis2.utils.ObjectStyleUtils;
+import org.dhis2.utils.OrientationUtilsKt;
 import org.dhis2.utils.customviews.CategoryComboDialog;
 import org.dhis2.utils.customviews.CustomDialog;
 import org.hisp.dhis.android.core.category.CategoryCombo;
@@ -198,18 +199,22 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == REQ_EVENT && resultCode == RESULT_OK) {
-            presenter.getTEIEvents();
-            if (data != null) {
-                lastModifiedEventUid = data.getStringExtra(Constants.EVENT_UID);
-                if (((TeiDashboardMobileActivity) context).getOrientation() != Configuration.ORIENTATION_LANDSCAPE)
-                    getSharedPreferences().edit().putString("COMPLETED_EVENT", lastModifiedEventUid).apply();
-                else {
-                    if (lastModifiedEventUid != null)
-                        presenter.displayGenerateEvent(lastModifiedEventUid);
+        if(resultCode == RESULT_OK) {
+            if (requestCode == REQ_EVENT) {
+                presenter.getTEIEvents();
+                if (data != null) {
+                    lastModifiedEventUid = data.getStringExtra(Constants.EVENT_UID);
+                    if (!OrientationUtilsKt.isLandscape())
+                        getSharedPreferences().edit().putString("COMPLETED_EVENT", lastModifiedEventUid).apply();
+                    else {
+                        if (lastModifiedEventUid != null)
+                            presenter.displayGenerateEvent(lastModifiedEventUid);
+                    }
                 }
             }
-
+            if (requestCode == REQ_DETAILS) {
+                activity.getPresenter().init();
+            }
         }
     }
 
@@ -384,7 +389,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
 
     @Override
     public void seeDetails(Intent intent, Bundle bundle) {
-        this.startActivity(intent, bundle);
+        this.startActivityForResult(intent, REQ_DETAILS, bundle);
     }
 
     @Override

@@ -313,6 +313,11 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
         }
     }
 
+    override fun setResultAndFinish() {
+        setResult(RESULT_OK)
+        finish()
+    }
+
     /*endregion*/
 
     /*region TEI*/
