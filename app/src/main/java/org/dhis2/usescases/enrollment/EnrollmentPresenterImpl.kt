@@ -23,6 +23,10 @@ import org.dhis2.utils.DhisTextUtils
 import org.dhis2.utils.Result
 import org.dhis2.utils.RulesActionCallbacks
 import org.dhis2.utils.RulesUtilsProviderImpl
+import org.dhis2.utils.analytics.AnalyticsHelper
+import org.dhis2.utils.analytics.CLICK
+import org.dhis2.utils.analytics.DELETE_AND_BACK
+import org.dhis2.utils.analytics.SAVE_ENROLL
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.`object`.ReadOnlyOneObjectRepositoryFinalImpl
 import org.hisp.dhis.android.core.common.FeatureType
@@ -33,11 +37,11 @@ import org.hisp.dhis.android.core.enrollment.EnrollmentObjectRepository
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
 import org.hisp.dhis.android.core.maintenance.D2Error
 import org.hisp.dhis.android.core.program.Program
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceObjectRepository
 import org.hisp.dhis.rules.models.RuleActionShowError
 import org.hisp.dhis.rules.models.RuleEffect
 import timber.log.Timber
+import java.util.concurrent.TimeUnit
 import kotlin.collections.set
 
 private const val TAG = "EnrollmentPresenter"
@@ -51,19 +55,20 @@ class EnrollmentPresenterImpl(
     private val programRepository: ReadOnlyOneObjectRepositoryFinalImpl<Program>,
     private val schedulerProvider: SchedulerProvider,
     val formRepository: EnrollmentFormRepository,
-    private val valueStore: ValueStore
+    private val valueStore: ValueStore,
+    private val analyticsHelper: AnalyticsHelper
 ) : RulesActionCallbacks {
 
-    private lateinit var disposable: CompositeDisposable
+    private val disposable = CompositeDisposable()
     private val optionsToHide = ArrayList<String>()
     private val optionsGroupsToHide = ArrayList<String>()
     private val optionsGroupToShow = HashMap<String, ArrayList<String>>()
     private val fieldsFlowable: FlowableProcessor<Boolean> = PublishProcessor.create()
     private var lastFocusItem: String? = null
-
+    private val backButtonProcessor: FlowableProcessor<Boolean> = PublishProcessor.create()
+    private var emptyMandatoryFields: MutableList<String> = mutableListOf()
+    private var errorFields: MutableList<String> = mutableListOf()
     fun init() {
-        disposable = CompositeDisposable()
-
         view.setSaveButtonVisible(false)
 
         disposable.add(
@@ -219,8 +224,11 @@ class EnrollmentPresenterImpl(
                             fields.map { fieldList ->
                                 val finalList = fieldList.toMutableList()
                                 val iterator = finalList.listIterator()
+                                emptyMandatoryFields.clear()
+                                errorFields.clear()
                                 while (iterator.hasNext()) {
                                     val field = iterator.next()
+                                    fieldIntegrityCheck(field)
                                     if (field is SectionViewModel) {
                                         var sectionViewModel: SectionViewModel = field
                                         val (values, totals) = getValueCount(
@@ -288,6 +296,18 @@ class EnrollmentPresenterImpl(
             }.publish()
     }
 
+    fun subscribeToBackButton() {
+        disposable.add(backButtonProcessor
+            .doOnNext { view.requestFocus() }
+            .debounce(1, TimeUnit.SECONDS, schedulerProvider.io())
+            .observeOn(schedulerProvider.ui())
+            .subscribe(
+                { view.performSaveClick() },
+                { t -> Timber.e(t) }
+            )
+        )
+    }
+
     fun finish(enrollmentMode: EnrollmentActivity.EnrollmentMode) {
         when (enrollmentMode) {
             EnrollmentActivity.EnrollmentMode.NEW -> disposable.add(
@@ -306,12 +326,16 @@ class EnrollmentPresenterImpl(
                         { Timber.tag(TAG).e(it) }
                     )
             )
-            EnrollmentActivity.EnrollmentMode.CHECK -> view.abstractActivity.finish()
+            EnrollmentActivity.EnrollmentMode.CHECK -> view.setResultAndFinish()
         }
     }
 
     fun updateFields() {
         fieldsFlowable.onNext(true)
+    }
+
+    fun backIsClicked() {
+        backButtonProcessor.onNext(true)
     }
 
     fun openInitial(eventUid: String): Boolean {
@@ -388,6 +412,7 @@ class EnrollmentPresenterImpl(
 
     fun deleteAllSavedData() {
         teiRepository.blockingDelete()
+        analyticsHelper.setEvent(DELETE_AND_BACK, CLICK, DELETE_AND_BACK)
     }
 
     fun getLastFocusItem(): String? {
@@ -462,7 +487,16 @@ class EnrollmentPresenterImpl(
         }
     }
 
-    fun dataIntegrityCheck(emptyMandatoryFields: List<String>, errorFields: List<String>): Boolean {
+    fun fieldIntegrityCheck(field: FieldViewModel) {
+        if (field.mandatory() && field.value().isNullOrEmpty()) {
+            emptyMandatoryFields.add(field.label())
+        }
+        if (!field.error().isNullOrEmpty()) {
+            errorFields.add(field.label())
+        }
+    }
+
+    fun dataIntegrityCheck(): Boolean {
         return when {
             emptyMandatoryFields.isNotEmpty() -> {
                 view.showMissingMandatoryFieldsMessage(emptyMandatoryFields)
@@ -472,7 +506,10 @@ class EnrollmentPresenterImpl(
                 view.showErrorFieldsMessage(errorFields)
                 false
             }
-            else -> true
+            else -> {
+                analyticsHelper.setEvent(SAVE_ENROLL, CLICK, SAVE_ENROLL)
+                true
+            }
         }
     }
 }

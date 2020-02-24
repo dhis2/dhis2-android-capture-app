@@ -13,8 +13,11 @@ import org.dhis2.data.forms.dataentry.DataEntryRepository
 import org.dhis2.data.forms.dataentry.StoreResult
 import org.dhis2.data.forms.dataentry.ValueStore
 import org.dhis2.data.forms.dataentry.ValueStoreImpl
+import org.dhis2.data.forms.dataentry.fields.FieldViewModel
+import org.dhis2.data.forms.dataentry.fields.edittext.EditTextViewModel
 import org.dhis2.data.schedulers.SchedulerProvider
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
+import org.dhis2.utils.analytics.AnalyticsHelper
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.`object`.ReadOnlyOneObjectRepositoryFinalImpl
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
@@ -22,6 +25,7 @@ import org.hisp.dhis.android.core.category.CategoryCombo
 import org.hisp.dhis.android.core.common.Access
 import org.hisp.dhis.android.core.common.DataAccess
 import org.hisp.dhis.android.core.common.FeatureType
+import org.hisp.dhis.android.core.common.ObjectStyle
 import org.hisp.dhis.android.core.common.ObjectWithUid
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.enrollment.Enrollment
@@ -52,6 +56,7 @@ class EnrollmentPresenterImplTest {
     private val enrollmentRepository: EnrollmentObjectRepository = mock()
     private val schedulers: SchedulerProvider = TrampolineSchedulerProvider()
     private val valueStore: ValueStore = mock()
+    private val analyticsHelper: AnalyticsHelper = mock()
 
     @Before
     fun setUp() {
@@ -64,41 +69,50 @@ class EnrollmentPresenterImplTest {
             programRepository,
             schedulers,
             formRepository,
-            valueStore
+            valueStore,
+            analyticsHelper
         )
     }
 
     @Test
     fun `Missing and errors fields should show mandatory fields dialog`() {
-        val emptyFields: List<String> = listOf("field1")
-        val errorFields: List<String> = listOf()
-        val checkWthErrors = presenter.dataIntegrityCheck(emptyFields, errorFields)
+
+        getEmptyAndErrorFields(
+            showMandatory = true,
+            showError = true
+        ).forEach { presenter.fieldIntegrityCheck(it) }
+
+        val checkWthErrors = presenter.dataIntegrityCheck()
 
         Assert.assertFalse(checkWthErrors)
 
-        verify(enrollmentView, times(1)).showMissingMandatoryFieldsMessage(emptyFields)
+        verify(enrollmentView, times(1)).showMissingMandatoryFieldsMessage(any())
     }
 
     @Test
     fun `Missing fields should show mandatory fields dialog`() {
-        val emptyFields: List<String> = listOf("field")
-        val errorFields: List<String> = listOf("field")
-        val checkWthErrors = presenter.dataIntegrityCheck(emptyFields, errorFields)
+        getEmptyAndErrorFields(
+            showMandatory = true,
+            showError = false
+        ).forEach { presenter.fieldIntegrityCheck(it) }
+        val checkWthErrors = presenter.dataIntegrityCheck()
 
         Assert.assertFalse(checkWthErrors)
 
-        verify(enrollmentView, times(1)).showMissingMandatoryFieldsMessage(emptyFields)
+        verify(enrollmentView, times(1)).showMissingMandatoryFieldsMessage(any())
     }
 
     @Test
     fun `Error fields should show mandatory fields dialog`() {
-        val emptyFields: List<String> = listOf()
-        val errorFields: List<String> = listOf("field")
-        val checkWthErrors = presenter.dataIntegrityCheck(emptyFields, errorFields)
+        getEmptyAndErrorFields(
+            showMandatory = false,
+            showError = true
+        ).forEach { presenter.fieldIntegrityCheck(it) }
+        val checkWthErrors = presenter.dataIntegrityCheck()
 
         Assert.assertFalse(checkWthErrors)
 
-        verify(enrollmentView, times(1)).showErrorFieldsMessage(errorFields)
+        verify(enrollmentView, times(1)).showErrorFieldsMessage(any())
     }
 
     @Test
@@ -123,34 +137,6 @@ class EnrollmentPresenterImplTest {
     fun `Open initial when needsCatCombo is true and needsCoordinates is true`() {
         checkCatCombo(false, FeatureType.POINT)
         assert(presenter.openInitial(""))
-    }
-
-    private fun checkCatCombo(catCombo: Boolean, featureType: FeatureType) {
-        whenever(programRepository.blockingGet()) doReturn Program.builder().uid("")
-            .categoryCombo(ObjectWithUid.create("")).build()
-
-        whenever(d2.eventModule()) doReturn mock()
-        whenever(d2.eventModule().events()) doReturn mock()
-        whenever(d2.eventModule().events().uid("")) doReturn mock()
-        whenever(d2.eventModule().events().uid("").blockingGet()) doReturn Event.builder()
-            .uid("").programStage("").build()
-
-        whenever(d2.programModule()) doReturn mock()
-        whenever(d2.programModule().programStages()) doReturn mock()
-        whenever(d2.programModule().programStages().uid("")) doReturn mock()
-        whenever(
-            d2.programModule().programStages().uid("").blockingGet()
-        ) doReturn ProgramStage.builder().uid("").featureType(featureType).build()
-
-        whenever(d2.categoryModule()) doReturn mock()
-        whenever(d2.categoryModule().categoryCombos()) doReturn mock()
-        whenever(d2.categoryModule().categoryCombos().uid("")) doReturn mock()
-        whenever(
-            d2.categoryModule().categoryCombos().uid("").blockingGet()
-        ) doReturn CategoryCombo.builder()
-            .isDefault(catCombo)
-            .uid("")
-            .build()
     }
 
     @Test
@@ -195,197 +181,11 @@ class EnrollmentPresenterImplTest {
         verify(valueStore, times(1)).save("uid", "fileValue")
     }
 
-    private fun mockValuesDataElement(
-        uid: String,
-        value: String?,
-        existValue: Boolean,
-        eventValueIsNull: Boolean,
-        isSameValue: Boolean,
-        valueTypeIsImage: Boolean
-    ) {
-        val sameValue = if (isSameValue) {
-            value
-        } else {
-            "other_value"
-        }
-        whenever(d2.trackedEntityModule().trackedEntityAttributes().uid("")) doReturn mock()
-        whenever(
-            d2.trackedEntityModule().trackedEntityAttributes().uid("").blockingExists()
-        ) doReturn false
-
-        whenever(
-            enrollmentRepository.blockingGet()
-        ) doReturn Enrollment.builder().uid("").build()
-
-        whenever(d2.eventModule().events().byEnrollmentUid().eq("")) doReturn mock()
-        whenever(
-            d2.eventModule().events().byEnrollmentUid().eq("").byStatus()
-        ) doReturn mock()
-        whenever(
-            d2.eventModule().events()
-                .byEnrollmentUid().eq("")
-                .byStatus().eq(EventStatus.ACTIVE)
-        ) doReturn mock()
-        whenever(
-            d2.eventModule().events()
-                .byEnrollmentUid().eq("")
-                .byStatus().eq(EventStatus.ACTIVE).orderByEventDate(
-                    RepositoryScope.OrderByDirection.DESC
-                )
-        ) doReturn mock()
-        whenever(
-            d2.eventModule().events().byEnrollmentUid().eq("").byStatus()
-                .eq(EventStatus.ACTIVE).orderByEventDate(RepositoryScope.OrderByDirection.DESC)
-                .blockingGet()
-        ) doReturn listOf(
-            Event.builder().uid("id").build()
-        )
-
-        whenever(
-            d2.trackedEntityModule().trackedEntityDataValues().byDataElement().eq(uid)
-        ) doReturn mock()
-        whenever(
-            d2.trackedEntityModule().trackedEntityDataValues().byDataElement().eq(uid).byEvent()
-        ) doReturn mock()
-
-        val retList = listOf("id")
-
-        whenever(
-            d2.trackedEntityModule().trackedEntityDataValues()
-                .byDataElement().eq(uid)
-                .byEvent().`in`(retList)
-        ) doReturn mock()
-        if (eventValueIsNull) {
-            whenever(
-                d2.trackedEntityModule().trackedEntityDataValues()
-                    .byDataElement().eq(uid)
-                    .byEvent().`in`(retList).blockingGet()
-            ) doReturn listOf()
-        } else {
-            whenever(
-                d2.trackedEntityModule().trackedEntityDataValues()
-                    .byDataElement().eq(uid)
-                    .byEvent().`in`(retList).blockingGet()
-            ) doReturn listOf(
-                TrackedEntityDataValue.builder()
-                    .event("eventName")
-                    .build()
-            )
-        }
-
-        whenever(
-            d2.trackedEntityModule().trackedEntityDataValues().value(
-                "eventName",
-                uid
-            )
-        ) doReturn mock()
-        whenever(
-            d2.trackedEntityModule().trackedEntityDataValues().value(
-                "eventName",
-                uid
-            ).blockingExists()
-        ) doReturn existValue
-        whenever(
-            d2.trackedEntityModule().trackedEntityDataValues().value(
-                "eventName",
-                uid
-            ).blockingGet()
-        ) doReturn TrackedEntityDataValue.builder()
-            .value(sameValue)
-            .build()
-
-        whenever(d2.dataElementModule().dataElements().uid(uid)) doReturn mock()
-        whenever(d2.dataElementModule().dataElements().uid(uid).blockingGet()) doReturn mock()
-        if (valueTypeIsImage) {
-            whenever(
-                d2.dataElementModule().dataElements().uid(uid).blockingGet().valueType()
-            ) doReturn ValueType.IMAGE
-        } else {
-            whenever(
-                d2.dataElementModule().dataElements().uid(uid).blockingGet().valueType()
-            ) doReturn ValueType.BOOLEAN
-        }
-
-        whenever(d2.fileResourceModule().fileResources().blockingAdd(any())) doReturn sameValue
-    }
-
-    private fun mockValuesAttribute(newValue: String) {
-        whenever(d2.trackedEntityModule().trackedEntityAttributes().uid("")) doReturn mock()
-        whenever(
-            d2.trackedEntityModule().trackedEntityAttributes().uid("").blockingExists()
-        ) doReturn true
-
-        whenever(teiRepository.blockingGet()) doReturn mock()
-        whenever(teiRepository.blockingGet().uid()) doReturn ""
-
-        whenever(
-            d2.trackedEntityModule().trackedEntityAttributeValues().value(
-                "",
-                ""
-            )
-        ) doReturn mock()
-
-        whenever(
-            d2.trackedEntityModule().trackedEntityAttributes().uid("").blockingGet()
-        ) doReturn TrackedEntityAttribute.builder()
-            .valueType(ValueType.IMAGE)
-            .uid("")
-            .build()
-
-        whenever(d2.fileResourceModule().fileResources().blockingAdd(any())) doReturn newValue
-
-        whenever(
-            d2.trackedEntityModule().trackedEntityAttributeValues().value(
-                "",
-                ""
-            ).blockingExists()
-        ) doReturn true
-        whenever(
-            d2.trackedEntityModule().trackedEntityAttributeValues().value(
-                "",
-                ""
-            ).blockingGet()
-        ) doReturn TrackedEntityAttributeValue.builder()
-            .value("value").build()
-    }
-
-    @Test
-    fun `Check data integrity when mandatory is false and has error is false`() {
-        val emptyFields: List<String> = listOf("field")
-        val errorFields: List<String> = listOf("field")
-        val result = presenter.dataIntegrityCheck(emptyFields, errorFields)
-        verify(enrollmentView, times(1)).showMissingMandatoryFieldsMessage(emptyFields)
-        verify(enrollmentView, times(0)).showErrorFieldsMessage(errorFields)
-        Assert.assertFalse(result)
-    }
-
     @Test
     fun `Check data integrity when mandatory is true and has error is false`() {
-        val emptyFields: List<String> = listOf()
-        val errorFields: List<String> = listOf()
-        val result = presenter.dataIntegrityCheck(emptyFields, errorFields)
+        val result = presenter.dataIntegrityCheck()
         verifyZeroInteractions(enrollmentView)
         Assert.assertTrue(result)
-    }
-
-    @Test
-    fun `Check data integrity when mandatory is false and has error is true`() {
-        val emptyFields: List<String> = listOf("field")
-        val errorFields: List<String> = listOf("field")
-        val result = presenter.dataIntegrityCheck(emptyFields, errorFields)
-        verify(enrollmentView, times(1)).showMissingMandatoryFieldsMessage(emptyFields)
-        verify(enrollmentView, times(0)).showErrorFieldsMessage(errorFields)
-        Assert.assertFalse(result)
-    }
-
-    @Test
-    fun `Check data integrity when mandatory is true and has error is true`() {
-        val emptyFields: List<String> = listOf()
-        val errorFields: List<String> = listOf("field")
-        val result = presenter.dataIntegrityCheck(emptyFields, errorFields)
-        verify(enrollmentView, times(0)).showMissingMandatoryFieldsMessage(emptyFields)
-        verify(enrollmentView, times(1)).showErrorFieldsMessage(errorFields)
-        Assert.assertFalse(result)
     }
 
     @Test
@@ -397,5 +197,85 @@ class EnrollmentPresenterImplTest {
         processor.onNext(true)
 
         testSubscriber.assertValueAt(0, true)
+    }
+
+    @Test
+    fun `Should execute the backButton processor`() {
+        val processor = PublishProcessor.create<Boolean>()
+        val testSubscriber = processor.test()
+
+        presenter.backIsClicked()
+        processor.onNext(true)
+
+        testSubscriber.assertValueAt(0, true)
+    }
+
+    private fun checkCatCombo(catCombo: Boolean, featureType: FeatureType) {
+        whenever(programRepository.blockingGet()) doReturn Program.builder().uid("")
+            .categoryCombo(ObjectWithUid.create("")).build()
+
+        whenever(d2.eventModule()) doReturn mock()
+        whenever(d2.eventModule().events()) doReturn mock()
+        whenever(d2.eventModule().events().uid("")) doReturn mock()
+        whenever(d2.eventModule().events().uid("").blockingGet()) doReturn Event.builder()
+            .uid("").programStage("").build()
+
+        whenever(d2.programModule()) doReturn mock()
+        whenever(d2.programModule().programStages()) doReturn mock()
+        whenever(d2.programModule().programStages().uid("")) doReturn mock()
+        whenever(
+            d2.programModule().programStages().uid("").blockingGet()
+        ) doReturn ProgramStage.builder().uid("").featureType(featureType).build()
+
+        whenever(d2.categoryModule()) doReturn mock()
+        whenever(d2.categoryModule().categoryCombos()) doReturn mock()
+        whenever(d2.categoryModule().categoryCombos().uid("")) doReturn mock()
+        whenever(
+            d2.categoryModule().categoryCombos().uid("").blockingGet()
+        ) doReturn CategoryCombo.builder()
+            .isDefault(catCombo)
+            .uid("")
+            .build()
+    }
+
+    fun getEmptyAndErrorFields(showMandatory: Boolean, showError: Boolean): List<FieldViewModel> {
+        val list = mutableListOf<FieldViewModel>()
+        if (showMandatory) {
+            list.add(
+                EditTextViewModel.create(
+                    "field1",
+                    "field1",
+                    true,
+                    null,
+                    "hint",
+                    1,
+                    ValueType.TEXT,
+                    null,
+                    true,
+                    null,
+                    null,
+                    ObjectStyle.builder().build(),
+                    null
+                )
+            )
+        }
+        if (showError) {
+            list.add(EditTextViewModel.create(
+                "field1",
+                "field2",
+                false,
+                null,
+                "hint",
+                1,
+                ValueType.TEXT,
+                null,
+                true,
+                null,
+                null,
+                ObjectStyle.builder().build(),
+                null
+            ).withError("error"))
+        }
+        return list
     }
 }

@@ -120,9 +120,8 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
         )
         binding.fieldRecycler.adapter = adapter
 
-        binding.next.setOnClickListener {
-            if (presenter.dataIntegrityCheck(adapter.emptyMandatoryFields(), adapter.errorFields())
-            ) {
+        binding.save.setOnClickListener {
+            if (presenter.dataIntegrityCheck()) {
                 binding.root.requestFocus()
                 analyticsHelper().setEvent(SAVE_ENROLL, CLICK, SAVE_ENROLL)
                 presenter.finish(mode)
@@ -130,6 +129,11 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
         }
 
         presenter.init()
+    }
+
+    override fun onResume() {
+        presenter.subscribeToBackButton()
+        super.onResume()
     }
 
     override fun onDestroy() {
@@ -250,12 +254,7 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
 
     override fun onBackPressed() {
         if (mode == EnrollmentMode.CHECK) {
-            if (
-                presenter.dataIntegrityCheck(adapter.emptyMandatoryFields(), adapter.errorFields())
-            ) {
-                binding.root.requestFocus()
-                super.onBackPressed()
-            }
+            presenter.backIsClicked()
         } else {
             showDeleteDialog()
         }
@@ -266,7 +265,6 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
             .setTitle(getString(R.string.title_delete_go_back))
             .setMessage(getString(R.string.delete_go_back))
             .setPositiveButton(getString(R.string.missing_mandatory_fields_go_back)) {
-                analyticsHelper().setEvent(DELETE_AND_BACK, CLICK, DELETE_AND_BACK)
                 presenter.deleteAllSavedData()
                 finish()
             }
@@ -304,6 +302,11 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
         }
     }
 
+    override fun setResultAndFinish() {
+        setResult(RESULT_OK)
+        finish()
+    }
+
     /*endregion*/
 
     /*region TEI*/
@@ -328,9 +331,9 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
             binding.teiDataHeader.mainAttributes.text =
                 String.format("%s %s", firstAttr, secondAttr)
             binding.teiDataHeader.secundaryAttribute.text = thirdAttr
-            if(profileImage.isEmpty()){
+            if (profileImage.isEmpty()) {
                 binding.teiDataHeader.teiImage.visibility = View.GONE
-            }else{
+            } else {
                 Glide.with(this).load(File(profileImage))
                     .transition(DrawableTransitionOptions.withCrossFade())
                     .transform(CircleCrop())
@@ -349,7 +352,7 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
 
     override fun setAccess(access: Boolean?) {
         if (access == false) {
-            binding.next.visibility = View.GONE
+            binding.save.visibility = View.GONE
         }
     }
     /*endregion*/
@@ -391,13 +394,23 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
 
         myLayoutManager.scrollToPositionWithOffset(myFirstPositionIndex, offset)
     }
+
     /*endregion*/
+    override fun requestFocus() {
+        binding.root.requestFocus()
+    }
 
     override fun setSaveButtonVisible(visible: Boolean) {
         if (visible) {
-            binding.next.show()
+            binding.save.show()
         } else {
-            binding.next.hide()
+            binding.save.hide()
+        }
+    }
+
+    override fun performSaveClick() {
+        if (presenter.dataIntegrityCheck()) {
+            presenter.finish(mode)
         }
     }
 
