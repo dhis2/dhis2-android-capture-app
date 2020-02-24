@@ -34,6 +34,7 @@ import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.DialogClickListener;
 import org.dhis2.utils.EventCreationType;
 import org.dhis2.utils.ObjectStyleUtils;
+import org.dhis2.utils.OrientationUtilsKt;
 import org.dhis2.utils.customviews.CategoryComboDialog;
 import org.dhis2.utils.customviews.CustomDialog;
 import org.hisp.dhis.android.core.category.CategoryCombo;
@@ -203,7 +204,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
                 presenter.getTEIEvents();
                 if (data != null) {
                     lastModifiedEventUid = data.getStringExtra(Constants.EVENT_UID);
-                    if (((TeiDashboardMobileActivity) context).getOrientation() != Configuration.ORIENTATION_LANDSCAPE)
+                    if (!OrientationUtilsKt.isLandscape())
                         getSharedPreferences().edit().putString("COMPLETED_EVENT", lastModifiedEventUid).apply();
                     else {
                         if (lastModifiedEventUid != null)
