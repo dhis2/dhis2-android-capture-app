@@ -206,6 +206,7 @@ public class SearchRepositoryImpl implements SearchRepository {
             dataSource = trackedEntityInstanceQuery.offlineFirst().getDataSource()
                     .mapByPage(list->filterByStatus(list,eventStatuses))
                     .mapByPage(this::filterDeleted)
+                    .mapByPage(list -> filterDeletedEnrollment(list, selectedProgram))
                     .map(tei -> transform(tei, selectedProgram, true));
         } else {
             //TODO: OFFLINE
@@ -214,6 +215,7 @@ public class SearchRepositoryImpl implements SearchRepository {
                     .mapByPage(list -> filterByPeriod(list, periods))
                     .mapByPage(list->filterByStatus(list,eventStatuses))
                     .mapByPage(this::filterDeleted)
+                    .mapByPage(list -> filterDeletedEnrollment(list, selectedProgram))
                     .map(tei -> transform(tei, selectedProgram, true));
         }
 
@@ -288,6 +290,7 @@ public class SearchRepositoryImpl implements SearchRepository {
         if (isOnline && states.isEmpty())
             return trackedEntityInstanceQuery.offlineFirst().get().toFlowable()
                     .map(this::filterDeleted)
+                    .map(list -> filterDeletedEnrollment(list, selectedProgram))
                     .flatMapIterable(list -> list)
                     .map(tei -> transform(tei, selectedProgram, true))
                     .toList().toFlowable();
@@ -296,6 +299,7 @@ public class SearchRepositoryImpl implements SearchRepository {
                     .map(list -> filterByState(list, states))
                     .map(list -> filterByPeriod(list, periods))
                     .map(this::filterDeleted)
+                    .map(list -> filterDeletedEnrollment(list, selectedProgram))
                     .flatMapIterable(list -> list)
                     .map(tei -> transform(tei, selectedProgram, true))
                     .toList().toFlowable();
@@ -462,7 +466,12 @@ public class SearchRepositoryImpl implements SearchRepository {
 
 
     private void setEnrollmentInfo(SearchTeiModel searchTei) {
-        List<Enrollment> enrollments = d2.enrollmentModule().enrollments().byTrackedEntityInstance().eq(searchTei.getTei().uid()).byStatus().eq(EnrollmentStatus.ACTIVE).blockingGet();
+        List<Enrollment> enrollments =
+                d2.enrollmentModule().enrollments()
+                        .byTrackedEntityInstance().eq(searchTei.getTei().uid())
+                        .byStatus().eq(EnrollmentStatus.ACTIVE)
+                        .byDeleted().eq(false)
+                        .blockingGet();
         for (Enrollment enrollment : enrollments) {
             if (enrollments.indexOf(enrollment) == 0)
                 searchTei.resetEnrollments();
@@ -589,6 +598,22 @@ public class SearchRepositoryImpl implements SearchRepository {
         return teis;
     }
 
+    private List<TrackedEntityInstance> filterDeletedEnrollment(List<TrackedEntityInstance> teis, @Nullable Program program) {
+        Iterator<TrackedEntityInstance> iterator = teis.iterator();
+        while (iterator.hasNext()) {
+            TrackedEntityInstance tei = iterator.next();
+            if (d2.trackedEntityModule().trackedEntityInstances().byUid().eq(tei.uid()).one().blockingExists()) {
+                if (program != null) {
+                    Enrollment enrollment = d2.enrollmentModule().enrollments().byTrackedEntityInstance().eq(tei.uid()).byProgram().eq(program.uid()).one().blockingGet();
+                    if (enrollment.program().equals(program.uid()) && enrollment.deleted()) {
+                        iterator.remove();
+                    }
+                }
+            }
+        }
+        return teis;
+    }
+
     private List<TrackedEntityInstance> filterByPeriod(List<TrackedEntityInstance> teis, List<DatePeriod> periods) {
         Iterator<TrackedEntityInstance> iterator = teis.iterator();
         if (!periods.isEmpty())
@@ -634,6 +659,10 @@ public class SearchRepositoryImpl implements SearchRepository {
 
             if (offlineOnly)
                 searchTei.setOnline(!offlineOnly);
+
+            if (localTei.deleted() != null && localTei.deleted()) {
+                searchTei.setOnline(true);
+            }
 
             setEnrollmentInfo(searchTei);
             setAttributesInfo(searchTei, selectedProgram);
