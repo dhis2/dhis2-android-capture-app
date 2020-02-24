@@ -58,4 +58,6 @@ interface EnrollmentView : AbstractActivityContracts.View {
     fun showMissingMandatoryFieldsMessage(emptyMandatoryFields: List<String>)
     fun showErrorFieldsMessage(errorFields: List<String>)
     fun setResultAndFinish()
+    fun requestFocus()
+    fun performSaveClick()
 }

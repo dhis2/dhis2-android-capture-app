@@ -122,15 +122,6 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
         binding.fieldRecycler.isNestedScrollingEnabled = true
         binding.fieldRecycler.adapter = adapter
 
-        binding.next.setOnClickListener {
-            if (presenter.dataIntegrityCheck(adapter.emptyMandatoryFields(), adapter.errorFields())
-            ) {
-                binding.root.requestFocus()
-                analyticsHelper().setEvent(SAVE_ENROLL, CLICK, SAVE_ENROLL)
-                presenter.finish(mode)
-            }
-        }
-
         binding.enrollmentDataButton.setOnClickListener {
             if (binding.enrollmentData.visibility == View.GONE) {
                 binding.enrollmentDataText.text = getString(R.string.enrollment_data_hide)
@@ -150,6 +141,11 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
         binding.enrollmentDataArrow.animate().scaleY(-1.0f).setDuration(0).start()
 
         presenter.init()
+    }
+
+    override fun onResume() {
+        presenter.subscribeToBackButton()
+        super.onResume()
     }
 
     override fun onDestroy() {
@@ -245,7 +241,7 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
     }
 
     override fun goBack() {
-        onBackPressed()
+        presenter.backIsClicked()
     }
 
     override fun showMissingMandatoryFieldsMessage(emptyMandatoryFields: List<String>) {
@@ -266,12 +262,7 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
 
     override fun onBackPressed() {
         if (mode == EnrollmentMode.CHECK) {
-            if (
-                presenter.dataIntegrityCheck(adapter.emptyMandatoryFields(), adapter.errorFields())
-            ) {
-                binding.root.requestFocus()
-                super.onBackPressed()
-            }
+            presenter.backIsClicked()
         } else {
             showDeleteDialog()
         }
@@ -345,7 +336,7 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
         binding.coordinatesView.setEditable(access)
         binding.teiCoordinatesView.setEditable(access)
         if (access == false) {
-            binding.next.visibility = View.GONE
+            binding.save.visibility = View.GONE
         }
     }
     /*endregion*/
@@ -564,11 +555,11 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
     /*endregion*/
 
     override fun showSaveButton() {
-        binding.next.show()
+        binding.save.show()
     }
 
     override fun hideSaveButton() {
-        binding.next.hide()
+        binding.save.hide()
     }
 
     override fun showAdjustingForm() {
@@ -579,5 +570,16 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
     override fun hideAdjustingForm() {
         binding.clIndicatorProgress.root.visibility = View.GONE
         binding.clIndicatorProgress.lottieView.repeatCount = 0
+    }
+
+    override fun requestFocus() {
+        binding.root.requestFocus()
+    }
+
+    override fun performSaveClick() {
+        if (presenter.dataIntegrityCheck(adapter.emptyMandatoryFields(), adapter.errorFields())) {
+            analyticsHelper().setEvent(SAVE_ENROLL, CLICK, SAVE_ENROLL)
+            presenter.finish(mode)
+        }
     }
 }
