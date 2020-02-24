@@ -16,7 +16,7 @@ class SectionHolder(
     private val formBinding: @NotNull FormSectionBinding,
     private val selectedSection: @NotNull ObservableField<String>,
     private val sectionProcessor: @NotNull FlowableProcessor<String>
-) : FormViewHolder(formBinding), View.OnClickListener {
+) : FormViewHolder(formBinding) {
 
     private lateinit var viewModel: SectionViewModel
 
@@ -30,7 +30,9 @@ class SectionHolder(
                 animateArrow()
             }
         })
-        formBinding.root.setOnClickListener(this)
+        formBinding.root.setOnClickListener{
+            onHeaderClick(false)
+        }
     }
 
     fun update(viewModel: SectionViewModel) {
@@ -68,8 +70,8 @@ class SectionHolder(
 
     override fun dispose() {}
 
-    override fun onClick(v: View) {
-        if (!viewModel.isOpen) {
+    fun onHeaderClick(isHeader:Boolean) {
+        if (!selectedSection.get().equals(viewModel.uid())) {
             selectedSection.set(viewModel.uid())
             sectionProcessor.onNext(viewModel.uid())
         } else {
@@ -112,5 +114,9 @@ class SectionHolder(
 
     fun setBottomShadow(showShadow: Boolean) {
         formBinding.shadowBottom.visibility = if (showShadow) View.VISIBLE else View.GONE
+    }
+
+    fun getSection(): String {
+        return viewModel.uid()
     }
 }

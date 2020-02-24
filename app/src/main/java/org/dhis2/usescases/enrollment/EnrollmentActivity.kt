@@ -3,6 +3,7 @@ package org.dhis2.usescases.enrollment
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
 import android.text.TextUtils.isEmpty
 import android.view.LayoutInflater
@@ -10,6 +11,9 @@ import android.view.View
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.bitmap.CircleCrop
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import io.reactivex.Flowable
@@ -42,7 +46,6 @@ import org.hisp.dhis.android.core.arch.helpers.GeometryHelper
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.Geometry
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue
 import java.io.File
 import javax.inject.Inject
 
@@ -304,13 +307,42 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
     /*endregion*/
 
     /*region TEI*/
-    override fun displayTeiInfo(it: List<TrackedEntityAttributeValue>) {
-        binding.title.text =
-            if (mode != EnrollmentMode.NEW) {
-                it.map { it.value() }.joinToString(separator = " ", limit = 3)
-            } else {
-                String.format(getString(R.string.enroll_in), presenter.getProgram().displayName())
+    override fun displayTeiInfo(attrList: List<String>, profileImage: String) {
+        if (mode != EnrollmentMode.NEW) {
+            binding.title.visibility = View.GONE
+            binding.teiDataHeader.root.visibility = View.VISIBLE
+            binding.teiDataHeader.mainAttributes.setTextColor(Color.WHITE)
+            binding.teiDataHeader.secundaryAttribute.setTextColor(Color.WHITE)
+            var firstAttr = ""
+            var secondAttr = ""
+            var thirdAttr = ""
+            if (attrList.size > 1) {
+                firstAttr = attrList[0]
             }
+            if (attrList.size > 2) {
+                secondAttr = attrList[1]
+            }
+            if (attrList.size >= 3) {
+                thirdAttr = attrList[2]
+            }
+            binding.teiDataHeader.mainAttributes.text =
+                String.format("%s %s", firstAttr, secondAttr)
+            binding.teiDataHeader.secundaryAttribute.text = thirdAttr
+            if(profileImage.isEmpty()){
+                binding.teiDataHeader.teiImage.visibility = View.GONE
+            }else{
+                Glide.with(this).load(File(profileImage))
+                    .transition(DrawableTransitionOptions.withCrossFade())
+                    .transform(CircleCrop())
+                    .into(binding.teiDataHeader.teiImage)
+            }
+
+        } else {
+            binding.title.visibility = View.VISIBLE
+            binding.teiDataHeader.root.visibility = View.GONE
+            binding.title.text =
+                String.format(getString(R.string.enroll_in), presenter.getProgram().displayName())
+        }
     }
     /*endregion*/
     /*region ACCESS*/

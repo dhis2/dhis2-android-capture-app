@@ -38,7 +38,9 @@ class EnrollmentRepository(
     private val enrollmentOrgUnitLabel: String,
     private val teiCoordinatesLabel: String,
     private val enrollmentCoordinatesLabel: String,
-    private val reservedValuesWarning: String
+    private val reservedValuesWarning: String,
+    private val enrollmentDateDefaultLabel:String,
+    private val incidentDateDefaultLabel: String
 ) : DataEntryRepository {
 
     private val enrollmentRepository: EnrollmentObjectRepository =
@@ -257,7 +259,7 @@ class EnrollmentRepository(
 
         enrollmentDataList.add(
             getEnrollmentDateField(
-                program.enrollmentDateLabel(),
+                program.enrollmentDateLabel()?:enrollmentDateDefaultLabel,
                 program.selectEnrollmentDatesInFuture(),
                 enrollmentDateEdition
             )
@@ -265,7 +267,7 @@ class EnrollmentRepository(
         if (program.displayIncidentDate()!!) {
             enrollmentDataList.add(
                 getIncidentDateField(
-                    program.incidentDateLabel(),
+                    program.incidentDateLabel()?:incidentDateDefaultLabel,
                     program.selectIncidentDatesInFuture(),
                     incidentDateEdition
                 )
@@ -307,7 +309,7 @@ class EnrollmentRepository(
     }
 
     private fun getEnrollmentDateField(
-        enrollmentDateLabel: String?,
+        enrollmentDateLabel: String,
         allowFutureDates: Boolean?,
         editable: Boolean?
     ): FieldViewModel {
@@ -325,7 +327,7 @@ class EnrollmentRepository(
     }
 
     private fun getIncidentDateField(
-        incidentDateLabel: String?,
+        incidentDateLabel: String,
         allowFutureDates: Boolean?,
         editable: Boolean
     ): FieldViewModel {

@@ -70,6 +70,8 @@ class EnrollmentModule(
         val teiCoordinatesLabel = context.getString(R.string.tei_coordinates)
         val enrollmentCoordinatesLabel = context.getString(R.string.enrollment_coordinates)
         val reservedValueWarning = context.getString(R.string.no_reserved_values)
+        val enrollmentDateDefaultLabel = context.getString(R.string.enrollmment_date)
+        val incidentDateDefaultLabel = context.getString(R.string.incident_date)
         return EnrollmentRepository(
             modelFactory,
             enrollmentUid,
@@ -80,7 +82,9 @@ class EnrollmentModule(
             enrollmentOrgUnitLabel,
             teiCoordinatesLabel,
             enrollmentCoordinatesLabel,
-            reservedValueWarning
+            reservedValueWarning,
+            enrollmentDateDefaultLabel,
+            incidentDateDefaultLabel
         )
     }
 

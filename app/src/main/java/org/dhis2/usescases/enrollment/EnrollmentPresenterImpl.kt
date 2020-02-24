@@ -7,6 +7,7 @@ import io.reactivex.flowables.ConnectableFlowable
 import io.reactivex.functions.BiFunction
 import io.reactivex.processors.FlowableProcessor
 import io.reactivex.processors.PublishProcessor
+import org.dhis2.Bindings.profilePicturePath
 import org.dhis2.Bindings.toDate
 import org.dhis2.R
 import org.dhis2.data.forms.dataentry.DataEntryRepository
@@ -26,11 +27,13 @@ import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.`object`.ReadOnlyOneObjectRepositoryFinalImpl
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.Geometry
+import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.enrollment.EnrollmentObjectRepository
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
 import org.hisp.dhis.android.core.maintenance.D2Error
 import org.hisp.dhis.android.core.program.Program
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceObjectRepository
 import org.hisp.dhis.rules.models.RuleActionShowError
 import org.hisp.dhis.rules.models.RuleEffect
@@ -69,22 +72,30 @@ class EnrollmentPresenterImpl(
                     d2.trackedEntityModule().trackedEntityTypeAttributes()
                         .byTrackedEntityTypeUid().eq(tei.trackedEntityType()).get()
                         .map { list ->
-                            list.sortBy { it.sortOrder() }
-                            list.map {
-                                it.trackedEntityAttribute()?.uid()
+                            val attrList = list.filter {
+                                d2.trackedEntityModule().trackedEntityAttributes()
+                                    .uid(it.trackedEntityAttribute()?.uid())
+                                    .blockingGet().valueType() != ValueType.IMAGE
+                            }.sortedBy {
+                                it.sortOrder()
+                            }.map {
+                                d2.trackedEntityModule().trackedEntityAttributeValues()
+                                    .byTrackedEntityInstance().eq(tei.uid())
+                                    .byTrackedEntityAttribute().eq(it.trackedEntityAttribute()?.uid())
+                                    .one()
+                                    .blockingGet()?.value() ?: ""
                             }
-                        }
-                        .flatMap {
-                            d2.trackedEntityModule().trackedEntityAttributeValues()
-                                .byTrackedEntityInstance().eq(tei.uid())
-                                .byTrackedEntityAttribute().`in`(it)
-                                .get()
+                            val icon =
+                                tei.profilePicturePath(d2, programRepository.blockingGet().uid())
+                            Pair(attrList, icon)
                         }
                 }
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
-                    { view.displayTeiInfo(it) },
+                    { mainAttributes ->
+                        view.displayTeiInfo(mainAttributes.first, mainAttributes.second)
+                    },
                     { Timber.tag(TAG).e(it) }
                 )
         )
@@ -203,7 +214,7 @@ class EnrollmentPresenterImpl(
         disposable.add(
             dataEntryRepository.enrollmentSectionUids()
                 .flatMap { sectionList ->
-                    view.sectionFlowable().startWith(sectionList[0])
+                    view.sectionFlowable().startWith(sectionList[0]).distinctUntilChanged()
                         .switchMap { section ->
                             fields.map { fieldList ->
                                 val finalList = fieldList.toMutableList()

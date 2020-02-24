@@ -27,7 +27,8 @@ class StickyHeaderItemDecoration(
             override fun onSingleTapConfirmed(e: MotionEvent?): Boolean {
                 val endY = e?.y ?: -1f
                 if (abs(endY - startY) < 5 && startY <= currentHeader?.second?.itemView?.height!!) {
-                    (currentHeader?.second as SectionHolder).onClick(currentHeader?.second?.itemView!!)
+//                    handleClick((currentHeader?.second as SectionHolder).getSection())
+//                    (currentHeader?.second as SectionHolder).onHeaderClick(true)
                 }
                 return false
             }
