@@ -60,7 +60,6 @@ class RelationshipPresenterTest {
 
     @Test
     fun `Should set relationships and init fab`() {
-
         whenever(dashboardRepository.listTeiRelationships()) doReturn Flowable.just(arrayListOf())
         whenever(dashboardRepository.relationshipsForTeiType("teiType")) doReturn Observable.just(
             arrayListOf()
@@ -71,7 +70,6 @@ class RelationshipPresenterTest {
 
         verify(view).setRelationships(any())
         verify(view).initFab(any())
-
     }
 
     @Test
@@ -86,7 +84,6 @@ class RelationshipPresenterTest {
 
         verify(view, times(1)).goToAddRelationship("teiUid", "teiType")
         verify(view, times(0)).showPermissionError()
-
     }
 
     @Test
@@ -100,7 +97,6 @@ class RelationshipPresenterTest {
         presenter.goToAddRelationship("teiType")
 
         verify(view, times(1)).showPermissionError()
-
     }
 
     @Test

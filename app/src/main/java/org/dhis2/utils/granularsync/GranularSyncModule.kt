@@ -25,7 +25,6 @@
 
 package org.dhis2.utils.granularsync
 
-import androidx.work.WorkManager
 import dagger.Module
 import dagger.Provides
 import org.dhis2.data.schedulers.SchedulerProvider

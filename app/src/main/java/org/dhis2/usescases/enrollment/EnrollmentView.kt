@@ -55,7 +55,7 @@ interface EnrollmentView : AbstractActivityContracts.View {
     fun openEvent(eventUid: String)
     fun openDashboard(enrollmentUid: String)
     fun goBack()
-    fun showMissingMandatoryFieldsMessage()
-    fun showErrorFieldsMessage()
+    fun showMissingMandatoryFieldsMessage(emptyMandatoryFields: List<String>)
+    fun showErrorFieldsMessage(errorFields: List<String>)
     fun setResultAndFinish()
 }

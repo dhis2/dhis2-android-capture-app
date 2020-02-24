@@ -248,7 +248,9 @@ class MapSelectorActivity :
 
     private fun bindPolygon(initial_coordinates: String?) {
         val viewModel = ViewModelProviders.of(this).get(PolygonViewModel::class.java)
-        viewModel.onMessage = { Toast.makeText(this@MapSelectorActivity, it, Toast.LENGTH_SHORT).show() }
+        viewModel.onMessage = {
+            Toast.makeText(this@MapSelectorActivity, it, Toast.LENGTH_SHORT).show()
+        }
         binding.recycler.layoutManager = GridLayoutManager(this, 2)
         viewModel.response.observe(
             this,

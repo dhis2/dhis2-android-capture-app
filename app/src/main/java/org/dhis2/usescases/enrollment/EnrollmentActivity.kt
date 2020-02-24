@@ -39,14 +39,13 @@ import org.dhis2.utils.Constants.GALLERY_REQUEST
 import org.dhis2.utils.Constants.RQ_QR_SCANNER
 import org.dhis2.utils.DatePickerUtils
 import org.dhis2.utils.DateUtils
-import org.dhis2.utils.DialogClickListener
 import org.dhis2.utils.EventMode
 import org.dhis2.utils.FileResourcesUtil
 import org.dhis2.utils.analytics.CLICK
 import org.dhis2.utils.analytics.DELETE_AND_BACK
 import org.dhis2.utils.analytics.SAVE_ENROLL
 import org.dhis2.utils.analytics.STATUS_ENROLLMENT
-import org.dhis2.utils.customviews.CustomDialog
+import org.dhis2.utils.customviews.AlertBottomDialog
 import org.hisp.dhis.android.core.arch.helpers.FileResourceDirectoryHelper
 import org.hisp.dhis.android.core.arch.helpers.GeometryHelper
 import org.hisp.dhis.android.core.common.FeatureType
@@ -124,7 +123,8 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
         binding.fieldRecycler.adapter = adapter
 
         binding.next.setOnClickListener {
-            if (presenter.dataIntegrityCheck(adapter.mandatoryOk(), adapter.hasError())) {
+            if (presenter.dataIntegrityCheck(adapter.emptyMandatoryFields(), adapter.errorFields())
+            ) {
                 binding.root.requestFocus()
                 analyticsHelper().setEvent(SAVE_ENROLL, CLICK, SAVE_ENROLL)
                 presenter.finish(mode)
@@ -160,7 +160,7 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
-        if(resultCode == Activity.RESULT_OK) {
+        if (resultCode == Activity.RESULT_OK) {
             when (requestCode) {
                 RQ_INCIDENT_GEOMETRY, RQ_ENROLLMENT_GEOMETRY -> {
                     handleGeometry(
@@ -219,7 +219,11 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
         } else {
             val eventCreationIntent = Intent(abstracContext, EventCaptureActivity::class.java)
             eventCreationIntent.putExtras(
-                EventCaptureActivity.getActivityBundle(eventUid, presenter.getProgram().uid(), EventMode.CHECK)
+                EventCaptureActivity.getActivityBundle(
+                    eventUid,
+                    presenter.getProgram().uid(),
+                    EventMode.CHECK
+                )
             )
             eventCreationIntent.putExtra(
                 Constants.TRACKED_ENTITY_INSTANCE,
@@ -244,23 +248,27 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
         onBackPressed()
     }
 
-    override fun showMissingMandatoryFieldsMessage() {
-        showInfoDialog(
-            getString(R.string.unable_to_complete),
-            getString(R.string.missing_mandatory_fields)
-        )
+    override fun showMissingMandatoryFieldsMessage(emptyMandatoryFields: List<String>) {
+        AlertBottomDialog.instance
+            .setTitle(getString(R.string.unable_to_complete))
+            .setMessage(getString(R.string.missing_mandatory_fields))
+            .setEmptyMandatoryFields(emptyMandatoryFields)
+            .show(supportFragmentManager, AlertBottomDialog::class.java.simpleName)
     }
 
-    override fun showErrorFieldsMessage() {
-        showInfoDialog(
-            getString(R.string.unable_to_complete),
-            getString(R.string.field_errors)
-        )
+    override fun showErrorFieldsMessage(errorFields: List<String>) {
+        AlertBottomDialog.instance
+            .setTitle(getString(R.string.unable_to_complete))
+            .setMessage(getString(R.string.field_errors))
+            .setEmptyMandatoryFields(errorFields)
+            .show(supportFragmentManager, AlertBottomDialog::class.java.simpleName)
     }
 
     override fun onBackPressed() {
         if (mode == EnrollmentMode.CHECK) {
-            if (presenter.dataIntegrityCheck(adapter.mandatoryOk(), adapter.hasError())) {
+            if (
+                presenter.dataIntegrityCheck(adapter.emptyMandatoryFields(), adapter.errorFields())
+            ) {
                 binding.root.requestFocus()
                 super.onBackPressed()
             }
@@ -270,26 +278,16 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
     }
 
     private fun showDeleteDialog() {
-        CustomDialog(
-            this,
-            getString(R.string.title_delete_go_back),
-            getString(R.string.delete_go_back),
-            getString(R.string.cancel),
-            getString(R.string.missing_mandatory_fields_go_back),
-            RQ_GO_BACK,
-            object : DialogClickListener {
-                override fun onPositive() {
-                    // do nothing
-                }
-
-                override fun onNegative() {
-                    analyticsHelper().setEvent(DELETE_AND_BACK, CLICK, DELETE_AND_BACK)
-                    presenter.deleteAllSavedData()
-                    finish()
-                }
+        AlertBottomDialog.instance
+            .setTitle(getString(R.string.title_delete_go_back))
+            .setMessage(getString(R.string.delete_go_back))
+            .setPositiveButton(getString(R.string.missing_mandatory_fields_go_back)) {
+                analyticsHelper().setEvent(DELETE_AND_BACK, CLICK, DELETE_AND_BACK)
+                presenter.deleteAllSavedData()
+                finish()
             }
-        )
-            .show()
+            .setNegativeButton()
+            .show(supportFragmentManager, AlertBottomDialog::class.java.simpleName)
     }
 
     private fun handleGeometry(featureType: FeatureType, dataExtra: String, requestCode: Int) {
@@ -559,7 +557,7 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
             offset = it.top
         }
 
-        adapter.swap(fields)
+        adapter.swap(fields, {  })
 
         myLayoutManager.scrollToPositionWithOffset(myFirstPositionIndex, offset)
     }
