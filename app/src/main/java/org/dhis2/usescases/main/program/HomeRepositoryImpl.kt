@@ -2,12 +2,11 @@ package org.dhis2.usescases.main.program
 
 import io.reactivex.Flowable
 import io.reactivex.parallel.ParallelFlowable
-import io.reactivex.schedulers.Schedulers
+import org.dhis2.data.schedulers.SchedulerProvider
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.dataset.DataSet
-import org.hisp.dhis.android.core.dataset.DataSetCollectionRepository
 import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.enrollment.EnrollmentCollectionRepository
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
@@ -15,7 +14,6 @@ import org.hisp.dhis.android.core.event.EventStatus
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.period.DatePeriod
 import org.hisp.dhis.android.core.program.Program
-import org.hisp.dhis.android.core.program.ProgramCollectionRepository
 import org.hisp.dhis.android.core.program.ProgramType.WITHOUT_REGISTRATION
 import org.hisp.dhis.android.core.program.ProgramType.WITH_REGISTRATION
 import java.util.Date
@@ -24,13 +22,10 @@ internal class HomeRepositoryImpl(
     private val d2: D2,
     private val eventLabel: String,
     private val dataSetLabel: String,
-    private val teiLabel: String
+    private val teiLabel: String,
+    private val schedulerProvider: SchedulerProvider
 ) :
     HomeRepository {
-    private val dataSetRepository: DataSetCollectionRepository = d2.dataSetModule().dataSets()
-        .withDataSetElements()
-    private val programRepository: ProgramCollectionRepository = d2.programModule().programs()
-        .withTrackedEntityType()
 
     private var captureOrgUnits: List<String> = ArrayList()
 
@@ -41,9 +36,9 @@ internal class HomeRepositoryImpl(
         assignedToUser: Boolean?
     ): Flowable<List<ProgramViewModel>> {
         return ParallelFlowable.from<DataSet>(
-            Flowable.fromIterable<DataSet>(dataSetRepository.blockingGet())
+            Flowable.fromIterable<DataSet>(d2.dataSetModule().dataSets().blockingGet())
         )
-            .runOn(Schedulers.io())
+            .runOn(schedulerProvider.io())
             .map { dataSet ->
                 var repo = d2.dataSetModule().dataSetInstances().byDataSetUid().eq(dataSet.uid())
                 if (orgUnitFilter.isNotEmpty()) {
@@ -93,7 +88,7 @@ internal class HomeRepositoryImpl(
                     if (dataSet.style() != null) dataSet.style()!!.color() else null,
                     if (dataSet.style() != null) dataSet.style()!!.icon() else null,
                     count, null,
-                    "DataSets",
+                    dataSetLabel,
                     "",
                     dataSet.displayDescription(),
                     true,
@@ -124,11 +119,13 @@ internal class HomeRepositoryImpl(
         return getCaptureOrgUnits()
             .map { captureOrgUnits ->
                 this.captureOrgUnits = captureOrgUnits
-                programRepository.byOrganisationUnitList(captureOrgUnits)
+                d2.programModule().programs()
+                    .withTrackedEntityType()
+                    .byOrganisationUnitList(captureOrgUnits)
             }
             .flatMap { programRepo ->
                 ParallelFlowable.from(Flowable.fromIterable(programRepo.blockingGet()))
-                    .runOn(Schedulers.io())
+                    .runOn(schedulerProvider.io())
                     .sequential()
             }
             .map { program ->
