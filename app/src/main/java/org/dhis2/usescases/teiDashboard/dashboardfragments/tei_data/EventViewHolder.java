@@ -17,35 +17,47 @@ import java.util.Locale;
  */
 
 class EventViewHolder extends RecyclerView.ViewHolder {
+    private final Program program;
+    private final Enrollment enrollment;
+    private final TEIDataContracts.Presenter presenter;
     private ItemEventBinding binding;
 
-    EventViewHolder(ItemEventBinding binding) {
+    EventViewHolder(ItemEventBinding binding, Program program, Enrollment enrollment, TEIDataContracts.Presenter presenter) {
         super(binding.getRoot());
         this.binding = binding;
+        this.program = program;
+        this.enrollment = enrollment;
+        this.presenter = presenter;
     }
 
-    public void bind(TEIDataContracts.Presenter presenter, Event eventModel, ProgramStage programStage, Enrollment enrollment, Program program) {
-        binding.setVariable(BR.event, eventModel);
-        binding.setVariable(BR.stage, programStage);
+    public void bind(EventViewModel eventModel) {
+        ProgramStage programStage = eventModel.getStage();
+        Event event = eventModel.getEvent();
+        binding.setEvent(eventModel.getEvent());
+        binding.setStage(eventModel.getStage());
+
+        binding.setEnrollment(enrollment);
+
+
         binding.setVariable(BR.enrollment, enrollment);
         binding.setVariable(BR.program, program);
         binding.executePendingBindings();
 
-        String date = DateUtils.getInstance().getPeriodUIString(programStage.periodType(), eventModel.eventDate() != null ? eventModel.eventDate() : eventModel.dueDate(), Locale.getDefault());
+        String date = DateUtils.getInstance().getPeriodUIString(programStage.periodType(), event.eventDate() != null ? event.eventDate() : event.dueDate(), Locale.getDefault());
         binding.eventDate.setText(date);
 
         itemView.setOnClickListener(view -> {
-            switch (eventModel.status()) {
+            switch (eventModel.getEvent().status()) {
                 case SCHEDULE:
                 case OVERDUE:
                 case SKIPPED:
-                    presenter.onScheduleSelected(eventModel.uid(), binding.sharedView);
+                    presenter.onScheduleSelected(event.uid(), binding.sharedView);
                     break;
                 case VISITED:
                     break;
                 case ACTIVE:
                 case COMPLETED:
-                    presenter.onEventSelected(eventModel.uid(), eventModel.status(), binding.sharedView);
+                    presenter.onEventSelected(event.uid(), event.status(), binding.sharedView);
                     break;
             }
         });

@@ -4,11 +4,11 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.res.Configuration;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.PopupMenu;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -16,7 +16,6 @@ import androidx.databinding.DataBindingUtil;
 import androidx.databinding.ObservableBoolean;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.DividerItemDecoration;
-import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.CircleCrop;
@@ -24,13 +23,13 @@ import com.bumptech.glide.load.resource.bitmap.CircleCrop;
 import org.dhis2.App;
 import org.dhis2.R;
 import org.dhis2.databinding.FragmentTeiDataBinding;
+import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity;
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
 import org.dhis2.usescases.programStageSelection.ProgramStageSelectionActivity;
 import org.dhis2.usescases.teiDashboard.DashboardProgramModel;
 import org.dhis2.usescases.teiDashboard.DashboardViewModel;
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity;
 import org.dhis2.utils.Constants;
-import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.DialogClickListener;
 import org.dhis2.utils.EventCreationType;
 import org.dhis2.utils.ObjectStyleUtils;
@@ -50,6 +49,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import io.reactivex.Flowable;
 import io.reactivex.Single;
 import io.reactivex.functions.Consumer;
 
@@ -57,6 +57,8 @@ import static android.app.Activity.RESULT_OK;
 import static com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade;
 import static org.dhis2.utils.Constants.ENROLLMENT_UID;
 import static org.dhis2.utils.Constants.EVENT_CREATION_TYPE;
+import static org.dhis2.utils.Constants.EVENT_PERIOD_TYPE;
+import static org.dhis2.utils.Constants.EVENT_REPEATABLE;
 import static org.dhis2.utils.Constants.EVENT_SCHEDULE_INTERVAL;
 import static org.dhis2.utils.Constants.ORG_UNIT;
 import static org.dhis2.utils.Constants.PROGRAM_UID;
@@ -100,6 +102,9 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
         super.onAttach(context);
         this.context = context;
         activity = (TeiDashboardMobileActivity) context;
+        activity.observeGrouping().observe(this, group -> {
+            presenter.onGroupingChanged(group);
+        });
         if (((App) context.getApplicationContext()).dashboardComponent() != null)
             ((App) context.getApplicationContext())
                     .dashboardComponent()
@@ -162,8 +167,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
             presenter.setDashboardProgram(this.dashboardModel);
             SharedPreferences prefs = context.getSharedPreferences(Constants.SHARE_PREFS, Context.MODE_PRIVATE);
             hasCatComb = nprogram.getCurrentProgram() != null && !nprogram.getCurrentProgram().categoryComboUid().equals(prefs.getString(Constants.DEFAULT_CAT_COMBO, ""));
-            adapter = new EventAdapter(presenter, nprogram.getProgramStages(), new ArrayList<>(), nprogram.getCurrentEnrollment(), nprogram.getCurrentProgram());
-            binding.teiRecycler.setLayoutManager(new LinearLayoutManager(getAbstracContext()));
+            adapter = new EventAdapter(presenter, nprogram.getCurrentProgram(), nprogram.getCurrentEnrollment());
             binding.teiRecycler.setAdapter(adapter);
             binding.setTrackEntity(nprogram.getTei());
             binding.setEnrollment(nprogram.getCurrentEnrollment());
@@ -175,7 +179,6 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
 
         } else if (nprogram != null) {
             binding.fab.setVisibility(View.GONE);
-            binding.teiRecycler.setLayoutManager(new LinearLayoutManager(getAbstracContext()));
             binding.teiRecycler.setAdapter(new DashboardProgramAdapter(presenter, nprogram));
             binding.teiRecycler.addItemDecoration(new DividerItemDecoration(getAbstracContext(), DividerItemDecoration.VERTICAL));
             binding.setTrackEntity(nprogram.getTei());
@@ -199,7 +202,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(resultCode == RESULT_OK) {
+        if (resultCode == RESULT_OK) {
             if (requestCode == REQ_EVENT) {
                 presenter.getTEIEvents();
                 if (data != null) {
@@ -219,7 +222,12 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
     }
 
     @Override
-    public Consumer<List<Event>> setEvents() {
+    public Flowable<String> observeStageSelection() {
+        return adapter.stageSelector();
+    }
+
+    @Override
+    public Consumer<List<EventViewModel>> setEvents() {
         return events -> {
             if (events.isEmpty()) {
                 binding.emptyTeis.setVisibility(View.VISIBLE);
@@ -230,8 +238,8 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
                 }
             } else {
                 binding.emptyTeis.setVisibility(View.GONE);
-                adapter.swapItems(events);
-                for (Event event : events) {
+                adapter.submitList(events);
+                /*for (EventV event : events) {
                     if (event.eventDate() != null) {
                         if (event.eventDate().after(DateUtils.getInstance().getToday()))
                             binding.teiRecycler.scrollToPosition(events.indexOf(event));
@@ -241,7 +249,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
                         catComboShowed.add(event);
                     } else if (!hasCatComb && event.attributeOptionCombo() == null)
                         presenter.setDefaultCatOptCombToEvent(event.uid());
-                }
+                }*/
             }
         };
     }
@@ -425,5 +433,44 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
                 .transition(withCrossFade())
                 .transform(new CircleCrop())
                 .into(binding.cardFront.teiImage);
+    }
+
+    @Override
+    public void showNewEventOptions(View anchor, ProgramStage stage) {
+        PopupMenu popupMenu = new PopupMenu(context, anchor);
+        popupMenu.inflate(R.menu.dashboard_event_creation);
+        popupMenu.setOnMenuItemClickListener(item -> {
+            switch (item.getItemId()) {
+                case R.id.schedulenew:
+                    goToEventInitial(EventCreationType.SCHEDULE, stage);
+                    break;
+                case R.id.addnew:
+                    goToEventInitial(EventCreationType.ADDNEW, stage);
+                    break;
+                case R.id.referral:
+                    goToEventInitial(EventCreationType.REFERAL, stage);
+                    break;
+            }
+            return true;
+        });
+        popupMenu.show();
+
+    }
+
+    private void goToEventInitial(EventCreationType eventCreationType, ProgramStage programStage) {
+        Intent intent = new Intent(activity, EventInitialActivity.class);
+        Bundle bundle = new Bundle();
+        bundle.putString(PROGRAM_UID, dashboardModel.getCurrentProgram().uid());
+        bundle.putString(TRACKED_ENTITY_INSTANCE, dashboardModel.getTei().uid());
+        bundle.putString(ORG_UNIT, dashboardModel.getCurrentOrgUnit().uid());
+        bundle.putString(ENROLLMENT_UID, dashboardModel.getCurrentEnrollment().uid());
+        bundle.putString(EVENT_CREATION_TYPE, eventCreationType.name());
+        bundle.putBoolean(EVENT_REPEATABLE, programStage.repeatable());
+        bundle.putSerializable(EVENT_PERIOD_TYPE, programStage.periodType() != null ? programStage.periodType().name() : null);
+        bundle.putString(Constants.PROGRAM_STAGE_UID, programStage.uid());
+        bundle.putInt(EVENT_SCHEDULE_INTERVAL, programStage.standardInterval() != null ? programStage.standardInterval() : 0);
+        intent.addFlags(Intent.FLAG_ACTIVITY_FORWARD_RESULT);
+        intent.putExtras(bundle);
+        activity.startActivity(intent);
     }
 }

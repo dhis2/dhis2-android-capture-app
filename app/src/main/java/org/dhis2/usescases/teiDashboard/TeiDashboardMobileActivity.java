@@ -17,8 +17,11 @@ import android.widget.PopupMenu;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.databinding.DataBindingUtil;
+import androidx.databinding.ObservableBoolean;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentStatePagerAdapter;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.viewpager.widget.ViewPager;
 
@@ -52,10 +55,6 @@ import timber.log.Timber;
 import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
 import static org.dhis2.utils.analytics.AnalyticsConstants.SHOW_HELP;
 
-/**
- * QUADRAM. Created by ppajuelo on 29/11/2017.
- */
-
 public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implements TeiDashboardContracts.View {
 
     @Inject
@@ -73,6 +72,9 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
 
     private DashboardViewModel dashboardViewModel;
     private boolean fromRelationship;
+
+    private MutableLiveData<Boolean> groupByStage = new MutableLiveData<>(false);
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -436,7 +438,10 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
         } catch (Exception e) {
             Timber.e(e);
         }
-        popupMenu.getMenuInflater().inflate(R.menu.dashboard_menu, popupMenu.getMenu());
+
+        popupMenu.getMenuInflater().inflate(
+                groupByStage.getValue() ? R.menu.dashboard_menu_group : R.menu.dashboard_menu,
+                popupMenu.getMenu());
         popupMenu.setOnMenuItemClickListener(item -> {
             switch (item.getItemId()) {
                 case R.id.showHelp:
@@ -448,6 +453,12 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
                     break;
                 case R.id.deleteEnrollment:
                     presenter.deleteEnrollment();
+                    break;
+                case R.id.groupEvents:
+                    groupByStage.setValue(true);
+                    break;
+                case R.id.showTimeline:
+                    groupByStage.setValue(false);
                     break;
             }
             return true;
@@ -470,5 +481,9 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
 
     private int getLastTabPosition() {
         return binding.tabLayout.getTabCount() - 1;
+    }
+
+    public LiveData<Boolean> observeGrouping(){
+        return groupByStage;
     }
 }

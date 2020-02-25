@@ -1,7 +1,5 @@
 package org.dhis2.usescases.teiDashboard;
 
-import android.content.Context;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -10,6 +8,8 @@ import org.dhis2.R;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.relationships.RelationshipViewModel;
+import org.dhis2.usescases.teiDashboard.dashboardfragments.tei_data.EventViewModel;
+import org.dhis2.usescases.teiDashboard.dashboardfragments.tei_data.EventViewModelType;
 import org.dhis2.utils.AuthorityException;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.ValueUtils;
@@ -48,6 +48,7 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityType;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityTypeAttribute;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import io.reactivex.Flowable;
@@ -129,6 +130,84 @@ public class DashboardRepositoryImpl
                                 ))
 
                 ).toObservable();
+    }
+
+    @Override
+    public Flowable<List<EventViewModel>> getTEIEnrollmentEvents(@NonNull String enrollmentUid,
+                                                                 @Nullable String selectedStage,
+                                                                 boolean groupedByStage) {
+        List<EventViewModel> eventViewModels = new ArrayList<>();
+        if (groupedByStage) {
+            return d2.programModule().programStages()
+                    .byProgramUid().eq(programUid)
+                    .orderBySortOrder(RepositoryScope.OrderByDirection.ASC)
+                    .get().toFlowable()
+                    .flatMapIterable(programStages -> programStages)
+                    .map(programStage -> {
+
+                                List<Event> eventList = d2.eventModule().events()
+                                        .byEnrollmentUid().eq(enrollmentUid)
+                                        .byProgramStageUid().eq(programStage.uid())
+                                        .byDeleted().isFalse()
+                                        .blockingGet();
+
+                                Collections.sort(eventList, ((event1, event2) ->
+                                        EventExtensionsKt.primaryDate(event2).compareTo(
+                                                EventExtensionsKt.primaryDate(event1)
+                                        )));
+
+                                eventViewModels.add(
+                                        new EventViewModel(
+                                                EventViewModelType.STAGE,
+                                                programStage,
+                                                null,
+                                                eventList.size(),
+                                                eventList.isEmpty() ? null : eventList.get(0).lastUpdated(),
+                                                true
+                                        ));
+
+                                if (selectedStage != null && selectedStage.equals(programStage.uid())) {
+                                    for (Event event : eventList) {
+                                        eventViewModels.add(
+                                                new EventViewModel(
+                                                        EventViewModelType.EVENT,
+                                                        programStage,
+                                                        event,
+                                                        0,
+                                                        null,
+                                                        true
+                                                ));
+                                    }
+                                }
+
+                                return eventViewModels;
+                            }
+
+                    );
+        } else {
+            return d2.eventModule().events()
+                    .byEnrollmentUid().eq(enrollmentUid)
+                    .byDeleted().isFalse()
+                    .get().toFlowable()
+                    .map(eventList -> {
+                        Collections.sort(eventList, ((event1, event2) ->
+                                EventExtensionsKt.primaryDate(event2).compareTo(
+                                        EventExtensionsKt.primaryDate(event1)
+                                )));
+                        for (Event event : eventList) {
+                            eventViewModels.add(
+                                    new EventViewModel(
+                                            EventViewModelType.EVENT,
+                                            d2.programModule().programStages().uid(event.programStage()).blockingGet(),
+                                            event,
+                                            0,
+                                            null,
+                                            true
+                                    ));
+                        }
+                        return eventViewModels;
+                    });
+        }
     }
 
     @Override

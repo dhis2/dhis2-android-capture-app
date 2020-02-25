@@ -2,6 +2,9 @@ package org.dhis2.usescases.teiDashboard.dashboardfragments.tei_data;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
+
+import androidx.annotation.NonNull;
 
 import org.dhis2.usescases.general.AbstractActivityContracts;
 import org.dhis2.usescases.teiDashboard.DashboardProgramModel;
@@ -15,6 +18,7 @@ import org.hisp.dhis.android.core.program.ProgramStage;
 
 import java.util.List;
 
+import io.reactivex.Flowable;
 import io.reactivex.Single;
 import io.reactivex.functions.Consumer;
 
@@ -25,7 +29,7 @@ public class TEIDataContracts {
 
     public interface View extends AbstractActivityContracts.View {
 
-        Consumer<List<Event>> setEvents();
+        Consumer<List<EventViewModel>> setEvents();
 
         Consumer<ProgramStage> displayGenerateEvent();
 
@@ -51,7 +55,11 @@ public class TEIDataContracts {
 
         void openEventCapture(Intent intent);
 
-        void showTeiImage(String fileName,String defaultIcon);
+        void showTeiImage(String fileName, String defaultIcon);
+
+        Flowable<String> observeStageSelection();
+
+        void showNewEventOptions(android.view.View view, ProgramStage stageUid);
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter {
@@ -87,6 +95,10 @@ public class TEIDataContracts {
         void setProgram(Program program);
 
         void showDescription(String description);
+
+        void onGroupingChanged(Boolean shouldGroup);
+
+        void onAddNewEvent(@NonNull android.view.View anchor, @NonNull ProgramStage programStage);
     }
 
 }

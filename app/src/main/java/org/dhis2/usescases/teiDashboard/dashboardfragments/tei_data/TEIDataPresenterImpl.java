@@ -3,6 +3,7 @@ package org.dhis2.usescases.teiDashboard.dashboardfragments.tei_data;
 import android.content.Intent;
 import android.view.View;
 
+import androidx.annotation.NonNull;
 import androidx.core.app.ActivityOptionsCompat;
 
 import org.dhis2.Bindings.ExtensionsKt;
@@ -16,13 +17,11 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialAc
 import org.dhis2.usescases.qrCodes.QrActivity;
 import org.dhis2.usescases.teiDashboard.DashboardProgramModel;
 import org.dhis2.usescases.teiDashboard.DashboardRepository;
-import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.EventCreationType;
 import org.dhis2.utils.EventMode;
 import org.dhis2.utils.analytics.AnalyticsHelper;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
-import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.program.Program;
@@ -31,6 +30,9 @@ import org.hisp.dhis.android.core.program.ProgramStage;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.processors.BehaviorProcessor;
+import io.reactivex.processors.FlowableProcessor;
+import io.reactivex.processors.PublishProcessor;
 import timber.log.Timber;
 
 import static org.dhis2.utils.analytics.AnalyticsConstants.ACTIVE_FOLLOW_UP;
@@ -48,12 +50,13 @@ class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
     private final DashboardRepository dashboardRepository;
     private final SchedulerProvider schedulerProvider;
     private final AnalyticsHelper analyticsHelper;
+    private final BehaviorProcessor<Boolean> groupingProcessor;
     private String programUid;
     private final String teiUid;
     private TEIDataContracts.View view;
     private CompositeDisposable compositeDisposable;
     private DashboardProgramModel dashboardModel;
-
+    private String currentStage = null;
 
     public TEIDataPresenterImpl(TEIDataContracts.View view, D2 d2, DashboardRepository dashboardRepository,
                                 String programUid, String teiUid, SchedulerProvider schedulerProvider,
@@ -66,6 +69,7 @@ class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
         this.schedulerProvider = schedulerProvider;
         this.analyticsHelper = analyticsHelper;
         this.compositeDisposable = new CompositeDisposable();
+        this.groupingProcessor = BehaviorProcessor.create();
     }
 
     @Override
@@ -97,15 +101,32 @@ class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
     @Override
     public void getTEIEvents() {
         compositeDisposable.add(
-                dashboardRepository.getTEIEnrollmentEvents(programUid, teiUid)
-                        .map(eventModels -> {
+                view.observeStageSelection()
+                        .startWith("")
+                        .map(selectedStage -> {
+                            if (!selectedStage.equals(currentStage)) {
+                                currentStage = selectedStage;
+                                return selectedStage;
+                            } else {
+                                currentStage = "";
+                                return "";
+                            }
+                        })
+                        .switchMap(selectedStage ->
+                                groupingProcessor.startWith(false)
+                                .flatMap(grouping->
+                                        dashboardRepository.getTEIEnrollmentEvents(dashboardModel.getCurrentEnrollment().uid(),
+                                                selectedStage.isEmpty() ? null : selectedStage,
+                                                grouping))
+                       /* .map(eventModels -> {
                             for (Event eventModel : eventModels) {
                                 if (eventModel.status() == EventStatus.SCHEDULE && eventModel.dueDate() != null && eventModel.dueDate().before(DateUtils.getInstance().getToday())) { //If a schedule event dueDate is before today the event is skipped
                                     dashboardRepository.updateState(eventModel, EventStatus.SKIPPED);
                                 }
                             }
                             return eventModels;
-                        })
+                        })*/
+                        )
                         .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.ui())
                         .subscribe(
@@ -264,5 +285,15 @@ class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
     @Override
     public void showDescription(String description) {
         view.showDescription(description);
+    }
+
+    @Override
+    public void onGroupingChanged(Boolean shouldGroup) {
+        groupingProcessor.onNext(shouldGroup);
+    }
+
+    @Override
+    public void onAddNewEvent(@NonNull View anchor,@NonNull ProgramStage stage) {
+        view.showNewEventOptions(anchor,stage);
     }
 }
