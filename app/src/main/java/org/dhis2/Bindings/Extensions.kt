@@ -60,10 +60,10 @@ fun TrackedEntityInstance.profilePicturePath(d2: D2, programUid: String?): Strin
     return path ?: ""
 }
 
-fun Fragment.app() : App {
+fun Fragment.app(): App {
     return context?.applicationContext as App
 }
 
-fun AppCompatActivity.app() : App {
+fun AppCompatActivity.app(): App {
     return applicationContext as App
 }

@@ -1,9 +1,9 @@
 package org.dhis2.usescases.map
 
+import com.mapbox.geojson.Point
 import org.dhis2.usescases.map.point.PointViewModel
 import org.junit.Before
 import org.junit.Test
-import com.mapbox.geojson.Point
 
 class PointViewModelTest {
 
@@ -30,5 +30,4 @@ class PointViewModelTest {
     fun `Should get point as string where point is null`() {
         assert(pointViewModel.getPointAsString() == null)
     }
-
 }

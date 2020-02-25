@@ -66,6 +66,10 @@ public class CircularCompletionView extends View {
             percentageColor = a.getColor(R.styleable.CircularCompletionView_percentageColor, percentageColor);
             circleColor = a.getColor(R.styleable.CircularCompletionView_circleColor, circleColor);
 
+            //Initial values
+            completionPercent = a.getFloat(R.styleable.CircularCompletionView_initialPercentage,0f);
+            secondaryPercent = a.getFloat(R.styleable.CircularCompletionView_initialSecondaryPercentage,0f);
+
         } finally {
             a.recycle();
         }

@@ -8,14 +8,12 @@ import io.reactivex.Single
 import org.dhis2.usescases.notes.NoteType
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.enrollment.Enrollment
-import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
 import org.hisp.dhis.android.core.note.Note
 import org.hisp.dhis.android.core.note.NoteCreateProjection
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito
 import org.mockito.Mockito.RETURNS_DEEP_STUBS
-
 
 class NoteDetailRepositoryTest {
 
@@ -45,7 +43,7 @@ class NoteDetailRepositoryTest {
     }
 
     @Test
-    fun `Should save Enrollment note`(){
+    fun `Should save Enrollment note`() {
         val note = dummyNote()
         val enrollmentUid = "EnrollmentUid"
 
@@ -64,7 +62,7 @@ class NoteDetailRepositoryTest {
         val testObserver = repository.saveNote(noteType, teiUid, message).test()
 
         testObserver.assertValueCount(1)
-        testObserver.assertValueAt(0){
+        testObserver.assertValueAt(0) {
             it == "noteId"
         }
     }
