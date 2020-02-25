@@ -75,7 +75,8 @@ fun TrackedEntityAttributeValueObjectRepository.blockingSetCheck(
 ): Boolean {
     return d2.trackedEntityModule().trackedEntityAttributes().uid(attrUid).blockingGet().let {
         if (check(d2, it.valueType(), it.optionSet()?.uid(), value)) {
-            blockingSet(value)
+            val finalValue = assureCodeForOptionSet(d2, it.optionSet()?.uid(), value)
+            blockingSet(finalValue)
             true
         } else {
             blockingDeleteIfExist()
@@ -148,7 +149,10 @@ private fun check(
 ): Boolean {
     return when {
         optionSetUid != null ->
-            d2.optionModule().options().byOptionSetUid().eq(optionSetUid).byCode().eq(value).one().blockingExists()
+            d2.optionModule().options().byOptionSetUid().eq(optionSetUid).byCode().eq(value).one().blockingExists() ||
+                    d2.optionModule().options().byOptionSetUid().eq(optionSetUid).byDisplayName().eq(
+                        value
+                    ).one().blockingExists()
         valueType != null -> {
             if (valueType.isNumeric) {
                 try {
@@ -170,4 +174,15 @@ private fun check(
         }
         else -> false
     }
+}
+
+private fun assureCodeForOptionSet(d2: D2, optionSetUid: String?, value: String): String? {
+    return optionSetUid?.let {
+        if (d2.optionModule().options().byOptionSetUid().eq(it).byName().eq(value).one().blockingExists()) {
+            d2.optionModule().options().byOptionSetUid().eq(it).byName().eq(value).one()
+                .blockingGet().code()
+        } else {
+            value
+        }
+    } ?: value
 }

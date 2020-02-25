@@ -10,7 +10,9 @@ import androidx.databinding.ObservableField;
 import org.dhis2.R;
 import org.dhis2.data.forms.FormSectionViewModel;
 import org.dhis2.data.forms.dataentry.DataEntryArguments;
+import org.dhis2.data.forms.dataentry.StoreResult;
 import org.dhis2.data.forms.dataentry.ValueStore;
+import org.dhis2.data.forms.dataentry.ValueStoreImpl;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.display.DisplayViewModel;
 import org.dhis2.data.forms.dataentry.fields.image.ImageViewModel;
@@ -87,6 +89,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     private int unsupportedFields;
     private int totalFields;
     private ConnectableFlowable<List<FieldViewModel>> fieldFlowable;
+    private boolean assignedValueChanged;
 
     @Override
     public String getLastFocusItem() {
@@ -340,8 +343,12 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                         .observeOn(schedulerProvider.ui())
                         .subscribe(
                                 updates -> {
-                                    EventCaptureFormFragment.getInstance().showFields(updates, lastFocusItem);
-                                    formAdjustProcessor.onNext(new Unit());
+                                    if(assignedValueChanged){
+                                        nextCalculation(true);
+                                    }else {
+                                        EventCaptureFormFragment.getInstance().showFields(updates, lastFocusItem);
+                                        formAdjustProcessor.onNext(new Unit());
+                                    }
                                 },
                                 Timber::e
                         ));
@@ -483,6 +490,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
         }
 
         //Reset effectsT
+        assignedValueChanged = false;
         optionsToHide.clear();
         optionsGroupsToHide.clear();
         optionsGroupToShow.clear();
@@ -795,7 +803,10 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     @Override
     public void save(@NotNull @NonNull String uid, @Nullable String value) {
         if (value == null || !sectionsToHide.contains(eventCaptureRepository.getSectionFor(uid))) {
-            valueStore.saveWithTypeCheck(uid, value).blockingFirst();
+            StoreResult result = valueStore.saveWithTypeCheck(uid, value).blockingFirst();
+            if(result.component2() == ValueStoreImpl.ValueStoreResult.VALUE_CHANGED){
+                assignedValueChanged = true;
+            }
         }
     }
 
