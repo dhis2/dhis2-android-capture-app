@@ -317,10 +317,21 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                                     one.sortOrder().compareTo(two.sortOrder()));
 
                             for (ProgramStageSection section : stageSections)
-                                formSection.add(FormSectionViewModel.createForSection(eventUid, section.uid(), section.displayName(),
-                                        section.renderType().mobile() != null ? section.renderType().mobile().type().name() : null));
-                        } else
-                            formSection.add(FormSectionViewModel.createForProgramStageWithLabel(eventUid, stage.displayName(), stage.uid()));
+                                formSection.add(FormSectionViewModel.createForSection(
+                                        eventUid,
+                                        section.uid(),
+                                        section.displayName(),
+                                        section.renderType().mobile() != null ?
+                                                section.renderType().mobile().type().name() :
+                                                null)
+                                );
+                        } else {
+                            formSection.add(FormSectionViewModel.createForSection(
+                                    eventUid,
+                                    "",
+                                    "",
+                                    ProgramStageSectionRenderingType.LISTING.name()));
+                        }
                     }
                     return formSection;
                 }).toFlowable();
@@ -491,14 +502,11 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
         return queryDataValues(eventUid)
                 .switchMap(dataValues ->
                         formRepository.ruleEngine()
-                                .flatMap(ruleEngine -> {
-                                    if (isEmpty(lastUpdatedUid))
-                                        return Flowable.fromCallable(ruleEngine.evaluate(eventBuilder.dataValues(dataValues).build()));
-                                    else if (dataElementRules.containsKey(lastUpdatedUid))
-                                        return Flowable.fromCallable(ruleEngine.evaluate(eventBuilder.dataValues(dataValues).build(), dataElementRules.get(lastUpdatedUid)));
-                                    else
-                                        return Flowable.fromCallable(ruleEngine.evaluate(eventBuilder.dataValues(dataValues).build(), finalMandatoryRules));
-                                })
+                                .flatMap(ruleEngine ->
+                                        Flowable.fromCallable(
+                                                ruleEngine.evaluate(
+                                                        eventBuilder.dataValues(dataValues).build()
+                                                )))
                                 .map(Result::success)
                 )
                 .doOnError(error -> Result.failure(new Exception(error)));
@@ -651,7 +659,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
     @Override
     public Single<Integer> getNoteCount() {
         //TODO: EVENT NOTES
-        return Single.just(Random.Default.nextInt(0,100));
+        return Single.just(Random.Default.nextInt(0, 100));
     }
 }
 

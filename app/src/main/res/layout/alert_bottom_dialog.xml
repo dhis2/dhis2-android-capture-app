@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+
+        <import type="android.view.View" />
+
+        <variable
+            name="title"
+            type="String" />
+
+        <variable
+            name="message"
+            type="java.lang.String" />
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/ic_front_backdrop_bg">
+
+
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@{title}"
+            android:textColor="@color/black_de0"
+            android:textSize="16sp"
+            android:layout_marginStart="24dp"
+            android:layout_marginEnd="14dp"
+            android:layout_marginTop="20dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Saved!"/>
+
+
+        <TextView
+            android:id="@+id/message"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginEnd="14dp"
+            android:layout_marginTop="15dp"
+            android:text='@{ message}'
+            android:textColor="@color/gray_990"
+            android:textSize="14sp"
+            app:layout_constraintTop_toBottomOf="@id/title"
+            tools:text="@tools:sample/lorem" />
+
+        <TextView
+            android:id="@+id/emptyMandatoryFields"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginEnd="14dp"
+            android:textColor="@color/gray_9b9"
+            android:textSize="14sp"
+            android:visibility="gone"
+            app:layout_constraintTop_toBottomOf="@id/message"
+            tools:text="@tools:sample/lorem/random" />
+
+        <Button
+            android:id="@+id/negative"
+            style="@style/TextButton"
+            android:layout_marginEnd="20dp"
+            android:layout_marginTop="12dp"
+            android:layout_marginBottom="5dp"
+            android:text='@string/cancel'
+            android:visibility="gone"
+            android:textSize="14sp"
+            app:layout_constraintEnd_toStartOf="@id/positive"
+            app:layout_constraintTop_toBottomOf="@id/emptyMandatoryFields"
+            tools:visibility="visible"/>
+
+        <Button
+            android:id="@+id/positive"
+            style="@style/TextButton"
+            android:layout_marginEnd="20dp"
+            android:layout_marginTop="12dp"
+            android:layout_marginBottom="5dp"
+            android:text='@string/action_accept'
+            android:textSize="14sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/emptyMandatoryFields" />
+
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

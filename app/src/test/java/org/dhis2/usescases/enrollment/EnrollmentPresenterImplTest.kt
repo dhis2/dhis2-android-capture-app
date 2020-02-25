@@ -70,29 +70,35 @@ class EnrollmentPresenterImplTest {
 
     @Test
     fun `Missing and errors fields should show mandatory fields dialog`() {
-        val checkWthErrors = presenter.dataIntegrityCheck(mandatoryOk = false, hasError = true)
+        val emptyFields: List<String> = listOf("field1")
+        val errorFields: List<String> = listOf()
+        val checkWthErrors = presenter.dataIntegrityCheck(emptyFields, errorFields)
 
         Assert.assertFalse(checkWthErrors)
 
-        verify(enrollmentView, times(1)).showMissingMandatoryFieldsMessage()
+        verify(enrollmentView, times(1)).showMissingMandatoryFieldsMessage(emptyFields)
     }
 
     @Test
     fun `Missing fields should show mandatory fields dialog`() {
-        val checkWthErrors = presenter.dataIntegrityCheck(mandatoryOk = false, hasError = false)
+        val emptyFields: List<String> = listOf("field")
+        val errorFields: List<String> = listOf("field")
+        val checkWthErrors = presenter.dataIntegrityCheck(emptyFields, errorFields)
 
         Assert.assertFalse(checkWthErrors)
 
-        verify(enrollmentView, times(1)).showMissingMandatoryFieldsMessage()
+        verify(enrollmentView, times(1)).showMissingMandatoryFieldsMessage(emptyFields)
     }
 
     @Test
     fun `Error fields should show mandatory fields dialog`() {
-        val checkWthErrors = presenter.dataIntegrityCheck(mandatoryOk = true, hasError = true)
+        val emptyFields: List<String> = listOf()
+        val errorFields: List<String> = listOf("field")
+        val checkWthErrors = presenter.dataIntegrityCheck(emptyFields, errorFields)
 
         Assert.assertFalse(checkWthErrors)
 
-        verify(enrollmentView, times(1)).showErrorFieldsMessage()
+        verify(enrollmentView, times(1)).showErrorFieldsMessage(errorFields)
     }
 
     @Test
@@ -117,34 +123,6 @@ class EnrollmentPresenterImplTest {
     fun `Open initial when needsCatCombo is true and needsCoordinates is true`() {
         checkCatCombo(false, FeatureType.POINT)
         assert(presenter.openInitial(""))
-    }
-
-    private fun checkCatCombo(catCombo: Boolean, featureType: FeatureType) {
-        whenever(programRepository.blockingGet()) doReturn Program.builder().uid("")
-            .categoryCombo(ObjectWithUid.create("")).build()
-
-        whenever(d2.eventModule()) doReturn mock()
-        whenever(d2.eventModule().events()) doReturn mock()
-        whenever(d2.eventModule().events().uid("")) doReturn mock()
-        whenever(d2.eventModule().events().uid("").blockingGet()) doReturn Event.builder()
-            .uid("").programStage("").build()
-
-        whenever(d2.programModule()) doReturn mock()
-        whenever(d2.programModule().programStages()) doReturn mock()
-        whenever(d2.programModule().programStages().uid("")) doReturn mock()
-        whenever(
-            d2.programModule().programStages().uid("").blockingGet()
-        ) doReturn ProgramStage.builder().uid("").featureType(featureType).build()
-
-        whenever(d2.categoryModule()) doReturn mock()
-        whenever(d2.categoryModule().categoryCombos()) doReturn mock()
-        whenever(d2.categoryModule().categoryCombos().uid("")) doReturn mock()
-        whenever(
-            d2.categoryModule().categoryCombos().uid("").blockingGet()
-        ) doReturn CategoryCombo.builder()
-            .isDefault(catCombo)
-            .uid("")
-            .build()
     }
 
     @Test
@@ -187,6 +165,95 @@ class EnrollmentPresenterImplTest {
         )
         presenter.saveFile("uid", "fileValue")
         verify(valueStore, times(1)).save("uid", "fileValue")
+    }
+
+    @Test
+    fun `Check data integrity when mandatory is false and has error is false`() {
+        val emptyFields: List<String> = listOf("field")
+        val errorFields: List<String> = listOf("field")
+        val result = presenter.dataIntegrityCheck(emptyFields, errorFields)
+        verify(enrollmentView, times(1)).showMissingMandatoryFieldsMessage(emptyFields)
+        verify(enrollmentView, times(0)).showErrorFieldsMessage(errorFields)
+        Assert.assertFalse(result)
+    }
+
+    @Test
+    fun `Check data integrity when mandatory is true and has error is false`() {
+        val emptyFields: List<String> = listOf()
+        val errorFields: List<String> = listOf()
+        val result = presenter.dataIntegrityCheck(emptyFields, errorFields)
+        verifyZeroInteractions(enrollmentView)
+        Assert.assertTrue(result)
+    }
+
+    @Test
+    fun `Check data integrity when mandatory is false and has error is true`() {
+        val emptyFields: List<String> = listOf("field")
+        val errorFields: List<String> = listOf("field")
+        val result = presenter.dataIntegrityCheck(emptyFields, errorFields)
+        verify(enrollmentView, times(1)).showMissingMandatoryFieldsMessage(emptyFields)
+        verify(enrollmentView, times(0)).showErrorFieldsMessage(errorFields)
+        Assert.assertFalse(result)
+    }
+
+    @Test
+    fun `Check data integrity when mandatory is true and has error is true`() {
+        val emptyFields: List<String> = listOf()
+        val errorFields: List<String> = listOf("field")
+        val result = presenter.dataIntegrityCheck(emptyFields, errorFields)
+        verify(enrollmentView, times(0)).showMissingMandatoryFieldsMessage(emptyFields)
+        verify(enrollmentView, times(1)).showErrorFieldsMessage(errorFields)
+        Assert.assertFalse(result)
+    }
+
+    @Test
+    fun `Should update the fields flowable`() {
+        val processor = PublishProcessor.create<Boolean>()
+        val testSubscriber = processor.test()
+
+        presenter.updateFields()
+        processor.onNext(true)
+
+        testSubscriber.assertValueAt(0, true)
+    }
+
+    @Test
+    fun `Should execute the backButton processor`() {
+        val processor = PublishProcessor.create<Boolean>()
+        val testSubscriber = processor.test()
+
+        presenter.backIsClicked()
+        processor.onNext(true)
+
+        testSubscriber.assertValueAt(0, true)
+    }
+
+    private fun checkCatCombo(catCombo: Boolean, featureType: FeatureType) {
+        whenever(programRepository.blockingGet()) doReturn Program.builder().uid("")
+            .categoryCombo(ObjectWithUid.create("")).build()
+
+        whenever(d2.eventModule()) doReturn mock()
+        whenever(d2.eventModule().events()) doReturn mock()
+        whenever(d2.eventModule().events().uid("")) doReturn mock()
+        whenever(d2.eventModule().events().uid("").blockingGet()) doReturn Event.builder()
+            .uid("").programStage("").build()
+
+        whenever(d2.programModule()) doReturn mock()
+        whenever(d2.programModule().programStages()) doReturn mock()
+        whenever(d2.programModule().programStages().uid("")) doReturn mock()
+        whenever(
+            d2.programModule().programStages().uid("").blockingGet()
+        ) doReturn ProgramStage.builder().uid("").featureType(featureType).build()
+
+        whenever(d2.categoryModule()) doReturn mock()
+        whenever(d2.categoryModule().categoryCombos()) doReturn mock()
+        whenever(d2.categoryModule().categoryCombos().uid("")) doReturn mock()
+        whenever(
+            d2.categoryModule().categoryCombos().uid("").blockingGet()
+        ) doReturn CategoryCombo.builder()
+            .isDefault(catCombo)
+            .uid("")
+            .build()
     }
 
     private fun mockValuesDataElement(
@@ -341,47 +408,5 @@ class EnrollmentPresenterImplTest {
             ).blockingGet()
         ) doReturn TrackedEntityAttributeValue.builder()
             .value("value").build()
-    }
-
-    @Test
-    fun `Check data integrity when mandatory is false and has error is false`() {
-        val result = presenter.dataIntegrityCheck(false, false)
-        verify(enrollmentView, times(1)).showMissingMandatoryFieldsMessage()
-        verify(enrollmentView, times(0)).showErrorFieldsMessage()
-        Assert.assertFalse(result)
-    }
-
-    @Test
-    fun `Check data integrity when mandatory is true and has error is false`() {
-        val result = presenter.dataIntegrityCheck(true, false)
-        verifyZeroInteractions(enrollmentView)
-        Assert.assertTrue(result)
-    }
-
-    @Test
-    fun `Check data integrity when mandatory is false and has error is true`() {
-        val result = presenter.dataIntegrityCheck(false, true)
-        verify(enrollmentView, times(1)).showMissingMandatoryFieldsMessage()
-        verify(enrollmentView, times(0)).showErrorFieldsMessage()
-        Assert.assertFalse(result)
-    }
-
-    @Test
-    fun `Check data integrity when mandatory is true and has error is true`() {
-        val result = presenter.dataIntegrityCheck(true, true)
-        verify(enrollmentView, times(0)).showMissingMandatoryFieldsMessage()
-        verify(enrollmentView, times(1)).showErrorFieldsMessage()
-        Assert.assertFalse(result)
-    }
-
-    @Test
-    fun `Should update the fields flowable`() {
-        val processor = PublishProcessor.create<Boolean>()
-        val testSubscriber = processor.test()
-
-        presenter.updateFields()
-        processor.onNext(true)
-
-        testSubscriber.assertValueAt(0, true)
     }
 }

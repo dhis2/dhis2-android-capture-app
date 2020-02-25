@@ -39,14 +39,13 @@ import org.dhis2.utils.Constants.GALLERY_REQUEST
 import org.dhis2.utils.Constants.RQ_QR_SCANNER
 import org.dhis2.utils.DatePickerUtils
 import org.dhis2.utils.DateUtils
-import org.dhis2.utils.DialogClickListener
 import org.dhis2.utils.EventMode
 import org.dhis2.utils.FileResourcesUtil
 import org.dhis2.utils.analytics.CLICK
 import org.dhis2.utils.analytics.DELETE_AND_BACK
 import org.dhis2.utils.analytics.SAVE_ENROLL
 import org.dhis2.utils.analytics.STATUS_ENROLLMENT
-import org.dhis2.utils.customviews.CustomDialog
+import org.dhis2.utils.customviews.AlertBottomDialog
 import org.hisp.dhis.android.core.arch.helpers.FileResourceDirectoryHelper
 import org.hisp.dhis.android.core.arch.helpers.GeometryHelper
 import org.hisp.dhis.android.core.common.FeatureType
@@ -123,14 +122,6 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
         binding.fieldRecycler.isNestedScrollingEnabled = true
         binding.fieldRecycler.adapter = adapter
 
-        binding.next.setOnClickListener {
-            if (presenter.dataIntegrityCheck(adapter.mandatoryOk(), adapter.hasError())) {
-                binding.root.requestFocus()
-                analyticsHelper().setEvent(SAVE_ENROLL, CLICK, SAVE_ENROLL)
-                presenter.finish(mode)
-            }
-        }
-
         binding.enrollmentDataButton.setOnClickListener {
             if (binding.enrollmentData.visibility == View.GONE) {
                 binding.enrollmentDataText.text = getString(R.string.enrollment_data_hide)
@@ -150,6 +141,11 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
         binding.enrollmentDataArrow.animate().scaleY(-1.0f).setDuration(0).start()
 
         presenter.init()
+    }
+
+    override fun onResume() {
+        presenter.subscribeToBackButton()
+        super.onResume()
     }
 
     override fun onDestroy() {
@@ -245,55 +241,44 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
     }
 
     override fun goBack() {
-        onBackPressed()
+        presenter.backIsClicked()
     }
 
-    override fun showMissingMandatoryFieldsMessage() {
-        showInfoDialog(
-            getString(R.string.unable_to_complete),
-            getString(R.string.missing_mandatory_fields)
-        )
+    override fun showMissingMandatoryFieldsMessage(emptyMandatoryFields: List<String>) {
+        AlertBottomDialog.instance
+            .setTitle(getString(R.string.unable_to_complete))
+            .setMessage(getString(R.string.missing_mandatory_fields))
+            .setEmptyMandatoryFields(emptyMandatoryFields)
+            .show(supportFragmentManager, AlertBottomDialog::class.java.simpleName)
     }
 
-    override fun showErrorFieldsMessage() {
-        showInfoDialog(
-            getString(R.string.unable_to_complete),
-            getString(R.string.field_errors)
-        )
+    override fun showErrorFieldsMessage(errorFields: List<String>) {
+        AlertBottomDialog.instance
+            .setTitle(getString(R.string.unable_to_complete))
+            .setMessage(getString(R.string.field_errors))
+            .setEmptyMandatoryFields(errorFields)
+            .show(supportFragmentManager, AlertBottomDialog::class.java.simpleName)
     }
 
     override fun onBackPressed() {
         if (mode == EnrollmentMode.CHECK) {
-            if (presenter.dataIntegrityCheck(adapter.mandatoryOk(), adapter.hasError())) {
-                binding.root.requestFocus()
-                super.onBackPressed()
-            }
+            presenter.backIsClicked()
         } else {
             showDeleteDialog()
         }
     }
 
     private fun showDeleteDialog() {
-        CustomDialog(
-            this,
-            getString(R.string.title_delete_go_back),
-            getString(R.string.delete_go_back),
-            getString(R.string.cancel),
-            getString(R.string.missing_mandatory_fields_go_back),
-            RQ_GO_BACK,
-            object : DialogClickListener {
-                override fun onPositive() {
-                    // do nothing
-                }
-
-                override fun onNegative() {
-                    analyticsHelper().setEvent(DELETE_AND_BACK, CLICK, DELETE_AND_BACK)
-                    presenter.deleteAllSavedData()
-                    finish()
-                }
+        AlertBottomDialog.instance
+            .setTitle(getString(R.string.title_delete_go_back))
+            .setMessage(getString(R.string.delete_go_back))
+            .setPositiveButton(getString(R.string.missing_mandatory_fields_go_back)) {
+                analyticsHelper().setEvent(DELETE_AND_BACK, CLICK, DELETE_AND_BACK)
+                presenter.deleteAllSavedData()
+                finish()
             }
-        )
-            .show()
+            .setNegativeButton()
+            .show(supportFragmentManager, AlertBottomDialog::class.java.simpleName)
     }
 
     private fun handleGeometry(featureType: FeatureType, dataExtra: String, requestCode: Int) {
@@ -328,6 +313,11 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
         }
     }
 
+    override fun setResultAndFinish() {
+        setResult(RESULT_OK)
+        finish()
+    }
+
     /*endregion*/
 
     /*region TEI*/
@@ -346,7 +336,7 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
         binding.coordinatesView.setEditable(access)
         binding.teiCoordinatesView.setEditable(access)
         if (access == false) {
-            binding.next.visibility = View.GONE
+            binding.save.visibility = View.GONE
         }
     }
     /*endregion*/
@@ -558,18 +548,18 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
             offset = it.top
         }
 
-        adapter.swap(fields)
+        adapter.swap(fields, {  })
 
         myLayoutManager.scrollToPositionWithOffset(myFirstPositionIndex, offset)
     }
     /*endregion*/
 
     override fun showSaveButton() {
-        binding.next.show()
+        binding.save.show()
     }
 
     override fun hideSaveButton() {
-        binding.next.hide()
+        binding.save.hide()
     }
 
     override fun showAdjustingForm() {
@@ -580,5 +570,16 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
     override fun hideAdjustingForm() {
         binding.clIndicatorProgress.root.visibility = View.GONE
         binding.clIndicatorProgress.lottieView.repeatCount = 0
+    }
+
+    override fun requestFocus() {
+        binding.root.requestFocus()
+    }
+
+    override fun performSaveClick() {
+        if (presenter.dataIntegrityCheck(adapter.emptyMandatoryFields(), adapter.errorFields())) {
+            analyticsHelper().setEvent(SAVE_ENROLL, CLICK, SAVE_ENROLL)
+            presenter.finish(mode)
+        }
     }
 }
