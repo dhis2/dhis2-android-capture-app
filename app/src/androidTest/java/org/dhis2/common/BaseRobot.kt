@@ -4,15 +4,35 @@ import android.app.Activity
 import android.app.ActivityManager
 import android.content.Context
 import android.content.Context.ACTIVITY_SERVICE
+import android.widget.EditText
+import androidx.annotation.IdRes
+import androidx.test.espresso.action.ViewActions.closeSoftKeyboard
+import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.action.ViewActions
+import androidx.test.espresso.matcher.ViewMatchers
+import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
 import androidx.test.uiautomator.UiDevice
+import org.hamcrest.CoreMatchers.allOf
 
 open class BaseRobot (val context: Context){
 
     fun pressBack(): BaseRobot {
         UiDevice.getInstance(getInstrumentation()).pressBack()
         return this
+    }
+
+    fun closeKeyboard() {
+        onView(isRoot()).perform(closeSoftKeyboard())
+    }
+
+    fun pressImeActionButton(@IdRes editTextId: Int? = null) {
+        if (editTextId != null) {
+            onView(withId(editTextId)).perform(ViewActions.pressImeActionButton())
+        } else {
+            onView(allOf(isAssignableFrom(EditText::class.java), hasFocus())).perform(ViewActions.pressImeActionButton())
+        }
     }
 
     inline fun <reified T : Activity> waitUntilActivityVisible() {

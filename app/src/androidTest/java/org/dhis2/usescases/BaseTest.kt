@@ -23,7 +23,7 @@ open class BaseTest {
     private var isIntentsEnable = false
     private lateinit var keyStoreRobot: KeyStoreRobot
     private lateinit var preferencesRobot: PreferencesRobot
-    private lateinit var mockWebServerRobot: MockWebServerRobot
+    lateinit var mockWebServerRobot: MockWebServerRobot
 
 
     protected open fun getPermissionsToBeAccepted() = arrayOf<String>()

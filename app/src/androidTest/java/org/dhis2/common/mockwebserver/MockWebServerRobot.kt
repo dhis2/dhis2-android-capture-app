@@ -14,6 +14,6 @@ class MockWebServerRobot(private val dhis2MockServer: Dhis2MockServer) {
     }
 
     fun addResponse(method:String, path:String, sdkResource:String, responseCode:Int = 200){
-        dhis2MockServer.addResponse(method, sdkResource, sdkResource, responseCode)
+        dhis2MockServer.addResponse(method, path, sdkResource, responseCode)
     }
 }
