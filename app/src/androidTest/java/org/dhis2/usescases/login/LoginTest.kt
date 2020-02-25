@@ -34,7 +34,7 @@ class LoginTest : BaseTest() {
 
     @Test
     fun loginButtonShouldBeDisplayedWhenAllFieldsAreFilled() {
-        mockWebServerRobot.addResponse(GET, "/api/me?", "mocks/user/user.json")
+        mockWebServerRobot.addResponse(GET, API_ME_PATH, API_ME_RESPONSE_OK)
 
         startLoginActivity()
 
@@ -68,5 +68,10 @@ class LoginTest : BaseTest() {
 
     fun startLoginActivity(){
         ruleLogin.launchActivity(null)
+    }
+
+    companion object {
+        const val API_ME_PATH = "/api/me?.*"
+        const val API_ME_RESPONSE_OK = "mocks/user/user.json"
     }
 }
