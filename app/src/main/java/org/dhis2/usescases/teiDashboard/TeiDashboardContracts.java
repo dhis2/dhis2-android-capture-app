@@ -61,5 +61,7 @@ public class TeiDashboardContracts {
         void saveProgramTheme(int programTheme);
 
         void removeProgramTheme();
+
+        void showFilterGeneral();
     }
 }
