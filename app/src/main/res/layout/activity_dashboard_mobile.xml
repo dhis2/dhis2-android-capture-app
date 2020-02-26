@@ -54,11 +54,11 @@
                 android:text='@{title}'
                 android:textColor="?colorAccent"
                 android:textSize="20sp"
-                app:layout_constraintEnd_toStartOf="@id/program_selector_button"
+                app:layout_constraintEnd_toStartOf="@id/moreOptions"
                 app:layout_constraintStart_toEndOf="@id/back"
                 tools:text="TEI NAME" />
 
-            <ImageView
+            <!--<ImageView
                 android:id="@+id/program_selector_button"
                 style="@style/ActionIcon"
                 android:onClick="@{()->presenter.onEnrollmentSelectorClick()}"
@@ -66,7 +66,7 @@
                 app:layout_constraintEnd_toStartOf="@id/moreOptions"
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/ic_program_border"
-                tools:ignore="ContentDescription" />
+                tools:ignore="ContentDescription" /> -->
 
             <ImageView
                 android:id="@+id/moreOptions"

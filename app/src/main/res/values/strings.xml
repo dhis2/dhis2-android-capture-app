@@ -634,4 +634,5 @@
     <string name="interval_minute_ago">%d min. ago</string>
     <string name="interval_hour_ago">%d hours ago</string>
     <string name="interval_yesterday">Yesterday</string>
+    <string name="program_selector">Program enrollments</string>
 </resources>

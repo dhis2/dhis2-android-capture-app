@@ -12,4 +12,8 @@
         android:id="@+id/deleteEnrollment"
         android:icon="@drawable/ic_delete"
         android:title="@string/dashboard_menu_delete_enrollment" />
+    <item
+        android:id="@+id/programSelector"
+        android:icon="@drawable/ic_program_border"
+        android:title="@string/program_selector" />
 </menu>

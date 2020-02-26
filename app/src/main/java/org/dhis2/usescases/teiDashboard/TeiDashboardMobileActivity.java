@@ -449,6 +449,10 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
                 case R.id.deleteEnrollment:
                     presenter.deleteEnrollment();
                     break;
+                case R.id.programSelector:
+                    presenter.onEnrollmentSelectorClick();
+                    break;
+
             }
             return true;
 
