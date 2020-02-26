@@ -24,7 +24,7 @@ class SettingsTest : BaseTest() {
 
     override fun setUp() {
         super.setUp()
-        mainRobot = MainRobot(context)
+        mainRobot = MainRobot()
     }
 
     @Test
