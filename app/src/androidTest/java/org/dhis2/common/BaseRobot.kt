@@ -16,7 +16,7 @@ import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
 import androidx.test.uiautomator.UiDevice
 import org.hamcrest.CoreMatchers.allOf
 
-open class BaseRobot (val context: Context){
+open class BaseRobot (){
 
     fun pressBack(): BaseRobot {
         UiDevice.getInstance(getInstrumentation()).pressBack()
