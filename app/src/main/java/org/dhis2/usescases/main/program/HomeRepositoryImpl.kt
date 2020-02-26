@@ -234,7 +234,6 @@ internal class HomeRepositoryImpl(
     ): Pair<Int, Boolean> {
         var enrollmentRepository = d2.enrollmentModule().enrollments()
             .byProgram().`in`(arrayListOf(program.uid()))
-            .byStatus().eq(EnrollmentStatus.ACTIVE)
         if (dateFilter.isNotEmpty()) {
             enrollmentRepository = enrollmentRepository
                 .byEnrollmentDate().inDatePeriods(dateFilter)
