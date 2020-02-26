@@ -39,32 +39,51 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-
-
-
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <androidx.cardview.widget.CardView
-            android:id="@+id/tei_data"
+        <LinearLayout
+            android:id="@+id/cardLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:cardElevation="4dp">
+            android:orientation="vertical">
 
-            <include
-                android:id="@+id/card_front"
-                layout="@layout/fragment_tei_data_card_front"
-                app:dashboardModel="@{dashboardModel}"
-                app:enrollment="@{enrollment}"
-                app:followup="@{followup}"
-                app:presenter="@{presenter}"
-                app:program="@{program}"
-                app:trackEntity="@{trackEntity}" />
-        </androidx.cardview.widget.CardView>
+            <androidx.cardview.widget.CardView
+                android:id="@+id/tei_data"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:cardElevation="4dp">
+
+                <include
+                    android:id="@+id/card_front"
+                    layout="@layout/fragment_tei_data_card_front"
+                    app:dashboardModel="@{dashboardModel}"
+                    app:enrollment="@{enrollment}"
+                    app:followup="@{followup}"
+                    app:presenter="@{presenter}"
+                    app:program="@{program}"
+                    app:trackEntity="@{trackEntity}" />
+            </androidx.cardview.widget.CardView>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/filterLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="?colorPrimary"
+                android:visibility="gone"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:listitem="@layout/item_filter" />
+
+        </LinearLayout>
+
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/tei_recycler"
@@ -76,7 +95,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tei_data"
+            app:layout_constraintTop_toBottomOf="@id/cardLayout"
             tools:listitem="@layout/item_event" />
 
         <TextView
@@ -86,7 +105,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tei_data"
+            app:layout_constraintTop_toBottomOf="@id/cardLayout"
             android:gravity="center"
             android:padding="42dp"
             android:background="@color/white"

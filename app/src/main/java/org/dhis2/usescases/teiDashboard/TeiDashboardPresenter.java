@@ -227,8 +227,4 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
             return false;
         }
     }
-
-    public void showFilterGeneral() {
-        /*view.showHideFilterGeneral();*/
-    }
 }

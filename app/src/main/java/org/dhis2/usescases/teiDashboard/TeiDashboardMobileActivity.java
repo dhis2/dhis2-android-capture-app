@@ -469,7 +469,6 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
                 case R.id.programSelector:
                     presenter.onEnrollmentSelectorClick();
                     break;
-
                 case R.id.groupEvents:
                     groupByStage.setValue(true);
                     break;
@@ -501,5 +500,9 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
 
     public LiveData<Boolean> observeGrouping() {
         return groupByStage;
+    }
+
+    public View getView(){
+        return binding.searchFilterGeneral;
     }
 }
