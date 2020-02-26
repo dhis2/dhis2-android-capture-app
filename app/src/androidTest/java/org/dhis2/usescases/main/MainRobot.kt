@@ -1,6 +1,5 @@
 package org.dhis2.usescases.main
 
-import android.content.Context
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
@@ -11,13 +10,13 @@ import org.dhis2.common.BaseRobot
 import org.dhis2.common.matchers.RecyclerviewMatchers.Companion.isNotEmpty
 import org.hamcrest.CoreMatchers.allOf
 
-fun MainRobot.screen(robotBody: MainRobot.() -> Unit){
-    this.run {
+fun homeRobot(robotBody: MainRobot.() -> Unit){
+    MainRobot().run {
         robotBody
     }
 }
 
-class MainRobot(context: Context) : BaseRobot(context){
+class MainRobot : BaseRobot(){
 
     fun clickOnNavigationDrawerMenu() = apply {
         onView(withId(R.id.menu)).perform(click())
