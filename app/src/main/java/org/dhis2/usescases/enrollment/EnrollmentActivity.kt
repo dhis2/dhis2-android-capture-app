@@ -36,9 +36,6 @@ import org.dhis2.utils.Constants.GALLERY_REQUEST
 import org.dhis2.utils.Constants.RQ_QR_SCANNER
 import org.dhis2.utils.EventMode
 import org.dhis2.utils.FileResourcesUtil
-import org.dhis2.utils.analytics.CLICK
-import org.dhis2.utils.analytics.DELETE_AND_BACK
-import org.dhis2.utils.analytics.SAVE_ENROLL
 import org.dhis2.utils.customviews.AlertBottomDialog
 import org.dhis2.utils.recyclers.StickyHeaderItemDecoration
 import org.hisp.dhis.android.core.arch.helpers.FileResourceDirectoryHelper
@@ -112,7 +109,7 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
                 { itemPosition ->
                     itemPosition >= 0 &&
                             itemPosition < adapter.itemCount &&
-                            adapter.getItemViewType(itemPosition) == 17
+                            adapter.getItemViewType(itemPosition) == adapter.sectionViewType()
                 },
                 { sectionUid ->
                     adapter.sectionFlowable().onNext(sectionUid)
@@ -121,11 +118,7 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
         binding.fieldRecycler.adapter = adapter
 
         binding.save.setOnClickListener {
-            if (presenter.dataIntegrityCheck()) {
-                binding.root.requestFocus()
-                analyticsHelper().setEvent(SAVE_ENROLL, CLICK, SAVE_ENROLL)
-                presenter.finish(mode)
-            }
+            goBack()
         }
 
         presenter.init()

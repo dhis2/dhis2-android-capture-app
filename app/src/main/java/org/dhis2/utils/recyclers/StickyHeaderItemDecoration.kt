@@ -3,14 +3,10 @@ package org.dhis2.utils.recyclers
 import android.graphics.Canvas
 import android.graphics.Rect
 import android.graphics.RectF
-import android.view.GestureDetector
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.view.GestureDetectorCompat
 import androidx.recyclerview.widget.RecyclerView
-import org.dhis2.data.forms.dataentry.fields.section.SectionHolder
-import kotlin.math.abs
 
 class StickyHeaderItemDecoration(
     parent: RecyclerView,
@@ -21,18 +17,6 @@ class StickyHeaderItemDecoration(
 
     private var currentHeader: Pair<Int, RecyclerView.ViewHolder>? = null
     private var startY: Float = -1f
-
-    private val mDetector: GestureDetectorCompat =
-        GestureDetectorCompat(parent.context, object : GestureDetector.SimpleOnGestureListener() {
-            override fun onSingleTapConfirmed(e: MotionEvent?): Boolean {
-                val endY = e?.y ?: -1f
-                if (abs(endY - startY) < 5 && startY <= currentHeader?.second?.itemView?.height!!) {
-//                    handleClick((currentHeader?.second as SectionHolder).getSection())
-//                    (currentHeader?.second as SectionHolder).onHeaderClick(true)
-                }
-                return false
-            }
-        })
 
     init {
         parent.adapter?.registerAdapterDataObserver(object : RecyclerView.AdapterDataObserver() {
@@ -53,14 +37,12 @@ class StickyHeaderItemDecoration(
                 motionEvent: MotionEvent
             ): Boolean {
 
-                return if (motionEvent.action == MotionEvent.ACTION_DOWN) {
-                    startY = motionEvent.y
-//                    motionEvent.y <= currentHeader?.second?.itemView?.bottom ?: 0
-                    mDetector.onTouchEvent(motionEvent)
-                } else if (motionEvent.action == MotionEvent.ACTION_UP) {
-                    mDetector.onTouchEvent(motionEvent)
-                } else {
-                    mDetector.onTouchEvent(motionEvent)
+                return when (motionEvent.action) {
+                    MotionEvent.ACTION_DOWN -> {
+                        startY = motionEvent.y
+                        motionEvent.y <= currentHeader?.second?.itemView?.bottom ?: 0
+                    }
+                    else -> false
                 }
             }
         })
