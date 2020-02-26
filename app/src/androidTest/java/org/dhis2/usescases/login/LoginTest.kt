@@ -35,6 +35,7 @@ class LoginTest : BaseTest() {
     @Test
     fun loginButtonShouldBeDisplayedWhenAllFieldsAreFilled() {
         mockWebServerRobot.addResponse(GET, API_ME_PATH, API_ME_RESPONSE_OK)
+        mockWebServerRobot.addResponse(GET, API_SYSTEM_INFO, API_SYSTEM_INFO_RESPONSE_OK)
 
         startLoginActivity()
 
@@ -45,21 +46,6 @@ class LoginTest : BaseTest() {
         onView(ViewMatchers.isRoot()).perform(ViewActions.closeSoftKeyboard())
         onView(withId(R.id.login)).perform(click())
         onView(withId(R.id.dialogAccept)).perform(click())
-
-        Thread.sleep(10000)
-
-
-        //  onView(withId(R.id.login)).check(matches(not(isDisplayed())))
-        //  onView(withId(R.id.server_url_edit)).perform(replaceText(TEST_URL), pressImeActionButton())
-        //  onView(withId(R.id.user_name_edit)).perform(
-        //      replaceText(TEST_USERNAME),
-        //      pressImeActionButton()
-        //  )
-        //  onView(withId(R.id.user_pass_edit)).perform(
-        //     replaceText(TEST_USERNAME),
-        //     pressImeActionButton()
-        // )
-    //    onView(withId(R.id.login)).check(matches(isDisplayed()))
     }
 
     fun startMainActivity(){
@@ -73,5 +59,7 @@ class LoginTest : BaseTest() {
     companion object {
         const val API_ME_PATH = "/api/me?.*"
         const val API_ME_RESPONSE_OK = "mocks/user/user.json"
+        const val API_SYSTEM_INFO = "/api/system/info?.*"
+        const val API_SYSTEM_INFO_RESPONSE_OK = "mocks/systeminfo/systeminfo.json"
     }
 }

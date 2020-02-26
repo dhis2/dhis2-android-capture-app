@@ -1,0 +1,24 @@
+{
+  "contextPath": "https://play.dhis2.org/android-current",
+  "userAgent": "PostmanRuntime/6.4.1",
+  "calendar": "iso8601",
+  "dateFormat": "yyyy-mm-dd",
+  "serverDate": "2017-11-29T11:27:46.935",
+  "lastAnalyticsTableSuccess": "2017-11-29T03:32:45.861",
+  "intervalSinceLastAnalyticsTableSuccess": "7 h, 55 m, 1 s",
+  "lastAnalyticsTableRuntime": "7 m, 40 s",
+  "version": "2.30",
+  "revision": "585e4bd",
+  "buildTime": "2017-10-12T06:22:05.000",
+  "jasperReportsVersion": "6.3.1",
+  "environmentVariable": "DHIS2_HOME",
+  "databaseInfo": {
+    "type": "PostgreSQL",
+    "spatialSupport": true
+  },
+  "encryption": false,
+  "systemId": "eed3d451-4ff5-4193-b951-ffcc68954299",
+  "systemName": "DHIS 2 Demo - Sierra Leone",
+  "isMetadataVersionEnabled": true,
+  "isMetadataSyncEnabled": false
+}
