@@ -35,11 +35,11 @@ import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
 import io.reactivex.processors.FlowableProcessor
 import io.reactivex.processors.PublishProcessor
+import java.util.ArrayList
 import org.dhis2.R
 import org.dhis2.data.tuples.Pair
 import org.dhis2.databinding.ItemNoteBinding
 import org.hisp.dhis.android.core.note.Note
-import java.util.ArrayList
 
 class NotesAdapter(private val listener: NoteItemClickListener) :
     RecyclerView.Adapter<NotesViewHolder>() {
@@ -64,7 +64,7 @@ class NotesAdapter(private val listener: NoteItemClickListener) :
 
     override fun onBindViewHolder(holder: NotesViewHolder, position: Int) {
         holder.bind(notes[position], listener)
-        if(addedNewNote && position == 0) {
+        if (addedNewNote && position == 0) {
             runEnterAnimation(holder.itemView)
         }
     }
@@ -79,7 +79,7 @@ class NotesAdapter(private val listener: NoteItemClickListener) :
     }
 
     private fun runEnterAnimation(view: View) {
-        val translateAnimation = TranslateAnimation(0f,0f,-200f,0f)
+        val translateAnimation = TranslateAnimation(0f, 0f, -200f, 0f)
         translateAnimation.duration = 500
         view.startAnimation(translateAnimation)
     }

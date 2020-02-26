@@ -17,10 +17,8 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ObservableInt
-import com.andrognito.pinlockview.PinLockListener
 import com.android.dbexporterlibrary.ExporterListener
 import javax.inject.Inject
-import org.dhis2.App
 import org.dhis2.Bindings.app
 import org.dhis2.R
 import org.dhis2.data.prefs.Preference
@@ -112,9 +110,9 @@ class MainActivity : ActivityGlobalAbstract(), MainView, ExporterListener {
         presenter.initFilters()
 
         if (ContextCompat.checkSelfPermission(
-                this,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE
-            ) != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(
+            this,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
+        ) != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(
                 this,
                 Manifest.permission.CAMERA
             ) != PackageManager.PERMISSION_GRANTED
@@ -186,7 +184,8 @@ class MainActivity : ActivityGlobalAbstract(), MainView, ExporterListener {
     override fun onLockClick() {
         if (prefs!!.getString(Preference.PIN, null) == null) {
             binding.mainDrawerLayout.closeDrawers()
-            PinDialog(PinDialog.Mode.SET,
+            PinDialog(
+                PinDialog.Mode.SET,
                 true,
                 { presenter.blockSession() },
                 {}

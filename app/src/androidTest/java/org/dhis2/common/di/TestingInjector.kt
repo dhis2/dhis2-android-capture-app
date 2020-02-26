@@ -1,6 +1,7 @@
 package org.dhis2.common.di
 
 import android.content.Context
+import org.dhis2.common.FileReader
 import org.dhis2.common.keystore.KeyStoreRobot
 import org.dhis2.common.mockwebserver.MockWebServerRobot
 import org.dhis2.common.preferences.PreferenceTestingImpl
@@ -17,8 +18,8 @@ class TestingInjector {
         fun providesPreferencesRobot(context:Context) : PreferencesRobot {
             return PreferencesRobot(PreferenceTestingImpl(context))
         }
-        fun providesMockWebserverRobot() : MockWebServerRobot {
-                return MockWebServerRobot(Dhis2MockServer(8080))
+        fun providesMockWebserverRobot(context:Context) : MockWebServerRobot {
+                return MockWebServerRobot(Dhis2MockServer(FileReader(context),8080))
         }
     }
 }

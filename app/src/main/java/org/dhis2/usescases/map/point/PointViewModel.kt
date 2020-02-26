@@ -1,8 +1,6 @@
 package org.dhis2.usescases.map.point
 
-import android.app.Application
 import androidx.databinding.ObservableField
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
 import com.google.gson.Gson
 import com.mapbox.geojson.Point

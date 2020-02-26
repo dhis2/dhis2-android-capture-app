@@ -16,9 +16,11 @@ class NotesRepository(private val d2: D2, val programUid: String) {
                     .one().blockingGet().uid()
             ).get()
             .map { notes ->
-                notes.sortedWith(Comparator { note1, note2 ->
-                    note1.storedDate()?.toDate()?.compareTo(note2.storedDate()?.toDate()) ?: 0
-                })
+                notes.sortedWith(
+                    Comparator { note1, note2 ->
+                        note1.storedDate()?.toDate()?.compareTo(note2.storedDate()?.toDate()) ?: 0
+                    }
+                )
             }
 
     fun getEventNotes(eventUid: String): Single<List<Note>> {

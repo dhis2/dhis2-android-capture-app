@@ -23,7 +23,7 @@ open class BaseTest {
     private var isIntentsEnable = false
     private lateinit var keyStoreRobot: KeyStoreRobot
     private lateinit var preferencesRobot: PreferencesRobot
-    private lateinit var mockWebServerRobot: MockWebServerRobot
+    lateinit var mockWebServerRobot: MockWebServerRobot
 
 
     protected open fun getPermissionsToBeAccepted() = arrayOf<String>()
@@ -50,7 +50,7 @@ open class BaseTest {
         TestingInjector.apply {
             keyStoreRobot = providesKeyStoreRobot(context)
             preferencesRobot = providesPreferencesRobot(context)
-            mockWebServerRobot = providesMockWebserverRobot()
+            mockWebServerRobot = providesMockWebserverRobot(context)
         }
     }
 
@@ -108,5 +108,6 @@ open class BaseTest {
         @ClassRule
         @JvmField
         val disableAnimationsTestRule = DisableAnimations()
+        const val MOCK_SERVER_URL = "http://127.0.0.1:8080"
     }
 }
