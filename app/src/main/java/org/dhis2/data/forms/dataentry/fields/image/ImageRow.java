@@ -44,7 +44,7 @@ public class ImageRow implements Row<ImageHolder, ImageViewModel> {
         FormImageBinding binding = DataBindingUtil.inflate(inflater, R.layout.form_image, parent, false);
 
         Integer height = null;
-        Integer parentHeight = parent.getMeasuredHeight() != 0 ? parent.getMeasuredHeight() : parent.getHeight();
+        Integer parentHeight = parent.getHeight();
         if (sectionRendering != null && sectionRendering.equals(ProgramStageSectionRenderingType.SEQUENTIAL.name())) {
             height = parentHeight / (count > 2 ? 3 : count);
         } else if (sectionRendering != null && sectionRendering.equals(ProgramStageSectionRenderingType.MATRIX.name())) {

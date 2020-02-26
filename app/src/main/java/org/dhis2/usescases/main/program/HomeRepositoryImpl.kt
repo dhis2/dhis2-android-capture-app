@@ -2,14 +2,11 @@ package org.dhis2.usescases.main.program
 
 import io.reactivex.Flowable
 import io.reactivex.parallel.ParallelFlowable
-import io.reactivex.schedulers.Schedulers
-import java.util.Date
-import kotlin.collections.ArrayList
+import org.dhis2.data.schedulers.SchedulerProvider
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.dataset.DataSet
-import org.hisp.dhis.android.core.dataset.DataSetCollectionRepository
 import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.enrollment.EnrollmentCollectionRepository
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
@@ -17,21 +14,18 @@ import org.hisp.dhis.android.core.event.EventStatus
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.period.DatePeriod
 import org.hisp.dhis.android.core.program.Program
-import org.hisp.dhis.android.core.program.ProgramCollectionRepository
 import org.hisp.dhis.android.core.program.ProgramType.WITHOUT_REGISTRATION
 import org.hisp.dhis.android.core.program.ProgramType.WITH_REGISTRATION
+import java.util.Date
 
 internal class HomeRepositoryImpl(
     private val d2: D2,
     private val eventLabel: String,
     private val dataSetLabel: String,
-    private val teiLabel: String
+    private val teiLabel: String,
+    private val schedulerProvider: SchedulerProvider
 ) :
     HomeRepository {
-    private val dataSetRepository: DataSetCollectionRepository = d2.dataSetModule().dataSets()
-        .withDataSetElements()
-    private val programRepository: ProgramCollectionRepository = d2.programModule().programs()
-        .withTrackedEntityType()
 
     private var captureOrgUnits: List<String> = ArrayList()
 
@@ -42,9 +36,9 @@ internal class HomeRepositoryImpl(
         assignedToUser: Boolean?
     ): Flowable<List<ProgramViewModel>> {
         return ParallelFlowable.from<DataSet>(
-            Flowable.fromIterable<DataSet>(dataSetRepository.blockingGet())
+            Flowable.fromIterable<DataSet>(d2.dataSetModule().dataSets().blockingGet())
         )
-            .runOn(Schedulers.io())
+            .runOn(schedulerProvider.io())
             .map { dataSet ->
                 var repo = d2.dataSetModule().dataSetInstances().byDataSetUid().eq(dataSet.uid())
                 if (orgUnitFilter.isNotEmpty()) {
@@ -55,14 +49,16 @@ internal class HomeRepositoryImpl(
                 }
 
                 var count = 0
-                if (statesFilter.isNotEmpty()) {
-                    for (instance in repo.blockingGet()) {
-                        if (statesFilter.contains(instance.state())) {
-                            count++
+                if (assignedToUser != true) {
+                    if (statesFilter.isNotEmpty()) {
+                        for (instance in repo.blockingGet()) {
+                            if (statesFilter.contains(instance.state())) {
+                                count++
+                            }
                         }
+                    } else {
+                        count = repo.blockingCount()
                     }
-                } else {
-                    count = repo.blockingCount()
                 }
 
                 val possibleStates = repo.blockingGet().map { it.state() }.toMutableList()
@@ -75,13 +71,13 @@ internal class HomeRepositoryImpl(
 
                 val state = when {
                     possibleStates.contains(State.ERROR) ||
-                        possibleStates.contains(State.WARNING) ->
+                            possibleStates.contains(State.WARNING) ->
                         State.WARNING
                     possibleStates.contains(State.SENT_VIA_SMS) ||
-                        possibleStates.contains(State.SYNCED_VIA_SMS) ->
+                            possibleStates.contains(State.SYNCED_VIA_SMS) ->
                         State.SENT_VIA_SMS
                     possibleStates.contains(State.TO_UPDATE) ||
-                        possibleStates.contains(State.TO_POST) ->
+                            possibleStates.contains(State.TO_POST) ->
                         State.TO_UPDATE
                     else -> State.SYNCED
                 }
@@ -92,7 +88,7 @@ internal class HomeRepositoryImpl(
                     if (dataSet.style() != null) dataSet.style()!!.color() else null,
                     if (dataSet.style() != null) dataSet.style()!!.icon() else null,
                     count, null,
-                    "DataSets",
+                    dataSetLabel,
                     "",
                     dataSet.displayDescription(),
                     true,
@@ -103,12 +99,12 @@ internal class HomeRepositoryImpl(
             .map { program ->
                 program.setTranslucent(
                     (
-                        dateFilter.isNotEmpty() ||
-                            orgUnitFilter.isNotEmpty() ||
-                            statesFilter.isNotEmpty() ||
-                            assignedToUser == true
-                        ) &&
-                        program.count() == 0
+                            dateFilter.isNotEmpty() ||
+                                    orgUnitFilter.isNotEmpty() ||
+                                    statesFilter.isNotEmpty() ||
+                                    assignedToUser == true
+                            ) &&
+                            program.count() == 0
                 )
             }
             .toList().toFlowable()
@@ -123,11 +119,13 @@ internal class HomeRepositoryImpl(
         return getCaptureOrgUnits()
             .map { captureOrgUnits ->
                 this.captureOrgUnits = captureOrgUnits
-                programRepository.byOrganisationUnitList(captureOrgUnits)
+                d2.programModule().programs()
+                    .withTrackedEntityType()
+                    .byOrganisationUnitList(captureOrgUnits)
             }
             .flatMap { programRepo ->
                 ParallelFlowable.from(Flowable.fromIterable(programRepo.blockingGet()))
-                    .runOn(Schedulers.io())
+                    .runOn(schedulerProvider.io())
                     .sequential()
             }
             .map { program ->
@@ -183,12 +181,12 @@ internal class HomeRepositoryImpl(
             }.map { program ->
                 program.setTranslucent(
                     (
-                        dateFilter.isNotEmpty() ||
-                            orgUnitFilter.isNotEmpty() ||
-                            statesFilter.isNotEmpty() ||
-                            assignedToUser == true
-                        ) &&
-                        program.count() == 0
+                            dateFilter.isNotEmpty() ||
+                                    orgUnitFilter.isNotEmpty() ||
+                                    statesFilter.isNotEmpty() ||
+                                    assignedToUser == true
+                            ) &&
+                            program.count() == 0
                 )
             }
             .toList().toFlowable()
@@ -196,27 +194,27 @@ internal class HomeRepositoryImpl(
 
     private fun getStateForProgramWithRegistration(program: Program): State {
         return if (d2.trackedEntityModule().trackedEntityInstances()
-            .byProgramUids(arrayListOf(program.uid())).byState().`in`(
-                State.ERROR,
-                State.WARNING
-            )
-            .blockingGet().isNotEmpty()
+                .byProgramUids(arrayListOf(program.uid())).byState().`in`(
+                    State.ERROR,
+                    State.WARNING
+                )
+                .blockingGet().isNotEmpty()
         ) {
             State.WARNING
         } else if (d2.trackedEntityModule().trackedEntityInstances()
-            .byProgramUids(arrayListOf(program.uid()))
-            .byState().`in`(
-                State.SENT_VIA_SMS,
-                State.SYNCED_VIA_SMS
-            ).blockingGet().isNotEmpty()
+                .byProgramUids(arrayListOf(program.uid()))
+                .byState().`in`(
+                    State.SENT_VIA_SMS,
+                    State.SYNCED_VIA_SMS
+                ).blockingGet().isNotEmpty()
         ) {
             State.SENT_VIA_SMS
         } else if (d2.trackedEntityModule().trackedEntityInstances()
-            .byProgramUids(arrayListOf(program.uid()))
-            .byState().`in`(
-                State.TO_UPDATE,
-                State.TO_POST
-            ).blockingGet().isNotEmpty() ||
+                .byProgramUids(arrayListOf(program.uid()))
+                .byState().`in`(
+                    State.TO_UPDATE,
+                    State.TO_POST
+                ).blockingGet().isNotEmpty() ||
             d2.trackedEntityModule().trackedEntityInstances()
                 .byProgramUids(arrayListOf(program.uid()))
                 .byDeleted().isTrue.blockingGet().isNotEmpty()
@@ -236,7 +234,6 @@ internal class HomeRepositoryImpl(
     ): Pair<Int, Boolean> {
         var enrollmentRepository = d2.enrollmentModule().enrollments()
             .byProgram().`in`(arrayListOf(program.uid()))
-            .byStatus().eq(EnrollmentStatus.ACTIVE)
         if (dateFilter.isNotEmpty()) {
             enrollmentRepository = enrollmentRepository
                 .byEnrollmentDate().inDatePeriods(dateFilter)
@@ -394,10 +391,10 @@ internal class HomeRepositoryImpl(
                 hasOverdue = !d2.eventModule().events()
                     .byEnrollmentUid().eq(enrollment.uid())
                     .byStatus().eq(EventStatus.OVERDUE).blockingIsEmpty() ||
-                    !d2.eventModule().events()
-                        .byEnrollmentUid().eq(enrollment.uid())
-                        .byStatus().eq(EventStatus.SCHEDULE)
-                        .byDueDate().before(Date()).blockingIsEmpty()
+                        !d2.eventModule().events()
+                            .byEnrollmentUid().eq(enrollment.uid())
+                            .byStatus().eq(EventStatus.SCHEDULE)
+                            .byDueDate().before(Date()).blockingIsEmpty()
             }
         }
         return Pair(teiUids.size, hasOverdue)

@@ -186,7 +186,13 @@ public class FormAdapter extends RecyclerView.Adapter {
     @Override
     public int getItemViewType(int position) {
         if (attributeList.get(position).optionSet() != null)
-            return SPINNER;
+            if (renderingTypes != null && renderingTypes.get(position) != null &&
+                    (renderingTypes.get(position).type() == ValueTypeRenderingType.BAR_CODE ||
+                            (renderingTypes.get(position).type() == ValueTypeRenderingType.QR_CODE))) {
+                return SCAN_CODE;
+            } else {
+                return SPINNER;
+            }
         else {
             switch (attributeList.get(position).valueType()) {
                 case AGE:

@@ -35,7 +35,8 @@ class ProgramPresenter internal constructor(
                             homeRepository.aggregatesModels(
                                 filterManager.periodFilters,
                                 filterManager.orgUnitUidsFilters,
-                                filterManager.stateFilters
+                                filterManager.stateFilters,
+                                filterManager.assignedFilter
                             )
                         )
                         .doOnNext { Timber.tag("INIT DATA").d("LIST READY TO BE SORTED SORTED") }
