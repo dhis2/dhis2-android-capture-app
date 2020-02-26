@@ -6,7 +6,6 @@ import org.dhis2.utils.AuthorityException;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.analytics.AnalyticsHelper;
 import org.hisp.dhis.android.core.common.Unit;
-import org.hisp.dhis.android.core.constant.Constant;
 import org.hisp.dhis.android.core.program.Program;
 
 import io.reactivex.Observable;
@@ -212,11 +211,20 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
 
     @Override
     public void saveProgramTheme(int programTheme) {
-        preferenceProvider.setValue(Constants.PROGRAM_THEME,programTheme);
+        preferenceProvider.setValue(Constants.PROGRAM_THEME, programTheme);
     }
 
     @Override
     public void removeProgramTheme() {
         preferenceProvider.removeValue(Constants.PROGRAM_THEME);
+    }
+
+    @Override
+    public Boolean getProgramGrouping() {
+        if (programUid != null) {
+            return preferenceProvider.programHasGrouping(programUid);
+        }else{
+            return false;
+        }
     }
 }

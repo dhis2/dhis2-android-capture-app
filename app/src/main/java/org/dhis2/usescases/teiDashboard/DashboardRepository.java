@@ -6,7 +6,7 @@ import androidx.annotation.Nullable;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.relationships.RelationshipViewModel;
-import org.dhis2.usescases.teiDashboard.dashboardfragments.tei_data.EventViewModel;
+import org.dhis2.usescases.teiDashboard.dashboardfragments.tei_data.tei_events.EventViewModel;
 import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryOptionCombo;
 import org.hisp.dhis.android.core.enrollment.Enrollment;

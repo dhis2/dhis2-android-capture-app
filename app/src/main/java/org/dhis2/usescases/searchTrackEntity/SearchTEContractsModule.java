@@ -18,7 +18,6 @@ import org.dhis2.utils.filters.FilterManager;
 import org.hisp.dhis.android.core.arch.call.D2Progress;
 import org.hisp.dhis.android.core.common.FeatureType;
 import org.hisp.dhis.android.core.common.ValueTypeDeviceRendering;
-import org.hisp.dhis.android.core.common.ValueTypeRenderingType;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute;
@@ -85,6 +84,8 @@ public class SearchTEContractsModule {
         Consumer<D2Progress> downloadProgress();
 
         boolean isMapVisible();
+
+        void openDashboard(String teiUid, String programUid, String enrollmentUid);
     }
 
     public interface Presenter {
@@ -103,7 +104,7 @@ public class SearchTEContractsModule {
 
         void onEnrollClick(android.view.View view);
 
-        void onTEIClick(String TEIuid, boolean isOnline);
+        void onTEIClick(String teiUid, String enrollmentUid, boolean isOnline);
 
         TrackedEntityType getTrackedEntityName();
 
@@ -111,7 +112,7 @@ public class SearchTEContractsModule {
 
         void addRelationship(@NonNull String teiUid, @Nullable String relationshipTypeUid, boolean online);
 
-        void downloadTei(String teiUid);
+        void downloadTei(String teiUid,String enrollmentUid);
 
         void downloadTeiForRelationship(String TEIuid, String relationshipTypeUid);
 

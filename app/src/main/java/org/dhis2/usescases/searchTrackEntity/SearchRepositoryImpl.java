@@ -652,7 +652,7 @@ public class SearchRepositoryImpl implements SearchRepository {
             TrackedEntityInstance localTei = d2.trackedEntityModule().trackedEntityInstances().byUid().eq(tei.uid()).one().blockingGet();
             searchTei.setTei(localTei);
             if (selectedProgram != null && d2.enrollmentModule().enrollments().byTrackedEntityInstance().eq(localTei.uid()).byProgram().eq(selectedProgram.uid()).one().blockingExists()) {
-                searchTei.setCurrentEnrollment(d2.enrollmentModule().enrollments().byTrackedEntityInstance().eq(localTei.uid()).byProgram().eq(selectedProgram.uid()).one().blockingGet());
+                searchTei.setCurrentEnrollment(d2.enrollmentModule().enrollments().byTrackedEntityInstance().eq(localTei.uid()).byProgram().eq(selectedProgram.uid()).one().blockingGet()); //TODO: THIS MAY BE WRONG
                 searchTei.setOnline(false);
             } else if (d2.enrollmentModule().enrollments().byTrackedEntityInstance().eq(localTei.uid()).one().blockingExists())
                 searchTei.setOnline(false);

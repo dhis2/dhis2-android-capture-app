@@ -71,7 +71,10 @@ public class SearchTEViewHolder extends RecyclerView.ViewHolder {
 
         binding.executePendingBindings();
 
-        itemView.setOnClickListener(view -> presenter.onTEIClick(searchTeiModel.getTei().uid(), searchTeiModel.isOnline()));
+        itemView.setOnClickListener(view -> presenter.onTEIClick(
+                searchTeiModel.getTei().uid(),
+                searchTeiModel.getSelectedEnrollment() != null ? searchTeiModel.getSelectedEnrollment().uid() : null,
+                searchTeiModel.isOnline()));
 
         File file = new File(searchTeiModel.getProfilePicturePath());
         Drawable placeHolderId = ObjectStyleUtils.getIconResource(itemView.getContext(), searchTeiModel.getDefaultTypeIcon(), R.drawable.photo_temp_gray);

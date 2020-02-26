@@ -71,6 +71,7 @@ import org.dhis2.usescases.searchTrackEntity.adapters.FormAdapter;
 import org.dhis2.usescases.searchTrackEntity.adapters.RelationshipLiveAdapter;
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiLiveAdapter;
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel;
+import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity;
 import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.DateUtils;
@@ -84,7 +85,6 @@ import org.dhis2.utils.maps.MarkerUtils;
 import org.hisp.dhis.android.core.arch.call.D2Progress;
 import org.hisp.dhis.android.core.common.FeatureType;
 import org.hisp.dhis.android.core.common.ValueTypeDeviceRendering;
-import org.hisp.dhis.android.core.common.ValueTypeRenderingType;
 import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute;
 
@@ -679,6 +679,11 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         }
     }
 
+    @Override
+    public void openDashboard(String teiUid, String programUid, String enrollmentUid) {
+        startActivity(TeiDashboardMobileActivity.intent(this, teiUid, programUid, enrollmentUid));
+    }
+
     /*region MAP*/
     @Override
     public Consumer<Pair<HashMap<String, FeatureCollection>, BoundingBox>> setMap() {
@@ -824,7 +829,9 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         RectF rectF = new RectF(pointf.x - 10, pointf.y - 10, pointf.x + 10, pointf.y + 10);
         List<Feature> features = map.queryRenderedFeatures(rectF, featureType == FeatureType.POINT ? "POINT_LAYER" : "POLYGON_LAYER");
         if (!features.isEmpty()) {
-            presenter.onTEIClick(features.get(0).getStringProperty("teiUid"), false);
+            presenter.onTEIClick(features.get(0).getStringProperty("teiUid"),
+                    features.get(0).getStringProperty("enrollmentUid"),
+                    false);
             return true;
         }
 

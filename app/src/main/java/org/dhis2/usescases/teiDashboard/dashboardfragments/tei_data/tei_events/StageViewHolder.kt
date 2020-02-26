@@ -1,4 +1,4 @@
-package org.dhis2.usescases.teiDashboard.dashboardfragments.tei_data
+package org.dhis2.usescases.teiDashboard.dashboardfragments.tei_data.tei_events
 
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
@@ -6,6 +6,7 @@ import io.reactivex.processors.FlowableProcessor
 import org.dhis2.Bindings.toDateSpan
 import org.dhis2.R
 import org.dhis2.databinding.ItemStageSectionBinding
+import org.dhis2.usescases.teiDashboard.dashboardfragments.tei_data.TEIDataContracts
 import org.dhis2.utils.ColorUtils
 import org.dhis2.utils.resources.ResourceManager
 

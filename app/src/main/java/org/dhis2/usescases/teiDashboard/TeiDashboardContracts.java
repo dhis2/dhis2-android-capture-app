@@ -61,5 +61,7 @@ public class TeiDashboardContracts {
         void saveProgramTheme(int programTheme);
 
         void removeProgramTheme();
+
+        Boolean getProgramGrouping();
     }
 }

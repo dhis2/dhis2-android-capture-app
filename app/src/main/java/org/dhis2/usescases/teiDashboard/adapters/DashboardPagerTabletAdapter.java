@@ -22,15 +22,17 @@ public class DashboardPagerTabletAdapter extends FragmentStatePagerAdapter {
     private static final int MOBILE_DASHBOARD_SIZE = 3;
     private final Context context;
     private final String teiUid;
+    private final String enrollmentUid;
     private String currentProgram;
     private final int NO_FRAGMENT_DUE_TO_NO_PROGRAM_SELECTED = 0;
 
 
-    public DashboardPagerTabletAdapter(Context context, FragmentManager fm, String program, String teiUid) {
+    public DashboardPagerTabletAdapter(Context context, FragmentManager fm, String program, String teiUid, String enrollmentUid) {
         super(fm, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
         this.currentProgram = program;
         this.context = context;
         this.teiUid = teiUid;
+        this.enrollmentUid = enrollmentUid;
     }
 
     @Override

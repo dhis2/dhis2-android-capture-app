@@ -2,19 +2,22 @@ package org.dhis2.usescases.teiDashboard.dashboardfragments.tei_data;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
 
 import androidx.annotation.NonNull;
 
 import org.dhis2.usescases.general.AbstractActivityContracts;
 import org.dhis2.usescases.teiDashboard.DashboardProgramModel;
+import org.dhis2.usescases.teiDashboard.dashboardfragments.tei_data.tei_events.EventViewModel;
 import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryOptionCombo;
+import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.event.EventStatus;
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.program.ProgramStage;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance;
 
 import java.util.List;
 
@@ -43,7 +46,7 @@ public class TEIDataContracts {
 
         void displayGenerateEvent(String eventUid);
 
-        void restoreAdapter(String programUid);
+        void restoreAdapter(String programUid, String teiUid, String enrollmentUid);
 
         void seeDetails(Intent intent, Bundle bundle);
 
@@ -57,16 +60,18 @@ public class TEIDataContracts {
 
         void showTeiImage(String fileName, String defaultIcon);
 
-        Flowable<String> observeStageSelection();
+        Flowable<String> observeStageSelection(Program currentProgram, Enrollment currentEnrollment);
 
         void showNewEventOptions(android.view.View view, ProgramStage stageUid);
+
+        void setEnrollmentData(Program program, Enrollment enrollment);
+
+        void setTrackedEntityInstance(TrackedEntityInstance trackedEntityInstance, OrganisationUnit organisationUnit);
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter {
 
         void init();
-
-        void getTEIEvents();
 
         void getCatComboOptions(Event event);
 
@@ -92,7 +97,7 @@ public class TEIDataContracts {
 
         void setDashboardProgram(DashboardProgramModel dashboardModel);
 
-        void setProgram(Program program);
+        void setProgram(Program program, String enrollmentUid);
 
         void showDescription(String description);
 

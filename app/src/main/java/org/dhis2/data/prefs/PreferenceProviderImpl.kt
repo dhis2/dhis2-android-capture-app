@@ -2,6 +2,8 @@ package org.dhis2.data.prefs
 
 import android.content.Context
 import android.content.SharedPreferences
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import de.adorsys.android.securestoragelibrary.SecurePreferences
 import org.dhis2.utils.Constants
 import org.dhis2.utils.Constants.SECURE_CREDENTIALS
@@ -123,8 +125,8 @@ class PreferenceProviderImpl(val context: Context) : PreferenceProvider {
 
     override fun areSameCredentials(serverUrl: String, userName: String, pass: String): Boolean {
         return SecurePreferences.getStringValue(context, SECURE_SERVER_URL, "") == serverUrl &&
-            SecurePreferences.getStringValue(context, SECURE_USER_NAME, "") == userName &&
-            SecurePreferences.getStringValue(context, SECURE_PASS, "") == pass
+                SecurePreferences.getStringValue(context, SECURE_USER_NAME, "") == userName &&
+                SecurePreferences.getStringValue(context, SECURE_PASS, "") == pass
     }
 
     override fun saveJiraCredentials(jiraAuth: String): String {
@@ -144,4 +146,29 @@ class PreferenceProviderImpl(val context: Context) : PreferenceProvider {
         SecurePreferences.clearAllValues(context)
         sharedPreferences.edit().clear().apply()
     }
+
+    override fun saveGroupingForProgram(programUid: String, shouldGroup: Boolean) {
+        val mapTypeToken = object : TypeToken<MutableMap<String, Boolean>>() {}.type
+        val groupingPrograms =
+            Gson().fromJson<MutableMap<String, Boolean>>(getString("GROUPING", "{}"), mapTypeToken)
+        if(shouldGroup) {
+            groupingPrograms[programUid] = shouldGroup
+        }else{
+            groupingPrograms.remove(programUid)
+        }
+        val updatedGroupingProgramsJson = Gson().toJson(groupingPrograms)
+        setValue("GROUPING", updatedGroupingProgramsJson)
+    }
+
+    override fun programHasGrouping(programUid: String): Boolean {
+        val mapTypeToken = object : TypeToken<MutableMap<String, Boolean>>() {}.type
+        val groupingPrograms =
+            Gson().fromJson<MutableMap<String, Boolean>>(getString("GROUPING", "{}"), mapTypeToken)
+        return if (groupingPrograms.containsKey(programUid)) {
+            groupingPrograms[programUid]!!
+        } else {
+            false
+        }
+    }
+    /*endregion*/
 }

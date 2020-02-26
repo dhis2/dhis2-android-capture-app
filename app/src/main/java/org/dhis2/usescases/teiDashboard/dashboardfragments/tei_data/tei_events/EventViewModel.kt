@@ -1,4 +1,4 @@
-package org.dhis2.usescases.teiDashboard.dashboardfragments.tei_data
+package org.dhis2.usescases.teiDashboard.dashboardfragments.tei_data.tei_events
 
 import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.program.ProgramStage

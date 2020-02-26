@@ -1,4 +1,4 @@
-package org.dhis2.usescases.teiDashboard.dashboardfragments.tei_data
+package org.dhis2.usescases.teiDashboard.dashboardfragments.tei_data.tei_events
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -12,9 +12,10 @@ import io.reactivex.processors.PublishProcessor
 import org.dhis2.R
 import org.dhis2.databinding.ItemEventBinding
 import org.dhis2.databinding.ItemStageSectionBinding
-import org.dhis2.usescases.teiDashboard.dashboardfragments.tei_data.EventViewModelType.EVENT
-import org.dhis2.usescases.teiDashboard.dashboardfragments.tei_data.EventViewModelType.STAGE
-import org.dhis2.usescases.teiDashboard.dashboardfragments.tei_data.EventViewModelType.values
+import org.dhis2.usescases.teiDashboard.dashboardfragments.tei_data.TEIDataContracts
+import org.dhis2.usescases.teiDashboard.dashboardfragments.tei_data.tei_events.EventViewModelType.EVENT
+import org.dhis2.usescases.teiDashboard.dashboardfragments.tei_data.tei_events.EventViewModelType.STAGE
+import org.dhis2.usescases.teiDashboard.dashboardfragments.tei_data.tei_events.EventViewModelType.values
 import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.program.Program
 
@@ -58,7 +59,11 @@ class EventAdapter(
                     parent,
                     false
                 )
-                StageViewHolder(binding, stageSelector, presenter)
+                StageViewHolder(
+                    binding,
+                    stageSelector,
+                    presenter
+                )
             }
             EVENT -> {
                 val binding = DataBindingUtil.inflate<ItemEventBinding>(
@@ -67,7 +72,12 @@ class EventAdapter(
                     parent,
                     false
                 )
-                EventViewHolder(binding, program, enrollment, presenter)
+                EventViewHolder(
+                    binding,
+                    program,
+                    enrollment,
+                    presenter
+                )
             }
         }
     }
