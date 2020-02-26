@@ -211,12 +211,21 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
 
     @Override
     public void saveProgramTheme(int programTheme) {
-        preferenceProvider.setValue(Constants.PROGRAM_THEME,programTheme);
+        preferenceProvider.setValue(Constants.PROGRAM_THEME, programTheme);
     }
 
     @Override
     public void removeProgramTheme() {
         preferenceProvider.removeValue(Constants.PROGRAM_THEME);
+    }
+
+    @Override
+    public Boolean getProgramGrouping() {
+        if (programUid != null) {
+            return preferenceProvider.programHasGrouping(programUid);
+        }else{
+            return false;
+        }
     }
 
     public void showFilterGeneral() {

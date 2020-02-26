@@ -186,12 +186,7 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
 
     @Override
     public void openDashboardFor(@NotNull String teiUid) {
-        Intent intent = new Intent(getContext(), TeiDashboardMobileActivity.class);
-        Bundle bundle = new Bundle();
-        bundle.putString("TEI_UID", teiUid);
-        bundle.putString("PROGRAM_UID", null);
-        intent.putExtras(bundle);
-        getAbstractActivity().startActivity(intent);
+        getActivity().startActivity(TeiDashboardMobileActivity.intent(getContext(),teiUid,null,null));
     }
 
     @Override

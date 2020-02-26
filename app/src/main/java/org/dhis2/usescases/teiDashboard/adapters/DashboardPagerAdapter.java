@@ -21,16 +21,18 @@ import org.jetbrains.annotations.NotNull;
 public class DashboardPagerAdapter extends FragmentStatePagerAdapter {
 
     private static final int MOBILE_DASHBOARD_SIZE = 4;
+    private final String enrollmentUid;
     private String currentProgram;
     private final String teiUid;
     private Context context;
 
 
-    public DashboardPagerAdapter(Context context, FragmentManager fm, String program, String teiUid) {
+    public DashboardPagerAdapter(Context context, FragmentManager fm, String program, String teiUid, String enrollmentUid) {
         super(fm, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
         this.context = context;
         this.currentProgram = program;
         this.teiUid = teiUid;
+        this.enrollmentUid = enrollmentUid;
     }
 
     @Override
@@ -58,12 +60,9 @@ public class DashboardPagerAdapter extends FragmentStatePagerAdapter {
                 }
                 return relationshipFragment;
             case 3:
-               return NotesFragment.newTrackerInstance(currentProgram, teiUid);
+                return NotesFragment.newTrackerInstance(currentProgram, teiUid);
             default:
-                if (teiDataFragment == null) {
-                    teiDataFragment = new TEIDataFragment();
-                }
-                return teiDataFragment;
+                return TEIDataFragment.newInstance(currentProgram, teiUid, enrollmentUid);
         }
     }
 

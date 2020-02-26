@@ -5,7 +5,6 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
-import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.DatePicker;
@@ -21,7 +20,6 @@ import org.dhis2.data.tuples.Trio;
 import org.dhis2.databinding.WidgetDatepickerBinding;
 import org.dhis2.usescases.enrollment.EnrollmentActivity;
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel;
-import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity;
 import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.DhisTextUtils;
@@ -643,11 +641,11 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     }
 
     @Override
-    public void onTEIClick(String TEIuid, boolean isOnline) {
+    public void onTEIClick(String TEIuid, String enrollmentUid, boolean isOnline) {
         if (!isOnline) {
-            openDashboard(TEIuid);
+            openDashboard(TEIuid, enrollmentUid);
         } else
-            downloadTei(TEIuid);
+            downloadTei(TEIuid, enrollmentUid);
 
     }
 
@@ -670,7 +668,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     }
 
     @Override
-    public void downloadTei(String teiUid) {
+    public void downloadTei(String teiUid, String enrollmentUid) {
         compositeDisposable.add(
                 d2.trackedEntityModule().trackedEntityInstanceDownloader().byUid().in(Collections.singletonList(teiUid)).download()
                         .subscribeOn(schedulerProvider.io())
@@ -678,7 +676,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                         .subscribe(
                                 view.downloadProgress(),
                                 Timber::d,
-                                () -> openDashboard(teiUid))
+                                () -> openDashboard(teiUid, enrollmentUid))
         );
     }
 
@@ -708,11 +706,8 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         return searchRepository.getOrgUnits(selectedProgram != null ? selectedProgram.uid() : null);
     }
 
-    private void openDashboard(String TEIuid) {
-        Bundle bundle = new Bundle();
-        bundle.putString("TEI_UID", TEIuid);
-        bundle.putString("PROGRAM_UID", selectedProgram != null ? selectedProgram.uid() : null);
-        view.startActivity(TeiDashboardMobileActivity.class, bundle, false, false, null);
+    private void openDashboard(String teiUid, String enrollmentUid) {
+        view.openDashboard(teiUid, selectedProgram != null ? selectedProgram.uid() : null, enrollmentUid);
     }
 
     @Override

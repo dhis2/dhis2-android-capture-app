@@ -12,11 +12,7 @@
         android:id="@+id/deleteEnrollment"
         android:icon="@drawable/ic_delete"
         android:title="@string/dashboard_menu_delete_enrollment" />
-    <item
-        android:id="@+id/programSelector"
-        android:icon="@drawable/ic_program_border"
-        android:title="@string/program_selector" />
-    <item android:id="@+id/groupEvents"
-        android:icon="@drawable/ic_group_view"
-        android:title="Group events by stage"/>
+    <item android:id="@+id/showTimeline"
+        android:icon="@drawable/ic_list_view"
+        android:title="Show events timeline"/>
 </menu>

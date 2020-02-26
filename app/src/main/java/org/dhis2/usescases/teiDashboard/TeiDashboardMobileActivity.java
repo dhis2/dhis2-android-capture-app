@@ -1,5 +1,6 @@
 package org.dhis2.usescases.teiDashboard;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.TypedArray;
 import android.graphics.Color;
@@ -19,6 +20,8 @@ import androidx.core.content.ContextCompat;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentStatePagerAdapter;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.viewpager.widget.ViewPager;
 
@@ -52,10 +55,6 @@ import timber.log.Timber;
 import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
 import static org.dhis2.utils.analytics.AnalyticsConstants.SHOW_HELP;
 
-/**
- * QUADRAM. Created by ppajuelo on 29/11/2017.
- */
-
 public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implements TeiDashboardContracts.View {
 
     @Inject
@@ -65,6 +64,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
 
     protected String teiUid;
     protected String programUid;
+    protected String enrollmentUid;
 
     ActivityDashboardMobileBinding binding;
     protected DashboardPagerAdapter adapter;
@@ -73,6 +73,22 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
 
     private DashboardViewModel dashboardViewModel;
     private boolean fromRelationship;
+
+    private MutableLiveData<Boolean> groupByStage;
+
+    public static Intent intent(Context context,
+                                String teiUid,
+                                String programUid,
+                                String enrollmentUid) {
+        Intent intent = new Intent(context, TeiDashboardMobileActivity.class);
+
+        intent.putExtra("TEI_UID", teiUid);
+        intent.putExtra("PROGRAM_UID", programUid);
+        intent.putExtra("ENROLLMENT_UID", enrollmentUid);
+
+        return intent;
+    }
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -83,10 +99,13 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
         } else {
             teiUid = getIntent().getStringExtra("TEI_UID");
             programUid = getIntent().getStringExtra("PROGRAM_UID");
+            enrollmentUid = getIntent().getStringExtra("ENROLLMENT_UID");
         }
+
         ((App) getApplicationContext()).createDashboardComponent(new TeiDashboardModule(this, teiUid, programUid)).inject(this);
         setTheme(presenter.getProgramTheme(R.style.AppTheme));
         super.onCreate(savedInstanceState);
+        groupByStage = new MutableLiveData<>(presenter.getProgramGrouping());
         dashboardViewModel = ViewModelProviders.of(this).get(DashboardViewModel.class);
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_dashboard_mobile);
@@ -176,14 +195,14 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
         binding.teiPager.invalidate();
 
         if (OrientationUtilsKt.isPortrait()) {
-            adapter = new DashboardPagerAdapter(this, getSupportFragmentManager(), programUid, teiUid);
+            adapter = new DashboardPagerAdapter(this, getSupportFragmentManager(), programUid, teiUid, enrollmentUid);
             currentAdapter = adapter;
             binding.teiPager.setAdapter(adapter);
-            binding.tabLayout.setVisibility(View.VISIBLE);
+            binding.tabLayout.setVisibility(programUid != null ? View.VISIBLE : View.GONE);
             if (fromRelationship)
                 binding.teiPager.setCurrentItem(2, false);
         } else {
-            tabletAdapter = new DashboardPagerTabletAdapter(this, getSupportFragmentManager(), programUid, teiUid);
+            tabletAdapter = new DashboardPagerTabletAdapter(this, getSupportFragmentManager(), programUid, teiUid, enrollmentUid);
             currentAdapter = tabletAdapter;
             binding.teiPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
                 @Override
@@ -265,10 +284,8 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
     @Override
     public void handleEnrollmentDeletion(Boolean hasMoreEnrollments) {
         if (hasMoreEnrollments) {
-            Bundle bundle = new Bundle();
-            bundle.putString("TEI_UID", teiUid);
-            bundle.putString("PROGRAM_UID", null);
-            startActivity(TeiDashboardMobileActivity.class, bundle, true, false, null);
+            startActivity(intent(this, teiUid, null, null));
+            finish();
         } else
             finish();
     }
@@ -282,7 +299,6 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
     public void setDataWithOutProgram(DashboardProgramModel program) {
         dashboardViewModel.updateDashboard(program);
         setProgramColor("");
-
         binding.setDashboardModel(program);
         binding.setTrackEntity(program.getTei());
         String title = String.format("%s %s - %s",
@@ -326,10 +342,8 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
             }
 
             if (data.hasExtra("CHANGE_PROGRAM")) {
-                Bundle bundle = new Bundle();
-                bundle.putString("TEI_UID", teiUid);
-                bundle.putString("PROGRAM_UID", data.getStringExtra("CHANGE_PROGRAM"));
-                startActivity(TeiDashboardMobileActivity.class, bundle, true, false, null);
+                startActivity(intent(this, teiUid, data.getStringExtra("CHANGE_PROGRAM"), null));
+                finish();
             }
 
         }
@@ -436,7 +450,10 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
         } catch (Exception e) {
             Timber.e(e);
         }
-        popupMenu.getMenuInflater().inflate(R.menu.dashboard_menu, popupMenu.getMenu());
+
+        popupMenu.getMenuInflater().inflate(
+                groupByStage.getValue() ? R.menu.dashboard_menu_group : R.menu.dashboard_menu,
+                popupMenu.getMenu());
         popupMenu.setOnMenuItemClickListener(item -> {
             switch (item.getItemId()) {
                 case R.id.showHelp:
@@ -453,6 +470,12 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
                     presenter.onEnrollmentSelectorClick();
                     break;
 
+                case R.id.groupEvents:
+                    groupByStage.setValue(true);
+                    break;
+                case R.id.showTimeline:
+                    groupByStage.setValue(false);
+                    break;
             }
             return true;
 
@@ -474,5 +497,9 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
 
     private int getLastTabPosition() {
         return binding.tabLayout.getTabCount() - 1;
+    }
+
+    public LiveData<Boolean> observeGrouping() {
+        return groupByStage;
     }
 }
