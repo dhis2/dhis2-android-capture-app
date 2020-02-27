@@ -227,4 +227,9 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
             return false;
         }
     }
+
+    @Override
+    public void showHideFilters() {
+        view.setFiltersLayoutState();
+    }
 }

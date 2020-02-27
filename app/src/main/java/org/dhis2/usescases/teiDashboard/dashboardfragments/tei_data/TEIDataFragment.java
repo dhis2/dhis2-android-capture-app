@@ -130,6 +130,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
         activity.observeGrouping().observe(this, group -> {
             presenter.onGroupingChanged(group);
         });
+        activity.observeFilters().observe(this, showFilters -> showHideFilters(showFilters));
         ((App) context.getApplicationContext())
                 .dashboardComponent()
                 .plus(new TEIDataModule(this,
@@ -138,7 +139,6 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
                         getArguments().getString("ENROLLMENT_UID")
                 ))
                 .inject(this);
-        activity.getView().setOnClickListener( v -> showHideFilters() );
     }
 
     @Override
@@ -527,13 +527,13 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
         activity.startActivity(intent);
     }
 
-    private void showHideFilters() {
-        if(binding.filterLayout.getVisibility() == View.VISIBLE) {
-            binding.teiData.setVisibility(View.VISIBLE);
-            binding.filterLayout.setVisibility(View.GONE);
-        } else {
+    private void showHideFilters(boolean showFilters) {
+        if(showFilters) {
             binding.teiData.setVisibility(View.GONE);
             binding.filterLayout.setVisibility(View.VISIBLE);
+        } else {
+            binding.teiData.setVisibility(View.VISIBLE);
+            binding.filterLayout.setVisibility(View.GONE);
         }
     }
 }

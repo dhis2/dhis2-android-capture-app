@@ -75,6 +75,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
     private boolean fromRelationship;
 
     private MutableLiveData<Boolean> groupByStage;
+    private MutableLiveData<Boolean> filtersShowing;
 
     public static Intent intent(Context context,
                                 String teiUid,
@@ -106,6 +107,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
         setTheme(presenter.getProgramTheme(R.style.AppTheme));
         super.onCreate(savedInstanceState);
         groupByStage = new MutableLiveData<>(presenter.getProgramGrouping());
+        filtersShowing = new MutableLiveData<>(false);
         dashboardViewModel = ViewModelProviders.of(this).get(DashboardViewModel.class);
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_dashboard_mobile);
@@ -143,8 +145,9 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
         binding.toolbarTitle.setEllipsize(TextUtils.TruncateAt.END);
 
         presenter.prefSaveCurrentProgram(programUid);
-    }
 
+        filtersShowing.observe(this, showFilter -> showHideFilters(showFilter) );
+    }
 
     @Override
     protected void onResume() {
@@ -505,4 +508,20 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
     public View getView(){
         return binding.searchFilterGeneral;
     }
+
+    @Override
+    public void setFiltersLayoutState() {
+        filtersShowing.setValue(!filtersShowing.getValue());
+    }
+
+    private void showHideFilters(boolean showFilter) {
+        if(showFilter){
+            binding.tabLayout.setVisibility(View.GONE);
+        } else {
+            binding.tabLayout.setVisibility(View.VISIBLE);
+        }
+    }
+
+    public LiveData<Boolean> observeFilters() { return filtersShowing; }
+
 }

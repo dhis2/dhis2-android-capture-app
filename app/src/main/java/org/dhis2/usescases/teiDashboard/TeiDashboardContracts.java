@@ -26,6 +26,8 @@ public class TeiDashboardContracts {
         void authorityErrorMessage();
 
         void updateNoteBadge(int numberOfNotes);
+
+        void setFiltersLayoutState();
     }
 
     public interface Presenter {
@@ -63,5 +65,7 @@ public class TeiDashboardContracts {
         void removeProgramTheme();
 
         Boolean getProgramGrouping();
+
+        void showHideFilters();
     }
 }
