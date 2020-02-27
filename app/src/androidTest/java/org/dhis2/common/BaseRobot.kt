@@ -14,6 +14,7 @@ import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
 import androidx.test.uiautomator.UiDevice
+import org.dhis2.R
 import org.hamcrest.CoreMatchers.allOf
 
 open class BaseRobot {
@@ -21,6 +22,10 @@ open class BaseRobot {
     fun pressBack(): BaseRobot {
         UiDevice.getInstance(getInstrumentation()).pressBack()
         return this
+    }
+
+    fun acceptGenericDialog(){
+        onView(withId(R.id.dialogAccept)).perform(ViewActions.click())
     }
 
     fun closeKeyboard() {
