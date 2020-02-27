@@ -18,6 +18,13 @@ class StickyHeaderItemDecoration(
     private var currentHeader: Pair<Int, RecyclerView.ViewHolder>? = null
     private var startY: Float = -1f
 
+    private val mDetector: GestureDetectorCompat =
+        GestureDetectorCompat(parent.context, object : GestureDetector.SimpleOnGestureListener() {
+            override fun onSingleTapConfirmed(e: MotionEvent?): Boolean {
+                return false
+            }
+        })
+
     init {
         parent.adapter?.registerAdapterDataObserver(object : RecyclerView.AdapterDataObserver() {
             override fun onChanged() {
