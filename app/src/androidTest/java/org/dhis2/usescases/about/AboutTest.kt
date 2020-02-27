@@ -25,7 +25,7 @@ class AboutTest : BaseTest() {
     }
 
     @Test
-    fun checkVersionNames() {
+    fun shouldCheckVersionsWhenOpenAboutScreen() {
         startActivity()
 
         val appVersion = getAppVersionName()

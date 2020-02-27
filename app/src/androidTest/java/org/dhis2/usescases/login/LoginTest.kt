@@ -6,7 +6,6 @@ import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.action.ViewActions.clearText
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
-import androidx.test.espresso.intent.rule.IntentsTestRule
 import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
@@ -23,9 +22,6 @@ import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 class LoginTest : BaseTest() {
-
-    /*@get:Rule
-    val intentsTestRule = IntentsTestRule(LoginActivity::class.java)*/
 
     @get:Rule
     val ruleLogin = ActivityTestRule(LoginActivity::class.java, false, false)
@@ -83,7 +79,28 @@ class LoginTest : BaseTest() {
             typeServer(MOCK_SERVER_URL)
             typeUsername(username)
             typePassword(password)
-            cleanPasswordField()
+            clearPasswordField()
+            closeKeyboard()
+            checkPasswordFieldIsClear()
+            checkLoginButtonIsHidden()
+        }
+    }
+
+    @Test
+    fun shouldClearFieldsAndHideLoginButtonWhenClickUsernameAndPasswordXButton() {
+        val username = "android"
+        val password = "Android123"
+        startLoginActivity()
+
+        loginRobot {
+            typeServer(MOCK_SERVER_URL)
+            typeUsername(username)
+            typePassword(password)
+            clearUsernameField()
+            clearPasswordField()
+            closeKeyboard()
+            checkUsernameFieldIsClear()
+            checkPasswordFieldIsClear()
             checkLoginButtonIsHidden()
         }
     }
