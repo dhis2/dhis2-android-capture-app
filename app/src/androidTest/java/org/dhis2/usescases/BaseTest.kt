@@ -33,7 +33,6 @@ open class BaseTest {
     open fun setUp() {
         injectDependencies()
         allowPermissions()
-        forceLogInForUsingDB()
     }
 
     private fun allowPermissions() {
@@ -58,13 +57,6 @@ open class BaseTest {
         mockWebServerRobot.start()
     }
 
-    private fun forceLogInForUsingDB() {
-    /*    keyStoreRobot.apply {
-            setData(USERNAME,"android")
-            setData(PASSWORD,"Android123")
-        } */
-    }
-
     @After
     @Throws(Exception::class)
     open fun teardown() {
@@ -74,6 +66,9 @@ open class BaseTest {
         stopMockServer()
     }
 
+    fun cleanDatabase(){
+        context.deleteDatabase(DHIS_DATABASE)
+    }
 
     fun enableIntents() {
         if (!isIntentsEnable){
@@ -109,5 +104,6 @@ open class BaseTest {
         @JvmField
         val disableAnimationsTestRule = DisableAnimations()
         const val MOCK_SERVER_URL = "http://127.0.0.1:8080"
+        const val DHIS_DATABASE = "dhis.db"
     }
 }
