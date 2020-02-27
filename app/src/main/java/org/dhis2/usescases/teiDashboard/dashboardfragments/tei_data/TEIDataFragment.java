@@ -127,10 +127,6 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
         super.onAttach(context);
         this.context = context;
         activity = (TeiDashboardMobileActivity) context;
-        activity.observeGrouping().observe(this, group -> {
-            presenter.onGroupingChanged(group);
-        });
-        activity.observeFilters().observe(this, showFilters -> showHideFilters(showFilters));
         ((App) context.getApplicationContext())
                 .dashboardComponent()
                 .plus(new TEIDataModule(this,
@@ -153,6 +149,10 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_tei_data, container, false);
         binding.setPresenter(presenter);
+        activity.observeGrouping().observe(this, group -> {
+            presenter.onGroupingChanged(group);
+        });
+        activity.observeFilters().observe(this, showFilters -> showHideFilters(showFilters));
 
         filtersAdapter = new FiltersAdapter(FiltersAdapter.ProgramType.TRACKER);
         filtersAdapter.addEventStatus();
