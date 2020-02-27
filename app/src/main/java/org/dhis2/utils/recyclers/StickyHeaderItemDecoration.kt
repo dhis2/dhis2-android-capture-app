@@ -3,9 +3,11 @@ package org.dhis2.utils.recyclers
 import android.graphics.Canvas
 import android.graphics.Rect
 import android.graphics.RectF
+import android.view.GestureDetector
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.GestureDetectorCompat
 import androidx.recyclerview.widget.RecyclerView
 
 class StickyHeaderItemDecoration(
@@ -16,7 +18,6 @@ class StickyHeaderItemDecoration(
 ) : RecyclerView.ItemDecoration() {
 
     private var currentHeader: Pair<Int, RecyclerView.ViewHolder>? = null
-    private var startY: Float = -1f
 
     private val mDetector: GestureDetectorCompat =
         GestureDetectorCompat(parent.context, object : GestureDetector.SimpleOnGestureListener() {
@@ -43,24 +44,16 @@ class StickyHeaderItemDecoration(
                 recyclerView: RecyclerView,
                 motionEvent: MotionEvent
             ): Boolean {
-
-                return when (motionEvent.action) {
-                    MotionEvent.ACTION_DOWN -> {
-                        startY = motionEvent.y
-                        motionEvent.y <= currentHeader?.second?.itemView?.bottom ?: 0
-                    }
-                    else -> false
-                }
+                return mDetector.onTouchEvent(motionEvent)
             }
         })
     }
 
     override fun onDrawOver(c: Canvas, parent: RecyclerView, state: RecyclerView.State) {
         super.onDrawOver(c, parent, state)
-        //val topChild = parent.getChildAt(0) ?: return
         val topChild = parent.findChildViewUnder(
             parent.paddingLeft.toFloat(),
-            parent.paddingTop.toFloat() /*+ (currentHeader?.second?.itemView?.height ?: 0 )*/
+            parent.paddingTop.toFloat()
         ) ?: return
         val topChildPosition = parent.getChildAdapterPosition(topChild)
         if (topChildPosition == RecyclerView.NO_POSITION) {
