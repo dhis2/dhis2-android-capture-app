@@ -10,6 +10,7 @@ import org.dhis2.R
 import org.dhis2.common.BaseRobot
 import org.hamcrest.CoreMatchers.containsString
 import org.hamcrest.CoreMatchers.not
+import org.hamcrest.Matchers.isEmptyString
 
 fun loginRobot(loginBody: LoginRobot.() -> Unit) {
     LoginRobot().run{
@@ -31,11 +32,15 @@ class LoginRobot : BaseRobot() {
         onView(withId(R.id.user_name_edit)).perform(TypeTextAction(username))
     }
 
+    fun clearUsernameField() {
+        onView(withId(R.id.clearUserNameButton)).perform(click())
+    }
+
     fun typePassword(password: String) {
         onView(withId(R.id.user_pass_edit)).perform(TypeTextAction(password))
     }
 
-    fun cleanPasswordField() {
+    fun clearPasswordField() {
         onView(withId(R.id.clearPassButton)).perform(click())
     }
 
@@ -49,6 +54,14 @@ class LoginRobot : BaseRobot() {
 
     fun checkAuthErrorAlertIsVisible(){
         onView(withId(R.id.dialogTitle)).check(matches(withText(containsString(LOGIN_ERROR_TITLE))))
+    }
+
+    fun checkUsernameFieldIsClear() {
+        onView(withId(R.id.user_name_edit)).check(matches(withText(isEmptyString())))
+    }
+
+    fun checkPasswordFieldIsClear() {
+        onView(withId(R.id.user_pass_edit)).check(matches(withText(isEmptyString())))
     }
 
     fun clickAccountRecovery() {

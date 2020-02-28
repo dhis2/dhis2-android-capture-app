@@ -2,7 +2,6 @@ package org.dhis2.usescases.login
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
-import org.dhis2.R
 import org.dhis2.usescases.BaseTest
 import org.dhis2.usescases.main.MainActivity
 import org.hisp.dhis.android.core.mockwebserver.ResponseController.GET
@@ -70,7 +69,9 @@ class LoginTest : BaseTest() {
             typeServer(MOCK_SERVER_URL)
             typeUsername(USERNAME)
             typePassword(PASSWORD)
-            cleanPasswordField()
+            clearPasswordField()
+            closeKeyboard()
+            checkPasswordFieldIsClear()
             checkLoginButtonIsHidden()
         }
     }
@@ -84,6 +85,29 @@ class LoginTest : BaseTest() {
             clickAccountRecovery()
             //validate using intent if browser is launch
         }
+    }
+
+    @Test
+    fun shouldClearFieldsAndHideLoginButtonWhenClickCredentialXButton() {
+        startLoginActivity()
+
+        loginRobot {
+            typeServer(MOCK_SERVER_URL)
+            typeUsername(USERNAME)
+            typePassword(PASSWORD)
+            clearUsernameField()
+            clearPasswordField()
+            closeKeyboard()
+            checkUsernameFieldIsClear()
+            checkPasswordFieldIsClear()
+            checkLoginButtonIsHidden()
+        }
+    }
+
+    @Test
+    fun shouldRedirectToHomeIfLoginOffline() {
+        //open
+        //redirect
     }
 
     fun startMainActivity(){
