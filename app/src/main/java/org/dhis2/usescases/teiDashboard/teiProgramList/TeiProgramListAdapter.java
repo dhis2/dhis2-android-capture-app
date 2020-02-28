@@ -135,6 +135,7 @@ public class TeiProgramListAdapter extends RecyclerView.Adapter<TeiProgramListEn
     }
 
     private void orderList() {
+        possibleEnrollmentPrograms.clear();
         listItems.clear();
 
         TeiProgramListItem allProgramsDashBoardItem = new TeiProgramListItem(null, null, TeiProgramListItem.TeiProgramListItemViewType.ALL_PROGRAMS_DASHBOARD);
