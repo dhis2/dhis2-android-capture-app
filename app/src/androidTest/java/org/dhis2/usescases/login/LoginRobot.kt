@@ -13,8 +13,8 @@ import org.hamcrest.CoreMatchers.not
 import org.hamcrest.Matchers.isEmptyString
 
 fun loginRobot(loginBody: LoginRobot.() -> Unit) {
-    LoginRobot().run{
-        loginBody
+    LoginRobot().apply{
+        loginBody()
     }
 }
 
@@ -54,6 +54,10 @@ class LoginRobot : BaseRobot() {
 
     fun checkAuthErrorAlertIsVisible(){
         onView(withId(R.id.dialogTitle)).check(matches(withText(containsString(LOGIN_ERROR_TITLE))))
+    }
+
+    fun checkUnblockSessionViewIsVisible(){
+        onView(withId(R.id.pin_layout)).check(matches(isDisplayed()))
     }
 
     fun checkUsernameFieldIsClear() {

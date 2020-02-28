@@ -11,8 +11,8 @@ import org.dhis2.common.matchers.RecyclerviewMatchers.Companion.isNotEmpty
 import org.hamcrest.CoreMatchers.allOf
 
 fun homeRobot(robotBody: MainRobot.() -> Unit){
-    MainRobot().run {
-        robotBody
+    MainRobot().apply {
+        robotBody()
     }
 }
 
