@@ -11,12 +11,13 @@ import androidx.appcompat.app.AlertDialog;
 import org.dhis2.R;
 import org.dhis2.databinding.WidgetDatepickerBinding;
 import org.dhis2.usescases.main.program.ProgramViewModel;
-import org.dhis2.utils.custom_views.OrgUnitDialog_2;
+import org.dhis2.utils.customviews.OrgUnitDialog;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.Program;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -53,7 +54,7 @@ public class TeiProgramListInteractor implements TeiProgramListContract.Interact
         getPrograms();
     }
 
-    private void showNativeCalendar(String programUid, String uid, OrgUnitDialog_2 orgUnitDialog) {
+    private void showNativeCalendar(String programUid, String uid, OrgUnitDialog orgUnitDialog) {
 
         Calendar c = Calendar.getInstance();
         int year = c.get(Calendar.YEAR);
@@ -125,7 +126,7 @@ public class TeiProgramListInteractor implements TeiProgramListContract.Interact
         dateDialog.show();
     }
 
-    private void showCustomCalendar(String programUid, String uid, OrgUnitDialog_2 orgUnitDialog) {
+    private void showCustomCalendar(String programUid, String uid, OrgUnitDialog orgUnitDialog) {
         LayoutInflater layoutInflater = LayoutInflater.from(view.getContext());
 //        View datePickerView = layoutInflater.inflate(R.layout.widget_datepicker, null);
         WidgetDatepickerBinding binding = WidgetDatepickerBinding.inflate(layoutInflater);
@@ -204,7 +205,7 @@ public class TeiProgramListInteractor implements TeiProgramListContract.Interact
     public void enroll(String programUid, String uid) {
         selectedEnrollmentDate = Calendar.getInstance().getTime();
 
-        OrgUnitDialog_2 orgUnitDialog = OrgUnitDialog_2.getInstace().setMultiSelection(false);
+        OrgUnitDialog orgUnitDialog = OrgUnitDialog.getInstace().setMultiSelection(false);
         orgUnitDialog.setProgram(programUid);
         orgUnitDialog.setTitle("Enrollment Org Unit")
                 .setPossitiveListener(v -> {
@@ -241,8 +242,10 @@ public class TeiProgramListInteractor implements TeiProgramListContract.Interact
         compositeDisposable.add(teiProgramListRepository.activeEnrollments(trackedEntityId)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        view::setActiveEnrollments,
+                .subscribe(enrollments -> {
+                            Collections.sort(enrollments, (enrollment1, enrollment2) -> enrollment1.programName().compareToIgnoreCase(enrollment2.programName()));
+                            view.setActiveEnrollments(enrollments);
+                        },
                         Timber::d)
         );
     }
@@ -251,8 +254,10 @@ public class TeiProgramListInteractor implements TeiProgramListContract.Interact
         compositeDisposable.add(teiProgramListRepository.otherEnrollments(trackedEntityId)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        view::setOtherEnrollments,
+                .subscribe(enrollments -> {
+                            Collections.sort(enrollments, (enrollment1, enrollment2) -> enrollment1.programName().compareToIgnoreCase(enrollment2.programName()));
+                            view.setOtherEnrollments(enrollments);
+                        },
                         Timber::d)
         );
     }
@@ -292,6 +297,7 @@ public class TeiProgramListInteractor implements TeiProgramListContract.Interact
                 programListToPrint.add(programViewModel);
             }
         }
+        Collections.sort(programListToPrint, (program1, program2) -> program1.title().compareToIgnoreCase(program2.title()));
         view.setPrograms(programListToPrint);
     }
 

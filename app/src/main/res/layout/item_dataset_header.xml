@@ -1,19 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="tableScale"
+            type="androidx.databinding.ObservableField&lt;org.dhis2.usescases.datasets.dataSetTable.dataSetSection.DataSetTableAdapter.TableScale&gt;" />
+    </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/container"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:background="?colorPrimaryLight">
+        android:minHeight="@dimen/default_cell_height">
 
         <TextView
             android:id="@+id/title"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:gravity="start|center"
-            android:padding="10dp"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textColor="@color/table_view_default_text_color"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            android:gravity="center"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            tools:textColor="@color/red_060"
+            app:tableScaleTextSize="@{tableScale}"
             tools:text="DATA ELEMENT TEXT" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

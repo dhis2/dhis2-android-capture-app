@@ -1,10 +1,12 @@
 package org.dhis2.usescases.settings;
 
 
+import android.Manifest;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -14,6 +16,10 @@ import android.text.style.ImageSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CompoundButton;
+import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
@@ -25,6 +31,7 @@ import androidx.work.WorkInfo;
 import androidx.work.WorkManager;
 
 import com.google.android.material.snackbar.Snackbar;
+import com.jakewharton.rxbinding2.widget.RxCompoundButton;
 import com.jakewharton.rxbinding2.widget.RxTextView;
 
 import org.dhis2.Components;
@@ -34,7 +41,7 @@ import org.dhis2.databinding.FragmentSettingsBinding;
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.HelpManager;
-import org.dhis2.utils.SyncUtils;
+import org.dhis2.utils.NetworkUtils;
 import org.hisp.dhis.android.core.imports.TrackerImportConflict;
 import org.jetbrains.annotations.NotNull;
 
@@ -49,6 +56,7 @@ import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
+import static android.text.TextUtils.isEmpty;
 import static org.dhis2.utils.Constants.DATA_NOW;
 import static org.dhis2.utils.Constants.META_NOW;
 import static org.dhis2.utils.Constants.TIME_15M;
@@ -56,11 +64,18 @@ import static org.dhis2.utils.Constants.TIME_DAILY;
 import static org.dhis2.utils.Constants.TIME_HOURLY;
 import static org.dhis2.utils.Constants.TIME_MANUAL;
 import static org.dhis2.utils.Constants.TIME_WEEKLY;
+import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
+import static org.dhis2.utils.analytics.AnalyticsConstants.CONFIRM_DELETE_LOCAL_DATA;
+import static org.dhis2.utils.analytics.AnalyticsConstants.CONFIRM_RESET;
+import static org.dhis2.utils.analytics.AnalyticsConstants.SYNC_DATA;
+import static org.dhis2.utils.analytics.AnalyticsConstants.SYNC_METADATA;
+import static org.dhis2.utils.analytics.AnalyticsConstants.TYPE_SYNC;
 
 /**
  * A simple {@link Fragment} subclass.
  */
 public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncManagerContracts.View {
+    private final int SMS_PERMISSIONS_REQ_ID = 102;
 
     @Inject
     SyncManagerContracts.Presenter presenter;
@@ -128,11 +143,6 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
         });
         presenter.init(this);
 
-        if (SyncUtils.isSyncRunning(context)) {
-            binding.buttonSyncData.setEnabled(false);
-            binding.buttonSyncMeta.setEnabled(false);
-        }
-
         listenerDisposable = new CompositeDisposable();
 
         listenerDisposable.add(RxTextView.textChanges(binding.eventMaxData).debounce(1000, TimeUnit.MILLISECONDS, Schedulers.io())
@@ -148,6 +158,11 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
                         data -> prefs.edit().putInt(Constants.TEI_MAX, Integer.valueOf(data.toString())).apply(),
                         Timber::d
                 ));
+
+
+        if (!getResources().getBoolean(R.bool.sms_enabled)) {
+            binding.settingsSms.setVisibility(View.GONE);
+        }
 
         binding.limitByOrgUnit.setOnCheckedChangeListener((buttonView, isChecked) -> prefs.edit().putBoolean(Constants.LIMIT_BY_ORG_UNIT, isChecked).apply());
         binding.limitByProgram.setOnCheckedChangeListener((buttonView, isChecked) -> prefs.edit().putBoolean(Constants.LIMIT_BY_PROGRAM, isChecked).apply());
@@ -174,8 +189,8 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
         return syncParameters -> {
             String eventMax = String.valueOf(prefs.getInt(Constants.EVENT_MAX, Constants.EVENT_MAX_DEFAULT));
             String teiMax = String.valueOf(prefs.getInt(Constants.TEI_MAX, Constants.TEI_MAX_DEFAULT));
-            String eventCurrent = String.valueOf(syncParameters.val0());
-            String teiCurrent = String.valueOf(syncParameters.val1());
+            String eventCurrent = String.valueOf(syncParameters.val1());
+            String teiCurrent = String.valueOf(syncParameters.val0());
             binding.eventMaxData.setText(eventMax);
             binding.teiMaxData.setText(teiMax);
             binding.eventCurrentData.setText(eventCurrent);
@@ -183,10 +198,87 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
             binding.limitByOrgUnit.setChecked(prefs.getBoolean(Constants.LIMIT_BY_ORG_UNIT, false));
             binding.limitByProgram.setChecked(prefs.getBoolean(Constants.LIMIT_BY_PROGRAM, false));
             binding.parameterLayout.message.setText(
-                    String.format("Events:%smax:%s%scurrent:%s\nTEI:%smax:%s%scurrent:%s",
+                    String.format(context.getString(R.string.event_tei_limits),
                             getString(R.string.tab), eventMax, getString(R.string.tab), eventCurrent,
                             getString(R.string.tab), teiMax, getString(R.string.tab), teiCurrent));
         };
+    }
+
+    @Override
+    public void showSmsSettings(boolean enabled, String number, boolean waitForResponse, String responseSender, int timeout) {
+        ((CompoundButton) binding.settingsSms.findViewById(R.id.settings_sms_switch))
+                .setChecked(enabled);
+        ((TextView) binding.settingsSms.findViewById(R.id.settings_sms_receiver))
+                .setText(number);
+        ((CompoundButton) binding.settingsSms.findViewById(R.id.settings_sms_response_wait_switch))
+                .setChecked(waitForResponse);
+        ((TextView) binding.settingsSms.findViewById(R.id.settings_sms_result_sender))
+                .setText(responseSender);
+        ((TextView) binding.settingsSms.findViewById(R.id.settings_sms_result_timeout))
+                .setText(Integer.toString(timeout));
+
+        boolean hasNetwork = NetworkUtils.isOnline(context);
+
+        binding.settingsSms.findViewById(R.id.settings_sms_switch).setEnabled(hasNetwork);
+        binding.settingsSms.findViewById(R.id.settings_sms_response_wait_switch).setEnabled(hasNetwork);
+        binding.settingsSms.findViewById(R.id.settings_sms_receiver).setEnabled(hasNetwork);
+        binding.settingsSms.findViewById(R.id.settings_sms_result_sender).setEnabled(hasNetwork);
+        binding.settingsSms.findViewById(R.id.settings_sms_result_timeout).setEnabled(hasNetwork);
+
+        if (NetworkUtils.isOnline(context)) {
+            setSMSListeners();
+        }
+    }
+
+    private void setSMSListeners() {
+
+        listenerDisposable.add(RxTextView.textChanges(binding.settingsSms.findViewById(R.id.settings_sms_receiver))
+                .skipInitialValue()
+                .debounce(1000, TimeUnit.MILLISECONDS, Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        data -> presenter.smsNumberSet(data.toString()),
+                        Timber::d
+                ));
+
+        listenerDisposable.add(RxCompoundButton.checkedChanges(binding.settingsSms.findViewById(R.id.settings_sms_switch))
+                .debounce(1000, TimeUnit.MILLISECONDS, Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        isChecked -> {
+                            if (!isChecked) {
+                                presenter.smsSwitch(false);
+                            } else if (NetworkUtils.isOnline(context) && isGatewaySet() && checkSMSPermissions(true)) {
+                                presenter.smsSwitch(true);
+                            }
+                        }
+                        ,
+                        Timber::d
+                ));
+
+        listenerDisposable.add(RxCompoundButton.checkedChanges(binding.settingsSms.findViewById(R.id.settings_sms_response_wait_switch))
+                .debounce(1000, TimeUnit.MILLISECONDS, Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        isChecked -> presenter.smsWaitForResponse(isChecked),
+                        Timber::d
+                ));
+
+        listenerDisposable.add(RxTextView.textChanges(binding.settingsSms.findViewById(R.id.settings_sms_result_sender))
+                .debounce(1000, TimeUnit.MILLISECONDS, Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        number -> presenter.smsResponseSenderSet(number.toString()),
+                        Timber::d
+                ));
+
+        listenerDisposable.add(RxTextView.textChanges(binding.settingsSms.findViewById(R.id.settings_sms_result_timeout))
+                .debounce(1000, TimeUnit.MILLISECONDS, Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        value -> presenter.smsWaitForResponseTimeout(Integer.valueOf(value.toString())),
+                        Timber::d
+                ));
     }
 
     private void setLastSyncDate() {
@@ -274,16 +366,20 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
 
         switch (checkedId) {
             case R.id.data_quarter:
+                analyticsHelper().setEvent(TYPE_SYNC, getString(R.string.data_every_fifteen_minutes), SYNC_DATA);
                 time = TIME_15M;
                 break;
             case R.id.data_hour:
+                analyticsHelper().setEvent(TYPE_SYNC, getString(R.string.data_every_hour), SYNC_DATA);
                 time = TIME_HOURLY;
                 break;
             case R.id.data_day:
+                analyticsHelper().setEvent(TYPE_SYNC, getString(R.string.data_every_day), SYNC_DATA);
                 time = TIME_DAILY;
                 break;
             case R.id.data_manual:
             default:
+                analyticsHelper().setEvent(TYPE_SYNC, getString(R.string.Manual), SYNC_DATA);
                 time = TIME_MANUAL;
                 break;
         }
@@ -302,13 +398,16 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
 
         switch (i) {
             case R.id.meta_weekly:
+                analyticsHelper().setEvent(TYPE_SYNC, getString(R.string.data_every_week), SYNC_METADATA);
                 time = TIME_WEEKLY;
                 break;
             case R.id.meta_manual:
+                analyticsHelper().setEvent(TYPE_SYNC, getString(R.string.Manual), SYNC_METADATA);
                 time = TIME_MANUAL;
                 break;
             case R.id.meta_day:
             default:
+                analyticsHelper().setEvent(TYPE_SYNC, getString(R.string.data_every_day), SYNC_METADATA);
                 time = TIME_DAILY;
                 break;
         }
@@ -329,7 +428,10 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
                 .setTitle(getString(R.string.wipe_data))
                 .setMessage(getString(R.string.wipe_data_meesage))
                 .setView(R.layout.warning_layout)
-                .setPositiveButton(getString(R.string.wipe_data_ok), (dialog, which) -> showDeleteProgress())
+                .setPositiveButton(getString(R.string.wipe_data_ok), (dialog, which) -> {
+                    analyticsHelper().setEvent(CONFIRM_RESET, CLICK, CONFIRM_RESET);
+                    showDeleteProgress();
+                })
                 .setNegativeButton(getString(R.string.wipe_data_no), (dialog, which) -> dialog.dismiss())
                 .show();
     }
@@ -340,7 +442,10 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
                 .setTitle(getString(R.string.delete_local_data))
                 .setMessage(getString(R.string.delete_local_data_message))
                 .setView(R.layout.warning_layout)
-                .setPositiveButton(getString(R.string.action_accept), (dialog, which) -> presenter.deleteLocalData())
+                .setPositiveButton(getString(R.string.action_accept), (dialog, which) -> {
+                    analyticsHelper().setEvent(CONFIRM_DELETE_LOCAL_DATA, CLICK, CONFIRM_DELETE_LOCAL_DATA);
+                    presenter.deleteLocalData();
+                })
                 .setNegativeButton(getString(R.string.cancel), (dialog, which) -> dialog.dismiss())
                 .show();
     }
@@ -414,6 +519,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
         binding.parameterData.setVisibility(View.GONE);
         binding.deleteDataButton.setVisibility(View.GONE);
         binding.resetButton.setVisibility(View.GONE);
+        binding.smsContent.setVisibility(View.GONE);
 
         switch (settingsItem) {
             case 0:
@@ -430,6 +536,9 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
                 break;
             case 6:
                 binding.resetButton.setVisibility(View.VISIBLE);
+                break;
+            case 7:
+                binding.smsContent.setVisibility(View.VISIBLE);
                 break;
         }
     }
@@ -473,5 +582,78 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
         }
 
         return String.format(context.getString(R.string.sync_setting), setting);
+    }
+
+    @Override
+    public void requestNoEmptySMSGateway() {
+        Toast.makeText(context,
+                context.getString(R.string.sms_empty_gateway),
+                Toast.LENGTH_SHORT).show();
+        presenter.smsSwitch(false);
+    }
+
+    @Override
+    public void displaySMSRefreshingData() {
+        Snackbar.make(
+                binding.getRoot(),
+                R.string.sms_downloading_data,
+                Snackbar.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void displaySMSEnabled(boolean isChecked) {
+        Snackbar.make(
+                binding.getRoot(),
+                isChecked ? R.string.sms_enabled : R.string.sms_disabled,
+                Snackbar.LENGTH_SHORT).show();
+    }
+
+    private boolean isGatewaySet() {
+        boolean gatewaySet = !isEmpty(
+                ((EditText) binding.settingsSms.findViewById(R.id.settings_sms_receiver)).getText().toString()
+        );
+        if (!gatewaySet) {
+            requestNoEmptySMSGateway();
+        }
+        return gatewaySet;
+    }
+
+    private Boolean checkSMSPermissions(boolean requestPermission) {
+        // check permissions
+        String[] smsPermissions = new String[]{
+                Manifest.permission.ACCESS_NETWORK_STATE,
+                Manifest.permission.READ_PHONE_STATE,
+                Manifest.permission.SEND_SMS,
+                Manifest.permission.RECEIVE_SMS,
+                Manifest.permission.READ_SMS
+        };
+
+        if (!hasPermissions(smsPermissions)) {
+            if (requestPermission) {
+                requestPermissions(smsPermissions, SMS_PERMISSIONS_REQ_ID);
+            }
+            return false;
+        }
+        return true;
+    }
+
+    private Boolean hasPermissions(String[] permissions) {
+        for (String permission : permissions) {
+            if (ContextCompat.checkSelfPermission(context, permission)
+                    != PackageManager.PERMISSION_GRANTED) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (requestCode == SMS_PERMISSIONS_REQ_ID && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            if (checkSMSPermissions(false))
+                presenter.smsSwitch(true);
+        } else {
+            presenter.smsSwitch(false);
+        }
     }
 }

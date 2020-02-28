@@ -4,7 +4,6 @@ import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
-import android.graphics.PorterDuffColorFilter;
 import android.graphics.drawable.AnimatedVectorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
@@ -15,7 +14,6 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
-import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.appcompat.content.res.AppCompatResources;
@@ -28,45 +26,29 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import org.dhis2.R;
+import org.dhis2.usescases.datasets.dataSetTable.dataSetSection.DataSetTableAdapter;
 import org.dhis2.usescases.programEventDetail.ProgramEventViewModel;
-import org.dhis2.utils.CatComboAdapter;
 import org.dhis2.utils.DateUtils;
-import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
-import org.hisp.dhis.android.core.common.ObjectStyleModel;
+import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.common.State;
-import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
+import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
-import org.hisp.dhis.android.core.event.EventModel;
+import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.imports.ImportStatus;
 import org.hisp.dhis.android.core.period.PeriodType;
-import org.hisp.dhis.android.core.program.ProgramModel;
-import org.hisp.dhis.android.core.program.ProgramStageModel;
+import org.hisp.dhis.android.core.program.Program;
+import org.hisp.dhis.android.core.program.ProgramStage;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
-
-import timber.log.Timber;
 
 /**
  * QUADRAM. Created by ppajuelo on 28/09/2017.
  */
 
 public class Bindings {
-
-    @BindingAdapter("elevation")
-    public static void setElevation(View view, float elevation) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            view.setElevation(elevation);
-        } else {
-            Drawable drawable = view.getResources().getDrawable(android.R.drawable.dialog_holo_light_frame);
-            drawable.setColorFilter(new PorterDuffColorFilter(view.getResources().getColor(R.color.colorGreyDefault), PorterDuff.Mode.MULTIPLY));
-            view.setBackground(drawable);
-        }
-    }
 
     @BindingAdapter("scrollingTextView")
     public static void setScrollingTextView(TextView textView, boolean canScroll) {
@@ -76,27 +58,12 @@ public class Bindings {
     }
 
     @BindingAdapter("date")
-    public static void setDate(TextView textView, String date) {
-        SimpleDateFormat formatIn = DateUtils.databaseDateFormat();
-        SimpleDateFormat formatOut = DateUtils.uiDateFormat();
-        try {
-            Date dateIn = formatIn.parse(date);
-            String dateOut = formatOut.format(dateIn);
-            textView.setText(dateOut);
-        } catch (ParseException e) {
-            Timber.e(e);
-        }
-
-    }
-
-    @BindingAdapter("date")
     public static void parseDate(TextView textView, Date date) {
         if (date != null) {
             SimpleDateFormat formatOut = DateUtils.uiDateFormat();
             String dateOut = formatOut.format(date);
             textView.setText(dateOut);
         }
-
     }
 
     @BindingAdapter("drawableEnd")
@@ -191,10 +158,10 @@ public class Bindings {
     }
 
     @BindingAdapter(value = {"eventStatusIcon", "enrollmentStatusIcon", "eventProgramStage", "eventProgram"}, requireAll = false)
-    public static void setEventIcon(ImageView view, EventModel event, EnrollmentModel enrollmentModel, ProgramStageModel eventProgramStage, ProgramModel program) {
+    public static void setEventIcon(ImageView view, Event event, Enrollment enrollment, ProgramStage eventProgramStage, Program program) {
         if (event != null) {
             EventStatus status = event.status();
-            EnrollmentStatus enrollmentStatus = enrollmentModel.enrollmentStatus();
+            EnrollmentStatus enrollmentStatus = enrollment.status();
             if (status == null)
                 status = EventStatus.ACTIVE;
             if (enrollmentStatus == null)
@@ -236,10 +203,10 @@ public class Bindings {
     }
 
     @BindingAdapter(value = {"eventStatusText", "enrollmentStatus", "eventProgramStage", "eventProgram"})
-    public static void setEventText(TextView view, EventModel event, EnrollmentModel enrollmentModel, ProgramStageModel eventProgramStage, ProgramModel program) {
+    public static void setEventText(TextView view, Event event, Enrollment enrollment, ProgramStage eventProgramStage, Program program) {
         if (event != null) {
             EventStatus status = event.status();
-            EnrollmentStatus enrollmentStatus = enrollmentModel.enrollmentStatus();
+            EnrollmentStatus enrollmentStatus = enrollment.status();
             if (status == null)
                 status = EventStatus.ACTIVE;
             if (enrollmentStatus == null)
@@ -266,7 +233,13 @@ public class Bindings {
                         }
                         break;
                     case SCHEDULE:
-                        if (DateUtils.getInstance().hasExpired(event, program.expiryDays(), program.completeEventsExpiryDays(), eventProgramStage.periodType() != null ? eventProgramStage.periodType() : program.expiryPeriodType())) {
+                        if (DateUtils.getInstance().isEventExpired(
+                                event.dueDate(),
+                                null,
+                                status,
+                                program.completeEventsExpiryDays(),
+                                eventProgramStage.periodType() != null ? eventProgramStage.periodType() : program.expiryPeriodType(),
+                                program.expiryDays())) {
                             view.setText(view.getContext().getString(R.string.event_expired));
                         } else {
                             view.setText(view.getContext().getString(R.string.event_schedule));
@@ -291,7 +264,7 @@ public class Bindings {
     }
 
     @BindingAdapter(value = {"eventColor", "eventProgramStage", "eventProgram"})
-    public static void setEventColor(View view, EventModel event, ProgramStageModel programStage, ProgramModel program) {
+    public static void setEventColor(View view, Event event, ProgramStage programStage, Program program) {
         if (event != null) {
             int bgColor;
             if (DateUtils.getInstance().isEventExpired(null, event.completedDate(), program.completeEventsExpiryDays())) {
@@ -314,7 +287,13 @@ public class Bindings {
                             bgColor = R.drawable.item_event_gray_ripple;
                         break;
                     case SCHEDULE:
-                        if (DateUtils.getInstance().hasExpired(event, program.expiryDays(), program.completeEventsExpiryDays(), programStage.periodType() != null ? programStage.periodType() : program.expiryPeriodType())) {
+                        if (DateUtils.getInstance().isEventExpired(
+                                event.dueDate(),
+                                null,
+                                event.status(),
+                                program.completeEventsExpiryDays(),
+                                programStage.periodType() != null ? programStage.periodType() : program.expiryPeriodType(),
+                                program.expiryDays())) {
                             bgColor = R.drawable.item_event_dark_gray_ripple;
                         } else
                             bgColor = R.drawable.item_event_green_ripple;
@@ -330,26 +309,6 @@ public class Bindings {
             }
             view.setBackground(AppCompatResources.getDrawable(view.getContext(), bgColor));
         }
-    }
-
-    @BindingAdapter("statusColor")
-    public static void setStatusColor(ImageView view, ImportStatus status) {
-        Drawable icon;
-        switch (status) {
-            case ERROR:
-                icon = AppCompatResources.getDrawable(view.getContext(), R.drawable.red_circle);
-                break;
-            case SUCCESS:
-                icon = AppCompatResources.getDrawable(view.getContext(), R.drawable.green_circle);
-                break;
-            case WARNING:
-                icon = AppCompatResources.getDrawable(view.getContext(), R.drawable.yellow_circle);
-                break;
-            default:
-                icon = null;
-                break;
-        }
-        view.setImageDrawable(icon);
     }
 
     @BindingAdapter("eventWithoutRegistrationStatusText")
@@ -395,9 +354,6 @@ public class Bindings {
             case TO_UPDATE:
                 textView.setText(textView.getContext().getString(R.string.state_to_update));
                 break;
-            case TO_DELETE:
-                textView.setText(textView.getContext().getString(R.string.state_to_delete));
-                break;
             case ERROR:
                 textView.setText(textView.getContext().getString(R.string.state_error));
                 break;
@@ -430,24 +386,10 @@ public class Bindings {
                 case SYNCED_VIA_SMS:
                     imageView.setImageResource(R.drawable.ic_sync_sms);
                     break;
-                case TO_DELETE:
-                    imageView.setImageResource(R.drawable.ic_delete);
-                    break;
                 default:
                     break;
             }
         }
-    }
-
-    @BindingAdapter("spinnerOptions")
-    public static void setSpinnerOptions(Spinner spinner, List<CategoryOptionComboModel> options) {
-        CatComboAdapter adapter = new CatComboAdapter(spinner.getContext(),
-                R.layout.spinner_layout,
-                R.id.spinner_text,
-                options,
-                "",
-                R.color.white_faf);
-        spinner.setAdapter(adapter);
     }
 
     @BindingAdapter("fromResBgColor")
@@ -495,16 +437,16 @@ public class Bindings {
         }
     }
 
-    public static void setObjectStyle(View view, View itemView, ObjectStyleModel objectStyle) {
-        if (objectStyle.icon() != null) {
-            Resources resources = view.getContext().getResources();
+    public static void setObjectStyle(View view, View itemView, ObjectStyle objectStyle) {
+        Resources resources = view.getContext().getResources();
+        if (objectStyle != null && objectStyle.icon() != null) {
             String iconName = objectStyle.icon().startsWith("ic_") ? objectStyle.icon() : "ic_" + objectStyle.icon();
             int icon = resources.getIdentifier(iconName, "drawable", view.getContext().getPackageName());
             if (view instanceof ImageView)
                 ((ImageView) view).setImageResource(icon);
         }
 
-        if (objectStyle.color() != null) {
+        if (objectStyle != null && objectStyle.color() != null) {
             String color = objectStyle.color().startsWith("#") ? objectStyle.color() : "#" + objectStyle.color();
             int colorRes;
             if (color.length() == 4)
@@ -512,6 +454,14 @@ public class Bindings {
             else
                 colorRes = Color.parseColor(color);
 
+            itemView.setBackgroundColor(colorRes);
+            setFromResBgColor(view, colorRes);
+        }
+        if (objectStyle == null) {
+            Drawable drawable = resources.getDrawable(R.drawable.ic_program_default);
+            if (view instanceof ImageView)
+                ((ImageView) view).setImageDrawable(drawable);
+            int colorRes = ContextCompat.getColor(view.getContext(), R.color.colorPrimary);
             itemView.setBackgroundColor(colorRes);
             setFromResBgColor(view, colorRes);
         }
@@ -559,11 +509,26 @@ public class Bindings {
         view.setImageDrawable(drawable);
     }
 
+    @BindingAdapter("tableScaleTextSize")
+    public static void setTabeScaleTextSize(TextView textView, DataSetTableAdapter.TableScale tableScale) {
+        switch (tableScale) {
+            case LARGE:
+                textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
+                break;
+            case SMALL:
+                textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
+                break;
+            default:
+                textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13);
+                break;
+        }
+    }
+
     @BindingAdapter("iconTint")
     public static void setIconTint(ImageView view, boolean followUp) {
         Drawable wrappedDrawable = DrawableCompat.wrap(view.getDrawable());
         Drawable mutableDrawable = wrappedDrawable.mutate();
-        if(followUp)
+        if (followUp)
             DrawableCompat.setTint(mutableDrawable, ContextCompat.getColor(view.getContext(), R.color.white));
         else
             DrawableCompat.setTint(mutableDrawable, ContextCompat.getColor(view.getContext(), R.color.text_black_333));

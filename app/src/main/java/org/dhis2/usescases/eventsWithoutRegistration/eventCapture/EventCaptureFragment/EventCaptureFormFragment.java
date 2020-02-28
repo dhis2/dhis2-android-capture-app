@@ -2,8 +2,11 @@ package org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureF
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Parcelable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +19,7 @@ import androidx.databinding.ObservableBoolean;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.SimpleItemAnimator;
 
 import org.dhis2.R;
 import org.dhis2.data.forms.FormSectionViewModel;
@@ -97,9 +101,20 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract {
 
         });
 
-        activity.getPresenter().initCompletionPercentage(sectionSelectorAdapter.completionPercentage());
 
         return binding.getRoot();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+            activity.getPresenter().init();
+            activity.getPresenter().initCompletionPercentage(sectionSelectorAdapter.completionPercentage());
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
     public void setSectionTitle(DataEntryArguments arguments, FormSectionViewModel formSectionViewModel) {
@@ -121,7 +136,10 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract {
     }
 
     public void setSingleSection(DataEntryArguments arguments, FormSectionViewModel formSectionViewModel) {
-        this.currentSection = "NO_SECTION";
+        this.currentSection = formSectionViewModel.sectionUid() != null ? formSectionViewModel.sectionUid() : "NO_SECTION";
+        binding.currentSectionTitle.sectionTitle.setText(formSectionViewModel.label());
+        binding.currentSectionTitle.setSectionUid(currentSection);
+
         binding.currentSectionTitle.root.setVisibility(View.GONE);
 
         setUpRecyclerView(arguments);
@@ -143,7 +161,10 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract {
         } else
             layoutManager = new LinearLayoutManager(activity,
                     RecyclerView.VERTICAL, false);
-
+        RecyclerView.ItemAnimator animator = binding.formRecycler.getItemAnimator();
+        if (animator instanceof SimpleItemAnimator) {
+            ((SimpleItemAnimator) animator).setSupportsChangeAnimations(false);
+        }
         binding.formRecycler.setLayoutManager(layoutManager);
         binding.formRecycler.setAdapter(dataEntryAdapter);
 
@@ -169,7 +190,16 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract {
 
             if (!isEmpty(lastFocusItem))
                 dataEntryAdapter.setLastFocusItem(lastFocusItem);
+
+            LinearLayoutManager myLayoutManager = (LinearLayoutManager) binding.formRecycler.getLayoutManager();
+            int myFirstPositionIndex = myLayoutManager.findFirstVisibleItemPosition();
+            View myFirstPositionView = myLayoutManager.findViewByPosition(myFirstPositionIndex);
+            int offset = 0;
+            if (myFirstPositionView != null){
+                offset = myFirstPositionView.getTop();
+            }
             dataEntryAdapter.swap(updates);
+            myLayoutManager.scrollToPositionWithOffset(myFirstPositionIndex, offset);
 
             int completedValues = 0;
             HashMap<String, Boolean> fields = new HashMap<>();
@@ -183,8 +213,15 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract {
         }
     }
 
-    public void setSectionSelector(List<EventSectionModel> data) {
-        sectionSelectorAdapter.swapData(currentSection, data);
+    public void setSectionSelector(List<EventSectionModel> data, float unsupportedPercentage) {
+        sectionSelectorAdapter.swapData(data, unsupportedPercentage);
+        if (data.size() == 1) {
+            isLastPosition.set(true);
+            binding.currentSectionTitle.root.setVisibility(View.GONE);
+        } else {
+            isLastPosition.set(false);
+            binding.currentSectionTitle.root.setVisibility(View.VISIBLE);
+        }
     }
 
     public FlowableProcessor<RowAction> dataEntryFlowable() {

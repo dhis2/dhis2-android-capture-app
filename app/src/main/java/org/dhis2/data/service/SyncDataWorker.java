@@ -58,18 +58,37 @@ public class SyncDataWorker extends Worker {
 
         boolean isEventOk = true;
         boolean isTeiOk = true;
+        boolean isDataValue = true;
 
         try {
-            presenter.syncAndDownloadEvents(getApplicationContext());
+            presenter.uploadResources();
+        }catch (Exception e){
+            Timber.e(e);
+        }
+        try {
+            presenter.syncAndDownloadEvents();
         } catch (Exception e) {
             Timber.e(e);
             isEventOk = false;
         }
         try {
-            presenter.syncAndDownloadTeis(getApplicationContext());
+            presenter.syncAndDownloadTeis();
         } catch (Exception e) {
             Timber.e(e);
             isTeiOk = false;
+        }
+
+        try {
+            presenter.syncAndDownloadDataValues();
+        } catch (Exception e) {
+            Timber.e(e);
+            isDataValue = false;
+        }
+
+        try {
+            presenter.downloadResources();
+        } catch (Exception e) {
+            Timber.e(e);
         }
 
         String lastDataSyncDate = DateUtils.dateTimeFormat().format(Calendar.getInstance().getTime());
@@ -77,9 +96,11 @@ public class SyncDataWorker extends Worker {
 
         SharedPreferences prefs = getApplicationContext().getSharedPreferences(Constants.SHARE_PREFS, Context.MODE_PRIVATE);
         prefs.edit().putString(Constants.LAST_DATA_SYNC, lastDataSyncDate).apply();
-        prefs.edit().putBoolean(Constants.LAST_DATA_SYNC_STATUS, isEventOk && isTeiOk && syncOk).apply();
+        prefs.edit().putBoolean(Constants.LAST_DATA_SYNC_STATUS, isEventOk && isTeiOk && isDataValue && syncOk).apply();
 
         cancelNotification();
+
+        presenter.startPeriodicDataWork();
 
         return Result.success(createOutputData(true));
     }

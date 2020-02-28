@@ -4,6 +4,7 @@ import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.dhis2.data.dagger.PerActivity;
 import org.dhis2.data.forms.RulesRepository;
+import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.utils.RulesUtilsProvider;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.rules.RuleExpressionEvaluator;
@@ -38,8 +39,9 @@ public class ProgramStageSelectionModule {
     @Provides
     @PerActivity
     ProgramStageSelectionContract.Presenter providesPresenter(@NonNull ProgramStageSelectionRepository programStageSelectionRepository,
-                                                              @NonNull RulesUtilsProvider ruleUtils) {
-        return new ProgramStageSelectionPresenter(programStageSelectionRepository, ruleUtils);
+                                                              @NonNull RulesUtilsProvider ruleUtils,
+                                                              SchedulerProvider schedulerProvider) {
+        return new ProgramStageSelectionPresenter(programStageSelectionRepository, ruleUtils, schedulerProvider);
     }
 
     @Provides
@@ -54,6 +56,6 @@ public class ProgramStageSelectionModule {
     @Provides
     @PerActivity
     RulesRepository rulesRepository(BriteDatabase briteDatabase,@NonNull D2 d2) {
-        return new RulesRepository(briteDatabase,d2);
+        return new RulesRepository(d2);
     }
 }

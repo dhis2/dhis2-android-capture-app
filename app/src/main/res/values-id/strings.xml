@@ -58,6 +58,8 @@
     <string name="due_date">Tanggal jatuh tempo</string>
     <string name="cancel">batal</string>
     <string name="delete">hapus</string>
+    <string name="total">Total</string>
+
     <string name="active_programs">Aktifkan program</string>
     <string name="enroll">Daftar</string>
     <string name="deactivate">Deaktivasi</string>
@@ -104,8 +106,15 @@
     <string name="event_notes">Catatan</string>
     <string name="skip">Lewati</string>
     <string name="reschedule">Jadwal ulang</string>
+    <string name="table">Tabel</string>
     <string name="state_warning">Peringatan</string>
     <string name="action_close">Tutup</string>
+    <string name="data_set_closed">Tutup</string>
+    <string name="data_set_open">Buka</string>
     <string name="data_every_day">Harian</string>
     <string name="data_every_week">Mingguan</string>
-    </resources>
+    <string name="sms_completed">Selesai</string>
+    <string name="sms_bar_state_sending">Dalam proses</string>
+    <string name="polygon">Poligon</string>
+    <!--endregion-->
+</resources>

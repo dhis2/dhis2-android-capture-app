@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <import type="android.view.View" />
+
+        <variable
+            name="label"
+            type="java.lang.String" />
+
+        <variable
+            name="description"
+            type="java.lang.String" />
+
+        <variable
+            name="selected"
+            type="java.lang.String"/>
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        tools:background="@color/colorPrimary"
+        android:padding="5dp"
+        android:layout_margin="5dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:id="@+id/layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageView
+                android:id="@+id/icImage"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/ic_form_image"
+                android:layout_marginEnd="8dp"
+                android:theme="@style/loginInputTextAccent"
+                app:tint="?colorAccent"/>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/inputLayout"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:hint="@{label}"
+                android:textColorHint="@drawable/edit_text_hint_accent"
+                android:theme="@style/loginInputText"
+                tools:hint="Form name">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/formLabel"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:imeOptions="actionNext"
+                    android:clickable="true"
+                    android:focusable="false"
+                    android:text="@{selected}"
+                    android:textAlignment="textStart"
+                    android:textColor="?colorAccent"
+                    android:textSize="15sp" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <ImageView
+                android:id="@+id/clear"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:visibility="gone"
+                app:srcCompat="@drawable/ic_clear"
+                app:tint="?colorAccent" />
+
+            <ImageView
+                android:id="@+id/descriptionLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:visibility="@{(label.length()>16||description!=null)?View.VISIBLE : View.GONE}"
+                app:srcCompat="@drawable/ic_info_outline"
+                app:tint="?colorAccent" />
+        </LinearLayout>
+
+
+        <ImageView
+            app:layout_constraintTop_toBottomOf="@id/layout"
+            android:background="@color/greyish"
+            app:srcCompat="@drawable/ic_camera"
+            android:id="@+id/image"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:scaleType="centerInside"
+            android:minHeight="100dp"
+            android:maxHeight="200dp"
+            android:visibility="gone"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            app:layout_constraintTop_toBottomOf="@id/image"
+            android:id="@+id/errorMessage"
+            android:layout_width="match_parent"
+            android:textSize="@dimen/textSize_12"
+            android:layout_height="wrap_content"
+            android:padding="4dp"
+            android:visibility="gone"
+            tools:textAppearance="@style/error_appearance"
+            tools:text="This is a error warning"
+            tools:visibility="visible"/>
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>

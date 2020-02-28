@@ -1,7 +1,7 @@
 [submodule "dhis2-android-sdk"]
 	path = dhis2-android-sdk
-	url = git@github.com:dhis2/dhis2-android-sdk.git
+	url = https://github.com/dhis2/dhis2-android-sdk.git
 [submodule "dhis2-rule-engine"]
 	path = dhis2-rule-engine
-	url = git@github.com:quadramqs/dhis2-rule-engine.git
+	url = https://github.com/dhis2/dhis2-rule-engine.git
 

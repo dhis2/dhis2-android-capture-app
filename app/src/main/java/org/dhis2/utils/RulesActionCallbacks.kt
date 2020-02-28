@@ -27,5 +27,5 @@ interface RulesActionCallbacks {
 
     fun setOptionToHide(optionUid: String)
 
-    fun setOptionGroupToHide(optionGroupUid: String)
+    fun setOptionGroupToHide(optionGroupUid: String, toHide: Boolean, field: String = "")
 }

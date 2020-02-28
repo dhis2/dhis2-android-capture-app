@@ -1,2 +1,2 @@
-include ':app', ':customFab', ':viewpagerdotsindicator', ':core','dhis2-rule-engine'
+include ':app', ':customFab', ':viewpagerdotsindicator', ':dhis2-rule-engine', ':core', ':tableview'
 project(':core').projectDir = new File('dhis2-android-sdk/core')

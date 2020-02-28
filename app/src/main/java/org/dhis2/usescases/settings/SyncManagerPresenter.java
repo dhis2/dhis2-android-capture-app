@@ -1,5 +1,28 @@
 package org.dhis2.usescases.settings;
 
+import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
+import static org.dhis2.utils.analytics.AnalyticsConstants.SYNC_DATA_NOW;
+import static org.dhis2.utils.analytics.AnalyticsConstants.SYNC_METADATA_NOW;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+import org.dhis2.data.prefs.PreferenceProvider;
+import org.dhis2.data.schedulers.SchedulerProvider;
+import org.dhis2.data.service.SyncDataWorker;
+import org.dhis2.data.service.SyncMetadataWorker;
+import org.dhis2.data.tuples.Pair;
+import org.dhis2.usescases.login.LoginActivity;
+import org.dhis2.usescases.reservedValue.ReservedValueActivity;
+import org.dhis2.utils.Constants;
+import org.hisp.dhis.android.core.D2;
+import org.hisp.dhis.android.core.common.State;
+import org.hisp.dhis.android.core.event.Event;
+import org.hisp.dhis.android.core.maintenance.D2Error;
+import org.hisp.dhis.android.core.sms.domain.interactor.ConfigCase;
+
 import android.content.Context;
 import android.content.SharedPreferences;
 
@@ -11,42 +34,40 @@ import androidx.work.OneTimeWorkRequest;
 import androidx.work.PeriodicWorkRequest;
 import androidx.work.WorkManager;
 
-import org.dhis2.data.metadata.MetadataRepository;
-import org.dhis2.data.service.SyncDataWorker;
-import org.dhis2.data.service.SyncMetadataWorker;
-import org.dhis2.usescases.login.LoginActivity;
-import org.dhis2.usescases.reservedValue.ReservedValueActivity;
-import org.dhis2.utils.Constants;
-import org.hisp.dhis.android.core.D2;
-import org.hisp.dhis.android.core.common.State;
-import org.hisp.dhis.android.core.maintenance.D2Error;
-
-import java.io.File;
-import java.util.concurrent.TimeUnit;
-
-import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.Completable;
 import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.observers.DisposableCompletableObserver;
+import io.reactivex.observers.DisposableSingleObserver;
 import io.reactivex.processors.FlowableProcessor;
 import io.reactivex.processors.PublishProcessor;
-import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
 /**
  * QUADRAM. Created by lmartin on 21/03/2018.
  */
 
-public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
+public class SyncManagerPresenter
+        implements
+        SyncManagerContracts.Presenter {
 
     private final D2 d2;
 
-    private MetadataRepository metadataRepository;
+    private final SchedulerProvider schedulerProvider;
+
+    private final PreferenceProvider preferenceProvider;
+
     private CompositeDisposable compositeDisposable;
+
     private SyncManagerContracts.View view;
+
     private FlowableProcessor<Boolean> checkData;
 
-    SyncManagerPresenter(MetadataRepository metadataRepository, D2 d2) {
-        this.metadataRepository = metadataRepository;
+    private SharedPreferences prefs;
+
+    SyncManagerPresenter(D2 d2, SchedulerProvider schedulerProvider, PreferenceProvider preferenceProvider) {
         this.d2 = d2;
+        this.schedulerProvider = schedulerProvider;
+        this.preferenceProvider = preferenceProvider;
         checkData = PublishProcessor.create();
     }
 
@@ -59,25 +80,43 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
     public void init(SyncManagerContracts.View view) {
         this.view = view;
         this.compositeDisposable = new CompositeDisposable();
+        this.prefs = view.getAbstracContext().getSharedPreferences(Constants.SHARE_PREFS, Context.MODE_PRIVATE);
 
-        compositeDisposable.add(
-                checkData
-                        .startWith(true)
-                        .flatMap(start ->
-                                metadataRepository.getDownloadedData())
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(
-                                view.setSyncData(),
-                                Timber::e
-                        )
-        );
+        compositeDisposable.add(checkData.startWith(true).map(start -> {
+            int teiCount = d2.trackedEntityModule().trackedEntityInstances().byState().neq(State.RELATIONSHIP)
+                    .blockingCount();
+            int eventCount = d2.eventModule().events().get().toObservable().map(events -> {
+                List<Event> eventsToCount = new ArrayList<>();
+                for (Event event : events) {
+                    if (event.enrollment() == null)
+                        eventsToCount.add(event);
+                }
+                return eventsToCount.size();
+            }).blockingLast();
+            return Pair.create(teiCount, eventCount);
+        }).subscribeOn(schedulerProvider.io()).observeOn(schedulerProvider.ui()).subscribe(view.setSyncData(),
+                Timber::e));
+
+        ConfigCase smsConfig = d2.smsModule().configCase();
+        compositeDisposable.add(smsConfig.getSmsModuleConfig().subscribeOn(schedulerProvider.io())
+                .observeOn(schedulerProvider.ui()).subscribeWith(new DisposableSingleObserver<ConfigCase.SmsConfig>() {
+                    @Override
+                    public void onSuccess(ConfigCase.SmsConfig c) {
+                        view.showSmsSettings(c.isModuleEnabled(), c.getGateway(), c.isWaitingForResult(),
+                                c.getResultSender(), c.getResultWaitingTimeout());
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Timber.e(e);
+                    }
+                }));
     }
 
     /**
-     * This method allows you to create a new periodic DATA sync work with an interval defined by
-     * {@code seconds}.
-     * All scheduled works will be cancelled in order to reschedule a new one.
+     * This method allows you to create a new periodic DATA sync work with an
+     * interval defined by {@code seconds}. All scheduled works will be cancelled in
+     * order to reschedule a new one.
      *
      * @param seconds     period interval in seconds
      * @param scheduleTag Name of the periodic work (DATA)
@@ -85,19 +124,20 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
     @Override
     public void syncData(int seconds, String scheduleTag) {
         WorkManager.getInstance(view.getContext().getApplicationContext()).cancelUniqueWork(scheduleTag);
-        PeriodicWorkRequest.Builder syncDataBuilder = new PeriodicWorkRequest.Builder(SyncDataWorker.class, seconds, TimeUnit.SECONDS);
+        PeriodicWorkRequest.Builder syncDataBuilder = new PeriodicWorkRequest.Builder(SyncDataWorker.class, seconds,
+                TimeUnit.SECONDS);
         syncDataBuilder.addTag(scheduleTag);
-        syncDataBuilder.setConstraints(new Constraints.Builder()
-                .setRequiredNetworkType(NetworkType.CONNECTED)
-                .build());
+        syncDataBuilder
+                .setConstraints(new Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build());
         PeriodicWorkRequest request = syncDataBuilder.build();
-        WorkManager.getInstance(view.getContext().getApplicationContext()).enqueueUniquePeriodicWork(scheduleTag, ExistingPeriodicWorkPolicy.REPLACE, request);
+        WorkManager.getInstance(view.getContext().getApplicationContext()).enqueueUniquePeriodicWork(scheduleTag,
+                ExistingPeriodicWorkPolicy.REPLACE, request);
     }
 
     /**
-     * This method allows you to create a new periodic METADATA sync work with an interval defined by
-     * {@code seconds}.
-     * All scheduled works will be cancelled in order to reschedule a new one.
+     * This method allows you to create a new periodic METADATA sync work with an
+     * interval defined by {@code seconds}. All scheduled works will be cancelled in
+     * order to reschedule a new one.
      *
      * @param seconds     period interval in seconds
      * @param scheduleTag Name of the periodic work (META)
@@ -105,13 +145,14 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
     @Override
     public void syncMeta(int seconds, String scheduleTag) {
         WorkManager.getInstance(view.getContext().getApplicationContext()).cancelUniqueWork(scheduleTag);
-        PeriodicWorkRequest.Builder syncDataBuilder = new PeriodicWorkRequest.Builder(SyncMetadataWorker.class, seconds, TimeUnit.SECONDS);
+        PeriodicWorkRequest.Builder syncDataBuilder = new PeriodicWorkRequest.Builder(SyncMetadataWorker.class,
+                seconds, TimeUnit.SECONDS);
         syncDataBuilder.addTag(scheduleTag);
-        syncDataBuilder.setConstraints(new Constraints.Builder()
-                .setRequiredNetworkType(NetworkType.CONNECTED)
-                .build());
+        syncDataBuilder
+                .setConstraints(new Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build());
         PeriodicWorkRequest request = syncDataBuilder.build();
-        WorkManager.getInstance(view.getContext().getApplicationContext()).enqueueUniquePeriodicWork(scheduleTag, ExistingPeriodicWorkPolicy.REPLACE, request);
+        WorkManager.getInstance(view.getContext().getApplicationContext()).enqueueUniquePeriodicWork(scheduleTag,
+                ExistingPeriodicWorkPolicy.REPLACE, request);
     }
 
     /**
@@ -120,13 +161,15 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
     @Override
     public void syncData() {
         view.syncData();
+        view.analyticsHelper().setEvent(SYNC_DATA_NOW, CLICK, SYNC_DATA_NOW);
         OneTimeWorkRequest.Builder syncDataBuilder = new OneTimeWorkRequest.Builder(SyncDataWorker.class);
         syncDataBuilder.addTag(Constants.DATA_NOW);
-        syncDataBuilder.setConstraints(new Constraints.Builder()
-                .setRequiredNetworkType(NetworkType.CONNECTED)
-                .build());
+        syncDataBuilder
+                .setConstraints(new Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build());
         OneTimeWorkRequest request = syncDataBuilder.build();
-        WorkManager.getInstance(view.getContext().getApplicationContext()).beginUniqueWork(Constants.DATA_NOW, ExistingWorkPolicy.REPLACE, request).enqueue();
+
+        WorkManager.getInstance(view.getContext().getApplicationContext()).enqueueUniqueWork(Constants.DATA_NOW,
+                ExistingWorkPolicy.KEEP, request);
     }
 
     /**
@@ -135,15 +178,15 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
     @Override
     public void syncMeta() {
         view.syncMeta();
+        view.analyticsHelper().setEvent(SYNC_METADATA_NOW, CLICK, SYNC_METADATA_NOW);
         OneTimeWorkRequest.Builder syncDataBuilder = new OneTimeWorkRequest.Builder(SyncMetadataWorker.class);
         syncDataBuilder.addTag(Constants.META_NOW);
-        syncDataBuilder.setConstraints(new Constraints.Builder()
-                .setRequiredNetworkType(NetworkType.CONNECTED)
-                .build());
+        syncDataBuilder
+                .setConstraints(new Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build());
         OneTimeWorkRequest request = syncDataBuilder.build();
-        WorkManager.getInstance(view.getContext().getApplicationContext()).beginUniqueWork(Constants.META_NOW, ExistingWorkPolicy.REPLACE, request).enqueue();
+        WorkManager.getInstance(view.getContext().getApplicationContext())
+                .beginUniqueWork(Constants.META_NOW, ExistingWorkPolicy.KEEP, request).enqueue();
     }
-
 
     @Override
     public void cancelPendingWork(String tag) {
@@ -151,13 +194,108 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
     }
 
     @Override
+    public void smsNumberSet(String number) {
+        compositeDisposable.add(
+                d2.smsModule().configCase().setGatewayNumber(number).subscribeWith(new DisposableCompletableObserver() {
+                    @Override
+                    public void onComplete() {
+                        Timber.d("SMS gateway set to %s", number);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        view.requestNoEmptySMSGateway();
+                    }
+                }));
+    }
+
+    @Override
+    public void smsSwitch(boolean isChecked) {
+
+        if(d2.smsModule().configCase().getSmsModuleConfig().blockingGet().isModuleEnabled() != isChecked) {
+
+            Completable completable;
+            if (isChecked) {
+                view.displaySMSRefreshingData();
+                completable = d2.smsModule().configCase().setModuleEnabled(true)
+                        .andThen(d2.smsModule().configCase().refreshMetadataIds());
+            } else {
+                completable = d2.smsModule().configCase().setModuleEnabled(false);
+            }
+
+            compositeDisposable
+                    .add(completable.subscribeOn(schedulerProvider.io()).subscribeWith(new DisposableCompletableObserver() {
+                        @Override
+                        public void onComplete() {
+                            view.displaySMSEnabled(isChecked);
+                        }
+
+                        @Override
+                        public void onError(Throwable e) {
+                            Timber.e(e);
+                        }
+                    }));
+        }
+    }
+
+    @Override
+    public void smsResponseSenderSet(String number) {
+        compositeDisposable.add(d2.smsModule().configCase().setConfirmationSenderNumber(number)
+                .subscribeWith(new DisposableCompletableObserver() {
+                    @Override
+                    public void onComplete() {
+                        Timber.d("SMS response sender set to %s", number);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Timber.e(e);
+                    }
+                }));
+    }
+
+    @Override
+    public void smsWaitForResponse(boolean waitForResponse) {
+        compositeDisposable.add(d2.smsModule().configCase().setWaitingForResultEnabled(waitForResponse)
+                .subscribeWith(new DisposableCompletableObserver() {
+                    @Override
+                    public void onComplete() {
+                        Timber.d("SMS waiting for response: %b", waitForResponse);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Timber.e(e);
+                    }
+                }));
+    }
+
+    @Override
+    public void smsWaitForResponseTimeout(int timeout) {
+        compositeDisposable.add(d2.smsModule().configCase().setWaitingResultTimeout(timeout)
+                .subscribeWith(new DisposableCompletableObserver() {
+                    @Override
+                    public void onComplete() {
+                        Timber.d("SMS waiting for response timeout: %d", timeout);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Timber.e(e);
+                    }
+                }));
+    }
+
+    @Override
     public boolean dataHasErrors() {
-        return !d2.eventModule().events.byState().in(State.ERROR).get().isEmpty() || !d2.trackedEntityModule().trackedEntityInstances.byState().in(State.ERROR).get().isEmpty();
+        return !d2.eventModule().events().byState().in(State.ERROR).blockingGet().isEmpty()
+                || !d2.trackedEntityModule().trackedEntityInstances().byState().in(State.ERROR).blockingGet().isEmpty();
     }
 
     @Override
     public boolean dataHasWarnings() {
-        return !d2.eventModule().events.byState().in(State.WARNING).get().isEmpty() || !d2.trackedEntityModule().trackedEntityInstances.byState().in(State.WARNING).get().isEmpty();
+        return !d2.eventModule().events().byState().in(State.WARNING).blockingGet().isEmpty()
+                || !d2.trackedEntityModule().trackedEntityInstances().byState().in(State.WARNING).blockingGet().isEmpty();
     }
 
     @Override
@@ -167,8 +305,6 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
 
     @Override
     public void resetSyncParameters() {
-        SharedPreferences prefs = view.getAbstracContext().getSharedPreferences(
-                Constants.SHARE_PREFS, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = prefs.edit();
 
         editor.putInt(Constants.EVENT_MAX, Constants.EVENT_MAX_DEFAULT);
@@ -194,11 +330,12 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
         try {
             WorkManager.getInstance(view.getContext().getApplicationContext()).cancelAllWork();
             WorkManager.getInstance(view.getContext().getApplicationContext()).pruneWork();
+            d2.userModule().logOut().blockingAwait();
             d2.wipeModule().wipeEverything();
             // clearing cache data
             deleteDir(view.getAbstracContext().getCacheDir());
 
-            view.getAbstracContext().getSharedPreferences().edit().clear().apply();
+            preferenceProvider.clear();
 
             view.startActivity(LoginActivity.class, null, true, true, null);
         } catch (Exception e) {
@@ -231,14 +368,13 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
 
     @Override
     public void checkSyncErrors() {
-        view.showSyncErrors(metadataRepository.getSyncErrors());
+        view.showSyncErrors(d2.importModule().trackerImportConflicts().blockingGet());
     }
 
     @Override
     public void checkData() {
         checkData.onNext(true);
     }
-
 
     private static boolean deleteDir(File dir) {
         if (dir != null && dir.isDirectory()) {

@@ -1,6 +1,5 @@
 package org.dhis2.data.forms.dataentry.fields.radiobutton;
 
-import android.graphics.Color;
 import android.view.View;
 import android.widget.RadioGroup;
 
@@ -8,9 +7,7 @@ import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.FormViewHolder;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.databinding.FormYesNoBinding;
-import org.dhis2.utils.custom_views.FieldLayout;
 
-import androidx.appcompat.content.res.AppCompatResources;
 import androidx.lifecycle.MutableLiveData;
 
 import io.reactivex.processors.FlowableProcessor;
@@ -105,12 +102,15 @@ public class RadioButtonHolder extends FormViewHolder {
         clearButton.setOnClickListener(view -> {
             if (checkBoxViewModel.editable().booleanValue()) {
                 setSelectedBackground(isSearchMode);
-                radioGroup.clearCheck();
-                processor.onNext(RowAction.create(checkBoxViewModel.uid(), null, getAdapterPosition()));
+                sendAction(RowAction.create(checkBoxViewModel.uid(),null,getAdapterPosition()));
             }
         });
 
         initFieldFocus();
+    }
+
+    private void sendAction(RowAction rowAction){
+        processor.onNext(rowAction);
     }
 
     public void dispose() {

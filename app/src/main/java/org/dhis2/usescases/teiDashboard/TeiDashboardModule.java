@@ -8,9 +8,7 @@ import org.dhis2.data.dagger.PerActivity;
 import org.dhis2.data.forms.EnrollmentFormRepository;
 import org.dhis2.data.forms.FormRepository;
 import org.dhis2.data.forms.RulesRepository;
-import org.dhis2.data.forms.dataentry.EnrollmentRuleEngineRepository;
-import org.dhis2.data.forms.dataentry.RuleEngineRepository;
-import org.dhis2.data.metadata.MetadataRepository;
+import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.utils.CodeGenerator;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.enrollment.EnrollmentCollectionRepository;
@@ -44,9 +42,8 @@ public class TeiDashboardModule {
 
     @Provides
     @PerActivity
-    TeiDashboardContracts.Presenter providePresenter(D2 d2, DashboardRepository dashboardRepository,
-                                                     MetadataRepository metadataRepository) {
-        return new TeiDashboardPresenter(d2, dashboardRepository, metadataRepository);
+    TeiDashboardContracts.Presenter providePresenter(D2 d2, DashboardRepository dashboardRepository, SchedulerProvider schedulerProvider) {
+        return new TeiDashboardPresenter(d2, dashboardRepository, schedulerProvider);
     }
 
     @Provides
@@ -57,24 +54,23 @@ public class TeiDashboardModule {
 
     @Provides
     @PerActivity
-    RulesRepository rulesRepository(@NonNull BriteDatabase briteDatabase, @NonNull D2 d2) {
-        return new RulesRepository(briteDatabase, d2);
+    RulesRepository rulesRepository(@NonNull D2 d2) {
+        return new RulesRepository(d2);
     }
 
     @Provides
     @PerActivity
-    FormRepository formRepository(@NonNull BriteDatabase briteDatabase,
-                                  @NonNull RuleExpressionEvaluator evaluator,
-                                  @NonNull RulesRepository rulesRepository,
-                                  @NonNull CodeGenerator codeGenerator,
-                                  D2 d2) {
-        EnrollmentCollectionRepository enrollmentRepository = d2.enrollmentModule().enrollments
+    FormRepository formRepository(
+            @NonNull RuleExpressionEvaluator evaluator,
+            @NonNull RulesRepository rulesRepository,
+            D2 d2) {
+        EnrollmentCollectionRepository enrollmentRepository = d2.enrollmentModule().enrollments()
                 .byTrackedEntityInstance().eq(teiUid);
         if (!isEmpty(programUid))
             enrollmentRepository = enrollmentRepository.byProgram().eq(programUid);
 
-        String uid = enrollmentRepository.one().get().uid();
+        String uid = enrollmentRepository.one().blockingGet().uid();
 
-        return new EnrollmentFormRepository(briteDatabase, evaluator, rulesRepository, codeGenerator, uid, d2);
+        return new EnrollmentFormRepository(evaluator, rulesRepository, uid, d2);
     }
 }

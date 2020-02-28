@@ -2,7 +2,7 @@
     <!-- Warnings and error messages -->
     <string name="error">Ошибка</string>
     <string name="sync_metadata">Метаданные</string>
-    <string name="sync_events">Events</string>
+    <string name="sync_events">События</string>
     <string name="add_new">Добавить новое</string>
     <string name="add">Добавить</string>
     <string name="schedule_new">Распланировать новое</string>
@@ -34,7 +34,7 @@
     <string name="create">Создать</string>
     <string name="update">Обновить</string>
     <string name="date">Дата</string>
-    <string name="category_option">Category option</string>
+    <string name="category_option">Опции категории</string>
     <string name="latitude">Широта</string>
     <string name="longitude">Долгота</string>
     <string name="new_event">Новое событие</string>
@@ -45,6 +45,8 @@
     <string name="due_date">Дата выполнения</string>
     <string name="cancel">Отмена</string>
     <string name="delete">Удалить</string>
+    <string name="total">Итог</string>
+
     <string name="active_programs">Действующие программы</string>
     <string name="enroll">Регистрировать</string>
     <string name="deactivate">Деактивировать</string>
@@ -74,7 +76,7 @@
     <string name="SAVE">Сохранить</string>
     <string name="button_ok">ОК</string>
     <string name="qr_attributes">Атрибуты</string>
-    <string name="qr_events">Events</string>
+    <string name="qr_events">События</string>
     <string name="qr_relationships">Зависимости</string>
     <string name="about">Об</string>
     <string name="share">Поделиться</string>
@@ -97,9 +99,31 @@
     <string name="skip">Пропустить</string>
     <string name="reschedule">Перепланировать</string>
     <string name="event_overdue">Просроченный</string>
+    <string name="table">Таблица</string>
     <string name="local_data_accept">Принять</string>
     <string name="state_warning">Предупреждение</string>
     <string name="action_close">Закрыть</string>
+    <string name="data_set_closed">Закрыть</string>
+    <string name="data_set_open">Открыть</string>
+    <string name="unsupported_value_type">Неподдерживаемый тип значения</string>
     <string name="data_every_day">Ежедневно</string>
     <string name="data_every_week">Еженедельно</string>
+    <string name="period_week">Неделя</string>
+    <string name="sms_completed">Завершенный</string>
+    <string name="sms_bar_state_sending">Выполняется</string>
+    <string name="sms_bar_state_sent">Отправлено</string>
+    <string name="sms_bar_state_failed">Сбой</string>
+
+    <string name="polygon_captured">Полигон зафиксирован</string>
+    <string name="polygon">Полигон</string>
+    <string name="filters_title_period">Период</string>
+    <string name="filters_title_org_unit">Орг. единица</string>
+    <string name="filters_title_status">Статус</string>
+    <string name="filter_period_today">Сегодня</string>
+    <string name="filter_period_yesterday">Вчера</string>
+    <string name="filter_period_this_week">Эта неделя</string>
+    <string name="filter_period_last_week">Прошлая неделя</string>
+    <string name="filter_period_this_month">Этот месяц</string>
+    <string name="filter_period_last_month">Последний месяц</string>
+    <string name="filter_period_other">Другое</string>
     </resources>

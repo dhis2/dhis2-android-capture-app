@@ -2,7 +2,6 @@
     <!--GENERAL-->
     <string name="app_name">DHIS2</string>
     <string name="logo_text">DHIS</string>
-    <string name="logo_number">2</string>
     <!-- Warnings and error messages -->
     <string name="error">Fel</string>
     <string name="error_wrong_server_url">Fel serveradress</string>
@@ -17,7 +16,6 @@
     <string name="sync_text">Synkroniserar med server</string>
     <string name="sync_title">Synkronisera nu</string>
 
-    <string name="sync_metadata">Metadata</string>
     <string name="sync_events">Händelser</string>
     <string name="sync_tei">Tracked entities</string>
 
@@ -109,8 +107,6 @@
     <string name="event_created">Händelse skapad</string>
     <string name="event_updated">Händelse uppdaterad</string>
     <string name="one_time">En gång</string>
-    <string name="permanent">Permanent</string>
-
     <!--Event Detail-->
     <string name="event_date">Händelse datum</string>
     <string name="due_date">Förfallodatum</string>
@@ -121,6 +117,7 @@
     <string name="delete_event">Ta bort händelse</string>
     <string name="confirm_delete_event">Är du säker på att du vill radera den här händelsen?</string>
     <string name="event_was_deleted">Händelse raderats</string>
+    <string name="total">Totalt</string>
 
     <!--TEI Enrollment list-->
     <string name="enrollment_list">Inskrivningslista</string>
@@ -144,7 +141,6 @@
     <!--DONE TASKS-->
     <string name="events">händelser</string>
     <string name="done_task">Hem</string>
-    <string name="app_info">App Info</string>
     <string name="log_out">Logga ut</string>
     <string name="block_session">Blockera sessionen</string>
 
@@ -255,7 +251,6 @@
     <string name="teiType_search_online">Sök efter typ är inte möjlig för online-sökning\nVälj ett program från listan.</string>
     <string name="max">max</string>
     <string name="current">AKTUELL</string>
-    <string name="tei">TEI</string>
     <string name="limit_by_organisation_unit">Begränsa per organisationsenhet</string>
     <string name="programs_list">Programlista</string>
     <string name="wipe_data">Återställ app</string>
@@ -268,7 +263,6 @@
 
     <!--ABOUT-->
     <string name="about_app">App version: %s</string>
-    <string name="about_sdk">SDK Version: %s</string>
     <string name="about_connected">Ansluten till: %s</string>
     <string name="about_user">Aktuell användare: %s</string>
     <string name="login_error_null_pass">Lösenordet saknas. Vänligen fyll i detta fält.</string>
@@ -314,10 +308,21 @@
     <string name="event_overview">detaljer</string>
     <string name="event_indicators">indikatorer</string>
     <string name="please_wait">Vänta</string>
+    <string name="table">Tabell</string>
     <string name="local_data_accept">Acceptera</string>
     <string name="login_server_info_title">Server URL</string>
     <string name="state_warning">Varning</string>
     <string name="action_close">Stänga</string>
+    <string name="data_set_closed">Stänga</string>
+    <string name="data_set_open">Öppen</string>
     <string name="data_every_day">Dagligen</string>
     <string name="data_every_week">Varje vecka</string>
+    <string name="sms_completed">Avklarad</string>
+    <string name="filters_title_period">Period</string>
+    <string name="filters_title_status">Status</string>
+    <string name="filter_period_this_week">Denna vecka</string>
+    <string name="filter_period_last_week">Förra veckan</string>
+    <string name="filter_period_this_month">Den här månaden</string>
+    <string name="filter_period_last_month">Förra månaden</string>
+    <string name="filter_period_other">Övrig</string>
     </resources>

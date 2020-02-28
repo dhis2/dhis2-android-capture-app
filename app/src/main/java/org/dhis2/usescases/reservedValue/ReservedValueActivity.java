@@ -8,7 +8,7 @@ import org.dhis2.R;
 import org.dhis2.databinding.ActivityReservedValueBinding;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.utils.Constants;
-import org.dhis2.utils.custom_views.CustomDialog;
+import org.dhis2.utils.customviews.CustomDialog;
 
 import java.util.List;
 
@@ -21,12 +21,13 @@ public class ReservedValueActivity extends ActivityGlobalAbstract implements Res
     private ActivityReservedValueBinding reservedBinding;
     private ReservedValueAdapter adapter;
     @Inject
-    ReservedValueContracts.Presenter presenter;
+    ReservedValuePresenter presenter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        ((App) getApplicationContext()).userComponent().plus(new ReservedValueModule(this)).inject(this);
         super.onCreate(savedInstanceState);
+
+        ((App) getApplicationContext()).userComponent().plus(new ReservedValueModule(this)).inject(this);
 
         reservedBinding = DataBindingUtil.setContentView(this, R.layout.activity_reserved_value);
         reservedBinding.setVariable(BR.presenter, presenter);
@@ -44,7 +45,7 @@ public class ReservedValueActivity extends ActivityGlobalAbstract implements Res
     @Override
     protected void onResume() {
         super.onResume();
-        presenter.init(this);
+        presenter.init();
     }
 
     @Override

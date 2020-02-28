@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="label"
+            type="java.lang.String" />
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <Button
+            android:id="@+id/formButton"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:minHeight="@dimen/default_cell_height"
+            android:clickable="false"
+            android:enabled="false"
+            android:focusable="true"
+            android:padding="3dp"
+            android:maxLines="2"
+            android:ellipsize="end"
+            android:textAllCaps="false"
+            android:textColor="@color/gray_b2b"
+            android:background="@drawable/cell_edit_bg"
+            tools:text="Unsupported" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

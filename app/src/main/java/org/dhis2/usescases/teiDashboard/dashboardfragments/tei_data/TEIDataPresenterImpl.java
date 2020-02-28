@@ -1,38 +1,41 @@
 package org.dhis2.usescases.teiDashboard.dashboardfragments.tei_data;
 
 import android.content.Intent;
-import android.os.Bundle;
-import android.view.Menu;
 import android.view.View;
 
+import androidx.core.app.ActivityOptionsCompat;
+
+import org.dhis2.Bindings.ExtensionsKt;
 import org.dhis2.R;
-import org.dhis2.data.metadata.MetadataRepository;
+import org.dhis2.data.schedulers.SchedulerProvider;
+import org.dhis2.data.tuples.Pair;
+import org.dhis2.usescases.enrollment.EnrollmentActivity;
+import org.dhis2.usescases.events.ScheduledEventActivity;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity;
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity;
 import org.dhis2.usescases.qrCodes.QrActivity;
 import org.dhis2.usescases.teiDashboard.DashboardProgramModel;
 import org.dhis2.usescases.teiDashboard.DashboardRepository;
-import org.dhis2.usescases.teiDashboard.eventDetail.EventDetailActivity;
-import org.dhis2.usescases.teiDashboard.nfc_data.NfcDataWriteActivity;
-import org.dhis2.usescases.teiDashboard.teiDataDetail.TeiDataDetailActivity;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.EventCreationType;
+import org.dhis2.utils.analytics.AnalyticsHelper;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.event.Event;
-import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
-import org.hisp.dhis.android.core.program.ProgramModel;
-import org.hisp.dhis.android.core.program.ProgramStageModel;
+import org.hisp.dhis.android.core.program.Program;
+import org.hisp.dhis.android.core.program.ProgramStage;
 
-import androidx.appcompat.widget.PopupMenu;
-import androidx.core.app.ActivityOptionsCompat;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
-import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
+
+import static org.dhis2.utils.analytics.AnalyticsConstants.ACTIVE_FOLLOW_UP;
+import static org.dhis2.utils.analytics.AnalyticsConstants.FOLLOW_UP;
+import static org.dhis2.utils.analytics.AnalyticsConstants.SHARE_TEI;
+import static org.dhis2.utils.analytics.AnalyticsConstants.TYPE_QR;
+import static org.dhis2.utils.analytics.AnalyticsConstants.TYPE_SHARE;
 
 /**
  * QUADRAM. Created by ppajuelo on 09/04/2019.
@@ -41,42 +44,68 @@ class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
 
     private final D2 d2;
     private final DashboardRepository dashboardRepository;
+    private final SchedulerProvider schedulerProvider;
+    private final AnalyticsHelper analyticsHelper;
     private String programUid;
     private final String teiUid;
-    private final MetadataRepository metadataRepository;
     private TEIDataContracts.View view;
     private CompositeDisposable compositeDisposable;
     private DashboardProgramModel dashboardModel;
 
-    public TEIDataPresenterImpl(D2 d2, DashboardRepository dashboardRepository, MetadataRepository metadataRepository,
-                                String programUid, String teiUid) {
+
+    public TEIDataPresenterImpl(TEIDataContracts.View view, D2 d2, DashboardRepository dashboardRepository,
+                                String programUid, String teiUid, SchedulerProvider schedulerProvider,
+                                AnalyticsHelper analyticsHelper) {
+        this.view = view;
         this.d2 = d2;
-        this.metadataRepository = metadataRepository;
         this.dashboardRepository = dashboardRepository;
         this.programUid = programUid;
         this.teiUid = teiUid;
+        this.schedulerProvider = schedulerProvider;
+        this.analyticsHelper = analyticsHelper;
+        this.compositeDisposable = new CompositeDisposable();
     }
 
     @Override
-    public void init(TEIDataContracts.View view) {
-        this.view = view;
-        this.compositeDisposable = new CompositeDisposable();
+    public void init() {
+        compositeDisposable.add(
+                d2.trackedEntityModule().trackedEntityInstances().uid(teiUid).get()
+                        .map(tei -> {
+                                    String defaultIcon = d2.trackedEntityModule().trackedEntityTypes().uid(tei.trackedEntityType()).blockingGet().style().icon();
+                                    return Pair.create(
+                                            ExtensionsKt.profilePicturePath(tei, d2, programUid),
+                                            defaultIcon != null ? defaultIcon : ""
+                                    );
+                                }
+                        )
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
+                        .subscribe(
+                                fileNameAndDefault -> view.showTeiImage(
+                                        fileNameAndDefault.val0(),
+                                        fileNameAndDefault.val1()
+                                ),
+                                Timber::e
+                        )
+        );
+
     }
+
 
     @Override
     public void getTEIEvents() {
         compositeDisposable.add(
                 dashboardRepository.getTEIEnrollmentEvents(programUid, teiUid)
                         .map(eventModels -> {
-                            for (EventModel eventModel : eventModels) {
+                            for (Event eventModel : eventModels) {
                                 if (eventModel.status() == EventStatus.SCHEDULE && eventModel.dueDate() != null && eventModel.dueDate().before(DateUtils.getInstance().getToday())) { //If a schedule event dueDate is before today the event is skipped
                                     dashboardRepository.updateState(eventModel, EventStatus.SKIPPED);
                                 }
                             }
                             return eventModels;
                         })
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
                         .subscribe(
                                 view.setEvents(),
                                 Timber::d
@@ -85,15 +114,18 @@ class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
     }
 
     @Override
-    public void getCatComboOptions(EventModel event) {
+    public void getCatComboOptions(Event event) {
         compositeDisposable.add(
                 dashboardRepository.catComboForProgram(event.program())
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(catCombo -> {
-                                    for (ProgramStageModel programStage : dashboardModel.getProgramStages()) {
+                        .flatMap(categoryCombo -> dashboardRepository.catOptionCombos(categoryCombo.uid()),
+                                Pair::create
+                        )
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
+                        .subscribe(categoryComboListPair -> {
+                                    for (ProgramStage programStage : dashboardModel.getProgramStages()) {
                                         if (event.programStage().equals(programStage.uid()))
-                                            view.showCatComboDialog(event.uid(), catCombo);
+                                            view.showCatComboDialog(event.uid(), categoryComboListPair.val0(), categoryComboListPair.val1());
                                     }
                                 },
                                 Timber::e));
@@ -106,7 +138,7 @@ class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
 
     @Override
     public void changeCatOption(String eventUid, String catOptionComboUid) {
-        metadataRepository.saveCatOption(eventUid, catOptionComboUid);
+        dashboardRepository.saveCatOption(eventUid, catOptionComboUid);
     }
 
     @Override
@@ -115,8 +147,8 @@ class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
                 dashboardRepository.getEnrollmentEventsWithDisplay(programUid, teiUid)
                         .flatMap(events -> events.isEmpty() ? dashboardRepository.getTEIEnrollmentEvents(programUid, teiUid) : Observable.just(events))
                         .map(events -> Observable.fromIterable(events).all(event -> event.status() == EventStatus.COMPLETED))
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
                         .subscribe(
                                 view.areEventsCompleted(),
                                 Timber::d
@@ -128,8 +160,8 @@ class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
     public void displayGenerateEvent(String eventUid) {
         compositeDisposable.add(
                 dashboardRepository.displayGenerateEvent(eventUid)
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
                         .subscribe(
                                 view.displayGenerateEvent(),
                                 Timber::d
@@ -139,14 +171,14 @@ class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
 
     @Override
     public void completeEnrollment() {
-        if (d2.programModule().programs.uid(programUid).withAllChildren().get().access().data().write()) {
+        if (d2.programModule().programs().uid(programUid).blockingGet().access().data().write()) {
             Flowable<Long> flowable;
             EnrollmentStatus newStatus = EnrollmentStatus.COMPLETED;
 
             flowable = dashboardRepository.updateEnrollmentStatus(dashboardModel.getCurrentEnrollment().uid(), newStatus);
             compositeDisposable.add(flowable
-                    .subscribeOn(Schedulers.computation())
-                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribeOn(schedulerProvider.computation())
+                    .observeOn(schedulerProvider.ui())
                     .map(result -> newStatus)
                     .subscribe(
                             view.enrollmentCompleted(),
@@ -160,8 +192,7 @@ class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
     @Override
     public void onFollowUp(DashboardProgramModel dashboardProgramModel) {
         boolean followup = dashboardRepository.setFollowUp(dashboardProgramModel.getCurrentEnrollment().uid());
-
-
+        analyticsHelper.setEvent(ACTIVE_FOLLOW_UP, Boolean.toString(followup), FOLLOW_UP);
         view.showToast(followup ?
                 view.getContext().getString(R.string.follow_up_enabled) :
                 view.getContext().getString(R.string.follow_up_disabled));
@@ -172,78 +203,39 @@ class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
 
     @Override
     public void onShareClick(View mView) {
-        PopupMenu menu = new PopupMenu(view.getContext(), mView);
-
-        menu.getMenu().add(Menu.NONE, Menu.NONE, 0, "QR");
-//        menu.getMenu().add(Menu.NONE, Menu.NONE, 1, "NFC"); TODO: When NFC is ready, reactivate option
-        //menu.getMenu().add(Menu.NONE, Menu.NONE, 1, "SMS"); TODO: When SMS is ready, reactivate option
-
-        menu.setOnMenuItemClickListener(item -> {
-            switch (item.getOrder()) {
-                case 0:
-                    Intent intent = new Intent(view.getContext(), QrActivity.class);
-                    intent.putExtra("TEI_UID", teiUid);
-                    view.showQR(intent);
-                    return true;
-                case 1:
-                    Intent intentNfc = new Intent(view.getContext(), NfcDataWriteActivity.class);
-                    intentNfc.putExtra("TEI_UID",teiUid);
-                    view.showQR(intentNfc);
-                    return true;
-                case 2:
-                    view.displayMessage(view.getContext().getString(R.string.feature_unavaible));
-                    return true;
-                default:
-                    return true;
-            }
-        });
-
-        menu.show();
+        analyticsHelper.setEvent(TYPE_SHARE, TYPE_QR, SHARE_TEI);
+        Intent intent = new Intent(view.getContext(), QrActivity.class);
+        intent.putExtra("TEI_UID", teiUid);
+        view.showQR(intent);
     }
 
     @Override
     public void seeDetails(View sharedView, DashboardProgramModel dashboardProgramModel) {
-        Intent intent = new Intent(view.getContext(), TeiDataDetailActivity.class);
-        Bundle extras = new Bundle();
-        extras.putString("TEI_UID", teiUid);
-        extras.putString("PROGRAM_UID", programUid);
-        if (dashboardProgramModel.getCurrentEnrollment() != null)
-            extras.putString("ENROLLMENT_UID", dashboardProgramModel.getCurrentEnrollment().uid());
-        intent.putExtras(extras);
         ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(view.getAbstractActivity(), sharedView, "user_info");
-        view.seeDetails(intent, options.toBundle());
+        view.seeDetails(EnrollmentActivity.Companion.getIntent(view.getContext(),
+                dashboardProgramModel.getCurrentEnrollment().uid(),
+                dashboardProgramModel.getCurrentProgram().uid(),
+                EnrollmentActivity.EnrollmentMode.CHECK), options.toBundle());
     }
 
     @Override
     public void onScheduleSelected(String uid, View sharedView) {
-        String title = String.format("%s %s - %s",
-                dashboardModel.getTrackedEntityAttributeValueBySortOrder(1) != null ? dashboardModel.getTrackedEntityAttributeValueBySortOrder(1) : "",
-                dashboardModel.getTrackedEntityAttributeValueBySortOrder(2) != null ? dashboardModel.getTrackedEntityAttributeValueBySortOrder(2) : "",
-                dashboardModel.getCurrentProgram() != null ? dashboardModel.getCurrentProgram().displayName() : view.getContext().getString(R.string.dashboard_overview)
-        );
-
-        Intent intent = new Intent(view.getContext(), EventDetailActivity.class);
-        Bundle extras = new Bundle();
-        extras.putString("EVENT_UID", uid);
-        extras.putString("TOOLBAR_TITLE", title);
-        extras.putString("TEI_UID", teiUid);
-        intent.putExtras(extras);
+        Intent intent = ScheduledEventActivity.Companion.getIntent(view.getContext(), uid);
         ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(view.getAbstractActivity(), sharedView, "shared_view");
         view.openEventDetails(intent, options.toBundle());
     }
 
     @Override
     public void onEventSelected(String uid, EventStatus eventStatus, View sharedView) {
-        if (eventStatus == EventStatus.ACTIVE || eventStatus == EventStatus.COMPLETED){
+        if (eventStatus == EventStatus.ACTIVE || eventStatus == EventStatus.COMPLETED) {
             Intent intent = new Intent(view.getContext(), EventCaptureActivity.class);
             intent.putExtras(EventCaptureActivity.getActivityBundle(uid, programUid));
             view.openEventCapture(intent);
-        }
-        else {
-            Event event = d2.eventModule().events.uid(uid).get();
+        } else {
+            Event event = d2.eventModule().events().uid(uid).blockingGet();
             Intent intent = new Intent(view.getContext(), EventInitialActivity.class);
             intent.putExtras(EventInitialActivity.getBundle(
-                    programUid, uid, EventCreationType.DEFAULT.name(), teiUid, null, event.organisationUnit(), event.programStage(), dashboardModel.getCurrentEnrollment().uid(), 0, dashboardModel.getCurrentEnrollment().enrollmentStatus()
+                    programUid, uid, EventCreationType.DEFAULT.name(), teiUid, null, event.organisationUnit(), event.programStage(), dashboardModel.getCurrentEnrollment().uid(), 0, dashboardModel.getCurrentEnrollment().status()
             ));
             view.openEventInitial(intent);
         }
@@ -256,7 +248,7 @@ class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
     }
 
     @Override
-    public void setProgram(ProgramModel program) {
+    public void setProgram(Program program) {
         this.programUid = program.uid();
         view.restoreAdapter(programUid);
     }

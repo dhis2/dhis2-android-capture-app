@@ -1,5 +1,20 @@
 package org.dhis2.usescases.teiDashboard.dashboardfragments.notes;
 
+import static android.text.TextUtils.isEmpty;
+import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
+import static org.dhis2.utils.analytics.AnalyticsConstants.CREATE_NOTE;
+
+import java.util.List;
+
+import javax.inject.Inject;
+
+import org.dhis2.App;
+import org.dhis2.R;
+import org.dhis2.databinding.FragmentNotesBinding;
+import org.dhis2.usescases.general.FragmentGlobalAbstract;
+import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity;
+import org.hisp.dhis.android.core.note.Note;
+
 import android.content.Context;
 import android.os.Bundle;
 import android.text.Editable;
@@ -12,20 +27,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
 
-import org.dhis2.App;
-import org.dhis2.R;
-import org.dhis2.databinding.FragmentNotesBinding;
-import org.dhis2.usescases.general.FragmentGlobalAbstract;
-import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity;
-import org.hisp.dhis.android.core.enrollment.note.NoteModel;
-
-import java.util.List;
-
-import javax.inject.Inject;
-
 import io.reactivex.functions.Consumer;
-
-import static android.text.TextUtils.isEmpty;
 
 /**
  * QUADRAM. Created by ppajuelo on 29/11/2017.
@@ -93,7 +95,8 @@ public class NotesFragment extends FragmentGlobalAbstract implements NotesContra
 
     public void addNote(View view) {
         if (presenter.hasProgramWritePermission()) {
-            noteAdapter.addNote(binding.editNote.getText().toString());
+            analyticsHelper().setEvent(CREATE_NOTE, CLICK, CREATE_NOTE);
+            presenter.saveNote(binding.editNote.getText().toString());
             clearNote(view);
         } else
             displayMessage(getString(R.string.search_access_error));
@@ -104,7 +107,7 @@ public class NotesFragment extends FragmentGlobalAbstract implements NotesContra
     }
 
     @Override
-    public Consumer<List<NoteModel>> swapNotes() {
+    public Consumer<List<Note>> swapNotes() {
         return noteModels -> noteAdapter.setItems(noteModels);
     }
 }

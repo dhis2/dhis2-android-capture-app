@@ -9,11 +9,11 @@
 
         <variable
             name="enrollment"
-            type="org.hisp.dhis.android.core.enrollment.EnrollmentModel" />
+            type="org.hisp.dhis.android.core.enrollment.Enrollment" />
 
         <variable
             name="trackEntity"
-            type="org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel" />
+            type="org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance" />
 
         <variable
             name="presenter"
@@ -25,7 +25,7 @@
 
         <variable
             name="program"
-            type="org.hisp.dhis.android.core.program.ProgramModel" />
+            type="org.hisp.dhis.android.core.program.Program" />
 
         <variable
             name="followup"
@@ -158,7 +158,7 @@
                 android:layout_height="24dp"
                 android:layout_centerHorizontal="true"
                 android:layout_marginEnd="8dp"
-                app:enrolmentIcon='@{enrollment.enrollmentStatus()}'
+                app:enrolmentIcon='@{enrollment.status()}'
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/ic_lock_open_green"
@@ -175,7 +175,7 @@
                 android:maxWidth="80dp"
                 android:textColor="#787878"
                 android:textSize="9sp"
-                app:enrolmentText='@{enrollment.enrollmentStatus()}'
+                app:enrolmentText='@{enrollment.status()}'
                 tools:text="Completado" />
 
         </RelativeLayout>
@@ -193,10 +193,8 @@
                 android:layout_width="48dp"
                 android:layout_height="48dp"
                 android:background="@drawable/photo_temp"
-                android:tint="@color/white"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/ic_tei_default"
                 tools:ignore="ContentDescription" />
 
 
@@ -308,7 +306,6 @@
                     android:id="@+id/enrollment_date"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="10dp"
                     android:fontFamily="@font/rubik_medium"
                     android:gravity="end"
                     android:textColor="@color/text_black_4d4d4d"
@@ -316,6 +313,7 @@
                     android:visibility="@{dashboardModel.currentEnrollment.enrollmentDate()==null?View.GONE:View.VISIBLE}"
                     app:date="@{dashboardModel.currentEnrollment.enrollmentDate()}"
                     app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/enrollment_date_label"
                     app:layout_constraintTop_toTopOf="@id/enrollment_date_label"
                     tools:text="DD/MM/YYYY" />
 
@@ -323,13 +321,13 @@
                     android:id="@+id/org_unit"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="10dp"
                     android:fontFamily="@font/rubik_medium"
                     android:gravity="end"
                     android:text='@{dashboardModel.getCurrentOrgUnit().displayName(),default="OrgUnit"}'
                     android:textColor="@color/text_black_4d4d4d"
                     android:textSize="12sp"
                     app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/org_unit_label"
                     app:layout_constraintTop_toTopOf="@id/org_unit_label" />
             </androidx.constraintlayout.widget.ConstraintLayout>
         </com.google.android.flexbox.FlexboxLayout>

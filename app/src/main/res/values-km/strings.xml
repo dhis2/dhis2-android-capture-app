@@ -50,8 +50,8 @@
     <!--PERIOD-->
     <string name="DAILY">រាល់​ថ្ងៃ</string>
     <string name="WEEKLY">រាល់​សប្ដាហ៍</string>
-    <string name="MONTHLY">Monthly</string>
-    <string name="YEARLY">Yearly</string>
+    <string name="MONTHLY">រាល់​ខែ</string>
+    <string name="YEARLY">ប្រចាំឆ្នាំ</string>
     <string name="clear_filters">លុបចោលការច្រោះមើលទិន្នន័យ</string>
     <string name="action_accept">ទទួលយក</string>
     <string name="action_share_zero_items">ចែករំលែក</string>
@@ -97,7 +97,7 @@
     <string name="completion">ការបញ្ចប់</string>
 
     <!--Event initial-->
-    <string name="create">Create</string>
+    <string name="create">​បង្កើត</string>
     <string name="update">ធ្វើ​បច្ចុប្បន្នភាព</string>
     <string name="date">កាលបរិច្ឆេទ</string>
     <string name="org_unit">អង្គភាព</string>
@@ -111,8 +111,6 @@
     <string name="one_time">មួយពេល</string>
     <string name="permanent">អចិន្ត្រៃយ៍</string>
 
-    <!--DataSet initial-->
-    <string name="report_period">Report period</string>
     <!--Event Detail-->
     <string name="event_date">ថ្ងៃខែឆ្នាំរបស់ព្រឹត្តិការណ៏</string>
     <string name="due_date">កាលបរិច្ឆេទកំណត់</string>
@@ -123,7 +121,6 @@
     <string name="delete_event">លុបចោលព្រឹត្តិការណ៏</string>
     <string name="confirm_delete_event">តើអ្នកច្បាស់ទេថាចង់លុបចោលព្រឹត្តិការណ៏នេះ?</string>
     <string name="event_was_deleted">ព្រឹត្តិការណ៏បានលុបជោគជ័យ</string>
-
     <!--TEI Enrollment list-->
     <string name="enrollment_list">បញ្ជីចុះឈ្មោះ</string>
     <string name="active_programs">កម្មវិធីដំណើរការ</string>
@@ -145,7 +142,6 @@
 
     <!--DONE TASKS-->
     <string name="events">ព្រឹត្តិការណ៏</string>
-    <string name="done_task">Home</string>
     <string name="app_info">ព័ត៌មានកម្មវិធី</string>
     <string name="log_out">ចាកចេញ</string>
     <string name="block_session">ការទប់ស្កាត់</string>
@@ -257,7 +253,6 @@
     <string name="teiType_search_online">ការស្វែងរកតាមរយៈបញ្ចូលមិនដំណើរការតាមរយៈការស្វែងរកតាមអនឡានទេ\nសូមជ្រើសរើសកម្មវិធីពីក្នុងបញ្ជី​</string>
     <string name="max">អតិបរមា</string>
     <string name="current">បច្ចុប្បន្ន</string>
-    <string name="tei">TEI</string>
     <string name="limit_by_organisation_unit">កំណត់ដោយអង្គភាព</string>
     <string name="programs_list">បញ្ជីកម្មវិធី</string>
     <string name="wipe_data">កំណត់កម្មវិធីឡើងវិញ</string>
@@ -313,7 +308,6 @@
     <string name="event_completed_message">គ្រប់ព្រឹត្តិការណ៏ទាំងអស់នៅក្នុងកម្មវិធីនេះបានបញ្ចប់។ តើអ្នកចង់បិទកម្មវិធីនេះទេ?</string>
     <string name="check_event">ត្រួតពិនិត្យ</string>
 
-    <string name="menu_home">Home</string>
     <string name="appwidget_text">ឧទាហរណ៏</string>
     <string name="add_widget">បន្ថែម Widget</string>
     <string name="showHelp">បង្ហាញជំនួយ</string>
@@ -344,14 +338,18 @@
     <string name="relationships">ទំនាក់ទំនង</string>
     <string name="dashboard_overview">ទិដ្ឋភាពទូទៅ</string>
     <string name="dashboard_relationships">ទំនាក់ទំនង</string>
-    <string name="dashboard_indicators">Indicators</string>
     <string name="dashboard_notes">ចំណាំ</string>
     <string name="event_overview">លម្អិត</string>
-    <string name="event_indicators">Indicators</string>
     <string name="event_notes">ចំណាំ</string>
     <string name="local_data_accept">ទទួលយក</string>
     <string name="login_server_info_title">អាសយដ្ឋានរបស់ម៉ាស៊ីនមេ</string>
     <string name="action_close">បិទ</string>
+    <string name="data_set_closed">បិទ</string>
+    <string name="data_set_open">បើក</string>
     <string name="data_every_day">រាល់​ថ្ងៃ</string>
     <string name="data_every_week">រាល់​សប្ដាហ៍</string>
+    <string name="sms_completed">បានបញ្ចប់</string>
+    <string name="filters_title_period">កំឡុងពេល</string>
+    <string name="filters_title_status">ស្ថានភាព</string>
+    <string name="filter_period_other">ផ្សេង</string>
     </resources>

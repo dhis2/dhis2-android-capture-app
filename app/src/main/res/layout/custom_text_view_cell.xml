@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <import type="android.view.View" />
+
+        <variable
+            name="renderType"
+            type="java.lang.String" />
+
+        <variable
+            name="isEditable"
+            type="androidx.databinding.ObservableBoolean" />
+
+        <variable
+            name="tableScale"
+            type="androidx.databinding.ObservableField&lt;org.dhis2.usescases.datasets.dataSetTable.dataSetSection.DataSetTableAdapter.TableScale&gt;" />
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/default_cell_height">
+
+        <EditText
+            android:id="@+id/input_editText"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:background="@drawable/cell_edit_bg"
+            android:ellipsize="end"
+            android:lines="1"
+            android:minHeight="@dimen/default_cell_height"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
+            android:scrollHorizontally="true"
+            android:singleLine="true"
+            android:textAlignment="textEnd"
+            android:textColor="@drawable/cell_text_color"
+            android:textCursorDrawable="@null"
+            android:textSize="14sp"
+            app:tableScaleTextSize="@{tableScale}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="hello" />
+
+        <ImageView
+            android:id="@+id/ic_mandatory"
+            android:layout_width="8dp"
+            android:layout_height="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:visibility="gone"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_mandatory"
+            tools:visibility="visible" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

@@ -1,13 +1,16 @@
 package org.dhis2.usescases.teiDashboard.dashboardfragments.indicators;
 
 import org.dhis2.data.forms.dataentry.RuleEngineRepository;
+import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.usescases.teiDashboard.DashboardRepository;
 import org.dhis2.utils.Result;
 import org.hisp.dhis.android.core.D2;
+import org.hisp.dhis.android.core.arch.helpers.UidsHelper;
 import org.hisp.dhis.android.core.enrollment.EnrollmentCollectionRepository;
-import org.hisp.dhis.android.core.program.ProgramIndicatorModel;
+import org.hisp.dhis.android.core.program.ProgramIndicator;
+import org.hisp.dhis.android.core.program.ProgramRuleActionType;
 import org.hisp.dhis.rules.models.RuleAction;
 import org.hisp.dhis.rules.models.RuleActionDisplayKeyValuePair;
 import org.hisp.dhis.rules.models.RuleActionDisplayText;
@@ -16,11 +19,10 @@ import org.hisp.dhis.rules.models.RuleEffect;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
-import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
 import static android.text.TextUtils.isEmpty;
@@ -31,6 +33,7 @@ import static android.text.TextUtils.isEmpty;
 public class IndicatorsPresenterImpl implements IndicatorsContracts.Presenter {
 
     private final D2 d2;
+    private final SchedulerProvider schedulerProvider;
     private CompositeDisposable compositeDisposable;
     private final String programUid;
     private final String enrollmentUid;
@@ -40,18 +43,19 @@ public class IndicatorsPresenterImpl implements IndicatorsContracts.Presenter {
 
 
     IndicatorsPresenterImpl(D2 d2, String programUid, String teiUid, DashboardRepository dashboardRepository,
-                            RuleEngineRepository ruleEngineRepository) {
+                            RuleEngineRepository ruleEngineRepository, SchedulerProvider schedulerProvider) {
         this.d2 = d2;
         this.programUid = programUid;
         this.dashboardRepository = dashboardRepository;
         this.ruleEngineRepository = ruleEngineRepository;
+        this.schedulerProvider = schedulerProvider;
 
-        EnrollmentCollectionRepository enrollmentRepository = d2.enrollmentModule().enrollments
+        EnrollmentCollectionRepository enrollmentRepository = d2.enrollmentModule().enrollments()
                 .byTrackedEntityInstance().eq(teiUid);
         if (!isEmpty(programUid))
             enrollmentRepository = enrollmentRepository.byProgram().eq(programUid);
 
-        enrollmentUid = enrollmentRepository.one().get() == null ? "" : enrollmentRepository.one().get().uid();
+        enrollmentUid = enrollmentRepository.one().blockingGet() == null ? "" : enrollmentRepository.one().blockingGet().uid();
     }
 
     @Override
@@ -60,34 +64,17 @@ public class IndicatorsPresenterImpl implements IndicatorsContracts.Presenter {
         this.compositeDisposable = new CompositeDisposable();
 
         compositeDisposable.add(
-                dashboardRepository.getIndicators(programUid)
-                        .filter(indicators -> !isEmpty(enrollmentUid))
-                        .map(indicators ->
-                                Observable.fromIterable(indicators)
-                                        .filter(indicator -> indicator.displayInForm() != null && indicator.displayInForm())
-                                        .map(indicator -> {
-                                            String indicatorValue = d2.programModule().programIndicatorEngine.getProgramIndicatorValue(
-                                                    enrollmentUid,
-                                                    null,
-                                                    indicator.uid());
-                                            return Pair.create(indicator, indicatorValue == null ? "" : indicatorValue);
-                                        })
-                                        .filter(pair -> !pair.val1().isEmpty())
-                                        .flatMap(pair -> dashboardRepository.getLegendColorForIndicator(pair.val0(), pair.val1()))
-                                        .toList()
-                        )
-                        .flatMap(Single::toFlowable)
-                        .flatMap(indicators -> ruleEngineRepository.updateRuleEngine()
-                                .flatMap(ruleEngine -> ruleEngineRepository.reCalculate())
-                                .map(this::applyRuleEffects) //Restart rule engine to take into account value changes
-                                .map(ruleIndicators -> {
-                                    for (Trio<ProgramIndicatorModel, String, String> indicator : ruleIndicators)
-                                        if (!indicators.contains(indicator))
-                                            indicators.add(indicator);
-                                    return indicators;
-                                }))
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
+                Flowable.zip(
+                        getIndicators(),
+                        getRulesIndicators(),
+                        (indicators, ruleIndicators) -> {
+                            for (Trio<ProgramIndicator, String, String> indicator : ruleIndicators)
+                                if (!indicators.contains(indicator))
+                                    indicators.add(indicator);
+                            return indicators;
+                        })
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
                         .subscribe(
                                 view.swapIndicators(),
                                 Timber::d
@@ -95,9 +82,46 @@ public class IndicatorsPresenterImpl implements IndicatorsContracts.Presenter {
         );
     }
 
-    private List<Trio<ProgramIndicatorModel, String, String>> applyRuleEffects(Result<RuleEffect> calcResult) {
+    private Flowable<List<Trio<ProgramIndicator, String, String>>> getIndicators() {
+        return dashboardRepository.getIndicators(programUid)
+                .filter(indicators -> !isEmpty(enrollmentUid))
+                .map(indicators ->
+                        Observable.fromIterable(indicators)
+                                .filter(indicator -> indicator.displayInForm() != null && indicator.displayInForm())
+                                .map(indicator -> {
+                                    String indicatorValue = d2.programModule().programIndicatorEngine().getProgramIndicatorValue(
+                                            enrollmentUid,
+                                            null,
+                                            indicator.uid());
+                                    return Pair.create(indicator, indicatorValue == null ? "" : indicatorValue);
+                                })
+                                .filter(pair -> !pair.val1().isEmpty())
+                                .flatMap(pair -> dashboardRepository.getLegendColorForIndicator(pair.val0(), pair.val1()))
+                                .toList()
+                ).flatMap(Single::toFlowable);
+    }
 
-        List<Trio<ProgramIndicatorModel, String, String>> indicators = new ArrayList<>();
+    private Flowable<List<Trio<ProgramIndicator, String, String>>> getRulesIndicators() {
+
+        return d2.programModule().programRules().byProgramUid().eq(programUid).get()
+                .map(UidsHelper::getUidsList)
+                .flatMap(programRulesUids -> d2.programModule().programRuleActions()
+                        .byProgramRuleUid().in(programRulesUids)
+                        .byProgramRuleActionType().in(ProgramRuleActionType.DISPLAYKEYVALUEPAIR, ProgramRuleActionType.DISPLAYTEXT).get())
+                .flatMapPublisher(actions -> {
+                    if (actions.isEmpty()) {
+                        return Flowable.just(new ArrayList<>());
+                    } else {
+                        return ruleEngineRepository.updateRuleEngine()
+                                .flatMap(ruleEngine -> ruleEngineRepository.reCalculate())
+                                .map(this::applyRuleEffects); //Restart rule engine to take into account value changes
+                    }
+                });
+    }
+
+    private List<Trio<ProgramIndicator, String, String>> applyRuleEffects(Result<RuleEffect> calcResult) {
+
+        List<Trio<ProgramIndicator, String, String>> indicators = new ArrayList<>();
 
         if (calcResult.error() != null) {
             Timber.e(calcResult.error());
@@ -108,12 +132,15 @@ public class IndicatorsPresenterImpl implements IndicatorsContracts.Presenter {
             RuleAction ruleAction = ruleEffect.ruleAction();
             if (!ruleEffect.data().contains("#{")) //Avoid display unavailable variables
                 if (ruleAction instanceof RuleActionDisplayKeyValuePair) {
-                    Trio<ProgramIndicatorModel, String, String> indicator = Trio.create(
-                            ProgramIndicatorModel.builder().displayName(((RuleActionDisplayKeyValuePair) ruleAction).content()).build(),
+                    Trio<ProgramIndicator, String, String> indicator = Trio.create(
+                            ProgramIndicator.builder()
+                                    .uid(((RuleActionDisplayKeyValuePair) ruleAction).content())
+                                    .displayName(((RuleActionDisplayKeyValuePair) ruleAction).content())
+                                    .build(),
                             ruleEffect.data(), "");
                     indicators.add(indicator);
                 } else if (ruleAction instanceof RuleActionDisplayText) {
-                    Trio<ProgramIndicatorModel, String, String> indicator = Trio.create(null,
+                    Trio<ProgramIndicator, String, String> indicator = Trio.create(null,
                             ((RuleActionDisplayText) ruleAction).content() + ruleEffect.data(), "");
                     indicators.add(indicator);
                 }

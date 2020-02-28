@@ -5,7 +5,7 @@ import androidx.annotation.Nullable;
 
 import com.google.auto.value.AutoValue;
 
-import org.hisp.dhis.android.core.category.CategoryModel;
+import org.hisp.dhis.android.core.category.Category;
 import org.hisp.dhis.android.core.period.PeriodType;
 
 import java.util.Collections;
@@ -30,7 +30,10 @@ public abstract class DataSetInitialModel {
     public abstract PeriodType periodType();
 
     @NonNull
-    public abstract List<CategoryModel> categoryModels();
+    public abstract List<Category> categories();
+
+    @Nullable
+    public abstract Integer openFuturePeriods();
 
     @NonNull
     public static DataSetInitialModel create(@NonNull String displayName,
@@ -38,11 +41,12 @@ public abstract class DataSetInitialModel {
                                              @NonNull String categoryCombo,
                                              @NonNull String categoryComboName,
                                              @NonNull PeriodType periodType,
-                                             @NonNull List<CategoryModel> categoryModels) {
-        return new AutoValue_DataSetInitialModel(displayName, description, categoryCombo, categoryComboName, periodType, categoryModels);
+                                             @NonNull List<Category> categories,
+                                             @Nullable Integer openFuturePeriods) {
+        return new AutoValue_DataSetInitialModel(displayName, description, categoryCombo, categoryComboName, periodType, categories, openFuturePeriods);
     }
 
-    public final List<CategoryModel> categories() {
-        return Collections.unmodifiableList(categoryModels());
+    public final List<Category> getCategories() {
+        return Collections.unmodifiableList(categories());
     }
 }

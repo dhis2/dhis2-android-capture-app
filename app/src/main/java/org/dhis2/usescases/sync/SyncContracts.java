@@ -14,7 +14,7 @@ public class SyncContracts {
 
     public interface Presenter extends AbstractActivityContracts.Presenter {
 
-        void init(View view, D2 d2);
+        void init(View view);
 
         void sync();
 

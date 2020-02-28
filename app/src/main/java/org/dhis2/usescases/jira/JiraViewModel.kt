@@ -8,13 +8,12 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.google.gson.Gson
-import de.adorsys.android.securestoragelibrary.SecurePreferences
 import okhttp3.MediaType
 import okhttp3.OkHttpClient
 import okhttp3.RequestBody
 import okhttp3.ResponseBody
-import org.dhis2.Bindings.default
-import org.dhis2.utils.BiometricStorage
+import org.dhis2.data.prefs.PreferenceProvider
+import org.dhis2.data.prefs.PreferenceProviderImpl
 import org.dhis2.utils.Constants
 import org.dhis2.utils.jira.IssueRequest
 import org.dhis2.utils.jira.JiraIssueListRequest
@@ -32,26 +31,55 @@ import retrofit2.http.POST
 class JiraViewModel : ViewModel(), JiraActions {
 
     private lateinit var issueService: JiraIssueService
+    private lateinit var prefs: PreferenceProvider
 
-    fun init() {
+    private var session: MutableLiveData<String?> = MutableLiveData()
+    private val isSessionOpen = ObservableField<Boolean>(false)
+
+    private val userName = MutableLiveData<String>()
+    private val pass = MutableLiveData<String>()
+    private var rememberCredentials: MutableLiveData<Boolean> = MutableLiveData()
+
+    private val summary = MutableLiveData<String>()
+    private val description = MutableLiveData<String>()
+    private val formCompleted = ObservableField<Boolean>(false)
+
+    private val issueListResponse = MutableLiveData<Response<ResponseBody>>()
+    private var issueMessage: MutableLiveData<String> = MutableLiveData()
+
+    fun init(preferenceProvider: PreferenceProviderImpl) {
         val retrofit = Retrofit.Builder()
-                .baseUrl("https://jira.dhis2.org/")
-                .client(OkHttpClient())
-                .validateEagerly(true)
-                .build()
+            .baseUrl("https://jira.dhis2.org/")
+            .client(OkHttpClient())
+            .validateEagerly(true)
+            .build()
 
         issueService = retrofit.create<JiraIssueService>(JiraIssueService::class.java)
+        prefs = preferenceProvider
 
-        if (SecurePreferences.contains(Constants.JIRA_USER))
+        session.value = prefs.getString(Constants.JIRA_AUTH, null)
+        rememberCredentials.value = prefs.contains(Constants.JIRA_AUTH)
+        issueMessage.value = ""
+
+        if (prefs.contains(Constants.JIRA_USER)) {
             getJiraIssues()
+        }
     }
 
     private interface JiraIssueService {
         @POST("rest/api/2/issue")
-        fun createIssue(@Header("Authorization") auth: String, @Body issueRequest: RequestBody): Call<ResponseBody>
+        fun createIssue(
+            @Header("Authorization")
+            auth: String,
+            @Body issueRequest: RequestBody
+        ): Call<ResponseBody>
 
         @POST("rest/api/2/search")
-        fun getJiraIssues(@Header("Authorization") auth: String?, @Body issueRequest: RequestBody): Call<ResponseBody>
+        fun getJiraIssues(
+            @Header("Authorization")
+            auth: String?,
+            @Body issueRequest: RequestBody
+        ): Call<ResponseBody>
     }
 
     override fun openSession() {
@@ -63,24 +91,25 @@ class JiraViewModel : ViewModel(), JiraActions {
 
     fun getJiraIssues() {
         val basic = String.format("Basic %s", session.value)
-        val request = JiraIssueListRequest(SecurePreferences.getStringValue(Constants.JIRA_USER, userName.value), 20)
-        val requestBody = RequestBody.create(MediaType.parse("application/json"), Gson().toJson(request))
+        val request = JiraIssueListRequest(prefs.getString(Constants.JIRA_USER, userName.value), 20)
+        val requestBody =
+            RequestBody.create(MediaType.parse("application/json"), Gson().toJson(request))
         issueService.getJiraIssues(basic, requestBody).enqueue(getJiraIssueListCallback())
     }
 
     private fun getJiraIssueListCallback(): Callback<ResponseBody> {
-
         return object : Callback<ResponseBody> {
             override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
                 if (response.isSuccessful) {
-                    if (rememberCredentials.value!! && !SecurePreferences.contains(Constants.JIRA_AUTH)) {
-                        BiometricStorage.saveJiraCredentials(getAuth())
-                        BiometricStorage.saveJiraUser(userName.value!!)
+                    if (rememberCredentials.value!! && !prefs.contains(Constants.JIRA_AUTH)) {
+                        prefs.saveJiraCredentials(getAuth())
+                        prefs.saveJiraUser(userName.value!!)
                     }
                     isSessionOpen.set(true)
                     issueListResponse.value = response
-                } else
+                } else {
                     closeSession()
+                }
             }
 
             override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
@@ -90,26 +119,11 @@ class JiraViewModel : ViewModel(), JiraActions {
     }
 
     override fun closeSession() {
-        BiometricStorage.closeJiraSession()
+        prefs.closeJiraSession()
         session.value = null
         rememberCredentials.value = false
         isSessionOpen.set(false)
     }
-
-    private val session = MutableLiveData<String?>().default(SecurePreferences.getStringValue(Constants.JIRA_AUTH, null))
-    private val isSessionOpen = ObservableField<Boolean>(false)
-
-    private val userName = MutableLiveData<String>()
-    private val pass = MutableLiveData<String>()
-    private val rememberCredentials = MutableLiveData<Boolean>().default(SecurePreferences.contains(Constants.JIRA_AUTH))
-
-    private val summary = MutableLiveData<String>()
-    private val description = MutableLiveData<String>()
-    private val formCompleted = ObservableField<Boolean>(false)
-
-    private val issueListResponse = MutableLiveData<Response<ResponseBody>>()
-    private val issueMessage = MutableLiveData<String>().default("")
-
 
     fun issueListResponse(): LiveData<Response<ResponseBody>> {
         return issueListResponse
@@ -130,7 +144,8 @@ class JiraViewModel : ViewModel(), JiraActions {
     override fun sendIssue() {
         val issueRequest = IssueRequest(summary.value, description.value)
         val basic = String.format("Basic %s", session.value)
-        val requestBody = RequestBody.create(MediaType.parse("application/json"), Gson().toJson(issueRequest))
+        val requestBody =
+            RequestBody.create(MediaType.parse("application/json"), Gson().toJson(issueRequest))
         issueService.createIssue(basic, requestBody).enqueue(getIssueCallback())
     }
 
@@ -140,8 +155,9 @@ class JiraViewModel : ViewModel(), JiraActions {
                 if (response.isSuccessful) {
                     issueMessage.value = "Issue Sent"
                     getJiraIssues()
-                } else
+                } else {
                     issueMessage.value = "Error sending issue"
+                }
             }
 
             override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
@@ -173,16 +189,20 @@ class JiraViewModel : ViewModel(), JiraActions {
     }
 
     private fun checkFormCompletion() {
-
-        val check = !isEmpty(summary.value) && !isEmpty(description.value) && isSessionOpen().get()!!
+        val check =
+            !isEmpty(summary.value) && !isEmpty(description.value) && isSessionOpen().get()!!
 
         formCompleted.set(check)
     }
 
     fun getAuth(): String {
-        return if (isEmpty(session.value))
-            Base64.encodeToString(String.format("%s:%s", userName.value, pass.value).toByteArray(), Base64.NO_WRAP)
-        else
+        return if (isEmpty(session.value)) {
+            Base64.encodeToString(
+                String.format("%s:%s", userName.value, pass.value).toByteArray(),
+                Base64.NO_WRAP
+            )
+        } else {
             session.value!!
+        }
     }
 }

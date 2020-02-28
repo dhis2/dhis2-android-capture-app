@@ -5,8 +5,8 @@ import android.database.Cursor;
 import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.hisp.dhis.android.core.common.ValueType;
-import org.hisp.dhis.android.core.option.OptionModel;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
+import org.hisp.dhis.android.core.option.Option;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue;
 
 /**
  * QUADRAM. Created by ppajuelo on 25/09/2018.
@@ -19,8 +19,8 @@ public class ValueUtils {
      * @param cursor        cursor of the original TEAV
      * @return Returns a trackedEntityAttributeValueModel which value has been parse for valueType orgunit uid or optionSet code/name
      */
-    public static TrackedEntityAttributeValueModel transform(BriteDatabase briteDatabase, Cursor cursor) {
-        TrackedEntityAttributeValueModel teAttrValue = TrackedEntityAttributeValueModel.create(cursor);
+    public static TrackedEntityAttributeValue transform(BriteDatabase briteDatabase, Cursor cursor) {
+        TrackedEntityAttributeValue teAttrValue = TrackedEntityAttributeValue.create(cursor);
         int valueTypeIndex = cursor.getColumnIndex("valueType");
         int optionSetIndex = cursor.getColumnIndex("optionSet");
         if (cursor.getString(valueTypeIndex).equals(ValueType.ORGANISATION_UNIT.name())) {
@@ -28,7 +28,7 @@ public class ValueUtils {
             try (Cursor orgUnitCursor = briteDatabase.query("SELECT OrganisationUnit.displayName FROM OrganisationUnit WHERE OrganisationUnit.uid = ?", orgUnitUid)) {
                 if (orgUnitCursor != null && orgUnitCursor.moveToFirst()) {
                     String orgUnitName = orgUnitCursor.getString(0);
-                    teAttrValue = TrackedEntityAttributeValueModel.builder()
+                    teAttrValue = TrackedEntityAttributeValue.builder()
                             .trackedEntityInstance(teAttrValue.trackedEntityInstance())
                             .lastUpdated(teAttrValue.lastUpdated())
                             .created(teAttrValue.created())
@@ -43,14 +43,15 @@ public class ValueUtils {
             try (Cursor optionsCursor = briteDatabase.query("SELECT * FROM Option WHERE optionSet = ?", optionSet)) {
                 if (optionsCursor != null && optionsCursor.moveToFirst()) {
                     for (int i = 0; i < optionsCursor.getCount(); i++) {
-                        OptionModel optionModel = OptionModel.create(optionsCursor);
-                        if (optionModel.code().equals(optionCode) || optionModel.name().equals(optionCode)) {
-                            teAttrValue = TrackedEntityAttributeValueModel.builder()
+                        Option option = Option.create(optionsCursor);
+                        if (option.code().equals(optionCode) || option.name().equals(optionCode)) {
+
+                            teAttrValue = TrackedEntityAttributeValue.builder()
                                     .trackedEntityInstance(teAttrValue.trackedEntityInstance())
                                     .lastUpdated(teAttrValue.lastUpdated())
                                     .created(teAttrValue.created())
                                     .trackedEntityAttribute(teAttrValue.trackedEntityAttribute())
-                                    .value(optionModel.displayName())
+                                    .value(option.displayName())
                                     .build();
                         }
                         optionsCursor.moveToNext();
@@ -65,8 +66,8 @@ public class ValueUtils {
         String displayName = optionSetCode;
         try (Cursor optionsCursor = briteDatabase.query("SELECT * FROM Option WHERE optionSet = ? AND code = ? LIMIT 1", optionSet, optionSetCode)) {
             if (optionsCursor != null && optionsCursor.moveToFirst()) {
-                OptionModel optionModel = OptionModel.create(optionsCursor);
-                displayName = optionModel.displayName();
+                Option option = Option.create(optionsCursor);
+                displayName = option.displayName();
             }
         }
         return displayName;

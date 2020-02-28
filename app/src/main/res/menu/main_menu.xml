@@ -20,8 +20,8 @@
         <item
             android:id="@+id/nfc_scan"
             android:icon="@drawable/ic_nfc"
-            android:title="NFC Reader"
-            android:visible="false" />
+            android:visible="false"
+            android:title="NFC Reader" />
         <item
             android:id="@+id/sync_manager"
             android:icon="@drawable/ic_menu_settings"

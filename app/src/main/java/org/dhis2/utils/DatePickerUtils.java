@@ -23,7 +23,7 @@ public class DatePickerUtils {
 
         Calendar c = Calendar.getInstance();
 
-        return buildDialog(context, c, null, true, buttonListener);
+        return buildDialog(context, c, null, null, null, true, buttonListener);
     }
 
     public static Dialog getDatePickerDialog(@NonNull Context context,
@@ -38,28 +38,31 @@ public class DatePickerUtils {
             c.setTime(currentDate);
 
 
-        return buildDialog(context, c, title, allowFutureDates, buttonListener);
+        return buildDialog(context, c, title, null, null, allowFutureDates, buttonListener);
     }
 
     public static Dialog getDatePickerDialog(@NonNull Context context,
                                              @Nullable String title,
                                              @Nullable Date currentDate,
-                                             boolean futureOnly,
-                                             Date maxDate,
-                                             Date minDate,
+                                             @Nullable Date minDate,
+                                             @Nullable Date maxDate,
+                                             boolean allowFutureDates,
                                              @NonNull OnDatePickerClickListener buttonListener) {
 
 
         Calendar c = Calendar.getInstance();
         if (currentDate != null)
             c.setTime(currentDate);
-        if(futureOnly)
-            c.add(Calendar.DAY_OF_YEAR, 1);
 
-        return buildDialog(context, c, title, true, buttonListener);
+
+        return buildDialog(context, c, title, minDate, maxDate, allowFutureDates, buttonListener);
     }
 
-    private static Dialog buildDialog(Context context, Calendar c, String title,
+    private static Dialog buildDialog(Context context,
+                                      Calendar c,
+                                      String title,
+                                      @Nullable Date minDate,
+                                      @Nullable Date maxDate,
                                       boolean allowFutureDates,
                                       OnDatePickerClickListener buttonListener) {
         LayoutInflater layoutInflater = LayoutInflater.from(context);

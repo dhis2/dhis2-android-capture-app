@@ -17,11 +17,12 @@ import org.dhis2.R;
 import org.dhis2.databinding.FragmentAboutBinding;
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
 import org.hisp.dhis.android.core.user.UserCredentials;
-import org.hisp.dhis.android.core.user.UserCredentialsModel;
 
 import javax.inject.Inject;
 
 import timber.log.Timber;
+
+import static org.dhis2.utils.analytics.AnalyticsConstants.ABOUT_FRAGMENT;
 
 /**
  * QUADRAM. Created by ppajuelo on 05/07/2018.

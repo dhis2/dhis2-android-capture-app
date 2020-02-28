@@ -53,12 +53,7 @@ public class OrgUnitHolder extends FormViewHolder {
 
         binding.orgUnitView.setObjectStyle(viewModel.objectStyle());
         if (model.objectStyle() != null) {
-            objectStyle = ObjectStyle.builder()
-                    .color(model.objectStyle().color())
-                    .icon(model.objectStyle().icon())
-                    .uid(model.objectStyle().uid())
-                    .objectTable(model.objectStyle().objectTable())
-                    .build();
+            objectStyle = model.objectStyle();
         }
         binding.orgUnitView.setLabel(viewModel.label(), viewModel.mandatory());
         descriptionText = viewModel.description();
