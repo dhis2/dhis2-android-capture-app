@@ -1,5 +1,6 @@
 package org.dhis2.usescases.login
 
+import androidx.test.espresso.Espresso.closeSoftKeyboard
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
 import org.dhis2.usescases.BaseTest
@@ -82,6 +83,8 @@ class LoginTest : BaseTest() {
 
         loginRobot {
             typeServer(MOCK_SERVER_URL)
+            checkUsernameFieldIsClear()
+            checkPasswordFieldIsClear()
             clickAccountRecovery()
             //validate using intent if browser is launch
         }
@@ -97,7 +100,7 @@ class LoginTest : BaseTest() {
             typePassword(PASSWORD)
             clearUsernameField()
             clearPasswordField()
-            closeKeyboard()
+            //closeKeyboard()
             checkUsernameFieldIsClear()
             checkPasswordFieldIsClear()
             checkLoginButtonIsHidden()
