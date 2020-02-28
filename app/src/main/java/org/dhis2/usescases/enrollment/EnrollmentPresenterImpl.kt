@@ -220,6 +220,7 @@ class EnrollmentPresenterImpl(
             dataEntryRepository.enrollmentSectionUids()
                 .flatMap { sectionList ->
                     view.sectionFlowable().startWith(sectionList[0]).distinctUntilChanged()
+                        .map { section -> view.setSelectedSection(section) }
                         .switchMap { section ->
                             fields.map { fieldList ->
                                 val finalList = fieldList.toMutableList()

@@ -31,7 +31,7 @@ class SectionHolder(
             }
         })
         formBinding.root.setOnClickListener{
-            onHeaderClick(false)
+            onHeaderClick()
         }
     }
 
@@ -70,7 +70,7 @@ class SectionHolder(
 
     override fun dispose() {}
 
-    fun onHeaderClick(isHeader:Boolean) {
+    fun onHeaderClick() {
         if (!selectedSection.get().equals(viewModel.uid())) {
             selectedSection.set(viewModel.uid())
             sectionProcessor.onNext(viewModel.uid())
@@ -116,7 +116,5 @@ class SectionHolder(
         formBinding.shadowBottom.visibility = if (showShadow) View.VISIBLE else View.GONE
     }
 
-    fun getSection(): String {
-        return viewModel.uid()
-    }
+    fun getSection(): String = selectedSection.get() ?: ""
 }

@@ -28,4 +28,5 @@ interface EnrollmentView : AbstractActivityContracts.View {
     fun setResultAndFinish()
     fun requestFocus()
     fun performSaveClick()
+    fun setSelectedSection(section: String): String
 }

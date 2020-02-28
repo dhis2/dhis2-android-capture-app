@@ -407,4 +407,6 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
         }
     }
 
+    override fun setSelectedSection(section: String) = adapter.setCurrentSection(section)!!
+
 }

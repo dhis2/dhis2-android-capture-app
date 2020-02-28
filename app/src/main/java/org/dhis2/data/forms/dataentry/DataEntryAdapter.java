@@ -362,8 +362,9 @@ public final class DataEntryAdapter extends ListAdapter<FieldViewModel, ViewHold
         return (SectionViewModel) getItem(position);
     }
 
-    public void setCurrentSection(String currentSection) {
+    public String setCurrentSection(String currentSection) {
         selectedSection.set(currentSection);
+        return selectedSection.get();
     }
 
     public SectionHolder createHeader(FormSectionBinding headerBinding) {

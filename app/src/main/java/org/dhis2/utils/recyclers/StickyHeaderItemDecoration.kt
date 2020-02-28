@@ -9,6 +9,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.GestureDetectorCompat
 import androidx.recyclerview.widget.RecyclerView
+import org.dhis2.data.forms.dataentry.EnrollmentRepository
+import org.dhis2.data.forms.dataentry.fields.section.SectionHolder
+import kotlin.math.abs
 
 class StickyHeaderItemDecoration(
     parent: RecyclerView,
@@ -18,11 +21,20 @@ class StickyHeaderItemDecoration(
 ) : RecyclerView.ItemDecoration() {
 
     private var currentHeader: Pair<Int, RecyclerView.ViewHolder>? = null
+    private var startY: Float = -1f
 
     private val mDetector: GestureDetectorCompat =
         GestureDetectorCompat(parent.context, object : GestureDetector.SimpleOnGestureListener() {
             override fun onSingleTapConfirmed(e: MotionEvent?): Boolean {
-                return false
+                val endY = e?.y ?: -1f
+                if (abs(endY - startY) < 5
+                    && startY <= currentHeader?.second?.itemView?.height!!
+                    && (currentHeader?.second as SectionHolder).getSection() ==
+                    EnrollmentRepository.SINGLE_SECTION_UID
+                ) {
+                    (currentHeader?.second as SectionHolder).onHeaderClick()
+                }
+                return true
             }
         })
 
@@ -44,6 +56,9 @@ class StickyHeaderItemDecoration(
                 recyclerView: RecyclerView,
                 motionEvent: MotionEvent
             ): Boolean {
+                if(motionEvent.action == MotionEvent.ACTION_DOWN) {
+                    startY = motionEvent.y
+                }
                 return mDetector.onTouchEvent(motionEvent)
             }
         })
