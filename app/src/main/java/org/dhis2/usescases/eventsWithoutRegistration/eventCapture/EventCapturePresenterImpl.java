@@ -492,21 +492,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
             Timber.e(calcResult.error());
             return viewModels;
         }
-        List<RuleEffect> testRuleEffect = new ArrayList<>();
-        for(RuleEffect effect : calcResult.items()){
-            RuleAction action = effect.ruleAction();
-            if(action instanceof RuleActionAssign){
-                if(((RuleActionAssign) action).field().startsWith("JGQ")||((RuleActionAssign) action).field().startsWith("gDe")){
-                    testRuleEffect.add(effect);
-                }
-            }else if(action instanceof RuleActionHideField){
-                if(((RuleActionHideField) action).field().startsWith("JGQ")||((RuleActionHideField) action).field().startsWith("gDe")){
-                    testRuleEffect.add(effect);
-                }
-            }
-        }
-
-
+        
         //Reset effectsT
         assignedValueChanged = false;
         optionsToHide.clear();
