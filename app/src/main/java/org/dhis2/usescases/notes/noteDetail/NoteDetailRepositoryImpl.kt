@@ -19,6 +19,7 @@ class NoteDetailRepositoryImpl(
         return if (type == NoteType.ENROLLMENT) {
             d2.noteModule().notes().add(
                 NoteCreateProjection.builder()
+                    .noteType(Note.NoteType.ENROLLMENT_NOTE)
                     .enrollment(
                         d2.enrollmentModule().enrollments()
                             .byProgram().eq(programUid)
@@ -29,7 +30,13 @@ class NoteDetailRepositoryImpl(
                     .build()
             )
         } else {
-            Single.just("")
+            d2.noteModule().notes().add(
+                NoteCreateProjection.builder()
+                    .noteType(Note.NoteType.EVENT_NOTE)
+                    .event(uid)
+                    .value(message)
+                    .build()
+            )
         }
     }
 }

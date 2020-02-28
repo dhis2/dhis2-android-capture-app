@@ -54,7 +54,25 @@ class NotesRepositoryTest {
 
     @Test
     fun `Should return notes for event`() {
-        // TODO: Implement test for getEventNotes(eventUid)
+        val notes = listOf(dummyNote(), dummyNote())
+        val eventUid = UUID.randomUUID().toString()
+
+        whenever(
+            d2.noteModule().notes()
+                .byEventUid().eq(eventUid)
+        ) doReturn mock()
+        whenever(
+            d2.noteModule().notes()
+                .byEventUid().eq(eventUid).get()
+        ) doReturn Single.just(notes)
+
+        val testObserver = repository.getEventNotes(eventUid).test()
+
+        testObserver.assertNoErrors()
+        testObserver.assertValueCount(1)
+        testObserver.assertValue(notes)
+
+        testObserver.dispose()
     }
 
     @Test
