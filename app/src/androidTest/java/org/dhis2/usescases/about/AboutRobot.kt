@@ -8,8 +8,8 @@ import org.dhis2.R
 import org.dhis2.common.BaseRobot
 
 fun aboutRobot(aboutBody: AboutRobot.() -> Unit){
-    AboutRobot().run {
-        aboutBody
+    AboutRobot().apply {
+        aboutBody()
     }
 }
 

@@ -22,7 +22,7 @@ open class BaseTest {
     protected var context: Context = InstrumentationRegistry.getInstrumentation().targetContext
     private var isIntentsEnable = false
     private lateinit var keyStoreRobot: KeyStoreRobot
-    private lateinit var preferencesRobot: PreferencesRobot
+    lateinit var preferencesRobot: PreferencesRobot
     lateinit var mockWebServerRobot: MockWebServerRobot
 
 

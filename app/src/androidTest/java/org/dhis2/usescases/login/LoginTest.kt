@@ -2,6 +2,7 @@ package org.dhis2.usescases.login
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
+import org.dhis2.data.prefs.Preference.Companion.SESSION_LOCKED
 import org.dhis2.usescases.BaseTest
 import org.dhis2.usescases.main.MainActivity
 import org.hisp.dhis.android.core.mockwebserver.ResponseController.*
@@ -29,7 +30,6 @@ class LoginTest : BaseTest() {
         mockWebServerRobot.addResponse(GET, API_SYSTEM_INFO_PATH, API_SYSTEM_INFO_RESPONSE_OK)
 
         startLoginActivity()
-
         loginRobot {
             clearServerField()
             typeServer(MOCK_SERVER_URL)
@@ -39,7 +39,6 @@ class LoginTest : BaseTest() {
             clickLoginButton()
             acceptGenericDialog()
         }
-
         cleanDatabase()
     }
 
@@ -82,6 +81,17 @@ class LoginTest : BaseTest() {
             typeServer(MOCK_SERVER_URL)
             clickAccountRecovery()
             //validate using intent if browser is launch
+        }
+    }
+
+    @Test
+    fun shouldGoToPinScreenWhenPinWasSet() {
+        preferencesRobot.saveValue(SESSION_LOCKED, true)
+
+        startLoginActivity()
+
+        loginRobot {
+            checkUnblockSessionViewIsVisible()
         }
     }
 
