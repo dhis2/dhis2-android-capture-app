@@ -12,6 +12,7 @@ import org.dhis2.data.forms.dataentry.RuleEngineRepository;
 import org.dhis2.data.prefs.PreferenceProvider;
 import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.data.tuples.Pair;
+import org.dhis2.data.tuples.Trio;
 import org.dhis2.usescases.enrollment.EnrollmentActivity;
 import org.dhis2.usescases.events.ScheduledEventActivity;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity;
@@ -25,6 +26,7 @@ import org.dhis2.utils.EventCreationType;
 import org.dhis2.utils.EventMode;
 import org.dhis2.utils.Result;
 import org.dhis2.utils.analytics.AnalyticsHelper;
+import org.dhis2.utils.filters.FilterManager;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.android.core.event.Event;
@@ -138,14 +140,22 @@ class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
 
             compositeDisposable.add(
                     Flowable.combineLatest(
+                            FilterManager.getInstance().asFlowable().startWith(FilterManager.getInstance()),
                             sectionFlowable,
                             groupingFlowable,
-                            Pair::create)
+                            Trio::create)
                             .switchMap(stageAndGrouping ->
                                     Flowable.zip(
                                             teiDataRepository.getTEIEnrollmentEvents(
-                                                    stageAndGrouping.val0().isEmpty() ? null : stageAndGrouping.val0(),
-                                                    stageAndGrouping.val1()).toFlowable(),
+                                                    stageAndGrouping.val1().isEmpty() ? null : stageAndGrouping.val1(),
+                                                    stageAndGrouping.val2(),
+                                                    FilterManager.getInstance().getPeriodFilters(),
+                                                    FilterManager.getInstance().getOrgUnitUidsFilters(),
+                                                    FilterManager.getInstance().getStateFilters(),
+                                                    FilterManager.getInstance().getAssignedFilter(),
+                                                    FilterManager.getInstance().getEventStatusFilters(),
+                                                    FilterManager.getInstance().getCatOptComboFilters()
+                                            ).toFlowable(),
                                             ruleEngineRepository.updateRuleEngine()
                                                     .flatMap(ruleEngine -> ruleEngineRepository.reCalculate()),
                                             this::applyEffects)
@@ -179,23 +189,34 @@ class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
                         teiDataRepository.getTrackedEntityInstance(),
                         teiDataRepository.enrollingOrgUnit(),
                         Pair::create)
-                        .
-
-                                subscribeOn(schedulerProvider.io())
-                        .
-
-                                observeOn(schedulerProvider.ui())
-                        .
-
-                                subscribe(
-                                        teiAndOrgUnit ->
-                                                view.setTrackedEntityInstance(
-                                                        teiAndOrgUnit.val0(),
-                                                        teiAndOrgUnit.val1()),
-                                        Timber::e
-                                )
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
+                        .subscribe(
+                                teiAndOrgUnit ->
+                                        view.setTrackedEntityInstance(
+                                                teiAndOrgUnit.val0(),
+                                                teiAndOrgUnit.val1()),
+                                Timber::e
+                        )
         );
 
+        compositeDisposable.add(
+                FilterManager.getInstance().getPeriodRequest()
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
+                        .subscribe(
+                                periodRequest -> view.showPeriodRequest(periodRequest),
+                                Timber::e
+                        ));
+
+        compositeDisposable.add(
+                FilterManager.getInstance().ouTreeFlowable()
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
+                        .subscribe(
+                                orgUnitRequest -> view.openOrgUnitTreeSelector(programUid),
+                                Timber::e
+                        ));
     }
 
     private List<EventViewModel> applyEffects(
