@@ -2,10 +2,9 @@ package org.dhis2.usescases.login
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
-import org.dhis2.R
 import org.dhis2.usescases.BaseTest
 import org.dhis2.usescases.main.MainActivity
-import org.hisp.dhis.android.core.mockwebserver.ResponseController.GET
+import org.hisp.dhis.android.core.mockwebserver.ResponseController.*
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -27,7 +26,7 @@ class LoginTest : BaseTest() {
     @Test
     fun shouldLoginSuccessfullyWhenCredentialsAreRight() {
         mockWebServerRobot.addResponse(GET, API_ME_PATH, API_ME_RESPONSE_OK)
-        mockWebServerRobot.addResponse(GET, API_SYSTEM_INFO, API_SYSTEM_INFO_RESPONSE_OK)
+        mockWebServerRobot.addResponse(GET, API_SYSTEM_INFO_PATH, API_SYSTEM_INFO_RESPONSE_OK)
 
         startLoginActivity()
 
@@ -95,9 +94,6 @@ class LoginTest : BaseTest() {
     }
 
     companion object {
-        const val API_ME_PATH = "/api/me?.*"
-        const val API_SYSTEM_INFO = "/api/system/info?.*"
-
         const val API_ME_RESPONSE_OK = "mocks/user/user.json"
         const val API_ME_UNAUTHORIZE = "mocks/user/unauthorize.json"
         const val API_SYSTEM_INFO_RESPONSE_OK = "mocks/systeminfo/systeminfo.json"
