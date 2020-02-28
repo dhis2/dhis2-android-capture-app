@@ -13,6 +13,7 @@ import androidx.paging.PagedList;
 import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.dhis2.Bindings.ExtensionsKt;
+import org.dhis2.Bindings.TrackedEntityInstanceExtensionsKt;
 import org.dhis2.Bindings.ValueExtensionsKt;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Trio;
@@ -30,10 +31,8 @@ import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.android.core.enrollment.EnrollmentCreateProjection;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
-import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.event.EventCollectionRepository;
 import org.hisp.dhis.android.core.event.EventStatus;
-import org.hisp.dhis.android.core.maintenance.D2Error;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitMode;
 import org.hisp.dhis.android.core.period.DatePeriod;
@@ -204,16 +203,18 @@ public class SearchRepositoryImpl implements SearchRepository {
         if (isOnline && states.isEmpty()) {
             //TODO: SEARCH OFFLINEFIRST
             dataSource = trackedEntityInstanceQuery.offlineFirst().getDataSource()
-                    .mapByPage(list->filterByStatus(list,eventStatuses))
+                    .mapByPage(list -> filterByStatus(list, eventStatuses))
                     .mapByPage(this::filterDeleted)
+                    .mapByPage(list -> TrackedEntityInstanceExtensionsKt.filterDeletedEnrollment(list, d2, selectedProgram != null ? selectedProgram.uid() : null))
                     .map(tei -> transform(tei, selectedProgram, true));
         } else {
             //TODO: OFFLINE
             dataSource = trackedEntityInstanceQuery.offlineOnly().getDataSource() //TODO: ASK SDK TO FILTER BY BOTH ENROLLMENT DATE AND EVENT DATES
                     .mapByPage(list -> filterByState(list, states))
                     .mapByPage(list -> filterByPeriod(list, periods))
-                    .mapByPage(list->filterByStatus(list,eventStatuses))
+                    .mapByPage(list -> filterByStatus(list, eventStatuses))
                     .mapByPage(this::filterDeleted)
+                    .mapByPage(list -> TrackedEntityInstanceExtensionsKt.filterDeletedEnrollment(list, d2, selectedProgram != null ? selectedProgram.uid() : null))
                     .map(tei -> transform(tei, selectedProgram, true));
         }
 
@@ -288,6 +289,7 @@ public class SearchRepositoryImpl implements SearchRepository {
         if (isOnline && states.isEmpty())
             return trackedEntityInstanceQuery.offlineFirst().get().toFlowable()
                     .map(this::filterDeleted)
+                    .map(list -> TrackedEntityInstanceExtensionsKt.filterDeletedEnrollment(list, d2, selectedProgram != null ? selectedProgram.uid() : null))
                     .flatMapIterable(list -> list)
                     .map(tei -> transform(tei, selectedProgram, true))
                     .toList().toFlowable();
@@ -296,6 +298,7 @@ public class SearchRepositoryImpl implements SearchRepository {
                     .map(list -> filterByState(list, states))
                     .map(list -> filterByPeriod(list, periods))
                     .map(this::filterDeleted)
+                    .map(list -> TrackedEntityInstanceExtensionsKt.filterDeletedEnrollment(list, d2, selectedProgram != null ? selectedProgram.uid() : null))
                     .flatMapIterable(list -> list)
                     .map(tei -> transform(tei, selectedProgram, true))
                     .toList().toFlowable();
@@ -354,100 +357,6 @@ public class SearchRepositoryImpl implements SearchRepository {
                             return Pair.create(enrollmentUid, uid);
                         })
         ).toObservable();
-/*
-        return Observable.defer(() -> {
-            TrackedEntityInstance trackedEntityInstance = null;
-            if (teiUid == null) {
-                String generatedUid = codeGenerator.generate();
-                trackedEntityInstance =
-                        TrackedEntityInstance.builder()
-                                .uid(generatedUid)
-                                .created(currentDate)
-                                .lastUpdated(currentDate)
-                                .organisationUnit(orgUnit)
-                                .trackedEntityType(teiType)
-                                .state(State.TO_POST)
-                                .build();
-
-                if (briteDatabase.insert(TrackedEntityInstanceTableInfo.TABLE_INFO.name(),
-                        trackedEntityInstance.toContentValues()) < 0) {
-                    String message = String.format(Locale.US, "Failed to insert new tracked entity " +
-                                    "instance for organisationUnit=[%s] and trackedEntity=[%s]",
-                            orgUnit, teiType);
-                    return Observable.error(new SQLiteConstraintException(message));
-                }
-
-                if (queryData.containsKey(Constants.ENROLLMENT_DATE_UID))
-                    queryData.remove(Constants.ENROLLMENT_DATE_UID);
-                for (String key : queryData.keySet()) {
-                    String dataValue = queryData.get(key);
-                    if (dataValue.contains("_os_"))
-                        dataValue = dataValue.split("_os_")[1];
-
-                    boolean isGenerated = d2.trackedEntityModule().trackedEntityAttributes().uid(key).blockingGet().generated();
-
-                    if (!isGenerated) {
-                        TrackedEntityAttributeValue attributeValueModel =
-                                TrackedEntityAttributeValue.builder()
-                                        .created(currentDate)
-                                        .lastUpdated(currentDate)
-                                        .value(dataValue)
-                                        .trackedEntityAttribute(key)
-                                        .trackedEntityInstance(generatedUid)
-                                        .build();
-                        if (briteDatabase.insert("TrackedEntityAttributeValue",
-                                attributeValueModel.toContentValues()) < 0) {
-                            String message = String.format(Locale.US, "Failed to insert new trackedEntityAttributeValue " +
-                                            "instance for organisationUnit=[%s] and trackedEntity=[%s]",
-                                    orgUnit, teiType);
-                            return Observable.error(new SQLiteConstraintException(message));
-                        }
-                    }
-                }
-
-            } else {
-                ContentValues dataValue = new ContentValues();
-
-                // renderSearchResults time stamp
-                dataValue.put("lastUpdated",
-                        BaseIdentifiableObject.DATE_FORMAT.format(currentDate));
-                dataValue.put("state",
-                        State.TO_POST.toString());
-
-                if (briteDatabase.update(TrackedEntityInstanceTableInfo.TABLE_INFO.name(), dataValue,
-                        "uid = ? ", teiUid) <= 0) {
-                    String message = String.format(Locale.US, "Failed to update tracked entity " +
-                                    "instance for uid=[%s]",
-                            teiUid);
-                    return Observable.error(new SQLiteConstraintException(message));
-                }
-            }
-
-            boolean displayIncidentDate = d2.programModule().programs().uid(programUid).blockingGet().displayIncidentDate();
-
-            Enrollment enrollment = Enrollment.builder()
-                    .uid(codeGenerator.generate())
-                    .created(currentDate)
-                    .lastUpdated(currentDate)
-                    .enrollmentDate(enrollmentDate)
-                    .incidentDate(displayIncidentDate ? new Date() : null)
-                    .program(programUid)
-                    .organisationUnit(orgUnit)
-                    .trackedEntityInstance(teiUid != null ? teiUid : trackedEntityInstance.uid())
-                    .status(EnrollmentStatus.ACTIVE)
-                    .followUp(false)
-                    .state(State.TO_POST)
-                    .build();
-
-            if (briteDatabase.insert(EnrollmentTableInfo.TABLE_INFO.name(), enrollment.toContentValues()) < 0) {
-                String message = String.format(Locale.US, "Failed to insert new enrollment " +
-                        "instance for organisationUnit=[%s] and program=[%s]", orgUnit, programUid);
-                return Observable.error(new SQLiteConstraintException(message));
-            }
-
-
-            return Observable.just(Pair.create(enrollment.uid(), trackedEntityInstance.uid()));
-        });*/
     }
 
     @Override
@@ -462,7 +371,12 @@ public class SearchRepositoryImpl implements SearchRepository {
 
 
     private void setEnrollmentInfo(SearchTeiModel searchTei) {
-        List<Enrollment> enrollments = d2.enrollmentModule().enrollments().byTrackedEntityInstance().eq(searchTei.getTei().uid()).byStatus().eq(EnrollmentStatus.ACTIVE).blockingGet();
+        List<Enrollment> enrollments =
+                d2.enrollmentModule().enrollments()
+                        .byTrackedEntityInstance().eq(searchTei.getTei().uid())
+                        .byStatus().eq(EnrollmentStatus.ACTIVE)
+                        .byDeleted().eq(false)
+                        .blockingGet();
         for (Enrollment enrollment : enrollments) {
             if (enrollments.indexOf(enrollment) == 0)
                 searchTei.resetEnrollments();
@@ -487,7 +401,7 @@ public class SearchRepositoryImpl implements SearchRepository {
                     attributes.moveToFirst();
                     for (int i = 0; i < attributes.getCount(); i++) {
                         if (searchTei != null)
-                            if(!attributes.getString(attributes.getColumnIndex("valueType")).equals(ValueType.IMAGE.name())) {
+                            if (!attributes.getString(attributes.getColumnIndex("valueType")).equals(ValueType.IMAGE.name())) {
                                 searchTei.addAttributeValue(ValueUtils.transform(briteDatabase, attributes));
                             }
                         attributes.moveToNext();
@@ -504,7 +418,7 @@ public class SearchRepositoryImpl implements SearchRepository {
                     attributes.moveToFirst();
                     for (int i = 0; i < attributes.getCount(); i++) {
                         if (searchTei != null)
-                            if(!attributes.getString(attributes.getColumnIndex("valueType")).equals(ValueType.IMAGE.name())) {
+                            if (!attributes.getString(attributes.getColumnIndex("valueType")).equals(ValueType.IMAGE.name())) {
                                 searchTei.addAttributeValue(ValueUtils.transform(briteDatabase, attributes));
                             }
                         attributes.moveToNext();
@@ -570,7 +484,7 @@ public class SearchRepositoryImpl implements SearchRepository {
 
     private List<TrackedEntityInstance> filterByState(List<TrackedEntityInstance> teis, List<State> states) {
         Iterator<TrackedEntityInstance> iterator = teis.iterator();
-        if(!states.isEmpty()) {
+        if (!states.isEmpty()) {
             while (iterator.hasNext()) {
                 if (!states.contains(iterator.next().state()))
                     iterator.remove();
@@ -635,6 +549,10 @@ public class SearchRepositoryImpl implements SearchRepository {
             if (offlineOnly)
                 searchTei.setOnline(!offlineOnly);
 
+            if (localTei.deleted() != null && localTei.deleted()) {
+                searchTei.setOnline(true);
+            }
+
             setEnrollmentInfo(searchTei);
             setAttributesInfo(searchTei, selectedProgram);
             setOverdueEvents(searchTei, selectedProgram);
@@ -653,7 +571,7 @@ public class SearchRepositoryImpl implements SearchRepository {
                 TrackedEntityAttributeValue.Builder attrValueBuilder = TrackedEntityAttributeValue.builder();
                 for (TrackedEntityAttributeValue attrValue : tei.trackedEntityAttributeValues()) {
 
-                    String friendlyValue = ValueExtensionsKt.userFriendlyValue(attrValue,d2);
+                    String friendlyValue = ValueExtensionsKt.userFriendlyValue(attrValue, d2);
 
                     attrValueBuilder.value(friendlyValue)
                             .created(attrValue.created())
