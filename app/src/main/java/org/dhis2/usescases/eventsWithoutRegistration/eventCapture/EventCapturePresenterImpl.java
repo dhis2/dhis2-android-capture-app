@@ -28,6 +28,9 @@ import org.dhis2.utils.RulesActionCallbacks;
 import org.dhis2.utils.RulesUtilsProvider;
 import org.hisp.dhis.android.core.common.Unit;
 import org.hisp.dhis.android.core.event.EventStatus;
+import org.hisp.dhis.rules.models.RuleAction;
+import org.hisp.dhis.rules.models.RuleActionAssign;
+import org.hisp.dhis.rules.models.RuleActionHideField;
 import org.hisp.dhis.rules.models.RuleActionShowError;
 import org.hisp.dhis.rules.models.RuleEffect;
 import org.jetbrains.annotations.NotNull;
@@ -90,6 +93,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     private int totalFields;
     private ConnectableFlowable<List<FieldViewModel>> fieldFlowable;
     private boolean assignedValueChanged;
+    private List<String> assignedFields = new ArrayList<>();
 
     @Override
     public String getLastFocusItem() {
@@ -343,7 +347,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                         .observeOn(schedulerProvider.ui())
                         .subscribe(
                                 updates -> {
-                                    if(assignedValueChanged){
+                                    if(assignedValueChanged && errors.isEmpty()){
                                         nextCalculation(true);
                                     }else {
                                         EventCaptureFormFragment.getInstance().showFields(updates, lastFocusItem);
@@ -488,7 +492,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
             Timber.e(calcResult.error());
             return viewModels;
         }
-
+        
         //Reset effectsT
         assignedValueChanged = false;
         optionsToHide.clear();
@@ -806,6 +810,11 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
             StoreResult result = valueStore.saveWithTypeCheck(uid, value).blockingFirst();
             if(result.component2() == ValueStoreImpl.ValueStoreResult.VALUE_CHANGED){
                 assignedValueChanged = true;
+                if(value != null && !assignedFields.contains(uid)){
+                    assignedFields.add(uid);
+                }else if(value == null && assignedFields.contains(uid)){
+                    assignedFields.remove(uid);
+                }
             }
         }
     }
