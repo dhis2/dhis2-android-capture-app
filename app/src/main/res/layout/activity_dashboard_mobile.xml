@@ -5,6 +5,8 @@
 
     <data>
 
+        <import type="android.view.View" />
+
         <variable
             name="title"
             type="String" />
@@ -20,6 +22,10 @@
         <variable
             name="dashboardModel"
             type="org.dhis2.usescases.teiDashboard.DashboardProgramModel" />
+
+        <variable
+            name="totalFilters"
+            type="Integer" />
     </data>
 
     <LinearLayout
@@ -54,18 +60,41 @@
                 android:text='@{title}'
                 android:textColor="?colorAccent"
                 android:textSize="20sp"
-                app:layout_constraintEnd_toStartOf="@id/program_selector_button"
+                app:layout_constraintEnd_toStartOf="@id/moreOptions"
                 app:layout_constraintStart_toEndOf="@id/back"
                 tools:text="TEI NAME" />
 
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/filterCounter"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginStart="24dp"
+                android:layout_marginTop="24dp"
+                android:padding="2dp"
+                app:layout_constraintStart_toStartOf="@id/search_filter_general"
+                app:layout_constraintTop_toTopOf="@id/search_filter_general">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/ic_oval_shape_white"
+                    android:gravity="center"
+                    android:includeFontPadding="false"
+                    android:text='@{""+totalFilters}'
+                    android:textColor="?colorPrimary"
+                    android:textSize="10sp"
+                    android:visibility="@{totalFilters>0?View.VISIBLE:View.GONE}"
+                    tools:text="1" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
             <ImageView
-                android:id="@+id/program_selector_button"
+                android:id="@+id/search_filter_general"
                 style="@style/ActionIcon"
-                android:onClick="@{()->presenter.onEnrollmentSelectorClick()}"
+                android:onClick="@{ () -> presenter.showHideFilters() }"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@id/moreOptions"
                 app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/ic_program_border"
+                app:srcCompat="@drawable/ic_filter"
                 tools:ignore="ContentDescription" />
 
             <ImageView
@@ -110,7 +139,7 @@
             app:tabPaddingStart="16dp"
             app:tabTextAppearance="@style/DhisTabText" />
 
-        <androidx.viewpager.widget.ViewPager
+        <androidx.viewpager2.widget.ViewPager2
             android:id="@+id/tei_pager"
             android:layout_width="match_parent"
             android:layout_height="match_parent"

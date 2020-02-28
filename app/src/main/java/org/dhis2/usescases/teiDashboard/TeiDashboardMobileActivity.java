@@ -18,15 +18,15 @@ import android.widget.PopupMenu;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.databinding.DataBindingUtil;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentStatePagerAdapter;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModelProviders;
-import androidx.viewpager.widget.ViewPager;
+import androidx.viewpager2.adapter.FragmentStateAdapter;
+import androidx.viewpager2.widget.ViewPager2;
 
 import com.google.android.material.badge.BadgeDrawable;
 import com.google.android.material.tabs.TabLayout;
+import com.google.android.material.tabs.TabLayoutMediator;
 
 import org.dhis2.App;
 import org.dhis2.R;
@@ -69,12 +69,13 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
     ActivityDashboardMobileBinding binding;
     protected DashboardPagerAdapter adapter;
     protected DashboardPagerTabletAdapter tabletAdapter;
-    protected FragmentStatePagerAdapter currentAdapter;
+    protected FragmentStateAdapter currentAdapter;
 
     private DashboardViewModel dashboardViewModel;
     private boolean fromRelationship;
 
     private MutableLiveData<Boolean> groupByStage;
+    private MutableLiveData<Boolean> filtersShowing;
 
     public static Intent intent(Context context,
                                 String teiUid,
@@ -106,12 +107,13 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
         setTheme(presenter.getProgramTheme(R.style.AppTheme));
         super.onCreate(savedInstanceState);
         groupByStage = new MutableLiveData<>(presenter.getProgramGrouping());
+        filtersShowing = new MutableLiveData<>(false);
         dashboardViewModel = ViewModelProviders.of(this).get(DashboardViewModel.class);
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_dashboard_mobile);
         binding.setPresenter(presenter);
 
-        binding.tabLayout.setupWithViewPager(binding.teiPager);
+        //binding.tabLayout.setupWithViewPager(binding.teiPager);
         binding.tabLayout.setTabMode(TabLayout.MODE_SCROLLABLE);
         binding.tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
@@ -143,14 +145,13 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
         binding.toolbarTitle.setEllipsize(TextUtils.TruncateAt.END);
 
         presenter.prefSaveCurrentProgram(programUid);
-    }
 
+        filtersShowing.observe(this, showFilter -> showHideFilters(showFilter));
+    }
 
     @Override
     protected void onResume() {
         super.onResume();
-
-        String prevDashboardProgram = presenter.getPreviousDashboard();
 
         if (currentAdapter == null) {
             restoreAdapter(programUid);
@@ -176,6 +177,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
         super.onRestoreInstanceState(savedInstanceState);
         teiUid = savedInstanceState.getString(Constants.TRACKED_ENTITY_INSTANCE);
         programUid = savedInstanceState.getString(Constants.PROGRAM_UID);
+        enrollmentUid = savedInstanceState.getString(Constants.ENROLLMENT_UID);
     }
 
     @Override
@@ -183,50 +185,109 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
         outState.clear();
         outState.putString(Constants.TRACKED_ENTITY_INSTANCE, teiUid);
         outState.putString(Constants.PROGRAM_UID, programUid);
+        outState.putString(Constants.ENROLLMENT_UID, enrollmentUid);
         super.onSaveInstanceState(outState);
     }
 
     private void setViewpagerAdapter() {
 
-        for (Fragment fragment : getSupportFragmentManager().getFragments())
-            getSupportFragmentManager().beginTransaction().remove(fragment).commitNow();
-
-        binding.teiPager.setAdapter(null);
-        binding.teiPager.invalidate();
-
         if (OrientationUtilsKt.isPortrait()) {
-            adapter = new DashboardPagerAdapter(this, getSupportFragmentManager(), programUid, teiUid, enrollmentUid);
+            binding.teiPager.setAdapter(null);
+            adapter = new DashboardPagerAdapter(this, programUid, teiUid, enrollmentUid);
             currentAdapter = adapter;
             binding.teiPager.setAdapter(adapter);
-            binding.tabLayout.setVisibility(programUid != null ? View.VISIBLE : View.GONE);
+            binding.teiPager.registerOnPageChangeCallback(
+                    new ViewPager2.OnPageChangeCallback() {
+                        @Override
+                        public void onPageSelected(int position) {
+                            if (position != 0) {
+                                binding.filterCounter.setVisibility(View.GONE);
+                                binding.searchFilterGeneral.setVisibility(View.GONE);
+                            } else {
+                                binding.filterCounter.setVisibility(View.VISIBLE);
+                                binding.searchFilterGeneral.setVisibility(View.VISIBLE);
+                            }
+                        }
+                    }
+            );
+            //binding.tabLayout.setVisibility(programUid != null ? View.VISIBLE : View.GONE);
             if (fromRelationship)
                 binding.teiPager.setCurrentItem(2, false);
+
+            tabLayoutMediator(binding.teiPager);
         } else {
-            tabletAdapter = new DashboardPagerTabletAdapter(this, getSupportFragmentManager(), programUid, teiUid, enrollmentUid);
+            tabletAdapter = new DashboardPagerTabletAdapter(this, programUid, teiUid, enrollmentUid);
             currentAdapter = tabletAdapter;
-            binding.teiPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-                @Override
-                public void onPageScrolled(int i, float v, int i1) {
-                    // nothing
-                }
+            binding.teiTablePager.registerOnPageChangeCallback(
+                    new ViewPager2.OnPageChangeCallback() {
+                        @Override
+                        public void onPageSelected(int position) {
+                            switch (position) {
+                                case 1:
+                                    binding.sectionTitle.setText(getString(R.string.dashboard_relationships));
+                                    break;
+                                case 2:
+                                    binding.sectionTitle.setText(getString(R.string.dashboard_notes));
+                                    break;
+                                default:
+                                    binding.sectionTitle.setText(getString(R.string.dashboard_indicators));
+                                    break;
+                            }
+                        }
+                    }
+            );
 
-                @Override
-                public void onPageSelected(int i) {
-                    binding.sectionTitle.setText(tabletAdapter.getPageTitle(i));
-                }
-
-                @Override
-                public void onPageScrollStateChanged(int i) {
-                    // nothing
-                }
-            });
-            binding.sectionTitle.setText(tabletAdapter.getPageTitle(0));
-            binding.teiPager.setAdapter(tabletAdapter);
-            binding.tabLayout.setVisibility(View.GONE);
+            binding.teiTablePager.setAdapter(tabletAdapter);
             binding.dotsIndicator.setVisibility(programUid != null ? View.VISIBLE : View.GONE);
-            binding.dotsIndicator.setViewPager(binding.teiPager);
+            //binding.dotsIndicator.setViewPager(binding.teiPager); // TODO look into dots Indicator integration with viewPager 2
             if (fromRelationship)
-                binding.teiPager.setCurrentItem(1, false);
+                binding.teiTablePager.setCurrentItem(1, false);
+
+            tabLayoutMediator(binding.teiTablePager);
+        }
+    }
+
+    private void tabLayoutMediator(ViewPager2 viewPager) {
+        new TabLayoutMediator(binding.tabLayout,viewPager,
+                (tab, position) -> {
+                    if (OrientationUtilsKt.isLandscape()) {
+                        setupTabletTabTitles(tab, position);
+                    } else {
+                        setupTabTitles(tab, position);
+                    }
+                }).attach();
+    }
+
+    private void setupTabTitles(TabLayout.Tab tab, int position) {
+        switch (position) {
+            case 1:
+                tab.setText(getString(R.string.dashboard_indicators));
+                break;
+            case 2:
+                tab.setText(getString(R.string.dashboard_relationships));
+                break;
+            case 3:
+                tab.setText(getString(R.string.dashboard_notes));
+                break;
+            default:
+                tab.setText(getString(R.string.dashboard_overview));
+                break;
+        }
+    }
+
+    private void setupTabletTabTitles(TabLayout.Tab tab, int position) {
+        if (programUid != null) {
+            switch (position) {
+                case 1:
+                    tab.setText(getString(R.string.dashboard_relationships));
+                    break;
+                case 2:
+                    tab.setText(getString(R.string.dashboard_notes));
+                    break;
+                default:
+                    tab.setText(getString(R.string.dashboard_indicators));
+                    break;
+            }
         }
     }
 
@@ -250,14 +311,18 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
         binding.executePendingBindings();
         this.programModel = program;
 
-        if (binding.teiPager.getAdapter() == null) {
-            setViewpagerAdapter();
-        }
-
-        if (OrientationUtilsKt.isLandscape())
+        if (OrientationUtilsKt.isLandscape()) {
+            if (binding.teiTablePager.getAdapter() == null) {
+                setViewpagerAdapter();
+            }
             getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.tei_main_view, new TEIDataFragment())
+                    .replace(R.id.tei_main_view, TEIDataFragment.newInstance(programUid, teiUid, enrollmentUid))
                     .commitAllowingStateLoss();
+        } else {
+            if (binding.teiPager.getAdapter() == null) {
+                setViewpagerAdapter();
+            }
+        }
 
         Boolean enrollmentStatus = program.getCurrentEnrollment() != null && program.getCurrentEnrollment().status() == EnrollmentStatus.ACTIVE;
         if (getIntent().getStringExtra(Constants.EVENT_UID) != null && enrollmentStatus)
@@ -272,7 +337,6 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
         this.tabletAdapter = null;
         this.currentAdapter = null;
         this.programUid = programUid;
-        binding.teiPager.setAdapter(null);
         presenter.init();
     }
 
@@ -466,6 +530,9 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
                 case R.id.deleteEnrollment:
                     presenter.deleteEnrollment();
                     break;
+                case R.id.programSelector:
+                    presenter.onEnrollmentSelectorClick();
+                    break;
                 case R.id.groupEvents:
                     groupByStage.setValue(true);
                     break;
@@ -498,4 +565,26 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
     public LiveData<Boolean> observeGrouping() {
         return groupByStage;
     }
+
+    @Override
+    public void setFiltersLayoutState() {
+        filtersShowing.setValue(!filtersShowing.getValue());
+    }
+
+    private void showHideFilters(boolean showFilter) {
+        if(OrientationUtilsKt.isPortrait()) {
+            if (showFilter) {
+                binding.tabLayout.setVisibility(View.GONE);
+                binding.teiPager.setUserInputEnabled(false);
+            } else {
+                binding.tabLayout.setVisibility(View.VISIBLE);
+                binding.teiPager.setUserInputEnabled(true);
+            }
+        }
+    }
+
+    public LiveData<Boolean> observeFilters() {
+        return filtersShowing;
+    }
+
 }

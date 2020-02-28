@@ -40,6 +40,8 @@ import org.dhis2.utils.ObjectStyleUtils;
 import org.dhis2.utils.OrientationUtilsKt;
 import org.dhis2.utils.customviews.CategoryComboDialog;
 import org.dhis2.utils.customviews.CustomDialog;
+import org.dhis2.utils.filters.FilterManager;
+import org.dhis2.utils.filters.FiltersAdapter;
 import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryOptionCombo;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
@@ -60,6 +62,7 @@ import javax.inject.Inject;
 import io.reactivex.Flowable;
 import io.reactivex.Single;
 import io.reactivex.functions.Consumer;
+import timber.log.Timber;
 
 import static android.app.Activity.RESULT_OK;
 import static com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade;
@@ -92,6 +95,9 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
     @Inject
     TEIDataContracts.Presenter presenter;
 
+    @Inject
+    FilterManager filterManager;
+
     private EventAdapter adapter;
     private CustomDialog dialog;
     private String lastModifiedEventUid;
@@ -104,6 +110,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
     private DashboardViewModel dashboardViewModel;
     private DashboardProgramModel dashboardModel;
     private TeiDashboardMobileActivity activity;
+    private FiltersAdapter filtersAdapter;
 
     public static TEIDataFragment newInstance(String programUid, String teiUid, String enrollmentUid) {
         TEIDataFragment fragment = new TEIDataFragment();
@@ -120,9 +127,6 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
         super.onAttach(context);
         this.context = context;
         activity = (TeiDashboardMobileActivity) context;
-        activity.observeGrouping().observe(this, group -> {
-            presenter.onGroupingChanged(group);
-        });
         ((App) context.getApplicationContext())
                 .dashboardComponent()
                 .plus(new TEIDataModule(this,
@@ -145,6 +149,19 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_tei_data, container, false);
         binding.setPresenter(presenter);
+        activity.observeGrouping().observe(this, group -> {
+            presenter.onGroupingChanged(group);
+        });
+        activity.observeFilters().observe(this, showFilters -> showHideFilters(showFilters));
+
+        filtersAdapter = new FiltersAdapter(FiltersAdapter.ProgramType.TRACKER);
+        filtersAdapter.addEventStatus();
+        try {
+            binding.filterLayout.setAdapter(filtersAdapter);
+
+        } catch (Exception e) {
+            Timber.e(e);
+        }
 
         binding.fab.setOptionsClick(integer -> {
             if (integer == null)
@@ -508,5 +525,15 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
         intent.addFlags(Intent.FLAG_ACTIVITY_FORWARD_RESULT);
         intent.putExtras(bundle);
         activity.startActivity(intent);
+    }
+
+    private void showHideFilters(boolean showFilters) {
+        if(showFilters) {
+            binding.teiData.setVisibility(View.GONE);
+            binding.filterLayout.setVisibility(View.VISIBLE);
+        } else {
+            binding.teiData.setVisibility(View.VISIBLE);
+            binding.filterLayout.setVisibility(View.GONE);
+        }
     }
 }
