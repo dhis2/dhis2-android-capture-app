@@ -26,4 +26,5 @@ interface EnrollmentView : AbstractActivityContracts.View {
     fun showMissingMandatoryFieldsMessage(emptyMandatoryFields: List<String>)
     fun showErrorFieldsMessage(errorFields: List<String>)
     fun sectionFlowable(): Flowable<String>
+    fun setSelectedSection(selectedSection: String)
 }

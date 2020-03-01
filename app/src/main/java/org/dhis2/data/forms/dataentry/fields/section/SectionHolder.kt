@@ -69,13 +69,7 @@ class SectionHolder(
     override fun dispose() {}
 
     override fun onClick(v: View) {
-        if (!viewModel.isOpen) {
-            selectedSection.set(viewModel.uid())
-            sectionProcessor.onNext(viewModel.uid())
-        } else {
-            selectedSection.set("")
-            sectionProcessor.onNext("")
-        }
+        sectionProcessor.onNext(viewModel.uid())
     }
 
     private fun setShadows() {

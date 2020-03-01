@@ -57,6 +57,9 @@ class EnrollmentPresenterImpl(
     private val optionsGroupToShow = HashMap<String, ArrayList<String>>()
     private val fieldsFlowable: FlowableProcessor<Boolean> = PublishProcessor.create()
     private var lastFocusItem: String? = null
+    private var selectedSection: String = ""
+    private var errorFields = mutableMapOf<String, String>()
+    private var mandatoryFields = mutableMapOf<String, String>()
 
     fun init() {
         disposable = CompositeDisposable()
@@ -192,6 +195,8 @@ class EnrollmentPresenterImpl(
                                     view.context.getString(R.string.unique_warning)
                                 )
                             }
+                            ValueStoreImpl.ValueStoreResult.UID_IS_NOT_DE_OR_ATTR ->
+                                Timber.tag(TAG).d("${it.uid} is not a data element or attribute")
                         }
                     },
                     { Timber.tag(TAG).e(it) }
@@ -204,28 +209,10 @@ class EnrollmentPresenterImpl(
             dataEntryRepository.enrollmentSectionUids()
                 .flatMap { sectionList ->
                     view.sectionFlowable().startWith(sectionList[0])
+                        .map { setCurrentSection(it) }
                         .switchMap { section ->
                             fields.map { fieldList ->
-                                val finalList = fieldList.toMutableList()
-                                val iterator = finalList.listIterator()
-                                while (iterator.hasNext()) {
-                                    val field = iterator.next()
-                                    if (field is SectionViewModel) {
-                                        var sectionViewModel: SectionViewModel = field
-                                        val (values, totals) = getValueCount(
-                                            fieldList,
-                                            sectionViewModel.uid()
-                                        )
-                                        sectionViewModel = sectionViewModel
-                                            .setOpen(field.uid() == section)
-                                            .setCompletedFields(values)
-                                            .setTotalFields(totals)
-                                        iterator.set(sectionViewModel)
-                                    } else if (!field.programStageSection().equals(section)) {
-                                        iterator.remove()
-                                    }
-                                }
-                                finalList
+                                return@map setFieldsToShow(section, fieldList)
                             }
                         }
                 }
@@ -234,6 +221,7 @@ class EnrollmentPresenterImpl(
                 .subscribe({
                     view.showFields(it)
                     view.setSaveButtonVisible(true)
+                    view.setSelectedSection(selectedSection)
                 }) {
                     Timber.tag(TAG).e(it)
                 }
@@ -250,6 +238,52 @@ class EnrollmentPresenterImpl(
         )
 
         fields.connect()
+    }
+
+    fun setCurrentSection(sectionUid: String): String {
+        if (sectionUid == selectedSection) {
+            this.selectedSection = ""
+        } else {
+            this.selectedSection = sectionUid
+        }
+        return selectedSection
+    }
+
+    fun setFieldsToShow(section: String, fieldList: List<FieldViewModel>): List<FieldViewModel> {
+        val finalList = fieldList.toMutableList()
+        val iterator = finalList.listIterator()
+        while (iterator.hasNext()) {
+            val field = iterator.next()
+            if (field is SectionViewModel) {
+                var sectionViewModel: SectionViewModel = field
+                val (values, totals) = getValueCount(
+                    fieldList,
+                    sectionViewModel.uid()
+                )
+                sectionViewModel = sectionViewModel
+                    .setOpen(field.uid() == section)
+                    .setCompletedFields(values)
+                    .setTotalFields(totals)
+                iterator.set(sectionViewModel)
+            }
+
+            if (field !is SectionViewModel) {
+                if (field.error()?.isNotEmpty() == true) {
+                    errorFields[field.uid()] = field.label()
+                }
+                if (field.mandatory() && field.value().isNullOrEmpty()) {
+                    mandatoryFields[field.uid()] = field.label()
+                }
+            }
+
+            if (field !is SectionViewModel && !field.programStageSection().equals(
+                    section
+                )
+            ) {
+                iterator.remove()
+            }
+        }
+        return finalList
     }
 
     fun getValueCount(fields: List<FieldViewModel>, sectionUid: String): Pair<Int, Int> {
@@ -324,6 +358,8 @@ class EnrollmentPresenterImpl(
             return fields
         }
 
+        mandatoryFields.clear()
+        errorFields.clear()
         optionsToHide.clear()
         optionsGroupsToHide.clear()
         optionsGroupToShow.clear()
@@ -341,6 +377,7 @@ class EnrollmentPresenterImpl(
                 }
             }
         }
+
         return ArrayList(fieldMap.values)
     }
 
@@ -440,7 +477,7 @@ class EnrollmentPresenterImpl(
     private fun assignValue(uid: String, value: String?) {
         try {
             if (d2.dataElementModule().dataElements().uid(uid).blockingExists()) {
-                // TODO: CHECK THIS: Enrollments rules should not assign values to dataElements
+                Timber.d("Enrollments rules should not assign values to dataElements")
             } else if (
                 d2.trackedEntityModule().trackedEntityAttributes().uid(uid).blockingExists()
             ) {
@@ -451,14 +488,14 @@ class EnrollmentPresenterImpl(
         }
     }
 
-    fun dataIntegrityCheck(emptyMandatoryFields: List<String>, errorFields: List<String>): Boolean {
+    fun dataIntegrityCheck(): Boolean {
         return when {
-            emptyMandatoryFields.isNotEmpty() -> {
-                view.showMissingMandatoryFieldsMessage(emptyMandatoryFields)
+            mandatoryFields.isNotEmpty() -> {
+                view.showMissingMandatoryFieldsMessage(mandatoryFields.values.toList())
                 false
             }
-            errorFields.isNotEmpty() -> {
-                view.showErrorFieldsMessage(errorFields)
+            this.errorFields.isNotEmpty() -> {
+                view.showErrorFieldsMessage(errorFields.values.toList())
                 false
             }
             else -> true

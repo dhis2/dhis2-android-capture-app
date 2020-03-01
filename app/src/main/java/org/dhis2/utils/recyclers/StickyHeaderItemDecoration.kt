@@ -10,7 +10,6 @@ import android.view.ViewGroup
 import androidx.core.view.GestureDetectorCompat
 import androidx.recyclerview.widget.RecyclerView
 import org.dhis2.data.forms.dataentry.fields.section.SectionHolder
-import kotlin.math.abs
 
 class StickyHeaderItemDecoration(
     parent: RecyclerView,
@@ -22,18 +21,28 @@ class StickyHeaderItemDecoration(
     private var currentHeader: Pair<Int, RecyclerView.ViewHolder>? = null
     private var startY: Float = -1f
 
-    private val mDetector: GestureDetectorCompat =
-        GestureDetectorCompat(parent.context, object : GestureDetector.SimpleOnGestureListener() {
-            override fun onSingleTapConfirmed(e: MotionEvent?): Boolean {
-                val endY = e?.y ?: -1f
-                if (abs(endY - startY) < 5 && startY <= currentHeader?.second?.itemView?.height!!) {
-                    (currentHeader?.second as SectionHolder).onClick(currentHeader?.second?.itemView!!)
-                }
-                return false
-            }
-        })
+    private var mDetector: GestureDetectorCompat
 
     init {
+
+        mDetector =
+            GestureDetectorCompat(
+                parent.context,
+                object : GestureDetector.SimpleOnGestureListener() {
+                    override fun onDown(e: MotionEvent?): Boolean {
+                        return e?.let { e.y <= currentHeader?.second?.itemView?.height!! }
+                            ?: super.onDown(e)
+                    }
+
+                    override fun onSingleTapUp(e: MotionEvent?): Boolean {
+                        if (e!!.y <= currentHeader?.second?.itemView?.height!!) {
+                            (currentHeader?.second as SectionHolder).onClick(currentHeader?.second?.itemView!!)
+                            return true
+                        }
+                        return false
+                    }
+                })
+
         parent.adapter?.registerAdapterDataObserver(object : RecyclerView.AdapterDataObserver() {
             override fun onChanged() {
                 // clear saved header as it can be outdated now
@@ -51,16 +60,11 @@ class StickyHeaderItemDecoration(
                 recyclerView: RecyclerView,
                 motionEvent: MotionEvent
             ): Boolean {
-
-                return if (motionEvent.action == MotionEvent.ACTION_DOWN) {
-                    startY = motionEvent.y
-//                    motionEvent.y <= currentHeader?.second?.itemView?.bottom ?: 0
-                    mDetector.onTouchEvent(motionEvent)
-                } else if (motionEvent.action == MotionEvent.ACTION_UP) {
-                    mDetector.onTouchEvent(motionEvent)
-                } else {
-                    mDetector.onTouchEvent(motionEvent)
+                val tapResponse = mDetector.onTouchEvent(motionEvent)
+                if (tapResponse && motionEvent.action != MotionEvent.ACTION_DOWN) {
+                    return true
                 }
+                return false
             }
         })
     }

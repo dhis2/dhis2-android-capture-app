@@ -118,7 +118,7 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
         binding.fieldRecycler.adapter = adapter
 
         binding.next.setOnClickListener {
-            if (presenter.dataIntegrityCheck(adapter.emptyMandatoryFields(), adapter.errorFields())
+            if (presenter.dataIntegrityCheck()
             ) {
                 binding.root.requestFocus()
                 analyticsHelper().setEvent(SAVE_ENROLL, CLICK, SAVE_ENROLL)
@@ -178,6 +178,10 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
 
     override fun sectionFlowable(): Flowable<String> {
         return adapter.sectionFlowable()
+    }
+
+    override fun setSelectedSection(selectedSection: String) {
+        adapter.setCurrentSection(selectedSection)
     }
 
     override fun openEvent(eventUid: String) {
@@ -248,7 +252,7 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
     override fun onBackPressed() {
         if (mode == EnrollmentMode.CHECK) {
             if (
-                presenter.dataIntegrityCheck(adapter.emptyMandatoryFields(), adapter.errorFields())
+                presenter.dataIntegrityCheck()
             ) {
                 binding.root.requestFocus()
                 super.onBackPressed()

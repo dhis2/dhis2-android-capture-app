@@ -13,6 +13,8 @@ import org.dhis2.data.forms.dataentry.DataEntryRepository
 import org.dhis2.data.forms.dataentry.StoreResult
 import org.dhis2.data.forms.dataentry.ValueStore
 import org.dhis2.data.forms.dataentry.ValueStoreImpl
+import org.dhis2.data.forms.dataentry.fields.FieldViewModel
+import org.dhis2.data.forms.dataentry.fields.edittext.EditTextViewModel
 import org.dhis2.data.schedulers.SchedulerProvider
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.hisp.dhis.android.core.D2
@@ -22,6 +24,7 @@ import org.hisp.dhis.android.core.category.CategoryCombo
 import org.hisp.dhis.android.core.common.Access
 import org.hisp.dhis.android.core.common.DataAccess
 import org.hisp.dhis.android.core.common.FeatureType
+import org.hisp.dhis.android.core.common.ObjectStyle
 import org.hisp.dhis.android.core.common.ObjectWithUid
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.enrollment.Enrollment
@@ -70,35 +73,102 @@ class EnrollmentPresenterImplTest {
 
     @Test
     fun `Missing and errors fields should show mandatory fields dialog`() {
-        val emptyFields: List<String> = listOf("field1")
-        val errorFields: List<String> = listOf()
-        val checkWthErrors = presenter.dataIntegrityCheck(emptyFields, errorFields)
+        presenter.setFieldsToShow(
+            "testSection",
+            arrayListOf(
+                EditTextViewModel.create(
+                    "uid1",
+                    "missing_mandatory_field",
+                    true,
+                    null,
+                    "",
+                    1,
+                    ValueType.TEXT,
+                    "testSection",
+                    true,
+                    null,
+                    null,
+                    ObjectStyle.builder().build(),
+                    null
+                )
+            )
+        )
+        val checkWthErrors = presenter.dataIntegrityCheck()
 
         Assert.assertFalse(checkWthErrors)
-
-        verify(enrollmentView, times(1)).showMissingMandatoryFieldsMessage(emptyFields)
+        verify(enrollmentView, times(1)).showMissingMandatoryFieldsMessage(arrayListOf("missing_mandatory_field"))
     }
 
     @Test
     fun `Missing fields should show mandatory fields dialog`() {
-        val emptyFields: List<String> = listOf("field")
-        val errorFields: List<String> = listOf("field")
-        val checkWthErrors = presenter.dataIntegrityCheck(emptyFields, errorFields)
+        presenter.setFieldsToShow(
+            "testSection",
+            arrayListOf(
+                EditTextViewModel.create(
+                    "uid1",
+                    "missing_mandatory_field",
+                    true,
+                    null,
+                    "",
+                    1,
+                    ValueType.TEXT,
+                    "testSection",
+                    true,
+                    null,
+                    null,
+                    ObjectStyle.builder().build(),
+                    null
+                ),
+                EditTextViewModel.create(
+                    "uid2",
+                    "error_field",
+                    false,
+                    null,
+                    "",
+                    1,
+                    ValueType.TEXT,
+                    "testSection",
+                    true,
+                    null,
+                    null,
+                    ObjectStyle.builder().build(),
+                    null
+                ).withError("Error")
+            )
+        )
+        val checkWthErrors = presenter.dataIntegrityCheck()
 
         Assert.assertFalse(checkWthErrors)
-
-        verify(enrollmentView, times(1)).showMissingMandatoryFieldsMessage(emptyFields)
+        verify(enrollmentView, times(1)).showMissingMandatoryFieldsMessage(arrayListOf("missing_mandatory_field"))
     }
 
     @Test
     fun `Error fields should show mandatory fields dialog`() {
-        val emptyFields: List<String> = listOf()
-        val errorFields: List<String> = listOf("field")
-        val checkWthErrors = presenter.dataIntegrityCheck(emptyFields, errorFields)
+        presenter.setFieldsToShow(
+            "testSection",
+            arrayListOf(
+                EditTextViewModel.create(
+                    "uid1",
+                    "error_field",
+                    false,
+                    null,
+                    "",
+                    1,
+                    ValueType.TEXT,
+                    "testSection",
+                    true,
+                    null,
+                    null,
+                    ObjectStyle.builder().build(),
+                    null
+                ).withError("Error")
+            )
+        )
+        val checkWthErrors = presenter.dataIntegrityCheck()
 
         Assert.assertFalse(checkWthErrors)
 
-        verify(enrollmentView, times(1)).showErrorFieldsMessage(errorFields)
+        verify(enrollmentView, times(1)).showErrorFieldsMessage(arrayListOf("error_field"))
     }
 
     @Test
@@ -347,45 +417,6 @@ class EnrollmentPresenterImplTest {
             ).blockingGet()
         ) doReturn TrackedEntityAttributeValue.builder()
             .value("value").build()
-    }
-
-    @Test
-    fun `Check data integrity when mandatory is false and has error is false`() {
-        val emptyFields: List<String> = listOf("field")
-        val errorFields: List<String> = listOf("field")
-        val result = presenter.dataIntegrityCheck(emptyFields, errorFields)
-        verify(enrollmentView, times(1)).showMissingMandatoryFieldsMessage(emptyFields)
-        verify(enrollmentView, times(0)).showErrorFieldsMessage(errorFields)
-        Assert.assertFalse(result)
-    }
-
-    @Test
-    fun `Check data integrity when mandatory is true and has error is false`() {
-        val emptyFields: List<String> = listOf()
-        val errorFields: List<String> = listOf()
-        val result = presenter.dataIntegrityCheck(emptyFields, errorFields)
-        verifyZeroInteractions(enrollmentView)
-        Assert.assertTrue(result)
-    }
-
-    @Test
-    fun `Check data integrity when mandatory is false and has error is true`() {
-        val emptyFields: List<String> = listOf("field")
-        val errorFields: List<String> = listOf("field")
-        val result = presenter.dataIntegrityCheck(emptyFields, errorFields)
-        verify(enrollmentView, times(1)).showMissingMandatoryFieldsMessage(emptyFields)
-        verify(enrollmentView, times(0)).showErrorFieldsMessage(errorFields)
-        Assert.assertFalse(result)
-    }
-
-    @Test
-    fun `Check data integrity when mandatory is true and has error is true`() {
-        val emptyFields: List<String> = listOf()
-        val errorFields: List<String> = listOf("field")
-        val result = presenter.dataIntegrityCheck(emptyFields, errorFields)
-        verify(enrollmentView, times(0)).showMissingMandatoryFieldsMessage(emptyFields)
-        verify(enrollmentView, times(1)).showErrorFieldsMessage(errorFields)
-        Assert.assertFalse(result)
     }
 
     @Test

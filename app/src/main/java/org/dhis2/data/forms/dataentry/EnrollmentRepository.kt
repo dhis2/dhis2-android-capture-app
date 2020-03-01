@@ -170,7 +170,7 @@ class EnrollmentRepository(
         }
 
         if (valueType == ValueType.ORGANISATION_UNIT && !DhisTextUtils.isEmpty(dataValue)) {
-            dataValue = getOrgUnitValue(dataValue)
+            dataValue = attrValueRepository.blockingGet().value() + "_ou_" + dataValue
         }
 
         val fieldViewModel = fieldFactory.create(
@@ -239,7 +239,7 @@ class EnrollmentRepository(
         return mutableListOf(
             SectionViewModel.create(
                 SINGLE_SECTION_UID,
-                String.format(singleSectionLabel,teiType.displayName()),
+                String.format(singleSectionLabel, teiType.displayName()),
                 null,
                 false,
                 0,
