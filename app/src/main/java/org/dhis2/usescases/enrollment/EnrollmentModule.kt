@@ -13,6 +13,7 @@ import org.dhis2.data.forms.dataentry.ValueStore
 import org.dhis2.data.forms.dataentry.ValueStoreImpl
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactoryImpl
 import org.dhis2.data.schedulers.SchedulerProvider
+import org.dhis2.utils.analytics.AnalyticsHelper
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.`object`.ReadOnlyOneObjectRepositoryFinalImpl
 import org.hisp.dhis.android.core.enrollment.EnrollmentObjectRepository
@@ -22,9 +23,10 @@ import org.hisp.dhis.rules.RuleExpressionEvaluator
 
 @Module
 class EnrollmentModule(
-    val enrollmentView: EnrollmentView,
+    private val enrollmentView: EnrollmentView,
     val enrollmentUid: String,
-    val programUid: String
+    val programUid: String,
+    val enrollmentMode: EnrollmentActivity.EnrollmentMode
 ) {
 
     @Provides
@@ -63,7 +65,28 @@ class EnrollmentModule(
             context.getString(R.string.filter_options),
             context.getString(R.string.choose_date)
         )
-        return EnrollmentRepository(context, modelFactory, enrollmentUid, d2)
+        val enrollmentDataSectionLabel = context.getString(R.string.enrollment_data_section_label)
+        val singleSectionLabel = context.getString(R.string.enrollment_single_section_label)
+        val enrollmentOrgUnitLabel = context.getString(R.string.enrolling_ou)
+        val teiCoordinatesLabel = context.getString(R.string.tei_coordinates)
+        val enrollmentCoordinatesLabel = context.getString(R.string.enrollment_coordinates)
+        val reservedValueWarning = context.getString(R.string.no_reserved_values)
+        val enrollmentDateDefaultLabel = context.getString(R.string.enrollmment_date)
+        val incidentDateDefaultLabel = context.getString(R.string.incident_date)
+        return EnrollmentRepository(
+            modelFactory,
+            enrollmentUid,
+            d2,
+            enrollmentMode,
+            enrollmentDataSectionLabel,
+            singleSectionLabel,
+            enrollmentOrgUnitLabel,
+            teiCoordinatesLabel,
+            enrollmentCoordinatesLabel,
+            reservedValueWarning,
+            enrollmentDateDefaultLabel,
+            incidentDateDefaultLabel
+        )
     }
 
     @Provides
@@ -76,7 +99,8 @@ class EnrollmentModule(
         programRepository: ReadOnlyOneObjectRepositoryFinalImpl<Program>,
         schedulerProvider: SchedulerProvider,
         formRepository: EnrollmentFormRepository,
-        valueStore: ValueStore
+        valueStore: ValueStore,
+        analyticsHelper: AnalyticsHelper
     ): EnrollmentPresenterImpl {
         return EnrollmentPresenterImpl(
             enrollmentView,
@@ -87,7 +111,8 @@ class EnrollmentModule(
             programRepository,
             schedulerProvider,
             formRepository,
-            valueStore
+            valueStore,
+            analyticsHelper
         )
     }
 

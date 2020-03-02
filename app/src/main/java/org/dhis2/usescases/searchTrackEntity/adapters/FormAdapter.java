@@ -141,7 +141,7 @@ public class FormAdapter extends RecyclerView.Adapter {
                 viewModel = SpinnerViewModel.create(attr.uid(), label, "", false, attr.optionSet().uid(), queryData.get(attr.uid()), null, true, attr.displayDescription(), 20, ObjectStyle.builder().build());
                 break;
             case COORDINATES:
-                viewModel = CoordinateViewModel.create(attr.uid(), label, false, queryData.get(attr.uid()), null, true, attr.displayDescription(), ObjectStyle.builder().build());
+                viewModel = CoordinateViewModel.create(attr.uid(), label, false, queryData.get(attr.uid()), null, true, attr.displayDescription(), ObjectStyle.builder().build(), FeatureType.POINT);
                 break;
             case TIME:
             case DATE:

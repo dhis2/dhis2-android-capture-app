@@ -76,7 +76,7 @@ public abstract class SectionViewModel extends FieldViewModel {
         return this;
     }
 
-    public FieldViewModel setOpen(boolean isOpen) {
+    public SectionViewModel setOpen(boolean isOpen) {
         return new AutoValue_SectionViewModel(
                 uid(),
                 label(),
@@ -98,7 +98,7 @@ public abstract class SectionViewModel extends FieldViewModel {
         );
     }
 
-    public FieldViewModel setTotalFields(Integer totalFields) {
+    public SectionViewModel setTotalFields(Integer totalFields) {
         return new AutoValue_SectionViewModel(
                 uid(),
                 label(),
@@ -120,7 +120,7 @@ public abstract class SectionViewModel extends FieldViewModel {
         );
     }
 
-    public FieldViewModel setCompletedFields(Integer completedFields) {
+    public SectionViewModel setCompletedFields(Integer completedFields) {
         return new AutoValue_SectionViewModel(
                 uid(),
                 label(),
@@ -133,7 +133,7 @@ public abstract class SectionViewModel extends FieldViewModel {
                 null,
                 null,
                 description(),
-                null,
+                objectStyle(),
                 null,
                 isOpen(),
                 totalFields(),

@@ -1,13 +1,14 @@
 package org.dhis2.Bindings
 
 import android.content.Context
-import java.util.Date
 import org.dhis2.R
 import org.dhis2.utils.DateUtils
 import org.joda.time.Days
 import org.joda.time.Hours
 import org.joda.time.Interval
 import org.joda.time.Minutes
+import timber.log.Timber
+import java.util.Date
 
 val String?.initials: String
     get() {
@@ -52,5 +53,30 @@ fun String?.toDateSpan(context: Context): String {
 }
 
 fun String.toDate(): Date {
-    return DateUtils.databaseDateFormat().parse(this)
+    var date: Date? = null
+    try {
+        date = DateUtils.databaseDateFormat().parse(this)
+    } catch (e: Exception) {
+        Timber.d("wrong format")
+    }
+    if (date == null) {
+        try {
+            date = DateUtils.dateTimeFormat().parse(this)
+        } catch (e: Exception) {
+            Timber.d("wrong format")
+        }
+    }
+    if (date == null) {
+        try {
+            date = DateUtils.uiDateFormat().parse(this)
+        } catch (e: Exception) {
+            Timber.d("wrong format")
+        }
+    }
+
+    if (date == null) {
+        throw NullPointerException("$this can't be parse to Date")
+    }
+
+    return date
 }
