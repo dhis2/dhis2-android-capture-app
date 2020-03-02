@@ -249,386 +249,11 @@ public class DateUtils {
 
     /**********************
      COMPARE DATES REGION*/
-    @Deprecated
-    public boolean hasExpired(@NonNull Event event, int expiryDays, int completeEventExpiryDays, @Nullable PeriodType expiryPeriodType) {
-        Calendar expiredDate = Calendar.getInstance();
-
-        if (event.status() == EventStatus.COMPLETED && completeEventExpiryDays == 0) {
-            return false;
-        }
-
-        if (event.completedDate() != null) {
-            expiredDate.setTime(event.completedDate());
-        } else {
-            expiredDate.setTime(event.eventDate() != null ? event.eventDate() : event.dueDate());
-            expiredDate.set(Calendar.HOUR_OF_DAY, 23);
-        }
-
-        if (expiryPeriodType == null) {
-            if (completeEventExpiryDays > 0) {
-                expiredDate.add(Calendar.DAY_OF_YEAR, completeEventExpiryDays);
-            }
-            return expiredDate.getTime().before(getNextPeriod(expiryPeriodType, expiredDate.getTime(), 0));
-        } else {
-            switch (expiryPeriodType) {
-                case Daily:
-                    break;
-                case Weekly:
-                    expiredDate.add(Calendar.WEEK_OF_YEAR, 1);
-                    expiredDate.set(Calendar.DAY_OF_WEEK, expiredDate.getFirstDayOfWeek());
-                    break;
-                case WeeklyWednesday:
-                    expiredDate.add(Calendar.WEEK_OF_YEAR, 1);
-                    expiredDate.set(Calendar.DAY_OF_WEEK, expiredDate.getFirstDayOfWeek());
-                    expiredDate.set(Calendar.DAY_OF_WEEK, Calendar.WEDNESDAY);
-                    break;
-                case WeeklyThursday:
-                    expiredDate.add(Calendar.WEEK_OF_YEAR, 1);
-                    expiredDate.set(Calendar.DAY_OF_WEEK, expiredDate.getFirstDayOfWeek());
-                    expiredDate.set(Calendar.DAY_OF_WEEK, Calendar.THURSDAY);
-                    break;
-                case WeeklySaturday:
-                    expiredDate.add(Calendar.WEEK_OF_YEAR, 1);
-                    expiredDate.set(Calendar.DAY_OF_WEEK, expiredDate.getFirstDayOfWeek());
-                    expiredDate.set(Calendar.DAY_OF_WEEK, Calendar.SATURDAY);
-                    break;
-                case WeeklySunday:
-                    expiredDate.add(Calendar.WEEK_OF_YEAR, 1);
-                    expiredDate.set(Calendar.DAY_OF_WEEK, expiredDate.getFirstDayOfWeek());
-                    expiredDate.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
-                    break;
-                case BiWeekly:
-                    expiredDate.add(Calendar.WEEK_OF_YEAR, 2);
-                    expiredDate.set(Calendar.DAY_OF_WEEK, expiredDate.getFirstDayOfWeek());
-                    break;
-                case Monthly:
-                    expiredDate.add(Calendar.MONTH, 1);
-                    expiredDate.set(Calendar.DAY_OF_MONTH, 1);
-                    break;
-                case BiMonthly:
-                    expiredDate.add(Calendar.MONTH, 2);
-                    expiredDate.set(Calendar.DAY_OF_MONTH, 1);
-                    break;
-                case Quarterly:
-                    expiredDate.add(Calendar.MONTH, 3);
-                    expiredDate.set(Calendar.DAY_OF_MONTH, 1);
-                    break;
-                case SixMonthly:
-                    expiredDate.add(Calendar.MONTH, 6);
-                    expiredDate.set(Calendar.DAY_OF_MONTH, 1);
-                    break;
-                case SixMonthlyApril:
-                    expiredDate.add(Calendar.MONTH, 6);
-                    expiredDate.set(Calendar.MONTH, Calendar.APRIL);
-                    expiredDate.set(Calendar.DAY_OF_MONTH, 1);
-                    break;
-                case Yearly:
-                    expiredDate.add(Calendar.YEAR, 1);
-                    expiredDate.set(Calendar.DAY_OF_YEAR, 1);
-                    break;
-                case FinancialApril:
-                    expiredDate.add(Calendar.YEAR, 1);
-                    expiredDate.set(Calendar.MONTH, Calendar.APRIL);
-                    expiredDate.set(Calendar.DAY_OF_MONTH, 1);
-                    break;
-                case FinancialJuly:
-                    expiredDate.add(Calendar.YEAR, 1);
-                    expiredDate.set(Calendar.MONTH, Calendar.JULY);
-                    expiredDate.set(Calendar.DAY_OF_MONTH, 1);
-                    break;
-                case FinancialOct:
-                    expiredDate.add(Calendar.YEAR, 1);
-                    expiredDate.add(Calendar.MONTH, Calendar.OCTOBER);
-                    expiredDate.set(Calendar.DAY_OF_MONTH, 1);
-                    break;
-            }
-            if (expiryDays > 0)
-                expiredDate.add(Calendar.DAY_OF_YEAR, expiryDays);
-            return expiredDate.getTime().before(getToday());
-        }
-
-    }
 
     public static int[] getDifference(Date startDate, Date endDate) {
         org.joda.time.Period interval = new org.joda.time.Period(startDate.getTime(), endDate.getTime(), org.joda.time.PeriodType.yearMonthDayTime());
         return new int[]{interval.getYears(), interval.getMonths(), interval.getDays()};
     }
-
-    public Date getNewDate(List<Event> events, PeriodType periodType) {
-        Calendar now = Calendar.getInstance();
-        now.set(Calendar.HOUR_OF_DAY, 0);
-        now.set(Calendar.MINUTE, 0);
-        now.set(Calendar.SECOND, 0);
-        now.set(Calendar.MILLISECOND, 0);
-
-        List<Date> eventDates = new ArrayList<>();
-        Date newDate = new Date();
-        boolean needNewDate = true;
-
-        for (Event event : events) {
-            eventDates.add(event.eventDate());
-        }
-
-        while (needNewDate) {
-            switch (periodType) {
-                case Weekly:
-                    now.setTime(moveWeekly(now));
-                    if (!eventDates.contains(now.getTime())) {
-                        newDate = now.getTime();
-                        needNewDate = false;
-                    }
-                    now.add(Calendar.WEEK_OF_YEAR, 1); //jump one week
-                    break;
-                case WeeklyWednesday:
-                    now.setTime(moveWeeklyWednesday(now));
-                    if (!eventDates.contains(now.getTime())) {
-                        newDate = now.getTime();
-                        needNewDate = false;
-                    }
-                    now.add(Calendar.WEEK_OF_YEAR, 1);
-                    break;
-                case WeeklyThursday:
-                    now.setTime(moveWeeklyThursday(now));
-                    if (!eventDates.contains(now.getTime())) {
-                        newDate = now.getTime();
-                        needNewDate = false;
-                    }
-                    now.add(Calendar.WEEK_OF_YEAR, 1);
-                    break;
-                case WeeklySaturday:
-                    now.setTime(moveWeeklySaturday(now));
-                    if (!eventDates.contains(now.getTime())) {
-                        newDate = now.getTime();
-                        needNewDate = false;
-                    }
-                    now.add(Calendar.WEEK_OF_YEAR, 1);
-                    break;
-                case WeeklySunday:
-                    now.setTime(moveWeeklySunday(now));
-                    if (!eventDates.contains(now.getTime())) {
-                        newDate = now.getTime();
-                        needNewDate = false;
-                    }
-                    now.add(Calendar.WEEK_OF_YEAR, 1);
-                    break;
-                case BiWeekly:
-                    now.setTime(moveBiWeekly(now));
-                    if (!eventDates.contains(now.getTime())) {
-                        newDate = now.getTime();
-                        needNewDate = false;
-                    }
-                    now.add(Calendar.WEEK_OF_YEAR, 2);
-                    break;
-                case Monthly:
-                    now.setTime(moveMonthly(now));
-                    if (!eventDates.contains(now.getTime())) {
-                        newDate = now.getTime();
-                        needNewDate = false;
-                    }
-                    now.add(Calendar.MONTH, 1);
-                    break;
-                case BiMonthly:
-                    now.setTime(moveBiMonthly(now));
-                    if (!eventDates.contains(now.getTime())) {
-                        newDate = now.getTime();
-                        needNewDate = false;
-                    }
-                    now.add(Calendar.MONTH, 2);
-                    break;
-                case Quarterly:
-                    now.setTime(moveQuarterly(now));
-                    if (!eventDates.contains(now.getTime())) {
-                        newDate = now.getTime();
-                        needNewDate = false;
-                    }
-                    now.add(Calendar.MONTH, 4);
-                    break;
-                case SixMonthly:
-                    now.setTime(moveSixMonthly(now));
-                    if (!eventDates.contains(now.getTime())) {
-                        newDate = now.getTime();
-                        needNewDate = false;
-                    }
-                    now.add(Calendar.MONTH, 6);
-                    break;
-                case SixMonthlyApril:
-                    now.setTime(moveSixMonthlyApril(now));
-                    if (!eventDates.contains(now.getTime())) {
-                        newDate = now.getTime();
-                        needNewDate = false;
-                    }
-                    now.add(Calendar.MONTH, 6);
-                    break;
-                case Yearly:
-                    now.setTime(moveYearly(now));
-                    if (!eventDates.contains(now.getTime())) {
-                        newDate = now.getTime();
-                        needNewDate = false;
-                    }
-                    now.add(Calendar.DAY_OF_YEAR, 1);
-                    break;
-                case FinancialApril:
-                    now.setTime(moveFinancialApril(now));
-                    if (!eventDates.contains(now.getTime())) {
-                        newDate = now.getTime();
-                        needNewDate = false;
-                    }
-                    now.add(Calendar.DAY_OF_YEAR, 1);
-                    break;
-                case FinancialJuly:
-                    now.setTime(moveFinancialJuly(now));
-                    if (!eventDates.contains(now.getTime())) {
-                        newDate = now.getTime();
-                        needNewDate = false;
-                    }
-                    now.add(Calendar.DAY_OF_YEAR, 1);
-                    break;
-                case FinancialOct:
-                    now.setTime(moveFinancialOct(now));
-                    if (!eventDates.contains(now.getTime())) {
-                        newDate = now.getTime();
-                        needNewDate = false;
-                    }
-                    now.add(Calendar.DAY_OF_YEAR, 1);
-                    break;
-                case Daily:
-                default:
-                    if (!eventDates.contains(now.getTime())) {
-                        newDate = now.getTime();
-                        needNewDate = false;
-                    }
-                    now.add(Calendar.DAY_OF_YEAR, 1); //jump one day
-                    break;
-            }
-            now.setTime(getNextPeriod(periodType, now.getTime(), 1));
-        }
-
-        return newDate;
-    }
-
-    public Date moveWeeklyWednesday(Calendar date) {
-        if (date.get(Calendar.DAY_OF_WEEK) > 1 && date.get(Calendar.DAY_OF_WEEK) < Calendar.WEDNESDAY)
-            date.set(Calendar.DAY_OF_WEEK, Calendar.WEDNESDAY);
-        else {
-            date.add(Calendar.WEEK_OF_YEAR, 1);
-            date.set(Calendar.DAY_OF_WEEK, Calendar.WEDNESDAY);
-        }
-        return date.getTime();
-    }
-
-    public Date moveWeeklyThursday(Calendar date) {
-        if (date.get(Calendar.DAY_OF_WEEK) > 1 && date.get(Calendar.DAY_OF_WEEK) < Calendar.THURSDAY)
-            date.set(Calendar.DAY_OF_WEEK, Calendar.THURSDAY);
-        else {
-            date.add(Calendar.WEEK_OF_YEAR, 1);
-            date.set(Calendar.DAY_OF_WEEK, Calendar.THURSDAY);
-        }
-        return date.getTime();
-    }
-
-    public Date moveWeeklySaturday(Calendar date) {
-        if (date.get(Calendar.DAY_OF_WEEK) > 1 && date.get(Calendar.DAY_OF_WEEK) < Calendar.SATURDAY)
-            date.set(Calendar.DAY_OF_WEEK, Calendar.SATURDAY);
-        else {
-            date.add(Calendar.WEEK_OF_YEAR, 1);
-            date.set(Calendar.DAY_OF_WEEK, Calendar.SATURDAY);
-        }
-        return date.getTime();
-    }
-
-    public Date moveWeeklySunday(Calendar date) {
-        if (date.get(Calendar.DAY_OF_WEEK) != Calendar.SUNDAY)
-            date.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
-        else {
-            date.add(Calendar.WEEK_OF_YEAR, 1);
-            date.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
-        }
-        return date.getTime();
-    }
-
-    public Date moveBiWeekly(Calendar date) {
-        date.add(Calendar.WEEK_OF_YEAR, 2);
-        date.set(Calendar.DAY_OF_WEEK, date.getFirstDayOfWeek());
-        return date.getTime();
-    }
-
-    public Date moveWeekly(Calendar date) {
-        date.add(Calendar.WEEK_OF_YEAR, 1); //Set to next week
-        date.set(Calendar.DAY_OF_WEEK, date.getFirstDayOfWeek()); //Set to first day of next week
-        date.add(Calendar.DAY_OF_YEAR, -1); //Set to last day of this week
-        return date.getTime();
-    }
-
-    public Date moveMonthly(Calendar date) {
-        date.add(Calendar.MONTH, 1);
-        date.set(Calendar.DAY_OF_MONTH, 1);
-        date.add(Calendar.DAY_OF_MONTH, -1);
-        return date.getTime();
-    }
-
-    public Date moveBiMonthly(Calendar date) {
-        date.add(Calendar.MONTH, 2);
-        date.set(Calendar.DAY_OF_MONTH, 1);
-        date.add(Calendar.DAY_OF_MONTH, -1);
-        return date.getTime();
-    }
-
-    public Date moveQuarterly(Calendar date) {
-        date.add(Calendar.MONTH, 4);
-        date.set(Calendar.DAY_OF_MONTH, 1);
-        date.add(Calendar.DAY_OF_MONTH, -1);
-        return date.getTime();
-    }
-
-    public Date moveSixMonthly(Calendar date) {
-        date.add(Calendar.MONTH, 6);
-        date.set(Calendar.DAY_OF_MONTH, 1);
-        date.add(Calendar.DAY_OF_MONTH, -1);
-        return date.getTime();
-    }
-
-    public Date moveSixMonthlyApril(Calendar date) {
-        if (date.get(Calendar.MONTH) > Calendar.SEPTEMBER && date.get(Calendar.MONTH) <= Calendar.DECEMBER) {
-            date.add(Calendar.MONTH, 6);
-            date.set(Calendar.MONTH, Calendar.APRIL);
-            date.set(Calendar.DAY_OF_MONTH, 1);
-        } else if (date.get(Calendar.MONTH) > Calendar.APRIL && date.get(Calendar.MONTH) < Calendar.SEPTEMBER) {
-            date.set(Calendar.MONTH, Calendar.SEPTEMBER);
-            date.set(Calendar.DAY_OF_MONTH, 1);
-        } else {
-            date.set(Calendar.DAY_OF_MONTH, Calendar.APRIL);
-            date.set(Calendar.DAY_OF_MONTH, 1);
-        }
-        return date.getTime();
-    }
-
-    public Date moveYearly(Calendar date) {
-        date.add(Calendar.YEAR, 1);
-        date.set(Calendar.DAY_OF_YEAR, 1);
-        return date.getTime();
-    }
-
-    public Date moveFinancialApril(Calendar date) {
-        date.add(Calendar.YEAR, 1);
-        date.set(Calendar.MONTH, Calendar.APRIL);
-        date.set(Calendar.DAY_OF_MONTH, 1);
-        return date.getTime();
-    }
-
-    public Date moveFinancialJuly(Calendar date) {
-        date.add(Calendar.YEAR, 1);
-        date.set(Calendar.MONTH, Calendar.JULY);
-        date.set(Calendar.DAY_OF_MONTH, 1);
-        return date.getTime();
-    }
-
-    public Date moveFinancialOct(Calendar date) {
-        date.add(Calendar.YEAR, 1);
-        date.set(Calendar.MONTH, Calendar.OCTOBER);
-        date.set(Calendar.DAY_OF_MONTH, 1);
-        return date.getTime();
-    }
-
 
     /**
      * @param currentDate      Date from which calculation will be carried out. Default value is today.
@@ -876,6 +501,17 @@ public class DateUtils {
                 calendar.set(Calendar.DAY_OF_MONTH, 1);
                 calendar.add(Calendar.MONTH, page * 6);
                 break;
+            case SixMonthlyNov:
+                if (calendar.get(Calendar.MONTH) < Calendar.MAY) {
+                    calendar.add(Calendar.YEAR, -1);
+                    calendar.set(Calendar.MONTH, Calendar.NOVEMBER);
+                } else if (calendar.get(Calendar.MONTH) >= Calendar.MAY && calendar.get(Calendar.MONTH) < Calendar.NOVEMBER)
+                    calendar.set(Calendar.MONTH, Calendar.MAY);
+                else
+                    calendar.set(Calendar.MONTH, Calendar.NOVEMBER);
+                calendar.set(Calendar.DAY_OF_MONTH, 1);
+                calendar.add(Calendar.MONTH, page * 6);
+                break;
             case Yearly:
                 calendar.add(Calendar.YEAR, page);
                 calendar.set(Calendar.DAY_OF_YEAR, 1);
@@ -905,6 +541,16 @@ public class DateUtils {
                     calendar.set(Calendar.MONTH, Calendar.OCTOBER);
                 } else
                     calendar.set(Calendar.MONTH, Calendar.OCTOBER);
+
+                calendar.add(Calendar.YEAR, page);
+                calendar.set(Calendar.DAY_OF_MONTH, 1);
+                break;
+            case FinancialNov:
+                if (calendar.get(Calendar.MONTH) < Calendar.NOVEMBER) {
+                    calendar.add(Calendar.YEAR, -1);
+                    calendar.set(Calendar.MONTH, Calendar.NOVEMBER);
+                } else
+                    calendar.set(Calendar.MONTH, Calendar.NOVEMBER);
 
                 calendar.add(Calendar.YEAR, page);
                 calendar.set(Calendar.DAY_OF_MONTH, 1);
