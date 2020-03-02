@@ -1,10 +1,17 @@
 package org.dhis2.usescases.login
 
+import androidx.test.espresso.intent.Intents.intended
+import androidx.test.espresso.intent.matcher.ComponentNameMatchers.hasShortClassName
+import androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent
+import androidx.test.espresso.intent.matcher.IntentMatchers.hasExtra
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
 import org.dhis2.data.prefs.Preference.Companion.SESSION_LOCKED
 import org.dhis2.usescases.BaseTest
 import org.dhis2.usescases.main.MainActivity
+import org.dhis2.utils.WebViewActivity
+import org.dhis2.utils.WebViewActivity.Companion.WEB_VIEW_URL
+import org.hamcrest.CoreMatchers.allOf
 import org.hisp.dhis.android.core.mockwebserver.ResponseController.*
 import org.junit.Rule
 import org.junit.Test
@@ -12,6 +19,7 @@ import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 class LoginTest : BaseTest() {
+
 
     @get:Rule
     val ruleLogin = ActivityTestRule(LoginActivity::class.java, false, false)
@@ -29,7 +37,9 @@ class LoginTest : BaseTest() {
         mockWebServerRobot.addResponse(GET, API_ME_PATH, API_ME_RESPONSE_OK)
         mockWebServerRobot.addResponse(GET, API_SYSTEM_INFO_PATH, API_SYSTEM_INFO_RESPONSE_OK)
 
+        enableIntents()
         startLoginActivity()
+
         loginRobot {
             clearServerField()
             typeServer(MOCK_SERVER_URL)
@@ -38,7 +48,9 @@ class LoginTest : BaseTest() {
             closeKeyboard()
             clickLoginButton()
             acceptGenericDialog()
+            //check intent
         }
+
         cleanDatabase()
     }
 
@@ -65,22 +77,27 @@ class LoginTest : BaseTest() {
         startLoginActivity()
 
         loginRobot {
+            clearServerField()
             typeServer(MOCK_SERVER_URL)
             typeUsername(USERNAME)
             typePassword(PASSWORD)
             cleanPasswordField()
+            closeKeyboard()
             checkLoginButtonIsHidden()
         }
     }
 
     @Test
     fun shouldLaunchWebViewWhenClickAccountRecoveryAndServerIsFilled() {
+        enableIntents()
         startLoginActivity()
 
         loginRobot {
+            clearServerField()
             typeServer(MOCK_SERVER_URL)
+            closeKeyboard()
             clickAccountRecovery()
-            //validate using intent if browser is launch
+            intended(hasExtra(WEB_VIEW_URL, "$MOCK_SERVER_URL/dhis-web-commons/security/recovery.action"))
         }
     }
 
@@ -91,8 +108,13 @@ class LoginTest : BaseTest() {
         startLoginActivity()
 
         loginRobot {
-            checkUnblockSessionViewIsVisible()
+        //    checkUnblockSessionViewIsVisible()
         }
+    }
+
+    @Test
+    fun shouldGoToHomeScreenWhenUserIsLoggedIn() {
+        //TODO
     }
 
     fun startMainActivity(){
