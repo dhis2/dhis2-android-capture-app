@@ -118,7 +118,7 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
         binding.fieldRecycler.adapter = adapter
 
         binding.save.setOnClickListener {
-            goBack()
+            performSaveClick()
         }
 
         presenter.init()
