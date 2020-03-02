@@ -318,7 +318,10 @@ class EnrollmentRepository(
             enrollmentDateLabel,
             true,
             ValueType.DATE,
-            DateUtils.databaseDateFormat().format(enrollmentRepository.blockingGet()!!.enrollmentDate()),
+            when (val date = enrollmentRepository.blockingGet()!!.enrollmentDate()) {
+                null -> null
+                else -> DateUtils.databaseDateFormat().format(date)
+            },
             ENROLLMENT_DATA_SECTION_UID,
             allowFutureDates,
             editable, null,
