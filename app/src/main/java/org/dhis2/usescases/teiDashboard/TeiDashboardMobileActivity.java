@@ -41,6 +41,7 @@ import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.HelpManager;
 import org.dhis2.utils.OrientationUtilsKt;
+import org.dhis2.utils.filters.FilterManager;
 import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.jetbrains.annotations.NotNull;
@@ -59,6 +60,9 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
 
     @Inject
     public TeiDashboardContracts.Presenter presenter;
+
+    @Inject
+    public FilterManager filterManager;
 
     protected DashboardProgramModel programModel;
 
@@ -113,7 +117,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
         binding = DataBindingUtil.setContentView(this, R.layout.activity_dashboard_mobile);
         binding.setPresenter(presenter);
 
-        //binding.tabLayout.setupWithViewPager(binding.teiPager);
+        binding.setTotalFilters(filterManager.getTotalFilters());
         binding.tabLayout.setTabMode(TabLayout.MODE_SCROLLABLE);
         binding.tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override

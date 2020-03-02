@@ -15,7 +15,7 @@ class DashboardPagerAdapter(
     fa: FragmentActivity,
     private val currentProgram: String?,
     private val teiUid: String,
-    private val enrollmentUid: String
+    private val enrollmentUid: String?
 ) : FragmentStateAdapter(fa) {
 
     private var indicatorsFragment: IndicatorsFragment? = null
