@@ -97,7 +97,7 @@ class LoginTest : BaseTest() {
             typeServer(MOCK_SERVER_URL)
             closeKeyboard()
             clickAccountRecovery()
-            intended(hasExtra(WEB_VIEW_URL, "$MOCK_SERVER_URL/dhis-web-commons/security/recovery.action"))
+            intended(allOf(hasExtra(WEB_VIEW_URL, "$MOCK_SERVER_URL/dhis-web-commons/security/recovery.action"), hasComponent(WebViewActivity::class.java!!.name)))
         }
     }
 
