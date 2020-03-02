@@ -3,6 +3,7 @@ package org.dhis2.usescases.enrollment
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
 import android.text.TextUtils.isEmpty
 import android.view.LayoutInflater
@@ -10,6 +11,9 @@ import android.view.View
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.bitmap.CircleCrop
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import io.reactivex.Flowable
@@ -32,9 +36,6 @@ import org.dhis2.utils.Constants.GALLERY_REQUEST
 import org.dhis2.utils.Constants.RQ_QR_SCANNER
 import org.dhis2.utils.EventMode
 import org.dhis2.utils.FileResourcesUtil
-import org.dhis2.utils.analytics.CLICK
-import org.dhis2.utils.analytics.DELETE_AND_BACK
-import org.dhis2.utils.analytics.SAVE_ENROLL
 import org.dhis2.utils.customviews.AlertBottomDialog
 import org.dhis2.utils.recyclers.StickyHeaderItemDecoration
 import org.hisp.dhis.android.core.arch.helpers.FileResourceDirectoryHelper
@@ -42,7 +43,6 @@ import org.hisp.dhis.android.core.arch.helpers.GeometryHelper
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.Geometry
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue
 import java.io.File
 import javax.inject.Inject
 
@@ -109,7 +109,7 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
                 { itemPosition ->
                     itemPosition >= 0 &&
                             itemPosition < adapter.itemCount &&
-                            adapter.getItemViewType(itemPosition) == 17
+                            adapter.getItemViewType(itemPosition) == adapter.sectionViewType()
                 },
                 { sectionUid ->
                     adapter.sectionFlowable().onNext(sectionUid)
@@ -117,16 +117,16 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
         )
         binding.fieldRecycler.adapter = adapter
 
-        binding.next.setOnClickListener {
-            if (presenter.dataIntegrityCheck()
-            ) {
-                binding.root.requestFocus()
-                analyticsHelper().setEvent(SAVE_ENROLL, CLICK, SAVE_ENROLL)
-                presenter.finish(mode)
-            }
+        binding.save.setOnClickListener {
+            goBack()
         }
 
         presenter.init()
+    }
+
+    override fun onResume() {
+        presenter.subscribeToBackButton()
+        super.onResume()
     }
 
     override fun onDestroy() {
@@ -251,12 +251,7 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
 
     override fun onBackPressed() {
         if (mode == EnrollmentMode.CHECK) {
-            if (
-                presenter.dataIntegrityCheck()
-            ) {
-                binding.root.requestFocus()
-                super.onBackPressed()
-            }
+            presenter.backIsClicked()
         } else {
             showDeleteDialog()
         }
@@ -267,7 +262,6 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
             .setTitle(getString(R.string.title_delete_go_back))
             .setMessage(getString(R.string.delete_go_back))
             .setPositiveButton(getString(R.string.missing_mandatory_fields_go_back)) {
-                analyticsHelper().setEvent(DELETE_AND_BACK, CLICK, DELETE_AND_BACK)
                 presenter.deleteAllSavedData()
                 finish()
             }
@@ -305,23 +299,57 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
         }
     }
 
+    override fun setResultAndFinish() {
+        setResult(RESULT_OK)
+        finish()
+    }
+
     /*endregion*/
 
     /*region TEI*/
-    override fun displayTeiInfo(it: List<TrackedEntityAttributeValue>) {
-        binding.title.text =
-            if (mode != EnrollmentMode.NEW) {
-                it.map { it.value() }.joinToString(separator = " ", limit = 3)
-            } else {
-                String.format(getString(R.string.enroll_in), presenter.getProgram().displayName())
+    override fun displayTeiInfo(attrList: List<String>, profileImage: String) {
+        if (mode != EnrollmentMode.NEW) {
+            binding.title.visibility = View.GONE
+            binding.teiDataHeader.root.visibility = View.VISIBLE
+            binding.teiDataHeader.mainAttributes.setTextColor(Color.WHITE)
+            binding.teiDataHeader.secundaryAttribute.setTextColor(Color.WHITE)
+            var firstAttr = ""
+            var secondAttr = ""
+            var thirdAttr = ""
+            if (attrList.size > 1) {
+                firstAttr = attrList[0]
             }
+            if (attrList.size > 2) {
+                secondAttr = attrList[1]
+            }
+            if (attrList.size >= 3) {
+                thirdAttr = attrList[2]
+            }
+            binding.teiDataHeader.mainAttributes.text =
+                String.format("%s %s", firstAttr, secondAttr)
+            binding.teiDataHeader.secundaryAttribute.text = thirdAttr
+            if (profileImage.isEmpty()) {
+                binding.teiDataHeader.teiImage.visibility = View.GONE
+            } else {
+                Glide.with(this).load(File(profileImage))
+                    .transition(DrawableTransitionOptions.withCrossFade())
+                    .transform(CircleCrop())
+                    .into(binding.teiDataHeader.teiImage)
+            }
+
+        } else {
+            binding.title.visibility = View.VISIBLE
+            binding.teiDataHeader.root.visibility = View.GONE
+            binding.title.text =
+                String.format(getString(R.string.enroll_in), presenter.getProgram().displayName())
+        }
     }
     /*endregion*/
     /*region ACCESS*/
 
     override fun setAccess(access: Boolean?) {
         if (access == false) {
-            binding.next.visibility = View.GONE
+            binding.save.visibility = View.GONE
         }
     }
     /*endregion*/
@@ -363,14 +391,23 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
 
         myLayoutManager.scrollToPositionWithOffset(myFirstPositionIndex, offset)
     }
+
     /*endregion*/
+    override fun requestFocus() {
+        binding.root.requestFocus()
+    }
 
     override fun setSaveButtonVisible(visible: Boolean) {
         if (visible) {
-            binding.next.show()
+            binding.save.show()
         } else {
-            binding.next.hide()
+            binding.save.hide()
         }
     }
 
+    override fun performSaveClick() {
+        if (presenter.dataIntegrityCheck()) {
+            presenter.finish(mode)
+        }
+    }
 }

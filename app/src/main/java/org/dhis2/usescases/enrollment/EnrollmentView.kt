@@ -5,7 +5,6 @@ import org.dhis2.data.forms.dataentry.fields.FieldViewModel
 import org.dhis2.data.forms.dataentry.fields.RowAction
 import org.dhis2.usescases.general.AbstractActivityContracts
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue
 
 interface EnrollmentView : AbstractActivityContracts.View {
 
@@ -18,7 +17,7 @@ interface EnrollmentView : AbstractActivityContracts.View {
 
     fun setSaveButtonVisible(visible: Boolean)
 
-    fun displayTeiInfo(it: List<TrackedEntityAttributeValue>)
+    fun displayTeiInfo(attrList: List<String>,profileImage:String)
     fun rowActions(): Flowable<RowAction>
     fun openEvent(eventUid: String)
     fun openDashboard(enrollmentUid: String)
@@ -27,4 +26,7 @@ interface EnrollmentView : AbstractActivityContracts.View {
     fun showErrorFieldsMessage(errorFields: List<String>)
     fun sectionFlowable(): Flowable<String>
     fun setSelectedSection(selectedSection: String)
+    fun setResultAndFinish()
+    fun requestFocus()
+    fun performSaveClick()
 }

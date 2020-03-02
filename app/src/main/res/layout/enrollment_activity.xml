@@ -45,14 +45,27 @@
 
             <TextView
                 android:id="@+id/title"
+                style="@style/TextPrimary"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:gravity="center_vertical"
                 android:textColor="?colorAccent"
-                android:textSize="20sp"
+                android:textSize="17sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/menu"
-                tools:text="TEI NAME" />
+                tools:text="TEI NAME"
+                tools:visibility="gone" />
+
+            <include
+                android:id="@+id/teiDataHeader"
+                layout="@layout/tei_data_header"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/menu"
+                app:layout_constraintTop_toTopOf="parent"/>
+
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.recyclerview.widget.RecyclerView
@@ -67,7 +80,7 @@
             tools:listitem="@layout/form_unsupported" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/next"
+            android:id="@+id/save"
             style="@style/Widget.MaterialComponents.FloatingActionButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

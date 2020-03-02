@@ -1,8 +1,6 @@
 package org.dhis2.usescases.teiDashboard;
 
 import android.content.Intent;
-import android.content.res.Configuration;
-import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.os.Build;
@@ -39,6 +37,7 @@ import org.dhis2.usescases.teiDashboard.teiProgramList.TeiProgramListActivity;
 import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.HelpManager;
+import org.dhis2.utils.OrientationUtilsKt;
 import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.jetbrains.annotations.NotNull;
@@ -71,7 +70,6 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
     protected DashboardPagerAdapter adapter;
     protected DashboardPagerTabletAdapter tabletAdapter;
     protected FragmentStatePagerAdapter currentAdapter;
-    private int orientation;
 
     private DashboardViewModel dashboardViewModel;
     private boolean fromRelationship;
@@ -135,7 +133,6 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
 
         String prevDashboardProgram = presenter.getPreviousDashboard();
 
-        orientation = Resources.getSystem().getConfiguration().orientation;
         if (currentAdapter == null) {
             restoreAdapter(programUid);
         }
@@ -158,7 +155,6 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
-        orientation = Resources.getSystem().getConfiguration().orientation;
         teiUid = savedInstanceState.getString(Constants.TRACKED_ENTITY_INSTANCE);
         programUid = savedInstanceState.getString(Constants.PROGRAM_UID);
     }
@@ -179,7 +175,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
         binding.teiPager.setAdapter(null);
         binding.teiPager.invalidate();
 
-        if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+        if (OrientationUtilsKt.isPortrait()) {
             adapter = new DashboardPagerAdapter(this, getSupportFragmentManager(), programUid, teiUid);
             currentAdapter = adapter;
             binding.teiPager.setAdapter(adapter);
@@ -239,7 +235,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
             setViewpagerAdapter();
         }
 
-        if (orientation == Configuration.ORIENTATION_LANDSCAPE)
+        if (OrientationUtilsKt.isLandscape())
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.tei_main_view, new TEIDataFragment())
                     .commitAllowingStateLoss();
@@ -300,7 +296,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
 
         setViewpagerAdapter();
 
-        if (orientation == Configuration.ORIENTATION_LANDSCAPE)
+        if (OrientationUtilsKt.isLandscape())
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.tei_main_view, new TEIDataFragment())
                     .commitAllowingStateLoss();
@@ -369,11 +365,6 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
         fromRelationship = true;
     }
 
-    public int getOrientation() {
-        return orientation;
-    }
-
-
     private void setProgramColor(String color) {
         int programTheme = ColorUtils.getThemeFromColor(color);
         int programColor = ColorUtils.getColorFrom(color, ColorUtils.getPrimaryColor(this, ColorUtils.ColorType.PRIMARY));
@@ -382,7 +373,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
             presenter.saveProgramTheme(programTheme);
             binding.toolbar.setBackgroundColor(programColor);
             binding.tabLayout.setBackgroundColor(programColor);
-            if (getOrientation() == Configuration.ORIENTATION_LANDSCAPE)
+            if (OrientationUtilsKt.isLandscape())
                 if (binding.dotsIndicator.getVisibility() == View.VISIBLE) {
                     binding.dotsIndicator.setDotIndicatorColor(programColor);
                     binding.dotsIndicator.setStrokeDotsIndicatorColor(programColor);
@@ -407,7 +398,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
             }
             binding.toolbar.setBackgroundColor(ContextCompat.getColor(this, colorPrimary));
             binding.tabLayout.setBackgroundColor(ContextCompat.getColor(this, colorPrimary));
-            if (getOrientation() == Configuration.ORIENTATION_LANDSCAPE)
+            if (OrientationUtilsKt.isLandscape())
                 if (binding.dotsIndicator.getVisibility() == View.VISIBLE) {
                     binding.dotsIndicator.setDotIndicatorColor(ContextCompat.getColor(this, colorPrimary));
                     binding.dotsIndicator.setStrokeDotsIndicatorColor(ContextCompat.getColor(this, colorPrimary));

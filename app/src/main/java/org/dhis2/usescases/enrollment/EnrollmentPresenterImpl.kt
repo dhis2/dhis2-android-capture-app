@@ -7,6 +7,7 @@ import io.reactivex.flowables.ConnectableFlowable
 import io.reactivex.functions.BiFunction
 import io.reactivex.processors.FlowableProcessor
 import io.reactivex.processors.PublishProcessor
+import org.dhis2.Bindings.profilePicturePath
 import org.dhis2.Bindings.toDate
 import org.dhis2.R
 import org.dhis2.data.forms.dataentry.DataEntryRepository
@@ -22,10 +23,15 @@ import org.dhis2.utils.DhisTextUtils
 import org.dhis2.utils.Result
 import org.dhis2.utils.RulesActionCallbacks
 import org.dhis2.utils.RulesUtilsProviderImpl
+import org.dhis2.utils.analytics.AnalyticsHelper
+import org.dhis2.utils.analytics.CLICK
+import org.dhis2.utils.analytics.DELETE_AND_BACK
+import org.dhis2.utils.analytics.SAVE_ENROLL
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.`object`.ReadOnlyOneObjectRepositoryFinalImpl
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.Geometry
+import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.enrollment.EnrollmentObjectRepository
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
@@ -35,6 +41,7 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceObjectRepos
 import org.hisp.dhis.rules.models.RuleActionShowError
 import org.hisp.dhis.rules.models.RuleEffect
 import timber.log.Timber
+import java.util.concurrent.TimeUnit
 import kotlin.collections.set
 
 private const val TAG = "EnrollmentPresenter"
@@ -48,10 +55,11 @@ class EnrollmentPresenterImpl(
     private val programRepository: ReadOnlyOneObjectRepositoryFinalImpl<Program>,
     private val schedulerProvider: SchedulerProvider,
     val formRepository: EnrollmentFormRepository,
-    private val valueStore: ValueStore
+    private val valueStore: ValueStore,
+    private val analyticsHelper: AnalyticsHelper
 ) : RulesActionCallbacks {
 
-    private lateinit var disposable: CompositeDisposable
+    private val disposable = CompositeDisposable()
     private val optionsToHide = ArrayList<String>()
     private val optionsGroupsToHide = ArrayList<String>()
     private val optionsGroupToShow = HashMap<String, ArrayList<String>>()
@@ -60,10 +68,9 @@ class EnrollmentPresenterImpl(
     private var selectedSection: String = ""
     private var errorFields = mutableMapOf<String, String>()
     private var mandatoryFields = mutableMapOf<String, String>()
+    private val backButtonProcessor: FlowableProcessor<Boolean> = PublishProcessor.create()
 
     fun init() {
-        disposable = CompositeDisposable()
-
         view.setSaveButtonVisible(false)
 
         disposable.add(
@@ -72,22 +79,30 @@ class EnrollmentPresenterImpl(
                     d2.trackedEntityModule().trackedEntityTypeAttributes()
                         .byTrackedEntityTypeUid().eq(tei.trackedEntityType()).get()
                         .map { list ->
-                            list.sortBy { it.sortOrder() }
-                            list.map {
-                                it.trackedEntityAttribute()?.uid()
+                            val attrList = list.filter {
+                                d2.trackedEntityModule().trackedEntityAttributes()
+                                    .uid(it.trackedEntityAttribute()?.uid())
+                                    .blockingGet().valueType() != ValueType.IMAGE
+                            }.sortedBy {
+                                it.sortOrder()
+                            }.map {
+                                d2.trackedEntityModule().trackedEntityAttributeValues()
+                                    .byTrackedEntityInstance().eq(tei.uid())
+                                    .byTrackedEntityAttribute().eq(it.trackedEntityAttribute()?.uid())
+                                    .one()
+                                    .blockingGet()?.value() ?: ""
                             }
-                        }
-                        .flatMap {
-                            d2.trackedEntityModule().trackedEntityAttributeValues()
-                                .byTrackedEntityInstance().eq(tei.uid())
-                                .byTrackedEntityAttribute().`in`(it)
-                                .get()
+                            val icon =
+                                tei.profilePicturePath(d2, programRepository.blockingGet().uid())
+                            Pair(attrList, icon)
                         }
                 }
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
-                    { view.displayTeiInfo(it) },
+                    { mainAttributes ->
+                        view.displayTeiInfo(mainAttributes.first, mainAttributes.second)
+                    },
                     { Timber.tag(TAG).e(it) }
                 )
         )
@@ -311,6 +326,18 @@ class EnrollmentPresenterImpl(
             }.publish()
     }
 
+    fun subscribeToBackButton() {
+        disposable.add(backButtonProcessor
+            .doOnNext { view.requestFocus() }
+            .debounce(1, TimeUnit.SECONDS, schedulerProvider.io())
+            .observeOn(schedulerProvider.ui())
+            .subscribe(
+                { view.performSaveClick() },
+                { t -> Timber.e(t) }
+            )
+        )
+    }
+
     fun finish(enrollmentMode: EnrollmentActivity.EnrollmentMode) {
         when (enrollmentMode) {
             EnrollmentActivity.EnrollmentMode.NEW -> disposable.add(
@@ -329,12 +356,16 @@ class EnrollmentPresenterImpl(
                         { Timber.tag(TAG).e(it) }
                     )
             )
-            EnrollmentActivity.EnrollmentMode.CHECK -> view.abstractActivity.finish()
+            EnrollmentActivity.EnrollmentMode.CHECK -> view.setResultAndFinish()
         }
     }
 
     fun updateFields() {
         fieldsFlowable.onNext(true)
+    }
+
+    fun backIsClicked() {
+        backButtonProcessor.onNext(true)
     }
 
     fun openInitial(eventUid: String): Boolean {
@@ -414,6 +445,7 @@ class EnrollmentPresenterImpl(
 
     fun deleteAllSavedData() {
         teiRepository.blockingDelete()
+        analyticsHelper.setEvent(DELETE_AND_BACK, CLICK, DELETE_AND_BACK)
     }
 
     fun getLastFocusItem(): String? {
@@ -498,7 +530,10 @@ class EnrollmentPresenterImpl(
                 view.showErrorFieldsMessage(errorFields.values.toList())
                 false
             }
-            else -> true
+            else -> {
+                analyticsHelper.setEvent(SAVE_ENROLL, CLICK, SAVE_ENROLL)
+                true
+            }
         }
     }
 }

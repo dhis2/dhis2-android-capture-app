@@ -48,6 +48,7 @@ import org.dhis2.databinding.FormSectionBinding;
 import org.hisp.dhis.android.core.common.FeatureType;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -336,11 +337,16 @@ public final class DataEntryAdapter extends ListAdapter<FieldViewModel, ViewHold
         return (SectionViewModel) getItem(position);
     }
 
-    public void setCurrentSection(String currentSection) {
+    public String setCurrentSection(String currentSection) {
         selectedSection.set(currentSection);
+        return selectedSection.get();
     }
 
     public SectionHolder createHeader(FormSectionBinding headerBinding) {
         return new SectionHolder(headerBinding, selectedSection, sectionProcessor);
+    }
+
+    public int sectionViewType() {
+        return SECTION;
     }
 }

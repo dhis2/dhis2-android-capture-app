@@ -7,6 +7,7 @@ import org.joda.time.Days
 import org.joda.time.Hours
 import org.joda.time.Interval
 import org.joda.time.Minutes
+import timber.log.Timber
 import java.util.Date
 
 val String?.initials: String
@@ -56,25 +57,25 @@ fun String.toDate(): Date {
     try {
         date = DateUtils.databaseDateFormat().parse(this)
     } catch (e: Exception) {
-
+        Timber.d("wrong format")
     }
     if (date == null) {
         try {
             date = DateUtils.dateTimeFormat().parse(this)
         } catch (e: Exception) {
-
+            Timber.d("wrong format")
         }
     }
     if (date == null) {
         try {
             date = DateUtils.uiDateFormat().parse(this)
         } catch (e: Exception) {
-
+            Timber.d("wrong format")
         }
     }
 
     if (date == null) {
-        throw NullPointerException("${this} can't be parse to Date")
+        throw NullPointerException("$this can't be parse to Date")
     }
 
     return date
