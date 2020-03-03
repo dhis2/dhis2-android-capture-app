@@ -67,9 +67,9 @@
                         android:id="@+id/yes"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginEnd="32dp"
                         android:checked="false"
                         android:text="@string/yes"
-                        android:layout_marginEnd="32dp"
                         android:textColor="@color/text_black_333"
                         app:buttonTint="@color/text_black_333"
                         tools:checked="true" />
@@ -78,22 +78,34 @@
                         android:id="@+id/no"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:checked="false"
                         android:layout_marginEnd="25dp"
+                        android:checked="false"
                         android:text="@string/no"
                         android:textColor="@color/text_black_333"
                         app:buttonTint="@color/text_black_333" />
 
-                    <!--<RadioButton
-                        android:id="@+id/no_value"
+                    <com.google.android.material.checkbox.MaterialCheckBox
+                        android:id="@+id/checkYes"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginEnd="32dp"
                         android:checked="false"
-                        android:text="@string/no_value"
+                        android:text="@string/yes"
                         android:textColor="@color/text_black_333"
-                        app:buttonTint="@color/text_black_333" />-->
+                        app:buttonTint="@color/text_black_333"
+                        tools:checked="true" />
 
+                    <com.google.android.material.checkbox.MaterialCheckBox
+                        android:id="@+id/checkNo"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="25dp"
+                        android:checked="false"
+                        android:text="@string/no"
+                        android:textColor="@color/text_black_333"
+                        app:buttonTint="@color/text_black_333" />
                 </RadioGroup>
+
 
                 <ImageView
                     android:id="@+id/clearSelection"
@@ -106,8 +118,7 @@
                 <View
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    />
+                    android:layout_weight="1" />
 
                 <ImageView
                     android:id="@+id/descriptionLabel"

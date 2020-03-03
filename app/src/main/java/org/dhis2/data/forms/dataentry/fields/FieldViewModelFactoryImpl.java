@@ -123,7 +123,8 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
                 return CoordinateViewModel.create(id, label, mandatory, value, section, editable, description, objectStyle, FeatureType.POINT);
             case BOOLEAN:
             case TRUE_ONLY:
-                return RadioButtonViewModel.fromRawValue(id, label, type, mandatory, value, section, editable, description, objectStyle);
+                return RadioButtonViewModel.fromRawValue(id, label, type, mandatory, value, section, editable, description, objectStyle,
+                        fieldRendering != null ? fieldRendering.type() : ValueTypeRenderingType.DEFAULT);
             case ORGANISATION_UNIT:
                 return OrgUnitViewModel.create(id, label, mandatory, value, section, editable, description, objectStyle);
             case FILE_RESOURCE:

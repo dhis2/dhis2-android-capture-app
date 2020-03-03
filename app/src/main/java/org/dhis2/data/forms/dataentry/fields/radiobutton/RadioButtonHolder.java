@@ -7,6 +7,7 @@ import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.FormViewHolder;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.databinding.FormYesNoBinding;
+import org.hisp.dhis.android.core.common.ValueTypeRenderingType;
 
 import androidx.lifecycle.MutableLiveData;
 
@@ -51,6 +52,7 @@ public class RadioButtonHolder extends FormViewHolder {
         binding.setDescription(descriptionText);
         label = new StringBuilder(checkBoxViewModel.label());
         binding.customYesNo.setValueType(checkBoxViewModel.valueType());
+        binding.customYesNo.setRendering(/*checkBoxViewModel.renderingType()*/ValueTypeRenderingType.VERTICAL_CHECKBOXES);
         if (checkBoxViewModel.mandatory())
             label.append("*");
         binding.setLabel(label.toString());
