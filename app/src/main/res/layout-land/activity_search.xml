@@ -105,8 +105,10 @@
                 android:layout_marginStart="24dp"
                 android:layout_marginTop="24dp"
                 android:padding="2dp"
+                android:visibility="gone"
                 app:layout_constraintStart_toStartOf="@id/search_filter_general"
-                app:layout_constraintTop_toTopOf="@id/search_filter_general">
+                app:layout_constraintTop_toTopOf="@id/search_filter_general"
+                tools:visibility="visible">
 
                 <TextView
                     android:layout_width="match_parent"
@@ -148,11 +150,13 @@
                 android:id="@+id/search_filter_general"
                 style="@style/ActionIcon"
                 android:onClick="@{()->presenter.showFilterGeneral()}"
+                android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@id/moreOptions"
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/ic_filter"
-                tools:ignore="ContentDescription" />
+                tools:ignore="ContentDescription"
+                tools:visibility="visible" />
 
             <ImageView
                 android:id="@+id/search_filter"
