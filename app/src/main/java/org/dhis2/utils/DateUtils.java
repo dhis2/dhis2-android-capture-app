@@ -450,14 +450,17 @@ public class DateUtils {
                 calendar.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
                 break;
             case WeeklyWednesday:
+                calendar.setFirstDayOfWeek(Calendar.WEDNESDAY);
                 calendar.add(Calendar.WEEK_OF_YEAR, page);
                 calendar.set(Calendar.DAY_OF_WEEK, Calendar.WEDNESDAY);
                 break;
             case WeeklyThursday:
+                calendar.setFirstDayOfWeek(Calendar.THURSDAY);
                 calendar.add(Calendar.WEEK_OF_YEAR, page);
                 calendar.set(Calendar.DAY_OF_WEEK, Calendar.THURSDAY);
                 break;
             case WeeklySaturday:
+                calendar.setFirstDayOfWeek(Calendar.SATURDAY);
                 calendar.add(Calendar.WEEK_OF_YEAR, page);
                 calendar.set(Calendar.DAY_OF_WEEK, Calendar.SATURDAY);
                 break;
@@ -481,13 +484,13 @@ public class DateUtils {
                 calendar.set(Calendar.DAY_OF_MONTH, 1);
                 break;
             case Quarterly:
-                extra = 4 - page * (calendar.get(Calendar.MONTH)+1) % 3;
-                calendar.add(Calendar.MONTH, page * extra);
+                extra = 3 * page - (calendar.get(Calendar.MONTH) % 3);
+                calendar.add(Calendar.MONTH, extra);
                 calendar.set(Calendar.DAY_OF_MONTH, 1);
                 break;
             case SixMonthly:
-                extra = 6 - page * (calendar.get(Calendar.MONTH)) % 6;
-                calendar.add(Calendar.MONTH, page * extra);
+                extra = 6 * page - (calendar.get(Calendar.MONTH) % 6);
+                calendar.add(Calendar.MONTH, extra);
                 calendar.set(Calendar.DAY_OF_MONTH, 1);
                 break;
             case SixMonthlyApril:
