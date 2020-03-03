@@ -252,7 +252,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
     }
 
     private void tabLayoutMediator(ViewPager2 viewPager) {
-        new TabLayoutMediator(binding.tabLayout,viewPager,
+        new TabLayoutMediator(binding.tabLayout, viewPager,
                 (tab, position) -> {
                     if (OrientationUtilsKt.isLandscape()) {
                         setupTabletTabTitles(tab, position);
@@ -581,7 +581,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
     }
 
     private void showHideFilters(boolean showFilter) {
-        if(OrientationUtilsKt.isPortrait()) {
+        if (OrientationUtilsKt.isPortrait()) {
             if (showFilter) {
                 binding.tabLayout.setVisibility(View.GONE);
                 binding.teiPager.setUserInputEnabled(false);
@@ -596,4 +596,8 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
         return filtersShowing;
     }
 
+    @Override
+    public void updateTotalFilters(Integer totalFilters) {
+        binding.setTotalFilters(totalFilters);
+    }
 }

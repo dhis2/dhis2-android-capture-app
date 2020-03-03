@@ -40,10 +40,6 @@ public interface DashboardRepository {
 
     Observable<List<Event>> getTEIEnrollmentEvents(String programUid, String teiUid);
 
-    Flowable<List<EventViewModel>> getTEIEnrollmentEvents(@NonNull String enrollmentUid,
-                                                          @Nullable String selectedStage,
-                                                          boolean groupedByStage);
-
     Observable<List<Event>> getEnrollmentEventsWithDisplay(String programUid, String teiUid);
 
     Observable<List<TrackedEntityAttributeValue>> getTEIAttributeValues(String programUid, String teiUid);

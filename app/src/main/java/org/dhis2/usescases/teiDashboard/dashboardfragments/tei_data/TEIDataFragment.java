@@ -25,6 +25,7 @@ import org.dhis2.R;
 import org.dhis2.databinding.FragmentTeiDataBinding;
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity;
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
+import org.dhis2.usescases.orgunitselector.OUTreeActivity;
 import org.dhis2.usescases.programStageSelection.ProgramStageSelectionActivity;
 import org.dhis2.usescases.teiDashboard.DashboardProgramModel;
 import org.dhis2.usescases.teiDashboard.DashboardViewModel;
@@ -156,9 +157,9 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
 
         filtersAdapter = new FiltersAdapter(FiltersAdapter.ProgramType.TRACKER);
         filtersAdapter.addEventStatus();
+
         try {
             binding.filterLayout.setAdapter(filtersAdapter);
-
         } catch (Exception e) {
             Timber.e(e);
         }
@@ -258,6 +259,9 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
             }
             if (requestCode == REQ_DETAILS) {
                 activity.getPresenter().init();
+            }
+            if (requestCode == FilterManager.OU_TREE) {
+                adapter.notifyDataSetChanged();
             }
         }
     }
@@ -470,9 +474,9 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
 
     @Override
     public void showTeiImage(String filePath, String defaultIcon) {
-        if(filePath.isEmpty() && defaultIcon.isEmpty()){
+        if (filePath.isEmpty() && defaultIcon.isEmpty()) {
             binding.cardFront.teiImage.setVisibility(View.GONE);
-        }else {
+        } else {
             binding.cardFront.teiImage.setVisibility(View.VISIBLE);
             Glide.with(this)
                     .load(new File(filePath))
@@ -528,12 +532,36 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
     }
 
     private void showHideFilters(boolean showFilters) {
-        if(showFilters) {
+        if (showFilters) {
             binding.teiData.setVisibility(View.GONE);
             binding.filterLayout.setVisibility(View.VISIBLE);
         } else {
             binding.teiData.setVisibility(View.VISIBLE);
             binding.filterLayout.setVisibility(View.GONE);
         }
+    }
+
+    @Override
+    public void showPeriodRequest(FilterManager.PeriodRequest periodRequest) {
+        if (periodRequest == FilterManager.PeriodRequest.FROM_TO) {
+            DateUtils.getInstance().showFromToSelector(
+                    activity,
+                    FilterManager.getInstance()::addPeriod);
+        } else {
+            DateUtils.getInstance().showPeriodDialog(
+                    activity,
+                    FilterManager.getInstance()::addPeriod,
+                    true);
+        }
+    }
+
+    @Override
+    public void openOrgUnitTreeSelector(String programUid) {
+        Intent ouTreeIntent = new Intent(context, OUTreeActivity.class);
+        if (programUid != null) {
+            Bundle bundle = OUTreeActivity.Companion.getBundle(programUid);
+            ouTreeIntent.putExtras(bundle);
+        }
+        this.startActivityForResult(ouTreeIntent, FilterManager.OU_TREE);
     }
 }

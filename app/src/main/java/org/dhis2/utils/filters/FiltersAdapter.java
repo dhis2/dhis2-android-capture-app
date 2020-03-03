@@ -16,6 +16,7 @@ import org.dhis2.databinding.ItemFilterStateBinding;
 import org.dhis2.databinding.ItemFilterStatusBinding;
 import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryOptionCombo;
+import org.hisp.dhis.android.core.dataset.DataSet;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,7 +37,9 @@ public class FiltersAdapter extends RecyclerView.Adapter<FilterHolder> {
         filtersList.add(Filters.PERIOD);
         filtersList.add(Filters.ORG_UNIT);
         filtersList.add(Filters.SYNC_STATE);
-        filtersList.add(Filters.ASSIGNED_TO_ME);
+        if(programType != ProgramType.DATASET) {
+            filtersList.add(Filters.ASSIGNED_TO_ME);
+        }
         openedFilter = new ObservableField<>();
     }
 

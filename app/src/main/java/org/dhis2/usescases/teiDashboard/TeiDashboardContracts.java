@@ -28,6 +28,8 @@ public class TeiDashboardContracts {
         void updateNoteBadge(int numberOfNotes);
 
         void setFiltersLayoutState();
+
+        void updateTotalFilters(Integer totalFilters);
     }
 
     public interface Presenter {

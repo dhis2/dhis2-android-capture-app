@@ -5,6 +5,7 @@ import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.utils.AuthorityException;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.analytics.AnalyticsHelper;
+import org.dhis2.utils.filters.FilterManager;
 import org.hisp.dhis.android.core.common.Unit;
 import org.hisp.dhis.android.core.program.Program;
 
@@ -92,6 +93,18 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
                             Timber::e)
             );
         }
+
+        compositeDisposable.add(
+                FilterManager.getInstance().asFlowable()
+                        .startWith(FilterManager.getInstance())
+                .map(FilterManager::getTotalFilters)
+                .subscribeOn(schedulerProvider.io())
+                .observeOn(schedulerProvider.ui())
+                .subscribe(
+                        totalFilters-> view.updateTotalFilters(totalFilters),
+                        Timber::e
+                )
+        );
     }
 
     @Override

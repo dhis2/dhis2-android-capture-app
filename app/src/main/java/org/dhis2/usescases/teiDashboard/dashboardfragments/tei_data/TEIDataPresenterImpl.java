@@ -8,9 +8,11 @@ import androidx.core.app.ActivityOptionsCompat;
 
 import org.dhis2.Bindings.ExtensionsKt;
 import org.dhis2.R;
+import org.dhis2.data.forms.dataentry.RuleEngineRepository;
 import org.dhis2.data.prefs.PreferenceProvider;
 import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.data.tuples.Pair;
+import org.dhis2.data.tuples.Trio;
 import org.dhis2.usescases.enrollment.EnrollmentActivity;
 import org.dhis2.usescases.events.ScheduledEventActivity;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity;
@@ -18,16 +20,27 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialAc
 import org.dhis2.usescases.qrCodes.QrActivity;
 import org.dhis2.usescases.teiDashboard.DashboardProgramModel;
 import org.dhis2.usescases.teiDashboard.DashboardRepository;
+import org.dhis2.usescases.teiDashboard.dashboardfragments.tei_data.tei_events.EventViewModel;
+import org.dhis2.usescases.teiDashboard.dashboardfragments.tei_data.tei_events.EventViewModelType;
 import org.dhis2.utils.EventCreationType;
 import org.dhis2.utils.EventMode;
+import org.dhis2.utils.Result;
 import org.dhis2.utils.analytics.AnalyticsHelper;
+import org.dhis2.utils.filters.FilterManager;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.program.ProgramStage;
+import org.hisp.dhis.rules.models.RuleActionHideProgramStage;
+import org.hisp.dhis.rules.models.RuleEffect;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
+import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
 import io.reactivex.disposables.CompositeDisposable;
@@ -53,6 +66,7 @@ class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
     private final PreferenceProvider preferences;
     private final TeiDataRepository teiDataRepository;
     private final String enrollmentUid;
+    private final RuleEngineRepository ruleEngineRepository;
     private String programUid;
     private final String teiUid;
     private TEIDataContracts.View view;
@@ -63,6 +77,7 @@ class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
     public TEIDataPresenterImpl(TEIDataContracts.View view, D2 d2,
                                 DashboardRepository dashboardRepository,
                                 TeiDataRepository teiDataRepository,
+                                RuleEngineRepository ruleEngineRepository,
                                 String programUid, String teiUid, String enrollmentUid,
                                 SchedulerProvider schedulerProvider,
                                 PreferenceProvider preferenceProvider,
@@ -71,6 +86,7 @@ class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
         this.d2 = d2;
         this.dashboardRepository = dashboardRepository;
         this.teiDataRepository = teiDataRepository;
+        this.ruleEngineRepository = ruleEngineRepository;
         this.programUid = programUid;
         this.teiUid = teiUid;
         this.enrollmentUid = enrollmentUid;
@@ -105,27 +121,44 @@ class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
         );
 
         if (programUid != null) {
+
+            Flowable<String> sectionFlowable = view.observeStageSelection(
+                    d2.programModule().programs().uid(programUid).blockingGet(),
+                    d2.enrollmentModule().enrollments().uid(enrollmentUid).blockingGet()
+            )
+                    .startWith("")
+                    .map(selectedStage -> {
+                        if (!selectedStage.equals(currentStage)) {
+                            currentStage = selectedStage;
+                            return selectedStage;
+                        } else {
+                            currentStage = "";
+                            return "";
+                        }
+                    });
+            Flowable<Boolean> groupingFlowable = groupingProcessor.startWith(preferences.programHasGrouping(programUid));
+
             compositeDisposable.add(
-                    view.observeStageSelection(
-                            d2.programModule().programs().uid(programUid).blockingGet(),
-                            d2.enrollmentModule().enrollments().uid(enrollmentUid).blockingGet()
-                    )
-                            .startWith("")
-                            .map(selectedStage -> {
-                                if (!selectedStage.equals(currentStage)) {
-                                    currentStage = selectedStage;
-                                    return selectedStage;
-                                } else {
-                                    currentStage = "";
-                                    return "";
-                                }
-                            })
-                            .switchMap(selectedStage ->
-                                    groupingProcessor.startWith(preferences.programHasGrouping(programUid))
-                                            .switchMapSingle(grouping ->
-                                                    teiDataRepository.getTEIEnrollmentEvents(
-                                                            selectedStage.isEmpty() ? null : selectedStage,
-                                                            grouping))
+                    Flowable.combineLatest(
+                            FilterManager.getInstance().asFlowable().startWith(FilterManager.getInstance()),
+                            sectionFlowable,
+                            groupingFlowable,
+                            Trio::create)
+                            .switchMap(stageAndGrouping ->
+                                    Flowable.zip(
+                                            teiDataRepository.getTEIEnrollmentEvents(
+                                                    stageAndGrouping.val1().isEmpty() ? null : stageAndGrouping.val1(),
+                                                    stageAndGrouping.val2(),
+                                                    FilterManager.getInstance().getPeriodFilters(),
+                                                    FilterManager.getInstance().getOrgUnitUidsFilters(),
+                                                    FilterManager.getInstance().getStateFilters(),
+                                                    FilterManager.getInstance().getAssignedFilter(),
+                                                    FilterManager.getInstance().getEventStatusFilters(),
+                                                    FilterManager.getInstance().getCatOptComboFilters()
+                                            ).toFlowable(),
+                                            ruleEngineRepository.updateRuleEngine()
+                                                    .flatMap(ruleEngine -> ruleEngineRepository.reCalculate()),
+                                            this::applyEffects)
                             )
                             .subscribeOn(schedulerProvider.io())
                             .observeOn(schedulerProvider.ui())
@@ -167,6 +200,56 @@ class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
                         )
         );
 
+        compositeDisposable.add(
+                FilterManager.getInstance().getPeriodRequest()
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
+                        .subscribe(
+                                periodRequest -> view.showPeriodRequest(periodRequest),
+                                Timber::e
+                        ));
+
+        compositeDisposable.add(
+                FilterManager.getInstance().ouTreeFlowable()
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
+                        .subscribe(
+                                orgUnitRequest -> view.openOrgUnitTreeSelector(programUid),
+                                Timber::e
+                        ));
+    }
+
+    private List<EventViewModel> applyEffects(
+            @NonNull List<EventViewModel> events,
+            @NonNull Result<RuleEffect> calcResult) {
+
+        Timber.d("APPLYING EFFECTS");
+
+        if (calcResult.error() != null) {
+            Timber.e(calcResult.error());
+            return events;
+        }
+
+        List<String> stagesToHide = new ArrayList<>();
+        for (RuleEffect ruleEffect : calcResult.items()) {
+            if (ruleEffect.ruleAction() instanceof RuleActionHideProgramStage) {
+                RuleActionHideProgramStage hideStageAction =
+                        (RuleActionHideProgramStage) ruleEffect.ruleAction();
+                stagesToHide.add(hideStageAction.programStage());
+            }
+        }
+
+        Iterator<EventViewModel> iterator = events.iterator();
+        while (iterator.hasNext()) {
+            EventViewModel eventViewModel = iterator.next();
+            if (eventViewModel.getType() == EventViewModelType.STAGE && stagesToHide.contains(eventViewModel.getStage().uid())) {
+                iterator.remove();
+            } else if (eventViewModel.getType() == EventViewModelType.EVENT && stagesToHide.contains(eventViewModel.getEvent().programStage())) {
+                iterator.remove();
+            }
+        }
+
+        return events;
     }
 
     @Override
