@@ -36,7 +36,9 @@ public class FiltersAdapter extends RecyclerView.Adapter<FilterHolder> {
         filtersList.add(Filters.PERIOD);
         filtersList.add(Filters.ORG_UNIT);
         filtersList.add(Filters.SYNC_STATE);
-        filtersList.add(Filters.ASSIGNED_TO_ME);
+        if(programType != ProgramType.DATASET) {
+            filtersList.add(Filters.ASSIGNED_TO_ME);
+        }
         openedFilter = new ObservableField<>();
     }
 

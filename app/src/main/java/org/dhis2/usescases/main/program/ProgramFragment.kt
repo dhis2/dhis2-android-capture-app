@@ -152,7 +152,7 @@ class ProgramFragment : FragmentGlobalAbstract(), ProgramView {
 
     override fun navigateTo(program: ProgramViewModel) {
         val bundle = Bundle()
-        val idTag = if (program.typeName() == Constants.DATA_SET) {
+        val idTag = if (program.programType().isEmpty()) {
             Constants.DATASET_UID
         } else {
             Constants.PROGRAM_UID

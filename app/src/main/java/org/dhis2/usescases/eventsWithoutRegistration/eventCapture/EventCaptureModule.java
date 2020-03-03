@@ -45,6 +45,7 @@ public class EventCaptureModule {
     @PerActivity
     EventCaptureContract.EventCaptureRepository provideRepository(Context context,
                                                                   FormRepository formRepository, D2 d2) {
+
         return new EventCaptureRepositoryImpl(context, formRepository, eventUid, d2);
     }
 

@@ -55,7 +55,11 @@ class NoteDetailRepositoryTest {
 
         whenever(
             d2.noteModule().notes().add(
-                NoteCreateProjection.builder().enrollment(enrollmentUid).value(message).build()
+                NoteCreateProjection.builder()
+                    .noteType(Note.NoteType.ENROLLMENT_NOTE)
+                    .enrollment(enrollmentUid)
+                    .value(message)
+                    .build()
             )
         ) doReturn Single.just(note.uid())
 
@@ -69,13 +73,24 @@ class NoteDetailRepositoryTest {
 
     @Test
     fun `Should save an Event note`() {
+        val note = dummyNote()
         val eventUid = "uid"
         val message = "Note message"
 
+        whenever(
+            d2.noteModule().notes().add(
+                NoteCreateProjection.builder()
+                    .noteType(Note.NoteType.EVENT_NOTE)
+                    .event(eventUid)
+                    .value(message)
+                    .build()
+            )
+        ) doReturn Single.just(note.uid())
         val testObserver = repository.saveNote(NoteType.EVENT, eventUid, message).test()
 
+        testObserver.assertValueCount(1)
         testObserver.assertValueAt(0) {
-            it == ""
+            it == note.uid()
         }
     }
 

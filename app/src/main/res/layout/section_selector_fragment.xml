@@ -26,10 +26,8 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/formRecycler"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
+            android:layout_height="match_parent"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
             android:paddingBottom="100dp"
             android:clipToPadding="false"
             tools:listitem="@layout/custom_text_view" />

@@ -48,6 +48,7 @@ import org.dhis2.databinding.FormSectionBinding;
 import org.hisp.dhis.android.core.common.FeatureType;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -185,11 +186,11 @@ public final class DataEntryAdapter extends ListAdapter<FieldViewModel, ViewHold
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         rows.get(holder.getItemViewType()).onBind(holder,
-                getItem(holder.getAdapterPosition()));
+                getItem(position));
         if (!(holder instanceof SectionHolder)) {
             holder.itemView.setBackgroundResource(R.color.form_field_background);
         } else {
-            ((SectionHolder) holder).setBottonShadow(
+            ((SectionHolder) holder).setBottomShadow(
                     position > 0 && getItemViewType(position - 1) != SECTION);
         }
     }
@@ -305,27 +306,9 @@ public final class DataEntryAdapter extends ListAdapter<FieldViewModel, ViewHold
 
     }
 
-    public List<String> emptyMandatoryFields(){
-        List<String> emptyMandatoryFields = new ArrayList<>();
-        for (FieldViewModel fieldViewModel : viewModels) {
-            if (fieldViewModel.mandatory() && (fieldViewModel.value() == null || fieldViewModel.value().isEmpty()))
-                emptyMandatoryFields.add(fieldViewModel.label());
-        }
-        return emptyMandatoryFields;
-    }
-
     @Override
     public void onViewDetachedFromWindow(@NonNull ViewHolder holder) {
         rows.get(holder.getItemViewType()).deAttach(holder);
-    }
-
-    public List<String> errorFields() {
-        List<String> errorFields = new ArrayList<>();
-        for (FieldViewModel fieldViewModel : viewModels) {
-            if (fieldViewModel.error() != null)
-                errorFields.add(fieldViewModel.label());
-        }
-        return errorFields;
     }
 
     public void setLastFocusItem(String lastFocusItem) {
@@ -354,11 +337,16 @@ public final class DataEntryAdapter extends ListAdapter<FieldViewModel, ViewHold
         return (SectionViewModel) getItem(position);
     }
 
-    public void setCurrentSection(String currentSection) {
+    public String setCurrentSection(String currentSection) {
         selectedSection.set(currentSection);
+        return selectedSection.get();
     }
 
     public SectionHolder createHeader(FormSectionBinding headerBinding) {
         return new SectionHolder(headerBinding, selectedSection, sectionProcessor);
+    }
+
+    public int sectionViewType() {
+        return SECTION;
     }
 }
