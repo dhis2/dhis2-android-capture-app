@@ -658,8 +658,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
 
     @Override
     public Single<Integer> getNoteCount() {
-        //TODO: EVENT NOTES
-        return Single.just(Random.Default.nextInt(0, 100));
+        return d2.noteModule().notes().byEventUid().eq(eventUid).count();
     }
 }
 

@@ -562,7 +562,7 @@
     <string name="image_selected">Image selected</string>
     <string name="show_in_map">Show in map</string>
     <string name="show_list">Show list</string>
-    
+
     <!--region TRACKER IMPORT CONFLICT MESSAGES-->
     <string name="value_required_but_not_provided">%s is mandatory but has not been provided.</string>
     <string name="polygon_captured">Polygon captured</string>
@@ -607,6 +607,7 @@
     <string name="event_tei_limits">Events:%smax:%s%scurrent:%s TEI:%smax:%s%scurrent:%s</string>
     <string name="enrollment_data_hide">Hide enrollment data</string>
     <string name="enrollment_data_show">Show enrollment data</string>
+    <string name="enrollment_data_section_label">Enrollment data</string>
     <string name="sms_enabled">SMS module enabled</string>
     <string name="sms_disabled">SMS module disabled</string>
     <string name="sms_downloading_data">Downloading data for SMS module. Please wait</string>
@@ -634,5 +635,6 @@
     <string name="interval_minute_ago">%d min. ago</string>
     <string name="interval_hour_ago">%d hours ago</string>
     <string name="interval_yesterday">Yesterday</string>
+    <string name="enrollment_single_section_label">Attributes - %s</string>
     <string name="program_selector">Program enrollments</string>
 </resources>

@@ -141,7 +141,7 @@ public class FormAdapter extends RecyclerView.Adapter {
                 viewModel = SpinnerViewModel.create(attr.uid(), label, "", false, attr.optionSet().uid(), queryData.get(attr.uid()), null, true, attr.displayDescription(), 20, ObjectStyle.builder().build());
                 break;
             case COORDINATES:
-                viewModel = CoordinateViewModel.create(attr.uid(), label, false, queryData.get(attr.uid()), null, true, attr.displayDescription(), ObjectStyle.builder().build());
+                viewModel = CoordinateViewModel.create(attr.uid(), label, false, queryData.get(attr.uid()), null, true, attr.displayDescription(), ObjectStyle.builder().build(), FeatureType.POINT);
                 break;
             case TIME:
             case DATE:
@@ -186,7 +186,13 @@ public class FormAdapter extends RecyclerView.Adapter {
     @Override
     public int getItemViewType(int position) {
         if (attributeList.get(position).optionSet() != null)
-            return SPINNER;
+            if (renderingTypes != null && renderingTypes.get(position) != null &&
+                    (renderingTypes.get(position).type() == ValueTypeRenderingType.BAR_CODE ||
+                            (renderingTypes.get(position).type() == ValueTypeRenderingType.QR_CODE))) {
+                return SCAN_CODE;
+            } else {
+                return SPINNER;
+            }
         else {
             switch (attributeList.get(position).valueType()) {
                 case AGE:

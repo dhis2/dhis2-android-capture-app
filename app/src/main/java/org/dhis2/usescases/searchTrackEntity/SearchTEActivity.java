@@ -77,6 +77,7 @@ import org.dhis2.utils.Constants;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.FileResourcesUtil;
 import org.dhis2.utils.HelpManager;
+import org.dhis2.utils.customviews.ScanTextView;
 import org.dhis2.utils.filters.FilterManager;
 import org.dhis2.utils.filters.FiltersAdapter;
 import org.dhis2.utils.maps.MapLayerDialog;
@@ -87,6 +88,7 @@ import org.hisp.dhis.android.core.common.FeatureType;
 import org.hisp.dhis.android.core.common.ValueTypeDeviceRendering;
 import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.lang.reflect.Field;
@@ -301,6 +303,12 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         if (requestCode == ACCESS_COARSE_LOCATION_PERMISSION_REQUEST) {
             initSearchNeeded = false;
         }
+    }
+
+    @Override
+    public void onsScanClicked(Intent intent, @NotNull ScanTextView scanTextView) {
+        initSearchNeeded = false;
+        super.onsScanClicked(intent, scanTextView);
     }
 
     @Override
