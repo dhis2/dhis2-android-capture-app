@@ -43,11 +43,11 @@ class AppTest : App() {
             userComponent = serverComponent!!.plus(UserModule())
         }
 
-        logInUser()
+        //logInUser()
 
         serverComponent?.let {
             val userManager = it.userManager()
-            userManager.logIn("android","Android123","any")
+        //    userManager.logIn("android","Android123","any")
         }
     }
 

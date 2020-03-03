@@ -70,48 +70,48 @@ class LoginTest : BaseTest() {
         }
     }
 
-    @Test
-    fun shouldHideLoginButtonIfPasswordIsMissing() {
-        startLoginActivity()
+      @Test
+      fun shouldHideLoginButtonIfPasswordIsMissing() {
+          startLoginActivity()
 
-        loginRobot {
-            clearServerField()
-            typeServer(MOCK_SERVER_URL)
-            closeKeyboard()
-            typeUsername(USERNAME)
-            closeKeyboard()
-            typePassword(PASSWORD)
-            cleanPasswordField()
-            closeKeyboard()
-            checkLoginButtonIsHidden()
-        }
-    }
+          loginRobot {
+              clearServerField()
+              typeServer(MOCK_SERVER_URL)
+              closeKeyboard()
+              typeUsername(USERNAME)
+              closeKeyboard()
+              typePassword(PASSWORD)
+              cleanPasswordField()
+              closeKeyboard()
+              checkLoginButtonIsHidden()
+          }
+      }
 
-    @Test
-    fun shouldLaunchWebViewWhenClickAccountRecoveryAndServerIsFilled() {
-        enableIntents()
-        startLoginActivity()
+      @Test
+      fun shouldLaunchWebViewWhenClickAccountRecoveryAndServerIsFilled() {
+          enableIntents()
+          startLoginActivity()
 
-        loginRobot {
-            clearServerField()
-            typeServer(MOCK_SERVER_URL)
-            closeKeyboard()
-            clickAccountRecovery()
-            checkWebviewWithRecoveryAccountIsOpened()
-        }
-    }
+          loginRobot {
+              clearServerField()
+              typeServer(MOCK_SERVER_URL)
+              closeKeyboard()
+              clickAccountRecovery()
+              checkWebviewWithRecoveryAccountIsOpened()
+          }
+      }
 
-    @Test
-    fun shouldGoToPinScreenWhenPinWasSet() {
-        preferencesRobot.saveValue(SESSION_LOCKED, true)
-        preferencesRobot.saveValue(PIN, "1234")
+      @Test
+      fun shouldGoToPinScreenWhenPinWasSet() {
+          preferencesRobot.saveValue(SESSION_LOCKED, true)
+          preferencesRobot.saveValue(PIN, "1234")
 
-        startLoginActivity()
+          startLoginActivity()
 
-        loginRobot {
-            checkUnblockSessionViewIsVisible()
-        }
-    }
+          loginRobot {
+              checkUnblockSessionViewIsVisible()
+          }
+      }
 
 
     @Test

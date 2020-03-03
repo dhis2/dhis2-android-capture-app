@@ -104,6 +104,6 @@ open class BaseTest {
         @JvmField
         val disableAnimationsTestRule = DisableAnimations()
         const val MOCK_SERVER_URL = "http://127.0.0.1:8080"
-        const val DHIS_DATABASE = "dhis.db"
+        const val DHIS_DATABASE = "127-0-0-1-8080_test_unencrypted.db"
     }
 }
