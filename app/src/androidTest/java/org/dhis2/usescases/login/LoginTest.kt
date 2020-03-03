@@ -1,17 +1,11 @@
 package org.dhis2.usescases.login
 
-import androidx.test.espresso.intent.Intents.intended
-import androidx.test.espresso.intent.matcher.ComponentNameMatchers.hasShortClassName
-import androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent
-import androidx.test.espresso.intent.matcher.IntentMatchers.hasExtra
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
+import org.dhis2.data.prefs.Preference.Companion.PIN
 import org.dhis2.data.prefs.Preference.Companion.SESSION_LOCKED
 import org.dhis2.usescases.BaseTest
 import org.dhis2.usescases.main.MainActivity
-import org.dhis2.utils.WebViewActivity
-import org.dhis2.utils.WebViewActivity.Companion.WEB_VIEW_URL
-import org.hamcrest.CoreMatchers.allOf
 import org.hisp.dhis.android.core.mockwebserver.ResponseController.*
 import org.junit.Rule
 import org.junit.Test
@@ -43,7 +37,9 @@ class LoginTest : BaseTest() {
         loginRobot {
             clearServerField()
             typeServer(MOCK_SERVER_URL)
+            closeKeyboard()
             typeUsername(USERNAME)
+            closeKeyboard()
             typePassword(PASSWORD)
             closeKeyboard()
             clickLoginButton()
@@ -63,7 +59,9 @@ class LoginTest : BaseTest() {
         loginRobot {
             clearServerField()
             typeServer(MOCK_SERVER_URL)
+            closeKeyboard()
             typeUsername(USERNAME)
+            closeKeyboard()
             typePassword(PASSWORD)
             closeKeyboard()
             clickLoginButton()
@@ -79,7 +77,9 @@ class LoginTest : BaseTest() {
         loginRobot {
             clearServerField()
             typeServer(MOCK_SERVER_URL)
+            closeKeyboard()
             typeUsername(USERNAME)
+            closeKeyboard()
             typePassword(PASSWORD)
             cleanPasswordField()
             closeKeyboard()
@@ -97,20 +97,22 @@ class LoginTest : BaseTest() {
             typeServer(MOCK_SERVER_URL)
             closeKeyboard()
             clickAccountRecovery()
-            intended(allOf(hasExtra(WEB_VIEW_URL, "$MOCK_SERVER_URL/dhis-web-commons/security/recovery.action"), hasComponent(WebViewActivity::class.java!!.name)))
+            checkWebviewWithRecoveryAccountIsOpened()
         }
     }
 
     @Test
     fun shouldGoToPinScreenWhenPinWasSet() {
         preferencesRobot.saveValue(SESSION_LOCKED, true)
+        preferencesRobot.saveValue(PIN, "1234")
 
         startLoginActivity()
 
         loginRobot {
-        //    checkUnblockSessionViewIsVisible()
+            checkUnblockSessionViewIsVisible()
         }
     }
+
 
     @Test
     fun shouldGoToHomeScreenWhenUserIsLoggedIn() {
@@ -130,7 +132,7 @@ class LoginTest : BaseTest() {
         const val API_ME_UNAUTHORIZE = "mocks/user/unauthorize.json"
         const val API_SYSTEM_INFO_RESPONSE_OK = "mocks/systeminfo/systeminfo.json"
 
-        const val USERNAME = "android"
+        const val USERNAME = "test"
         const val PASSWORD = "Android123"
     }
 }
