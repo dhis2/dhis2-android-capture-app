@@ -204,7 +204,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
                     new ViewPager2.OnPageChangeCallback() {
                         @Override
                         public void onPageSelected(int position) {
-                            if (position != 0) {
+                            if (position != 0 || programUid == null) {
                                 binding.filterCounter.setVisibility(View.GONE);
                                 binding.searchFilterGeneral.setVisibility(View.GONE);
                             } else {
@@ -380,10 +380,15 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
 
         setViewpagerAdapter();
 
-        if (OrientationUtilsKt.isLandscape())
+        if (OrientationUtilsKt.isLandscape()) {
             getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.tei_main_view, new TEIDataFragment())
+                    .replace(R.id.tei_main_view, TEIDataFragment.newInstance(programUid, teiUid, enrollmentUid))
                     .commitAllowingStateLoss();
+
+            binding.filterCounter.setVisibility(View.GONE);
+            binding.searchFilterGeneral.setVisibility(View.GONE);
+
+        }
     }
 
     @Override
