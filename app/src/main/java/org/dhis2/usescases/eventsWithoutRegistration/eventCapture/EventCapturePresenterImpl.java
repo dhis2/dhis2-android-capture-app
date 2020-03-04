@@ -15,6 +15,7 @@ import org.dhis2.data.forms.dataentry.ValueStoreImpl;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.display.DisplayViewModel;
 import org.dhis2.data.forms.dataentry.fields.image.ImageViewModel;
+import org.dhis2.data.forms.dataentry.fields.option_set.OptionSetViewModel;
 import org.dhis2.data.forms.dataentry.fields.section.SectionViewModel;
 import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel;
 import org.dhis2.data.forms.dataentry.fields.unsupported.UnsupportedViewModel;
@@ -40,7 +41,6 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 import javax.inject.Singleton;
 
@@ -230,7 +230,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
 
                                                         if (fieldViewModel.optionSet() == null || !(fieldViewModel instanceof ImageViewModel)) {
                                                             totalFields++;
-                                                        } else if (!optionSets.contains(fieldViewModel.optionSet())){
+                                                        } else if (!optionSets.contains(fieldViewModel.optionSet())) {
                                                             optionSets.add(fieldViewModel.optionSet());
                                                             totalFields++;
                                                         }
@@ -251,7 +251,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
 
                                                             HashMap<String, Boolean> finalFields = new HashMap<>();
                                                             for (FieldViewModel fieldViewModel : fieldViewModels) {
-                                                                finalFields.put(fieldViewModel.optionSet() == null || !(fieldViewModel instanceof ImageViewModel)?
+                                                                finalFields.put(fieldViewModel.optionSet() == null || !(fieldViewModel instanceof ImageViewModel) ?
                                                                                 fieldViewModel.uid() :
                                                                                 fieldViewModel.optionSet(),
                                                                         !DhisTextUtils.Companion.isEmpty(fieldViewModel.value()));
@@ -281,7 +281,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                                                             int cont = 0;
                                                             HashMap<String, Boolean> finalFields = new HashMap<>();
                                                             for (FieldViewModel fieldViewModel : fields) {
-                                                                finalFields.put(fieldViewModel.optionSet() == null || !(fieldViewModel instanceof ImageViewModel)?
+                                                                finalFields.put(fieldViewModel.optionSet() == null || !(fieldViewModel instanceof ImageViewModel) ?
                                                                                 fieldViewModel.uid() :
                                                                                 fieldViewModel.optionSet(),
                                                                         !DhisTextUtils.Companion.isEmpty(fieldViewModel.value()));
@@ -442,12 +442,24 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                     iter.remove();
         }
 
-        for (FieldViewModel fieldViewModel : fieldViewModels.values())
+        for (FieldViewModel fieldViewModel : fieldViewModels.values()) {
             if (fieldViewModel instanceof SpinnerViewModel) {
                 ((SpinnerViewModel) fieldViewModel).setOptionsToHide(optionsToHide, optionsGroupsToHide);
                 if (optionsGroupToShow.keySet().contains(fieldViewModel.uid()))
                     ((SpinnerViewModel) fieldViewModel).setOptionGroupsToShow(optionsGroupToShow.get(fieldViewModel.uid()));
             }
+            if (fieldViewModel instanceof OptionSetViewModel) {
+                List<String> finalOptionsToHide = new ArrayList<>();
+                finalOptionsToHide.addAll(optionsToHide);
+                finalOptionsToHide.addAll(
+                        eventCaptureRepository.getOptionsFromGroups(optionsGroupsToHide));
+                ((OptionSetViewModel) fieldViewModel).setOptionsToHide(finalOptionsToHide);
+                if (optionsGroupToShow.keySet().contains(fieldViewModel.uid()))
+                    ((OptionSetViewModel) fieldViewModel).setOptionsToShow(
+                            eventCaptureRepository.getOptionsFromGroups(optionsGroupToShow.get(fieldViewModel.uid()))
+                    );
+            }
+        }
 
         return new ArrayList<>(fieldViewModels.values());
     }
@@ -693,7 +705,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     public void save(@NotNull @NonNull String uid, @Nullable String value) {
         if (value == null || !sectionsToHide.contains(eventCaptureRepository.getSectionFor(uid))) {
             StoreResult result = valueStore.saveWithTypeCheck(uid, value).blockingFirst();
-            if(result.component2() == ValueStoreImpl.ValueStoreResult.VALUE_CHANGED){
+            if (result.component2() == ValueStoreImpl.ValueStoreResult.VALUE_CHANGED) {
                 assignedValueChanged = true;
             }
         }

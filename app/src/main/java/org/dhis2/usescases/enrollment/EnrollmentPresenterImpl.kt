@@ -16,6 +16,7 @@ import org.dhis2.data.forms.dataentry.StoreResult
 import org.dhis2.data.forms.dataentry.ValueStore
 import org.dhis2.data.forms.dataentry.ValueStoreImpl
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel
+import org.dhis2.data.forms.dataentry.fields.option_set.OptionSetViewModel
 import org.dhis2.data.forms.dataentry.fields.section.SectionViewModel
 import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel
 import org.dhis2.data.schedulers.SchedulerProvider
@@ -405,6 +406,15 @@ class EnrollmentPresenterImpl(
                 it.setOptionsToHide(optionsToHide, optionsGroupsToHide)
                 if (optionsGroupToShow.keys.contains(it.uid())) {
                     it.optionGroupsToShow = optionsGroupToShow[it.uid()]
+                }
+            }
+            if(it is OptionSetViewModel){
+                val finalOptionsToHide = arrayListOf<String>()
+                finalOptionsToHide.addAll(optionsToHide)
+                finalOptionsToHide.addAll(formRepository.getOptionsFromGroups(optionsGroupsToHide))
+                it.optionsToHide = optionsToHide
+                if (optionsGroupToShow.keys.contains(it.uid())) {
+                    it.optionsToShow = formRepository.getOptionsFromGroups(optionsGroupToShow[it.uid()]?: arrayListOf())
                 }
             }
         }

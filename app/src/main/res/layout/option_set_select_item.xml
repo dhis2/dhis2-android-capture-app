@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="editable"
+            type="Boolean" />
+
+        <variable
+            name="optionName"
+            type="String" />
+    </data>
+
+    <RadioButton
+        android:id="@+id/radio"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:enabled="@{editable}"
+        android:text="@{optionName}"
+        android:textColor="@color/text_black_333"
+        app:buttonTint="@color/text_black_333"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:checked="true"
+        tools:text="Option Name" />
+</layout>

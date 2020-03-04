@@ -28,6 +28,8 @@ import org.dhis2.data.forms.dataentry.fields.file.FileRow;
 import org.dhis2.data.forms.dataentry.fields.file.FileViewModel;
 import org.dhis2.data.forms.dataentry.fields.image.ImageRow;
 import org.dhis2.data.forms.dataentry.fields.image.ImageViewModel;
+import org.dhis2.data.forms.dataentry.fields.option_set.OptionSetRow;
+import org.dhis2.data.forms.dataentry.fields.option_set.OptionSetViewModel;
 import org.dhis2.data.forms.dataentry.fields.orgUnit.OrgUnitRow;
 import org.dhis2.data.forms.dataentry.fields.orgUnit.OrgUnitViewModel;
 import org.dhis2.data.forms.dataentry.fields.picture.PictureRow;
@@ -48,7 +50,6 @@ import org.dhis2.databinding.FormSectionBinding;
 import org.hisp.dhis.android.core.common.FeatureType;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -76,6 +77,7 @@ public final class DataEntryAdapter extends ListAdapter<FieldViewModel, ViewHold
     private static final int DISPLAY = 14;
     private static final int PICTURE = 15;
     private static final int SCAN_CODE = 16;
+    private static final int OPTION_SET_SELECT = 18;
 
 
     @NonNull
@@ -135,6 +137,7 @@ public final class DataEntryAdapter extends ListAdapter<FieldViewModel, ViewHold
         rows.add(PICTURE, new PictureRow(layoutInflater, processor, true));
         rows.add(SCAN_CODE, new ScanTextRow(layoutInflater, processor, true));
         rows.add(SECTION, new SectionRow(layoutInflater, selectedSection, sectionProcessor));
+        rows.add(OPTION_SET_SELECT, new OptionSetRow(layoutInflater, processor, true,rendering, currentFocusUid));
     }
 
     public DataEntryAdapter(@NonNull LayoutInflater layoutInflater,
@@ -172,6 +175,7 @@ public final class DataEntryAdapter extends ListAdapter<FieldViewModel, ViewHold
         rows.add(PICTURE, new PictureRow(layoutInflater, processor, true));
         rows.add(SCAN_CODE, new ScanTextRow(layoutInflater, processor, true));
         rows.add(SECTION, new SectionRow(layoutInflater, selectedSection, sectionProcessor));
+        rows.add(OPTION_SET_SELECT, new OptionSetRow(layoutInflater, processor, true,rendering, currentFocusUid));
     }
 
     @NonNull
@@ -236,6 +240,8 @@ public final class DataEntryAdapter extends ListAdapter<FieldViewModel, ViewHold
             return SCAN_CODE;
         } else if (viewModel instanceof SectionViewModel) {
             return SECTION;
+        } else if (viewModel instanceof OptionSetViewModel) {
+            return OPTION_SET_SELECT;
         } else {
             throw new IllegalStateException("Unsupported view model type: "
                     + viewModel.getClass());

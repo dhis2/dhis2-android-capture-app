@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <import type="android.view.View" />
+
+        <variable
+            name="label"
+            type="java.lang.String" />
+
+        <variable
+            name="description"
+            type="java.lang.String" />
+
+        <variable
+            name="optionSet"
+            type="java.lang.String" />
+
+        <variable
+            name="isBgTransparent"
+            type="java.lang.Boolean" />
+
+        <variable
+            name="initialValue"
+            type="java.lang.String" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/rootLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:padding="5dp">
+
+        <ImageView
+            android:id="@+id/renderImage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="5dp"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:srcCompat="@drawable/sierra_leone"
+            tools:visibility="visible" />
+
+        <TextView
+            android:id="@+id/label"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="5dp"
+            android:gravity="start|center"
+            android:text='@{label}'
+            android:textAllCaps="false"
+            android:textColor="@color/text_black_808"
+            android:textSize="16sp"
+            app:layout_constraintEnd_toStartOf="@id/descriptionLabel"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/renderImage"
+            tools:text="WHOMCH Smocking cessation counselling provided fdsfsdfsdfsdfsdfsdfsdfsdfsdfsdfdfsfsdfsdf" />
+
+        <ImageView
+            android:id="@+id/descriptionLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/renderImage"
+            app:srcCompat="@drawable/ic_info_outline"
+            app:tint="?colorPrimary" />
+
+
+        <ImageView
+            android:id="@+id/delete"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/label"
+            app:srcCompat="@drawable/ic_close"
+            app:tint="?colorPrimary" />
+
+        <LinearLayout
+            android:id="@+id/checkLayout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintEnd_toStartOf="@id/delete"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/label" />
+
+        <RadioGroup
+            android:id="@+id/radioLayout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintEnd_toStartOf="@id/delete"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/label" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
