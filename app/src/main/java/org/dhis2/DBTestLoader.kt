@@ -41,6 +41,6 @@ class DBTestLoader(private val context: Context) {
 
     companion object {
         const val DB_NAME_TEST = "dhis_test.db"
-        const val DB_NAME = "dhis.db"
+        const val DB_NAME = "127-0-0-1-8080_test_unencrypted.db"
     }
 }

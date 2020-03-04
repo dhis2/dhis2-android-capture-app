@@ -4,7 +4,7 @@ import androidx.annotation.NonNull;
 
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
-import org.hisp.dhis.android.core.organisationunit.OrganisationUnitLevel;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
@@ -18,5 +18,5 @@ public interface DataEntryRepository {
 
     Observable<List<OrganisationUnit>> getOrgUnits();
 
-    Observable<List<OrganisationUnitLevel>> getOrgUnitLevels();
+    @NotNull Flowable<List<String>> enrollmentSectionUids();
 }

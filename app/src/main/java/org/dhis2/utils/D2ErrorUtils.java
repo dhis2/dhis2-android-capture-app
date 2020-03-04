@@ -47,7 +47,6 @@ public class D2ErrorUtils {
             case USER_ACCOUNT_DISABLED:
             case OBJECT_CANT_BE_UPDATED:
             case OWNERSHIP_ACCESS_DENIED:
-            case DIFFERENT_SERVER_OFFLINE:
             case CANT_CREATE_EXISTING_OBJECT:
             case NO_AUTHENTICATED_USER_OFFLINE:
             case CANT_DELETE_NON_EXISTING_OBJECT:

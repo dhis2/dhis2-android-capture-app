@@ -23,10 +23,15 @@ class NotesRepository(private val d2: D2, val programUid: String) {
                 )
             }
 
-    fun getEventNotes(eventUid: String): Single<List<Note>> {
-        // TODO: Implement when sdk can get event notes
-        return Single.just(listOf())
-    }
+    fun getEventNotes(eventUid: String): Single<List<Note>> =
+        d2.noteModule().notes().byEventUid().eq(eventUid).get()
+            .map { notes ->
+                notes.sortedWith(
+                    Comparator { note1, note2 ->
+                        note1.storedDate()?.toDate()?.compareTo(note2.storedDate()?.toDate()) ?: 0
+                    }
+                )
+            }
 
     fun hasProgramWritePermission(): Boolean =
         d2.programModule().programs().uid(programUid).blockingGet().access().data().write()
