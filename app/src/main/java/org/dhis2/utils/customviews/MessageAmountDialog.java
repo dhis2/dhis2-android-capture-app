@@ -8,10 +8,8 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.DialogFragment;
-import androidx.fragment.app.FragmentActivity;
 
 import org.dhis2.R;
-import org.dhis2.usescases.sms.SmsSubmitActivity;
 import org.jetbrains.annotations.NotNull;
 
 public class MessageAmountDialog extends DialogFragment {
@@ -53,10 +51,7 @@ public class MessageAmountDialog extends DialogFragment {
 
     @Override
     public void onCancel(@NonNull DialogInterface dialog) {
-        FragmentActivity activity = getActivity();
-        if (activity instanceof SmsSubmitActivity) {
-            messageCountAcceptedListener.acceptSMSCount(false);
-        }
+        messageCountAcceptedListener.acceptSMSCount(false);
     }
 
     @Override
