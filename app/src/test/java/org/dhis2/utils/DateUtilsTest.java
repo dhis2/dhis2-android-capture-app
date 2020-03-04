@@ -635,10 +635,10 @@ public class DateUtilsTest {
     }
 
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void complete_event_with_null_complete_date_throws_error() throws ParseException {
 
-        DateUtils.getInstance().isEventExpired(toDate("2019-02-28"), null, EventStatus.COMPLETED, 1, null, 0);
+        assertFalse(DateUtils.getInstance().isEventExpired(toDate("2019-02-28"), null, EventStatus.COMPLETED, 1, null, 0));
 
     }
 }

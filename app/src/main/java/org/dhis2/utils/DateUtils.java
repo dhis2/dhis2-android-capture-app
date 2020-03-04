@@ -786,7 +786,6 @@ public class DateUtils {
      */
     public Boolean isEventExpired(Date eventDate, Date completeDate, EventStatus status, int compExpDays, PeriodType programPeriodType, int expDays) {
         if (status == EventStatus.COMPLETED && completeDate == null)
-//            throw new NullPointerException("completeDate can't be null if status of event is COMPLETED");
             return false;
 
         boolean expiredBecouseOfPeriod;
