@@ -28,6 +28,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
     private final SchedulerProvider schedulerProvider;
     private final AnalyticsHelper analyticsHelper;
     private final PreferenceProvider preferenceProvider;
+    private final FilterManager filterManager;
     private TeiDashboardContracts.View view;
 
     private String teiUid;
@@ -38,7 +39,15 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
     private PublishProcessor<Unit> notesCounterProcessor;
 
 
-    public TeiDashboardPresenter(TeiDashboardContracts.View view, String teiUid, String programUid, DashboardRepository dashboardRepository, SchedulerProvider schedulerProvider, AnalyticsHelper analyticsHelper, PreferenceProvider preferenceProvider) {
+    public TeiDashboardPresenter(
+            TeiDashboardContracts.View view,
+            String teiUid, String programUid,
+            DashboardRepository dashboardRepository,
+            SchedulerProvider schedulerProvider,
+            AnalyticsHelper analyticsHelper,
+            PreferenceProvider preferenceProvider,
+            FilterManager filterManager
+    ) {
         this.view = view;
         this.teiUid = teiUid;
         this.programUid = programUid;
@@ -46,6 +55,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
         this.dashboardRepository = dashboardRepository;
         this.schedulerProvider = schedulerProvider;
         this.preferenceProvider = preferenceProvider;
+        this.filterManager = filterManager;
         compositeDisposable = new CompositeDisposable();
         notesCounterProcessor = PublishProcessor.create();
     }
@@ -95,8 +105,8 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
         }
 
         compositeDisposable.add(
-                FilterManager.getInstance().asFlowable()
-                        .startWith(FilterManager.getInstance())
+                filterManager.asFlowable()
+                        .startWith(filterManager)
                         .map(FilterManager::getTotalFilters)
                         .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.ui())

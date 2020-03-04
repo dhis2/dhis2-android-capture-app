@@ -10,6 +10,7 @@ import org.dhis2.data.prefs.PreferenceProvider;
 import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.usescases.teiDashboard.DashboardRepository;
 import org.dhis2.utils.analytics.AnalyticsHelper;
+import org.dhis2.utils.filters.FilterManager;
 import org.hisp.dhis.android.core.D2;
 
 import dagger.Module;
@@ -42,7 +43,8 @@ public class TEIDataModule {
                                                  RuleEngineRepository ruleEngineRepository,
                                                  SchedulerProvider schedulerProvider,
                                                  AnalyticsHelper analyticsHelper,
-                                                 PreferenceProvider preferenceProvider) {
+                                                 PreferenceProvider preferenceProvider,
+                                                 FilterManager filterManager) {
         return new TEIDataPresenterImpl(view,
                 d2,
                 dashboardRepository,
@@ -53,7 +55,8 @@ public class TEIDataModule {
                 enrollmentUid,
                 schedulerProvider,
                 preferenceProvider,
-                analyticsHelper);
+                analyticsHelper,
+                filterManager);
 
     }
 
