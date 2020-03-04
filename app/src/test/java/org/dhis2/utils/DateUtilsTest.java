@@ -36,7 +36,8 @@ public class DateUtilsTest {
 
         Calendar cal = Calendar.getInstance();
         cal.setTime(dateInRange);
-        cal.setFirstDayOfWeek(Calendar.MONDAY);
+        DateUtils.getInstance().setCurrentDate(dateInRange);
+        DateUtils.getInstance().getCalendar().setFirstDayOfWeek(Calendar.MONDAY);
 
         Date nullDate = DateUtils.getInstance().expDate(dateInRange, 2, null);
         Date minDateWeekly = DateUtils.getInstance().expDate(dateInRange, 2, PeriodType.Weekly);
@@ -399,7 +400,6 @@ public class DateUtilsTest {
     @Test
     public void getDateFromDateAndPeriod() throws ParseException {
         DateUtils dateUtils = DateUtils.getInstance();
-        Calendar.getInstance().setFirstDayOfWeek(Calendar.MONDAY);
 
         String dateToTestString = "2018-12-05";
         String firstDayOfYearString = "2018-01-01";
@@ -407,6 +407,8 @@ public class DateUtilsTest {
         Date dateToTest = DateUtils.uiDateFormat().parse(dateToTestString);
         Date firstDayOfYear = DateUtils.uiDateFormat().parse(firstDayOfYearString);
         Date lastDayOfYear = DateUtils.uiDateFormat().parse(lastDayOfYearString);
+        dateUtils.setCurrentDate(dateToTest);
+        dateUtils.getCalendar().setFirstDayOfWeek(Calendar.MONDAY);
 
         Date[] dates1 = dateUtils.getDateFromDateAndPeriod(dateToTest, Period.YEARLY);
         assertEquals(dates1[0], firstDayOfYear);
