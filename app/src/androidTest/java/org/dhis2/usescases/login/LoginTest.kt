@@ -81,11 +81,13 @@ class LoginTest : BaseTest() {
               typeUsername(USERNAME)
               closeKeyboard()
               typePassword(PASSWORD)
-              cleanPasswordField()
+              clearPasswordField()
               closeKeyboard()
               checkLoginButtonIsHidden()
           }
       }
+
+
 
       @Test
       fun shouldLaunchWebViewWhenClickAccountRecoveryAndServerIsFilled() {
@@ -100,6 +102,25 @@ class LoginTest : BaseTest() {
               checkWebviewWithRecoveryAccountIsOpened()
           }
       }
+
+    @Test
+    fun shouldClearFieldsAndHideLoginButtonWhenClickCredentialXButton() {
+        startLoginActivity()
+        loginRobot {
+            clearServerField()
+            typeServer(MOCK_SERVER_URL)
+            closeKeyboard()
+            typeUsername(USERNAME)
+            closeKeyboard()
+            typePassword(PASSWORD)
+            closeKeyboard()
+            clearUsernameField()
+            clearPasswordField()
+            checkUsernameFieldIsClear()
+            checkPasswordFieldIsClear()
+            checkLoginButtonIsHidden()
+        }
+    }
 
       @Test
       fun shouldGoToPinScreenWhenPinWasSet() {
