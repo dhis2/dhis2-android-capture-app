@@ -11,8 +11,6 @@ import org.junit.runner.RunWith
 @RunWith(AndroidJUnit4::class)
 class MainTest : BaseTest() {
 
-    private lateinit var mainRobot: MainRobot
-
     @get:Rule
     val rule = ActivityTestRule(MainActivity::class.java, false, false)
 
