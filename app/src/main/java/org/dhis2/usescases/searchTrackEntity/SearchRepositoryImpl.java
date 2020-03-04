@@ -25,6 +25,7 @@ import org.dhis2.utils.ValueUtils;
 import org.dhis2.utils.filters.FilterManager;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper;
+import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope;
 import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.common.ValueType;
@@ -112,16 +113,19 @@ public class SearchRepositoryImpl implements SearchRepository {
     @NonNull
     @Override
     public Observable<List<TrackedEntityAttribute>> programAttributes(String programId) {
-        return d2.programModule().programTrackedEntityAttributes().byProgram().eq(programId).get().toObservable()
-                .flatMap(attributes -> {
-                    List<String> uids = new ArrayList<>();
+        return d2.programModule().programTrackedEntityAttributes()
+                .byProgram().eq(programId)
+                .orderBySortOrder(RepositoryScope.OrderByDirection.ASC)
+                .get()
+                .toObservable()
+                .map(attributes -> {
+                    List<TrackedEntityAttribute> attrList = new ArrayList<>();
                     for (ProgramTrackedEntityAttribute pteAttribute : attributes) {
-                        if (pteAttribute.searchable())
-                            uids.add(pteAttribute.trackedEntityAttribute().uid());
-                        else if (d2.trackedEntityModule().trackedEntityAttributes().byUid().eq(pteAttribute.trackedEntityAttribute().uid()).one().blockingGet().unique())
-                            uids.add(pteAttribute.trackedEntityAttribute().uid());
+                        TrackedEntityAttribute teAttribute = d2.trackedEntityModule().trackedEntityAttributes().uid(pteAttribute.trackedEntityAttribute().uid()).blockingGet();
+                        if (pteAttribute.searchable() || teAttribute.unique())
+                            attrList.add(teAttribute);
                     }
-                    return Observable.just(d2.trackedEntityModule().trackedEntityAttributes().byUid().in(uids).blockingGet());
+                    return attrList;
                 });
     }
 
