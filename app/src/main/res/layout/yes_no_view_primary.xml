@@ -51,6 +51,7 @@
 
 
             <LinearLayout
+                android:id="@+id/checkLayouts"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:gravity="center_vertical"
@@ -83,6 +84,14 @@
                         android:text="@string/no"
                         android:textColor="@color/text_black_333"
                         app:buttonTint="@color/text_black_333" />
+                </RadioGroup>
+
+                <LinearLayout
+                    android:id="@+id/checkGroup"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
 
                     <com.google.android.material.checkbox.MaterialCheckBox
                         android:id="@+id/checkYes"
@@ -104,8 +113,7 @@
                         android:text="@string/no"
                         android:textColor="@color/text_black_333"
                         app:buttonTint="@color/text_black_333" />
-                </RadioGroup>
-
+                </LinearLayout>
 
                 <ImageView
                     android:id="@+id/clearSelection"
@@ -128,6 +136,19 @@
                     app:srcCompat="@drawable/ic_info_outline"
                     app:tint="?colorPrimary" />
             </LinearLayout>
+
+            <com.google.android.material.switchmaterial.SwitchMaterial
+                android:id="@+id/yesOnlyToggle"
+                style="@style/Widget.AppCompat.CompoundButton.Switch"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/yes"
+                android:textAppearance="@style/TextPrimary"
+                android:textSize="14sp"
+                app:switchPadding="20dp"
+                app:thumbTint="@drawable/selector_material_thumb_field"
+                app:trackTint="@drawable/selector_material_track_field"
+                app:useMaterialThemeColors="false" />
         </LinearLayout>
     </RelativeLayout>
 </layout>
