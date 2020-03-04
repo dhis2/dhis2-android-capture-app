@@ -797,14 +797,14 @@ public class DateUtils {
 
         if (programPeriodType != null) {
             Date expDate = getNextPeriod(programPeriodType, eventDate, 1); //Initial date of next period
+            Date currentDate = getCalendar().getTime();
             if (expDays > 0) {
                 Calendar calendar = getCalendar();
                 calendar.setTime(expDate);
                 calendar.add(Calendar.DAY_OF_YEAR, expDays);
                 expDate = calendar.getTime();
             }
-
-            expiredBecouseOfPeriod = expDate != null && expDate.compareTo(getCalendar().getTime())<=0;
+            expiredBecouseOfPeriod = expDate != null && expDate.compareTo(currentDate)<=0;
 
             return expiredBecouseOfPeriod || expiredBecouseOfCompletion;
         } else

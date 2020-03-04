@@ -73,8 +73,8 @@ public class DateUtilsTest {
         assertEquals("2018-07-26", DateUtils.uiDateFormat().format(minDateWeeklyThursday));
         assertEquals("2018-07-28", DateUtils.uiDateFormat().format(minDateWeeklySaturday));
         assertEquals("2018-07-29", DateUtils.uiDateFormat().format(minDateWeeklySunday));
-        assertEquals("2018-07-29", DateUtils.uiDateFormat().format(minDateBiWeekly));
-        assertEquals("2018-06-17", DateUtils.uiDateFormat().format(minDateBiWeekly2));
+        assertEquals("2018-07-16", DateUtils.uiDateFormat().format(minDateBiWeekly));
+        assertEquals("2018-06-18", DateUtils.uiDateFormat().format(minDateBiWeekly2));
         assertEquals("2018-07-01", DateUtils.uiDateFormat().format(minDateMonthly));
         assertEquals("2018-06-01", DateUtils.uiDateFormat().format(minDateMonthly2));
         assertEquals("2018-07-01", DateUtils.uiDateFormat().format(minDateBiMonthly));
@@ -508,15 +508,15 @@ public class DateUtilsTest {
 
         assertEquals("2019-01-11", DateUtils.getInstance().getPeriodUIString(null, testDate, Locale.ENGLISH));
         assertEquals("2019-01-11", DateUtils.getInstance().getPeriodUIString(PeriodType.Daily, testDate, Locale.ENGLISH));
-        assertEquals("2 2019", DateUtils.getInstance().getPeriodUIString(PeriodType.Weekly, testDate, Locale.ENGLISH));
-        assertEquals("2 2019", DateUtils.getInstance().getPeriodUIString(PeriodType.WeeklyWednesday, testDate, Locale.ENGLISH));
-        assertEquals("2 2019", DateUtils.getInstance().getPeriodUIString(PeriodType.WeeklyThursday, testDate, Locale.ENGLISH));
-        assertEquals("2 2019", DateUtils.getInstance().getPeriodUIString(PeriodType.WeeklySaturday, testDate, Locale.ENGLISH));
-        assertEquals("2 2019", DateUtils.getInstance().getPeriodUIString(PeriodType.WeeklySunday, testDate, Locale.ENGLISH));
+        assertEquals("Week 2 2019-01-07 to  2019-01-13", DateUtils.getInstance().getPeriodUIString(PeriodType.Weekly, testDate, Locale.ENGLISH));
+        assertEquals("Week 2 2019-01-09 to  2019-01-15", DateUtils.getInstance().getPeriodUIString(PeriodType.WeeklyWednesday, testDate, Locale.ENGLISH));
+        assertEquals("Week 2 2019-01-10 to  2019-01-16", DateUtils.getInstance().getPeriodUIString(PeriodType.WeeklyThursday, testDate, Locale.ENGLISH));
+        assertEquals("Week 1 2019-01-05 to  2019-01-11", DateUtils.getInstance().getPeriodUIString(PeriodType.WeeklySaturday, testDate, Locale.ENGLISH));
+        assertEquals("Week 2 2019-01-06 to  2019-01-12", DateUtils.getInstance().getPeriodUIString(PeriodType.WeeklySunday, testDate, Locale.ENGLISH));
         assertEquals("2 2019 - 3 2019", DateUtils.getInstance().getPeriodUIString(PeriodType.BiWeekly, testDate, Locale.ENGLISH));
         assertEquals("Jan 2019", DateUtils.getInstance().getPeriodUIString(PeriodType.Monthly, testDate, Locale.ENGLISH));
         assertEquals("Jan 2019 - Feb 2019", DateUtils.getInstance().getPeriodUIString(PeriodType.BiMonthly, testDate, Locale.ENGLISH));
-        assertEquals("Jan 2019 - Apr 2019", DateUtils.getInstance().getPeriodUIString(PeriodType.Quarterly, testDate, Locale.ENGLISH));
+        assertEquals("Jan 2019 - Mar 2019", DateUtils.getInstance().getPeriodUIString(PeriodType.Quarterly, testDate, Locale.ENGLISH));
         assertEquals("Jan 2019 - Jun 2019", DateUtils.getInstance().getPeriodUIString(PeriodType.SixMonthly, testDate, Locale.ENGLISH));
         assertEquals("Oct 2018 - Mar 2019", DateUtils.getInstance().getPeriodUIString(PeriodType.SixMonthlyApril, testDate, Locale.ENGLISH));
         assertEquals("2019", DateUtils.getInstance().getPeriodUIString(PeriodType.Yearly, testDate, Locale.ENGLISH));
@@ -560,13 +560,15 @@ public class DateUtilsTest {
         DateUtils.getInstance().setCurrentDate(currentDate);
 
         assertFalse(DateUtils.getInstance().isEventExpired(toDate("2019-03-01"), null, EventStatus.ACTIVE, 0, PeriodType.Monthly, 1));
+        DateUtils.getInstance().setCurrentDate(currentDate);
         assertFalse(DateUtils.getInstance().isEventExpired(toDate("2019-03-02"), null, EventStatus.ACTIVE, 0, PeriodType.Monthly, 1));
+        DateUtils.getInstance().setCurrentDate(currentDate);
         assertFalse(DateUtils.getInstance().isEventExpired(toDate("2019-02-28"), null, EventStatus.ACTIVE, 0, PeriodType.Monthly, 1));
 
         currentDate = DateUtils.uiDateFormat().parse("2019-03-02");
         DateUtils.getInstance().setCurrentDate(currentDate);
 
-        assertTrue(DateUtils.getInstance().isEventExpired(toDate("2019-03-01"), null, EventStatus.ACTIVE, 0, null, 0));
+        assertFalse(DateUtils.getInstance().isEventExpired(toDate("2019-03-01"), null, EventStatus.ACTIVE, 0, null, 0));
     }
 
     @Test
@@ -607,7 +609,7 @@ public class DateUtilsTest {
         Date currentDate = DateUtils.uiDateFormat().parse("2019-03-01");
         DateUtils.getInstance().setCurrentDate(currentDate);
 
-        assertTrue(!DateUtils.getInstance().isEventExpired(toDate("2019-02-28"), toDate("2019-02-28"), EventStatus.COMPLETED, 1, PeriodType.Monthly, 1));
+        assertFalse(DateUtils.getInstance().isEventExpired(toDate("2019-02-28"), toDate("2019-02-28"), EventStatus.COMPLETED, 1, PeriodType.Monthly, 1));
 
     }
 
@@ -618,7 +620,7 @@ public class DateUtilsTest {
         Date currentDate = DateUtils.uiDateFormat().parse("2019-03-02");
         DateUtils.getInstance().setCurrentDate(currentDate);
 
-        assertTrue(DateUtils.getInstance().isEventExpired(toDate("2019-03-01"), toDate("2019-03-01"), EventStatus.COMPLETED, 1, null, 0));
+        assertFalse(DateUtils.getInstance().isEventExpired(toDate("2019-03-01"), toDate("2019-03-01"), EventStatus.COMPLETED, 1, null, 0));
 
     }
 
