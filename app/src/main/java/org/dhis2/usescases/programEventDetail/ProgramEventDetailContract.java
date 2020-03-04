@@ -1,8 +1,5 @@
 package org.dhis2.usescases.programEventDetail;
 
-import androidx.lifecycle.LiveData;
-import androidx.paging.PagedList;
-
 import com.mapbox.geojson.BoundingBox;
 import com.mapbox.geojson.FeatureCollection;
 import com.mapbox.mapboxsdk.geometry.LatLng;
@@ -13,11 +10,13 @@ import org.dhis2.utils.filters.FilterManager;
 import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryOptionCombo;
 import org.hisp.dhis.android.core.common.FeatureType;
-import org.hisp.dhis.android.core.period.DatePeriod;
+import org.hisp.dhis.android.core.dataelement.DataElement;
 import org.hisp.dhis.android.core.program.Program;
 
 import java.util.List;
 
+import androidx.lifecycle.LiveData;
+import androidx.paging.PagedList;
 import io.reactivex.functions.Consumer;
 
 /**
@@ -43,6 +42,8 @@ public class ProgramEventDetailContract {
         void updateFilters(int totalFilters);
 
         void setCatOptionComboFilter(Pair<CategoryCombo, List<CategoryOptionCombo>> categoryOptionCombos);
+
+        void setTextTypeDataElementsFilter(List<DataElement> textTypeDataElementsFilter);
 
         void openOrgUnitTreeSelector();
 

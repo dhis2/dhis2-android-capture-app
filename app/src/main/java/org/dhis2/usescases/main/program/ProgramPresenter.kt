@@ -4,6 +4,7 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.processors.PublishProcessor
 import org.dhis2.data.prefs.PreferenceProvider
 import org.dhis2.data.schedulers.SchedulerProvider
+import org.dhis2.data.tuples.Pair
 import org.dhis2.utils.Constants.PROGRAM_THEME
 import org.dhis2.utils.filters.FilterManager
 import timber.log.Timber
@@ -19,6 +20,8 @@ class ProgramPresenter internal constructor(
     var disposable: CompositeDisposable = CompositeDisposable()
 
     fun init() {
+        FilterManager.getInstance().clearTextValues()
+
         val applyFiler = PublishProcessor.create<FilterManager>()
 
         disposable.add(

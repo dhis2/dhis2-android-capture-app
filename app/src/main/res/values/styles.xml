@@ -297,4 +297,6 @@
         <item name="android:windowExitAnimation">@anim/pin_dialog_anim_exit</item>
     </style>
 
+    <style name="spinner"/>
+
 </resources>

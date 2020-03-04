@@ -8,6 +8,7 @@ import androidx.paging.PagedList;
 
 import com.mapbox.geojson.BoundingBox;
 import com.mapbox.geojson.FeatureCollection;
+import android.database.Cursor;
 
 import org.dhis2.Bindings.ValueExtensionsKt;
 import org.dhis2.data.tuples.Pair;
@@ -22,6 +23,7 @@ import org.hisp.dhis.android.core.category.CategoryOption;
 import org.hisp.dhis.android.core.category.CategoryOptionCombo;
 import org.hisp.dhis.android.core.common.FeatureType;
 import org.hisp.dhis.android.core.common.State;
+import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.dataelement.DataElement;
 import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.event.EventCollectionRepository;
@@ -32,6 +34,7 @@ import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.program.ProgramStageDataElement;
 import org.hisp.dhis.android.core.program.ProgramStageSection;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValue;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -41,6 +44,7 @@ import java.util.List;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
+import timber.log.Timber;
 
 import static android.text.TextUtils.isEmpty;
 
@@ -57,12 +61,13 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
         this.programUid = programUid;
         this.d2 = d2;
     }
-    
+
     @NonNull
     @Override
     public LiveData<PagedList<ProgramEventViewModel>> filteredProgramEvents(List<DatePeriod> dateFilter, List<String> orgUnitFilter, List<CategoryOptionCombo> catOptCombList,
-                                                                            List<EventStatus> eventStatus, List<State> states, boolean assignedToUser) {
+                                                                            List<EventStatus> eventStatus, List<State> states, boolean assignedToUser,Pair<String, String> valueFilter) {
         EventCollectionRepository eventRepo = d2.eventModule().events().byProgramUid().eq(programUid);
+
         if (!dateFilter.isEmpty())
             eventRepo = eventRepo.byEventDate().inDatePeriods(dateFilter);
         if (!orgUnitFilter.isEmpty())
@@ -75,6 +80,10 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
             eventRepo = eventRepo.byState().in(states);
         if (assignedToUser)
             eventRepo = eventRepo.byAssignedUser().eq(getCurrentUser());
+        if (valueFilter != null && !valueFilter.val0().isEmpty() && !valueFilter.val1().isEmpty()) {
+            List<String> uIds = getEventUIdsFilteredByValue(valueFilter);
+            eventRepo = eventRepo.byUid().in(uIds);
+        }
 
         DataSource dataSource = eventRepo.orderByEventDate(RepositoryScope.OrderByDirection.DESC).withTrackedEntityDataValues().getDataSource().map(event -> transformToProgramEventModel(event));
 
@@ -85,6 +94,33 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
             }
         }, 20).build();
     }
+
+    @NotNull
+    private List<String> getEventUIdsFilteredByValue(
+            Pair<String, String> valueFilter) {
+
+        List<String> uids = new ArrayList<>();
+
+        String QUERY = "SELECT Event.uid FROM Event " +
+        "LEFT OUTER JOIN TrackedEntityDataValue AS Value ON Value.event = Event.uid " +
+        "WHERE Value.dataElement = '" + valueFilter.val0() + "' AND Value.value like '%" +
+         valueFilter.val1()+ "%'";
+
+        try (Cursor uIdsCursor = d2.databaseAdapter().rawQuery(QUERY)) {
+            if (uIdsCursor != null) {
+                uIdsCursor.moveToFirst();
+                for (int i = 0; i < uIdsCursor.getCount(); i++) {
+                    uids.add(uIdsCursor.getString(0));
+                    uIdsCursor.moveToNext();
+                }
+            }
+        } catch (Exception e) {
+            Timber.e(e);
+        }
+
+        return uids;
+    }
+
 
     @NonNull
     @Override
@@ -281,6 +317,34 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
                                 .byCategoryComboUid().eq(categoryCombo.uid()).get(),
                         Pair::create
                 ));
+    }
+
+    @NonNull
+    @Override
+    public Observable<List<DataElement>> textTypeDataElements() {
+        List<String> programStageUIds =
+                d2.programModule().programs().uid(programUid).get()
+                .flatMap(program -> d2.programModule().programStages().byProgramUid()
+                        .eq(program.uid()).get())
+                .toObservable().flatMap(programStages ->
+                Observable.fromIterable(programStages)
+                        .map(item -> item.uid())
+                        .toList().toObservable()).blockingFirst();
+
+        List<String> programStagesDataElementsUIds =
+                d2.programModule().programStageDataElements().byProgramStage().in(programStageUIds).get()
+                        .toObservable().flatMap(programStageDataElements ->
+                        Observable.fromIterable(programStageDataElements)
+                                .map(item -> item.dataElement().uid())
+                                .toList().toObservable()).blockingFirst();
+
+
+        return d2.dataElementModule().dataElements()
+                .byValueType().eq(ValueType.TEXT)
+                .byUid().in(programStagesDataElementsUIds)
+                .byOptionSetUid().isNull()
+                .orderByDisplayName(RepositoryScope.OrderByDirection.ASC)
+                .get().toObservable();
     }
 
     @Override
