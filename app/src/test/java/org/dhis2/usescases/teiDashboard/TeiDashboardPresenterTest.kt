@@ -1,9 +1,12 @@
 package org.dhis2.usescases.teiDashboard
 
+import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
+import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
+import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.Single
 import org.dhis2.data.prefs.PreferenceProvider
@@ -14,6 +17,7 @@ import org.dhis2.utils.analytics.AnalyticsHelper
 import org.dhis2.utils.analytics.CLICK
 import org.dhis2.utils.analytics.DELETE_ENROLL
 import org.dhis2.utils.analytics.DELETE_TEI
+import org.dhis2.utils.filters.FilterManager
 import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
@@ -33,6 +37,7 @@ class TeiDashboardPresenterTest {
     private val view: TeiDashboardContracts.View = mock()
     private val analyticsHelper: AnalyticsHelper = mock()
     private val preferenceProvider: PreferenceProvider = mock()
+    private val filterManager: FilterManager = mock()
     private val programUid = "programUid"
     private val teiUid = "teiUid"
 
@@ -45,7 +50,8 @@ class TeiDashboardPresenterTest {
             repository,
             schedulers,
             analyticsHelper,
-            preferenceProvider
+            preferenceProvider,
+            filterManager
         )
     }
 
@@ -86,10 +92,14 @@ class TeiDashboardPresenterTest {
         whenever(
             repository.getTeiActivePrograms(teiUid, false)
         )doReturn Observable.just(programs)
+        whenever(
+            filterManager.asFlowable()
+        ) doReturn Flowable.just(filterManager)
 
         presenter.init()
 
         verify(view).setData(presenter.dashboardProgramModel)
+        verify(view, times(2)).updateTotalFilters(any())
     }
 
     @Test
@@ -122,10 +132,15 @@ class TeiDashboardPresenterTest {
         whenever(
             repository.getTEIEnrollments(teiUid)
         )doReturn Observable.just(enrollments)
+        whenever(
+            filterManager.asFlowable()
+        ) doReturn Flowable.just(filterManager)
+
 
         presenter.init()
 
         verify(view).setDataWithOutProgram(presenter.dashboardProgramModel)
+        verify(view, times(2)).updateTotalFilters(any())
     }
 
     @Test
@@ -174,6 +189,9 @@ class TeiDashboardPresenterTest {
         whenever(
             repository.getTeiActivePrograms(teiUid, false)
         )doReturn Observable.just(programs)
+        whenever(
+            filterManager.asFlowable()
+        ) doReturn Flowable.just(filterManager)
 
         presenter.setProgram(program)
 
@@ -248,5 +266,12 @@ class TeiDashboardPresenterTest {
         presenter.showDescription("description")
 
         verify(view).showDescription("description")
+    }
+
+    @Test
+    fun `Should get program id`(){
+        val uid = presenter.programUid
+
+        assert(uid == programUid)
     }
 }
