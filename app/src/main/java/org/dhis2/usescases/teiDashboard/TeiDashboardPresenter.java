@@ -97,13 +97,13 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
         compositeDisposable.add(
                 FilterManager.getInstance().asFlowable()
                         .startWith(FilterManager.getInstance())
-                .map(FilterManager::getTotalFilters)
-                .subscribeOn(schedulerProvider.io())
-                .observeOn(schedulerProvider.ui())
-                .subscribe(
-                        totalFilters-> view.updateTotalFilters(totalFilters),
-                        Timber::e
-                )
+                        .map(FilterManager::getTotalFilters)
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
+                        .subscribe(
+                                totalFilters -> view.updateTotalFilters(totalFilters),
+                                Timber::e
+                        )
         );
     }
 
@@ -129,7 +129,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
                                 canDelete -> {
                                     if (canDelete) {
                                         analyticsHelper.setEvent(DELETE_TEI, CLICK, DELETE_TEI);
-                                        view.handleTEIdeletion();
+                                        view.handleTeiDeletion();
                                     } else {
                                         view.authorityErrorMessage();
                                     }
@@ -218,11 +218,6 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
     }
 
     @Override
-    public String getPreviousDashboard() {
-        return preferenceProvider.getString(Constants.PREVIOUS_DASHBOARD_PROGRAM, null);
-    }
-
-    @Override
     public void saveProgramTheme(int programTheme) {
         preferenceProvider.setValue(Constants.PROGRAM_THEME, programTheme);
     }
@@ -236,13 +231,22 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
     public Boolean getProgramGrouping() {
         if (programUid != null) {
             return preferenceProvider.programHasGrouping(programUid);
-        }else{
+        } else {
             return false;
         }
     }
 
     @Override
-    public void showHideFilters() {
+    public void generalFiltersClick() {
         view.setFiltersLayoutState();
+    }
+
+    @Override
+    public void handleShowHideFilters(boolean showFilters) {
+        if (showFilters) {
+            view.hideTabsAndDisableSwipe();
+        } else {
+            view.showTabsAndEnableSwipe();
+        }
     }
 }
