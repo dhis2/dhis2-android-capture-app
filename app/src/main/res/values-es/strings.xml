@@ -577,7 +577,6 @@
     <string name="filters_title_period">Periodo</string>
     <string name="filters_title_org_unit">Unidad Org.</string>
     <string name="filters_title_status">Estado</string>
-    <string name="filters_title_state">Estado</string>
     <string name="filter_period_today">Hoy</string>
     <string name="filter_period_yesterday">Ayer</string>
     <string name="filter_period_tomorrow">Mañana</string>
@@ -592,4 +591,4 @@
     <string name="filter_period_any">Cualquier momento</string>
     <string name="data_values_error_sync_message">La sincronización falló. Comprueba los valores para tratar de resolver el problema e inténtelo otra vez. Si el fallo persiste contacta con su administrador del sistema.</string>
     <string name="sms_synced_message">Los datos se han enviado al servidor pero no se puede garantizar que se hayan guardado</string>
-</resources>
+    </resources>
