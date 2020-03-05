@@ -39,7 +39,7 @@ class TeiDataRepositoryImpl(
 
         var eventRepo = d2.eventModule().events().byEnrollmentUid().eq(enrollmentUid)
         if (selectedStage != null) {
-            eventRepo.byProgramStageUid().eq(selectedStage)
+            eventRepo = eventRepo.byProgramStageUid().eq(selectedStage)
         }
 
         eventRepo = eventRepo.applyFilters(
