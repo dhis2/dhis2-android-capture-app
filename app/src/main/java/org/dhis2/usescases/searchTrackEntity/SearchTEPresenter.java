@@ -670,7 +670,10 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     @Override
     public void downloadTei(String teiUid, String enrollmentUid) {
         compositeDisposable.add(
-                d2.trackedEntityModule().trackedEntityInstanceDownloader().byUid().in(Collections.singletonList(teiUid)).download()
+                d2.trackedEntityModule().trackedEntityInstanceDownloader()
+                        .byUid().in(Collections.singletonList(teiUid))
+                        .overwrite(true)
+                        .download()
                         .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.ui())
                         .subscribe(

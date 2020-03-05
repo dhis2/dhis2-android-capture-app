@@ -9,6 +9,7 @@ import org.dhis2.data.forms.RulesRepository;
 import org.dhis2.data.prefs.PreferenceProvider;
 import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.utils.analytics.AnalyticsHelper;
+import org.dhis2.utils.filters.FilterManager;
 import org.dhis2.utils.resources.ResourceManager;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.enrollment.EnrollmentCollectionRepository;
@@ -47,14 +48,16 @@ public class TeiDashboardModule {
     TeiDashboardContracts.Presenter providePresenter(DashboardRepository dashboardRepository,
                                                      SchedulerProvider schedulerProvider,
                                                      AnalyticsHelper analyticsHelper,
-                                                     PreferenceProvider preferenceProvider) {
+                                                     PreferenceProvider preferenceProvider,
+                                                     FilterManager filterManager) {
         return new TeiDashboardPresenter(view,
                 teiUid,
                 programUid,
                 dashboardRepository,
                 schedulerProvider,
                 analyticsHelper,
-                preferenceProvider);
+                preferenceProvider,
+                filterManager);
     }
 
     @Provides

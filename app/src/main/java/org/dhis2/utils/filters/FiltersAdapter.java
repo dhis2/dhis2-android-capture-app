@@ -16,6 +16,7 @@ import org.dhis2.databinding.ItemFilterStateBinding;
 import org.dhis2.databinding.ItemFilterStatusBinding;
 import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryOptionCombo;
+import org.hisp.dhis.android.core.dataset.DataSet;
 
 import java.util.ArrayList;
 import java.util.List;

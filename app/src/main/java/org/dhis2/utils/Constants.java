@@ -122,6 +122,7 @@ public class Constants {
     public static final String DATA_SET = "DataSets";
     public static final String DATASET_UID = "DATASET_UID";
     public static final String TRACKED_ENTITY_UID = "TRACKED_ENTITY_UID";
+    public static final String TEI_UID = "TEI_UID";
 
     public static final String RESERVED = "TAG_RV";
 

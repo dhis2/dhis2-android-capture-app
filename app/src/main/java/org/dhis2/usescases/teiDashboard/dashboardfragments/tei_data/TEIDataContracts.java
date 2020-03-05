@@ -8,6 +8,7 @@ import androidx.annotation.NonNull;
 import org.dhis2.usescases.general.AbstractActivityContracts;
 import org.dhis2.usescases.teiDashboard.DashboardProgramModel;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.tei_data.tei_events.EventViewModel;
+import org.dhis2.utils.filters.FilterManager;
 import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryOptionCombo;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
@@ -67,6 +68,10 @@ public class TEIDataContracts {
         void setEnrollmentData(Program program, Enrollment enrollment);
 
         void setTrackedEntityInstance(TrackedEntityInstance trackedEntityInstance, OrganisationUnit organisationUnit);
+
+        void showPeriodRequest(FilterManager.PeriodRequest periodRequest);
+
+        void openOrgUnitTreeSelector(String programUid);
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter {

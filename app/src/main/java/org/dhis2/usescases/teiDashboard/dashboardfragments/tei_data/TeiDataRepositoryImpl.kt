@@ -1,16 +1,22 @@
 package org.dhis2.usescases.teiDashboard.dashboardfragments.tei_data
 
 import io.reactivex.Single
+import org.dhis2.Bindings.applyFilters
 import org.dhis2.Bindings.primaryDate
 import org.dhis2.usescases.teiDashboard.dashboardfragments.tei_data.tei_events.EventViewModel
 import org.dhis2.usescases.teiDashboard.dashboardfragments.tei_data.tei_events.EventViewModelType
 import org.dhis2.utils.DateUtils
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
+import org.hisp.dhis.android.core.category.CategoryOptionCombo
+import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.enrollment.Enrollment
+import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
 import org.hisp.dhis.android.core.event.Event
+import org.hisp.dhis.android.core.event.EventCollectionRepository
 import org.hisp.dhis.android.core.event.EventStatus
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
+import org.hisp.dhis.android.core.period.DatePeriod
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance
 
@@ -23,12 +29,34 @@ class TeiDataRepositoryImpl(
 
     override fun getTEIEnrollmentEvents(
         selectedStage: String?,
-        groupedByStage: Boolean
+        groupedByStage: Boolean,
+        periodFilters: MutableList<DatePeriod>,
+        orgUnitFilters: MutableList<String>,
+        stateFilters: MutableList<State>,
+        assignedToMe: Boolean,
+        eventStatusFilters: MutableList<EventStatus>,
+        catOptComboFilters: MutableList<CategoryOptionCombo>
     ): Single<List<EventViewModel>> {
+
+        var eventRepo = d2.eventModule().events().byEnrollmentUid().eq(enrollmentUid)
+
+        eventRepo = eventRepo.applyFilters(
+            periodFilters,
+            orgUnitFilters,
+            stateFilters,
+            if (assignedToMe) {
+                d2.userModule().user().blockingGet().uid()
+            } else {
+                null
+            },
+            eventStatusFilters,
+            catOptComboFilters
+        )
+
         return if (groupedByStage) {
-            getGroupedEvents(selectedStage)
+            getGroupedEvents(eventRepo, selectedStage)
         } else {
-            getTimelineEvents()
+            getTimelineEvents(eventRepo)
         }
     }
 
@@ -59,6 +87,7 @@ class TeiDataRepositoryImpl(
     }
 
     private fun getGroupedEvents(
+        eventRepository: EventCollectionRepository,
         selectedStage: String?
     ): Single<List<EventViewModel>> {
         val eventViewModels = mutableListOf<EventViewModel>()
@@ -69,10 +98,9 @@ class TeiDataRepositoryImpl(
             .get()
             .map { programStages ->
                 programStages.forEach { programStage ->
-                    val eventList = d2.eventModule().events()
-                        .byEnrollmentUid().eq(enrollmentUid)
-                        .byProgramStageUid().eq(programStage.uid())
+                    val eventList = eventRepository
                         .byDeleted().isFalse
+                        .byProgramStageUid().eq(programStage.uid())
                         .blockingGet()
                     eventList.sortWith(Comparator { event1, event2 ->
                         event2.primaryDate().compareTo(event1.primaryDate())
@@ -85,7 +113,7 @@ class TeiDataRepositoryImpl(
                             null,
                             eventList.size,
                             if (eventList.isEmpty()) null else eventList[0].lastUpdated(),
-                            true
+                            programStage.uid() == selectedStage && checkAddEvent()
                         )
                     )
                     if (selectedStage != null && selectedStage == programStage.uid()) {
@@ -109,11 +137,9 @@ class TeiDataRepositoryImpl(
 
     }
 
-    private fun getTimelineEvents(
-    ): Single<List<EventViewModel>> {
+    private fun getTimelineEvents(eventRepository: EventCollectionRepository): Single<List<EventViewModel>> {
         val eventViewModels = mutableListOf<EventViewModel>()
-        return d2.eventModule().events()
-            .byEnrollmentUid().eq(enrollmentUid)
+        return eventRepository
             .byDeleted().isFalse
             .get()
             .map { eventList ->
@@ -152,4 +178,10 @@ class TeiDataRepositoryImpl(
             }
         }
     }
+
+    private fun checkAddEvent(): Boolean {
+        val enrollment =  d2.enrollmentModule().enrollments().uid(enrollmentUid).blockingGet()
+        return !(enrollment==null || enrollment.status() != EnrollmentStatus.ACTIVE)
+    }
+
 }
