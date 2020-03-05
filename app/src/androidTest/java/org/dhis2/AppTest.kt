@@ -9,11 +9,9 @@ import org.dhis2.data.schedulers.SchedulersProviderImpl
 import org.dhis2.data.server.ServerModule
 import org.dhis2.data.service.workManager.WorkManagerModule
 import org.dhis2.data.user.UserModule
-import org.dhis2.usescases.BaseTest.Companion.DHIS_DATABASE
 import org.dhis2.utils.UtilsModule
 import org.dhis2.utils.analytics.AnalyticsModule
 import org.hisp.dhis.android.core.D2Manager
-import org.hisp.dhis.android.core.arch.db.access.internal.DatabaseAdapterFactory
 
 class AppTest : App() {
 
@@ -25,6 +23,7 @@ class AppTest : App() {
 
     @Override
     override fun setUpServerComponent() {
+        D2Manager.setDBForExternalTesting("127-0-0-1-8080_android_unencrypted.db","android")
         D2Manager.blockingInstantiateD2(ServerModule.getD2Configuration(this))
 
         serverComponent = appComponent.plus(ServerModule())
@@ -45,22 +44,22 @@ class AppTest : App() {
             userComponent = serverComponent!!.plus(UserModule())
         }
 
+    //    logInUser()
+
         serverComponent?.let {
-        //    logInUser()
-            val userManager = it.userManager()
-        //    userManager.logIn("test","Android123","http://127.0.0.1:8080")
+        //    val userManager = it.userManager()
+        //    userManager.logIn("android","Android123","http://127.0.0.1:8080").blockingFirst()
         }
     }
 
     private fun logInUser() {
         val keyStoreRobot = TestingInjector.providesKeyStoreRobot(baseContext)
         keyStoreRobot.apply {
-            setData(USERNAME, "test")
+            setData(USERNAME, "android")
             setData(PASSWORD, "Android123")
         }
-
     //    val databaseAdapter = DatabaseAdapterFactory.getDatabaseAdapter()
-   //     DatabaseAdapterFactory.createOrOpenDatabase(databaseAdapter, DHIS_DATABASE, this.applicationContext, false)
+   //     DatabaseAdapterFactory.createOrOpenDatabase(databaseAdapter, DB_GENERATED_BY_LOGIN, this.applicationContext, false)
     }
 
     override fun prepareAppComponent(): AppComponent.Builder {

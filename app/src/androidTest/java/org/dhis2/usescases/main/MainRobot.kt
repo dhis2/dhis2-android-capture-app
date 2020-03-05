@@ -31,7 +31,7 @@ class MainRobot : BaseRobot(){
     }
 
     fun clickOnLogout() = apply {
-       // onView(anyOf(withText(R.string.log_out), withId(R.id.logout_button))).perform(click())
+        onView(withId(R.id.nav_view)).perform(NavigationViewActions.navigateTo(R.id.logout_button))
     }
 
     fun clickAbout() = apply {
