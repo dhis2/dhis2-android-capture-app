@@ -64,7 +64,9 @@ public final class EnrollmentRuleEngineRepository
         this.formRepository = formRepository;
         this.enrollmentUid = enrollmentUid;
 
-        initData();
+        if (enrollmentUid != null ) {
+            initData();
+        }
 
     }
 
