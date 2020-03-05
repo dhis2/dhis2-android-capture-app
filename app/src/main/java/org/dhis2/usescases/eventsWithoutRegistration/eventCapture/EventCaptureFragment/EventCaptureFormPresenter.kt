@@ -16,7 +16,7 @@ class EventCaptureFormPresenter(
     val schedulerProvider: SchedulerProvider
 ) {
     private var lastFocusItem: String = ""
-    private var selectedSection = ""
+    private var selectedSection: String? = null
     var disposable: CompositeDisposable = CompositeDisposable()
 
     fun init() {
@@ -64,9 +64,10 @@ class EventCaptureFormPresenter(
                 .subscribe(
                     { fields ->
                         view.showFields(fields, lastFocusItem)
-                        if (fields.isNotEmpty()) {
-                            setCurrentSection(fields.mapNotNull { it.programStageSection() }.first())
-                        }
+                        selectedSection ?: fields
+                            .mapNotNull { it.programStageSection() }
+                            .firstOrNull()
+                            ?.let{ selectedSection = it }
                     },
                     { Timber.e(it) }
                 )

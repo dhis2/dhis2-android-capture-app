@@ -177,7 +177,7 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
         );
         binding.formRecycler.setAdapter(dataEntryAdapter);
 
-       /* binding.formRecycler.addOnScrollListener(new RecyclerView.OnScrollListener() {
+        binding.formRecycler.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
                 if (newState == RecyclerView.SCROLL_STATE_DRAGGING) {
@@ -188,53 +188,21 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
                 }
 
             }
-        });*/
+        });
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             binding.formRecycler.setOnScrollChangeListener((v, scrollX, scrollY, oldScrollX, oldScrollY) -> {
-                //checkFirstItem();
                 checkLastItem();
             });
         } else {
             binding.formRecycler.setOnScrollListener(new RecyclerView.OnScrollListener() {
                 @Override
                 public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
-                    //checkFirstItem();
                     checkLastItem();
                 }
             });
         }
     }
-
-    /*private void checkFirstItem() {
-
-        LinearLayoutManager layoutManager = (GridLayoutManager) binding.formRecycler.getLayoutManager();
-        int position = layoutManager.findFirstVisibleItemPosition();
-
-        try {
-            while (position >= 0 && dataEntryAdapter.getItemViewType(position) != 17) {
-                position--;
-            }
-            if (position >= 0) {
-                SectionViewModel sectionViewModel = dataEntryAdapter.getSectionAt(position);
-
-                createHeader(sectionViewModel);
-            }
-        } catch (Exception e) {
-            Timber.tag(EventCaptureFormFragment.class.getName()).e(e);
-        }
-    }*/
-
-   /* private void createHeader(SectionViewModel sectionViewModel) {
-        if (headerBinding == null) {
-            headerBinding = FormSectionBinding.inflate(LayoutInflater.from(binding.header.getContext()), binding.header, false);
-            headerHolder = dataEntryAdapter.createHeader(headerBinding);
-            binding.header.removeAllViews();
-            binding.header.addView(headerHolder.itemView);
-        }
-        headerHolder.update(sectionViewModel);
-    }*/
-
 
     private void checkLastItem() {
         GridLayoutManager layoutManager = (GridLayoutManager) binding.formRecycler.getLayoutManager();

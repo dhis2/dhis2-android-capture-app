@@ -27,12 +27,12 @@ class StickyHeaderItemDecoration(
                 parent.context,
                 object : GestureDetector.SimpleOnGestureListener() {
                     override fun onDown(e: MotionEvent?): Boolean {
-                        return e?.let { e.y <= currentHeader?.second?.itemView?.height!! }
+                        return e?.let { e.y <= currentHeader?.second?.itemView?.height ?:-1 }
                             ?: super.onDown(e)
                     }
 
                     override fun onSingleTapUp(e: MotionEvent?): Boolean {
-                        if (e!!.y <= currentHeader?.second?.itemView?.height!!) {
+                        if (e!!.y <= currentHeader?.second?.itemView?.height ?: -1) {
                             (currentHeader?.second as SectionHolder).onClick(currentHeader?.second?.itemView!!)
                             return true
                         }
