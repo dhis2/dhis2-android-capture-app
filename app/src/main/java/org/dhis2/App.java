@@ -115,7 +115,7 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
 
         setUpAppComponent();
         if (isTesting) {
-        //    populateDBIfNeeded();
+            populateDBIfNeeded();
         }
         setUpServerComponent();
 
