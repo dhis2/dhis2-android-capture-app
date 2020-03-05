@@ -1,6 +1,5 @@
 package org.dhis2.usescases.settings;
 
-import android.Manifest;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
@@ -31,6 +30,7 @@ import com.google.android.material.textfield.TextInputLayout;
 import com.jakewharton.rxbinding2.widget.RxCompoundButton;
 import com.jakewharton.rxbinding2.widget.RxTextView;
 
+import org.dhis2.Bindings.ContextExtensionsKt;
 import org.dhis2.Components;
 import org.dhis2.R;
 import org.dhis2.data.service.workManager.WorkManagerController;
@@ -54,7 +54,6 @@ import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
-import static android.text.TextUtils.isEmpty;
 import static org.dhis2.utils.Constants.DATA_NOW;
 import static org.dhis2.utils.Constants.META_NOW;
 import static org.dhis2.utils.Constants.TIME_15M;
@@ -108,6 +107,8 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
 
         binding.dataRadioGroup.setOnCheckedChangeListener((group, checkedId) -> saveTimeData(checkedId));
         binding.metaRadioGroup.setOnCheckedChangeListener((group, checkedId) -> saveTimeMeta(checkedId));
+
+        binding.smsSettings.setVisibility(ContextExtensionsKt.showSMS(context) ? View.VISIBLE : View.GONE);
 
         return binding.getRoot();
     }
@@ -226,7 +227,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
                 .setText(responseSender);
         ((TextView) binding.settingsSms.findViewById(R.id.settings_sms_result_timeout))
                 .setText(Integer.toString(timeout));
-        if (!gateway.getText().toString().isEmpty()){
+        if (!gateway.getText().toString().isEmpty()) {
             presenter.validateGatewayObservable(gateway.getText().toString());
         }
         boolean hasNetwork = NetworkUtils.isOnline(context);
@@ -261,7 +262,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
                                 presenter.smsSwitch(false);
                             } else if (NetworkUtils.isOnline(context) &&
                                     isGatewaySetAndValid() &&
-                                    checkSMSPermissions(true)) {
+                                    ContextExtensionsKt.checkSMSPermission(this, true, SMS_PERMISSIONS_REQ_ID)) {
                                 presenter.smsSwitch(true);
                             }
                         }
@@ -626,39 +627,10 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
         return presenter.isGatewaySetAndValid(gateway);
     }
 
-    private Boolean checkSMSPermissions(boolean requestPermission) {
-        // check permissions
-        String[] smsPermissions = new String[]{
-                Manifest.permission.ACCESS_NETWORK_STATE,
-                Manifest.permission.READ_PHONE_STATE,
-                Manifest.permission.SEND_SMS,
-                Manifest.permission.RECEIVE_SMS,
-                Manifest.permission.READ_SMS
-        };
-
-        if (!hasPermissions(smsPermissions)) {
-            if (requestPermission) {
-                requestPermissions(smsPermissions, SMS_PERMISSIONS_REQ_ID);
-            }
-            return false;
-        }
-        return true;
-    }
-
-    private Boolean hasPermissions(String[] permissions) {
-        for (String permission : permissions) {
-            if (ContextCompat.checkSelfPermission(context, permission)
-                    != PackageManager.PERMISSION_GRANTED) {
-                return false;
-            }
-        }
-        return true;
-    }
-
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (requestCode == SMS_PERMISSIONS_REQ_ID && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            if (checkSMSPermissions(false))
+            if (ContextExtensionsKt.checkSMSPermission(this, false, SMS_PERMISSIONS_REQ_ID))
                 presenter.smsSwitch(true);
         } else {
             presenter.smsSwitch(false);
