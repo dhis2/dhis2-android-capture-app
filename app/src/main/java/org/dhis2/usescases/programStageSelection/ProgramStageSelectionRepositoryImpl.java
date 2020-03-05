@@ -8,25 +8,19 @@ import org.dhis2.data.forms.RulesRepository;
 import org.dhis2.utils.EventCreationType;
 import org.dhis2.utils.Result;
 import org.hisp.dhis.android.core.D2;
-import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.android.core.enrollment.EnrollmentTableInfo;
-import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.program.ProgramStage;
 import org.hisp.dhis.android.core.program.ProgramStageCollectionRepository;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueTableInfo;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValue;
 import org.hisp.dhis.rules.RuleEngine;
 import org.hisp.dhis.rules.RuleEngineContext;
 import org.hisp.dhis.rules.RuleExpressionEvaluator;
 import org.hisp.dhis.rules.models.RuleAttributeValue;
-import org.hisp.dhis.rules.models.RuleDataValue;
 import org.hisp.dhis.rules.models.RuleEffect;
 import org.hisp.dhis.rules.models.RuleEnrollment;
-import org.hisp.dhis.rules.models.RuleEvent;
 import org.hisp.dhis.rules.models.TriggerEnvironment;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
@@ -80,7 +74,7 @@ public class ProgramStageSelectionRepositoryImpl implements ProgramStageSelectio
         String orgUnitUid = d2.enrollmentModule().enrollments().uid(enrollmentUid).blockingGet().organisationUnit();
         this.cachedRuleEngineFlowable =
                 Single.zip(
-                        rulesRepository.rulesNew(programUid),
+                        rulesRepository.rulesNew(programUid, null),
                         rulesRepository.ruleVariablesProgramStages(programUid),
                         rulesRepository.enrollmentEvents(enrollmentUid),
                         rulesRepository.supplementaryData(orgUnitUid),
@@ -99,7 +93,7 @@ public class ProgramStageSelectionRepositoryImpl implements ProgramStageSelectio
                         }).toFlowable()
                         .cacheWithInitialCapacity(1);
     }
-    
+
     private Flowable<RuleEnrollment> ruleEnrollment(String enrollmentUid) {
         return briteDatabase.createQuery(Arrays.asList(EnrollmentTableInfo.TABLE_INFO.name(),
                 TrackedEntityAttributeValueTableInfo.TABLE_INFO.name()), QUERY_ATTRIBUTE_VALUES, enrollmentUid == null ? "" : enrollmentUid)

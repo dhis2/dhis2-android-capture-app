@@ -86,7 +86,6 @@ android {
         exclude 'META-INF/rxjava.properties'
     }
 
-
     buildTypes {
         debug {
             // custom application suffix which allows to
@@ -111,7 +110,6 @@ android {
             ext.enableCrashlytics = true
 
             resValue "string", "content_provider", "com.dhis2.provider"
-
         }
 
         training {
@@ -157,6 +155,12 @@ android {
     flavorDimensions "default"
     productFlavors {
         dhis {
+            applicationId "com.dhis2"
+            dimension "default"
+            versionCode versions.vCode
+            versionName versions.vName
+        }
+        dhisNoSMS {
             applicationId "com.dhis2"
             dimension "default"
             versionCode versions.vCode

@@ -1,66 +1,19 @@
 package org.dhis2.data.forms;
 
-import android.content.ContentValues;
-import android.database.Cursor;
-
 import androidx.annotation.NonNull;
 
-import com.squareup.sqlbrite2.BriteDatabase;
-
-import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
-import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactoryImpl;
-import org.dhis2.data.tuples.Pair;
-import org.dhis2.data.tuples.Trio;
-import org.dhis2.utils.CodeGenerator;
-import org.dhis2.utils.Constants;
-import org.dhis2.utils.DateUtils;
 import org.hisp.dhis.android.core.D2;
-import org.hisp.dhis.android.core.category.CategoryCombo;
-import org.hisp.dhis.android.core.category.CategoryOptionCombo;
-import org.hisp.dhis.android.core.common.FeatureType;
-import org.hisp.dhis.android.core.common.Geometry;
-import org.hisp.dhis.android.core.common.ObjectStyle;
-import org.hisp.dhis.android.core.common.State;
-import org.hisp.dhis.android.core.common.Unit;
-import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
-import org.hisp.dhis.android.core.enrollment.EnrollmentObjectRepository;
-import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
-import org.hisp.dhis.android.core.enrollment.EnrollmentTableInfo;
-import org.hisp.dhis.android.core.event.Event;
-import org.hisp.dhis.android.core.event.EventStatus;
-import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
-import org.hisp.dhis.android.core.period.PeriodType;
-import org.hisp.dhis.android.core.program.Program;
-import org.hisp.dhis.android.core.program.ProgramStage;
-import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttribute;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueTableInfo;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceTableInfo;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityType;
 import org.hisp.dhis.rules.RuleEngine;
 import org.hisp.dhis.rules.RuleEngineContext;
 import org.hisp.dhis.rules.RuleExpressionEvaluator;
 import org.hisp.dhis.rules.models.TriggerEnvironment;
 
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 
 import io.reactivex.Flowable;
-import io.reactivex.Observable;
 import io.reactivex.Single;
-import io.reactivex.exceptions.OnErrorNotImplementedException;
-import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
-
-import static android.text.TextUtils.isEmpty;
 
 @SuppressWarnings({
         "PMD.AvoidDuplicateLiterals"
@@ -89,7 +42,7 @@ public class EnrollmentFormRepository implements FormRepository {
         // the event is not changing throughout lifecycle of FormComponent.
         this.cachedRuleEngineFlowable = enrollmentProgram()
                 .switchMap(program -> Single.zip(
-                        rulesRepository.rulesNew(program).subscribeOn(Schedulers.io()),
+                        rulesRepository.rulesNew(program, null).subscribeOn(Schedulers.io()),
                         rulesRepository.ruleVariables(program).subscribeOn(Schedulers.io()),
                         rulesRepository.enrollmentEvents(enrollmentUid).subscribeOn(Schedulers.io()),
                         rulesRepository.queryConstants().subscribeOn(Schedulers.io()),
@@ -114,7 +67,7 @@ public class EnrollmentFormRepository implements FormRepository {
         String orgUnit = d2.enrollmentModule().enrollments().uid(enrollmentUid).blockingGet().organisationUnit();
         return this.cachedRuleEngineFlowable = enrollmentProgram()
                 .switchMap(program -> Single.zip(
-                        rulesRepository.rulesNew(program),
+                        rulesRepository.rulesNew(program, null),
                         rulesRepository.ruleVariables(program),
                         rulesRepository.enrollmentEvents(enrollmentUid),
                         rulesRepository.queryConstants(),
