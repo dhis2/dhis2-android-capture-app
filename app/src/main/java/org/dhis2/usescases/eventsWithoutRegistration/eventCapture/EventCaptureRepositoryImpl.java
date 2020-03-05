@@ -1,6 +1,7 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventCapture;
 
 import android.content.Context;
+import android.database.Cursor;
 
 import androidx.annotation.NonNull;
 
@@ -14,6 +15,9 @@ import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactoryImpl;
 import org.dhis2.data.forms.dataentry.fields.image.ImageHolder;
 import org.dhis2.data.forms.dataentry.fields.orgUnit.OrgUnitViewModel;
+import org.dhis2.data.forms.dataentry.fields.picture.PictureViewModel;
+import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel;
+import org.dhis2.data.tuples.Trio;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.Result;
 import org.hisp.dhis.android.core.D2;
@@ -32,6 +36,7 @@ import org.hisp.dhis.android.core.maintenance.D2Error;
 import org.hisp.dhis.android.core.option.Option;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.Program;
+import org.hisp.dhis.android.core.program.ProgramIndicator;
 import org.hisp.dhis.android.core.program.ProgramRule;
 import org.hisp.dhis.android.core.program.ProgramRuleAction;
 import org.hisp.dhis.android.core.program.ProgramRuleActionType;
@@ -84,6 +89,12 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
     private Map<String, List<Rule>> dataElementRules = new HashMap<>();
     private List<Rule> finalMandatoryRules;
     private List<FieldViewModel> sectionFields;
+
+    private static final String SELECT_LEGEND =
+            "SELECT Legend.color FROM Legend \n"
+            + "JOIN ProgramIndicatorLegendSetLink ON ProgramIndicatorLegendSetLink.legendSet = Legend.LegendSet \n"
+            + "JOIN ProgramIndicator ON ProgramIndicator.uid = ProgramIndicatorLegendSetLink.programIndicator \n"
+            + "WHERE ProgramIndicator.uid = ? AND Legend.startValue <= ? AND Legend.endValue > ?";
 
     public EventCaptureRepositoryImpl(Context context, FormRepository formRepository, String eventUid, D2 d2) {
         this.eventUid = eventUid;
@@ -659,6 +670,30 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
     @Override
     public Single<Integer> getNoteCount() {
         return d2.noteModule().notes().byEventUid().eq(eventUid).count();
+    }
+
+    @Override
+    public Flowable<List<ProgramIndicator>> getIndicators( String programUid )
+    {
+        return d2.programModule().programIndicators().byProgramUid().eq( programUid ).withLegendSets().get()
+                .toFlowable();
+    }
+
+    @Override
+    public Observable<Trio<ProgramIndicator, String, String>> getLegendColorForIndicator( ProgramIndicator indicator,
+            String value )
+    {
+        String piId = indicator != null && indicator.uid() != null ? indicator.uid() : "";
+        String color = "";
+        try (Cursor cursor = d2.databaseAdapter().rawQuery( SELECT_LEGEND, piId, value == null ? "" : value,
+                value == null ? "" : value ))
+        {
+            if ( cursor != null && cursor.moveToFirst() && cursor.getCount() > 0 )
+            {
+                color = cursor.getString( 0 );
+            }
+        }
+        return Observable.just( Trio.create( indicator, value, color ) );
     }
 }
 
