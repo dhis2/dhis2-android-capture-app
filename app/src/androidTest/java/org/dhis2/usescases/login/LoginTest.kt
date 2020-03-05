@@ -44,7 +44,6 @@ class LoginTest : BaseTest() {
             closeKeyboard()
             clickLoginButton()
             acceptGenericDialog()
-            //check intent
         }
 
         cleanDatabase()
@@ -123,14 +122,19 @@ class LoginTest : BaseTest() {
         mainRule.launchActivity(null)
     }
 
-    fun startLoginActivity(){
+    private fun startLoginActivity(){
         ruleLogin.launchActivity(null)
+    }
+
+    private fun cleanDatabase(){
+        context.deleteDatabase(DB_GENERATED_BY_LOGIN)
     }
 
     companion object {
         const val API_ME_RESPONSE_OK = "mocks/user/user.json"
         const val API_ME_UNAUTHORIZE = "mocks/user/unauthorize.json"
         const val API_SYSTEM_INFO_RESPONSE_OK = "mocks/systeminfo/systeminfo.json"
+        const val DB_GENERATED_BY_LOGIN = "127-0-0-1-8080_test_unencrypted.db"
 
         const val USERNAME = "test"
         const val PASSWORD = "Android123"
