@@ -257,6 +257,16 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
         view.setFiltersLayoutState();
     }
 
+    @Override
+    public void handleShowHideFilters(boolean showFilters) {
+        if (showFilters) {
+            view.hideTabsAndDisableSwipe();
+        } else {
+            view.showTabsAndEnableSwipe();
+        }
+    }
+
+
     private Map<String, Boolean> getGrouping() {
         TypeToken<HashMap<String, Boolean>> typeToken =
                 new TypeToken<HashMap<String, Boolean>>() {
@@ -265,14 +275,5 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
                 Preference.GROUPING,
                 typeToken,
                 new HashMap<>());
-    }
-
-    @Override
-    public void handleShowHideFilters(boolean showFilters) {
-        if (showFilters) {
-            view.hideTabsAndDisableSwipe();
-        } else {
-            view.showTabsAndEnableSwipe();
-        }
     }
 }

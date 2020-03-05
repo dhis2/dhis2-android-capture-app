@@ -1,5 +1,6 @@
 package org.dhis2.usescases.teiDashboard
 
+import com.google.gson.reflect.TypeToken
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
@@ -9,6 +10,7 @@ import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.Single
+import org.dhis2.data.prefs.Preference.Companion.GROUPING
 import org.dhis2.data.prefs.PreferenceProvider
 import org.dhis2.data.schedulers.SchedulerProvider
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
@@ -304,8 +306,14 @@ class TeiDashboardPresenterTest {
     }
 
     @Test
-    fun `Should return program grouping from preferences`() {
-        whenever(preferenceProvider.programHasGrouping(programUid)) doReturn true
+    fun `Should return true program grouping from preferences if setting set to true`() {
+        val typeToken: TypeToken<HashMap<String, Boolean>> =
+            object: TypeToken<HashMap<String, Boolean>>() {}
+        val returnedHashMap = hashMapOf(programUid to true)
+
+        whenever(
+            preferenceProvider.getObjectFromJson(GROUPING, typeToken, hashMapOf())
+        ) doReturn returnedHashMap
 
         val isGrouped = presenter.programGrouping
 
@@ -313,7 +321,37 @@ class TeiDashboardPresenterTest {
     }
 
     @Test
-    fun `Should return false as program grouping since program uid is null`() {
+    fun `Should return false program grouping from preferences if setting is set to false`() {
+        val typeToken: TypeToken<HashMap<String, Boolean>> =
+            object: TypeToken<HashMap<String, Boolean>>() {}
+        val returnedHashMap = hashMapOf(programUid to false)
+
+        whenever(
+            preferenceProvider.getObjectFromJson(GROUPING, typeToken, hashMapOf())
+        ) doReturn returnedHashMap
+
+        val isGrouped = presenter.programGrouping
+
+        assert(isGrouped == false)
+    }
+
+    @Test
+    fun `Should return false program grouping if the programUid not = presenter's programUid`() {
+        val typeToken: TypeToken<HashMap<String, Boolean>> =
+            object: TypeToken<HashMap<String, Boolean>>() {}
+        val returnedHashMap = hashMapOf("otherProgramUid" to true)
+
+        whenever(
+            preferenceProvider.getObjectFromJson(GROUPING, typeToken, hashMapOf())
+        ) doReturn returnedHashMap
+
+        val isGrouped = presenter.programGrouping
+
+        assert(isGrouped == false)
+    }
+
+    @Test
+    fun `Should return false as program grouping if program uid is null`() {
         presenter = TeiDashboardPresenter(
             view,
             teiUid,
