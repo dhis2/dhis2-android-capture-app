@@ -6,9 +6,12 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityOptionsCompat;
 
+import com.google.gson.reflect.TypeToken;
+
 import org.dhis2.Bindings.ExtensionsKt;
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.RuleEngineRepository;
+import org.dhis2.data.prefs.Preference;
 import org.dhis2.data.prefs.PreferenceProvider;
 import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.data.tuples.Pair;
@@ -37,8 +40,10 @@ import org.hisp.dhis.rules.models.RuleActionHideProgramStage;
 import org.hisp.dhis.rules.models.RuleEffect;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
@@ -139,7 +144,9 @@ class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
                             return "";
                         }
                     });
-            Flowable<Boolean> groupingFlowable = groupingProcessor.startWith(preferences.programHasGrouping(programUid));
+            Flowable<Boolean> groupingFlowable = groupingProcessor.startWith(
+                    getGrouping().containsKey(programUid)?getGrouping().get(programUid):false
+            );
 
             compositeDisposable.add(
                     Flowable.combineLatest(
@@ -409,7 +416,13 @@ class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
     @Override
     public void onGroupingChanged(Boolean shouldGroup) {
         if (programUid != null) {
-            preferences.saveGroupingForProgram(programUid, shouldGroup);
+            Map<String, Boolean> groups = getGrouping();
+            if (shouldGroup) {
+                groups.put(programUid, true);
+            } else {
+                groups.remove(programUid);
+            }
+            preferences.saveAsJson(Preference.GROUPING, groups);
             groupingProcessor.onNext(shouldGroup);
         }
     }
@@ -417,5 +430,15 @@ class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
     @Override
     public void onAddNewEvent(@NonNull View anchor, @NonNull ProgramStage stage) {
         view.showNewEventOptions(anchor, stage);
+    }
+
+    private Map<String, Boolean> getGrouping() {
+        TypeToken<HashMap<String, Boolean>> typeToken =
+                new TypeToken<HashMap<String, Boolean>>() {
+                };
+        return preferences.getObjectFromJson(
+                Preference.GROUPING,
+                typeToken,
+                new HashMap<>());
     }
 }

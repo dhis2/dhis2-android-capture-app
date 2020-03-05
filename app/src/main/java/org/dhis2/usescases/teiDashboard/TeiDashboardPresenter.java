@@ -1,5 +1,8 @@
 package org.dhis2.usescases.teiDashboard;
 
+import com.google.gson.reflect.TypeToken;
+
+import org.dhis2.data.prefs.Preference;
 import org.dhis2.data.prefs.PreferenceProvider;
 import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.utils.AuthorityException;
@@ -8,6 +11,9 @@ import org.dhis2.utils.analytics.AnalyticsHelper;
 import org.dhis2.utils.filters.FilterManager;
 import org.hisp.dhis.android.core.common.Unit;
 import org.hisp.dhis.android.core.program.Program;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import io.reactivex.Observable;
 import io.reactivex.disposables.CompositeDisposable;
@@ -240,7 +246,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
     @Override
     public Boolean getProgramGrouping() {
         if (programUid != null) {
-            return preferenceProvider.programHasGrouping(programUid);
+            return getGrouping().containsKey(programUid) ? getGrouping().get(programUid) : false;
         } else {
             return false;
         }
@@ -249,6 +255,16 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
     @Override
     public void generalFiltersClick() {
         view.setFiltersLayoutState();
+    }
+
+    private Map<String, Boolean> getGrouping() {
+        TypeToken<HashMap<String, Boolean>> typeToken =
+                new TypeToken<HashMap<String, Boolean>>() {
+                };
+        return preferenceProvider.getObjectFromJson(
+                Preference.GROUPING,
+                typeToken,
+                new HashMap<>());
     }
 
     @Override

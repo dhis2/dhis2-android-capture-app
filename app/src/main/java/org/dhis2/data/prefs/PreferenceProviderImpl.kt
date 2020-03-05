@@ -147,27 +147,16 @@ class PreferenceProviderImpl(val context: Context) : PreferenceProvider {
         sharedPreferences.edit().clear().apply()
     }
 
-    override fun saveGroupingForProgram(programUid: String, shouldGroup: Boolean) {
-        val mapTypeToken = object : TypeToken<MutableMap<String, Boolean>>() {}.type
-        val groupingPrograms =
-            Gson().fromJson<MutableMap<String, Boolean>>(getString("GROUPING", "{}"), mapTypeToken)
-        if(shouldGroup) {
-            groupingPrograms[programUid] = shouldGroup
-        }else{
-            groupingPrograms.remove(programUid)
-        }
-        val updatedGroupingProgramsJson = Gson().toJson(groupingPrograms)
-        setValue("GROUPING", updatedGroupingProgramsJson)
+    override fun <T> saveAsJson(key: String, objectToSave: T) {
+        setValue(key, Gson().toJson(objectToSave))
     }
 
-    override fun programHasGrouping(programUid: String): Boolean {
-        val mapTypeToken = object : TypeToken<MutableMap<String, Boolean>>() {}.type
-        val groupingPrograms =
-            Gson().fromJson<MutableMap<String, Boolean>>(getString("GROUPING", "{}"), mapTypeToken)
-        return if (groupingPrograms.containsKey(programUid)) {
-            groupingPrograms[programUid]!!
+    override fun <T> getObjectFromJson(key: String, typeToken: TypeToken<T>, default: T): T {
+        val mapTypeToken = typeToken.type
+        return if (getString(key, null) == null) {
+            default
         } else {
-            false
+            Gson().fromJson<T>(getString(key), mapTypeToken)
         }
     }
     /*endregion*/
