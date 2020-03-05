@@ -17,10 +17,6 @@ import me.toptas.fancyshowcase.FancyShowCaseView;
 import me.toptas.fancyshowcase.FocusShape;
 import me.toptas.fancyshowcase.listener.DismissListener;
 
-/**
- * QUADRAM. Created by Administrador on 01/06/2018.
- */
-
 public class HelpManager {
 
     private static HelpManager instance;
@@ -242,12 +238,6 @@ public class HelpManager {
                 .focusShape(FocusShape.ROUNDED_RECTANGLE)
                 .closeOnTouch(true)
                 .build();
-        FancyShowCaseView tuto8 = new FancyShowCaseView.Builder(activity)
-                .title(activity.getString(R.string.tuto_dashboard_8))
-                .enableAutoTextPosition()
-                .focusOn(activity.findViewById(R.id.program_selector_button))
-                .closeOnTouch(true)
-                .build();
 
         ArrayList<FancyShowCaseView> steps = new ArrayList<>();
         steps.add(tuto1);
@@ -257,7 +247,6 @@ public class HelpManager {
         steps.add(tuto5);
         steps.add(tuto6);
         steps.add(tuto7);
-        steps.add(tuto8);
         return steps;
     }
 

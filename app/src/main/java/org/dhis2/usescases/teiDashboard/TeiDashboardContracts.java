@@ -3,10 +3,6 @@ package org.dhis2.usescases.teiDashboard;
 import org.dhis2.usescases.general.AbstractActivityContracts;
 import org.hisp.dhis.android.core.program.Program;
 
-/**
- * QUADRAM. Created by ppajuelo on 30/11/2017.
- */
-
 public class TeiDashboardContracts {
 
     public interface View extends AbstractActivityContracts.View {
@@ -19,13 +15,21 @@ public class TeiDashboardContracts {
 
         void restoreAdapter(String programUid);
 
-        void handleTEIdeletion();
+        void handleTeiDeletion();
 
         void handleEnrollmentDeletion(Boolean hasMoreEnrollments);
 
         void authorityErrorMessage();
 
         void updateNoteBadge(int numberOfNotes);
+
+        void setFiltersLayoutState();
+
+        void updateTotalFilters(Integer totalFilters);
+
+        void hideTabsAndDisableSwipe();
+
+        void showTabsAndEnableSwipe();
     }
 
     public interface Presenter {
@@ -56,12 +60,14 @@ public class TeiDashboardContracts {
 
         void prefSaveCurrentProgram(String programUid);
 
-        String getPreviousDashboard();
-
         void saveProgramTheme(int programTheme);
 
         void removeProgramTheme();
 
         Boolean getProgramGrouping();
+
+        void generalFiltersClick();
+
+        void handleShowHideFilters(boolean showFilter);
     }
 }

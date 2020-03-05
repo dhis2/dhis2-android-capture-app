@@ -281,6 +281,8 @@
                     android:id="@+id/scrollView"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
+                    android:paddingBottom="100dp"
+                    android:clipToPadding="false"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior"
                     app:layout_constraintBottom_toBottomOf="parent"

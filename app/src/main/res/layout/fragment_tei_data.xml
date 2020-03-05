@@ -33,38 +33,61 @@
             name="followup"
             type="androidx.databinding.ObservableBoolean" />
 
+        <variable
+            name="isGrouping"
+            type="java.lang.Boolean" />
+
     </data>
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-
-
-
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <androidx.cardview.widget.CardView
-            android:id="@+id/tei_data"
+        <LinearLayout
+            android:id="@+id/cardLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:cardElevation="4dp">
+            android:orientation="vertical">
 
-            <include
-                android:id="@+id/card_front"
-                layout="@layout/fragment_tei_data_card_front"
-                app:dashboardModel="@{dashboardModel}"
-                app:enrollment="@{enrollment}"
-                app:followup="@{followup}"
-                app:presenter="@{presenter}"
-                app:program="@{program}"
-                app:trackEntity="@{trackEntity}" />
-        </androidx.cardview.widget.CardView>
+            <androidx.cardview.widget.CardView
+                android:id="@+id/tei_data"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:cardElevation="4dp">
+
+                <include
+                    android:id="@+id/card_front"
+                    layout="@layout/fragment_tei_data_card_front"
+                    app:dashboardModel="@{dashboardModel}"
+                    app:enrollment="@{enrollment}"
+                    app:followup="@{followup}"
+                    app:presenter="@{presenter}"
+                    app:program="@{program}"
+                    app:trackEntity="@{trackEntity}" />
+            </androidx.cardview.widget.CardView>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/filterLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="?colorPrimary"
+                android:visibility="gone"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:listitem="@layout/item_filter" />
+
+        </LinearLayout>
+
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/tei_recycler"
@@ -76,7 +99,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tei_data"
+            app:layout_constraintTop_toBottomOf="@id/cardLayout"
             tools:listitem="@layout/item_event" />
 
         <TextView
@@ -86,7 +109,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tei_data"
+            app:layout_constraintTop_toBottomOf="@id/cardLayout"
             android:gravity="center"
             android:padding="42dp"
             android:background="@color/white"
@@ -101,7 +124,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|end"
-            android:visibility="@{enrollment==null || enrollment.status() != EnrollmentStatus.ACTIVE ? View.GONE : View.VISIBLE}"
+            android:visibility="@{enrollment==null || enrollment.status() != EnrollmentStatus.ACTIVE || isGrouping ? View.GONE : View.VISIBLE}"
             app:close_on_click="true"
             app:color_main_button="?colorPrimary"
             app:color_secondary_buttons="?colorPrimaryDark"
