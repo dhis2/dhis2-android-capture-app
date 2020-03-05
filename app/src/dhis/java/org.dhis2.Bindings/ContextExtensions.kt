@@ -26,7 +26,7 @@ fun Fragment.checkSMSPermission(requestPermission: Boolean, request: Int): Boole
         Manifest.permission.READ_SMS
     )
 
-    if (context?.hasPermissions(smsPermissions) == true) {
+    if (context?.hasPermissions(smsPermissions) != true) {
         if (requestPermission) {
             requestPermissions(smsPermissions, request)
         }

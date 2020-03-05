@@ -2,9 +2,6 @@ package org.dhis2.data.forms
 
 import android.text.TextUtils.isEmpty
 import io.reactivex.Single
-import java.util.Calendar
-import java.util.Date
-import java.util.Objects
 import org.dhis2.Bindings.toRuleDataValue
 import org.dhis2.Bindings.toRuleList
 import org.dhis2.Bindings.toRuleVariable
@@ -22,6 +19,9 @@ import org.hisp.dhis.rules.models.RuleEnrollment
 import org.hisp.dhis.rules.models.RuleEvent
 import org.hisp.dhis.rules.models.RuleVariable
 import timber.log.Timber
+import java.util.Calendar
+import java.util.Date
+import java.util.Objects
 
 class RulesRepository(private val d2: D2) {
 
@@ -50,9 +50,19 @@ class RulesRepository(private val d2: D2) {
         }
     }
 
-    fun rulesNew(programUid: String): Single<List<Rule>> {
+    fun rulesNew(programUid: String, eventUid: String? = null): Single<List<Rule>> {
         return queryRules(programUid)
             .map { it.toRuleList() }
+            .map {
+                if (eventUid != null) {
+                    val stage = d2.eventModule().events().uid(eventUid).blockingGet().programStage()
+                    it.filter {rule->
+                        rule.programStage() == null || rule.programStage() == stage
+                    }
+                }else{
+                    it
+                }
+            }
     }
 
     fun ruleVariables(programUid: String): Single<List<RuleVariable>> {
@@ -166,32 +176,32 @@ class RulesRepository(private val d2: D2) {
                 .withTrackedEntityDataValues()
                 .orderByEventDate(RepositoryScope.OrderByDirection.DESC)
                 .get().map { list ->
-                var currentEventIndex = -1
-                var index = 0
-                do {
-                    if (list[index].uid() == eventToEvaluate.uid()) {
-                        currentEventIndex = index
-                    } else {
-                        index++
+                    var currentEventIndex = -1
+                    var index = 0
+                    do {
+                        if (list[index].uid() == eventToEvaluate.uid()) {
+                            currentEventIndex = index
+                        } else {
+                            index++
+                        }
+                    } while (currentEventIndex == -1)
+
+                    var newEvents = list.subList(0, currentEventIndex)
+                    var previousEvents = list.subList(currentEventIndex + 1, list.size)
+
+                    if (newEvents.size > 10) {
+                        newEvents = newEvents.subList(0, 10)
                     }
-                } while (currentEventIndex == -1)
+                    if (previousEvents.size > 10) {
+                        previousEvents = previousEvents.subList(0, 10)
+                    }
 
-                var newEvents = list.subList(0, currentEventIndex)
-                var previousEvents = list.subList(currentEventIndex + 1, list.size)
+                    val finalList = ArrayList<Event>()
+                    finalList.addAll(newEvents)
+                    finalList.addAll(previousEvents)
 
-                if (newEvents.size > 10) {
-                    newEvents = newEvents.subList(0, 10)
+                    finalList
                 }
-                if (previousEvents.size > 10) {
-                    previousEvents = previousEvents.subList(0, 10)
-                }
-
-                val finalList = ArrayList<Event>()
-                finalList.addAll(newEvents)
-                finalList.addAll(previousEvents)
-
-                finalList
-            }
         }
     }
 
