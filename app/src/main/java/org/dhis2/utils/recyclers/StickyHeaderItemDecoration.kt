@@ -14,13 +14,10 @@ import org.dhis2.data.forms.dataentry.fields.section.SectionHolder
 class StickyHeaderItemDecoration(
     parent: RecyclerView,
     private val shouldFadeOutHeader: Boolean = false,
-    private val isHeader: (Int) -> Boolean,
-    private val handleClick: (String) -> Unit
+    private val isHeader: (Int) -> Boolean
 ) : RecyclerView.ItemDecoration() {
 
     private var currentHeader: Pair<Int, RecyclerView.ViewHolder>? = null
-    private var startY: Float = -1f
-
     private var mDetector: GestureDetectorCompat
 
     init {

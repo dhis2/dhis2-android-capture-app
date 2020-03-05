@@ -105,15 +105,12 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
         )
         binding.fieldRecycler.addItemDecoration(
             StickyHeaderItemDecoration(binding.fieldRecycler,
-                false,
-                { itemPosition ->
-                    itemPosition >= 0 &&
-                            itemPosition < adapter.itemCount &&
-                            adapter.getItemViewType(itemPosition) == adapter.sectionViewType()
-                },
-                { sectionUid ->
-                    adapter.sectionFlowable().onNext(sectionUid)
-                })
+                false
+            ) { itemPosition ->
+                itemPosition >= 0 &&
+                        itemPosition < adapter.itemCount &&
+                        adapter.getItemViewType(itemPosition) == adapter.sectionViewType()
+            }
         )
         binding.fieldRecycler.adapter = adapter
 
@@ -387,7 +384,7 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
             offset = it.top
         }
 
-        adapter.swap(fields, { })
+        adapter.swap(fields) { }
 
         myLayoutManager.scrollToPositionWithOffset(myFirstPositionIndex, offset)
     }

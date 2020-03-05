@@ -30,6 +30,7 @@ import org.dhis2.databinding.SectionSelectorFragmentBinding;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity;
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
 import org.dhis2.utils.Constants;
+import org.dhis2.utils.recyclers.StickyHeaderItemDecoration;
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
 import org.jetbrains.annotations.NotNull;
 
@@ -37,8 +38,10 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import io.reactivex.Flowable;
 import io.reactivex.processors.FlowableProcessor;
 import io.reactivex.processors.PublishProcessor;
+import kotlin.jvm.functions.Function1;
 import timber.log.Timber;
 
 import static android.text.TextUtils.isEmpty;
@@ -131,7 +134,7 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
             createDataEntry();
         }
 
-        dataEntryAdapter.swap(updates, this::checkFirstItem);
+        dataEntryAdapter.swap(updates, () -> { });
 
         myLayoutManager.scrollToPositionWithOffset(myFirstPositionIndex, offset);
 
@@ -165,9 +168,16 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
         });
 
         binding.formRecycler.setLayoutManager(layoutManager);
+        binding.formRecycler.addItemDecoration(
+                new StickyHeaderItemDecoration(binding.formRecycler,
+                        false, itemPosition -> itemPosition >= 0 &&
+                                itemPosition < dataEntryAdapter.getItemCount() &&
+                                dataEntryAdapter.getItemViewType(itemPosition) == dataEntryAdapter.sectionViewType()
+                )
+        );
         binding.formRecycler.setAdapter(dataEntryAdapter);
 
-        binding.formRecycler.addOnScrollListener(new RecyclerView.OnScrollListener() {
+       /* binding.formRecycler.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
                 if (newState == RecyclerView.SCROLL_STATE_DRAGGING) {
@@ -178,25 +188,25 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
                 }
 
             }
-        });
+        });*/
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             binding.formRecycler.setOnScrollChangeListener((v, scrollX, scrollY, oldScrollX, oldScrollY) -> {
-                checkFirstItem();
+                //checkFirstItem();
                 checkLastItem();
             });
         } else {
             binding.formRecycler.setOnScrollListener(new RecyclerView.OnScrollListener() {
                 @Override
                 public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
-                    checkFirstItem();
+                    //checkFirstItem();
                     checkLastItem();
                 }
             });
         }
     }
 
-    private void checkFirstItem() {
+    /*private void checkFirstItem() {
 
         LinearLayoutManager layoutManager = (GridLayoutManager) binding.formRecycler.getLayoutManager();
         int position = layoutManager.findFirstVisibleItemPosition();
@@ -213,9 +223,9 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
         } catch (Exception e) {
             Timber.tag(EventCaptureFormFragment.class.getName()).e(e);
         }
-    }
+    }*/
 
-    private void createHeader(SectionViewModel sectionViewModel) {
+   /* private void createHeader(SectionViewModel sectionViewModel) {
         if (headerBinding == null) {
             headerBinding = FormSectionBinding.inflate(LayoutInflater.from(binding.header.getContext()), binding.header, false);
             headerHolder = dataEntryAdapter.createHeader(headerBinding);
@@ -223,7 +233,8 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
             binding.header.addView(headerHolder.itemView);
         }
         headerHolder.update(sectionViewModel);
-    }
+    }*/
+
 
     private void checkLastItem() {
         GridLayoutManager layoutManager = (GridLayoutManager) binding.formRecycler.getLayoutManager();
