@@ -33,6 +33,6 @@ class DashboardProgramViewHolder extends RecyclerView.ViewHolder {
             binding.setVariable(BR.enrollment, enrollment);
         binding.executePendingBindings();
 
-        itemView.setOnClickListener(v -> presenter.setProgram(dashboardProgramModel.getEnrollmentPrograms().get(position)));
+        itemView.setOnClickListener(v -> presenter.setProgram(dashboardProgramModel.getEnrollmentPrograms().get(position), enrollment.uid()));
     }
 }

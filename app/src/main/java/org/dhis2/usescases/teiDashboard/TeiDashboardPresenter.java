@@ -1,13 +1,19 @@
 package org.dhis2.usescases.teiDashboard;
 
+import com.google.gson.reflect.TypeToken;
+
+import org.dhis2.data.prefs.Preference;
 import org.dhis2.data.prefs.PreferenceProvider;
 import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.utils.AuthorityException;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.analytics.AnalyticsHelper;
+import org.dhis2.utils.filters.FilterManager;
 import org.hisp.dhis.android.core.common.Unit;
-import org.hisp.dhis.android.core.constant.Constant;
 import org.hisp.dhis.android.core.program.Program;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import io.reactivex.Observable;
 import io.reactivex.disposables.CompositeDisposable;
@@ -28,6 +34,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
     private final SchedulerProvider schedulerProvider;
     private final AnalyticsHelper analyticsHelper;
     private final PreferenceProvider preferenceProvider;
+    private final FilterManager filterManager;
     private TeiDashboardContracts.View view;
 
     private String teiUid;
@@ -38,7 +45,15 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
     private PublishProcessor<Unit> notesCounterProcessor;
 
 
-    public TeiDashboardPresenter(TeiDashboardContracts.View view, String teiUid, String programUid, DashboardRepository dashboardRepository, SchedulerProvider schedulerProvider, AnalyticsHelper analyticsHelper, PreferenceProvider preferenceProvider) {
+    public TeiDashboardPresenter(
+            TeiDashboardContracts.View view,
+            String teiUid, String programUid,
+            DashboardRepository dashboardRepository,
+            SchedulerProvider schedulerProvider,
+            AnalyticsHelper analyticsHelper,
+            PreferenceProvider preferenceProvider,
+            FilterManager filterManager
+    ) {
         this.view = view;
         this.teiUid = teiUid;
         this.programUid = programUid;
@@ -46,6 +61,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
         this.dashboardRepository = dashboardRepository;
         this.schedulerProvider = schedulerProvider;
         this.preferenceProvider = preferenceProvider;
+        this.filterManager = filterManager;
         compositeDisposable = new CompositeDisposable();
         notesCounterProcessor = PublishProcessor.create();
     }
@@ -93,6 +109,18 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
                             Timber::e)
             );
         }
+
+        compositeDisposable.add(
+                filterManager.asFlowable()
+                        .startWith(filterManager)
+                        .map(FilterManager::getTotalFilters)
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
+                        .subscribe(
+                                totalFilters -> view.updateTotalFilters(totalFilters),
+                                Timber::e
+                        )
+        );
     }
 
     @Override
@@ -117,7 +145,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
                                 canDelete -> {
                                     if (canDelete) {
                                         analyticsHelper.setEvent(DELETE_TEI, CLICK, DELETE_TEI);
-                                        view.handleTEIdeletion();
+                                        view.handleTeiDeletion();
                                     } else {
                                         view.authorityErrorMessage();
                                     }
@@ -206,17 +234,46 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
     }
 
     @Override
-    public String getPreviousDashboard() {
-        return preferenceProvider.getString(Constants.PREVIOUS_DASHBOARD_PROGRAM, null);
-    }
-
-    @Override
     public void saveProgramTheme(int programTheme) {
-        preferenceProvider.setValue(Constants.PROGRAM_THEME,programTheme);
+        preferenceProvider.setValue(Constants.PROGRAM_THEME, programTheme);
     }
 
     @Override
     public void removeProgramTheme() {
         preferenceProvider.removeValue(Constants.PROGRAM_THEME);
+    }
+
+    @Override
+    public Boolean getProgramGrouping() {
+        if (programUid != null) {
+            return getGrouping().containsKey(programUid) ? getGrouping().get(programUid) : false;
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public void generalFiltersClick() {
+        view.setFiltersLayoutState();
+    }
+
+    @Override
+    public void handleShowHideFilters(boolean showFilters) {
+        if (showFilters) {
+            view.hideTabsAndDisableSwipe();
+        } else {
+            view.showTabsAndEnableSwipe();
+        }
+    }
+
+
+    private Map<String, Boolean> getGrouping() {
+        TypeToken<HashMap<String, Boolean>> typeToken =
+                new TypeToken<HashMap<String, Boolean>>() {
+                };
+        return preferenceProvider.getObjectFromJson(
+                Preference.GROUPING,
+                typeToken,
+                new HashMap<>());
     }
 }

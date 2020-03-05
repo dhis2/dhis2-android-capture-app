@@ -29,26 +29,7 @@ fun String?.toDateSpan(context: Context): String {
     return if (this == null) {
         ""
     } else {
-        val duration = Interval(toDate().time, Date().time).toDuration()
-        when {
-            duration.toStandardMinutes().isLessThan(Minutes.minutes(1)) -> {
-                context.getString(R.string.interval_now)
-            }
-            duration.toStandardMinutes().isLessThan(Minutes.minutes(60)) -> {
-                context.getString(R.string.interval_minute_ago)
-                    .format(duration.toStandardMinutes().minutes)
-            }
-            duration.toStandardHours().isLessThan(Hours.hours(24)) -> {
-                context.getString(R.string.interval_hour_ago)
-                    .format(duration.toStandardHours().hours)
-            }
-            duration.toStandardDays().isLessThan(Days.days(2)) -> {
-                context.getString(R.string.interval_yesterday)
-            }
-            else -> {
-                DateUtils.uiDateFormat().format(toDate())
-            }
-        }
+        toDate().toDateSpan(context)
     }
 }
 

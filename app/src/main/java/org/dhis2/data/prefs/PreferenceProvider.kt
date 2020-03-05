@@ -1,6 +1,7 @@
 package org.dhis2.data.prefs
 
 import android.content.SharedPreferences
+import com.google.gson.reflect.TypeToken
 
 interface PreferenceProvider {
 
@@ -23,4 +24,6 @@ interface PreferenceProvider {
     fun getBoolean(key: String, default: Boolean): Boolean
     fun getFloat(key: String, default: Float): Float?
     fun getSet(key: String, default: Set<String>): Set<String>?
+    fun <T> getObjectFromJson(key: String, typeToken: TypeToken<T>, default: T): T
+    fun <T> saveAsJson(key: String, objectToSave: T)
 }
