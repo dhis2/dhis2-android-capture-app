@@ -72,6 +72,7 @@ class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
     private final TeiDataRepository teiDataRepository;
     private final String enrollmentUid;
     private final RuleEngineRepository ruleEngineRepository;
+    private final FilterManager filterManager;
     private String programUid;
     private final String teiUid;
     private TEIDataContracts.View view;
@@ -86,7 +87,8 @@ class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
                                 String programUid, String teiUid, String enrollmentUid,
                                 SchedulerProvider schedulerProvider,
                                 PreferenceProvider preferenceProvider,
-                                AnalyticsHelper analyticsHelper) {
+                                AnalyticsHelper analyticsHelper,
+                                FilterManager filterManager) {
         this.view = view;
         this.d2 = d2;
         this.dashboardRepository = dashboardRepository;
@@ -98,6 +100,7 @@ class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
         this.schedulerProvider = schedulerProvider;
         this.preferences = preferenceProvider;
         this.analyticsHelper = analyticsHelper;
+        this.filterManager = filterManager;
         this.compositeDisposable = new CompositeDisposable();
         this.groupingProcessor = BehaviorProcessor.create();
     }
@@ -147,7 +150,7 @@ class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
 
             compositeDisposable.add(
                     Flowable.combineLatest(
-                            FilterManager.getInstance().asFlowable().startWith(FilterManager.getInstance()),
+                            filterManager.asFlowable().startWith(filterManager),
                             sectionFlowable,
                             groupingFlowable,
                             Trio::create)
@@ -156,12 +159,12 @@ class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
                                             teiDataRepository.getTEIEnrollmentEvents(
                                                     stageAndGrouping.val1().isEmpty() ? null : stageAndGrouping.val1(),
                                                     stageAndGrouping.val2(),
-                                                    FilterManager.getInstance().getPeriodFilters(),
-                                                    FilterManager.getInstance().getOrgUnitUidsFilters(),
-                                                    FilterManager.getInstance().getStateFilters(),
-                                                    FilterManager.getInstance().getAssignedFilter(),
-                                                    FilterManager.getInstance().getEventStatusFilters(),
-                                                    FilterManager.getInstance().getCatOptComboFilters()
+                                                    filterManager.getPeriodFilters(),
+                                                    filterManager.getOrgUnitUidsFilters(),
+                                                    filterManager.getStateFilters(),
+                                                    filterManager.getAssignedFilter(),
+                                                    filterManager.getEventStatusFilters(),
+                                                    filterManager.getCatOptComboFilters()
                                             ).toFlowable(),
                                             ruleEngineRepository.updateRuleEngine()
                                                     .flatMap(ruleEngine -> ruleEngineRepository.reCalculate()),
@@ -208,7 +211,7 @@ class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
         );
 
         compositeDisposable.add(
-                FilterManager.getInstance().getPeriodRequest()
+                filterManager.getPeriodRequest()
                         .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.ui())
                         .subscribe(
@@ -217,7 +220,7 @@ class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
                         ));
 
         compositeDisposable.add(
-                FilterManager.getInstance().ouTreeFlowable()
+                filterManager.ouTreeFlowable()
                         .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.ui())
                         .subscribe(

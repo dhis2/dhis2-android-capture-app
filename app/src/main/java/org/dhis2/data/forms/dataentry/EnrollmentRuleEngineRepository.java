@@ -165,13 +165,6 @@ public final class EnrollmentRuleEngineRepository
                 .map(ruleAttributeValues -> ruleEnrollmentBuilder.attributeValues(ruleAttributeValues).build())
                 .switchMap(enrollment -> formRepository.ruleEngine().switchMap(ruleEngine -> {
                     return Flowable.fromCallable(ruleEngine.evaluate(enrollment));
-                   /* if (isEmpty(lastUpdatedAttr) && !getIndicators)
-                        return Flowable.fromCallable(ruleEngine.evaluate(enrollment));
-                    else
-                        return Flowable
-                                .just(attributeRules.get(lastUpdatedAttr) != null ? attributeRules.get(lastUpdatedAttr)
-                                        : RuleExtensionsKt.toRuleList(mandatoryRules))
-                                .flatMap(rules -> Flowable.fromCallable(ruleEngine.evaluate(enrollment, rules)));*/
                 }).map(Result::success).onErrorReturn(error -> Result.failure(new Exception(error))));
     }
 

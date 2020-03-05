@@ -34,6 +34,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
     private final SchedulerProvider schedulerProvider;
     private final AnalyticsHelper analyticsHelper;
     private final PreferenceProvider preferenceProvider;
+    private final FilterManager filterManager;
     private TeiDashboardContracts.View view;
 
     private String teiUid;
@@ -44,7 +45,15 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
     private PublishProcessor<Unit> notesCounterProcessor;
 
 
-    public TeiDashboardPresenter(TeiDashboardContracts.View view, String teiUid, String programUid, DashboardRepository dashboardRepository, SchedulerProvider schedulerProvider, AnalyticsHelper analyticsHelper, PreferenceProvider preferenceProvider) {
+    public TeiDashboardPresenter(
+            TeiDashboardContracts.View view,
+            String teiUid, String programUid,
+            DashboardRepository dashboardRepository,
+            SchedulerProvider schedulerProvider,
+            AnalyticsHelper analyticsHelper,
+            PreferenceProvider preferenceProvider,
+            FilterManager filterManager
+    ) {
         this.view = view;
         this.teiUid = teiUid;
         this.programUid = programUid;
@@ -52,6 +61,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
         this.dashboardRepository = dashboardRepository;
         this.schedulerProvider = schedulerProvider;
         this.preferenceProvider = preferenceProvider;
+        this.filterManager = filterManager;
         compositeDisposable = new CompositeDisposable();
         notesCounterProcessor = PublishProcessor.create();
     }
@@ -101,8 +111,8 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
         }
 
         compositeDisposable.add(
-                FilterManager.getInstance().asFlowable()
-                        .startWith(FilterManager.getInstance())
+                filterManager.asFlowable()
+                        .startWith(filterManager)
                         .map(FilterManager::getTotalFilters)
                         .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.ui())
@@ -135,7 +145,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
                                 canDelete -> {
                                     if (canDelete) {
                                         analyticsHelper.setEvent(DELETE_TEI, CLICK, DELETE_TEI);
-                                        view.handleTEIdeletion();
+                                        view.handleTeiDeletion();
                                     } else {
                                         view.authorityErrorMessage();
                                     }
@@ -224,11 +234,6 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
     }
 
     @Override
-    public String getPreviousDashboard() {
-        return preferenceProvider.getString(Constants.PREVIOUS_DASHBOARD_PROGRAM, null);
-    }
-
-    @Override
     public void saveProgramTheme(int programTheme) {
         preferenceProvider.setValue(Constants.PROGRAM_THEME, programTheme);
     }
@@ -248,7 +253,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
     }
 
     @Override
-    public void showHideFilters() {
+    public void generalFiltersClick() {
         view.setFiltersLayoutState();
     }
 
@@ -260,5 +265,14 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
                 Preference.GROUPING,
                 typeToken,
                 new HashMap<>());
+    }
+
+    @Override
+    public void handleShowHideFilters(boolean showFilters) {
+        if (showFilters) {
+            view.hideTabsAndDisableSwipe();
+        } else {
+            view.showTabsAndEnableSwipe();
+        }
     }
 }

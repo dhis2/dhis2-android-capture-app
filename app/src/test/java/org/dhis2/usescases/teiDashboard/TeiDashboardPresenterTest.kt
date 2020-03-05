@@ -226,7 +226,7 @@ class TeiDashboardPresenterTest {
         presenter.deleteTei()
 
         verify(analyticsHelper).setEvent(DELETE_TEI, CLICK, DELETE_TEI)
-        verify(view).handleTEIdeletion()
+        verify(view).handleTeiDeletion()
     }
 
     @Test
