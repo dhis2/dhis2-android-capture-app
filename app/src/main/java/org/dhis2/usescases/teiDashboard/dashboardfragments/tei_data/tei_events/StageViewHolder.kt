@@ -38,15 +38,19 @@ internal class StageViewHolder(
             )
         )
         binding.lastUpdatedEvent.text = eventItem.lastUpdate.toDateSpan(itemView.context)
-        binding.addStageButton.visibility = if (stage.repeatable() == true || eventItem.eventCount == 0) {
+        binding.addStageButton.visibility = if (stage.repeatable() == true && eventItem.canAddNewEvent || eventItem.eventCount == 0) {
             View.VISIBLE
         } else {
             View.GONE
         }
-        binding.addStageButton.setOnClickListener {view->
+        binding.lastUpdatedEvent.visibility = when(binding.addStageButton.visibility){
+            View.VISIBLE -> View.GONE
+            else -> View.VISIBLE
+        }
+            binding.addStageButton.setOnClickListener {view->
             presenter.onAddNewEvent(view,stage)
         }
-        binding.programStageCount.text = "${eventItem.eventCount} Events"
+        binding.programStageCount.text = "${eventItem.eventCount} ${itemView.context.getString(R.string.events)}"
 
         itemView.setOnClickListener { stageSelector.onNext(stage.uid()) }
 

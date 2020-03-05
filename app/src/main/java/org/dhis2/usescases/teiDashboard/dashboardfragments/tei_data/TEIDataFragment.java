@@ -151,6 +151,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_tei_data, container, false);
         binding.setPresenter(presenter);
         activity.observeGrouping().observe(this, group -> {
+            binding.setIsGrouping(group);
             presenter.onGroupingChanged(group);
         });
         activity.observeFilters().observe(this, showFilters -> showHideFilters(showFilters));

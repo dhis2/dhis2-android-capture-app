@@ -33,6 +33,10 @@
             name="followup"
             type="androidx.databinding.ObservableBoolean" />
 
+        <variable
+            name="isGrouping"
+            type="java.lang.Boolean" />
+
     </data>
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
@@ -120,7 +124,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|end"
-            android:visibility="@{enrollment==null || enrollment.status() != EnrollmentStatus.ACTIVE ? View.GONE : View.VISIBLE}"
+            android:visibility="@{enrollment==null || enrollment.status() != EnrollmentStatus.ACTIVE || isGrouping ? View.GONE : View.VISIBLE}"
             app:close_on_click="true"
             app:color_main_button="?colorPrimary"
             app:color_secondary_buttons="?colorPrimaryDark"

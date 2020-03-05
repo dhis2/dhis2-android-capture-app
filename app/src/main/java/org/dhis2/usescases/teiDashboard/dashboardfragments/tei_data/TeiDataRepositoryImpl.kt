@@ -11,6 +11,7 @@ import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
 import org.hisp.dhis.android.core.category.CategoryOptionCombo
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.enrollment.Enrollment
+import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
 import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.event.EventCollectionRepository
 import org.hisp.dhis.android.core.event.EventStatus
@@ -38,9 +39,6 @@ class TeiDataRepositoryImpl(
     ): Single<List<EventViewModel>> {
 
         var eventRepo = d2.eventModule().events().byEnrollmentUid().eq(enrollmentUid)
-        if (selectedStage != null) {
-            eventRepo = eventRepo.byProgramStageUid().eq(selectedStage)
-        }
 
         eventRepo = eventRepo.applyFilters(
             periodFilters,
@@ -102,6 +100,7 @@ class TeiDataRepositoryImpl(
                 programStages.forEach { programStage ->
                     val eventList = eventRepository
                         .byDeleted().isFalse
+                        .byProgramStageUid().eq(programStage.uid())
                         .blockingGet()
                     eventList.sortWith(Comparator { event1, event2 ->
                         event2.primaryDate().compareTo(event1.primaryDate())
@@ -114,7 +113,7 @@ class TeiDataRepositoryImpl(
                             null,
                             eventList.size,
                             if (eventList.isEmpty()) null else eventList[0].lastUpdated(),
-                            true
+                            programStage.uid() == selectedStage && checkAddEvent()
                         )
                     )
                     if (selectedStage != null && selectedStage == programStage.uid()) {
@@ -179,4 +178,10 @@ class TeiDataRepositoryImpl(
             }
         }
     }
+
+    private fun checkAddEvent(): Boolean {
+        val enrollment =  d2.enrollmentModule().enrollments().uid(enrollmentUid).blockingGet()
+        return !(enrollment==null || enrollment.status() != EnrollmentStatus.ACTIVE)
+    }
+
 }
