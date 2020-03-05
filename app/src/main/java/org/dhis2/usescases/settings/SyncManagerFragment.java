@@ -3,7 +3,10 @@ package org.dhis2.usescases.settings;
 import android.Manifest;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
@@ -54,7 +57,6 @@ import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
-import static android.text.TextUtils.isEmpty;
 import static org.dhis2.utils.Constants.DATA_NOW;
 import static org.dhis2.utils.Constants.META_NOW;
 import static org.dhis2.utils.Constants.TIME_15M;
@@ -82,6 +84,13 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
     private SharedPreferences prefs;
     private CompositeDisposable listenerDisposable;
     private Context context;
+
+    private BroadcastReceiver networkReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            setNetworkEdition(NetworkUtils.isOnline(context));
+        }
+    };
 
     public SyncManagerFragment() {
         // Required empty public constructor
@@ -115,6 +124,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
     @Override
     public void onResume() {
         super.onResume();
+        context.registerReceiver(networkReceiver, new IntentFilter("android.net.conn.CONNECTIVITY_CHANGE"));
         workManagerController.getWorkInfosByTagLiveData(META_NOW).observe(this, workStatuses -> {
             if (!workStatuses.isEmpty() && workStatuses.get(0).getState() == WorkInfo.State.RUNNING) {
                 binding.syncMetaLayout.message.setTextColor(ContextCompat.getColor(context, R.color.text_black_333));
@@ -171,6 +181,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
     @Override
     public void onPause() {
         super.onPause();
+        context.unregisterReceiver(networkReceiver);
         listenerDisposable.clear();
         presenter.disponse();
     }
@@ -226,7 +237,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
                 .setText(responseSender);
         ((TextView) binding.settingsSms.findViewById(R.id.settings_sms_result_timeout))
                 .setText(Integer.toString(timeout));
-        if (!gateway.getText().toString().isEmpty()){
+        if (!gateway.getText().toString().isEmpty()) {
             presenter.validateGatewayObservable(gateway.getText().toString());
         }
         boolean hasNetwork = NetworkUtils.isOnline(context);
@@ -663,5 +674,22 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
         } else {
             presenter.smsSwitch(false);
         }
+    }
+
+    private void setNetworkEdition(boolean isOnline) {
+        for (int i = 0; i < binding.dataRadioGroup.getChildCount(); i++) {
+            binding.dataRadioGroup.getChildAt(i).setEnabled(isOnline);
+        }
+        for (int i = 0; i < binding.metaRadioGroup.getChildCount(); i++) {
+            binding.metaRadioGroup.getChildAt(i).setEnabled(isOnline);
+        }
+        binding.buttonSyncData.setEnabled(isOnline);
+        binding.buttonSyncData.setAlpha(isOnline ? 1.0f : 0.5f);
+        binding.buttonSyncMeta.setAlpha(isOnline ? 1.0f : 0.5f);
+        binding.settingsSms.findViewById(R.id.settings_sms_switch).setEnabled(isOnline);
+        binding.settingsSms.findViewById(R.id.settings_sms_response_wait_switch).setEnabled(isOnline);
+        binding.settingsSms.findViewById(R.id.settings_sms_receiver).setEnabled(isOnline);
+        binding.settingsSms.findViewById(R.id.settings_sms_result_sender).setEnabled(isOnline);
+        binding.settingsSms.findViewById(R.id.settings_sms_result_timeout).setEnabled(isOnline);
     }
 }
