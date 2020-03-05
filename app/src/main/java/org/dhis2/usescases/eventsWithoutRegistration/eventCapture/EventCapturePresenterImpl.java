@@ -415,13 +415,18 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
         Map<String, FieldViewModel> fieldViewModels = toMap(viewModels);
         rulesUtils.applyRuleEffects(fieldViewModels, calcResult, this);
 
+        valueStore.deleteOptionValues(
+                eventCaptureRepository.getOptionCodesFrom(optionsToHide,optionsGroupsToHide)
+        );
+
         //Remove fields for MATRIX/SEQUENTIAL and actions HIDEOPTION/HIDEOPTIONGROUP
         for (String optionUidToHide : optionsToHide) {
             Iterator<FieldViewModel> fieldIterator = fieldViewModels.values().iterator();
             while (fieldIterator.hasNext()) {
                 FieldViewModel field = fieldIterator.next();
-                if (field instanceof ImageViewModel && field.uid().contains(optionUidToHide))
+                if (field instanceof ImageViewModel && field.uid().contains(optionUidToHide)) {
                     fieldIterator.remove();
+                }
             }
         }
 
@@ -742,7 +747,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     public void setOptionGroupToHide(String optionGroupUid, boolean toHide, String field) {
         if (toHide)
             optionsGroupsToHide.add(optionGroupUid);
-        else if (!optionsGroupsToHide.contains(optionGroupUid))//When combined with show option group the hide option group takes precedence.
+        else if (!optionsGroupsToHide.contains(optionGroupUid))
             if (optionsGroupToShow.get(field) != null)
                 optionsGroupToShow.get(field).add(optionGroupUid);
             else

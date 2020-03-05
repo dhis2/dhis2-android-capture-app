@@ -165,6 +165,8 @@ public class EventCaptureContract {
         Single<Integer> getNoteCount();
 
         List<String> getOptionsFromGroups(List<String> optionGroupUids);
+
+        List<String> getOptionCodesFrom(List<String> optionsToHide, List<String> optionsGroupsToHide);
     }
 
 }

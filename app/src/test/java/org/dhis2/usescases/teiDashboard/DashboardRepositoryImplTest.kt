@@ -117,6 +117,46 @@ class DashboardRepositoryImplTest {
         }
     }
 
+    @Test
+    fun `Should return only enrollments that are not deleted`() {
+        val teiUid = "teiUid"
+
+        val enrollment1 = getMockingEnrollment().toBuilder()
+            .uid("enrollment_1").deleted(true).trackedEntityInstance(teiUid)
+            .build()
+        val enrollment2 = getMockingEnrollment().toBuilder()
+            .deleted(false).trackedEntityInstance(teiUid)
+            .build()
+
+        val enrollments = listOf(enrollment1, enrollment2)
+
+        whenever(d2.enrollmentModule().enrollments().byTrackedEntityInstance()) doReturn mock()
+        whenever(
+            d2.enrollmentModule().enrollments().byTrackedEntityInstance().eq(teiUid)
+        ) doReturn mock()
+        whenever(
+            d2.enrollmentModule().enrollments()
+                .byTrackedEntityInstance().eq(teiUid)
+                .byDeleted()
+        ) doReturn mock()
+        whenever(
+            d2.enrollmentModule().enrollments()
+                .byTrackedEntityInstance().eq(teiUid)
+                .byDeleted().eq(false)
+        ) doReturn mock()
+        whenever(
+            d2.enrollmentModule().enrollments()
+                .byTrackedEntityInstance().eq(teiUid)
+                .byDeleted().eq(false).get()
+        ) doReturn Single.just(enrollments)
+
+        val testObserver = repository.getTEIEnrollments(teiUid).test()
+
+        testObserver.assertNoErrors()
+        testObserver.assertValueCount(1)
+
+    }
+
     private fun getMockingProgram(): Program {
         return Program.builder()
             .uid("programUid")

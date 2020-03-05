@@ -21,6 +21,7 @@ import org.dhis2.utils.Result;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper;
 import org.hisp.dhis.android.core.category.CategoryOption;
+import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
 import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.common.ObjectWithUid;
 import org.hisp.dhis.android.core.common.ValueType;
@@ -379,11 +380,11 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                             fieldViewModel.allowFutureDate(), fieldViewModel.editable() == null ? false : fieldViewModel.editable(), renderingType, fieldViewModel.description(), fieldRendering, options.size(), objectStyle, fieldViewModel.fieldMask()));
 
                 }
-            } else if(fieldViewModel instanceof OptionSetViewModel){
+            } else if (fieldViewModel instanceof OptionSetViewModel) {
                 List<Option> options = d2.optionModule().options().byOptionSetUid().eq(fieldViewModel.optionSet() == null ? "" : fieldViewModel.optionSet())
                         .blockingGet();
-                renderList.add(((OptionSetViewModel)fieldViewModel).withOptions(options));
-            }else
+                renderList.add(((OptionSetViewModel) fieldViewModel).withOptions(options));
+            } else
                 renderList.add(fieldViewModel);
         }
         return renderList;
@@ -668,17 +669,31 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
     }
 
     @Override
-    public List<String> getOptionsFromGroups(List<String> optionGroupUids){
+    public List<String> getOptionsFromGroups(List<String> optionGroupUids) {
         List<String> optionsFromGroups = new ArrayList<>();
         List<OptionGroup> optionGroups = d2.optionModule().optionGroups().withOptions().byUid().in(optionGroupUids).blockingGet();
-        for(OptionGroup optionGroup : optionGroups){
-            for(ObjectWithUid option : optionGroup.options()){
-                if(!optionsFromGroups.contains(option.uid())){
+        for (OptionGroup optionGroup : optionGroups) {
+            for (ObjectWithUid option : optionGroup.options()) {
+                if (!optionsFromGroups.contains(option.uid())) {
                     optionsFromGroups.add(option.uid());
                 }
             }
         }
         return optionsFromGroups;
+    }
+
+    @Override
+    public List<String> getOptionCodesFrom(List<String> optionsToHide, List<String> optionsGroupsToHide) {
+        List<String> optionsToDelete = new ArrayList<>(optionsToHide);
+        if(!optionsGroupsToHide.isEmpty()) {
+            List<String> options = getOptionsFromGroups(optionsGroupsToHide);
+            optionsToDelete.addAll(options);
+        }
+        return d2.optionModule().options().byUid().in(optionsToDelete).get()
+                .toFlowable()
+                .flatMapIterable(options->options)
+                .map(BaseIdentifiableObject::code)
+                .toList().blockingGet();
     }
 }
 

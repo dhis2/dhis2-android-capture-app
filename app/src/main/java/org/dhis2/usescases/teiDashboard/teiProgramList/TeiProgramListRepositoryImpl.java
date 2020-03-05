@@ -37,7 +37,11 @@ public class TeiProgramListRepositoryImpl implements TeiProgramListRepository {
     @NonNull
     @Override
     public Observable<List<EnrollmentViewModel>> activeEnrollments(String trackedEntityId) {
-        return Observable.fromCallable(() -> d2.enrollmentModule().enrollments().byTrackedEntityInstance().eq(trackedEntityId).byStatus().eq(EnrollmentStatus.ACTIVE).blockingGet())
+        return Observable.fromCallable(() ->
+                d2.enrollmentModule().enrollments()
+                        .byTrackedEntityInstance().eq(trackedEntityId)
+                        .byStatus().eq(EnrollmentStatus.ACTIVE)
+                        .byDeleted().eq(false).blockingGet())
                 .flatMapIterable(enrollments -> enrollments)
                 .map(enrollment -> {
                     Program program = d2.programModule().programs().byUid().eq(enrollment.program()).one().blockingGet();
@@ -120,7 +124,10 @@ public class TeiProgramListRepositoryImpl implements TeiProgramListRepository {
     @NonNull
     @Override
     public Observable<List<Program>> alreadyEnrolledPrograms(String trackedEntityId) {
-        return Observable.fromCallable(() -> d2.enrollmentModule().enrollments().byTrackedEntityInstance().eq(trackedEntityId).blockingGet())
+        return Observable.fromCallable(() ->
+                d2.enrollmentModule().enrollments()
+                        .byTrackedEntityInstance().eq(trackedEntityId)
+                        .byDeleted().eq(false).blockingGet())
                 .flatMapIterable(enrollments -> enrollments)
                 .map(enrollment -> d2.programModule().programs().byUid().eq(enrollment.program()).one().blockingGet())
                 .toList()

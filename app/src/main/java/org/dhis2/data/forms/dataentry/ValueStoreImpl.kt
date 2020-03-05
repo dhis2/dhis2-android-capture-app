@@ -1,12 +1,12 @@
 package org.dhis2.data.forms.dataentry
 
 import io.reactivex.Flowable
-import java.io.File
 import org.dhis2.Bindings.blockingSetCheck
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableModel
 import org.dhis2.utils.DhisTextUtils
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.ValueType
+import java.io.File
 
 class ValueStoreImpl(
     private val d2: D2,
@@ -149,5 +149,40 @@ class ValueStoreImpl(
     private fun saveFileResource(path: String): String {
         val file = File(path)
         return d2.fileResourceModule().fileResources().blockingAdd(file)
+    }
+
+    override fun deleteOptionValues(optionCodeValuesToDelete: List<String>) {
+        when (entryMode) {
+            DataEntryStore.EntryMode.DE -> deleteOptionValuesForEvents(optionCodeValuesToDelete)
+            DataEntryStore.EntryMode.ATTR -> deleteOptionValuesForEnrollment(
+                optionCodeValuesToDelete
+            )
+            DataEntryStore.EntryMode.DV
+            -> throw IllegalArgumentException(
+                "DataValues can't be saved using these arguments. Use the other one."
+            )
+        }
+    }
+
+    private fun deleteOptionValuesForEvents(optionCodeValuesToDelete: List<String>) {
+        d2.trackedEntityModule().trackedEntityDataValues()
+            .byEvent().eq(recordUid)
+            .byValue().`in`(optionCodeValuesToDelete)
+            .blockingGet().filter {
+                d2.dataElementModule().dataElements().uid(it.dataElement()).blockingGet().optionSetUid() != null
+            }.forEach {
+                saveDataElement(it.dataElement()!!, null)
+            }
+    }
+
+    private fun deleteOptionValuesForEnrollment(optionCodeValuesToDelete: List<String>) {
+        d2.trackedEntityModule().trackedEntityAttributeValues()
+            .byTrackedEntityInstance().eq(recordUid)
+            .byValue().`in`(optionCodeValuesToDelete)
+            .blockingGet().filter {
+                d2.trackedEntityModule().trackedEntityAttributes().uid(it.trackedEntityAttribute()).blockingGet().optionSet()?.uid() != null
+            }.forEach {
+                saveAttribute(it.trackedEntityAttribute()!!, null)
+            }
     }
 }

@@ -7,4 +7,5 @@ interface ValueStore {
     fun save(uid: String, value: String?): Flowable<StoreResult>
     fun saveWithTypeCheck(uid: String, value: String?): Flowable<StoreResult>
     fun save(dataValue: DataSetTableModel): Flowable<StoreResult>
+    fun deleteOptionValues(optionCodeValuesToDelete: List<String>)
 }

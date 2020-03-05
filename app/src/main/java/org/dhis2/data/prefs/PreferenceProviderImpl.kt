@@ -2,6 +2,8 @@ package org.dhis2.data.prefs
 
 import android.content.Context
 import android.content.SharedPreferences
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import de.adorsys.android.securestoragelibrary.SecurePreferences
 import org.dhis2.utils.Constants
 import org.dhis2.utils.Constants.SECURE_CREDENTIALS
@@ -123,8 +125,8 @@ class PreferenceProviderImpl(val context: Context) : PreferenceProvider {
 
     override fun areSameCredentials(serverUrl: String, userName: String, pass: String): Boolean {
         return SecurePreferences.getStringValue(context, SECURE_SERVER_URL, "") == serverUrl &&
-            SecurePreferences.getStringValue(context, SECURE_USER_NAME, "") == userName &&
-            SecurePreferences.getStringValue(context, SECURE_PASS, "") == pass
+                SecurePreferences.getStringValue(context, SECURE_USER_NAME, "") == userName &&
+                SecurePreferences.getStringValue(context, SECURE_PASS, "") == pass
     }
 
     override fun saveJiraCredentials(jiraAuth: String): String {
@@ -144,4 +146,18 @@ class PreferenceProviderImpl(val context: Context) : PreferenceProvider {
         SecurePreferences.clearAllValues(context)
         sharedPreferences.edit().clear().apply()
     }
+
+    override fun <T> saveAsJson(key: String, objectToSave: T) {
+        setValue(key, Gson().toJson(objectToSave))
+    }
+
+    override fun <T> getObjectFromJson(key: String, typeToken: TypeToken<T>, default: T): T {
+        val mapTypeToken = typeToken.type
+        return if (getString(key, null) == null) {
+            default
+        } else {
+            Gson().fromJson<T>(getString(key), mapTypeToken)
+        }
+    }
+    /*endregion*/
 }

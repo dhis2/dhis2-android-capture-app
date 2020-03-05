@@ -194,9 +194,13 @@ public class OptionSetSelectionView extends FieldLayout {
     }
 
     private boolean canShowOption(String optionUid) {
-        boolean inOptionsToShow = !optionsToShow.isEmpty() && optionsToShow.contains(optionUid);
-        boolean inOptionsToHide = optionsToShow.isEmpty() && optionsToHide.contains(optionUid);
-        return inOptionsToShow || !inOptionsToHide;
+        boolean inOptionsToShow = optionsToShow.contains(optionUid);
+        boolean inOptionsToHide = optionsToHide.contains(optionUid);
+        if(!optionsToShow.isEmpty()){
+            return inOptionsToShow;
+        }else{
+            return !inOptionsToHide;
+        }
     }
 
     public void setWarning(String warning, String error) {

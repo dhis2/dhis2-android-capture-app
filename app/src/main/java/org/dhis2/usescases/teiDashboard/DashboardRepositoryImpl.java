@@ -1,7 +1,5 @@
 package org.dhis2.usescases.teiDashboard;
 
-import android.content.Context;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -10,6 +8,8 @@ import org.dhis2.R;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.relationships.RelationshipViewModel;
+import org.dhis2.usescases.teiDashboard.dashboardfragments.tei_data.tei_events.EventViewModel;
+import org.dhis2.usescases.teiDashboard.dashboardfragments.tei_data.tei_events.EventViewModelType;
 import org.dhis2.utils.AuthorityException;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.ValueUtils;
@@ -48,6 +48,7 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityType;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityTypeAttribute;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import io.reactivex.Flowable;
@@ -386,7 +387,7 @@ public class DashboardRepositoryImpl
     @Override
     public Observable<List<Program>> getTeiActivePrograms(String teiUid, boolean showOnlyActive) {
         EnrollmentCollectionRepository enrollmentRepo = d2.enrollmentModule().enrollments().byTrackedEntityInstance()
-                .eq(teiUid);
+                .eq(teiUid).byDeleted().eq(false);
         if (showOnlyActive)
             enrollmentRepo.byStatus().eq(EnrollmentStatus.ACTIVE);
         return enrollmentRepo.get().toObservable().flatMapIterable(enrollments -> enrollments)
@@ -396,7 +397,7 @@ public class DashboardRepositoryImpl
 
     @Override
     public Observable<List<Enrollment>> getTEIEnrollments(String teiUid) {
-        return d2.enrollmentModule().enrollments().byTrackedEntityInstance().eq(teiUid).get().toObservable();
+        return d2.enrollmentModule().enrollments().byTrackedEntityInstance().eq(teiUid).byDeleted().eq(false).get().toObservable();
     }
 
     @Override
