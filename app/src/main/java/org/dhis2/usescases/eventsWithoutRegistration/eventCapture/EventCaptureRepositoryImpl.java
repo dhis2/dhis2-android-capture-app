@@ -81,8 +81,6 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
     private final HashMap<String, ProgramStageDataElement> stageDataElementsMap;
     private String lastUpdatedUid;
     private RuleEvent.Builder eventBuilder;
-    private Map<String, List<Rule>> dataElementRules = new HashMap<>();
-    private List<Rule> finalMandatoryRules;
     private List<FieldViewModel> sectionFields;
 
     public EventCaptureRepositoryImpl(Context context, FormRepository formRepository, String eventUid, D2 d2) {
@@ -117,8 +115,6 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
 
         isEventEditable = isEventExpired(eventUid);
 
-        loadDataElementRules(currentEvent);
-
         List<ProgramStageSection> sections = d2.programModule().programStageSections().byProgramStageUid().eq(currentStage.uid())
                 .withDataElements().withProgramIndicators().blockingGet();
         sectionMap = new HashMap<>();
@@ -137,71 +133,6 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
         }
 
         sectionFields = new ArrayList<>();
-    }
-
-    private void loadDataElementRules(Event event) {
-        List<ProgramRule> rules = d2.programModule().programRules().byProgramUid().eq(event.program()).withProgramRuleActions().blockingGet();
-        List<ProgramRule> mandatoryRules = new ArrayList<>();
-        Iterator<ProgramRule> ruleIterator = rules.iterator();
-        while (ruleIterator.hasNext()) {
-            ProgramRule rule = ruleIterator.next();
-            if (rule.programStage() != null && !rule.programStage().uid().equals(event.programStage()))
-                ruleIterator.remove();
-            else if (rule.condition() == null)
-                ruleIterator.remove();
-            else
-                for (ProgramRuleAction action : rule.programRuleActions())
-                    if (action.programRuleActionType() == ProgramRuleActionType.HIDEFIELD ||
-                            action.programRuleActionType() == ProgramRuleActionType.HIDESECTION ||
-                            action.programRuleActionType() == ProgramRuleActionType.ASSIGN ||
-                            action.programRuleActionType() == ProgramRuleActionType.SHOWWARNING ||
-                            action.programRuleActionType() == ProgramRuleActionType.SHOWERROR ||
-                            action.programRuleActionType() == ProgramRuleActionType.HIDEOPTIONGROUP ||
-                            action.programRuleActionType() == ProgramRuleActionType.HIDEOPTION ||
-                            action.programRuleActionType() == ProgramRuleActionType.DISPLAYKEYVALUEPAIR ||
-                            action.programRuleActionType() == ProgramRuleActionType.DISPLAYTEXT ||
-                            action.programRuleActionType() == ProgramRuleActionType.SETMANDATORYFIELD)
-                        if (!mandatoryRules.contains(rule))
-                            mandatoryRules.add(rule);
-        }
-
-        List<ProgramRuleVariable> variables = d2.programModule().programRuleVariables()
-                .byProgramUid().eq(event.program())
-                .blockingGet();
-
-        Iterator<ProgramRuleVariable> variableIterator = variables.iterator();
-        while (variableIterator.hasNext()) {
-            ProgramRuleVariable variable = variableIterator.next();
-            if (variable.programStage() != null && variable.programStage().uid().equals(event.programStage()))
-                variableIterator.remove();
-            else if (variable.dataElement() == null)
-                variableIterator.remove();
-        }
-
-        finalMandatoryRules = RuleExtensionsKt.toRuleList(mandatoryRules);
-        for (ProgramRuleVariable variable : variables) {
-            if (variable.dataElement() != null && !dataElementRules.containsKey(variable.dataElement().uid()))
-                dataElementRules.put(variable.dataElement().uid(), finalMandatoryRules);
-            for (ProgramRule rule : rules) {
-                if (rule.condition().contains(variable.displayName()) || actionsContainsDE(rule.programRuleActions(), variable.displayName())) {
-                    if (dataElementRules.get(variable.dataElement().uid()) == null)
-                        dataElementRules.put(variable.dataElement().uid(), finalMandatoryRules);
-                    Rule fRule = RuleExtensionsKt.toRuleEngineObject(rule);
-                    if (!dataElementRules.get(variable.dataElement().uid()).contains(fRule))
-                        dataElementRules.get(variable.dataElement().uid()).add(fRule);
-                }
-            }
-        }
-    }
-
-    private boolean actionsContainsDE(List<ProgramRuleAction> programRuleActions, String variableName) {
-        boolean actionContainsDe = false;
-        for (ProgramRuleAction ruleAction : programRuleActions) {
-            if (ruleAction.data() != null && ruleAction.data().contains(variableName))
-                actionContainsDe = true;
-
-        }
-        return actionContainsDe;
     }
 
     @Override
