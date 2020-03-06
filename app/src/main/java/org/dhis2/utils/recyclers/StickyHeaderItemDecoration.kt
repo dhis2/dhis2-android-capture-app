@@ -27,7 +27,7 @@ class StickyHeaderItemDecoration(
                 parent.context,
                 object : GestureDetector.SimpleOnGestureListener() {
                     override fun onDown(e: MotionEvent?): Boolean {
-                        return e?.let { e.y <= currentHeader?.second?.itemView?.height ?:-1 }
+                        return e?.let { e.y <= currentHeader?.second?.itemView?.height ?: -1 }
                             ?: super.onDown(e)
                     }
 
@@ -38,7 +38,8 @@ class StickyHeaderItemDecoration(
                         }
                         return false
                     }
-                })
+                }
+            )
 
         parent.adapter?.registerAdapterDataObserver(object : RecyclerView.AdapterDataObserver() {
             override fun onChanged() {
@@ -136,7 +137,6 @@ class StickyHeaderItemDecoration(
                     Canvas.ALL_SAVE_FLAG
                 )
             }
-
         }
         c.translate(0f, (nextHeader.top - currentHeader.height).toFloat() /*+ paddingTop*/)
 
@@ -170,7 +170,6 @@ class StickyHeaderItemDecoration(
      * @param parent ViewGroup: RecyclerView in this case.
      */
     private fun fixLayoutSize(parent: ViewGroup, view: View) {
-
         // Specs for parent (RecyclerView)
         val widthSpec = View.MeasureSpec.makeMeasureSpec(parent.width, View.MeasureSpec.EXACTLY)
         val heightSpec =
