@@ -183,11 +183,15 @@ public abstract class OptionSetViewModel extends FieldViewModel {
     }
 
     public void setOptionsToHide(List<String> optionsToHide) {
-        this.optionsToHide.addAll(optionsToHide);
+        if(optionsToHide!=null) {
+            this.optionsToHide.addAll(optionsToHide);
+        }
     }
 
     public void setOptionsToShow(List<String> optionsToShow) {
-        this.optionsToShow.addAll(optionsToShow);
+        if(optionsToShow!=null) {
+            this.optionsToShow.addAll(optionsToShow);
+        }
     }
 
     public List<String> getOptionsToHide() {

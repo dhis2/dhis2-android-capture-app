@@ -57,6 +57,9 @@ public class ImageHolder extends FormViewHolder {
 
     public void update(ImageViewModel viewModel) {
         this.model = viewModel;
+        if(currentSelector.get() != null && viewModel.value() == null){
+            currentSelector.set("");
+        }
 
         this.isEditable = viewModel.editable();
         descriptionText = viewModel.description();

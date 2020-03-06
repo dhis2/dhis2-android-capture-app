@@ -308,14 +308,18 @@ class RulesUtilsProviderImpl : RulesUtilsProvider {
         hideOption: RuleActionHideOption,
         rulesActionCallbacks: RulesActionCallbacks
     ) {
-        rulesActionCallbacks.setOptionToHide(hideOption.option())
+        rulesActionCallbacks.setOptionToHide(hideOption.option(), hideOption.field())
     }
 
     private fun hideOptionGroup(
         hideOptionGroup: RuleActionHideOptionGroup,
         rulesActionCallbacks: RulesActionCallbacks
     ) {
-        rulesActionCallbacks.setOptionGroupToHide(hideOptionGroup.optionGroup(), true)
+        rulesActionCallbacks.setOptionGroupToHide(
+            hideOptionGroup.optionGroup(),
+            true,
+            hideOptionGroup.field()
+        )
     }
 
     private fun showOptionGroup(

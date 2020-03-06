@@ -61,8 +61,8 @@ class EnrollmentPresenterImpl(
 ) : RulesActionCallbacks {
 
     private val disposable = CompositeDisposable()
-    private val optionsToHide = ArrayList<String>()
-    private val optionsGroupsToHide = ArrayList<String>()
+    private val optionsToHide = HashMap<String, ArrayList<String>>()
+    private val optionsGroupsToHide = HashMap<String, ArrayList<String>>()
     private val optionsGroupToShow = HashMap<String, ArrayList<String>>()
     private val fieldsFlowable: FlowableProcessor<Boolean> = PublishProcessor.create()
     private var lastFocusItem: String? = null
@@ -403,18 +403,17 @@ class EnrollmentPresenterImpl(
 
         fieldMap.values.forEach {
             if (it is SpinnerViewModel) {
-                it.setOptionsToHide(optionsToHide, optionsGroupsToHide)
+                it.setOptionsToHide(optionsToHide[it.uid()], optionsGroupsToHide[it.uid()])
                 if (optionsGroupToShow.keys.contains(it.uid())) {
                     it.optionGroupsToShow = optionsGroupToShow[it.uid()]
                 }
             }
-            if(it is OptionSetViewModel){
-                val finalOptionsToHide = arrayListOf<String>()
-                finalOptionsToHide.addAll(optionsToHide)
-                finalOptionsToHide.addAll(formRepository.getOptionsFromGroups(optionsGroupsToHide))
-                it.optionsToHide = optionsToHide
+            if (it is OptionSetViewModel) {
+                it.optionsToHide = optionsToHide[it.uid()]
                 if (optionsGroupToShow.keys.contains(it.uid())) {
-                    it.optionsToShow = formRepository.getOptionsFromGroups(optionsGroupToShow[it.uid()]?: arrayListOf())
+                    it.optionsToShow = formRepository.getOptionsFromGroups(
+                        optionsGroupToShow[it.uid()] ?: arrayListOf()
+                    )
                 }
             }
         }
@@ -499,20 +498,38 @@ class EnrollmentPresenterImpl(
 
     override fun setHideProgramStage(programStageUid: String) = Unit
 
-    override fun setOptionToHide(optionUid: String) {
-        optionsToHide.add(optionUid)
+    override fun setOptionToHide(optionUid: String, field: String) {
+        if (!optionsToHide.containsKey(field)) {
+            optionsToHide[field] = arrayListOf(optionUid)
+        }
+        optionsToHide[field]!!.add(optionUid)
+        valueStore.deleteOptionValueIfSelected(field, optionUid)
     }
 
     override fun setOptionGroupToHide(optionGroupUid: String, toHide: Boolean, field: String) {
         if (toHide) {
-            optionsGroupsToHide.add(optionGroupUid)
-        } else if (!optionsGroupsToHide.contains(optionGroupUid)) {
-            // When combined with show option group the hide option group takes precedence.
+            if(!optionsGroupsToHide.containsKey(field)){
+                optionsGroupsToHide[field] = arrayListOf()
+            }
+            optionsGroupsToHide[field]!!.add(optionGroupUid)
+            if (!optionsToHide.containsKey(field)) {
+                optionsToHide[field] = arrayListOf()
+            }
+            optionsToHide[field]!!.addAll(
+                formRepository.getOptionsFromGroups(
+                    arrayListOf(
+                        optionGroupUid
+                    )
+                )
+            )
+            valueStore.deleteOptionValueIfSelectedInGroup(field, optionGroupUid, true)
+        } else if (!optionsGroupsToHide.containsKey(field) || !optionsGroupsToHide.contains(optionGroupUid)) {
             if (optionsGroupToShow[field] != null) {
                 optionsGroupToShow[field]!!.add(optionGroupUid)
             } else {
-                optionsGroupToShow[field] = ArrayList(optionsGroupsToHide)
+                optionsGroupToShow[field] = arrayListOf(optionGroupUid)
             }
+            valueStore.deleteOptionValueIfSelectedInGroup(field, optionGroupUid, false)
         }
     }
 

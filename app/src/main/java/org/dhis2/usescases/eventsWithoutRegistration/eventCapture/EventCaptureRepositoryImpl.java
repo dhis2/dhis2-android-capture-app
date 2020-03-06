@@ -13,6 +13,7 @@ import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactoryImpl;
 import org.dhis2.data.forms.dataentry.fields.image.ImageHolder;
+import org.dhis2.data.forms.dataentry.fields.image.ImageViewModel;
 import org.dhis2.data.forms.dataentry.fields.option_set.OptionSetViewModel;
 import org.dhis2.data.forms.dataentry.fields.orgUnit.OrgUnitViewModel;
 import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel;
@@ -20,6 +21,7 @@ import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.Result;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper;
+import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope;
 import org.hisp.dhis.android.core.category.CategoryOption;
 import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
 import org.hisp.dhis.android.core.common.ObjectStyle;
@@ -359,10 +361,10 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
         for (FieldViewModel fieldViewModel : fieldViewModels) {
 
             ProgramStageSectionRenderingType renderingType = renderingType(fieldViewModel.programStageSection());
-            if (fieldViewModel instanceof SpinnerViewModel && !isEmpty(fieldViewModel.optionSet()) && renderingType != ProgramStageSectionRenderingType.LISTING) {
+            if (fieldViewModel instanceof ImageViewModel && !isEmpty(fieldViewModel.optionSet()) && renderingType != ProgramStageSectionRenderingType.LISTING) {
                 List<Option> options = d2.optionModule().options().byOptionSetUid().eq(fieldViewModel.optionSet() == null ? "" : fieldViewModel.optionSet())
+                        .orderBySortOrder(RepositoryScope.OrderByDirection.ASC)
                         .blockingGet();
-                Collections.sort(options, (one, two) -> one.sortOrder().compareTo(two.sortOrder()));
                 for (Option option : options) {
                     ValueTypeDeviceRendering fieldRendering = null;
 
@@ -375,7 +377,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
 
                     renderList.add(fieldFactory.create(
                             fieldViewModel.uid() + "." + option.uid(),
-                            option.displayName() + ImageHolder.NAME_CODE_DELIMITATOR + option.code(), ValueType.TEXT, false,
+                            option.displayName() + ImageViewModel.NAME_CODE_DELIMITATOR + option.code(), ValueType.TEXT, false,
                             fieldViewModel.optionSet(), fieldViewModel.value(), fieldViewModel.programStageSection(),
                             fieldViewModel.allowFutureDate(), fieldViewModel.editable() == null ? false : fieldViewModel.editable(), renderingType, fieldViewModel.description(), fieldRendering, options.size(), objectStyle, fieldViewModel.fieldMask()));
 
@@ -680,20 +682,6 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
             }
         }
         return optionsFromGroups;
-    }
-
-    @Override
-    public List<String> getOptionCodesFrom(List<String> optionsToHide, List<String> optionsGroupsToHide) {
-        List<String> optionsToDelete = new ArrayList<>(optionsToHide);
-        if(!optionsGroupsToHide.isEmpty()) {
-            List<String> options = getOptionsFromGroups(optionsGroupsToHide);
-            optionsToDelete.addAll(options);
-        }
-        return d2.optionModule().options().byUid().in(optionsToDelete).get()
-                .toFlowable()
-                .flatMapIterable(options->options)
-                .map(BaseIdentifiableObject::code)
-                .toList().blockingGet();
     }
 }
 

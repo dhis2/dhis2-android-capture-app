@@ -93,7 +93,6 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
         isNull(type, "type must be supplied");
 
         if (!isEmpty(optionSet)) {
-            fieldRendering = ValueTypeDeviceRendering.builder().type(ValueTypeRenderingType.VERTICAL_RADIOBUTTONS).build();
             if (renderingType == null || renderingType == ProgramStageSectionRenderingType.LISTING) {
                 if (fieldRendering != null && (fieldRendering.type().equals(ValueTypeRenderingType.QR_CODE) || fieldRendering.type().equals(ValueTypeRenderingType.BAR_CODE))) {
                     return ScanTextViewModel.create(id, label, mandatory, value, section, editable, description, objectStyle, fieldRendering);
