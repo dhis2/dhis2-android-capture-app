@@ -3,9 +3,12 @@ package org.dhis2.usescases.pin
 import android.Manifest
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
+import org.dhis2.data.prefs.Preference.Companion.PIN
+import org.dhis2.data.prefs.Preference.Companion.SESSION_LOCKED
 import org.dhis2.usescases.BaseTest
 import org.dhis2.usescases.main.MainActivity
 import org.dhis2.usescases.main.MainRobot
+import org.dhis2.usescases.main.homeRobot
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -27,6 +30,37 @@ class PinTest : BaseTest() {
         startActivity()
         mainRobot.clickOnNavigationDrawerMenu()
                 .clickOnPin()
+    }
+
+    @Test
+    fun shouldAppClosedIfSetPin() {
+        startActivity()
+
+        homeRobot {
+            clickOnNavigationDrawerMenu()
+            clickOnPin()
+        }
+        preferencesRobot.saveValue(PIN, "1234")
+        preferencesRobot.saveValue(SESSION_LOCKED, true)
+    }
+
+    @Test
+    fun shouldRedirectToHomeIfPinIsCorrect() {
+        //prefrenesRobot.ssaveValue(PIN, "12342)
+        //prefrencesRobot.saveValue(Session_Locked, true)
+        //Si escribo 1234 voy a la home
+        //Si escribo 4123 no voy a ninguno sitio . Check Pin incorrecto
+    }
+
+    @Test
+    fun shouldSendErrorIfPinIsWrong() {
+
+    }
+
+    @Test
+    fun shouldSuccessfullyLoginIfClickForgotYourCode() {
+        //startActivity()
+
     }
 
     fun startActivity(){
