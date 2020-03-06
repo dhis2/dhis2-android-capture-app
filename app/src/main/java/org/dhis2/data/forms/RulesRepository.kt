@@ -2,9 +2,6 @@ package org.dhis2.data.forms
 
 import android.text.TextUtils.isEmpty
 import io.reactivex.Single
-import java.util.Calendar
-import java.util.Date
-import java.util.Objects
 import org.dhis2.Bindings.toRuleDataValue
 import org.dhis2.Bindings.toRuleList
 import org.dhis2.Bindings.toRuleVariable
@@ -22,6 +19,9 @@ import org.hisp.dhis.rules.models.RuleEnrollment
 import org.hisp.dhis.rules.models.RuleEvent
 import org.hisp.dhis.rules.models.RuleVariable
 import timber.log.Timber
+import java.util.Calendar
+import java.util.Date
+import java.util.Objects
 
 class RulesRepository(private val d2: D2) {
 
@@ -50,9 +50,19 @@ class RulesRepository(private val d2: D2) {
         }
     }
 
-    fun rulesNew(programUid: String): Single<List<Rule>> {
+    fun rulesNew(programUid: String, eventUid: String? = null): Single<List<Rule>> {
         return queryRules(programUid)
             .map { it.toRuleList() }
+            .map {
+                if (eventUid != null) {
+                    val stage = d2.eventModule().events().uid(eventUid).blockingGet().programStage()
+                    it.filter {rule->
+                        rule.programStage() == null || rule.programStage() == stage
+                    }
+                }else{
+                    it
+                }
+            }
     }
 
     fun ruleVariables(programUid: String): Single<List<RuleVariable>> {

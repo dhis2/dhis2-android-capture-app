@@ -51,7 +51,7 @@ public class EventRepository implements FormRepository {
         // We don't want to rebuild RuleEngine on each request, since metadata of
         // the event is not changing throughout lifecycle of FormComponent.
         this.cachedRuleEngineFlowable = Single.zip(
-                rulesRepository.rulesNew(programUid),
+                rulesRepository.rulesNew(programUid, eventUid),
                 rulesRepository.ruleVariables(programUid),
                 rulesRepository.otherEvents(this.eventUid),
                 rulesRepository.enrollment(this.eventUid),
@@ -83,7 +83,7 @@ public class EventRepository implements FormRepository {
     @Override
     public Flowable<RuleEngine> restartRuleEngine() {
         return this.cachedRuleEngineFlowable = Single.zip(
-                rulesRepository.rulesNew(programUid).subscribeOn(Schedulers.io()),
+                rulesRepository.rulesNew(programUid,eventUid).subscribeOn(Schedulers.io()),
                 rulesRepository.ruleVariables(programUid).subscribeOn(Schedulers.io()),
                 rulesRepository.otherEvents(eventUid).subscribeOn(Schedulers.io()),
                 rulesRepository.enrollment(eventUid).subscribeOn(Schedulers.io()),
