@@ -196,7 +196,9 @@ fun ProgramRuleAction.toRuleEngineObject(): RuleAction {
             optionGroup()?.let {
                 RuleActionHideOptionGroup.create(
                     content(),
-                    it.uid()
+                    it.uid(),
+                    field
+
                 )
             } ?: RuleActionUnsupported.create(
                 "HIDE OPTION GROUP RULE IS MISSING OPTION GROUP",

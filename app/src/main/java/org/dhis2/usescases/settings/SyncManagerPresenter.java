@@ -79,16 +79,14 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
         this.prefs = view.getAbstracContext().getSharedPreferences(Constants.SHARE_PREFS, Context.MODE_PRIVATE);
 
         compositeDisposable.add(checkData.startWith(true).map(start -> {
-            int teiCount = d2.trackedEntityModule().trackedEntityInstances().byState().neq(State.RELATIONSHIP)
+            int teiCount = d2.trackedEntityModule().trackedEntityInstances()
+                    .byState().neq(State.RELATIONSHIP)
+                    .byDeleted().isFalse()
                     .blockingCount();
-            int eventCount = d2.eventModule().events().get().toObservable().map(events -> {
-                List<Event> eventsToCount = new ArrayList<>();
-                for (Event event : events) {
-                    if (event.enrollment() == null)
-                        eventsToCount.add(event);
-                }
-                return eventsToCount.size();
-            }).blockingLast();
+            int eventCount = d2.eventModule().events()
+                    .byEnrollmentUid().isNull()
+                    .byDeleted().isFalse()
+                    .blockingCount();
             return Pair.create(teiCount, eventCount);
         }).subscribeOn(schedulerProvider.io()).observeOn(schedulerProvider.ui()).subscribe(view.setSyncData(),
                 Timber::e));

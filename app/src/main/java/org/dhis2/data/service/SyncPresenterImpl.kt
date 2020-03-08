@@ -5,9 +5,6 @@ import androidx.work.ExistingWorkPolicy
 import androidx.work.ListenableWorker
 import io.reactivex.Completable
 import io.reactivex.Observable
-import java.util.ArrayList
-import java.util.Calendar
-import kotlin.math.ceil
 import org.dhis2.data.prefs.Preference.Companion.DATA
 import org.dhis2.data.prefs.Preference.Companion.EVENT_MAX
 import org.dhis2.data.prefs.Preference.Companion.EVENT_MAX_DEFAULT
@@ -24,23 +21,44 @@ import org.dhis2.data.service.workManager.WorkManagerController
 import org.dhis2.data.service.workManager.WorkerItem
 import org.dhis2.data.service.workManager.WorkerType
 import org.dhis2.utils.DateUtils
+import org.dhis2.utils.analytics.AnalyticsHelper
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.call.D2Progress
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.imports.TrackerImportConflict
 import org.hisp.dhis.android.core.program.ProgramType
+import org.hisp.dhis.android.core.settings.GeneralSettings
+import org.hisp.dhis.android.core.settings.LimitScope
+import org.hisp.dhis.android.core.settings.ProgramSettings
 import timber.log.Timber
+import java.util.ArrayList
+import java.util.Calendar
+import kotlin.math.ceil
 
 class SyncPresenterImpl(
     private val d2: D2,
     private val preferences: PreferenceProvider,
-    private val workManagerController: WorkManagerController
+    private val workManagerController: WorkManagerController,
+    private val analyticsHelper: AnalyticsHelper
 ) : SyncPresenter {
 
     override fun syncAndDownloadEvents() {
-        val eventLimit = preferences.getInt(EVENT_MAX, EVENT_MAX_DEFAULT)
-        val limitByOU = preferences.getBoolean(LIMIT_BY_ORG_UNIT, false)
-        val limitByProgram = preferences.getBoolean(LIMIT_BY_PROGRAM, false)
+        val programSettings = getProgramSetting()
+        val globalProgramSettings = programSettings.globalSettings()
+
+        val eventLimit = globalProgramSettings?.eventsDownload() ?: preferences.getInt(
+            EVENT_MAX,
+            EVENT_MAX_DEFAULT
+        )
+
+        val limitByOU = globalProgramSettings?.settingDownload()?.let {
+            it == LimitScope.PER_ORG_UNIT || it == LimitScope.PER_OU_AND_PROGRAM
+        } ?: preferences.getBoolean(LIMIT_BY_ORG_UNIT, false)
+
+        val limitByProgram = globalProgramSettings?.settingDownload()?.let {
+            it == LimitScope.PER_PROGRAM || it == LimitScope.PER_OU_AND_PROGRAM
+        } ?: preferences.getBoolean(LIMIT_BY_PROGRAM, false)
+
         Completable.fromObservable(d2.eventModule().events().upload())
             .andThen(
                 Completable.fromObservable(
@@ -55,9 +73,18 @@ class SyncPresenterImpl(
     }
 
     override fun syncAndDownloadTeis() {
-        val teiLimit = preferences.getInt(TEI_MAX, TEI_MAX_DEFAULT)
-        val limitByOU = preferences.getBoolean(LIMIT_BY_ORG_UNIT, false)
-        val limitByProgram = preferences.getBoolean(LIMIT_BY_PROGRAM, false)
+        val programSettings = getProgramSetting()
+        val globalProgramSettings = programSettings.globalSettings()
+
+        val teiLimit =
+            globalProgramSettings?.teiDownload() ?: preferences.getInt(TEI_MAX, TEI_MAX_DEFAULT)
+        val limitByOU = globalProgramSettings?.settingDownload()?.let {
+            it == LimitScope.PER_ORG_UNIT || it == LimitScope.PER_OU_AND_PROGRAM
+        }?:preferences.getBoolean(LIMIT_BY_ORG_UNIT, false)
+        val limitByProgram = globalProgramSettings?.settingDownload()?.let {
+            it == LimitScope.PER_PROGRAM || it == LimitScope.PER_OU_AND_PROGRAM
+        }?:preferences.getBoolean(LIMIT_BY_PROGRAM, false)
+
         Completable.fromObservable(d2.trackedEntityModule().trackedEntityInstances().upload())
             .andThen(
                 Completable.fromObservable(
@@ -95,12 +122,35 @@ class SyncPresenterImpl(
     }
 
     override fun syncMetadata(progressUpdate: SyncMetadataWorker.OnProgressUpdate) {
+
         Completable.fromObservable(
             d2.metadataModule().download()
                 .doOnNext { data ->
                     progressUpdate.onProgressUpdate(ceil(data.percentage() ?: 0.0).toInt())
                 }
-        ).blockingAwait()
+                .doOnComplete { setUpSMS() }
+
+        )            .blockingAwait()
+    }
+
+    private fun setUpSMS() {
+        val globalSettings = getSettings()
+
+        if (!globalSettings.numberSmsToSend().isNullOrEmpty()) {
+            d2.smsModule().configCase().setGatewayNumber(globalSettings.numberSmsToSend())
+                .andThen(
+                    if (!globalSettings.numberSmsConfirmation().isNullOrEmpty()) {
+                        d2.smsModule().configCase()
+                            .setConfirmationSenderNumber(globalSettings.numberSmsConfirmation())
+                    } else {
+                        Completable.complete()
+                    }
+                ).andThen(
+                    d2.smsModule().configCase().setModuleEnabled(true)
+                ).andThen(
+                    d2.smsModule().configCase().refreshMetadataIds()
+                ).blockingAwait()
+        }
     }
 
     override fun uploadResources() {
@@ -367,5 +417,21 @@ class SyncPresenterImpl(
 
             workManagerController.syncDataForWorker(workerItem)
         }
+    }
+
+    private fun getSettings(): GeneralSettings {
+        return d2.settingModule().generalSetting().blockingGet()
+    }
+
+    private fun getProgramSetting(): ProgramSettings {
+        return d2.settingModule().programSetting().blockingGet()
+    }
+
+    override fun logTimeToFinish(millisToFinish: Long, eventName: String) {
+        analyticsHelper.setEvent(
+            eventName,
+            (millisToFinish / 60000.0).toString(),
+            eventName
+        )
     }
 }

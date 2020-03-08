@@ -295,6 +295,10 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                                                         }
                                                     }
 
+                                                    if(fieldMap.containsKey("")) {
+                                                        finalFieldList.addAll(fieldMap.get(""));
+                                                    }
+
                                                     return Pair.create(eventSectionModels, finalFieldList);
                                                 })))
                         .subscribeOn(schedulerProvider.io())
