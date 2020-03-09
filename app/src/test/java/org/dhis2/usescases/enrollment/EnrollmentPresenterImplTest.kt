@@ -4,6 +4,7 @@ import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
 import org.dhis2.data.forms.dataentry.DataEntryRepository
+import org.dhis2.data.forms.dataentry.ValueStore
 import org.dhis2.data.schedulers.SchedulerProvider
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.hisp.dhis.android.core.D2
@@ -26,6 +27,7 @@ class EnrollmentPresenterImplTest {
     private val d2: D2 = mock()
     private val enrollmentRepository: EnrollmentObjectRepository = mock()
     private val schedulers: SchedulerProvider = TrampolineSchedulerProvider()
+    private val valueStore: ValueStore = mock()
 
     @Before
     fun setUp() {
@@ -37,7 +39,8 @@ class EnrollmentPresenterImplTest {
             teiRepository,
             programRepository,
             schedulers,
-            formRepository
+            formRepository,
+            valueStore
         )
     }
 

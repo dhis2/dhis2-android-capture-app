@@ -4,6 +4,7 @@ import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
 import junit.framework.TestCase.assertFalse
 import junit.framework.TestCase.assertTrue
+import org.dhis2.data.forms.dataentry.ValueStore
 import org.dhis2.data.forms.dataentry.tablefields.FieldViewModel
 import org.dhis2.data.forms.dataentry.tablefields.edittext.EditTextViewModel
 import org.dhis2.data.schedulers.SchedulerProvider
@@ -25,11 +26,12 @@ class DataValuePresenterTest {
     private val dataValueRepository: DataValueRepository = mock()
     private val schedulers: SchedulerProvider = TrampolineSchedulerProvider()
     private val analyticsHelper: AnalyticsHelper = mock()
+    private val valueStore: ValueStore = mock()
 
     @Before
     fun setup() {
-        presenter = DataValuePresenter(view, dataValueRepository, schedulers, analyticsHelper)
-    }
+        presenter =
+            DataValuePresenter(view, dataValueRepository, valueStore, schedulers, analyticsHelper)    }
 
     @Test
     fun `Check all row have values`() {

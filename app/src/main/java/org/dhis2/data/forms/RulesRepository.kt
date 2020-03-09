@@ -2,9 +2,6 @@ package org.dhis2.data.forms
 
 import android.text.TextUtils.isEmpty
 import io.reactivex.Single
-import java.util.Calendar
-import java.util.Date
-import java.util.Objects
 import org.dhis2.Bindings.toRuleDataValue
 import org.dhis2.Bindings.toRuleList
 import org.dhis2.Bindings.toRuleVariable
@@ -21,6 +18,10 @@ import org.hisp.dhis.rules.models.RuleAttributeValue
 import org.hisp.dhis.rules.models.RuleEnrollment
 import org.hisp.dhis.rules.models.RuleEvent
 import org.hisp.dhis.rules.models.RuleVariable
+import timber.log.Timber
+import java.util.Calendar
+import java.util.Date
+import java.util.Objects
 
 class RulesRepository(private val d2: D2) {
 
@@ -49,9 +50,19 @@ class RulesRepository(private val d2: D2) {
         }
     }
 
-    fun rulesNew(programUid: String): Single<List<Rule>> {
+    fun rulesNew(programUid: String, eventUid: String? = null): Single<List<Rule>> {
         return queryRules(programUid)
             .map { it.toRuleList() }
+            .map {
+                if (eventUid != null) {
+                    val stage = d2.eventModule().events().uid(eventUid).blockingGet().programStage()
+                    it.filter { rule ->
+                        rule.programStage() == null || rule.programStage() == stage
+                    }
+                } else {
+                    it
+                }
+            }
     }
 
     fun ruleVariables(programUid: String): Single<List<RuleVariable>> {
@@ -151,6 +162,7 @@ class RulesRepository(private val d2: D2) {
                 .byEnrollmentUid().eq(eventToEvaluate.enrollment())
                 .byUid().notIn(eventToEvaluate.uid())
                 .byStatus().notIn(EventStatus.SCHEDULE, EventStatus.SKIPPED, EventStatus.OVERDUE)
+                .byEventDate().before(Date())
                 .withTrackedEntityDataValues()
                 .orderByEventDate(RepositoryScope.OrderByDirection.DESC)
                 .get()
@@ -160,41 +172,43 @@ class RulesRepository(private val d2: D2) {
                 .byProgramStageUid().eq(eventToEvaluate.programStage())
                 .byOrganisationUnitUid().eq(eventToEvaluate.organisationUnit())
                 .byStatus().notIn(EventStatus.SCHEDULE, EventStatus.SKIPPED, EventStatus.OVERDUE)
+                .byEventDate().before(Date())
                 .withTrackedEntityDataValues()
                 .orderByEventDate(RepositoryScope.OrderByDirection.DESC)
                 .get().map { list ->
-                var currentEventIndex = -1
-                var index = 0
-                do {
-                    if (list[index].uid() == eventToEvaluate.uid()) {
-                        currentEventIndex = index
-                    } else {
-                        index++
+                    var currentEventIndex = -1
+                    var index = 0
+                    do {
+                        if (list[index].uid() == eventToEvaluate.uid()) {
+                            currentEventIndex = index
+                        } else {
+                            index++
+                        }
+                    } while (currentEventIndex == -1)
+
+                    var newEvents = list.subList(0, currentEventIndex)
+                    var previousEvents = list.subList(currentEventIndex + 1, list.size)
+
+                    if (newEvents.size > 10) {
+                        newEvents = newEvents.subList(0, 10)
                     }
-                } while (currentEventIndex == -1)
+                    if (previousEvents.size > 10) {
+                        previousEvents = previousEvents.subList(0, 10)
+                    }
 
-                var newEvents = list.subList(0, currentEventIndex)
-                var previousEvents = list.subList(currentEventIndex + 1, list.size)
+                    val finalList = ArrayList<Event>()
+                    finalList.addAll(newEvents)
+                    finalList.addAll(previousEvents)
 
-                if (newEvents.size > 10) {
-                    newEvents = newEvents.subList(0, 10)
+                    finalList
                 }
-                if (previousEvents.size > 10) {
-                    previousEvents = previousEvents.subList(0, 10)
-                }
-
-                val finalList = ArrayList<Event>()
-                finalList.addAll(newEvents)
-                finalList.addAll(previousEvents)
-
-                finalList
-            }
         }
     }
 
     fun enrollmentEvents(enrollmentUid: String): Single<List<RuleEvent>> {
         return d2.eventModule().events().byEnrollmentUid().eq(enrollmentUid)
             .byStatus().notIn(EventStatus.SCHEDULE, EventStatus.SKIPPED, EventStatus.OVERDUE)
+            .byEventDate().before(Date())
             .withTrackedEntityDataValues()
             .get()
             .toFlowable().flatMapIterable { events -> events }
@@ -286,15 +300,33 @@ class RulesRepository(private val d2: D2) {
                     .eq(enrollment.program()).byTrackedEntityAttributeUid().eq(attribute.uid())
                     .byUseCodeForOptionSet().isTrue.blockingIsEmpty()
                 if (!useOptionCode) {
-                    value = d2.optionModule().options()
-                        .byOptionSetUid().eq(attribute.optionSet()!!.uid())
-                        .byCode().eq(value)
-                        .one().blockingGet()!!.name()
+                    value = if (d2.optionModule().options()
+                            .byOptionSetUid().eq(attribute.optionSet()!!.uid())
+                            .byCode().eq(value)
+                            .one().blockingExists()
+                    ) {
+                        d2.optionModule().options()
+                            .byOptionSetUid().eq(attribute.optionSet()!!.uid())
+                            .byCode().eq(value)
+                            .one().blockingGet()?.name()
+                    } else {
+                        ""
+                    }
                 }
             } else if (attribute.valueType()?.isNumeric!!) {
-                value = value?.toFloat().toString()
+                value = try {
+                    value?.toFloat().toString()
+                } catch (e: Exception) {
+                    Timber.e(e)
+                    ""
+                }
             }
-            RuleAttributeValue.create(attributeValue.trackedEntityAttribute()!!, value!!)
+            ruleAttributeValues.add(
+                RuleAttributeValue.create(
+                    attributeValue.trackedEntityAttribute()!!,
+                    value!!
+                )
+            )
         }
         return ruleAttributeValues
     }

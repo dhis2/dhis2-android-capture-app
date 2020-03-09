@@ -178,13 +178,6 @@ class LoginPresenter(
         view.navigateToQRActivity()
     }
 
-    fun unlockSession(pin: String) {
-        if (preferenceProvider.getString(PIN, "") == pin) {
-            preferenceProvider.setValue(SESSION_LOCKED, false)
-            view.startActivity(MainActivity::class.java, null, true, true, null)
-        }
-    }
-
     fun onDestroy() {
         disposable.clear()
     }
@@ -229,6 +222,7 @@ class LoginPresenter(
         if (throwable is D2Error && throwable.errorCode() == D2ErrorCode.ALREADY_AUTHENTICATED) {
             preferenceProvider.apply {
                 setValue(SESSION_LOCKED, false)
+
                 setValue(PIN, null)
             }
             view.alreadyAuthenticated()

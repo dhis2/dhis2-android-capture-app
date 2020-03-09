@@ -30,9 +30,12 @@ import java.util.Date
 import javax.inject.Inject
 import org.dhis2.App
 import org.dhis2.Bindings.Bindings
+import org.dhis2.Bindings.showSMS
 import org.dhis2.R
 import org.dhis2.databinding.SyncBottomDialogBinding
+import org.dhis2.usescases.sms.InputArguments
 import org.dhis2.usescases.sms.SmsSendingService
+import org.dhis2.usescases.sms.StatusText
 import org.dhis2.utils.DateUtils
 import org.dhis2.utils.NetworkUtils
 import org.dhis2.utils.analytics.AnalyticsHelper
@@ -72,6 +75,25 @@ class SyncStatusDialog private constructor(
     enum class ConflictType {
         PROGRAM, TEI, EVENT, DATA_SET, DATA_VALUES
     }
+
+    private val inputArguments: InputArguments
+        get() {
+            val bundle = Bundle()
+            when (conflictType) {
+                ConflictType.TEI -> InputArguments.setEnrollmentData(bundle, recordUid)
+                ConflictType.EVENT -> InputArguments.setSimpleEventData(bundle, recordUid)
+                ConflictType.DATA_VALUES -> InputArguments.setDataSet(
+                    bundle,
+                    recordUid,
+                    orgUnitDataValue,
+                    periodIdDataValue,
+                    attributeComboDataValue
+                )
+                else -> {
+                }
+            }
+            return InputArguments(bundle)
+        }
 
     class Builder {
         private lateinit var recordUid: String
@@ -196,7 +218,7 @@ class SyncStatusDialog private constructor(
 
     private fun setNetworkMessage() {
         if (!NetworkUtils.isOnline(context)) {
-            if (presenter.isSMSEnabled()) {
+            if (presenter.isSMSEnabled() && context?.showSMS() == true) {
                 if (conflictType != ConflictType.PROGRAM &&
                     conflictType != ConflictType.DATA_SET &&
                     conflictType != ConflictType.TEI // FYI - Tei sms sync is temporary disabled
@@ -372,27 +394,13 @@ class SyncStatusDialog private constructor(
         if (states.isNullOrEmpty()) return
 
         states.forEach {
-            when {
-                it.state.isStarting -> {
-                    adapter!!.addItem(
-                        StatusLogItem.create(Date(), getString(R.string.sms_bar_state_starting))
-                    )
-                    adapter!!.addItem(
-                        StatusLogItem.create(Date(), it.sent.toString() + "/" + it.total)
-                    )
-                }
-                it.state.isSending -> {
-                    adapter!!.addItem(
-                        StatusLogItem.create(Date(), getString(R.string.sms_bar_state_sending))
-                    )
-                }
-                it.state.isError -> adapter!!.addItem(
-                    StatusLogItem.create(Date(), getString(R.string.sms_bar_state_failed))
+            adapter!!.addItem(
+                StatusLogItem.create(
+                    Date(),
+                    StatusText.getTextSubmissionType(resources, inputArguments) + ": " +
+                        StatusText.getTextForStatus(resources, it)
                 )
-                it.state.isCompleted -> adapter!!.addItem(
-                    StatusLogItem.create(Date(), getString(R.string.sms_bar_state_sent))
-                )
-            }
+            )
         }
 
         val lastState = states[states.size - 1]

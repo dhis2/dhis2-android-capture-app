@@ -66,6 +66,9 @@ public class EventCaptureContract {
         void showRuleCalculation(Boolean shouldShow);
 
         void showErrorSnackBar();
+
+        void showEventIntegrityAlert();
+
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter {
@@ -116,6 +119,8 @@ public class EventCaptureContract {
 
     public interface EventCaptureRepository {
 
+        Flowable<Boolean> eventIntegrityCheck();
+
         Flowable<String> programStageName();
 
         Flowable<String> eventDate();
@@ -156,8 +161,6 @@ public class EventCaptureContract {
 
         boolean isEventExpired(String eventUid);
 
-        Observable<List<OrganisationUnitLevel>> getOrgUnitLevels();
-
         boolean optionIsInOptionGroup(String optionUid, String optionGroupToHide);
 
         String getSectionFor(String field);
@@ -165,9 +168,6 @@ public class EventCaptureContract {
         Single<Boolean> canReOpenEvent();
 
         Observable<Boolean> isCompletedEventExpired(String eventUid);
-        void assign(String uid, String value);
-
-        void saveImage(String uuid, String filePath);
     }
 
 }

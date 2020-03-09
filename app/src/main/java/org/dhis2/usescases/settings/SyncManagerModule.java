@@ -8,16 +8,17 @@ import org.hisp.dhis.android.core.D2;
 import dagger.Module;
 import dagger.Provides;
 
-/**
- * QUADRAM. Created by frodriguez on 4/13/2018.
- */
-
 @Module
 public final class SyncManagerModule {
 
     @Provides
     @PerFragment
-    SyncManagerContracts.Presenter providePresenter(D2 d2, SchedulerProvider schedulerProvider, PreferenceProvider preferenceProvider) {
-        return new SyncManagerPresenter(d2, schedulerProvider,preferenceProvider);
+    SyncManagerContracts.Presenter providePresenter(D2 d2, SchedulerProvider schedulerProvider, GatewayValidator gatewayValidator ,PreferenceProvider preferenceProvider) {
+        return new SyncManagerPresenter(d2, schedulerProvider,gatewayValidator ,preferenceProvider);
+    }
+
+    @Provides @PerFragment
+    GatewayValidator providesGatewayValidator(){
+        return new GatewayValidator();
     }
 }

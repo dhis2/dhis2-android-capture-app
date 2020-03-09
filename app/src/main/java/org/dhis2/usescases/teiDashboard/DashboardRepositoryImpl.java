@@ -490,7 +490,7 @@ public class DashboardRepositoryImpl
     @Override
     public Observable<List<Program>> getTeiActivePrograms(String teiUid, boolean showOnlyActive) {
         EnrollmentCollectionRepository enrollmentRepo = d2.enrollmentModule().enrollments().byTrackedEntityInstance()
-                .eq(teiUid);
+                .eq(teiUid).byDeleted().eq(false);
         if (showOnlyActive)
             enrollmentRepo.byStatus().eq(EnrollmentStatus.ACTIVE);
         return enrollmentRepo.get().toObservable().flatMapIterable(enrollments -> enrollments)
@@ -500,7 +500,7 @@ public class DashboardRepositoryImpl
 
     @Override
     public Observable<List<Enrollment>> getTEIEnrollments(String teiUid) {
-        return d2.enrollmentModule().enrollments().byTrackedEntityInstance().eq(teiUid).get().toObservable();
+        return d2.enrollmentModule().enrollments().byTrackedEntityInstance().eq(teiUid).byDeleted().eq(false).get().toObservable();
     }
 
     @Override

@@ -46,7 +46,8 @@ class RulesUtilsProviderImpl(private val codeGenerator: CodeGenerator) : RulesUt
                 is RuleActionShowError -> showError(
                     it.ruleAction() as RuleActionShowError,
                     fieldViewModels,
-                    rulesActionCallbacks
+                    rulesActionCallbacks,
+                    it.data()
                 )
                 is RuleActionHideField -> hideField(
                     it.ruleAction() as RuleActionHideField,
@@ -146,12 +147,13 @@ class RulesUtilsProviderImpl(private val codeGenerator: CodeGenerator) : RulesUt
     private fun showError(
         showError: RuleActionShowError,
         fieldViewModels: MutableMap<String, FieldViewModel>,
-        rulesActionCallbacks: RulesActionCallbacks
+        rulesActionCallbacks: RulesActionCallbacks,
+        effectData: String?
     ) {
         val model = fieldViewModels[showError.field()]
 
         if (model != null) {
-            fieldViewModels[showError.field()] = model.withError(showError.content())
+            fieldViewModels[showError.field()] = model.withError("${showError.content()} $effectData" )
         }
 
         rulesActionCallbacks.setShowError(showError, model)
