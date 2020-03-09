@@ -77,6 +77,7 @@ import org.dhis2.utils.Constants;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.FileResourcesUtil;
 import org.dhis2.utils.HelpManager;
+import org.dhis2.utils.customviews.CoordinatesView;
 import org.dhis2.utils.customviews.ScanTextView;
 import org.dhis2.utils.filters.FilterManager;
 import org.dhis2.utils.filters.FiltersAdapter;
@@ -290,10 +291,6 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                 }
                 break;
         }
-        if (requestCode == FilterManager.OU_TREE && resultCode == Activity.RESULT_OK) {
-            filtersAdapter.notifyDataSetChanged();
-            updateFilters(FilterManager.getInstance().getTotalFilters());
-        }
         super.onActivityResult(requestCode, resultCode, data);
     }
 
@@ -303,6 +300,12 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         if (requestCode == ACCESS_COARSE_LOCATION_PERMISSION_REQUEST) {
             initSearchNeeded = false;
         }
+    }
+
+    @Override
+    public void onMapPositionClick(CoordinatesView coordinatesView) {
+        initSearchNeeded = false;
+        super.onMapPositionClick(coordinatesView);
     }
 
     @Override
