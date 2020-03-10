@@ -45,7 +45,6 @@ import com.google.android.material.snackbar.Snackbar;
 import com.mapbox.geojson.BoundingBox;
 import com.mapbox.geojson.Feature;
 import com.mapbox.geojson.FeatureCollection;
-import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.geometry.LatLngBounds;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
@@ -82,6 +81,7 @@ import org.dhis2.utils.filters.FilterManager;
 import org.dhis2.utils.filters.FiltersAdapter;
 import org.dhis2.utils.maps.MapLayerDialog;
 import org.dhis2.utils.maps.MapLayerManager;
+import org.dhis2.utils.maps.MapboxExtensionKt;
 import org.dhis2.utils.maps.MarkerUtils;
 import org.hisp.dhis.android.core.arch.call.D2Progress;
 import org.hisp.dhis.android.core.common.FeatureType;
@@ -100,7 +100,6 @@ import javax.inject.Inject;
 
 import io.reactivex.Flowable;
 import io.reactivex.functions.Consumer;
-import kotlin.Pair;
 import timber.log.Timber;
 
 import static com.mapbox.mapboxsdk.style.expressions.Expression.eq;
@@ -727,7 +726,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                                             boundingBox.south(),
                                             boundingBox.west());
 
-                                    map.easeCamera(CameraUpdateFactory.newLatLngBounds(bounds, 50), 1200);
+                                    MapboxExtensionKt.initDefaultCamera(map,this,bounds);
 
                                     markerViewManager = new MarkerViewManager(binding.mapView, map);
                                     symbolManager = new SymbolManager(binding.mapView, map, style, null,
@@ -763,7 +762,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                                 boundingBox.south(),
                                 boundingBox.west());
 
-                        map.easeCamera(CameraUpdateFactory.newLatLngBounds(bounds, 50), 1200);
+                        MapboxExtensionKt.initDefaultCamera(map,this,bounds);
                     }
                 });
             else {
@@ -774,9 +773,8 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                         boundingBox.south(),
                         boundingBox.west());
 
-                map.easeCamera(CameraUpdateFactory.newLatLngBounds(bounds, 50), 1200);
+                MapboxExtensionKt.initDefaultCamera(map,this,bounds);
             }
-
     }
 
     @Override

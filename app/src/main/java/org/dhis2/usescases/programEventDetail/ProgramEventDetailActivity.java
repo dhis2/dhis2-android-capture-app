@@ -1,6 +1,7 @@
 package org.dhis2.usescases.programEventDetail;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.graphics.PointF;
@@ -29,7 +30,6 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import com.mapbox.geojson.BoundingBox;
 import com.mapbox.geojson.Feature;
 import com.mapbox.geojson.FeatureCollection;
-import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.geometry.LatLngBounds;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
@@ -61,6 +61,7 @@ import org.dhis2.utils.analytics.AnalyticsConstants;
 import org.dhis2.utils.filters.FilterManager;
 import org.dhis2.utils.filters.FiltersAdapter;
 import org.dhis2.utils.granularsync.SyncStatusDialog;
+import org.dhis2.utils.maps.MapboxExtensionKt;
 import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryOptionCombo;
 import org.hisp.dhis.android.core.common.FeatureType;
@@ -141,7 +142,6 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
         } catch (Exception e) {
             Timber.e(e);
         }
-    //    presenter.getMapData();
     }
 
     @Override
@@ -363,7 +363,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
                             setSource(style, featureCollection);
                             setLayer(style);
 
-                            initCameraPosition(boundingBox);
+                            initCameraPosition(map,this,boundingBox);
 
                             markerViewManager = new MarkerViewManager(binding.mapView, map);
                             symbolManager = new SymbolManager(binding.mapView, map, style, null,
@@ -377,18 +377,18 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
                     }
                     else {
                         ((GeoJsonSource) mapbox.getStyle().getSource("events")).setGeoJson(featureCollection);
-                        initCameraPosition(boundingBox);
+                        initCameraPosition(map,this,boundingBox);
                     }
                 });
             } else {
                 ((GeoJsonSource) map.getStyle().getSource("events")).setGeoJson(featureCollection);
-                initCameraPosition(boundingBox);
+                initCameraPosition(map,this, boundingBox);
             }
     }
 
-    private void initCameraPosition(BoundingBox bbox) {
+    private void initCameraPosition(MapboxMap map,Context context, BoundingBox bbox) {
         LatLngBounds bounds = LatLngBounds.from(bbox.north(), bbox.east(), bbox.south(), bbox.west());
-        map.easeCamera(CameraUpdateFactory.newLatLngBounds(bounds, 50), 1200);
+        MapboxExtensionKt.initDefaultCamera(map, context, bounds);
     }
 
     private void setSource(Style style, FeatureCollection featureCollection) {
