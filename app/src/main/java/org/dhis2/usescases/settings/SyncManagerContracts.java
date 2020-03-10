@@ -66,7 +66,7 @@ public class SyncManagerContracts {
 
         void onItemClick(SettingItem settingItem);
 
-        void init(SyncManagerContracts.View view);
+        void init();
 
         void syncData(int seconds, String scheduleTag);
 

@@ -18,7 +18,9 @@
                 android:id="@+id/settings_sms_receiver"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:imeOptions="actionDone"
                 android:inputType="phone"
+                android:maxLines="1"
                 android:textSize="12sp" />
 
         </com.google.android.material.textfield.TextInputLayout>
@@ -34,6 +36,7 @@
                 android:id="@+id/settings_sms_result_sender"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:imeOptions="actionDone"
                 android:inputType="phone"
                 android:maxLines="1"
                 android:textSize="12sp" />
@@ -52,6 +55,7 @@
                 android:id="@+id/settings_sms_result_timeout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:imeOptions="actionDone"
                 android:inputType="number"
                 android:maxLines="1"
                 android:textSize="12sp" />

@@ -1,8 +1,5 @@
 package org.dhis2.usescases.settings;
 
-import android.content.Context;
-import android.content.SharedPreferences;
-
 import androidx.work.ExistingPeriodicWorkPolicy;
 import androidx.work.ExistingWorkPolicy;
 
@@ -15,16 +12,15 @@ import org.dhis2.usescases.login.LoginActivity;
 import org.dhis2.usescases.reservedValue.ReservedValueActivity;
 import org.dhis2.usescases.settings.models.SettingsViewModel;
 import org.dhis2.utils.Constants;
+import org.dhis2.utils.analytics.AnalyticsHelper;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.maintenance.D2Error;
 import org.hisp.dhis.android.core.settings.LimitScope;
 
 import java.io.File;
 
-import io.reactivex.Completable;
 import io.reactivex.Single;
 import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.observers.DisposableCompletableObserver;
 import io.reactivex.processors.FlowableProcessor;
 import io.reactivex.processors.PublishProcessor;
 import timber.log.Timber;
@@ -40,10 +36,10 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
     private final SchedulerProvider schedulerProvider;
     private final PreferenceProvider preferenceProvider;
     private final SettingsRepository settingsRepository;
+    private final AnalyticsHelper analyticsHelper;
     private CompositeDisposable compositeDisposable;
     private SyncManagerContracts.View view;
     private FlowableProcessor<Boolean> checkData;
-    private SharedPreferences prefs;
     private GatewayValidator gatewayValidator;
     private WorkManagerController workManagerController;
 
@@ -53,13 +49,17 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
             GatewayValidator gatewayValidator,
             PreferenceProvider preferenceProvider,
             WorkManagerController workManagerController,
-            SettingsRepository settingsRepository) {
+            SettingsRepository settingsRepository,
+            SyncManagerContracts.View view,
+            AnalyticsHelper analyticsHelper) {
+        this.view = view;
         this.d2 = d2;
         this.settingsRepository = settingsRepository;
         this.schedulerProvider = schedulerProvider;
         this.preferenceProvider = preferenceProvider;
         this.gatewayValidator = gatewayValidator;
         this.workManagerController = workManagerController;
+        this.analyticsHelper = analyticsHelper;
         checkData = PublishProcessor.create();
     }
 
@@ -69,10 +69,8 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
     }
 
     @Override
-    public void init(SyncManagerContracts.View view) {
-        this.view = view;
+    public void init() {
         this.compositeDisposable = new CompositeDisposable();
-        this.prefs = view.getAbstracContext().getSharedPreferences(Constants.SHARE_PREFS, Context.MODE_PRIVATE);
 
         compositeDisposable.add(
                 checkData.startWith(true)
@@ -97,92 +95,6 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
                                 },
                                 Timber::e
                         ));
-
-    /*    compositeDisposable.add(
-                view.listenToMaxEventsChanges()
-                        .distinctUntilChanged()
-                        .debounce(1000, TimeUnit.MILLISECONDS, schedulerProvider.io())
-                        .map(CharSequence::toString)
-                        .map(dataToSave -> dataToSave.isEmpty() ? 0 : Integer.valueOf(dataToSave))
-                        .toFlowable(BackpressureStrategy.LATEST)
-                        .flatMap(
-                                settingsRepository::saveEventsToDownload)
-                        .observeOn(schedulerProvider.io())
-                        .subscribe(
-                                data -> checkData.onNext(data),
-                                Timber::e
-                        ));
-
-        compositeDisposable.add(
-                view.listenToMaxTeiChanges()
-                        .distinctUntilChanged()
-                        .debounce(1000, TimeUnit.MILLISECONDS, schedulerProvider.io())
-                        .map(CharSequence::toString)
-                        .map(dataToSave -> dataToSave.isEmpty() ? 0 : Integer.valueOf(dataToSave))
-                        .toFlowable(BackpressureStrategy.LATEST)
-                        .flatMap(
-                                settingsRepository::saveTeiToDownload)
-                        .observeOn(schedulerProvider.io())
-                        .subscribe(
-                                data -> checkData.onNext(data),
-                                Timber::d
-                        ));
-
-        compositeDisposable.add(
-                InitialValueObservable.combineLatest(
-                        view.listenToGatewayChanges().skipInitialValue().map(CharSequence::toString)
-                                .distinctUntilChanged(),
-                        view.listenToSmsChanges()
-                                .distinctUntilChanged(),
-                        Pair::create
-                ).debounce(1000, TimeUnit.MILLISECONDS, schedulerProvider.io())
-                        .observeOn(schedulerProvider.ui())
-                        .subscribe(
-                                gateWayAndEnabled -> {
-                                    String gateway = gateWayAndEnabled.val0();
-                                    boolean smsEnabled = gateWayAndEnabled.val1();
-                                    if (!smsEnabled) {
-                                        smsSwitch(false);
-                                    } else if (isGatewaySetAndValid(gateway)) {
-                                        smsSwitch(true);
-                                    } else {
-                                        validateGatewayObservable(gateway);
-                                    }
-                                }
-                                ,
-                                Timber::d
-                        ));
-
-        compositeDisposable.add(
-                view.listenToSmsResponseChanges()
-                        .distinctUntilChanged()
-                        .debounce(1000, TimeUnit.MILLISECONDS, schedulerProvider.io())
-                        .observeOn(schedulerProvider.ui())
-                        .subscribe(
-                                this::smsWaitForResponse,
-                                Timber::d
-                        ));
-        compositeDisposable.add(
-                view.listenToSmsResultSenderChanges()
-                        .distinctUntilChanged()
-                        .debounce(1000, TimeUnit.MILLISECONDS, schedulerProvider.io())
-                        .observeOn(schedulerProvider.ui())
-                        .subscribe(
-                                number -> smsResponseSenderSet(number.toString()),
-                                Timber::d
-                        ));
-
-        compositeDisposable.add(
-                view.listenToSmsTimeoutChanges()
-                        .distinctUntilChanged()
-                        .debounce(1000, TimeUnit.MILLISECONDS, schedulerProvider.io())
-                        .map(CharSequence::toString)
-                        .map(Integer::valueOf)
-                        .observeOn(schedulerProvider.ui())
-                        .subscribe(
-                                this::smsWaitForResponseTimeout,
-                                Timber::d
-                        ));*/
     }
 
     @Override
@@ -288,31 +200,15 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
         settingsRepository.enableSmsModule(enableSms, () -> view.displaySMSEnabled(enableSms));
     }
 
-    /**
-     * This method allows you to create a new periodic DATA sync work with an
-     * interval defined by {@code seconds}. All scheduled works will be cancelled in
-     * order to reschedule a new one.
-     *
-     * @param seconds     period interval in seconds
-     * @param scheduleTag Name of the periodic work (DATA)
-     */
     @Override
     public void syncData(int seconds, String scheduleTag) {
-        prefs.edit().putInt(Constants.TIME_DATA, seconds).apply();
+        preferenceProvider.setValue(Constants.TIME_DATA, seconds);
         workManagerController.cancelUniqueWork(scheduleTag);
         WorkerItem workerItem = new WorkerItem(scheduleTag, WorkerType.DATA, (long) seconds, null, null, ExistingPeriodicWorkPolicy.REPLACE);
         workManagerController.enqueuePeriodicWork(workerItem);
         checkData();
     }
 
-    /**
-     * This method allows you to create a new periodic METADATA sync work with an
-     * interval defined by {@code seconds}. All scheduled works will be cancelled in
-     * order to reschedule a new one.
-     *
-     * @param seconds     period interval in seconds
-     * @param scheduleTag Name of the periodic work (META)
-     */
     @Override
     public void syncMeta(int seconds, String scheduleTag) {
         workManagerController.cancelUniqueWork(scheduleTag);
@@ -321,32 +217,26 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
         checkData();
     }
 
-    /**
-     * This method allows you to run a DATA sync work.
-     */
     @Override
     public void syncData() {
         view.syncData();
-        view.analyticsHelper().setEvent(SYNC_DATA_NOW, CLICK, SYNC_DATA_NOW);
+        analyticsHelper.setEvent(SYNC_DATA_NOW, CLICK, SYNC_DATA_NOW);
         WorkerItem workerItem = new WorkerItem(Constants.DATA_NOW, WorkerType.DATA, null, null, ExistingWorkPolicy.KEEP, null);
         workManagerController.syncDataForWorker(workerItem);
         checkData();
     }
 
-    /**
-     * This method allows you to run a METADATA sync work.
-     */
     @Override
     public void syncMeta() {
         view.syncMeta();
-        view.analyticsHelper().setEvent(SYNC_METADATA_NOW, CLICK, SYNC_METADATA_NOW);
+        analyticsHelper.setEvent(SYNC_METADATA_NOW, CLICK, SYNC_METADATA_NOW);
         WorkerItem workerItem = new WorkerItem(Constants.META_NOW, WorkerType.METADATA, null, null, ExistingWorkPolicy.KEEP, null);
         workManagerController.syncDataForWorker(workerItem);
     }
 
     @Override
     public void cancelPendingWork(String tag) {
-        prefs.edit().putInt(tag.equals(Constants.DATA) ? Constants.TIME_DATA : Constants.TIME_META, 0).apply();
+        preferenceProvider.setValue(tag.equals(Constants.DATA) ? Constants.TIME_DATA : Constants.TIME_META, 0);
         workManagerController.cancelUniqueWork(tag);
         checkData();
     }
@@ -358,24 +248,17 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
 
     @Override
     public void resetSyncParameters() {
-        SharedPreferences.Editor editor = prefs.edit();
-
-        editor.putInt(Constants.EVENT_MAX, Constants.EVENT_MAX_DEFAULT);
-        editor.putInt(Constants.TEI_MAX, Constants.TEI_MAX_DEFAULT);
-        editor.putBoolean(Constants.LIMIT_BY_ORG_UNIT, false);
-        editor.putBoolean(Constants.LIMIT_BY_PROGRAM, false);
-
-        editor.apply();
+        preferenceProvider.setValue(Constants.EVENT_MAX, Constants.EVENT_MAX_DEFAULT);
+        preferenceProvider.setValue(Constants.TEI_MAX, Constants.TEI_MAX_DEFAULT);
+        preferenceProvider.setValue(Constants.LIMIT_BY_ORG_UNIT, false);
+        preferenceProvider.setValue(Constants.LIMIT_BY_PROGRAM, false);
 
         checkData.onNext(true);
-
     }
 
     @Override
     public void onWipeData() {
-
         view.wipeDatabase();
-
     }
 
     @Override

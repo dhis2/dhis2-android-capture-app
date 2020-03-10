@@ -97,7 +97,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
         super.onAttach(context);
         this.context = context;
         ((Components) context.getApplicationContext()).userComponent()
-                .plus(new SyncManagerModule()).inject(this);
+                .plus(new SyncManagerModule(this)).inject(this);
     }
 
     @Override
@@ -136,7 +136,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
                 presenter.checkData();
             }
         });
-        presenter.init(this);
+        presenter.init();
 
         if (!getResources().getBoolean(R.bool.sms_enabled)) {
             binding.settingsSms.getRoot().setVisibility(View.GONE);
@@ -801,6 +801,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
 
     private void setNetworkEdition(boolean isOnline) {
         binding.buttonSyncData.setEnabled(isOnline);
+        binding.buttonSyncMeta.setEnabled(isOnline);
         binding.buttonSyncData.setAlpha(isOnline ? 1.0f : 0.5f);
         binding.buttonSyncMeta.setAlpha(isOnline ? 1.0f : 0.5f);
     }

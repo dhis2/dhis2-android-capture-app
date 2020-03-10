@@ -8,6 +8,7 @@ import io.reactivex.Observable
 import org.dhis2.data.prefs.PreferenceProvider
 import org.dhis2.data.service.SyncPresenterImpl
 import org.dhis2.data.service.workManager.WorkManagerController
+import org.dhis2.utils.analytics.AnalyticsHelper
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.call.D2Progress
 import org.junit.Before
@@ -20,10 +21,11 @@ class SyncPresenterTest {
     private val d2: D2 = mock()
     private val preferences: PreferenceProvider = mock()
     private val workManagerController: WorkManagerController = mock()
+    private val analyticsHelper: AnalyticsHelper = mock()
 
     @Before
     fun setUp() {
-        presenter = SyncPresenterImpl(d2, preferences, workManagerController)
+        presenter = SyncPresenterImpl(d2, preferences, workManagerController, analyticsHelper)
     }
 
     @Test
