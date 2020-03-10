@@ -1,29 +1,17 @@
 package org.dhis2.usescases.programEventDetail;
-
-import android.os.Bundle;
-
 import androidx.annotation.NonNull;
-
 import com.mapbox.mapboxsdk.geometry.LatLng;
 
 import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.data.tuples.Pair;
-import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity;
-import org.dhis2.utils.granularsync.SyncStatusDialog;
-import org.dhis2.utils.Constants;
 import org.dhis2.utils.filters.FilterManager;
 import org.hisp.dhis.android.core.common.Unit;
 
 import io.reactivex.Observable;
 import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.internal.observers.ConsumerSingleObserver;
 import io.reactivex.processors.FlowableProcessor;
 import io.reactivex.processors.PublishProcessor;
 import timber.log.Timber;
-
-import static org.dhis2.utils.Constants.ORG_UNIT;
-import static org.dhis2.utils.Constants.PROGRAM_UID;
-
 
 /**
  * QUADRAM. Created by Cristian on 13/02/2018.
@@ -67,7 +55,7 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
         );
 
         compositeDisposable.add(Observable.just(eventRepository.getAccessDataWrite())
-                .subscribeOn(schedulerProvider.computation())
+                .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
                         view::setWritePermission,
@@ -88,7 +76,7 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
         compositeDisposable.add(
                 eventRepository.program()
                         .observeOn(schedulerProvider.ui())
-                        .subscribeOn(schedulerProvider.computation())
+                        .subscribeOn(schedulerProvider.io())
                         .subscribe(
                                 view::setProgram,
                                 Timber::e
@@ -115,7 +103,7 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
                                 filterManager.getStateFilters(),
                                 filterManager.getAssignedFilter()
                         ))
-                        .subscribeOn(schedulerProvider.computation())
+                        .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.ui())
                         .subscribe(
                                 view::setLiveData,
@@ -138,7 +126,7 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
                         .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.ui())
                         .subscribe(
-                                map -> view.setMap(),
+                                map -> view.setMap(map.component1(), map.component2()),
                                 throwable -> view.renderError(throwable.getMessage())
                         ));
 
@@ -221,7 +209,6 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
 
     @Override
     public void onBackClick() {
-
         view.back();
     }
 
@@ -245,5 +232,4 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
         filterManager.clearAllFilters();
         view.clearFilters();
     }
-
 }

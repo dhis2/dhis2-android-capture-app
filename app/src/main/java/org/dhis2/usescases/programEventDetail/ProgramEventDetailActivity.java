@@ -352,19 +352,18 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
     }
 
     @Override
-    public Consumer<kotlin.Pair<FeatureCollection, BoundingBox>> setMap() {
-        return data -> {
+    public void setMap(FeatureCollection featureCollection, BoundingBox boundingBox) {
             if (map == null) {
-                binding.mapView.getMapAsync(mapboxMap -> {
-                    map = mapboxMap;
+                binding.mapView.getMapAsync(mapbox -> {
+                    map = mapbox;
                     if (map.getStyle() == null){
                         map.setStyle(Style.MAPBOX_STREETS, style -> {
                             map.addOnMapClickListener(this);
                             style.addImage("ICON_ID", BitmapFactory.decodeResource(getResources(), R.drawable.mapbox_marker_icon_default));
-                            setSource(style, data.component1());
+                            setSource(style, featureCollection);
                             setLayer(style);
 
-                            initCameraPosition(data.component2());
+                            initCameraPosition(boundingBox);
 
                             markerViewManager = new MarkerViewManager(binding.mapView, map);
                             symbolManager = new SymbolManager(binding.mapView, map, style, null,
@@ -372,20 +371,19 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
 
                             symbolManager.setIconAllowOverlap(true);
                             symbolManager.setTextAllowOverlap(true);
-                            symbolManager.create(data.component1());
+                            symbolManager.create(featureCollection);
 
                         });
                     }
                     else {
-                        ((GeoJsonSource) mapboxMap.getStyle().getSource("events")).setGeoJson(data.component1());
-                        initCameraPosition(data.component2());
+                        ((GeoJsonSource) mapbox.getStyle().getSource("events")).setGeoJson(featureCollection);
+                        initCameraPosition(boundingBox);
                     }
                 });
             } else {
-                ((GeoJsonSource) map.getStyle().getSource("events")).setGeoJson(data.component1());
-                initCameraPosition(data.component2());
+                ((GeoJsonSource) map.getStyle().getSource("events")).setGeoJson(featureCollection);
+                initCameraPosition(boundingBox);
             }
-        };
     }
 
     private void initCameraPosition(BoundingBox bbox) {
