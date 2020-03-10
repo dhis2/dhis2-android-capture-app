@@ -170,26 +170,22 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
     public void saveGatewayNumber(String gatewayNumber) {
         if (isGatewaySetAndValid(gatewayNumber)) {
             settingsRepository.saveGatewayNumber(gatewayNumber);
-            checkData();
         }
     }
 
     @Override
     public void saveSmsResultSender(String smsResultSender) {
         settingsRepository.saveSmsResultSender(smsResultSender);
-        checkData();
     }
 
     @Override
     public void saveSmsResponseTimeout(Integer smsResponseTimeout) {
         settingsRepository.saveSmsResponseTimeout(smsResponseTimeout);
-        checkData();
     }
 
     @Override
     public void saveWaitForSmsResponse(boolean shouldWait) {
         settingsRepository.saveWaitForSmsResponse(shouldWait);
-        checkData();
     }
 
     @Override
@@ -197,7 +193,18 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
         if (enableSms) {
             view.displaySMSRefreshingData();
         }
-        settingsRepository.enableSmsModule(enableSms, () -> view.displaySMSEnabled(enableSms));
+        compositeDisposable.add(
+                settingsRepository.enableSmsModule(enableSms)
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
+                        .subscribe(
+                                () -> view.displaySMSEnabled(enableSms),
+                                error -> {
+                                    Timber.e(error);
+                                    view.displaySmsEnableError();
+                                }
+                        )
+        );
     }
 
     @Override

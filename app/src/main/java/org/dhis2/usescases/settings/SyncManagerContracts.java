@@ -54,6 +54,8 @@ public class SyncManagerContracts {
         void setSMSSettings(SMSSettingsViewModel smsSettingsViewModel);
 
         void setReservedValuesSettings(ReservedValueSettingsViewModel reservedValueSettingsViewModel);
+
+        void displaySmsEnableError();
     }
 
     public interface Presenter {

@@ -1,5 +1,6 @@
 package org.dhis2.usescases.settings
 
+import io.reactivex.Completable
 import io.reactivex.Single
 import org.dhis2.Bindings.toSeconds
 import org.dhis2.data.prefs.Preference
@@ -30,22 +31,19 @@ class SettingsRepository(
     private val hasProgramSettings: Boolean = d2.settingModule().programSetting().blockingExists()
     private val hasGeneralSettings: Boolean = d2.settingModule().generalSetting().blockingExists()
     private val generalSettings: GeneralSettings?
-    private val programSettings: ProgramSettings?
-    private val smsConfig: ConfigCase.SmsConfig
-
-    init {
-        generalSettings = if (hasGeneralSettings) {
+        get() = if (hasGeneralSettings) {
             d2.settingModule().generalSetting().blockingGet()
         } else {
             null
         }
-        programSettings = if (hasProgramSettings) {
+    private val programSettings: ProgramSettings?
+        get() = if (hasProgramSettings) {
             d2.settingModule().programSetting().blockingGet()
         } else {
             null
         }
-        smsConfig = d2.smsModule().configCase().smsModuleConfig.blockingGet()
-    }
+    private val smsConfig: ConfigCase.SmsConfig
+        get() = d2.smsModule().configCase().smsModuleConfig.blockingGet()
 
     fun dataSync(): Single<DataSettingsViewModel> {
         return Single.just(
@@ -250,16 +248,13 @@ class SettingsRepository(
         d2.smsModule().configCase().setWaitingForResultEnabled(shouldWait).blockingAwait()
     }
 
-    fun enableSmsModule(enable: Boolean, onCompleteListener: Runnable) {
-        if (enable) {
+    fun enableSmsModule(enable: Boolean): Completable {
+        return if (enable) {
             d2.smsModule().configCase().setModuleEnabled(enable)
                 .andThen(d2.smsModule().configCase().refreshMetadataIds())
-                .doOnComplete { onCompleteListener.run() }
-                .blockingAwait()
+
         } else {
             d2.smsModule().configCase().setModuleEnabled(enable)
-                .doOnComplete { onCompleteListener.run() }
-                .blockingAwait()
         }
     }
 }
