@@ -42,6 +42,9 @@ object GeometryUtils {
                     if (point != null) {
                         point.addStringProperty("teiUid", it.tei.uid())
                         point.addStringProperty("teiImage", it.profilePicturePath)
+                        if (it.selectedEnrollment != null){
+                            point.addStringProperty("enrollmentUid", it.selectedEnrollment.uid())
+                        }
                         featureMap["TEI"]!!.add(point)
                     }
                 } else if (geometry.type() == FeatureType.POLYGON) {
