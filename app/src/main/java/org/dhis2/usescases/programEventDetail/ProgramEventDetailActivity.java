@@ -115,12 +115,6 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
     }
 
     @Override
-    protected void onStart() {
-        super.onStart();
-        binding.mapView.onStart();
-    }
-
-    @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         this.programUid = getIntent().getStringExtra(EXTRA_PROGRAM_UID);
 
@@ -147,7 +141,15 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
         } catch (Exception e) {
             Timber.e(e);
         }
+    //    presenter.getMapData();
     }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        binding.mapView.onStart();
+    }
+
 
     @Override
     protected void onResume() {
@@ -177,6 +179,13 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
 
         FilterManager.getInstance().clearEventStatus();
         FilterManager.getInstance().clearCatOptCombo();
+    }
+
+
+    @Override
+    public void onLowMemory() {
+        super.onLowMemory();
+        binding.mapView.onLowMemory();
     }
 
     @Override
@@ -348,27 +357,25 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
             if (map == null) {
                 binding.mapView.getMapAsync(mapboxMap -> {
                     map = mapboxMap;
-                    if (map.getStyle() == null)
+                    if (map.getStyle() == null){
                         map.setStyle(Style.MAPBOX_STREETS, style -> {
+                            map.addOnMapClickListener(this);
+                            style.addImage("ICON_ID", BitmapFactory.decodeResource(getResources(), R.drawable.mapbox_marker_icon_default));
+                            setSource(style, data.component1());
+                            setLayer(style);
 
-                                    map.addOnMapClickListener(this);
-                                    //TODO: GET STAGE ICON
-                                    style.addImage("ICON_ID", BitmapFactory.decodeResource(getResources(), R.drawable.mapbox_marker_icon_default));
-                                    setSource(style, data.component1());
-                                    setLayer(style);
+                            initCameraPosition(data.component2());
 
-                                    initCameraPosition(data.component2());
+                            markerViewManager = new MarkerViewManager(binding.mapView, map);
+                            symbolManager = new SymbolManager(binding.mapView, map, style, null,
+                                    new GeoJsonOptions().withTolerance(0.4f));
 
-                                    markerViewManager = new MarkerViewManager(binding.mapView, map);
-                                    symbolManager = new SymbolManager(binding.mapView, map, style, null,
-                                            new GeoJsonOptions().withTolerance(0.4f));
+                            symbolManager.setIconAllowOverlap(true);
+                            symbolManager.setTextAllowOverlap(true);
+                            symbolManager.create(data.component1());
 
-                                    symbolManager.setIconAllowOverlap(true);
-                                    symbolManager.setTextAllowOverlap(true);
-                                    symbolManager.create(data.component1());
-
-                                }
-                        );
+                        });
+                    }
                     else {
                         ((GeoJsonSource) mapboxMap.getStyle().getSource("events")).setGeoJson(data.component1());
                         initCameraPosition(data.component2());
