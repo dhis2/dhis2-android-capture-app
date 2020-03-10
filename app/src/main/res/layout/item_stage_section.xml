@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        tools:background="@color/form_field_background">
+
+        <ImageView
+            android:id="@+id/shadow_bottom"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:scaleType="fitXY"
+            android:src="@drawable/inner_shadow_bottom"
+            android:visibility="gone"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:visibility="visible" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/stageCard"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:background="@color/white"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            app:layout_constraintTop_toBottomOf="@id/shadow_bottom">
+
+            <ImageView
+                android:id="@+id/programStageIcon"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/square_rounded_corners_2"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:backgroundTint="?colorPrimary"
+                tools:src="@drawable/ic_cardiogram_e_positive" />
+
+            <TextView
+                android:id="@+id/programStageName"
+                android:layout_width="0dp"
+                android:layout_height="24dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:gravity="bottom"
+                android:lines="1"
+                android:textColor="@color/text_black_DE3"
+                android:textSize="14sp"
+                android:translationY="3.71sp"
+                app:layout_constraintEnd_toStartOf="@id/lastUpdatedEvent"
+                app:layout_constraintStart_toEndOf="@id/programStageIcon"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="Program stage name" />
+
+            <TextView
+                android:id="@+id/programStageCount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="5dp"
+                android:textColor="@color/text_black_8A3"
+                android:textSize="12sp"
+                app:layout_constraintStart_toEndOf="@id/programStageIcon"
+                app:layout_constraintTop_toBottomOf="@id/programStageName"
+                tools:text="X events" />
+
+            <TextView
+                android:id="@+id/lastUpdatedEvent"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="7dp"
+                android:textColor="@color/text_black_C4C"
+                android:textSize="12sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="Yesterday" />
+
+            <ImageButton
+                android:id="@+id/addStageButton"
+                style="@style/ActionIcon"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:tint="?colorPrimaryLight"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/ic_add_accent">
+
+            </ImageButton>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <ImageView
+            android:id="@+id/shadow_top"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:scaleType="fitXY"
+            android:src="@drawable/inner_shadow_top"
+            android:visibility="gone"
+            app:layout_constraintTop_toBottomOf="@id/stageCard"
+            tools:visibility="visible" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/schedulenew"
+        android:icon="@drawable/ic_date_range"
+        android:title="@string/schedule_new" />
+
+    <item
+        android:id="@+id/addnew"
+        android:icon="@drawable/ic_note_add"
+        android:title="@string/add_new" />
+
+    <item
+        android:id="@+id/referral"
+        android:icon="@drawable/ic_arrow_forward"
+        android:title="@string/referral" />
+</menu>

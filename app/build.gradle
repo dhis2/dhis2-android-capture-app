@@ -4,6 +4,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'io.fabric'
+apply plugin: 'hu.supercluster.paperwork'
 
 def libraries = rootProject.ext.libraries
 def versions = rootProject.ext.versions
@@ -19,6 +20,13 @@ repositories {
         url("https://oss.sonatype.org/content/repositories/snapshots")
     }
     mavenCentral()
+}
+
+paperwork {
+    set = [
+            buildTime: buildTime("yyyy-MM-dd HH:mm"),
+            gitSha   : gitSha()
+    ]
 }
 
 android {
@@ -213,7 +221,7 @@ dependencies {
 
     debugImplementation project(':dhis2-rule-engine')
     betaImplementation project(':dhis2-rule-engine')
-    
+
     implementation project(':viewpagerdotsindicator')
     implementation project(':tableview')
 
@@ -237,7 +245,7 @@ dependencies {
         exclude group: "org.hisp.dhis", module: "core-rules"
     }
 
-    releaseImplementation ("org.hisp.dhis.rules:rule-engine:${libraries.ruleEngine}"){
+    releaseImplementation("org.hisp.dhis.rules:rule-engine:${libraries.ruleEngine}") {
         exclude group: "junit", module: "junit"
     }
     //endregion
@@ -302,7 +310,6 @@ dependencies {
 
     //GSON
     implementation 'com.google.code.gson:gson:2.8.5'
-
 
 
     //CRASHLYTICS
