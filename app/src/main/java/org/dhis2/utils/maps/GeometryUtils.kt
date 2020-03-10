@@ -51,6 +51,9 @@ object GeometryUtils {
                     val polygon = getPolygonFeature(geometry)
                     polygon.addStringProperty("teiUid", it.tei.uid())
                     polygon.addStringProperty("teiImage", it.profilePicturePath)
+                    if (it.selectedEnrollment != null){
+                        polygon.addStringProperty("enrollmentUid", it.selectedEnrollment.uid())
+                    }
                     featureMap["TEI"]!!.add(polygon)
                     val polygonPoint = getPolygonPointFeature(geometry)
                     polygonPoint.addStringProperty("teiUid", it.tei.uid())
