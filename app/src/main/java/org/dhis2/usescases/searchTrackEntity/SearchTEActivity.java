@@ -170,7 +170,6 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
                 .detectAll()
                 .penaltyLog()
-//                    .penaltyDeath()
                 .build());
 
         tEType = getIntent().getStringExtra("TRACKED_ENTITY_UID");
@@ -544,9 +543,6 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             prefs.edit().remove(Constants.PROGRAM_THEME).apply();
             int colorPrimary;
             switch (prefs.getInt(Constants.THEME, R.style.AppTheme)) {
-                case R.style.AppTheme:
-                    colorPrimary = R.color.colorPrimary;
-                    break;
                 case R.style.RedTheme:
                     colorPrimary = R.color.colorPrimaryRed;
                     break;
@@ -697,8 +693,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
     /*region MAP*/
     @Override
-    public Consumer<Pair<HashMap<String, FeatureCollection>, BoundingBox>> setMap() {
-        return data -> {
+    public void setMap(HashMap<String, FeatureCollection> teiFeatureCollections, BoundingBox boundingBox) {
             if (map == null)
                 binding.mapView.getMapAsync(mapboxMap -> {
                     map = mapboxMap;
@@ -706,6 +701,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                         map.setStyle(Style.MAPBOX_STREETS, style -> {
                                     binding.mapLayerButton.setVisibility(View.VISIBLE);
                                     MapLayerManager.Companion.init(style, "teis", featureType);
+
                                     MapLayerManager.Companion.instance().setEnrollmentLayerData(
                                             presenter.getProgram() != null ?
                                                     ColorUtils.getColorFrom(presenter.getProgram().style() != null ? presenter.getProgram().style().color() : null, ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.PRIMARY)) :
@@ -722,14 +718,14 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                                     style.addImage("ICON_ID", MarkerUtils.INSTANCE.getMarker(this, presenter.getSymbolIcon(), presenter.getTEIColor()));
                                     style.addImage("ICON_ENROLLMENT_ID", MarkerUtils.INSTANCE.getMarker(this, presenter.getEnrollmentSymbolIcon(), presenter.getEnrollmentColor()));
 
-                                    setSource(style, data.component1());
+                                    setSource(style, teiFeatureCollections);
 
                                     setLayer(style);
 
-                                    LatLngBounds bounds = LatLngBounds.from(data.component2().north(),
-                                            data.component2().east(),
-                                            data.component2().south(),
-                                            data.component2().west());
+                                    LatLngBounds bounds = LatLngBounds.from(boundingBox.north(),
+                                            boundingBox.east(),
+                                            boundingBox.south(),
+                                            boundingBox.west());
 
                                     map.easeCamera(CameraUpdateFactory.newLatLngBounds(bounds, 50), 1200);
 
@@ -739,8 +735,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
                                     symbolManager.setIconAllowOverlap(true);
                                     symbolManager.setTextAllowOverlap(true);
-                                    symbolManager.create(data.component1().get("TEI"));
-
+                                    symbolManager.create(teiFeatureCollections.get("TEI"));
                                 }
                         );
 
@@ -761,27 +756,27 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
                     } else {
                         binding.mapLayerButton.setVisibility(View.VISIBLE);
-                        ((GeoJsonSource) mapboxMap.getStyle().getSource("teis")).setGeoJson(data.component1().get("TEI"));
-                        ((GeoJsonSource) mapboxMap.getStyle().getSource("enrollments")).setGeoJson(data.component1().get("ENROLLMENT"));
-                        LatLngBounds bounds = LatLngBounds.from(data.component2().north(),
-                                data.component2().east(),
-                                data.component2().south(),
-                                data.component2().west());
+                        ((GeoJsonSource) mapboxMap.getStyle().getSource("teis")).setGeoJson(teiFeatureCollections.get("TEI"));
+                        ((GeoJsonSource) mapboxMap.getStyle().getSource("enrollments")).setGeoJson(teiFeatureCollections.get("ENROLLMENT"));
+                        LatLngBounds bounds = LatLngBounds.from(boundingBox.north(),
+                                boundingBox.east(),
+                                boundingBox.south(),
+                                boundingBox.west());
 
                         map.easeCamera(CameraUpdateFactory.newLatLngBounds(bounds, 50), 1200);
                     }
                 });
             else {
-                ((GeoJsonSource) map.getStyle().getSource("teis")).setGeoJson(data.component1().get("TEI"));
-                ((GeoJsonSource) map.getStyle().getSource("enrollments")).setGeoJson(data.component1().get("ENROLLMENT"));
-                LatLngBounds bounds = LatLngBounds.from(data.component2().north(),
-                        data.component2().east(),
-                        data.component2().south(),
-                        data.component2().west());
+                ((GeoJsonSource) map.getStyle().getSource("teis")).setGeoJson(teiFeatureCollections.get("TEI"));
+                ((GeoJsonSource) map.getStyle().getSource("enrollments")).setGeoJson(teiFeatureCollections.get("ENROLLMENT"));
+                LatLngBounds bounds = LatLngBounds.from(boundingBox.north(),
+                        boundingBox.east(),
+                        boundingBox.south(),
+                        boundingBox.west());
 
                 map.easeCamera(CameraUpdateFactory.newLatLngBounds(bounds, 50), 1200);
             }
-        };
+
     }
 
     @Override
