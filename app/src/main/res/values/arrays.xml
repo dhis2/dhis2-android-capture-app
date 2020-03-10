@@ -4,14 +4,24 @@
     <string-array name="data_sync_periods">
         <item>@string/fifteen_minute</item>
         <item>@string/a_hour</item>
+        <item>@string/every_6_hours</item>
+        <item>@string/every_12_hours</item>
         <item>@string/a_day</item>
         <item>@string/Manual</item>
     </string-array>
 
     <string-array name="metadata_sync_periods">
+        <item>@string/every_12_hours</item>
         <item>@string/a_day</item>
         <item>@string/a_week</item>
         <item>@string/Manual</item>
+    </string-array>
+
+    <string-array name="download_limit_scope">
+        <item>@string/settings_limit_globally</item>
+        <item>@string/settings_limit_ou</item>
+        <item>@string/settings_limit_program</item>
+        <item>@string/settings_limit_ou_program</item>
     </string-array>
 
 </resources>

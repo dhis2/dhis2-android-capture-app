@@ -19,12 +19,29 @@ public final class SyncManagerModule {
             SchedulerProvider schedulerProvider,
             GatewayValidator gatewayValidator,
             PreferenceProvider preferenceProvider,
-            WorkManagerController workManagerController) {
-        return new SyncManagerPresenter(d2, schedulerProvider, gatewayValidator, preferenceProvider, workManagerController);
+            WorkManagerController workManagerController,
+            SettingsRepository settingsRepository) {
+        return new SyncManagerPresenter(d2,
+                schedulerProvider,
+                gatewayValidator,
+                preferenceProvider,
+                workManagerController,
+                settingsRepository);
     }
 
-    @Provides @PerFragment
-    GatewayValidator providesGatewayValidator(){
+    @Provides
+    @PerFragment
+    SettingsRepository provideRepository(
+            D2 d2,
+            PreferenceProvider preferenceProvider
+    ) {
+        return new SettingsRepository(d2,
+                preferenceProvider);
+    }
+
+    @Provides
+    @PerFragment
+    GatewayValidator providesGatewayValidator() {
         return new GatewayValidator();
     }
 }

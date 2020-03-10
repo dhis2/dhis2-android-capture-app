@@ -5,6 +5,7 @@ import androidx.work.ExistingWorkPolicy
 import androidx.work.ListenableWorker
 import io.reactivex.Completable
 import io.reactivex.Observable
+import org.dhis2.Bindings.toSeconds
 import org.dhis2.data.prefs.Preference.Companion.DATA
 import org.dhis2.data.prefs.Preference.Companion.EVENT_MAX
 import org.dhis2.data.prefs.Preference.Companion.EVENT_MAX_DEFAULT
@@ -30,6 +31,7 @@ import org.hisp.dhis.android.core.program.ProgramType
 import org.hisp.dhis.android.core.settings.GeneralSettings
 import org.hisp.dhis.android.core.settings.LimitScope
 import org.hisp.dhis.android.core.settings.ProgramSettings
+import org.hisp.dhis.android.core.systeminfo.DHISVersion
 import timber.log.Timber
 import java.util.ArrayList
 import java.util.Calendar
@@ -80,10 +82,10 @@ class SyncPresenterImpl(
             globalProgramSettings?.teiDownload() ?: preferences.getInt(TEI_MAX, TEI_MAX_DEFAULT)
         val limitByOU = globalProgramSettings?.settingDownload()?.let {
             it == LimitScope.PER_ORG_UNIT || it == LimitScope.PER_OU_AND_PROGRAM
-        }?:preferences.getBoolean(LIMIT_BY_ORG_UNIT, false)
+        } ?: preferences.getBoolean(LIMIT_BY_ORG_UNIT, false)
         val limitByProgram = globalProgramSettings?.settingDownload()?.let {
             it == LimitScope.PER_PROGRAM || it == LimitScope.PER_OU_AND_PROGRAM
-        }?:preferences.getBoolean(LIMIT_BY_PROGRAM, false)
+        } ?: preferences.getBoolean(LIMIT_BY_PROGRAM, false)
 
         Completable.fromObservable(d2.trackedEntityModule().trackedEntityInstances().upload())
             .andThen(
@@ -130,26 +132,28 @@ class SyncPresenterImpl(
                 }
                 .doOnComplete { setUpSMS() }
 
-        )            .blockingAwait()
+        ).blockingAwait()
     }
 
     private fun setUpSMS() {
         val globalSettings = getSettings()
 
-        if (!globalSettings.numberSmsToSend().isNullOrEmpty()) {
-            d2.smsModule().configCase().setGatewayNumber(globalSettings.numberSmsToSend())
-                .andThen(
-                    if (!globalSettings.numberSmsConfirmation().isNullOrEmpty()) {
-                        d2.smsModule().configCase()
-                            .setConfirmationSenderNumber(globalSettings.numberSmsConfirmation())
-                    } else {
-                        Completable.complete()
-                    }
-                ).andThen(
-                    d2.smsModule().configCase().setModuleEnabled(true)
-                ).andThen(
-                    d2.smsModule().configCase().refreshMetadataIds()
-                ).blockingAwait()
+        globalSettings?.let {
+            if (!globalSettings.numberSmsToSend().isNullOrEmpty()) {
+                d2.smsModule().configCase().setGatewayNumber(globalSettings.numberSmsToSend())
+                    .andThen(
+                        if (!globalSettings.numberSmsConfirmation().isNullOrEmpty()) {
+                            d2.smsModule().configCase()
+                                .setConfirmationSenderNumber(globalSettings.numberSmsConfirmation())
+                        } else {
+                            Completable.complete()
+                        }
+                    ).andThen(
+                        d2.smsModule().configCase().setModuleEnabled(true)
+                    ).andThen(
+                        d2.smsModule().configCase().refreshMetadataIds()
+                    ).blockingAwait()
+            }
         }
     }
 
@@ -159,13 +163,17 @@ class SyncPresenterImpl(
     }
 
     override fun downloadResources() {
-        if (d2.systemInfoModule().versionManager().is2_33) {
+        if (d2.systemInfoModule().versionManager().isGreaterThan(DHISVersion.V2_32)) {
             d2.fileResourceModule().blockingDownload()
         }
     }
 
     override fun syncReservedValues() {
-        d2.trackedEntityModule().reservedValueManager().blockingDownloadAllReservedValues(100)
+        val maxNumberOfValuesToReserve = getSettings()?.let {
+            it.reservedValues() ?: 100
+        } ?: 100
+        d2.trackedEntityModule().reservedValueManager()
+            .blockingDownloadAllReservedValues(maxNumberOfValuesToReserve)
     }
 
     override fun checkSyncStatus(): Boolean {
@@ -388,7 +396,8 @@ class SyncPresenterImpl(
     }
 
     override fun startPeriodicDataWork() {
-        val seconds = preferences.getInt(TIME_DATA, TIME_DAILY)
+        val seconds =
+            getSettings()?.dataSync()?.toSeconds() ?: preferences.getInt(TIME_DATA, TIME_DAILY)
         workManagerController.cancelUniqueWork(DATA)
 
         if (seconds != 0) {
@@ -404,7 +413,8 @@ class SyncPresenterImpl(
     }
 
     override fun startPeriodicMetaWork() {
-        val seconds = preferences.getInt(TIME_META, TIME_DAILY)
+        val seconds =
+            getSettings()?.metadataSync()?.toSeconds() ?: preferences.getInt(TIME_META, TIME_DAILY)
         workManagerController.cancelUniqueWork(META)
 
         if (seconds != 0) {
@@ -419,7 +429,7 @@ class SyncPresenterImpl(
         }
     }
 
-    private fun getSettings(): GeneralSettings {
+    private fun getSettings(): GeneralSettings? {
         return d2.settingModule().generalSetting().blockingGet()
     }
 

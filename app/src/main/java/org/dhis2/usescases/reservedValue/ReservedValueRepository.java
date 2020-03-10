@@ -1,10 +1,11 @@
 package org.dhis2.usescases.reservedValue;
 
+import org.hisp.dhis.android.core.trackedentity.ReservedValueSummary;
+
 import java.util.List;
 
-import io.reactivex.Flowable;
+import io.reactivex.Single;
 
 public interface ReservedValueRepository {
-
-    Flowable<List<ReservedValueModel>> getDataElements();
+    Single<List<ReservedValueSummary>> getReservedValues();
 }

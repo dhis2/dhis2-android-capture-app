@@ -1,76 +1,80 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_marginTop="@dimen/item_margin"
-    android:gravity="end"
-    android:orientation="vertical">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/settings_sms_receiver_layout"
-        android:theme="@style/TextInputLayoutAppearance"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:hint="@string/settings_sms_receiver_number"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
 
-        <com.google.android.material.textfield.TextInputEditText
-            android:inputType="phone"
-            android:id="@+id/settings_sms_receiver"
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/settings_sms_receiver_layout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:hint="@string/settings_sms_receiver_number"
+            android:theme="@style/TextInputLayoutAppearance">
 
-    </com.google.android.material.textfield.TextInputLayout>
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/settings_sms_receiver"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="phone"
+                android:textSize="12sp" />
 
-    <androidx.appcompat.widget.SwitchCompat
-        android:id="@+id/settings_sms_switch"
-        android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:layout_marginTop="5dp"
-        android:text="@string/settings_sms_module_switch"
-        android:textSize="12sp"
-        app:switchPadding="15dp" />
+        </com.google.android.material.textfield.TextInputLayout>
 
-    <androidx.appcompat.widget.SwitchCompat
-        android:id="@+id/settings_sms_response_wait_switch"
-        android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:text="@string/settings_sms_response_wait_switch"
-        android:textSize="12sp"
-        app:switchPadding="15dp" />
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/settings_sms_result_sender_layout"
-        android:theme="@style/TextInputLayoutAppearance"
-        android:layout_width="match_parent"
-        android:hint="@string/settings_sms_result_sender_number"
-        android:layout_height="wrap_content">
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:inputType="phone"
-            android:maxLines="1"
-            android:id="@+id/settings_sms_result_sender"
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/settings_sms_result_sender_layout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:hint="@string/settings_sms_result_sender_number"
+            android:theme="@style/TextInputLayoutAppearance">
 
-    </com.google.android.material.textfield.TextInputLayout>
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/settings_sms_result_sender"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="phone"
+                android:maxLines="1"
+                android:textSize="12sp" />
+
+        </com.google.android.material.textfield.TextInputLayout>
 
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/settings_sms_result_timeout_layout"
-        android:theme="@style/TextInputLayoutAppearance"
-        android:layout_width="match_parent"
-        android:hint="@string/settings_sms_result_timeout"
-        android:layout_height="wrap_content">
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:inputType="number"
-            android:maxLines="1"
-            android:id="@+id/settings_sms_result_timeout"
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/settings_sms_result_timeout_layout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:hint="@string/settings_sms_result_timeout"
+            android:theme="@style/TextInputLayoutAppearance">
 
-    </com.google.android.material.textfield.TextInputLayout>
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/settings_sms_result_timeout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="number"
+                android:maxLines="1"
+                android:textSize="12sp" />
 
-</LinearLayout>
+        </com.google.android.material.textfield.TextInputLayout>
+
+
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/settings_sms_switch"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginTop="5dp"
+            android:text="@string/settings_sms_module_switch"
+            android:textSize="12sp"
+            app:switchPadding="15dp" />
+
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/settings_sms_response_wait_switch"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:text="@string/settings_sms_response_wait_switch"
+            android:textSize="12sp"
+            app:switchPadding="15dp" />
+
+    </LinearLayout>
+</layout>

@@ -10,6 +10,7 @@ import org.dhis2.utils.Constants.SECURE_CREDENTIALS
 import org.dhis2.utils.Constants.SECURE_PASS
 import org.dhis2.utils.Constants.SECURE_SERVER_URL
 import org.dhis2.utils.Constants.SECURE_USER_NAME
+import org.hisp.dhis.android.core.D2Manager
 
 class PreferenceProviderImpl(val context: Context) : PreferenceProvider {
 

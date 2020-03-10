@@ -1,44 +1,37 @@
 package org.dhis2.usescases.settings;
 
-import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
-import static org.dhis2.utils.analytics.AnalyticsConstants.SYNC_DATA_NOW;
-import static org.dhis2.utils.analytics.AnalyticsConstants.SYNC_METADATA_NOW;
-
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-
-import org.dhis2.data.prefs.PreferenceProvider;
-import org.dhis2.data.schedulers.SchedulerProvider;
-import org.dhis2.data.service.SyncDataWorker;
-import org.dhis2.data.service.SyncMetadataWorker;
-import org.dhis2.data.service.workManager.WorkManagerController;
-import org.dhis2.data.service.workManager.WorkerItem;
-import org.dhis2.data.service.workManager.WorkerType;
-import org.dhis2.data.tuples.Pair;
-import org.dhis2.usescases.login.LoginActivity;
-import org.dhis2.usescases.reservedValue.ReservedValueActivity;
-import org.dhis2.utils.Constants;
-import org.hisp.dhis.android.core.D2;
-import org.hisp.dhis.android.core.common.State;
-import org.hisp.dhis.android.core.event.Event;
-import org.hisp.dhis.android.core.maintenance.D2Error;
-import org.hisp.dhis.android.core.sms.domain.interactor.ConfigCase;
-
 import android.content.Context;
 import android.content.SharedPreferences;
 
 import androidx.work.ExistingPeriodicWorkPolicy;
 import androidx.work.ExistingWorkPolicy;
 
+import org.dhis2.data.prefs.PreferenceProvider;
+import org.dhis2.data.schedulers.SchedulerProvider;
+import org.dhis2.data.service.workManager.WorkManagerController;
+import org.dhis2.data.service.workManager.WorkerItem;
+import org.dhis2.data.service.workManager.WorkerType;
+import org.dhis2.usescases.login.LoginActivity;
+import org.dhis2.usescases.reservedValue.ReservedValueActivity;
+import org.dhis2.usescases.settings.models.SettingsViewModel;
+import org.dhis2.utils.Constants;
+import org.hisp.dhis.android.core.D2;
+import org.hisp.dhis.android.core.maintenance.D2Error;
+import org.hisp.dhis.android.core.settings.LimitScope;
+
+import java.io.File;
+
 import io.reactivex.Completable;
+import io.reactivex.Single;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.observers.DisposableCompletableObserver;
-import io.reactivex.observers.DisposableSingleObserver;
 import io.reactivex.processors.FlowableProcessor;
 import io.reactivex.processors.PublishProcessor;
 import timber.log.Timber;
+
+import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
+import static org.dhis2.utils.analytics.AnalyticsConstants.SYNC_DATA_NOW;
+import static org.dhis2.utils.analytics.AnalyticsConstants.SYNC_METADATA_NOW;
 
 
 public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
@@ -46,6 +39,7 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
     private final D2 d2;
     private final SchedulerProvider schedulerProvider;
     private final PreferenceProvider preferenceProvider;
+    private final SettingsRepository settingsRepository;
     private CompositeDisposable compositeDisposable;
     private SyncManagerContracts.View view;
     private FlowableProcessor<Boolean> checkData;
@@ -58,8 +52,10 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
             SchedulerProvider schedulerProvider,
             GatewayValidator gatewayValidator,
             PreferenceProvider preferenceProvider,
-            WorkManagerController workManagerController) {
+            WorkManagerController workManagerController,
+            SettingsRepository settingsRepository) {
         this.d2 = d2;
+        this.settingsRepository = settingsRepository;
         this.schedulerProvider = schedulerProvider;
         this.preferenceProvider = preferenceProvider;
         this.gatewayValidator = gatewayValidator;
@@ -68,7 +64,7 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
     }
 
     @Override
-    public void onItemClick(int settingsItem) {
+    public void onItemClick(SettingItem settingsItem) {
         view.openItem(settingsItem);
     }
 
@@ -78,66 +74,220 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
         this.compositeDisposable = new CompositeDisposable();
         this.prefs = view.getAbstracContext().getSharedPreferences(Constants.SHARE_PREFS, Context.MODE_PRIVATE);
 
-        compositeDisposable.add(checkData.startWith(true).map(start -> {
-            int teiCount = d2.trackedEntityModule().trackedEntityInstances()
-                    .byState().neq(State.RELATIONSHIP)
-                    .byDeleted().isFalse()
-                    .blockingCount();
-            int eventCount = d2.eventModule().events()
-                    .byEnrollmentUid().isNull()
-                    .byDeleted().isFalse()
-                    .blockingCount();
-            return Pair.create(teiCount, eventCount);
-        }).subscribeOn(schedulerProvider.io()).observeOn(schedulerProvider.ui()).subscribe(view.setSyncData(),
-                Timber::e));
+        compositeDisposable.add(
+                checkData.startWith(true)
+                        .flatMapSingle(start ->
+                                Single.zip(
+                                        settingsRepository.metaSync(),
+                                        settingsRepository.dataSync(),
+                                        settingsRepository.syncParameters(),
+                                        settingsRepository.reservedValues(),
+                                        settingsRepository.sms(),
+                                        SettingsViewModel::new
+                                ))
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
+                        .subscribe(
+                                settingsViewModel -> {
+                                    view.setMetadataSettings(settingsViewModel.getMetadataSettingsViewModel());
+                                    view.setDataSettings(settingsViewModel.getDataSettingsViewModel());
+                                    view.setParameterSettings(settingsViewModel.getSyncParametersViewModel());
+                                    view.setReservedValuesSettings(settingsViewModel.getReservedValueSettingsViewModel());
+                                    view.setSMSSettings(settingsViewModel.getSmsSettingsViewModel());
+                                },
+                                Timber::e
+                        ));
 
-        ConfigCase smsConfig = d2.smsModule().configCase();
-        compositeDisposable.add(smsConfig.getSmsModuleConfig().subscribeOn(schedulerProvider.io())
-                .observeOn(schedulerProvider.ui()).subscribeWith(new DisposableSingleObserver<ConfigCase.SmsConfig>() {
-                    @Override
-                    public void onSuccess(ConfigCase.SmsConfig c) {
-                        view.showSmsSettings(c.isModuleEnabled(), c.getGateway(), c.isWaitingForResult(),
-                                c.getResultSender(), c.getResultWaitingTimeout());
-                    }
+    /*    compositeDisposable.add(
+                view.listenToMaxEventsChanges()
+                        .distinctUntilChanged()
+                        .debounce(1000, TimeUnit.MILLISECONDS, schedulerProvider.io())
+                        .map(CharSequence::toString)
+                        .map(dataToSave -> dataToSave.isEmpty() ? 0 : Integer.valueOf(dataToSave))
+                        .toFlowable(BackpressureStrategy.LATEST)
+                        .flatMap(
+                                settingsRepository::saveEventsToDownload)
+                        .observeOn(schedulerProvider.io())
+                        .subscribe(
+                                data -> checkData.onNext(data),
+                                Timber::e
+                        ));
 
-                    @Override
-                    public void onError(Throwable e) {
-                        Timber.e(e);
-                    }
-                }));
+        compositeDisposable.add(
+                view.listenToMaxTeiChanges()
+                        .distinctUntilChanged()
+                        .debounce(1000, TimeUnit.MILLISECONDS, schedulerProvider.io())
+                        .map(CharSequence::toString)
+                        .map(dataToSave -> dataToSave.isEmpty() ? 0 : Integer.valueOf(dataToSave))
+                        .toFlowable(BackpressureStrategy.LATEST)
+                        .flatMap(
+                                settingsRepository::saveTeiToDownload)
+                        .observeOn(schedulerProvider.io())
+                        .subscribe(
+                                data -> checkData.onNext(data),
+                                Timber::d
+                        ));
+
+        compositeDisposable.add(
+                InitialValueObservable.combineLatest(
+                        view.listenToGatewayChanges().skipInitialValue().map(CharSequence::toString)
+                                .distinctUntilChanged(),
+                        view.listenToSmsChanges()
+                                .distinctUntilChanged(),
+                        Pair::create
+                ).debounce(1000, TimeUnit.MILLISECONDS, schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
+                        .subscribe(
+                                gateWayAndEnabled -> {
+                                    String gateway = gateWayAndEnabled.val0();
+                                    boolean smsEnabled = gateWayAndEnabled.val1();
+                                    if (!smsEnabled) {
+                                        smsSwitch(false);
+                                    } else if (isGatewaySetAndValid(gateway)) {
+                                        smsSwitch(true);
+                                    } else {
+                                        validateGatewayObservable(gateway);
+                                    }
+                                }
+                                ,
+                                Timber::d
+                        ));
+
+        compositeDisposable.add(
+                view.listenToSmsResponseChanges()
+                        .distinctUntilChanged()
+                        .debounce(1000, TimeUnit.MILLISECONDS, schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
+                        .subscribe(
+                                this::smsWaitForResponse,
+                                Timber::d
+                        ));
+        compositeDisposable.add(
+                view.listenToSmsResultSenderChanges()
+                        .distinctUntilChanged()
+                        .debounce(1000, TimeUnit.MILLISECONDS, schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
+                        .subscribe(
+                                number -> smsResponseSenderSet(number.toString()),
+                                Timber::d
+                        ));
+
+        compositeDisposable.add(
+                view.listenToSmsTimeoutChanges()
+                        .distinctUntilChanged()
+                        .debounce(1000, TimeUnit.MILLISECONDS, schedulerProvider.io())
+                        .map(CharSequence::toString)
+                        .map(Integer::valueOf)
+                        .observeOn(schedulerProvider.ui())
+                        .subscribe(
+                                this::smsWaitForResponseTimeout,
+                                Timber::d
+                        ));*/
     }
 
-    public void validateGatewayObservable(String gateway){
+    @Override
+    public int getMetadataPeriodSetting() {
+        return settingsRepository.metaSync()
+                .blockingGet()
+                .getMetadataSyncPeriod();
+    }
+
+    @Override
+    public int getDataPeriodSetting() {
+        return settingsRepository.dataSync()
+                .blockingGet()
+                .getDataSyncPeriod();
+    }
+
+    public void validateGatewayObservable(String gateway) {
         if (plusIsMissingOrIsTooLong(gateway)) {
             view.showInvalidGatewayError();
-        } else if (gateway.isEmpty()){
+        } else if (gateway.isEmpty()) {
             view.requestNoEmptySMSGateway();
-        } else if (isValidGateway(gateway)){
+        } else if (isValidGateway(gateway)) {
             view.hideGatewayError();
-            smsNumberSet(gateway);
         }
     }
 
-    private boolean isValidGateway(String gateway){
+    private boolean isValidGateway(String gateway) {
         return gatewayValidator.validate(gateway) ||
                 (gateway.startsWith("+") && gateway.length() == 1);
     }
 
-    private boolean plusIsMissingOrIsTooLong(String gateway){
+    private boolean plusIsMissingOrIsTooLong(String gateway) {
         return (!gateway.startsWith("+") && gateway.length() == 1) ||
                 (gateway.length() >= GatewayValidator.Companion.getMax_size());
     }
 
     public boolean isGatewaySetAndValid(String gateway) {
-        if (gateway.isEmpty()){
+        if (gateway.isEmpty()) {
             view.requestNoEmptySMSGateway();
             return false;
-        } else if (!gatewayValidator.validate(gateway)){
+        } else if (!gatewayValidator.validate(gateway)) {
             view.showInvalidGatewayError();
             return false;
         }
         return true;
     }
+
+    @Override
+    public void saveLimitScope(LimitScope limitScope) {
+        settingsRepository.saveLimitScope(limitScope);
+        checkData.onNext(true);
+    }
+
+    @Override
+    public void saveEventMaxCount(Integer eventsNumber) {
+        settingsRepository.saveEventsToDownload(eventsNumber);
+        checkData.onNext(true);
+    }
+
+    @Override
+    public void saveTeiMaxCount(Integer teiNumber) {
+        settingsRepository.saveTeiToDownload(teiNumber);
+        checkData.onNext(true);
+    }
+
+    @Override
+    public void saveReservedValues(Integer reservedValuesCount) {
+        settingsRepository.saveReservedValuesToDownload(reservedValuesCount);
+        checkData.onNext(true);
+    }
+
+    @Override
+    public void saveGatewayNumber(String gatewayNumber) {
+        if (isGatewaySetAndValid(gatewayNumber)) {
+            settingsRepository.saveGatewayNumber(gatewayNumber);
+            checkData();
+        }
+    }
+
+    @Override
+    public void saveSmsResultSender(String smsResultSender) {
+        settingsRepository.saveSmsResultSender(smsResultSender);
+        checkData();
+    }
+
+    @Override
+    public void saveSmsResponseTimeout(Integer smsResponseTimeout) {
+        settingsRepository.saveSmsResponseTimeout(smsResponseTimeout);
+        checkData();
+    }
+
+    @Override
+    public void saveWaitForSmsResponse(boolean shouldWait) {
+        settingsRepository.saveWaitForSmsResponse(shouldWait);
+        checkData();
+    }
+
+    @Override
+    public void enableSmsModule(boolean enableSms) {
+        if (enableSms) {
+            view.displaySMSRefreshingData();
+        }
+        settingsRepository.enableSmsModule(enableSms, () -> view.displaySMSEnabled(enableSms));
+    }
+
     /**
      * This method allows you to create a new periodic DATA sync work with an
      * interval defined by {@code seconds}. All scheduled works will be cancelled in
@@ -148,9 +298,11 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
      */
     @Override
     public void syncData(int seconds, String scheduleTag) {
+        prefs.edit().putInt(Constants.TIME_DATA, seconds).apply();
         workManagerController.cancelUniqueWork(scheduleTag);
         WorkerItem workerItem = new WorkerItem(scheduleTag, WorkerType.DATA, (long) seconds, null, null, ExistingPeriodicWorkPolicy.REPLACE);
         workManagerController.enqueuePeriodicWork(workerItem);
+        checkData();
     }
 
     /**
@@ -166,6 +318,7 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
         workManagerController.cancelUniqueWork(scheduleTag);
         WorkerItem workerItem = new WorkerItem(scheduleTag, WorkerType.METADATA, (long) seconds, null, null, ExistingPeriodicWorkPolicy.REPLACE);
         workManagerController.enqueuePeriodicWork(workerItem);
+        checkData();
     }
 
     /**
@@ -173,9 +326,11 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
      */
     @Override
     public void syncData() {
+        view.syncData();
         view.analyticsHelper().setEvent(SYNC_DATA_NOW, CLICK, SYNC_DATA_NOW);
         WorkerItem workerItem = new WorkerItem(Constants.DATA_NOW, WorkerType.DATA, null, null, ExistingWorkPolicy.KEEP, null);
         workManagerController.syncDataForWorker(workerItem);
+        checkData();
     }
 
     /**
@@ -191,116 +346,13 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
 
     @Override
     public void cancelPendingWork(String tag) {
+        prefs.edit().putInt(tag.equals(Constants.DATA) ? Constants.TIME_DATA : Constants.TIME_META, 0).apply();
         workManagerController.cancelUniqueWork(tag);
+        checkData();
     }
 
     @Override
-    public void smsNumberSet(String number) {
-        compositeDisposable.add(
-                d2.smsModule().configCase().setGatewayNumber(number).subscribeWith(new DisposableCompletableObserver() {
-                    @Override
-                    public void onComplete() {
-                        Timber.d("SMS gateway set to %s", number);
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        view.requestNoEmptySMSGateway();
-                    }
-                }));
-    }
-
-    @Override
-    public void smsSwitch(boolean isChecked) {
-
-        if(d2.smsModule().configCase().getSmsModuleConfig().blockingGet().isModuleEnabled() != isChecked) {
-
-            Completable completable;
-            if (isChecked) {
-                view.displaySMSRefreshingData();
-                completable = d2.smsModule().configCase().setModuleEnabled(true)
-                        .andThen(d2.smsModule().configCase().refreshMetadataIds());
-            } else {
-                completable = d2.smsModule().configCase().setModuleEnabled(false);
-            }
-
-            compositeDisposable
-                    .add(completable.subscribeOn(schedulerProvider.io()).subscribeWith(new DisposableCompletableObserver() {
-                        @Override
-                        public void onComplete() {
-                            view.displaySMSEnabled(isChecked);
-                        }
-
-                        @Override
-                        public void onError(Throwable e) {
-                            Timber.e(e);
-                        }
-                    }));
-        }
-    }
-
-    @Override
-    public void smsResponseSenderSet(String number) {
-        compositeDisposable.add(d2.smsModule().configCase().setConfirmationSenderNumber(number)
-                .subscribeWith(new DisposableCompletableObserver() {
-                    @Override
-                    public void onComplete() {
-                        Timber.d("SMS response sender set to %s", number);
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        Timber.e(e);
-                    }
-                }));
-    }
-
-    @Override
-    public void smsWaitForResponse(boolean waitForResponse) {
-        compositeDisposable.add(d2.smsModule().configCase().setWaitingForResultEnabled(waitForResponse)
-                .subscribeWith(new DisposableCompletableObserver() {
-                    @Override
-                    public void onComplete() {
-                        Timber.d("SMS waiting for response: %b", waitForResponse);
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        Timber.e(e);
-                    }
-                }));
-    }
-
-    @Override
-    public void smsWaitForResponseTimeout(int timeout) {
-        compositeDisposable.add(d2.smsModule().configCase().setWaitingResultTimeout(timeout)
-                .subscribeWith(new DisposableCompletableObserver() {
-                    @Override
-                    public void onComplete() {
-                        Timber.d("SMS waiting for response timeout: %d", timeout);
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        Timber.e(e);
-                    }
-                }));
-    }
-
-    @Override
-    public boolean dataHasErrors() {
-        return !d2.eventModule().events().byState().in(State.ERROR).blockingGet().isEmpty()
-                || !d2.trackedEntityModule().trackedEntityInstances().byState().in(State.ERROR).blockingGet().isEmpty();
-    }
-
-    @Override
-    public boolean dataHasWarnings() {
-        return !d2.eventModule().events().byState().in(State.WARNING).blockingGet().isEmpty()
-                || !d2.trackedEntityModule().trackedEntityInstances().byState().in(State.WARNING).blockingGet().isEmpty();
-    }
-
-    @Override
-    public void disponse() {
+    public void dispose() {
         compositeDisposable.clear();
     }
 
@@ -369,7 +421,7 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
 
     @Override
     public void checkSyncErrors() {
-        view.showSyncErrors(d2.importModule().trackerImportConflicts().blockingGet());
+        view.showSyncErrors(d2.maintenanceModule().d2Errors().blockingGet());
     }
 
     @Override
