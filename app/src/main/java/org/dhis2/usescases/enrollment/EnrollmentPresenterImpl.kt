@@ -296,10 +296,10 @@ class EnrollmentPresenterImpl(
                     }
                 }
                 if (field.error()?.isNotEmpty() == true) {
-                    errorFields[field.uid()] = field.label()
+                    errorFields[field.programStageSection() ?: section] = field.label()
                 }
                 if (field.mandatory() && field.value().isNullOrEmpty()) {
-                    mandatoryFields[field.uid()] = field.label()
+                    mandatoryFields[field.programStageSection() ?: section] = field.label()
                 }
             }
 
@@ -542,7 +542,7 @@ class EnrollmentPresenterImpl(
                 false
             }
             mandatoryFields.isNotEmpty() -> {
-                view.showMissingMandatoryFieldsMessage(mandatoryFields.values.toList())
+                view.showMissingMandatoryFieldsMessage(mandatoryFields)
                 false
             }
             this.errorFields.isNotEmpty() -> {

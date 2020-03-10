@@ -6,11 +6,12 @@ import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Flowable
+import io.reactivex.processors.FlowableProcessor
+import io.reactivex.processors.PublishProcessor
 import io.reactivex.subjects.BehaviorSubject
 import org.dhis2.data.forms.dataentry.StoreResult
 import org.dhis2.data.forms.dataentry.ValueStore
 import org.dhis2.data.forms.dataentry.ValueStoreImpl
-import org.dhis2.data.forms.dataentry.fields.FieldViewModel
 import org.dhis2.data.forms.dataentry.fields.RowAction
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureContract
@@ -29,6 +30,7 @@ class EventCaptureFormPresenterTest {
     private val d2: D2 = Mockito.mock(D2::class.java, Mockito.RETURNS_DEEP_STUBS)
     private val valueStore: ValueStore = mock()
     private val schedulerProvider = TrampolineSchedulerProvider()
+    private val processor: FlowableProcessor<String> = PublishProcessor.create()
 
     @Before
     fun setUp() {
@@ -45,15 +47,19 @@ class EventCaptureFormPresenterTest {
     fun `Should listen to data entry, sections and field changes`() {
         whenever(view.dataEntryFlowable()) doReturn mock()
         whenever(view.dataEntryFlowable().onBackpressureBuffer()) doReturn mock()
-        whenever(view.dataEntryFlowable().onBackpressureBuffer().distinctUntilChanged()) doReturn Flowable.just(
-            RowAction.create("", "")
-        )
-        whenever(view.sectionSelectorFlowable()) doReturn mock()
-        whenever(view.sectionSelectorFlowable().distinctUntilChanged()) doReturn Flowable.just("")
+        whenever(
+            view.dataEntryFlowable().onBackpressureBuffer().distinctUntilChanged()
+        ) doReturn Flowable.just(RowAction.create("", ""))
+        whenever(view.sectionSelectorFlowable()) doReturn processor
         whenever(activityPresenter.formFieldsFlowable()) doReturn BehaviorSubject.create()
         presenter.init()
 
-        assert(view.dataEntryFlowable().onBackpressureBuffer().distinctUntilChanged().test().hasSubscription())
+        assert(view.dataEntryFlowable()
+            .onBackpressureBuffer()
+            .distinctUntilChanged()
+            .test()
+            .hasSubscription()
+        )
         assert(view.sectionSelectorFlowable().distinctUntilChanged().test().hasSubscription())
         assert(activityPresenter.formFieldsFlowable().hasObservers())
     }
@@ -62,11 +68,10 @@ class EventCaptureFormPresenterTest {
     fun `Should save new value`() {
         whenever(view.dataEntryFlowable()) doReturn mock()
         whenever(view.dataEntryFlowable().onBackpressureBuffer()) doReturn mock()
-        whenever(view.dataEntryFlowable().onBackpressureBuffer().distinctUntilChanged()) doReturn Flowable.just(
-            RowAction.create("testUid", "testValue")
-        )
-        whenever(view.sectionSelectorFlowable()) doReturn mock()
-        whenever(view.sectionSelectorFlowable().distinctUntilChanged()) doReturn Flowable.just("")
+        whenever(
+            view.dataEntryFlowable().onBackpressureBuffer().distinctUntilChanged()
+        ) doReturn Flowable.just(RowAction.create("testUid", "testValue"))
+        whenever(view.sectionSelectorFlowable()) doReturn processor
         whenever(activityPresenter.formFieldsFlowable()) doReturn BehaviorSubject.create()
         presenter.init()
 
@@ -77,11 +82,10 @@ class EventCaptureFormPresenterTest {
     fun `Should ask for new calculation if value saved changed`() {
         whenever(view.dataEntryFlowable()) doReturn mock()
         whenever(view.dataEntryFlowable().onBackpressureBuffer()) doReturn mock()
-        whenever(view.dataEntryFlowable().onBackpressureBuffer().distinctUntilChanged()) doReturn Flowable.just(
-            RowAction.create("testUid", "testValue")
-        )
-        whenever(view.sectionSelectorFlowable()) doReturn mock()
-        whenever(view.sectionSelectorFlowable().distinctUntilChanged()) doReturn Flowable.just("")
+        whenever(
+            view.dataEntryFlowable().onBackpressureBuffer().distinctUntilChanged()
+        ) doReturn Flowable.just(RowAction.create("testUid", "testValue"))
+        whenever(view.sectionSelectorFlowable()) doReturn processor
         whenever(activityPresenter.formFieldsFlowable()) doReturn BehaviorSubject.create()
         whenever(valueStore.save("testUid", "testValue")) doReturn Flowable.just(
             StoreResult("testUid", ValueStoreImpl.ValueStoreResult.VALUE_CHANGED)
@@ -96,11 +100,10 @@ class EventCaptureFormPresenterTest {
     fun `Should not ask for new calculation if value saved did not changed`() {
         whenever(view.dataEntryFlowable()) doReturn mock()
         whenever(view.dataEntryFlowable().onBackpressureBuffer()) doReturn mock()
-        whenever(view.dataEntryFlowable().onBackpressureBuffer().distinctUntilChanged()) doReturn Flowable.just(
-            RowAction.create("testUid", "testValue")
-        )
-        whenever(view.sectionSelectorFlowable()) doReturn mock()
-        whenever(view.sectionSelectorFlowable().distinctUntilChanged()) doReturn Flowable.just("")
+        whenever(
+            view.dataEntryFlowable().onBackpressureBuffer().distinctUntilChanged()
+        ) doReturn Flowable.just(RowAction.create("testUid", "testValue"))
+        whenever(view.sectionSelectorFlowable()) doReturn processor
         whenever(activityPresenter.formFieldsFlowable()) doReturn BehaviorSubject.create()
         whenever(valueStore.save("testUid", "testValue")) doReturn Flowable.just(
             StoreResult("testUid", ValueStoreImpl.ValueStoreResult.VALUE_HAS_NOT_CHANGED)
@@ -115,13 +118,13 @@ class EventCaptureFormPresenterTest {
     fun `Should go to new section`() {
         whenever(view.dataEntryFlowable()) doReturn mock()
         whenever(view.dataEntryFlowable().onBackpressureBuffer()) doReturn mock()
-        whenever(view.dataEntryFlowable().onBackpressureBuffer().distinctUntilChanged()) doReturn Flowable.just(
-            RowAction.create("", "")
-        )
-        whenever(view.sectionSelectorFlowable()) doReturn mock()
-        whenever(view.sectionSelectorFlowable().distinctUntilChanged()) doReturn Flowable.just("sectionUid")
+        whenever(
+            view.dataEntryFlowable().onBackpressureBuffer().distinctUntilChanged()
+        ) doReturn Flowable.just(RowAction.create("", ""))
+        whenever(view.sectionSelectorFlowable()) doReturn processor
         whenever(activityPresenter.formFieldsFlowable()) doReturn BehaviorSubject.create()
         presenter.init()
+        processor.onNext("sectionUid")
         verify(activityPresenter,times(1)).goToSection("sectionUid")
     }
 
@@ -129,11 +132,10 @@ class EventCaptureFormPresenterTest {
     fun `Should show fields`() {
         whenever(view.dataEntryFlowable()) doReturn mock()
         whenever(view.dataEntryFlowable().onBackpressureBuffer()) doReturn mock()
-        whenever(view.dataEntryFlowable().onBackpressureBuffer().distinctUntilChanged()) doReturn Flowable.just(
-            RowAction.create("", "")
-        )
-        whenever(view.sectionSelectorFlowable()) doReturn mock()
-        whenever(view.sectionSelectorFlowable().distinctUntilChanged()) doReturn Flowable.just("")
+        whenever(
+            view.dataEntryFlowable().onBackpressureBuffer().distinctUntilChanged()
+        ) doReturn Flowable.just(RowAction.create("", ""))
+        whenever(view.sectionSelectorFlowable()) doReturn processor
         whenever(activityPresenter.formFieldsFlowable()) doReturn BehaviorSubject.create()
         presenter.init()
         activityPresenter.formFieldsFlowable().onNext(mutableListOf())
@@ -144,11 +146,10 @@ class EventCaptureFormPresenterTest {
     fun `Should clear disposable`() {
         whenever(view.dataEntryFlowable()) doReturn mock()
         whenever(view.dataEntryFlowable().onBackpressureBuffer()) doReturn mock()
-        whenever(view.dataEntryFlowable().onBackpressureBuffer().distinctUntilChanged()) doReturn Flowable.just(
-            RowAction.create("", "")
-        )
-        whenever(view.sectionSelectorFlowable()) doReturn mock()
-        whenever(view.sectionSelectorFlowable().distinctUntilChanged()) doReturn Flowable.just("")
+        whenever(
+            view.dataEntryFlowable().onBackpressureBuffer().distinctUntilChanged()
+        ) doReturn Flowable.just(RowAction.create("", ""))
+        whenever(view.sectionSelectorFlowable()) doReturn processor
         whenever(activityPresenter.formFieldsFlowable()) doReturn BehaviorSubject.create()
         presenter.init()
         presenter.onDetach()

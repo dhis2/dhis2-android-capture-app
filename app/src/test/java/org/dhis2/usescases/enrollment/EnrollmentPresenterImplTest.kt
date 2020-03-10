@@ -116,6 +116,10 @@ class EnrollmentPresenterImplTest {
         val checkWthErrors = presenter.dataIntegrityCheck()
 
         Assert.assertFalse(checkWthErrors)
+        verify(
+            enrollmentView,
+            times(1)
+        ).showMissingMandatoryFieldsMessage(mutableMapOf("testSection" to "missing_mandatory_field"))
         verify(enrollmentView, times(1))
             .showMissingMandatoryFieldsMessage(arrayListOf("missing_mandatory_field"))
     }
