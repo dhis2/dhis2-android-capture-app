@@ -28,16 +28,14 @@ class SettingsRepository(
     val d2: D2,
     val prefs: PreferenceProvider
 ) {
-    private val hasProgramSettings: Boolean = d2.settingModule().programSetting().blockingExists()
-    private val hasGeneralSettings: Boolean = d2.settingModule().generalSetting().blockingExists()
     private val generalSettings: GeneralSettings?
-        get() = if (hasGeneralSettings) {
+        get() = if (d2.settingModule().generalSetting().blockingExists()) {
             d2.settingModule().generalSetting().blockingGet()
         } else {
             null
         }
     private val programSettings: ProgramSettings?
-        get() = if (hasProgramSettings) {
+        get() = if (d2.settingModule().programSetting().blockingExists()) {
             d2.settingModule().programSetting().blockingGet()
         } else {
             null
@@ -63,7 +61,7 @@ class SettingsRepository(
             MetadataSettingsViewModel(
                 metadataPeriod(),
                 prefs.getString(Constants.LAST_META_SYNC, "-")!!,
-                !prefs.getBoolean(Constants.LAST_DATA_SYNC_STATUS, true),
+                !prefs.getBoolean(Constants.LAST_META_SYNC_STATUS, true),
                 generalSettings?.metadataSync() == null
             )
         )
