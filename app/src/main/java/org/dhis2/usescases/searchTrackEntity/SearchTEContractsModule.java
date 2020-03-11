@@ -79,7 +79,7 @@ public class SearchTEContractsModule {
 
         Consumer<FeatureType> featureType();
 
-        Consumer<Pair<HashMap<String, FeatureCollection>, BoundingBox>> setMap();
+        void setMap(HashMap<String, FeatureCollection> teiFeatureCollections, BoundingBox boundingBox);
 
         Consumer<D2Progress> downloadProgress();
 
