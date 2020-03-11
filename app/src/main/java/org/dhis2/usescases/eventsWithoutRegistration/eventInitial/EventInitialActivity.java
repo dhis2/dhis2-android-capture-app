@@ -405,7 +405,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
             }
 
             binding.date.setText(selectedDateString);
-            if(selectedOrgUnit == null && eventUid == null)
+            if (selectedOrgUnit == null && eventUid == null)
                 presenter.initOrgunit(selectedDate);
 
         } else {
