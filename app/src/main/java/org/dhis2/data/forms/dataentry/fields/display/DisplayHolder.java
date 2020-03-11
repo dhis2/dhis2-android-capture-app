@@ -36,11 +36,4 @@ public class DisplayHolder extends FormViewHolder {
         binding.executePendingBindings();
 
     }
-
-    @Override
-    public void dispose() {
-
-    }
-
-
 }

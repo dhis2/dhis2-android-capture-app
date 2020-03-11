@@ -43,7 +43,7 @@ public class OptionSetSelectionView extends FieldLayout {
     private boolean isEditable;
     private List<String> optionsToHide;
     private List<String> optionsToShow;
-
+    private final int DEFAULT_MAX_CHAR_LENGHT = 16;
 
     public OptionSetSelectionView(Context context) {
         super(context);
@@ -225,7 +225,7 @@ public class OptionSetSelectionView extends FieldLayout {
     }
 
     public void setDescription(String description) {
-        descriptionLabel.setVisibility(label.length() > 16 || description != null ? View.VISIBLE : View.GONE);
+        descriptionLabel.setVisibility(label.length() > DEFAULT_MAX_CHAR_LENGHT || description != null ? View.VISIBLE : View.GONE);
     }
 
     public interface OnSelectedOption {

@@ -133,10 +133,4 @@ public class DateTimeHolder extends FormViewHolder implements OnDateSelected {
             clearBackground(isSearchMode);
         }
     }
-
-    @Override
-    public void dispose() {
-
-    }
-
 }

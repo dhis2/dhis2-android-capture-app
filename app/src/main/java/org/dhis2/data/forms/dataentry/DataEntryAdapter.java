@@ -312,11 +312,6 @@ public final class DataEntryAdapter extends ListAdapter<FieldViewModel, ViewHold
 
     }
 
-    @Override
-    public void onViewDetachedFromWindow(@NonNull ViewHolder holder) {
-        rows.get(holder.getItemViewType()).deAttach(holder);
-    }
-
     public void setLastFocusItem(String lastFocusItem) {
         currentFocusUid.setValue(lastFocusItem);
         this.nextFocusPosition = -1;

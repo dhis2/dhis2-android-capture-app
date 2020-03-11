@@ -63,7 +63,7 @@
             app:layout_constraintEnd_toStartOf="@id/descriptionLabel"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/renderImage"
-            tools:text="WHOMCH Smocking cessation counselling provided fdsfsdfsdfsdfsdfsdfsdfsdfsdfsdfdfsfsdfsdf" />
+            tools:text="WHOMCH Smocking cessation counselling provided" />
 
         <ImageView
             android:id="@+id/descriptionLabel"

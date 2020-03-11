@@ -43,9 +43,4 @@ public class OptionSetRow implements Row<OptionSetHolder, OptionSetViewModel> {
     public void onBind(@NonNull OptionSetHolder viewHolder, @NonNull OptionSetViewModel viewModel) {
         viewHolder.update(viewModel);
     }
-
-    @Override
-    public void deAttach(@NonNull OptionSetHolder viewHolder) {
-
-    }
 }

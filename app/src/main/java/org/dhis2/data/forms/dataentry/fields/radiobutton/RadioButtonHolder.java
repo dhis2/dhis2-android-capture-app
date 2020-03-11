@@ -1,11 +1,9 @@
 package org.dhis2.data.forms.dataentry.fields.radiobutton;
 
 import android.view.View;
-import android.widget.RadioGroup;
 
 import androidx.lifecycle.MutableLiveData;
 
-import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.FormViewHolder;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.databinding.FormYesNoBinding;
@@ -103,8 +101,4 @@ public class RadioButtonHolder extends FormViewHolder {
 
         initFieldFocus();
     }
-
-    public void dispose() {
-    }
-
 }

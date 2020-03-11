@@ -46,20 +46,5 @@ class OptionSetHolder(
         )
         formBinding.optionSetSelectionView.setLabel(viewModel.label(), viewModel.mandatory())
         formBinding.optionSetSelectionView.setDescription(viewModel.description())
-
-        /*formBinding.optionSetSelectionView.descriptin.setOnClickListener {
-            CustomDialog(
-                itemView.context,
-                viewModel.label(),
-                viewModel.description() ?: "",
-                itemView.context.getString(R.string.action_close),
-                null,
-                201,
-                null
-            ).show()
-        }*/
     }
-
-    override fun dispose() {}
-
 }
