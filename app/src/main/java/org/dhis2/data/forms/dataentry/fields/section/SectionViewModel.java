@@ -55,7 +55,25 @@ public abstract class SectionViewModel extends FieldViewModel {
     @NonNull
     @Override
     public FieldViewModel withError(@NonNull String error) {
-        return this;
+        return new AutoValue_SectionViewModel(
+                uid(),
+                label(),
+                false,
+                null,
+                null,
+                false,
+                false,
+                null,
+                null,
+                error,
+                description(),
+                objectStyle(),
+                null,
+                isOpen(),
+                totalFields(),
+                completedFields(),
+                rendering()
+        );
     }
 
     @NonNull
@@ -87,7 +105,7 @@ public abstract class SectionViewModel extends FieldViewModel {
                 false,
                 null,
                 null,
-                null,
+                error(),
                 description(),
                 objectStyle(),
                 null,
@@ -109,7 +127,7 @@ public abstract class SectionViewModel extends FieldViewModel {
                 false,
                 null,
                 null,
-                null,
+                error(),
                 description(),
                 objectStyle(),
                 null,
@@ -131,7 +149,7 @@ public abstract class SectionViewModel extends FieldViewModel {
                 false,
                 null,
                 null,
-                null,
+                error(),
                 description(),
                 objectStyle(),
                 null,

@@ -14,13 +14,10 @@ import org.dhis2.data.forms.dataentry.fields.section.SectionHolder
 class StickyHeaderItemDecoration(
     parent: RecyclerView,
     private val shouldFadeOutHeader: Boolean = false,
-    private val isHeader: (Int) -> Boolean,
-    private val handleClick: (String) -> Unit
+    private val isHeader: (Int) -> Boolean
 ) : RecyclerView.ItemDecoration() {
 
     private var currentHeader: Pair<Int, RecyclerView.ViewHolder>? = null
-    private var startY: Float = -1f
-
     private var mDetector: GestureDetectorCompat
 
     init {
@@ -30,18 +27,19 @@ class StickyHeaderItemDecoration(
                 parent.context,
                 object : GestureDetector.SimpleOnGestureListener() {
                     override fun onDown(e: MotionEvent?): Boolean {
-                        return e?.let { e.y <= currentHeader?.second?.itemView?.height!! }
+                        return e?.let { e.y <= currentHeader?.second?.itemView?.height ?: -1 }
                             ?: super.onDown(e)
                     }
 
                     override fun onSingleTapUp(e: MotionEvent?): Boolean {
-                        if (e!!.y <= currentHeader?.second?.itemView?.height!!) {
+                        if (e!!.y <= currentHeader?.second?.itemView?.height ?: -1) {
                             (currentHeader?.second as SectionHolder).onClick(currentHeader?.second?.itemView!!)
                             return true
                         }
                         return false
                     }
-                })
+                }
+            )
 
         parent.adapter?.registerAdapterDataObserver(object : RecyclerView.AdapterDataObserver() {
             override fun onChanged() {
@@ -139,7 +137,6 @@ class StickyHeaderItemDecoration(
                     Canvas.ALL_SAVE_FLAG
                 )
             }
-
         }
         c.translate(0f, (nextHeader.top - currentHeader.height).toFloat() /*+ paddingTop*/)
 
@@ -173,7 +170,6 @@ class StickyHeaderItemDecoration(
      * @param parent ViewGroup: RecyclerView in this case.
      */
     private fun fixLayoutSize(parent: ViewGroup, view: View) {
-
         // Specs for parent (RecyclerView)
         val widthSpec = View.MeasureSpec.makeMeasureSpec(parent.width, View.MeasureSpec.EXACTLY)
         val heightSpec =

@@ -447,7 +447,6 @@
     <string name="finish_add_new"><![CDATA[Acabar y añadir]]></string>
     <string name="finish">Acabar</string>
     <string name="error_fields_title">Campos con errores</string>
-    <string name="error_fields_events">Algunos campos tienen errores. No se han guardado, revíselos.</string>
     <string name="event_reopened">Ahora puede editar este evento</string>
     <string name="unique_warning">El valor debe ser único, se ha encontrado una coincidencia. El campo no se ha guardado, revíselo.</string>
     <string name="please_wait">Por favor, espere</string>

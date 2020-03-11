@@ -17,6 +17,8 @@ import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import io.reactivex.Flowable
+import java.io.File
+import javax.inject.Inject
 import org.dhis2.App
 import org.dhis2.R
 import org.dhis2.data.forms.dataentry.DataEntryAdapter
@@ -46,8 +48,6 @@ import org.hisp.dhis.android.core.arch.helpers.GeometryHelper
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.Geometry
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
-import java.io.File
-import javax.inject.Inject
 
 class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
 
@@ -107,16 +107,14 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
             DataEntryArguments.forEnrollment(intent.getStringExtra(ENROLLMENT_UID_EXTRA))
         )
         binding.fieldRecycler.addItemDecoration(
-            StickyHeaderItemDecoration(binding.fieldRecycler,
-                false,
-                { itemPosition ->
-                    itemPosition >= 0 &&
-                            itemPosition < adapter.itemCount &&
-                            adapter.getItemViewType(itemPosition) == adapter.sectionViewType()
-                },
-                { sectionUid ->
-                    adapter.sectionFlowable().onNext(sectionUid)
-                })
+            StickyHeaderItemDecoration(
+                binding.fieldRecycler,
+                false
+            ) { itemPosition ->
+                itemPosition >= 0 &&
+                    itemPosition < adapter.itemCount &&
+                    adapter.getItemViewType(itemPosition) == adapter.sectionViewType()
+            }
         )
         binding.fieldRecycler.adapter = adapter
 
@@ -237,12 +235,20 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
         onBackPressed()
     }
 
-    override fun showMissingMandatoryFieldsMessage(emptyMandatoryFields: List<String>) {
+    override fun showMissingMandatoryFieldsMessage(emptyMandatoryFields: MutableMap<String, String>) {
         AlertBottomDialog.instance
             .setTitle(getString(R.string.unable_to_complete))
             .setMessage(getString(R.string.missing_mandatory_fields))
-            .setEmptyMandatoryFields(emptyMandatoryFields)
+            .setEmptyMandatoryFields(emptyMandatoryFields.values.toList())
             .show(supportFragmentManager, AlertBottomDialog::class.java.simpleName)
+
+        val sections = adapter.currentList.toMutableList()
+        sections.forEach {
+            if (emptyMandatoryFields.containsKey(it.uid())) {
+                sections[sections.indexOf(it)] = it.withError("mandatory field missing")
+            }
+        }
+        adapter.swap(sections) {}
     }
 
     override fun showErrorFieldsMessage(errorFields: List<String>) {
@@ -340,7 +346,6 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
                     .transform(CircleCrop())
                     .into(binding.teiDataHeader.teiImage)
             }
-
         } else {
             binding.title.visibility = View.VISIBLE
             binding.teiDataHeader.root.visibility = View.GONE
@@ -365,11 +370,9 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
     }
 
     override fun showStatusOptions(currentStatus: EnrollmentStatus) {
-
     }
 
     /*endregion*/
-
 
     /*region DATA ENTRY*/
     override fun showFields(fields: List<FieldViewModel>) {
@@ -391,7 +394,7 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
             offset = it.top
         }
 
-        adapter.swap(fields, { })
+        adapter.swap(fields) { }
 
         myLayoutManager.scrollToPositionWithOffset(myFirstPositionIndex, offset)
     }

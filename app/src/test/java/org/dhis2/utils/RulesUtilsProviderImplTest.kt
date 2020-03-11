@@ -408,7 +408,7 @@ class RulesUtilsProviderImplTest {
     fun `RuleActionHideOptionGroup should execute callback action`() {
         testRuleEffects.add(
             RuleEffect.create(
-                RuleActionHideOptionGroup.create("content", "optionGroupUid"),
+                RuleActionHideOptionGroup.create("content", "optionGroupUid","field"),
                 "data"
             )
         )
