@@ -108,7 +108,7 @@ class EnrollmentPresenterImplTest {
         verify(
             enrollmentView,
             times(1)
-        ).showMissingMandatoryFieldsMessage(arrayListOf("missing_mandatory_field"))
+        ).showMissingMandatoryFieldsMessage(mutableMapOf("testSection" to "missing_mandatory_field"))
     }
 
     @Test
@@ -154,7 +154,7 @@ class EnrollmentPresenterImplTest {
         verify(
             enrollmentView,
             times(1)
-        ).showMissingMandatoryFieldsMessage(arrayListOf("missing_mandatory_field"))
+        ).showMissingMandatoryFieldsMessage(mutableMapOf("testSection" to "missing_mandatory_field"))
     }
 
     @Test

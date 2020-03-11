@@ -81,8 +81,10 @@
                 android:layout_marginStart="24dp"
                 android:layout_marginTop="24dp"
                 android:padding="2dp"
+                android:visibility="gone"
                 app:layout_constraintStart_toStartOf="@id/search_filter_general"
-                app:layout_constraintTop_toTopOf="@id/search_filter_general">
+                app:layout_constraintTop_toTopOf="@id/search_filter_general"
+                tools:visibility="visible">
 
                 <TextView
                     android:layout_width="match_parent"
@@ -124,11 +126,13 @@
                 android:id="@+id/search_filter_general"
                 style="@style/ActionIcon"
                 android:onClick="@{()->presenter.showFilterGeneral()}"
+                android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@id/moreOptions"
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/ic_filter"
-                tools:ignore="ContentDescription" />
+                tools:ignore="ContentDescription"
+                tools:visibility="visible" />
 
             <ImageView
                 android:id="@+id/search_filter"
@@ -212,14 +216,14 @@
                 android:id="@+id/form_recycler"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:focusableInTouchMode="true"
                 android:layout_marginBottom="90dp"
+                android:focusableInTouchMode="true"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 app:layout_constrainedHeight="true"
-                app:layout_constraintVertical_bias="0"
                 app:layout_constraintBottom_toTopOf="@id/enrollmentButton"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/backdropGuideTop" />
+                app:layout_constraintTop_toBottomOf="@+id/backdropGuideTop"
+                app:layout_constraintVertical_bias="0" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/mainLayout"
@@ -235,10 +239,10 @@
                     android:layout_height="40dp"
                     android:paddingTop="8dp"
                     android:visibility="gone"
-                    tools:visibility="visible"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent">
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:visibility="visible">
 
 
                     <ImageView
@@ -281,8 +285,8 @@
                     android:id="@+id/scrollView"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
-                    android:paddingBottom="100dp"
                     android:clipToPadding="false"
+                    android:paddingBottom="100dp"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior"
                     app:layout_constraintBottom_toBottomOf="parent"

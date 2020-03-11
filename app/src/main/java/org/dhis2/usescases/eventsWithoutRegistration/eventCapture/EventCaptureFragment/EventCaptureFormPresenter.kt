@@ -16,6 +16,7 @@ class EventCaptureFormPresenter(
     val schedulerProvider: SchedulerProvider
 ) {
     private var lastFocusItem: String = ""
+    private var selectedSection: String? = null
     var disposable: CompositeDisposable = CompositeDisposable()
 
     fun init() {
@@ -44,6 +45,7 @@ class EventCaptureFormPresenter(
 
         disposable.add(
             view.sectionSelectorFlowable()
+                .map{ setCurrentSection(it) }
                 .distinctUntilChanged()
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
@@ -60,10 +62,25 @@ class EventCaptureFormPresenter(
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
-                    { view.showFields(it, lastFocusItem) },
+                    { fields ->
+                        view.showFields(fields, lastFocusItem)
+                        selectedSection ?: fields
+                            .mapNotNull { it.programStageSection() }
+                            .firstOrNull()
+                            ?.let{ selectedSection = it }
+                    },
                     { Timber.e(it) }
                 )
         )
+    }
+
+    private fun setCurrentSection(sectionUid: String): String? {
+        if (sectionUid == selectedSection) {
+            this.selectedSection = ""
+        } else {
+            this.selectedSection = sectionUid
+        }
+        return selectedSection
     }
 
     fun onDetach() {

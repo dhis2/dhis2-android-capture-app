@@ -394,9 +394,6 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     @Override
     public void setForm(List<TrackedEntityAttribute> trackedEntityAttributes, @Nullable Program program, HashMap<String, String> queryData,
                         List<ValueTypeDeviceRendering> renderingTypes) {
-
-        //TODO: refreshData for recycler
-
         //Form has been set.
         FormAdapter formAdapter = (FormAdapter) binding.formRecycler.getAdapter();
         formAdapter.setList(trackedEntityAttributes, program, queryData, renderingTypes);
@@ -434,11 +431,17 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             liveData.observe(this, searchTeiModels -> {
                 Trio<PagedList<SearchTeiModel>, String, Boolean> data = presenter.getMessage(searchTeiModels);
                 if (data.val1().isEmpty()) {
+                    binding.filterCounter.setVisibility(View.VISIBLE);
+                    binding.searchFilterGeneral.setVisibility(View.VISIBLE);
+
                     binding.messageContainer.setVisibility(View.GONE);
                     binding.scrollView.setVisibility(View.VISIBLE);
                     liveAdapter.submitList(data.val0());
                     binding.progressLayout.setVisibility(View.GONE);
                 } else {
+                    binding.filterCounter.setVisibility(View.GONE);
+                    binding.searchFilterGeneral.setVisibility(View.GONE);
+
                     showMap(false);
                     binding.progressLayout.setVisibility(View.GONE);
                     binding.messageContainer.setVisibility(View.VISIBLE);

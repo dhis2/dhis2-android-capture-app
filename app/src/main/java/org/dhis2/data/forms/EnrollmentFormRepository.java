@@ -42,7 +42,7 @@ public class EnrollmentFormRepository implements FormRepository {
         // the event is not changing throughout lifecycle of FormComponent.
         this.cachedRuleEngineFlowable = enrollmentProgram()
                 .switchMap(program -> Single.zip(
-                        rulesRepository.rulesNew(program).subscribeOn(Schedulers.io()),
+                        rulesRepository.rulesNew(program, null).subscribeOn(Schedulers.io()),
                         rulesRepository.ruleVariables(program).subscribeOn(Schedulers.io()),
                         rulesRepository.enrollmentEvents(enrollmentUid).subscribeOn(Schedulers.io()),
                         rulesRepository.queryConstants().subscribeOn(Schedulers.io()),
@@ -67,7 +67,7 @@ public class EnrollmentFormRepository implements FormRepository {
         String orgUnit = d2.enrollmentModule().enrollments().uid(enrollmentUid).blockingGet().organisationUnit();
         return this.cachedRuleEngineFlowable = enrollmentProgram()
                 .switchMap(program -> Single.zip(
-                        rulesRepository.rulesNew(program),
+                        rulesRepository.rulesNew(program, null),
                         rulesRepository.ruleVariables(program),
                         rulesRepository.enrollmentEvents(enrollmentUid),
                         rulesRepository.queryConstants(),
