@@ -27,7 +27,7 @@
     <item
         android:id="@+id/activate"
         android:icon="@drawable/ic_lock_open_menu"
-        android:title="@string/activate" />
+        android:title="@string/re_open" />
     <item
         android:id="@+id/deactivate"
         android:icon="@drawable/ic_cancel_menu"
