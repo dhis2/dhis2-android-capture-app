@@ -1,8 +1,5 @@
 package org.dhis2.Bindings
 
-import android.app.Activity
-import android.view.View
-import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
@@ -69,9 +66,4 @@ fun Fragment.app(): App {
 
 fun AppCompatActivity.app(): App {
     return applicationContext as App
-}
-
-fun View.closeKeyboard(){
-    val imm = context.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
-    imm.hideSoftInputFromWindow(windowToken, 0)
 }

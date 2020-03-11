@@ -14,6 +14,4 @@ class DataEntryDiff : DiffUtil.ItemCallback<FieldViewModel>() {
         } else {
             oldItem == newItem
         }
-
-
 }

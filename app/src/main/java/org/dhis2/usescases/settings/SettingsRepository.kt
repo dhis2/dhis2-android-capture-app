@@ -113,26 +113,25 @@ class SettingsRepository(
         return d2.eventModule().events()
             .byState().`in`(State.ERROR)
             .blockingGet().isNotEmpty() ||
-                d2.trackedEntityModule().trackedEntityInstances()
-                    .byState().`in`(State.ERROR)
-                    .blockingGet().isNotEmpty() ||
-                d2.dataValueModule().dataValues()
-                    .byState().`in`(State.ERROR)
-                    .blockingGet().isNotEmpty()
+            d2.trackedEntityModule().trackedEntityInstances()
+                .byState().`in`(State.ERROR)
+                .blockingGet().isNotEmpty() ||
+            d2.dataValueModule().dataValues()
+                .byState().`in`(State.ERROR)
+                .blockingGet().isNotEmpty()
     }
 
     private fun dataHasWarning(): Boolean {
         return d2.eventModule().events()
             .byState().`in`(State.WARNING)
             .blockingGet().isNotEmpty() ||
-                d2.trackedEntityModule().trackedEntityInstances()
-                    .byState().`in`(State.WARNING)
-                    .blockingGet().isNotEmpty() ||
-                d2.dataValueModule().dataValues()
-                    .byState().`in`(State.WARNING)
-                    .blockingGet().isNotEmpty()
+            d2.trackedEntityModule().trackedEntityInstances()
+                .byState().`in`(State.WARNING)
+                .blockingGet().isNotEmpty() ||
+            d2.dataValueModule().dataValues()
+                .byState().`in`(State.WARNING)
+                .blockingGet().isNotEmpty()
     }
-
 
     private fun metadataPeriod(): Int {
         return generalSettings?.metadataSync()?.toSeconds() ?: prefs.getInt(
@@ -250,7 +249,6 @@ class SettingsRepository(
         return if (enable) {
             d2.smsModule().configCase().setModuleEnabled(enable)
                 .andThen(d2.smsModule().configCase().refreshMetadataIds())
-
         } else {
             d2.smsModule().configCase().setModuleEnabled(enable)
         }

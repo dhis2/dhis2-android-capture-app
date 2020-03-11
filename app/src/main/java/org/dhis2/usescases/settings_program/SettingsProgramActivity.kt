@@ -37,11 +37,13 @@ class SettingsProgramActivity : ActivityGlobalAbstract(), ProgramSettingsView {
         binding.programSettingsView.adapter = adapter
         binding.toolbar.moreOptions.moreOptions.visibility = View.GONE
         binding.toolbar.menu.setOnClickListener { finish() }
+        presenter.init()
+
     }
 
-    override fun onResume() {
-        super.onResume()
-        presenter.init()
+    override fun onDestroy() {
+        super.onDestroy()
+        presenter.dispose()
     }
 
     override fun setData(programSettings: List<ProgramSettingsViewModel>) {

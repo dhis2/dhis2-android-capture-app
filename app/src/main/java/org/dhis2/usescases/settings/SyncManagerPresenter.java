@@ -61,6 +61,7 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
         this.workManagerController = workManagerController;
         this.analyticsHelper = analyticsHelper;
         checkData = PublishProcessor.create();
+        compositeDisposable = new CompositeDisposable();
     }
 
     @Override
@@ -70,8 +71,6 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
 
     @Override
     public void init() {
-        this.compositeDisposable = new CompositeDisposable();
-
         compositeDisposable.add(
                 checkData.startWith(true)
                         .flatMapSingle(start ->

@@ -1,10 +1,14 @@
 package org.dhis2.data.service
 
+import androidx.annotation.VisibleForTesting
 import androidx.work.Data
 import androidx.work.ExistingWorkPolicy
 import androidx.work.ListenableWorker
 import io.reactivex.Completable
 import io.reactivex.Observable
+import java.util.ArrayList
+import java.util.Calendar
+import kotlin.math.ceil
 import org.dhis2.Bindings.toSeconds
 import org.dhis2.data.prefs.Preference.Companion.DATA
 import org.dhis2.data.prefs.Preference.Companion.EVENT_MAX
@@ -33,9 +37,6 @@ import org.hisp.dhis.android.core.settings.LimitScope
 import org.hisp.dhis.android.core.settings.ProgramSettings
 import org.hisp.dhis.android.core.systeminfo.DHISVersion
 import timber.log.Timber
-import java.util.ArrayList
-import java.util.Calendar
-import kotlin.math.ceil
 
 class SyncPresenterImpl(
     private val d2: D2,
@@ -45,6 +46,24 @@ class SyncPresenterImpl(
 ) : SyncPresenter {
 
     override fun syncAndDownloadEvents() {
+
+        val (eventLimit,limitByOU,limitByProgram) = getDownloadLimits()
+
+        Completable.fromObservable(d2.eventModule().events().upload())
+            .andThen(
+                Completable.fromObservable(
+                    d2.eventModule()
+                        .eventDownloader()
+                        .limit(eventLimit)
+                        .limitByOrgunit(limitByOU)
+                        .limitByProgram(limitByProgram)
+                        .download()
+                )
+            ).blockingAwait()
+    }
+
+    @VisibleForTesting
+    fun getDownloadLimits(): Triple<Int, Boolean, Boolean> {
         val programSettings = getProgramSetting()
         val globalProgramSettings = programSettings.globalSettings()
 
@@ -61,17 +80,7 @@ class SyncPresenterImpl(
             it == LimitScope.PER_PROGRAM || it == LimitScope.PER_OU_AND_PROGRAM
         } ?: preferences.getBoolean(LIMIT_BY_PROGRAM, false)
 
-        Completable.fromObservable(d2.eventModule().events().upload())
-            .andThen(
-                Completable.fromObservable(
-                    d2.eventModule()
-                        .eventDownloader()
-                        .limit(eventLimit)
-                        .limitByOrgunit(limitByOU)
-                        .limitByProgram(limitByProgram)
-                        .download()
-                )
-            ).blockingAwait()
+        return Triple(eventLimit, limitByOU, limitByProgram)
     }
 
     override fun syncAndDownloadTeis() {
@@ -124,7 +133,6 @@ class SyncPresenterImpl(
     }
 
     override fun syncMetadata(progressUpdate: SyncMetadataWorker.OnProgressUpdate) {
-
         Completable.fromObservable(
             d2.metadataModule().download()
                 .doOnNext { data ->

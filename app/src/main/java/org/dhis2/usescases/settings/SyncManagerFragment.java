@@ -30,7 +30,7 @@ import androidx.work.WorkInfo;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 
-import org.dhis2.Bindings.ExtensionsKt;
+import org.dhis2.Bindings.ViewExtensionsKt;
 import org.dhis2.Components;
 import org.dhis2.R;
 import org.dhis2.data.service.workManager.WorkManagerController;
@@ -658,7 +658,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
 
         binding.eventsEditText.setOnEditorActionListener((view, actionId, keyEvent) -> {
             if (actionId == EditorInfo.IME_ACTION_DONE) {
-                ExtensionsKt.closeKeyboard(view);
+                ViewExtensionsKt.closeKeyboard(view);
                 if (!binding.eventsEditText.getText().toString().isEmpty()) {
                     presenter.saveEventMaxCount(Integer.valueOf(binding.eventsEditText.getText().toString()));
                 }
@@ -671,7 +671,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
         binding.teiEditText.setOnEditorActionListener((view, actionId, keyEvent) -> {
             if (actionId == EditorInfo.IME_ACTION_DONE) {
                 if (!binding.teiEditText.getText().toString().isEmpty()) {
-                    ExtensionsKt.closeKeyboard(view);
+                    ViewExtensionsKt.closeKeyboard(view);
                     presenter.saveTeiMaxCount(Integer.valueOf(binding.teiEditText.getText().toString()));
                 }
                 return true;
@@ -705,7 +705,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
     private void setUpSmsListeners() {
         binding.settingsSms.settingsSmsReceiver.setOnEditorActionListener((view, actionId, keyEvent) -> {
             if (actionId == EditorInfo.IME_ACTION_DONE && !binding.settingsSms.settingsSmsReceiver.getText().toString().isEmpty()) {
-                ExtensionsKt.closeKeyboard(view);
+                ViewExtensionsKt.closeKeyboard(view);
                 presenter.saveGatewayNumber(binding.settingsSms.settingsSmsReceiver.getText().toString());
                 return true;
             } else {
@@ -715,7 +715,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
 
         binding.settingsSms.settingsSmsResultSender.setOnEditorActionListener((view, actionId, keyEvent) -> {
             if (actionId == EditorInfo.IME_ACTION_DONE && !binding.settingsSms.settingsSmsResultSender.getText().toString().isEmpty()) {
-                ExtensionsKt.closeKeyboard(view);
+                ViewExtensionsKt.closeKeyboard(view);
                 presenter.saveSmsResultSender(binding.settingsSms.settingsSmsResultSender.getText().toString());
                 return true;
             } else {
@@ -725,7 +725,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
 
         binding.settingsSms.settingsSmsResultTimeout.setOnEditorActionListener((view, actionId, keyEvent) -> {
             if (actionId == EditorInfo.IME_ACTION_DONE && !binding.settingsSms.settingsSmsResultTimeout.getText().toString().isEmpty()) {
-                ExtensionsKt.closeKeyboard(view);
+                ViewExtensionsKt.closeKeyboard(view);
                 presenter.saveSmsResponseTimeout(
                         Integer.valueOf(binding.settingsSms.settingsSmsResultTimeout.getText().toString()));
                 return true;
@@ -765,7 +765,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
         }
 
         binding.reservedValueEditText.setOnEditorActionListener((view, actionId, keyEvent) -> {
-            ExtensionsKt.closeKeyboard(view);
+            ViewExtensionsKt.closeKeyboard(view);
             if (actionId == EditorInfo.IME_ACTION_DONE) {
                 if (!binding.reservedValueEditText.getText().toString().isEmpty()) {
                     presenter.saveReservedValues(Integer.valueOf(binding.reservedValueEditText.getText().toString()));

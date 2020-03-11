@@ -215,7 +215,7 @@
     <string name="settings_sms_response_wait_switch">Wait for SMS result response</string>
     <plurals name="settings_specific_programs">
         <item quantity="one">There is %s program with specific settings</item>
-        <item quantity="other">There are %s program with specific settings</item>
+        <item quantity="other">There are %s programs with specific settings</item>
     </plurals>
     <string name="settings_sync_period">Syncing period</string>
     <string name="settings_limit_scope">Settings limited</string>

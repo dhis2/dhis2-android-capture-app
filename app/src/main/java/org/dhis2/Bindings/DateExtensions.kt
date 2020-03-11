@@ -1,13 +1,13 @@
 package org.dhis2.Bindings
 
 import android.content.Context
+import java.util.Date
 import org.dhis2.R
 import org.dhis2.utils.DateUtils
 import org.joda.time.Days
 import org.joda.time.Hours
 import org.joda.time.Interval
 import org.joda.time.Minutes
-import java.util.Date
 
 fun Date?.toDateSpan(context: Context): String {
     return if (this == null) {

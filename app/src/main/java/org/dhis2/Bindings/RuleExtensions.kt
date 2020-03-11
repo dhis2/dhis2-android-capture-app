@@ -86,9 +86,9 @@ fun List<ProgramRuleVariable>.toRuleVariableList(
     dataElementRepository: DataElementCollectionRepository
 ): List<RuleVariable> {
     return filter {
-        if(it.dataElement()!=null){
+        if (it.dataElement() != null) {
             dataElementRepository.uid(it.dataElement()?.uid()).blockingExists()
-        }else{
+        } else {
             attributeRepository.uid(it.trackedEntityAttribute()?.uid()).blockingExists()
         }
     }.map {

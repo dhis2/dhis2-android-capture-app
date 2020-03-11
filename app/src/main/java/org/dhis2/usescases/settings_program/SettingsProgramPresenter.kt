@@ -37,4 +37,8 @@ class SettingsProgramPresenter(
                 )
         )
     }
+
+    fun dispose() {
+        disposable.clear()
+    }
 }

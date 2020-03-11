@@ -59,9 +59,9 @@ class LoginPresenter(
                     .subscribe(
                         { isUserLoggedIn ->
                             if (isUserLoggedIn && !preferenceProvider.getBoolean(
-                                    SESSION_LOCKED,
-                                    false
-                                )
+                                SESSION_LOCKED,
+                                false
+                            )
                             ) {
                                 view.startActivity(MainActivity::class.java, null, true, true, null)
                             } else if (preferenceProvider.getBoolean(SESSION_LOCKED, false)) {
@@ -210,11 +210,11 @@ class LoginPresenter(
             preferenceProvider.setValue(Preference.INITIAL_SYNC_DONE, false)
 
             val updatedServer = (preferenceProvider.getSet(PREFS_URLS, HashSet()) as HashSet)
-            if(!updatedServer.contains(server)) {
+            if (!updatedServer.contains(server)) {
                 updatedServer.add(server)
             }
             val updatedUsers = (preferenceProvider.getSet(PREFS_USERS, HashSet()) as HashSet)
-            if(!updatedUsers.contains(userName)) {
+            if (!updatedUsers.contains(userName)) {
                 updatedUsers.add(userName)
             }
 
@@ -250,7 +250,7 @@ class LoginPresenter(
 
     fun areSameCredentials(serverUrl: String, userName: String, pass: String): Boolean {
         return preferenceProvider.areCredentialsSet() &&
-                preferenceProvider.areSameCredentials(serverUrl, userName, pass)
+            preferenceProvider.areSameCredentials(serverUrl, userName, pass)
     }
 
     fun saveUserCredentials(serverUrl: String, userName: String, pass: String) {
@@ -264,10 +264,10 @@ class LoginPresenter(
             fingerPrintController.authenticate()
                 .map { result ->
                     if (preferenceProvider.contains(
-                            SECURE_SERVER_URL,
-                            SECURE_USER_NAME,
-                            SECURE_PASS
-                        )
+                        SECURE_SERVER_URL,
+                        SECURE_USER_NAME,
+                        SECURE_PASS
+                    )
                     ) {
                         Result.success(result)
                     } else {
