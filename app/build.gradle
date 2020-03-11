@@ -155,6 +155,7 @@ android {
     }
 
     flavorDimensions "default"
+
     productFlavors {
         dhis {
             applicationId "com.dhis2"
