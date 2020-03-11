@@ -22,10 +22,6 @@ import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
 
-/**
- * Created by Cristian E. on 02/11/2017.
- */
-
 public interface ProgramEventDetailRepository {
 
     @NonNull

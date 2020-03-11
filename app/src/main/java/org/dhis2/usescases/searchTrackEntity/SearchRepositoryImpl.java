@@ -173,7 +173,6 @@ public class SearchRepositoryImpl implements SearchRepository {
             orgUnits.addAll(
                     UidsHelper.getUidsList(d2.organisationUnitModule().organisationUnits()
                             .byRootOrganisationUnit(true)
-//                            .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_TEI_SEARCH)TODO: SHOULD WE USE THE SCOPE??
                             .blockingGet()));
             ouMode = OrganisationUnitMode.DESCENDANTS;
         } else
