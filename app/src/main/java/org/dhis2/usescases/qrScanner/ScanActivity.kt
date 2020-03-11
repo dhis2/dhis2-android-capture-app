@@ -12,19 +12,23 @@ import com.google.zxing.Result
 import me.dm7.barcodescanner.zxing.ZXingScannerView
 import org.dhis2.App
 import org.dhis2.R
-import org.dhis2.databinding.ActivityQrBinding
+import org.dhis2.databinding.ActivityScanBinding
 import org.dhis2.usescases.general.ActivityGlobalAbstract
 import org.dhis2.utils.Constants
 import javax.inject.Inject
 
 class ScanActivity : ActivityGlobalAbstract(), ZXingScannerView.ResultHandler {
-    private lateinit var binding: ActivityQrBinding
+    private lateinit var binding: ActivityScanBinding
     private lateinit var mScannerView: ZXingScannerView
     private var isPermissionRequested = false
     private var optionSetUid: String? = null
 
     @Inject
-    lateinit var scanPresenter: ScanPresenter
+    lateinit var scanRepository: ScanRepository
+
+    companion object {
+        const val REQUEST_CODE = 101
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,7 +38,7 @@ class ScanActivity : ActivityGlobalAbstract(), ZXingScannerView.ResultHandler {
             ?.plus(ScanModule(optionSetUid))
             ?.inject(this)
 
-        binding = DataBindingUtil.setContentView(this, R.layout.activity_qr)
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_scan)
         mScannerView = binding.scannerView
         mScannerView.setAutoFocus(true)
         mScannerView.setFormats(ZXingScannerView.ALL_FORMATS)
@@ -53,7 +57,7 @@ class ScanActivity : ActivityGlobalAbstract(), ZXingScannerView.ResultHandler {
             ActivityCompat.requestPermissions(
                 this,
                 arrayOf(Manifest.permission.CAMERA),
-                101
+                REQUEST_CODE
             )
         } else {
             abstractActivity.finish()
@@ -76,7 +80,7 @@ class ScanActivity : ActivityGlobalAbstract(), ZXingScannerView.ResultHandler {
         grantResults: IntArray
     ) {
         when (requestCode) {
-            101 -> {
+            REQUEST_CODE -> {
                 // If request is cancelled, the result arrays are empty.
                 if (grantResults.isNotEmpty() &&
                     grantResults[0] == PackageManager.PERMISSION_GRANTED
@@ -91,7 +95,7 @@ class ScanActivity : ActivityGlobalAbstract(), ZXingScannerView.ResultHandler {
 
     override fun handleResult(result: Result) {
         if(optionSetUid == null ||
-            scanPresenter.getOptions().any { it.displayName() == result.text }
+            scanRepository.getOptions().any { it.displayName() == result.text }
         ) {
             val url = result.text
             val data = Intent()

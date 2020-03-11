@@ -11,7 +11,7 @@ class ScanModule(private val optionSetUid: String?) {
 
     @Provides
     @PerActivity
-    internal fun providesPresenter(d2: D2): ScanPresenter {
-        return ScanPresenter(d2, optionSetUid)
+    internal fun providesRepository(d2: D2): ScanRepository {
+        return ScanRepository(d2, optionSetUid)
     }
 }
