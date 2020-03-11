@@ -44,7 +44,7 @@ public class ProgramStageSelectionRepositoryImpl implements ProgramStageSelectio
         String orgUnitUid = d2.enrollmentModule().enrollments().uid(enrollmentUid).blockingGet().organisationUnit();
         this.cachedRuleEngineFlowable =
                 Single.zip(
-                        rulesRepository.rulesNew(programUid),
+                        rulesRepository.rulesNew(programUid, null),
                         rulesRepository.ruleVariablesProgramStages(programUid),
                         rulesRepository.enrollmentEvents(enrollmentUid),
                         rulesRepository.supplementaryData(orgUnitUid),

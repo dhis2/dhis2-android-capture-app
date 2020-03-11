@@ -427,8 +427,6 @@
     <string name="finish_add_new"><![CDATA[Terminer & ajouter nouveau]]></string>
     <string name="finish">Terminer</string>
     <string name="error_fields_title">Champs avec erreurs</string>
-    <string name="error_fields_events">Certains champs on des erreurs. Les valeurs n\'ont pas été enregistrées. 
-Veuillez les vérifier. </string>
     <string name="event_reopened">Cet evènement peut maintenant etre édité</string>
     <string name="unique_warning">La valeur doit être unique, une coincidence a été trouvée. Elle n\'a pas été sauvegardée. Veuillez vérifier. </string>
     <string name="please_wait">Veuillez patienter</string>
