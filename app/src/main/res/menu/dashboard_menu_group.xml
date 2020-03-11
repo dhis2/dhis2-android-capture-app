@@ -16,7 +16,20 @@
         android:id="@+id/programSelector"
         android:icon="@drawable/ic_program_border"
         android:title="@string/program_selector" />
-    <item android:id="@+id/showTimeline"
+    <item
+        android:id="@+id/showTimeline"
         android:icon="@drawable/ic_list_view"
         android:title="Show events timeline"/>
+    <item
+        android:id="@+id/complete"
+        android:icon="@drawable/ic_lock_menu"
+        android:title="@string/complete" />
+    <item
+        android:id="@+id/activate"
+        android:icon="@drawable/ic_lock_open_menu"
+        android:title="@string/activate" />
+    <item
+        android:id="@+id/deactivate"
+        android:icon="@drawable/ic_cancel_menu"
+        android:title="@string/deactivate" />
 </menu>
