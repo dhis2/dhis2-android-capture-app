@@ -32,8 +32,11 @@ import org.dhis2.usescases.map.MapSelectorActivity
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity
 import org.dhis2.utils.Constants
 import org.dhis2.utils.Constants.CAMERA_REQUEST
+import org.dhis2.utils.Constants.ENROLLMENT_UID
 import org.dhis2.utils.Constants.GALLERY_REQUEST
+import org.dhis2.utils.Constants.PROGRAM_UID
 import org.dhis2.utils.Constants.RQ_QR_SCANNER
+import org.dhis2.utils.Constants.TEI_UID
 import org.dhis2.utils.EventMode
 import org.dhis2.utils.FileResourcesUtil
 import org.dhis2.utils.customviews.AlertBottomDialog
@@ -220,8 +223,9 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
 
     override fun openDashboard(enrollmentUid: String) {
         val bundle = Bundle()
-        bundle.putString("PROGRAM_UID", presenter.getProgram().uid())
-        bundle.putString("TEI_UID", presenter.getEnrollment().trackedEntityInstance())
+        bundle.putString(PROGRAM_UID, presenter.getProgram().uid())
+        bundle.putString(TEI_UID, presenter.getEnrollment().trackedEntityInstance())
+        bundle.putString(ENROLLMENT_UID, enrollmentUid)
         startActivity(TeiDashboardMobileActivity::class.java, bundle, true, false, null)
     }
 

@@ -452,7 +452,7 @@
     <string name="finish_add_new"><![CDATA[Finish & add new]]></string>
     <string name="finish">Finish</string>
     <string name="error_fields_title">Fields with errors</string>
-    <string name="error_fields_events">Some fields has errors. They have not been saved. Please, check them.</string>
+    <string name="error_fields_events">Some fields have errors. They have not been saved. Please, check them.</string>
     <string name="event_reopened">This event can now be edited</string>
     <string name="unique_warning">The value should be unique, a coincidence has been found. It has not been saved. Please check it.</string>
     <string name="please_wait">Please wait</string>
@@ -636,4 +636,5 @@
     <string name="interval_hour_ago">%d hours ago</string>
     <string name="interval_yesterday">Yesterday</string>
     <string name="enrollment_single_section_label">Attributes - %s</string>
+    <string name="program_selector">Program enrollments</string>
 </resources>

@@ -71,6 +71,7 @@ import org.dhis2.usescases.searchTrackEntity.adapters.FormAdapter;
 import org.dhis2.usescases.searchTrackEntity.adapters.RelationshipLiveAdapter;
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiLiveAdapter;
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel;
+import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity;
 import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.DateUtils;
@@ -85,7 +86,6 @@ import org.dhis2.utils.maps.MarkerUtils;
 import org.hisp.dhis.android.core.arch.call.D2Progress;
 import org.hisp.dhis.android.core.common.FeatureType;
 import org.hisp.dhis.android.core.common.ValueTypeDeviceRendering;
-import org.hisp.dhis.android.core.common.ValueTypeRenderingType;
 import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute;
 import org.jetbrains.annotations.NotNull;
@@ -394,9 +394,6 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     @Override
     public void setForm(List<TrackedEntityAttribute> trackedEntityAttributes, @Nullable Program program, HashMap<String, String> queryData,
                         List<ValueTypeDeviceRendering> renderingTypes) {
-
-        //TODO: refreshData for recycler
-
         //Form has been set.
         FormAdapter formAdapter = (FormAdapter) binding.formRecycler.getAdapter();
         formAdapter.setList(trackedEntityAttributes, program, queryData, renderingTypes);
@@ -434,11 +431,17 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             liveData.observe(this, searchTeiModels -> {
                 Trio<PagedList<SearchTeiModel>, String, Boolean> data = presenter.getMessage(searchTeiModels);
                 if (data.val1().isEmpty()) {
+                    binding.filterCounter.setVisibility(View.VISIBLE);
+                    binding.searchFilterGeneral.setVisibility(View.VISIBLE);
+
                     binding.messageContainer.setVisibility(View.GONE);
                     binding.scrollView.setVisibility(View.VISIBLE);
                     liveAdapter.submitList(data.val0());
                     binding.progressLayout.setVisibility(View.GONE);
                 } else {
+                    binding.filterCounter.setVisibility(View.GONE);
+                    binding.searchFilterGeneral.setVisibility(View.GONE);
+
                     showMap(false);
                     binding.progressLayout.setVisibility(View.GONE);
                     binding.messageContainer.setVisibility(View.VISIBLE);
@@ -687,6 +690,11 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         }
     }
 
+    @Override
+    public void openDashboard(String teiUid, String programUid, String enrollmentUid) {
+        startActivity(TeiDashboardMobileActivity.intent(this, teiUid, programUid, enrollmentUid));
+    }
+
     /*region MAP*/
     @Override
     public Consumer<Pair<HashMap<String, FeatureCollection>, BoundingBox>> setMap() {
@@ -832,7 +840,9 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         RectF rectF = new RectF(pointf.x - 10, pointf.y - 10, pointf.x + 10, pointf.y + 10);
         List<Feature> features = map.queryRenderedFeatures(rectF, featureType == FeatureType.POINT ? "POINT_LAYER" : "POLYGON_LAYER");
         if (!features.isEmpty()) {
-            presenter.onTEIClick(features.get(0).getStringProperty("teiUid"), false);
+            presenter.onTEIClick(features.get(0).getStringProperty("teiUid"),
+                    features.get(0).getStringProperty("enrollmentUid"),
+                    false);
             return true;
         }
 

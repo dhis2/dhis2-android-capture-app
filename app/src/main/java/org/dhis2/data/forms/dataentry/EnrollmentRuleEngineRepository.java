@@ -64,7 +64,9 @@ public final class EnrollmentRuleEngineRepository
         this.formRepository = formRepository;
         this.enrollmentUid = enrollmentUid;
 
-        initData();
+        if (enrollmentUid != null ) {
+            initData();
+        }
 
     }
 
@@ -105,6 +107,7 @@ public final class EnrollmentRuleEngineRepository
             else
                 for (ProgramRuleAction action : rule.programRuleActions())
                     if (action.programRuleActionType() == ProgramRuleActionType.HIDEFIELD
+                            || action.programRuleActionType() == ProgramRuleActionType.HIDEPROGRAMSTAGE
                             || action.programRuleActionType() == ProgramRuleActionType.HIDESECTION
                             || action.programRuleActionType() == ProgramRuleActionType.ASSIGN
                             || action.programRuleActionType() == ProgramRuleActionType.SHOWWARNING
@@ -113,6 +116,7 @@ public final class EnrollmentRuleEngineRepository
                             || action.programRuleActionType() == ProgramRuleActionType.DISPLAYTEXT
                             || action.programRuleActionType() == ProgramRuleActionType.HIDEOPTIONGROUP
                             || action.programRuleActionType() == ProgramRuleActionType.HIDEOPTION
+                            || action.programRuleActionType() == ProgramRuleActionType.SHOWOPTIONGROUP
                             || action.programRuleActionType() == ProgramRuleActionType.SETMANDATORYFIELD)
                         if (!mandatoryRules.contains(rule))
                             mandatoryRules.add(rule);
@@ -162,13 +166,7 @@ public final class EnrollmentRuleEngineRepository
         return queryAttributeValues()
                 .map(ruleAttributeValues -> ruleEnrollmentBuilder.attributeValues(ruleAttributeValues).build())
                 .switchMap(enrollment -> formRepository.ruleEngine().switchMap(ruleEngine -> {
-                    if (isEmpty(lastUpdatedAttr) && !getIndicators)
-                        return Flowable.fromCallable(ruleEngine.evaluate(enrollment));
-                    else
-                        return Flowable
-                                .just(attributeRules.get(lastUpdatedAttr) != null ? attributeRules.get(lastUpdatedAttr)
-                                        : RuleExtensionsKt.toRuleList(mandatoryRules))
-                                .flatMap(rules -> Flowable.fromCallable(ruleEngine.evaluate(enrollment, rules)));
+                    return Flowable.fromCallable(ruleEngine.evaluate(enrollment));
                 }).map(Result::success).onErrorReturn(error -> Result.failure(new Exception(error))));
     }
 

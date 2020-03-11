@@ -4,6 +4,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'io.fabric'
+apply plugin: 'hu.supercluster.paperwork'
 
 def libraries = rootProject.ext.libraries
 def versions = rootProject.ext.versions
@@ -19,6 +20,13 @@ repositories {
         url("https://oss.sonatype.org/content/repositories/snapshots")
     }
     mavenCentral()
+}
+
+paperwork {
+    set = [
+            buildTime: buildTime("yyyy-MM-dd HH:mm"),
+            gitSha   : gitSha()
+    ]
 }
 
 android {
@@ -140,7 +148,6 @@ android {
         alpha {
             applicationIdSuffix = ".alpha"
             matchingFallbacks = ['debug']
-            matchingFallbacks = ['debug']
             signingConfig signingConfigs.debug
             resValue "string", "content_provider", "com.dhis2.alpha.provider"
         }
@@ -231,7 +238,7 @@ dependencies {
         exclude group: "org.hisp.dhis", module: "core-rules"
     }
 
-    releaseImplementation ("org.hisp.dhis.rules:rule-engine:${libraries.ruleEngine}"){
+    releaseImplementation("org.hisp.dhis.rules:rule-engine:${libraries.ruleEngine}") {
         exclude group: "junit", module: "junit"
     }
     //endregion

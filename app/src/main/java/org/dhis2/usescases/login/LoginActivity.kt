@@ -28,11 +28,14 @@ import javax.inject.Inject
 import okhttp3.HttpUrl
 import org.dhis2.App
 import org.dhis2.Bindings.app
+import org.dhis2.Bindings.buildInfo
 import org.dhis2.Bindings.onRightDrawableClicked
+import org.dhis2.BuildConfig
 import org.dhis2.R
 import org.dhis2.data.server.UserManager
 import org.dhis2.data.tuples.Trio
 import org.dhis2.databinding.ActivityLoginBinding
+import org.dhis2.databinding.ActivityLoginBindingImpl
 import org.dhis2.usescases.general.ActivityGlobalAbstract
 import org.dhis2.usescases.main.MainActivity
 import org.dhis2.usescases.qrScanner.QRActivity
@@ -132,6 +135,7 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
         setTestingCredentials()
         setAutocompleteAdapters()
         setUpFingerPrintDialog()
+        setUpLoginInfo()
     }
 
     override fun setUpFingerPrintDialog() {
@@ -417,5 +421,9 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
 
     override fun hideFingerprintDialog() {
         fingerPrintDialog.hide()
+    }
+
+    private fun setUpLoginInfo() {
+        binding.appBuildInfo.text = buildInfo()
     }
 }
