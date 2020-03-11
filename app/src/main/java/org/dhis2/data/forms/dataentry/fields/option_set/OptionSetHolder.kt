@@ -35,7 +35,7 @@ class OptionSetHolder(
 
     fun update(viewModel: OptionSetViewModel) {
         this.viewModel = viewModel
-
+        label = StringBuilder().append(viewModel.label())
         formBinding.optionSetSelectionView.setOptionsToShow(
             viewModel.optionsToHide, viewModel.optionsToShow
         )

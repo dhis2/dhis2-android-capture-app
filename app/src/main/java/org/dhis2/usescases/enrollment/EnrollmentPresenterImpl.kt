@@ -403,7 +403,10 @@ class EnrollmentPresenterImpl(
 
         fieldMap.values.forEach {
             if (it is SpinnerViewModel) {
-                it.setOptionsToHide(optionsToHide[it.uid()], optionsGroupsToHide[it.uid()])
+                it.setOptionsToHide(
+                    optionsToHide[it.uid()] ?: emptyList(),
+                    optionsGroupsToHide[it.uid()] ?: emptyList()
+                )
                 if (optionsGroupToShow.keys.contains(it.uid())) {
                     it.optionGroupsToShow = optionsGroupToShow[it.uid()]
                 }
@@ -508,7 +511,7 @@ class EnrollmentPresenterImpl(
 
     override fun setOptionGroupToHide(optionGroupUid: String, toHide: Boolean, field: String) {
         if (toHide) {
-            if(!optionsGroupsToHide.containsKey(field)){
+            if (!optionsGroupsToHide.containsKey(field)) {
                 optionsGroupsToHide[field] = arrayListOf()
             }
             optionsGroupsToHide[field]!!.add(optionGroupUid)
@@ -523,7 +526,10 @@ class EnrollmentPresenterImpl(
                 )
             )
             valueStore.deleteOptionValueIfSelectedInGroup(field, optionGroupUid, true)
-        } else if (!optionsGroupsToHide.containsKey(field) || !optionsGroupsToHide.contains(optionGroupUid)) {
+        } else if (!optionsGroupsToHide.containsKey(field) || !optionsGroupsToHide.contains(
+                optionGroupUid
+            )
+        ) {
             if (optionsGroupToShow[field] != null) {
                 optionsGroupToShow[field]!!.add(optionGroupUid)
             } else {

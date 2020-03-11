@@ -40,7 +40,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Map;
 
 import javax.inject.Singleton;
@@ -80,7 +79,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     //Rules data
     private List<String> sectionsToHide;
     private Map<String, List<String>> optionsToHide = new HashMap<>();
-    private Map<String,List<String>> optionsGroupsToHide = new HashMap<>();
+    private Map<String, List<String>> optionsGroupsToHide = new HashMap<>();
     private Map<String, List<String>> optionsGroupToShow = new HashMap<>();
     private boolean canComplete;
     private String completeMessage;
@@ -422,22 +421,31 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
             FieldViewModel field = fieldIterator.next();
             if (field instanceof ImageViewModel) {
                 ImageViewModel imageField = (ImageViewModel) field;
-                if(optionsToHide.containsKey(imageField.fieldUid()) && optionsToHide.get(imageField.fieldUid()).contains(imageField.optionUid())) {
+                if (optionsToHide.containsKey(imageField.fieldUid()) && optionsToHide.get(imageField.fieldUid()).contains(imageField.optionUid())) {
                     fieldIterator.remove();
-                }else if(optionsGroupToShow.containsKey(imageField.fieldUid()) &&
-                        !eventCaptureRepository.getOptionsFromGroups(optionsGroupToShow.get(imageField.fieldUid())).contains(imageField.optionUid())){
+                } else if (optionsGroupToShow.containsKey(imageField.fieldUid()) &&
+                        !eventCaptureRepository.getOptionsFromGroups(optionsGroupToShow.get(imageField.fieldUid())).contains(imageField.optionUid())) {
                     fieldIterator.remove();
                 }
-            }else if (field instanceof SpinnerViewModel) {
-                ((SpinnerViewModel) field).setOptionsToHide(optionsToHide.get(field.uid()), optionsGroupsToHide.get(field.uid()));
+            } else if (field instanceof SpinnerViewModel) {
+                ((SpinnerViewModel) field).setOptionsToHide(
+                        optionsToHide.get(field.uid()) != null ? optionsToHide.get(field.uid()) : new ArrayList<>(),
+                        optionsGroupsToHide.get(field.uid()) != null ? optionsGroupsToHide.get(field.uid()) : new ArrayList<>()
+                );
                 if (optionsGroupToShow.keySet().contains(field.uid())) {
-                    ((SpinnerViewModel) field).setOptionGroupsToShow(optionsGroupToShow.get(field.uid()));
+                    ((SpinnerViewModel) field).setOptionGroupsToShow(
+                            optionsGroupToShow.get(field.uid()) != null ? optionsGroupToShow.get(field.uid()) : new ArrayList<>()
+                    );
                 }
-            }else if (field instanceof OptionSetViewModel) {
-                ((OptionSetViewModel) field).setOptionsToHide(optionsToHide.get(field.uid()));
+            } else if (field instanceof OptionSetViewModel) {
+                ((OptionSetViewModel) field).setOptionsToHide(
+                        optionsToHide.get(field.uid()) != null ? optionsToHide.get(field.uid()) : new ArrayList<>()
+                );
                 if (optionsGroupToShow.keySet().contains(field.uid())) {
                     ((OptionSetViewModel) field).setOptionsToShow(
-                            eventCaptureRepository.getOptionsFromGroups(optionsGroupToShow.get(field.uid()))
+                            eventCaptureRepository.getOptionsFromGroups(
+                                    optionsGroupToShow.get(field.uid()) != null ? optionsGroupToShow.get(field.uid()) : new ArrayList<>()
+                            )
                     );
                 }
             }
@@ -738,15 +746,15 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     @Override
     public void setOptionGroupToHide(@NonNull String optionGroupUid, boolean toHide, @NonNull String field) {
         if (toHide) {
-            if(!optionsGroupsToHide.containsKey(field)){
-                optionsGroupsToHide.put(field,new ArrayList<>());
+            if (!optionsGroupsToHide.containsKey(field)) {
+                optionsGroupsToHide.put(field, new ArrayList<>());
             }
             optionsGroupsToHide.get(field).add(optionGroupUid);
             if (!optionsToHide.containsKey(field)) {
                 optionsToHide.put(field, new ArrayList<>());
             }
             optionsToHide.get(field).addAll(eventCaptureRepository.getOptionsFromGroups(Collections.singletonList(optionGroupUid)));
-            StoreResult result = valueStore.deleteOptionValueIfSelectedInGroup(field, optionGroupUid,true);
+            StoreResult result = valueStore.deleteOptionValueIfSelectedInGroup(field, optionGroupUid, true);
             if (result.component2() == ValueStoreImpl.ValueStoreResult.VALUE_CHANGED) {
                 assignedValueChanged = true;
             }
@@ -756,7 +764,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
             } else {
                 optionsGroupToShow.put(field, Collections.singletonList(optionGroupUid));
             }
-            StoreResult result = valueStore.deleteOptionValueIfSelectedInGroup(field, optionGroupUid,false);
+            StoreResult result = valueStore.deleteOptionValueIfSelectedInGroup(field, optionGroupUid, false);
             if (result.component2() == ValueStoreImpl.ValueStoreResult.VALUE_CHANGED) {
                 assignedValueChanged = true;
             }
