@@ -460,4 +460,14 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
         badge.setNumber(numberOfNotes);
         badge.setMaxCharacterCount(3);
     }
+
+    @Override
+    public void showLoopWarning() {
+        new MaterialAlertDialogBuilder(this, R.style.DhisMaterialDialog)
+                .setTitle("Program rules warning")
+                .setMessage("There is a configuration issue causing a loop in the rules. Contact you administrator.")
+                .setPositiveButton(R.string.action_accept,(dialogInterface,i)->{})
+                .setCancelable(false)
+                .show();
+    }
 }
