@@ -548,9 +548,15 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
             Timber.e(e);
         }
 
-        popupMenu.getMenuInflater().inflate(
-                groupByStage.getValue() ? R.menu.dashboard_menu_group : R.menu.dashboard_menu,
-                popupMenu.getMenu());
+        int menu;
+        if(enrollmentUid == null) {
+            menu = R.menu.dashboard_tei_menu;
+        } else if (groupByStage.getValue()){
+            menu = R.menu.dashboard_menu_group;
+        } else {
+            menu = R.menu.dashboard_menu;
+        }
+        popupMenu.getMenuInflater().inflate(menu, popupMenu.getMenu());
         popupMenu.setOnMenuItemClickListener(item -> {
             switch (item.getItemId()) {
                 case R.id.showHelp:
