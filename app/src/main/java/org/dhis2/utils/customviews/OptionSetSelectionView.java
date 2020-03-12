@@ -3,13 +3,17 @@ package org.dhis2.utils.customviews;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.View;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RadioGroup;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.core.content.ContextCompat;
 import androidx.databinding.ViewDataBinding;
+
+import com.google.android.material.checkbox.MaterialCheckBox;
 
 import org.dhis2.Bindings.Bindings;
 import org.dhis2.R;
@@ -160,6 +164,7 @@ public class OptionSetSelectionView extends FieldLayout {
                 OptionSetSelectCheckItemBinding optionBinding = OptionSetSelectCheckItemBinding.inflate(inflater, checkGroup, false);
                 optionBinding.setEditable(isEditable);
                 optionBinding.setOptionName(option.displayName());
+                optionBinding.checkBox.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 1.0f));
                 optionBinding.checkBox.setChecked(currentCodeValue != null && (currentCodeValue.equals(option.code()) || currentCodeValue.equals(option.name())));
                 optionBinding.checkBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
                     if (isChecked) {
@@ -181,6 +186,7 @@ public class OptionSetSelectionView extends FieldLayout {
                 OptionSetSelectItemBinding optionBinding = OptionSetSelectItemBinding.inflate(inflater, radioGroup, false);
                 optionBinding.setEditable(isEditable);
                 optionBinding.setOptionName(option.displayName());
+                optionBinding.radio.setLayoutParams(new RadioGroup.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 1.0f));
                 optionBinding.radio.setChecked(currentCodeValue != null && (currentCodeValue.equals(option.code()) || currentCodeValue.equals(option.name())));
                 optionBinding.radio.setOnCheckedChangeListener((buttonView, isChecked) -> {
                     if (isChecked) {
