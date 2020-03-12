@@ -90,14 +90,26 @@ class ScanActivity : ActivityGlobalAbstract(), ZXingScannerView.ResultHandler {
     }
 
     override fun handleResult(result: Result) {
-        if(optionSetUid == null ||
-            scanPresenter.getOptions().any { it.displayName() == result.text }
-        ) {
-            val url = result.text
-            val data = Intent()
-            data.putExtra(Constants.EXTRA_DATA, url)
-            setResult(Activity.RESULT_OK, data)
+
+        var url = result.text
+
+        if (optionSetUid != null) {
+            val option = scanPresenter.getOptions()
+                .firstOrNull {
+                    it.displayName() == result.text ||
+                            it.name() == result.text ||
+                            it.code() == result.text
+                }
+            if (option!=null) {
+                url = option.displayName()
+            } else {
+                finish()
+            }
         }
+
+        val data = Intent()
+        data.putExtra(Constants.EXTRA_DATA, url)
+        setResult(Activity.RESULT_OK, data)
         finish()
     }
 }

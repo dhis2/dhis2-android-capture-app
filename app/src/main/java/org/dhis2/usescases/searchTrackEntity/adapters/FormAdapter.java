@@ -161,7 +161,7 @@ public class FormAdapter extends RecyclerView.Adapter {
                 viewModel = OrgUnitViewModel.create(attr.uid(), label, false, value, null, true, attr.displayDescription(), ObjectStyle.builder().build());
                 break;
             case SCAN_CODE:
-                viewModel = ScanTextViewModel.create(attr.uid(), label, false, queryData.get(attr.uid()), null, true, attr.optionSet().uid(), attr.description(), ObjectStyle.builder().build(), renderingTypes.get(position));
+                viewModel = ScanTextViewModel.create(attr.uid(), label, false, queryData.get(attr.uid()), null, true, attr.optionSet() != null ? attr.optionSet().uid() : null, attr.description(), ObjectStyle.builder().build(), renderingTypes.get(position));
                 break;
             default:
                 Crashlytics.log("Unsupported viewType " +
