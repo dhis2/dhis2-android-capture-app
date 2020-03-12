@@ -523,7 +523,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
         bundle.putString(ENROLLMENT_UID, dashboardModel.getCurrentEnrollment().uid());
         bundle.putString(EVENT_CREATION_TYPE, eventCreationType.name());
         bundle.putBoolean(EVENT_REPEATABLE, programStage.repeatable());
-        bundle.putSerializable(EVENT_PERIOD_TYPE, programStage.periodType() != null ? programStage.periodType().name() : null);
+        bundle.putSerializable(EVENT_PERIOD_TYPE, programStage.periodType());
         bundle.putString(Constants.PROGRAM_STAGE_UID, programStage.uid());
         bundle.putInt(EVENT_SCHEDULE_INTERVAL, programStage.standardInterval() != null ? programStage.standardInterval() : 0);
         intent.addFlags(Intent.FLAG_ACTIVITY_FORWARD_RESULT);
