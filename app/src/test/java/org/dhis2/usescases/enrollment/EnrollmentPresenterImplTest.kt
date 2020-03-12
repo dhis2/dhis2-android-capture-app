@@ -68,6 +68,19 @@ class EnrollmentPresenterImplTest {
     }
 
     @Test
+    fun `Should delete option value if selected in group to hide`() {
+        whenever(formRepository.getOptionsFromGroups(arrayListOf("optionGroupToHide")))doReturn arrayListOf("option1","option2")
+        presenter.setOptionGroupToHide("optionGroupToHide", true, "field")
+        verify(valueStore).deleteOptionValueIfSelectedInGroup("field","optionGroupToHide",true)
+    }
+
+    @Test
+    fun `Should delete option value if selected not in group to hide`() {
+        presenter.setOptionGroupToHide("optionGroupToHide", false, "field")
+        verify(valueStore).deleteOptionValueIfSelectedInGroup("field","optionGroupToHide",false)
+    }
+
+    @Test
     fun `Missing and errors fields should show mandatory fields dialog`() {
         presenter.setFieldsToShow(
             "testSection",
