@@ -19,6 +19,7 @@ abstract class ScanTextViewModel : FieldViewModel() {
             value: String?,
             section: String?,
             editable: Boolean?,
+            optionSet: String?,
             description: String?,
             objectStyle: ObjectStyle?,
             fieldRendering: ValueTypeDeviceRendering?
@@ -31,7 +32,7 @@ abstract class ScanTextViewModel : FieldViewModel() {
                 section,
                 null,
                 editable,
-                null,
+                optionSet,
                 null,
                 null,
                 description,
