@@ -286,12 +286,12 @@ class EnrollmentPresenterImpl(
             if (field !is SectionViewModel) {
                 val isUnique =
                     d2.trackedEntityModule().trackedEntityAttributes().uid(field.uid()).blockingGet()?.unique() ?: false
-                var hasValue: Boolean
+                var uniqueValueAlreadyExist: Boolean
                 if (isUnique) {
-                    hasValue = d2.trackedEntityModule().trackedEntityAttributeValues()
+                    uniqueValueAlreadyExist = d2.trackedEntityModule().trackedEntityAttributeValues()
                         .byTrackedEntityAttribute().eq(field.uid())
-                        .byValue().eq(field.value()).blockingGet().isNotEmpty()
-                    if(hasValue){
+                        .byValue().eq(field.value()).blockingGet().size > 1
+                    if(uniqueValueAlreadyExist){
                         uniqueFields[field.uid()] = field.label()
                     }
                 }
@@ -403,6 +403,7 @@ class EnrollmentPresenterImpl(
 
         mandatoryFields.clear()
         errorFields.clear()
+        uniqueFields.clear()
         optionsToHide.clear()
         optionsGroupsToHide.clear()
         optionsGroupToShow.clear()

@@ -154,7 +154,9 @@ class EnrollmentPresenterImplTest {
                 .byTrackedEntityAttribute().eq("uid1")
                 .byValue().eq("value")
                 .blockingGet()
-        ) doReturn listOf(TrackedEntityAttributeValue.builder().build())
+        ) doReturn listOf(
+            TrackedEntityAttributeValue.builder().value("1").build(),
+            TrackedEntityAttributeValue.builder().value("1").build())
         whenever(enrollmentView.context) doReturn mock()
 
         presenter.setFieldsToShow("testSection", fields)
@@ -180,7 +182,7 @@ class EnrollmentPresenterImplTest {
                 .byTrackedEntityAttribute().eq("uid1")
                 .byValue().eq("value")
                 .blockingGet()
-        ) doReturn listOf()
+        ) doReturn listOf(TrackedEntityAttributeValue.builder().value("1").build())
 
         presenter.setFieldsToShow("testSection", fields)
         val checkUnique = presenter.dataIntegrityCheck()
