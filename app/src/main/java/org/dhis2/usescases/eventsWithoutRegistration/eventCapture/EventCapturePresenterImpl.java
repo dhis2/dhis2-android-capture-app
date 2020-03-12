@@ -53,10 +53,6 @@ import io.reactivex.processors.PublishProcessor;
 import io.reactivex.subjects.BehaviorSubject;
 import timber.log.Timber;
 
-
-/**
- * QUADRAM. Created by ppajuelo on 19/11/2018.
- */
 @Singleton
 public class EventCapturePresenterImpl implements EventCaptureContract.Presenter, RulesActionCallbacks {
 
@@ -93,6 +89,8 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     private PublishProcessor<Unit> notesCounterProcessor;
     private BehaviorSubject<List<FieldViewModel>> formFieldsProcessor;
     private boolean assignedValueChanged;
+    private int calculationLoop = 0;
+    private final int MAX_LOOP_CALCULATIONS = 5;
 
 
     public EventCapturePresenterImpl(EventCaptureContract.View view, String eventUid,
@@ -281,10 +279,12 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                                                             int cont = 0;
                                                             HashMap<String, Boolean> finalFields = new HashMap<>();
                                                             for (FieldViewModel fieldViewModel : fields) {
-                                                                finalFields.put(fieldViewModel.optionSet() == null || !(fieldViewModel instanceof ImageViewModel) ?
-                                                                                fieldViewModel.uid() :
-                                                                                fieldViewModel.optionSet(),
-                                                                        !DhisTextUtils.Companion.isEmpty(fieldViewModel.value()));
+                                                                if (!(fieldViewModel instanceof DisplayViewModel)) {
+                                                                    finalFields.put(fieldViewModel.optionSet() == null || !(fieldViewModel instanceof ImageViewModel) ?
+                                                                                    fieldViewModel.uid() :
+                                                                                    fieldViewModel.optionSet(),
+                                                                            !DhisTextUtils.Companion.isEmpty(fieldViewModel.value()));
+                                                                }
                                                             }
                                                             for (String key : finalFields.keySet())
                                                                 if (finalFields.get(key))
@@ -295,7 +295,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                                                         }
                                                     }
 
-                                                    if(fieldMap.containsKey("")) {
+                                                    if (fieldMap.get("") != null) {
                                                         finalFieldList.addAll(fieldMap.get(""));
                                                     }
 
@@ -304,9 +304,14 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                         .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.ui())
                         .subscribe(sectionsAndFields -> {
-                                    if (assignedValueChanged) {
+                                    if (assignedValueChanged && errors.isEmpty() && calculationLoop < MAX_LOOP_CALCULATIONS) {
+                                        calculationLoop++;
                                         nextCalculation(true);
                                     } else {
+                                        if (calculationLoop == 5) {
+                                            view.showLoopWarning();
+                                        }
+                                        calculationLoop = 0;
                                         formFieldsProcessor.onNext(sectionsAndFields.val1());
                                         formAdjustProcessor.onNext(new Unit());
                                         int completedFields = 0;
@@ -453,14 +458,6 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                     );
                 }
             }
-        }
-
-        //Display the DisplayViewModels only in the last section
-        if (getFinalSections().size() > 1 && !DhisTextUtils.Companion.isEmpty(currentSection.get()) && !currentSection.get().equals(sectionList.get(sectionList.size() - 1).sectionUid())) {
-            Iterator<Map.Entry<String, FieldViewModel>> iter = fieldViewModels.entrySet().iterator();
-            while (iter.hasNext())
-                if (iter.next().getValue() instanceof DisplayViewModel)
-                    iter.remove();
         }
 
         return new ArrayList<>(fieldViewModels.values());

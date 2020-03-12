@@ -469,6 +469,7 @@
     <string name="error_fields_events">Some fields have errors. They have not been saved. Please, check them.</string>
     <string name="event_reopened">This event can now be edited</string>
     <string name="unique_warning">The value should be unique, a coincidence has been found. It has not been saved. Please check it.</string>
+    <string name="unique_coincidence_found">A coincidence in a unique field has been found. Please check form to save Enrollment.</string>
     <string name="please_wait">Please wait</string>
     <string name="skip">Skip</string>
     <string name="reschedule">Reschedule</string>
