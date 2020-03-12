@@ -67,10 +67,4 @@ public class EditTextRow implements Row<EditTextCustomHolder, EditTextModel> {
     public void onBind(@NonNull EditTextCustomHolder viewHolder, @NonNull EditTextModel viewModel) {
         viewHolder.update(viewModel);
     }
-
-    @Override
-    public void deAttach(@NonNull EditTextCustomHolder viewHolder) {
-        viewHolder.dispose();
-    }
-
 }

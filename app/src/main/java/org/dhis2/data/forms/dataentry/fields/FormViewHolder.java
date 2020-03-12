@@ -47,8 +47,6 @@ public abstract class FormViewHolder extends RecyclerView.ViewHolder {
         }
     }
 
-    public abstract void dispose();
-
     public void initFieldFocus() {
         if (currentUid != null) {
             currentUid.observeForever(fieldUid -> {

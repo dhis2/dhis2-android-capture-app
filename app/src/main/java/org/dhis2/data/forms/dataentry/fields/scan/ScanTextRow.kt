@@ -29,8 +29,4 @@ class ScanTextRow(
     override fun onBind(viewHolder: ScanTextHolder, viewModel: ScanTextViewModel) {
         viewHolder.update(viewModel)
     }
-
-    override fun deAttach(viewHolder: ScanTextHolder) {
-        viewHolder.dispose()
-    }
 }

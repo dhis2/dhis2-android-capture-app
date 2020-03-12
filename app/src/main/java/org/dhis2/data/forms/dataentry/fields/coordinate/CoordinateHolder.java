@@ -72,10 +72,4 @@ public class CoordinateHolder extends FormViewHolder {
         binding.executePendingBindings();
         initFieldFocus();
     }
-
-    @Override
-    public void dispose() {
-    }
-
-
 }

@@ -174,11 +174,6 @@ public class EditTextCustomHolder extends FormViewHolder {
         return gson.fromJson(json, type);
     }
 
-
-    public void dispose() {
-
-    }
-
     private void setLongClick() {
         binding.customEdittext.setOnLongActionListener(view -> {
             ClipboardManager clipboard = (ClipboardManager) binding.getRoot().getContext().getSystemService(Context.CLIPBOARD_SERVICE);

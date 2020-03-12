@@ -2,10 +2,12 @@ package org.dhis2.data.forms.dataentry
 
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
+import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.dataelement.DataElement
+import org.hisp.dhis.android.core.option.Option
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValue
@@ -148,6 +150,67 @@ class ValueStoreTest {
         testSubscriber.assertValue {
             it.valueStoreResult == ValueStoreImpl.ValueStoreResult.UID_IS_NOT_DE_OR_ATTR
         }
+    }
+
+    @Test
+    fun `Should not delete data element value if field is option set`() {
+        whenever(d2.optionModule().options().uid("optionUid").blockingGet()) doReturn Option.builder()
+            .name("optionName")
+            .uid("optionUid")
+            .code("optionCode")
+            .build()
+        whenever(
+            d2.trackedEntityModule().trackedEntityAttributeValues().value(
+                "recordUid",
+                "fieldUid"
+            )
+        ) doReturn mock()
+        whenever(
+            d2.trackedEntityModule().trackedEntityDataValues().value(
+                "recordUid",
+                "fieldUid"
+            ).blockingExists()
+        ) doReturn true
+
+        whenever(
+            d2.trackedEntityModule().trackedEntityDataValues().value(
+                "recordUid",
+                "fieldUid"
+            ).blockingGet()
+        ) doReturn TrackedEntityDataValue.builder()
+            .dataElement("fieldUid")
+            .event("recordUid")
+            .value("optionCode")
+            .build()
+        whenever(d2.dataElementModule().dataElements().uid("fieldUid").blockingGet())doReturn DataElement.builder()
+            .uid("fieldUid")
+            .valueType(ValueType.TEXT)
+            .build()
+        val storeResult = deValueStore.deleteOptionValueIfSelected("fieldUid", "optionUid")
+        assert(storeResult.valueStoreResult == ValueStoreImpl.ValueStoreResult.VALUE_CHANGED)
+    }
+
+    @Test
+    fun `Should delete data element value if field is option set`() {
+        whenever(d2.optionModule().options().uid("optionUid").blockingGet()) doReturn Option.builder()
+            .name("optionName")
+            .uid("optionUid")
+            .code("optionCode")
+            .build()
+        whenever(
+            d2.trackedEntityModule().trackedEntityDataValues().value(
+                "recordUid",
+                "fieldUid"
+            )
+        ) doReturn mock()
+        whenever(
+            d2.trackedEntityModule().trackedEntityDataValues().value(
+                "recordUid",
+                "fieldUid"
+            ).blockingExists()
+        ) doReturn false
+        val storeResult = deValueStore.deleteOptionValueIfSelected("fieldUid", "optionUid")
+        assert(storeResult.valueStoreResult == ValueStoreImpl.ValueStoreResult.VALUE_HAS_NOT_CHANGED)
     }
 
     fun mockedAttribute(): TrackedEntityAttribute {
