@@ -274,4 +274,20 @@ class EnrollmentFormRepositoryImpl(
                     }.toRuleAttributeValue(d2, program.uid())
             }.toFlowable()
     }
+
+    override fun getOptionsFromGroups(optionGroupUids: ArrayList<String>): List<String> {
+        val optionsFromGroups = arrayListOf<String>()
+        val optionGroups = d2.optionModule().optionGroups()
+            .withOptions()
+            .byUid().`in`(optionGroupUids)
+            .blockingGet()
+        for (optionGroup in optionGroups) {
+            for (option in optionGroup.options()!!) {
+                if (!optionsFromGroups.contains(option.uid())) {
+                    optionsFromGroups.add(option.uid())
+                }
+            }
+        }
+        return optionsFromGroups
+    }
 }

@@ -79,8 +79,6 @@ class SectionHolder(
         setShadows()
     }
 
-    override fun dispose() {}
-
     override fun onClick(v: View) {
         sectionProcessor.onNext(viewModel.uid())
     }

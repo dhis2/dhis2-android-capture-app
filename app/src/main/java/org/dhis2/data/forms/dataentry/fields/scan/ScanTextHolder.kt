@@ -36,7 +36,4 @@ class ScanTextHolder(
             }
         }
     }
-
-    override fun dispose() {
-    }
 }

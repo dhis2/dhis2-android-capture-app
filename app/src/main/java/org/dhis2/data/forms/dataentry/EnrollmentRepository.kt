@@ -10,6 +10,7 @@ import org.dhis2.data.forms.dataentry.fields.FieldViewModel
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory
 import org.dhis2.data.forms.dataentry.fields.coordinate.CoordinateViewModel
 import org.dhis2.data.forms.dataentry.fields.datetime.DateTimeViewModel
+import org.dhis2.data.forms.dataentry.fields.option_set.OptionSetViewModel
 import org.dhis2.data.forms.dataentry.fields.orgUnit.OrgUnitViewModel
 import org.dhis2.data.forms.dataentry.fields.section.SectionViewModel
 import org.dhis2.usescases.enrollment.EnrollmentActivity
@@ -95,6 +96,18 @@ class EnrollmentRepository(
             .flatMapIterable { programTrackedEntityAttributes -> programTrackedEntityAttributes }
             .map { transform(it) }
             .toList()
+            .map {
+                val finalFieldList = mutableListOf<FieldViewModel>()
+                for(field in it){
+                    if(field is OptionSetViewModel){
+                        val options = d2.optionModule().options().byOptionSetUid().eq(field.optionSet()).blockingGet()
+                        finalFieldList.add(field.withOptions(options))
+                    }else{
+                        finalFieldList.add(field)
+                    }
+                }
+                finalFieldList
+            }
     }
 
     @VisibleForTesting
