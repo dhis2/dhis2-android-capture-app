@@ -341,7 +341,7 @@ fun List<TrackedEntityAttributeValue>.toRuleAttributeValue(
         if (!attr.optionSet()?.uid().isNullOrEmpty()) {
             if (d2.programModule().programRuleVariables()
                 .byProgramUid().eq(program)
-                .byDataElementUid().eq(it.trackedEntityAttribute())
+                .byTrackedEntityAttributeUid().eq(it.trackedEntityAttribute())
                 .byUseCodeForOptionSet().isTrue
                 .blockingIsEmpty()
             ) {
