@@ -93,6 +93,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     private BehaviorSubject<List<FieldViewModel>> formFieldsProcessor;
     private boolean assignedValueChanged;
     private int calculationLoop = 0;
+    private final int MAX_LOOP_CALCULATIONS = 5;
 
 
     public EventCapturePresenterImpl(EventCaptureContract.View view, String eventUid,
@@ -306,7 +307,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                         .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.ui())
                         .subscribe(sectionsAndFields -> {
-                                    if (assignedValueChanged && errors.isEmpty() && calculationLoop < 5) {
+                                    if (assignedValueChanged && errors.isEmpty() && calculationLoop < MAX_LOOP_CALCULATIONS) {
                                         calculationLoop++;
                                         nextCalculation(true);
                                     } else {
