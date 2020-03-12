@@ -287,7 +287,7 @@ class EnrollmentPresenterImpl(
                 val isUnique =
                     d2.trackedEntityModule().trackedEntityAttributes().uid(field.uid()).blockingGet()?.unique() ?: false
                 var uniqueValueAlreadyExist: Boolean
-                if (isUnique) {
+                if (isUnique && field.value()!=null) {
                     uniqueValueAlreadyExist = d2.trackedEntityModule().trackedEntityAttributeValues()
                         .byTrackedEntityAttribute().eq(field.uid())
                         .byValue().eq(field.value()).blockingGet().size > 1

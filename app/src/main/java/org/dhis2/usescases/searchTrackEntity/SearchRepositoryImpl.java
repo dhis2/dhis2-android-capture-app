@@ -13,6 +13,10 @@ import androidx.paging.PagedList;
 import org.dhis2.Bindings.ExtensionsKt;
 import org.dhis2.Bindings.TrackedEntityInstanceExtensionsKt;
 import org.dhis2.Bindings.ValueExtensionsKt;
+import org.dhis2.data.forms.dataentry.DataEntryStore;
+import org.dhis2.data.forms.dataentry.StoreResult;
+import org.dhis2.data.forms.dataentry.ValueStore;
+import org.dhis2.data.forms.dataentry.ValueStoreImpl;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel;
@@ -216,7 +220,7 @@ public class SearchRepositoryImpl implements SearchRepository {
                 trackedEntityInstanceQuery = trackedEntityInstanceQuery.byAttribute(dataId).like(dataValue);
         }
 
-        if(assignedToMe){
+        if (assignedToMe) {
             trackedEntityInstanceQuery = trackedEntityInstanceQuery.byAssignedUserMode().eq(AssignedUserMode.CURRENT);
         }
 
@@ -344,6 +348,8 @@ public class SearchRepositoryImpl implements SearchRepository {
                                 orgUnit, teiType);
                         return Single.error(new SQLiteConstraintException(message));
                     } else {
+                        ValueStore valueStore = new ValueStoreImpl(d2, uid, DataEntryStore.EntryMode.ATTR);
+
                         if (queryData.containsKey(Constants.ENROLLMENT_DATE_UID))
                             queryData.remove(Constants.ENROLLMENT_DATE_UID);
                         for (String key : queryData.keySet()) {
@@ -353,8 +359,9 @@ public class SearchRepositoryImpl implements SearchRepository {
 
                             boolean isGenerated = d2.trackedEntityModule().trackedEntityAttributes().uid(key).blockingGet().generated();
 
-                            if (!isGenerated)
-                                d2.trackedEntityModule().trackedEntityAttributeValues().value(key, uid).blockingSet(dataValue);
+                            if (!isGenerated) {
+                                StoreResult toreResult = valueStore.save(key, dataValue).blockingFirst();
+                            }
                         }
                         return Single.just(uid);
                     }
