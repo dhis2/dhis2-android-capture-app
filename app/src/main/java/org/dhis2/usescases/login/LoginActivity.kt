@@ -36,7 +36,7 @@ import org.dhis2.data.tuples.Trio
 import org.dhis2.databinding.ActivityLoginBinding
 import org.dhis2.usescases.general.ActivityGlobalAbstract
 import org.dhis2.usescases.main.MainActivity
-import org.dhis2.usescases.qrScanner.QRActivity
+import org.dhis2.usescases.qrScanner.ScanActivity
 import org.dhis2.usescases.sync.SyncActivity
 import org.dhis2.utils.Constants
 import org.dhis2.utils.Constants.ACCOUNT_RECOVERY
@@ -408,7 +408,7 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
     }
 
     override fun navigateToQRActivity() {
-        Intent(context, QRActivity::class.java).apply {
+        Intent(context, ScanActivity::class.java).apply {
             startActivityForResult(this, RQ_QR_SCANNER)
         }
     }

@@ -58,7 +58,7 @@
             android:name=".usescases.searchTrackEntity.SearchTEActivity"
             android:configChanges="keyboardHidden|screenSize" />
         <activity android:name=".usescases.teiDashboard.TeiDashboardMobileActivity" />
-        <activity android:name=".usescases.qrScanner.QRActivity" />
+        <activity android:name=".usescases.qrScanner.ScanActivity" />
         <activity android:name=".usescases.teiDashboard.teiProgramList.TeiProgramListActivity" />
         <activity android:name=".usescases.map.MapSelectorActivity" />
         <activity android:name=".usescases.programStageSelection.ProgramStageSelectionActivity" />
