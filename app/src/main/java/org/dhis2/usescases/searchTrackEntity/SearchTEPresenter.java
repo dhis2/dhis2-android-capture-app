@@ -168,7 +168,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                         .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.ui())
                         .subscribe(
-                                view.setMap(),
+                                map -> view.setMap(map.component1(), map.component2()),
                                 Timber::e,
                                 () -> Timber.d("COMPLETED")
                         ));
@@ -351,8 +351,6 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                     break;
             }
         }
-
-//        Crashlytics.logException(throwable);
     }
 
     private void getTrackedEntityTypeAttributes() {
@@ -646,7 +644,6 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
             openDashboard(TEIuid, enrollmentUid);
         } else
             downloadTei(TEIuid, enrollmentUid);
-
     }
 
     @Override

@@ -550,17 +550,25 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
             Timber.e(e);
         }
 
-        popupMenu.getMenuInflater().inflate(
-                groupByStage.getValue() ? R.menu.dashboard_menu_group : R.menu.dashboard_menu,
-                popupMenu.getMenu());
-
-        EnrollmentStatus status = presenter.getEnrollmentStatus(enrollmentUid);
-        if (status == EnrollmentStatus.COMPLETED) {
-            popupMenu.getMenu().findItem(R.id.complete).setVisible(false);
-        } else if (status == EnrollmentStatus.CANCELLED){
-            popupMenu.getMenu().findItem(R.id.deactivate).setVisible(false);
+        int menu;
+        if(enrollmentUid == null) {
+            menu = R.menu.dashboard_tei_menu;
+        } else if (groupByStage.getValue()){
+            menu = R.menu.dashboard_menu_group;
         } else {
-            popupMenu.getMenu().findItem(R.id.activate).setVisible(false);
+            menu = R.menu.dashboard_menu;
+        }
+        popupMenu.getMenuInflater().inflate(menu, popupMenu.getMenu());
+
+        if(enrollmentUid != null) {
+            EnrollmentStatus status = presenter.getEnrollmentStatus(enrollmentUid);
+            if (status == EnrollmentStatus.COMPLETED) {
+                popupMenu.getMenu().findItem(R.id.complete).setVisible(false);
+            } else if (status == EnrollmentStatus.CANCELLED) {
+                popupMenu.getMenu().findItem(R.id.deactivate).setVisible(false);
+            } else {
+                popupMenu.getMenu().findItem(R.id.activate).setVisible(false);
+            }
         }
 
         popupMenu.setOnMenuItemClickListener(item -> {

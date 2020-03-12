@@ -280,7 +280,6 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
     public Flowable<String> observeStageSelection(Program currentProgram, Enrollment currentEnrollment) {
         if (adapter == null) {
             adapter = new EventAdapter(presenter, currentProgram, currentEnrollment);
-            //TODO: Add header itemDecoration(requires ANDROAPP-656 to be merge)
             binding.teiRecycler.setAdapter(adapter);
         }
         return adapter.stageSelector();

@@ -18,7 +18,8 @@ import org.dhis2.Bindings.Bindings
 import org.dhis2.R
 import org.dhis2.databinding.ScanTextViewAccentBinding
 import org.dhis2.databinding.ScanTextViewBinding
-import org.dhis2.usescases.qrScanner.QRActivity
+import org.dhis2.usescases.qrScanner.ScanActivity
+import org.dhis2.utils.Constants
 import org.hisp.dhis.android.core.common.ObjectStyle
 import org.hisp.dhis.android.core.common.ValueTypeRenderingType
 
@@ -35,6 +36,7 @@ class ScanTextView @JvmOverloads constructor(
     private lateinit var binding: ViewDataBinding
     private lateinit var onScanClick: OnScanClick
     private lateinit var onScanResult: (String?) -> Unit
+    var optionSet: String? = null
 
     init {
         init(context)
@@ -63,7 +65,8 @@ class ScanTextView @JvmOverloads constructor(
             Manifest.permission.CAMERA
         ) == PERMISSION_GRANTED
         ) {
-            val intent = Intent(context, QRActivity::class.java)
+            val intent = Intent(context, ScanActivity::class.java)
+            intent.putExtra(Constants.OPTION_SET, optionSet)
             this.onScanClick.onsScanClicked(intent, this)
         }
     }

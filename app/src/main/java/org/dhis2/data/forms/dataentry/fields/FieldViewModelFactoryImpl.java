@@ -84,7 +84,7 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
         if (!isEmpty(optionSet)) {
             if (renderingType == null || renderingType == ProgramStageSectionRenderingType.LISTING) {
                 if (fieldRendering != null && (fieldRendering.type().equals(ValueTypeRenderingType.QR_CODE) || fieldRendering.type().equals(ValueTypeRenderingType.BAR_CODE))) {
-                    return ScanTextViewModel.create(id, label, mandatory, value, section, editable, description, objectStyle, fieldRendering);
+                    return ScanTextViewModel.create(id, label, mandatory, value, section, editable, optionSet, description, objectStyle, fieldRendering);
                 } else {
                     return SpinnerViewModel.create(id, label, hintFilterOptions, mandatory, optionSet, value, section, editable, description, optionCount, objectStyle);
                 }
@@ -109,7 +109,7 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
             case UNIT_INTERVAL:
             case URL:
                 if (fieldRendering != null && (fieldRendering.type().equals(ValueTypeRenderingType.QR_CODE) || fieldRendering.type().equals(ValueTypeRenderingType.BAR_CODE))) {
-                    return ScanTextViewModel.create(id, label, mandatory, value, section, editable, description, objectStyle, fieldRendering);
+                    return ScanTextViewModel.create(id, label, mandatory, value, section, editable, optionSet, description, objectStyle, fieldRendering);
                 } else {
                     return EditTextViewModel.create(id, label, mandatory, value, hintEnterText, 1, type, section, editable, description, fieldRendering, objectStyle, fieldMask);
                 }

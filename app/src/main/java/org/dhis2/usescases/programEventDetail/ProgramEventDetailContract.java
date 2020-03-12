@@ -46,7 +46,7 @@ public class ProgramEventDetailContract {
 
         void openOrgUnitTreeSelector();
 
-        Consumer<kotlin.Pair<FeatureCollection, BoundingBox>> setMap();
+        void setMap(FeatureCollection featureCollection, BoundingBox boundingBox);
 
         void setEventInfo(Pair<ProgramEventViewModel,LatLng> programEventViewModel);
 
