@@ -40,7 +40,6 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 import javax.inject.Singleton;
 
@@ -93,6 +92,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     private PublishProcessor<Unit> notesCounterProcessor;
     private BehaviorSubject<List<FieldViewModel>> formFieldsProcessor;
     private boolean assignedValueChanged;
+    private int calculationLoop = 0;
 
 
     public EventCapturePresenterImpl(EventCaptureContract.View view, String eventUid,
@@ -230,7 +230,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
 
                                                         if (fieldViewModel.optionSet() == null || !(fieldViewModel instanceof ImageViewModel)) {
                                                             totalFields++;
-                                                        } else if (!optionSets.contains(fieldViewModel.optionSet())){
+                                                        } else if (!optionSets.contains(fieldViewModel.optionSet())) {
                                                             optionSets.add(fieldViewModel.optionSet());
                                                             totalFields++;
                                                         }
@@ -251,7 +251,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
 
                                                             HashMap<String, Boolean> finalFields = new HashMap<>();
                                                             for (FieldViewModel fieldViewModel : fieldViewModels) {
-                                                                finalFields.put(fieldViewModel.optionSet() == null || !(fieldViewModel instanceof ImageViewModel)?
+                                                                finalFields.put(fieldViewModel.optionSet() == null || !(fieldViewModel instanceof ImageViewModel) ?
                                                                                 fieldViewModel.uid() :
                                                                                 fieldViewModel.optionSet(),
                                                                         !DhisTextUtils.Companion.isEmpty(fieldViewModel.value()));
@@ -281,10 +281,12 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                                                             int cont = 0;
                                                             HashMap<String, Boolean> finalFields = new HashMap<>();
                                                             for (FieldViewModel fieldViewModel : fields) {
-                                                                finalFields.put(fieldViewModel.optionSet() == null || !(fieldViewModel instanceof ImageViewModel)?
-                                                                                fieldViewModel.uid() :
-                                                                                fieldViewModel.optionSet(),
-                                                                        !DhisTextUtils.Companion.isEmpty(fieldViewModel.value()));
+                                                                if (!(fieldViewModel instanceof DisplayViewModel)) {
+                                                                    finalFields.put(fieldViewModel.optionSet() == null || !(fieldViewModel instanceof ImageViewModel) ?
+                                                                                    fieldViewModel.uid() :
+                                                                                    fieldViewModel.optionSet(),
+                                                                            !DhisTextUtils.Companion.isEmpty(fieldViewModel.value()));
+                                                                }
                                                             }
                                                             for (String key : finalFields.keySet())
                                                                 if (finalFields.get(key))
@@ -295,14 +297,23 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                                                         }
                                                     }
 
+                                                    if (fieldMap.get("") != null) {
+                                                        finalFieldList.addAll(fieldMap.get(""));
+                                                    }
+
                                                     return Pair.create(eventSectionModels, finalFieldList);
                                                 })))
                         .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.ui())
                         .subscribe(sectionsAndFields -> {
-                                    if (assignedValueChanged) {
+                                    if (assignedValueChanged && errors.isEmpty() && calculationLoop < 5) {
+                                        calculationLoop++;
                                         nextCalculation(true);
                                     } else {
+                                        if (calculationLoop == 5) {
+                                            view.showLoopWarning();
+                                        }
+                                        calculationLoop = 0;
                                         formFieldsProcessor.onNext(sectionsAndFields.val1());
                                         formAdjustProcessor.onNext(new Unit());
                                         int completedFields = 0;
@@ -693,7 +704,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     public void save(@NotNull @NonNull String uid, @Nullable String value) {
         if (value == null || !sectionsToHide.contains(eventCaptureRepository.getSectionFor(uid))) {
             StoreResult result = valueStore.saveWithTypeCheck(uid, value).blockingFirst();
-            if(result.component2() == ValueStoreImpl.ValueStoreResult.VALUE_CHANGED){
+            if (result.component2() == ValueStoreImpl.ValueStoreResult.VALUE_CHANGED) {
                 assignedValueChanged = true;
             }
         }
