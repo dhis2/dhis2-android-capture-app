@@ -445,14 +445,6 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
             }
         }
 
-        //Display the DisplayViewModels only in the last section
-        if (getFinalSections().size() > 1 && !DhisTextUtils.Companion.isEmpty(currentSection.get()) && !currentSection.get().equals(sectionList.get(sectionList.size() - 1).sectionUid())) {
-            Iterator<Map.Entry<String, FieldViewModel>> iter = fieldViewModels.entrySet().iterator();
-            while (iter.hasNext())
-                if (iter.next().getValue() instanceof DisplayViewModel)
-                    iter.remove();
-        }
-
         for (FieldViewModel fieldViewModel : fieldViewModels.values())
             if (fieldViewModel instanceof SpinnerViewModel) {
                 ((SpinnerViewModel) fieldViewModel).setOptionsToHide(optionsToHide, optionsGroupsToHide);
