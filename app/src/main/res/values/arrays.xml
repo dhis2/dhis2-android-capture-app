@@ -2,7 +2,7 @@
 <resources>
 
     <string-array name="data_sync_periods">
-        <item>@string/fifteen_minute</item>
+        <item>@string/thirty_minutes</item>
         <item>@string/a_hour</item>
         <item>@string/every_6_hours</item>
         <item>@string/every_12_hours</item>
@@ -11,7 +11,6 @@
     </string-array>
 
     <string-array name="metadata_sync_periods">
-        <item>@string/every_12_hours</item>
         <item>@string/a_day</item>
         <item>@string/a_week</item>
         <item>@string/Manual</item>

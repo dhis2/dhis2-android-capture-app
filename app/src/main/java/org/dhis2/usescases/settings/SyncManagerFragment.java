@@ -58,6 +58,7 @@ import javax.inject.Inject;
 import static org.dhis2.Bindings.SettingExtensionsKt.EVERY_12_HOUR;
 import static org.dhis2.Bindings.SettingExtensionsKt.EVERY_15_MIN;
 import static org.dhis2.Bindings.SettingExtensionsKt.EVERY_24_HOUR;
+import static org.dhis2.Bindings.SettingExtensionsKt.EVERY_30_MIN;
 import static org.dhis2.Bindings.SettingExtensionsKt.EVERY_6_HOUR;
 import static org.dhis2.Bindings.SettingExtensionsKt.EVERY_7_DAYS;
 import static org.dhis2.Bindings.SettingExtensionsKt.EVERY_HOUR;
@@ -318,8 +319,8 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
         int timeData = presenter.getDataPeriodSetting();
         String setting;
         switch (timeData) {
-            case EVERY_15_MIN:
-                setting = getString(R.string.fifteen_minute);
+            case EVERY_30_MIN:
+                setting = getString(R.string.thirty_minutes);
                 break;
             case EVERY_HOUR:
                 setting = getString(R.string.a_hour);
@@ -417,7 +418,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
                 context.getResources().getStringArray(R.array.data_sync_periods)));
 
         switch (dataSettings.getDataSyncPeriod()) {
-            case EVERY_15_MIN:
+            case EVERY_30_MIN:
                 binding.dataPeriods.setSelection(0);
                 break;
             case EVERY_HOUR:
@@ -443,7 +444,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
                 if (dataInit) {
                     switch (position) {
                         case 0:
-                            saveTimeData(EVERY_15_MIN);
+                            saveTimeData(EVERY_30_MIN);
                             break;
                         case 1:
                             saveTimeData(EVERY_HOUR);
@@ -504,18 +505,15 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
         binding.metadataPeriods.setAdapter(new ArrayAdapter<>(context, R.layout.spinner_settings_item,
                 context.getResources().getStringArray(R.array.metadata_sync_periods)));
         switch (metadataSettings.getMetadataSyncPeriod()) {
-            case EVERY_12_HOUR:
-                binding.metadataPeriods.setSelection(0);
-                break;
             case EVERY_7_DAYS:
-                binding.metadataPeriods.setSelection(2);
+                binding.metadataPeriods.setSelection(1);
                 break;
             case TIME_MANUAL:
-                binding.metadataPeriods.setSelection(3);
+                binding.metadataPeriods.setSelection(2);
                 break;
             case EVERY_24_HOUR:
             default:
-                binding.metadataPeriods.setSelection(1);
+                binding.metadataPeriods.setSelection(0);
                 break;
         }
         binding.metadataPeriods.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -524,15 +522,12 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
                 if (metadataInit) {
                     switch (position) {
                         case 0:
-                            saveTimeMeta(EVERY_12_HOUR);
-                            break;
-                        case 1:
                             saveTimeMeta(EVERY_24_HOUR);
                             break;
-                        case 2:
+                        case 1:
                             saveTimeMeta(EVERY_7_DAYS);
                             break;
-                        case 3:
+                        case 2:
                             saveTimeMeta(TIME_MANUAL);
                             break;
                         default:

@@ -185,6 +185,7 @@
     <!-- SYNC -->
     <string name="a_minute">1 Minute</string>
     <string name="fifteen_minute">15 Minutes</string>
+    <string name="thirty_minutes">30 Minutes</string>
     <string name="a_hour">1 Hour</string>
     <string name="every_6_hours">6h</string>
     <string name="a_day">1 Day (Default)</string>
