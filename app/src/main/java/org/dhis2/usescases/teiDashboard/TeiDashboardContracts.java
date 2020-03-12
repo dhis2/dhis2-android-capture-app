@@ -1,6 +1,7 @@
 package org.dhis2.usescases.teiDashboard;
 
 import org.dhis2.usescases.general.AbstractActivityContracts;
+import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.program.Program;
 
 public class TeiDashboardContracts {
@@ -30,6 +31,8 @@ public class TeiDashboardContracts {
         void hideTabsAndDisableSwipe();
 
         void showTabsAndEnableSwipe();
+
+        void updateStatus();
     }
 
     public interface Presenter {
@@ -69,5 +72,9 @@ public class TeiDashboardContracts {
         void generalFiltersClick();
 
         void handleShowHideFilters(boolean showFilter);
+
+        EnrollmentStatus getEnrollmentStatus(String enrollmentUid);
+
+        void updateEnrollmentStatus(String enrollmentUid, EnrollmentStatus status);
     }
 }

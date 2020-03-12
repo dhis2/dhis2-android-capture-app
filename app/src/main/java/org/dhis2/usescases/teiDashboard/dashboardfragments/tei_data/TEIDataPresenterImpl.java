@@ -432,6 +432,19 @@ class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
         view.showNewEventOptions(anchor, stage);
     }
 
+    @Override
+    public void getEnrollment(String enrollmentUid) {
+        compositeDisposable.add(
+                d2.enrollmentModule().enrollments().uid(enrollmentUid).get()
+                .subscribeOn(schedulerProvider.io())
+                .observeOn(schedulerProvider.ui())
+                .subscribe(
+                        view::setEnrollment,
+                        Timber::e
+                )
+        );
+    }
+
     private Map<String, Boolean> getGrouping() {
         TypeToken<HashMap<String, Boolean>> typeToken =
                 new TypeToken<HashMap<String, Boolean>>() {

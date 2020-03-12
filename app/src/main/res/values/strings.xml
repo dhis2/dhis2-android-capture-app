@@ -103,7 +103,7 @@
     <string name="completed">Completed</string>
     <string name="cancelled">Cancelled</string>
     <string name="re_open">re-open</string>
-    <string name="activate">activate</string>
+    <string name="activate">Activate</string>
 
     <!-- State -->
     <string name="state_synced">Sync</string>

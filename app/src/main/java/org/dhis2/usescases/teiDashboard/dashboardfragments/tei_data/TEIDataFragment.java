@@ -155,7 +155,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
             presenter.onGroupingChanged(group);
         });
         activity.observeFilters().observe(this, showFilters -> showHideFilters(showFilters));
-
+        activity.updatedEnrollment().observe(this, enrollmentUid -> updateEnrollment(enrollmentUid) );
         filtersAdapter = new FiltersAdapter(FiltersAdapter.ProgramType.TRACKER);
         filtersAdapter.addEventStatus();
 
@@ -185,6 +185,15 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
 
 
         return binding.getRoot();
+    }
+
+    private void updateEnrollment(String enrollmentUid) {
+        presenter.getEnrollment(enrollmentUid);
+    }
+
+    @Override
+    public void setEnrollment(Enrollment enrollment) {
+        binding.setEnrollment(enrollment);
     }
 
     @Override
