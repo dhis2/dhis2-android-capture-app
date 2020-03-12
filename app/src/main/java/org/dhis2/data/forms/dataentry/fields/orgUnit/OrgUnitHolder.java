@@ -18,25 +18,18 @@ import static android.text.TextUtils.isEmpty;
 
 public class OrgUnitHolder extends FormViewHolder {
     private final FormOrgUnitBinding binding;
-    private CompositeDisposable compositeDisposable;
     private OrgUnitViewModel model;
 
     OrgUnitHolder(FormOrgUnitBinding binding, FlowableProcessor<RowAction> processor, boolean isSearchMode, MutableLiveData<String> currentSelection) {
         super(binding);
         this.binding = binding;
         this.currentUid = currentSelection;
-        compositeDisposable = new CompositeDisposable();
 
         binding.orgUnitView.setListener(orgUnitUid -> {
             processor.onNext(RowAction.create(model.uid(), orgUnitUid, getAdapterPosition()));
         });
 
         binding.orgUnitView.setActivationListener(() -> setSelectedBackground(isSearchMode));
-    }
-
-    @Override
-    public void dispose() {
-        compositeDisposable.clear();
     }
 
     public void update(OrgUnitViewModel viewModel) {

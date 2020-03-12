@@ -29,9 +29,6 @@ import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 
-/**
- * QUADRAM. Created by ppajuelo on 07/11/2018.
- */
 class RulesUtilsProviderImplTest {
 
     private lateinit var ruleUtils: RulesUtilsProvider
@@ -401,7 +398,7 @@ class RulesUtilsProviderImplTest {
             actionCallbacks
         )
 
-        verify(actionCallbacks, times(1)).setOptionToHide("optionUid")
+        verify(actionCallbacks, times(1)).setOptionToHide("optionUid", "field")
     }
 
     @Test
@@ -419,7 +416,7 @@ class RulesUtilsProviderImplTest {
             actionCallbacks
         )
 
-        verify(actionCallbacks, times(1)).setOptionGroupToHide("optionGroupUid", true)
+        verify(actionCallbacks, times(1)).setOptionGroupToHide("optionGroupUid", true, "field")
     }
 
     @Test

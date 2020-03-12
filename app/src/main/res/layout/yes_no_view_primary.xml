@@ -51,6 +51,7 @@
 
 
             <LinearLayout
+                android:id="@+id/checkLayouts"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:gravity="center_vertical"
@@ -67,9 +68,9 @@
                         android:id="@+id/yes"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginEnd="32dp"
                         android:checked="false"
                         android:text="@string/yes"
-                        android:layout_marginEnd="32dp"
                         android:textColor="@color/text_black_333"
                         app:buttonTint="@color/text_black_333"
                         tools:checked="true" />
@@ -78,22 +79,41 @@
                         android:id="@+id/no"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:checked="false"
                         android:layout_marginEnd="25dp"
+                        android:checked="false"
                         android:text="@string/no"
                         android:textColor="@color/text_black_333"
                         app:buttonTint="@color/text_black_333" />
+                </RadioGroup>
 
-                    <!--<RadioButton
-                        android:id="@+id/no_value"
+                <LinearLayout
+                    android:id="@+id/checkGroup"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <com.google.android.material.checkbox.MaterialCheckBox
+                        android:id="@+id/checkYes"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginEnd="32dp"
                         android:checked="false"
-                        android:text="@string/no_value"
+                        android:text="@string/yes"
                         android:textColor="@color/text_black_333"
-                        app:buttonTint="@color/text_black_333" />-->
+                        app:buttonTint="@color/text_black_333"
+                        tools:checked="true" />
 
-                </RadioGroup>
+                    <com.google.android.material.checkbox.MaterialCheckBox
+                        android:id="@+id/checkNo"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="25dp"
+                        android:checked="false"
+                        android:text="@string/no"
+                        android:textColor="@color/text_black_333"
+                        app:buttonTint="@color/text_black_333" />
+                </LinearLayout>
 
                 <ImageView
                     android:id="@+id/clearSelection"
@@ -106,8 +126,7 @@
                 <View
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    />
+                    android:layout_weight="1" />
 
                 <ImageView
                     android:id="@+id/descriptionLabel"
@@ -117,6 +136,19 @@
                     app:srcCompat="@drawable/ic_info_outline"
                     app:tint="?colorPrimary" />
             </LinearLayout>
+
+            <com.google.android.material.switchmaterial.SwitchMaterial
+                android:id="@+id/yesOnlyToggle"
+                style="@style/Widget.AppCompat.CompoundButton.Switch"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/yes"
+                android:textAppearance="@style/TextPrimary"
+                android:textSize="14sp"
+                app:switchPadding="20dp"
+                app:thumbTint="@drawable/selector_material_thumb_field"
+                app:trackTint="@drawable/selector_material_track_field"
+                app:useMaterialThemeColors="false" />
         </LinearLayout>
     </RelativeLayout>
 </layout>

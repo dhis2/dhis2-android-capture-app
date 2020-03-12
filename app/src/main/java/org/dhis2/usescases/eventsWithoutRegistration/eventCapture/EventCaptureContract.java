@@ -165,6 +165,8 @@ public class EventCaptureContract {
         Observable<Boolean> isCompletedEventExpired(String eventUid);
 
         Single<Integer> getNoteCount();
+
+        List<String> getOptionsFromGroups(List<String> optionGroupUids);
     }
 
 }

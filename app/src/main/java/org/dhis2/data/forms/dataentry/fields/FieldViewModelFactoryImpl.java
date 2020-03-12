@@ -8,6 +8,7 @@ import org.dhis2.data.forms.dataentry.fields.coordinate.CoordinateViewModel;
 import org.dhis2.data.forms.dataentry.fields.datetime.DateTimeViewModel;
 import org.dhis2.data.forms.dataentry.fields.edittext.EditTextViewModel;
 import org.dhis2.data.forms.dataentry.fields.image.ImageViewModel;
+import org.dhis2.data.forms.dataentry.fields.option_set.OptionSetViewModel;
 import org.dhis2.data.forms.dataentry.fields.orgUnit.OrgUnitViewModel;
 import org.dhis2.data.forms.dataentry.fields.picture.PictureViewModel;
 import org.dhis2.data.forms.dataentry.fields.radiobutton.RadioButtonViewModel;
@@ -20,6 +21,9 @@ import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.common.ValueTypeDeviceRendering;
 import org.hisp.dhis.android.core.common.ValueTypeRenderingType;
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
+
+import java.util.Arrays;
+import java.util.List;
 
 import static android.text.TextUtils.isEmpty;
 import static org.dhis2.utils.Preconditions.isNull;
@@ -53,6 +57,13 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
     @NonNull
     private final String hintChooseDate;
 
+    private final List<ValueTypeRenderingType> optionSetTextRenderings = Arrays.asList(
+            ValueTypeRenderingType.HORIZONTAL_CHECKBOXES,
+            ValueTypeRenderingType.VERTICAL_CHECKBOXES,
+            ValueTypeRenderingType.HORIZONTAL_RADIOBUTTONS,
+            ValueTypeRenderingType.VERTICAL_RADIOBUTTONS
+    );
+
     public FieldViewModelFactoryImpl(@NonNull String hintEnterText, @NonNull String hintEnterLongText,
                                      @NonNull String hintEnterNumber, @NonNull String hintEnterInteger,
                                      @NonNull String hintEnterIntegerPositive, @NonNull String hintEnterIntegerNegative,
@@ -84,7 +95,9 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
         if (!isEmpty(optionSet)) {
             if (renderingType == null || renderingType == ProgramStageSectionRenderingType.LISTING) {
                 if (fieldRendering != null && (fieldRendering.type().equals(ValueTypeRenderingType.QR_CODE) || fieldRendering.type().equals(ValueTypeRenderingType.BAR_CODE))) {
-                    return ScanTextViewModel.create(id, label, mandatory, value, section, editable, description, objectStyle, fieldRendering);
+                    return ScanTextViewModel.create(id, label, mandatory, value, section, editable, optionSet, description, objectStyle, fieldRendering);
+                } else if (fieldRendering != null && type == ValueType.TEXT && optionSetTextRenderings.contains(fieldRendering.type())) {
+                    return OptionSetViewModel.create(id, label, mandatory, optionSet, value, section, editable, description, objectStyle, fieldRendering);
                 } else {
                     return SpinnerViewModel.create(id, label, hintFilterOptions, mandatory, optionSet, value, section, editable, description, optionCount, objectStyle);
                 }
@@ -109,7 +122,7 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
             case UNIT_INTERVAL:
             case URL:
                 if (fieldRendering != null && (fieldRendering.type().equals(ValueTypeRenderingType.QR_CODE) || fieldRendering.type().equals(ValueTypeRenderingType.BAR_CODE))) {
-                    return ScanTextViewModel.create(id, label, mandatory, value, section, editable, description, objectStyle, fieldRendering);
+                    return ScanTextViewModel.create(id, label, mandatory, value, section, editable, optionSet, description, objectStyle, fieldRendering);
                 } else {
                     return EditTextViewModel.create(id, label, mandatory, value, hintEnterText, 1, type, section, editable, description, fieldRendering, objectStyle, fieldMask);
                 }
@@ -123,7 +136,8 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
                 return CoordinateViewModel.create(id, label, mandatory, value, section, editable, description, objectStyle, FeatureType.POINT);
             case BOOLEAN:
             case TRUE_ONLY:
-                return RadioButtonViewModel.fromRawValue(id, label, type, mandatory, value, section, editable, description, objectStyle);
+                return RadioButtonViewModel.fromRawValue(id, label, type, mandatory, value, section, editable, description, objectStyle,
+                        fieldRendering != null ? fieldRendering.type() : ValueTypeRenderingType.DEFAULT);
             case ORGANISATION_UNIT:
                 return OrgUnitViewModel.create(id, label, mandatory, value, section, editable, description, objectStyle);
             case FILE_RESOURCE:
