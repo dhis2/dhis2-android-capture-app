@@ -303,9 +303,9 @@ class RulesRepository(private val d2: D2) {
                     .byUseCodeForOptionSet().isTrue.blockingIsEmpty()
                 if (!useOptionCode) {
                     value = if (d2.optionModule().options()
-                        .byOptionSetUid().eq(attribute.optionSet()!!.uid())
-                        .byCode().eq(value)
-                        .one().blockingExists()
+                            .byOptionSetUid().eq(attribute.optionSet()!!.uid())
+                            .byCode().eq(value)
+                            .one().blockingExists()
                     ) {
                         d2.optionModule().options()
                             .byOptionSetUid().eq(attribute.optionSet()!!.uid())
@@ -323,7 +323,12 @@ class RulesRepository(private val d2: D2) {
                     ""
                 }
             }
-            RuleAttributeValue.create(attributeValue.trackedEntityAttribute()!!, value!!)
+            ruleAttributeValues.add(
+                RuleAttributeValue.create(
+                    attributeValue.trackedEntityAttribute()!!,
+                    value!!
+                )
+            )
         }
         return ruleAttributeValues
     }
