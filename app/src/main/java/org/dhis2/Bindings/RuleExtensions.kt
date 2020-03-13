@@ -86,9 +86,9 @@ fun List<ProgramRuleVariable>.toRuleVariableList(
     dataElementRepository: DataElementCollectionRepository
 ): List<RuleVariable> {
     return filter {
-        if(it.dataElement()!=null){
+        if (it.dataElement() != null) {
             dataElementRepository.uid(it.dataElement()?.uid()).blockingExists()
-        }else{
+        } else {
             attributeRepository.uid(it.trackedEntityAttribute()?.uid()).blockingExists()
         }
     }.map {
@@ -341,7 +341,7 @@ fun List<TrackedEntityAttributeValue>.toRuleAttributeValue(
         if (!attr.optionSet()?.uid().isNullOrEmpty()) {
             if (d2.programModule().programRuleVariables()
                 .byProgramUid().eq(program)
-                .byDataElementUid().eq(it.trackedEntityAttribute())
+                .byTrackedEntityAttributeUid().eq(it.trackedEntityAttribute())
                 .byUseCodeForOptionSet().isTrue
                 .blockingIsEmpty()
             ) {

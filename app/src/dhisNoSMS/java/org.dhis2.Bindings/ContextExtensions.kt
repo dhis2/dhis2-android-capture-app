@@ -12,3 +12,11 @@ fun Context.buildInfo(): String {
         "v${BuildConfig.VERSION_NAME} : ${paperWork.get("buildTime")} : ${paperWork.get("gitSha")} "
     }
 }
+
+fun Fragment.checkSMSPermission(requestPermission: Boolean, request: Int): Boolean {
+    return false
+}
+
+fun Context.showSMS(): Boolean {
+    return BuildConfig.FLAVOR == "dhis"
+}

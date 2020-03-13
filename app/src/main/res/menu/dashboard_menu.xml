@@ -16,7 +16,20 @@
         android:id="@+id/programSelector"
         android:icon="@drawable/ic_program_border"
         android:title="@string/program_selector" />
-    <item android:id="@+id/groupEvents"
+    <item
+        android:id="@+id/groupEvents"
         android:icon="@drawable/ic_group_view"
         android:title="Group events by stage"/>
+    <item
+        android:id="@+id/complete"
+        android:icon="@drawable/ic_lock_menu"
+        android:title="@string/complete" />
+    <item
+        android:id="@+id/activate"
+        android:icon="@drawable/ic_lock_open_menu"
+        android:title="@string/re_open" />
+    <item
+        android:id="@+id/deactivate"
+        android:icon="@drawable/ic_cancel_menu"
+        android:title="@string/deactivate" />
 </menu>

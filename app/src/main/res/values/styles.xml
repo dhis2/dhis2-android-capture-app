@@ -297,4 +297,8 @@
         <item name="android:windowExitAnimation">@anim/pin_dialog_anim_exit</item>
     </style>
 
+    <style name="settingsHint">
+        <item name="android:textSize">10sp</item>
+    </style>
+
 </resources>

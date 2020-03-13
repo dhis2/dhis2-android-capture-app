@@ -20,17 +20,11 @@ import java.util.List;
 
 import io.reactivex.Observable;
 
-/**
- * QUADRAM. Created by ppajuelo on 02/11/2017.
- */
-
 public class TeiProgramListRepositoryImpl implements TeiProgramListRepository {
 
-    private final CodeGenerator codeGenerator;
     private final D2 d2;
 
-    TeiProgramListRepositoryImpl(CodeGenerator codeGenerator, D2 d2) {
-        this.codeGenerator = codeGenerator;
+    TeiProgramListRepositoryImpl(D2 d2) {
         this.d2 = d2;
     }
 
@@ -146,6 +140,9 @@ public class TeiProgramListRepositoryImpl implements TeiProgramListRepository {
                 .map(enrollmentUid ->
                         d2.enrollmentModule().enrollments().uid(enrollmentUid))
                 .map(enrollmentRepository -> {
+                    if(d2.programModule().programs().uid(programUid).blockingGet().displayIncidentDate()){
+                        enrollmentRepository.setIncidentDate(DateUtils.getInstance().getToday());
+                    }
                     enrollmentRepository.setEnrollmentDate(enrollmentDate);
                     enrollmentRepository.setFollowUp(false);
                     return enrollmentRepository.blockingGet().uid();

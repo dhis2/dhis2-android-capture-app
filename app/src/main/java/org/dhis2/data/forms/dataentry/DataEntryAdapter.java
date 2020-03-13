@@ -26,6 +26,7 @@ import org.dhis2.data.forms.dataentry.fields.edittext.EditTextModel;
 import org.dhis2.data.forms.dataentry.fields.edittext.EditTextRow;
 import org.dhis2.data.forms.dataentry.fields.file.FileRow;
 import org.dhis2.data.forms.dataentry.fields.file.FileViewModel;
+import org.dhis2.data.forms.dataentry.fields.image.ImageHolder;
 import org.dhis2.data.forms.dataentry.fields.image.ImageRow;
 import org.dhis2.data.forms.dataentry.fields.image.ImageViewModel;
 import org.dhis2.data.forms.dataentry.fields.option_set.OptionSetRow;
@@ -192,7 +193,9 @@ public final class DataEntryAdapter extends ListAdapter<FieldViewModel, ViewHold
         rows.get(holder.getItemViewType()).onBind(holder,
                 getItem(position));
         if (!(holder instanceof SectionHolder)) {
-            holder.itemView.setBackgroundResource(R.color.form_field_background);
+            if (!(holder instanceof ImageHolder)) {
+                holder.itemView.setBackgroundResource(R.color.form_field_background);
+            }
         } else {
             ((SectionHolder) holder).setBottomShadow(
                     position > 0 && getItemViewType(position - 1) != SECTION);
@@ -320,7 +323,7 @@ public final class DataEntryAdapter extends ListAdapter<FieldViewModel, ViewHold
 
     public int getItemSpan(int position) {
 
-        if (getItemViewType(position) == SECTION || rendering == null) {
+        if (getItemViewType(position) == SECTION || getItemViewType(position) == DISPLAY || rendering == null) {
             return 2;
         } else {
             switch (ProgramStageSectionRenderingType.valueOf(rendering)) {

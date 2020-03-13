@@ -72,6 +72,8 @@ public class TEIDataContracts {
         void showPeriodRequest(FilterManager.PeriodRequest periodRequest);
 
         void openOrgUnitTreeSelector(String programUid);
+
+        void setEnrollment(Enrollment enrollment);
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter {
@@ -109,6 +111,8 @@ public class TEIDataContracts {
         void onGroupingChanged(Boolean shouldGroup);
 
         void onAddNewEvent(@NonNull android.view.View anchor, @NonNull ProgramStage programStage);
+
+        void getEnrollment(String enrollmentUid);
     }
 
 }

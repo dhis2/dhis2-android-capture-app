@@ -183,7 +183,11 @@ private fun check(
 
 private fun assureCodeForOptionSet(d2: D2, optionSetUid: String?, value: String): String? {
     return optionSetUid?.let {
-        if (d2.optionModule().options().byOptionSetUid().eq(it).byName().eq(value).one().blockingExists()) {
+        if (d2.optionModule().options()
+            .byOptionSetUid().eq(it)
+            .byName().eq(value)
+            .one().blockingExists()
+        ) {
             d2.optionModule().options().byOptionSetUid().eq(it).byName().eq(value).one()
                 .blockingGet().code()
         } else {
