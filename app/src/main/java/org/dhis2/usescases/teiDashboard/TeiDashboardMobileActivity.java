@@ -338,6 +338,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
 
         binding.executePendingBindings();
         this.programModel = program;
+        this.enrollmentUid = program.getCurrentEnrollment().uid();
 
         if (OrientationUtilsKt.isLandscape()) {
             if (binding.teiTablePager.getAdapter() == null) {
