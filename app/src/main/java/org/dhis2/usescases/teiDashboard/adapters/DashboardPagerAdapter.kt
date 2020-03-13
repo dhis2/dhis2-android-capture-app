@@ -2,14 +2,12 @@ package org.dhis2.usescases.teiDashboard.adapters
 
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
-import androidx.fragment.app.FragmentManager
 import androidx.viewpager2.adapter.FragmentStateAdapter
-
+import java.lang.IllegalStateException
 import org.dhis2.usescases.notes.NotesFragment
 import org.dhis2.usescases.teiDashboard.dashboardfragments.indicators.IndicatorsFragment
 import org.dhis2.usescases.teiDashboard.dashboardfragments.relationships.RelationshipFragment
 import org.dhis2.usescases.teiDashboard.dashboardfragments.tei_data.TEIDataFragment
-import java.lang.IllegalStateException
 
 class DashboardPagerAdapter(
     fa: FragmentActivity,
@@ -43,9 +41,7 @@ class DashboardPagerAdapter(
 
     override fun getItemCount() = if (currentProgram != null) MOBILE_DASHBOARD_SIZE else 1
 
-
     companion object {
         const val MOBILE_DASHBOARD_SIZE = 4
     }
-
 }

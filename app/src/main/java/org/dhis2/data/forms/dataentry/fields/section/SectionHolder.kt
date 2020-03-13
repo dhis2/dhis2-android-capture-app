@@ -1,10 +1,8 @@
 package org.dhis2.data.forms.dataentry.fields.section
 
 import android.animation.Animator
-import android.content.res.ColorStateList
 import android.view.View
 import androidx.core.content.ContextCompat
-import androidx.core.content.res.ResourcesCompat
 import androidx.databinding.Observable
 import androidx.databinding.Observable.OnPropertyChangedCallback
 import androidx.databinding.ObservableField

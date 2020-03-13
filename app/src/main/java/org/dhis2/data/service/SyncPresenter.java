@@ -65,4 +65,6 @@ interface SyncPresenter {
     void uploadResources();
 
     ListenableWorker.Result blockSyncGranularDataValues(String dataSetUid, String orgUnitUid, String attrOptionCombo, String periodId, String[] catOptionCombo);
+
+    void logTimeToFinish(long millisToFinish, String eventName);
 }

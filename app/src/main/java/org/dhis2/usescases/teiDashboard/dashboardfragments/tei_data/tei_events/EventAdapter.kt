@@ -51,7 +51,6 @@ class EventAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-
         return when (values()[viewType]) {
             STAGE -> {
                 val binding = ItemStageSectionBinding.inflate(

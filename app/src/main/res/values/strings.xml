@@ -185,8 +185,11 @@
     <!-- SYNC -->
     <string name="a_minute">1 Minute</string>
     <string name="fifteen_minute">15 Minutes</string>
+    <string name="thirty_minutes">30 Minutes</string>
     <string name="a_hour">1 Hour</string>
+    <string name="every_6_hours">6h</string>
     <string name="a_day">1 Day (Default)</string>
+    <string name="every_12_hours">12h</string>
     <string name="Automatic_Sync_Data">Automatic Sync Data every:</string>
     <string name="Manual">Manual</string>
     <string name="Automatic_Sync_Metadata">Automatic Sync Configuration every:</string>
@@ -211,6 +214,16 @@
     <string name="settings_sms_receiver_number_hint">number</string>
     <string name="settings_sms_module_switch">Enable SMS submission</string>
     <string name="settings_sms_response_wait_switch">Wait for SMS result response</string>
+    <plurals name="settings_specific_programs">
+        <item quantity="one">There is %s program with specific settings</item>
+        <item quantity="other">There are %s programs with specific settings</item>
+    </plurals>
+    <string name="settings_sync_period">Syncing period</string>
+    <string name="settings_limit_scope">Settings limited</string>
+    <string name="settings_limit_globally">Globally</string>
+    <string name="settings_limit_program">by program</string>
+    <string name="settings_limit_ou">by organisation unit</string>
+    <string name="settings_limit_ou_program">by org. unit and program</string>
     <!-- SEARCH TRACK ENTITY -->
 
     <!--region SETTINCS-->
@@ -324,6 +337,7 @@
     <string name="max">Max</string>
     <string name="current">Current</string>
     <string name="tei">TEI</string>
+    <string name="teis">TEIs</string>
     <string name="limit_by_organisation_unit">Limit by organisation unit</string>
     <string name="limit_by_program">Limit by program</string>
     <string name="programs_list">Program list</string>
@@ -606,6 +620,7 @@
     <string name="filter_event_status_completed">Completed</string>
     <string name="filter_event_status_skipped">Skipped</string>
     <string name="event_tei_limits">Events:%smax:%s%scurrent:%s TEI:%smax:%s%scurrent:%s</string>
+    <string name="event_tei_limits_v2">Settings limited %s\nEvents: %s/%s TEI: %s/%s</string>
     <string name="enrollment_data_hide">Hide enrollment data</string>
     <string name="enrollment_data_show">Show enrollment data</string>
     <string name="enrollment_data_section_label">Enrollment data</string>
@@ -650,4 +665,20 @@
     <string name="choose_image">Choose image</string>
     <string name="scan_code">Scan code</string>
     <string name="choose_option">Choose option</string>
+    <string name="reserved_values_hint">Reserved values downloaded per TEI attribute</string>
+    <string name="settings_reserved_values_message">Reserved values downloaded per TEI attribute</string>
+    <string name="reserved_values_left">%s reserved values left</string>
+    <string name="manage_reserved_values_button">Manage reserved values</string>
+    <string name="events_to_download">Events to download</string>
+    <string name="teis_to_download">TEIs to download</string>
+    <string name="program_settings">Program settings</string>
+    <string name="limit_scope_all_ou_trailing">for all organisation units</string>
+    <string name="limit_scope_global_trailing">globally</string>
+    <string name="limit_scope_ou_trailing">per organisation unit</string>
+    <string name="limit_scope_program_trailing">per program</string>
+    <string name="limit_scope_ou_program_trailing">per org. unit and program</string>
+    <string name="activity_program_settings">Program sync setting</string>
+    <string name="syncing_period_not_editable">Syncing period is not editable</string>
+    <string name="sync_parameters_not_editable">Sync parameters are not editable</string>
+    <string name="rv_no_editable">Number of reserved values downloaded is not editable</string>
 </resources>
