@@ -56,7 +56,6 @@ import java.util.List;
 import javax.inject.Inject;
 
 import static org.dhis2.Bindings.SettingExtensionsKt.EVERY_12_HOUR;
-import static org.dhis2.Bindings.SettingExtensionsKt.EVERY_15_MIN;
 import static org.dhis2.Bindings.SettingExtensionsKt.EVERY_24_HOUR;
 import static org.dhis2.Bindings.SettingExtensionsKt.EVERY_30_MIN;
 import static org.dhis2.Bindings.SettingExtensionsKt.EVERY_6_HOUR;
@@ -83,12 +82,16 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
     private BroadcastReceiver networkReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            setNetworkEdition(NetworkUtils.isOnline(context));
+            presenter.checkData();
+            checkSyncDataButtonStatus();
+            checkSyncMetaButtonStatus();
         }
     };
     private boolean dataInit;
     private boolean metadataInit;
     private boolean scopeLimitInit;
+    private boolean dataWorkRunning;
+    private boolean metadataWorkRunning;
 
     public SyncManagerFragment() {
         // Required empty public constructor
@@ -123,22 +126,24 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
                 binding.syncMetaLayout.message.setTextColor(ContextCompat.getColor(context, R.color.text_black_333));
                 String metaText = metaSyncSettings().concat("\n").concat(context.getString(R.string.syncing_configuration));
                 binding.syncMetaLayout.message.setText(metaText);
-                binding.buttonSyncMeta.setEnabled(false);
+                metadataWorkRunning = true;
             } else {
-                binding.buttonSyncMeta.setEnabled(true);
+                metadataWorkRunning = false;
                 presenter.checkData();
             }
+            checkSyncMetaButtonStatus();
         });
         workManagerController.getWorkInfosByTagLiveData(DATA_NOW).observe(this, workStatuses -> {
             if (!workStatuses.isEmpty() && workStatuses.get(0).getState() == WorkInfo.State.RUNNING) {
                 String dataText = dataSyncSetting().concat("\n").concat(context.getString(R.string.syncing_data));
                 binding.syncDataLayout.message.setTextColor(ContextCompat.getColor(context, R.color.text_black_333));
                 binding.syncDataLayout.message.setText(dataText);
-                binding.buttonSyncData.setEnabled(false);
+                dataWorkRunning = true;
             } else {
-                binding.buttonSyncData.setEnabled(true);
+                dataWorkRunning = false;
                 presenter.checkData();
             }
+            checkSyncDataButtonStatus();
         });
         presenter.init();
 
@@ -287,19 +292,27 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
         binding.deleteDataButton.setVisibility(View.GONE);
         binding.resetButton.setVisibility(View.GONE);
         binding.smsContent.setVisibility(View.GONE);
+        binding.dataDivider.setVisibility(View.VISIBLE);
+        binding.metaDivider.setVisibility(View.VISIBLE);
+        binding.parameterDivider.setVisibility(View.VISIBLE);
+        binding.reservedValueDivider.setVisibility(View.VISIBLE);
 
         switch (settingsItem) {
             case DATA_SYNC:
                 binding.syncDataActions.setVisibility(View.VISIBLE);
+                binding.dataDivider.setVisibility(View.GONE);
                 break;
             case META_SYNC:
                 binding.syncMetadataActions.setVisibility(View.VISIBLE);
+                binding.metaDivider.setVisibility(View.GONE);
                 break;
             case SYNC_PARAMETERS:
                 binding.parameterData.setVisibility(View.VISIBLE);
+                binding.parameterDivider.setVisibility(View.GONE);
                 break;
             case RESERVED_VALUES:
                 binding.reservedValuesActions.setVisibility(View.VISIBLE);
+                binding.reservedValueDivider.setVisibility(View.GONE);
                 break;
             case DELETE_LOCAL_DATA:
                 binding.deleteDataButton.setVisibility(View.VISIBLE);
@@ -493,11 +506,11 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
 
         if (metadataSettings.getCanEdit()) {
             binding.metadataPeriods.setVisibility(View.VISIBLE);
-            binding.metadataPeriods.setVisibility(View.VISIBLE);
+            binding.metadataPeriodsHint.setVisibility(View.VISIBLE);
             binding.metaPeriodsNoEdition.setVisibility(View.GONE);
         } else {
             binding.metadataPeriods.setVisibility(View.GONE);
-            binding.metadataPeriods.setVisibility(View.GONE);
+            binding.metadataPeriodsHint.setVisibility(View.GONE);
             binding.metaPeriodsNoEdition.setVisibility(View.VISIBLE);
         }
 
@@ -802,10 +815,17 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
         binding.settingsSms.settingsSmsSwitch.setChecked(false);
     }
 
-    private void setNetworkEdition(boolean isOnline) {
-        binding.buttonSyncData.setEnabled(isOnline);
-        binding.buttonSyncMeta.setEnabled(isOnline);
-        binding.buttonSyncData.setAlpha(isOnline ? 1.0f : 0.5f);
-        binding.buttonSyncMeta.setAlpha(isOnline ? 1.0f : 0.5f);
+    private void checkSyncDataButtonStatus() {
+        boolean isOnline = NetworkUtils.isOnline(context);
+        boolean canBeClicked = isOnline && !dataWorkRunning;
+        binding.buttonSyncData.setEnabled(canBeClicked);
+        binding.buttonSyncData.setClickable(canBeClicked);
+    }
+
+    private void checkSyncMetaButtonStatus() {
+        boolean isOnline = NetworkUtils.isOnline(context);
+        boolean canBeClicked = isOnline && !metadataInit;
+        binding.buttonSyncMeta.setEnabled(canBeClicked);
+        binding.buttonSyncMeta.setClickable(canBeClicked);
     }
 }

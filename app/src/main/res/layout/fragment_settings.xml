@@ -130,6 +130,7 @@
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <View
+                    android:id="@+id/dataDivider"
                     android:layout_width="0dp"
                     android:layout_height="1dp"
                     android:layout_marginStart="72dp"
@@ -235,6 +236,7 @@
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <View
+                    android:id="@+id/metaDivider"
                     android:layout_width="0dp"
                     android:layout_height="1dp"
                     android:layout_marginStart="72dp"
@@ -407,6 +409,7 @@
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <View
+                    android:id="@+id/parameterDivider"
                     android:layout_width="0dp"
                     android:layout_height="1dp"
                     android:layout_marginStart="72dp"
@@ -504,6 +507,7 @@
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <View
+                    android:id="@+id/reservedValueDivider"
                     android:layout_width="0dp"
                     android:layout_height="1dp"
                     android:layout_marginStart="72dp"
