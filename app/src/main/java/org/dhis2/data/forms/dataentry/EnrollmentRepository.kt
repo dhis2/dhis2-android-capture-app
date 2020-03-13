@@ -380,9 +380,11 @@ class EnrollmentRepository(
             .uid(
                 enrollmentRepository.blockingGet()!!.trackedEntityInstance()
             ).blockingGet()
+        val teiType = d2.trackedEntityModule().trackedEntityTypes()
+            .uid(tei.trackedEntityType()).blockingGet()
         return CoordinateViewModel.create(
             TEI_COORDINATES_UID,
-            teiCoordinatesLabel,
+            "$teiCoordinatesLabel ${teiType.displayName()}",
             false,
             if (tei!!.geometry() != null) tei.geometry()!!.coordinates() else null,
             ENROLLMENT_DATA_SECTION_UID,
