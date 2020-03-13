@@ -28,12 +28,14 @@ public class SearchTeiLiveAdapter extends PagedListAdapter<SearchTeiModel, Searc
             if (oldItem.isOnline() && oldItem.getTei().state() == null)
                 return oldItem.getTei().uid().equals(newItem.getTei().uid()) &&
                         (oldItem.getTei().state() == null && newItem.getTei().state() == null) &&
-                        oldItem.getAttributeValues().equals(newItem.getAttributeValues());
+                        oldItem.getAttributeValues().equals(newItem.getAttributeValues()) &&
+                        oldItem.getProfilePicturePath().equals(newItem.getProfilePicturePath());
             else {
                 return oldItem.getTei().uid().equals(newItem.getTei().uid()) &&
                         oldItem.getTei().state().equals(newItem.getTei().state()) &&
                         oldItem.getAttributeValues().equals(newItem.getAttributeValues()) &&
-                        oldItem.getEnrollments().equals(newItem.getEnrollments());
+                        oldItem.getEnrollments().equals(newItem.getEnrollments()) &&
+                        oldItem.getProfilePicturePath().equals(newItem.getProfilePicturePath());
             }
         }
     };
