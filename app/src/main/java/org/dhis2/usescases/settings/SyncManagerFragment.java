@@ -614,16 +614,16 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
 
         if (parameterSettings.getLimitScopeIsEditable()) {
             binding.downloadLimitScopeHint.setVisibility(View.VISIBLE);
-            binding.eventsEditText.setVisibility(View.VISIBLE);
-            binding.teiEditText.setVisibility(View.VISIBLE);
             binding.downloadLimitScope.setVisibility(View.VISIBLE);
+            binding.eventsInputLayout.setVisibility(View.VISIBLE);
+            binding.teiInputLayout.setVisibility(View.VISIBLE);
             binding.parametersNoEdition.setVisibility(View.GONE);
             setUpSyncParameterListeners();
         } else {
             binding.downloadLimitScopeHint.setVisibility(View.GONE);
-            binding.eventsEditText.setVisibility(View.GONE);
-            binding.teiEditText.setVisibility(View.GONE);
             binding.downloadLimitScope.setVisibility(View.GONE);
+            binding.eventsInputLayout.setVisibility(View.GONE);
+            binding.teiInputLayout.setVisibility(View.GONE);
             binding.parametersNoEdition.setVisibility(View.VISIBLE);
         }
         binding.eventsEditText.setEnabled(parameterSettings.getEventNumberIsEditable());

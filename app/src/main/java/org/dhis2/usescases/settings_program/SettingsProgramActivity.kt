@@ -38,7 +38,6 @@ class SettingsProgramActivity : ActivityGlobalAbstract(), ProgramSettingsView {
         binding.toolbar.moreOptions.moreOptions.visibility = View.GONE
         binding.toolbar.menu.setOnClickListener { finish() }
         presenter.init()
-
     }
 
     override fun onDestroy() {

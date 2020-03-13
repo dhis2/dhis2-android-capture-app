@@ -4,11 +4,12 @@ import io.reactivex.disposables.CompositeDisposable
 import org.dhis2.data.schedulers.SchedulerProvider
 import org.hisp.dhis.android.core.D2
 import timber.log.Timber
+import java.util.Locale
 
 class SettingsProgramPresenter(
-   private val d2: D2,
-   private val view: ProgramSettingsView,
-   private val schedulerProvider: SchedulerProvider
+    private val d2: D2,
+    private val view: ProgramSettingsView,
+    private val schedulerProvider: SchedulerProvider
 ) {
 
     val disposable = CompositeDisposable()
@@ -29,6 +30,12 @@ class SettingsProgramPresenter(
                     )
                 }
                 .toList()
+                .map { programSettings ->
+                    programSettings.sortBy {
+                        it.programSettings.name()?.toLowerCase(Locale.getDefault())
+                    }
+                    programSettings
+                }
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
