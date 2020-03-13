@@ -4,6 +4,7 @@ import androidx.annotation.VisibleForTesting
 import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.Single
+import java.util.ArrayList
 import org.dhis2.Bindings.userFriendlyValue
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory
@@ -27,12 +28,11 @@ import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType
 import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttribute
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute
 import timber.log.Timber
-import java.util.ArrayList
-
 
 class EnrollmentRepository(
     private val fieldFactory: FieldViewModelFactory,
-    private val enrollmentUid: String, private val d2: D2,
+    private val enrollmentUid: String,
+    private val d2: D2,
     private val enrollmentMode: EnrollmentActivity.EnrollmentMode,
     private val enrollmentDataSectionLabel: String,
     private val singleSectionLabel: String,
@@ -59,7 +59,6 @@ class EnrollmentRepository(
     }
 
     override fun list(): Flowable<MutableList<FieldViewModel>> {
-
         return d2.enrollmentModule().enrollments().uid(enrollmentUid).get()
             .flatMap { enrollment ->
                 d2.programModule().programs().uid(enrollment.program()).get()
@@ -137,7 +136,6 @@ class EnrollmentRepository(
             .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE).get()
             .toObservable()
     }
-
 
     private fun transform(
         programTrackedEntityAttribute: ProgramTrackedEntityAttribute,
@@ -231,11 +229,12 @@ class EnrollmentRepository(
                     warning = reservedValuesWarning
                 }
 
-                if (attr.valueType() == ValueType.NUMBER)
+                if (attr.valueType() == ValueType.NUMBER) {
                     while (dataValue!!.startsWith("0")) {
                         dataValue = d2.trackedEntityModule().reservedValueManager()
                             .blockingGetValue(attr.uid(), orgUnitUid)
                     }
+                }
             }
         } catch (e: Exception) {
             Timber.e(e)
@@ -352,7 +351,9 @@ class EnrollmentRepository(
             incidentDateLabel,
             true,
             ValueType.DATE,
-            DateUtils.databaseDateFormat().format(enrollmentRepository.blockingGet()!!.incidentDate()),
+            DateUtils.databaseDateFormat().format(
+                enrollmentRepository.blockingGet()!!.incidentDate()
+            ),
             ENROLLMENT_DATA_SECTION_UID,
             allowFutureDates,
             editable, null,
@@ -401,10 +402,11 @@ class EnrollmentRepository(
             ENROLLMENT_COORDINATES_UID,
             enrollmentCoordinatesLabel,
             false,
-            if (enrollmentRepository.blockingGet()!!.geometry() != null)
+            if (enrollmentRepository.blockingGet()!!.geometry() != null) {
                 enrollmentRepository.blockingGet()!!.geometry()!!.coordinates()
-            else
-                null,
+            } else {
+                null
+            },
             ENROLLMENT_DATA_SECTION_UID,
             true, null,
             ObjectStyle.builder().build(),
@@ -442,7 +444,10 @@ class EnrollmentRepository(
             .byAutoGenerateEvent().isTrue
             .blockingGet()
         for (stage in stages) {
-            if (stage.reportDateToUse() != null && stage.reportDateToUse() == "enrollmentDate" || stage.generatedByEnrollmentDate() == true) {
+            if (stage.reportDateToUse() != null &&
+                stage.reportDateToUse() == "enrollmentDate" ||
+                stage.generatedByEnrollmentDate() == true
+            ) {
                 enrollmentDateEditable = false
             } else {
                 incidentDateEditable = false
@@ -462,6 +467,4 @@ class EnrollmentRepository(
         const val TEI_COORDINATES_UID = "TEI_COORDINATES_UID"
         const val ENROLLMENT_COORDINATES_UID = "ENROLLMENT_COORDINATES_UID"
     }
-
-
 }

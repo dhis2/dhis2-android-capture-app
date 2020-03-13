@@ -122,6 +122,7 @@
 
         <activity android:name=".usescases.notes.noteDetail.NoteDetailActivity"
             android:windowSoftInputMode="adjustResize" />
+        <activity android:name=".usescases.settings_program.SettingsProgramActivity" />
 
         <service
             android:name=".data.notifications.DhisFirebaseMessagingService"

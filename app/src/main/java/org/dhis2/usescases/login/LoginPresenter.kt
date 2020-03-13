@@ -209,10 +209,14 @@ class LoginPresenter(
         if (userResponse.isSuccessful) {
             preferenceProvider.setValue(Preference.INITIAL_SYNC_DONE, false)
 
-            val updatedServer =
-                (preferenceProvider.getSet(PREFS_URLS, HashSet()) as HashSet).add(userName)
-            val updatedUsers =
-                (preferenceProvider.getSet(PREFS_USERS, HashSet()) as HashSet).add(server)
+            val updatedServer = (preferenceProvider.getSet(PREFS_URLS, HashSet()) as HashSet)
+            if (!updatedServer.contains(server)) {
+                updatedServer.add(server)
+            }
+            val updatedUsers = (preferenceProvider.getSet(PREFS_USERS, HashSet()) as HashSet)
+            if (!updatedUsers.contains(userName)) {
+                updatedUsers.add(userName)
+            }
 
             preferenceProvider.setValue(PREFS_URLS, updatedServer)
             preferenceProvider.setValue(PREFS_USERS, updatedUsers)

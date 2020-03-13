@@ -11,11 +11,12 @@ import java.util.List;
 
 import org.dhis2.R;
 import org.dhis2.databinding.ItemReservedValueBinding;
+import org.hisp.dhis.android.core.trackedentity.ReservedValueSummary;
 
 public class ReservedValueAdapter extends RecyclerView.Adapter<ReservedValueViewHolder> {
 
     private ReservedValuePresenter presenter;
-    private List<ReservedValueModel> dataElements;
+    private List<ReservedValueSummary> dataElements;
 
     public ReservedValueAdapter(ReservedValuePresenter presenter) {
         this.presenter = presenter;
@@ -32,7 +33,7 @@ public class ReservedValueAdapter extends RecyclerView.Adapter<ReservedValueView
 
     @Override
     public void onBindViewHolder(@NonNull ReservedValueViewHolder holder, int position) {
-        holder.bind(presenter, dataElements.get(position));
+        holder.bind(dataElements.get(position));
     }
 
     @Override
@@ -40,7 +41,7 @@ public class ReservedValueAdapter extends RecyclerView.Adapter<ReservedValueView
         return dataElements.size();
     }
 
-    public void setDataElements(List<ReservedValueModel> list){
+    public void setDataElements(List<ReservedValueSummary> list){
         dataElements = list;
         notifyDataSetChanged();
     }

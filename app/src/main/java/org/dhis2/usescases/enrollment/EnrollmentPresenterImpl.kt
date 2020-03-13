@@ -7,6 +7,8 @@ import io.reactivex.flowables.ConnectableFlowable
 import io.reactivex.functions.BiFunction
 import io.reactivex.processors.FlowableProcessor
 import io.reactivex.processors.PublishProcessor
+import java.util.concurrent.TimeUnit
+import kotlin.collections.set
 import org.dhis2.Bindings.profilePicturePath
 import org.dhis2.Bindings.toDate
 import org.dhis2.R
@@ -42,8 +44,6 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceObjectRepos
 import org.hisp.dhis.rules.models.RuleActionShowError
 import org.hisp.dhis.rules.models.RuleEffect
 import timber.log.Timber
-import java.util.concurrent.TimeUnit
-import kotlin.collections.set
 
 private const val TAG = "EnrollmentPresenter"
 
@@ -90,7 +90,9 @@ class EnrollmentPresenterImpl(
                             }.map {
                                 d2.trackedEntityModule().trackedEntityAttributeValues()
                                     .byTrackedEntityInstance().eq(tei.uid())
-                                    .byTrackedEntityAttribute().eq(it.trackedEntityAttribute()?.uid())
+                                    .byTrackedEntityAttribute().eq(
+                                        it.trackedEntityAttribute()?.uid()
+                                    )
                                     .one()
                                     .blockingGet()?.value() ?: ""
                             }
@@ -136,7 +138,9 @@ class EnrollmentPresenterImpl(
                 .flatMap { rowAction ->
                     when (rowAction.id()) {
                         EnrollmentRepository.ENROLLMENT_DATE_UID -> {
-                            enrollmentObjectRepository.setEnrollmentDate(rowAction.value()?.toDate())
+                            enrollmentObjectRepository.setEnrollmentDate(
+                                rowAction.value()?.toDate()
+                            )
                             Flowable.just(
                                 StoreResult(
                                     "",
@@ -305,8 +309,8 @@ class EnrollmentPresenterImpl(
             }
 
             if (field !is SectionViewModel && !field.programStageSection().equals(
-                    section
-                )
+                section
+            )
             ) {
                 iterator.remove()
             }
@@ -340,14 +344,15 @@ class EnrollmentPresenterImpl(
     }
 
     fun subscribeToBackButton() {
-        disposable.add(backButtonProcessor
-            .doOnNext { view.requestFocus() }
-            .debounce(1, TimeUnit.SECONDS, schedulerProvider.io())
-            .observeOn(schedulerProvider.ui())
-            .subscribe(
-                { view.performSaveClick() },
-                { t -> Timber.e(t) }
-            )
+        disposable.add(
+            backButtonProcessor
+                .doOnNext { view.requestFocus() }
+                .debounce(1, TimeUnit.SECONDS, schedulerProvider.io())
+                .observeOn(schedulerProvider.ui())
+                .subscribe(
+                    { view.performSaveClick() },
+                    { t -> Timber.e(t) }
+                )
         )
     }
 
@@ -386,7 +391,7 @@ class EnrollmentPresenterImpl(
         val event = d2.eventModule().events().uid(eventUid).blockingGet()
         val stage = d2.programModule().programStages().uid(event.programStage()).blockingGet()
         val needsCatCombo = programRepository.blockingGet().categoryComboUid() != null &&
-                d2.categoryModule().categoryCombos().uid(catComboUid).blockingGet().isDefault == false
+            d2.categoryModule().categoryCombos().uid(catComboUid).blockingGet().isDefault == false
         val needsCoordinates =
             stage.featureType() != null && stage.featureType() != FeatureType.NONE
 

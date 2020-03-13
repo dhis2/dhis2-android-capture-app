@@ -27,6 +27,9 @@ import javax.inject.Inject;
 
 import timber.log.Timber;
 
+import static org.dhis2.utils.analytics.AnalyticsConstants.DATA_TIME;
+import static org.dhis2.utils.analytics.AnalyticsConstants.METADATA_TIME;
+
 /**
  * QUADRAM. Created by ppajuelo on 23/10/2018.
  */
@@ -60,6 +63,8 @@ public class SyncDataWorker extends Worker {
         boolean isTeiOk = true;
         boolean isDataValue = true;
 
+        long init = System.currentTimeMillis();
+
         try {
             presenter.uploadResources();
         }catch (Exception e){
@@ -90,6 +95,7 @@ public class SyncDataWorker extends Worker {
         } catch (Exception e) {
             Timber.e(e);
         }
+        presenter.logTimeToFinish(System.currentTimeMillis() - init, DATA_TIME);
 
         String lastDataSyncDate = DateUtils.dateTimeFormat().format(Calendar.getInstance().getTime());
         boolean syncOk = presenter.checkSyncStatus();

@@ -33,7 +33,9 @@ class StickyHeaderItemDecoration(
 
                     override fun onSingleTapUp(e: MotionEvent?): Boolean {
                         if (e!!.y <= currentHeader?.second?.itemView?.height ?: -1) {
-                            (currentHeader?.second as SectionHolder).onClick(currentHeader?.second?.itemView!!)
+                            (currentHeader?.second as SectionHolder).onClick(
+                                currentHeader?.second?.itemView!!
+                            )
                             return true
                         }
                         return false
@@ -99,7 +101,9 @@ class StickyHeaderItemDecoration(
         if (headerPosition == RecyclerView.NO_POSITION) return null
         val headerType = parent.adapter?.getItemViewType(headerPosition) ?: return null
         // if match reuse viewHolder
-        if (currentHeader?.first == headerPosition && currentHeader?.second?.itemViewType == headerType) {
+        if (currentHeader?.first == headerPosition &&
+            currentHeader?.second?.itemViewType == headerType
+        ) {
             return currentHeader?.second?.itemView
         }
 

@@ -235,7 +235,9 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
         onBackPressed()
     }
 
-    override fun showMissingMandatoryFieldsMessage(emptyMandatoryFields: MutableMap<String, String>) {
+    override fun showMissingMandatoryFieldsMessage(
+        emptyMandatoryFields: MutableMap<String, String>
+    ) {
         AlertBottomDialog.instance
             .setTitle(getString(R.string.unable_to_complete))
             .setMessage(getString(R.string.missing_mandatory_fields))

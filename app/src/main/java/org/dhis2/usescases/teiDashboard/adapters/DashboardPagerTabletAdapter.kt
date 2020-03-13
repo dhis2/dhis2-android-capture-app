@@ -3,12 +3,10 @@ package org.dhis2.usescases.teiDashboard.adapters
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.viewpager2.adapter.FragmentStateAdapter
-
+import java.lang.IllegalStateException
 import org.dhis2.usescases.notes.NotesFragment
 import org.dhis2.usescases.teiDashboard.dashboardfragments.indicators.IndicatorsFragment
 import org.dhis2.usescases.teiDashboard.dashboardfragments.relationships.RelationshipFragment
-import java.lang.IllegalStateException
-
 
 class DashboardPagerTabletAdapter(
     fa: FragmentActivity,
@@ -31,7 +29,6 @@ class DashboardPagerTabletAdapter(
     } else {
         NO_FRAGMENT_DUE_TO_NO_PROGRAM_SELECTED
     }
-
 
     companion object {
         const val MOBILE_DASHBOARD_SIZE = 3

@@ -13,6 +13,7 @@ import androidx.work.Data;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.perf.metrics.AddTrace;
 
 import org.dhis2.App;
@@ -27,6 +28,8 @@ import java.util.Calendar;
 import javax.inject.Inject;
 
 import timber.log.Timber;
+
+import static org.dhis2.utils.analytics.AnalyticsConstants.METADATA_TIME;
 
 /**
  * QUADRAM. Created by ppajuelo on 23/10/2018.
@@ -50,16 +53,6 @@ public class SyncMetadataWorker extends Worker {
     @Override
     @AddTrace(name = "MetadataSyncTrace")
     public Result doWork() {
-
-        Timber.d("USER COMPONENT IS NULL : %s", ((App) getApplicationContext()).userComponent() != null);
-        Timber.d("SERVER COMPONENT IS NULL : %s", ((App) getApplicationContext()).serverComponent() != null);
-        try {
-            Timber.d("D2 IS NULL : %s", D2Manager.getD2() != null);
-        } catch (IllegalStateException e) {
-            Timber.d("D2 : %s", e.getMessage());
-
-        }
-
         if (((App) getApplicationContext()).userComponent() != null) {
 
             ((App) getApplicationContext()).userComponent().plus(new SyncMetadataWorkerModule()).inject(this);
@@ -72,6 +65,7 @@ public class SyncMetadataWorker extends Worker {
             boolean isMetaOk = true;
             boolean noNetwork = false;
 
+            long init = System.currentTimeMillis();
             try {
                 presenter.syncMetadata(progress -> triggerNotification(
                         getApplicationContext().getString(R.string.app_name),
@@ -82,6 +76,8 @@ public class SyncMetadataWorker extends Worker {
                 isMetaOk = false;
                 if (!NetworkUtils.isOnline(getApplicationContext()))
                     noNetwork = true;
+            } finally {
+                presenter.logTimeToFinish(System.currentTimeMillis() - init, METADATA_TIME);
             }
 
             String lastDataSyncDate = DateUtils.dateTimeFormat().format(Calendar.getInstance().getTime());
