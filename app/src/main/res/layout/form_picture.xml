@@ -26,6 +26,15 @@
         android:layout_height="wrap_content"
         android:padding="5dp">
 
+        <TextView
+            android:id="@+id/label"
+            style="@style/FieldLabel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@{label}"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="@string/lorem" />
+
         <LinearLayout
             android:id="@+id/layout"
             android:layout_width="match_parent"
@@ -35,7 +44,7 @@
             android:orientation="horizontal"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toBottomOf="@id/label">
 
             <ImageView
                 android:id="@+id/icImage"
@@ -51,10 +60,9 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:hint="@{label}"
+                android:hint="@string/choose_image"
                 android:textColorHint="@color/text_black_808"
-                android:theme="@style/loginInputText"
-                tools:hint="Form name">
+                android:theme="@style/loginInputText">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/formLabel"

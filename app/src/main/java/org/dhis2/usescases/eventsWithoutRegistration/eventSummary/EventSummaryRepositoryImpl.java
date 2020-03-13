@@ -57,23 +57,14 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
 
     private final D2 d2;
 
-    public EventSummaryRepositoryImpl(@NonNull Context context,
+    public EventSummaryRepositoryImpl(@NonNull FieldViewModelFactory fieldFactory,
                                       @NonNull FormRepository formRepository,
                                       @Nullable String eventUid,
                                       @NonNull D2 d2) {
         this.formRepository = formRepository;
         this.eventUid = eventUid;
         this.d2 = d2;
-        fieldFactory = new FieldViewModelFactoryImpl(
-                context.getString(R.string.enter_text),
-                context.getString(R.string.enter_long_text),
-                context.getString(R.string.enter_number),
-                context.getString(R.string.enter_integer),
-                context.getString(R.string.enter_positive_integer),
-                context.getString(R.string.enter_negative_integer),
-                context.getString(R.string.enter_positive_integer_or_zero),
-                context.getString(R.string.filter_options),
-                context.getString(R.string.choose_date));
+        this.fieldFactory = fieldFactory;
     }
 
     @NonNull

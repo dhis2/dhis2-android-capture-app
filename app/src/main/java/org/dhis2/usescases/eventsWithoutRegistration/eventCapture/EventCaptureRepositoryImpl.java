@@ -88,7 +88,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
     private RuleEvent.Builder eventBuilder;
     private List<FieldViewModel> sectionFields;
 
-    public EventCaptureRepositoryImpl(Context context, FormRepository formRepository, String eventUid, D2 d2) {
+    public EventCaptureRepositoryImpl(FieldViewModelFactory fieldFactory, FormRepository formRepository, String eventUid, D2 d2) {
         this.eventUid = eventUid;
         this.formRepository = formRepository;
         this.d2 = d2;
@@ -107,16 +107,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                 .organisationUnit(currentEvent.organisationUnit())
                 .organisationUnitCode(ou.code());
 
-        fieldFactory = new FieldViewModelFactoryImpl(
-                context.getString(R.string.enter_text),
-                context.getString(R.string.enter_long_text),
-                context.getString(R.string.enter_number),
-                context.getString(R.string.enter_integer),
-                context.getString(R.string.enter_positive_integer),
-                context.getString(R.string.enter_negative_integer),
-                context.getString(R.string.enter_positive_integer_or_zero),
-                context.getString(R.string.filter_options),
-                context.getString(R.string.choose_date));
+        this.fieldFactory = fieldFactory;
 
         isEventEditable = isEventExpired(eventUid);
 
