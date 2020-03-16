@@ -48,7 +48,8 @@ public class RadioButtonHolder extends FormViewHolder {
         binding.setDescription(descriptionText);
         label = new StringBuilder(checkBoxViewModel.label());
         binding.customYesNo.setValueType(checkBoxViewModel.valueType());
-        binding.customYesNo.setRendering(/*checkBoxViewModel.renderingType()*/ValueTypeRenderingType.TOGGLE);
+        binding.customYesNo.setRendering(checkBoxViewModel.renderingType() != null ?
+                checkBoxViewModel.renderingType() : ValueTypeRenderingType.DEFAULT);
         if (checkBoxViewModel.mandatory())
             label.append("*");
         binding.setLabel(label.toString());
