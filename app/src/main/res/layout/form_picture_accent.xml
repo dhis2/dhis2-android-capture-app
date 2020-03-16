@@ -17,16 +17,27 @@
 
         <variable
             name="selected"
-            type="java.lang.String"/>
+            type="java.lang.String" />
 
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        tools:background="@color/colorPrimary"
-        android:padding="5dp"
-        android:layout_margin="5dp"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        android:padding="5dp"
+        tools:background="@color/colorPrimary">
+
+
+        <TextView
+            android:id="@+id/label"
+            style="@style/FieldLabel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@{label}"
+            android:textColor="?colorAccent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="@string/lorem" />
 
         <LinearLayout
             android:id="@+id/layout"
@@ -40,36 +51,35 @@
             android:orientation="horizontal"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toBottomOf="@id/label">
 
             <ImageView
                 android:id="@+id/icImage"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
+                android:layout_marginEnd="8dp"
+                android:theme="@style/loginInputTextAccent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/ic_form_image"
-                android:layout_marginEnd="8dp"
-                android:theme="@style/loginInputTextAccent"
-                app:tint="?colorAccent"/>
+                app:tint="?colorAccent" />
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/inputLayout"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:hint="@{label}"
+                android:hint="@string/choose_image"
                 android:textColorHint="@drawable/edit_text_hint_accent"
-                android:theme="@style/loginInputText"
-                tools:hint="Form name">
+                android:theme="@style/loginInputTextAccent">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/formLabel"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:imeOptions="actionNext"
                     android:clickable="true"
                     android:focusable="false"
+                    android:imeOptions="actionNext"
                     android:text="@{selected}"
                     android:textAlignment="textStart"
                     android:textColor="?colorAccent"
@@ -96,30 +106,30 @@
 
 
         <ImageView
-            app:layout_constraintTop_toBottomOf="@id/layout"
-            android:background="@color/greyish"
-            app:srcCompat="@drawable/ic_camera"
             android:id="@+id/image"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            android:scaleType="centerInside"
-            android:minHeight="100dp"
-            android:maxHeight="200dp"
-            android:visibility="gone"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:background="@color/greyish"
+            android:maxHeight="200dp"
+            android:minHeight="100dp"
+            android:scaleType="centerInside"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/layout"
+            app:srcCompat="@drawable/ic_camera" />
 
         <TextView
-            app:layout_constraintTop_toBottomOf="@id/image"
             android:id="@+id/errorMessage"
             android:layout_width="match_parent"
-            android:textSize="@dimen/textSize_12"
             android:layout_height="wrap_content"
             android:padding="4dp"
+            android:textSize="@dimen/textSize_12"
             android:visibility="gone"
-            tools:textAppearance="@style/error_appearance"
+            app:layout_constraintTop_toBottomOf="@id/image"
             tools:text="This is a error warning"
-            tools:visibility="visible"/>
+            tools:textAppearance="@style/error_appearance"
+            tools:visibility="visible" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

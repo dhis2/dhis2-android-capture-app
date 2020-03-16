@@ -297,6 +297,13 @@
         <item name="android:windowExitAnimation">@anim/pin_dialog_anim_exit</item>
     </style>
 
+    <style name="FieldLabel">
+        <item name="android:textSize">@dimen/field_label_size</item>
+        <item name="android:fontFamily">@font/rubik_regular</item>
+        <item name="android:layout_margin">5dp</item>
+        <item name="android:paddingBottom">8dp</item>
+    </style>
+  
     <style name="settingsHint">
         <item name="android:textSize">10sp</item>
     </style>

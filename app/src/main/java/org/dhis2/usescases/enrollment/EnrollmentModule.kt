@@ -3,6 +3,7 @@ package org.dhis2.usescases.enrollment
 import android.content.Context
 import dagger.Module
 import dagger.Provides
+import org.dhis2.Bindings.valueTypeHintMap
 import org.dhis2.R
 import org.dhis2.data.dagger.PerActivity
 import org.dhis2.data.forms.RulesRepository
@@ -54,17 +55,7 @@ class EnrollmentModule(
     @Provides
     @PerActivity
     fun provideDataEntrytRepository(context: Context, d2: D2): DataEntryRepository {
-        val modelFactory = FieldViewModelFactoryImpl(
-            context.getString(R.string.enter_text),
-            context.getString(R.string.enter_long_text),
-            context.getString(R.string.enter_number),
-            context.getString(R.string.enter_integer),
-            context.getString(R.string.enter_positive_integer),
-            context.getString(R.string.enter_negative_integer),
-            context.getString(R.string.enter_positive_integer_or_zero),
-            context.getString(R.string.filter_options),
-            context.getString(R.string.choose_date)
-        )
+        val modelFactory = FieldViewModelFactoryImpl(context.valueTypeHintMap())
         val enrollmentDataSectionLabel = context.getString(R.string.enrollment_data_section_label)
         val singleSectionLabel = context.getString(R.string.enrollment_single_section_label)
         val enrollmentOrgUnitLabel = context.getString(R.string.enrolling_ou)
