@@ -2,7 +2,10 @@ package org.dhis2.Bindings
 
 import android.Manifest
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
+import android.os.Build
+import android.provider.Telephony
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import hu.supercluster.paperwork.Paperwork
@@ -48,4 +51,21 @@ fun Context.hasPermissions(permissions: Array<String>): Boolean {
 
 fun Context.showSMS(): Boolean {
     return BuildConfig.FLAVOR == "dhis"
+}
+
+fun Context.defaultSMSHandler(): String {
+    return Telephony.Sms.getDefaultSmsPackage(this)
+}
+
+fun Context.isDefaultSMSHandler(): Boolean {
+    return packageName == defaultSMSHandler()
+}
+
+fun Fragment.setDefaultSMSHandler(defaultSMSHandlerPackage: String? = null, reqID: Int) {
+    val intent = Intent(Telephony.Sms.Intents.ACTION_CHANGE_DEFAULT)
+    intent.putExtra(
+        Telephony.Sms.Intents.EXTRA_PACKAGE_NAME,
+        defaultSMSHandlerPackage ?: context?.packageName
+    )
+    startActivityForResult(intent, reqID)
 }

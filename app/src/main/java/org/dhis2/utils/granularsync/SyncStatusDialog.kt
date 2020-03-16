@@ -2,6 +2,7 @@ package org.dhis2.utils.granularsync
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.app.Activity.RESULT_OK
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
@@ -28,6 +29,9 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import org.dhis2.App
 import org.dhis2.Bindings.Bindings
 import org.dhis2.Bindings.checkSMSPermission
+import org.dhis2.Bindings.defaultSMSHandler
+import org.dhis2.Bindings.isDefaultSMSHandler
+import org.dhis2.Bindings.setDefaultSMSHandler
 import org.dhis2.Bindings.showSMS
 import org.dhis2.R
 import org.dhis2.databinding.SyncBottomDialogBinding
@@ -50,6 +54,8 @@ import java.util.Date
 import javax.inject.Inject
 
 private const val SMS_PERMISSIONS_REQ_ID = 102
+private const val DEFAULT_SMS_REQ_ID = 1503
+private const val RESTORE_DEFAULT_SMS_REQ_ID = 1504
 
 @SuppressLint("ValidFragment")
 class SyncStatusDialog private constructor(
@@ -61,6 +67,7 @@ class SyncStatusDialog private constructor(
     private val dismissListener: GranularSyncContracts.OnDismissListener?
 ) : BottomSheetDialogFragment(), GranularSyncContracts.View {
 
+    private var dafaultSMSHandler: String? = null
     @Inject
     lateinit var presenter: GranularSyncContracts.Presenter
     @Inject
@@ -230,8 +237,15 @@ class SyncStatusDialog private constructor(
                     binding!!.syncButton.setText(R.string.action_sync_sms)
                     binding!!.syncButton.visibility = View.VISIBLE
                     binding!!.syncButton.setOnClickListener {
-                        if (checkSMSPermission(true, SMS_PERMISSIONS_REQ_ID))
-                            syncSMS()
+                        if (context?.isDefaultSMSHandler() == true) {
+                            if (checkSMSPermission(true, SMS_PERMISSIONS_REQ_ID)) {
+                                syncSMS()
+                            }
+                        } else {
+                            dafaultSMSHandler = context?.defaultSMSHandler() ?: ""
+                            setDefaultSMSHandler(null, DEFAULT_SMS_REQ_ID)
+                        }
+
                     }
                 } else {
                     binding!!.syncButton.visibility = View.GONE
@@ -352,9 +366,14 @@ class SyncStatusDialog private constructor(
     }
 
     override fun onDismiss(dialog: DialogInterface) {
-        presenter.onDettach()
-        dismissListener?.onDismiss(syncing)
-        super.onDismiss(dialog)
+
+        if (context?.isDefaultSMSHandler() == true) {
+            setDefaultSMSHandler(dafaultSMSHandler, RESTORE_DEFAULT_SMS_REQ_ID)
+        } else {
+            presenter.onDettach()
+            dismissListener?.onDismiss(syncing)
+            super.onDismiss(dialog)
+        }
     }
 
     private fun syncSMS() {
@@ -554,8 +573,24 @@ class SyncStatusDialog private constructor(
         grantResults: IntArray
     ) {
         if (requestCode == SMS_PERMISSIONS_REQ_ID &&
-            grantResults.all { it == PackageManager.PERMISSION_GRANTED }) {
+            grantResults.all { it == PackageManager.PERMISSION_GRANTED }
+        ) {
             syncSMS()
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        when (requestCode) {
+            DEFAULT_SMS_REQ_ID -> {
+                if (resultCode == RESULT_OK && checkSMSPermission(true, SMS_PERMISSIONS_REQ_ID)) {
+                    syncSMS()
+                }
+            }
+            RESTORE_DEFAULT_SMS_REQ_ID -> {
+                if (resultCode == RESULT_OK) {
+                    dismiss()
+                }
+            }
         }
     }
 }

@@ -110,7 +110,6 @@ public final class DataEntryAdapter extends ListAdapter<FieldViewModel, ViewHold
                             @NonNull FragmentManager fragmentManager,
                             @NonNull DataEntryArguments dataEntryArguments) {
         super(new DataEntryDiff());
-        setHasStableIds(true);
         rows = new ArrayList<>();
         viewModels = new ArrayList<>();
         processor = PublishProcessor.create();
@@ -148,7 +147,6 @@ public final class DataEntryAdapter extends ListAdapter<FieldViewModel, ViewHold
                             @NonNull FlowableProcessor<String> sectionProcessor,
                             @NonNull FlowableProcessor<Trio<String, String, Integer>> processorOptSet) {
         super(new DataEntryDiff());
-        setHasStableIds(true);
         rows = new ArrayList<>();
         viewModels = new ArrayList<>();
         this.processor = processor;

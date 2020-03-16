@@ -86,6 +86,14 @@ android {
         exclude 'META-INF/rxjava.properties'
     }
 
+    signingConfigs {
+        release {
+            storeFile file('dhis_keystore.jks')
+            storePassword 'XwbwJOgmh0p]U'
+            keyAlias 'android@dhis2.org'
+            keyPassword 'XwbwJOgmh0p]U'
+        }
+    }
 
     buildTypes {
         debug {
@@ -112,6 +120,7 @@ android {
 
             resValue "string", "content_provider", "com.dhis2.provider"
 
+            signingConfig = signingConfigs.release
         }
 
         training {
@@ -216,11 +225,13 @@ sonarqube {
 }
 
 dependencies {
+    releaseImplementation project(':core')
     debugImplementation project(':core')
     betaImplementation project(':core')
 
     implementation project(':customFab')
 
+    releaseImplementation project(':dhis2-rule-engine')
     debugImplementation project(':dhis2-rule-engine')
     betaImplementation project(':dhis2-rule-engine')
 
@@ -243,13 +254,13 @@ dependencies {
 
     //region DHIS2 LIBRARIES
 
-    releaseImplementation("org.hisp.dhis:android-core:${libraries.dhis2sdk}") {
+   /* releaseImplementation("org.hisp.dhis:android-core:${libraries.dhis2sdk}") {
         exclude group: "org.hisp.dhis", module: "core-rules"
     }
 
     releaseImplementation("org.hisp.dhis.rules:rule-engine:${libraries.ruleEngine}") {
         exclude group: "junit", module: "junit"
-    }
+    }*/
     //endregion
 
     //region UI LIBRARIES
