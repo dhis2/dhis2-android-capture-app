@@ -5,6 +5,7 @@ import android.os.Handler;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 import androidx.databinding.ObservableField;
 
 import org.dhis2.R;
@@ -218,9 +219,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                                                     HashMap<String, List<FieldViewModel>> fieldMap = new HashMap<>();
                                                     List<String> optionSets = new ArrayList<>();
                                                     for (FieldViewModel fieldViewModel : fields) {
-                                                        String fieldSection = fieldViewModel.programStageSection() != null ?
-                                                                fieldViewModel.programStageSection() :
-                                                                "";
+                                                        String fieldSection = getFieldSection(fieldViewModel);
                                                         if (!fieldMap.containsKey(fieldSection)) {
                                                             fieldMap.put(fieldSection, new ArrayList<>());
                                                         }
@@ -295,8 +294,8 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                                                         }
                                                     }
 
-                                                    if (fieldMap.get("") != null) {
-                                                        finalFieldList.addAll(fieldMap.get(""));
+                                                    if (fieldMap.containsKey("display") && fieldMap.get("display") != null) {
+                                                        finalFieldList.addAll(fieldMap.get("display"));
                                                     }
 
                                                     return Pair.create(eventSectionModels, finalFieldList);
@@ -340,6 +339,19 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
         );
 
         fieldFlowable.connect();
+    }
+
+    @VisibleForTesting
+    public String getFieldSection(FieldViewModel fieldViewModel) {
+        String fieldSection;
+        if (fieldViewModel instanceof DisplayViewModel) {
+            fieldSection = "display";
+        } else {
+            fieldSection = fieldViewModel.programStageSection() != null ?
+                    fieldViewModel.programStageSection() :
+                    "";
+        }
+        return fieldSection;
     }
 
     private float calculateCompletionPercentage(int completedFields, int totals) {
