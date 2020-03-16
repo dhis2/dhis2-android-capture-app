@@ -214,7 +214,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
     public void setEnrollmentData(Program program, Enrollment enrollment) {
         binding.setProgram(program);
         binding.setEnrollment(enrollment);
-        if (enrollment != null) {
+        if (enrollment != null && enrollment.followUp() != null) {
             followUp.set(enrollment.followUp());
         }
         binding.setFollowup(followUp);
