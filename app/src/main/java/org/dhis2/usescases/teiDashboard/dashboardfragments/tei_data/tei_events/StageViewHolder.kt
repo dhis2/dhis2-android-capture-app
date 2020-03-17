@@ -42,12 +42,12 @@ internal class StageViewHolder(
             eventItem.eventCount == 0
         val stageRepeatableZeroCount = stage.repeatable() == true &&
             eventItem.eventCount == 0
-        val stageRepeatableCountSelected == stage.repeatable() == true &&
+        val stageRepeatableCountSelected = stage.repeatable() == true &&
             eventItem.eventCount > 0 && eventItem.isSelected
         
         binding.addStageButton.visibility =
             if (eventItem.canAddNewEvent && 
-                (stageNotRepeatableZeroCount || sstageRepeatableZeroCount || stageRepeatableCountSelected)
+                (stageNotRepeatableZeroCount || stageRepeatableZeroCount || stageRepeatableCountSelected)
             ) {
                 View.VISIBLE
             } else {
