@@ -145,7 +145,7 @@ class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
                         }
                     });
             Flowable<Boolean> groupingFlowable = groupingProcessor.startWith(
-                    getGrouping().containsKey(programUid)?getGrouping().get(programUid):false
+                    getGrouping().containsKey(programUid) ? getGrouping().get(programUid) : false
             );
 
             compositeDisposable.add(
@@ -436,12 +436,16 @@ class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
     public void getEnrollment(String enrollmentUid) {
         compositeDisposable.add(
                 d2.enrollmentModule().enrollments().uid(enrollmentUid).get()
-                .subscribeOn(schedulerProvider.io())
-                .observeOn(schedulerProvider.ui())
-                .subscribe(
-                        view::setEnrollment,
-                        Timber::e
-                )
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
+                        .subscribe(
+
+                                enrollment -> {
+                                    view.setEnrollment(enrollment);
+                                    filterManager.publishData();
+                                },
+                                Timber::e
+                        )
         );
     }
 

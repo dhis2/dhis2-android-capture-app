@@ -39,8 +39,9 @@ internal class StageViewHolder(
         )
         binding.lastUpdatedEvent.text = eventItem.lastUpdate.toDateSpan(itemView.context)
         binding.addStageButton.visibility =
-            if (stage.repeatable() == true &&
-                eventItem.canAddNewEvent || eventItem.eventCount == 0
+            if (
+                eventItem.canAddNewEvent && (stage.repeatable() != true && eventItem.eventCount == 0 ||
+                        stage.repeatable() == true && eventItem.eventCount == 0 || stage.repeatable() == true && eventItem.eventCount > 0 && eventItem.isSelected)
             ) {
                 View.VISIBLE
             } else {
