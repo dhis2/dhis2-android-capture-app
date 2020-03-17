@@ -228,7 +228,7 @@ public class SearchRepositoryImpl implements SearchRepository {
                     .mapByPage(list -> filterByStatus(list, eventStatuses))
                     .mapByPage(this::filterDeleted)
                     .mapByPage(list -> TrackedEntityInstanceExtensionsKt.filterDeletedEnrollment(list, d2, selectedProgram != null ? selectedProgram.uid() : null))
-                    .map(tei -> transform(tei, selectedProgram, true));
+                    .map(tei -> transform(tei, selectedProgram, false));
         } else {
             dataSource = trackedEntityInstanceQuery.offlineOnly().getDataSource() //TODO: ASK SDK TO FILTER BY BOTH ENROLLMENT DATE AND EVENT DATES
                     .mapByPage(list -> filterByState(list, states))
@@ -312,7 +312,7 @@ public class SearchRepositoryImpl implements SearchRepository {
                     .map(this::filterDeleted)
                     .map(list -> TrackedEntityInstanceExtensionsKt.filterDeletedEnrollment(list, d2, selectedProgram != null ? selectedProgram.uid() : null))
                     .flatMapIterable(list -> list)
-                    .map(tei -> transform(tei, selectedProgram, true))
+                    .map(tei -> transform(tei, selectedProgram, false))
                     .toList().toFlowable();
         else
             return trackedEntityInstanceQuery.offlineOnly().get().toFlowable()

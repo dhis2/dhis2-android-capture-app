@@ -10,14 +10,16 @@ fun List<TrackedEntityInstance>.filterDeletedEnrollment(
     return program?.let {
         this.filter {
             if (d2.trackedEntityModule().trackedEntityInstances().uid(it.uid()).blockingExists()) {
-                val enrollmentsInProgram =
-                    d2.enrollmentModule().enrollments()
-                        .byTrackedEntityInstance().eq(it.uid())
-                        .byProgram().eq(program)
-                        .blockingGet()
-                enrollmentsInProgram.any { enrollment ->
+                val enrollmentsInProgram = d2.enrollmentModule().enrollments()
+                    .byTrackedEntityInstance().eq(it.uid())
+                    .byProgram().eq(program)
+                    .blockingGet()
+
+                val enrollmentDeleted = enrollmentsInProgram.any { enrollment ->
                     enrollment.deleted() != true
                 }
+
+                enrollmentsInProgram.size == 0 || enrollmentDeleted
             } else {
                 true
             }
