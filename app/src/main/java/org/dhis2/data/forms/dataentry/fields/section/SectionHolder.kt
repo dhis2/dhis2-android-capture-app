@@ -7,8 +7,8 @@ import androidx.core.content.res.ResourcesCompat
 import androidx.databinding.Observable
 import androidx.databinding.Observable.OnPropertyChangedCallback
 import androidx.databinding.ObservableField
-import com.tbuonomo.viewpagerdotsindicator.UiUtils
 import io.reactivex.processors.FlowableProcessor
+import org.dhis2.Bindings.getThemePrimaryColor
 import org.dhis2.R
 import org.dhis2.data.forms.dataentry.fields.FormViewHolder
 import org.dhis2.databinding.FormSectionBinding
@@ -42,7 +42,7 @@ class SectionHolder(
             sectionName.text = viewModel.label()
             openIndicator.visibility = if (viewModel.isOpen) View.VISIBLE else View.GONE
             if (viewModel.completedFields() == viewModel.totalFields()){
-                sectionFieldsInfo.setTextColor(UiUtils.getThemePrimaryColor(root.context))
+                sectionFieldsInfo.setTextColor(root.getThemePrimaryColor())
             } else {
                 sectionFieldsInfo.setTextColor(
                     ResourcesCompat.getColor(root.resources, R.color.placeholder, null)
