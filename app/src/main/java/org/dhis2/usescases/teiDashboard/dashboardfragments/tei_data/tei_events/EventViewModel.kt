@@ -10,5 +10,6 @@ data class EventViewModel(
     val event: Event?,
     val eventCount: Int,
     val lastUpdate: Date?,
+    val isSelected: Boolean,
     val canAddNewEvent: Boolean
 )
