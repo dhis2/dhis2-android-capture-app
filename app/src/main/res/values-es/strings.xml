@@ -99,8 +99,6 @@
     <string name="completed">Completado</string>
     <string name="cancelled">Cancelar</string>
     <string name="re_open">Reabrir</string>
-    <string name="activate">Activar</string>
-
     <!-- State -->
     <string name="state_synced">Sincronizado</string>
     <string name="state_to_post">Para enviar</string>
