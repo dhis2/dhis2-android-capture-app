@@ -383,8 +383,8 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == RESULT_OK && requestCode == Constants.RQ_MAP_LOCATION_VIEW) {
             if (coordinatesView != null && data.getExtras() != null) {
-                FeatureType locationType = FeatureType.valueOf(data.getStringExtra(MapSelectorActivity.Companion.getLOCATION_TYPE_EXTRA()));
-                String dataExtra = data.getStringExtra(MapSelectorActivity.Companion.getDATA_EXTRA());
+                FeatureType locationType = FeatureType.valueOf(data.getStringExtra(MapSelectorActivity.LOCATION_TYPE_EXTRA));
+                String dataExtra = data.getStringExtra(MapSelectorActivity.DATA_EXTRA);
                 Geometry geometry;
                 if (locationType == FeatureType.POINT) {
                     Type type = new TypeToken<List<Double>>() {

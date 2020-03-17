@@ -713,8 +713,8 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == Constants.RQ_MAP_LOCATION && resultCode == RESULT_OK) {
-            FeatureType locationType = FeatureType.valueOf(data.getStringExtra(MapSelectorActivity.Companion.getLOCATION_TYPE_EXTRA()));
-            String dataExtra = data.getStringExtra(MapSelectorActivity.Companion.getDATA_EXTRA());
+            FeatureType locationType = FeatureType.valueOf(data.getStringExtra(MapSelectorActivity.LOCATION_TYPE_EXTRA));
+            String dataExtra = data.getStringExtra(MapSelectorActivity.DATA_EXTRA);
             Geometry geometry;
             if (locationType == FeatureType.POINT) {
                 Type type = new TypeToken<List<Double>>() {
