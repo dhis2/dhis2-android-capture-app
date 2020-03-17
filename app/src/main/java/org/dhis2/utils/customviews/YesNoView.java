@@ -27,7 +27,7 @@ import org.hisp.dhis.android.core.common.ValueTypeRenderingType;
  * QUADRAM. Created by frodriguez on 1/24/2018.
  */
 
-public class YesNoView extends FieldLayout implements RadioGroup.OnCheckedChangeListener {
+public class YesNoView extends FieldLayout {
 
     private ViewDataBinding binding;
 
@@ -150,7 +150,7 @@ public class YesNoView extends FieldLayout implements RadioGroup.OnCheckedChange
                 yesOnlyToggle.setVisibility(View.GONE);
                 clearButton.setVisibility(View.VISIBLE);
                 radioGroup.setOrientation(LinearLayout.HORIZONTAL);
-                radioGroup.setOnCheckedChangeListener(this);
+                radioGroup.setOnCheckedChangeListener(radioClickListener);
                 checkYes.setOnCheckedChangeListener(null);
                 checkNo.setOnCheckedChangeListener(null);
                 yesOnlyToggle.setOnCheckedChangeListener(null);
@@ -166,11 +166,6 @@ public class YesNoView extends FieldLayout implements RadioGroup.OnCheckedChange
     public void setDescription(String description) {
         binding.setVariable(BR.description, description);
         binding.executePendingBindings();
-    }
-
-    @Override
-    public void onCheckedChanged(RadioGroup radioGroup, int i) {
-
     }
 
     public void setIsBgTransparent(boolean isBgTransparent) {
