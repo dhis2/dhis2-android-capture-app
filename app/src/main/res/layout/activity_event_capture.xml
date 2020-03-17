@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:app="http://schemas.android.com/apk/res-auto"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
@@ -9,7 +10,7 @@
             type="org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureContract.Presenter" />
     </data>
 
-    <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/root"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -19,7 +20,7 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/activityToolbar"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="?android:attr/actionBarSize"
             android:background="?colorPrimary"
             app:layout_constraintTop_toTopOf="parent">
 
@@ -47,14 +48,14 @@
                 android:id="@+id/completion"
                 android:layout_width="wrap_content"
                 android:layout_height="0dp"
+                app:circleColor="#4D000000"
+                app:completionColor="#FFFFFF"
                 app:layout_constraintBottom_toBottomOf="@+id/moreOptions"
                 app:layout_constraintEnd_toStartOf="@id/moreOptions"
                 app:layout_constraintTop_toTopOf="@+id/moreOptions"
                 app:percentageColor="@color/bg_white_f9f"
-                app:completionColor="#FFFFFF"
-                app:secondaryColor="#858585"
-                app:circleColor="#4D000000"
                 app:percentageSize="13sp"
+                app:secondaryColor="#858585"
                 app:strokeSize="3dp"
                 tools:initialPercentage="0.1"
                 tools:initialSecondaryPercentage="0.2" />
@@ -66,10 +67,12 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="12dp"
                 android:maxLines="1"
+                android:layout_marginTop="9dp"
                 android:textColor="?colorAccent"
+                app:layout_constraintBottom_toTopOf="@+id/eventSecundaryInfo"
                 app:layout_constraintEnd_toStartOf="@id/completion"
                 app:layout_constraintStart_toEndOf="@id/buttonBack"
-                app:layout_constraintTop_toTopOf="@id/buttonBack"
+                app:layout_constraintTop_toTopOf="parent"
                 tools:text="Program Stage Name" />
 
             <TextView
@@ -78,12 +81,13 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="12dp"
-                android:layout_marginBottom="5dp"
                 android:maxLines="1"
                 android:textColor="?colorAccent"
+                android:layout_marginBottom="9dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@id/completion"
                 app:layout_constraintStart_toEndOf="@id/buttonBack"
+                app:layout_constraintTop_toBottomOf="@+id/programStageName"
                 tools:text="2018-01-07|Org Unit|Cat Option" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -98,7 +102,7 @@
             app:tabPaddingEnd="16dp"
             app:tabPaddingStart="16dp"
             app:tabTextAppearance="@style/DhisTabText"
-            tools:visibility="visible"></com.google.android.material.tabs.TabLayout>
+            tools:visibility="visible"/>
 
         <androidx.viewpager.widget.ViewPager
             android:id="@+id/eventViewPager"

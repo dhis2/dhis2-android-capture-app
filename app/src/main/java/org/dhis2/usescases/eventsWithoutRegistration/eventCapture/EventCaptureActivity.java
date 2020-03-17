@@ -350,7 +350,15 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
     @Override
     public void renderInitialInfo(String stageName, String eventDate, String orgUnit, String catOption) {
         binding.programStageName.setText(stageName);
-        binding.eventSecundaryInfo.setText(String.format("%s | %s | %s", eventDate, orgUnit, catOption));
+        StringBuilder eventDataString = new StringBuilder(
+                String.format("%s | %s", eventDate, orgUnit)
+        );
+        if (catOption != null && !catOption.isEmpty()) {
+            eventDataString.append(
+                    String.format(" | %s", catOption)
+            );
+        }
+        binding.eventSecundaryInfo.setText(eventDataString);
     }
 
     @Override
@@ -466,7 +474,8 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
         new MaterialAlertDialogBuilder(this, R.style.DhisMaterialDialog)
                 .setTitle("Program rules warning")
                 .setMessage("There is a configuration issue causing a loop in the rules. Contact you administrator.")
-                .setPositiveButton(R.string.action_accept,(dialogInterface,i)->{})
+                .setPositiveButton(R.string.action_accept, (dialogInterface, i) -> {
+                })
                 .setCancelable(false)
                 .show();
     }
