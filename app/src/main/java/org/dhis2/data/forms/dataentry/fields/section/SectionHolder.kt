@@ -3,9 +3,11 @@ package org.dhis2.data.forms.dataentry.fields.section
 import android.animation.Animator
 import android.view.View
 import androidx.core.content.ContextCompat
+import androidx.core.content.res.ResourcesCompat
 import androidx.databinding.Observable
 import androidx.databinding.Observable.OnPropertyChangedCallback
 import androidx.databinding.ObservableField
+import com.tbuonomo.viewpagerdotsindicator.UiUtils
 import io.reactivex.processors.FlowableProcessor
 import org.dhis2.R
 import org.dhis2.data.forms.dataentry.fields.FormViewHolder
@@ -39,6 +41,13 @@ class SectionHolder(
         formBinding.apply {
             sectionName.text = viewModel.label()
             openIndicator.visibility = if (viewModel.isOpen) View.VISIBLE else View.GONE
+            if (viewModel.completedFields() == viewModel.totalFields()){
+                sectionFieldsInfo.setTextColor(UiUtils.getThemePrimaryColor(root.context))
+            } else {
+                sectionFieldsInfo.setTextColor(
+                    ResourcesCompat.getColor(root.resources, R.color.placeholder, null)
+                )
+            }
             sectionFieldsInfo.text = String.format(
                 "%s/%s",
                 viewModel.completedFields(),
