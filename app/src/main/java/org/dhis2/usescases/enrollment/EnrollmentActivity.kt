@@ -340,8 +340,17 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
             binding.teiDataHeader.mainAttributes.text =
                 String.format("%s %s", firstAttr, secondAttr)
             binding.teiDataHeader.secundaryAttribute.text = thirdAttr
+
+            if(firstAttr.isEmpty() && secondAttr.isEmpty()){
+                binding.teiDataHeader.mainAttributes.visibility = View.GONE
+            }
+            if(thirdAttr.isEmpty()){
+                binding.teiDataHeader.secundaryAttribute.visibility = View.GONE
+            }
+
             if (profileImage.isEmpty()) {
                 binding.teiDataHeader.teiImage.visibility = View.GONE
+                binding.teiDataHeader.imageSeparator.visibility = View.GONE
             } else {
                 Glide.with(this).load(File(profileImage))
                     .transition(DrawableTransitionOptions.withCrossFade())
