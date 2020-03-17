@@ -38,10 +38,16 @@ internal class StageViewHolder(
             )
         )
         binding.lastUpdatedEvent.text = eventItem.lastUpdate.toDateSpan(itemView.context)
+        val stageNotRepeatableZeroCount = stage.repeatable() != true && 
+            eventItem.eventCount == 0
+        val stageRepeatableZeroCount = stage.repeatable() == true &&
+            eventItem.eventCount == 0
+        val stageRepeatableCountSelected == stage.repeatable() == true &&
+            eventItem.eventCount > 0 && eventItem.isSelected
+        
         binding.addStageButton.visibility =
-            if (
-                eventItem.canAddNewEvent && (stage.repeatable() != true && eventItem.eventCount == 0 ||
-                        stage.repeatable() == true && eventItem.eventCount == 0 || stage.repeatable() == true && eventItem.eventCount > 0 && eventItem.isSelected)
+            if (eventItem.canAddNewEvent && 
+                (stageNotRepeatableZeroCount || sstageRepeatableZeroCount || stageRepeatableCountSelected)
             ) {
                 View.VISIBLE
             } else {
