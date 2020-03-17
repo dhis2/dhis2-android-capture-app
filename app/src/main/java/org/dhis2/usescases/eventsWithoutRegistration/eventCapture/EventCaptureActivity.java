@@ -353,7 +353,7 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
         StringBuilder eventDataString = new StringBuilder(
                 String.format("%s | %s", eventDate, orgUnit)
         );
-        if (catOption != null) {
+        if (catOption != null && !catOption.isEmpty()) {
             eventDataString.append(
                     String.format(" | %s", catOption)
             );
