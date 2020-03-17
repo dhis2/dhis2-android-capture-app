@@ -18,7 +18,7 @@ fun MetadataSyncPeriod.toSeconds(): Int {
     return when (this) {
         MetadataSyncPeriod.EVERY_HOUR -> EVERY_HOUR
         MetadataSyncPeriod.EVERY_12_HOURS -> EVERY_12_HOUR
-        MetadataSyncPeriod.EVERY_DAY -> EVERY_24_HOUR
+        MetadataSyncPeriod.EVERY_24_HOURS -> EVERY_24_HOUR
         MetadataSyncPeriod.EVERY_7_DAYS -> EVERY_7_DAYS
     }
 }

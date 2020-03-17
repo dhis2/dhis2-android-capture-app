@@ -217,6 +217,7 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
 
     @Override
     public void syncMeta(int seconds, String scheduleTag) {
+        preferenceProvider.setValue(Constants.TIME_META, seconds);
         workManagerController.cancelUniqueWork(scheduleTag);
         WorkerItem workerItem = new WorkerItem(scheduleTag, WorkerType.METADATA, (long) seconds, null, null, ExistingPeriodicWorkPolicy.REPLACE);
         workManagerController.enqueuePeriodicWork(workerItem);
