@@ -154,8 +154,16 @@ android {
     }
 
     flavorDimensions "default"
+
     productFlavors {
         dhis {
+            applicationId "com.dhis2"
+            dimension "default"
+            versionCode versions.vCode
+            versionName versions.vName
+        }
+
+        dhisNoSMS {
             applicationId "com.dhis2"
             dimension "default"
             versionCode versions.vCode

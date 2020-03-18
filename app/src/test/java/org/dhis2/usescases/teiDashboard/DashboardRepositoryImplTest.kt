@@ -1,15 +1,21 @@
 package org.dhis2.usescases.teiDashboard
 
 import com.nhaarman.mockitokotlin2.doReturn
+import com.nhaarman.mockitokotlin2.doThrow
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Single
 import org.dhis2.utils.DateUtils
 import org.dhis2.utils.resources.ResourceManager
 import org.hisp.dhis.android.core.D2
+import org.hisp.dhis.android.core.common.Unit
 import org.hisp.dhis.android.core.enrollment.Enrollment
+import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
 import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.event.EventStatus
+import org.hisp.dhis.android.core.maintenance.D2Error
+import org.hisp.dhis.android.core.maintenance.D2ErrorCode
+import org.hisp.dhis.android.core.maintenance.D2ErrorComponent
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.program.ProgramStage
 import org.junit.Before
@@ -155,6 +161,107 @@ class DashboardRepositoryImplTest {
         testObserver.assertNoErrors()
         testObserver.assertValueCount(1)
 
+    }
+
+    @Test
+    fun `Should get enrollment status`() {
+        whenever(d2.enrollmentModule().enrollments()) doReturn mock()
+        whenever(d2.enrollmentModule().enrollments().uid("uid")) doReturn mock()
+        whenever(d2.enrollmentModule().enrollments().uid("uid").blockingGet()) doReturn mock()
+        whenever(
+            d2.enrollmentModule().enrollments().uid("uid").blockingGet().status()
+        ) doReturn EnrollmentStatus.COMPLETED
+
+        val status = repository.getEnrollmentStatus("uid")
+
+        assert(status == EnrollmentStatus.COMPLETED)
+    }
+
+    @Test
+    fun `Should return false if updating status of enrollment returns a D2Error`() {
+        whenever(d2.programModule().programs()) doReturn mock()
+        whenever(d2.programModule().programs().uid("programUid")) doReturn mock()
+        whenever(d2.programModule().programs().uid("programUid").blockingGet()) doReturn mock()
+        whenever(
+            d2.programModule().programs().uid("programUid").blockingGet().access()
+        ) doReturn mock()
+        whenever(
+            d2.programModule().programs().uid("programUid").blockingGet().access().data()
+        ) doReturn mock()
+        whenever(
+            d2.programModule().programs().uid("programUid").blockingGet().access().data().write()
+        ) doReturn true
+        whenever(d2.enrollmentModule().enrollments()) doReturn mock()
+        whenever(d2.enrollmentModule().enrollments().uid("enrollmentUid")) doReturn mock()
+        whenever(
+            d2.enrollmentModule().enrollments()
+                .uid("enrollmentUid").setStatus(EnrollmentStatus.COMPLETED)
+        ) doThrow D2Error.builder().errorCode(D2ErrorCode.VALUE_CANT_BE_SET)
+            .errorComponent(D2ErrorComponent.Database)
+            .errorDescription("description")
+            .build()
+
+        val testObserver =
+            repository.updateEnrollmentStatus("enrollmentUid", EnrollmentStatus.COMPLETED).test()
+
+        testObserver.assertNoErrors()
+        testObserver.assertValueAt(0) {
+            !it
+        }
+    }
+
+    @Test
+    fun `Should return true if enrollment status was updated correctly`() {
+        whenever(d2.programModule().programs()) doReturn mock()
+        whenever(d2.programModule().programs().uid("programUid")) doReturn mock()
+        whenever(d2.programModule().programs().uid("programUid").blockingGet()) doReturn mock()
+        whenever(
+            d2.programModule().programs().uid("programUid").blockingGet().access()
+        ) doReturn mock()
+        whenever(
+            d2.programModule().programs().uid("programUid").blockingGet().access().data()
+        ) doReturn mock()
+        whenever(
+            d2.programModule().programs().uid("programUid").blockingGet().access().data().write()
+        ) doReturn true
+        whenever(d2.enrollmentModule().enrollments()) doReturn mock()
+        whenever(d2.enrollmentModule().enrollments().uid("enrollmentUid")) doReturn mock()
+        whenever(
+            d2.enrollmentModule().enrollments()
+                .uid("enrollmentUid").setStatus(EnrollmentStatus.COMPLETED)
+        ) doReturn Unit()
+
+        val testObserver =
+            repository.updateEnrollmentStatus("enrollmentUid", EnrollmentStatus.COMPLETED).test()
+
+        testObserver.assertNoErrors()
+        testObserver.assertValueAt(0) {
+            it
+        }
+    }
+
+    @Test
+    fun `Should return false if user does not hava write permission to update enrollment status`() {
+        whenever(d2.programModule().programs()) doReturn mock()
+        whenever(d2.programModule().programs().uid("programUid")) doReturn mock()
+        whenever(d2.programModule().programs().uid("programUid").blockingGet()) doReturn mock()
+        whenever(
+            d2.programModule().programs().uid("programUid").blockingGet().access()
+        ) doReturn mock()
+        whenever(
+            d2.programModule().programs().uid("programUid").blockingGet().access().data()
+        ) doReturn mock()
+        whenever(
+            d2.programModule().programs().uid("programUid").blockingGet().access().data().write()
+        ) doReturn false
+
+        val testObserver =
+            repository.updateEnrollmentStatus("enrollmentUid", EnrollmentStatus.COMPLETED).test()
+
+        testObserver.assertNoErrors()
+        testObserver.assertValueAt(0) {
+            !it
+        }
     }
 
     private fun getMockingProgram(): Program {

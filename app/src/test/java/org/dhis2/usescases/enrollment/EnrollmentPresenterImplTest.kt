@@ -31,6 +31,7 @@ import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
 import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.program.ProgramStage
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceObjectRepository
 import org.junit.Assert
 import org.junit.Before
@@ -68,109 +69,138 @@ class EnrollmentPresenterImplTest {
     }
 
     @Test
+    fun `Should delete option value if selected in group to hide`() {
+        whenever(formRepository.getOptionsFromGroups(arrayListOf("optionGroupToHide")))doReturn arrayListOf("option1","option2")
+        presenter.setOptionGroupToHide("optionGroupToHide", true, "field")
+        verify(valueStore).deleteOptionValueIfSelectedInGroup("field","optionGroupToHide",true)
+    }
+
+    @Test
+    fun `Should delete option value if selected not in group to hide`() {
+        presenter.setOptionGroupToHide("optionGroupToHide", false, "field")
+        verify(valueStore).deleteOptionValueIfSelectedInGroup("field","optionGroupToHide",false)
+    }
+
+    @Test
     fun `Missing and errors fields should show mandatory fields dialog`() {
+        val fields = arrayListOf(
+            dummyEditTextViewModel("uid1", "missing_mandatory_field", mandatory = true)
+        )
+
+        mockTrackedEntityAttributes()
+        whenever(
+            d2.trackedEntityModule().trackedEntityAttributes().uid("uid1").blockingGet().unique()
+        ) doReturn false
+
         presenter.setFieldsToShow(
             "testSection",
-            arrayListOf(
-                EditTextViewModel.create(
-                    "uid1",
-                    "missing_mandatory_field",
-                    true,
-                    null,
-                    "",
-                    1,
-                    ValueType.TEXT,
-                    "testSection",
-                    true,
-                    null,
-                    null,
-                    ObjectStyle.builder().build(),
-                    null
-                )
-            )
+            fields
         )
         val checkWthErrors = presenter.dataIntegrityCheck()
 
         Assert.assertFalse(checkWthErrors)
-        verify(
-            enrollmentView,
-            times(1)
-        ).showMissingMandatoryFieldsMessage(arrayListOf("missing_mandatory_field"))
+        val map = mutableMapOf("testSection" to "missing_mandatory_field")
+        verify(enrollmentView, times(1)).showMissingMandatoryFieldsMessage(map)
     }
 
     @Test
     fun `Missing fields should show mandatory fields dialog`() {
-        presenter.setFieldsToShow(
-            "testSection",
-            arrayListOf(
-                EditTextViewModel.create(
-                    "uid1",
-                    "missing_mandatory_field",
-                    true,
-                    null,
-                    "",
-                    1,
-                    ValueType.TEXT,
-                    "testSection",
-                    true,
-                    null,
-                    null,
-                    ObjectStyle.builder().build(),
-                    null
-                ),
-                EditTextViewModel.create(
-                    "uid2",
-                    "error_field",
-                    false,
-                    null,
-                    "",
-                    1,
-                    ValueType.TEXT,
-                    "testSection",
-                    true,
-                    null,
-                    null,
-                    ObjectStyle.builder().build(),
-                    null
-                ).withError("Error")
-            )
+        val fields = arrayListOf(
+            dummyEditTextViewModel("uid1", "missing_mandatory_field", mandatory = true),
+            dummyEditTextViewModel("uid2", "error_field").withError("Error")
         )
+
+        whenever(d2.trackedEntityModule()) doReturn mock()
+        whenever(d2.trackedEntityModule().trackedEntityAttributes()) doReturn mock()
+        fields.forEach {
+            whenever(
+                d2.trackedEntityModule().trackedEntityAttributes().uid(it.uid())
+            ) doReturn mock()
+            whenever(
+                d2.trackedEntityModule().trackedEntityAttributes().uid(it.uid()).blockingGet()
+            ) doReturn mock()
+            whenever(
+                d2.trackedEntityModule().trackedEntityAttributes()
+                    .uid(it.uid()).blockingGet().unique()
+            ) doReturn false
+        }
+
+        presenter.setFieldsToShow("testSection", fields)
         val checkWthErrors = presenter.dataIntegrityCheck()
 
         Assert.assertFalse(checkWthErrors)
-        verify(
-            enrollmentView,
-            times(1)
-        ).showMissingMandatoryFieldsMessage(arrayListOf("missing_mandatory_field"))
+        val map = mutableMapOf("testSection" to "missing_mandatory_field")
+        verify(enrollmentView, times(1)).showMissingMandatoryFieldsMessage(map)
     }
 
     @Test
     fun `Error fields should show mandatory fields dialog`() {
-        presenter.setFieldsToShow(
-            "testSection",
-            arrayListOf(
-                EditTextViewModel.create(
-                    "uid1",
-                    "error_field",
-                    false,
-                    null,
-                    "",
-                    1,
-                    ValueType.TEXT,
-                    "testSection",
-                    true,
-                    null,
-                    null,
-                    ObjectStyle.builder().build(),
-                    null
-                ).withError("Error")
-            )
+        val fields = arrayListOf(
+            dummyEditTextViewModel("uid1", "error_field").withError("Error")
         )
+
+        mockTrackedEntityAttributes()
+        whenever(
+            d2.trackedEntityModule().trackedEntityAttributes().uid("uid1").blockingGet().unique()
+        ) doReturn false
+
+        presenter.setFieldsToShow("testSection", fields)
         val checkWthErrors = presenter.dataIntegrityCheck()
 
         Assert.assertFalse(checkWthErrors)
-
         verify(enrollmentView, times(1)).showErrorFieldsMessage(arrayListOf("error_field"))
+    }
+
+    @Test
+    fun `Should show dialog if an unique field has a coincidence in a unique attribute`() {
+        val fields = arrayListOf(
+            dummyEditTextViewModel("uid1", "field", value = "value")
+        )
+        mockTrackedEntityAttributes()
+        mockTrackedEntityAttributeValues()
+
+        whenever(
+            d2.trackedEntityModule().trackedEntityAttributes().uid("uid1").blockingGet().unique()
+        ) doReturn true
+        whenever(
+            d2.trackedEntityModule().trackedEntityAttributeValues()
+                .byTrackedEntityAttribute().eq("uid1")
+                .byValue().eq("value")
+                .blockingGet()
+        ) doReturn listOf(
+            TrackedEntityAttributeValue.builder().value("1").build(),
+            TrackedEntityAttributeValue.builder().value("1").build())
+        whenever(enrollmentView.context) doReturn mock()
+
+        presenter.setFieldsToShow("testSection", fields)
+        val checkUnique = presenter.dataIntegrityCheck()
+
+        Assert.assertFalse(checkUnique)
+        verify(enrollmentView).showInfoDialog(null, null)
+    }
+
+    @Test
+    fun `should not show dialog if no coincidence is found in a unique attribute`() {
+        val fields = arrayListOf(
+            dummyEditTextViewModel("uid1", "field", value = "value")
+        )
+        mockTrackedEntityAttributes()
+        mockTrackedEntityAttributeValues()
+
+        whenever(
+            d2.trackedEntityModule().trackedEntityAttributes().uid("uid1").blockingGet().unique()
+        ) doReturn true
+        whenever(
+            d2.trackedEntityModule().trackedEntityAttributeValues()
+                .byTrackedEntityAttribute().eq("uid1")
+                .byValue().eq("value")
+                .blockingGet()
+        ) doReturn listOf(TrackedEntityAttributeValue.builder().value("1").build())
+
+        presenter.setFieldsToShow("testSection", fields)
+        val checkUnique = presenter.dataIntegrityCheck()
+
+        assert(checkUnique)
     }
 
     @Test
@@ -337,5 +367,54 @@ class EnrollmentPresenterImplTest {
             )
         }
         return list
+    }
+
+    private fun dummyEditTextViewModel(uid: String, label: String, value: String? = null, mandatory: Boolean = false) =
+        EditTextViewModel.create(
+            uid,
+            label,
+            mandatory,
+            value,
+            "",
+            1,
+            ValueType.TEXT,
+            "testSection",
+            true,
+            null,
+            null,
+            ObjectStyle.builder().build(),
+            null
+        )
+
+    private fun mockTrackedEntityAttributes() {
+        whenever(d2.trackedEntityModule()) doReturn mock()
+        whenever(d2.trackedEntityModule().trackedEntityAttributes()) doReturn mock()
+        whenever(d2.trackedEntityModule().trackedEntityAttributes().uid("uid1")) doReturn mock()
+        whenever(
+            d2.trackedEntityModule().trackedEntityAttributes().uid("uid1").blockingGet()
+        ) doReturn mock()
+    }
+
+    private fun mockTrackedEntityAttributeValues() {
+        whenever(
+            d2.trackedEntityModule().trackedEntityAttributeValues()
+        ) doReturn mock()
+        whenever(
+            d2.trackedEntityModule().trackedEntityAttributeValues().byTrackedEntityAttribute()
+        ) doReturn mock()
+        whenever(
+            d2.trackedEntityModule().trackedEntityAttributeValues()
+                .byTrackedEntityAttribute().eq("uid1")
+        ) doReturn mock()
+        whenever(
+            d2.trackedEntityModule().trackedEntityAttributeValues()
+                .byTrackedEntityAttribute().eq("uid1")
+                .byValue()
+        ) doReturn mock()
+        whenever(
+            d2.trackedEntityModule().trackedEntityAttributeValues()
+                .byTrackedEntityAttribute().eq("uid1")
+                .byValue().eq("value")
+        ) doReturn mock()
     }
 }

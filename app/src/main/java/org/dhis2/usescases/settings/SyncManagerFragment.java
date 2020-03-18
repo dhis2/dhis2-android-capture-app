@@ -1,26 +1,24 @@
 package org.dhis2.usescases.settings;
 
-import android.Manifest;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.Spannable;
 import android.text.SpannableString;
+import android.text.style.ForegroundColorSpan;
 import android.text.style.ImageSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CompoundButton;
-import android.widget.EditText;
-import android.widget.TextView;
+import android.view.inputmethod.EditorInfo;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
@@ -29,50 +27,48 @@ import androidx.core.content.ContextCompat;
 import androidx.databinding.DataBindingUtil;
 import androidx.work.WorkInfo;
 
+import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
-import com.google.android.material.textfield.TextInputLayout;
-import com.jakewharton.rxbinding2.widget.RxCompoundButton;
-import com.jakewharton.rxbinding2.widget.RxTextView;
 
+import org.dhis2.Bindings.ContextExtensionsKt;
+import org.dhis2.Bindings.ViewExtensionsKt;
 import org.dhis2.Components;
 import org.dhis2.R;
 import org.dhis2.data.service.workManager.WorkManagerController;
-import org.dhis2.data.tuples.Pair;
 import org.dhis2.databinding.FragmentSettingsBinding;
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
+import org.dhis2.usescases.settings.models.DataSettingsViewModel;
+import org.dhis2.usescases.settings.models.MetadataSettingsViewModel;
+import org.dhis2.usescases.settings.models.ReservedValueSettingsViewModel;
+import org.dhis2.usescases.settings.models.SMSSettingsViewModel;
+import org.dhis2.usescases.settings.models.SyncParametersViewModel;
+import org.dhis2.usescases.settings_program.SettingsProgramActivity;
+import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.HelpManager;
 import org.dhis2.utils.NetworkUtils;
-import org.hisp.dhis.android.core.imports.TrackerImportConflict;
+import org.hisp.dhis.android.core.maintenance.D2Error;
+import org.hisp.dhis.android.core.settings.LimitScope;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.functions.Consumer;
-import io.reactivex.schedulers.Schedulers;
-import timber.log.Timber;
-
+import static org.dhis2.Bindings.SettingExtensionsKt.EVERY_12_HOUR;
+import static org.dhis2.Bindings.SettingExtensionsKt.EVERY_24_HOUR;
+import static org.dhis2.Bindings.SettingExtensionsKt.EVERY_30_MIN;
+import static org.dhis2.Bindings.SettingExtensionsKt.EVERY_6_HOUR;
+import static org.dhis2.Bindings.SettingExtensionsKt.EVERY_7_DAYS;
+import static org.dhis2.Bindings.SettingExtensionsKt.EVERY_HOUR;
 import static org.dhis2.utils.Constants.DATA_NOW;
 import static org.dhis2.utils.Constants.META_NOW;
-import static org.dhis2.utils.Constants.TIME_15M;
-import static org.dhis2.utils.Constants.TIME_DAILY;
-import static org.dhis2.utils.Constants.TIME_HOURLY;
 import static org.dhis2.utils.Constants.TIME_MANUAL;
-import static org.dhis2.utils.Constants.TIME_WEEKLY;
 import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
 import static org.dhis2.utils.analytics.AnalyticsConstants.CONFIRM_DELETE_LOCAL_DATA;
 import static org.dhis2.utils.analytics.AnalyticsConstants.CONFIRM_RESET;
-import static org.dhis2.utils.analytics.AnalyticsConstants.SYNC_DATA;
-import static org.dhis2.utils.analytics.AnalyticsConstants.SYNC_METADATA;
-import static org.dhis2.utils.analytics.AnalyticsConstants.TYPE_SYNC;
 
 public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncManagerContracts.View {
-    private final int SMS_PERMISSIONS_REQ_ID = 102;
 
     @Inject
     SyncManagerContracts.Presenter presenter;
@@ -81,16 +77,21 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
     WorkManagerController workManagerController;
 
     private FragmentSettingsBinding binding;
-    private SharedPreferences prefs;
-    private CompositeDisposable listenerDisposable;
     private Context context;
 
     private BroadcastReceiver networkReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            setNetworkEdition(NetworkUtils.isOnline(context));
+            presenter.checkData();
+            checkSyncDataButtonStatus();
+            checkSyncMetaButtonStatus();
         }
     };
+    private boolean dataInit;
+    private boolean metadataInit;
+    private boolean scopeLimitInit;
+    private boolean dataWorkRunning;
+    private boolean metadataWorkRunning;
 
     public SyncManagerFragment() {
         // Required empty public constructor
@@ -101,7 +102,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
         super.onAttach(context);
         this.context = context;
         ((Components) context.getApplicationContext()).userComponent()
-                .plus(new SyncManagerModule()).inject(this);
+                .plus(new SyncManagerModule(this)).inject(this);
     }
 
     @Override
@@ -110,13 +111,8 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_settings, container, false);
 
         binding.setPresenter(presenter);
-        prefs = getAbstracContext().getSharedPreferences(
-                Constants.SHARE_PREFS, Context.MODE_PRIVATE);
 
-        initRadioGroups();
-
-        binding.dataRadioGroup.setOnCheckedChangeListener((group, checkedId) -> saveTimeData(checkedId));
-        binding.metaRadioGroup.setOnCheckedChangeListener((group, checkedId) -> saveTimeMeta(checkedId));
+        binding.smsSettings.setVisibility(ContextExtensionsKt.showSMS(context) ? View.VISIBLE : View.GONE);
 
         return binding.getRoot();
     }
@@ -130,60 +126,37 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
                 binding.syncMetaLayout.message.setTextColor(ContextCompat.getColor(context, R.color.text_black_333));
                 String metaText = metaSyncSettings().concat("\n").concat(context.getString(R.string.syncing_configuration));
                 binding.syncMetaLayout.message.setText(metaText);
-                binding.buttonSyncMeta.setEnabled(false);
+                metadataWorkRunning = true;
             } else {
-                binding.buttonSyncMeta.setEnabled(true);
-                setLastSyncDate();
+                metadataWorkRunning = false;
                 presenter.checkData();
             }
+            checkSyncMetaButtonStatus();
         });
         workManagerController.getWorkInfosByTagLiveData(DATA_NOW).observe(this, workStatuses -> {
             if (!workStatuses.isEmpty() && workStatuses.get(0).getState() == WorkInfo.State.RUNNING) {
                 String dataText = dataSyncSetting().concat("\n").concat(context.getString(R.string.syncing_data));
                 binding.syncDataLayout.message.setTextColor(ContextCompat.getColor(context, R.color.text_black_333));
                 binding.syncDataLayout.message.setText(dataText);
-                binding.buttonSyncData.setEnabled(false);
+                dataWorkRunning = true;
             } else {
-                binding.buttonSyncData.setEnabled(true);
-                setLastSyncDate();
+                dataWorkRunning = false;
                 presenter.checkData();
             }
+            checkSyncDataButtonStatus();
         });
-        presenter.init(this);
-
-        listenerDisposable = new CompositeDisposable();
-
-        listenerDisposable.add(RxTextView.textChanges(binding.eventMaxData).debounce(1000, TimeUnit.MILLISECONDS, Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        data -> prefs.edit().putInt(Constants.EVENT_MAX, Integer.valueOf(data.toString())).apply(),
-                        Timber::d
-                ));
-
-        listenerDisposable.add(RxTextView.textChanges(binding.teiMaxData).debounce(1000, TimeUnit.MILLISECONDS, Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        data -> prefs.edit().putInt(Constants.TEI_MAX, Integer.valueOf(data.toString())).apply(),
-                        Timber::d
-                ));
-
+        presenter.init();
 
         if (!getResources().getBoolean(R.bool.sms_enabled)) {
-            binding.settingsSms.setVisibility(View.GONE);
+            binding.settingsSms.getRoot().setVisibility(View.GONE);
         }
-
-        binding.limitByOrgUnit.setOnCheckedChangeListener((buttonView, isChecked) -> prefs.edit().putBoolean(Constants.LIMIT_BY_ORG_UNIT, isChecked).apply());
-        binding.limitByProgram.setOnCheckedChangeListener((buttonView, isChecked) -> prefs.edit().putBoolean(Constants.LIMIT_BY_PROGRAM, isChecked).apply());
-
-        setLastSyncDate();
     }
 
     @Override
     public void onPause() {
         super.onPause();
         context.unregisterReceiver(networkReceiver);
-        listenerDisposable.clear();
-        presenter.disponse();
+        presenter.dispose();
     }
 
     @Override
@@ -194,254 +167,28 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
     }
 
     @Override
-    public Consumer<Pair<Integer, Integer>> setSyncData() {
-        return syncParameters -> {
-            String eventMax = String.valueOf(prefs.getInt(Constants.EVENT_MAX, Constants.EVENT_MAX_DEFAULT));
-            String teiMax = String.valueOf(prefs.getInt(Constants.TEI_MAX, Constants.TEI_MAX_DEFAULT));
-            String eventCurrent = String.valueOf(syncParameters.val1());
-            String teiCurrent = String.valueOf(syncParameters.val0());
-            binding.eventMaxData.setText(eventMax);
-            binding.teiMaxData.setText(teiMax);
-            binding.eventCurrentData.setText(eventCurrent);
-            binding.teiCurrentData.setText(teiCurrent);
-            binding.limitByOrgUnit.setChecked(prefs.getBoolean(Constants.LIMIT_BY_ORG_UNIT, false));
-            binding.limitByProgram.setChecked(prefs.getBoolean(Constants.LIMIT_BY_PROGRAM, false));
-            binding.parameterLayout.message.setText(
-                    String.format(context.getString(R.string.event_tei_limits),
-                            getString(R.string.tab), eventMax, getString(R.string.tab), eventCurrent,
-                            getString(R.string.tab), teiMax, getString(R.string.tab), teiCurrent));
-        };
-    }
-
-    @Override
     public void showInvalidGatewayError() {
-        String error = getContext().getResources().getString(R.string.invalid_phone_number);
-        ((TextInputLayout) binding.settingsSms.findViewById(R.id.settings_sms_receiver_layout))
-                .setError(error);
+        String error = context.getResources().getString(R.string.invalid_phone_number);
+        binding.settingsSms.settingsSmsReceiverLayout.setError(error);
     }
 
     @Override
     public void hideGatewayError() {
-        ((TextInputLayout) binding.settingsSms.findViewById(R.id.settings_sms_receiver_layout)).setError(null);
+        binding.settingsSms.settingsSmsReceiverLayout.setError(null);
     }
 
-    @Override
-    public void showSmsSettings(boolean enabled, String number, boolean waitForResponse, String responseSender, int timeout) {
-        ((CompoundButton) binding.settingsSms.findViewById(R.id.settings_sms_switch))
-                .setChecked(enabled);
-        TextView gateway = binding.settingsSms.findViewById(R.id.settings_sms_receiver);
-        gateway.setText(number);
-        ((CompoundButton) binding.settingsSms.findViewById(R.id.settings_sms_response_wait_switch))
-                .setChecked(waitForResponse);
-        ((TextView) binding.settingsSms.findViewById(R.id.settings_sms_result_sender))
-                .setText(responseSender);
-        ((TextView) binding.settingsSms.findViewById(R.id.settings_sms_result_timeout))
-                .setText(Integer.toString(timeout));
-        if (!gateway.getText().toString().isEmpty()) {
-            presenter.validateGatewayObservable(gateway.getText().toString());
-        }
-        boolean hasNetwork = NetworkUtils.isOnline(context);
-
-        binding.settingsSms.findViewById(R.id.settings_sms_switch).setEnabled(hasNetwork);
-        binding.settingsSms.findViewById(R.id.settings_sms_response_wait_switch).setEnabled(hasNetwork);
-        binding.settingsSms.findViewById(R.id.settings_sms_receiver).setEnabled(hasNetwork);
-        binding.settingsSms.findViewById(R.id.settings_sms_result_sender).setEnabled(hasNetwork);
-        binding.settingsSms.findViewById(R.id.settings_sms_result_timeout).setEnabled(hasNetwork);
-
-        if (NetworkUtils.isOnline(context)) {
-            setSMSListeners();
-        }
-    }
-
-    private void setSMSListeners() {
-
-        listenerDisposable.add(RxTextView.textChanges(binding.settingsSms.findViewById(R.id.settings_sms_receiver))
-                .skipInitialValue()
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        data -> presenter.validateGatewayObservable(data.toString()),
-                        Timber::d
-                ));
-
-        listenerDisposable.add(RxCompoundButton.checkedChanges(binding.settingsSms.findViewById(R.id.settings_sms_switch))
-                .debounce(1000, TimeUnit.MILLISECONDS, Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        isChecked -> {
-                            if (!isChecked) {
-                                presenter.smsSwitch(false);
-                            } else if (NetworkUtils.isOnline(context) &&
-                                    isGatewaySetAndValid() &&
-                                    checkSMSPermissions(true)) {
-                                presenter.smsSwitch(true);
-                            }
-                        }
-                        ,
-                        Timber::d
-                ));
-
-        listenerDisposable.add(RxCompoundButton.checkedChanges(binding.settingsSms.findViewById(R.id.settings_sms_response_wait_switch))
-                .debounce(1000, TimeUnit.MILLISECONDS, Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        isChecked -> presenter.smsWaitForResponse(isChecked),
-                        Timber::d
-                ));
-
-        listenerDisposable.add(RxTextView.textChanges(binding.settingsSms.findViewById(R.id.settings_sms_result_sender))
-                .debounce(1000, TimeUnit.MILLISECONDS, Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        number -> presenter.smsResponseSenderSet(number.toString()),
-                        Timber::d
-                ));
-
-        listenerDisposable.add(RxTextView.textChanges(binding.settingsSms.findViewById(R.id.settings_sms_result_timeout))
-                .debounce(1000, TimeUnit.MILLISECONDS, Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        value -> presenter.smsWaitForResponseTimeout(Integer.valueOf(value.toString())),
-                        Timber::d
-                ));
-    }
-
-    private void setLastSyncDate() {
-        boolean dataStatus = prefs.getBoolean(Constants.LAST_DATA_SYNC_STATUS, true);
-        boolean metaStatus = prefs.getBoolean(Constants.LAST_META_SYNC_STATUS, true);
-
-        if (dataStatus) {
-            String dataText = dataSyncSetting().concat("\n").concat(String.format(getString(R.string.last_data_sync_date), prefs.getString(Constants.LAST_DATA_SYNC, "-")));
-            binding.syncDataLayout.message.setText(dataText);
-            binding.syncDataLayout.message.setTextColor(ContextCompat.getColor(context, R.color.text_black_333));
-        } else {
-            String dataText = dataSyncSetting().concat("\n").concat(getString(R.string.sync_error_text));
-            binding.syncDataLayout.message.setText(dataText);
-        }
-
-        if (presenter.dataHasErrors()) {
-            String src = dataSyncSetting().concat("\n").concat(getString(R.string.data_sync_error));
-            SpannableString str = new SpannableString(src);
-            int wIndex = src.indexOf('@');
-            int eIndex = src.indexOf('$');
-            str.setSpan(new ImageSpan(getContext(), R.drawable.ic_sync_warning), wIndex, wIndex + 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-            str.setSpan(new ImageSpan(getContext(), R.drawable.ic_sync_problem_red), eIndex, eIndex + 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-            binding.syncDataLayout.message.setText(str);
-            binding.syncDataLayout.message.setTextColor(ContextCompat.getColor(getContext(), R.color.red_060));
-
-        } else if (presenter.dataHasWarnings()) {
-            String src = dataSyncSetting().concat("\n").concat(getString(R.string.data_sync_warning));
-            SpannableString str = new SpannableString(src);
-            int wIndex = src.indexOf('@');
-            str.setSpan(new ImageSpan(getContext(), R.drawable.ic_sync_warning), wIndex, wIndex + 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-            binding.syncDataLayout.message.setText(str);
-            binding.syncDataLayout.message.setTextColor(ContextCompat.getColor(getContext(), R.color.colorPrimaryOrange));
-        }
-
-        if (metaStatus) {
-            String metaText = metaSyncSettings().concat("\n").concat(String.format(getString(R.string.last_data_sync_date), prefs.getString(Constants.LAST_META_SYNC, "-")));
-            binding.syncMetaLayout.message.setText(metaText);
-            binding.syncMetaLayout.message.setTextColor(ContextCompat.getColor(context, R.color.text_black_333));
-        } else {
-            String metaText = metaSyncSettings().concat("\n").concat(getString(R.string.metadata_sync_error));
-            binding.syncMetaLayout.message.setText(metaText);
-            binding.syncMetaLayout.message.setTextColor(ContextCompat.getColor(context, R.color.red_060));
-        }
-
-    }
-
-    private void initRadioGroups() {
-        int timeData = prefs.getInt("timeData", TIME_DAILY);
-        int timeMeta = prefs.getInt("timeMeta", TIME_DAILY);
-
-        switch (timeData) {
-            case TIME_15M:
-                binding.dataRadioGroup.check(R.id.data_quarter);
-                break;
-            case TIME_HOURLY:
-                binding.dataRadioGroup.check(R.id.data_hour);
-                break;
-            case TIME_MANUAL:
-                binding.buttonSyncData.setVisibility(View.VISIBLE);
-                binding.dataRadioGroup.check(R.id.data_manual);
-                break;
-            case TIME_DAILY:
-            default:
-                binding.dataRadioGroup.check(R.id.data_day);
-                break;
-        }
-
-        switch (timeMeta) {
-            case TIME_MANUAL:
-                binding.buttonSyncMeta.setVisibility(View.VISIBLE);
-                binding.metaRadioGroup.check(R.id.meta_manual);
-                break;
-            case TIME_WEEKLY:
-                binding.metaRadioGroup.check(R.id.meta_weekly);
-                break;
-            case TIME_DAILY:
-            default:
-                binding.metaRadioGroup.check(R.id.meta_day);
-                break;
-        }
-    }
-
-    private void saveTimeData(int checkedId) {
-        int time;
-
-        switch (checkedId) {
-            case R.id.data_quarter:
-                analyticsHelper().setEvent(TYPE_SYNC, getString(R.string.data_every_fifteen_minutes), SYNC_DATA);
-                time = TIME_15M;
-                break;
-            case R.id.data_hour:
-                analyticsHelper().setEvent(TYPE_SYNC, getString(R.string.data_every_hour), SYNC_DATA);
-                time = TIME_HOURLY;
-                break;
-            case R.id.data_day:
-                analyticsHelper().setEvent(TYPE_SYNC, getString(R.string.data_every_day), SYNC_DATA);
-                time = TIME_DAILY;
-                break;
-            case R.id.data_manual:
-            default:
-                analyticsHelper().setEvent(TYPE_SYNC, getString(R.string.Manual), SYNC_DATA);
-                time = TIME_MANUAL;
-                break;
-        }
-        prefs.edit().putInt(Constants.TIME_DATA, time).apply();
+    private void saveTimeData(int time) {
         if (time != TIME_MANUAL) {
-            binding.buttonSyncData.setVisibility(View.GONE);
             presenter.syncData(time, Constants.DATA);
         } else {
-            binding.buttonSyncData.setVisibility(View.VISIBLE);
             presenter.cancelPendingWork(Constants.DATA);
         }
     }
 
-    private void saveTimeMeta(int i) {
-        int time;
-
-        switch (i) {
-            case R.id.meta_weekly:
-                analyticsHelper().setEvent(TYPE_SYNC, getString(R.string.data_every_week), SYNC_METADATA);
-                time = TIME_WEEKLY;
-                break;
-            case R.id.meta_manual:
-                analyticsHelper().setEvent(TYPE_SYNC, getString(R.string.Manual), SYNC_METADATA);
-                time = TIME_MANUAL;
-                break;
-            case R.id.meta_day:
-            default:
-                analyticsHelper().setEvent(TYPE_SYNC, getString(R.string.data_every_day), SYNC_METADATA);
-                time = TIME_DAILY;
-                break;
-        }
-
-        prefs.edit().putInt(Constants.TIME_META, time).apply();
+    private void saveTimeMeta(int time) {
         if (time != TIME_MANUAL) {
-            binding.buttonSyncMeta.setVisibility(View.GONE);
             presenter.syncMeta(time, Constants.META);
         } else {
-            binding.buttonSyncMeta.setVisibility(View.VISIBLE);
             presenter.cancelPendingWork(Constants.META);
         }
     }
@@ -496,7 +243,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
 
     @Override
     public void showTutorial() {
-        if (isAdded() && getContext() != null)
+        if (isAdded() && context != null)
             new Handler().postDelayed(() -> {
                 if (getAbstractActivity() != null) {
                     HelpManager.getInstance().setScroll(getAbstractActivity().findViewById(R.id.scrollView));
@@ -506,7 +253,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
     }
 
     @Override
-    public void showSyncErrors(List<TrackerImportConflict> data) {
+    public void showSyncErrors(List<D2Error> data) {
         new ErrorDialog().setData(data).show(getChildFragmentManager().beginTransaction(), ErrorDialog.TAG);
     }
 
@@ -514,13 +261,13 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
     public void showLocalDataDeleted(boolean error) {
 
         if (!error) {
-            binding.eventCurrentData.setText(String.valueOf(0));
-            binding.teiCurrentData.setText(String.valueOf(0));
+            binding.eventsEditText.setText(String.valueOf(0));
+            binding.teiEditText.setText(String.valueOf(0));
         }
 
         Snackbar deleteDataSnack = Snackbar.make(binding.getRoot(),
                 error ? R.string.delete_local_data_error : R.string.delete_local_data_done,
-                Snackbar.LENGTH_SHORT);
+                BaseTransientBottomBar.LENGTH_SHORT);
         deleteDataSnack.show();
     }
 
@@ -537,82 +284,514 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
     }
 
     @Override
-    public void openItem(int settingsItem) {
-        binding.dataRadioGroup.setVisibility(View.GONE);
-        binding.metaRadioGroup.setVisibility(View.GONE);
+    public void openItem(SettingItem settingsItem) {
+        binding.syncDataActions.setVisibility(View.GONE);
+        binding.syncMetadataActions.setVisibility(View.GONE);
         binding.parameterData.setVisibility(View.GONE);
+        binding.reservedValuesActions.setVisibility(View.GONE);
         binding.deleteDataButton.setVisibility(View.GONE);
         binding.resetButton.setVisibility(View.GONE);
         binding.smsContent.setVisibility(View.GONE);
+        binding.dataDivider.setVisibility(View.VISIBLE);
+        binding.metaDivider.setVisibility(View.VISIBLE);
+        binding.parameterDivider.setVisibility(View.VISIBLE);
+        binding.reservedValueDivider.setVisibility(View.VISIBLE);
 
         switch (settingsItem) {
-            case 0:
-                binding.dataRadioGroup.setVisibility(View.VISIBLE);
+            case DATA_SYNC:
+                binding.syncDataActions.setVisibility(View.VISIBLE);
+                binding.dataDivider.setVisibility(View.GONE);
                 break;
-            case 1:
-                binding.metaRadioGroup.setVisibility(View.VISIBLE);
+            case META_SYNC:
+                binding.syncMetadataActions.setVisibility(View.VISIBLE);
+                binding.metaDivider.setVisibility(View.GONE);
                 break;
-            case 2:
+            case SYNC_PARAMETERS:
                 binding.parameterData.setVisibility(View.VISIBLE);
+                binding.parameterDivider.setVisibility(View.GONE);
                 break;
-            case 5:
+            case RESERVED_VALUES:
+                binding.reservedValuesActions.setVisibility(View.VISIBLE);
+                binding.reservedValueDivider.setVisibility(View.GONE);
+                break;
+            case DELETE_LOCAL_DATA:
                 binding.deleteDataButton.setVisibility(View.VISIBLE);
                 break;
-            case 6:
+            case RESET_APP:
                 binding.resetButton.setVisibility(View.VISIBLE);
                 break;
-            case 7:
+            case SMS:
                 binding.smsContent.setVisibility(View.VISIBLE);
+                break;
+            default:
                 break;
         }
     }
 
     private String dataSyncSetting() {
-        int timeData = prefs.getInt("timeData", TIME_DAILY);
+        int timeData = presenter.getDataPeriodSetting();
         String setting;
         switch (timeData) {
-            case TIME_15M:
-                setting = getString(R.string.data_every_fifteen_minutes);
+            case EVERY_30_MIN:
+                setting = getString(R.string.thirty_minutes);
                 break;
-            case TIME_HOURLY:
-                setting = getString(R.string.data_every_hour);
+            case EVERY_HOUR:
+                setting = getString(R.string.a_hour);
+                break;
+            case EVERY_6_HOUR:
+                setting = getString(R.string.every_6_hours);
+                break;
+            case EVERY_12_HOUR:
+                setting = getString(R.string.every_12_hours);
                 break;
             case TIME_MANUAL:
                 setting = getString(R.string.Manual);
                 break;
-            case TIME_DAILY:
+            case EVERY_24_HOUR:
             default:
-                setting = getString(R.string.data_every_day);
+                setting = getString(R.string.a_day);
                 break;
         }
 
-        return String.format(context.getString(R.string.sync_setting), setting);
+        return String.format(context.getString(R.string.settings_sync_period).concat(": %s"), setting);
     }
 
     private String metaSyncSettings() {
-        int timeMeta = prefs.getInt("timeMeta", TIME_DAILY);
+        int timeMeta = presenter.getMetadataPeriodSetting();
         String setting;
         switch (timeMeta) {
+            case EVERY_12_HOUR:
+                setting = getString(R.string.every_12_hours);
+                break;
+            case EVERY_7_DAYS:
+                setting = getString(R.string.a_week);
+                break;
             case TIME_MANUAL:
                 setting = getString(R.string.Manual);
                 break;
-            case TIME_WEEKLY:
-                setting = getString(R.string.data_every_week);
-                break;
-            case TIME_DAILY:
+            case EVERY_24_HOUR:
             default:
-                setting = getString(R.string.data_every_day);
+                setting = getString(R.string.a_day);
                 break;
         }
 
-        return String.format(context.getString(R.string.sync_setting), setting);
+        return String.format(context.getString(R.string.settings_sync_period).concat(": %s"), setting);
+    }
+
+    @Override
+    public void setDataSettings(DataSettingsViewModel dataSettings) {
+        dataInit = false;
+        binding.dataPeriods.setOnItemSelectedListener(null);
+        if (!dataSettings.getSyncHasErrors()) {
+            String dataText = dataSyncSetting()
+                    .concat("\n")
+                    .concat(String.format(getString(R.string.last_data_sync_date), dataSettings.getLastDataSync()));
+            binding.syncDataLayout.message.setText(dataText);
+            binding.syncDataLayout.message.setTextColor(ContextCompat.getColor(context, R.color.text_black_333));
+        } else {
+            String dataText = dataSyncSetting()
+                    .concat("\n")
+                    .concat(getString(R.string.sync_error_text));
+            binding.syncDataLayout.message.setText(dataText);
+        }
+
+        if (dataSettings.getDataHasErrors()) {
+            String src = dataSyncSetting()
+                    .concat("\n")
+                    .concat(getString(R.string.data_sync_error));
+            SpannableString str = new SpannableString(src);
+            int wIndex = src.indexOf('@');
+            int eIndex = src.indexOf('$');
+            str.setSpan(new ImageSpan(context, R.drawable.ic_sync_warning), wIndex, wIndex + 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            str.setSpan(new ImageSpan(context, R.drawable.ic_sync_problem_red), eIndex, eIndex + 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            binding.syncDataLayout.message.setText(str);
+            binding.syncDataLayout.message.setTextColor(ContextCompat.getColor(context, R.color.red_060));
+
+        } else if (dataSettings.getDataHasWarnings()) {
+            String src = dataSyncSetting().concat("\n").concat(getString(R.string.data_sync_warning));
+            SpannableString str = new SpannableString(src);
+            int wIndex = src.indexOf('@');
+            str.setSpan(new ImageSpan(context, R.drawable.ic_sync_warning), wIndex, wIndex + 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            binding.syncDataLayout.message.setText(str);
+            binding.syncDataLayout.message.setTextColor(ContextCompat.getColor(context, R.color.colorPrimaryOrange));
+        }
+
+        if (dataSettings.getCanEdit()) {
+            binding.dataPeriodsHint.setVisibility(View.VISIBLE);
+            binding.dataPeriods.setVisibility(View.VISIBLE);
+            binding.dataPeriodsNoEdition.setVisibility(View.GONE);
+        } else {
+            binding.dataPeriodsHint.setVisibility(View.GONE);
+            binding.dataPeriods.setVisibility(View.GONE);
+            binding.dataPeriodsNoEdition.setVisibility(View.VISIBLE);
+        }
+
+        binding.dataPeriods.setEnabled(dataSettings.getCanEdit());
+        binding.dataPeriods.setAdapter(new ArrayAdapter<>(context, R.layout.spinner_settings_item,
+                context.getResources().getStringArray(R.array.data_sync_periods)));
+
+        switch (dataSettings.getDataSyncPeriod()) {
+            case EVERY_30_MIN:
+                binding.dataPeriods.setSelection(0);
+                break;
+            case EVERY_HOUR:
+                binding.dataPeriods.setSelection(1);
+                break;
+            case EVERY_6_HOUR:
+                binding.dataPeriods.setSelection(2);
+                break;
+            case EVERY_12_HOUR:
+                binding.dataPeriods.setSelection(3);
+                break;
+            case TIME_MANUAL:
+                binding.dataPeriods.setSelection(5);
+                break;
+            case EVERY_24_HOUR:
+            default:
+                binding.dataPeriods.setSelection(4);
+                break;
+        }
+        binding.dataPeriods.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
+                if (dataInit) {
+                    switch (position) {
+                        case 0:
+                            saveTimeData(EVERY_30_MIN);
+                            break;
+                        case 1:
+                            saveTimeData(EVERY_HOUR);
+                            break;
+                        case 2:
+                            saveTimeData(EVERY_6_HOUR);
+                            break;
+                        case 3:
+                            saveTimeData(EVERY_12_HOUR);
+                            break;
+                        case 4:
+                            saveTimeData(EVERY_24_HOUR);
+                            break;
+                        case 5:
+                            saveTimeData(TIME_MANUAL);
+                            break;
+                        default:
+                            break;
+                    }
+                } else {
+                    dataInit = true;
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+                /*do nothing*/
+            }
+        });
+    }
+
+    @Override
+    public void setMetadataSettings(MetadataSettingsViewModel metadataSettings) {
+        metadataInit = false;
+        binding.metadataPeriods.setOnItemSelectedListener(null);
+
+        if (!metadataSettings.getHasErrors()) {
+            String metaText = metaSyncSettings().concat("\n").concat(String.format(getString(R.string.last_data_sync_date), metadataSettings.getLastMetadataSync()));
+            binding.syncMetaLayout.message.setText(metaText);
+            binding.syncMetaLayout.message.setTextColor(ContextCompat.getColor(context, R.color.text_black_333));
+        } else {
+            String metaText = metaSyncSettings().concat("\n").concat(getString(R.string.metadata_sync_error));
+            binding.syncMetaLayout.message.setText(metaText);
+            binding.syncMetaLayout.message.setTextColor(ContextCompat.getColor(context, R.color.red_060));
+        }
+
+        if (metadataSettings.getCanEdit()) {
+            binding.metadataPeriods.setVisibility(View.VISIBLE);
+            binding.metadataPeriodsHint.setVisibility(View.VISIBLE);
+            binding.metaPeriodsNoEdition.setVisibility(View.GONE);
+        } else {
+            binding.metadataPeriods.setVisibility(View.GONE);
+            binding.metadataPeriodsHint.setVisibility(View.GONE);
+            binding.metaPeriodsNoEdition.setVisibility(View.VISIBLE);
+        }
+
+        binding.metadataPeriods.setEnabled(metadataSettings.getCanEdit());
+        binding.metadataPeriods.setAdapter(new ArrayAdapter<>(context, R.layout.spinner_settings_item,
+                context.getResources().getStringArray(R.array.metadata_sync_periods)));
+        switch (metadataSettings.getMetadataSyncPeriod()) {
+            case EVERY_7_DAYS:
+                binding.metadataPeriods.setSelection(1);
+                break;
+            case TIME_MANUAL:
+                binding.metadataPeriods.setSelection(2);
+                break;
+            case EVERY_24_HOUR:
+            default:
+                binding.metadataPeriods.setSelection(0);
+                break;
+        }
+        binding.metadataPeriods.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
+                if (metadataInit) {
+                    switch (position) {
+                        case 0:
+                            saveTimeMeta(EVERY_24_HOUR);
+                            break;
+                        case 1:
+                            saveTimeMeta(EVERY_7_DAYS);
+                            break;
+                        case 2:
+                            saveTimeMeta(TIME_MANUAL);
+                            break;
+                        default:
+                            break;
+                    }
+                } else {
+                    metadataInit = true;
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+                /*do nothing*/
+            }
+        });
+    }
+
+    @Override
+    public void setParameterSettings(SyncParametersViewModel parameterSettings) {
+        scopeLimitInit = false;
+        String eventMax = String.valueOf(parameterSettings.getNumberOfEventsToDownload());
+        String teiMax = String.valueOf(parameterSettings.getNumberOfTeiToDownload());
+        String eventCurrent = String.valueOf(parameterSettings.getCurrentEventCount());
+        String teiCurrent = String.valueOf(parameterSettings.getCurrentTeiCount());
+        binding.eventsEditText.setText(eventMax);
+        binding.teiEditText.setText(teiMax);
+
+        String limitScope;
+        switch (parameterSettings.getLimitScope()) {
+            case PER_PROGRAM:
+                binding.downloadLimitScope.setSelection(2);
+                limitScope = getString(R.string.settings_limit_program);
+                break;
+            case PER_ORG_UNIT:
+                binding.downloadLimitScope.setSelection(1);
+                limitScope = getString(R.string.settings_limit_ou);
+                break;
+            case PER_OU_AND_PROGRAM:
+                binding.downloadLimitScope.setSelection(3);
+                limitScope = getString(R.string.settings_limit_ou_program);
+                break;
+            default:
+                binding.downloadLimitScope.setSelection(0);
+                limitScope = getString(R.string.settings_limit_globally);
+                break;
+        }
+
+        if (parameterSettings.getHasSpecificProgramSettings() > 0) {
+            binding.specificSettingsText.setVisibility(View.VISIBLE);
+            binding.specificSettingsButton.setVisibility(View.VISIBLE);
+            String quantityString = context.getResources()
+                    .getQuantityString(R.plurals.settings_specific_programs,
+                            parameterSettings.getHasSpecificProgramSettings());
+            SpannableString str = new SpannableString(String.format(quantityString,
+                    parameterSettings.getHasSpecificProgramSettings()));
+            int indexOfNumber = str.toString().indexOf(String.valueOf(parameterSettings.getHasSpecificProgramSettings()));
+            str.setSpan(new ForegroundColorSpan(ColorUtils.getPrimaryColor(context, ColorUtils.ColorType.PRIMARY)),
+                    indexOfNumber,
+                    indexOfNumber + 1,
+                    Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
+            binding.specificSettingsText.setText(str);
+            binding.specificSettingsButton.setOnClickListener(view ->
+                    startActivity(SettingsProgramActivity.Companion.getIntentActivity(context)));
+        } else {
+            binding.specificSettingsText.setVisibility(View.GONE);
+            binding.specificSettingsButton.setVisibility(View.GONE);
+        }
+
+        binding.downloadLimitScope.setAdapter(new ArrayAdapter<>(context, R.layout.spinner_settings_item,
+                context.getResources().getStringArray(R.array.download_limit_scope)));
+
+        if (parameterSettings.getLimitScopeIsEditable()) {
+            binding.downloadLimitScopeHint.setVisibility(View.VISIBLE);
+            binding.downloadLimitScope.setVisibility(View.VISIBLE);
+            binding.eventsInputLayout.setVisibility(View.VISIBLE);
+            binding.teiInputLayout.setVisibility(View.VISIBLE);
+            binding.parametersNoEdition.setVisibility(View.GONE);
+            setUpSyncParameterListeners();
+        } else {
+            binding.downloadLimitScopeHint.setVisibility(View.GONE);
+            binding.downloadLimitScope.setVisibility(View.GONE);
+            binding.eventsInputLayout.setVisibility(View.GONE);
+            binding.teiInputLayout.setVisibility(View.GONE);
+            binding.parametersNoEdition.setVisibility(View.VISIBLE);
+        }
+        binding.eventsEditText.setEnabled(parameterSettings.getEventNumberIsEditable());
+        binding.teiEditText.setEnabled(parameterSettings.getTeiNumberIsEditable());
+        binding.downloadLimitScope.setEnabled(parameterSettings.getLimitScopeIsEditable());
+
+        binding.parameterLayout.message.setText(
+                String.format(context.getString(R.string.event_tei_limits_v2),
+                        limitScope,
+                        eventCurrent, eventMax, teiCurrent, teiMax));
+    }
+
+    private void setUpSyncParameterListeners() {
+        binding.downloadLimitScope.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int position, long l) {
+                if (scopeLimitInit) {
+                    switch (position) {
+                        case 0:
+                        default:
+                            presenter.saveLimitScope(LimitScope.GLOBAL);
+                            break;
+                        case 1:
+                            presenter.saveLimitScope(LimitScope.PER_ORG_UNIT);
+                            break;
+                        case 2:
+                            presenter.saveLimitScope(LimitScope.PER_PROGRAM);
+                            break;
+                        case 3:
+                            presenter.saveLimitScope(LimitScope.PER_OU_AND_PROGRAM);
+                            break;
+                    }
+                } else {
+                    scopeLimitInit = true;
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+                /*do nothing*/
+            }
+        });
+
+        binding.eventsEditText.setOnEditorActionListener((view, actionId, keyEvent) -> {
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                ViewExtensionsKt.closeKeyboard(view);
+                if (!binding.eventsEditText.getText().toString().isEmpty()) {
+                    presenter.saveEventMaxCount(Integer.valueOf(binding.eventsEditText.getText().toString()));
+                }
+                return true;
+            } else {
+                return false;
+            }
+        });
+
+        binding.teiEditText.setOnEditorActionListener((view, actionId, keyEvent) -> {
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                if (!binding.teiEditText.getText().toString().isEmpty()) {
+                    ViewExtensionsKt.closeKeyboard(view);
+                    presenter.saveTeiMaxCount(Integer.valueOf(binding.teiEditText.getText().toString()));
+                }
+                return true;
+            } else {
+                return false;
+            }
+        });
+    }
+
+    @Override
+    public void setSMSSettings(SMSSettingsViewModel smsSettingsViewModel) {
+        binding.settingsSms.settingsSmsSwitch.setChecked(smsSettingsViewModel.isEnabled());
+        binding.settingsSms.settingsSmsReceiver.setText(smsSettingsViewModel.getGatewayNumber());
+        binding.settingsSms.settingsSmsResponseWaitSwitch.setChecked(smsSettingsViewModel.getWaitingForResponse());
+        binding.settingsSms.settingsSmsResultSender.setText(smsSettingsViewModel.getResponseNumber());
+        binding.settingsSms.settingsSmsResultTimeout.setText(String.format("%s", smsSettingsViewModel.getResponseTimeout()));
+        if (!binding.settingsSms.settingsSmsReceiver.getText().toString().isEmpty()) {
+            presenter.validateGatewayObservable(binding.settingsSms.settingsSmsReceiver.getText().toString());
+        }
+        boolean hasNetwork = NetworkUtils.isOnline(context);
+
+        binding.settingsSms.settingsSmsSwitch.setEnabled(hasNetwork);
+        binding.settingsSms.settingsSmsResponseWaitSwitch.setEnabled(hasNetwork);
+        binding.settingsSms.settingsSmsReceiver.setEnabled(hasNetwork && smsSettingsViewModel.isGatewayNumberEditable());
+        binding.settingsSms.settingsSmsResultSender.setEnabled(hasNetwork && smsSettingsViewModel.isResponseNumberEditable());
+        binding.settingsSms.settingsSmsResultTimeout.setEnabled(hasNetwork);
+
+        setUpSmsListeners();
+    }
+
+    private void setUpSmsListeners() {
+        binding.settingsSms.settingsSmsReceiver.setOnEditorActionListener((view, actionId, keyEvent) -> {
+            if (actionId == EditorInfo.IME_ACTION_DONE && !binding.settingsSms.settingsSmsReceiver.getText().toString().isEmpty()) {
+                ViewExtensionsKt.closeKeyboard(view);
+                presenter.saveGatewayNumber(binding.settingsSms.settingsSmsReceiver.getText().toString());
+                return true;
+            } else {
+                return false;
+            }
+        });
+
+        binding.settingsSms.settingsSmsResultSender.setOnEditorActionListener((view, actionId, keyEvent) -> {
+            if (actionId == EditorInfo.IME_ACTION_DONE && !binding.settingsSms.settingsSmsResultSender.getText().toString().isEmpty()) {
+                ViewExtensionsKt.closeKeyboard(view);
+                presenter.saveSmsResultSender(binding.settingsSms.settingsSmsResultSender.getText().toString());
+                return true;
+            } else {
+                return false;
+            }
+        });
+
+        binding.settingsSms.settingsSmsResultTimeout.setOnEditorActionListener((view, actionId, keyEvent) -> {
+            if (actionId == EditorInfo.IME_ACTION_DONE && !binding.settingsSms.settingsSmsResultTimeout.getText().toString().isEmpty()) {
+                ViewExtensionsKt.closeKeyboard(view);
+                presenter.saveSmsResponseTimeout(
+                        Integer.valueOf(binding.settingsSms.settingsSmsResultTimeout.getText().toString()));
+                return true;
+            } else {
+                return false;
+            }
+        });
+
+        binding.settingsSms.settingsSmsResponseWaitSwitch.setOnCheckedChangeListener((compoundButton, isChecked) -> {
+            if (!isChecked || !binding.settingsSms.settingsSmsResultSender.getText().toString().isEmpty()) {
+                presenter.saveWaitForSmsResponse(isChecked);
+            }
+        });
+
+        binding.settingsSms.settingsSmsSwitch.setOnCheckedChangeListener((compoundButton, isChecked) -> {
+            if (!isChecked || presenter.isGatewaySetAndValid(binding.settingsSms.settingsSmsReceiver.getText().toString())) {
+                presenter.enableSmsModule(isChecked);
+            }
+        });
+    }
+
+    @Override
+    public void setReservedValuesSettings(ReservedValueSettingsViewModel reservedValueSettingsViewModel) {
+        binding.reservedValueLayout.setMessage(
+                String.format("%s ", String.valueOf(reservedValueSettingsViewModel.getNumberOfReservedValuesToDownload()))
+                        .concat(getString(R.string.settings_reserved_values_message))
+        );
+        binding.reservedValuesInputLayout.setHint(getString(R.string.settings_reserved_values_message));
+        binding.reservedValueEditText.setText(String.valueOf(reservedValueSettingsViewModel.getNumberOfReservedValuesToDownload()));
+        binding.reservedValueEditText.setEnabled(reservedValueSettingsViewModel.getCanBeEdited());
+        if (reservedValueSettingsViewModel.getCanBeEdited()) {
+            binding.reservedValuesInputLayout.setVisibility(View.VISIBLE);
+            binding.reservedValueNoEdition.setVisibility(View.GONE);
+        } else {
+            binding.reservedValuesInputLayout.setVisibility(View.GONE);
+            binding.reservedValueNoEdition.setVisibility(View.VISIBLE);
+        }
+
+        binding.reservedValueEditText.setOnEditorActionListener((view, actionId, keyEvent) -> {
+            ViewExtensionsKt.closeKeyboard(view);
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                if (!binding.reservedValueEditText.getText().toString().isEmpty()) {
+                    presenter.saveReservedValues(Integer.valueOf(binding.reservedValueEditText.getText().toString()));
+                }
+                return true;
+            } else {
+                return false;
+            }
+        });
     }
 
     @Override
     public void requestNoEmptySMSGateway() {
-        ((TextInputLayout) binding.settingsSms.findViewById(R.id.settings_sms_receiver_layout)).setError(
-                binding.getRoot().getContext().getResources().getString(R.string.sms_empty_gateway)
-        );
+        binding.settingsSms.settingsSmsReceiverLayout.setError(
+                binding.getRoot().getContext().getResources().getString(R.string.sms_empty_gateway));
     }
 
     @Override
@@ -620,7 +799,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
         Snackbar.make(
                 binding.getRoot(),
                 R.string.sms_downloading_data,
-                Snackbar.LENGTH_SHORT).show();
+                BaseTransientBottomBar.LENGTH_SHORT).show();
     }
 
     @Override
@@ -628,68 +807,25 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
         Snackbar.make(
                 binding.getRoot(),
                 isChecked ? R.string.sms_enabled : R.string.sms_disabled,
-                Snackbar.LENGTH_SHORT).show();
-    }
-
-    private boolean isGatewaySetAndValid() {
-        String gateway =
-                ((EditText) binding.settingsSms.findViewById(R.id.settings_sms_receiver)).getText().toString();
-        return presenter.isGatewaySetAndValid(gateway);
-    }
-
-    private Boolean checkSMSPermissions(boolean requestPermission) {
-        // check permissions
-        String[] smsPermissions = new String[]{
-                Manifest.permission.ACCESS_NETWORK_STATE,
-                Manifest.permission.READ_PHONE_STATE,
-                Manifest.permission.SEND_SMS,
-                Manifest.permission.RECEIVE_SMS,
-                Manifest.permission.READ_SMS
-        };
-
-        if (!hasPermissions(smsPermissions)) {
-            if (requestPermission) {
-                requestPermissions(smsPermissions, SMS_PERMISSIONS_REQ_ID);
-            }
-            return false;
-        }
-        return true;
-    }
-
-    private Boolean hasPermissions(String[] permissions) {
-        for (String permission : permissions) {
-            if (ContextCompat.checkSelfPermission(context, permission)
-                    != PackageManager.PERMISSION_GRANTED) {
-                return false;
-            }
-        }
-        return true;
+                BaseTransientBottomBar.LENGTH_SHORT).show();
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if (requestCode == SMS_PERMISSIONS_REQ_ID && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            if (checkSMSPermissions(false))
-                presenter.smsSwitch(true);
-        } else {
-            presenter.smsSwitch(false);
-        }
+    public void displaySmsEnableError() {
+        binding.settingsSms.settingsSmsSwitch.setChecked(false);
     }
 
-    private void setNetworkEdition(boolean isOnline) {
-        for (int i = 0; i < binding.dataRadioGroup.getChildCount(); i++) {
-            binding.dataRadioGroup.getChildAt(i).setEnabled(isOnline);
-        }
-        for (int i = 0; i < binding.metaRadioGroup.getChildCount(); i++) {
-            binding.metaRadioGroup.getChildAt(i).setEnabled(isOnline);
-        }
-        binding.buttonSyncData.setEnabled(isOnline);
-        binding.buttonSyncData.setAlpha(isOnline ? 1.0f : 0.5f);
-        binding.buttonSyncMeta.setAlpha(isOnline ? 1.0f : 0.5f);
-        binding.settingsSms.findViewById(R.id.settings_sms_switch).setEnabled(isOnline);
-        binding.settingsSms.findViewById(R.id.settings_sms_response_wait_switch).setEnabled(isOnline);
-        binding.settingsSms.findViewById(R.id.settings_sms_receiver).setEnabled(isOnline);
-        binding.settingsSms.findViewById(R.id.settings_sms_result_sender).setEnabled(isOnline);
-        binding.settingsSms.findViewById(R.id.settings_sms_result_timeout).setEnabled(isOnline);
+    private void checkSyncDataButtonStatus() {
+        boolean isOnline = NetworkUtils.isOnline(context);
+        boolean canBeClicked = isOnline && !dataWorkRunning;
+        binding.buttonSyncData.setEnabled(canBeClicked);
+        binding.buttonSyncData.setClickable(canBeClicked);
+    }
+
+    private void checkSyncMetaButtonStatus() {
+        boolean isOnline = NetworkUtils.isOnline(context);
+        boolean canBeClicked = isOnline && !metadataInit;
+        binding.buttonSyncMeta.setEnabled(canBeClicked);
+        binding.buttonSyncMeta.setClickable(canBeClicked);
     }
 }

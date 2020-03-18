@@ -10,6 +10,7 @@ import org.dhis2.utils.Constants;
 import org.dhis2.utils.analytics.AnalyticsHelper;
 import org.dhis2.utils.filters.FilterManager;
 import org.hisp.dhis.android.core.common.Unit;
+import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.program.Program;
 
 import java.util.HashMap;
@@ -265,6 +266,28 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
             view.showTabsAndEnableSwipe();
         }
     }
+
+    @Override
+    public EnrollmentStatus getEnrollmentStatus(String enrollmentUid) {
+        return dashboardRepository.getEnrollmentStatus(enrollmentUid);
+    }
+
+    @Override
+    public void updateEnrollmentStatus(String enrollmentUid, EnrollmentStatus status) {
+        compositeDisposable.add(
+                dashboardRepository.updateEnrollmentStatus(enrollmentUid, status)
+                .subscribeOn(schedulerProvider.io())
+                .observeOn(schedulerProvider.ui())
+                .subscribe(updated -> {
+                    if (updated) {
+                        view.updateStatus();
+                    } else {
+                        view.displayMessage("There was an error updating the status");
+                    }
+                }, Timber::e)
+        );
+    }
+
 
 
     private Map<String, Boolean> getGrouping() {

@@ -92,6 +92,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
 
     private MutableLiveData<Boolean> groupByStage;
     private MutableLiveData<Boolean> filtersShowing;
+    private MutableLiveData<String> currentEnrollment;
 
     public static Intent intent(Context context,
                                 String teiUid,
@@ -124,6 +125,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
         super.onCreate(savedInstanceState);
         groupByStage = new MutableLiveData<>(presenter.getProgramGrouping());
         filtersShowing = new MutableLiveData<>(false);
+        currentEnrollment = new MutableLiveData<>();
         dashboardViewModel = ViewModelProviders.of(this).get(DashboardViewModel.class);
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_dashboard_mobile);
@@ -338,6 +340,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
 
         binding.executePendingBindings();
         this.programModel = program;
+        this.enrollmentUid = program.getCurrentEnrollment().uid();
 
         if (OrientationUtilsKt.isLandscape()) {
             if (binding.teiTablePager.getAdapter() == null) {
@@ -548,9 +551,27 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
             Timber.e(e);
         }
 
-        popupMenu.getMenuInflater().inflate(
-                groupByStage.getValue() ? R.menu.dashboard_menu_group : R.menu.dashboard_menu,
-                popupMenu.getMenu());
+        int menu;
+        if(enrollmentUid == null) {
+            menu = R.menu.dashboard_tei_menu;
+        } else if (groupByStage.getValue()){
+            menu = R.menu.dashboard_menu_group;
+        } else {
+            menu = R.menu.dashboard_menu;
+        }
+        popupMenu.getMenuInflater().inflate(menu, popupMenu.getMenu());
+
+        if(enrollmentUid != null) {
+            EnrollmentStatus status = presenter.getEnrollmentStatus(enrollmentUid);
+            if (status == EnrollmentStatus.COMPLETED) {
+                popupMenu.getMenu().findItem(R.id.complete).setVisible(false);
+            } else if (status == EnrollmentStatus.CANCELLED) {
+                popupMenu.getMenu().findItem(R.id.deactivate).setVisible(false);
+            } else {
+                popupMenu.getMenu().findItem(R.id.activate).setVisible(false);
+            }
+        }
+
         popupMenu.setOnMenuItemClickListener(item -> {
             switch (item.getItemId()) {
                 case R.id.showHelp:
@@ -571,6 +592,15 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
                     break;
                 case R.id.showTimeline:
                     groupByStage.setValue(false);
+                    break;
+                case R.id.complete:
+                    presenter.updateEnrollmentStatus(enrollmentUid, EnrollmentStatus.COMPLETED);
+                    break;
+                case R.id.activate:
+                    presenter.updateEnrollmentStatus(enrollmentUid, EnrollmentStatus.ACTIVE);
+                    break;
+                case R.id.deactivate:
+                    presenter.updateEnrollmentStatus(enrollmentUid, EnrollmentStatus.CANCELLED);
                     break;
             }
             return true;
@@ -623,5 +653,14 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
     public void showTabsAndEnableSwipe() {
         binding.tabLayout.setVisibility(View.VISIBLE);
         binding.teiPager.setUserInputEnabled(true);
+    }
+
+    @Override
+    public void updateStatus() {
+        currentEnrollment.setValue(programModel.getCurrentEnrollment().uid());
+    }
+
+    public LiveData<String> updatedEnrollment() {
+        return currentEnrollment;
     }
 }

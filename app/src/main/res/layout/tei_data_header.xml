@@ -12,10 +12,19 @@
             android:id="@+id/tei_image"
             android:layout_width="40dp"
             android:layout_height="40dp"
+            android:layout_marginEnd="16dp"
             android:background="@drawable/photo_temp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:ignore="ContentDescription" />
+
+        <View
+            android:id="@+id/imageSeparator"
+            android:layout_width="16dp"
+            android:layout_height="40dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@id/tei_image"
+            app:layout_constraintTop_toTopOf="parent" />
 
 
         <TextView
@@ -23,10 +32,10 @@
             style="@style/TextPrimary"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
             android:textColor="@color/text_black_333"
-            android:textSize="14sp"
-            app:layout_constraintStart_toEndOf="@id/tei_image"
+            android:textSize="17sp"
+            app:layout_constraintStart_toEndOf="@id/imageSeparator"
+            app:layout_constraintBottom_toTopOf="@id/secundary_attribute"
             app:layout_constraintTop_toTopOf="parent"
             tools:text="Sarah Thompson" />
 
@@ -34,11 +43,12 @@
             android:id="@+id/secundary_attribute"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
             android:textColor="#8A333333"
-            android:textSize="12sp"
-            app:layout_constraintStart_toEndOf="@id/tei_image"
+            android:textSize="10sp"
+            app:layout_constraintStart_toEndOf="@id/imageSeparator"
             app:layout_constraintTop_toBottomOf="@id/main_attributes"
+            app:layout_constraintBottom_toBottomOf="parent"
             tools:text="343984738R" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

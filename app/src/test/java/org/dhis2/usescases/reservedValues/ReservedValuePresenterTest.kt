@@ -8,6 +8,7 @@ import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.BackpressureStrategy
 import io.reactivex.Flowable
 import io.reactivex.Observable
+import io.reactivex.Single
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.dhis2.usescases.reservedValue.ReservedValueContracts
 import org.dhis2.usescases.reservedValue.ReservedValueModel
@@ -18,6 +19,9 @@ import org.hisp.dhis.android.core.arch.call.D2Progress
 import org.hisp.dhis.android.core.maintenance.D2Error
 import org.hisp.dhis.android.core.maintenance.D2ErrorCode
 import org.hisp.dhis.android.core.maintenance.D2ErrorComponent
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
+import org.hisp.dhis.android.core.trackedentity.ReservedValueSummary
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute
 import org.junit.Before
 import org.junit.Test
 
@@ -41,18 +45,18 @@ class ReservedValuePresenterTest {
     @Test
     fun `Should init sucessfully and show reserved values`() {
         val dataElements = dummyDataElements()
-        whenever(repository.dataElements) doReturn dummyDataElements()
+        whenever(repository.reservedValues) doReturn dummyDataElements()
 
         reservedValuePresenter.init()
 
-        verify(view).setReservedValues(dataElements?.blockingFirst())
+        verify(view).setReservedValues(dataElements?.blockingGet())
     }
 
     @Test
-    fun `Should download reserverd values when refill is clicked`() {
+    fun `Should download reserved values when refill is clicked`() {
         whenever(
             d2.trackedEntityModule().reservedValueManager().downloadReservedValues(
-                "any",
+                "attr",
                 100
             )
         ) doReturn dummyD2Progress
@@ -67,7 +71,7 @@ class ReservedValuePresenterTest {
     fun `Should catch exception D2 when error happens during download`() {
         whenever(
             d2.trackedEntityModule().reservedValueManager().downloadReservedValues(
-                "any",
+                "attr",
                 100
             )
         ) doReturn D2Error()
@@ -81,7 +85,7 @@ class ReservedValuePresenterTest {
     fun `Should not catch exception random when error happens during download`() {
         whenever(
             d2.trackedEntityModule().reservedValueManager().downloadReservedValues(
-                "any",
+                "attr",
                 100
             )
         ) doReturn Observable.error(Throwable("random"))
@@ -112,7 +116,17 @@ class ReservedValuePresenterTest {
         )
 
     private fun dummyReservedValueModel() =
-        ReservedValueModel.create("any", "any", true, "any", "any", 1599)
+        ReservedValueSummary.create(
+            TrackedEntityAttribute.builder()
+                .uid("attr")
+                .displayName("attrName")
+                .build(),
+            OrganisationUnit.builder()
+                .uid("org")
+                .displayName("orgUnitName")
+                .build(),
+            3
+        )
 
     private fun D2Error(): Observable<D2Progress> {
         return Observable.error(
@@ -124,9 +138,19 @@ class ReservedValuePresenterTest {
         )
     }
 
-    private fun dummyDataElements(): Flowable<MutableList<ReservedValueModel>>? {
+    private fun dummyDataElements(): Single<MutableList<ReservedValueSummary>>? {
         val reservedValue =
-            ReservedValueModel.create("any", "other", true, "arg", "none", 1)
-        return Observable.just(mutableListOf(reservedValue)).toFlowable(BackpressureStrategy.LATEST)
+            ReservedValueSummary.create(
+                TrackedEntityAttribute.builder()
+                    .uid("attr")
+                    .displayName("attrName")
+                    .build(),
+                OrganisationUnit.builder()
+                    .uid("org")
+                    .displayName("orgUnitName")
+                    .build(),
+                3
+            )
+        return Single.just(mutableListOf(reservedValue))
     }
 }

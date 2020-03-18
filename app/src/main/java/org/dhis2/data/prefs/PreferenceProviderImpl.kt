@@ -125,8 +125,8 @@ open class PreferenceProviderImpl(val context: Context) : PreferenceProvider {
 
     override fun areSameCredentials(serverUrl: String, userName: String, pass: String): Boolean {
         return SecurePreferences.getStringValue(context, SECURE_SERVER_URL, "") == serverUrl &&
-                SecurePreferences.getStringValue(context, SECURE_USER_NAME, "") == userName &&
-                SecurePreferences.getStringValue(context, SECURE_PASS, "") == pass
+            SecurePreferences.getStringValue(context, SECURE_USER_NAME, "") == userName &&
+            SecurePreferences.getStringValue(context, SECURE_PASS, "") == pass
     }
 
     override fun saveJiraCredentials(jiraAuth: String): String {

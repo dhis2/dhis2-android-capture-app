@@ -9,6 +9,7 @@ import org.dhis2.databinding.ActivityReservedValueBinding;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.customviews.CustomDialog;
+import org.hisp.dhis.android.core.trackedentity.ReservedValueSummary;
 
 import java.util.List;
 
@@ -35,7 +36,7 @@ public class ReservedValueActivity extends ActivityGlobalAbstract implements Res
     }
 
     @Override
-    public void setReservedValues(List<ReservedValueModel> reservedValueModels) {
+    public void setReservedValues(List<ReservedValueSummary> reservedValueModels) {
         if (reservedBinding.recycler.getAdapter() == null) {
             reservedBinding.recycler.setAdapter(adapter);
         }

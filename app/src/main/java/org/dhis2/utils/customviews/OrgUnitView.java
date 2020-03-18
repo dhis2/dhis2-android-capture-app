@@ -140,6 +140,8 @@ public class OrgUnitView extends FieldLayout implements OrgUnitCascadeDialog.Cas
             inputLayout.setHint(this.label);
             binding.setVariable(BR.label, this.label);
         }
+
+        binding.setVariable(BR.fieldHint,getContext().getString(R.string.choose_ou));
     }
 
     public void setDescription(String description) {

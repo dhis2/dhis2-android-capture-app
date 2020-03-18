@@ -107,6 +107,7 @@ public class EditTextCustomHolder extends FormViewHolder {
         }
         label = new StringBuilder(model.label());
         binding.customEdittext.setLabel(model.label(), model.mandatory());
+        binding.customEdittext.setHint(editTextModel.hint());
         descriptionText = model.description();
         binding.customEdittext.setDescription(descriptionText);
 
@@ -172,11 +173,6 @@ public class EditTextCustomHolder extends FormViewHolder {
         }.getType();
 
         return gson.fromJson(json, type);
-    }
-
-
-    public void dispose() {
-
     }
 
     private void setLongClick() {

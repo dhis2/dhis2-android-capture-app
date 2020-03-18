@@ -13,12 +13,17 @@ import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactoryImpl;
 import org.dhis2.data.forms.dataentry.fields.image.ImageHolder;
+import org.dhis2.data.forms.dataentry.fields.image.ImageViewModel;
+import org.dhis2.data.forms.dataentry.fields.option_set.OptionSetViewModel;
 import org.dhis2.data.forms.dataentry.fields.orgUnit.OrgUnitViewModel;
+import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.Result;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper;
+import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope;
 import org.hisp.dhis.android.core.category.CategoryOption;
+import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
 import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.common.ObjectWithUid;
 import org.hisp.dhis.android.core.common.ValueType;
@@ -30,6 +35,7 @@ import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.maintenance.D2Error;
 import org.hisp.dhis.android.core.option.Option;
+import org.hisp.dhis.android.core.option.OptionGroup;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.program.ProgramRule;
@@ -59,7 +65,6 @@ import java.util.Map;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
-import kotlin.random.Random;
 
 import static android.text.TextUtils.isEmpty;
 
@@ -83,7 +88,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
     private RuleEvent.Builder eventBuilder;
     private List<FieldViewModel> sectionFields;
 
-    public EventCaptureRepositoryImpl(Context context, FormRepository formRepository, String eventUid, D2 d2) {
+    public EventCaptureRepositoryImpl(FieldViewModelFactory fieldFactory, FormRepository formRepository, String eventUid, D2 d2) {
         this.eventUid = eventUid;
         this.formRepository = formRepository;
         this.d2 = d2;
@@ -102,16 +107,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                 .organisationUnit(currentEvent.organisationUnit())
                 .organisationUnitCode(ou.code());
 
-        fieldFactory = new FieldViewModelFactoryImpl(
-                context.getString(R.string.enter_text),
-                context.getString(R.string.enter_long_text),
-                context.getString(R.string.enter_number),
-                context.getString(R.string.enter_integer),
-                context.getString(R.string.enter_positive_integer),
-                context.getString(R.string.enter_negative_integer),
-                context.getString(R.string.enter_positive_integer_or_zero),
-                context.getString(R.string.filter_options),
-                context.getString(R.string.choose_date));
+        this.fieldFactory = fieldFactory;
 
         isEventEditable = isEventExpired(eventUid);
 
@@ -287,10 +283,10 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
         for (FieldViewModel fieldViewModel : fieldViewModels) {
 
             ProgramStageSectionRenderingType renderingType = renderingType(fieldViewModel.programStageSection());
-            if (!isEmpty(fieldViewModel.optionSet()) && renderingType != ProgramStageSectionRenderingType.LISTING) {
+            if (fieldViewModel instanceof ImageViewModel && !isEmpty(fieldViewModel.optionSet()) && renderingType != ProgramStageSectionRenderingType.LISTING) {
                 List<Option> options = d2.optionModule().options().byOptionSetUid().eq(fieldViewModel.optionSet() == null ? "" : fieldViewModel.optionSet())
+                        .orderBySortOrder(RepositoryScope.OrderByDirection.ASC)
                         .blockingGet();
-                Collections.sort(options, (one, two) -> one.sortOrder().compareTo(two.sortOrder()));
                 for (Option option : options) {
                     ValueTypeDeviceRendering fieldRendering = null;
 
@@ -303,11 +299,15 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
 
                     renderList.add(fieldFactory.create(
                             fieldViewModel.uid() + "." + option.uid(),
-                            option.displayName() + ImageHolder.NAME_CODE_DELIMITATOR + option.code(), ValueType.TEXT, false,
+                            option.displayName() + ImageViewModel.NAME_CODE_DELIMITATOR + option.code(), ValueType.TEXT, false,
                             fieldViewModel.optionSet(), fieldViewModel.value(), fieldViewModel.programStageSection(),
                             fieldViewModel.allowFutureDate(), fieldViewModel.editable() == null ? false : fieldViewModel.editable(), renderingType, fieldViewModel.description(), fieldRendering, options.size(), objectStyle, fieldViewModel.fieldMask()));
 
                 }
+            } else if (fieldViewModel instanceof OptionSetViewModel) {
+                List<Option> options = d2.optionModule().options().byOptionSetUid().eq(fieldViewModel.optionSet() == null ? "" : fieldViewModel.optionSet())
+                        .blockingGet();
+                renderList.add(((OptionSetViewModel) fieldViewModel).withOptions(options));
             } else
                 renderList.add(fieldViewModel);
         }
@@ -590,6 +590,20 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
     @Override
     public Single<Integer> getNoteCount() {
         return d2.noteModule().notes().byEventUid().eq(eventUid).count();
+    }
+
+    @Override
+    public List<String> getOptionsFromGroups(List<String> optionGroupUids) {
+        List<String> optionsFromGroups = new ArrayList<>();
+        List<OptionGroup> optionGroups = d2.optionModule().optionGroups().withOptions().byUid().in(optionGroupUids).blockingGet();
+        for (OptionGroup optionGroup : optionGroups) {
+            for (ObjectWithUid option : optionGroup.options()) {
+                if (!optionsFromGroups.contains(option.uid())) {
+                    optionsFromGroups.add(option.uid());
+                }
+            }
+        }
+        return optionsFromGroups;
     }
 }
 

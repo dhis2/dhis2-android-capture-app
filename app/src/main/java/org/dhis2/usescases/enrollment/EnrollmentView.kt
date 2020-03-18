@@ -17,12 +17,12 @@ interface EnrollmentView : AbstractActivityContracts.View {
 
     fun setSaveButtonVisible(visible: Boolean)
 
-    fun displayTeiInfo(attrList: List<String>,profileImage:String)
+    fun displayTeiInfo(attrList: List<String>, profileImage: String)
     fun rowActions(): Flowable<RowAction>
     fun openEvent(eventUid: String)
     fun openDashboard(enrollmentUid: String)
     fun goBack()
-    fun showMissingMandatoryFieldsMessage(emptyMandatoryFields: List<String>)
+    fun showMissingMandatoryFieldsMessage(emptyMandatoryFields: MutableMap<String, String>)
     fun showErrorFieldsMessage(errorFields: List<String>)
     fun sectionFlowable(): Flowable<String>
     fun setSelectedSection(selectedSection: String)

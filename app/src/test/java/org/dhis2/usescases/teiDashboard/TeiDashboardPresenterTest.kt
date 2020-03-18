@@ -6,6 +6,7 @@ import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
+import com.nhaarman.mockitokotlin2.verifyNoMoreInteractions
 import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Flowable
 import io.reactivex.Observable
@@ -23,6 +24,7 @@ import org.dhis2.utils.analytics.DELETE_ENROLL
 import org.dhis2.utils.analytics.DELETE_TEI
 import org.dhis2.utils.filters.FilterManager
 import org.hisp.dhis.android.core.enrollment.Enrollment
+import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
 import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.program.Program
@@ -388,4 +390,36 @@ class TeiDashboardPresenterTest {
 
         verify(view).showTabsAndEnableSwipe()
     }
+
+    @Test
+    fun `Should return the status of the enrollment`() {
+        presenter.getEnrollmentStatus("uid")
+
+        verify(repository).getEnrollmentStatus(any())
+    }
+
+    @Test
+    fun `Should update the status of the enrollment`(){
+        whenever(
+            repository.updateEnrollmentStatus("uid", EnrollmentStatus.COMPLETED)
+        ) doReturn Observable.just(true)
+
+        presenter.updateEnrollmentStatus("uid", EnrollmentStatus.COMPLETED)
+
+        verify(view).updateStatus()
+        verifyNoMoreInteractions(view)
+    }
+
+    @Test
+    fun `Should show error message when updating the status of the enrollment returns an error`() {
+        whenever(
+            repository.updateEnrollmentStatus("uid", EnrollmentStatus.COMPLETED)
+        ) doReturn Observable.just(false)
+
+        presenter.updateEnrollmentStatus("uid", EnrollmentStatus.COMPLETED)
+
+        verify(view).displayMessage(any())
+        verifyNoMoreInteractions(view)
+    }
+
 }

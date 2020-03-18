@@ -99,8 +99,6 @@
     <string name="completed">Completado</string>
     <string name="cancelled">Cancelar</string>
     <string name="re_open">Reabrir</string>
-    <string name="activate">Activar</string>
-
     <!-- State -->
     <string name="state_synced">Sincronizado</string>
     <string name="state_to_post">Para enviar</string>
@@ -447,7 +445,6 @@
     <string name="finish_add_new"><![CDATA[Acabar y añadir]]></string>
     <string name="finish">Acabar</string>
     <string name="error_fields_title">Campos con errores</string>
-    <string name="error_fields_events">Algunos campos tienen errores. No se han guardado, revíselos.</string>
     <string name="event_reopened">Ahora puede editar este evento</string>
     <string name="unique_warning">El valor debe ser único, se ha encontrado una coincidencia. El campo no se ha guardado, revíselo.</string>
     <string name="please_wait">Por favor, espere</string>

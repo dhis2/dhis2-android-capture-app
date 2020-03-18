@@ -45,10 +45,6 @@ import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.Geometry
 import timber.log.Timber
 
-/**
- * Created by Cristian on 15/03/2018.
- */
-
 class MapSelectorActivity :
     ActivityGlobalAbstract(),
     MapActivityLocationCallback.OnLocationChanged {
@@ -386,13 +382,10 @@ class MapSelectorActivity :
         ) != PackageManager.PERMISSION_GRANTED
         ) {
             // Should we show an explanation?
-            /*if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_COARSE_LOCATION)) {
-                // TODO CRIS
-                // Show an expanation to the user *asynchronously* -- don't block
-                // this thread waiting for the user's response! After the user
-                // sees the explanation, try again to request the permission.
-
-            }*/
+            // TODO CRIS
+            // Show an explanation to the user *asynchronously* -- don't block
+            // this thread waiting for the user's response! After the user
+            // sees the explanation, try again to request the permission.
             ActivityCompat.requestPermissions(
                 this,
                 arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION),
@@ -400,18 +393,6 @@ class MapSelectorActivity :
             )
             return
         }
-
-        /* mFusedLocationClient.lastLocation.addOnSuccessListener { location ->
-             if (location != null) {
-                 map.animateCamera(CameraUpdateFactory.newLatLngZoom(LatLng(location.latitude, location.longitude), 13.0))
-
-                 val cameraPosition = CameraPosition.Builder()
-                         .target(LatLng(location.latitude, location.longitude))      // Sets the center of the map to location user
-                         .zoom(15.0)                   // Sets the zoom
-                         .build()                   // Creates a CameraPosition from the builder
-                 map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition))
-             }
-         }*/
     }
 
     override fun onRequestPermissionsResult(
@@ -423,20 +404,19 @@ class MapSelectorActivity :
         when (requestCode) {
             ACCESS_COARSE_LOCATION_PERMISSION_REQUEST -> {
                 // If request is cancelled, the result arrays are empty.
-                if (grantResults.size > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    centerMapOnCurrentLocation()
-                } else {
-                    // TODO CRIS
+                if (grantResults.isNotEmpty() &&
+                    grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    enableLocationComponent()
                 }
             }
         }
     }
 
     companion object {
-        private val ACCESS_COARSE_LOCATION_PERMISSION_REQUEST = 102
-        val DATA_EXTRA = "data_extra"
-        val LOCATION_TYPE_EXTRA = "LOCATION_TYPE_EXTRA"
-        val INITIAL_GEOMETRY_COORDINATES = "INITIAL_DATA"
+        const val ACCESS_COARSE_LOCATION_PERMISSION_REQUEST = 102
+        const val DATA_EXTRA = "data_extra"
+        const val LOCATION_TYPE_EXTRA = "LOCATION_TYPE_EXTRA"
+        const val INITIAL_GEOMETRY_COORDINATES = "INITIAL_DATA"
 
         fun create(activity: Activity, locationType: FeatureType): Intent {
             val intent = Intent(activity, MapSelectorActivity::class.java)

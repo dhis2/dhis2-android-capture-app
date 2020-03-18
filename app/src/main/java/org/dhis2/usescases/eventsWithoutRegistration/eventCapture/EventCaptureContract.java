@@ -63,6 +63,8 @@ public class EventCaptureContract {
         void showEventIntegrityAlert();
 
         void updateNoteBadge(int numberOfNotes);
+
+        void showLoopWarning();
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter {
@@ -163,6 +165,8 @@ public class EventCaptureContract {
         Observable<Boolean> isCompletedEventExpired(String eventUid);
 
         Single<Integer> getNoteCount();
+
+        List<String> getOptionsFromGroups(List<String> optionGroupUids);
     }
 
 }

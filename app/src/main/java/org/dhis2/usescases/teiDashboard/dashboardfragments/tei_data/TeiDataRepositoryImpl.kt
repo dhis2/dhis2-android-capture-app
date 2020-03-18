@@ -37,7 +37,6 @@ class TeiDataRepositoryImpl(
         eventStatusFilters: MutableList<EventStatus>,
         catOptComboFilters: MutableList<CategoryOptionCombo>
     ): Single<List<EventViewModel>> {
-
         var eventRepo = d2.eventModule().events().byEnrollmentUid().eq(enrollmentUid)
 
         eventRepo = eventRepo.applyFilters(
@@ -73,7 +72,6 @@ class TeiDataRepositoryImpl(
     }
 
     override fun enrollingOrgUnit(): Single<OrganisationUnit> {
-
         return if (programUid == null) {
             getTrackedEntityInstance()
                 .map { it.organisationUnit() }
@@ -102,9 +100,11 @@ class TeiDataRepositoryImpl(
                         .byDeleted().isFalse
                         .byProgramStageUid().eq(programStage.uid())
                         .blockingGet()
-                    eventList.sortWith(Comparator { event1, event2 ->
-                        event2.primaryDate().compareTo(event1.primaryDate())
-                    })
+                    eventList.sortWith(
+                        Comparator { event1, event2 ->
+                            event2.primaryDate().compareTo(event1.primaryDate())
+                        }
+                    )
 
                     eventViewModels.add(
                         EventViewModel(
@@ -113,7 +113,8 @@ class TeiDataRepositoryImpl(
                             null,
                             eventList.size,
                             if (eventList.isEmpty()) null else eventList[0].lastUpdated(),
-                            programStage.uid() == selectedStage && checkAddEvent()
+                            programStage.uid() == selectedStage,
+                            checkAddEvent()
                         )
                     )
                     if (selectedStage != null && selectedStage == programStage.uid()) {
@@ -125,27 +126,30 @@ class TeiDataRepositoryImpl(
                                     event,
                                     0,
                                     null,
-                                    true
+                                    isSelected = true,
+                                    canAddNewEvent = true
                                 )
                             )
                         }
                     }
-
                 }
                 eventViewModels
             }
-
     }
 
-    private fun getTimelineEvents(eventRepository: EventCollectionRepository): Single<List<EventViewModel>> {
+    private fun getTimelineEvents(
+        eventRepository: EventCollectionRepository
+    ): Single<List<EventViewModel>> {
         val eventViewModels = mutableListOf<EventViewModel>()
         return eventRepository
             .byDeleted().isFalse
             .get()
             .map { eventList ->
-                eventList.sortWith(Comparator { event1, event2 ->
-                    event2.primaryDate().compareTo(event1.primaryDate())
-                })
+                eventList.sortWith(
+                    Comparator { event1, event2 ->
+                        event2.primaryDate().compareTo(event1.primaryDate())
+                    }
+                )
                 checkEventStatus(eventList).forEach { event ->
                     val stageUid = d2.programModule().programStages()
                         .uid(event.programStage())
@@ -157,13 +161,13 @@ class TeiDataRepositoryImpl(
                             event,
                             0,
                             null,
-                            true
+                            isSelected = true,
+                            canAddNewEvent = true
                         )
                     )
                 }
                 eventViewModels
             }
-
     }
 
     private fun checkEventStatus(events: List<Event>): List<Event> {
@@ -180,8 +184,7 @@ class TeiDataRepositoryImpl(
     }
 
     private fun checkAddEvent(): Boolean {
-        val enrollment =  d2.enrollmentModule().enrollments().uid(enrollmentUid).blockingGet()
-        return !(enrollment==null || enrollment.status() != EnrollmentStatus.ACTIVE)
+        val enrollment = d2.enrollmentModule().enrollments().uid(enrollmentUid).blockingGet()
+        return !(enrollment == null || enrollment.status() != EnrollmentStatus.ACTIVE)
     }
-
 }

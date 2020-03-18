@@ -33,6 +33,9 @@ class Preference {
         const val DEFAULT_CAT_COMBO = "DEFAULT_CAT_COMB"
         const val PREF_DEFAULT_CAT_OPTION_COMBO = "PREF_DEFAULT_CAT_OPTION_COMBO"
 
+        const val NUMBER_RV = "pref_rv"
+        const val DEFAULT_NUMBER_RV = 100
+
         const val GROUPING = "GROUPING"
     }
 }

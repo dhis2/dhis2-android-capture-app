@@ -155,7 +155,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
             presenter.onGroupingChanged(group);
         });
         activity.observeFilters().observe(this, showFilters -> showHideFilters(showFilters));
-
+        activity.updatedEnrollment().observe(this, enrollmentUid -> updateEnrollment(enrollmentUid) );
         filtersAdapter = new FiltersAdapter(FiltersAdapter.ProgramType.TRACKER);
         filtersAdapter.addEventStatus();
 
@@ -187,6 +187,15 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
         return binding.getRoot();
     }
 
+    private void updateEnrollment(String enrollmentUid) {
+        presenter.getEnrollment(enrollmentUid);
+    }
+
+    @Override
+    public void setEnrollment(Enrollment enrollment) {
+        binding.setEnrollment(enrollment);
+    }
+
     @Override
     public void onResume() {
         super.onResume();
@@ -206,7 +215,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
         binding.setProgram(program);
         binding.setEnrollment(enrollment);
         if (enrollment != null) {
-            followUp.set(enrollment.followUp());
+            followUp.set(enrollment.followUp() != null ? enrollment.followUp() : false);
         }
         binding.setFollowup(followUp);
     }
@@ -271,7 +280,6 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
     public Flowable<String> observeStageSelection(Program currentProgram, Enrollment currentEnrollment) {
         if (adapter == null) {
             adapter = new EventAdapter(presenter, currentProgram, currentEnrollment);
-            //TODO: Add header itemDecoration(requires ANDROAPP-656 to be merge)
             binding.teiRecycler.setAdapter(adapter);
         }
         return adapter.stageSelector();
@@ -524,7 +532,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
         bundle.putString(ENROLLMENT_UID, dashboardModel.getCurrentEnrollment().uid());
         bundle.putString(EVENT_CREATION_TYPE, eventCreationType.name());
         bundle.putBoolean(EVENT_REPEATABLE, programStage.repeatable());
-        bundle.putSerializable(EVENT_PERIOD_TYPE, programStage.periodType() != null ? programStage.periodType().name() : null);
+        bundle.putSerializable(EVENT_PERIOD_TYPE, programStage.periodType());
         bundle.putString(Constants.PROGRAM_STAGE_UID, programStage.uid());
         bundle.putInt(EVENT_SCHEDULE_INTERVAL, programStage.standardInterval() != null ? programStage.standardInterval() : 0);
         intent.addFlags(Intent.FLAG_ACTIVITY_FORWARD_RESULT);

@@ -12,6 +12,7 @@ import org.dhis2.R;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.databinding.ItemErrorDialogBinding;
 import org.hisp.dhis.android.core.imports.TrackerImportConflict;
+import org.hisp.dhis.android.core.maintenance.D2Error;
 
 import java.util.List;
 
@@ -24,11 +25,11 @@ import io.reactivex.processors.PublishProcessor;
 
 public class ErrorAdapter extends RecyclerView.Adapter<ErrorViewHolder> {
 
-    private final List<TrackerImportConflict> data;
+    private final List<D2Error> data;
     private final ObservableBoolean sharing;
-    private FlowableProcessor<Pair<Boolean, TrackerImportConflict>> processor;
+    private FlowableProcessor<Pair<Boolean, D2Error>> processor;
 
-    public ErrorAdapter(List<TrackerImportConflict> data, ObservableBoolean sharing) {
+    public ErrorAdapter(List<D2Error> data, ObservableBoolean sharing) {
         this.processor = PublishProcessor.create();
         this.data = data;
         this.sharing = sharing;
@@ -52,7 +53,7 @@ public class ErrorAdapter extends RecyclerView.Adapter<ErrorViewHolder> {
     }
 
     @NonNull
-    public FlowableProcessor<Pair<Boolean, TrackerImportConflict>> asFlowable() {
+    public FlowableProcessor<Pair<Boolean, D2Error>> asFlowable() {
         return processor;
     }
 }

@@ -261,6 +261,10 @@ public class CustomTextView extends FieldLayout {
         }
     }
 
+    public void setHint(String hint){
+        binding.setVariable(BR.fieldHint, hint);
+    }
+
     public TextInputAutoCompleteTextView getEditText() {
         return editText;
     }

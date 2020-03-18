@@ -25,6 +25,7 @@ class ScanTextHolder(
             setAlert(model.warning(), model.error())
             setObjectStyle(model.objectStyle())
             updateEditable(model.editable() ?: false)
+            optionSet = model.optionSet()
             setOnScannerListener { value ->
                 this.setText(value)
                 val rowAction = RowAction.create(
@@ -34,8 +35,5 @@ class ScanTextHolder(
                 processor.onNext(rowAction)
             }
         }
-    }
-
-    override fun dispose() {
     }
 }

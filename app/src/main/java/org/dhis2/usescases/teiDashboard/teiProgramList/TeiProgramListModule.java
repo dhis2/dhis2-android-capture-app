@@ -49,7 +49,7 @@ public class TeiProgramListModule {
 
     @Provides
     @PerActivity
-    TeiProgramListRepository eventDetailRepository(@NonNull CodeGenerator codeGenerator, D2 d2) {
-        return new TeiProgramListRepositoryImpl(codeGenerator, d2);
+    TeiProgramListRepository eventDetailRepository(D2 d2) {
+        return new TeiProgramListRepositoryImpl(d2);
     }
 }

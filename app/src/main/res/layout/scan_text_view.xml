@@ -26,9 +26,10 @@
         <variable
             name="initialValue"
             type="java.lang.String" />
+
     </data>
 
-    <RelativeLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/rootLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -44,20 +45,34 @@
             android:layout_centerHorizontal="true"
             android:layout_marginBottom="5dp"
             android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
             tools:srcCompat="@drawable/sierra_leone"
             tools:visibility="visible" />
+
+
+        <TextView
+            android:id="@+id/label"
+            style="@style/FieldLabel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@{label}"
+            app:layout_constraintTop_toBottomOf="@id/renderImage"
+            tools:text="@string/lorem" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/renderImage"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            app:layout_constraintTop_toBottomOf="@id/label">
 
             <ImageView
-                android:layout_gravity="center"
                 android:id="@+id/descIcon"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
+                android:layout_gravity="center"
                 android:layout_marginEnd="8dp"
                 tools:srcCompat="@drawable/ic_form_barcode" />
 
@@ -67,13 +82,12 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:theme="@style/loginInputText"
-                tools:hint="hint">
+                android:hint="@string/scan_code">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/input_editText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:drawableTint="?colorPrimary"
                     android:imeOptions="actionNext"
                     android:maxLines="4"
                     android:textAlignment="textStart"
@@ -97,5 +111,5 @@
                 app:srcCompat="@drawable/ic_info_outline"
                 app:tint="?colorPrimary" />
         </LinearLayout>
-    </RelativeLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
