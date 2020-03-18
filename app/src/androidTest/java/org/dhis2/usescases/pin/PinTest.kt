@@ -1,14 +1,8 @@
 package org.dhis2.usescases.pin
 
 import android.Manifest
-import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.action.ViewActions.click
-import androidx.test.espresso.assertion.ViewAssertions.matches
-import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
-import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
-import org.dhis2.common.matchers.isToast
 import org.dhis2.data.prefs.Preference.Companion.PIN
 import org.dhis2.data.prefs.Preference.Companion.SESSION_LOCKED
 import org.dhis2.usescases.BaseTest
@@ -51,64 +45,61 @@ class PinTest : BaseTest() {
             clickOnNavigationDrawerMenu()
             clickOnPin()
         }
-        onView(withText("1")).perform(click())
-        onView(withText("2")).perform(click())
-        onView(withText("3")).perform(click())
-        onView(withText("4")).perform(click())
-       // Thread.sleep(1000)
-        /*preferencesRobot.saveValue(PIN, "1234")
-        preferencesRobot.saveValue(SESSION_LOCKED, true)*/
+
+        pinRobot {
+            clickPinButton("1")
+            clickPinButton("2")
+            clickPinButton("3")
+            clickPinButton("4")
+        }
     }
 
     @Test
     fun shouldRedirectToHomeIfPinIsCorrect() {
-        //prefrenesRobot.ssaveValue(PIN, "12342)
-        //prefrencesRobot.saveValue(Session_Locked, true)
-        //Si escribo 1234 voy a la home
-        //Si escribo 4123 no voy a ninguno sitio . Check Pin incorrecto
-
+        enableIntents()
         preferencesRobot.saveValue(SESSION_LOCKED, true)
-        preferencesRobot.saveValue(PIN, "1234")
+        preferencesRobot.saveValue(PIN, PIN_NUMBER)
         startLoginActivity()
-        onView(withText("1")).perform(click())
-        onView(withText("2")).perform(click())
-        onView(withText("3")).perform(click())
-        onView(withText("4")).perform(click())
-        // inteded home activity
+
+        pinRobot {
+            clickPinButton("1")
+            clickPinButton("2")
+            clickPinButton("3")
+            clickPinButton("4")
+            checkRedirectToHome()
+        }
     }
 
     @Test
     fun shouldSendErrorIfPinIsWrong() {
-
-        //Type 4321
-        //should show warning
-
         preferencesRobot.saveValue(SESSION_LOCKED, true)
-        preferencesRobot.saveValue(PIN, "1234")
+        preferencesRobot.saveValue(PIN, PIN_NUMBER)
         startLoginActivity()
-        onView(withText("1")).perform(click())
-        onView(withText("2")).perform(click())
-        onView(withText("3")).perform(click())
-        onView(withText("3")).perform(click())
+
+        pinRobot {
+            clickPinButton("1")
+            clickPinButton("2")
+            clickPinButton("3")
+            clickPinButton("3")
+        }
 
         //check how to match toast
-     //   onView(withText("Wrong pin")).check(matches(isDisplayed()))
-        //onView(withText("Wrong pin")).inRoot(withDecorView(not(`is`(ruleLoginActivity.activity.window.decorView)))).check(matches(isDisplayed()))
-        onView(withText("Wrong pin")).inRoot(isToast()).check(matches(isDisplayed()))
-        Thread.sleep(1000)
     }
 
     @Test
     fun shouldSuccessfullyLoginIfClickForgotYourCode() {
-
+        enableIntents()
         preferencesRobot.saveValue(SESSION_LOCKED, true)
-        preferencesRobot.saveValue(PIN, "1234")
+        preferencesRobot.saveValue(PIN, PIN_NUMBER)
         startLoginActivity()
 
         pinRobot {
             clickForgotCode()
         }
-        //intended al login
+
+        homeRobot {
+            checkLogInIsLaunched()
+        }
     }
 
     fun startActivity(){
@@ -117,5 +108,10 @@ class PinTest : BaseTest() {
 
     fun startLoginActivity() {
         ruleLoginActivity.launchActivity(null)
+    }
+
+    companion object {
+        const val PIN_NUMBER = "1234"
+        const val PIN_ERROR = "Wrong pin"
     }
 }
