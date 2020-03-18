@@ -32,13 +32,16 @@ class PinTest : BaseTest() {
 
     @Test
     fun openPin() {
-        /*startActivity()
-        mainRobot.clickOnNavigationDrawerMenu()
-                .clickOnPin()*/
+        startActivity()
+
+        homeRobot {
+            clickOnNavigationDrawerMenu()
+            clickOnPin()
+        }
     }
 
     @Test
-    fun shouldAppClosedIfSetPin() {
+    fun shouldCloseAppIfPinIsSet() {
         startActivity()
 
         homeRobot {
@@ -81,9 +84,8 @@ class PinTest : BaseTest() {
             clickPinButton("2")
             clickPinButton("3")
             clickPinButton("3")
+            checkToastDisplayed(PIN_ERROR)
         }
-
-        //check how to match toast
     }
 
     @Test
