@@ -2,8 +2,10 @@ package org.dhis2.common.matchers
 
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import android.widget.AdapterView
 import androidx.annotation.NonNull
+import androidx.test.espresso.Root
 import androidx.test.espresso.matcher.BoundedMatcher
 import androidx.test.espresso.matcher.ViewMatchers.withClassName
 import com.google.android.material.textfield.TextInputLayout
@@ -11,6 +13,7 @@ import org.hamcrest.CoreMatchers.containsString
 import org.hamcrest.Description
 import org.hamcrest.Matcher
 import org.hamcrest.TypeSafeMatcher
+
 
 fun withErrorEnabledTil(): Matcher<View> {
     return object : BoundedMatcher<View, TextInputLayout>(TextInputLayout::class.java) {
@@ -69,6 +72,26 @@ fun adaptedDataNotEmpty(): Matcher<View> {
 
         override fun describeTo(description: Description) {
             description.appendText("adaptedDataNotEmpty ")
+        }
+    }
+}
+
+fun isToast(): Matcher<Root> {
+    return object : TypeSafeMatcher<Root>() {
+        override fun matchesSafely(view: Root): Boolean {
+            val type = view.windowLayoutParams.get().type
+            if (type == WindowManager.LayoutParams.TYPE_TOAST) {
+                val windowToken = view.decorView.windowToken
+                val appToken = view.decorView.applicationWindowToken
+                if (windowToken === appToken) {
+                    return true
+                }
+            }
+            return false
+        }
+
+        override fun describeTo(description: Description) {
+            description.appendText("is toast")
         }
     }
 }

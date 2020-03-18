@@ -1,16 +1,14 @@
 package org.dhis2.usescases.pin
 
 import android.Manifest
-import android.R
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
-import androidx.test.espresso.matcher.RootMatchers.withDecorView
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
-import com.google.android.material.internal.ContextUtils.getActivity
+import org.dhis2.common.matchers.isToast
 import org.dhis2.data.prefs.Preference.Companion.PIN
 import org.dhis2.data.prefs.Preference.Companion.SESSION_LOCKED
 import org.dhis2.usescases.BaseTest
@@ -18,8 +16,6 @@ import org.dhis2.usescases.login.LoginActivity
 import org.dhis2.usescases.main.MainActivity
 import org.dhis2.usescases.main.MainRobot
 import org.dhis2.usescases.main.homeRobot
-import org.hamcrest.Matchers.`is`
-import org.hamcrest.Matchers.not
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -96,8 +92,9 @@ class PinTest : BaseTest() {
         onView(withText("3")).perform(click())
 
         //check how to match toast
-        //onView(withText("Wrong pin")).inRoot(withDecorView(not(`is`(getActivity(context)!!.getWindow().getDecorView())))).check(matches(isDisplayed()))
-
+     //   onView(withText("Wrong pin")).check(matches(isDisplayed()))
+        //onView(withText("Wrong pin")).inRoot(withDecorView(not(`is`(ruleLoginActivity.activity.window.decorView)))).check(matches(isDisplayed()))
+        onView(withText("Wrong pin")).inRoot(isToast()).check(matches(isDisplayed()))
         Thread.sleep(1000)
     }
 
@@ -119,6 +116,6 @@ class PinTest : BaseTest() {
     }
 
     fun startLoginActivity() {
-        rule.launchActivity(null)
+        ruleLoginActivity.launchActivity(null)
     }
 }

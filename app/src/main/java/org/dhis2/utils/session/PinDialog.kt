@@ -11,10 +11,10 @@ import android.view.Window
 import android.widget.Toast
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentManager
-import javax.inject.Inject
 import org.dhis2.Bindings.app
 import org.dhis2.R
 import org.dhis2.databinding.DialogPinBinding
+import javax.inject.Inject
 
 const val PIN_DIALOG_TAG: String = "PINDIALOG"
 
@@ -87,7 +87,7 @@ class PinDialog(
                     if (presenter.unlockSession(it)) {
                         unlockCallback.invoke(true)
                     } else {
-                        Toast.makeText(context, "Wrong pin", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, "Wrong pin", Toast.LENGTH_LONG).show()
                     }
             }
         }
