@@ -304,7 +304,7 @@ class EnrollmentPresenterImpl(
                     errorFields[field.programStageSection() ?: section] = field.label()
                 }
                 if (field.mandatory() && field.value().isNullOrEmpty()) {
-                    mandatoryFields[field.programStageSection() ?: section] = field.label()
+                    mandatoryFields[field.label()] = field.programStageSection() ?: section
                 }
             }
 
