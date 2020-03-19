@@ -282,7 +282,6 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
 
     override fun onUnlockClick(android: View) {
         PinDialog(
-                this,
             PinDialog.Mode.ASK,
             true,
             {

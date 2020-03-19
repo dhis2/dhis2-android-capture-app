@@ -185,7 +185,6 @@ class MainActivity : ActivityGlobalAbstract(), MainView, ExporterListener {
         if (prefs!!.getString(Preference.PIN, null) == null) {
             binding.mainDrawerLayout.closeDrawers()
             PinDialog(
-                    this,
                 PinDialog.Mode.SET,
                 true,
                 { presenter.blockSession() },

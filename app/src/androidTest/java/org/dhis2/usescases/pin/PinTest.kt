@@ -9,6 +9,7 @@ import org.dhis2.usescases.BaseTest
 import org.dhis2.usescases.login.LoginActivity
 import org.dhis2.usescases.main.MainActivity
 import org.dhis2.usescases.main.homeRobot
+import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -38,6 +39,7 @@ class PinTest : BaseTest() {
     }
 
     @Test
+    @Ignore("Killing process makes test failed")
     fun shouldCloseAppIfPinIsSet() {
         startActivity()
 
