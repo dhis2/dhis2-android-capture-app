@@ -1,8 +1,5 @@
 package org.dhis2
 
-import org.dhis2.common.keystore.KeyStoreRobot.Companion.PASSWORD
-import org.dhis2.common.keystore.KeyStoreRobot.Companion.USERNAME
-import org.dhis2.common.di.TestingInjector
 import org.dhis2.common.preferences.PreferencesTestingModule
 import org.dhis2.data.schedulers.SchedulerModule
 import org.dhis2.data.schedulers.SchedulersProviderImpl
@@ -43,23 +40,6 @@ class AppTest : App() {
         if (userManager != null) {
             userComponent = serverComponent!!.plus(UserModule())
         }
-
-    //    logInUser()
-
-        serverComponent?.let {
-        //    val userManager = it.userManager()
-        //    userManager.logIn("android","Android123","http://127.0.0.1:8080").blockingFirst()
-        }
-    }
-
-    private fun logInUser() {
-        val keyStoreRobot = TestingInjector.providesKeyStoreRobot(baseContext)
-        keyStoreRobot.apply {
-            setData(USERNAME, "android")
-            setData(PASSWORD, "Android123")
-        }
-    //    val databaseAdapter = DatabaseAdapterFactory.getDatabaseAdapter()
-   //     DatabaseAdapterFactory.createOrOpenDatabase(databaseAdapter, DB_GENERATED_BY_LOGIN, this.applicationContext, false)
     }
 
     override fun prepareAppComponent(): AppComponent.Builder {
