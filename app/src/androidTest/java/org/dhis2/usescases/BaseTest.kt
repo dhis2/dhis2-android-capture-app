@@ -5,11 +5,10 @@ import android.os.Build
 import androidx.test.espresso.intent.Intents
 import androidx.test.platform.app.InstrumentationRegistry
 import org.dhis2.DisableAnimations
-import org.dhis2.common.di.BaseTestComponent
 import org.dhis2.common.di.TestingInjector
 import org.dhis2.common.keystore.KeyStoreRobot
-import org.dhis2.common.keystore.KeyStoreRobot.Companion.PASSWORD
-import org.dhis2.common.keystore.KeyStoreRobot.Companion.USERNAME
+import org.dhis2.common.keystore.KeyStoreRobot.Companion.KEYSTORE_PASSWORD
+import org.dhis2.common.keystore.KeyStoreRobot.Companion.KEYSTORE_USERNAME
 import org.dhis2.common.mockwebserver.MockWebServerRobot
 import org.dhis2.common.preferences.PreferencesRobot
 import org.junit.After
@@ -86,8 +85,8 @@ open class BaseTest {
 
     private fun cleanKeystore() {
         keyStoreRobot.apply {
-            removeData(USERNAME)
-            removeData(PASSWORD)
+            removeData(KEYSTORE_USERNAME)
+            removeData(KEYSTORE_PASSWORD)
         }
     }
 

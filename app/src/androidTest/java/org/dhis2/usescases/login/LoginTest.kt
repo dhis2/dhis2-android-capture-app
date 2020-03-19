@@ -1,7 +1,11 @@
 package org.dhis2.usescases.login
 
+import android.Manifest
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
+import org.dhis2.common.di.TestingInjector
+import org.dhis2.common.keystore.KeyStoreRobot.Companion.KEYSTORE_PASSWORD
+import org.dhis2.common.keystore.KeyStoreRobot.Companion.KEYSTORE_USERNAME
 import org.dhis2.data.prefs.Preference.Companion.PIN
 import org.dhis2.data.prefs.Preference.Companion.SESSION_LOCKED
 import org.dhis2.usescases.BaseTest
@@ -14,12 +18,15 @@ import org.junit.runner.RunWith
 @RunWith(AndroidJUnit4::class)
 class LoginTest : BaseTest() {
 
-
     @get:Rule
     val ruleLogin = ActivityTestRule(LoginActivity::class.java, false, false)
 
     @get:Rule
     val mainRule = ActivityTestRule(MainActivity::class.java, false, false)
+
+    override fun getPermissionsToBeAccepted(): Array<String> {
+        return arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA)
+    }
 
     override fun setUp() {
         super.setUp()
@@ -137,7 +144,16 @@ class LoginTest : BaseTest() {
 
     @Test
     fun shouldGoToHomeScreenWhenUserIsLoggedIn() {
-        //TODO
+        setupCredentials()
+        startLoginActivity()
+    }
+
+    private fun setupCredentials() {
+        val keyStoreRobot = TestingInjector.providesKeyStoreRobot(context)
+        keyStoreRobot.apply {
+            setData(KEYSTORE_USERNAME, "android")
+            setData(KEYSTORE_PASSWORD, "Android123")
+        }
     }
 
     fun startMainActivity(){
