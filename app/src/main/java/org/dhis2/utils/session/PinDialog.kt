@@ -1,9 +1,8 @@
 package org.dhis2.utils.session
 
+import android.app.Activity
 import android.app.Dialog
 import android.os.Bundle
-import android.os.Handler
-import android.os.Process
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -18,11 +17,11 @@ import javax.inject.Inject
 
 const val PIN_DIALOG_TAG: String = "PINDIALOG"
 
-class PinDialog(
-    val mode: Mode,
-    private val canBeClosed: Boolean,
-    private val unlockCallback: (Boolean) -> Unit,
-    private val forgotPinCallback: () -> Unit
+class PinDialog(val activity: Activity,
+                val mode: Mode,
+                private val canBeClosed: Boolean,
+                private val unlockCallback: (Boolean) -> Unit,
+                private val forgotPinCallback: () -> Unit
 ) : DialogFragment(), PinView {
 
     private lateinit var binding: DialogPinBinding
@@ -96,9 +95,10 @@ class PinDialog(
     }
 
     private fun blockSession() {
-        Handler().postDelayed(
+        activity.finish()
+    /*    Handler().postDelayed(
             { Process.killProcess(Process.myPid()) }, 1500
-        )
+        ) */
     }
 
     override fun closeDialog() {

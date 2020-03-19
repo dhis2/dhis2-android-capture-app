@@ -172,7 +172,7 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity
     }
 
     public void showPinDialog() {
-        new PinDialog(PinDialog.Mode.ASK,
+        new PinDialog(this,PinDialog.Mode.ASK,
                 (this instanceof LoginActivity),
                 aBoolean -> {
                     startActivity(MainActivity.class, null, true, true, null);
