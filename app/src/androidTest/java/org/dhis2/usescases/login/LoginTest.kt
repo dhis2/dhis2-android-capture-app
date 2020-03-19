@@ -30,7 +30,8 @@ class LoginTest : BaseTest() {
     fun shouldLoginSuccessfullyWhenCredentialsAreRight() {
         mockWebServerRobot.addResponse(GET, API_ME_PATH, API_ME_RESPONSE_OK)
         mockWebServerRobot.addResponse(GET, API_SYSTEM_INFO_PATH, API_SYSTEM_INFO_RESPONSE_OK)
-
+        mockWebServerRobot.addResponse(GET, "/api/dataStore/ANDROID_SETTING_APP/general_settings?.*", API_METADATA_SETTINGS_RESPONSE_ERROR)
+    
         enableIntents()
         startLoginActivity()
 
@@ -155,6 +156,9 @@ class LoginTest : BaseTest() {
         const val API_ME_RESPONSE_OK = "mocks/user/user.json"
         const val API_ME_UNAUTHORIZE = "mocks/user/unauthorize.json"
         const val API_SYSTEM_INFO_RESPONSE_OK = "mocks/systeminfo/systeminfo.json"
+        const val API_METADATA_SETTINGS_RESPONSE_ERROR = "mocks/settingswebapp/generalsettings_404.json"
+        const val API_METADATA_SETTINGS_PROGRAM_RESPONSE_ERROR = "mocks/settingswebapp/programsettings_404.json"
+        const val API_METADATA_SETTINGS_DATASET_RESPONSE_ERROR = "mocks/settingswebapp/datasetsettings_404.json"
         const val DB_GENERATED_BY_LOGIN = "127-0-0-1-8080_test_unencrypted.db"
 
         const val USERNAME = "test"

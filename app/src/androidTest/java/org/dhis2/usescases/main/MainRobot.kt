@@ -6,14 +6,12 @@ import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.NavigationViewActions
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.matcher.IntentMatchers
-import androidx.test.espresso.matcher.ViewMatchers.*
+import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
+import androidx.test.espresso.matcher.ViewMatchers.withId
 import org.dhis2.R
 import org.dhis2.common.BaseRobot
 import org.dhis2.common.matchers.RecyclerviewMatchers.Companion.isNotEmpty
-import org.dhis2.usescases.BaseTest
 import org.dhis2.usescases.login.LoginActivity
-import org.dhis2.utils.WebViewActivity
-import org.hamcrest.CoreMatchers
 import org.hamcrest.CoreMatchers.allOf
 
 fun homeRobot(robotBody: MainRobot.() -> Unit){
@@ -37,7 +35,6 @@ class MainRobot : BaseRobot(){
     }
 
     fun clickOnLogout() {
-        //onView(anyOf(withText(R.string.log_out), withId(R.id.logout_button))).perform(click())
         onView(withId(R.id.nav_view)).perform(NavigationViewActions.navigateTo(R.id.logout_button))
     }
 

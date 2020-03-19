@@ -8,7 +8,6 @@ import org.dhis2.data.prefs.Preference.Companion.SESSION_LOCKED
 import org.dhis2.usescases.BaseTest
 import org.dhis2.usescases.login.LoginActivity
 import org.dhis2.usescases.main.MainActivity
-import org.dhis2.usescases.main.MainRobot
 import org.dhis2.usescases.main.homeRobot
 import org.junit.Rule
 import org.junit.Test
@@ -17,8 +16,6 @@ import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 class PinTest : BaseTest() {
-
-    private lateinit var mainRobot: MainRobot
 
     @get:Rule
     val rule = ActivityTestRule(MainActivity::class.java, false, false)
