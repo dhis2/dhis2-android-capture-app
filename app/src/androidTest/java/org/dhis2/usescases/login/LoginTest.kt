@@ -31,7 +31,7 @@ class LoginTest : BaseTest() {
         mockWebServerRobot.addResponse(GET, API_ME_PATH, API_ME_RESPONSE_OK)
         mockWebServerRobot.addResponse(GET, API_SYSTEM_INFO_PATH, API_SYSTEM_INFO_RESPONSE_OK)
         mockWebServerRobot.addResponse(GET, "/api/dataStore/ANDROID_SETTING_APP/general_settings?.*", API_METADATA_SETTINGS_RESPONSE_ERROR)
-    
+
         enableIntents()
         startLoginActivity()
 

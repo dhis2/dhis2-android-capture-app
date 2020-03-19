@@ -19,7 +19,7 @@ class SearchTETest : BaseTest(){
 
     @Test
     fun openSearchTE() {
-        prepareChildProgrammeIntentAndLaunchActivity()
+    //    prepareChildProgrammeIntentAndLaunchActivity()
 
     //Working on it
     //     onView(withId(R.id.scrollView))
