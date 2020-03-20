@@ -30,6 +30,7 @@ import org.dhis2.utils.RulesActionCallbacks;
 import org.dhis2.utils.RulesUtilsProvider;
 import org.hisp.dhis.android.core.common.Unit;
 import org.hisp.dhis.android.core.event.EventStatus;
+import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
 import org.hisp.dhis.rules.models.RuleActionShowError;
 import org.hisp.dhis.rules.models.RuleEffect;
 import org.jetbrains.annotations.NotNull;
@@ -293,6 +294,8 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                                                             finalFieldList.addAll(fieldMap.get(sectionModel.sectionUid()));
                                                         }
                                                     }
+
+                                                    finalFieldList.add(SectionViewModel.createClosingSection());
 
                                                     if (fieldMap.containsKey("display") && fieldMap.get("display") != null) {
                                                         finalFieldList.addAll(fieldMap.get("display"));

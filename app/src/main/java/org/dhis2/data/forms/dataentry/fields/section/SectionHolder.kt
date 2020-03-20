@@ -13,6 +13,7 @@ import org.dhis2.R
 import org.dhis2.data.forms.dataentry.fields.FormViewHolder
 import org.dhis2.databinding.FormSectionBinding
 import org.dhis2.utils.customviews.CustomDialog
+import org.hisp.dhis.android.core.dataset.Section
 import org.jetbrains.annotations.NotNull
 
 class SectionHolder(
@@ -38,10 +39,11 @@ class SectionHolder(
 
     fun update(viewModel: SectionViewModel) {
         this.viewModel = viewModel
+        checkVisibility(viewModel.uid() == SectionViewModel.CLOSING_SECTION_UID)
         formBinding.apply {
             sectionName.text = viewModel.label()
             openIndicator.visibility = if (viewModel.isOpen) View.VISIBLE else View.GONE
-            if (viewModel.completedFields() == viewModel.totalFields()){
+            if (viewModel.completedFields() == viewModel.totalFields()) {
                 sectionFieldsInfo.setTextColor(root.getThemePrimaryColor())
             } else {
                 sectionFieldsInfo.setTextColor(
@@ -88,8 +90,18 @@ class SectionHolder(
         setShadows()
     }
 
+    private fun checkVisibility(isClosingSection: Boolean) {
+        formBinding.sectionDetails.visibility = if (isClosingSection) {
+            View.GONE
+        } else {
+            View.VISIBLE
+        }
+    }
+
     override fun onClick(v: View) {
-        sectionProcessor.onNext(viewModel.uid())
+        if (viewModel.uid() != SectionViewModel.CLOSING_SECTION_UID) {
+            sectionProcessor.onNext(viewModel.uid())
+        }
     }
 
     private fun setShadows() {
