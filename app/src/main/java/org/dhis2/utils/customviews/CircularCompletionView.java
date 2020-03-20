@@ -44,10 +44,10 @@ public class CircularCompletionView extends View {
     private void initialDefaultValues(AttributeSet attrs) {
 
         //Default Colors
-        completionColor = ContextCompat.getColor(getContext(), R.color.green_7ed);
-        secondaryColor = ContextCompat.getColor(getContext(), R.color.gray_814);
-        percentageColor = ContextCompat.getColor(getContext(), R.color.black_de0);
-        circleColor = ContextCompat.getColor(getContext(), R.color.gray_d7d);
+        completionColor = ContextCompat.getColor(getContext(), R.color.completionColor);
+        secondaryColor = ContextCompat.getColor(getContext(), R.color.secondaryColor);
+        percentageColor = ContextCompat.getColor(getContext(), R.color.percentageColor);
+        circleColor = ContextCompat.getColor(getContext(), R.color.circleColor);
 
         if (attrs == null) {
             return;
