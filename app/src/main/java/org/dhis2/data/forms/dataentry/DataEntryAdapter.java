@@ -135,10 +135,10 @@ public final class DataEntryAdapter extends ListAdapter<FieldViewModel, ViewHold
         rows.add(UNSUPPORTED, new UnsupportedRow(layoutInflater));
         rows.add(LONG_TEXT, new EditTextRow(layoutInflater, processor, true, dataEntryArguments.renderType(), true, currentFocusUid));
         rows.add(DISPLAY, new DisplayRow(layoutInflater));
-        rows.add(PICTURE, new PictureRow(layoutInflater, processor, true));
+        rows.add(PICTURE, new PictureRow(fragmentManager, layoutInflater, processor, true));
         rows.add(SCAN_CODE, new ScanTextRow(layoutInflater, processor, true));
         rows.add(SECTION, new SectionRow(layoutInflater, selectedSection, sectionProcessor));
-        rows.add(OPTION_SET_SELECT, new OptionSetRow(layoutInflater, processor, true,rendering, currentFocusUid));
+        rows.add(OPTION_SET_SELECT, new OptionSetRow(layoutInflater, processor, true, rendering, currentFocusUid));
     }
 
     public DataEntryAdapter(@NonNull LayoutInflater layoutInflater,
@@ -173,10 +173,10 @@ public final class DataEntryAdapter extends ListAdapter<FieldViewModel, ViewHold
         rows.add(UNSUPPORTED, new UnsupportedRow(layoutInflater));
         rows.add(LONG_TEXT, new EditTextRow(layoutInflater, processor, true, dataEntryArguments.renderType(), true, currentFocusUid));
         rows.add(DISPLAY, new DisplayRow(layoutInflater));
-        rows.add(PICTURE, new PictureRow(layoutInflater, processor, true));
+        rows.add(PICTURE, new PictureRow(fragmentManager, layoutInflater, processor, true));
         rows.add(SCAN_CODE, new ScanTextRow(layoutInflater, processor, true));
         rows.add(SECTION, new SectionRow(layoutInflater, selectedSection, sectionProcessor));
-        rows.add(OPTION_SET_SELECT, new OptionSetRow(layoutInflater, processor, true,rendering, currentFocusUid));
+        rows.add(OPTION_SET_SELECT, new OptionSetRow(layoutInflater, processor, true, rendering, currentFocusUid));
     }
 
     @NonNull

@@ -5,6 +5,7 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.databinding.DataBindingUtil;
+import androidx.fragment.app.FragmentManager;
 
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.Row;
@@ -22,11 +23,15 @@ public class PictureRow implements Row<PictureHolder, PictureViewModel> {
     private final LayoutInflater inflater;
     private final boolean isBgTransparent;
     private final String renderType;
+    private final FragmentManager fm;
     private boolean isSearchMode = false;
 
-    public PictureRow(@NonNull LayoutInflater layoutInflater,
-                         @NonNull FlowableProcessor<RowAction> processor,
-                      boolean isBgTransparent) {
+    public PictureRow(
+            @NonNull FragmentManager fragmentManager,
+            @NonNull LayoutInflater layoutInflater,
+            @NonNull FlowableProcessor<RowAction> processor,
+            boolean isBgTransparent) {
+        this.fm = fragmentManager;
         this.inflater = layoutInflater;
         this.processor = processor;
         this.isBgTransparent = isBgTransparent;
@@ -34,9 +39,12 @@ public class PictureRow implements Row<PictureHolder, PictureViewModel> {
         this.isSearchMode = true;
     }
 
-    public PictureRow(@NonNull LayoutInflater layoutInflater,
-                      @NonNull FlowableProcessor<RowAction> processor,
-                         boolean isBgTransparent, String renderType) {
+    public PictureRow(
+            @NonNull FragmentManager fragmentManager,
+            @NonNull LayoutInflater layoutInflater,
+            @NonNull FlowableProcessor<RowAction> processor,
+            boolean isBgTransparent, String renderType) {
+        this.fm = fragmentManager;
         this.inflater = layoutInflater;
         this.processor = processor;
         this.isBgTransparent = isBgTransparent;
@@ -49,6 +57,7 @@ public class PictureRow implements Row<PictureHolder, PictureViewModel> {
         CustomFormPictureBinding binding = DataBindingUtil.inflate(inflater,
                 R.layout.custom_form_picture, parent, false);
         binding.formPictures.setIsBgTransparent(isBgTransparent);
+        binding.formPictures.setFragmentManager(fm);
         PictureView.OnIntentSelected onIntentSelected = (PictureView.OnIntentSelected) binding.formPictures.getContext();
         return new PictureHolder(onIntentSelected,
                 binding, processor, isSearchMode);
