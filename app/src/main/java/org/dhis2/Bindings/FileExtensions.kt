@@ -3,16 +3,20 @@ package org.dhis2.Bindings
 import android.graphics.BitmapFactory
 import java.io.File
 
-fun File.widthAndHeight(minimun: Int? = null): Pair<Int, Int> {
+fun File.widthAndHeight(minimum: Int? = null): Pair<Int, Int> {
     BitmapFactory.decodeFile(this.absolutePath).apply {
-        val ratio = width.toFloat() / height.toFloat()
+        return resizeToMinimum(minimum, width, height)
+    }
+}
 
-        return if (minimun != null && width > height && width < minimun) {
-            Pair(minimun, (minimun.toFloat() / ratio).toInt())
-        } else if (minimun != null && height >= width && height < minimun) {
-            Pair((minimun.toFloat() * ratio).toInt(), minimun)
-        } else {
-            Pair(width, height)
-        }
+fun resizeToMinimum(minimum: Int? = null, width: Int, height: Int): Pair<Int, Int> {
+    val ratio = width.toFloat() / height.toFloat()
+
+    return if (minimum != null && width > height && width < minimum) {
+        Pair(minimum, (minimum.toFloat() / ratio).toInt())
+    } else if (minimum != null && height >= width && height < minimum) {
+        Pair((minimum.toFloat() * ratio).toInt(), minimum)
+    } else {
+        Pair(width, height)
     }
 }
