@@ -72,6 +72,7 @@ public abstract class SectionViewModel extends FieldViewModel {
                 false,
                 0,
                 0,
+                null,
                 ProgramStageSectionRenderingType.LISTING.name()
         );
     }
