@@ -4,6 +4,8 @@ import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
 import org.hisp.dhis.android.core.D2
+import org.hisp.dhis.android.core.category.CategoryOption
+import org.hisp.dhis.android.core.category.CategoryOptionCombo
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.dataset.DataSet
 import org.hisp.dhis.android.core.dataset.DataSetCompleteRegistration
@@ -197,6 +199,80 @@ class DataSetTableRepositoryTest {
         testObserver.assertValue(State.TO_POST)
     }
 
+    @Test
+    fun `Should return the category Combo name`() {
+        val uid = "catComboUid"
+        val name = "CatComboName"
+        whenever(d2.categoryModule().categoryOptionCombos().uid(uid)) doReturn mock()
+        whenever(
+            d2.categoryModule().categoryOptionCombos().uid(uid).blockingGet()
+        ) doReturn mock()
+        whenever(
+            d2.categoryModule().categoryOptionCombos()
+                .uid(uid).blockingGet().displayName()
+        ) doReturn name
+
+        val testObserver = repository.getCatComboName(uid).test()
+
+        testObserver.assertNoErrors()
+        testObserver.assertValue{ it == name }
+    }
+
+    @Test
+    fun `Should return the uid of the default categoryOption if input is an empty list`() {
+        val categoryOptionCombo = dummyCategoryOptionCombos()
+
+        whenever(d2.categoryModule().categoryOptionCombos().byDisplayName()) doReturn mock()
+        whenever(
+            d2.categoryModule().categoryOptionCombos().byDisplayName().like("default")
+        ) doReturn mock()
+        whenever(
+            d2.categoryModule().categoryOptionCombos()
+                .byDisplayName().like("default")
+                .one()
+        ) doReturn mock()
+        whenever(
+            d2.categoryModule().categoryOptionCombos()
+                .byDisplayName().like("default")
+                .one().blockingGet()
+        ) doReturn mock()
+        whenever(
+            d2.categoryModule().categoryOptionCombos()
+                .byDisplayName().like("default")
+                .one().blockingGet().uid()
+        ) doReturn categoryOptionCombo.uid()
+
+        val returnedValue = repository.getCatOptComboFromOptionList(listOf())
+
+        assert(returnedValue == "uid")
+    }
+
+    @Test
+    fun `Should return the uid of one of the categoryOptionCombo by a list of catOption uids`() {
+        val categoryOptionCombos = dummyCategoryOptionCombos("name", "uid_1")
+        val catOptionUids = listOf("catOpt_uid_1", "catOpt_Uid_1")
+
+        whenever(
+            d2.categoryModule().categoryOptionCombos().byCategoryOptions(catOptionUids)
+        ) doReturn mock()
+        whenever(
+            d2.categoryModule().categoryOptionCombos()
+                .byCategoryOptions(catOptionUids).one()
+        ) doReturn mock()
+        whenever(
+            d2.categoryModule().categoryOptionCombos()
+                .byCategoryOptions(catOptionUids).one().blockingGet()
+        ) doReturn mock()
+        whenever(
+            d2.categoryModule().categoryOptionCombos()
+                .byCategoryOptions(catOptionUids).one().blockingGet().uid()
+        ) doReturn categoryOptionCombos.uid()
+
+        val returnedValue = repository.getCatOptComboFromOptionList(catOptionUids)
+
+        assert(returnedValue == "uid_1")
+    }
+
     private fun dummyDataSet() = DataSet.builder().uid(dataSetUid).build()
 
     private fun dummySection(uid: String) = Section.builder().uid(uid).displayName(uid).build()
@@ -222,6 +298,13 @@ class DataSetTableRepositoryTest {
             .completed(true)
             .periodType(PeriodType.Daily)
             .state(state).build()
+
+    private fun dummyCategoryOptionCombos(displayName: String = "default", uid: String = "uid") =
+        CategoryOptionCombo.builder()
+            .uid(uid)
+            .displayName(displayName)
+            .categoryOptions(listOf(CategoryOption.builder().uid("catOptionUid").build()))
+            .build()
 
     private fun mockDataSetCompRegistration() {
         whenever(d2.dataSetModule().dataSetCompleteRegistrations().byDataSetUid()) doReturn mock()
