@@ -14,6 +14,8 @@ import javax.annotation.Nullable;
 @AutoValue
 public abstract class SectionViewModel extends FieldViewModel {
 
+    public static final String CLOSING_SECTION_UID = "closing_section";
+
     @NonNull
     public abstract boolean isOpen();
 
@@ -49,6 +51,28 @@ public abstract class SectionViewModel extends FieldViewModel {
                 completedFields,
                 null,
                 rendering != null ? rendering : ProgramStageSectionRenderingType.LISTING.name()
+        );
+    }
+
+    public static SectionViewModel createClosingSection() {
+        return new AutoValue_SectionViewModel(
+                SectionViewModel.CLOSING_SECTION_UID,
+                SectionViewModel.CLOSING_SECTION_UID,
+                false,
+                null,
+                null,
+                false,
+                false,
+                null,
+                null,
+                null,
+                null,
+                ObjectStyle.builder().build(),
+                null,
+                false,
+                0,
+                0,
+                ProgramStageSectionRenderingType.LISTING.name()
         );
     }
 

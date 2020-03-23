@@ -387,6 +387,12 @@
 
     <color name="placeholder">#61333333</color>
     <color name="default_field_icon_color">#5C5C5C</color>
+
+    <!-- CircularCompletionView -->
+    <color name="percentageColor">#F9FAF9</color>
+    <color name="completionColor">#F0FFFFFF</color>
+    <color name="secondaryColor">#F0858585</color>
+    <color name="circleColor">#4D000000</color>
     <!--endregion-->
 
 </resources>
