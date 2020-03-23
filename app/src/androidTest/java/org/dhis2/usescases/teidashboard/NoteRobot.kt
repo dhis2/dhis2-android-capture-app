@@ -9,7 +9,7 @@ import org.dhis2.common.BaseRobot
 
 fun noteRobot(noteRobot: NoteRobot.() -> Unit) {
     NoteRobot().apply {
-        noteRobot
+        noteRobot()
     }
 }
 
