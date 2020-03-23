@@ -156,6 +156,11 @@ class LoginTest : BaseTest() {
         }
     }
 
+    @Test
+    fun shouldGenerateLoginThroughQR() {
+
+    }
+
     fun startMainActivity(){
         mainRule.launchActivity(null)
     }

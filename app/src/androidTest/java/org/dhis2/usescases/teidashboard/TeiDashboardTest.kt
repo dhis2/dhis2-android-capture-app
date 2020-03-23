@@ -22,16 +22,19 @@ class TeiDashboardTest : BaseTest() {
 
     @Test
     fun openTeiDashboard() {
-      //  prepareTeiProgrammeIntentAndLaunchActivity()
+        prepareTeiCompletedProgrammeIntentAndLaunchActivity()
     }
 
-    private fun prepareTeiProgrammeIntentAndLaunchActivity() {
+    private fun prepareTeiCompletedProgrammeIntentAndLaunchActivity() {
         Intent().apply {
             putExtra(CHILD_PROGRAM_UID, CHILD_PROGRAM_UID_VALUE)
             putExtra(TEI_UID, TEI_UID_VALUE)
         }.also { rule.launchActivity(it) }
     }
 
+    private fun prepareTeiOpenedProgrammeIntentAndLaunchActivity() {
+
+    }
 
     companion object{
         const val CHILD_PROGRAM_UID = "PROGRAM_UID"
