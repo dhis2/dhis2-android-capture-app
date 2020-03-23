@@ -9,6 +9,7 @@ import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
 import org.hisp.dhis.android.core.category.CategoryCombo
 import org.hisp.dhis.android.core.common.ObjectWithUid
 import org.hisp.dhis.android.core.dataset.DataInputPeriod
+import org.hisp.dhis.android.core.dataset.DataSet
 import org.hisp.dhis.android.core.dataset.DataSetElement
 import org.hisp.dhis.android.core.period.Period
 import org.junit.Before
@@ -103,7 +104,9 @@ class DataValueRepositoryTest {
         ) doReturn dataSetElements
 
         val categoryCombosUids = dataSetElements.map { it.categoryCombo()?.uid() }
-        val categoryCombos = dataSetElements.map { CategoryCombo.builder().uid(it.categoryCombo()?.uid()).build()}
+        val categoryCombos = dataSetElements.map {
+            CategoryCombo.builder().uid(it.categoryCombo()?.uid()).build()
+        }
 
         whenever(
             d2.categoryModule().categoryCombos().byUid().`in`(categoryCombosUids)
@@ -139,6 +142,101 @@ class DataValueRepositoryTest {
         testObserver.dispose()
     }
 
+    @Test
+    fun `Should return catOptions when no section and dataSetElement without catOptions`() {
+        val dataSetElements = listOf(dummyDataSetElementWithoNoCatCombo())
+        val categoryCombos = listOf(dummyCategoryCombo())
+        val categoryCombosUids = categoryCombos.map { it.uid() }
+
+
+        whenever(
+            d2.dataSetModule().dataSets().withDataSetElements().uid(dataSetUid)
+        ) doReturn mock()
+
+        whenever(
+            d2.dataSetModule().dataSets().withDataSetElements().uid(dataSetUid).blockingGet()
+        ) doReturn mock()
+
+        whenever(
+            d2.dataSetModule().dataSets().withDataSetElements().uid(dataSetUid).blockingGet()
+                .dataSetElements()
+        ) doReturn dataSetElements
+
+        whenever(
+            d2.dataElementModule()
+                .dataElements()
+                .uid(dataSetElements.first().dataElement().uid())
+        ) doReturn mock()
+
+        whenever(
+            d2.dataElementModule()
+                .dataElements()
+                .uid(dataSetElements.first().dataElement().uid())
+                .blockingGet()
+        ) doReturn mock()
+
+        whenever(
+            d2.dataElementModule()
+                .dataElements()
+                .uid(dataSetElements.first().dataElement().uid())
+                .blockingGet()
+                .categoryComboUid()
+        ) doReturn categoryCombosUids.first()
+
+
+        whenever(
+            d2.categoryModule().categoryCombos().byUid().`in`(categoryCombosUids)
+        ) doReturn mock()
+
+        whenever(
+            d2.categoryModule().categoryCombos().byUid().`in`(categoryCombosUids).withCategories()
+        ) doReturn mock()
+
+        whenever(
+            d2.categoryModule().categoryCombos().byUid().`in`(categoryCombosUids).withCategories()
+                .withCategoryOptionCombos()
+        ) doReturn mock()
+
+        whenever(
+            d2.categoryModule().categoryCombos().byUid().`in`(categoryCombosUids).withCategories()
+                .withCategoryOptionCombos().orderByDisplayName(RepositoryScope.OrderByDirection.ASC)
+        ) doReturn mock()
+
+        whenever(
+            d2.categoryModule().categoryCombos().byUid().`in`(categoryCombosUids).withCategories()
+                .withCategoryOptionCombos().orderByDisplayName(RepositoryScope.OrderByDirection.ASC)
+                .get()
+        ) doReturn Single.just(categoryCombos)
+
+
+        val testObserver = repository.getCatCombo("NO_SECTION").test()
+
+        testObserver.assertNoErrors()
+        testObserver.assertValueCount(1)
+        testObserver.assertValue(categoryCombos)
+
+        testObserver.dispose()
+    }
+
+    @Test
+    fun `Should return dataSet`() {
+        val dataSet = dummyDataSet()
+        whenever(
+            d2.dataSetModule().dataSets().uid(dataSetUid).get()
+        ) doReturn Single.just(dataSet)
+
+
+        val testObserver = repository.dataSet.test()
+
+        testObserver.assertNoErrors()
+        testObserver.assertValueCount(1)
+        testObserver.assertValue(dataSet)
+
+        testObserver.dispose()
+    }
+
+
+
     private fun dummyPeriod(): Period =
         Period.builder()
             .periodId(UUID.randomUUID().toString())
@@ -154,6 +252,17 @@ class DataValueRepositoryTest {
             .categoryCombo(ObjectWithUid.create(UUID.randomUUID().toString()))
             .dataSet(ObjectWithUid.create(UUID.randomUUID().toString()))
             .dataElement(ObjectWithUid.create(UUID.randomUUID().toString()))
+            .build()
+
+    private fun dummyDataSetElementWithoNoCatCombo(): DataSetElement =
+        DataSetElement.builder()
+            .dataSet(ObjectWithUid.create(UUID.randomUUID().toString()))
+            .dataElement(ObjectWithUid.create(UUID.randomUUID().toString()))
+            .build()
+
+    private fun dummyDataSet(): DataSet =
+        DataSet.builder()
+            .uid(UUID.randomUUID().toString())
             .build()
 
     private fun dummyCategoryCombo(): CategoryCombo =

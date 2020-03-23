@@ -2,6 +2,8 @@ package org.dhis2.usescases.datasets.dataSetTable.dataSetSection
 
 import android.text.TextUtils
 import io.reactivex.Flowable
+import java.util.ArrayList
+import java.util.HashMap
 import org.dhis2.data.tuples.Pair
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableModel
 import org.hisp.dhis.android.core.D2
@@ -21,14 +23,11 @@ import org.hisp.dhis.android.core.dataset.Section
 import org.hisp.dhis.android.core.datavalue.DataValue
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.period.Period
-import java.util.ArrayList
-import java.util.HashMap
 
 class DataValueRepositoryImpl(private val d2: D2, private val dataSetUid: String) :
     DataValueRepository {
-    override fun getPeriod(periodId: String): Flowable<Period> {
-        return d2.periodModule().periods().byPeriodId().eq(periodId).one().get().toFlowable()
-    }
+    override fun getPeriod(periodId: String): Flowable<Period> =
+        d2.periodModule().periods().byPeriodId().eq(periodId).one().get().toFlowable()
 
     override fun getDataInputPeriod(): Flowable<List<DataInputPeriod>> {
         return Flowable.fromCallable {
@@ -44,9 +43,13 @@ class DataValueRepositoryImpl(private val d2: D2, private val dataSetUid: String
                 .dataSetElements()
         when {
             sectionName != "NO_SECTION" -> {
-                val dataElements =
-                    d2.dataSetModule().sections().withDataElements().byDataSetUid().eq(dataSetUid)
-                        .byDisplayName().eq(sectionName).one().blockingGet().dataElements()
+                val dataElements = d2.dataSetModule()
+                    .sections()
+                    .withDataElements()
+                    .byDataSetUid().eq(dataSetUid)
+                    .byDisplayName().eq(sectionName)
+                    .one().blockingGet()
+                    .dataElements()
                 dataSetElements?.forEach { dataSetElement ->
                     dataElements
                         ?.asSequence()
@@ -54,35 +57,34 @@ class DataValueRepositoryImpl(private val d2: D2, private val dataSetUid: String
                         ?.forEach { dataElement ->
                             when {
                                 dataSetElement.categoryCombo()
-                                    ?.let{ it.uid() !in categoryCombos} ?: false ->
+                                    ?.let { it.uid() !in categoryCombos } ?: false ->
                                     categoryCombos.add(dataSetElement.categoryCombo()!!.uid())
                                 dataElement.categoryCombo()
-                                    ?.let{ it.uid() !in categoryCombos } ?: false ->
+                                    ?.let { it.uid() !in categoryCombos } ?: false ->
                                     categoryCombos.add(dataElement.categoryComboUid())
                             }
                         }
                 }
             }
-            else -> {
-                dataSetElements?.map { it.categoryCombo()?.uid() ?: run {
-                    val dataElement = d2.dataElementModule().dataElements()
-                        .uid(it.dataElement().uid()).blockingGet()
-                    return@map dataElement.categoryComboUid()
-                }}?.toList()?.let {
+            else ->
+                dataSetElements?.map {
+                    it.categoryCombo()?.uid()
+                        ?: d2.dataElementModule()
+                            .dataElements()
+                            .uid(it.dataElement().uid())
+                            .blockingGet()
+                            .categoryComboUid()
+                }?.toList()?.let {
                     categoryCombos.addAll(it)
                 }
-            }
         }
         return d2.categoryModule().categoryCombos().byUid().`in`(categoryCombos).withCategories()
             .withCategoryOptionCombos().orderByDisplayName(RepositoryScope.OrderByDirection.ASC)
             .get().toFlowable()
     }
 
-    override fun getDataSet(): Flowable<DataSet> {
-        return Flowable.fromCallable {
-            d2.dataSetModule().dataSets().byUid().eq(dataSetUid).one().blockingGet()
-        }
-    }
+    override fun getDataSet(): Flowable<DataSet> =
+        d2.dataSetModule().dataSets().uid(dataSetUid).get().toFlowable()
 
     override fun getCatOptions(
         sectionName: String,
@@ -110,11 +112,11 @@ class DataValueRepositoryImpl(private val d2: D2, private val dataSetUid: String
                 var add = true
                 for (catComboList in finalList) {
                     if (catComboList.contains(
-                            Pair.create(
-                                catOption,
-                                category
-                            )
+                        Pair.create(
+                            catOption,
+                            category
                         )
+                    )
                     ) add = false
                 }
                 if (add) {
@@ -146,24 +148,29 @@ class DataValueRepositoryImpl(private val d2: D2, private val dataSetUid: String
         dataElement: DataElement,
         override: List<DataSetElement>?
     ): DataElement {
-        for (dataSetElement in override!!) if (dataSetElement.dataElement().uid() == dataElement.uid() && dataSetElement.categoryCombo() != null) return DataElement.builder()
-            .uid(dataElement.uid())
-            .code(dataElement.code())
-            .name(dataElement.name())
-            .displayName(dataElement.displayName())
-            .shortName(dataElement.shortName())
-            .displayShortName(dataElement.displayShortName())
-            .description(dataElement.description())
-            .displayDescription(dataElement.displayDescription())
-            .valueType(dataElement.valueType())
-            .zeroIsSignificant(dataElement.zeroIsSignificant())
-            .aggregationType(dataElement.aggregationType())
-            .formName(dataElement.formName())
-            .domainType(dataElement.domainType())
-            .displayFormName(dataElement.displayFormName())
-            .optionSet(dataElement.optionSet())
-            .categoryCombo(dataSetElement.categoryCombo()).build()
-        return dataElement
+        return override
+            ?.firstOrNull {
+                it.dataElement().uid() == dataElement.uid() && it.categoryCombo() != null
+            }?.let {
+            DataElement.builder()
+                .uid(dataElement.uid())
+                .code(dataElement.code())
+                .name(dataElement.name())
+                .displayName(dataElement.displayName())
+                .shortName(dataElement.shortName())
+                .displayShortName(dataElement.displayShortName())
+                .description(dataElement.description())
+                .displayDescription(dataElement.displayDescription())
+                .valueType(dataElement.valueType())
+                .zeroIsSignificant(dataElement.zeroIsSignificant())
+                .aggregationType(dataElement.aggregationType())
+                .formName(dataElement.formName())
+                .domainType(dataElement.domainType())
+                .displayFormName(dataElement.displayFormName())
+                .optionSet(dataElement.optionSet())
+                .categoryCombo(it.categoryCombo()).build()
+        }
+            ?: dataElement
     }
 
     override fun getDataValues(
@@ -243,7 +250,7 @@ class DataValueRepositoryImpl(private val d2: D2, private val dataSetUid: String
                     dataValue.attributeOptionCombo(),
                     value,
                     dataValue.storedBy(),
-                    "",  //no used anywhere, remove this field
+                    "", // no used anywhere, remove this field
                     uidCatOptions,
                     mapDataElementCatCombo[dataValue.dataElement()]
                 )
@@ -438,7 +445,7 @@ class DataValueRepositoryImpl(private val d2: D2, private val dataSetUid: String
     ): List<CategoryOptionCombo> {
         val catOptionCombos: MutableList<CategoryOptionCombo> =
             ArrayList()
-        for (catOptions in catOptionsList) {
+        catOptionsList.forEach { catOptions ->
             catOptionCombos.addAll(
                 d2.categoryModule().categoryOptionCombos()
                     .byCategoryOptions(UidsHelper.getUidsList(catOptions))
@@ -448,5 +455,4 @@ class DataValueRepositoryImpl(private val d2: D2, private val dataSetUid: String
         }
         return catOptionCombos
     }
-
 }
