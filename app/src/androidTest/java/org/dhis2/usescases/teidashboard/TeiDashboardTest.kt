@@ -25,6 +25,28 @@ class TeiDashboardTest : BaseTest() {
         prepareTeiCompletedProgrammeIntentAndLaunchActivity()
     }
 
+    @Test
+    fun shouldSuccessfullyCreateANoteWhenClickCreateNote() {
+        //click en notes
+        //click en fab +
+        //create a new note
+        //click in create
+
+        prepareTeiCompletedProgrammeIntentAndLaunchActivity()
+
+        teiDashboardRobot {
+            clickOnPinTab()
+        }
+
+        noteRobot {
+            clickOnFabAddNewNote()
+            typeNote()
+            clickOnSaveButton()
+        }
+
+        Thread.sleep(1000)
+    }
+
     private fun prepareTeiCompletedProgrammeIntentAndLaunchActivity() {
         Intent().apply {
             putExtra(CHILD_PROGRAM_UID, CHILD_PROGRAM_UID_VALUE)
