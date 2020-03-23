@@ -6,13 +6,14 @@ import androidx.test.espresso.action.ViewActions.clearText
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.intent.Intents
-import androidx.test.espresso.intent.matcher.IntentMatchers
 import androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent
 import androidx.test.espresso.intent.matcher.IntentMatchers.hasExtra
 import androidx.test.espresso.matcher.ViewMatchers.*
 import org.dhis2.R
 import org.dhis2.common.BaseRobot
+import org.dhis2.common.viewactions.ClickDrawableAction
 import org.dhis2.usescases.BaseTest
+import org.dhis2.usescases.qrScanner.ScanActivity
 import org.dhis2.utils.WebViewActivity
 import org.hamcrest.CoreMatchers
 import org.hamcrest.CoreMatchers.containsString
@@ -56,6 +57,10 @@ class LoginRobot : BaseRobot() {
         onView(withId(R.id.login)).perform(click())
     }
 
+    fun clickQRButton(){
+        onView(withId(R.id.server_url_edit)).perform(ClickDrawableAction(ClickDrawableAction.RIGHT))
+    }
+
     fun checkLoginButtonIsHidden() {
         onView(withId(R.id.login)).check(matches(not(isDisplayed())))
     }
@@ -84,6 +89,10 @@ class LoginRobot : BaseRobot() {
         Intents.intended(CoreMatchers.allOf(hasExtra(WebViewActivity.WEB_VIEW_URL,
                 "${BaseTest.MOCK_SERVER_URL}/dhis-web-commons/security/recovery.action"),
                 hasComponent(WebViewActivity::class.java.name)))
+    }
+
+    fun checkQRScanIsOpened(){
+        Intents.intended(CoreMatchers.allOf(hasComponent(ScanActivity::class.java.name)))
     }
 
     companion object {

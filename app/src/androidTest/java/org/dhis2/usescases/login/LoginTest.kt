@@ -158,7 +158,13 @@ class LoginTest : BaseTest() {
 
     @Test
     fun shouldGenerateLoginThroughQR() {
+        enableIntents()
+        startLoginActivity()
 
+        loginRobot {
+            clickQRButton()
+            checkQRScanIsOpened()
+        }
     }
 
     fun startMainActivity(){

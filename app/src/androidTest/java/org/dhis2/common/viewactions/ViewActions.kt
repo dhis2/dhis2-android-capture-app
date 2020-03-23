@@ -1,4 +1,4 @@
-package org.dhis2.common
+package org.dhis2.common.viewactions
 
 import android.view.View
 import android.widget.Spinner
