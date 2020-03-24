@@ -79,7 +79,6 @@ public class SyncMetadataWorker extends Worker {
 
             String lastDataSyncDate = DateUtils.dateTimeFormat().format(Calendar.getInstance().getTime());
 
-            //SharedPreferences prefs = getApplicationContext().getSharedPreferences(Constants.SHARE_PREFS, Context.MODE_PRIVATE);
             prefs.setValue(Constants.LAST_META_SYNC, lastDataSyncDate);
             prefs.setValue(Constants.LAST_META_SYNC_STATUS, isMetaOk);
             prefs.setValue(Constants.LAST_META_SYNC_NO_NETWORK, noNetwork);
