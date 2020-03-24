@@ -3,7 +3,6 @@ package org.dhis2.data.service;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Build;
 
 import androidx.annotation.NonNull;
@@ -13,15 +12,14 @@ import androidx.work.Data;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
-import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.perf.metrics.AddTrace;
 
 import org.dhis2.App;
 import org.dhis2.R;
+import org.dhis2.data.prefs.PreferenceProvider;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.NetworkUtils;
-import org.hisp.dhis.android.core.D2Manager;
 
 import java.util.Calendar;
 
@@ -31,10 +29,6 @@ import timber.log.Timber;
 
 import static org.dhis2.utils.analytics.AnalyticsConstants.METADATA_TIME;
 
-/**
- * QUADRAM. Created by ppajuelo on 23/10/2018.
- */
-
 public class SyncMetadataWorker extends Worker {
 
     private static final String METADATA_CHANNEL = "sync_metadata_notification";
@@ -42,6 +36,9 @@ public class SyncMetadataWorker extends Worker {
 
     @Inject
     SyncPresenter presenter;
+
+    @Inject
+    PreferenceProvider prefs;
 
     public SyncMetadataWorker(
             @NonNull Context context,
@@ -82,10 +79,10 @@ public class SyncMetadataWorker extends Worker {
 
             String lastDataSyncDate = DateUtils.dateTimeFormat().format(Calendar.getInstance().getTime());
 
-            SharedPreferences prefs = getApplicationContext().getSharedPreferences(Constants.SHARE_PREFS, Context.MODE_PRIVATE);
-            prefs.edit().putString(Constants.LAST_META_SYNC, lastDataSyncDate).apply();
-            prefs.edit().putBoolean(Constants.LAST_META_SYNC_STATUS, isMetaOk).apply();
-            prefs.edit().putBoolean(Constants.LAST_META_SYNC_NO_NETWORK, noNetwork).apply();
+            //SharedPreferences prefs = getApplicationContext().getSharedPreferences(Constants.SHARE_PREFS, Context.MODE_PRIVATE);
+            prefs.setValue(Constants.LAST_META_SYNC, lastDataSyncDate);
+            prefs.setValue(Constants.LAST_META_SYNC_STATUS, isMetaOk);
+            prefs.setValue(Constants.LAST_META_SYNC_NO_NETWORK, noNetwork);
 
             cancelNotification();
 
