@@ -232,7 +232,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                                                             optionSets.add(fieldViewModel.optionSet());
                                                             totalFields++;
                                                         }
-                                                        if (fieldViewModel instanceof UnsupportedViewModel)
+                                                        if (fieldViewModel instanceof UnsupportedViewModel || fieldViewModel instanceof DisplayViewModel)
                                                             unsupportedFields++;
                                                     }
 
