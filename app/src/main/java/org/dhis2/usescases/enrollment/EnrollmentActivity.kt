@@ -244,15 +244,6 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
             .setMessage(getString(R.string.missing_mandatory_fields))
             .setEmptyMandatoryFields(emptyMandatoryFields.keys.toList())
             .show(supportFragmentManager, AlertBottomDialog::class.java.simpleName)
-
-        val fields = adapter.currentList.toMutableList()
-        val sections = fields.filterIsInstance<SectionViewModel>()
-        sections.forEach { section ->
-            var errors = 0;
-            repeat(emptyMandatoryFields.filter { it.value == section.uid() }.size) { errors++}
-            fields[fields.indexOf(section)] = section.withErrors(errors)
-        }
-        adapter.swap(fields) {}
     }
 
     override fun showErrorFieldsMessage(errorFields: List<String>) {
