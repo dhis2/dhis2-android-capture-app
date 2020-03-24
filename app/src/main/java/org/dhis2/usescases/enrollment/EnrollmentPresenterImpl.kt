@@ -305,7 +305,7 @@ class EnrollmentPresenterImpl(
                     errorFields[field.programStageSection() ?: section] = field.label()
                 }
                 if (field.mandatory() && field.value().isNullOrEmpty()) {
-                    mandatoryFields[field.programStageSection() ?: section] = field.label()
+                    mandatoryFields[field.label()] = field.programStageSection() ?: section
                 }
             }
 
@@ -315,6 +315,12 @@ class EnrollmentPresenterImpl(
             ) {
                 iterator.remove()
             }
+        }
+        val sections = finalList.filterIsInstance<SectionViewModel>()
+        sections.forEach { section ->
+            var errors = 0;
+            repeat(mandatoryFields.filter { it.value == section.uid() }.size) { errors++}
+            finalList[finalList.indexOf(section)] = section.withErrors(errors)
         }
         return finalList
     }

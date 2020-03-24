@@ -373,6 +373,7 @@
 
     <color name="warning_color">#F19525</color>
     <color name="error_color">#F11E1E</color>
+    <color name="section_error_color">#E91E63</color>
 
     <color name="state_by_sms">#26215E8C</color>
     <color name="state_error">#26FF0000</color>

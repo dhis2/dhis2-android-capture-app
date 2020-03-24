@@ -9,6 +9,7 @@ import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 @AutoValue
 public abstract class SectionViewModel extends FieldViewModel {
@@ -23,6 +24,9 @@ public abstract class SectionViewModel extends FieldViewModel {
 
     @NonNull
     public abstract Integer completedFields();
+
+    @Nullable
+    public abstract Integer errors();
 
     @NonNull
     public abstract String rendering();
@@ -45,6 +49,7 @@ public abstract class SectionViewModel extends FieldViewModel {
                 isOpen,
                 totalFields,
                 completedFields,
+                null,
                 rendering != null ? rendering : ProgramStageSectionRenderingType.LISTING.name()
         );
     }
@@ -67,6 +72,7 @@ public abstract class SectionViewModel extends FieldViewModel {
                 false,
                 0,
                 0,
+                null,
                 ProgramStageSectionRenderingType.LISTING.name()
         );
     }
@@ -77,8 +83,7 @@ public abstract class SectionViewModel extends FieldViewModel {
     }
 
     @NonNull
-    @Override
-    public FieldViewModel withError(@NonNull String error) {
+    public SectionViewModel withErrors(@NonNull Integer errors) {
         return new AutoValue_SectionViewModel(
                 uid(),
                 label(),
@@ -89,15 +94,23 @@ public abstract class SectionViewModel extends FieldViewModel {
                 false,
                 null,
                 null,
-                error,
+                null,
                 description(),
                 objectStyle(),
                 null,
                 isOpen(),
                 totalFields(),
                 completedFields(),
+                errors,
                 rendering()
+
         );
+    }
+
+    @NonNull
+    @Override
+    public FieldViewModel withError(@NonNull String error) {
+        return this;
     }
 
     @NonNull
@@ -136,6 +149,7 @@ public abstract class SectionViewModel extends FieldViewModel {
                 isOpen,
                 totalFields(),
                 completedFields(),
+                errors(),
                 rendering()
         );
     }
@@ -158,6 +172,7 @@ public abstract class SectionViewModel extends FieldViewModel {
                 isOpen(),
                 totalFields,
                 completedFields(),
+                errors(),
                 rendering()
         );
     }
@@ -180,6 +195,7 @@ public abstract class SectionViewModel extends FieldViewModel {
                 isOpen(),
                 totalFields(),
                 completedFields,
+                errors(),
                 rendering()
         );
     }
