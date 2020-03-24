@@ -16,9 +16,9 @@ import androidx.paging.PagedList;
 
 import org.dhis2.R;
 import org.dhis2.data.schedulers.SchedulerProvider;
+import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.databinding.WidgetDatepickerBinding;
-import org.dhis2.usescases.enrollment.EnrollmentActivity;
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel;
 import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.Constants;
@@ -47,10 +47,14 @@ import java.util.Map;
 
 import javax.annotation.Nullable;
 
+import io.reactivex.BackpressureStrategy;
+import io.reactivex.Flowable;
 import io.reactivex.Observable;
+import io.reactivex.Single;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.processors.FlowableProcessor;
 import io.reactivex.processors.PublishProcessor;
+import io.reactivex.subjects.BehaviorSubject;
 import timber.log.Timber;
 
 import static android.app.Activity.RESULT_OK;
@@ -59,18 +63,14 @@ import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
 import static org.dhis2.utils.analytics.AnalyticsConstants.CREATE_ENROLL;
 import static org.dhis2.utils.analytics.AnalyticsConstants.SEARCH_TEI;
 
-/**
- * QUADRAM. Created by ppajuelo on 02/11/2017.
- */
-
 public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
     private static final int MAX_NO_SELECTED_PROGRAM_RESULTS = 5;
     private final SearchRepository searchRepository;
     private final D2 d2;
     private final SchedulerProvider schedulerProvider;
-    private SearchTEContractsModule.View view;
-
+    private final SearchTEContractsModule.View view;
+    private final BehaviorSubject<String> programSubject;
     private Program selectedProgram;
 
     private CompositeDisposable compositeDisposable;
@@ -81,12 +81,12 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
     private FlowableProcessor<HashMap<String, String>> queryProcessor;
     private String trackedEntityType;
-    private String initialProgram;
     private FlowableProcessor<Unit> mapProcessor;
     private FlowableProcessor<Unit> enrollmentMapProcessor;
     private Dialog dialogDisplayed;
 
-    public SearchTEPresenter(D2 d2, SearchRepository searchRepository, SchedulerProvider schedulerProvider) {
+    public SearchTEPresenter(SearchTEContractsModule.View view, D2 d2, SearchRepository searchRepository, SchedulerProvider schedulerProvider, @Nullable String initialProgram) {
+        this.view = view;
         this.searchRepository = searchRepository;
         this.d2 = d2;
         this.schedulerProvider = schedulerProvider;
@@ -94,121 +94,138 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         queryProcessor = PublishProcessor.create();
         mapProcessor = PublishProcessor.create();
         enrollmentMapProcessor = PublishProcessor.create();
+        programSubject = BehaviorSubject.createDefault(initialProgram != null ? initialProgram : "");
+        this.selectedProgram = initialProgram != null ?
+                d2.programModule().programs().uid(initialProgram).blockingGet() : null;
     }
 
     //-----------------------------------
     //region LIFECYCLE
 
     @Override
-    public void init(SearchTEContractsModule.View view, String trackedEntityType, String initialProgram) {
-        this.view = view;
+    public void init(String trackedEntityType) {
         compositeDisposable = new CompositeDisposable();
         this.trackedEntityType = trackedEntityType;
-        this.initialProgram = initialProgram;
 
         compositeDisposable.add(
                 searchRepository.getTrackedEntityType(trackedEntityType)
                         .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.io())
-                        .flatMap(trackedEntity ->
-                        {
-                            this.trackedEntity = trackedEntity;
-                            return searchRepository.programsWithRegistration(trackedEntityType);
-                        })
-                        .subscribeOn(schedulerProvider.ui())
+                        .flatMap(trackedEntity -> searchRepository.programsWithRegistration(trackedEntityType)
+                                .map(programs -> Pair.create(trackedEntity, programs)))
+                        .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.ui())
-                        .subscribe(programs -> {
-
-                                    List<Program> programsWithTEType = new ArrayList<>();
-                                    for (Program program : programs) {
-                                        if (program.trackedEntityType().equals(trackedEntityType))
-                                            programsWithTEType.add(program);
-                                        if (program.uid().equals(initialProgram))
-                                            this.selectedProgram = program;
-                                    }
+                        .subscribe(data -> {
+                                    this.trackedEntity = data.val0();
+                                    List<Program> programs = data.val1();
                                     Collections.sort(programs, (program1, program2) -> program1.displayName().compareToIgnoreCase(program2.displayName()));
-                                    if (selectedProgram == null && programsWithTEType.size() == 1) {
-                                        setProgram(programsWithTEType.get(0));
-                                        view.setPrograms(programsWithTEType);
-                                    } else if (selectedProgram != null) {
-                                        setProgram(selectedProgram);
-                                        view.setPrograms(programs);
-                                    } else {
-                                        setProgram(null);
-                                        view.setPrograms(programs);
-                                    }
-                                    startFilterManager();
-
+                                    view.setPrograms(programs);
+                                    view.featureType(trackedEntity.featureType() != null ? trackedEntity.featureType() : FeatureType.NONE);
                                 }, Timber::d
                         ));
-
-        compositeDisposable.add(
-                searchRepository.getTrackedEntityType(trackedEntityType)
-                        .map(teiType -> teiType.featureType() != null ? teiType.featureType() : FeatureType.NONE)
-                        .subscribeOn(schedulerProvider.io())
-                        .observeOn(schedulerProvider.ui())
-                        .subscribe(
-                                view.featureType(),
-                                Timber::d
-                        )
-        );
-
-        compositeDisposable.add(
-                mapProcessor
-                        .flatMap(unit ->
-                                queryProcessor.startWith(queryData)
-                                        .flatMap(query ->
-                                                searchRepository.searchTeiForMap(
-                                                        selectedProgram, trackedEntityType,
-                                                        FilterManager.getInstance().getOrgUnitUidsFilters(),
-                                                        FilterManager.getInstance().getStateFilters(),
-                                                        query, NetworkUtils.isOnline(view.getContext())))
-                                        .map(GeometryUtils.INSTANCE::getSourceFromTeis)
-                        )
-                        .subscribeOn(schedulerProvider.io())
-                        .observeOn(schedulerProvider.ui())
-                        .subscribe(
-                                map -> view.setMap(map.component1(), map.component2()),
-                                Timber::e,
-                                () -> Timber.d("COMPLETED")
-                        ));
-
-    }
-
-    @Override
-    public void initSearch(SearchTEContractsModule.View view) {
 
         compositeDisposable.add(view.rowActionss()
                 .subscribeOn(schedulerProvider.ui())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(data -> {
                             Map<String, String> queryDataBU = new HashMap<>(queryData);
-                            view.setFabIcon(true);
-                            if (!DhisTextUtils.Companion.isEmpty(data.value())) {
-                                queryData.put(data.id(), data.value());
-                                if (data.requiresExactMatch())
-                                    if (data.value().equals("null_os_null"))
-                                        queryData.remove(data.id());
-                            } else {
-                                queryData.remove(data.id());
-                            }
-
-                            if (!queryData.equals(queryDataBU)) { //Only when queryData has changed
-                                if (!DhisTextUtils.Companion.isEmpty(data.value()))
+                            view.setFabIcon(!data.id().isEmpty());
+                            if (!data.id().isEmpty()) {
+                                if (!DhisTextUtils.Companion.isEmpty(data.value())) {
                                     queryData.put(data.id(), data.value());
-                                else
+                                    if (data.requiresExactMatch())
+                                        if (data.value().equals("null_os_null"))
+                                            queryData.remove(data.id());
+                                } else {
                                     queryData.remove(data.id());
+                                }
+
+                                if (!queryData.equals(queryDataBU)) { //Only when queryData has changed
+                                    if (!DhisTextUtils.Companion.isEmpty(data.value()))
+                                        queryData.put(data.id(), data.value());
+                                    else
+                                        queryData.remove(data.id());
+                                }
                             }
                         },
                         Timber::d)
         );
 
         compositeDisposable.add(
-                queryProcessor
-                        .doOnNext(queryData -> {
-                            if (view.isMapVisible() && selectedProgram != null)
-                                mapProcessor.onNext(new Unit());
+                Flowable.combineLatest(
+                        programSubject.distinctUntilChanged()
+                                .switchMap(programUid -> {
+                                    if (programUid.isEmpty()) {
+                                        return searchRepository.trackedEntityTypeAttributes()
+                                                .map(attributes -> new SearchProgramAttributes(attributes, new ArrayList<>()));
+                                    } else {
+                                        return searchRepository.programAttributes(programUid);
+                                    }
+                                }).toFlowable(BackpressureStrategy.LATEST),
+                        queryProcessor.startWith(queryData),
+                        Pair::create)
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
+                        .subscribe(
+                                result -> view.setForm(
+                                        result.val0().getTrackedEntityAttributes(),
+                                        selectedProgram,
+                                        result.val1(),
+                                        result.val0().getRendering().isEmpty() ? null : result.val0().getRendering()
+                                ),
+                                Timber::e
+                        ));
+
+        compositeDisposable.add(
+                programSubject.distinctUntilChanged()
+                        .switchMapSingle(programUid -> {
+                            if (programUid.isEmpty()) {
+                                return Single.just(Program.builder().uid("").build());
+                            } else {
+                                return d2.programModule().programs().uid(programUid).get();
+                            }
                         })
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
+                        .subscribe(
+                                programSelected -> {
+                                    boolean otherProgramSelected = selectedProgram == programSelected;
+                                    selectedProgram = programSelected;
+                                    view.clearList(programSelected == null ? null : programSelected.uid());
+                                    view.clearData();
+                                    view.setFabIcon(true);
+
+                                    if (!otherProgramSelected) {
+                                        queryData.clear();
+
+                                        if (queryData.isEmpty())
+                                            queryProcessor.onNext(new HashMap<>());
+                                        else
+                                            queryProcessor.onNext(queryData);
+                                    }
+                                },
+                                Timber::e
+                        ));
+
+        compositeDisposable.add(
+                Flowable.combineLatest(
+                        programSubject.distinctUntilChanged()
+                                .switchMapSingle(programUid -> {
+                                    if (programUid.isEmpty()) {
+                                        return Single.just(Program.builder().uid("").build());
+                                    } else {
+                                        return d2.programModule().programs().uid(programUid).get();
+                                    }
+                                }).toFlowable(BackpressureStrategy.LATEST),
+                        FilterManager.getInstance().asFlowable()
+                                .startWith(FilterManager.getInstance()),
+                        queryProcessor.startWith(queryData)
+                                .doOnNext(currentQueryData -> {
+                                    if (view.isMapVisible() && selectedProgram != null)
+                                        mapProcessor.onNext(new Unit());
+                                }),
+                        Trio::create)
+                        .map(Trio::val2)
                         .map(map -> {
                             HashMap<String, String> data = new HashMap<>(map);
                             return searchRepository.searchTrackedEntities(
@@ -223,16 +240,14 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                         .doOnError(this::handleError)
                         .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.ui())
-                        .subscribe(view::setLiveData, Timber::d)
-        );
+                        .subscribe(
+                                liveData -> {
+                                    view.setLiveData(liveData);
+                                    view.clearData();
+                                },
+                                Timber::e
 
-        compositeDisposable.add(
-                queryProcessor
-                        .startWith(queryData)
-                        .subscribeOn(schedulerProvider.ui())
-                        .observeOn(schedulerProvider.ui())
-                        .subscribe(data -> view.clearData(), Timber::d)
-        );
+                        ));
 
         compositeDisposable.add(
                 FilterManager.getInstance().ouTreeFlowable()
@@ -275,6 +290,26 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                         )
         );
 
+        compositeDisposable.add(
+                mapProcessor
+                        .flatMap(unit ->
+                                queryProcessor.startWith(queryData)
+                                        .flatMap(query ->
+                                                searchRepository.searchTeiForMap(
+                                                        selectedProgram, trackedEntityType,
+                                                        FilterManager.getInstance().getOrgUnitUidsFilters(),
+                                                        FilterManager.getInstance().getStateFilters(),
+                                                        query, NetworkUtils.isOnline(view.getContext())))
+                                        .map(GeometryUtils.INSTANCE::getSourceFromTeis)
+                        )
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
+                        .subscribe(
+                                map -> view.setMap(map.component1(), map.component2()),
+                                Timber::e,
+                                () -> Timber.d("COMPLETED")
+                        ));
+
     }
 
     @Override
@@ -285,8 +320,11 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
     //------------------------------------------
     //region DATA
+
+
     @Override
-    public Trio<PagedList<SearchTeiModel>, String, Boolean> getMessage(PagedList<SearchTeiModel> list) {
+    public Trio<PagedList<SearchTeiModel>, String, Boolean> getMessage
+            (PagedList<SearchTeiModel> list) {
 
         int size = list.size();
 
@@ -353,46 +391,6 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         }
     }
 
-    private void getTrackedEntityTypeAttributes() {
-        compositeDisposable.add(searchRepository.trackedEntityTypeAttributes()
-                .subscribeOn(schedulerProvider.io())
-                .observeOn(schedulerProvider.ui())
-                .subscribe(
-                        data -> view.setForm(data, selectedProgram, queryData, null),
-                        Timber::d)
-        );
-    }
-
-    private void getProgramTrackedEntityAttributes() {
-        compositeDisposable.add(searchRepository.programAttributes(selectedProgram.uid())
-                .subscribeOn(schedulerProvider.io())
-                .observeOn(schedulerProvider.ui())
-                .subscribe(
-                        data -> view.setForm(data.getTrackedEntityAttributes(), selectedProgram, queryData, data.getRendering()),
-                        Timber::d)
-        );
-    }
-
-    private void startFilterManager() {
-        compositeDisposable.add(
-                FilterManager.getInstance().asFlowable()
-                        .startWith(FilterManager.getInstance())
-                        .map(filterManager -> searchRepository.searchTrackedEntities(
-                                selectedProgram, trackedEntityType,
-                                filterManager.getOrgUnitUidsFilters(),
-                                filterManager.getStateFilters(),
-                                filterManager.getEventStatusFilters(),
-                                queryData,
-                                filterManager.getAssignedFilter(),
-                                NetworkUtils.isOnline(view.getContext())))
-                        .subscribeOn(schedulerProvider.computation())
-                        .observeOn(schedulerProvider.ui())
-                        .subscribe(
-                                view::setLiveData,
-                                Timber::d)
-        );
-    }
-
     @Override
     public TrackedEntityType getTrackedEntityName() {
         return trackedEntity;
@@ -413,24 +411,18 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         view.clearData();
         view.setFabIcon(true);
 
-        if (selectedProgram == null)
-            getTrackedEntityTypeAttributes();
-        else
-            getProgramTrackedEntityAttributes();
-
-        if (!otherProgramSelected)
+        if (!otherProgramSelected) {
             queryData.clear();
-
-        if (queryData.isEmpty())
             queryProcessor.onNext(new HashMap<>());
-        else
-            queryProcessor.onNext(queryData);
+        } else {
+            programSubject.onNext(programSelected != null ? programSelected.uid() : "");
+        }
     }
 
     @Override
     public void onClearClick() {
         queryData.clear();
-        setProgram(selectedProgram);
+        queryProcessor.onNext(queryData);
     }
 
 
@@ -503,7 +495,8 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         );
     }
 
-    private void showNativeCalendar(OrganisationUnit selectedOrgUnit, String programUid, String uid) {
+    private void showNativeCalendar(OrganisationUnit selectedOrgUnit, String programUid, String
+            uid) {
         Calendar c = Calendar.getInstance();
         int year = c.get(Calendar.YEAR);
         int month = c.get(Calendar.MONTH);
@@ -558,7 +551,8 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         dateDialog.show();
     }
 
-    private void showCustomCalendar(OrganisationUnit selectedOrgUnit, String programUid, String uid) {
+    private void showCustomCalendar(OrganisationUnit selectedOrgUnit, String programUid, String
+            uid) {
 
         if (dialogDisplayed == null || !dialogDisplayed.isShowing()) {
             LayoutInflater layoutInflater = LayoutInflater.from(view.getContext());
@@ -616,11 +610,13 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     }
 
 
-    private void showEnrollmentDatePicker(OrganisationUnit selectedOrgUnit, String programUid, String uid) {
+    private void showEnrollmentDatePicker(OrganisationUnit selectedOrgUnit, String
+            programUid, String uid) {
         showCustomCalendar(selectedOrgUnit, programUid, uid);
     }
 
-    private void enrollInOrgUnit(String orgUnitUid, String programUid, String uid, Date enrollmentDate) {
+    private void enrollInOrgUnit(String orgUnitUid, String programUid, String uid, Date
+            enrollmentDate) {
         compositeDisposable.add(
                 searchRepository.saveToEnroll(trackedEntity.uid(), orgUnitUid, programUid, uid, queryData, enrollmentDate)
                         .subscribeOn(schedulerProvider.computation())
@@ -628,8 +624,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                         .subscribe(enrollmentAndTEI -> {
                                     if (view.fromRelationshipTEI() == null) {
                                         this.view.analyticsHelper().setEvent(CREATE_ENROLL, CLICK, CREATE_ENROLL);
-                                        Intent intent = EnrollmentActivity.Companion.getIntent(view.getContext(), enrollmentAndTEI.val0(), selectedProgram.uid(), EnrollmentActivity.EnrollmentMode.NEW);
-                                        view.getContext().startActivity(intent);
+                                        view.openEnrollmentForm(enrollmentAndTEI.val0(), selectedProgram.uid());
                                     } else {
                                         addRelationship(enrollmentAndTEI.val1(), null, false);
                                     }
@@ -647,7 +642,8 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     }
 
     @Override
-    public void addRelationship(@NonNull String teiUid, @Nullable String relationshipTypeUid, boolean online) {
+    public void addRelationship(@NonNull String teiUid, @Nullable String relationshipTypeUid,
+                                boolean online) {
         if (teiUid.equals(view.fromRelationshipTEI())) {
             view.displayMessage(view.getContext().getString(R.string.relationship_error_recursive));
         } else if (!online) {
@@ -805,5 +801,10 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
             return ColorUtils.parseColor(selectedProgram.style().color());
         else
             return -1;
+    }
+
+    @Override
+    public void updateList() {
+        queryProcessor.onNext(queryData);
     }
 }

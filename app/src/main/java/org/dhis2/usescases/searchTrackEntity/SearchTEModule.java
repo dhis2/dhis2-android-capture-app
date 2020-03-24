@@ -17,9 +17,16 @@ import dagger.Provides;
 public class SearchTEModule {
 
     private final String teiType;
+    private final String initialProgram;
+    private final SearchTEContractsModule.View view;
 
-    public SearchTEModule(String tEType) {
+    public SearchTEModule(
+            SearchTEContractsModule.View view,
+            String tEType,
+            String initialProgram) {
+        this.view = view;
         this.teiType = tEType;
+        this.initialProgram = initialProgram;
     }
 
     @Provides
@@ -31,7 +38,7 @@ public class SearchTEModule {
     @Provides
     @PerActivity
     SearchTEContractsModule.Presenter providePresenter(D2 d2, SearchRepository searchRepository, SchedulerProvider schedulerProvider) {
-        return new SearchTEPresenter(d2, searchRepository, schedulerProvider);
+        return new SearchTEPresenter(view, d2, searchRepository, schedulerProvider, initialProgram);
     }
 
     @Provides

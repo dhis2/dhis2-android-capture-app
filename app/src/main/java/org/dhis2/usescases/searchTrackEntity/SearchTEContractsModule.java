@@ -29,7 +29,6 @@ import java.util.List;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.functions.Consumer;
-import kotlin.Pair;
 
 /**
  * QUADRAM. Created by ppajuelo on 02/11/2017.
@@ -77,7 +76,7 @@ public class SearchTEContractsModule {
 
         void updateFiltersSearch(int totalFilters);
 
-        Consumer<FeatureType> featureType();
+        void featureType(FeatureType featureType);
 
         void setMap(HashMap<String, FeatureCollection> teiFeatureCollections, BoundingBox boundingBox);
 
@@ -86,11 +85,13 @@ public class SearchTEContractsModule {
         boolean isMapVisible();
 
         void openDashboard(String teiUid, String programUid, String enrollmentUid);
+
+        void openEnrollmentForm(String enrollmentUid, String programUid);
     }
 
     public interface Presenter {
 
-        void init(View view, String trackedEntityType, String initialProgram);
+        void init(String trackedEntityType);
 
         void onDestroy();
 
@@ -112,7 +113,7 @@ public class SearchTEContractsModule {
 
         void addRelationship(@NonNull String teiUid, @Nullable String relationshipTypeUid, boolean online);
 
-        void downloadTei(String teiUid,String enrollmentUid);
+        void downloadTei(String teiUid, String enrollmentUid);
 
         void downloadTeiForRelationship(String TEIuid, String relationshipTypeUid);
 
@@ -123,8 +124,6 @@ public class SearchTEContractsModule {
         Trio<PagedList<SearchTeiModel>, String, Boolean> getMessage(PagedList<SearchTeiModel> list);
 
         HashMap<String, String> getQueryData();
-
-        void initSearch(SearchTEContractsModule.View view);
 
         void onSyncIconClick(String teiUid);
 
@@ -149,5 +148,7 @@ public class SearchTEContractsModule {
         int getTEIColor();
 
         int getEnrollmentColor();
+
+        void updateList();
     }
 }
