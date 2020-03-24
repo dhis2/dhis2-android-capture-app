@@ -18,6 +18,7 @@ import org.dhis2.data.forms.dataentry.StoreResult
 import org.dhis2.data.forms.dataentry.ValueStore
 import org.dhis2.data.forms.dataentry.ValueStoreImpl
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel
+import org.dhis2.data.forms.dataentry.fields.display.DisplayViewModel
 import org.dhis2.data.forms.dataentry.fields.option_set.OptionSetViewModel
 import org.dhis2.data.forms.dataentry.fields.section.SectionViewModel
 import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel
@@ -288,7 +289,7 @@ class EnrollmentPresenterImpl(
                 iterator.set(sectionViewModel)
             }
 
-            if (field !is SectionViewModel) {
+            if (field !is SectionViewModel && field !is DisplayViewModel) {
                 val isUnique =
                     d2.trackedEntityModule().trackedEntityAttributes().uid(field.uid()).blockingGet()?.unique() ?: false
                 var uniqueValueAlreadyExist: Boolean
