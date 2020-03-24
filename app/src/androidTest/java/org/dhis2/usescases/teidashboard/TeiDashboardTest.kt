@@ -39,12 +39,14 @@ class TeiDashboardTest : BaseTest() {
         }
 
         noteRobot {
+            checkFabDisplay()
             clickOnFabAddNewNote()
-            typeNote()
-            clickOnSaveButton()
+            //typeNote()
+            //closeKeyboard()
+            //clickOnSaveButton()
         }
 
-        Thread.sleep(1000)
+        Thread.sleep(10000)
     }
 
     private fun prepareTeiCompletedProgrammeIntentAndLaunchActivity() {
