@@ -26,7 +26,7 @@ class NoteRobot: BaseRobot() {
     }
 
     fun typeNote() {
-        onView(withId(R.id.note)).perform(TypeTextAction("fkjadshfkjhdsakjfsa"))
+        onView(withId(R.id.noteText)).perform(click(), TypeTextAction("fkjadshfkjhdsakjfsa"))
     }
 
     fun clickOnSaveButton() {

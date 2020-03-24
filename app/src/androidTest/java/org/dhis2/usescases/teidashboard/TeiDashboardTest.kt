@@ -21,11 +21,6 @@ class TeiDashboardTest : BaseTest() {
     }
 
     @Test
-    fun openTeiDashboard() {
-        prepareTeiCompletedProgrammeIntentAndLaunchActivity()
-    }
-
-    @Test
     fun shouldSuccessfullyCreateANoteWhenClickCreateNote() {
         //click en notes
         //click en fab +
@@ -41,12 +36,12 @@ class TeiDashboardTest : BaseTest() {
         noteRobot {
             checkFabDisplay()
             clickOnFabAddNewNote()
-            //typeNote()
+            typeNote()
             //closeKeyboard()
             //clickOnSaveButton()
         }
 
-        Thread.sleep(10000)
+      Thread.sleep(10000)
     }
 
     private fun prepareTeiCompletedProgrammeIntentAndLaunchActivity() {

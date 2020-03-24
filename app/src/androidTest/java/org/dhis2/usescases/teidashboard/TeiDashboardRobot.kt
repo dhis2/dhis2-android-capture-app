@@ -14,6 +14,8 @@ fun teiDashboardRobot(teiDashboardRobot: TeiDashboardRobot.() -> Unit) {
 
 class TeiDashboardRobot: BaseRobot () {
     fun clickOnPinTab() {
+        //tab_layout
         onView(clickOnTab(3)).perform(click())
+        Thread.sleep(500)
     }
 }
