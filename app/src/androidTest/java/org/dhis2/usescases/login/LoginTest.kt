@@ -3,9 +3,6 @@ package org.dhis2.usescases.login
 import android.Manifest
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
-import org.dhis2.common.di.TestingInjector
-import org.dhis2.common.keystore.KeyStoreRobot.Companion.KEYSTORE_PASSWORD
-import org.dhis2.common.keystore.KeyStoreRobot.Companion.KEYSTORE_USERNAME
 import org.dhis2.data.prefs.Preference.Companion.PIN
 import org.dhis2.data.prefs.Preference.Companion.SESSION_LOCKED
 import org.dhis2.usescases.BaseTest
@@ -146,14 +143,6 @@ class LoginTest : BaseTest() {
     fun shouldGoToHomeScreenWhenUserIsLoggedIn() {
         setupCredentials()
         startLoginActivity()
-    }
-
-    private fun setupCredentials() {
-        val keyStoreRobot = TestingInjector.providesKeyStoreRobot(context)
-        keyStoreRobot.apply {
-            setData(KEYSTORE_USERNAME, "android")
-            setData(KEYSTORE_PASSWORD, "Android123")
-        }
     }
 
     @Test

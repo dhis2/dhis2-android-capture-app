@@ -72,6 +72,14 @@ open class BaseTest {
         }
     }
 
+    fun setupCredentials() {
+        val keyStoreRobot = TestingInjector.providesKeyStoreRobot(context)
+        keyStoreRobot.apply {
+            setData(KEYSTORE_USERNAME, "android")
+            setData(KEYSTORE_PASSWORD, "Android123")
+        }
+    }
+
     private fun disableIntents() {
         if (isIntentsEnable){
             Intents.release()

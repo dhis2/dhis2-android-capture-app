@@ -4,7 +4,6 @@ import android.view.View
 import androidx.annotation.NonNull
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.espresso.matcher.BoundedMatcher
-import androidx.test.espresso.matcher.ViewMatchers.*
 import org.hamcrest.Description
 import org.hamcrest.Matcher
 import org.hamcrest.TypeSafeMatcher
@@ -47,7 +46,6 @@ class RecyclerviewMatchers {
 
                 override fun matchesSafely(view: RecyclerView): Boolean {
                     val viewHolder = view.findViewHolderForAdapterPosition(position) ?: return false
-
                     return itemMatcher.matches(viewHolder.itemView)
                 }
             }

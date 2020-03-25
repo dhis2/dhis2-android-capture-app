@@ -3,8 +3,6 @@ package org.dhis2.usescases.main
 import android.Manifest
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
-import org.dhis2.common.di.TestingInjector
-import org.dhis2.common.keystore.KeyStoreRobot
 import org.dhis2.usescases.BaseTest
 import org.dhis2.usescases.login.loginRobot
 import org.junit.Rule
@@ -49,14 +47,6 @@ class MainTest : BaseTest() {
         loginRobot {
             checkUsernameFieldIsClear()
             checkPasswordFieldIsClear()
-        }
-    }
-
-    private fun setupCredentials() {
-        val keyStoreRobot = TestingInjector.providesKeyStoreRobot(context)
-        keyStoreRobot.apply {
-            setData(KeyStoreRobot.KEYSTORE_USERNAME, "android")
-            setData(KeyStoreRobot.KEYSTORE_PASSWORD, "Android123")
         }
     }
 

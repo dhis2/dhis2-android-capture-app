@@ -22,6 +22,7 @@ class TeiDashboardTest : BaseTest() {
 
     @Test
     fun shouldSuccessfullyCreateANoteWhenClickCreateNote() {
+        setupCredentials()
         prepareTeiCompletedProgrammeIntentAndLaunchActivity()
 
         teiDashboardRobot {
@@ -31,12 +32,10 @@ class TeiDashboardTest : BaseTest() {
         noteRobot {
             checkFabDisplay()
             clickOnFabAddNewNote()
-            typeNote()
+            typeNote("ThisIsJustATest")
             clickOnSaveButton()
-            //checkNewNoteWasCreated()
+            checkNewNoteWasCreated("ThisIsJustATest")
         }
-
-      Thread.sleep(10000)
     }
 
     @Test
@@ -50,10 +49,24 @@ class TeiDashboardTest : BaseTest() {
         noteRobot {
             checkFabDisplay()
             clickOnFabAddNewNote()
-            typeNote()
+            typeNote("InvalidNote")
             clickOnClearButton()
-            // click on clear dialog
-            // check recycler is empty
+            clickYesOnAlertDialog()
+            checkNoteWasNotCreated("InvalidNote")
+        }
+    }
+
+    @Test
+    fun shouldOpenNotesDetailed() {
+        prepareTeiCompletedProgrammeIntentAndLaunchActivity()
+
+        teiDashboardRobot {
+            clickOnPinTab()
+        }
+
+        noteRobot {
+            clickOnNote(0)
+            //checkear que es el texto esperado/usuario/etc..
         }
     }
 
