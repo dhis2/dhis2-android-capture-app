@@ -22,11 +22,6 @@ class TeiDashboardTest : BaseTest() {
 
     @Test
     fun shouldSuccessfullyCreateANoteWhenClickCreateNote() {
-        //click en notes
-        //click en fab +
-        //create a new note
-        //click in create
-
         prepareTeiCompletedProgrammeIntentAndLaunchActivity()
 
         teiDashboardRobot {
@@ -37,11 +32,29 @@ class TeiDashboardTest : BaseTest() {
             checkFabDisplay()
             clickOnFabAddNewNote()
             typeNote()
-            //closeKeyboard()
-            //clickOnSaveButton()
+            clickOnSaveButton()
+            //checkNewNoteWasCreated()
         }
 
       Thread.sleep(10000)
+    }
+
+    @Test
+    fun shouldNotCreateANoteWhenClickClear() {
+        prepareTeiCompletedProgrammeIntentAndLaunchActivity()
+
+        teiDashboardRobot {
+            clickOnPinTab()
+        }
+
+        noteRobot {
+            checkFabDisplay()
+            clickOnFabAddNewNote()
+            typeNote()
+            clickOnClearButton()
+            // click on clear dialog
+            // check recycler is empty
+        }
     }
 
     private fun prepareTeiCompletedProgrammeIntentAndLaunchActivity() {
