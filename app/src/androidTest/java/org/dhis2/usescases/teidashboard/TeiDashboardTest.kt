@@ -3,6 +3,7 @@ package org.dhis2.usescases.teidashboard
 import android.content.Intent
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
+import org.dhis2.R
 import org.dhis2.usescases.BaseTest
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity
 import org.junit.Rule
@@ -32,9 +33,10 @@ class TeiDashboardTest : BaseTest() {
         noteRobot {
             checkFabDisplay()
             clickOnFabAddNewNote()
-            typeNote("ThisIsJustATest")
+            typeNote(NOTE_VALID)
             clickOnSaveButton()
-            checkNewNoteWasCreated("ThisIsJustATest")
+            checkToastDisplayed(TOAST_TEXT_SAVED)
+            checkNewNoteWasCreated(NOTE_VALID)
         }
     }
 
@@ -49,10 +51,10 @@ class TeiDashboardTest : BaseTest() {
         noteRobot {
             checkFabDisplay()
             clickOnFabAddNewNote()
-            typeNote("InvalidNote")
+            typeNote(NOTE_INVALID)
             clickOnClearButton()
             clickYesOnAlertDialog()
-            checkNoteWasNotCreated("InvalidNote")
+            checkNoteWasNotCreated(NOTE_INVALID)
         }
     }
 
@@ -87,5 +89,9 @@ class TeiDashboardTest : BaseTest() {
 
         const val TEI_UID = "TEI_UID"
         const val TEI_UID_VALUE = "vOxUH373fy5"
+
+        const val TOAST_TEXT_SAVED = "Note saved"
+        const val NOTE_VALID = "ThisIsJustATest"
+        const val NOTE_INVALID = "InvalidNote"
     }
 }
