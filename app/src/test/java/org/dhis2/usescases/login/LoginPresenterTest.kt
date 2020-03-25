@@ -1,10 +1,11 @@
 package org.dhis2.usescases.login
 
 import co.infinum.goldfinger.Goldfinger
+import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
+import com.nhaarman.mockitokotlin2.verifyNoMoreInteractions
 import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Observable
 import junit.framework.Assert.assertTrue
@@ -17,6 +18,8 @@ import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.dhis2.data.server.UserManager
 import org.dhis2.usescases.main.MainActivity
 import org.dhis2.utils.Constants
+import org.dhis2.utils.Constants.SECURE_SERVER_URL
+import org.dhis2.utils.Constants.SECURE_USER_NAME
 import org.dhis2.utils.TestingCredential
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.dhis2.utils.analytics.CLICK
@@ -50,6 +53,7 @@ class LoginPresenterTest {
         loginPresenter.init(userManager)
 
         verify(view).startActivity(MainActivity::class.java, null, true, true, null)
+        verifyNoMoreInteractions(view)
     }
 
     @Test
@@ -60,6 +64,40 @@ class LoginPresenterTest {
         loginPresenter.init(userManager)
 
         verify(view).showUnlockButton()
+        verifyNoMoreInteractions(view)
+    }
+
+    @Test
+    fun `Should set server url and username if they are saved and user is not loggedIn`() {
+        val serverUrl = "https://test.com/"
+        val userName = "user"
+        val protocol = "https://"
+        whenever(userManager.isUserLoggedIn) doReturn Observable.just(false)
+        whenever(preferenceProvider.getBoolean("SessionLocked", false)) doReturn false
+        whenever(view.getDefaultServerProtocol()) doReturn protocol
+        whenever(
+            preferenceProvider.getString(SECURE_SERVER_URL, protocol)
+        ) doReturn serverUrl
+        whenever(preferenceProvider.getString(SECURE_USER_NAME, "")) doReturn userName
+
+        loginPresenter.init(userManager)
+
+        verify(view).setUrl(serverUrl)
+        verify(view).setUser(userName)
+        verify(view).getDefaultServerProtocol()
+        verifyNoMoreInteractions(view)
+    }
+
+    @Test
+    fun `Should set Url to default server protocol if userManager is null`() {
+        val defaultProtocol = "https://"
+        whenever(view.getDefaultServerProtocol()) doReturn defaultProtocol
+
+        loginPresenter.init(null)
+
+        verify(view).getDefaultServerProtocol()
+        verify(view).setUrl(any())
+        verifyNoMoreInteractions(view)
     }
 
     @Test
