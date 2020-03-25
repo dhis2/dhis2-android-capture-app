@@ -67,4 +67,9 @@ class NoteRobot: BaseRobot() {
     fun clickOnClearButton() {
         onView(withId(R.id.clearButton)).perform(click())
     }
+
+    fun checkNoteDetails(user: String, noteText: String) {
+        onView(withId(R.id.storeBy)).check(matches(withText(user)))
+        onView(withId(R.id.note)).check(matches(withText(noteText)))
+    }
 }

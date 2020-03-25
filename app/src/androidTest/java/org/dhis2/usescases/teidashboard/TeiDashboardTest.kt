@@ -59,7 +59,7 @@ class TeiDashboardTest : BaseTest() {
     }
 
     @Test
-    fun shouldOpenNotesDetailed() {
+    fun shouldOpenNotesDetailsWhenClickOnNote() {
         prepareTeiCompletedProgrammeIntentAndLaunchActivity()
 
         teiDashboardRobot {
@@ -68,7 +68,7 @@ class TeiDashboardTest : BaseTest() {
 
         noteRobot {
             clickOnNote(0)
-            //checkear que es el texto esperado/usuario/etc..
+            checkNoteDetails("@${USER}", NOTE_VALID)
         }
     }
 
@@ -93,5 +93,6 @@ class TeiDashboardTest : BaseTest() {
         const val TOAST_TEXT_SAVED = "Note saved"
         const val NOTE_VALID = "ThisIsJustATest"
         const val NOTE_INVALID = "InvalidNote"
+        const val USER = "android"
     }
 }
