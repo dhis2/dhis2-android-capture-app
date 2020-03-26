@@ -14,9 +14,9 @@ Any issues around using a particular feature with Android are highlighted with a
 ## Variables to use in a program indicator expression or filter
 | Variable type| Description of variable type|Status|Notes on implementation|
 |-|---|:-:|---|
-|Event Date<br/>event_date|The date of when the event took place.|![](resources/images/../../admin/icon-wip.png)||
+|Event Date<br/>event_date|The date of when the event took place.|![](resources/images/../../admin/icon-complete.png)||
 |Creation Date\*<br/>creation_date|The date of when an event or enrollment was created in the system.|![](resources/images/../../admin/icon-wip.png)||
-|Due Date<br/>due_date|The date of when an event is due.|![](resources/images/../../admin/icon-wip.png)||
+|Due Date<br/>due_date|The date of when an event is due.|![](resources/images/../../admin/icon-complete.png)||
 |Sync Date\*<br/>sync_date|The date of when the event or enrollment was last synchronized with the Android app.|![](resources/images/../../admin/icon-wip.png)||
 |Incident Date<br/>incident_date|The date of the incidence of the event.|![](resources/images/../../admin/icon-complete.png)||
 |Enrollment Date (not visible on UI)<br/>enrollment_date|The date of when the tracked entity instance was enrolled in the program.|![](resources/images/../../admin/icon-complete.png)||
