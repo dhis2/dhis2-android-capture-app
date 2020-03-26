@@ -7,25 +7,39 @@
     android:minHeight="@dimen/default_cell_height">
 
     <ImageView
-        android:id="@+id/buttonScale"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/buttonRowScale"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_zoomx2" />
-
-    <ImageView
-        android:id="@+id/buttonRowScale"
+        android:id="@+id/buttonRowScaleMinus"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
+        android:tint="#333333"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/buttonRowScaleAdd"
+        app:srcCompat="@drawable/ic_scale" />
+
+   <!-- <ImageView
+        android:id="@+id/buttonScale"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/buttonRowScaleAdd"
+        app:layout_constraintStart_toEndOf="@id/buttonRowScaleMinus"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_zoomx2" />-->
+
+    <ImageView
+        android:id="@+id/buttonRowScaleAdd"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:tint="#333333"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:tint="#333333"
+        app:layout_constraintStart_toEndOf="@id/buttonRowScaleMinus"
         app:srcCompat="@drawable/ic_scale" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

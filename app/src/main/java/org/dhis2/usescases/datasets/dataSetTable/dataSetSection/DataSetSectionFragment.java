@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -22,6 +23,7 @@ import com.evrencoskun.tableview.adapter.recyclerview.holder.AbstractViewHolder;
 import com.google.android.material.snackbar.Snackbar;
 
 import org.dhis2.App;
+import org.dhis2.Bindings.MeasureExtensionsKt;
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.tablefields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.tablefields.RowAction;
@@ -32,7 +34,9 @@ import org.dhis2.usescases.datasets.dataSetTable.DataSetTableContract;
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
 import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.Constants;
+import org.dhis2.utils.OrientationUtilsKt;
 import org.hisp.dhis.android.core.category.CategoryOption;
+import org.hisp.dhis.android.core.dataelement.DataElement;
 import org.hisp.dhis.android.core.dataset.DataSet;
 import org.hisp.dhis.android.core.dataset.Section;
 
@@ -43,6 +47,8 @@ import javax.inject.Inject;
 
 import io.reactivex.Flowable;
 import io.reactivex.processors.FlowableProcessor;
+import kotlin.Pair;
+import kotlin.Triple;
 
 import static com.evrencoskun.tableview.adapter.recyclerview.holder.AbstractViewHolder.SelectionState.UNSELECTED;
 import static org.dhis2.utils.analytics.AnalyticsConstants.LEVEL_ZOOM;
@@ -144,6 +150,37 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
 
         adapter.swap(fields);
 
+        Pair<Integer, Integer> savedMeasure = presenterFragment.getCurrentSectionMeasure();
+        if (savedMeasure.getFirst() != 0) {
+            tableView.setRowHeaderWidth(savedMeasure.getFirst());
+            adapter.setColumnHeaderHeight(savedMeasure.getSecond());
+        } else {
+
+            int widthFactor;
+            int maxColumns = dataTableModel.header().get(dataTableModel.header().size() - 1).size();
+            if (OrientationUtilsKt.isPortrait()) {
+                widthFactor = 2;
+            } else {
+                if (maxColumns > 1) {
+                    widthFactor = 3;
+                } else {
+                    widthFactor = 2;
+                }
+            }
+
+            Triple<String, Integer, Integer> labelMeasure = MeasureExtensionsKt.measureText(
+                    dataTableModel.rows(),
+                    getContext(),
+                    widthFactor
+            );
+            adapter.setMaxLabel(labelMeasure.getFirst());
+            tableView.setRowHeaderWidth(labelMeasure.getSecond());
+            if(labelMeasure.getThird()!=0){
+                adapter.setColumnHeaderHeight(
+                        labelMeasure.getThird() + getContext().getResources().getDimensionPixelSize(R.dimen.padding_5));
+            }
+        }
+
         adapter.setAllItems(
                 columnHeaders,
                 dataTableModel.rows(),
@@ -197,34 +234,41 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
                     tableView.getAdapter().getRowHeaderWidth(),
                     binding.headerContainer.getChildAt(0).getLayoutParams().height
             ));
-            cornerView.findViewById(R.id.buttonScale).setOnClickListener(view -> {
-                for (int i = 0; i < binding.tableLayout.getChildCount(); i++) {
-                    if (binding.tableLayout.getChildAt(i) instanceof TableView) {
-                        TableView table = (TableView) binding.tableLayout.getChildAt(i);
-                        DataSetTableAdapter adapter = (DataSetTableAdapter) table.getAdapter();
-                        ImageView scaleImage = cornerView.findViewById(R.id.buttonScale);
-                        switch (adapter.getCurrentTableScale().get()) {
-                            case DEFAULT:
-                                scaleImage.setImageDrawable(AppCompatResources.getDrawable(view.getContext(), R.drawable.ic_zoomx3));
-                                break;
-                            case LARGE:
-                                scaleImage.setImageDrawable(AppCompatResources.getDrawable(view.getContext(), R.drawable.ic_zoomx1));
-                                break;
-                            case SMALL:
-                                scaleImage.setImageDrawable(AppCompatResources.getDrawable(view.getContext(), R.drawable.ic_zoomx2));
-                                break;
-                        }
-                        DataSetTableAdapter.TableScale tableScale = adapter.scale();
-                        analyticsHelper().setEvent(LEVEL_ZOOM, tableScale.name(), ZOOM_TABLE);
-                    }
-                }
-            });
-            cornerView.findViewById(R.id.buttonRowScale).setOnClickListener(view -> {
+
+            cornerView.findViewById(R.id.buttonRowScaleAdd).setOnClickListener(view -> {
                         for (int i = 0; i < binding.tableLayout.getChildCount(); i++) {
                             if (binding.tableLayout.getChildAt(i) instanceof TableView) {
                                 TableView table = (TableView) binding.tableLayout.getChildAt(i);
                                 DataSetTableAdapter adapter = (DataSetTableAdapter) table.getAdapter();
-                                adapter.scaleRowWidth();
+                                adapter.scaleRowWidth(true);
+                                ViewGroup.LayoutParams params = cornerView.getLayoutParams();
+                                params.width = adapter.getRowHeaderWidth();
+                                cornerView.setLayoutParams(params);
+                                if (i == 0) {
+                                    presenterFragment.saveCurrentSectionMeasures(
+                                            adapter.getRowHeaderWidth(),
+                                            adapter.getColumnHeaderHeight()
+                                    );
+                                }
+                            }
+                        }
+                    }
+            );
+            cornerView.findViewById(R.id.buttonRowScaleMinus).setOnClickListener(view -> {
+                        for (int i = 0; i < binding.tableLayout.getChildCount(); i++) {
+                            if (binding.tableLayout.getChildAt(i) instanceof TableView) {
+                                TableView table = (TableView) binding.tableLayout.getChildAt(i);
+                                DataSetTableAdapter adapter = (DataSetTableAdapter) table.getAdapter();
+                                adapter.scaleRowWidth(false);
+                                ViewGroup.LayoutParams params = cornerView.getLayoutParams();
+                                params.width = adapter.getRowHeaderWidth();
+                                cornerView.setLayoutParams(params);
+                                if (i == 0) {
+                                    presenterFragment.saveCurrentSectionMeasures(
+                                            adapter.getRowHeaderWidth(),
+                                            adapter.getColumnHeaderHeight()
+                                    );
+                                }
                             }
                         }
                     }
