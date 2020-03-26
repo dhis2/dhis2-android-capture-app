@@ -338,6 +338,7 @@ class LoginPresenter(
         return Pair(urls, users)
     }
 
+    //TODO Remove this when we remove the userManager from the presenter
     @RestrictTo(Scope.TESTS)
     fun setUserManager(userManager: UserManager) {
         this.userManager = userManager
