@@ -13,7 +13,6 @@ import org.dhis2.R
 import org.dhis2.data.forms.dataentry.fields.FormViewHolder
 import org.dhis2.databinding.FormSectionBinding
 import org.dhis2.utils.customviews.CustomDialog
-import org.hisp.dhis.android.core.dataset.Section
 import org.jetbrains.annotations.NotNull
 
 class SectionHolder(
@@ -102,6 +101,11 @@ class SectionHolder(
             View.GONE
         } else {
             View.VISIBLE
+        }
+        formBinding.shadowEnd.visibility = if (isClosingSection) {
+            View.VISIBLE
+        } else {
+            View.GONE
         }
     }
 
