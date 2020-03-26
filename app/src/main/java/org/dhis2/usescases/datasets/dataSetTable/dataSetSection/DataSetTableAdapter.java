@@ -87,6 +87,7 @@ public class DataSetTableAdapter extends AbstractTableAdapter<CategoryOption, Da
 
     private int currentWidth = 300;
     private int currentHeight;
+    private int rowWidth = 90;
 
     private String catCombo;
     private Boolean dataElementDecoration;
@@ -102,23 +103,35 @@ public class DataSetTableAdapter extends AbstractTableAdapter<CategoryOption, Da
             currentWidth = 300;
             currentHeight = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 36, context.getResources().getDisplayMetrics());
             currentTableScale.set(TableScale.DEFAULT);
-            getTableView().setRowHeaderWidth((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 120, context.getResources().getDisplayMetrics()));
         } else if (currentWidth == 300) {
             currentWidth = 400;
             currentHeight = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 48, context.getResources().getDisplayMetrics());
             currentTableScale.set(TableScale.LARGE);
-            getTableView().setRowHeaderWidth((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 150, context.getResources().getDisplayMetrics()));
         } else if (currentWidth == 400) {
             currentWidth = 200;
             currentHeight = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 24, context.getResources().getDisplayMetrics());
             currentTableScale.set(TableScale.SMALL);
-            getTableView().setRowHeaderWidth((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 90, context.getResources().getDisplayMetrics()));
         }
 
         onScaleListener.scaleTo(currentWidth, currentHeight);
 
         notifyDataSetChanged();
         return currentTableScale.get();
+    }
+
+    void scaleRowWidth() {
+        switch (rowWidth) {
+            case 90:
+                rowWidth = 130;
+                break;
+            case 130:
+                rowWidth = 170;
+                break;
+            default:
+                rowWidth = 90;
+                break;
+        }
+        getTableView().setRowHeaderWidth((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, rowWidth, context.getResources().getDisplayMetrics()));
     }
 
     public ObservableField<TableScale> getCurrentTableScale() {

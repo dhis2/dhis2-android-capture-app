@@ -219,6 +219,16 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
                     }
                 }
             });
+            cornerView.findViewById(R.id.buttonRowScale).setOnClickListener(view -> {
+                        for (int i = 0; i < binding.tableLayout.getChildCount(); i++) {
+                            if (binding.tableLayout.getChildAt(i) instanceof TableView) {
+                                TableView table = (TableView) binding.tableLayout.getChildAt(i);
+                                DataSetTableAdapter adapter = (DataSetTableAdapter) table.getAdapter();
+                                adapter.scaleRowWidth();
+                            }
+                        }
+                    }
+            );
             binding.headerContainer.addView(cornerView);
         }
     }
