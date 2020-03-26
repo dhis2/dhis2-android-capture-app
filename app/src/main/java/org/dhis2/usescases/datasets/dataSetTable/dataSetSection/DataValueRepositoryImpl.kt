@@ -112,11 +112,11 @@ class DataValueRepositoryImpl(private val d2: D2, private val dataSetUid: String
                 var add = true
                 for (catComboList in finalList) {
                     if (catComboList.contains(
-                        Pair.create(
-                            catOption,
-                            category
+                            Pair.create(
+                                catOption,
+                                category
+                            )
                         )
-                    )
                     ) add = false
                 }
                 if (add) {
@@ -152,24 +152,24 @@ class DataValueRepositoryImpl(private val d2: D2, private val dataSetUid: String
             ?.firstOrNull {
                 it.dataElement().uid() == dataElement.uid() && it.categoryCombo() != null
             }?.let {
-            DataElement.builder()
-                .uid(dataElement.uid())
-                .code(dataElement.code())
-                .name(dataElement.name())
-                .displayName(dataElement.displayName())
-                .shortName(dataElement.shortName())
-                .displayShortName(dataElement.displayShortName())
-                .description(dataElement.description())
-                .displayDescription(dataElement.displayDescription())
-                .valueType(dataElement.valueType())
-                .zeroIsSignificant(dataElement.zeroIsSignificant())
-                .aggregationType(dataElement.aggregationType())
-                .formName(dataElement.formName())
-                .domainType(dataElement.domainType())
-                .displayFormName(dataElement.displayFormName())
-                .optionSet(dataElement.optionSet())
-                .categoryCombo(it.categoryCombo()).build()
-        }
+                DataElement.builder()
+                    .uid(dataElement.uid())
+                    .code(dataElement.code())
+                    .name(dataElement.name())
+                    .displayName(dataElement.displayName())
+                    .shortName(dataElement.shortName())
+                    .displayShortName(dataElement.displayShortName())
+                    .description(dataElement.description())
+                    .displayDescription(dataElement.displayDescription())
+                    .valueType(dataElement.valueType())
+                    .zeroIsSignificant(dataElement.zeroIsSignificant())
+                    .aggregationType(dataElement.aggregationType())
+                    .formName(dataElement.formName())
+                    .domainType(dataElement.domainType())
+                    .displayFormName(dataElement.displayFormName())
+                    .optionSet(dataElement.optionSet())
+                    .categoryCombo(it.categoryCombo()).build()
+            }
             ?: dataElement
     }
 
@@ -264,25 +264,28 @@ class DataValueRepositoryImpl(private val d2: D2, private val dataSetUid: String
             .toFlowable()
     }
 
-    override fun getGreyFields(sectionName: String): Flowable<List<DataElementOperand>> {
-        return if (!sectionName.isEmpty() && sectionName != "NO_SECTION") d2.dataSetModule()
-            .sections().withGreyedFields().byDataSetUid().eq(dataSetUid).byDisplayName()
-            .eq(sectionName).one().get()
-            .map<List<DataElementOperand>> { obj: Section -> obj.greyedFields() }
-            .toFlowable() else Flowable.just(
-            ArrayList()
-        )
-    }
+    override fun getGreyFields(sectionName: String): Flowable<List<DataElementOperand>> =
+        when {
+            sectionName.isNotEmpty() && sectionName != "NO_SECTION" ->
+                d2.dataSetModule().sections()
+                    .withGreyedFields()
+                    .byDataSetUid().eq(dataSetUid)
+                    .byDisplayName().eq(sectionName)
+                    .one().get()
+                    .map<List<DataElementOperand>> { obj: Section -> obj.greyedFields() }
+                    .toFlowable()
+            else -> Flowable.just(ArrayList())
+        }
 
-    override fun getSectionByDataSet(section: String): Flowable<Section> {
-        return if (!section.isEmpty() && section != "NO_SECTION") Flowable.just(
-            d2.dataSetModule().sections().byDataSetUid().eq(dataSetUid).byDisplayName().eq(section).one().blockingGet()
-        ) else Flowable.just(
-            Section.builder().uid(
-                ""
-            ).build()
-        )
-    }
+    override fun getSectionByDataSet(section: String): Flowable<Section> =
+        when {
+            section.isNotEmpty() && section != "NO_SECTION" ->
+                d2.dataSetModule().sections()
+                    .byDataSetUid().eq(dataSetUid)
+                    .byDisplayName().eq(section)
+                    .one().get().toFlowable()
+            else -> Flowable.just(Section.builder().uid("").build())
+        }
 
     override fun completeDataSet(
         orgUnitUid: String,

@@ -8,9 +8,12 @@ import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
 import org.hisp.dhis.android.core.category.CategoryCombo
 import org.hisp.dhis.android.core.common.ObjectWithUid
+import org.hisp.dhis.android.core.dataelement.DataElement
+import org.hisp.dhis.android.core.dataelement.DataElementOperand
 import org.hisp.dhis.android.core.dataset.DataInputPeriod
 import org.hisp.dhis.android.core.dataset.DataSet
 import org.hisp.dhis.android.core.dataset.DataSetElement
+import org.hisp.dhis.android.core.dataset.Section
 import org.hisp.dhis.android.core.period.Period
 import org.junit.Before
 import org.junit.Test
@@ -60,14 +63,12 @@ class DataValueRepositoryTest {
                 .withDataInputPeriods()
                 .uid(dataSetUid)
         ) doReturn mock()
-
         whenever(
             d2.dataSetModule().dataSets()
                 .withDataInputPeriods()
                 .uid(dataSetUid)
                 .blockingGet()
         ) doReturn mock()
-
         whenever(
             d2.dataSetModule().dataSets()
                 .withDataInputPeriods()
@@ -75,7 +76,6 @@ class DataValueRepositoryTest {
                 .blockingGet()
                 .dataInputPeriods()
         ) doReturn dataInputPeriods
-
 
         val testObserver = repository.dataInputPeriod.test()
 
@@ -93,11 +93,9 @@ class DataValueRepositoryTest {
         whenever(
             d2.dataSetModule().dataSets().withDataSetElements().uid(dataSetUid)
         ) doReturn mock()
-
         whenever(
             d2.dataSetModule().dataSets().withDataSetElements().uid(dataSetUid).blockingGet()
         ) doReturn mock()
-
         whenever(
             d2.dataSetModule().dataSets().withDataSetElements().uid(dataSetUid).blockingGet()
                 .dataSetElements()
@@ -111,21 +109,17 @@ class DataValueRepositoryTest {
         whenever(
             d2.categoryModule().categoryCombos().byUid().`in`(categoryCombosUids)
         ) doReturn mock()
-
         whenever(
             d2.categoryModule().categoryCombos().byUid().`in`(categoryCombosUids).withCategories()
         ) doReturn mock()
-
         whenever(
             d2.categoryModule().categoryCombos().byUid().`in`(categoryCombosUids).withCategories()
                 .withCategoryOptionCombos()
         ) doReturn mock()
-
         whenever(
             d2.categoryModule().categoryCombos().byUid().`in`(categoryCombosUids).withCategories()
                 .withCategoryOptionCombos().orderByDisplayName(RepositoryScope.OrderByDirection.ASC)
         ) doReturn mock()
-
         whenever(
             d2.categoryModule().categoryCombos().byUid().`in`(categoryCombosUids).withCategories()
                 .withCategoryOptionCombos().orderByDisplayName(RepositoryScope.OrderByDirection.ASC)
@@ -144,7 +138,7 @@ class DataValueRepositoryTest {
 
     @Test
     fun `Should return catOptions when no section and dataSetElement without catOptions`() {
-        val dataSetElements = listOf(dummyDataSetElementWithoNoCatCombo())
+        val dataSetElements = listOf(dummyDataSetElementWithNoCatCombo())
         val categoryCombos = listOf(dummyCategoryCombo())
         val categoryCombosUids = categoryCombos.map { it.uid() }
 
@@ -152,11 +146,9 @@ class DataValueRepositoryTest {
         whenever(
             d2.dataSetModule().dataSets().withDataSetElements().uid(dataSetUid)
         ) doReturn mock()
-
         whenever(
             d2.dataSetModule().dataSets().withDataSetElements().uid(dataSetUid).blockingGet()
         ) doReturn mock()
-
         whenever(
             d2.dataSetModule().dataSets().withDataSetElements().uid(dataSetUid).blockingGet()
                 .dataSetElements()
@@ -167,14 +159,12 @@ class DataValueRepositoryTest {
                 .dataElements()
                 .uid(dataSetElements.first().dataElement().uid())
         ) doReturn mock()
-
         whenever(
             d2.dataElementModule()
                 .dataElements()
                 .uid(dataSetElements.first().dataElement().uid())
                 .blockingGet()
         ) doReturn mock()
-
         whenever(
             d2.dataElementModule()
                 .dataElements()
@@ -183,25 +173,20 @@ class DataValueRepositoryTest {
                 .categoryComboUid()
         ) doReturn categoryCombosUids.first()
 
-
         whenever(
             d2.categoryModule().categoryCombos().byUid().`in`(categoryCombosUids)
         ) doReturn mock()
-
         whenever(
             d2.categoryModule().categoryCombos().byUid().`in`(categoryCombosUids).withCategories()
         ) doReturn mock()
-
         whenever(
             d2.categoryModule().categoryCombos().byUid().`in`(categoryCombosUids).withCategories()
                 .withCategoryOptionCombos()
         ) doReturn mock()
-
         whenever(
             d2.categoryModule().categoryCombos().byUid().`in`(categoryCombosUids).withCategories()
                 .withCategoryOptionCombos().orderByDisplayName(RepositoryScope.OrderByDirection.ASC)
         ) doReturn mock()
-
         whenever(
             d2.categoryModule().categoryCombos().byUid().`in`(categoryCombosUids).withCategories()
                 .withCategoryOptionCombos().orderByDisplayName(RepositoryScope.OrderByDirection.ASC)
@@ -217,6 +202,113 @@ class DataValueRepositoryTest {
 
         testObserver.dispose()
     }
+    
+    @Test
+    fun `Should return catOptions for a section and dataSetElement have catOptions`() {
+        val dataSetElements = listOf(dummyDataSetElement(), dummyDataSetElement())
+        val sectionName = "section"
+        val dataElements = dataSetElements.map {
+            DataElement.builder().uid(it.dataElement().uid()).build()
+        }
+
+        whenever(
+            d2.dataSetModule().dataSets().withDataSetElements().uid(dataSetUid)
+        ) doReturn mock()
+        whenever(
+            d2.dataSetModule().dataSets().withDataSetElements().uid(dataSetUid).blockingGet()
+        ) doReturn mock()
+        whenever(
+            d2.dataSetModule().dataSets().withDataSetElements().uid(dataSetUid).blockingGet()
+                .dataSetElements()
+        ) doReturn dataSetElements
+
+        whenever(
+            d2.dataSetModule()
+                .sections()
+                .withDataElements()
+                .byDataSetUid()
+        ) doReturn mock()
+        whenever(
+            d2.dataSetModule()
+                .sections()
+                .withDataElements()
+                .byDataSetUid().eq(dataSetUid)
+        ) doReturn mock()
+        whenever(
+            d2.dataSetModule()
+                .sections()
+                .withDataElements()
+                .byDataSetUid().eq(dataSetUid)
+                .byDisplayName()
+        ) doReturn mock()
+        whenever(
+            d2.dataSetModule()
+                .sections()
+                .withDataElements()
+                .byDataSetUid().eq(dataSetUid)
+                .byDisplayName().eq(sectionName)
+        ) doReturn mock()
+        whenever(
+            d2.dataSetModule()
+                .sections()
+                .withDataElements()
+                .byDataSetUid().eq(dataSetUid)
+                .byDisplayName().eq(sectionName)
+                .one()
+        ) doReturn mock()
+        whenever(
+            d2.dataSetModule()
+                .sections()
+                .withDataElements()
+                .byDataSetUid().eq(dataSetUid)
+                .byDisplayName().eq(sectionName)
+                .one().blockingGet()
+        ) doReturn mock()
+        whenever(
+            d2.dataSetModule()
+                .sections()
+                .withDataElements()
+                .byDataSetUid().eq(dataSetUid)
+                .byDisplayName().eq(sectionName)
+                .one().blockingGet()
+                .dataElements()
+        ) doReturn dataElements
+
+        val categoryCombosUids = dataSetElements.map { it.categoryCombo()?.uid() }
+        val categoryCombos = dataSetElements.map {
+            CategoryCombo.builder().uid(it.categoryCombo()?.uid()).build()
+        }
+
+        whenever(
+            d2.categoryModule().categoryCombos().byUid().`in`(categoryCombosUids)
+        ) doReturn mock()
+        whenever(
+            d2.categoryModule().categoryCombos().byUid().`in`(categoryCombosUids).withCategories()
+        ) doReturn mock()
+        whenever(
+            d2.categoryModule().categoryCombos().byUid().`in`(categoryCombosUids).withCategories()
+                .withCategoryOptionCombos()
+        ) doReturn mock()
+        whenever(
+            d2.categoryModule().categoryCombos().byUid().`in`(categoryCombosUids).withCategories()
+                .withCategoryOptionCombos().orderByDisplayName(RepositoryScope.OrderByDirection.ASC)
+        ) doReturn mock()
+        whenever(
+            d2.categoryModule().categoryCombos().byUid().`in`(categoryCombosUids).withCategories()
+                .withCategoryOptionCombos().orderByDisplayName(RepositoryScope.OrderByDirection.ASC)
+                .get()
+        ) doReturn Single.just(categoryCombos)
+
+
+        val testObserver = repository.getCatCombo(sectionName).test()
+
+        testObserver.assertNoErrors()
+        testObserver.assertValueCount(1)
+        testObserver.assertValue(categoryCombos)
+
+        testObserver.dispose()
+    }
+
 
     @Test
     fun `Should return dataSet`() {
@@ -231,6 +323,111 @@ class DataValueRepositoryTest {
         testObserver.assertNoErrors()
         testObserver.assertValueCount(1)
         testObserver.assertValue(dataSet)
+
+        testObserver.dispose()
+    }
+
+    @Test
+    fun `Should return empty list for greyFields without section`() {
+        val sectionName = "section"
+        val section = dummySection()
+        whenever(
+            d2.dataSetModule()
+                .sections().withGreyedFields().byDataSetUid()
+        ) doReturn mock()
+        whenever(
+            d2.dataSetModule()
+                .sections().withGreyedFields().byDataSetUid().eq(dataSetUid)
+        ) doReturn mock()
+        whenever(
+            d2.dataSetModule()
+                .sections().withGreyedFields().byDataSetUid().eq(dataSetUid).byDisplayName()
+        ) doReturn mock()
+        whenever(
+            d2.dataSetModule()
+                .sections().withGreyedFields().byDataSetUid().eq(dataSetUid).byDisplayName()
+                .eq(sectionName)
+        ) doReturn mock()
+        whenever(
+            d2.dataSetModule()
+                .sections().withGreyedFields().byDataSetUid().eq(dataSetUid).byDisplayName()
+                .eq(sectionName).one()
+        ) doReturn mock()
+        whenever(
+            d2.dataSetModule()
+                .sections().withGreyedFields().byDataSetUid().eq(dataSetUid).byDisplayName()
+                .eq(sectionName).one().get()
+        ) doReturn Single.just(section)
+        val testObserver = repository.getGreyFields(sectionName).test()
+
+        testObserver.assertNoErrors()
+        testObserver.assertValueCount(1)
+        testObserver.assertValue(section.greyedFields())
+
+        testObserver.dispose()
+    }
+
+    @Test
+    fun `Should return greyFields for section`() {
+        val sectionName = "NO_SECTION"
+
+        val testObserver = repository.getGreyFields(sectionName).test()
+
+        testObserver.assertNoErrors()
+        testObserver.assertValueCount(1)
+        testObserver.assertValue(listOf())
+
+        testObserver.dispose()
+    }
+
+    @Test
+    fun `Should return section by sectionName`() {
+        val sectionName = "section"
+        val section = dummySection()
+        whenever(
+            d2.dataSetModule().sections().byDataSetUid()
+        ) doReturn mock()
+        whenever(
+            d2.dataSetModule().sections().byDataSetUid().eq(dataSetUid)
+        ) doReturn mock()
+        whenever(
+            d2.dataSetModule().sections().byDataSetUid().eq(dataSetUid).byDisplayName()
+        ) doReturn mock()
+        whenever(
+            d2.dataSetModule().sections()
+                .byDataSetUid().eq(dataSetUid)
+                .byDisplayName().eq(sectionName)
+        ) doReturn mock()
+        whenever(
+            d2.dataSetModule().sections()
+                .byDataSetUid().eq(dataSetUid)
+                .byDisplayName().eq(sectionName).one()
+        ) doReturn mock()
+        whenever(
+            d2.dataSetModule().sections()
+                .byDataSetUid().eq(dataSetUid)
+                .byDisplayName()
+                .eq(sectionName)
+                .one().get()
+        ) doReturn Single.just(section)
+        val testObserver = repository.getSectionByDataSet(sectionName).test()
+
+        testObserver.assertNoErrors()
+        testObserver.assertValueCount(1)
+        testObserver.assertValue(section)
+
+        testObserver.dispose()
+    }
+
+    @Test
+    fun `Should return empty section for no section`() {
+        val sectionName = "NO_SECTION"
+
+        val testObserver = repository.getSectionByDataSet(sectionName).test()
+
+        testObserver.assertNoErrors()
+        testObserver.assertValueCount(1)
+        testObserver.assertValue(Section.builder().uid("").build())
 
         testObserver.dispose()
     }
@@ -254,7 +451,7 @@ class DataValueRepositoryTest {
             .dataElement(ObjectWithUid.create(UUID.randomUUID().toString()))
             .build()
 
-    private fun dummyDataSetElementWithoNoCatCombo(): DataSetElement =
+    private fun dummyDataSetElementWithNoCatCombo(): DataSetElement =
         DataSetElement.builder()
             .dataSet(ObjectWithUid.create(UUID.randomUUID().toString()))
             .dataElement(ObjectWithUid.create(UUID.randomUUID().toString()))
@@ -269,4 +466,13 @@ class DataValueRepositoryTest {
         CategoryCombo.builder()
             .uid(UUID.randomUUID().toString())
             .build()
+
+    private fun dummySection(): Section =
+        Section.builder()
+            .uid(UUID.randomUUID().toString())
+            .greyedFields(
+                listOf(DataElementOperand.builder().uid(UUID.randomUUID().toString()).build())
+            )
+            .build()
+
 }
