@@ -3,7 +3,6 @@ package org.dhis2.usescases.teidashboard
 import android.content.Intent
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
-import org.dhis2.R
 import org.dhis2.usescases.BaseTest
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity
 import org.junit.Rule
@@ -70,6 +69,35 @@ class TeiDashboardTest : BaseTest() {
             clickOnNote(0)
             checkNoteDetails("@${USER}", NOTE_VALID)
         }
+    }
+
+    @Test
+    fun shouldReactivateTEIWhenClickReOpen() {
+        prepareTeiCompletedProgrammeIntentAndLaunchActivity()
+
+        teiDashboardRobot {
+            clickOnMenu()
+            clickOnMenuReOpen()
+            checkUnlockIconIsDisplay()
+            checkCanAddEvent()
+            // check you can add event
+        }
+        Thread.sleep(10000)
+    }
+
+    @Test
+    fun shouldDeactivateTEIWhenClickOpen() {
+        prepareTeiCompletedProgrammeIntentAndLaunchActivity()
+        //should be a teiOpened
+
+        teiDashboardRobot {
+            clickOnMenu()
+            clickOnMenuOpen()
+            checkLockIconIsDisplay()
+            checkCanNotAddEvent()
+            // check you can't add event
+        }
+        Thread.sleep(10000)
     }
 
     private fun prepareTeiCompletedProgrammeIntentAndLaunchActivity() {
