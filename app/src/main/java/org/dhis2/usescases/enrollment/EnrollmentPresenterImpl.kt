@@ -18,6 +18,7 @@ import org.dhis2.data.forms.dataentry.StoreResult
 import org.dhis2.data.forms.dataentry.ValueStore
 import org.dhis2.data.forms.dataentry.ValueStoreImpl
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel
+import org.dhis2.data.forms.dataentry.fields.display.DisplayViewModel
 import org.dhis2.data.forms.dataentry.fields.option_set.OptionSetViewModel
 import org.dhis2.data.forms.dataentry.fields.section.SectionViewModel
 import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel
@@ -288,7 +289,7 @@ class EnrollmentPresenterImpl(
                 iterator.set(sectionViewModel)
             }
 
-            if (field !is SectionViewModel) {
+            if (field !is SectionViewModel && field !is DisplayViewModel) {
                 val isUnique =
                     d2.trackedEntityModule().trackedEntityAttributes().uid(field.uid()).blockingGet()?.unique() ?: false
                 var uniqueValueAlreadyExist: Boolean
@@ -304,7 +305,7 @@ class EnrollmentPresenterImpl(
                     errorFields[field.programStageSection() ?: section] = field.label()
                 }
                 if (field.mandatory() && field.value().isNullOrEmpty()) {
-                    mandatoryFields[field.programStageSection() ?: section] = field.label()
+                    mandatoryFields[field.label()] = field.programStageSection() ?: section
                 }
             }
 
@@ -314,6 +315,12 @@ class EnrollmentPresenterImpl(
             ) {
                 iterator.remove()
             }
+        }
+        val sections = finalList.filterIsInstance<SectionViewModel>()
+        sections.forEach { section ->
+            var errors = 0;
+            repeat(mandatoryFields.filter { it.value == section.uid() }.size) { errors++}
+            finalList[finalList.indexOf(section)] = section.withErrors(errors)
         }
         return finalList
     }

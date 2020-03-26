@@ -99,7 +99,7 @@ class EnrollmentPresenterImplTest {
         val checkWthErrors = presenter.dataIntegrityCheck()
 
         Assert.assertFalse(checkWthErrors)
-        val map = mutableMapOf("testSection" to "missing_mandatory_field")
+        val map = mutableMapOf("missing_mandatory_field" to "testSection")
         verify(enrollmentView, times(1)).showMissingMandatoryFieldsMessage(map)
     }
 
@@ -129,7 +129,7 @@ class EnrollmentPresenterImplTest {
         val checkWthErrors = presenter.dataIntegrityCheck()
 
         Assert.assertFalse(checkWthErrors)
-        val map = mutableMapOf("testSection" to "missing_mandatory_field")
+        val map = mutableMapOf("missing_mandatory_field" to "testSection")
         verify(enrollmentView, times(1)).showMissingMandatoryFieldsMessage(map)
     }
 
