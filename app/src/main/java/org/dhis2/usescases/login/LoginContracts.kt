@@ -57,5 +57,6 @@ class LoginContracts {
         fun showEmptyCredentialsMessage()
         fun setTestingCredentials()
         fun setUpFingerPrintDialog()
+        fun getDefaultServerProtocol(): String
     }
 }

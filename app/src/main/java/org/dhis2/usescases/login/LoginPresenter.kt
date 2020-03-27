@@ -60,20 +60,30 @@ class LoginPresenter(
                     .observeOn(schedulers.ui())
                     .subscribe(
                         { isUserLoggedIn ->
-                            if (isUserLoggedIn && !preferenceProvider.getBoolean(
-                                SESSION_LOCKED,
-                                false
-                            )
-                            ) {
+                            val isSessionLocked =
+                                preferenceProvider.getBoolean(SESSION_LOCKED, false)
+                            if (isUserLoggedIn && !isSessionLocked) {
                                 view.startActivity(MainActivity::class.java, null, true, true, null)
-                            } else if (preferenceProvider.getBoolean(SESSION_LOCKED, false)) {
+                            } else if (isSessionLocked) {
                                 view.showUnlockButton()
+                            }
+                            if (!isUserLoggedIn) {
+                                val serverUrl =
+                                    preferenceProvider.getString(
+                                        SECURE_SERVER_URL,
+                                        view.getDefaultServerProtocol()
+                                    )
+                                val user = preferenceProvider.getString(SECURE_USER_NAME, "")
+                                if (!serverUrl.isNullOrEmpty() && !user.isNullOrEmpty()) {
+                                    view.setUrl(serverUrl)
+                                    view.setUser(user)
+                                }
                             }
                         },
                         { exception -> Timber.e(exception) }
                     )
             )
-        } ?: view.setUrl(view.context.getString(R.string.login_https))
+        } ?: view.setUrl(view.getDefaultServerProtocol())
     }
 
     fun checkServerInfoAndShowBiometricButton() {
@@ -90,13 +100,28 @@ class LoginPresenter(
                                     view.setUser(it)
                                 }
                             } else {
-                                view.setUrl(view.context.getString(R.string.login_https))
+                                val isSessionLocked =
+                                    preferenceProvider.getBoolean(SESSION_LOCKED, false)
+                                if (!isSessionLocked){
+                                    val serverUrl =
+                                        preferenceProvider.getString(
+                                            SECURE_SERVER_URL,
+                                            view.getDefaultServerProtocol()
+                                        )
+                                    val user = preferenceProvider.getString(SECURE_USER_NAME, "")
+                                    if (!serverUrl.isNullOrEmpty() && !user.isNullOrEmpty()) {
+                                        view.setUrl(serverUrl)
+                                        view.setUser(user)
+                                    }
+                                } else {
+                                    view.setUrl(view.getDefaultServerProtocol())
+                                }
                             }
                         },
                         { Timber.e(it) }
                     )
             )
-        } ?: view.setUrl(view.context.getString(R.string.login_https))
+        } ?: view.setUrl(view.getDefaultServerProtocol())
 
         showBiometricButtonIfVersionIsGreaterThanM(view)
     }
@@ -265,10 +290,10 @@ class LoginPresenter(
             fingerPrintController.authenticate()
                 .map { result ->
                     if (preferenceProvider.contains(
-                        SECURE_SERVER_URL,
-                        SECURE_USER_NAME,
-                        SECURE_PASS
-                    )
+                            SECURE_SERVER_URL,
+                            SECURE_USER_NAME,
+                            SECURE_PASS
+                        )
                     ) {
                         Result.success(result)
                     } else {
