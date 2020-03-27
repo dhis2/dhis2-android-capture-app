@@ -91,8 +91,6 @@ class LoginTest : BaseTest() {
           }
       }
 
-
-
       @Test
       fun shouldLaunchWebViewWhenClickAccountRecoveryAndServerIsFilled() {
           enableIntents()
@@ -137,7 +135,6 @@ class LoginTest : BaseTest() {
               checkUnblockSessionViewIsVisible()
           }
       }
-
 
     @Test
     fun shouldGoToHomeScreenWhenUserIsLoggedIn() {

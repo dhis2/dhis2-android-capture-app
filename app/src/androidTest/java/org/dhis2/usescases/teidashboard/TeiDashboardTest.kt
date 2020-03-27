@@ -26,7 +26,7 @@ class TeiDashboardTest : BaseTest() {
         prepareTeiCompletedProgrammeIntentAndLaunchActivity()
 
         teiDashboardRobot {
-            clickOnPinTab()
+            clickOnNotesTab()
         }
 
         noteRobot {
@@ -44,7 +44,7 @@ class TeiDashboardTest : BaseTest() {
         prepareTeiCompletedProgrammeIntentAndLaunchActivity()
 
         teiDashboardRobot {
-            clickOnPinTab()
+            clickOnNotesTab()
         }
 
         noteRobot {
@@ -62,11 +62,11 @@ class TeiDashboardTest : BaseTest() {
         prepareTeiCompletedProgrammeIntentAndLaunchActivity()
 
         teiDashboardRobot {
-            clickOnPinTab()
+            clickOnNotesTab()
         }
 
         noteRobot {
-            clickOnNote(0)
+            clickOnNoteWithPosition(0)
             checkNoteDetails("@${USER}", NOTE_VALID)
         }
     }
@@ -82,7 +82,6 @@ class TeiDashboardTest : BaseTest() {
             checkCanAddEvent()
             // check you can add event
         }
-        Thread.sleep(10000)
     }
 
     @Test
@@ -91,13 +90,10 @@ class TeiDashboardTest : BaseTest() {
         //should be a teiOpened
 
         teiDashboardRobot {
-            clickOnMenu()
             clickOnMenuOpen()
             checkLockIconIsDisplay()
             checkCanNotAddEvent()
-            // check you can't add event
         }
-        Thread.sleep(10000)
     }
 
     @Test
@@ -107,7 +103,7 @@ class TeiDashboardTest : BaseTest() {
         teiDashboardRobot {
             clickOnShareButton()
             clickOnNextQR()
-            //click on next
+            //Use a loop to iterate and assert
         }
     }
 

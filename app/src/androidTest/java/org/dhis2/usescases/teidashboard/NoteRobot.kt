@@ -27,7 +27,7 @@ class NoteRobot: BaseRobot() {
         onView(withId(R.id.addNoteButton)).perform(click())
     }
 
-    fun clickOnNote(position:Int){
+    fun clickOnNoteWithPosition(position:Int){
         onView(withId(R.id.notes_recycler))
                 .perform(actionOnItemAtPosition<NotesViewHolder>(position, click()))
     }

@@ -1,12 +1,13 @@
 package org.dhis2.usescases.teidashboard
 
-import androidx.test.espresso.Espresso.*
+import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.*
 import org.dhis2.R
 import org.dhis2.common.BaseRobot
 import org.dhis2.common.matchers.clickOnTab
+import org.hamcrest.Matchers.allOf
 import org.hamcrest.Matchers.not
 
 
@@ -17,43 +18,36 @@ fun teiDashboardRobot(teiDashboardRobot: TeiDashboardRobot.() -> Unit) {
 }
 
 class TeiDashboardRobot: BaseRobot () {
-    fun clickOnPinTab() {
-        //tab_layout
+    fun clickOnNotesTab() {
         onView(clickOnTab(3)).perform(click())
+        //onView(isRoot()).perform(waitForTransitionUntil(R.id.addNoteButton))
         Thread.sleep(500)
     }
 
     fun clickOnMenu() {
         onView(withId(R.id.moreOptions)).perform(click())
-        Thread.sleep(500)
     }
 
     fun clickOnMenuReOpen() {
-        //onView(withId(R.id.activate)).check(matches(isDisplayed()))
-                //.perform(click())
-        onView(withText("re-open")).perform(click())
-                //.check(matches(isDisplayed()))
-        Thread.sleep(500)
+        onView(withText(R.string.re_open)).perform(click())
     }
 
     fun checkLockIconIsDisplay() {
-        onView(withId(R.id.program_lock_text)).check(matches(withText("Completed")))
+        onView(withId(R.id.program_lock_text)).check(matches(withText(R.string.completed)))
     }
 
     fun checkUnlockIconIsDisplay() {
-        onView(withId(R.id.program_lock_text)).check(matches(withText("Open")))
+        onView(withId(R.id.program_lock_text)).check(matches(withText(R.string.event_open)))
     }
 
     fun checkCanAddEvent() {
-        onView(withId(R.id.fab)).check(matches(isDisplayed()))
-        onView(withId(R.id.fab)).perform(click())
+        onView(withId(R.id.fab)).check(matches(allOf(isDisplayed(), isEnabled()))).perform(click())
         onView(withId(R.id.addnew)).check(matches(isDisplayed()))
     }
 
     fun clickOnMenuOpen() {
-        onView(withText("Complete")).perform(click())
-        //onView(withId(R.id.deactivate)).perform(click())
-        Thread.sleep(500)
+        onView(withText(R.string.deactivate)).perform(click())
+       // onView(withId(R.id.deactivate)).perform(click())
     }
 
     fun checkCanNotAddEvent() {
@@ -71,5 +65,4 @@ class TeiDashboardRobot: BaseRobot () {
     fun clickOnNextQR() {
         onView(withId(R.id.next)).perform(click())
     }
-
 }

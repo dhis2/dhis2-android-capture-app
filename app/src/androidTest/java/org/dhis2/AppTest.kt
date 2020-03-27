@@ -20,7 +20,7 @@ class AppTest : App() {
 
     @Override
     override fun setUpServerComponent() {
-        D2Manager.setDBForExternalTesting("127-0-0-1-8080_android_unencrypted.db","android")
+        D2Manager.setTestingDatabase("127-0-0-1-8080_android_unencrypted.db","android")
         D2Manager.blockingInstantiateD2(ServerModule.getD2Configuration(this))
 
         serverComponent = appComponent.plus(ServerModule())
