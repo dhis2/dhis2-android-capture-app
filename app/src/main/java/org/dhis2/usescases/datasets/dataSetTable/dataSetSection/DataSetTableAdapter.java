@@ -55,6 +55,7 @@ import java.util.List;
 import io.reactivex.processors.FlowableProcessor;
 import kotlin.Pair;
 import kotlin.Triple;
+import timber.log.Timber;
 
 import static android.text.TextUtils.isEmpty;
 
@@ -377,7 +378,7 @@ public class DataSetTableAdapter extends AbstractTableAdapter<CategoryOption, Da
                     changeCellItem(viewModels.get(0).size() - 1, rowAction.rowPos(), totalRow + "", showRowTotal);
                 }
             } catch (Exception e) {
-
+                Timber.d("Data element is not numeric");
             }
 
             try {
@@ -388,7 +389,7 @@ public class DataSetTableAdapter extends AbstractTableAdapter<CategoryOption, Da
                     changeCellItem(rowAction.columnPos(), viewModels.size() - 1, totalColumn + "", showColumnTotal);
                 }
             } catch (Exception e) {
-
+                Timber.d("Data element is not numeric");
             }
 
             try {
@@ -399,7 +400,7 @@ public class DataSetTableAdapter extends AbstractTableAdapter<CategoryOption, Da
                     changeCellItem(viewModels.get(0).size() - 1, viewModels.size() - 1, total + "", true);
                 }
             } catch (Exception e) {
-
+                Timber.d("Data element is not numeric");
             }
 
         }
