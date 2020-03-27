@@ -41,6 +41,7 @@ import androidx.paging.PagedList;
 import androidx.recyclerview.widget.DividerItemDecoration;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 import com.mapbox.geojson.BoundingBox;
 import com.mapbox.geojson.Feature;
@@ -154,6 +155,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     private SymbolManager symbolManager;
 
     private boolean initSearchNeeded = true;
+    private Snackbar downloadingSnackbar;
     //---------------------------------------------------------------------------------------------
 
     //region LIFECYCLE
@@ -690,99 +692,107 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
     @Override
     public void openDashboard(String teiUid, String programUid, String enrollmentUid) {
+        if(downloadingSnackbar!=null && downloadingSnackbar.isShown()){
+            downloadingSnackbar.dismiss();
+        }
         startActivity(TeiDashboardMobileActivity.intent(this, teiUid, programUid, enrollmentUid));
     }
 
     /*region MAP*/
     @Override
     public void setMap(HashMap<String, FeatureCollection> teiFeatureCollections, BoundingBox boundingBox) {
-            if (map == null)
-                binding.mapView.getMapAsync(mapboxMap -> {
-                    map = mapboxMap;
-                    if (map.getStyle() == null) {
-                        map.setStyle(Style.MAPBOX_STREETS, style -> {
-                                    binding.mapLayerButton.setVisibility(View.VISIBLE);
-                                    MapLayerManager.Companion.init(style, "teis", featureType);
+        if (map == null)
+            binding.mapView.getMapAsync(mapboxMap -> {
+                map = mapboxMap;
+                if (map.getStyle() == null) {
+                    map.setStyle(Style.MAPBOX_STREETS, style -> {
+                                binding.mapLayerButton.setVisibility(View.VISIBLE);
+                                MapLayerManager.Companion.init(style, "teis", featureType);
 
-                                    MapLayerManager.Companion.instance().setEnrollmentLayerData(
-                                            presenter.getProgram() != null ?
-                                                    ColorUtils.getColorFrom(presenter.getProgram().style() != null ? presenter.getProgram().style().color() : null, ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.PRIMARY)) :
-                                                    ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.PRIMARY),
-                                            ColorUtils.getPrimaryColor(this, ColorUtils.ColorType.PRIMARY_DARK),
-                                            presenter.getProgram() != null ? presenter.getProgram().featureType() != null ? presenter.getProgram().featureType() : FeatureType.NONE : FeatureType.NONE
-                                    );
-                                    MapLayerManager.Companion.instance().showEnrollmentLayer().observe(this, show -> {
-                                        if (show)
-                                            presenter.getEnrollmentMapData();
-                                    });
-                                    map.addOnMapClickListener(this);
+                                MapLayerManager.Companion.instance().setEnrollmentLayerData(
+                                        presenter.getProgram() != null ?
+                                                ColorUtils.getColorFrom(presenter.getProgram().style() != null ? presenter.getProgram().style().color() : null, ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.PRIMARY)) :
+                                                ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.PRIMARY),
+                                        ColorUtils.getPrimaryColor(this, ColorUtils.ColorType.PRIMARY_DARK),
+                                        presenter.getProgram() != null ? presenter.getProgram().featureType() != null ? presenter.getProgram().featureType() : FeatureType.NONE : FeatureType.NONE
+                                );
+                                MapLayerManager.Companion.instance().showEnrollmentLayer().observe(this, show -> {
+                                    if (show)
+                                        presenter.getEnrollmentMapData();
+                                });
+                                map.addOnMapClickListener(this);
 
-                                    style.addImage("ICON_ID", MarkerUtils.INSTANCE.getMarker(this, presenter.getSymbolIcon(), presenter.getTEIColor()));
-                                    style.addImage("ICON_ENROLLMENT_ID", MarkerUtils.INSTANCE.getMarker(this, presenter.getEnrollmentSymbolIcon(), presenter.getEnrollmentColor()));
+                                style.addImage("ICON_ID", MarkerUtils.INSTANCE.getMarker(this, presenter.getSymbolIcon(), presenter.getTEIColor()));
+                                style.addImage("ICON_ENROLLMENT_ID", MarkerUtils.INSTANCE.getMarker(this, presenter.getEnrollmentSymbolIcon(), presenter.getEnrollmentColor()));
 
-                                    setSource(style, teiFeatureCollections);
+                                setSource(style, teiFeatureCollections);
 
-                                    setLayer(style);
+                                setLayer(style);
 
-                                    LatLngBounds bounds = LatLngBounds.from(boundingBox.north(),
-                                            boundingBox.east(),
-                                            boundingBox.south(),
-                                            boundingBox.west());
+                                LatLngBounds bounds = LatLngBounds.from(boundingBox.north(),
+                                        boundingBox.east(),
+                                        boundingBox.south(),
+                                        boundingBox.west());
 
-                                    MapboxExtensionKt.initDefaultCamera(map,this,bounds);
+                                MapboxExtensionKt.initDefaultCamera(map, this, bounds);
 
-                                    markerViewManager = new MarkerViewManager(binding.mapView, map);
-                                    symbolManager = new SymbolManager(binding.mapView, map, style, null,
-                                            new GeoJsonOptions().withTolerance(0.4f));
+                                markerViewManager = new MarkerViewManager(binding.mapView, map);
+                                symbolManager = new SymbolManager(binding.mapView, map, style, null,
+                                        new GeoJsonOptions().withTolerance(0.4f));
 
-                                    symbolManager.setIconAllowOverlap(true);
-                                    symbolManager.setTextAllowOverlap(true);
-                                    symbolManager.create(teiFeatureCollections.get("TEI"));
-                                }
-                        );
-
-                        binding.mapView.addOnStyleImageMissingListener(filePath -> {
-                            File file = new File(filePath);
-                            if (file.exists()) {
-                                Style style = mapboxMap.getStyle();
-                                if (style != null) {
-                                    style.addImageAsync(filePath, MarkerUtils.INSTANCE.getMarker(this, FileResourcesUtil.getSmallImage(this, filePath), presenter.getTEIColor()));
-                                }
-                            } else {
-                                Style style = mapboxMap.getStyle();
-                                if (style != null) {
-                                    style.addImageAsync(filePath, MarkerUtils.INSTANCE.getMarker(this, presenter.getSymbolIcon(), presenter.getTEIColor()));
-                                }
+                                symbolManager.setIconAllowOverlap(true);
+                                symbolManager.setTextAllowOverlap(true);
+                                symbolManager.create(teiFeatureCollections.get("TEI"));
                             }
-                        });
+                    );
 
-                    } else {
-                        binding.mapLayerButton.setVisibility(View.VISIBLE);
-                        ((GeoJsonSource) mapboxMap.getStyle().getSource("teis")).setGeoJson(teiFeatureCollections.get("TEI"));
-                        ((GeoJsonSource) mapboxMap.getStyle().getSource("enrollments")).setGeoJson(teiFeatureCollections.get("ENROLLMENT"));
-                        LatLngBounds bounds = LatLngBounds.from(boundingBox.north(),
-                                boundingBox.east(),
-                                boundingBox.south(),
-                                boundingBox.west());
+                    binding.mapView.addOnStyleImageMissingListener(filePath -> {
+                        File file = new File(filePath);
+                        if (file.exists()) {
+                            Style style = mapboxMap.getStyle();
+                            if (style != null) {
+                                style.addImageAsync(filePath, MarkerUtils.INSTANCE.getMarker(this, FileResourcesUtil.getSmallImage(this, filePath), presenter.getTEIColor()));
+                            }
+                        } else {
+                            Style style = mapboxMap.getStyle();
+                            if (style != null) {
+                                style.addImageAsync(filePath, MarkerUtils.INSTANCE.getMarker(this, presenter.getSymbolIcon(), presenter.getTEIColor()));
+                            }
+                        }
+                    });
 
-                        MapboxExtensionKt.initDefaultCamera(map,this,bounds);
-                    }
-                });
-            else {
-                ((GeoJsonSource) map.getStyle().getSource("teis")).setGeoJson(teiFeatureCollections.get("TEI"));
-                ((GeoJsonSource) map.getStyle().getSource("enrollments")).setGeoJson(teiFeatureCollections.get("ENROLLMENT"));
-                LatLngBounds bounds = LatLngBounds.from(boundingBox.north(),
-                        boundingBox.east(),
-                        boundingBox.south(),
-                        boundingBox.west());
+                } else {
+                    binding.mapLayerButton.setVisibility(View.VISIBLE);
+                    ((GeoJsonSource) mapboxMap.getStyle().getSource("teis")).setGeoJson(teiFeatureCollections.get("TEI"));
+                    ((GeoJsonSource) mapboxMap.getStyle().getSource("enrollments")).setGeoJson(teiFeatureCollections.get("ENROLLMENT"));
+                    LatLngBounds bounds = LatLngBounds.from(boundingBox.north(),
+                            boundingBox.east(),
+                            boundingBox.south(),
+                            boundingBox.west());
 
-                MapboxExtensionKt.initDefaultCamera(map,this,bounds);
-            }
+                    MapboxExtensionKt.initDefaultCamera(map, this, bounds);
+                }
+            });
+        else {
+            ((GeoJsonSource) map.getStyle().getSource("teis")).setGeoJson(teiFeatureCollections.get("TEI"));
+            ((GeoJsonSource) map.getStyle().getSource("enrollments")).setGeoJson(teiFeatureCollections.get("ENROLLMENT"));
+            LatLngBounds bounds = LatLngBounds.from(boundingBox.north(),
+                    boundingBox.east(),
+                    boundingBox.south(),
+                    boundingBox.west());
+
+            MapboxExtensionKt.initDefaultCamera(map, this, bounds);
+        }
     }
 
     @Override
     public Consumer<D2Progress> downloadProgress() {
-        return progress -> Snackbar.make(binding.getRoot(), String.format("Downloading %s", String.valueOf(progress.percentage())) + "%", Snackbar.LENGTH_SHORT).show();
+        return progress -> {
+            if (downloadingSnackbar == null || !downloadingSnackbar.isShown()) {
+                downloadingSnackbar = Snackbar.make(binding.getRoot(), "Downloading", BaseTransientBottomBar.LENGTH_INDEFINITE);
+                downloadingSnackbar.show();
+            }
+        };
     }
 
     @Override
