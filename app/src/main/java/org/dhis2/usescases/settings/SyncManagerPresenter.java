@@ -273,16 +273,18 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
         try {
             workManagerController.cancelAllWork();
             workManagerController.pruneWork();
-            d2.userModule().logOut().blockingAwait();
-            d2.wipeModule().wipeEverything();
             // clearing cache data
             deleteDir(view.getAbstracContext().getCacheDir());
 
             preferenceProvider.clear();
 
-            view.startActivity(LoginActivity.class, null, true, true, null);
+            d2.wipeModule().wipeEverything();
+            d2.userModule().logOut().blockingAwait();
+
         } catch (Exception e) {
             Timber.e(e);
+        } finally {
+            view.startActivity(LoginActivity.class, null, true, true, null);
         }
     }
 

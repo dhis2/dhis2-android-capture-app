@@ -26,6 +26,7 @@ import org.dhis2.data.forms.dataentry.DataEntryArguments
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel
 import org.dhis2.data.forms.dataentry.fields.RowAction
 import org.dhis2.data.forms.dataentry.fields.display.DisplayViewModel
+import org.dhis2.data.forms.dataentry.fields.section.SectionViewModel
 import org.dhis2.databinding.EnrollmentActivityBinding
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity
@@ -241,16 +242,8 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
         AlertBottomDialog.instance
             .setTitle(getString(R.string.unable_to_complete))
             .setMessage(getString(R.string.missing_mandatory_fields))
-            .setEmptyMandatoryFields(emptyMandatoryFields.values.toList())
+            .setEmptyMandatoryFields(emptyMandatoryFields.keys.toList())
             .show(supportFragmentManager, AlertBottomDialog::class.java.simpleName)
-
-        val sections = adapter.currentList.toMutableList()
-        sections.forEach {
-            if (emptyMandatoryFields.containsKey(it.uid())) {
-                sections[sections.indexOf(it)] = it.withError("mandatory field missing")
-            }
-        }
-        adapter.swap(sections) {}
     }
 
     override fun showErrorFieldsMessage(errorFields: List<String>) {
