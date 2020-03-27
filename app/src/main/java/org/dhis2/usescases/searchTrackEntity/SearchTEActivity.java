@@ -789,7 +789,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     public Consumer<D2Progress> downloadProgress() {
         return progress -> {
             if (downloadingSnackbar == null || !downloadingSnackbar.isShown()) {
-                downloadingSnackbar = Snackbar.make(binding.getRoot(), "Downloading", BaseTransientBottomBar.LENGTH_INDEFINITE);
+                downloadingSnackbar = Snackbar.make(binding.getRoot(), getString(R.string.downloading), BaseTransientBottomBar.LENGTH_INDEFINITE);
                 downloadingSnackbar.show();
             }
         };
