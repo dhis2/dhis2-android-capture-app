@@ -20,6 +20,7 @@ import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.ObjectStyle
 import org.hisp.dhis.android.core.common.ValueType
+import org.hisp.dhis.android.core.dataset.Section
 import org.hisp.dhis.android.core.enrollment.EnrollmentObjectRepository
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.program.Program
@@ -83,6 +84,7 @@ class EnrollmentRepository(
                     }.map { list ->
                         val fields = getEnrollmentData(program)
                         fields.addAll(list)
+                        fields.add(SectionViewModel.createClosingSection())
                         fields
                     }
             }.toFlowable()

@@ -17,7 +17,7 @@
     <string name="no_value">no value</string>
     <string name="no_reserved_values">There are no more reserved values. Contact your system administrator</string>
     <string name="no_reserved_values_connection">There are no more reserved values. Connect to the network to refill them</string>
-
+    <string name="errors">errors</string>
     <!-- SyncService strings: -->
     <string name="sync_now">Synchronise now</string>
     <string name="sync_text">Synchronising with server</string>

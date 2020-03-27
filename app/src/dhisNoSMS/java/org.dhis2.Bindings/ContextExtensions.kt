@@ -1,6 +1,7 @@
 package org.dhis2.Bindings
 
 import android.content.Context
+import androidx.fragment.app.Fragment
 import hu.supercluster.paperwork.Paperwork
 import org.dhis2.BuildConfig
 

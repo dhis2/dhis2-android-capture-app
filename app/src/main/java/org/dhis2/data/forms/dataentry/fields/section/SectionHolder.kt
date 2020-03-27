@@ -38,33 +38,41 @@ class SectionHolder(
 
     fun update(viewModel: SectionViewModel) {
         this.viewModel = viewModel
+        checkVisibility(viewModel.uid() == SectionViewModel.CLOSING_SECTION_UID)
         formBinding.apply {
             sectionName.text = viewModel.label()
             openIndicator.visibility = if (viewModel.isOpen) View.VISIBLE else View.GONE
-            if (viewModel.completedFields() == viewModel.totalFields()){
-                sectionFieldsInfo.setTextColor(root.getThemePrimaryColor())
-            } else {
-                sectionFieldsInfo.setTextColor(
-                    ResourcesCompat.getColor(root.resources, R.color.placeholder, null)
-                )
-            }
-            sectionFieldsInfo.text = String.format(
-                "%s/%s",
-                viewModel.completedFields(),
-                viewModel.totalFields()
-            )
-            sectionDetails.setBackgroundColor(
-                when {
-                    viewModel.error() != null -> ContextCompat.getColor(
-                        binding.root.context,
-                        R.color.error_color
+            when(viewModel.errors()) {
+                null, 0 -> sectionFieldsInfo.apply{
+                    text = String.format(
+                        "%s/%s",
+                        viewModel.completedFields(),
+                        viewModel.totalFields()
                     )
-                    else -> ContextCompat.getColor(
-                        binding.root.context,
-                        R.color.colorAccent
+                    background = null
+                    setTextColor(
+                        when {
+                            viewModel.completedFields() == viewModel.totalFields() ->
+                                root.getThemePrimaryColor()
+                            else ->
+                                ResourcesCompat.getColor(root.resources, R.color.placeholder, null)
+                        }
+                    )
+
+                }
+                else -> sectionFieldsInfo.apply {
+                    text = String.format(
+                        "%s %s",
+                        viewModel.errors(),
+                        itemView.context.getString(R.string.errors)
+                    )
+                    background =
+                        ContextCompat.getDrawable(itemView.context, R.drawable.bg_section_error)
+                    setTextColor(
+                        ResourcesCompat.getColor(root.resources, R.color.white, null)
                     )
                 }
-            )
+            }
         }
 
         formBinding.descriptionIcon.visibility = if (viewModel.description().isNullOrEmpty()) {
@@ -88,8 +96,23 @@ class SectionHolder(
         setShadows()
     }
 
+    private fun checkVisibility(isClosingSection: Boolean) {
+        formBinding.sectionDetails.visibility = if (isClosingSection) {
+            View.GONE
+        } else {
+            View.VISIBLE
+        }
+        formBinding.shadowEnd.visibility = if (isClosingSection) {
+            View.VISIBLE
+        } else {
+            View.GONE
+        }
+    }
+
     override fun onClick(v: View) {
-        sectionProcessor.onNext(viewModel.uid())
+        if (viewModel.uid() != SectionViewModel.CLOSING_SECTION_UID) {
+            sectionProcessor.onNext(viewModel.uid())
+        }
     }
 
     private fun setShadows() {
