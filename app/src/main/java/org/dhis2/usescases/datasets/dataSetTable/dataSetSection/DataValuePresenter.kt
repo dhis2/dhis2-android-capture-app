@@ -285,8 +285,10 @@ class DataValuePresenter(
             val values = ArrayList<String>()
             val fields = ArrayList<FieldViewModel>()
             var totalRow = 0
-            isNumber = dataElement.valueType() == ValueType.NUMBER ||
-                    dataElement.valueType() == ValueType.INTEGER
+            var fieldIsNumber = dataElement.valueType()!!.isNumeric
+            if(!isNumber) {
+                isNumber = dataElement.valueType()!!.isNumeric
+            }
             val fieldFactory = FieldViewModelFactoryImpl("", "")
 
             for (
@@ -369,8 +371,8 @@ class DataValuePresenter(
                 fields.add(fieldViewModel)
                 values.add(fieldViewModel.value().toString())
 
-                if (!section!!.uid().isEmpty() && section!!.showRowTotals()!! &&
-                    isNumber && !fieldViewModel.value()!!.isEmpty()
+                if (section!!.uid().isNotEmpty() && section!!.showRowTotals()!! &&
+                    fieldIsNumber && fieldViewModel.value()!!.isNotEmpty()
                 ) {
                     totalRow += Integer.parseInt(fieldViewModel.value()!!)
                 }
@@ -388,7 +390,7 @@ class DataValuePresenter(
                         fields[fields.indexOf(fieldViewModel)] = fieldViewModel.setMandatory()
                     }
 
-            if (!section!!.uid().isEmpty() && section!!.showRowTotals()!! && isNumber) {
+            if (section!!.uid().isNotEmpty() && section!!.showRowTotals()!! && fieldIsNumber) {
                 setTotalRow(totalRow, fields, values, row, column)
             }
 

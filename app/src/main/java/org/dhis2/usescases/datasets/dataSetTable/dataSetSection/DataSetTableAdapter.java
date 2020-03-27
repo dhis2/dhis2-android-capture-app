@@ -1,6 +1,7 @@
 package org.dhis2.usescases.datasets.dataSetTable.dataSetSection;
 
 import android.content.Context;
+import android.text.TextUtils;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -54,6 +55,8 @@ import java.util.List;
 import io.reactivex.processors.FlowableProcessor;
 import kotlin.Pair;
 import kotlin.Triple;
+
+import static android.text.TextUtils.isEmpty;
 
 /**
  * QUADRAM. Created by ppajuelo on 02/10/2018.
@@ -135,7 +138,7 @@ public class DataSetTableAdapter extends AbstractTableAdapter<CategoryOption, Da
             rowWidth -= 50;
         }
 
-        Triple<String,Integer,Integer> measures =
+        Triple<String, Integer, Integer> measures =
                 MeasureExtensionsKt.calculateHeight(new Pair(maxLabel, rowWidth), context);
         setColumnHeaderHeight(measures.getThird() + context.getResources().getDimensionPixelSize(R.dimen.padding_5));
 
@@ -362,27 +365,43 @@ public class DataSetTableAdapter extends AbstractTableAdapter<CategoryOption, Da
     public void updateValue(RowAction rowAction) {
         if (showRowTotal || showColumnTotal) {
             int oldValue = 0;
+
             if (getCellItem(rowAction.columnPos(), rowAction.rowPos()) != null && !getCellItem(rowAction.columnPos(), rowAction.rowPos()).isEmpty())
                 oldValue = Integer.parseInt(getCellItem(rowAction.columnPos(), rowAction.rowPos()));
 
-            if (showRowTotal) {
-                int totalRow = Integer.parseInt(getCellItem(viewModels.get(0).size() - 1, rowAction.rowPos()).isEmpty() ?
-                        "0" : getCellItem(viewModels.get(0).size() - 1, rowAction.rowPos()))
-                        + (Integer.parseInt(rowAction.value() != null ? rowAction.value() : "0") - oldValue);
-                changeCellItem(viewModels.get(0).size() - 1, rowAction.rowPos(), totalRow + "", showRowTotal);
+            try {
+                if (showRowTotal) {
+                    int totalRow = Integer.parseInt(isEmpty(getCellItem(viewModels.get(0).size() - 1, rowAction.rowPos())) ?
+                            "0" : getCellItem(viewModels.get(0).size() - 1, rowAction.rowPos()))
+                            + (Integer.parseInt(rowAction.value() != null ? rowAction.value() : "0") - oldValue);
+                    changeCellItem(viewModels.get(0).size() - 1, rowAction.rowPos(), totalRow + "", showRowTotal);
+                }
+            } catch (Exception e) {
+
             }
-            if (showColumnTotal) {
-                int totalColumn = Integer.parseInt(getCellItem(rowAction.columnPos(), viewModels.size() - 1).isEmpty() ?
-                        "0" : getCellItem(rowAction.columnPos(), viewModels.size() - 1))
-                        + (Integer.parseInt(rowAction.value() != null ? rowAction.value() : "0") - oldValue);
-                changeCellItem(rowAction.columnPos(), viewModels.size() - 1, totalColumn + "", showColumnTotal);
+
+            try {
+                if (showColumnTotal) {
+                    int totalColumn = Integer.parseInt(isEmpty(getCellItem(rowAction.columnPos(), viewModels.size() - 1)) ?
+                            "0" : getCellItem(rowAction.columnPos(), viewModels.size() - 1))
+                            + (Integer.parseInt(rowAction.value() != null ? rowAction.value() : "0") - oldValue);
+                    changeCellItem(rowAction.columnPos(), viewModels.size() - 1, totalColumn + "", showColumnTotal);
+                }
+            } catch (Exception e) {
+
             }
-            if (showRowTotal && showColumnTotal) {
-                int total = Integer.parseInt(getCellItem(viewModels.get(0).size() - 1, viewModels.size() - 1).isEmpty() ?
-                        "0" : getCellItem(viewModels.get(0).size() - 1, viewModels.size() - 1))
-                        + (Integer.parseInt(rowAction.value() != null ? rowAction.value() : "0") - oldValue);
-                changeCellItem(viewModels.get(0).size() - 1, viewModels.size() - 1, total + "", true);
+
+            try {
+                if (showRowTotal && showColumnTotal) {
+                    int total = Integer.parseInt(isEmpty(getCellItem(viewModels.get(0).size() - 1, viewModels.size() - 1)) ?
+                            "0" : getCellItem(viewModels.get(0).size() - 1, viewModels.size() - 1))
+                            + (Integer.parseInt(rowAction.value() != null ? rowAction.value() : "0") - oldValue);
+                    changeCellItem(viewModels.get(0).size() - 1, viewModels.size() - 1, total + "", true);
+                }
+            } catch (Exception e) {
+
             }
+
         }
         String value = rowAction.value();
 

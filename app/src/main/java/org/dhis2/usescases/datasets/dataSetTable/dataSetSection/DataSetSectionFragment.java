@@ -5,13 +5,10 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.content.ContextCompat;
 import androidx.core.widget.NestedScrollView;
 import androidx.databinding.DataBindingUtil;
@@ -36,7 +33,6 @@ import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.OrientationUtilsKt;
 import org.hisp.dhis.android.core.category.CategoryOption;
-import org.hisp.dhis.android.core.dataelement.DataElement;
 import org.hisp.dhis.android.core.dataset.DataSet;
 import org.hisp.dhis.android.core.dataset.Section;
 
@@ -51,8 +47,6 @@ import kotlin.Pair;
 import kotlin.Triple;
 
 import static com.evrencoskun.tableview.adapter.recyclerview.holder.AbstractViewHolder.SelectionState.UNSELECTED;
-import static org.dhis2.utils.analytics.AnalyticsConstants.LEVEL_ZOOM;
-import static org.dhis2.utils.analytics.AnalyticsConstants.ZOOM_TABLE;
 
 /**
  * QUADRAM. Created by ppajuelo on 02/10/2018.
@@ -152,8 +146,10 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
 
         Pair<Integer, Integer> savedMeasure = presenterFragment.getCurrentSectionMeasure();
         if (savedMeasure.getFirst() != 0) {
+            adapter.setMaxLabel(MeasureExtensionsKt.maxLengthLabel(dataTableModel.rows()));
             tableView.setRowHeaderWidth(savedMeasure.getFirst());
             adapter.setColumnHeaderHeight(savedMeasure.getSecond());
+
         } else {
 
             int widthFactor;
@@ -175,7 +171,7 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
             );
             adapter.setMaxLabel(labelMeasure.getFirst());
             tableView.setRowHeaderWidth(labelMeasure.getSecond());
-            if(labelMeasure.getThird()!=0){
+            if (labelMeasure.getThird() != 0) {
                 adapter.setColumnHeaderHeight(
                         labelMeasure.getThird() + getContext().getResources().getDimensionPixelSize(R.dimen.padding_5));
             }
@@ -234,6 +230,8 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
                     tableView.getAdapter().getRowHeaderWidth(),
                     binding.headerContainer.getChildAt(0).getLayoutParams().height
             ));
+            if (binding.headerContainer.getChildCount() > 1)
+                cornerView.setTop((binding.headerContainer.getChildCount() - 2) * binding.headerContainer.getChildAt(0).getLayoutParams().height);
 
             cornerView.findViewById(R.id.buttonRowScaleAdd).setOnClickListener(view -> {
                         for (int i = 0; i < binding.tableLayout.getChildCount(); i++) {

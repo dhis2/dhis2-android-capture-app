@@ -8,6 +8,12 @@ fun List<DataElement>.toDisplayNameList(): List<String> {
     return map { it.displayName() ?: it.uid() }
 }
 
+fun List<DataElement>.maxLengthLabel(): String {
+    return toDisplayNameList().maxBy {
+        it.length
+    } ?: ""
+}
+
 fun List<DataElement>.measureText(context: Context, widthFactor: Int): Triple<String, Int, Int> {
     return toDisplayNameList()
         .calculateWidth(context)
