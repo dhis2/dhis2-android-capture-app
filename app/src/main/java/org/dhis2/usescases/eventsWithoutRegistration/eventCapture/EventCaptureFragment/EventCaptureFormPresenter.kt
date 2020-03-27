@@ -25,7 +25,7 @@ class EventCaptureFormPresenter(
                 .onBackpressureBuffer()
                 .distinctUntilChanged()
                 .subscribeOn(schedulerProvider.io())
-                .observeOn(schedulerProvider.ui())
+                .observeOn(schedulerProvider.io())
                 .switchMap { action ->
                     if (action.lastFocusPosition() != null && action.lastFocusPosition() >= 0) {
                         this.lastFocusItem = action.id()
