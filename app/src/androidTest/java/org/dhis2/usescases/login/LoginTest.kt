@@ -42,11 +42,8 @@ class LoginTest : BaseTest() {
         loginRobot {
             clearServerField()
             typeServer(MOCK_SERVER_URL)
-            closeKeyboard()
             typeUsername(USERNAME)
-            closeKeyboard()
             typePassword(PASSWORD)
-            closeKeyboard()
             clickLoginButton()
             acceptGenericDialog()
         }
@@ -63,11 +60,8 @@ class LoginTest : BaseTest() {
         loginRobot {
             clearServerField()
             typeServer(MOCK_SERVER_URL)
-            closeKeyboard()
             typeUsername(USERNAME)
-            closeKeyboard()
             typePassword(PASSWORD)
-            closeKeyboard()
             clickLoginButton()
             acceptGenericDialog()
             checkAuthErrorAlertIsVisible()
@@ -81,12 +75,9 @@ class LoginTest : BaseTest() {
           loginRobot {
               clearServerField()
               typeServer(MOCK_SERVER_URL)
-              closeKeyboard()
               typeUsername(USERNAME)
-              closeKeyboard()
               typePassword(PASSWORD)
               clearPasswordField()
-              closeKeyboard()
               checkLoginButtonIsHidden()
           }
       }
@@ -99,7 +90,6 @@ class LoginTest : BaseTest() {
           loginRobot {
               clearServerField()
               typeServer(MOCK_SERVER_URL)
-              closeKeyboard()
               clickAccountRecovery()
               checkWebviewWithRecoveryAccountIsOpened()
           }
@@ -111,11 +101,8 @@ class LoginTest : BaseTest() {
         loginRobot {
             clearServerField()
             typeServer(MOCK_SERVER_URL)
-            closeKeyboard()
             typeUsername(USERNAME)
-            closeKeyboard()
             typePassword(PASSWORD)
-            closeKeyboard()
             clearUsernameField()
             clearPasswordField()
             checkUsernameFieldIsClear()

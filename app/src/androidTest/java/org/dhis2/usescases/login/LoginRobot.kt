@@ -31,6 +31,7 @@ class LoginRobot : BaseRobot() {
 
     fun typeServer(server: String) {
         onView(withId(R.id.server_url_edit)).perform(TypeTextAction(server))
+        closeKeyboard()
     }
 
     fun clearServerField(){
@@ -39,6 +40,7 @@ class LoginRobot : BaseRobot() {
 
     fun typeUsername(username: String) {
         onView(withId(R.id.user_name_edit)).perform(TypeTextAction(username))
+        closeKeyboard()
     }
 
     fun clearUsernameField() {
@@ -47,6 +49,7 @@ class LoginRobot : BaseRobot() {
 
     fun typePassword(password: String) {
         onView(withId(R.id.user_pass_edit)).perform(TypeTextAction(password))
+        closeKeyboard()
     }
 
     fun clearPasswordField() {
