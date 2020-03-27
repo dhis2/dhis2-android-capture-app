@@ -98,7 +98,22 @@ class LoginPresenter(
                                     view.setUser(it)
                                 }
                             } else {
-                                view.setUrl(view.getDefaultServerProtocol())
+                                val isSessionLocked =
+                                    preferenceProvider.getBoolean(SESSION_LOCKED, false)
+                                if (!isSessionLocked){
+                                    val serverUrl =
+                                        preferenceProvider.getString(
+                                            SECURE_SERVER_URL,
+                                            view.getDefaultServerProtocol()
+                                        )
+                                    val user = preferenceProvider.getString(SECURE_USER_NAME, "")
+                                    if (!serverUrl.isNullOrEmpty() && !user.isNullOrEmpty()) {
+                                        view.setUrl(serverUrl)
+                                        view.setUser(user)
+                                    }
+                                } else {
+                                    view.setUrl(view.getDefaultServerProtocol())
+                                }
                             }
                         },
                         { Timber.e(it) }
