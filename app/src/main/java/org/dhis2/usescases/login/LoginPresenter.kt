@@ -1,6 +1,8 @@
 package org.dhis2.usescases.login
 
 import android.os.Build
+import androidx.annotation.RestrictTo
+import androidx.annotation.RestrictTo.Scope
 import co.infinum.goldfinger.Goldfinger
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
@@ -194,8 +196,7 @@ class LoginPresenter(
                     .observeOn(schedulers.ui())
                     .subscribe(
                         {
-                            val prefs = view.abstracContext.sharedPreferences
-                            prefs.edit().putBoolean(SESSION_LOCKED, false).apply()
+                            preferenceProvider.setValue(SESSION_LOCKED, false)
                             view.handleLogout()
                         },
                         { view.handleLogout() }
@@ -335,6 +336,12 @@ class LoginPresenter(
         preferenceProvider.setValue(PREFS_USERS, HashSet(users))
 
         return Pair(urls, users)
+    }
+
+    //TODO Remove this when we remove the userManager from the presenter
+    @RestrictTo(Scope.TESTS)
+    fun setUserManager(userManager: UserManager) {
+        this.userManager = userManager
     }
 
     companion object {

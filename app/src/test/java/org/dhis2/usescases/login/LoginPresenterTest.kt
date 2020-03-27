@@ -3,9 +3,9 @@ package org.dhis2.usescases.login
 import co.infinum.goldfinger.Goldfinger
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
+import io.reactivex.Completable
 import io.reactivex.Observable
 import junit.framework.Assert.assertTrue
 import org.dhis2.data.fingerprint.FingerPrintController
@@ -24,6 +24,7 @@ import org.dhis2.utils.analytics.LOGIN
 import org.dhis2.utils.analytics.SERVER_QR_SCANNER
 import org.junit.Before
 import org.junit.Test
+import org.mockito.Mockito
 
 class LoginPresenterTest {
 
@@ -33,7 +34,7 @@ class LoginPresenterTest {
     private val preferenceProvider: PreferenceProvider = mock()
     private val goldfinger: FingerPrintController = mock()
     private val view: LoginContracts.View = mock()
-    private val userManager: UserManager = mock()
+    private val userManager: UserManager = Mockito.mock(UserManager::class.java, Mockito.RETURNS_DEEP_STUBS)
     private val analyticsHelper: AnalyticsHelper = mock()
 
     @Before
@@ -240,5 +241,14 @@ class LoginPresenterTest {
         testingCredentials.forEach {
             assertTrue(urls.contains(it.server_url))
         }
+    }
+
+    @Test
+    fun `Should handle log out when button is clicked`() {
+        whenever(userManager.d2.userModule().logOut()) doReturn Completable.complete()
+        loginPresenter.setUserManager(userManager)
+        loginPresenter.logOut()
+
+        verify(view).handleLogout()
     }
 }
