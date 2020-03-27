@@ -100,6 +100,17 @@ class TeiDashboardTest : BaseTest() {
         Thread.sleep(10000)
     }
 
+    @Test
+    fun shouldShowQRWhenClickOnShare() {
+        prepareTeiCompletedProgrammeIntentAndLaunchActivity()
+
+        teiDashboardRobot {
+            clickOnShareButton()
+            clickOnNextQR()
+            //click on next
+        }
+    }
+
     private fun prepareTeiCompletedProgrammeIntentAndLaunchActivity() {
         Intent().apply {
             putExtra(CHILD_PROGRAM_UID, CHILD_PROGRAM_UID_VALUE)

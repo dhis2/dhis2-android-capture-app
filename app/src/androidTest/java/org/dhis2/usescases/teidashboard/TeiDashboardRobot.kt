@@ -59,4 +59,17 @@ class TeiDashboardRobot: BaseRobot () {
     fun checkCanNotAddEvent() {
         onView(withId(R.id.fab)).check(matches(not(isDisplayed())))
     }
+
+    fun clickOnShareButton() {
+        onView(withId(R.id.shareContainer)).perform(click())
+    }
+
+    fun checkNumberOfQR() {
+        onView(withId(R.id.page)).check(matches(withText("8")))
+    }
+
+    fun clickOnNextQR() {
+        onView(withId(R.id.next)).perform(click())
+    }
+
 }
