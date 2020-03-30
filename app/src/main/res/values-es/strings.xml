@@ -14,7 +14,6 @@
     <string name="no_value">sin valor</string>
     <string name="no_reserved_values">No quedan valores reservados. Contacta con el administrador del sistema.</string>
     <string name="no_reserved_values_connection">No quedan valores reservados. Conéctate a internet para recargarlos.</string>
-
     <!-- SyncService strings: -->
     <string name="sync_now">Sincronizar ahora</string>
     <string name="sync_text">Sincronizando con el servidor</string>
