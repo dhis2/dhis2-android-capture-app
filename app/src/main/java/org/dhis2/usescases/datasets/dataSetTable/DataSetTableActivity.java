@@ -2,6 +2,7 @@ package org.dhis2.usescases.datasets.dataSetTable;
 
 
 import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
@@ -97,6 +98,12 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
     protected void onDestroy() {
         super.onDestroy();
         presenter.onDettach();
+    }
+
+    @Override
+    public void onConfigurationChanged(@NonNull Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        viewPagerAdapter.notifyDataSetChanged();
     }
 
     private void setViewPager() {
