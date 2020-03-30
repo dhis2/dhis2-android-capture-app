@@ -12,18 +12,21 @@ import org.hisp.dhis.android.core.D2;
 import dagger.Module;
 import dagger.Provides;
 
-/**
- * Created by ppajuelo on 02/11/2017.
- *
- */
+
 @PerActivity
 @Module
 public class SearchTEModule {
 
+    private final SearchTEContractsModule.View view;
     private final String teiType;
+    private final String initialProgram;
 
-    public SearchTEModule(String tEType) {
+    public SearchTEModule(SearchTEContractsModule.View view,
+                          String tEType,
+                          String initialProgram) {
+        this.view = view;
         this.teiType = tEType;
+        this.initialProgram = initialProgram;
     }
 
     @Provides
@@ -34,8 +37,10 @@ public class SearchTEModule {
 
     @Provides
     @PerActivity
-    SearchTEContractsModule.Presenter providePresenter(D2 d2, SearchRepository searchRepository, SchedulerProvider schedulerProvider) {
-        return new SearchTEPresenter(d2, searchRepository, schedulerProvider);
+    SearchTEContractsModule.Presenter providePresenter(D2 d2,
+                                                       SearchRepository searchRepository,
+                                                       SchedulerProvider schedulerProvider) {
+        return new SearchTEPresenter(view, d2, searchRepository, schedulerProvider, initialProgram);
     }
 
     @Provides

@@ -71,8 +71,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     private final SearchRepository searchRepository;
     private final D2 d2;
     private final SchedulerProvider schedulerProvider;
-    private SearchTEContractsModule.View view;
-
+    private final SearchTEContractsModule.View view;
     private Program selectedProgram;
 
     private CompositeDisposable compositeDisposable;
@@ -88,10 +87,19 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     private FlowableProcessor<Unit> enrollmentMapProcessor;
     private Dialog dialogDisplayed;
 
-    public SearchTEPresenter(D2 d2, SearchRepository searchRepository, SchedulerProvider schedulerProvider) {
+    private boolean showList = true;
+
+    public SearchTEPresenter(SearchTEContractsModule.View view,
+                             D2 d2,
+                             SearchRepository searchRepository,
+                             SchedulerProvider schedulerProvider,
+                             @Nullable String initialProgram) {
+        this.view = view;
         this.searchRepository = searchRepository;
         this.d2 = d2;
         this.schedulerProvider = schedulerProvider;
+        this.initialProgram = initialProgram;
+        compositeDisposable = new CompositeDisposable();
         queryData = new HashMap<>();
         queryProcessor = PublishProcessor.create();
         mapProcessor = PublishProcessor.create();
@@ -102,11 +110,8 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     //region LIFECYCLE
 
     @Override
-    public void init(SearchTEContractsModule.View view, String trackedEntityType, String initialProgram) {
-        this.view = view;
-        compositeDisposable = new CompositeDisposable();
+    public void init(String trackedEntityType) {
         this.trackedEntityType = trackedEntityType;
-        this.initialProgram = initialProgram;
 
         compositeDisposable.add(
                 searchRepository.getTrackedEntityType(trackedEntityType)
@@ -178,7 +183,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     }
 
     @Override
-    public void initSearch(SearchTEContractsModule.View view) {
+    public void initSearch() {
 
         compositeDisposable.add(view.rowActionss()
                 .subscribeOn(schedulerProvider.ui())
@@ -306,6 +311,10 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                 canRegister = true;
             } else if (size == 0) {
                 messageId = view.getContext().getString(R.string.search_init);
+            }
+        } else  if (selectedProgram != null && selectedProgram.displayFrontPageList()) {
+            if (!showList && selectedProgram.minAttributesRequiredToSearch() > queryData.size()) {
+                messageId = String.format(view.getContext().getString(R.string.search_min_num_attr), selectedProgram.minAttributesRequiredToSearch());
             }
         } else if (selectedProgram == null) {
             if (size == 0 && queryData.isEmpty() && view.fromRelationshipTEI() == null)
@@ -448,7 +457,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         else {
             this.view.analyticsHelper().setEvent(SEARCH_TEI, CLICK, SEARCH_TEI);
             this.view.clearData();
-            this.view.setFabIcon(false);
+
             List<String> optionSetIds = new ArrayList<>();
             this.view.updateFiltersSearch(queryData.entrySet().size());
             for (Map.Entry<String, String> entry : queryData.entrySet()) {
@@ -458,7 +467,17 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
             for (String id : optionSetIds) {
                 queryData.remove(id);
             }
-            queryProcessor.onNext(queryData);
+            if (selectedProgram != null && selectedProgram.displayFrontPageList()) {
+                if (queryData.size() < selectedProgram.minAttributesRequiredToSearch()) {
+                    showList = false;
+                    this.view.setFabIcon(true);
+                    queryProcessor.onNext(new HashMap<>());
+                } else {
+                    showList = true;
+                    this.view.setFabIcon(false);
+                    queryProcessor.onNext(queryData);
+                }
+            }
         }
     }
 

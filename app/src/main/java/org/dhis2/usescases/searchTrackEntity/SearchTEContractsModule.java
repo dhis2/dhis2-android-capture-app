@@ -84,7 +84,7 @@ public class SearchTEContractsModule {
 
     public interface Presenter {
 
-        void init(View view, String trackedEntityType, String initialProgram);
+        void init(String trackedEntityType);
 
         void onDestroy();
 
@@ -118,7 +118,7 @@ public class SearchTEContractsModule {
 
         HashMap<String, String> getQueryData();
 
-        void initSearch(SearchTEContractsModule.View view);
+        void initSearch();
 
         void onSyncIconClick(String teiUid);
 
