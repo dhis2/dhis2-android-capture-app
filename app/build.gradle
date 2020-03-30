@@ -219,6 +219,7 @@ dependencies {
 
     debugImplementation project(':dhis2-rule-engine')
     betaImplementation project(':dhis2-rule-engine')
+    releaseImplementation project(':dhis2-rule-engine')
 
     implementation project(':viewpagerdotsindicator')
     implementation project(':tableview')
@@ -243,9 +244,9 @@ dependencies {
         exclude group: "org.hisp.dhis", module: "core-rules"
     }
 
-    releaseImplementation("org.hisp.dhis.rules:rule-engine:${libraries.ruleEngine}") {
+  /*  releaseImplementation("org.hisp.dhis.rules:rule-engine:${libraries.ruleEngine}") {
         exclude group: "junit", module: "junit"
-    }
+    }*/
     //endregion
 
     //region UI LIBRARIES
