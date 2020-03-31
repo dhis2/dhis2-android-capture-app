@@ -10,6 +10,7 @@ import org.hisp.dhis.android.core.D2
 import org.dhis2.data.forms.dataentry.DataEntryStore
 import org.dhis2.data.forms.dataentry.ValueStore
 import org.dhis2.data.forms.dataentry.ValueStoreImpl
+import org.dhis2.data.prefs.PreferenceProvider
 
 @Module
 class DataValueModule(
@@ -29,14 +30,17 @@ class DataValueModule(
         repository: DataValueRepository,
         valueStore: ValueStore,
         schedulerProvider: SchedulerProvider,
-        analyticsHelper: AnalyticsHelper
+        analyticsHelper: AnalyticsHelper,
+        preferenceProvider: PreferenceProvider
     ): DataValuePresenter {
         return DataValuePresenter(
             view,
             repository,
             valueStore,
             schedulerProvider,
-            analyticsHelper
+            analyticsHelper,
+            preferenceProvider,
+            dataSetUid
         )
     }
 

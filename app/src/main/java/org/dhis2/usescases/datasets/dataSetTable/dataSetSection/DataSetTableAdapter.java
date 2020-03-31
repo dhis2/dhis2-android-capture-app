@@ -1,10 +1,12 @@
 package org.dhis2.usescases.datasets.dataSetTable.dataSetSection;
 
 import android.content.Context;
+import android.text.TextUtils;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.databinding.DataBindingUtil;
@@ -15,6 +17,7 @@ import com.evrencoskun.tableview.TableView;
 import com.evrencoskun.tableview.adapter.AbstractTableAdapter;
 import com.evrencoskun.tableview.adapter.recyclerview.holder.AbstractViewHolder;
 
+import org.dhis2.Bindings.MeasureExtensionsKt;
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.tablefields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.tablefields.Row;
@@ -50,6 +53,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.reactivex.processors.FlowableProcessor;
+import kotlin.Pair;
+import kotlin.Triple;
+import timber.log.Timber;
+
+import static android.text.TextUtils.isEmpty;
 
 /**
  * QUADRAM. Created by ppajuelo on 02/10/2018.
@@ -90,6 +98,11 @@ public class DataSetTableAdapter extends AbstractTableAdapter<CategoryOption, Da
 
     private String catCombo;
     private Boolean dataElementDecoration;
+    private String maxLabel;
+
+    public void setMaxLabel(String maxLabel) {
+        this.maxLabel = maxLabel;
+    }
 
     public enum TableScale {
         SMALL, DEFAULT, LARGE
@@ -110,13 +123,28 @@ public class DataSetTableAdapter extends AbstractTableAdapter<CategoryOption, Da
             currentWidth = 200;
             currentHeight = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 24, context.getResources().getDisplayMetrics());
             currentTableScale.set(TableScale.SMALL);
-
         }
 
         onScaleListener.scaleTo(currentWidth, currentHeight);
 
         notifyDataSetChanged();
         return currentTableScale.get();
+    }
+
+    void scaleRowWidth(boolean add) {
+        int rowWidth = getRowHeaderWidth();
+        if (add) {
+            rowWidth += 50;
+        } else {
+            rowWidth -= 50;
+        }
+
+        Triple<String, Integer, Integer> measures =
+                MeasureExtensionsKt.calculateHeight(new Pair(maxLabel, rowWidth), context);
+        setColumnHeaderHeight(measures.getThird() + context.getResources().getDimensionPixelSize(R.dimen.padding_5));
+
+        getTableView().setRowHeaderWidth(rowWidth);
+        notifyDataSetChanged();
     }
 
     public ObservableField<TableScale> getCurrentTableScale() {
@@ -185,7 +213,7 @@ public class DataSetTableAdapter extends AbstractTableAdapter<CategoryOption, Da
 
         rows.get(holder.getItemViewType()).onBind(holder, viewModels.get(rowPosition).get(columnPosition).withValue(cellItemModel.toString()), cellItemModel.toString());
         holder.itemView.getLayoutParams().width = currentWidth;
-        holder.itemView.getLayoutParams().height = currentHeight;
+        holder.itemView.getLayoutParams().height = getColumnHeaderHeight();
     }
 
     public void swap(List<List<FieldViewModel>> viewModels) {
@@ -270,17 +298,13 @@ public class DataSetTableAdapter extends AbstractTableAdapter<CategoryOption, Da
     public void onBindRowHeaderViewHolder(AbstractViewHolder holder, Object rowHeaderItemModel, int
             position) {
         ((DataSetRowHeader) holder).bind(mRowHeaderItems.get(position), currentTableScale, dataElementDecoration);
-        holder.itemView.getLayoutParams().height = currentHeight;
+        holder.itemView.getLayoutParams().height = /*currentHeight*/getColumnHeaderHeight();
     }
 
 
     @Override
     public View onCreateCornerView() {
-        // Get Corner xml layout
         return null;
-        /*View corner = LayoutInflater.from(mContext).inflate(R.layout.table_view_corner_layout, null);
-        corner.findViewById(R.id.buttonScale).setOnClickListener(view -> scale());
-        return corner;*/
     }
 
     @Override
@@ -342,31 +366,47 @@ public class DataSetTableAdapter extends AbstractTableAdapter<CategoryOption, Da
     public void updateValue(RowAction rowAction) {
         if (showRowTotal || showColumnTotal) {
             int oldValue = 0;
+
             if (getCellItem(rowAction.columnPos(), rowAction.rowPos()) != null && !getCellItem(rowAction.columnPos(), rowAction.rowPos()).isEmpty())
                 oldValue = Integer.parseInt(getCellItem(rowAction.columnPos(), rowAction.rowPos()));
 
-            if (showRowTotal) {
-                int totalRow = Integer.parseInt(getCellItem(viewModels.get(0).size() - 1, rowAction.rowPos()).isEmpty() ?
-                        "0" : getCellItem(viewModels.get(0).size() - 1, rowAction.rowPos()))
-                        + (Integer.parseInt(rowAction.value() != null ? rowAction.value() : "0") - oldValue);
-                changeCellItem(viewModels.get(0).size() - 1, rowAction.rowPos(), totalRow + "", showRowTotal);
+            try {
+                if (showRowTotal) {
+                    int totalRow = Integer.parseInt(isEmpty(getCellItem(viewModels.get(0).size() - 1, rowAction.rowPos())) ?
+                            "0" : getCellItem(viewModels.get(0).size() - 1, rowAction.rowPos()))
+                            + (Integer.parseInt(rowAction.value() != null ? rowAction.value() : "0") - oldValue);
+                    changeCellItem(viewModels.get(0).size() - 1, rowAction.rowPos(), totalRow + "", showRowTotal);
+                }
+            } catch (Exception e) {
+                Timber.d("Data element is not numeric");
             }
-            if (showColumnTotal) {
-                int totalColumn = Integer.parseInt(getCellItem(rowAction.columnPos(), viewModels.size() - 1).isEmpty() ?
-                        "0" : getCellItem(rowAction.columnPos(), viewModels.size() - 1))
-                        + (Integer.parseInt(rowAction.value() != null ? rowAction.value() : "0") - oldValue);
-                changeCellItem(rowAction.columnPos(), viewModels.size() - 1, totalColumn + "", showColumnTotal);
+
+            try {
+                if (showColumnTotal) {
+                    int totalColumn = Integer.parseInt(isEmpty(getCellItem(rowAction.columnPos(), viewModels.size() - 1)) ?
+                            "0" : getCellItem(rowAction.columnPos(), viewModels.size() - 1))
+                            + (Integer.parseInt(rowAction.value() != null ? rowAction.value() : "0") - oldValue);
+                    changeCellItem(rowAction.columnPos(), viewModels.size() - 1, totalColumn + "", showColumnTotal);
+                }
+            } catch (Exception e) {
+                Timber.d("Data element is not numeric");
             }
-            if (showRowTotal && showColumnTotal) {
-                int total = Integer.parseInt(getCellItem(viewModels.get(0).size() - 1, viewModels.size() - 1).isEmpty() ?
-                        "0" : getCellItem(viewModels.get(0).size() - 1, viewModels.size() - 1))
-                        + (Integer.parseInt(rowAction.value() != null ? rowAction.value() : "0") - oldValue);
-                changeCellItem(viewModels.get(0).size() - 1, viewModels.size() - 1, total + "", true);
+
+            try {
+                if (showRowTotal && showColumnTotal) {
+                    int total = Integer.parseInt(isEmpty(getCellItem(viewModels.get(0).size() - 1, viewModels.size() - 1)) ?
+                            "0" : getCellItem(viewModels.get(0).size() - 1, viewModels.size() - 1))
+                            + (Integer.parseInt(rowAction.value() != null ? rowAction.value() : "0") - oldValue);
+                    changeCellItem(viewModels.get(0).size() - 1, viewModels.size() - 1, total + "", true);
+                }
+            } catch (Exception e) {
+                Timber.d("Data element is not numeric");
             }
+
         }
         String value = rowAction.value();
 
-        if(rowAction.optionSetName() != null && !rowAction.optionSetName().isEmpty()){
+        if (rowAction.optionSetName() != null && !rowAction.optionSetName().isEmpty()) {
             value = rowAction.optionSetName();
         }
 

@@ -850,11 +850,13 @@ public class TableView extends FrameLayout implements ITableView {
         }
 
         if (mColumnHeaderRecyclerView != null) {
-            // Update ColumnHeader left margin
-            LayoutParams layoutParams = (LayoutParams) mColumnHeaderRecyclerView.getLayoutParams();
-            layoutParams.leftMargin = rowHeaderWidth;
-            mColumnHeaderRecyclerView.setLayoutParams(layoutParams);
-            mColumnHeaderRecyclerView.requestLayout();
+            // Update ColumnHeaders left margin
+            for(CellRecyclerView mColumnHeaderRecyclerView : mColumnHeaderRecyclerViews) {
+                LayoutParams layoutParams = (LayoutParams) mColumnHeaderRecyclerView.getLayoutParams();
+                layoutParams.leftMargin = rowHeaderWidth;
+                mColumnHeaderRecyclerView.setLayoutParams(layoutParams);
+                mColumnHeaderRecyclerView.requestLayout();
+            }
         }
 
         if (mCellRecyclerView != null) {
@@ -865,10 +867,25 @@ public class TableView extends FrameLayout implements ITableView {
             mCellRecyclerView.requestLayout();
         }
 
+        if(mBackupHeaders != null) {
+            // Update BackupHeaders left margin
+            for(CellRecyclerView mBackupHeader : mBackupHeaders) {
+                LayoutParams layoutParams = (LayoutParams) mBackupHeader.getLayoutParams();
+                layoutParams.leftMargin = rowHeaderWidth;
+                mBackupHeader.setLayoutParams(layoutParams);
+                mBackupHeader.requestLayout();
+            }
+        }
+
         if (getAdapter() != null) {
             // update CornerView size
             getAdapter().setRowHeaderWidth(rowHeaderWidth);
         }
+    }
+
+    @Override
+    public void setCellHeight(int hcellHeight) {
+        mColumnHeaderHeight = hcellHeight;
     }
 
     public void setColumnWidth(int columnPosition, int width) {
