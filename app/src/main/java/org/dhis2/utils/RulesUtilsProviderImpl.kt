@@ -23,11 +23,7 @@ import org.hisp.dhis.rules.models.RuleActionShowWarning
 import org.hisp.dhis.rules.models.RuleActionWarningOnCompletion
 import org.hisp.dhis.rules.models.RuleEffect
 
-/**
- * QUADRAM. Created by ppajuelo on 13/06/2018.
- */
-
-class RulesUtilsProviderImpl(private val codeGenerator: CodeGenerator) : RulesUtilsProvider {
+class RulesUtilsProviderImpl : RulesUtilsProvider {
 
     private var currentFieldViewModels: HashMap<String, FieldViewModel>? = null
 
@@ -67,7 +63,6 @@ class RulesUtilsProviderImpl(private val codeGenerator: CodeGenerator) : RulesUt
                 )
                 is RuleActionHideSection -> hideSection(
                     it.ruleAction() as RuleActionHideSection,
-                    fieldViewModels,
                     rulesActionCallbacks
                 )
                 is RuleActionAssign -> assign(
@@ -200,26 +195,9 @@ class RulesUtilsProviderImpl(private val codeGenerator: CodeGenerator) : RulesUt
 
     private fun hideSection(
         hideSection: RuleActionHideSection,
-        fieldViewModels: MutableMap<String, FieldViewModel>,
         rulesActionCallbacks: RulesActionCallbacks
     ) {
         rulesActionCallbacks.setHideSection(hideSection.programStageSection())
-        for (field in fieldViewModels.values) {
-            if (field.programStageSection() == hideSection.programStageSection() &&
-                field.value() != null
-            ) {
-                val uid =
-                    if (field.uid().contains(".")) {
-                        field.uid()
-                            .split("\\.".toRegex())
-                            .dropLastWhile { it.isEmpty() }
-                            .toTypedArray()[0]
-                    } else {
-                        field.uid()
-                    }
-                rulesActionCallbacks.save(uid, null)
-            }
-        }
     }
 
     private fun assign(
