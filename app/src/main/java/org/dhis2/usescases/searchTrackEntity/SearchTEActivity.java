@@ -176,14 +176,14 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                 .build());
 
         tEType = getIntent().getStringExtra("TRACKED_ENTITY_UID");
+        initialProgram = getIntent().getStringExtra("PROGRAM_UID");
 
-        ((App) getApplicationContext()).userComponent().plus(new SearchTEModule(tEType)).inject(this);
+        ((App) getApplicationContext()).userComponent().plus(new SearchTEModule(this, tEType, initialProgram)).inject(this);
 
         super.onCreate(savedInstanceState);
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_search);
         binding.setPresenter(presenter);
-        initialProgram = getIntent().getStringExtra("PROGRAM_UID");
         binding.setNeedsSearch(needsSearch);
         binding.setTotalFilters(FilterManager.getInstance().getTotalFilters());
         binding.setTotalFiltersSearch(presenter.getQueryData().size());
@@ -238,8 +238,8 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     protected void onResume() {
         super.onResume();
         binding.mapView.onResume();
-        presenter.init(this, tEType, initialProgram);
-        presenter.initSearch(this);
+        presenter.init(tEType);
+        presenter.initSearch();
         updateFiltersSearch(presenter.getQueryData().size());
         registerReceiver(networkReceiver, new IntentFilter("android.net.conn.CONNECTIVITY_CHANGE"));
         binding.setTotalFilters(FilterManager.getInstance().getTotalFilters());

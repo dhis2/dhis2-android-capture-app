@@ -131,13 +131,13 @@ public class SearchRepositoryImpl implements SearchRepository {
 
     @Override
     public Observable<List<Program>> programsWithRegistration(String programTypeId) {
-        return Observable.fromCallable(() -> d2.organisationUnitModule().organisationUnits().byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE).blockingGet())
+        return d2.organisationUnitModule().organisationUnits().byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE).get()
                 .map(UidsHelper::getUidsList)
-                .flatMap(orgUnitsUids -> Observable.just(d2.programModule().programs()
+                .flatMap(orgUnitsUids -> d2.programModule().programs()
                         .byOrganisationUnitList(orgUnitsUids)
                         .byRegistration().isTrue()
                         .byTrackedEntityTypeUid().eq(teiType)
-                        .blockingGet()));
+                        .get()).toObservable();
     }
 
     @NonNull
