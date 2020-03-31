@@ -9,6 +9,8 @@ import org.dhis2.common.di.TestingInjector
 import org.dhis2.common.keystore.KeyStoreRobot
 import org.dhis2.common.keystore.KeyStoreRobot.Companion.KEYSTORE_PASSWORD
 import org.dhis2.common.keystore.KeyStoreRobot.Companion.KEYSTORE_USERNAME
+import org.dhis2.common.keystore.KeyStoreRobot.Companion.PASSWORD
+import org.dhis2.common.keystore.KeyStoreRobot.Companion.USERNAME
 import org.dhis2.common.mockwebserver.MockWebServerRobot
 import org.dhis2.common.preferences.PreferencesRobot
 import org.junit.After
@@ -75,8 +77,8 @@ open class BaseTest {
     fun setupCredentials() {
         val keyStoreRobot = TestingInjector.providesKeyStoreRobot(context)
         keyStoreRobot.apply {
-            setData(KEYSTORE_USERNAME, "android")
-            setData(KEYSTORE_PASSWORD, "Android123")
+            setData(KEYSTORE_USERNAME, USERNAME)
+            setData(KEYSTORE_PASSWORD, PASSWORD)
         }
     }
 

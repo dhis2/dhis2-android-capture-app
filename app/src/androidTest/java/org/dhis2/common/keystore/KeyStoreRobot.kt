@@ -19,5 +19,7 @@ class KeyStoreRobot (private val keystore: AndroidSecureStore) {
     companion object {
         const val KEYSTORE_USERNAME = "username"
         const val KEYSTORE_PASSWORD = "password"
+        const val USERNAME = "android"
+        const val PASSWORD = "Android123"
     }
 }

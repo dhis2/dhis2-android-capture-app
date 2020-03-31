@@ -68,32 +68,32 @@ class LoginTest : BaseTest() {
         }
     }
 
-      @Test
-      fun shouldHideLoginButtonIfPasswordIsMissing() {
-          startLoginActivity()
+    @Test
+    fun shouldHideLoginButtonIfPasswordIsMissing() {
+      startLoginActivity()
 
-          loginRobot {
-              clearServerField()
-              typeServer(MOCK_SERVER_URL)
-              typeUsername(USERNAME)
-              typePassword(PASSWORD)
-              clearPasswordField()
-              checkLoginButtonIsHidden()
-          }
+      loginRobot {
+          clearServerField()
+          typeServer(MOCK_SERVER_URL)
+          typeUsername(USERNAME)
+          typePassword(PASSWORD)
+          clearPasswordField()
+          checkLoginButtonIsHidden()
       }
+    }
 
-      @Test
-      fun shouldLaunchWebViewWhenClickAccountRecoveryAndServerIsFilled() {
-          enableIntents()
-          startLoginActivity()
+    @Test
+    fun shouldLaunchWebViewWhenClickAccountRecoveryAndServerIsFilled() {
+      enableIntents()
+      startLoginActivity()
 
-          loginRobot {
-              clearServerField()
-              typeServer(MOCK_SERVER_URL)
-              clickAccountRecovery()
-              checkWebviewWithRecoveryAccountIsOpened()
-          }
+      loginRobot {
+          clearServerField()
+          typeServer(MOCK_SERVER_URL)
+          clickAccountRecovery()
+          checkWebviewWithRecoveryAccountIsOpened()
       }
+    }
 
     @Test
     fun shouldClearFieldsAndHideLoginButtonWhenClickCredentialXButton() {
@@ -111,17 +111,17 @@ class LoginTest : BaseTest() {
         }
     }
 
-      @Test
-      fun shouldGoToPinScreenWhenPinWasSet() {
-          preferencesRobot.saveValue(SESSION_LOCKED, true)
-          preferencesRobot.saveValue(PIN, "1234")
+    @Test
+    fun shouldGoToPinScreenWhenPinWasSet() {
+      preferencesRobot.saveValue(SESSION_LOCKED, true)
+      preferencesRobot.saveValue(PIN, "1234")
 
-          startLoginActivity()
+      startLoginActivity()
 
-          loginRobot {
-              checkUnblockSessionViewIsVisible()
-          }
+      loginRobot {
+          checkUnblockSessionViewIsVisible()
       }
+    }
 
     @Test
     fun shouldGoToHomeScreenWhenUserIsLoggedIn() {

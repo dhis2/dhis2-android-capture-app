@@ -107,15 +107,34 @@ class TeiDashboardTest : BaseTest() {
         }
     }
 
+    @Test
+    fun shouldBeAbleToMakeAReferral() {
+        prepareTeiOpenedProgrammeIntentAndLaunchActivity()
+
+        teiDashboardRobot {
+            clickOnFab()
+            clickOnReferral()
+            Thread.sleep(10000)
+        }
+    }
+
+    @Test
+    fun shouldNotBeAbleToMakeAReferral() {
+
+    }
+
     private fun prepareTeiCompletedProgrammeIntentAndLaunchActivity() {
         Intent().apply {
             putExtra(CHILD_PROGRAM_UID, CHILD_PROGRAM_UID_VALUE)
-            putExtra(TEI_UID, TEI_UID_VALUE)
+            putExtra(TEI_UID, TEI_UID_VALUE_COMPLETED)
         }.also { rule.launchActivity(it) }
     }
 
     private fun prepareTeiOpenedProgrammeIntentAndLaunchActivity() {
-
+        Intent().apply {
+            putExtra(CHILD_PROGRAM_UID, CHILD_PROGRAM_UID_VALUE)
+            putExtra(TEI_UID, TEI_UID_VALUE_OPEN)
+        }.also { rule.launchActivity(it) }
     }
 
     companion object{
@@ -123,7 +142,8 @@ class TeiDashboardTest : BaseTest() {
         const val CHILD_PROGRAM_UID_VALUE = "IpHINAT79UW"
 
         const val TEI_UID = "TEI_UID"
-        const val TEI_UID_VALUE = "vOxUH373fy5"
+        const val TEI_UID_VALUE_COMPLETED = "vOxUH373fy5"
+        const val TEI_UID_VALUE_OPEN = "PQfMcpmXeFE"
 
         const val TOAST_TEXT_SAVED = "Note saved"
         const val NOTE_VALID = "ThisIsJustATest"
