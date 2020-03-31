@@ -2,7 +2,7 @@ package org.dhis2.usescases.datasets.dataSetTable;
 
 import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.data.tuples.Pair;
-import org.hisp.dhis.android.core.common.State;
+import org.dhis2.utils.analytics.AnalyticsHelper;
 
 import java.util.List;
 
@@ -17,6 +17,7 @@ public class DataSetTablePresenter implements DataSetTableContract.Presenter {
 
     private final DataSetTableRepository tableRepository;
     private final SchedulerProvider schedulerProvider;
+    private final AnalyticsHelper analyticsHelper;
     DataSetTableContract.View view;
     public CompositeDisposable disposable;
 
@@ -27,10 +28,15 @@ public class DataSetTablePresenter implements DataSetTableContract.Presenter {
     private boolean open = true;
     private String periodId;
 
-    public DataSetTablePresenter(DataSetTableContract.View view, DataSetTableRepository dataSetTableRepository, SchedulerProvider schedulerProvider) {
+    public DataSetTablePresenter(
+            DataSetTableContract.View view,
+            DataSetTableRepository dataSetTableRepository,
+            SchedulerProvider schedulerProvider,
+            AnalyticsHelper analyticsHelper) {
         this.view = view;
         this.tableRepository = dataSetTableRepository;
         this.schedulerProvider = schedulerProvider;
+        this.analyticsHelper = analyticsHelper;
         disposable = new CompositeDisposable();
     }
 
@@ -125,7 +131,7 @@ public class DataSetTablePresenter implements DataSetTableContract.Presenter {
 
     @Override
     public void optionsClick() {
-        view.analyticsHelper().setEvent(INFO_DATASET_TABLE, CLICK, INFO_DATASET_TABLE);
+        analyticsHelper.setEvent(INFO_DATASET_TABLE, CLICK, INFO_DATASET_TABLE);
         view.showOptions(open);
         open = !open;
     }

@@ -9,6 +9,7 @@ import io.reactivex.processors.PublishProcessor
 import java.util.ArrayList
 import java.util.HashMap
 import org.dhis2.R
+import org.dhis2.data.forms.dataentry.StoreResult
 import org.dhis2.data.forms.dataentry.ValueStore
 import org.dhis2.data.forms.dataentry.ValueStoreImpl
 import org.dhis2.data.forms.dataentry.tablefields.FieldViewModel
@@ -640,40 +641,34 @@ class DataValuePresenter(
         disposable.add(
             dataSetSectionFragment.rowActions()
                 .flatMap { rowAction ->
-
                     var dataSetTableModel: DataSetTableModel? = null
-
-                    for (dataValue in dataTableModel!!.dataValues()!!) {
-                        if (dataValue.dataElement() == rowAction.dataElement() &&
-                            dataValue.categoryOptionCombo() == rowAction.catOptCombo()
-                        ) {
-                            dataSetTableModel = dataValue.setValue(rowAction.value())
-                            if (rowAction.value().isNullOrEmpty()) {
-                                dataTableModel!!.dataValues()?.remove(dataValue)
+                    val dataValue = dataTableModel?.dataValues()?.firstOrNull {
+                        it.dataElement() == rowAction.dataElement()
+                                && it.categoryOptionCombo() == rowAction.catOptCombo()
+                    }
+                    when(dataValue) {
+                        null -> if(!rowAction.value().isNullOrEmpty()) {
+                            dataSetTableModel = DataSetTableModel.create(
+                                java.lang.Long.parseLong("0"),
+                                rowAction.dataElement(),
+                                periodId,
+                                orgUnitUid,
+                                rowAction.catOptCombo(),
+                                attributeOptionCombo,
+                                rowAction.value(),
+                                "",
+                                "",
+                                rowAction.listCategoryOption(),
+                                rowAction.catCombo()
+                            ).also {
+                                dataTableModel?.dataValues()?.add(it)
                             }
                         }
-                    }
-
-                    if (dataSetTableModel == null &&
-                        rowAction.value() != null &&
-                        !rowAction.value()!!.isEmpty()
-                    ) {
-                        dataSetTableModel = DataSetTableModel.create(
-                            java.lang.Long.parseLong("0"),
-                            rowAction.dataElement(),
-                            periodId,
-                            orgUnitUid,
-                            rowAction.catOptCombo(),
-                            attributeOptionCombo,
-                            rowAction.value(),
-                            "",
-                            "",
-                            rowAction.listCategoryOption(),
-                            rowAction.catCombo()
-                        )
-
-                        if (!rowAction.value().isNullOrEmpty()) {
-                            dataTableModel!!.dataValues()!!.add(dataSetTableModel)
+                        else ->  {
+                            dataSetTableModel = dataValue.setValue(rowAction.value())
+                            if(rowAction.value().isNullOrEmpty()) {
+                                dataTableModel?.dataValues()?.remove(dataValue)
+                            }
                         }
                     }
 
@@ -681,8 +676,12 @@ class DataValuePresenter(
                         dataSetSectionFragment.abstractActivity.back()
                     }
 
-                    dataSetSectionFragment.updateData(rowAction, dataSetTableModel!!.catCombo())
-                    valueStore.save(dataSetTableModel)
+                    dataSetTableModel?.let{
+                        dataSetSectionFragment.updateData(rowAction, it.catCombo())
+                        valueStore.save(it)
+                    } ?: Flowable.just(
+                        StoreResult("", ValueStoreImpl.ValueStoreResult.VALUE_HAS_NOT_CHANGED)
+                    )
                 }
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
