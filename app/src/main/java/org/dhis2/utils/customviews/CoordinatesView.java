@@ -39,7 +39,7 @@ import java.util.List;
 import io.reactivex.processors.FlowableProcessor;
 
 import static android.text.TextUtils.isEmpty;
-import static org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialPresenter.ACCESS_COARSE_LOCATION_PERMISSION_REQUEST;
+import static org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialPresenter.ACCESS_LOCATION_PERMISSION_REQUEST;
 
 /**
  * QUADRAM. Created by Administrador on 21/03/2018.
@@ -252,10 +252,10 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
     }
 
     public void getLocation() {
-        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions((ActivityGlobalAbstract) getContext(),
-                    new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
-                    ACCESS_COARSE_LOCATION_PERMISSION_REQUEST);
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                    ACCESS_LOCATION_PERMISSION_REQUEST);
             if (getContext() instanceof EnrollmentActivity)
                 ((EnrollmentActivity) getContext()).setCoordinatesView(this);
         } else {
@@ -351,11 +351,10 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
             }
         };
 
-        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
-                ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions((ActivityGlobalAbstract) getContext(),
-                    new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION},
-                    ACCESS_COARSE_LOCATION_PERMISSION_REQUEST);
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                    ACCESS_LOCATION_PERMISSION_REQUEST);
         } else
             mFusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, null);
 
