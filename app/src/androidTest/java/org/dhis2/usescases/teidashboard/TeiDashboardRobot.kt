@@ -6,7 +6,6 @@ import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.*
 import org.dhis2.R
 import org.dhis2.common.BaseRobot
-import org.dhis2.common.matchers.DrawableMatchers
 import org.dhis2.common.matchers.clickOnTab
 import org.hamcrest.Matchers.allOf
 import org.hamcrest.Matchers.not
@@ -52,7 +51,7 @@ class TeiDashboardRobot: BaseRobot () {
     }
 
     fun clickOnReferral(){
-        onView(DrawableMatchers(R.id.referral)).perform(click())
+        onView(withId(R.id.referral)).perform(click())
     }
 
     fun clickOnMenuOpen() {
