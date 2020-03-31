@@ -94,9 +94,9 @@ public class SearchTEContractsModule {
 
         void onClearClick();
 
-        void onFabClick(android.view.View view, boolean needsSearch);
+        void onFabClick(boolean needsSearch);
 
-        void onEnrollClick(android.view.View view);
+        void onEnrollClick();
 
         void onTEIClick(String TEIuid, boolean isOnline);
 

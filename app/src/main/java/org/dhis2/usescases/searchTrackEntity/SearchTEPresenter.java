@@ -7,10 +7,10 @@ import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.widget.DatePicker;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RestrictTo;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.paging.PagedList;
@@ -26,6 +26,7 @@ import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.NetworkUtils;
 import org.dhis2.utils.ObjectStyleUtils;
+import org.dhis2.utils.analytics.AnalyticsHelper;
 import org.dhis2.utils.customviews.OrgUnitDialog;
 import org.dhis2.utils.filters.FilterManager;
 import org.dhis2.utils.granularsync.SyncStatusDialog;
@@ -72,6 +73,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     private final D2 d2;
     private final SchedulerProvider schedulerProvider;
     private final SearchTEContractsModule.View view;
+    private final AnalyticsHelper analyticsHelper;
     private Program selectedProgram;
 
     private CompositeDisposable compositeDisposable;
@@ -93,12 +95,14 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                              D2 d2,
                              SearchRepository searchRepository,
                              SchedulerProvider schedulerProvider,
+                             AnalyticsHelper analyticsHelper,
                              @Nullable String initialProgram) {
         this.view = view;
         this.searchRepository = searchRepository;
         this.d2 = d2;
         this.schedulerProvider = schedulerProvider;
         this.initialProgram = initialProgram;
+        this.analyticsHelper = analyticsHelper;
         compositeDisposable = new CompositeDisposable();
         queryData = new HashMap<>();
         queryProcessor = PublishProcessor.create();
@@ -451,15 +455,15 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     }
 
     @Override
-    public void onFabClick(View view, boolean needsSearch) {
+    public void onFabClick(boolean needsSearch) {
         if (!needsSearch)
-            onEnrollClick(view);
+            onEnrollClick();
         else {
-            this.view.analyticsHelper().setEvent(SEARCH_TEI, CLICK, SEARCH_TEI);
-            this.view.clearData();
+            analyticsHelper.setEvent(SEARCH_TEI, CLICK, SEARCH_TEI);
+            view.clearData();
 
             List<String> optionSetIds = new ArrayList<>();
-            this.view.updateFiltersSearch(queryData.entrySet().size());
+            view.updateFiltersSearch(queryData.entrySet().size());
             for (Map.Entry<String, String> entry : queryData.entrySet()) {
                 if (entry.getValue().equals("null_os_null"))
                     optionSetIds.add(entry.getKey());
@@ -470,26 +474,29 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
             if (selectedProgram != null && selectedProgram.displayFrontPageList()) {
                 if (queryData.size() < selectedProgram.minAttributesRequiredToSearch()) {
                     showList = false;
-                    this.view.setFabIcon(true);
+                    view.setFabIcon(true);
                     queryProcessor.onNext(new HashMap<>());
                 } else {
                     showList = true;
-                    this.view.setFabIcon(false);
+                    view.setFabIcon(false);
                     queryProcessor.onNext(queryData);
                 }
+            } else {
+                view.setFabIcon(false);
+                queryProcessor.onNext(queryData);
             }
         }
     }
 
     @Override
-    public void onEnrollClick(View view) {
+    public void onEnrollClick() {
         if (selectedProgram != null)
             if (selectedProgram.access().data().write() != null && selectedProgram.access().data().write())
                 enroll(selectedProgram.uid(), null);
             else
-                this.view.displayMessage(view.getContext().getString(R.string.search_access_error));
+                view.displayMessage(view.getContext().getString(R.string.search_access_error));
         else
-            this.view.displayMessage(view.getContext().getString(R.string.search_program_not_selected));
+            view.displayMessage(view.getContext().getString(R.string.search_program_not_selected));
     }
 
     private void enroll(String programUid, String uid) {
@@ -646,7 +653,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                         .observeOn(schedulerProvider.ui())
                         .subscribe(enrollmentAndTEI -> {
                                     if (view.fromRelationshipTEI() == null) {
-                                        this.view.analyticsHelper().setEvent(CREATE_ENROLL, CLICK, CREATE_ENROLL);
+                                        analyticsHelper.setEvent(CREATE_ENROLL, CLICK, CREATE_ENROLL);
                                         Intent intent = EnrollmentActivity.Companion.getIntent(view.getContext(), enrollmentAndTEI.val0(), selectedProgram.uid(), EnrollmentActivity.EnrollmentMode.NEW);
                                         view.getContext().startActivity(intent);
                                     } else {
@@ -671,7 +678,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         if (teiUid.equals(view.fromRelationshipTEI())) {
             view.displayMessage(view.getContext().getString(R.string.relationship_error_recursive));
         } else if (!online) {
-            view.analyticsHelper().setEvent(ADD_RELATIONSHIP, CLICK, ADD_RELATIONSHIP);
+            analyticsHelper.setEvent(ADD_RELATIONSHIP, CLICK, ADD_RELATIONSHIP);
             Intent intent = new Intent();
             intent.putExtra("TEI_A_UID", teiUid);
             if (relationshipTypeUid != null)
@@ -679,7 +686,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
             view.getAbstractActivity().setResult(RESULT_OK, intent);
             view.getAbstractActivity().finish();
         } else {
-            view.analyticsHelper().setEvent(ADD_RELATIONSHIP, CLICK, ADD_RELATIONSHIP);
+            analyticsHelper.setEvent(ADD_RELATIONSHIP, CLICK, ADD_RELATIONSHIP);
             downloadTeiForRelationship(teiUid, relationshipTypeUid);
         }
     }
@@ -828,5 +835,10 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
             return ColorUtils.parseColor(selectedProgram.style().color());
         else
             return -1;
+    }
+
+    @RestrictTo(RestrictTo.Scope.TESTS)
+    public void setProgramForTesting(Program program) {
+        selectedProgram = program;
     }
 }
