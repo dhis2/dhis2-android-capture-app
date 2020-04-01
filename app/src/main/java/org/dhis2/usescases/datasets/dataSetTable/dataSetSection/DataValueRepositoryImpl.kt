@@ -112,15 +112,17 @@ class DataValueRepositoryImpl(private val d2: D2, private val dataSetUid: String
                 var add = true
                 for (catComboList in finalList) {
                     if (catComboList.contains(
-                            Pair.create(
-                                catOption,
-                                category
-                            )
+                        Pair.create(
+                            catOption,
+                            category
                         )
+                    )
                     ) add = false
                 }
                 if (add) {
-                    if (finalList.size != 0 && finalList[finalList.size - 1][0].val1().uid() == category.uid()) {
+                    if (finalList.size != 0 &&
+                        finalList[finalList.size - 1][0].val1().uid() == category.uid()
+                    ) {
                         finalList[finalList.size - 1].add(
                             Pair.create(
                                 catOption,
@@ -152,24 +154,24 @@ class DataValueRepositoryImpl(private val d2: D2, private val dataSetUid: String
             ?.firstOrNull {
                 it.dataElement().uid() == dataElement.uid() && it.categoryCombo() != null
             }?.let {
-                DataElement.builder()
-                    .uid(dataElement.uid())
-                    .code(dataElement.code())
-                    .name(dataElement.name())
-                    .displayName(dataElement.displayName())
-                    .shortName(dataElement.shortName())
-                    .displayShortName(dataElement.displayShortName())
-                    .description(dataElement.description())
-                    .displayDescription(dataElement.displayDescription())
-                    .valueType(dataElement.valueType())
-                    .zeroIsSignificant(dataElement.zeroIsSignificant())
-                    .aggregationType(dataElement.aggregationType())
-                    .formName(dataElement.formName())
-                    .domainType(dataElement.domainType())
-                    .displayFormName(dataElement.displayFormName())
-                    .optionSet(dataElement.optionSet())
-                    .categoryCombo(it.categoryCombo()).build()
-            }
+            DataElement.builder()
+                .uid(dataElement.uid())
+                .code(dataElement.code())
+                .name(dataElement.name())
+                .displayName(dataElement.displayName())
+                .shortName(dataElement.shortName())
+                .displayShortName(dataElement.displayShortName())
+                .description(dataElement.description())
+                .displayDescription(dataElement.displayDescription())
+                .valueType(dataElement.valueType())
+                .zeroIsSignificant(dataElement.zeroIsSignificant())
+                .aggregationType(dataElement.aggregationType())
+                .formName(dataElement.formName())
+                .domainType(dataElement.domainType())
+                .displayFormName(dataElement.displayFormName())
+                .optionSet(dataElement.optionSet())
+                .categoryCombo(it.categoryCombo()).build()
+        }
             ?: dataElement
     }
 
@@ -196,17 +198,28 @@ class DataValueRepositoryImpl(private val d2: D2, private val dataSetUid: String
                             .byDataSetUid().eq(dataSetUid).byDisplayName().eq(sectionName).one()
                             .blockingGet().dataElements()
                     for (dataElement in dataElementSection!!) {
-                        for (dataSetElement in dataSet.dataSetElements()!!) if (dataSetElement.dataElement().uid() == dataElement.uid()) dataElements!!.add(
-                            dataSetElement
-                        )
+                        dataSet.dataSetElements()!!
+                            .asSequence()
+                            .filter { it.dataElement().uid() == dataElement.uid() }
+                            .forEach {
+                                dataElements!!.add(
+                                    it
+                                )
+                            }
                     }
                 } else dataElements = dataSet.dataSetElements()
                 dataElements
             }
             .flatMapIterable { dataSetElement: DataSetElement ->
-                if (dataSetElement.categoryCombo() != null) mapDataElementCatCombo[dataSetElement.dataElement().uid()] =
-                    dataSetElement.categoryCombo()!!.uid() else mapDataElementCatCombo[dataSetElement.dataElement().uid()] =
-                    d2.dataElementModule().dataElements().byUid().eq(dataSetElement.dataElement().uid()).one().blockingGet().categoryCombo()!!.uid()
+                if (dataSetElement.categoryCombo() != null) {
+                    mapDataElementCatCombo[dataSetElement.dataElement().uid()] =
+                        dataSetElement.categoryCombo()!!.uid()
+                } else {
+                    mapDataElementCatCombo[dataSetElement.dataElement().uid()] =
+                        d2.dataElementModule().dataElements()
+                            .byUid().eq(dataSetElement.dataElement().uid())
+                            .one().blockingGet().categoryCombo()!!.uid()
+                }
                 d2.dataValueModule().dataValues().byDataElementUid()
                     .eq(dataSetElement.dataElement().uid())
                     .byAttributeOptionComboUid().eq(catOptionComb)
@@ -390,12 +403,16 @@ class DataValueRepositoryImpl(private val d2: D2, private val dataSetUid: String
                 d2.dataSetModule().dataSets().withDataSetElements().byUid().eq(dataSetUid).one()
                     .blockingGet().dataSetElements()
             for (dataSetElement in dataSetElements!!) {
-                if (dataSetElement.categoryCombo() != null && categoryCombo.uid() == dataSetElement.categoryCombo()!!.uid()) dataElementUids.add(
-                    dataSetElement.dataElement().uid()
-                ) else {
+                if (dataSetElement.categoryCombo() != null &&
+                    categoryCombo.uid() == dataSetElement.categoryCombo()!!.uid()
+                ){
+                    dataElementUids.add(dataSetElement.dataElement().uid())
+                } else {
                     val uid = d2.dataElementModule().dataElements()
                         .uid(dataSetElement.dataElement().uid()).blockingGet().categoryComboUid()
-                    if (categoryCombo.uid() == uid) dataElementUids.add(dataSetElement.dataElement().uid())
+                    if (categoryCombo.uid() == uid) {
+                        dataElementUids.add(dataSetElement.dataElement().uid())
+                    }
                 }
             }
             d2.dataElementModule().dataElements()
@@ -405,7 +422,9 @@ class DataValueRepositoryImpl(private val d2: D2, private val dataSetUid: String
         }
     }
 
-    override fun getCatOptionFromCatOptionCombo(categoryOptionCombo: CategoryOptionCombo): List<CategoryOption> {
+    override fun getCatOptionFromCatOptionCombo(
+        categoryOptionCombo: CategoryOptionCombo
+    ): List<CategoryOption> {
         return d2.categoryModule().categoryOptionCombos().withCategoryOptions()
             .uid(categoryOptionCombo.uid()).blockingGet().categoryOptions()!!
     }
@@ -423,9 +442,11 @@ class DataValueRepositoryImpl(private val d2: D2, private val dataSetUid: String
                     .map { categoryOptionCombos: List<CategoryOptionCombo> ->
                         var canWriteCatOption = false
                         for (categoryOptionCombo in categoryOptionCombos) {
-                            for (categoryOption in categoryOptionCombo.categoryOptions()!!) if (categoryOption.access().data().write()) {
-                                canWriteCatOption = true
-                                break
+                            for (categoryOption in categoryOptionCombo.categoryOptions()!!){
+                                if (categoryOption.access().data().write()) {
+                                    canWriteCatOption = true
+                                    break
+                                }
                             }
                         }
                         var canWriteOrgUnit = false
@@ -433,9 +454,10 @@ class DataValueRepositoryImpl(private val d2: D2, private val dataSetUid: String
                             val organisationUnits =
                                 d2.organisationUnitModule().organisationUnits()
                                     .byDataSetUids(listOf(dataSetUid))
-                                    .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE)
-                                    .blockingGet()
-                            canWriteOrgUnit = !organisationUnits.isEmpty()
+                                    .byOrganisationUnitScope(
+                                        OrganisationUnit.Scope.SCOPE_DATA_CAPTURE
+                                    ).blockingGet()
+                            canWriteOrgUnit = organisationUnits.isNotEmpty()
                         }
                         canWriteCatOption && canWriteOrgUnit
                     } else return@flatMap Flowable.just(false)
