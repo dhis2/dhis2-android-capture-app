@@ -362,7 +362,11 @@ public class CustomTextView extends FieldLayout {
     public void setObjectStyle(ObjectStyle objectStyle) {
         Drawable styleIcon = ObjectStyleUtils.getIconResource(editText.getContext(), objectStyle.icon(), -1);
         icon.setImageDrawable(styleIcon);
-        int colorResource = ObjectStyleUtils.getColorResource(editText.getContext(), objectStyle.color(), R.color.default_field_icon_color);
+        int colorResource = ObjectStyleUtils.getColorResource(
+                editText.getContext(),
+                objectStyle.color(),
+                isBgTransparent ? R.color.default_field_icon_color : R.color.colorAccent
+        );
         descIcon.setColorFilter(colorResource);
     }
 
