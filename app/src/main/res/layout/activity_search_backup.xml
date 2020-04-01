@@ -136,7 +136,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="40dp"
                     android:background="@drawable/selector_enroll_button"
-                    android:onClick="@{(view)->presenter.onEnrollClick(view)}"
+                    android:onClick="@{(view)->presenter.onEnrollClick()}"
                     android:text="@string/add_new"
                     android:textAllCaps="true"
                     android:textColor="?colorPrimary" />

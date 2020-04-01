@@ -100,7 +100,7 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         when (requestCode) {
-            EventInitialPresenter.ACCESS_COARSE_LOCATION_PERMISSION_REQUEST -> {
+            EventInitialPresenter.ACCESS_LOCATION_PERMISSION_REQUEST -> {
                 // If request is cancelled, the result arrays are empty.
                 if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     coordinatesView?.let {
