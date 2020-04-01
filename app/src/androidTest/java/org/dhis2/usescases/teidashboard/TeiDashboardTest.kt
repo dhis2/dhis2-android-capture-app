@@ -15,11 +15,6 @@ class TeiDashboardTest : BaseTest() {
     @get:Rule
     val rule = ActivityTestRule(TeiDashboardMobileActivity::class.java, false, false)
 
-    override fun setUp() {
-        super.setUp()
-        //init robot
-    }
-
     @Test
     fun shouldSuccessfullyCreateANoteWhenClickCreateNote() {
         setupCredentials()
@@ -59,7 +54,7 @@ class TeiDashboardTest : BaseTest() {
 
     @Test
     fun shouldOpenNotesDetailsWhenClickOnNote() {
-        prepareTeiCompletedProgrammeIntentAndLaunchActivity()
+        prepareTeiWithExistingNoteIntentAndLaunchActivity()
 
         teiDashboardRobot {
             clickOnNotesTab()
@@ -67,7 +62,7 @@ class TeiDashboardTest : BaseTest() {
 
         noteRobot {
             clickOnNoteWithPosition(0)
-            checkNoteDetails("@${USER}", NOTE_VALID)
+            checkNoteDetails("@${USER}", NOTE_EXISTING_TEXT)
         }
     }
 
@@ -80,23 +75,22 @@ class TeiDashboardTest : BaseTest() {
             clickOnMenuReOpen()
             checkUnlockIconIsDisplay()
             checkCanAddEvent()
-            // check you can add event
         }
     }
 
     @Test
     fun shouldDeactivateTEIWhenClickOpen() {
-        prepareTeiCompletedProgrammeIntentAndLaunchActivity()
-        //should be a teiOpened
+        prepareTeiOpenedProgrammeIntentAndLaunchActivity()
 
         teiDashboardRobot {
-            clickOnMenuOpen()
+            clickOnMenu()
+            clickOnMenuDeactivate()
             checkLockIconIsDisplay()
             checkCanNotAddEvent()
         }
     }
 
-    @Test
+/*    @Test
     fun shouldShowQRWhenClickOnShare() {
         prepareTeiCompletedProgrammeIntentAndLaunchActivity()
 
@@ -105,23 +99,24 @@ class TeiDashboardTest : BaseTest() {
             clickOnNextQR()
             //Use a loop to iterate and assert
         }
-    }
+    } */
 
-    @Test
+ /*   @Test
     fun shouldBeAbleToMakeAReferral() {
-        prepareTeiOpenedProgrammeIntentAndLaunchActivity()
+        prepareTeiOpenedForReferralProgrammeIntentAndLaunchActivity()
 
         teiDashboardRobot {
             clickOnFab()
             clickOnReferral()
-            Thread.sleep(10000)
+            clickOnFirstReferralEvent()
+            checkEventIsCreated("EventName")
         }
     }
 
     @Test
-    fun shouldNotBeAbleToMakeAReferral() {
-
-    }
+    fun shouldNotBeAbleToCreateNewEventsWhenFull() {
+        //Maria Wright prepareTeiWihFullPrograms
+    } */
 
     private fun prepareTeiCompletedProgrammeIntentAndLaunchActivity() {
         Intent().apply {
@@ -130,10 +125,24 @@ class TeiDashboardTest : BaseTest() {
         }.also { rule.launchActivity(it) }
     }
 
+    private fun prepareTeiOpenedForReferralProgrammeIntentAndLaunchActivity() {
+        Intent().apply {
+            putExtra(CHILD_PROGRAM_UID, CHILD_PROGRAM_UID_VALUE)
+            putExtra(TEI_UID, TEI_UID_VALUE_OPEN_REFERRAL)
+        }.also { rule.launchActivity(it) }
+    }
+
     private fun prepareTeiOpenedProgrammeIntentAndLaunchActivity() {
         Intent().apply {
             putExtra(CHILD_PROGRAM_UID, CHILD_PROGRAM_UID_VALUE)
-            putExtra(TEI_UID, TEI_UID_VALUE_OPEN)
+            putExtra(TEI_UID, TEI_UID_VALUE_OPENED)
+        }.also { rule.launchActivity(it) }
+    }
+
+    private fun prepareTeiWithExistingNoteIntentAndLaunchActivity() {
+        Intent().apply {
+            putExtra(CHILD_PROGRAM_UID, CHILD_PROGRAM_UID_VALUE)
+            putExtra(TEI_UID, TEI_UID_VALUE_WITH_NOTE)
         }.also { rule.launchActivity(it) }
     }
 
@@ -143,11 +152,14 @@ class TeiDashboardTest : BaseTest() {
 
         const val TEI_UID = "TEI_UID"
         const val TEI_UID_VALUE_COMPLETED = "vOxUH373fy5"
-        const val TEI_UID_VALUE_OPEN = "PQfMcpmXeFE"
+        const val TEI_UID_VALUE_OPENED = "FcA5liuWG0x"
+        const val TEI_UID_VALUE_OPEN_REFERRAL = "PQfMcpmXeFE"
+        const val TEI_UID_VALUE_WITH_NOTE = "UtDZmrX5lSd"
 
         const val TOAST_TEXT_SAVED = "Note saved"
         const val NOTE_VALID = "ThisIsJustATest"
         const val NOTE_INVALID = "InvalidNote"
+        const val NOTE_EXISTING_TEXT = "This is a note test"
         const val USER = "android"
     }
 }

@@ -3,10 +3,12 @@ package org.dhis2.usescases.teidashboard
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
+import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition
 import androidx.test.espresso.matcher.ViewMatchers.*
 import org.dhis2.R
 import org.dhis2.common.BaseRobot
 import org.dhis2.common.matchers.clickOnTab
+import org.dhis2.usescases.programStageSelection.ProgramStageSelectionViewHolder
 import org.hamcrest.Matchers.allOf
 import org.hamcrest.Matchers.not
 
@@ -34,7 +36,7 @@ class TeiDashboardRobot: BaseRobot () {
     }
 
     fun checkLockIconIsDisplay() {
-        onView(withId(R.id.program_lock_text)).check(matches(withText(R.string.completed)))
+        onView(withId(R.id.program_lock_text)).check(matches(withText(R.string.cancelled)))
     }
 
     fun checkUnlockIconIsDisplay() {
@@ -54,9 +56,17 @@ class TeiDashboardRobot: BaseRobot () {
         onView(withId(R.id.referral)).perform(click())
     }
 
-    fun clickOnMenuOpen() {
+    fun clickOnFirstReferralEvent(){
+        onView(withId(R.id.recycler_view))
+                .perform(actionOnItemAtPosition<ProgramStageSelectionViewHolder>(0, click()))
+    }
+
+    fun checkEventIsCreated(eventName:String){
+
+    }
+
+    fun clickOnMenuDeactivate() {
         onView(withText(R.string.deactivate)).perform(click())
-       // onView(withId(R.id.deactivate)).perform(click())
     }
 
     fun checkCanNotAddEvent() {
