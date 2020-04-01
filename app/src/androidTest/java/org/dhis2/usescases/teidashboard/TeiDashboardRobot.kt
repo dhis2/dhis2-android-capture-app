@@ -9,6 +9,7 @@ import org.dhis2.R
 import org.dhis2.common.BaseRobot
 import org.dhis2.common.matchers.clickOnTab
 import org.dhis2.usescases.programStageSelection.ProgramStageSelectionViewHolder
+import org.dhis2.usescases.teiDashboard.dashboardfragments.tei_data.DashboardProgramViewHolder
 import org.hamcrest.Matchers.allOf
 import org.hamcrest.Matchers.not
 
@@ -46,6 +47,11 @@ class TeiDashboardRobot: BaseRobot () {
     fun checkCanAddEvent() {
         onView(withId(R.id.fab)).check(matches(allOf(isDisplayed(), isEnabled()))).perform(click())
         onView(withId(R.id.addnew)).check(matches(isDisplayed()))
+    }
+
+    fun clickOnEventWithPosition(position : Int){
+        onView(withId(R.id.tei_recycler))
+                .perform(actionOnItemAtPosition<DashboardProgramViewHolder>(position, click()))
     }
 
     fun clickOnFab(){

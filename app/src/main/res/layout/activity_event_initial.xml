@@ -103,6 +103,7 @@
             tools:openDrawer="end">
 
                 <androidx.core.widget.NestedScrollView
+                    android:id="@+id/ns_event_initial"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent">
 

@@ -9,11 +9,8 @@ import org.dhis2.usescases.teiDashboard.DashboardProgramModel;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.android.core.program.Program;
 
-/**
- * QUADRAM. Created by ppajuelo on 29/11/2017.
- */
 
-class DashboardProgramViewHolder extends RecyclerView.ViewHolder {
+public class DashboardProgramViewHolder extends RecyclerView.ViewHolder {
     private ItemDashboardProgramBinding binding;
 
     DashboardProgramViewHolder(ItemDashboardProgramBinding binding) {

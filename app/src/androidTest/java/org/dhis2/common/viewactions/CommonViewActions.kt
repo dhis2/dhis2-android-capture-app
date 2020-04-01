@@ -3,6 +3,7 @@ package org.dhis2.common.viewactions
 import android.view.View
 import android.widget.Spinner
 import androidx.appcompat.widget.SwitchCompat
+import androidx.recyclerview.widget.RecyclerView
 import androidx.test.espresso.UiController
 import androidx.test.espresso.ViewAction
 import androidx.test.espresso.matcher.ViewMatchers.*
@@ -42,6 +43,26 @@ fun setSwitchCheckTo(checkValue: Boolean) : ViewAction {
             } else {
                 throw IllegalArgumentException("Error the view is not a switch")
             }
+        }
+    }
+}
+
+fun scrollToBottomRecyclerView() : ViewAction {
+    return object : ViewAction {
+        override fun getDescription(): String {
+            return "Recyclerview scrolling until the end"
+        }
+
+        override fun getConstraints(): Matcher<View> {
+            return isAssignableFrom(RecyclerView::class.java)
+        }
+
+        override fun perform(uiController: UiController?, view: View?) {
+            val recyclerView = view as RecyclerView
+            val itemCount = recyclerView.adapter?.itemCount
+            val position = itemCount?.minus(1) ?: 0
+            recyclerView.scrollToPosition(position)
+            uiController?.loopMainThreadUntilIdle()
         }
     }
 }

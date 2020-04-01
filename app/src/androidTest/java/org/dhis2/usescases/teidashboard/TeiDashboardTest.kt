@@ -90,7 +90,7 @@ class TeiDashboardTest : BaseTest() {
         }
     }
 
-/*    @Test
+    @Test
     fun shouldShowQRWhenClickOnShare() {
         prepareTeiCompletedProgrammeIntentAndLaunchActivity()
 
@@ -99,9 +99,9 @@ class TeiDashboardTest : BaseTest() {
             clickOnNextQR()
             //Use a loop to iterate and assert
         }
-    } */
+    }
 
- /*   @Test
+    @Test
     fun shouldBeAbleToMakeAReferral() {
         prepareTeiOpenedForReferralProgrammeIntentAndLaunchActivity()
 
@@ -116,7 +116,22 @@ class TeiDashboardTest : BaseTest() {
     @Test
     fun shouldNotBeAbleToCreateNewEventsWhenFull() {
         //Maria Wright prepareTeiWihFullPrograms
-    } */
+    }
+
+    @Test
+    fun shouldOpenEventAndSaveSuccessfully(){
+        prepareTeiOpenedProgrammeIntentAndLaunchActivity()
+
+        val babyPostNatal = 0
+        teiDashboardRobot {
+            clickOnEventWithPosition(babyPostNatal)
+        }
+
+        eventRobot {
+            scrollToBottomFormulary()
+            //clickOnFabButton
+        }
+    }
 
     private fun prepareTeiCompletedProgrammeIntentAndLaunchActivity() {
         Intent().apply {
@@ -152,7 +167,7 @@ class TeiDashboardTest : BaseTest() {
 
         const val TEI_UID = "TEI_UID"
         const val TEI_UID_VALUE_COMPLETED = "vOxUH373fy5"
-        const val TEI_UID_VALUE_OPENED = "FcA5liuWG0x"
+        const val TEI_UID_VALUE_OPENED = "Pqv3LrNECkn"
         const val TEI_UID_VALUE_OPEN_REFERRAL = "PQfMcpmXeFE"
         const val TEI_UID_VALUE_WITH_NOTE = "UtDZmrX5lSd"
 
