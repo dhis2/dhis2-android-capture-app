@@ -55,13 +55,16 @@
 
                     <EditText
                         android:id="@+id/orgUnitSearchEditText"
+                        android:background="@android:color/transparent"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:ellipsize="end"
                         android:hint="@string/search_optionset"
                         android:imeOptions="actionDone"
                         android:maxLines="1"
-                        android:padding="5dp"
+                        android:paddingTop="8dp"
+                        android:paddingStart="5dp"
+                        android:paddingEnd="5dp"
                         android:textSize="16sp"
                         app:layout_constraintStart_toStartOf="parent"
                         tools:text="Org" />
