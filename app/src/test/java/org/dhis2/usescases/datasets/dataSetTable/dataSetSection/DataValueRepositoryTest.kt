@@ -8,10 +8,13 @@ import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
 import org.hisp.dhis.android.core.category.CategoryCombo
 import org.hisp.dhis.android.core.common.ObjectWithUid
+import org.hisp.dhis.android.core.dataapproval.DataApproval
+import org.hisp.dhis.android.core.dataapproval.DataApprovalState
 import org.hisp.dhis.android.core.dataelement.DataElement
 import org.hisp.dhis.android.core.dataelement.DataElementOperand
 import org.hisp.dhis.android.core.dataset.DataInputPeriod
 import org.hisp.dhis.android.core.dataset.DataSet
+import org.hisp.dhis.android.core.dataset.DataSetCompleteRegistration
 import org.hisp.dhis.android.core.dataset.DataSetElement
 import org.hisp.dhis.android.core.dataset.Section
 import org.hisp.dhis.android.core.period.Period
@@ -432,7 +435,219 @@ class DataValueRepositoryTest {
         testObserver.dispose()
     }
 
+    @Test
+    fun `Should return dataSet is complete`() {
+        val orgUnit = "orgUnit"
+        val period = "period"
+        val attributeOptionCombo = "attributeOptionCombo"
+        val dataSetCompleteRegistration = DataSetCompleteRegistration.builder()
+            .dataSet(dataSetUid)
+            .organisationUnit(orgUnit)
+            .period(period)
+            .attributeOptionCombo(attributeOptionCombo)
+            .deleted(true)
+            .build()
+        whenever(
+            d2.dataSetModule().dataSetCompleteRegistrations()
+                .byDataSetUid()
+        ) doReturn mock()
+        whenever(
+            d2.dataSetModule().dataSetCompleteRegistrations()
+                .byDataSetUid().eq(dataSetUid)
+        ) doReturn mock()
+        whenever(
+            d2.dataSetModule().dataSetCompleteRegistrations()
+                .byDataSetUid().eq(dataSetUid)
+                .byOrganisationUnitUid()
+        ) doReturn mock()
+        whenever(
+            d2.dataSetModule().dataSetCompleteRegistrations()
+                .byDataSetUid().eq(dataSetUid)
+                .byOrganisationUnitUid().eq(orgUnit)
+        ) doReturn mock()
+        whenever(
+            d2.dataSetModule().dataSetCompleteRegistrations()
+                .byDataSetUid().eq(dataSetUid)
+                .byOrganisationUnitUid().eq(orgUnit)
+                .byPeriod()
+        ) doReturn mock()
+        whenever(
+            d2.dataSetModule().dataSetCompleteRegistrations()
+                .byDataSetUid().eq(dataSetUid)
+                .byOrganisationUnitUid().eq(orgUnit)
+                .byPeriod().eq(period)
+        ) doReturn mock()
+        whenever(
+            d2.dataSetModule().dataSetCompleteRegistrations()
+                .byDataSetUid().eq(dataSetUid)
+                .byOrganisationUnitUid().eq(orgUnit)
+                .byPeriod().eq(period)
+                .byAttributeOptionComboUid()
+        ) doReturn mock()
+        whenever(
+            d2.dataSetModule().dataSetCompleteRegistrations()
+                .byDataSetUid().eq(dataSetUid)
+                .byOrganisationUnitUid().eq(orgUnit)
+                .byPeriod().eq(period)
+                .byAttributeOptionComboUid().eq(attributeOptionCombo)
+        ) doReturn mock()
+        whenever(
+            d2.dataSetModule().dataSetCompleteRegistrations()
+                .byDataSetUid().eq(dataSetUid)
+                .byOrganisationUnitUid().eq(orgUnit)
+                .byPeriod().eq(period)
+                .byAttributeOptionComboUid().eq(attributeOptionCombo)
+                .one()
+        ) doReturn mock()
+        whenever(
+            d2.dataSetModule().dataSetCompleteRegistrations()
+                .byDataSetUid().eq(dataSetUid)
+                .byOrganisationUnitUid().eq(orgUnit)
+                .byPeriod().eq(period)
+                .byAttributeOptionComboUid().eq(attributeOptionCombo)
+                .one().blockingGet()
+        ) doReturn dataSetCompleteRegistration
 
+
+        val testObserver = repository.isCompleted(orgUnit, period, attributeOptionCombo).test()
+
+        testObserver.assertNoErrors()
+        testObserver.assertValue(false)
+
+        testObserver.dispose()
+    }
+
+    @Test
+    fun `Should return dataSet is approved`() {
+        val orgUnit = "orgUnit"
+        val period = "period"
+        val attributeOptionCombo = "attributeOptionCombo"
+        val dataApproval = DataApproval.builder()
+            .state(DataApprovalState.APPROVED_HERE)
+            .organisationUnit(orgUnit)
+            .period(period)
+            .attributeOptionCombo(attributeOptionCombo)
+            .workflow("workflow")
+            .build()
+        whenever(
+            d2.dataSetModule().dataApprovals()
+                .byOrganisationUnitUid()
+        ) doReturn mock()
+        whenever(
+            d2.dataSetModule().dataApprovals()
+                .byOrganisationUnitUid().eq(orgUnit)
+        ) doReturn mock()
+        whenever(
+            d2.dataSetModule().dataApprovals()
+                .byOrganisationUnitUid().eq(orgUnit)
+                .byPeriodId()
+        ) doReturn mock()
+        whenever(
+            d2.dataSetModule().dataApprovals()
+                .byOrganisationUnitUid().eq(orgUnit)
+                .byPeriodId().eq(period)
+        ) doReturn mock()
+        whenever(
+            d2.dataSetModule().dataApprovals()
+                .byOrganisationUnitUid().eq(orgUnit)
+                .byPeriodId().eq(period)
+                .byAttributeOptionComboUid()
+        ) doReturn mock()
+        whenever(
+            d2.dataSetModule().dataApprovals()
+                .byOrganisationUnitUid().eq(orgUnit)
+                .byPeriodId().eq(period)
+                .byAttributeOptionComboUid().eq(attributeOptionCombo)
+        ) doReturn mock()
+        whenever(
+            d2.dataSetModule().dataApprovals()
+                .byOrganisationUnitUid().eq(orgUnit)
+                .byPeriodId().eq(period)
+                .byAttributeOptionComboUid().eq(attributeOptionCombo)
+                .one()
+        ) doReturn mock()
+        whenever(
+            d2.dataSetModule().dataApprovals()
+                .byOrganisationUnitUid().eq(orgUnit)
+                .byPeriodId().eq(period)
+                .byAttributeOptionComboUid().eq(attributeOptionCombo)
+                .one().blockingGet()
+        ) doReturn dataApproval
+
+
+        val testObserver = repository.isApproval(orgUnit, period, attributeOptionCombo).test()
+
+        testObserver.assertNoErrors()
+        testObserver.assertValue(true)
+
+        testObserver.dispose()
+    }
+
+    @Test
+    fun `Should return dataSet is not approved`() {
+        val orgUnit = "orgUnit"
+        val period = "period"
+        val attributeOptionCombo = "attributeOptionCombo"
+        val dataApproval = DataApproval.builder()
+            .state(DataApprovalState.UNAPPROVED_ABOVE)
+            .organisationUnit(orgUnit)
+            .period(period)
+            .attributeOptionCombo(attributeOptionCombo)
+            .workflow("workflow")
+            .build()
+        whenever(
+            d2.dataSetModule().dataApprovals()
+                .byOrganisationUnitUid()
+        ) doReturn mock()
+        whenever(
+            d2.dataSetModule().dataApprovals()
+                .byOrganisationUnitUid().eq(orgUnit)
+        ) doReturn mock()
+        whenever(
+            d2.dataSetModule().dataApprovals()
+                .byOrganisationUnitUid().eq(orgUnit)
+                .byPeriodId()
+        ) doReturn mock()
+        whenever(
+            d2.dataSetModule().dataApprovals()
+                .byOrganisationUnitUid().eq(orgUnit)
+                .byPeriodId().eq(period)
+        ) doReturn mock()
+        whenever(
+            d2.dataSetModule().dataApprovals()
+                .byOrganisationUnitUid().eq(orgUnit)
+                .byPeriodId().eq(period)
+                .byAttributeOptionComboUid()
+        ) doReturn mock()
+        whenever(
+            d2.dataSetModule().dataApprovals()
+                .byOrganisationUnitUid().eq(orgUnit)
+                .byPeriodId().eq(period)
+                .byAttributeOptionComboUid().eq(attributeOptionCombo)
+        ) doReturn mock()
+        whenever(
+            d2.dataSetModule().dataApprovals()
+                .byOrganisationUnitUid().eq(orgUnit)
+                .byPeriodId().eq(period)
+                .byAttributeOptionComboUid().eq(attributeOptionCombo)
+                .one()
+        ) doReturn mock()
+        whenever(
+            d2.dataSetModule().dataApprovals()
+                .byOrganisationUnitUid().eq(orgUnit)
+                .byPeriodId().eq(period)
+                .byAttributeOptionComboUid().eq(attributeOptionCombo)
+                .one().blockingGet()
+        ) doReturn dataApproval
+
+
+        val testObserver = repository.isApproval(orgUnit, period, attributeOptionCombo).test()
+
+        testObserver.assertNoErrors()
+        testObserver.assertValue(false)
+
+        testObserver.dispose()
+    }
 
     private fun dummyPeriod(): Period =
         Period.builder()

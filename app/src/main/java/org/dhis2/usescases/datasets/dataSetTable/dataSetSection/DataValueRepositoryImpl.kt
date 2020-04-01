@@ -37,7 +37,7 @@ class DataValueRepositoryImpl(private val d2: D2, private val dataSetUid: String
     }
 
     override fun getCatCombo(sectionName: String): Flowable<List<CategoryCombo>> {
-        val categoryCombos: MutableList<String> = ArrayList()
+        val categoryCombos: MutableList<String> = arrayListOf()
         val dataSetElements =
             d2.dataSetModule().dataSets().withDataSetElements().uid(dataSetUid).blockingGet()
                 .dataSetElements()
@@ -330,17 +330,17 @@ class DataValueRepositoryImpl(private val d2: D2, private val dataSetUid: String
     }
 
     override fun isCompleted(
-        orgUnitUid: String,
-        periodInitialDate: String,
-        catCombo: String
+        orgUnit: String,
+        period: String,
+        attributeOptionCombo: String
     ): Flowable<Boolean> {
         return Flowable.fromCallable {
             val completeRegistration =
                 d2.dataSetModule().dataSetCompleteRegistrations()
                     .byDataSetUid().eq(dataSetUid)
-                    .byAttributeOptionComboUid().eq(catCombo)
-                    .byPeriod().eq(periodInitialDate)
-                    .byOrganisationUnitUid().eq(orgUnitUid)
+                    .byOrganisationUnitUid().eq(orgUnit)
+                    .byPeriod().eq(period)
+                    .byAttributeOptionComboUid().eq(attributeOptionCombo)
                     .one().blockingGet()
             completeRegistration != null && !completeRegistration.deleted()!!
         }
