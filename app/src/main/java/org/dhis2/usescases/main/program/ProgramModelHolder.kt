@@ -46,7 +46,6 @@ class ProgramModelHolder(private val binding: ItemProgramModelBinding) :
 
         iconImage?.mutate()
 
-        binding.imageLayout.setCardBackgroundColor(ColorUtils.getContrastColor(color))
         binding.programImage.setImageDrawable(iconImage)
         binding.programImage.setColorFilter(ColorUtils.getContrastColor(color))
         binding.programImage.setBackgroundColor(color)
