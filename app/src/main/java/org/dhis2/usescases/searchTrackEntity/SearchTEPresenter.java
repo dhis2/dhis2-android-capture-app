@@ -425,6 +425,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         view.clearList(programSelected == null ? null : programSelected.uid());
         view.clearData();
         view.setFabIcon(true);
+        showList = true;
 
         if (selectedProgram == null)
             getTrackedEntityTypeAttributes();
@@ -471,20 +472,33 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
             for (String id : optionSetIds) {
                 queryData.remove(id);
             }
-            if (selectedProgram != null && selectedProgram.displayFrontPageList()) {
-                if (queryData.size() < selectedProgram.minAttributesRequiredToSearch()) {
-                    showList = false;
-                    view.setFabIcon(true);
-                    queryProcessor.onNext(new HashMap<>());
-                } else {
-                    showList = true;
-                    view.setFabIcon(false);
-                    queryProcessor.onNext(queryData);
-                }
-            } else {
+
+            if(compliesWithMinAttributesToSearch()) {
                 view.setFabIcon(false);
                 queryProcessor.onNext(queryData);
+            } else {
+                if (selectedProgram.displayFrontPageList()) {
+                    showList = false;
+                }
+                view.setFabIcon(true);
+                queryProcessor.onNext(new HashMap<>());
             }
+        }
+    }
+
+    private boolean compliesWithMinAttributesToSearch() {
+        if(selectedProgram != null) {
+            if(selectedProgram.displayFrontPageList() && queryData.size() < selectedProgram.minAttributesRequiredToSearch()){
+                return false;
+            } else if (!selectedProgram.displayFrontPageList() && queryData.size() < selectedProgram.minAttributesRequiredToSearch()) {
+                return false;
+            } else if (!selectedProgram.displayFrontPageList() && queryData.size() == 0 && selectedProgram.minAttributesRequiredToSearch() == 0) {
+                return false;
+            } else {
+                return true;
+            }
+        } else {
+            return true;
         }
     }
 
