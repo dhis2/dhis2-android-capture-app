@@ -91,13 +91,25 @@ class TeiDashboardTest : BaseTest() {
     }
 
     @Test
+    fun shouldCompleteTEIWhenClickOpen() {
+        prepareTeiOpenedForCompleteProgrammeIntentAndLaunchActivity()
+
+        teiDashboardRobot {
+            clickOnMenu()
+            clickOnMenuComplete()
+            checkLockCompleteIconIsDisplay()
+            checkCanNotAddEvent()
+        }
+    }
+
+    @Test
     fun shouldShowQRWhenClickOnShare() {
         prepareTeiCompletedProgrammeIntentAndLaunchActivity()
 
         teiDashboardRobot {
             clickOnShareButton()
             clickOnNextQR()
-            //Use a loop to iterate and assert
+            //Use a custom matcher to iterate loop
         }
     }
 
@@ -133,6 +145,30 @@ class TeiDashboardTest : BaseTest() {
         }
     }
 
+    @Test
+    fun shouldSuccessfullyCreateRelationshipWhenClickAdd() {
+        prepareTeiCompletedProgrammeIntentAndLaunchActivity()
+
+        teiDashboardRobot {
+            clickOnRelationshipTab()
+        }
+
+        relationshipRobot {
+            clickOnFabAdd()
+            // click on a relationship type ?
+            // click on a TEI
+            // check relationship was created
+            Thread.sleep(5000)
+        }
+    }
+
+    @Test
+    fun shouldDeleteTeiSuccessfully() {
+        //open more options
+        // click on delete tei
+        // check tei was deleted and not show on reclycler view
+    }
+
     private fun prepareTeiCompletedProgrammeIntentAndLaunchActivity() {
         Intent().apply {
             putExtra(CHILD_PROGRAM_UID, CHILD_PROGRAM_UID_VALUE)
@@ -154,6 +190,13 @@ class TeiDashboardTest : BaseTest() {
         }.also { rule.launchActivity(it) }
     }
 
+    private fun prepareTeiOpenedForCompleteProgrammeIntentAndLaunchActivity() {
+        Intent().apply {
+            putExtra(CHILD_PROGRAM_UID, CHILD_PROGRAM_UID_VALUE)
+            putExtra(TEI_UID, TEI_UID_VALUE_OPEN_TO_COMPLETE)
+        }.also { rule.launchActivity(it) }
+    }
+
     private fun prepareTeiWithExistingNoteIntentAndLaunchActivity() {
         Intent().apply {
             putExtra(CHILD_PROGRAM_UID, CHILD_PROGRAM_UID_VALUE)
@@ -169,6 +212,7 @@ class TeiDashboardTest : BaseTest() {
         const val TEI_UID_VALUE_COMPLETED = "vOxUH373fy5"
         const val TEI_UID_VALUE_OPENED = "Pqv3LrNECkn"
         const val TEI_UID_VALUE_OPEN_REFERRAL = "PQfMcpmXeFE"
+        const val TEI_UID_VALUE_OPEN_TO_COMPLETE = "qx4yw1EuxmW"
         const val TEI_UID_VALUE_WITH_NOTE = "UtDZmrX5lSd"
 
         const val TOAST_TEXT_SAVED = "Note saved"

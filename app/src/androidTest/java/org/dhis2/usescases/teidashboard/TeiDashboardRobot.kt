@@ -75,6 +75,14 @@ class TeiDashboardRobot: BaseRobot () {
         onView(withText(R.string.deactivate)).perform(click())
     }
 
+    fun clickOnMenuComplete() {
+        onView(withText(R.string.complete)).perform(click())
+    }
+
+    fun checkLockCompleteIconIsDisplay() {
+        onView(withId(R.id.program_lock_text)).check(matches(withText(R.string.completed)))
+    }
+
     fun checkCanNotAddEvent() {
         onView(withId(R.id.fab)).check(matches(not(isDisplayed())))
     }
@@ -83,11 +91,19 @@ class TeiDashboardRobot: BaseRobot () {
         onView(withId(R.id.shareContainer)).perform(click())
     }
 
-    fun checkNumberOfQR() {
-        onView(withId(R.id.page)).check(matches(withText("8")))
+    fun clickOnNextQR() {
+        var qrLenght = 1
+       // onView(withId(R.id.page)).check(matches(withText("8")))
+
+        while (qrLenght < 8) {
+            onView(withId(R.id.next)).perform(click())
+            qrLenght++
+        }
     }
 
-    fun clickOnNextQR() {
-        onView(withId(R.id.next)).perform(click())
+    fun clickOnRelationshipTab() {
+        onView(clickOnTab(2)).perform(click())
+        //onView(isRoot()).perform(waitForTransitionUntil(R.id.addNoteButton))
+        Thread.sleep(500)
     }
 }
