@@ -29,46 +29,47 @@
         android:paddingEnd="16dp"
         android:paddingBottom="8dp">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <com.google.android.material.card.MaterialCardView
             android:id="@+id/imageLayout"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
             android:background="?attr/colorPrimaryLight"
             android:onClick="@{()->presenter.showDescription(program.description())}"
+            app:cardCornerRadius="50dp"
+            app:cardElevation="0dp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            >
 
-            <ImageView
-                android:id="@+id/program_image"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                tools:ignore="ContentDescription"
-                tools:src="@drawable/ic_with_registration" />
+        <ImageView
+            android:id="@+id/program_image"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            tools:ignore="ContentDescription"
+            tools:src="@drawable/ic_with_registration" />
 
+        </com.google.android.material.card.MaterialCardView>
 
-            <ImageView
-                android:layout_width="16dp"
-                android:layout_height="16dp"
-                android:visibility="@{program.description()==null?View.GONE:View.VISIBLE}"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintRight_toRightOf="parent"
-                app:srcCompat="@drawable/ic_circle_white"
-                tools:ignore="ContentDescription" />
+        <ImageView
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:visibility="@{program.description()==null?View.GONE:View.VISIBLE}"
+            app:layout_constraintBottom_toBottomOf="@id/imageLayout"
+            app:layout_constraintRight_toRightOf="@id/imageLayout"
+            app:srcCompat="@drawable/ic_circle_white"
+            tools:ignore="ContentDescription" />
 
-            <ImageView
-                android:id="@+id/info"
-                android:layout_width="16dp"
-                android:layout_height="16dp"
-                android:visibility="@{program.description()==null?View.GONE:View.VISIBLE}"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintRight_toRightOf="parent"
-                app:srcCompat="@drawable/ic_info_layer"
-                tools:ignore="ContentDescription" />
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
+        <ImageView
+            android:id="@+id/info"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:visibility="@{program.description()==null?View.GONE:View.VISIBLE}"
+            app:layout_constraintBottom_toBottomOf="@id/imageLayout"
+            app:layout_constraintRight_toRightOf="@id/imageLayout"
+            app:srcCompat="@drawable/ic_info_layer"
+            tools:ignore="ContentDescription" />
 
         <TextView
             android:id="@+id/count"
