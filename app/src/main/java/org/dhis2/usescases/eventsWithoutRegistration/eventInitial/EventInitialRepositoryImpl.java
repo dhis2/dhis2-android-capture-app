@@ -1,13 +1,9 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventInitial;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import android.content.Context;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import org.dhis2.utils.DateUtils;
 import org.hisp.dhis.android.core.D2;
@@ -30,10 +26,14 @@ import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.program.ProgramStage;
 
-import android.content.Context;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
@@ -117,7 +117,7 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
     }
 
     @Override
-    public Observable<List<CategoryOptionCombo>> catOptionCombos(String catOptionComboUid){
+    public Observable<List<CategoryOptionCombo>> catOptionCombos(String catOptionComboUid) {
         return d2.categoryModule().categoryOptionCombos().byCategoryComboUid().eq(catOptionComboUid).get().toObservable();
     }
 
@@ -359,7 +359,7 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
     @Override
     public Observable<Program> getProgramWithId(String programUid) {
         return d2.programModule().programs()
-            .withTrackedEntityType().byUid().eq(programUid).one().get().toObservable();
+                .withTrackedEntityType().byUid().eq(programUid).one().get().toObservable();
     }
 
     @Override
@@ -375,12 +375,25 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
 
     @Override
     public Observable<ObjectStyle> getObjectStyle(String uid) {
-        return d2.programModule().programStages().byUid().eq(uid).one().get().toObservable()
-                .map(programStage -> (programStage.style() != null) ? programStage.style() : ObjectStyle.builder().build());
+        return d2.programModule().programStages().uid(uid).get()
+                .map(programStage -> {
+                    Program program = d2.programModule().programs().uid(programStage.program().uid()).blockingGet();
+                    ObjectStyle programStyle = program.style() != null ? program.style() : ObjectStyle.builder().build();
+                    if (programStage.style() != null) {
+                        programStage.style().icon();
+                        programStage.style().color();
+                        return ObjectStyle.builder()
+                                .icon(programStage.style().icon() != null ? programStage.style().icon() : programStyle.icon())
+                                .color(programStage.style().color() != null ? programStage.style().color() : programStyle.color())
+                                .build();
+                    } else {
+                        return programStyle;
+                    }
+                }).toObservable();
     }
 
     @Override
-    public String getCategoryOptionCombo(String categoryComboUid, List<String> categoryOptionsUid){
+    public String getCategoryOptionCombo(String categoryComboUid, List<String> categoryOptionsUid) {
         return d2.categoryModule().categoryOptionCombos()
                 .byCategoryComboUid().eq(categoryComboUid)
                 .byCategoryOptions(categoryOptionsUid)
