@@ -7,6 +7,10 @@ import io.reactivex.Single
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
 import org.hisp.dhis.android.core.category.CategoryCombo
+import org.hisp.dhis.android.core.category.CategoryOption
+import org.hisp.dhis.android.core.category.CategoryOptionCombo
+import org.hisp.dhis.android.core.common.Access
+import org.hisp.dhis.android.core.common.DataAccess
 import org.hisp.dhis.android.core.common.ObjectWithUid
 import org.hisp.dhis.android.core.dataapproval.DataApproval
 import org.hisp.dhis.android.core.dataapproval.DataApprovalState
@@ -17,6 +21,7 @@ import org.hisp.dhis.android.core.dataset.DataSet
 import org.hisp.dhis.android.core.dataset.DataSetCompleteRegistration
 import org.hisp.dhis.android.core.dataset.DataSetElement
 import org.hisp.dhis.android.core.dataset.Section
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.period.Period
 import org.junit.Before
 import org.junit.Test
@@ -649,6 +654,168 @@ class DataValueRepositoryTest {
         testObserver.dispose()
     }
 
+    @Test
+    fun `Should return dataSet and orgUnit have write permission`() {
+        val dataSet = dummyDataSet()
+        val categoryOption = CategoryOption.builder()
+            .uid(UUID.randomUUID().toString())
+            .access(Access.create(true, true, DataAccess.create(true, true)))
+            .build()
+        val categoryOptionCombo = CategoryOptionCombo.builder()
+            .uid(UUID.randomUUID().toString())
+            .categoryOptions(listOf(categoryOption))
+            .build()
+
+        whenever(
+            d2.dataSetModule().dataSets().uid(dataSetUid).get()
+        ) doReturn Single.just(dataSet)
+
+        whenever(
+            d2.categoryModule()
+                .categoryOptionCombos().withCategoryOptions()
+        ) doReturn mock()
+        whenever(
+            d2.categoryModule()
+                .categoryOptionCombos().withCategoryOptions()
+                .byCategoryComboUid()
+        ) doReturn mock()
+        whenever(
+            d2.categoryModule()
+                .categoryOptionCombos().withCategoryOptions()
+                .byCategoryComboUid().eq(dataSet.categoryCombo()?.uid())
+        ) doReturn mock()
+        whenever(
+            d2.categoryModule()
+                .categoryOptionCombos().withCategoryOptions()
+                .byCategoryComboUid().eq(dataSet.categoryCombo()?.uid())
+                .get()
+        ) doReturn Single.just(listOf(categoryOptionCombo))
+
+        val testObserver = repository.canWriteAny().test()
+
+        testObserver.assertNoErrors()
+        testObserver.assertValue(true)
+
+        testObserver.dispose()
+    }
+
+    @Test
+    fun `Should return catCombo don't have write permission`() {
+        val dataSet = dummyDataSet()
+        val categoryOption = CategoryOption.builder()
+            .uid(UUID.randomUUID().toString())
+            .access(Access.create(false, false, DataAccess.create(false, false)))
+            .build()
+        val categoryOptionCombo = CategoryOptionCombo.builder()
+            .uid(UUID.randomUUID().toString())
+            .categoryOptions(listOf(categoryOption))
+            .build()
+
+        whenever(
+            d2.dataSetModule().dataSets().uid(dataSetUid).get()
+        ) doReturn Single.just(dataSet)
+
+        whenever(
+            d2.categoryModule()
+                .categoryOptionCombos().withCategoryOptions()
+        ) doReturn mock()
+        whenever(
+            d2.categoryModule()
+                .categoryOptionCombos().withCategoryOptions()
+                .byCategoryComboUid()
+        ) doReturn mock()
+        whenever(
+            d2.categoryModule()
+                .categoryOptionCombos().withCategoryOptions()
+                .byCategoryComboUid().eq(dataSet.categoryCombo()?.uid())
+        ) doReturn mock()
+        whenever(
+            d2.categoryModule()
+                .categoryOptionCombos().withCategoryOptions()
+                .byCategoryComboUid().eq(dataSet.categoryCombo()?.uid())
+                .get()
+        ) doReturn Single.just(listOf(categoryOptionCombo))
+
+        val testObserver = repository.canWriteAny().test()
+
+        testObserver.assertNoErrors()
+        testObserver.assertValue(false)
+
+        testObserver.dispose()
+    }
+
+    @Test
+    fun `Should return orgUnit don't have write permission`() {
+        val dataSet = dummyDataSet()
+        val categoryOption = CategoryOption.builder()
+            .uid(UUID.randomUUID().toString())
+            .access(Access.create(false, false, DataAccess.create(false, false)))
+            .build()
+        val categoryOptionCombo = CategoryOptionCombo.builder()
+            .uid(UUID.randomUUID().toString())
+            .categoryOptions(listOf(categoryOption))
+            .build()
+
+        whenever(
+            d2.dataSetModule().dataSets().uid(dataSetUid).get()
+        ) doReturn Single.just(dataSet)
+
+        whenever(
+            d2.categoryModule()
+                .categoryOptionCombos().withCategoryOptions()
+        ) doReturn mock()
+        whenever(
+            d2.categoryModule()
+                .categoryOptionCombos().withCategoryOptions()
+                .byCategoryComboUid()
+        ) doReturn mock()
+        whenever(
+            d2.categoryModule()
+                .categoryOptionCombos().withCategoryOptions()
+                .byCategoryComboUid().eq(dataSet.categoryCombo()?.uid())
+        ) doReturn mock()
+        whenever(
+            d2.categoryModule()
+                .categoryOptionCombos().withCategoryOptions()
+                .byCategoryComboUid().eq(dataSet.categoryCombo()?.uid())
+                .get()
+        ) doReturn Single.just(listOf(categoryOptionCombo))
+
+        whenever(
+            d2.organisationUnitModule().organisationUnits()
+                .byDataSetUids(listOf(dataSetUid))
+                .byOrganisationUnitScope(
+                    OrganisationUnit.Scope.SCOPE_DATA_CAPTURE
+                ).blockingGet()
+        ) doReturn listOf(OrganisationUnit.builder().uid(UUID.randomUUID().toString()).build())
+
+        val testObserver = repository.canWriteAny().test()
+
+        testObserver.assertNoErrors()
+        testObserver.assertValue(false)
+
+        testObserver.dispose()
+    }
+
+    @Test
+    fun `Should return dataSet don't have write permission`() {
+        whenever(
+            d2.dataSetModule().dataSets().uid(dataSetUid).get()
+        ) doReturn Single.just(
+            DataSet.builder()
+            .uid(UUID.randomUUID().toString())
+            .access(Access.create(false, false, DataAccess.create(false, false)))
+            .build()
+        )
+
+        val testObserver = repository.canWriteAny().test()
+
+        testObserver.assertNoErrors()
+        testObserver.assertValue(false)
+
+        testObserver.dispose()
+    }
+
     private fun dummyPeriod(): Period =
         Period.builder()
             .periodId(UUID.randomUUID().toString())
@@ -675,6 +842,8 @@ class DataValueRepositoryTest {
     private fun dummyDataSet(): DataSet =
         DataSet.builder()
             .uid(UUID.randomUUID().toString())
+            .access(Access.create(true, true, DataAccess.create(true, true)))
+            .categoryCombo(ObjectWithUid.create(UUID.randomUUID().toString()))
             .build()
 
     private fun dummyCategoryCombo(): CategoryCombo =
