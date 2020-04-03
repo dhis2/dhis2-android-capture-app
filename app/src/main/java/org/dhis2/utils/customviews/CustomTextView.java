@@ -247,9 +247,13 @@ public class CustomTextView extends FieldLayout implements View.OnFocusChangeLis
             if (mandatory)
                 labelBuilder.append("*");
             this.label = labelBuilder.toString();
-            inputLayout.setHint(this.label);
+            inputLayout.setHint(null);
             binding.setVariable(BR.label, this.label);
         }
+    }
+
+    public void setHint(String hint){
+        binding.setVariable(BR.fieldHint, hint);
     }
 
     public TextInputAutoCompleteTextView getEditText() {

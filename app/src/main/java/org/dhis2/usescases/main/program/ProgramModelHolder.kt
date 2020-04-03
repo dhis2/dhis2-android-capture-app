@@ -5,6 +5,7 @@ import androidx.recyclerview.widget.RecyclerView
 import org.dhis2.R
 import org.dhis2.databinding.ItemProgramModelBinding
 import org.dhis2.utils.ColorUtils
+import org.dhis2.utils.ObjectStyleUtils
 import timber.log.Timber
 
 /**
@@ -46,7 +47,9 @@ class ProgramModelHolder(private val binding: ItemProgramModelBinding) :
 
         iconImage?.mutate()
 
-        binding.programImage.setImageDrawable(iconImage)
+        binding.programImage.setImageDrawable(
+            ObjectStyleUtils.getIconResource(itemView.context,programViewModel.icon(),R.drawable.ic_program_default)
+        )
         binding.programImage.setColorFilter(ColorUtils.getContrastColor(color))
         binding.programImage.setBackgroundColor(color)
 
