@@ -8,6 +8,7 @@ import androidx.test.espresso.matcher.ViewMatchers.*
 import org.dhis2.R
 import org.dhis2.common.BaseRobot
 import org.dhis2.common.matchers.clickOnTab
+import org.dhis2.common.matchers.isToast
 import org.dhis2.usescases.programStageSelection.ProgramStageSelectionViewHolder
 import org.dhis2.usescases.teiDashboard.dashboardfragments.tei_data.DashboardProgramViewHolder
 import org.hamcrest.Matchers.allOf
@@ -60,6 +61,10 @@ class TeiDashboardRobot: BaseRobot () {
 
     fun clickOnReferral(){
         onView(withId(R.id.referral)).perform(click())
+    }
+
+    fun checkCannotAddMoreEventToasIsShown() {
+        onView(withText(R.string.program_not_allow_events)).inRoot(isToast()).check(matches(isDisplayed()))
     }
 
     fun clickOnFirstReferralEvent(){
