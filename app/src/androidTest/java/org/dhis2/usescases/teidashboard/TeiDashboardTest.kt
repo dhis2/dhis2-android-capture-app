@@ -175,6 +175,10 @@ class TeiDashboardTest : BaseTest() {
         //open more options
         // click on delete tei
         // check tei was deleted and not show on reclycler view
+
+        teiDashboardRobot {
+            clickOnMenuDeleteTEI()
+        }
     }
 
     private fun prepareTeiCompletedProgrammeIntentAndLaunchActivity() {

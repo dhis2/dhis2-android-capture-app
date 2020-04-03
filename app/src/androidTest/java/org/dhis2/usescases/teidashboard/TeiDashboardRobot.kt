@@ -111,4 +111,8 @@ class TeiDashboardRobot: BaseRobot () {
         //onView(isRoot()).perform(waitForTransitionUntil(R.id.addNoteButton))
         Thread.sleep(500)
     }
+
+    fun clickOnMenuDeleteTEI() {
+        onView(withId(R.id.deleteTei)).perform(click())
+    }
 }

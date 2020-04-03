@@ -28,7 +28,6 @@ class RelationshipRobot: BaseRobot() {
                 .check(matches(isDisplayed()))
                 .perform(click())*/
         //onView(withId(R.id.rfabLayout)).check(matches(withText("Mother-Child__a-to-b__(Person-Person)")))
-        //deleteTei
 
         onView(allOf(withText("Mother-Child__a-to-b__(Person-Person)"), withParent(withId(R.id.rfabLayout))))
                 .check(matches(isDisplayed()))
