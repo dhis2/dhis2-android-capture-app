@@ -205,7 +205,12 @@ class GranularSyncPresenterImpl(
                 )
                 if (enrollmentUids.isNotEmpty()) {
                     smsSender.convertEnrollment(enrollmentUids[0])
-                } else {
+
+                } else if( !d2.enrollmentModule().enrollments().byTrackedEntityInstance().eq(recordUid).blockingIsEmpty()){
+                    smsSender.convertEnrollment(
+                        d2.enrollmentModule().enrollments().byTrackedEntityInstance().eq(recordUid).one().blockingGet().uid()
+                    )
+                }else {
                     Single.error(Exception(view.emptyEnrollmentError()))
                 }
             }
