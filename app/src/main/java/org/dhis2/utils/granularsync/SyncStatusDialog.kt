@@ -136,10 +136,10 @@ class SyncStatusDialog private constructor(
         fun build(): SyncStatusDialog {
             if (conflictType == ConflictType.DATA_VALUES &&
                 (
-                    orgUnitDataValue == null ||
-                        attributeComboDataValue == null ||
-                        periodIdDataValue == null
-                    )
+                        orgUnitDataValue == null ||
+                                attributeComboDataValue == null ||
+                                periodIdDataValue == null
+                        )
             ) {
                 throw NullPointerException(
                     "DataSets require non null, orgUnit, attributeOptionCombo and periodId"
@@ -218,10 +218,9 @@ class SyncStatusDialog private constructor(
 
     private fun setNetworkMessage() {
         if (!NetworkUtils.isOnline(context)) {
-            if (presenter.isSMSEnabled() && context?.showSMS() == true) {
+            if (presenter.isSMSEnabled(conflictType == ConflictType.TEI) && context?.showSMS() == true) {
                 if (conflictType != ConflictType.PROGRAM &&
-                    conflictType != ConflictType.DATA_SET &&
-                    conflictType != ConflictType.TEI // FYI - Tei sms sync is temporary disabled
+                    conflictType != ConflictType.DATA_SET
                 ) {
                     analyticsHelper.setEvent(SYNC_GRANULAR_SMS, CLICK, SYNC_GRANULAR)
                     binding!!.connectionMessage.setText(R.string.network_unavailable_sms)
@@ -398,7 +397,7 @@ class SyncStatusDialog private constructor(
                 StatusLogItem.create(
                     Date(),
                     StatusText.getTextSubmissionType(resources, inputArguments) + ": " +
-                        StatusText.getTextForStatus(resources, it)
+                            StatusText.getTextForStatus(resources, it)
                 )
             )
         }

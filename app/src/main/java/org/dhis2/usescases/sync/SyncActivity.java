@@ -100,7 +100,6 @@ public class SyncActivity extends ActivityGlobalAbstract implements SyncContract
         if (binding.lottieView != null) {
             binding.lottieView.setRepeatCount(LottieDrawable.INFINITE);
             binding.lottieView.setRepeatMode(LottieDrawable.RESTART);
-            binding.lottieView.useHardwareAcceleration(true);
             binding.lottieView.enableMergePathsForKitKatAndAbove(true);
             binding.lottieView.playAnimation();
         }
