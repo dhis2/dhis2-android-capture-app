@@ -166,6 +166,7 @@ class TeiDashboardTest : BaseTest() {
             // click on a TEI
             // check relationship was created
             Thread.sleep(5000)
+            clickOnMotherRelationship()
         }
     }
 
