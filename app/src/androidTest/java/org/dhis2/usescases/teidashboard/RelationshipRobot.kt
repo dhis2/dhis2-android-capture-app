@@ -29,7 +29,7 @@ class RelationshipRobot: BaseRobot() {
                 .perform(click())*/
         //onView(withId(R.id.rfabLayout)).check(matches(withText("Mother-Child__a-to-b__(Person-Person)")))
 
-        onView(allOf(withText("Mother-Child__a-to-b__(Person-Person)"), withParent(withId(R.id.rfabLayout))))
+        onView(allOf(withText("Mother-Child_a-to-b_(Person-Person)"), withParent(withId(R.id.rfabLayout))))
                 .check(matches(isDisplayed()))
                // .perform(click());
     }

@@ -4,6 +4,8 @@ import android.content.Intent
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
 import org.dhis2.usescases.BaseTest
+import org.dhis2.usescases.searchTrackEntity.SearchTEActivity
+import org.dhis2.usescases.searchte.SearchTETest
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity
 import org.junit.Rule
 import org.junit.Test
@@ -14,6 +16,8 @@ class TeiDashboardTest : BaseTest() {
 
     @get:Rule
     val rule = ActivityTestRule(TeiDashboardMobileActivity::class.java, false, false)
+    @get:Rule
+    val ruleSearch = ActivityTestRule(SearchTEActivity::class.java, false, false)
 
     @Test
     fun shouldSuccessfullyCreateANoteWhenClickCreateNote() {
@@ -172,12 +176,20 @@ class TeiDashboardTest : BaseTest() {
 
     @Test
     fun shouldDeleteTeiSuccessfully() {
-        //open more options
+        // open more options
         // click on delete tei
         // check tei was deleted and not show on reclycler view
+        setupCredentials()
+        //prepareTeiToDelete()
+        prepareChildProgrammeIntentAndLaunchActivity()
 
         teiDashboardRobot {
+            /*clickOnMenu()
             clickOnMenuDeleteTEI()
+            checkTEIIsDelete()*/
+            clickOnTEI()
+            // rule.getactivity == null assert
+            Thread.sleep(5000)
         }
     }
 
@@ -223,6 +235,20 @@ class TeiDashboardTest : BaseTest() {
         }.also { rule.launchActivity(it) }
     }
 
+    private fun prepareChildProgrammeIntentAndLaunchActivity() {
+        Intent().apply {
+            putExtra(SearchTETest.CHILD_PROGRAM_UID, SearchTETest.CHILD_PROGRAM_UID_VALUE)
+            putExtra(SearchTETest.CHILD_TE_TYPE, SearchTETest.CHILD_TE_TYPE_VALUE)
+        }.also { ruleSearch.launchActivity(it) }
+    }
+
+    private fun prepareTeiToDelete(){
+        Intent().apply{
+            putExtra(CHILD_PROGRAM_UID, CHILD_PROGRAM_UID_VALUE)
+            putExtra(TEI_UID, TEI_UID_VALUE_TO_DELETE)
+        }.also { rule.launchActivity(it) }
+    }
+
     companion object{
         const val CHILD_PROGRAM_UID = "PROGRAM_UID"
         const val CHILD_PROGRAM_UID_VALUE = "IpHINAT79UW"
@@ -234,6 +260,7 @@ class TeiDashboardTest : BaseTest() {
         const val TEI_UID_VALUE_OPEN_REFERRAL = "PQfMcpmXeFE"
         const val TEI_UID_VALUE_OPEN_TO_COMPLETE = "qx4yw1EuxmW"
         const val TEI_UID_VALUE_WITH_NOTE = "UtDZmrX5lSd"
+        const val TEI_UID_VALUE_TO_DELETE = "SHnmavBQu72"
 
         const val TOAST_TEXT_SAVED = "Note saved"
         const val NOTE_VALID = "ThisIsJustATest"

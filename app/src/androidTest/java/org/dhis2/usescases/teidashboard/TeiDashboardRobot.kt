@@ -4,13 +4,17 @@ import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition
+import androidx.test.espresso.contrib.RecyclerViewActions.scrollTo
 import androidx.test.espresso.matcher.ViewMatchers.*
 import org.dhis2.R
 import org.dhis2.common.BaseRobot
+import org.dhis2.common.matchers.RecyclerviewMatchers
 import org.dhis2.common.matchers.clickOnTab
 import org.dhis2.common.matchers.isToast
 import org.dhis2.usescases.programStageSelection.ProgramStageSelectionViewHolder
+import org.dhis2.usescases.searchTrackEntity.adapters.SearchTEViewHolder
 import org.dhis2.usescases.teiDashboard.dashboardfragments.tei_data.DashboardProgramViewHolder
+import org.hamcrest.CoreMatchers
 import org.hamcrest.Matchers.allOf
 import org.hamcrest.Matchers.not
 
@@ -113,6 +117,16 @@ class TeiDashboardRobot: BaseRobot () {
     }
 
     fun clickOnMenuDeleteTEI() {
-        onView(withId(R.id.deleteTei)).perform(click())
+        onView(withText(R.string.dashboard_menu_delete_tei)).perform(click())
+    }
+
+    fun checkTEIIsDelete() {
+        // Olvia Watts
+        onView(withId(R.id.scrollView)).check(matches(CoreMatchers.allOf(isDisplayed(), RecyclerviewMatchers.isNotEmpty(),
+                not(hasDescendant(withText("Olvia Watts"))))))
+    }
+
+    fun clickOnTEI() {
+        onView(withId(R.id.scrollView)).perform(scrollTo<SearchTEViewHolder>(hasDescendant(withText("Olvia Watts"))), click())
     }
 }
