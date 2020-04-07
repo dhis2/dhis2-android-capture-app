@@ -88,6 +88,9 @@ class MapLayerManager private constructor(
 
     fun updateStyle(style: Style) {
         this.style = style
+        handleTeiLayer(showTei.value == true)
+        handleEnrollmentLayer(showEnrollment.value == true)
+        handleHeatMapLayer(showHeatMap.value == true)
     }
 
     private fun clearDisposable() {

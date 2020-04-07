@@ -782,6 +782,8 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             symbolManager.setIconAllowOverlap(true);
             symbolManager.setTextAllowOverlap(true);
             symbolManager.setIconIgnorePlacement(true);
+            symbolManager.setTextIgnorePlacement(true);
+            symbolManager.setSymbolPlacement("line-center");
             symbolManager.create(data.component1().get("TEI"));
         }
     }
@@ -797,7 +799,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     }
 
     private void setSource(Style style, HashMap<String, FeatureCollection> featCollectionMap) {
-        style.addSource(new GeoJsonSource("teis", featCollectionMap.get("TEI")/*,new GeoJsonOptions().withCluster(true).withClusterMaxZoom(14).withClusterRadius(30)*/));
+        style.addSource(new GeoJsonSource("teis", featCollectionMap.get("TEI")));
         style.addSource(new GeoJsonSource("enrollments", featCollectionMap.get("ENROLLMENT")));
     }
 

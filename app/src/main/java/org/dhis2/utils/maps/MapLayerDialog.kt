@@ -62,8 +62,8 @@ class MapLayerDialog(
 
     private fun initListeners() {
         binding.styleCheck.setOnCheckedChangeListener { _, isChecked ->
-            layerManager.setSatelliteLayer(isChecked)
             styleCallback(isChecked)
+            layerManager.setSatelliteLayer(isChecked)
         }
 
         binding.teiCheck.setOnCheckedChangeListener { _, isChecked ->
