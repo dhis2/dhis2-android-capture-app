@@ -129,4 +129,25 @@ class TeiDashboardRobot: BaseRobot () {
     fun clickOnTEI() {
         onView(withId(R.id.scrollView)).perform(scrollTo<SearchTEViewHolder>(hasDescendant(withText("Olvia Watts"))), click())
     }
+
+    fun checkUpperInfo(incidentDate: String, enrollmentDate: String, orgUnit: String) {
+        onView(withId(R.id.incident_date)).check(matches(withText(incidentDate)))
+        onView(withId(R.id.enrollment_date)).check(matches(withText(enrollmentDate)))
+        onView(withId(R.id.org_unit)).check(matches(withText(orgUnit)))
+    }
+
+    fun clickOnSeeDetails() {
+        onView(withId(R.id.viewMore)).perform(click())
+    }
+
+    fun checkFullDetails() {
+        onView(withId(R.id.inputEditText)).check(matches(withText("2021-01-10")))
+        onView(withId(R.id.inputEditText)).check(matches(withText("2021-01-10")))
+        onView(withId(R.id.input_editText)).check(matches(withText("Ngelehun CHC")))
+        onView(withId(R.id.latitude)).check(matches(withText("40.48713205295354")))
+        onView(withId(R.id.longitude)).check(matches(withText("-3.6847423830882633")))
+        onView(withId(R.id.input_editText)).check(matches(withText("Filona")))
+        onView(withId(R.id.input_editText)).check(matches(withText("Ryder")))
+        onView(withId(R.id.input_editText)).check(matches(withText("Female")))
+    }
 }

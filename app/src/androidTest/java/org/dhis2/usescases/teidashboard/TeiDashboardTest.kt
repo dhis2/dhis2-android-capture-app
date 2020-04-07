@@ -193,6 +193,25 @@ class TeiDashboardTest : BaseTest() {
         }
     }
 
+    @Test
+    fun shouldShowCorrectInfoWhenOpenTEI() {
+        prepareTeiCompletedProgrammeIntentAndLaunchActivity()
+
+        teiDashboardRobot {
+            checkUpperInfo("2021-01-10", "2021-01-10", "Ngelehun CHC")
+        }
+    }
+
+    @Test
+    fun shouldShowTEIDetailsWhenClickOnSeeDetails() {
+        prepareTeiCompletedProgrammeIntentAndLaunchActivity()
+
+        teiDashboardRobot {
+            clickOnSeeDetails()
+            //checkFullDetails()
+        }
+    }
+
     private fun prepareTeiCompletedProgrammeIntentAndLaunchActivity() {
         Intent().apply {
             putExtra(CHILD_PROGRAM_UID, CHILD_PROGRAM_UID_VALUE)
