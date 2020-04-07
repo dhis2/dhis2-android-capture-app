@@ -8,6 +8,7 @@ import androidx.test.espresso.UiController
 import androidx.test.espresso.ViewAction
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.espresso.util.TreeIterables
+import com.wangjie.rapidfloatingactionbutton.RapidFloatingActionLayout
 import org.hamcrest.CoreMatchers.allOf
 import org.hamcrest.Matcher
 
@@ -63,6 +64,28 @@ fun scrollToBottomRecyclerView() : ViewAction {
             val position = itemCount?.minus(1) ?: 0
             recyclerView.scrollToPosition(position)
             uiController?.loopMainThreadUntilIdle()
+        }
+    }
+}
+
+fun clickOnFabChild() : ViewAction {
+    return object : ViewAction {
+        override fun getDescription(): String {
+            return "searching for fab child"
+        }
+
+        override fun getConstraints(): Matcher<View> {
+            return isAssignableFrom(RapidFloatingActionLayout::class.java)
+        }
+
+        override fun perform(uiController: UiController?, view: View?) {
+            val rootView = (view as RapidFloatingActionLayout)
+            for (index in 0 until rootView.childCount) {
+                val child = rootView.getChildAt(index)
+                child.performClick()
+                uiController?.loopMainThreadUntilIdle()
+                return
+            }
         }
     }
 }

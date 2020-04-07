@@ -4,6 +4,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.AdapterView
+import android.widget.FrameLayout
 import androidx.annotation.NonNull
 import androidx.test.espresso.Root
 import androidx.test.espresso.matcher.BoundedMatcher
@@ -92,6 +93,23 @@ fun isToast(): Matcher<Root> {
 
         override fun describeTo(description: Description) {
             description.appendText("is toast")
+        }
+    }
+}
+
+fun findChildFabButton(childToClick:Int) : Matcher<View> {
+    return object : TypeSafeMatcher<View>() {
+        override fun matchesSafely(view: View): Boolean {
+            val rootView = (view as FrameLayout)
+            for (index in 0 until rootView.childCount) {
+                val child = rootView.getChildAt(index)
+                if (childToClick == index) return true
+            }
+            return false
+        }
+
+        override fun describeTo(description: Description) {
+            description.appendText("Fab children")
         }
     }
 }

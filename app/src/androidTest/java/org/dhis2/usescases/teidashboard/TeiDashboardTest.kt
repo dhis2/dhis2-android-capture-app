@@ -119,6 +119,7 @@ class TeiDashboardTest : BaseTest() {
 
     @Test
     fun shouldBeAbleToMakeAReferral() {
+        //TO Check is failing
         prepareTeiOpenedForReferralProgrammeIntentAndLaunchActivity()
 
         teiDashboardRobot {
@@ -159,18 +160,19 @@ class TeiDashboardTest : BaseTest() {
     fun shouldSuccessfullyCreateRelationshipWhenClickAdd() {
         prepareTeiCompletedProgrammeIntentAndLaunchActivity()
 
-        Thread.sleep(10000)
+    //    Thread.sleep(10000)
         teiDashboardRobot {
             clickOnRelationshipTab()
         }
 
         relationshipRobot {
             clickOnFabAdd()
+            clickOnRelationshipType()
             // click on a relationship type ?
             // click on a TEI
             // check relationship was created
             Thread.sleep(5000)
-            clickOnMotherRelationship()
+        //    clickOnMotherRelationship()
         }
     }
 
