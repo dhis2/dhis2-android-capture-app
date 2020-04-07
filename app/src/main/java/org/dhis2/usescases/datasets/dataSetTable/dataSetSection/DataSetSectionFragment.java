@@ -1,6 +1,7 @@
 package org.dhis2.usescases.datasets.dataSetTable.dataSetSection;
 
 import android.content.Context;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -79,6 +80,13 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
         dataSetSectionFragment.setArguments(bundle);
         bundle.putString(Constants.DATA_SET_UID, dataSetUid);
         return dataSetSectionFragment;
+    }
+
+    @Override
+    public void onConfigurationChanged(@NonNull Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        getAbstractActivity().hideKeyboard();
+        requireView().clearFocus();
     }
 
     @Override
