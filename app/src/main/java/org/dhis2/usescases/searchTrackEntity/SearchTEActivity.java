@@ -96,9 +96,12 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import io.ona.kujaku.utils.helpers.MapBoxStyleHelper;
 import io.reactivex.Flowable;
 import io.reactivex.functions.Consumer;
 import kotlin.Pair;
+import kotlin.Unit;
+import kotlin.jvm.functions.Function1;
 import timber.log.Timber;
 
 import static com.mapbox.mapboxsdk.style.expressions.Expression.eq;
@@ -156,6 +159,8 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     private MapboxMap map;
     private MarkerViewManager markerViewManager;
     private SymbolManager symbolManager;
+    private String currentStyle = Style.MAPBOX_STREETS;
+    private boolean changingStyle;
     //---------------------------------------------------------------------------------------------
 
     //region LIFECYCLE
@@ -226,10 +231,20 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         } catch (Exception e) {
             Timber.e(e);
         }
-        binding.mapLayerButton.setOnClickListener(view ->
-                new MapLayerDialog(map.getStyle().getImage("ICON_ID"), map.getStyle().getImage("ICON_ENROLLMENT_ID"))
-                        .show(getSupportFragmentManager(), MapLayerDialog.class.getSimpleName()));
 
+        binding.mapLayerButton.setOnClickListener(view ->
+                new MapLayerDialog(map.getStyle().getImage("ICON_ID"),
+                        map.getStyle().getImage("ICON_ENROLLMENT_ID"),
+                        isSatelliteStyle -> {
+                            if (isSatelliteStyle) {
+                                currentStyle = Style.SATELLITE_STREETS;
+                            } else {
+                                currentStyle = Style.MAPBOX_STREETS;
+                            }
+                            changingStyle = true;
+                            presenter.getMapData();
+                            return null;
+                        }).show(getSupportFragmentManager(), MapLayerDialog.class.getName()));
         binding.executePendingBindings();
         showHideFilter();
     }
@@ -244,6 +259,9 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         registerReceiver(networkReceiver, new IntentFilter("android.net.conn.CONNECTIVITY_CHANGE"));
         binding.setTotalFilters(FilterManager.getInstance().getTotalFilters());
         filtersAdapter.notifyDataSetChanged();
+        if (isMapVisible()) {
+            binding.progressLayout.setVisibility(View.GONE);
+        }
     }
 
     @Override
@@ -378,7 +396,9 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
     @Override
     public void clearData() {
-        binding.progressLayout.setVisibility(View.VISIBLE);
+        if (!isMapVisible()) {
+            binding.progressLayout.setVisibility(View.VISIBLE);
+        }
         binding.scrollView.setVisibility(View.GONE);
     }
 
@@ -659,49 +679,13 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     @Override
     public Consumer<Pair<HashMap<String, FeatureCollection>, BoundingBox>> setMap() {
         return data -> {
-            if (map == null)
+            binding.progressLayout.setVisibility(View.GONE);
+
+            if (map == null) {
                 binding.mapView.getMapAsync(mapboxMap -> {
                     map = mapboxMap;
                     if (map.getStyle() == null) {
-                        map.setStyle(Style.MAPBOX_STREETS, style -> {
-                                    binding.mapLayerButton.setVisibility(View.VISIBLE);
-                                    MapLayerManager.Companion.init(style, "teis", featureType);
-                                    MapLayerManager.Companion.instance().setEnrollmentLayerData(
-                                            presenter.getProgram() != null ?
-                                                    ColorUtils.getColorFrom(presenter.getProgram().style() != null ? presenter.getProgram().style().color() : null, ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.PRIMARY)) :
-                                                    ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.PRIMARY),
-                                            ColorUtils.getPrimaryColor(this, ColorUtils.ColorType.PRIMARY_DARK),
-                                            presenter.getProgram() != null ? presenter.getProgram().featureType() != null ? presenter.getProgram().featureType() : FeatureType.NONE : FeatureType.NONE
-                                    );
-                                    MapLayerManager.Companion.instance().showEnrollmentLayer().observe(this, show -> {
-                                        if (show)
-                                            presenter.getEnrollmentMapData();
-                                    });
-                                    map.addOnMapClickListener(this);
-
-                                    style.addImage("ICON_ID", MarkerUtils.INSTANCE.getMarker(this, presenter.getSymbolIcon(), presenter.getTEIColor()));
-                                    style.addImage("ICON_ENROLLMENT_ID", MarkerUtils.INSTANCE.getMarker(this, presenter.getEnrollmentSymbolIcon(), presenter.getEnrollmentColor()));
-
-                                    setSource(style, data.component1());
-
-                                    setLayer(style);
-
-                                    LatLngBounds bounds = LatLngBounds.from(data.component2().north(),
-                                            data.component2().east(),
-                                            data.component2().south(),
-                                            data.component2().west());
-
-                                    map.easeCamera(CameraUpdateFactory.newLatLngBounds(bounds, 50), 1200);
-
-                                    markerViewManager = new MarkerViewManager(binding.mapView, map);
-                                    symbolManager = new SymbolManager(binding.mapView, map, style, null,
-                                            new GeoJsonOptions().withTolerance(0.4f));
-
-                                    symbolManager.setIconAllowOverlap(true);
-                                    symbolManager.setTextAllowOverlap(true);
-                                    symbolManager.create(data.component1().get("TEI"));
-
-                                }
+                        map.setStyle(Style.MAPBOX_STREETS, style -> loadDataForStyle(style, data)
                         );
 
                         binding.mapView.addOnStyleImageMissingListener(filePath -> {
@@ -731,17 +715,77 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                         map.easeCamera(CameraUpdateFactory.newLatLngBounds(bounds, 50), 1200);
                     }
                 });
-            else {
+            } else if (changingStyle) {
+                map.setStyle(currentStyle, style -> {
+                    loadDataForStyle(style, data);
+                    changingStyle = false;
+                });
+            } else {
                 ((GeoJsonSource) map.getStyle().getSource("teis")).setGeoJson(data.component1().get("TEI"));
                 ((GeoJsonSource) map.getStyle().getSource("enrollments")).setGeoJson(data.component1().get("ENROLLMENT"));
-                LatLngBounds bounds = LatLngBounds.from(data.component2().north(),
-                        data.component2().east(),
-                        data.component2().south(),
-                        data.component2().west());
+                if (data.component2().north() != 0.0 && data.component2().east() != 0.0 && data.component2().south() != 0.0 && data.component2().west() != 0.0) {
+                    LatLngBounds bounds = LatLngBounds.from(data.component2().north(),
+                            data.component2().east(),
+                            data.component2().south(),
+                            data.component2().west());
 
-                map.easeCamera(CameraUpdateFactory.newLatLngBounds(bounds, 50), 1200);
+                    map.easeCamera(CameraUpdateFactory.newLatLngBounds(bounds, 50), 1200);
+                } else {
+                    map.easeCamera(CameraUpdateFactory.zoomTo(map.getMinZoomLevel()));
+                }
             }
         };
+    }
+
+    private void loadDataForStyle(Style style, Pair<HashMap<String, FeatureCollection>, BoundingBox> data) {
+        binding.mapLayerButton.setVisibility(View.VISIBLE);
+        if(!changingStyle) {
+            MapLayerManager.Companion.init(style, "teis", featureType);
+            MapLayerManager.Companion.instance().setEnrollmentLayerData(
+                    presenter.getProgram() != null ?
+                            ColorUtils.getColorFrom(presenter.getProgram().style() != null ? presenter.getProgram().style().color() : null, ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.PRIMARY)) :
+                            ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.PRIMARY),
+                    ColorUtils.getPrimaryColor(this, ColorUtils.ColorType.PRIMARY_DARK),
+                    presenter.getProgram() != null ? presenter.getProgram().featureType() != null ? presenter.getProgram().featureType() : FeatureType.NONE : FeatureType.NONE
+            );
+            MapLayerManager.Companion.instance().showEnrollmentLayer().observe(this, show -> {
+                if (show)
+                    presenter.getEnrollmentMapData();
+            });
+        }else {
+            MapLayerManager.Companion.instance().updateStyle(style);
+        }
+        map.addOnMapClickListener(this);
+
+        style.addImage("ICON_ID", MarkerUtils.INSTANCE.getMarker(this, presenter.getSymbolIcon(), presenter.getTEIColor()));
+        style.addImage("ICON_ENROLLMENT_ID", MarkerUtils.INSTANCE.getMarker(this, presenter.getEnrollmentSymbolIcon(), presenter.getEnrollmentColor()));
+
+        setSource(style, data.component1());
+
+        setLayer(style);
+
+        LatLngBounds bounds = LatLngBounds.from(data.component2().north(),
+                data.component2().east(),
+                data.component2().south(),
+                data.component2().west());
+
+        map.easeCamera(CameraUpdateFactory.newLatLngBounds(bounds, 50), 1200);
+
+        if (markerViewManager == null) {
+            markerViewManager = new MarkerViewManager(binding.mapView, map);
+        }
+
+        if (symbolManager == null) {
+            symbolManager = new SymbolManager(binding.mapView, map, style, null,
+                    new GeoJsonOptions().withTolerance(0.4f));
+
+            symbolManager.setIconAllowOverlap(true);
+            symbolManager.setTextAllowOverlap(true);
+            symbolManager.setIconIgnorePlacement(true);
+            symbolManager.setTextIgnorePlacement(true);
+            symbolManager.setSymbolPlacement("line-center");
+            symbolManager.create(data.component1().get("TEI"));
+        }
     }
 
     @Override
@@ -755,7 +799,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     }
 
     private void setSource(Style style, HashMap<String, FeatureCollection> featCollectionMap) {
-        style.addSource(new GeoJsonSource("teis", featCollectionMap.get("TEI")/*,new GeoJsonOptions().withCluster(true).withClusterMaxZoom(14).withClusterRadius(30)*/));
+        style.addSource(new GeoJsonSource("teis", featCollectionMap.get("TEI")));
         style.addSource(new GeoJsonSource("enrollments", featCollectionMap.get("ENROLLMENT")));
     }
 

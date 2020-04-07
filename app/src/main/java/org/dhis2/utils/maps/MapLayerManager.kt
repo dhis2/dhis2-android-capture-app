@@ -31,11 +31,12 @@ import org.dhis2.utils.ColorUtils
 import org.hisp.dhis.android.core.common.FeatureType
 
 class MapLayerManager private constructor(
-    val style: Style,
+    var style: Style,
     private val sourceName: String,
     private val sourceFeatureType: FeatureType
 ) {
 
+    private var satelliteStyle: MutableLiveData<Boolean> = MutableLiveData(false)
     private var showTei: MutableLiveData<Boolean> = MutableLiveData(true)
     private var showEnrollment: MutableLiveData<Boolean> = MutableLiveData(false)
     private var showHeatMap: MutableLiveData<Boolean> = MutableLiveData(false)
@@ -63,9 +64,7 @@ class MapLayerManager private constructor(
             sourceName: String,
             sourceFeatureType: FeatureType
         ): MapLayerManager {
-            if (instance == null) {
-                instance = MapLayerManager(style, sourceName, sourceFeatureType)
-            }
+            instance = MapLayerManager(style, sourceName, sourceFeatureType)
             return instance!!
         }
 
@@ -87,6 +86,13 @@ class MapLayerManager private constructor(
         }
     }
 
+    fun updateStyle(style: Style) {
+        this.style = style
+        handleTeiLayer(showTei.value == true)
+        handleEnrollmentLayer(showEnrollment.value == true)
+        handleHeatMapLayer(showHeatMap.value == true)
+    }
+
     private fun clearDisposable() {
         disposable.clear()
     }
@@ -95,6 +101,10 @@ class MapLayerManager private constructor(
         this.enrollmentColor = color
         this.enrollmentDarkColor = colorDark
         this.enrollmentFeatureType = enrollmentFeatureType
+    }
+
+    fun setSatelliteStyle(): LiveData<Boolean> {
+        return satelliteStyle
     }
 
     fun showTeiLayer(): LiveData<Boolean> {
@@ -107,6 +117,10 @@ class MapLayerManager private constructor(
 
     fun showHeatMapLayer(): LiveData<Boolean> {
         return showHeatMap
+    }
+
+    fun setSatelliteLayer(check: Boolean) {
+        satelliteStyle.value = check
     }
 
     fun setTeiLayer(check: Boolean) {
