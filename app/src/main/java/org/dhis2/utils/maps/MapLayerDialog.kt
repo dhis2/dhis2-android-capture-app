@@ -16,7 +16,11 @@ import org.dhis2.R
 import org.dhis2.databinding.DialogMapLayerBinding
 import org.hisp.dhis.android.core.D2
 
-class MapLayerDialog(val teiIcon: Bitmap, val enrollmentIcon: Bitmap?) : DialogFragment() {
+class MapLayerDialog(
+    private val teiIcon: Bitmap,
+    private val enrollmentIcon: Bitmap?,
+    val styleCallback: (Boolean) -> Unit
+) : DialogFragment() {
 
     private lateinit var d2: D2
     private lateinit var layerManager: MapLayerManager
@@ -57,6 +61,11 @@ class MapLayerDialog(val teiIcon: Bitmap, val enrollmentIcon: Bitmap?) : DialogF
     }
 
     private fun initListeners() {
+        binding.styleCheck.setOnCheckedChangeListener { _, isChecked ->
+            layerManager.setSatelliteLayer(isChecked)
+            styleCallback(isChecked)
+        }
+
         binding.teiCheck.setOnCheckedChangeListener { _, isChecked ->
             layerManager.setTeiLayer(isChecked)
         }
@@ -71,6 +80,12 @@ class MapLayerDialog(val teiIcon: Bitmap, val enrollmentIcon: Bitmap?) : DialogF
     }
 
     private fun initLiveData() {
+        layerManager.setSatelliteStyle().observe(this,
+            Observer {
+                binding.styleCheck.isChecked = it
+            }
+        )
+
         layerManager.showTeiLayer().observe(
             this,
             Observer {

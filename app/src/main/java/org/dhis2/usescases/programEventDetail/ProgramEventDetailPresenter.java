@@ -64,7 +64,7 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
         );
 
         compositeDisposable.add(Observable.just(eventRepository.getAccessDataWrite())
-                .subscribeOn(schedulerProvider.computation())
+                .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
                         view::setWritePermission,
@@ -85,7 +85,7 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
         compositeDisposable.add(
                 eventRepository.program()
                         .observeOn(schedulerProvider.ui())
-                        .subscribeOn(schedulerProvider.computation())
+                        .subscribeOn(schedulerProvider.io())
                         .subscribe(
                                 view::setProgram,
                                 Timber::e
@@ -111,7 +111,7 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
                                 filterManager.getEventStatusFilters(),
                                 filterManager.getStateFilters()
                         ))
-                        .subscribeOn(schedulerProvider.computation())
+                        .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.ui())
                         .subscribe(
                                 view::setLiveData,
@@ -120,7 +120,8 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
 
         compositeDisposable.add(
                 mapProcessor
-                        .flatMap(unit ->
+                        .observeOn(schedulerProvider.io())
+                        .switchMap(unit ->
                                 FilterManager.getInstance().asFlowable()
                                         .startWith(FilterManager.getInstance())
                                         .flatMap(filterManager -> eventRepository.filteredEventsForMap(
@@ -130,7 +131,7 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
                                                 filterManager.getEventStatusFilters(),
                                                 filterManager.getStateFilters()
                                         )))
-                        .subscribeOn(schedulerProvider.computation())
+                        .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.ui())
                         .subscribe(
                                 view.setMap(),
@@ -141,7 +142,7 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
                 eventInfoProcessor
                         .flatMap(eventInfo -> eventRepository.getInfoForEvent(eventInfo.val0())
                                 .map(eventData -> Pair.create(eventData, eventInfo.val1())))
-                        .subscribeOn(schedulerProvider.computation())
+                        .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.ui())
                         .subscribe(
                                 view::setEventInfo,

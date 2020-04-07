@@ -618,4 +618,8 @@
     <string name="event_date_in_future_message">This event can\'t have a date in the future. Please change it.</string>
     <string name="change_event_date">Change date</string>
     <string name="go_back">Go back</string>
+    <string name="dialog_layer_satellite">Show satellite view</string>
+    <string name="dialog_layer_tei_coordinates">Show tei coordinates</string>
+    <string name="dialog_layer_enrollment_coordinates">Show enrollment coordinates</string>
+    <string name="dialog_layer_heatmap">Show heatmap layer</string>
 </resources>
