@@ -168,7 +168,6 @@ class TeiDashboardTest : BaseTest() {
         relationshipRobot {
             clickOnFabAdd()
             clickOnRelationshipType()
-            // click on a relationship type ?
             // click on a TEI
             // check relationship was created
             Thread.sleep(5000)
