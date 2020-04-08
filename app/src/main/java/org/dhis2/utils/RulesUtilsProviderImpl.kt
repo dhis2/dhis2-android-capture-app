@@ -141,12 +141,12 @@ class RulesUtilsProviderImpl : RulesUtilsProvider {
         showError: RuleActionShowError,
         fieldViewModels: MutableMap<String, FieldViewModel>,
         rulesActionCallbacks: RulesActionCallbacks,
-        data: String
+        effectData: String
     ) {
         val model = fieldViewModels[showError.field()]
 
         if (model != null) {
-            fieldViewModels[showError.field()] = model.withError(showError.content() + " " + data)
+            fieldViewModels[showError.field()] = model.withError("${showError.content()} $effectData" )
         }
 
         rulesActionCallbacks.setShowError(showError, model)

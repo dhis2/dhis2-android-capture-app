@@ -45,7 +45,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 tools:ignore="ContentDescription"
-                tools:src="@drawable/ic_with_registration" />
+                tools:src="@drawable/ic_observation_negative" />
 
 
             <ImageView

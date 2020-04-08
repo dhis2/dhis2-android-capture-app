@@ -33,7 +33,15 @@ class DataValuePresenterTest {
     @Before
     fun setup() {
         presenter =
-            DataValuePresenter(view, dataValueRepository, valueStore, schedulers, analyticsHelper,prefsProvider,"dataSetUid")
+            DataValuePresenter(
+                view,
+                dataValueRepository,
+                valueStore,
+                schedulers,
+                analyticsHelper,
+                prefsProvider,
+                "dataSetUid"
+            )
     }
 
     @Test

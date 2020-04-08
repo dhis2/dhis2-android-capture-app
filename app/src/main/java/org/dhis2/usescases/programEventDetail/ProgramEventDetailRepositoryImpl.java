@@ -57,12 +57,12 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
         this.programUid = programUid;
         this.d2 = d2;
     }
-    
+
     @NonNull
     @Override
     public LiveData<PagedList<ProgramEventViewModel>> filteredProgramEvents(List<DatePeriod> dateFilter, List<String> orgUnitFilter, List<CategoryOptionCombo> catOptCombList,
                                                                             List<EventStatus> eventStatus, List<State> states, boolean assignedToUser) {
-        EventCollectionRepository eventRepo = d2.eventModule().events().byProgramUid().eq(programUid);
+        EventCollectionRepository eventRepo = d2.eventModule().events().byProgramUid().eq(programUid).byDeleted().isFalse();
         if (!dateFilter.isEmpty())
             eventRepo = eventRepo.byEventDate().inDatePeriods(dateFilter);
         if (!orgUnitFilter.isEmpty())
@@ -93,7 +93,7 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
             List<CategoryOptionCombo> catOptCombList, List<EventStatus> eventStatus,
             List<State> states, boolean assignedToUser
     ) {
-        EventCollectionRepository eventRepo = d2.eventModule().events().byProgramUid().eq(programUid);
+        EventCollectionRepository eventRepo = d2.eventModule().events().byProgramUid().eq(programUid).byDeleted().isFalse();
         if (!dateFilter.isEmpty())
             eventRepo = eventRepo.byEventDate().inDatePeriods(dateFilter);
         if (!orgUnitFilter.isEmpty())
