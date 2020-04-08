@@ -20,7 +20,6 @@ import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.ObjectStyle
 import org.hisp.dhis.android.core.common.ValueType
-import org.hisp.dhis.android.core.dataset.Section
 import org.hisp.dhis.android.core.enrollment.EnrollmentObjectRepository
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.program.Program
@@ -287,8 +286,11 @@ class EnrollmentRepository(
                 )
             )
         }
+        val orgUnits = d2.organisationUnitModule().organisationUnits()
+            .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE)
+            .byProgramUids(listOf(enrollmentRepository.blockingGet().program())).blockingCount()
         enrollmentDataList.add(
-            getOrgUnitField(enrollmentMode == EnrollmentActivity.EnrollmentMode.NEW)
+            getOrgUnitField(enrollmentMode == EnrollmentActivity.EnrollmentMode.NEW && orgUnits > 1)
         )
 
         val teiType =
