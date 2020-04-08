@@ -84,14 +84,14 @@ class ValueStoreImpl(
         val currentValue = if (valueRepository.blockingExists()) {
             valueRepository.blockingGet().value()
         } else {
-            null
+            ""
         }
 
         return if (currentValue != newValue) {
             if (!DhisTextUtils.isEmpty(value)) {
                 valueRepository.blockingSetCheck(d2, uid, newValue!!)
             } else {
-                valueRepository.blockingDelete()
+                valueRepository.blockingDeleteIfExist()
             }
             Flowable.just(StoreResult(uid, ValueStoreResult.VALUE_CHANGED))
         } else {
@@ -102,7 +102,7 @@ class ValueStoreImpl(
     private fun saveDataElement(uid: String, value: String?): Flowable<StoreResult> {
         val valueRepository = d2.trackedEntityModule().trackedEntityDataValues()
             .value(recordUid, uid)
-        var newValue = value
+        var newValue = value?:""
         if (d2.dataElementModule().dataElements().uid(uid).blockingGet().valueType() ==
             ValueType.IMAGE &&
             value != null
@@ -113,14 +113,14 @@ class ValueStoreImpl(
         val currentValue = if (valueRepository.blockingExists()) {
             valueRepository.blockingGet().value()
         } else {
-            null
+            ""
         }
 
         return if (currentValue != newValue) {
             if (!DhisTextUtils.isEmpty(value)) {
                 valueRepository.blockingSetCheck(d2, uid, newValue!!)
             } else {
-                valueRepository.blockingDelete()
+                valueRepository.blockingDeleteIfExist()
             }
             Flowable.just(StoreResult(uid, ValueStoreResult.VALUE_CHANGED))
         } else {
