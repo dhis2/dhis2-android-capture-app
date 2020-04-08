@@ -447,7 +447,6 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         else {
             analyticsHelper.setEvent(SEARCH_TEI, CLICK, SEARCH_TEI);
             view.clearData();
-            this.view.setFabIcon(queryData.isEmpty());
 
             List<String> optionSetIds = new ArrayList<>();
             view.updateFiltersSearch(queryData.entrySet().size());
