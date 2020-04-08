@@ -61,7 +61,7 @@ public class EventInitialPresenter
         implements
         EventInitialContract.Presenter {
 
-    public static final int ACCESS_COARSE_LOCATION_PERMISSION_REQUEST = 101;
+    public static final int ACCESS_LOCATION_PERMISSION_REQUEST = 101;
 
     private EventInitialContract.View view;
 
@@ -304,18 +304,18 @@ public class EventInitialPresenter
     @Override
     public void onLocationClick() {
         if (ActivityCompat.checkSelfPermission(view.getContext(),
-                Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // Should we show an explanation?
             if (ActivityCompat.shouldShowRequestPermissionRationale(view.getAbstractActivity(),
-                    Manifest.permission.ACCESS_COARSE_LOCATION)) {
+                    Manifest.permission.ACCESS_FINE_LOCATION)) {
                 // TODO CRIS: Show an expanation to the user *asynchronously* -- don't block
                 // this thread waiting for the user's response! After the user
                 // sees the explanation, try again to request the permission.
 
             } else {
                 ActivityCompat.requestPermissions(view.getAbstractActivity(),
-                        new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
-                        ACCESS_COARSE_LOCATION_PERMISSION_REQUEST);
+                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                        ACCESS_LOCATION_PERMISSION_REQUEST);
             }
             return;
         }

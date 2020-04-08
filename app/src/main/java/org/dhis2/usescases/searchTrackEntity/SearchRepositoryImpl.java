@@ -146,13 +146,13 @@ public class SearchRepositoryImpl implements SearchRepository {
 
     @Override
     public Observable<List<Program>> programsWithRegistration(String programTypeId) {
-        return Observable.fromCallable(() -> d2.organisationUnitModule().organisationUnits().byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE).blockingGet())
+        return d2.organisationUnitModule().organisationUnits().byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE).get()
                 .map(UidsHelper::getUidsList)
-                .flatMap(orgUnitsUids -> Observable.just(d2.programModule().programs()
+                .flatMap(orgUnitsUids -> d2.programModule().programs()
                         .byOrganisationUnitList(orgUnitsUids)
                         .byRegistration().isTrue()
                         .byTrackedEntityTypeUid().eq(teiType)
-                        .blockingGet()));
+                        .get()).toObservable();
     }
 
     @NonNull
@@ -165,6 +165,83 @@ public class SearchRepositoryImpl implements SearchRepository {
                                                                      @Nullable HashMap<String, String> queryData,
                                                                      boolean assignedToMe,
                                                                      boolean isOnline) {
+
+        TrackedEntityInstanceQueryCollectionRepository trackedEntityInstanceQuery =
+                getFilteredRepository(selectedProgram,
+                        trackedEntityType,
+                        orgUnits,
+                        states,
+                        queryData,
+                        assignedToMe);
+
+        DataSource<TrackedEntityInstance, SearchTeiModel> dataSource;
+
+        if (isOnline && states.isEmpty()) {
+            dataSource = trackedEntityInstanceQuery.offlineFirst().getDataSource()
+                    .mapByPage(list -> filterByStatus(list, eventStatuses))
+                    .mapByPage(this::filterDeleted)
+                    .mapByPage(list -> TrackedEntityInstanceExtensionsKt.filterDeletedEnrollment(list, d2, selectedProgram != null ? selectedProgram.uid() : null))
+                    .map(tei -> transform(tei, selectedProgram, false));
+        } else {
+            dataSource = trackedEntityInstanceQuery.offlineOnly().getDataSource()
+                    .mapByPage(list -> filterByStatus(list, eventStatuses))
+                    .mapByPage(this::filterDeleted)
+                    .mapByPage(list -> TrackedEntityInstanceExtensionsKt.filterDeletedEnrollment(list, d2, selectedProgram != null ? selectedProgram.uid() : null))
+                    .map(tei -> transform(tei, selectedProgram, true));
+        }
+
+        return new LivePagedListBuilder<>(new DataSource.Factory<TrackedEntityInstance, SearchTeiModel>() {
+            @NonNull
+            @Override
+            public DataSource<TrackedEntityInstance, SearchTeiModel> create() {
+                return dataSource;
+            }
+        }, 10).build();
+    }
+
+    @NonNull
+    @Override
+    public Flowable<List<SearchTeiModel>> searchTeiForMap(@Nullable Program selectedProgram,
+                                                          @NonNull String trackedEntityType,
+                                                          @NonNull List<String> orgUnits,
+                                                          @Nonnull List<State> states,
+                                                          @NonNull List<EventStatus> eventStatuses,
+                                                          @Nullable HashMap<String, String> queryData,
+                                                          boolean assignedToMe,
+                                                          boolean isOnline) {
+
+        TrackedEntityInstanceQueryCollectionRepository trackedEntityInstanceQuery =
+                getFilteredRepository(selectedProgram,
+                        trackedEntityType,
+                        orgUnits,
+                        states,
+                        queryData,
+                        assignedToMe);
+
+        if (isOnline && states.isEmpty())
+            return trackedEntityInstanceQuery.offlineFirst().get().toFlowable()
+                    .map(list -> filterByStatus(list, eventStatuses))
+                    .map(this::filterDeleted)
+                    .map(list -> TrackedEntityInstanceExtensionsKt.filterDeletedEnrollment(list, d2, selectedProgram != null ? selectedProgram.uid() : null))
+                    .flatMapIterable(list -> list)
+                    .map(tei -> transform(tei, selectedProgram, false))
+                    .toList().toFlowable();
+        else
+            return trackedEntityInstanceQuery.offlineOnly().get().toFlowable()
+                    .map(list -> filterByStatus(list, eventStatuses))
+                    .map(this::filterDeleted)
+                    .map(list -> TrackedEntityInstanceExtensionsKt.filterDeletedEnrollment(list, d2, selectedProgram != null ? selectedProgram.uid() : null))
+                    .flatMapIterable(list -> list)
+                    .map(tei -> transform(tei, selectedProgram, true))
+                    .toList().toFlowable();
+    }
+
+    private TrackedEntityInstanceQueryCollectionRepository getFilteredRepository(@Nullable Program selectedProgram,
+                                                                                 @NonNull String trackedEntityType,
+                                                                                 @NonNull List<String> orgUnits,
+                                                                                 @Nonnull List<State> states,
+                                                                                 @Nullable HashMap<String, String> queryData,
+                                                                                 boolean assignedToMe) {
 
         TrackedEntityInstanceQueryCollectionRepository trackedEntityInstanceQuery = d2.trackedEntityModule().trackedEntityInstanceQuery();
         if (selectedProgram != null)
@@ -192,7 +269,7 @@ public class SearchRepositoryImpl implements SearchRepository {
 
         List<DatePeriod> periods = FilterManager.getInstance().getPeriodFilters();
 
-        if (periods.size() > 0) {
+        if (!periods.isEmpty()) {
             queryData.remove(Constants.ENROLLMENT_DATE_UID);
             trackedEntityInstanceQuery = trackedEntityInstanceQuery.byProgramStartDate().eq(periods.get(0).startDate());
             trackedEntityInstanceQuery = trackedEntityInstanceQuery.byProgramEndDate().eq(periods.get(0).endDate());
@@ -208,7 +285,7 @@ public class SearchRepositoryImpl implements SearchRepository {
                 Timber.d(ex);
             }
         }
-        DataSource dataSource;
+
         for (int i = 0; i < queryData.keySet().size(); i++) {
             String dataId = queryData.keySet().toArray()[i].toString();
             String dataValue = queryData.get(dataId);
@@ -223,106 +300,8 @@ public class SearchRepositoryImpl implements SearchRepository {
             trackedEntityInstanceQuery = trackedEntityInstanceQuery.byAssignedUserMode().eq(AssignedUserMode.CURRENT);
         }
 
-        if (isOnline && states.isEmpty()) {
-            dataSource = trackedEntityInstanceQuery.offlineFirst().getDataSource()
-                    .mapByPage(list -> filterByStatus(list, eventStatuses))
-                    .mapByPage(this::filterDeleted)
-                    .mapByPage(list -> TrackedEntityInstanceExtensionsKt.filterDeletedEnrollment(list, d2, selectedProgram != null ? selectedProgram.uid() : null))
-                    .map(tei -> transform(tei, selectedProgram, false));
-        } else {
-            dataSource = trackedEntityInstanceQuery.offlineOnly().getDataSource() //TODO: ASK SDK TO FILTER BY BOTH ENROLLMENT DATE AND EVENT DATES
-                    .mapByPage(list -> filterByState(list, states))
-                    .mapByPage(list -> filterByPeriod(list, periods))
-                    .mapByPage(list -> filterByStatus(list, eventStatuses))
-                    .mapByPage(this::filterDeleted)
-                    .mapByPage(list -> TrackedEntityInstanceExtensionsKt.filterDeletedEnrollment(list, d2, selectedProgram != null ? selectedProgram.uid() : null))
-                    .map(tei -> transform(tei, selectedProgram, true));
-        }
+        return trackedEntityInstanceQuery;
 
-        return new LivePagedListBuilder(new DataSource.Factory() {
-            @NonNull
-            @Override
-            public DataSource create() {
-                return dataSource;
-            }
-        }, 10).build();
-    }
-
-    @NonNull
-    @Override
-    public Flowable<List<SearchTeiModel>> searchTeiForMap(@Nullable Program selectedProgram,
-                                                          @NonNull String trackedEntityType,
-                                                          @NonNull List<String> orgUnits,
-                                                          @Nonnull List<State> states,
-                                                          @Nullable HashMap<String, String> queryData,
-                                                          boolean isOnline) {
-
-        TrackedEntityInstanceQueryCollectionRepository trackedEntityInstanceQuery = d2.trackedEntityModule().trackedEntityInstanceQuery();
-        if (selectedProgram != null)
-            trackedEntityInstanceQuery = trackedEntityInstanceQuery.byProgram().eq(selectedProgram.uid());
-        else
-            trackedEntityInstanceQuery = trackedEntityInstanceQuery.byTrackedEntityType().eq(trackedEntityType);
-
-        OrganisationUnitMode ouMode;
-        if (orgUnits.isEmpty()) {
-            orgUnits.addAll(
-                    UidsHelper.getUidsList(d2.organisationUnitModule().organisationUnits()
-                            .byRootOrganisationUnit(true)
-                            .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_TEI_SEARCH)
-                            .blockingGet()));
-            ouMode = OrganisationUnitMode.DESCENDANTS;
-        } else
-            ouMode = OrganisationUnitMode.SELECTED;
-
-        trackedEntityInstanceQuery = trackedEntityInstanceQuery
-                .byOrgUnits().in(orgUnits)
-                .byOrgUnitMode().eq(ouMode);
-
-        List<DatePeriod> periods = FilterManager.getInstance().getPeriodFilters();
-
-        if (periods.size() > 0) {
-            queryData.remove(Constants.ENROLLMENT_DATE_UID);
-            trackedEntityInstanceQuery = trackedEntityInstanceQuery.byProgramStartDate().eq(periods.get(0).startDate());
-            trackedEntityInstanceQuery = trackedEntityInstanceQuery.byProgramEndDate().eq(periods.get(0).endDate());
-        } else if (queryData != null && !isEmpty(queryData.get(Constants.ENROLLMENT_DATE_UID))) {
-            try {
-                Date enrollmentDate = DateUtils.uiDateFormat().parse(queryData.get(Constants.ENROLLMENT_DATE_UID));
-                queryData.remove(Constants.ENROLLMENT_DATE_UID);
-                trackedEntityInstanceQuery = trackedEntityInstanceQuery.byProgramStartDate().eq(enrollmentDate);
-                trackedEntityInstanceQuery = trackedEntityInstanceQuery.byProgramEndDate().eq(enrollmentDate);
-                periods.add(DatePeriod.create(enrollmentDate, enrollmentDate));
-
-            } catch (ParseException ex) {
-                Timber.d(ex);
-            }
-        }
-
-        for (int i = 0; i < queryData.keySet().size(); i++) {
-            String dataId = queryData.keySet().toArray()[i].toString();
-            String dataValue = queryData.get(dataId);
-            if (dataValue.contains("_os_")) {
-                dataValue = dataValue.split("_os_")[1];
-                trackedEntityInstanceQuery = trackedEntityInstanceQuery.byAttribute(dataId).eq(dataValue);
-            } else
-                trackedEntityInstanceQuery = trackedEntityInstanceQuery.byAttribute(dataId).like(dataValue);
-        }
-
-        if (isOnline && states.isEmpty())
-            return trackedEntityInstanceQuery.offlineFirst().get().toFlowable()
-                    .map(this::filterDeleted)
-                    .map(list -> TrackedEntityInstanceExtensionsKt.filterDeletedEnrollment(list, d2, selectedProgram != null ? selectedProgram.uid() : null))
-                    .flatMapIterable(list -> list)
-                    .map(tei -> transform(tei, selectedProgram, false))
-                    .toList().toFlowable();
-        else
-            return trackedEntityInstanceQuery.offlineOnly().get().toFlowable()
-                    .map(list -> filterByState(list, states))
-                    .map(list -> filterByPeriod(list, periods))
-                    .map(this::filterDeleted)
-                    .map(list -> TrackedEntityInstanceExtensionsKt.filterDeletedEnrollment(list, d2, selectedProgram != null ? selectedProgram.uid() : null))
-                    .flatMapIterable(list -> list)
-                    .map(tei -> transform(tei, selectedProgram, true))
-                    .toList().toFlowable();
     }
 
     @NonNull

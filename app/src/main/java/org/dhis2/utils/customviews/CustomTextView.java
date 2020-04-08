@@ -256,7 +256,7 @@ public class CustomTextView extends FieldLayout {
             if (mandatory)
                 labelBuilder.append("*");
             this.label = labelBuilder.toString();
-            inputLayout.setHint(this.label);
+            inputLayout.setHint(null);
             binding.setVariable(BR.label, this.label);
         }
     }
