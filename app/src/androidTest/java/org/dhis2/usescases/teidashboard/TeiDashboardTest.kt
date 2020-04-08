@@ -209,7 +209,21 @@ class TeiDashboardTest : BaseTest() {
 
         teiDashboardRobot {
             clickOnSeeDetails()
-            //checkFullDetails()
+            checkFullDetails("2021-01-10", "2021-01-10", "Ngelehun CHC", "40.48713205295354", "-3.6847423830882633", "Filona", "Ryder", "Female")
+        }
+    }
+
+    @Test
+    fun shouldShowIndicatorsDetailsWhenClickOnIndicatorsTab() {
+        prepareTeiCompletedProgrammeIntentAndLaunchActivity()
+
+        teiDashboardRobot {
+            clickOnIndicatorsTab()
+        }
+
+        indicatorsRobot {
+            checkDetails("0", "4817")
+            Thread.sleep(5000)
         }
     }
 
