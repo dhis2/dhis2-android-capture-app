@@ -8,7 +8,8 @@ import androidx.test.espresso.contrib.RecyclerViewActions.scrollTo
 import androidx.test.espresso.matcher.ViewMatchers.*
 import org.dhis2.R
 import org.dhis2.common.BaseRobot
-import org.dhis2.common.matchers.RecyclerviewMatchers
+import org.dhis2.common.matchers.RecyclerviewMatchers.Companion.atPosition
+import org.dhis2.common.matchers.RecyclerviewMatchers.Companion.isNotEmpty
 import org.dhis2.common.matchers.clickOnTab
 import org.dhis2.common.matchers.isToast
 import org.dhis2.usescases.programStageSelection.ProgramStageSelectionViewHolder
@@ -29,6 +30,18 @@ class TeiDashboardRobot: BaseRobot () {
 
     fun clickOnNotesTab() {
         onView(clickOnTab(3)).perform(click())
+        //onView(isRoot()).perform(waitForTransitionUntil(R.id.addNoteButton))
+        Thread.sleep(500)
+    }
+
+    fun clickOnRelationshipTab() {
+        onView(clickOnTab(2)).perform(click())
+        //onView(isRoot()).perform(waitForTransitionUntil(R.id.addNoteButton))
+        Thread.sleep(500)
+    }
+
+    fun clickOnIndicatorsTab() {
+        onView(clickOnTab(1)).perform(click())
         //onView(isRoot()).perform(waitForTransitionUntil(R.id.addNoteButton))
         Thread.sleep(500)
     }
@@ -110,19 +123,13 @@ class TeiDashboardRobot: BaseRobot () {
         }
     }
 
-    fun clickOnRelationshipTab() {
-        onView(clickOnTab(2)).perform(click())
-        //onView(isRoot()).perform(waitForTransitionUntil(R.id.addNoteButton))
-        Thread.sleep(500)
-    }
-
     fun clickOnMenuDeleteTEI() {
         onView(withText(R.string.dashboard_menu_delete_tei)).perform(click())
     }
 
     fun checkTEIIsDelete() {
         // Olvia Watts
-        onView(withId(R.id.scrollView)).check(matches(CoreMatchers.allOf(isDisplayed(), RecyclerviewMatchers.isNotEmpty(),
+        onView(withId(R.id.scrollView)).check(matches(CoreMatchers.allOf(isDisplayed(), isNotEmpty(),
                 not(hasDescendant(withText("Olvia Watts"))))))
     }
 
@@ -140,14 +147,42 @@ class TeiDashboardRobot: BaseRobot () {
         onView(withId(R.id.viewMore)).perform(click())
     }
 
-    fun checkFullDetails() {
-        onView(withId(R.id.inputEditText)).check(matches(withText("2021-01-10")))
-        onView(withId(R.id.inputEditText)).check(matches(withText("2021-01-10")))
+    fun checkFullDetails(enrollmentDate: String, birthday: String, orgUnit: String, latitude: String, longitude: String, name: String, lastName: String, sex: String) {
+        onView(withId(R.id.fieldRecycler)).check(matches(allOf(isDisplayed(), isNotEmpty(),
+                atPosition(1, hasDescendant(withText(enrollmentDate))))))
+
+        onView(withId(R.id.fieldRecycler)).check(matches(allOf(isDisplayed(), isNotEmpty(),
+                atPosition(2, hasDescendant(withText(birthday))))))
+
+        onView(withId(R.id.fieldRecycler)).check(matches(allOf(isDisplayed(), isNotEmpty(),
+                atPosition(3, hasDescendant(withText(orgUnit))))))
+
+        onView(withId(R.id.fieldRecycler)).check(matches(allOf(isDisplayed(), isNotEmpty(),
+                atPosition(4, hasDescendant(allOf(withId(R.id.latitude), withText(latitude)))))))
+
+        onView(withId(R.id.fieldRecycler)).check(matches(allOf(isDisplayed(), isNotEmpty(),
+                atPosition(4, hasDescendant(allOf(withId(R.id.longitude), withText(longitude)))))))
+
+        onView(withId(R.id.fieldRecycler))
+                .perform(actionOnItemAtPosition<DashboardProgramViewHolder>(6, click()))
+
+        onView(withId(R.id.fieldRecycler)).check(matches(allOf(isDisplayed(), isNotEmpty(),
+                atPosition(2, hasDescendant(withText(name))))))
+
+        onView(withId(R.id.fieldRecycler)).check(matches(allOf(isDisplayed(), isNotEmpty(),
+                atPosition(3, hasDescendant(withText(lastName))))))
+
+        onView(withId(R.id.fieldRecycler)).check(matches(allOf(isDisplayed(), isNotEmpty(),
+                atPosition(4, hasDescendant(withText(sex))))))
+
+        //onView(withId(R.id.inputEditText)).check(matches(withText("2021-01-10")))
+        /*onView(withId(R.id.inputEditText)).check(matches(withText("2021-01-10")))
         onView(withId(R.id.input_editText)).check(matches(withText("Ngelehun CHC")))
         onView(withId(R.id.latitude)).check(matches(withText("40.48713205295354")))
         onView(withId(R.id.longitude)).check(matches(withText("-3.6847423830882633")))
         onView(withId(R.id.input_editText)).check(matches(withText("Filona")))
         onView(withId(R.id.input_editText)).check(matches(withText("Ryder")))
-        onView(withId(R.id.input_editText)).check(matches(withText("Female")))
+        onView(withId(R.id.input_editText)).check(matches(withText("Female")))*/
     }
+
 }

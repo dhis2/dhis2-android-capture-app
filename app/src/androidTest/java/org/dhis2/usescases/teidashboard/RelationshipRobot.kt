@@ -27,25 +27,14 @@ class RelationshipRobot: BaseRobot() {
        // onView(allOf(withParent(withId(R.id.rfab)), findChildFabButton(1)))
         //onView(withTagValue(is((Object) tagValue)));
         onView(allOf(withId(R.id.rfab__content_label_list_root_view),
-                hasDescendant(withText("Mother-Child_a-to-b_(Person-Person)")))).perform()
+                hasDescendant(withText("Mother-Child_a-to-b_(Person-Person)")))).perform(click())
     }
 
-    fun clickOnMotherRelationship() {
-       // onView(withId(R.id.clear_relationship_button))
-        /*onView(allOf(withId(R.id.button1), withParent(withId(R.id.include_one))))
-                .check(matches(isDisplayed()))
-                .perform(click())*/
-        //onView(withId(R.id.rfabLayout)).check(matches(withText("Mother-Child__a-to-b__(Person-Person)")))
+    fun clickOnTEI() {
 
-        onView(allOf(withText("Mother-Child_a-to-b_(Person-Person)"), withParent(withId(R.id.rfabLayout))))
-                .check(matches(isDisplayed()))
-               // .perform(click());
     }
 
-    fun clickOnClearRelationship() {
-        // not sure how to clear relationships
-        onView(withId(R.id.relationship_recycler))
-                .perform(RecyclerViewActions.actionOnItemAtPosition<ProgramStageSelectionViewHolder>(0, click()))
-        onView(withId(R.id.clear_relationship_button))
+    fun checkRelationshipWasCreated() {
+
     }
 }

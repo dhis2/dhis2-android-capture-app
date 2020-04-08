@@ -4,9 +4,12 @@ import android.content.Intent
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
 import org.dhis2.usescases.BaseTest
+import org.dhis2.usescases.login.LoginTest
 import org.dhis2.usescases.searchTrackEntity.SearchTEActivity
 import org.dhis2.usescases.searchte.SearchTETest
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity
+import org.hisp.dhis.android.core.mockwebserver.ResponseController
+import org.hisp.dhis.android.core.mockwebserver.ResponseController.GET
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -168,7 +171,6 @@ class TeiDashboardTest : BaseTest() {
         relationshipRobot {
             clickOnFabAdd()
             clickOnRelationshipType()
-            // click on a relationship type ?
             // click on a TEI
             // check relationship was created
             Thread.sleep(5000)
@@ -181,6 +183,10 @@ class TeiDashboardTest : BaseTest() {
         // open more options
         // click on delete tei
         // check tei was deleted and not show on reclycler view
+        mockWebServerRobot.addResponse(GET, "/api/trackedEntityInstances?.*", API_TEI_1_RESPONSE_OK)
+        mockWebServerRobot.addResponse(GET, "/api/trackedEntityInstances?.*", API_TEI_2_RESPONSE_OK)
+        mockWebServerRobot.addResponse(GET, "/api/trackedEntityInstances?.*", API_TEI_3_RESPONSE_OK)
+        //https://play.dhis2.org/android-current/api/trackedEntityInstances/query?ou=DiszpKrYNg8&ouMode=DESCENDANTS&program=IpHINAT79UW&paging=true&page=1&pageSize=10
         setupCredentials()
         //prepareTeiToDelete()
         prepareChildProgrammeIntentAndLaunchActivity()
@@ -210,7 +216,21 @@ class TeiDashboardTest : BaseTest() {
 
         teiDashboardRobot {
             clickOnSeeDetails()
-            //checkFullDetails()
+            checkFullDetails("2021-01-10", "2021-01-10", "Ngelehun CHC", "40.48713205295354", "-3.6847423830882633", "Filona", "Ryder", "Female")
+        }
+    }
+
+    @Test
+    fun shouldShowIndicatorsDetailsWhenClickOnIndicatorsTab() {
+        prepareTeiCompletedProgrammeIntentAndLaunchActivity()
+
+        teiDashboardRobot {
+            clickOnIndicatorsTab()
+        }
+
+        indicatorsRobot {
+            checkDetails("0", "4817")
+            Thread.sleep(5000)
         }
     }
 
@@ -288,5 +308,9 @@ class TeiDashboardTest : BaseTest() {
         const val NOTE_INVALID = "InvalidNote"
         const val NOTE_EXISTING_TEXT = "This is a note test"
         const val USER = "android"
+
+        const val API_TEI_1_RESPONSE_OK = "mocks/teilist/teilist_1.json"
+        const val API_TEI_2_RESPONSE_OK = "mocks/teilist/teilist_2.json"
+        const val API_TEI_3_RESPONSE_OK = "mocks/teilist/teilist_3.json"
     }
 }
