@@ -1,4 +1,4 @@
-package org.dhis2.usescases.datasets
+package org.dhis2.usescases.datasets.dataSetTable.dataSetSection
 
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
@@ -10,9 +10,6 @@ import org.dhis2.data.forms.dataentry.tablefields.edittext.EditTextViewModel
 import org.dhis2.data.schedulers.SchedulerProvider
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableModel
-import org.dhis2.usescases.datasets.dataSetTable.dataSetSection.DataValueContract
-import org.dhis2.usescases.datasets.dataSetTable.dataSetSection.DataValuePresenter
-import org.dhis2.usescases.datasets.dataSetTable.dataSetSection.DataValueRepository
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.hisp.dhis.android.core.common.ValueType
 import org.junit.Before
