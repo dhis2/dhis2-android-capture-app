@@ -1,14 +1,15 @@
 package org.dhis2.usescases.teidashboard
 
-import android.content.Intent
+import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.action.ViewActions.click
+import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
+import org.dhis2.R
 import org.dhis2.usescases.BaseTest
-import org.dhis2.usescases.login.LoginTest
 import org.dhis2.usescases.searchTrackEntity.SearchTEActivity
-import org.dhis2.usescases.searchte.SearchTETest
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity
-import org.hisp.dhis.android.core.mockwebserver.ResponseController
+import org.dhis2.usescases.teidashboard.robot.*
 import org.hisp.dhis.android.core.mockwebserver.ResponseController.GET
 import org.junit.Rule
 import org.junit.Test
@@ -25,7 +26,7 @@ class TeiDashboardTest : BaseTest() {
     @Test
     fun shouldSuccessfullyCreateANoteWhenClickCreateNote() {
         setupCredentials()
-        prepareTeiCompletedProgrammeIntentAndLaunchActivity()
+        prepareTeiCompletedProgrammeIntentAndLaunchActivity(rule)
 
         teiDashboardRobot {
             clickOnNotesTab()
@@ -43,7 +44,7 @@ class TeiDashboardTest : BaseTest() {
 
     @Test
     fun shouldNotCreateANoteWhenClickClear() {
-        prepareTeiCompletedProgrammeIntentAndLaunchActivity()
+        prepareTeiCompletedProgrammeIntentAndLaunchActivity(rule)
 
         teiDashboardRobot {
             clickOnNotesTab()
@@ -61,7 +62,7 @@ class TeiDashboardTest : BaseTest() {
 
     @Test
     fun shouldOpenNotesDetailsWhenClickOnNote() {
-        prepareTeiWithExistingNoteIntentAndLaunchActivity()
+        prepareTeiWithExistingNoteIntentAndLaunchActivity(rule)
 
         teiDashboardRobot {
             clickOnNotesTab()
@@ -75,7 +76,7 @@ class TeiDashboardTest : BaseTest() {
 
     @Test
     fun shouldReactivateTEIWhenClickReOpen() {
-        prepareTeiCompletedProgrammeIntentAndLaunchActivity()
+        prepareTeiCompletedProgrammeIntentAndLaunchActivity(rule)
 
         teiDashboardRobot {
             clickOnMenu()
@@ -87,7 +88,7 @@ class TeiDashboardTest : BaseTest() {
 
     @Test
     fun shouldDeactivateTEIWhenClickOpen() {
-        prepareTeiOpenedProgrammeIntentAndLaunchActivity()
+        prepareTeiOpenedProgrammeIntentAndLaunchActivity(rule)
 
         teiDashboardRobot {
             clickOnMenu()
@@ -99,7 +100,7 @@ class TeiDashboardTest : BaseTest() {
 
     @Test
     fun shouldCompleteTEIWhenClickOpen() {
-        prepareTeiOpenedForCompleteProgrammeIntentAndLaunchActivity()
+        prepareTeiOpenedForCompleteProgrammeIntentAndLaunchActivity(rule)
 
         teiDashboardRobot {
             clickOnMenu()
@@ -111,31 +112,31 @@ class TeiDashboardTest : BaseTest() {
 
     @Test
     fun shouldShowQRWhenClickOnShare() {
-        prepareTeiCompletedProgrammeIntentAndLaunchActivity()
+        prepareTeiCompletedProgrammeIntentAndLaunchActivity(rule)
 
         teiDashboardRobot {
             clickOnShareButton()
             clickOnNextQR()
-            //Use a custom matcher to iterate loop
         }
     }
 
     @Test
     fun shouldBeAbleToMakeAReferral() {
-        //TO Check is failing
-        prepareTeiOpenedForReferralProgrammeIntentAndLaunchActivity()
+        prepareTeiOpenedForReferralProgrammeIntentAndLaunchActivity(rule)
 
         teiDashboardRobot {
             clickOnFab()
             clickOnReferral()
             clickOnFirstReferralEvent()
             checkEventIsCreated("EventName")
+            //ENABLE TO CONTINUE
         }
     }
 
     @Test
     fun shouldNotBeAbleToCreateNewEventsWhenFull() {
-        prepareTeiOpenedWithFullEvents()
+        prepareTeiOpenedWithFullEvents(rule)
+
         teiDashboardRobot {
             clickOnFab()
             clickOnReferral()
@@ -145,7 +146,7 @@ class TeiDashboardTest : BaseTest() {
 
     @Test
     fun shouldOpenEventAndSaveSuccessfully(){
-        prepareTeiOpenedProgrammeIntentAndLaunchActivity()
+        prepareTeiOpenedProgrammeIntentAndLaunchActivity(rule)
 
         val babyPostNatal = 0
         teiDashboardRobot {
@@ -161,7 +162,7 @@ class TeiDashboardTest : BaseTest() {
 
     @Test
     fun shouldSuccessfullyCreateRelationshipWhenClickAdd() {
-        prepareTeiCompletedProgrammeIntentAndLaunchActivity()
+        prepareTeiCompletedProgrammeIntentAndLaunchActivity(rule)
 
     //    Thread.sleep(10000)
         teiDashboardRobot {
@@ -174,7 +175,7 @@ class TeiDashboardTest : BaseTest() {
             // click on a TEI
             // check relationship was created
             Thread.sleep(5000)
-        //    clickOnMotherRelationship()
+            //    clickOnMotherRelationship()
         }
     }
 
@@ -189,21 +190,22 @@ class TeiDashboardTest : BaseTest() {
         //https://play.dhis2.org/android-current/api/trackedEntityInstances/query?ou=DiszpKrYNg8&ouMode=DESCENDANTS&program=IpHINAT79UW&paging=true&page=1&pageSize=10
         setupCredentials()
         //prepareTeiToDelete()
-        prepareChildProgrammeIntentAndLaunchActivity()
+        prepareChildProgrammeIntentAndLaunchActivity(ruleSearch)
 
         teiDashboardRobot {
             /*clickOnMenu()
             clickOnMenuDeleteTEI()
             checkTEIIsDelete()*/
+            onView(withId(R.id.close_filter)).perform(click())
             clickOnTEI()
             // rule.getactivity == null assert
-            Thread.sleep(5000)
+            Thread.sleep(10000)
         }
     }
 
     @Test
     fun shouldShowCorrectInfoWhenOpenTEI() {
-        prepareTeiCompletedProgrammeIntentAndLaunchActivity()
+        prepareTeiCompletedProgrammeIntentAndLaunchActivity(rule)
 
         teiDashboardRobot {
             checkUpperInfo("2021-01-10", "2021-01-10", "Ngelehun CHC")
@@ -212,7 +214,7 @@ class TeiDashboardTest : BaseTest() {
 
     @Test
     fun shouldShowTEIDetailsWhenClickOnSeeDetails() {
-        prepareTeiCompletedProgrammeIntentAndLaunchActivity()
+        prepareTeiCompletedProgrammeIntentAndLaunchActivity(rule)
 
         teiDashboardRobot {
             clickOnSeeDetails()
@@ -222,7 +224,7 @@ class TeiDashboardTest : BaseTest() {
 
     @Test
     fun shouldShowIndicatorsDetailsWhenClickOnIndicatorsTab() {
-        prepareTeiCompletedProgrammeIntentAndLaunchActivity()
+        prepareTeiCompletedProgrammeIntentAndLaunchActivity(rule)
 
         teiDashboardRobot {
             clickOnIndicatorsTab()
@@ -230,79 +232,10 @@ class TeiDashboardTest : BaseTest() {
 
         indicatorsRobot {
             checkDetails("0", "4817")
-            Thread.sleep(5000)
         }
     }
 
-    private fun prepareTeiCompletedProgrammeIntentAndLaunchActivity() {
-        Intent().apply {
-            putExtra(CHILD_PROGRAM_UID, CHILD_PROGRAM_UID_VALUE)
-            putExtra(TEI_UID, TEI_UID_VALUE_COMPLETED)
-        }.also { rule.launchActivity(it) }
-    }
-
-    private fun prepareTeiOpenedForReferralProgrammeIntentAndLaunchActivity() {
-        Intent().apply {
-            putExtra(CHILD_PROGRAM_UID, CHILD_PROGRAM_UID_VALUE)
-            putExtra(TEI_UID, TEI_UID_VALUE_OPEN_REFERRAL)
-        }.also { rule.launchActivity(it) }
-    }
-
-    private fun prepareTeiOpenedProgrammeIntentAndLaunchActivity() {
-        Intent().apply {
-            putExtra(CHILD_PROGRAM_UID, CHILD_PROGRAM_UID_VALUE)
-            putExtra(TEI_UID, TEI_UID_VALUE_OPENED)
-        }.also { rule.launchActivity(it) }
-    }
-
-    private fun prepareTeiOpenedForCompleteProgrammeIntentAndLaunchActivity() {
-        Intent().apply {
-            putExtra(CHILD_PROGRAM_UID, CHILD_PROGRAM_UID_VALUE)
-            putExtra(TEI_UID, TEI_UID_VALUE_OPEN_TO_COMPLETE)
-        }.also { rule.launchActivity(it) }
-    }
-
-    private fun prepareTeiWithExistingNoteIntentAndLaunchActivity() {
-        Intent().apply {
-            putExtra(CHILD_PROGRAM_UID, CHILD_PROGRAM_UID_VALUE)
-            putExtra(TEI_UID, TEI_UID_VALUE_WITH_NOTE)
-        }.also { rule.launchActivity(it) }
-    }
-
-    private fun prepareTeiOpenedWithFullEvents(){
-        Intent().apply{
-            putExtra(CHILD_PROGRAM_UID, CHILD_PROGRAM_UID_VALUE)
-            putExtra(TEI_UID, TEI_UID_VALUE_OPENED_FULL)
-        }.also { rule.launchActivity(it) }
-    }
-
-    private fun prepareChildProgrammeIntentAndLaunchActivity() {
-        Intent().apply {
-            putExtra(SearchTETest.CHILD_PROGRAM_UID, SearchTETest.CHILD_PROGRAM_UID_VALUE)
-            putExtra(SearchTETest.CHILD_TE_TYPE, SearchTETest.CHILD_TE_TYPE_VALUE)
-        }.also { ruleSearch.launchActivity(it) }
-    }
-
-    private fun prepareTeiToDelete(){
-        Intent().apply{
-            putExtra(CHILD_PROGRAM_UID, CHILD_PROGRAM_UID_VALUE)
-            putExtra(TEI_UID, TEI_UID_VALUE_TO_DELETE)
-        }.also { rule.launchActivity(it) }
-    }
-
     companion object{
-        const val CHILD_PROGRAM_UID = "PROGRAM_UID"
-        const val CHILD_PROGRAM_UID_VALUE = "IpHINAT79UW"
-
-        const val TEI_UID = "TEI_UID"
-        const val TEI_UID_VALUE_COMPLETED = "vOxUH373fy5"
-        const val TEI_UID_VALUE_OPENED = "Pqv3LrNECkn"
-        const val TEI_UID_VALUE_OPENED_FULL = "r2FEXpX6ize"
-        const val TEI_UID_VALUE_OPEN_REFERRAL = "PQfMcpmXeFE"
-        const val TEI_UID_VALUE_OPEN_TO_COMPLETE = "qx4yw1EuxmW"
-        const val TEI_UID_VALUE_WITH_NOTE = "UtDZmrX5lSd"
-        const val TEI_UID_VALUE_TO_DELETE = "SHnmavBQu72"
-
         const val TOAST_TEXT_SAVED = "Note saved"
         const val NOTE_VALID = "ThisIsJustATest"
         const val NOTE_INVALID = "InvalidNote"

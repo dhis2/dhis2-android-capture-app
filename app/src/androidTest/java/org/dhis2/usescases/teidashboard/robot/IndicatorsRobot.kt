@@ -1,4 +1,4 @@
-package org.dhis2.usescases.teidashboard
+package org.dhis2.usescases.teidashboard.robot
 
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.assertion.ViewAssertions.matches
@@ -19,9 +19,11 @@ class IndicatorsRobot: BaseRobot() {
 
     fun checkDetails(firstIndicator: String, secondIndicator: String) {
         onView(withId(R.id.indicators_recycler)).check(matches(allOf(isDisplayed(), isNotEmpty(),
-                atPosition(0, hasDescendant(allOf(withId(R.id.indicator_value), withText(firstIndicator)))))))
+                atPosition(0, hasDescendant(allOf(withText(firstIndicator),
+                        hasSibling(allOf(withId(R.id.indicator_name), withText("Measles + Yellow fever doses")))))))))
 
         onView(withId(R.id.indicators_recycler)).check(matches(allOf(isDisplayed(), isNotEmpty(),
-                atPosition(1, hasDescendant(withText(secondIndicator))))))
+                atPosition(1, hasDescendant(allOf(withText(secondIndicator),
+                        hasSibling(allOf(withId(R.id.indicator_name), withText("Average weight (g)")))))))))
     }
 }

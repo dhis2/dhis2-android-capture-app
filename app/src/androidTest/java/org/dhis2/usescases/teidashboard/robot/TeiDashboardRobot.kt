@@ -1,4 +1,4 @@
-package org.dhis2.usescases.teidashboard
+package org.dhis2.usescases.teidashboard.robot
 
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
@@ -174,15 +174,6 @@ class TeiDashboardRobot: BaseRobot () {
 
         onView(withId(R.id.fieldRecycler)).check(matches(allOf(isDisplayed(), isNotEmpty(),
                 atPosition(4, hasDescendant(withText(sex))))))
-
-        //onView(withId(R.id.inputEditText)).check(matches(withText("2021-01-10")))
-        /*onView(withId(R.id.inputEditText)).check(matches(withText("2021-01-10")))
-        onView(withId(R.id.input_editText)).check(matches(withText("Ngelehun CHC")))
-        onView(withId(R.id.latitude)).check(matches(withText("40.48713205295354")))
-        onView(withId(R.id.longitude)).check(matches(withText("-3.6847423830882633")))
-        onView(withId(R.id.input_editText)).check(matches(withText("Filona")))
-        onView(withId(R.id.input_editText)).check(matches(withText("Ryder")))
-        onView(withId(R.id.input_editText)).check(matches(withText("Female")))*/
     }
 
 }

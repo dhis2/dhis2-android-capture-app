@@ -1,13 +1,10 @@
-package org.dhis2.usescases.teidashboard
+package org.dhis2.usescases.teidashboard.robot
 
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
-import androidx.test.espresso.assertion.ViewAssertions.matches
-import androidx.test.espresso.contrib.RecyclerViewActions
 import androidx.test.espresso.matcher.ViewMatchers.*
 import org.dhis2.R
 import org.dhis2.common.BaseRobot
-import org.dhis2.usescases.programStageSelection.ProgramStageSelectionViewHolder
 import org.hamcrest.CoreMatchers.allOf
 
 

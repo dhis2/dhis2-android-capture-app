@@ -1,4 +1,4 @@
-package org.dhis2.usescases.teidashboard
+package org.dhis2.usescases.teidashboard.robot
 
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.TypeTextAction
