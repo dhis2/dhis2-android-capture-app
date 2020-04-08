@@ -121,15 +121,17 @@ class TeiDashboardTest : BaseTest() {
     }
 
     @Test
-    fun shouldBeAbleToMakeAReferral() {
+    fun shouldMakeAReferral() {
         prepareTeiOpenedForReferralProgrammeIntentAndLaunchActivity(rule)
 
         teiDashboardRobot {
             clickOnFab()
             clickOnReferral()
             clickOnFirstReferralEvent()
-            checkEventIsCreated("EventName")
-            //ENABLE TO CONTINUE
+            clickOnReferralOption()
+            clickOnReferralNextButton()
+            checkEventCreatedToastIsShown()
+            checkEventWasCreated("Lab monitoring")
         }
     }
 
@@ -140,7 +142,7 @@ class TeiDashboardTest : BaseTest() {
         teiDashboardRobot {
             clickOnFab()
             clickOnReferral()
-            checkCannotAddMoreEventToasIsShown()
+            checkCannotAddMoreEventToastIsShown()
         }
     }
 

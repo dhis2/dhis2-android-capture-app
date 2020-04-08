@@ -80,17 +80,33 @@ class TeiDashboardRobot: BaseRobot () {
         onView(withId(R.id.referral)).perform(click())
     }
 
-    fun checkCannotAddMoreEventToasIsShown() {
+    fun checkCannotAddMoreEventToastIsShown() {
         onView(withText(R.string.program_not_allow_events)).inRoot(isToast()).check(matches(isDisplayed()))
     }
 
     fun clickOnFirstReferralEvent(){
         onView(withId(R.id.recycler_view))
+                .check(matches(allOf(atPosition(0, hasDescendant(withText("Lab monitoring"))))))
                 .perform(actionOnItemAtPosition<ProgramStageSelectionViewHolder>(0, click()))
     }
 
-    fun checkEventIsCreated(eventName:String){
+    fun clickOnReferralOption() {
+        onView(withId(R.id.one_time)).perform(click())
+    }
 
+    fun clickOnReferralNextButton() {
+        onView(withId(R.id.action_button)).perform(click())
+    }
+
+    fun checkEventCreatedToastIsShown() {
+        onView(withText(R.string.event_created)).inRoot(isToast()).check(matches(isDisplayed()))
+    }
+
+    fun checkEventWasCreated(eventName:String){
+        onView(withId(R.id.tei_recycler)).check(matches(allOf(
+                isDisplayed(), isNotEmpty(),
+                atPosition(0, hasDescendant(hasSibling(allOf(withId(R.id.event_name), withText(eventName)))))
+        )))
     }
 
     fun clickOnMenuDeactivate() {
