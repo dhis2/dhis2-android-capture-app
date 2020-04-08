@@ -393,6 +393,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
                     .concat("\n")
                     .concat(getString(R.string.sync_error_text));
             binding.syncDataLayout.message.setText(dataText);
+            binding.syncDataLayout.message.setTextColor(ContextCompat.getColor(context, R.color.red_060));
         }
 
         if (dataSettings.getDataHasErrors()) {

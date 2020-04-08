@@ -7,6 +7,7 @@ import junit.framework.TestCase.assertTrue
 import org.dhis2.data.forms.dataentry.ValueStore
 import org.dhis2.data.forms.dataentry.tablefields.FieldViewModel
 import org.dhis2.data.forms.dataentry.tablefields.edittext.EditTextViewModel
+import org.dhis2.data.prefs.PreferenceProvider
 import org.dhis2.data.schedulers.SchedulerProvider
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableModel
@@ -27,11 +28,20 @@ class DataValuePresenterTest {
     private val schedulers: SchedulerProvider = TrampolineSchedulerProvider()
     private val analyticsHelper: AnalyticsHelper = mock()
     private val valueStore: ValueStore = mock()
+    private val prefsProvider: PreferenceProvider = mock()
 
     @Before
     fun setup() {
         presenter =
-            DataValuePresenter(view, dataValueRepository, valueStore, schedulers, analyticsHelper)
+            DataValuePresenter(
+                view,
+                dataValueRepository,
+                valueStore,
+                schedulers,
+                analyticsHelper,
+                prefsProvider,
+                "dataSetUid"
+            )
     }
 
     @Test
