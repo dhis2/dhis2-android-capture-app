@@ -17,6 +17,7 @@ private const val TEI_UID_VALUE_OPEN_REFERRAL = "Fs6QyeOdDA3" //"PQfMcpmXeFE"
 private const val TEI_UID_VALUE_OPEN_TO_COMPLETE = "qx4yw1EuxmW"
 private const val TEI_UID_VALUE_WITH_NOTE = "UtDZmrX5lSd"
 private const val TEI_UID_VALUE_TO_DELETE = "SHnmavBQu72"
+private const val TEI_UID_VALUE_TO_SCHEDULE = "uh47DXf1St9"
 
 fun prepareTeiCompletedProgrammeIntentAndLaunchActivity(rule: ActivityTestRule<TeiDashboardMobileActivity>) {
     Intent().apply {
@@ -71,6 +72,13 @@ fun prepareTeiToDelete(rule: ActivityTestRule<TeiDashboardMobileActivity>){
     Intent().apply{
         putExtra(PROGRAM_UID, CHILD_PROGRAM_UID_VALUE)
         putExtra(TEI_UID, TEI_UID_VALUE_TO_DELETE)
+    }.also { rule.launchActivity(it) }
+}
+
+fun prepareTeiOpenedWithNoPreviousEventProgrammeIntentAndLaunchActivity(rule: ActivityTestRule<TeiDashboardMobileActivity>) {
+    Intent().apply {
+        putExtra(PROGRAM_UID, TB_PROGRAM_UI)
+        putExtra(TEI_UID, TEI_UID_VALUE_TO_SCHEDULE)
     }.also { rule.launchActivity(it) }
 }
 

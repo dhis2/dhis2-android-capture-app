@@ -79,7 +79,7 @@ class TeiDashboardTest : BaseTest() {
         prepareTeiCompletedProgrammeIntentAndLaunchActivity(rule)
 
         teiDashboardRobot {
-            clickOnMenu()
+            clickOnMenuMoreOptions()
             clickOnMenuReOpen()
             checkUnlockIconIsDisplay()
             checkCanAddEvent()
@@ -91,7 +91,7 @@ class TeiDashboardTest : BaseTest() {
         prepareTeiOpenedProgrammeIntentAndLaunchActivity(rule)
 
         teiDashboardRobot {
-            clickOnMenu()
+            clickOnMenuMoreOptions()
             clickOnMenuDeactivate()
             checkLockIconIsDisplay()
             checkCanNotAddEvent()
@@ -103,7 +103,7 @@ class TeiDashboardTest : BaseTest() {
         prepareTeiOpenedForCompleteProgrammeIntentAndLaunchActivity(rule)
 
         teiDashboardRobot {
-            clickOnMenu()
+            clickOnMenuMoreOptions()
             clickOnMenuComplete()
             checkLockCompleteIconIsDisplay()
             checkCanNotAddEvent()
@@ -132,6 +132,42 @@ class TeiDashboardTest : BaseTest() {
             clickOnReferralNextButton()
             checkEventCreatedToastIsShown()
             checkEventWasCreated("Lab monitoring")
+        }
+    }
+
+    @Test
+    fun shouldSuccessfullyScheduleAnEvent() {
+        prepareTeiOpenedWithNoPreviousEventProgrammeIntentAndLaunchActivity(rule)
+
+        teiDashboardRobot {
+            clickOnFab()
+            clickOnScheduleNew()
+            clickOnFirstReferralEvent()
+            clickOnReferralNextButton()
+            checkEventCreatedToastIsShown()
+            checkEventWasCreated("Lab monitoring")
+        }
+    }
+
+    @Test
+    fun shouldEnrollToOtherProgramWhenClickOnProgramEnrollments() {
+        //launch tei
+        //click on more options
+        // click on Program enrollments
+        // choose a Program to be enroll
+        // choose date and accept
+        // click on save in enrollment
+        // if Child Program after save will ask to type AGAR then to choose option (Finish or Finish and Complete)
+
+        prepareTeiOpenedWithNoPreviousEventProgrammeIntentAndLaunchActivity(rule)
+
+        teiDashboardRobot {
+            clickOnMenuMoreOptions()
+            clickOnMenuProgramEnrollments()
+            clickOnAProgramForEnrollment() // is not clicking on enrollment btn
+            //clickOnAcceptEnrollmentDate()
+            //clickOnSaveEnrollment()
+            Thread.sleep(1000)
         }
     }
 

@@ -15,7 +15,6 @@ import org.dhis2.common.matchers.isToast
 import org.dhis2.usescases.programStageSelection.ProgramStageSelectionViewHolder
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTEViewHolder
 import org.dhis2.usescases.teiDashboard.dashboardfragments.tei_data.DashboardProgramViewHolder
-import org.hamcrest.CoreMatchers
 import org.hamcrest.Matchers.allOf
 import org.hamcrest.Matchers.not
 
@@ -46,7 +45,7 @@ class TeiDashboardRobot: BaseRobot () {
         Thread.sleep(500)
     }
 
-    fun clickOnMenu() {
+    fun clickOnMenuMoreOptions() {
         onView(withId(R.id.moreOptions)).perform(click())
     }
 
@@ -145,7 +144,7 @@ class TeiDashboardRobot: BaseRobot () {
 
     fun checkTEIIsDelete() {
         // Olvia Watts
-        onView(withId(R.id.scrollView)).check(matches(CoreMatchers.allOf(isDisplayed(), isNotEmpty(),
+        onView(withId(R.id.scrollView)).check(matches(allOf(isDisplayed(), isNotEmpty(),
                 not(hasDescendant(withText("Olvia Watts"))))))
     }
 
@@ -192,4 +191,23 @@ class TeiDashboardRobot: BaseRobot () {
                 atPosition(4, hasDescendant(withText(sex))))))
     }
 
+    fun clickOnScheduleNew() {
+        onView(withId(R.id.schedulenew)).perform(click())
+    }
+
+    fun clickOnMenuProgramEnrollments() {
+        onView(withText("Program enrollments")).perform(click())
+    }
+    fun clickOnAProgramForEnrollment() {
+        onView(withId(R.id.recycler))
+                .perform(actionOnItemAtPosition<DashboardProgramViewHolder>(4, click())) //action_button
+    }
+
+    fun clickOnAcceptEnrollmentDate() {
+        onView(withId(R.id.acceptButton)).perform(click())
+    }
+
+    fun clickOnSaveEnrollment() {
+        onView(withId(R.id.save)).perform(click())
+    }
 }
