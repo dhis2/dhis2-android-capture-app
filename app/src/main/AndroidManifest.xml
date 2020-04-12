@@ -9,15 +9,8 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
-    <uses-permission android:name="android.permission.SEND_SMS" />
-    <uses-permission android:name="android.permission.RECEIVE_SMS" />
-    <uses-permission android:name="android.permission.READ_SMS" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-
     <uses-permission android:name="android.permission.USE_BIOMETRIC" />
-    <!--<uses-permission android:name="android.permission.NFC"/>-->
-    <!--<uses-feature android:name="android.hardware.nfc" />-->
-
 
     <uses-feature
         android:name="android.hardware.sensor.accelerometer"
@@ -86,8 +79,9 @@
 
         <activity android:name=".usescases.datasets.datasetDetail.DataSetDetailActivity" />
         <activity android:name=".usescases.datasets.datasetInitial.DataSetInitialActivity" />
-        <activity android:name=".usescases.datasets.dataSetTable.DataSetTableActivity"
-            android:configChanges="keyboardHidden|orientation|screenSize"/>
+        <activity
+            android:name=".usescases.datasets.dataSetTable.DataSetTableActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize" />
 
         <receiver android:name=".widgets.DhisCustomLauncher">
             <intent-filter>
@@ -100,13 +94,11 @@
         </receiver>
 
         <activity android:name=".usescases.reservedValue.ReservedValueActivity" />
-        <activity android:name=".usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity"
-            android:configChanges="keyboardHidden|orientation|screenSize"/>
+        <activity
+            android:name=".usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize" />
         <activity android:name=".usescases.sync.SyncActivity" />
         <activity android:name=".usescases.development.DevelopmentActivity" />
-        <activity
-            android:name=".usescases.sms.SmsSubmitActivity"
-            android:theme="@style/Theme.AppCompat.Translucent" />
 
         <service android:name=".usescases.sms.SmsSendingService" />
         <activity android:name=".usescases.teiDashboard.nfc_data.NfcDataWriteActivity" />
@@ -122,8 +114,10 @@
         </provider>
 
         <activity android:name=".usescases.orgunitselector.OUTreeActivity" />
-        <activity android:name=".usescases.enrollment.EnrollmentActivity"
-            android:configChanges="keyboardHidden|orientation|screenSize"/>
+        <activity
+            android:name=".usescases.enrollment.EnrollmentActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:windowSoftInputMode="adjustPan|stateHidden" />
         <activity android:name=".usescases.events.ScheduledEventActivity" />
 
         <service

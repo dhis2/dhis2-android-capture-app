@@ -29,7 +29,7 @@
         <item
             android:id="@+id/block_button"
             android:icon="@drawable/ic_menu_lock"
-            android:title="@string/block_session" />
+            android:title="@string/set_pin" />
 
         <item
             android:id="@+id/logout_button"

@@ -27,6 +27,7 @@ import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.databinding.FormCoordinatesAccentBinding;
 import org.dhis2.databinding.FormCoordinatesBinding;
+import org.dhis2.usescases.enrollment.EnrollmentActivity;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.hisp.dhis.android.core.arch.helpers.GeometryHelper;
 import org.hisp.dhis.android.core.common.FeatureType;
@@ -252,10 +253,11 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
 
     public void getLocation() {
         if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-
             ActivityCompat.requestPermissions((ActivityGlobalAbstract) getContext(),
                     new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
                     ACCESS_COARSE_LOCATION_PERMISSION_REQUEST);
+            if (getContext() instanceof EnrollmentActivity)
+                ((EnrollmentActivity) getContext()).setCoordinatesView(this);
         } else {
 
             mFusedLocationClient.getLastLocation().

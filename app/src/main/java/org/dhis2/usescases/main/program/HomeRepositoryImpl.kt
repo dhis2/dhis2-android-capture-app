@@ -241,7 +241,6 @@ internal class HomeRepositoryImpl(private val d2: D2, private val eventLabel: St
                                     .byProgram().`in`(programUids)
                                     .byEnrollmentDate().inDatePeriods(dateFilter)
                                     .byOrganisationUnit().`in`(orgUnitFilter)
-                                    .byStatus().eq(EnrollmentStatus.ACTIVE)
                                     .byDeleted().isFalse
                                     .byState().`in`(statesFilter)
                                     .blockingGet()
@@ -250,7 +249,6 @@ internal class HomeRepositoryImpl(private val d2: D2, private val eventLabel: St
                                     .byProgram().`in`(programUids)
                                     .byEnrollmentDate().inDatePeriods(dateFilter)
                                     .byOrganisationUnit().`in`(orgUnitFilter)
-                                    .byStatus().eq(EnrollmentStatus.ACTIVE)
                                     .byDeleted().isFalse
                                     .blockingGet()
                             }
@@ -259,7 +257,6 @@ internal class HomeRepositoryImpl(private val d2: D2, private val eventLabel: St
                                 d2.enrollmentModule().enrollments()
                                     .byProgram().`in`(programUids)
                                     .byEnrollmentDate().inDatePeriods(dateFilter)
-                                    .byStatus().eq(EnrollmentStatus.ACTIVE)
                                     .byDeleted().isFalse
                                     .byState().`in`(statesFilter)
                                     .blockingGet()
@@ -267,7 +264,6 @@ internal class HomeRepositoryImpl(private val d2: D2, private val eventLabel: St
                                 d2.enrollmentModule().enrollments()
                                     .byProgram().`in`(programUids)
                                     .byEnrollmentDate().inDatePeriods(dateFilter)
-                                    .byStatus().eq(EnrollmentStatus.ACTIVE)
                                     .byDeleted().isFalse
                                     .blockingGet()
                             }
@@ -280,7 +276,6 @@ internal class HomeRepositoryImpl(private val d2: D2, private val eventLabel: St
                             d2.enrollmentModule().enrollments()
                                 .byProgram().`in`(programUids)
                                 .byOrganisationUnit().`in`(orgUnitFilter)
-                                .byStatus().eq(EnrollmentStatus.ACTIVE)
                                 .byDeleted().isFalse
                                 .byState().`in`(statesFilter)
                                 .blockingGet()
@@ -288,7 +283,6 @@ internal class HomeRepositoryImpl(private val d2: D2, private val eventLabel: St
                             d2.enrollmentModule().enrollments()
                                 .byProgram().`in`(programUids)
                                 .byOrganisationUnit().`in`(orgUnitFilter)
-                                .byStatus().eq(EnrollmentStatus.ACTIVE)
                                 .byDeleted().isFalse
                                 .blockingGet()
                         }
@@ -300,14 +294,12 @@ internal class HomeRepositoryImpl(private val d2: D2, private val eventLabel: St
                         val enrollments = if (statesFilter.isNotEmpty()) {
                             d2.enrollmentModule().enrollments()
                                 .byProgram().`in`(programUids)
-                                .byStatus().eq(EnrollmentStatus.ACTIVE)
                                 .byDeleted().isFalse
                                 .byState().`in`(statesFilter)
                                 .blockingGet()
                         } else {
                             d2.enrollmentModule().enrollments()
                                 .byProgram().`in`(programUids)
-                                .byStatus().eq(EnrollmentStatus.ACTIVE)
                                 .byDeleted().isFalse
                                 .blockingGet()
                         }

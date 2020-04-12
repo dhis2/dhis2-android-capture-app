@@ -138,6 +138,7 @@ public class DataSetInitialActivity extends ActivityGlobalAbstract implements Da
         PeriodDialogInputPeriod periodDialog = new PeriodDialogInputPeriod();
         periodDialog.setInputPeriod(periods)
                 .setOpenFuturePeriods(openFuturePeriods)
+                .setOrgUnit(selectedOrgUnit)
                 .setPeriod(periodType)
                 .setTitle(binding.dataSetPeriodInputLayout.getHint().toString())
                 .setPossitiveListener(selectedDate -> {

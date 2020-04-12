@@ -452,7 +452,7 @@
     <string name="finish_add_new"><![CDATA[Finish & add new]]></string>
     <string name="finish">Finish</string>
     <string name="error_fields_title">Fields with errors</string>
-    <string name="error_fields_events">Some fields has errors. They have not been saved. Please, check them.</string>
+    <string name="error_fields_events">Some fields have errors. They have not been saved. Please, check them.</string>
     <string name="event_reopened">This event can now be edited</string>
     <string name="unique_warning">The value should be unique, a coincidence has been found. It has not been saved. Please check it.</string>
     <string name="please_wait">Please wait</string>
@@ -612,4 +612,10 @@
     <string name="sms_empty_gateway">SMS gateway can\'t be empty</string>
     <string name="granular_sync_enrollments_empty">There are no enrollments to upload</string>
     <string name="granular_sync_unsupported_task">This convertTask is not supported</string>
+    <string name="disable_pin_locked">Don´t show again lock screen</string>
+    <string name="set_pin">Set pin</string>
+    <string name="conflict">Conflict</string>
+    <string name="event_date_in_future_message">This event can\'t have a date in the future. Please change it.</string>
+    <string name="change_event_date">Change date</string>
+    <string name="go_back">Go back</string>
 </resources>

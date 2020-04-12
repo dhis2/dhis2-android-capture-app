@@ -2,6 +2,7 @@ package org.dhis2;
 
 import org.dhis2.data.database.DbModule;
 import org.dhis2.data.prefs.PreferenceModule;
+import org.dhis2.data.prefs.PreferenceProvider;
 import org.dhis2.data.schedulers.SchedulerModule;
 import org.dhis2.data.server.ServerComponent;
 import org.dhis2.data.server.ServerModule;
@@ -12,6 +13,8 @@ import org.dhis2.usescases.splash.SplashComponent;
 import org.dhis2.usescases.splash.SplashModule;
 import org.dhis2.utils.UtilsModule;
 import org.dhis2.utils.analytics.AnalyticsModule;
+import org.dhis2.utils.session.PinModule;
+import org.dhis2.utils.session.SessionComponent;
 
 import javax.inject.Singleton;
 
@@ -41,6 +44,8 @@ public interface AppComponent {
         AppComponent build();
     }
 
+    PreferenceProvider preferenceProvider();
+
     //injection targets
     void inject(App app);
 
@@ -50,4 +55,6 @@ public interface AppComponent {
     SplashComponent plus(SplashModule module);
 
     LoginComponent plus(LoginModule loginContractsModule);
+
+    SessionComponent plus(PinModule pinModule);
 }

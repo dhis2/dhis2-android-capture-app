@@ -448,6 +448,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         else {
             this.view.analyticsHelper().setEvent(SEARCH_TEI, CLICK, SEARCH_TEI);
             this.view.clearData();
+            this.view.setFabIcon(false);
             List<String> optionSetIds = new ArrayList<>();
             this.view.updateFiltersSearch(queryData.entrySet().size());
             for (Map.Entry<String, String> entry : queryData.entrySet()) {
@@ -667,7 +668,10 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     @Override
     public void downloadTei(String teiUid) {
         compositeDisposable.add(
-                d2.trackedEntityModule().trackedEntityInstanceDownloader().byUid().in(Collections.singletonList(teiUid)).download()
+                d2.trackedEntityModule().trackedEntityInstanceDownloader()
+                        .byUid().in(Collections.singletonList(teiUid))
+                        .overwrite(true)
+                        .download()
                         .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.ui())
                         .subscribe(

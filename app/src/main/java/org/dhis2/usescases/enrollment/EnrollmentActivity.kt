@@ -3,6 +3,7 @@ package org.dhis2.usescases.enrollment
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.text.TextUtils.isEmpty
 import android.view.LayoutInflater
@@ -30,6 +31,7 @@ import org.dhis2.data.forms.dataentry.fields.display.DisplayViewModel
 import org.dhis2.databinding.EnrollmentActivityBinding
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity
+import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialPresenter
 import org.dhis2.usescases.general.ActivityGlobalAbstract
 import org.dhis2.usescases.map.MapSelectorActivity
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity
@@ -42,6 +44,7 @@ import org.dhis2.utils.analytics.CLICK
 import org.dhis2.utils.analytics.DELETE_AND_BACK
 import org.dhis2.utils.analytics.SAVE_ENROLL
 import org.dhis2.utils.analytics.STATUS_ENROLLMENT
+import org.dhis2.utils.customviews.CoordinatesView
 import org.dhis2.utils.customviews.CustomDialog
 import org.hisp.dhis.android.core.arch.helpers.FileResourceDirectoryHelper
 import org.hisp.dhis.android.core.arch.helpers.GeometryHelper
@@ -61,6 +64,8 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
 
     @Inject
     lateinit var presenter: EnrollmentPresenterImpl
+
+    var coordinatesView: CoordinatesView? = null
 
     lateinit var binding: EnrollmentActivityBinding
     lateinit var mode: EnrollmentMode
@@ -91,6 +96,22 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
     private lateinit var adapter: DataEntryAdapter
 
     /*region LIFECYCLE*/
+
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        when (requestCode) {
+            EventInitialPresenter.ACCESS_COARSE_LOCATION_PERMISSION_REQUEST -> {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    coordinatesView?.let {
+                        it.getLocation()
+                        coordinatesView = null
+                    }
+                }
+            }
+        }
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         (applicationContext as App).userComponent()!!.plus(
@@ -174,7 +195,7 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
                 if (resultCode == Activity.RESULT_OK) {
                     try {
                         val imageUri = data?.data
-                        presenter.saveValue(
+                        presenter.saveFile(
                             uuid,
                             FileResourcesUtil.getFileFromGallery(this, imageUri).path
                         )
@@ -190,11 +211,7 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
                         FileResourceDirectoryHelper.getFileResourceDirectory(this),
                         "tempFile.png"
                     )
-                    if (file.exists()) {
-                        presenter.saveValue(uuid, file.path)
-                    } else {
-                        presenter.saveValue(uuid, null)
-                    }
+                    presenter.saveFile(uuid, if (file.exists()) file.path else null)
                 }
             }
             RQ_EVENT -> openDashboard(presenter.getEnrollment().uid()!!)
