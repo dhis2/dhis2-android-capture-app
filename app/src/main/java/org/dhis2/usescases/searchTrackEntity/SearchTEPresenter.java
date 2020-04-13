@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.widget.DatePicker;
-import android.widget.Filter;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RestrictTo;
@@ -35,9 +34,11 @@ import org.dhis2.utils.maps.GeometryUtils;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.common.FeatureType;
 import org.hisp.dhis.android.core.common.Unit;
+import org.hisp.dhis.android.core.common.ValueTypeDeviceRendering;
 import org.hisp.dhis.android.core.maintenance.D2Error;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.Program;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityType;
 
 import java.util.ArrayList;
@@ -50,11 +51,13 @@ import java.util.Map;
 
 import javax.annotation.Nullable;
 
+import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.processors.FlowableProcessor;
 import io.reactivex.processors.PublishProcessor;
+import io.reactivex.subjects.BehaviorSubject;
 import timber.log.Timber;
 
 import static android.app.Activity.RESULT_OK;
@@ -62,10 +65,6 @@ import static org.dhis2.utils.analytics.AnalyticsConstants.ADD_RELATIONSHIP;
 import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
 import static org.dhis2.utils.analytics.AnalyticsConstants.CREATE_ENROLL;
 import static org.dhis2.utils.analytics.AnalyticsConstants.SEARCH_TEI;
-
-/**
- * QUADRAM. Created by ppajuelo on 02/11/2017.
- */
 
 public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
@@ -75,6 +74,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     private final SchedulerProvider schedulerProvider;
     private final SearchTEContractsModule.View view;
     private final AnalyticsHelper analyticsHelper;
+    private final BehaviorSubject<String> currentProgram;
     private Program selectedProgram;
 
     private CompositeDisposable compositeDisposable;
@@ -85,7 +85,6 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
     private FlowableProcessor<HashMap<String, String>> queryProcessor;
     private String trackedEntityType;
-    private String initialProgram;
     private FlowableProcessor<Unit> mapProcessor;
     private FlowableProcessor<Unit> enrollmentMapProcessor;
     private Dialog dialogDisplayed;
@@ -102,13 +101,14 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         this.searchRepository = searchRepository;
         this.d2 = d2;
         this.schedulerProvider = schedulerProvider;
-        this.initialProgram = initialProgram;
         this.analyticsHelper = analyticsHelper;
         compositeDisposable = new CompositeDisposable();
         queryData = new HashMap<>();
         queryProcessor = PublishProcessor.create();
         mapProcessor = PublishProcessor.create();
         enrollmentMapProcessor = PublishProcessor.create();
+        selectedProgram = initialProgram != null ? d2.programModule().programs().uid(initialProgram).blockingGet() : null;
+        currentProgram = BehaviorSubject.createDefault(initialProgram != null ? initialProgram : "");
     }
 
     //-----------------------------------
@@ -122,27 +122,15 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                 searchRepository.getTrackedEntityType(trackedEntityType)
                         .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.io())
-                        .flatMap(trackedEntity ->
-                        {
-                            this.trackedEntity = trackedEntity;
-                            return searchRepository.programsWithRegistration(trackedEntityType);
-                        })
+                        .flatMap(trackedEntity -> searchRepository.programsWithRegistration(trackedEntityType)
+                                .map(programs -> new kotlin.Pair<>(trackedEntity, programs)))
                         .subscribeOn(schedulerProvider.ui())
                         .observeOn(schedulerProvider.ui())
-                        .subscribe(programs -> {
-
-                                    List<Program> programsWithTEType = new ArrayList<>();
-                                    for (Program program : programs) {
-                                        if (program.trackedEntityType().equals(trackedEntityType))
-                                            programsWithTEType.add(program);
-                                        if (program.uid().equals(initialProgram))
-                                            this.selectedProgram = program;
-                                    }
+                        .subscribe(data -> {
+                                    this.trackedEntity = data.component1();
+                                    List<Program> programs = data.component2();
                                     Collections.sort(programs, (program1, program2) -> program1.displayName().compareToIgnoreCase(program2.displayName()));
-                                    if (selectedProgram == null && programsWithTEType.size() == 1) {
-                                        setProgram(programsWithTEType.get(0));
-                                        view.setPrograms(programsWithTEType);
-                                    } else if (selectedProgram != null) {
+                                    if (selectedProgram != null) {
                                         setProgram(selectedProgram);
                                         view.setPrograms(programs);
                                     } else {
@@ -162,10 +150,20 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                                 Timber::d
                         )
         );
-    }
 
-    @Override
-    public void initSearch() {
+        compositeDisposable.add(currentProgram
+                .flatMap(programUid -> {
+                    if (programUid.isEmpty())
+                        return searchRepository.trackedEntityTypeAttributes()
+                                .map(attributes -> Pair.create(attributes, new ArrayList<ValueTypeDeviceRendering>()));
+                    else
+                        return searchRepository.programAttributes(selectedProgram.uid())
+                                .map(data -> Pair.create(data.getTrackedEntityAttributes(), data.getRendering()));
+                })
+                .subscribe(
+                        data -> view.setForm(data.val0(), selectedProgram, queryData, data.val1()),
+                        Timber::d)
+        );
 
         compositeDisposable.add(view.rowActionss()
                 .subscribeOn(schedulerProvider.ui())
@@ -192,12 +190,15 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                         Timber::d)
         );
 
+
         compositeDisposable.add(
-                Flowable.combineLatest(
-                        queryProcessor.startWith(queryData),
-                        FilterManager.getInstance().asFlowable().startWith(FilterManager.getInstance()),
-                        Pair::create
-                )
+                currentProgram.distinctUntilChanged().toFlowable(BackpressureStrategy.LATEST)
+                        .switchMap(program ->
+                                Flowable.combineLatest(
+                                        queryProcessor.startWith(queryData),
+                                        FilterManager.getInstance().asFlowable().startWith(FilterManager.getInstance()),
+                                        Pair::create
+                                ))
                         .onBackpressureLatest()
                         .observeOn(schedulerProvider.io())
                         .filter(data -> !view.isMapVisible())
@@ -218,11 +219,13 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
         compositeDisposable.add(
                 mapProcessor.switchMap(data ->
-                        Flowable.combineLatest(
-                                queryProcessor.startWith(queryData),
-                                FilterManager.getInstance().asFlowable().startWith(FilterManager.getInstance()),
-                                Pair::create
-                        ))
+                        currentProgram.distinctUntilChanged().toFlowable(BackpressureStrategy.LATEST)
+                                .switchMap(program ->
+                                        Flowable.combineLatest(
+                                                queryProcessor.startWith(queryData),
+                                                FilterManager.getInstance().asFlowable().startWith(FilterManager.getInstance()),
+                                                Pair::create
+                                        )))
                         .onBackpressureLatest()
                         .observeOn(schedulerProvider.io())
                         .filter(data -> view.isMapVisible())
@@ -285,6 +288,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                                 Timber::e
                         )
         );
+
 
     }
 
@@ -371,26 +375,6 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         }
     }
 
-    private void getTrackedEntityTypeAttributes() {
-        compositeDisposable.add(searchRepository.trackedEntityTypeAttributes()
-                .subscribeOn(schedulerProvider.io())
-                .observeOn(schedulerProvider.ui())
-                .subscribe(
-                        data -> view.setForm(data, selectedProgram, queryData, null),
-                        Timber::d)
-        );
-    }
-
-    private void getProgramTrackedEntityAttributes() {
-        compositeDisposable.add(searchRepository.programAttributes(selectedProgram.uid())
-                .subscribeOn(schedulerProvider.io())
-                .observeOn(schedulerProvider.ui())
-                .subscribe(
-                        data -> view.setForm(data.getTrackedEntityAttributes(), selectedProgram, queryData, data.getRendering()),
-                        Timber::d)
-        );
-    }
-
     @Override
     public TrackedEntityType getTrackedEntityName() {
         return trackedEntity;
@@ -407,15 +391,11 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     public void setProgram(Program programSelected) {
         boolean otherProgramSelected = selectedProgram == programSelected;
         selectedProgram = programSelected;
+        currentProgram.onNext(programSelected != null ? programSelected.uid() : "");
         view.clearList(programSelected == null ? null : programSelected.uid());
         view.clearData();
         view.setFabIcon(true);
         showList = true;
-
-        if (selectedProgram == null)
-            getTrackedEntityTypeAttributes();
-        else
-            getProgramTrackedEntityAttributes();
 
         if (!otherProgramSelected)
             queryData.clear();
@@ -458,7 +438,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                 queryData.remove(id);
             }
 
-            if(compliesWithMinAttributesToSearch()) {
+            if (compliesWithMinAttributesToSearch()) {
                 view.setFabIcon(false);
                 queryProcessor.onNext(queryData);
             } else {
@@ -472,8 +452,8 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     }
 
     private boolean compliesWithMinAttributesToSearch() {
-        if(selectedProgram != null) {
-            if(selectedProgram.displayFrontPageList() && queryData.size() < selectedProgram.minAttributesRequiredToSearch()){
+        if (selectedProgram != null) {
+            if (selectedProgram.displayFrontPageList() && queryData.size() < selectedProgram.minAttributesRequiredToSearch()) {
                 return false;
             } else if (!selectedProgram.displayFrontPageList() && queryData.size() < selectedProgram.minAttributesRequiredToSearch()) {
                 return false;
