@@ -66,11 +66,14 @@ A contextual guide opens the first time the user opens the App.
 <!-- PALD alternative: "The Filter allows you to narrow down the data available from the ..." -->
 The app has new and improved filters for all listing screens (home, event listing, tei search and dataSets).
 
-Filter by period, org. Unit, sync state, event status and category option combination.
+Filter by period, org. Unit, sync state, event status, category option combination and "assigned to me".
 
-![](resources/images/image96.png){ width=25%}
+>**User Assignment**
+>
+>Events can be assigned to users. This must be configured in the server and enabled per program. The app will show the events assigned to the user but will not prevent from other users to complete that same event.
 
-![](resources/images/image97.png){ width=25%}
+![](resources/images/image96.jpg){ width=25%}
+![](resources/images/image97.jpg){ width=25%}
 
 Filters will adapt to the different programs and data sets. 
 1. Program without registration: Period, Org. Unit, Sync State, Event Status and, Category Combination.
