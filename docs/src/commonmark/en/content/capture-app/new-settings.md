@@ -19,3 +19,5 @@
 **Delete Data**: this action will delete local data without having to log out.
 
 **Reset App**: this action will log out the user and delete all data and metadata. It is similar to resetting the App.
+
+**SMS Settings**: This sections allows to check or edit the parameters related to the sms gateway.
