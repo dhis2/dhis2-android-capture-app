@@ -124,8 +124,6 @@ public class SearchTEContractsModule {
 
         HashMap<String, String> getQueryData();
 
-        void initSearch();
-
         void onSyncIconClick(String teiUid);
 
         void showFilter();

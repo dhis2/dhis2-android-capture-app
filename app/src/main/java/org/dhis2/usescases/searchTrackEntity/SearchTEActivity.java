@@ -170,11 +170,6 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
 
-        StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
-                .detectAll()
-                .penaltyLog()
-                .build());
-
         tEType = getIntent().getStringExtra("TRACKED_ENTITY_UID");
         initialProgram = getIntent().getStringExtra("PROGRAM_UID");
 
@@ -257,7 +252,6 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         }
         if (initSearchNeeded) {
             presenter.init(tEType);
-            presenter.initSearch();
         } else {
             initSearchNeeded = true;
         }
