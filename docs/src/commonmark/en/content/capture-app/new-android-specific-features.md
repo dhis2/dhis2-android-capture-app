@@ -174,3 +174,10 @@ When a program stage or tracked entity type have a feature type (and for program
 ![](resources/images/image101.png){ width=25%}
 ![](resources/images/image102.png){ width=25%}
 ![](resources/images/image103.png){ width=25%}
+
+## Event Notes
+
+Notes are available in every program event. Click on "+" to add a new note.
+
+![](resources/images/image106.jpg){ width=25%}
+![](resources/images/image107.jpg){ width=25%}
