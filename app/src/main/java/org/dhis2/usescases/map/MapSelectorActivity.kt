@@ -378,18 +378,13 @@ class MapSelectorActivity :
         // Map is set up and the style has loaded. Now you can add data or make other map adjustments
         if (ActivityCompat.checkSelfPermission(
             this,
-            Manifest.permission.ACCESS_COARSE_LOCATION
+            Manifest.permission.ACCESS_FINE_LOCATION
         ) != PackageManager.PERMISSION_GRANTED
         ) {
-            // Should we show an explanation?
-            // TODO CRIS
-            // Show an explanation to the user *asynchronously* -- don't block
-            // this thread waiting for the user's response! After the user
-            // sees the explanation, try again to request the permission.
             ActivityCompat.requestPermissions(
                 this,
-                arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION),
-                ACCESS_COARSE_LOCATION_PERMISSION_REQUEST
+                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                ACCESS_LOCATION_PERMISSION_REQUEST
             )
             return
         }
@@ -402,18 +397,20 @@ class MapSelectorActivity :
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         when (requestCode) {
-            ACCESS_COARSE_LOCATION_PERMISSION_REQUEST -> {
+            ACCESS_LOCATION_PERMISSION_REQUEST -> {
                 // If request is cancelled, the result arrays are empty.
                 if (grantResults.isNotEmpty() &&
-                    grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    grantResults[0] == PackageManager.PERMISSION_GRANTED
+                ) {
                     enableLocationComponent()
+                    centerMapOnCurrentLocation()
                 }
             }
         }
     }
 
     companion object {
-        const val ACCESS_COARSE_LOCATION_PERMISSION_REQUEST = 102
+        private const val ACCESS_LOCATION_PERMISSION_REQUEST = 102
         const val DATA_EXTRA = "data_extra"
         const val LOCATION_TYPE_EXTRA = "LOCATION_TYPE_EXTRA"
         const val INITIAL_GEOMETRY_COORDINATES = "INITIAL_DATA"
