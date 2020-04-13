@@ -4,10 +4,10 @@
 
 ### Complete/Re-open event
 
-User must enter the event and then click the 'END' button in the bottom right corner.
+User must enter the event and then click the complete icon in the bottom right corner.
 
-![](resources/images/image37.png){ width=25%}
-![](resources/images/image74.png){ width=25%}
+![](resources/images/image37.jpg){ width=25%}
+![](resources/images/image74.jpg){ width=25%}
 
 Two options will be presented:
 
@@ -27,10 +27,9 @@ Two options will be presented:
 
 ### Complete/Deactivate Enrollment
 
-To complete or deactivate an enrollment, click on ‘See details’ and actions will be available in the ‘Lock’ icon on the top right corner of the screen. 
+To complete or deactivate an enrollment, click on three dot menu in the right upper corner and select "Complete" or "Deactivate".
 
-![](resources/images/image76.png){ width=25%}
-![](resources/images/image77.jpg){ width=25%}
+![](resources/images/image76.jpg){ width=25%}
 
 ### Reset Search Fields
 
@@ -70,12 +69,12 @@ The dashboards will show the list of active enrollments.
 
 ### TEI enrollment history and new enrollment
 
-User is able to see the complete historical record of the TEI. By clicking on the top right corner icon they will see a list of Active enrollments, followed by a list of past enrollments (completed or cancelled), followed by the programs in which the TEI could be enrolled.
+User is able to see the complete historical record of the TEI. Clicking on the top right corner menu, select "Program Enrollments" and a list of Active enrollments will be displayed, followed by a list of past enrollments (completed or cancelled), followed by the programs in which the TEI could be enrolled.
 User can also return to the 'TEI Dashboard without any program' by selecting 'All enrollments'.
 
 Users should be able to navigate to the different enrollments from the list.
 
-![](resources/images/image40.png){ width=25%}
+![](resources/images/image40.jpg){ width=25%}
 ![](resources/images/image7.png){ width=25%}
 
 ### Delete TEI's & Enrollments
@@ -89,7 +88,14 @@ F_TEI_CASCADE_DELETE
 
 They will show in the TEI search list, but will not be accessible.
 
-![](resources/images/image86.png){ width=25%}
+![](resources/images/image86.jpg){ width=25%}
+
+### Group events by stage
+
+User is able to group the events by stages. Each stage will sort the events from the recent to the oldest date.
+
+![](resources/images/image108.png){ width=25%}
+![](resources/images/image109.jpg){ width=25%}
 
 ## Program without registration specific features
 
