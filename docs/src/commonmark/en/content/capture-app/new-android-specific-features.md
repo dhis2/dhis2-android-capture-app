@@ -40,6 +40,16 @@ If the user forgets the PIN number, log in by entering the credentials is also a
 ![](resources/images/image65.PNG){width=25%}
 ![](resources/images/image63.jpg){width=25%}
 
+## Fingerprint
+
+User is able to use the fingerprint scanner if the feature is activated in the device.
+
+* When the fingerprint scanner is enable and not the PIN, every time the app closes, goes to background or the device is blocked, the session will be locked. Once the app is open again, the user needs to tap the fingerprint icon to activate the scanner.
+* If the PIN and the fingerprint are set, when the session is locked and the user open the app again, the PIN will be asked.
+
+![](resources/images/image104.jpg){width=25%}
+![](resources/images/image105.jpg){width=25%}
+
 ## Instructions/ information buttons
 
 A contextual guide opens the first time the user opens the App.
