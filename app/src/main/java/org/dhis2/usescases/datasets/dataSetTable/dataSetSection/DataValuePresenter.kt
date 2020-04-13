@@ -646,6 +646,7 @@ class DataValuePresenter(
         disposable.add(
             dataSetSectionFragment.rowActions()
                 .flatMap { rowAction ->
+
                     var dataSetTableModel: DataSetTableModel? = null
                     val dataValue = dataTableModel?.dataValues()?.firstOrNull {
                         it.dataElement() == rowAction.dataElement()

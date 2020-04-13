@@ -48,7 +48,7 @@
             android:layout_height="match_parent"
             android:layout_gravity="center"
             tools:ignore="ContentDescription"
-            tools:src="@drawable/ic_with_registration" />
+            tools:src="@drawable/ic_observation_negative" />
 
         </com.google.android.material.card.MaterialCardView>
 

@@ -90,7 +90,7 @@ public class SearchTEContractsModule {
 
     public interface Presenter {
 
-        void init(View view, String trackedEntityType, String initialProgram);
+        void init(String trackedEntityType);
 
         void onDestroy();
 
@@ -100,9 +100,9 @@ public class SearchTEContractsModule {
 
         void onClearClick();
 
-        void onFabClick(android.view.View view, boolean needsSearch);
+        void onFabClick(boolean needsSearch);
 
-        void onEnrollClick(android.view.View view);
+        void onEnrollClick();
 
         void onTEIClick(String teiUid, String enrollmentUid, boolean isOnline);
 
@@ -123,8 +123,6 @@ public class SearchTEContractsModule {
         Trio<PagedList<SearchTeiModel>, String, Boolean> getMessage(PagedList<SearchTeiModel> list);
 
         HashMap<String, String> getQueryData();
-
-        void initSearch(SearchTEContractsModule.View view);
 
         void onSyncIconClick(String teiUid);
 

@@ -36,8 +36,6 @@ import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.observers.DisposableCompletableObserver
 import io.reactivex.schedulers.Schedulers
-import java.util.Collections
-import java.util.Date
 import org.dhis2.data.schedulers.SchedulerProvider
 import org.dhis2.data.service.workManager.WorkManagerController
 import org.dhis2.data.service.workManager.WorkerItem
@@ -61,7 +59,10 @@ import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.program.ProgramType
 import org.hisp.dhis.android.core.sms.domain.interactor.SmsSubmitCase
 import org.hisp.dhis.android.core.sms.domain.repository.SmsRepository
+import org.hisp.dhis.android.core.systeminfo.SMSVersion
 import timber.log.Timber
+import java.util.Collections
+import java.util.Date
 
 class GranularSyncPresenterImpl(
     val d2: D2,
@@ -129,8 +130,17 @@ class GranularSyncPresenterImpl(
         }
     }
 
-    override fun isSMSEnabled(): Boolean {
-        return d2.smsModule().configCase().smsModuleConfig.blockingGet().isModuleEnabled
+    override fun isSMSEnabled(isTrackerSync: Boolean): Boolean {
+        val hasCorrectSmsVersion = if (isTrackerSync) {
+            d2.systemInfoModule().versionManager().smsVersion == SMSVersion.V2
+        } else {
+            true
+        }
+
+        val smsModuleIsEnabled =
+            d2.smsModule().configCase().smsModuleConfig.blockingGet().isModuleEnabled
+
+        return hasCorrectSmsVersion && smsModuleIsEnabled
     }
 
     override fun initGranularSync(): LiveData<List<WorkInfo>> {
@@ -190,7 +200,12 @@ class GranularSyncPresenterImpl(
                 )
                 if (enrollmentUids.isNotEmpty()) {
                     smsSender.convertEnrollment(enrollmentUids[0])
-                } else {
+
+                } else if( !d2.enrollmentModule().enrollments().byTrackedEntityInstance().eq(recordUid).blockingIsEmpty()){
+                    smsSender.convertEnrollment(
+                        d2.enrollmentModule().enrollments().byTrackedEntityInstance().eq(recordUid).one().blockingGet().uid()
+                    )
+                }else {
                     Single.error(Exception(view.emptyEnrollmentError()))
                 }
             }
@@ -269,8 +284,8 @@ class GranularSyncPresenterImpl(
         if (statesList.isEmpty()) return false
         val last = statesList[statesList.size - 1]
         return last.state == SmsSendingService.State.SENDING &&
-            last.sent == sent &&
-            last.total == total
+                last.sent == sent &&
+                last.total == total
     }
 
     override fun reportState(state: SmsSendingService.State, sent: Int, total: Int) {
@@ -366,7 +381,7 @@ class GranularSyncPresenterImpl(
                 State.TO_UPDATE,
                 State.TO_POST
             ).blockingGet().isNotEmpty() ||
-                teiRepository.byDeleted().isTrue.blockingGet().isNotEmpty() ->
+                    teiRepository.byDeleted().isTrue.blockingGet().isNotEmpty() ->
                 State.TO_UPDATE
             else -> State.SYNCED
         }
@@ -388,7 +403,7 @@ class GranularSyncPresenterImpl(
                 State.TO_UPDATE,
                 State.TO_POST
             ).blockingGet().isNotEmpty() ||
-                eventRepository.byDeleted().isTrue.blockingGet().isNotEmpty() ->
+                    eventRepository.byDeleted().isTrue.blockingGet().isNotEmpty() ->
                 State.TO_UPDATE
             else -> State.SYNCED
         }
@@ -416,10 +431,10 @@ class GranularSyncPresenterImpl(
             stateCandidates.contains(State.ERROR) -> State.ERROR
             stateCandidates.contains(State.WARNING) -> State.WARNING
             stateCandidates.contains(State.SENT_VIA_SMS) ||
-                stateCandidates.contains(State.SYNCED_VIA_SMS) ->
+                    stateCandidates.contains(State.SYNCED_VIA_SMS) ->
                 State.SENT_VIA_SMS
             stateCandidates.contains(State.TO_POST) ||
-                stateCandidates.contains(State.TO_UPDATE) ->
+                    stateCandidates.contains(State.TO_UPDATE) ->
                 State.TO_UPDATE
             else -> State.SYNCED
         }
