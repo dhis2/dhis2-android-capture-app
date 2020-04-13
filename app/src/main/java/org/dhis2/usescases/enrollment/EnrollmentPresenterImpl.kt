@@ -72,6 +72,7 @@ class EnrollmentPresenterImpl(
     private var mandatoryFields = mutableMapOf<String, String>()
     private var uniqueFields = mutableMapOf<String, String>()
     private val backButtonProcessor: FlowableProcessor<Boolean> = PublishProcessor.create()
+    private var showErrors: Boolean = false
 
     fun init() {
         view.setSaveButtonVisible(false)
@@ -317,7 +318,7 @@ class EnrollmentPresenterImpl(
             }
         }
         val sections = finalList.filterIsInstance<SectionViewModel>()
-        sections.forEach { section ->
+        sections.takeIf { showErrors }?.forEach { section ->
             var errors = 0;
             repeat(mandatoryFields.filter { it.value == section.uid() }.size) { errors++}
             finalList[finalList.indexOf(section)] = section.withErrors(errors)
@@ -588,6 +589,8 @@ class EnrollmentPresenterImpl(
                 false
             }
             mandatoryFields.isNotEmpty() -> {
+                showErrors = true
+                fieldsFlowable.onNext(true)
                 view.showMissingMandatoryFieldsMessage(mandatoryFields)
                 false
             }
