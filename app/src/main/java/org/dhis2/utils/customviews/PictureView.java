@@ -111,7 +111,7 @@ public class PictureView extends FieldLayout implements View.OnClickListener, Vi
     }
 
     private boolean removeFile() {
-        return new File(currentValue).delete();
+        return currentValue != null && new File(currentValue).delete();
     }
 
     public void setLabel(String label) {
