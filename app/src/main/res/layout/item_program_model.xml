@@ -35,7 +35,7 @@
             android:layout_height="48dp"
             android:background="?attr/colorPrimaryLight"
             android:onClick="@{()->presenter.showDescription(program.description())}"
-            app:cardCornerRadius="50dp"
+            app:cardCornerRadius="6dp"
             app:cardElevation="0dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
