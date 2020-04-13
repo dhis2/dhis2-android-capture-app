@@ -161,12 +161,11 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
         }
 
         if (!items.isEmpty()) {
-            rfaContent.setItems(items)
+            rfaContent
                     .setItems(items)
                     .setIconShadowRadius(RFABTextUtil.dip2px(getAbstracContext(), 5))
                     .setIconShadowColor(0xff888888)
-                    .setIconShadowDy(RFABTextUtil.dip2px(getAbstracContext(), 5))
-                    .setIconShadowColor(0xff888888);
+                    .setIconShadowDy(RFABTextUtil.dip2px(getAbstracContext(), 1));
 
             rfaHelper = new RapidFloatingActionHelper(getAbstracContext(), binding.rfabLayout, binding.rfab, rfaContent).build();
         }

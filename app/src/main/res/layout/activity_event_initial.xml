@@ -125,7 +125,7 @@
                                 android:contentDescription='@{name}'
                                 android:padding="7dp"
                                 android:tint="?colorPrimaryDark"
-                                app:imageBackground="@{ @drawable/photo_temp }"
+                                android:background="@drawable/rounded_square"
                                 app:srcCompat="@drawable/ic_clinical_f_outline" />
 
                             <LinearLayout

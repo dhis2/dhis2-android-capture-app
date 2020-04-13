@@ -187,6 +187,10 @@ public abstract class AbstractTableAdapter<CH, RH, C> implements ITableAdapter {
         this.mColumnHeaderHeight = columnHeaderHeight;
     }
 
+    public int getColumnHeaderHeight() {
+        return mColumnHeaderHeight;
+    }
+
     public void setHeaderHeight(int headerHeight) {
         this.headerHeight = headerHeight;
     }

@@ -681,4 +681,8 @@
     <string name="syncing_period_not_editable">Syncing period is not editable</string>
     <string name="sync_parameters_not_editable">Sync parameters are not editable</string>
     <string name="rv_no_editable">Number of reserved values downloaded is not editable</string>
+    <string name="dialog_layer_satellite">Show satellite view</string>
+    <string name="dialog_layer_tei_coordinates">Show tei coordinates</string>
+    <string name="dialog_layer_enrollment_coordinates">Show enrollment coordinates</string>
+    <string name="dialog_layer_heatmap">Show heatmap layer</string>
 </resources>

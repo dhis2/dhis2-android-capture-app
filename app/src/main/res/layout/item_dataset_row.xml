@@ -14,8 +14,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:minHeight="@dimen/default_column_header_height"
-        android:paddingStart="5dp"
-        android:paddingEnd="5dp"
+        android:padding="5dp"
         tools:background="@color/black_de0">
 
 
@@ -26,15 +25,14 @@
             android:layout_weight="1"
             android:ellipsize="end"
             android:gravity="center_vertical"
-            android:maxLines="2"
             android:minHeight="@dimen/default_column_header_height"
             android:textColor="@color/table_view_default_text_color"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/descriptionLabel"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:tableScaleTextSize="@{tableScale}"
-            tools:text="DATA ELEMENT TEXT\nTWO LINES" />
+            android:textSize="12sp"
+            tools:text="DATA ELEMENT TEXT\nTWO \nLINES" />
 
         <ImageView
             android:id="@+id/descriptionLabel"
