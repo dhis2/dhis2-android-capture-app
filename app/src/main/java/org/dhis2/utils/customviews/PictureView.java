@@ -100,7 +100,7 @@ public class PictureView extends FieldLayout implements View.OnClickListener, Vi
         formLabel.setOnClickListener(this);
         clearButton = findViewById(R.id.clear);
         clearButton.setOnClickListener(view -> {
-                    if (removeFile()) {
+                    if (isEditable && removeFile()) {
                         setTextSelected(null);
                         image.setVisibility(View.GONE);
                         Glide.with(this).clear(image);
