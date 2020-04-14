@@ -14,6 +14,7 @@ import androidx.core.content.ContextCompat;
 import androidx.core.widget.NestedScrollView;
 import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.MutableLiveData;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.evrencoskun.tableview.TableView;
 import com.evrencoskun.tableview.adapter.recyclerview.CellRecyclerView;
@@ -255,6 +256,11 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
                                             adapter.getRowHeaderWidth(),
                                             adapter.getColumnHeaderHeight()
                                     );
+                                    int scrollPos = table.getScrollHandler().getColumnPosition();
+                                    table.scrollToColumnPosition(scrollPos);
+                                    for (RecyclerView rv : rvs) {
+                                        rv.getLayoutManager().scrollToPosition(scrollPos);
+                                    }
                                 }
                             }
                         }
@@ -274,6 +280,11 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
                                             adapter.getRowHeaderWidth(),
                                             adapter.getColumnHeaderHeight()
                                     );
+                                    int scrollPos = table.getScrollHandler().getColumnPosition();
+                                    table.scrollToColumnPosition(scrollPos);
+                                    for (RecyclerView rv : rvs) {
+                                        rv.getLayoutManager().scrollToPosition(scrollPos);
+                                    }
                                 }
                             }
                         }
