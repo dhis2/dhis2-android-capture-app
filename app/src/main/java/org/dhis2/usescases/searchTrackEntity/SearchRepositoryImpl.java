@@ -614,7 +614,8 @@ public class SearchRepositoryImpl implements SearchRepository {
     }
 
     private boolean attrIsProfileImage(String attrUid) {
-        return d2.trackedEntityModule().trackedEntityAttributes().uid(attrUid).blockingGet().valueType() == ValueType.IMAGE;
+        return d2.trackedEntityModule().trackedEntityAttributes().uid(attrUid).blockingExists() &&
+                d2.trackedEntityModule().trackedEntityAttributes().uid(attrUid).blockingGet().valueType() == ValueType.IMAGE;
     }
 
     // Private Region End//
