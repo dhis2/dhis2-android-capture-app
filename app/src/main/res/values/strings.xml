@@ -685,4 +685,5 @@
     <string name="dialog_layer_tei_coordinates">Show tei coordinates</string>
     <string name="dialog_layer_enrollment_coordinates">Show enrollment coordinates</string>
     <string name="dialog_layer_heatmap">Show heatmap layer</string>
+    <string name="downloading">Downloading</string>
 </resources>

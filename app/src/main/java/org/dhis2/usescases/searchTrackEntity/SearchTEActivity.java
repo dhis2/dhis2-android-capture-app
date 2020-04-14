@@ -41,6 +41,7 @@ import androidx.paging.PagedList;
 import androidx.recyclerview.widget.DividerItemDecoration;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 import com.mapbox.geojson.BoundingBox;
 import com.mapbox.geojson.Feature;
@@ -155,6 +156,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     private SymbolManager symbolManager;
 
     private boolean initSearchNeeded = true;
+    private Snackbar downloadingSnackbar;
     private String currentStyle = Style.MAPBOX_STREETS;
     private boolean changingStyle;
     //---------------------------------------------------------------------------------------------
@@ -702,6 +704,9 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
     @Override
     public void openDashboard(String teiUid, String programUid, String enrollmentUid) {
+        if(downloadingSnackbar!=null && downloadingSnackbar.isShown()){
+            downloadingSnackbar.dismiss();
+        }
         startActivity(TeiDashboardMobileActivity.intent(this, teiUid, programUid, enrollmentUid));
     }
 
