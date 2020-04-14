@@ -212,7 +212,7 @@
     <string name="settingsErrorLog_descr">يحتوي هذا السجل على جميع الأخطاء الناتجة عن مزامنة بياناتك والبيانات التعريفية.</string>
     <string name="settingsDeleteLocalData">حذف البيانات المحفوظة محلياً في هذا الجهاز</string>
     <string name="settingsDeleteLocalData_descr">سيتم حذف جميع بيانات تطبيق Capture المخزنة في جهازك. سيتم فقدان البيانات التي لم تتم مزامنتها مع الخادم.</string>
-    <string name="settingsReset">إعادة تعيين بيانات التطبيق &amp؛ و إعدادات التكوين</string>
+    <string name="settingsReset">إعادة تعيين بيانات التطبيق &amp;؛ و إعدادات التكوين</string>
     <string name="settingsReset_descr">سيتم حذف بيانات التهيئة والتطبيق المخزنة في الجهاز. سيُطلب منك تسجيل الدخول مرة أخرى وستفقد البيانات التي لم تتم مزامنتها مع الخادم.</string>
     <string name="settingsSms">إعدادات الرسائل النصية القصيرة</string>
     <string name="settingsSms_descr">فحص وتحرير المعلمات المتعلقة ببوابة الرسائل القصيرة</string>
@@ -256,7 +256,7 @@
     <string name="online_results">النتائج المحفوظة على الإنترنت</string>
     <!--PERMISSIONS-->
     <string name="permission_denied">ليس لديك الإذن المطلوب للقيام بهذا الإجراء</string>
-    <string name="add_relation_button">إضافة كـ ...</string>
+    <string name="add_relation_button">إضافة كـ …</string>
 
     <string name="date_dialog_clear">مسح</string>
     <string name="period">الفترة الزمنية</string>
@@ -264,8 +264,8 @@
     <string name="org_unit_select_level">المستوى %d</string>
     <string name="tuto_main_1">مرحباً بكم في dhis2</string>
     <string name="tuto_main_2">هنا يمكنك رؤية أنشطتك</string>
-    <string name="tuto_main_3">يمكنك تطبيق عامل تصفية ...</string>
-    <string name="tuto_main_4">...عن طريق تغيير الفترة و تحديد التواريخ...</string>
+    <string name="tuto_main_3">يمكنك تطبيق عامل تصفية …</string>
+    <string name="tuto_main_4">…عن طريق تغيير الفترة و تحديد التواريخ…</string>
     <string name="tuto_main_5">أو تصفية حسب الوحدة التنظيمية</string>
     <string name="tuto_main_6">تحقق من الإجراءات الأخرى في القائمة الرئيسية</string>
 
@@ -309,7 +309,7 @@
     <string name="limit_by_organisation_unit">ضع حداً حسب الوحدة التنظيمية</string>
     <string name="limit_by_program">ضع حداً حسب البرنامج</string>
     <string name="programs_list">قائمة البرنامج</string>
-    <string name="wipe_data">إعادة تعيين بيانات التطبيق &amp؛ و إعدادات التكوين</string>
+    <string name="wipe_data">إعادة تعيين بيانات التطبيق &amp;؛ و إعدادات التكوين</string>
     <string name="add_relationship_error">من غير الممكن إ</string>
     <string name="warning_error_on_complete_title">تحقق من هذا!</string>
     <string name="warning_on_complete_title">تحذير</string>
@@ -370,20 +370,20 @@
     <string name="menu_home">الرئيسية</string>
     <string name="appwidget_text">مثال</string>
     <string name="showHelp">إظهار المساعدة</string>
-    <string name="tuto_settings_1">مزامنة بياناتك...</string>
-    <string name="tuto_settings_2">...التكوين الخاص بك...</string>
-    <string name="tuto_settings_3">...تعيين عدد السجلات التي يتم تحميلها من الخادم ...</string>
+    <string name="tuto_settings_1">مزامنة بياناتك…</string>
+    <string name="tuto_settings_2">…التكوين الخاص بك…</string>
+    <string name="tuto_settings_3">…تعيين عدد السجلات التي يتم تحميلها من الخادم …</string>
     <string name="tuto_settings_reserved">تحقق وأدر كم عدد القيم المحجوزة المتبقية</string>
     <string name="tuto_settings_errors">تحقق مما إذا فشل الاتصال بالخادم</string>
     <string name="tuto_settings_reset">حرر بعض المساحة في الذاكرة</string>
-    <string name="tuto_settings_4">... أو احذف كل شيء للبدء من جديد.</string>
+    <string name="tuto_settings_4">… أو احذف كل شيء للبدء من جديد.</string>
     <string name="tuto_search_1_v2">ابحث عن الكيانات الخاصة بك في كل من جهازك المحلي وخادم الإنترنت.</string>
     <string name="tuto_search_2">يمكنك التبديل إلى برامج أخرى</string>
     <string name="tuto_search_3_v2">بحث أو إضافة كيانات جديدة. تحتاج إلى البحث قبل أن تتمكن من إضافة واحدة جديدة!</string>
     <string name="tuto_search_4_v2">انقر هنا لتنظيف الحقول وإعادة البحث.</string>
-    <string name="tuto_dashboard_2">الاطلاع على معلومات الملف الشخصي للكيانات...</string>
-    <string name="tuto_dashboard_3">...مشاركة المعلومات عبر QR أو SMS...</string>
-    <string name="tuto_dashboard_4">...أو ضع علامة على الكيان للمتابعة</string>
+    <string name="tuto_dashboard_2">الاطلاع على معلومات الملف الشخصي للكيانات…</string>
+    <string name="tuto_dashboard_3">…مشاركة المعلومات عبر QR أو SMS…</string>
+    <string name="tuto_dashboard_4">…أو ضع علامة على الكيان للمتابعة</string>
     <string name="tuto_dashboard_5">انقر لإنشاء أو جدولة حدث أو الإحالة إلى وحدة تنظيمية أخرى.</string>
     <string name="tuto_dashboard_6">هنا سترى جميع الأحداث. انقر لرؤية تفاصيل حدث.</string>
     <string name="tuto_dashboard_7">تنقل خلال القائمة لإضافة العلاقات أو مشاهدة المؤشرات أو كتابة الملاحظات.</string>
@@ -418,7 +418,7 @@
     <string name="unselect_enrollment_description">عرض لوحة معلومات بجميع البرامج النشطة</string>
     <string name="CHECK_SYNC_ERRORS">فتح سجل أخطاء التزامن</string>
     <string name="error_dialog_title">سجل أخطاء التزامن</string>
-    <string name="share_with">مشاركة مع...</string>
+    <string name="share_with">مشاركة مع…</string>
     <string name="errors_during_sync">فشلت مزامنة التكوين الخاصة بك. قد تكون هناك أخطاء في الخادم الخاص بك. انقر هنا للمزيد من المعلومات.</string>
     <string name="sectionSelectorPrev">السابق</string>
     <string name="sectionSelectorNext">التالي</string>
@@ -528,7 +528,7 @@
     <string name="sms_bar_state_failed">فشل</string>
 
     <string name="start_sync_granular">بدء المزامنة</string>
-    <string name="syncing">مزامنة...</string>
+    <string name="syncing">مزامنة…</string>
     <string name="end_sync_granular">اكتمال عملية المزامنة</string>
     <string name="error_sync">حدث خطأ أثناء المزامنة.</string>
     <string name="cancel_sync">تزامن ملغي.</string>
