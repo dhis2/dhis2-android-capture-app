@@ -332,6 +332,7 @@
     <string name="max">Máx</string>
     <string name="current">En uso</string>
     <string name="tei">TEI</string>
+    <string name="teis">TEIs</string>
     <string name="limit_by_organisation_unit">Limitar por unid. organizativa</string>
     <string name="limit_by_program">Limitado por programa</string>
     <string name="programs_list">Listado de programas</string>
@@ -643,6 +644,14 @@
     <string name="enrollment_single_section_label">Atributos - %s</string>
     <string name="program_selector">Registros en programas</string>
     <string name="select_time">Selecciona hora</string>
+    <string name="enter_letter">Introduce una letra</string>
+    <string name="enter_unit_interval">Introduce un número de 0 a 1</string>
+    <string name="enter_percentage">Introduce un porcentaje</string>
+    <string name="enter_phone_number">Introduce número de teléfono</string>
+    <string name="enter_email">Introduce email</string>
+    <string name="choose_ou">Elija unidad organizativa</string>
+    <string name="enter_url">Introduzca url</string>
+    <string name="enter_value">Introduzca valor</string>
     <string name="choose_image">Elija una imagen</string>
     <string name="scan_code">Escanear código</string>
     <string name="choose_option">Elija una opción</string>
@@ -662,4 +671,8 @@
     <string name="syncing_period_not_editable">El periodo de sincronización no es editable</string>
     <string name="sync_parameters_not_editable">Los parámetros de sincronización no son editables</string>
     <string name="rv_no_editable">El número de valores reservados a descargar no es editable</string>
-    </resources>
+    <string name="dialog_layer_satellite">Mostrar vista satélite</string>
+    <string name="dialog_layer_tei_coordinates">Mostrar coordenadas de la entidad</string>
+    <string name="dialog_layer_enrollment_coordinates">Mostrar coordinadas del registro</string>
+    <string name="dialog_layer_heatmap">Mostrar mapa de calor</string>
+</resources>
