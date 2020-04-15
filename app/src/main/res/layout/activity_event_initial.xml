@@ -120,10 +120,10 @@
 
                             <ImageView
                                 android:id="@+id/programStageIcon"
-                                android:layout_width="80dp"
-                                android:layout_height="80dp"
+                                android:layout_width="48dp"
+                                android:layout_height="48dp"
                                 android:contentDescription='@{name}'
-                                android:padding="7dp"
+                                android:padding="4dp"
                                 android:tint="?colorPrimaryDark"
                                 android:background="@drawable/rounded_square"
                                 app:srcCompat="@drawable/ic_clinical_f_outline" />
