@@ -13,7 +13,6 @@ import android.graphics.RectF;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.StrictMode;
 import android.transition.ChangeBounds;
 import android.transition.Transition;
 import android.transition.TransitionManager;
@@ -41,7 +40,6 @@ import androidx.paging.PagedList;
 import androidx.recyclerview.widget.DividerItemDecoration;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 import com.mapbox.geojson.BoundingBox;
 import com.mapbox.geojson.Feature;
@@ -66,6 +64,7 @@ import org.dhis2.data.forms.dataentry.ProgramAdapter;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.databinding.ActivitySearchBinding;
+import org.dhis2.usescases.enrollment.EnrollmentActivity;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.usescases.orgunitselector.OUTreeActivity;
 import org.dhis2.usescases.searchTrackEntity.adapters.FormAdapter;
@@ -704,10 +703,21 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
     @Override
     public void openDashboard(String teiUid, String programUid, String enrollmentUid) {
-        if(downloadingSnackbar!=null && downloadingSnackbar.isShown()){
+        if (downloadingSnackbar != null && downloadingSnackbar.isShown()) {
             downloadingSnackbar.dismiss();
         }
         startActivity(TeiDashboardMobileActivity.intent(this, teiUid, programUid, enrollmentUid));
+    }
+
+    @Override
+    public void goToEnrollment(String enrollmentUid, String programUid) {
+        Intent intent = EnrollmentActivity.Companion.getIntent(this,
+                enrollmentUid,
+                programUid,
+                EnrollmentActivity.EnrollmentMode.NEW,
+                fromRelationshipTEI() != null);
+        startActivity(intent);
+        finish();
     }
 
     /*region MAP*/

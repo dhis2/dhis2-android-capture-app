@@ -38,7 +38,6 @@ import org.hisp.dhis.android.core.common.ValueTypeDeviceRendering;
 import org.hisp.dhis.android.core.maintenance.D2Error;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.Program;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityType;
 
 import java.util.ArrayList;
@@ -631,13 +630,11 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                         .subscribeOn(schedulerProvider.computation())
                         .observeOn(schedulerProvider.ui())
                         .subscribe(enrollmentAndTEI -> {
-                                    if (view.fromRelationshipTEI() == null) {
-                                        analyticsHelper.setEvent(CREATE_ENROLL, CLICK, CREATE_ENROLL);
-                                        Intent intent = EnrollmentActivity.Companion.getIntent(view.getContext(), enrollmentAndTEI.val0(), selectedProgram.uid(), EnrollmentActivity.EnrollmentMode.NEW);
-                                        view.getContext().startActivity(intent);
-                                    } else {
-                                        addRelationship(enrollmentAndTEI.val1(), null, false);
-                                    }
+                                    analyticsHelper.setEvent(CREATE_ENROLL, CLICK, CREATE_ENROLL);
+                                    view.goToEnrollment(
+                                            enrollmentAndTEI.val0(),
+                                            selectedProgram.uid()
+                                    );
                                 },
                                 Timber::d)
         );

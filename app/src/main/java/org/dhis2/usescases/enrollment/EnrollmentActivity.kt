@@ -17,8 +17,6 @@ import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import io.reactivex.Flowable
-import java.io.File
-import javax.inject.Inject
 import org.dhis2.App
 import org.dhis2.R
 import org.dhis2.data.forms.dataentry.DataEntryAdapter
@@ -26,7 +24,6 @@ import org.dhis2.data.forms.dataentry.DataEntryArguments
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel
 import org.dhis2.data.forms.dataentry.fields.RowAction
 import org.dhis2.data.forms.dataentry.fields.display.DisplayViewModel
-import org.dhis2.data.forms.dataentry.fields.section.SectionViewModel
 import org.dhis2.databinding.EnrollmentActivityBinding
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity
@@ -49,11 +46,14 @@ import org.hisp.dhis.android.core.arch.helpers.GeometryHelper
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.Geometry
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
+import java.io.File
+import javax.inject.Inject
 
 class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
 
     enum class EnrollmentMode { NEW, CHECK }
 
+    private var forRelationship: Boolean = false
     @Inject
     lateinit var presenter: EnrollmentPresenterImpl
 
@@ -64,6 +64,7 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
         const val ENROLLMENT_UID_EXTRA = "ENROLLMENT_UID_EXTRA"
         const val PROGRAM_UID_EXTRA = "PROGRAM_UID_EXTRA"
         const val MODE_EXTRA = "MODE_EXTRA"
+        const val FOR_RELATIONSHIP = "FOR_RELATIONSHIP"
         const val RQ_ENROLLMENT_GEOMETRY = 1023
         const val RQ_INCIDENT_GEOMETRY = 1024
         const val RQ_EVENT = 1025
@@ -73,12 +74,17 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
             context: Context,
             enrollmentUid: String,
             programUid: String,
-            enrollmentMode: EnrollmentMode
+            enrollmentMode: EnrollmentMode,
+            forRelationship: Boolean? = false
         ): Intent {
             val intent = Intent(context, EnrollmentActivity::class.java)
             intent.putExtra(ENROLLMENT_UID_EXTRA, enrollmentUid)
             intent.putExtra(PROGRAM_UID_EXTRA, programUid)
             intent.putExtra(MODE_EXTRA, enrollmentMode.name)
+            intent.putExtra(FOR_RELATIONSHIP, forRelationship)
+            if (forRelationship == true) {
+                intent.addFlags(Intent.FLAG_ACTIVITY_FORWARD_RESULT)
+            }
             return intent
         }
     }
@@ -96,6 +102,7 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
                 EnrollmentMode.valueOf(intent.getStringExtra(MODE_EXTRA))
             )
         ).inject(this)
+        forRelationship = intent.getBooleanExtra(FOR_RELATIONSHIP, false)
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.enrollment_activity)
         binding.view = this
@@ -113,8 +120,8 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
                 false
             ) { itemPosition ->
                 itemPosition >= 0 &&
-                    itemPosition < adapter.itemCount &&
-                    adapter.getItemViewType(itemPosition) == adapter.sectionViewType()
+                        itemPosition < adapter.itemCount &&
+                        adapter.getItemViewType(itemPosition) == adapter.sectionViewType()
             }
         )
         binding.fieldRecycler.adapter = adapter
@@ -220,11 +227,18 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
     }
 
     override fun openDashboard(enrollmentUid: String) {
-        val bundle = Bundle()
-        bundle.putString(PROGRAM_UID, presenter.getProgram().uid())
-        bundle.putString(TEI_UID, presenter.getEnrollment().trackedEntityInstance())
-        bundle.putString(ENROLLMENT_UID, enrollmentUid)
-        startActivity(TeiDashboardMobileActivity::class.java, bundle, true, false, null)
+        if (forRelationship) {
+            val intent = Intent()
+            intent.putExtra("TEI_A_UID", presenter.getEnrollment().trackedEntityInstance())
+            setResult(Activity.RESULT_OK, intent)
+            finish()
+        } else {
+            val bundle = Bundle()
+            bundle.putString(PROGRAM_UID, presenter.getProgram().uid())
+            bundle.putString(TEI_UID, presenter.getEnrollment().trackedEntityInstance())
+            bundle.putString(ENROLLMENT_UID, enrollmentUid)
+            startActivity(TeiDashboardMobileActivity::class.java, bundle, true, false, null)
+        }
     }
 
     override fun rowActions(): Flowable<RowAction> {

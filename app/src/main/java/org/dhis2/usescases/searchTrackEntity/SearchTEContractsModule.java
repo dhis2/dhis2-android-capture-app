@@ -86,6 +86,8 @@ public class SearchTEContractsModule {
         boolean isMapVisible();
 
         void openDashboard(String teiUid, String programUid, String enrollmentUid);
+
+        void goToEnrollment(String enrollmentUid, String programUid);
     }
 
     public interface Presenter {
