@@ -17,6 +17,7 @@ import android.os.StrictMode;
 import android.transition.ChangeBounds;
 import android.transition.Transition;
 import android.transition.TransitionManager;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.MotionEvent;
@@ -442,6 +443,8 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
     @Override
     public void setLiveData(LiveData<PagedList<SearchTeiModel>> liveData) {
+        Log.d("SEARCH", "Setting live data");
+        Long start = System.currentTimeMillis();
         if (!fromRelationship) {
             liveData.observe(this, searchTeiModels -> {
                 Trio<PagedList<SearchTeiModel>, String, Boolean> data = presenter.getMessage(searchTeiModels);
@@ -463,7 +466,8 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                     binding.message.setText(data.val1());
                     binding.scrollView.setVisibility(View.GONE);
                 }
-
+                Long end = System.currentTimeMillis();
+                Log.d("SEARCH", "Done in " + (end - start));
             });
         } else {
             liveData.observeForever(searchTeiModels -> {
