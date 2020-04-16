@@ -440,7 +440,8 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
                 Intent intent = EnrollmentActivity.Companion.getIntent(this,
                         data.getStringExtra("GO_TO_ENROLLMENT"),
                         data.getStringExtra("GO_TO_ENROLLMENT_PROGRAM"),
-                        EnrollmentActivity.EnrollmentMode.NEW);
+                        EnrollmentActivity.EnrollmentMode.NEW,
+                        false);
                 startActivity(intent);
                 finish();
             }

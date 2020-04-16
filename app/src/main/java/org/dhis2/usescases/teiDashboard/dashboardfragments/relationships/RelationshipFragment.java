@@ -56,6 +56,8 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
     private RapidFloatingActionHelper rfaHelper;
     private RelationshipType relationshipType;
 
+    public static final String TEI_A_UID = "TEI_A_UID";
+
     @Override
     public void onAttach(@NotNull Context context) {
         super.onAttach(context);
@@ -122,7 +124,7 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
         if (requestCode == Constants.REQ_ADD_RELATIONSHIP) {
             if (resultCode == RESULT_OK) {
                 if (data != null) {
-                    String tei_a = data.getStringExtra("TEI_A_UID");
+                    String tei_a = data.getStringExtra(TEI_A_UID);
                     presenter.addRelationship(tei_a, relationshipType.uid());
                 }
             }
