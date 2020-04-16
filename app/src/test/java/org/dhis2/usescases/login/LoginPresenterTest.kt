@@ -4,6 +4,7 @@ import co.infinum.goldfinger.Goldfinger
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
+import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.verifyNoMoreInteractions
 import com.nhaarman.mockitokotlin2.whenever
@@ -87,6 +88,24 @@ class LoginPresenterTest {
         verify(view).setUrl(serverUrl)
         verify(view).setUser(userName)
         verify(view).getDefaultServerProtocol()
+        verifyNoMoreInteractions(view)
+    }
+
+    @Test
+    fun `Should set default protocol if server url and username is empty`() {
+        val protocol = "https://"
+        whenever(userManager.isUserLoggedIn) doReturn Observable.just(false)
+        whenever(preferenceProvider.getBoolean("SessionLocked", false)) doReturn false
+        whenever(view.getDefaultServerProtocol()) doReturn protocol
+        whenever(
+            preferenceProvider.getString(SECURE_SERVER_URL, protocol)
+        ) doReturn null
+        whenever(preferenceProvider.getString(SECURE_USER_NAME, "")) doReturn null
+
+        loginPresenter.init(userManager)
+
+        verify(view).setUrl(protocol)
+        verify(view, times(2)).getDefaultServerProtocol()
         verifyNoMoreInteractions(view)
     }
 
