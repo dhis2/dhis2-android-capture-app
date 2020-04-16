@@ -316,29 +316,22 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
         if (mode != EnrollmentMode.NEW) {
             binding.title.visibility = View.GONE
             binding.teiDataHeader.root.visibility = View.VISIBLE
-            binding.teiDataHeader.mainAttributes.setTextColor(Color.WHITE)
-            binding.teiDataHeader.secundaryAttribute.setTextColor(Color.WHITE)
-            var firstAttr = ""
-            var secondAttr = ""
-            var thirdAttr = ""
-            if (attrList.size > 1) {
-                firstAttr = attrList[0]
-            }
-            if (attrList.size > 2) {
-                secondAttr = attrList[1]
-            }
-            if (attrList.size >= 3) {
-                thirdAttr = attrList[2]
-            }
-            binding.teiDataHeader.mainAttributes.text =
-                String.format("%s %s", firstAttr, secondAttr)
-            binding.teiDataHeader.secundaryAttribute.text = thirdAttr
 
-            if(firstAttr.isEmpty() && secondAttr.isEmpty()){
-                binding.teiDataHeader.mainAttributes.visibility = View.GONE
+            val attrListNotEmpty = attrList.filter { it.isNotEmpty() }
+            binding.teiDataHeader.mainAttributes.apply {
+                when (attrListNotEmpty.size) {
+                    0 -> visibility = View.GONE
+                    1 -> text = attrListNotEmpty[0]
+                    else -> text = String.format("%s %s", attrListNotEmpty[0], attrListNotEmpty[1])
+                }
+                setTextColor(Color.WHITE)
             }
-            if(thirdAttr.isEmpty()){
-                binding.teiDataHeader.secundaryAttribute.visibility = View.GONE
+            binding.teiDataHeader.secundaryAttribute.apply {
+                when (attrListNotEmpty.size) {
+                    0, 1, 2 -> visibility = View.GONE
+                    else -> text = attrListNotEmpty[2]
+                }
+                setTextColor(Color.WHITE)
             }
 
             if (profileImage.isEmpty()) {

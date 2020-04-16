@@ -85,7 +85,6 @@ android {
         exclude 'META-INF/rxjava.properties'
     }
 
-
     buildTypes {
         debug {
             // custom application suffix which allows to
@@ -110,7 +109,6 @@ android {
             ext.enableCrashlytics = true
 
             resValue "string", "content_provider", "com.dhis2.provider"
-
         }
 
         training {
@@ -222,7 +220,8 @@ dependencies {
 
     debugImplementation project(':dhis2-rule-engine')
     betaImplementation project(':dhis2-rule-engine')
-    
+    releaseImplementation project(':dhis2-rule-engine')
+
     implementation project(':viewpagerdotsindicator')
     implementation project(':tableview')
 
@@ -246,9 +245,9 @@ dependencies {
         exclude group: "org.hisp.dhis", module: "core-rules"
     }
 
-    releaseImplementation("org.hisp.dhis.rules:rule-engine:${libraries.ruleEngine}") {
+  /*  releaseImplementation("org.hisp.dhis.rules:rule-engine:${libraries.ruleEngine}") {
         exclude group: "junit", module: "junit"
-    }
+    }*/
     //endregion
 
     //region UI LIBRARIES
@@ -341,7 +340,7 @@ dependencies {
     implementation 'me.toptas.fancyshowcase:fancyshowcaseview:1.1.5'
 
     //Lottie animations
-    implementation 'com.airbnb.android:lottie:2.8.0'
+    implementation 'com.airbnb.android:lottie:3.4.0'
 
     //Glide load images
     implementation 'com.github.bumptech.glide:glide:4.9.0'

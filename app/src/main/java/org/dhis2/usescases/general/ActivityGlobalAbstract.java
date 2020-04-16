@@ -65,7 +65,7 @@ import rx.subjects.BehaviorSubject;
 import timber.log.Timber;
 
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;
-import static org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialPresenter.ACCESS_COARSE_LOCATION_PERMISSION_REQUEST;
+import static org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialPresenter.ACCESS_LOCATION_PERMISSION_REQUEST;
 import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
 import static org.dhis2.utils.analytics.AnalyticsConstants.SHOW_HELP;
 import static org.dhis2.utils.session.PinDialogKt.PIN_DIALOG_TAG;
@@ -84,13 +84,6 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity
     @Inject
     public AnalyticsHelper analyticsHelper;
     public ScanTextView scanTextView;
-
-    public void requestLocationPermission(CoordinatesView coordinatesView) {
-        this.coordinatesView = coordinatesView;
-        ActivityCompat.requestPermissions((ActivityGlobalAbstract) getContext(),
-                new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
-                ACCESS_COARSE_LOCATION_PERMISSION_REQUEST);
-    }
 
     public enum Status {
         ON_PAUSE,
@@ -153,7 +146,7 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         switch (requestCode) {
-            case ACCESS_COARSE_LOCATION_PERMISSION_REQUEST:
+            case ACCESS_LOCATION_PERMISSION_REQUEST:
                 if (grantResults[0] == PERMISSION_GRANTED) {
                     coordinatesView.getLocation();
                 }

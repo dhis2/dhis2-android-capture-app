@@ -14,6 +14,7 @@
     <string name="no_value">sin valor</string>
     <string name="no_reserved_values">No quedan valores reservados. Contacta con el administrador del sistema.</string>
     <string name="no_reserved_values_connection">No quedan valores reservados. Conéctate a internet para recargarlos.</string>
+    <string name="errors">errores</string>
     <!-- SyncService strings: -->
     <string name="sync_now">Sincronizar ahora</string>
     <string name="sync_text">Sincronizando con el servidor</string>
@@ -98,6 +99,8 @@
     <string name="completed">Completado</string>
     <string name="cancelled">Cancelar</string>
     <string name="re_open">Reabrir</string>
+    <string name="activate">Activar</string>
+
     <!-- State -->
     <string name="state_synced">Sincronizado</string>
     <string name="state_to_post">Para enviar</string>
@@ -177,8 +180,11 @@
     <!-- SYNC -->
     <string name="a_minute">1 minuto</string>
     <string name="fifteen_minute">15 minutos</string>
+    <string name="thirty_minutes">30 minutos</string>
     <string name="a_hour">1 hora</string>
+    <string name="every_6_hours">6h</string>
     <string name="a_day">1 día (por defecto)</string>
+    <string name="every_12_hours">12h</string>
     <string name="Automatic_Sync_Data">Sincronizacion de datos automatica cada:</string>
     <string name="Manual">Manual</string>
     <string name="Automatic_Sync_Metadata">Sincronizacion de configuracion automatica cada:</string>
@@ -203,6 +209,16 @@
     <string name="settings_sms_receiver_number_hint">numero</string>
     <string name="settings_sms_module_switch">Permitir envío por SMS</string>
     <string name="settings_sms_response_wait_switch">Esperar confirmación por SMS</string>
+    <plurals name="settings_specific_programs">
+        <item quantity="one">Hay %s programa con una configuración específica</item>
+        <item quantity="other">Hay %s programas con configuraciones específicas</item>
+    </plurals>
+    <string name="settings_sync_period">Periodo de sincronización</string>
+    <string name="settings_limit_scope">Configuración limitada</string>
+    <string name="settings_limit_globally">Globalmente</string>
+    <string name="settings_limit_program">por programa</string>
+    <string name="settings_limit_ou">por unidad organizativa</string>
+    <string name="settings_limit_ou_program">por unid. org. y programa</string>
     <!-- SEARCH TRACK ENTITY -->
 
     <!--region SETTINCS-->
@@ -316,6 +332,7 @@
     <string name="max">Máx</string>
     <string name="current">En uso</string>
     <string name="tei">TEI</string>
+    <string name="teis">TEIs</string>
     <string name="limit_by_organisation_unit">Limitar por unid. organizativa</string>
     <string name="limit_by_program">Limitado por programa</string>
     <string name="programs_list">Listado de programas</string>
@@ -444,8 +461,10 @@
     <string name="finish_add_new"><![CDATA[Acabar y añadir]]></string>
     <string name="finish">Acabar</string>
     <string name="error_fields_title">Campos con errores</string>
+    <string name="error_fields_events">Algunos campos presentan errores. No se han guardado. Revíselos por favor.</string>
     <string name="event_reopened">Ahora puede editar este evento</string>
     <string name="unique_warning">El valor debe ser único, se ha encontrado una coincidencia. El campo no se ha guardado, revíselo.</string>
+    <string name="unique_coincidence_found">Se ha encontrado una coincidencia en un campo único. Por favor compruebe el formulario para guardar el registro.</string>
     <string name="please_wait">Por favor, espere</string>
     <string name="skip">Omitir</string>
     <string name="reschedule">Reprogramar</string>
@@ -573,6 +592,8 @@
     <string name="filters_title_period">Periodo</string>
     <string name="filters_title_org_unit">Unidad Org.</string>
     <string name="filters_title_status">Estado</string>
+    <string name="filters_title_state">Sincronizado</string>
+    <string name="filters_title_assigned">Asignado a mí</string>
     <string name="filter_period_today">Hoy</string>
     <string name="filter_period_yesterday">Ayer</string>
     <string name="filter_period_tomorrow">Mañana</string>
@@ -587,4 +608,71 @@
     <string name="filter_period_any">Cualquier momento</string>
     <string name="data_values_error_sync_message">La sincronización falló. Comprueba los valores para tratar de resolver el problema e inténtelo otra vez. Si el fallo persiste contacta con su administrador del sistema.</string>
     <string name="sms_synced_message">Los datos se han enviado al servidor pero no se puede garantizar que se hayan guardado</string>
-    </resources>
+    <string name="filter_event_status_open">Abierto</string>
+    <string name="filter_event_status_schedule">Planificado</string>
+    <string name="filter_event_status_overdue">Atrasado</string>
+    <string name="filter_event_status_visited">Visitado</string>
+    <string name="filter_event_status_completed">Completado</string>
+    <string name="filter_event_status_skipped">Omitido</string>
+    <string name="event_tei_limits">Eventos:%smax:%s%sactual:%sEntidades:%smax:%s%sactual:%s</string>
+    <string name="event_tei_limits_v2">Configuración limitada %s\nEventos: %s/%s Entidades: %s/%s</string>
+    <string name="enrollment_data_hide">Ocultar datos de registro</string>
+    <string name="enrollment_data_show">Mostrar datos de registro</string>
+    <string name="enrollment_data_section_label">Datos de registro</string>
+    <string name="sms_enabled">Módulo de SMS activado</string>
+    <string name="sms_disabled">Módulo de SMS desactivado</string>
+    <string name="sms_downloading_data">Descargando datos para el módulo de SMS. Por favor espere.</string>
+    <string name="sms_empty_gateway">El gateway de SMS no puede estar vacío</string>
+    <string name="granular_sync_enrollments_empty">No hay registros que sincronizar</string>
+    <string name="granular_sync_unsupported_task">La conversión elegida no está soportada</string>
+    <string name="disable_pin_locked">No volver a mostrar la pantalla de bloqueo</string>
+    <string name="set_pin">Establecer pin</string>
+    <string name="conflict">Conflicto</string>
+    <string name="event_date_in_future_message">Este evento no puede tener una fecha en el futuro. Por favor cámbiela.</string>
+    <string name="change_event_date">Cambiar fecha</string>
+    <string name="go_back">Ir atrás</string>
+    <string name="data_sets">Sets de datos</string>
+    <string name="no_notes">Sin notas</string>
+    <string name="no_add_notes">No se pueden añadir más notas</string>
+    <string name="new_note">Nueva nota</string>
+    <string name="note_saved">Nota guardada</string>
+    <string name="discard_note">¿Descartar nota?</string>
+    <string name="interval_now">ahora</string>
+    <string name="interval_minute_ago">Hace %d min.</string>
+    <string name="interval_hour_ago">Hace %d horas</string>
+    <string name="interval_yesterday">Ayer</string>
+    <string name="enrollment_single_section_label">Atributos - %s</string>
+    <string name="program_selector">Registros en programas</string>
+    <string name="select_time">Selecciona hora</string>
+    <string name="enter_letter">Introduce una letra</string>
+    <string name="enter_unit_interval">Introduce un número de 0 a 1</string>
+    <string name="enter_percentage">Introduce un porcentaje</string>
+    <string name="enter_phone_number">Introduce número de teléfono</string>
+    <string name="enter_email">Introduce email</string>
+    <string name="choose_ou">Elija unidad organizativa</string>
+    <string name="enter_url">Introduzca url</string>
+    <string name="enter_value">Introduzca valor</string>
+    <string name="choose_image">Elija una imagen</string>
+    <string name="scan_code">Escanear código</string>
+    <string name="choose_option">Elija una opción</string>
+    <string name="reserved_values_hint">Valores reservados descargados por atributo de entidad</string>
+    <string name="settings_reserved_values_message">Valores reservados descargados por atributo de entidad</string>
+    <string name="reserved_values_left">Quedan %s valores reservados</string>
+    <string name="manage_reserved_values_button">Gestionar valores reservados</string>
+    <string name="events_to_download">Eventos a descargar</string>
+    <string name="teis_to_download">Entidades a descargar</string>
+    <string name="program_settings">Configuración de programa</string>
+    <string name="limit_scope_all_ou_trailing">para todas las unidades organizativas</string>
+    <string name="limit_scope_global_trailing">globalmente</string>
+    <string name="limit_scope_ou_trailing">por unidad organizativa</string>
+    <string name="limit_scope_program_trailing">por programa</string>
+    <string name="limit_scope_ou_program_trailing">por unid. org. y programa</string>
+    <string name="activity_program_settings">Configuración de sincronización del programa</string>
+    <string name="syncing_period_not_editable">El periodo de sincronización no es editable</string>
+    <string name="sync_parameters_not_editable">Los parámetros de sincronización no son editables</string>
+    <string name="rv_no_editable">El número de valores reservados a descargar no es editable</string>
+    <string name="dialog_layer_satellite">Mostrar vista satélite</string>
+    <string name="dialog_layer_tei_coordinates">Mostrar coordenadas de la entidad</string>
+    <string name="dialog_layer_enrollment_coordinates">Mostrar coordinadas del registro</string>
+    <string name="dialog_layer_heatmap">Mostrar mapa de calor</string>
+</resources>

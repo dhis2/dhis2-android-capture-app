@@ -6,6 +6,7 @@ import org.dhis2.data.dagger.PerFragment
 import org.dhis2.data.forms.dataentry.DataEntryStore
 import org.dhis2.data.forms.dataentry.ValueStore
 import org.dhis2.data.forms.dataentry.ValueStoreImpl
+import org.dhis2.data.prefs.PreferenceProvider
 import org.dhis2.data.schedulers.SchedulerProvider
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.hisp.dhis.android.core.D2
@@ -28,14 +29,17 @@ class DataValueModule(
         repository: DataValueRepository,
         valueStore: ValueStore,
         schedulerProvider: SchedulerProvider,
-        analyticsHelper: AnalyticsHelper
+        analyticsHelper: AnalyticsHelper,
+        preferenceProvider: PreferenceProvider
     ): DataValuePresenter {
         return DataValuePresenter(
             view,
             repository,
             valueStore,
             schedulerProvider,
-            analyticsHelper
+            analyticsHelper,
+            preferenceProvider,
+            dataSetUid
         )
     }
 

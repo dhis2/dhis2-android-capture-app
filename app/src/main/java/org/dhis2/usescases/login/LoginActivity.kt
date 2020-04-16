@@ -419,4 +419,7 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
     private fun setUpLoginInfo() {
         binding.appBuildInfo.text = buildInfo()
     }
+
+    override fun getDefaultServerProtocol(): String =
+        getString(R.string.login_https)
 }

@@ -31,7 +31,9 @@ public class DataSetRowHeader extends AbstractViewHolder {
         binding.setTableScale(currentTableScale);
         binding.title.setText(!isEmpty(dataElement.displayFormName()) ? dataElement.displayFormName() : dataElement.displayName());
 
-        if (binding.title.getText().length() > 16 || dataElementDecoration) {
+        boolean hasDescription = dataElement.displayDescription()!=null && !dataElement.displayDescription().isEmpty();
+        boolean showDecoration = dataElementDecoration.equals(true);
+        if (showDecoration|| hasDescription) {
             binding.descriptionLabel.setVisibility(View.VISIBLE);
             binding.descriptionLabel.setOnClickListener(v ->
                     new CustomDialog(
