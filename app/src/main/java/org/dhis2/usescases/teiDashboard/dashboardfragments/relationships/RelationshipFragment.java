@@ -197,7 +197,7 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
                         getString(R.string.resource_not_found),
                         teiTypeName),
                 getString(R.string.relationship_without_enrollment),
-                getString(R.string.ok),
+                getString(R.string.button_ok),
                 getString(R.string.no),
                 new OnDialogClickListener() {
                     @Override
@@ -220,7 +220,7 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
                         getString(R.string.resource_not_found),
                         teiTypeName),
                 getString(R.string.relationship_not_found_message),
-                getString(R.string.ok),
+                getString(R.string.button_ok),
                 getString(R.string.no),
                 new OnDialogClickListener() {
                     @Override
