@@ -80,7 +80,8 @@ public class SearchRepositoryImpl implements SearchRepository {
                     "JOIN %s ON %s.%s = %s.%s " +
                     "WHERE %s.%s = ? AND %s.%s = ? AND " +
                     "%s.%s = 1 " +
-                    "ORDER BY %s.%s ASC",
+                    "ORDER BY %s.%s ASC " +
+                    "LIMIT 3",
             "TrackedEntityAttributeValue", "TrackedEntityAttribute", "valueType", "TrackedEntityAttribute", "optionSet", "TrackedEntityAttributeValue",
             "ProgramTrackedEntityAttribute", "ProgramTrackedEntityAttribute", "trackedEntityAttribute", "TrackedEntityAttributeValue", "trackedEntityAttribute",
             "TrackedEntityAttribute", "TrackedEntityAttribute", "uid", "TrackedEntityAttributeValue", "trackedEntityAttribute",
@@ -92,7 +93,8 @@ public class SearchRepositoryImpl implements SearchRepository {
             "SELECT DISTINCT %s.*, TrackedEntityAttribute.valueType, TrackedEntityAttribute.optionSet, ProgramTrackedEntityAttribute.displayInList FROM %s " +
                     "JOIN %s ON %s.%s = %s.%s " +
                     "LEFT JOIN ProgramTrackedEntityAttribute ON ProgramTrackedEntityAttribute.trackedEntityAttribute = TrackedEntityAttribute.uid " +
-                    "WHERE %s.%s = ? AND %s.%s = 1 ORDER BY %s.%s ASC",
+                    "WHERE %s.%s = ? AND %s.%s = 1 ORDER BY %s.%s ASC " +
+                    "LIMIT 3",
             "TrackedEntityAttributeValue", "TrackedEntityAttributeValue",
             "TrackedEntityAttribute", "TrackedEntityAttribute", "uid", "TrackedEntityAttributeValue", "trackedEntityAttribute",
             "TrackedEntityAttributeValue", "trackedEntityInstance",

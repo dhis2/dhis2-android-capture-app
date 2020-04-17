@@ -462,7 +462,6 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                     binding.message.setText(data.val1());
                     binding.scrollView.setVisibility(View.GONE);
                 }
-
             });
         } else {
             liveData.observeForever(searchTeiModels -> {
