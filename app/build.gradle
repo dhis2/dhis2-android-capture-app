@@ -300,9 +300,11 @@ dependencies {
     //endregion
 
     // Kujaku dependencies
-    implementation 'io.ona.kujaku:library:0.7.7'
+//    implementation 'io.ona.kujaku:library:0.7.7'
     implementation 'com.mapbox.mapboxsdk:mapbox-android-sdk:8.3.0'
     implementation 'com.mapbox.mapboxsdk:mapbox-android-plugin-markerview-v8:0.3.0'
+    implementation 'com.mapbox.mapboxsdk:mapbox-android-plugin-annotation-v9:0.8.0'
+
 
 
     // Jake Wharton libraries
