@@ -5,7 +5,6 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.widget.DatePicker;
 
@@ -204,7 +203,6 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                         .onBackpressureLatest()
                         .observeOn(schedulerProvider.io())
                         .filter(data -> !view.isMapVisible())
-                        //.debounce(700, TimeUnit.MILLISECONDS)
                         .switchMap(map -> Flowable.just(searchRepository.searchTrackedEntities(
                                 selectedProgram,
                                 trackedEntityType,
