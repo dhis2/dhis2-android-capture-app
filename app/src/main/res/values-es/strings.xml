@@ -588,4 +588,8 @@
     <string name="filter_period_any">Cualquier momento</string>
     <string name="data_values_error_sync_message">La sincronización falló. Comprueba los valores para tratar de resolver el problema e inténtelo otra vez. Si el fallo persiste contacta con su administrador del sistema.</string>
     <string name="sms_synced_message">Los datos se han enviado al servidor pero no se puede garantizar que se hayan guardado</string>
-    </resources>
+    <string name="filter_sync_synced">Sincronizado</string>
+    <string name="filter_sync_not_synced">No sincronizado</string>
+    <string name="filter_sync_error">Errores de sincro.</string>
+    <string name="filter_sync_sms">Sincronizado por SMS</string>
+</resources>
