@@ -303,7 +303,7 @@
         <item name="android:layout_margin">5dp</item>
         <item name="android:paddingBottom">8dp</item>
     </style>
-  
+
     <style name="settingsHint">
         <item name="android:textSize">10sp</item>
     </style>

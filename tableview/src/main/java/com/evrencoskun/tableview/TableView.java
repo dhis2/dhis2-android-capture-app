@@ -883,6 +883,11 @@ public class TableView extends FrameLayout implements ITableView {
         }
     }
 
+    @Override
+    public void setCellHeight(int hcellHeight) {
+        mColumnHeaderHeight = hcellHeight;
+    }
+
     public void setColumnWidth(int columnPosition, int width) {
         mColumnWidthHandler.setColumnWidth(columnPosition, width);
     }
@@ -909,6 +914,7 @@ public class TableView extends FrameLayout implements ITableView {
 
         // Reload the preferences
         mPreferencesHandler.loadPreferences(savedState.preferences);
+        scrollToColumnPosition(mScrollHandler.getColumnPosition());
     }
 
     public View getCornerView() {

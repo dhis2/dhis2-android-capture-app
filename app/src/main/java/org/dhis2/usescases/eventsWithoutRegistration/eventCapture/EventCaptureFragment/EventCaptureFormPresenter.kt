@@ -24,14 +24,15 @@ class EventCaptureFormPresenter(
             view.dataEntryFlowable()
                 .onBackpressureBuffer()
                 .distinctUntilChanged()
-                .subscribeOn(schedulerProvider.io())
-                .observeOn(schedulerProvider.ui())
+                .observeOn(schedulerProvider.io())
                 .switchMap { action ->
                     if (action.lastFocusPosition() != null && action.lastFocusPosition() >= 0) {
                         this.lastFocusItem = action.id()
                     }
                     valueStore.save(action.id(), action.value())
                 }
+                .subscribeOn(schedulerProvider.io())
+                .observeOn(schedulerProvider.ui())
                 .subscribe(
                     {
                         if(it.valueStoreResult == ValueStoreImpl.ValueStoreResult.VALUE_CHANGED){

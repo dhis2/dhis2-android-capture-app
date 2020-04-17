@@ -41,7 +41,7 @@ class SectionHolder(
         checkVisibility(viewModel.uid() == SectionViewModel.CLOSING_SECTION_UID)
         formBinding.apply {
             sectionName.text = viewModel.label()
-            openIndicator.visibility = if (viewModel.isOpen) View.VISIBLE else View.GONE
+            openIndicator.scaleY = if (viewModel.isOpen) 1f else -1f
             when(viewModel.errors()) {
                 null, 0 -> sectionFieldsInfo.apply{
                     text = String.format(
@@ -127,23 +127,11 @@ class SectionHolder(
     private fun animateArrow() {
         val isSelected = selectedSection.get() == viewModel.uid()
         if (isSelected) {
-            formBinding.openIndicator.rotation = -45f
+            formBinding.openIndicator.scaleY = 1f
         }
         formBinding.openIndicator.animate()
-            .scaleY(if (isSelected) 1f else 0f)
-            .scaleX(if (isSelected) 1f else 0f)
-            .rotation(if (isSelected) 0f else -45f)
+            .scaleY(if (isSelected) 1f else -1f)
             .setDuration(200)
-            .setListener(object : Animator.AnimatorListener {
-                override fun onAnimationStart(animation: Animator) {}
-                override fun onAnimationEnd(animation: Animator) {
-                    formBinding.openIndicator.visibility =
-                        if (viewModel.isOpen) View.VISIBLE else View.GONE
-                }
-
-                override fun onAnimationCancel(animation: Animator) {}
-                override fun onAnimationRepeat(animation: Animator) {}
-            })
             .start()
     }
 
