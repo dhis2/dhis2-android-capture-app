@@ -107,7 +107,7 @@
 
     <!-- State -->
     <string name="state_synced">Sync</string>
-    <string name="state_to_post">To post</string>
+    <string name="state_to_post">To send</string>
     <string name="state_to_update">To update</string>
     <string name="state_to_delete">To delete</string>
     <string name="state_error">Error</string>
