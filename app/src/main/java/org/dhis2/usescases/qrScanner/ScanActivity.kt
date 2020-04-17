@@ -58,7 +58,7 @@ class ScanActivity : ActivityGlobalAbstract(), ZXingScannerView.ResultHandler {
             ?.inject(this)
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_scan)
-        renderingType = intent.getSerializableExtra(Constants.SCAN_RENDERING_TYPE) as ValueTypeRenderingType
+        renderingType = intent.getSerializableExtra(Constants.SCAN_RENDERING_TYPE) as ValueTypeRenderingType?
         mScannerView = binding.scannerView
         mScannerView.apply {
             setAutoFocus(true)
@@ -74,7 +74,7 @@ class ScanActivity : ActivityGlobalAbstract(), ZXingScannerView.ResultHandler {
                 ValueTypeRenderingType.QR_CODE -> {
                     setFormats(listOf(QR_CODE, DATA_MATRIX, MAXICODE, AZTEC))
                 }
-                else -> throw IllegalArgumentException("ValueTypeRenderingType is not implemented")
+                else -> setFormats(ZXingScannerView.ALL_FORMATS)
             }
         }
     }
