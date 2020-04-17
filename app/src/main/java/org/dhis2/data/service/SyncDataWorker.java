@@ -28,7 +28,6 @@ import javax.inject.Inject;
 import timber.log.Timber;
 
 import static org.dhis2.utils.analytics.AnalyticsConstants.DATA_TIME;
-import static org.dhis2.utils.analytics.AnalyticsConstants.METADATA_TIME;
 
 public class SyncDataWorker extends Worker {
 
@@ -66,15 +65,17 @@ public class SyncDataWorker extends Worker {
 
         try {
             presenter.uploadResources();
-        }catch (Exception e){
+        } catch (Exception e){
             Timber.e(e);
         }
+
         try {
             presenter.syncAndDownloadEvents();
         } catch (Exception e) {
             Timber.e(e);
             isEventOk = false;
         }
+
         try {
             presenter.syncAndDownloadTeis();
         } catch (Exception e) {

@@ -77,6 +77,8 @@ class LoginPresenter(
                                 if (!serverUrl.isNullOrEmpty() && !user.isNullOrEmpty()) {
                                     view.setUrl(serverUrl)
                                     view.setUser(user)
+                                } else {
+                                    view.setUrl(view.getDefaultServerProtocol())
                                 }
                             }
                         },

@@ -38,7 +38,6 @@ import org.hisp.dhis.android.core.common.ValueTypeDeviceRendering;
 import org.hisp.dhis.android.core.maintenance.D2Error;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.Program;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityType;
 
 import java.util.ArrayList;
@@ -61,6 +60,7 @@ import io.reactivex.subjects.BehaviorSubject;
 import timber.log.Timber;
 
 import static android.app.Activity.RESULT_OK;
+import static org.dhis2.usescases.teiDashboard.dashboardfragments.relationships.RelationshipFragment.TEI_A_UID;
 import static org.dhis2.utils.analytics.AnalyticsConstants.ADD_RELATIONSHIP;
 import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
 import static org.dhis2.utils.analytics.AnalyticsConstants.CREATE_ENROLL;
@@ -631,13 +631,11 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                         .subscribeOn(schedulerProvider.computation())
                         .observeOn(schedulerProvider.ui())
                         .subscribe(enrollmentAndTEI -> {
-                                    if (view.fromRelationshipTEI() == null) {
-                                        analyticsHelper.setEvent(CREATE_ENROLL, CLICK, CREATE_ENROLL);
-                                        Intent intent = EnrollmentActivity.Companion.getIntent(view.getContext(), enrollmentAndTEI.val0(), selectedProgram.uid(), EnrollmentActivity.EnrollmentMode.NEW);
-                                        view.getContext().startActivity(intent);
-                                    } else {
-                                        addRelationship(enrollmentAndTEI.val1(), null, false);
-                                    }
+                                    analyticsHelper.setEvent(CREATE_ENROLL, CLICK, CREATE_ENROLL);
+                                    view.goToEnrollment(
+                                            enrollmentAndTEI.val0(),
+                                            selectedProgram.uid()
+                                    );
                                 },
                                 Timber::d)
         );
@@ -658,7 +656,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         } else if (!online) {
             analyticsHelper.setEvent(ADD_RELATIONSHIP, CLICK, ADD_RELATIONSHIP);
             Intent intent = new Intent();
-            intent.putExtra("TEI_A_UID", teiUid);
+            intent.putExtra(TEI_A_UID, teiUid);
             if (relationshipTypeUid != null)
                 intent.putExtra("RELATIONSHIP_TYPE_UID", relationshipTypeUid);
             view.getAbstractActivity().setResult(RESULT_OK, intent);

@@ -360,7 +360,8 @@ class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
         view.seeDetails(EnrollmentActivity.Companion.getIntent(view.getContext(),
                 dashboardProgramModel.getCurrentEnrollment().uid(),
                 dashboardProgramModel.getCurrentProgram().uid(),
-                EnrollmentActivity.EnrollmentMode.CHECK), options.toBundle());
+                EnrollmentActivity.EnrollmentMode.CHECK,
+                false), options.toBundle());
     }
 
     @Override
