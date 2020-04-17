@@ -146,6 +146,8 @@
     <string name="to_enroll_programs">برامج للتسجيل</string>
     <string name="enroll">سجٍل</string>
     <string name="last_visit">آخر زيارة:</string>
+    <string name="apply">تطبيق</string>
+
     <!--TEI DASHBOARD-->
     <string name="see_details">انظر التفاصيل</string>
     <string name="view_more">عرض المزيد</string>
@@ -179,6 +181,7 @@
     <string name="Manual">يدوياً</string>
     <string name="Automatic_Sync_Metadata">مزامنة الإعدادات تلقائياً كل:</string>
     <string name="a_week">1 اسبوع</string>
+    <string name="sync_max_parameters">معاملات المزامنة الحالية:</string>
     <string name="sync_default_parameters">إعادة تعيين إلى الافتراضي</string>
     <string name="wipe_data_meesage">سيتم حذف قاعدة البيانات.\n سيُطلب منك تسجيل الدخول مرة أخرى.</string>
     <string name="wipe_data_ok">قبول</string>
@@ -197,7 +200,10 @@
     <string name="settings_sms_result_sender_hint">رقم</string>
     <string name="settings_sms_receiver_number_hint">رقم</string>
     <string name="settings_sms_module_switch">تمكين إرسال الرسائل النصية</string>
+    <string name="settings_sms_response_wait_switch">انتظر لرد ونتيجة الـ SMS</string>
     <string name="settings_sync_period">فترة المزامنة</string>
+    <string name="settings_limit_scope">الإعدادات محدودة</string>
+    <string name="settings_limit_globally">شامل</string>
     <string name="settings_limit_program">حسب البرنامج</string>
     <string name="settings_limit_ou">حسب الوحدة التنظيمية</string>
     <string name="settings_limit_ou_program">حسب الوحدة التنظيمية والبرنامج</string>
@@ -206,6 +212,7 @@
     <!--region SETTINCS-->
     <string name="settingsSyncData">زامن البيانات</string>
     <string name="settingsSyncMetadata">زامن اعدادات التكوين</string>
+    <string name="settingsSyncParameters">معاملات المزامنة</string>
     <string name="settingsReservedValues">القيم المحجوزة</string>
     <string name="settingsReservedValues_descr">هنا يمكنك رؤية عدد القيم المتاحة بلا اتصال بالإنترنت وحجز قيم جديدة.</string>
     <string name="settingsErrorLog">افتح سجل أخطاء المزامنة</string>
@@ -242,6 +249,10 @@
     <string name="error_fields">تحتوي بعض الحقول على أخطاء:\n%s\n يرجى التحقق منها.</string>
     <string name="missing_mandatory_fields_finish">بعض الحقول الإلزامية مفقودة. يمكنك إنهاء إدخال البيانات والخروج، لكن لا يمكن إكمال الحدث.</string>
     <string name="enrollment_coordinates">إحداثيات التسجيل</string>
+    <string name="tei_coordinates">إحداثيات لـ </string>
+
+    <!--EVENT SUMMARY-->
+    <string name="section_list">قائمة الأقسام</string>
     <string name="event_summary_header" formatted="false">تم إكمال %s أسئلة من %s</string>
     <string name="event_summary_sections_header" formatted="false">إكتمال %s من %s</string>
     <string name="complete_and_close">مكتمل ومغلق</string>
@@ -254,6 +265,8 @@
     <string name="incident_date">تاريخ الواقعة</string>
     <string name="local_results">النتائج المحفوظة محلياً</string>
     <string name="online_results">النتائج المحفوظة على الإنترنت</string>
+    <string name="past_programs">البرامج الماضية</string>
+
     <!--PERMISSIONS-->
     <string name="permission_denied">ليس لديك الإذن المطلوب للقيام بهذا الإجراء</string>
     <string name="add_relation_button">إضافة كـ …</string>
@@ -369,6 +382,7 @@
 
     <string name="menu_home">الرئيسية</string>
     <string name="appwidget_text">مثال</string>
+    <string name="add_widget">إضافة أداة</string>
     <string name="showHelp">إظهار المساعدة</string>
     <string name="tuto_settings_1">مزامنة بياناتك…</string>
     <string name="tuto_settings_2">…التكوين الخاص بك…</string>
@@ -381,6 +395,7 @@
     <string name="tuto_search_2">يمكنك التبديل إلى برامج أخرى</string>
     <string name="tuto_search_3_v2">بحث أو إضافة كيانات جديدة. تحتاج إلى البحث قبل أن تتمكن من إضافة واحدة جديدة!</string>
     <string name="tuto_search_4_v2">انقر هنا لتنظيف الحقول وإعادة البحث.</string>
+    <string name="tuto_dashboard_1">هذه لوحة معلومات الكيان المسجل</string>
     <string name="tuto_dashboard_2">الاطلاع على معلومات الملف الشخصي للكيانات…</string>
     <string name="tuto_dashboard_3">…مشاركة المعلومات عبر QR أو SMS…</string>
     <string name="tuto_dashboard_4">…أو ضع علامة على الكيان للمتابعة</string>
@@ -445,6 +460,7 @@
     <string name="empty_description">لا توجد معلومات عن هذا الحقل</string>
     <string name="biometrics_dialog_title">إعتمادات فارغة</string>
     <string name="biometrics_first_use_text">لتتمكن من تسجيل الدخول باستخدام الماسح الضوئي لبصمات الأصابع ، تحتاج أولاً إلى تسجيل الدخول بإستخدام الطريقة الافتراضية</string>
+    <string name="biometrics_security_title">الأمن البيومتري</string>
     <string name="biometrics_security_text">استخدم بصمة إصبعك لتسجيل الدخول مع هذا المستخدم؟</string>
     <string name="tab_tables">جداول</string>
     <string name="table">الجدول</string>
@@ -522,6 +538,7 @@
     <string name="sms_state_converted">تم قراءة البيانات وتحويلها. الرقم المعرف للإرسال: %d</string>
     <string name="sms_general_error">خطأ في إرسال الرسالة القصيرة</string>
     <string name="sms_title_event">إرسال الحدث sms</string>
+    <string name="sms_title_data_set">إرسال حزمة البيانات SMS</string>
     <string name="sms_bar_state_starting">البدء</string>
     <string name="sms_bar_state_sending">قيد العمل</string>
     <string name="sms_bar_state_sent">تم الإرسال</string>
@@ -587,6 +604,7 @@
     <string name="sms_downloading_data">تحميل البيانات لوحدة الرسائل القصيرة. أرجو الإنتظار</string>
     <string name="sms_empty_gateway">لايمكن ترك بوابة عبور رسائل الـ sms فارغ</string>
     <string name="granular_sync_enrollments_empty">لا توجد تسجيلات ليتم رفعها</string>
+    <string name="granular_sync_unsupported_task">هذه الـ convertTask غير مدعومة</string>
     <string name="disable_pin_locked">لا تظهر مرة أخرى قفل الشاشة</string>
     <string name="set_pin">ضبط رمز</string>
     <string name="conflict">تعارض</string>
@@ -621,6 +639,7 @@
     <string name="events_to_download">أحداث للتحميل</string>
     <string name="program_settings">إعدادات البرنامج</string>
     <string name="limit_scope_all_ou_trailing">لكل الوحدات التنظيمية</string>
+    <string name="limit_scope_global_trailing">شامل</string>
     <string name="limit_scope_ou_trailing">لكل وحدة تنظيمية</string>
     <string name="limit_scope_program_trailing">لكل برنامج</string>
     <string name="limit_scope_ou_program_trailing">لكل وحدة تنظيمية وبرنامج</string>
@@ -628,4 +647,5 @@
     <string name="syncing_period_not_editable">فترة المزامنة غير قابلة للتعديل</string>
     <string name="sync_parameters_not_editable">معلمات المزامنة غير قابلة للتعديل</string>
     <string name="rv_no_editable">عدد القيم المحجوزة التي تم تنزيلها غير قابل للتعديل</string>
+    <string name="dialog_layer_enrollment_coordinates">عرض إحداثيات التسجيل</string>
 </resources>

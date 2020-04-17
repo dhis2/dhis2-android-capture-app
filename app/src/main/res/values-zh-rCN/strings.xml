@@ -14,6 +14,7 @@
     <string name="no_value">无值</string>
     <string name="no_reserved_values">没有更多保留值，请联系管理员</string>
     <string name="no_reserved_values_connection">没有更多保留值，连接网络重新填充他们</string>
+    <string name="errors">错误</string>
     <!-- SyncService strings: -->
     <string name="sync_now">现在同步</string>
     <string name="sync_text">与服务器同步中</string>
@@ -644,7 +645,7 @@
     <string name="program_selector">项目注册</string>
     <string name="select_time">选择时间</string>
     <string name="enter_letter">输入字符</string>
-    <string name="enter_unit_interval">输入0-1之间的数</string>
+    <string name="enter_unit_interval">输入0–1之间的数</string>
     <string name="enter_percentage">输入百分比</string>
     <string name="enter_phone_number">输入电话号码</string>
     <string name="enter_email">输入电子邮件</string>
@@ -670,4 +671,8 @@
     <string name="syncing_period_not_editable">同步期间不能编辑</string>
     <string name="sync_parameters_not_editable">同步参数不能编辑</string>
     <string name="rv_no_editable">下载的保留值数量不能编辑</string>
+    <string name="dialog_layer_satellite">显示卫星视图</string>
+    <string name="dialog_layer_tei_coordinates">显示跟踪实体坐标</string>
+    <string name="dialog_layer_enrollment_coordinates">显示注册坐标</string>
+    <string name="dialog_layer_heatmap">显示热力图</string>
 </resources>
