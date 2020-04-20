@@ -51,7 +51,7 @@
             android:onClick="@{() -> viewModel.add(point)}"
             android:visibility="@{isLast ? View.VISIBLE : View.GONE}"
             android:tint="@color/blue_fab"
-            android:src="@drawable/ic_add"
+            app:srcCompat="@drawable/ic_add_primary"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toTopOf="parent"
