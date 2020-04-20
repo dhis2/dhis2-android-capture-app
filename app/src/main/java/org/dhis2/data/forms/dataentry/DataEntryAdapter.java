@@ -201,6 +201,8 @@ public final class DataEntryAdapter extends ListAdapter<FieldViewModel, ViewHold
         } else {
             ((SectionHolder) holder).setBottomShadow(
                     position > 0 && getItemViewType(position - 1) != SECTION);
+            ((SectionHolder) holder).setLastSectionHeight(
+                    position == getItemCount()-1 && getItemViewType(position - 1) != SECTION);
         }
     }
 
