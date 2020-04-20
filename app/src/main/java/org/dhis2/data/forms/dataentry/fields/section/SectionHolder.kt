@@ -149,7 +149,7 @@ class SectionHolder(
     fun setLastSectionHeight(previousSectionIsOpened: Boolean) {
         val params = formBinding.lastSectionDetails.layoutParams
         val finalHeight = if (previousSectionIsOpened) {
-            48.px
+            48.dp
         } else {
             1.dp
         }
