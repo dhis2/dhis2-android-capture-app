@@ -48,6 +48,7 @@
                 android:lines="1"
                 android:textColor="@color/text_black_DE3"
                 android:textSize="14sp"
+                android:ellipsize="end"
                 android:translationY="3.71sp"
                 app:layout_constraintEnd_toStartOf="@id/lastUpdatedEvent"
                 app:layout_constraintStart_toEndOf="@id/programStageIcon"
