@@ -398,12 +398,12 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                             .subscribeOn(schedulerProvider.io())
                             .observeOn(schedulerProvider.ui())
                             .subscribe(
-                                    hasExpiredResult -> this.hasExpired = hasExpiredResult && eventCaptureRepository.isEventExpired(eventUid),
+                                    hasExpiredResult -> this.hasExpired = hasExpiredResult && !eventCaptureRepository.isEventEditable(eventUid),
                                     Timber::e
                             )
             );
         else
-            this.hasExpired = eventCaptureRepository.isEventExpired(eventUid);
+            this.hasExpired = !eventCaptureRepository.isEventEditable(eventUid);
     }
 
     @Override
@@ -615,6 +615,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                                             currentSectionPosition.onNext(0);
                                             view.showSnackBar(R.string.event_reopened);
                                             eventStatus = EventStatus.ACTIVE;
+                                            goToSection(currentSection.get());
                                         }
                                     }
                                 },

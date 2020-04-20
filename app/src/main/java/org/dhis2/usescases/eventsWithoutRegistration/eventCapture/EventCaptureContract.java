@@ -154,7 +154,7 @@ public class EventCaptureContract {
 
         boolean isEnrollmentCancelled();
 
-        boolean isEventExpired(String eventUid);
+        boolean isEventEditable(String eventUid);
 
         boolean optionIsInOptionGroup(String optionUid, String optionGroupToHide);
 
