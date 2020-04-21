@@ -269,6 +269,12 @@ public class FilterManager {
         filterProcessor.onNext(this);
     }
 
+    public void clearAssignToMe(){
+        assignedFilter = false;
+        assignedToMeApplied.set(0);
+        filterProcessor.onNext(this);
+    }
+
     public void clearAllFilters() {
         eventStatusFilters.clear();
         catOptComboFilters.clear();
