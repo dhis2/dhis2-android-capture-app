@@ -117,18 +117,12 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     @Override
     public void init(String trackedEntityType) {
         this.trackedEntityType = trackedEntityType;
-
+        this.trackedEntity = searchRepository.getTrackedEntityType(trackedEntityType).blockingFirst();
         compositeDisposable.add(
-                searchRepository.getTrackedEntityType(trackedEntityType)
+              searchRepository.programsWithRegistration(trackedEntityType)
                         .subscribeOn(schedulerProvider.io())
-                        .observeOn(schedulerProvider.io())
-                        .flatMap(trackedEntity -> searchRepository.programsWithRegistration(trackedEntityType)
-                                .map(programs -> new kotlin.Pair<>(trackedEntity, programs)))
-                        .subscribeOn(schedulerProvider.ui())
                         .observeOn(schedulerProvider.ui())
-                        .subscribe(data -> {
-                                    this.trackedEntity = data.component1();
-                                    List<Program> programs = data.component2();
+                        .subscribe(programs -> {
                                     Collections.sort(programs, (program1, program2) -> program1.displayName().compareToIgnoreCase(program2.displayName()));
                                     if (selectedProgram != null) {
                                         setProgram(selectedProgram);
