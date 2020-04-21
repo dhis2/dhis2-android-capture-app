@@ -149,5 +149,7 @@ public class SearchTEContractsModule {
         int getTEIColor();
 
         int getEnrollmentColor();
+
+        boolean programHasAssignment(String programUid);
     }
 }

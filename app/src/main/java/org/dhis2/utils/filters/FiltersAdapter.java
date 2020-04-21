@@ -16,7 +16,6 @@ import org.dhis2.databinding.ItemFilterStateBinding;
 import org.dhis2.databinding.ItemFilterStatusBinding;
 import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryOptionCombo;
-import org.hisp.dhis.android.core.dataset.DataSet;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,9 +36,6 @@ public class FiltersAdapter extends RecyclerView.Adapter<FilterHolder> {
         filtersList.add(Filters.PERIOD);
         filtersList.add(Filters.ORG_UNIT);
         filtersList.add(Filters.SYNC_STATE);
-        if(programType != ProgramType.DATASET) {
-            filtersList.add(Filters.ASSIGNED_TO_ME);
-        }
         openedFilter = new ObservableField<>();
     }
 
@@ -93,6 +89,21 @@ public class FiltersAdapter extends RecyclerView.Adapter<FilterHolder> {
             filtersList.add(Filters.EVENT_STATUS);
             notifyDataSetChanged();
         }
+    }
+
+    public void addAssignedToMe() {
+        if (!filtersList.contains(Filters.ASSIGNED_TO_ME)) {
+            filtersList.add(Filters.ASSIGNED_TO_ME);
+            notifyDataSetChanged();
+        }
+    }
+
+    public void removeAssignedToMe() {
+        if (filtersList.contains(Filters.ASSIGNED_TO_ME)) {
+            filtersList.remove(Filters.ASSIGNED_TO_ME);
+        }
+        FilterManager.getInstance().clearAssignToMe();
+        notifyDataSetChanged();
     }
 
 }

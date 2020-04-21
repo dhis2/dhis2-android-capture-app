@@ -810,6 +810,14 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
             return -1;
     }
 
+    @Override
+    public boolean programHasAssignment(String programUid) {
+        return !d2.programModule().programStages()
+                .byProgramUid().eq(programUid)
+                .byEnableUserAssignment().isTrue()
+                .blockingIsEmpty();
+    }
+
     @RestrictTo(RestrictTo.Scope.TESTS)
     public void setProgramForTesting(Program program) {
         selectedProgram = program;
