@@ -133,10 +133,10 @@ class ValueStoreImpl(
             val isUnique =
                 d2.trackedEntityModule().trackedEntityAttributes().uid(uid).blockingGet()!!.unique()
                     ?: false
-            val hasValue = d2.trackedEntityModule().trackedEntityAttributeValues()
-                .byTrackedEntityAttribute().eq(uid)
-                .byValue().eq(value).blockingGet().isNotEmpty()
             if (isUnique) {
+                val hasValue = d2.trackedEntityModule().trackedEntityAttributeValues()
+                    .byTrackedEntityAttribute().eq(uid)
+                    .byValue().eq(value).blockingGet().isNotEmpty()
                 !hasValue
             } else {
                 true
