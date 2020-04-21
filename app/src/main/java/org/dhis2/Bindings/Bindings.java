@@ -371,6 +371,7 @@ public class Bindings {
             switch (state) {
                 case TO_POST:
                 case TO_UPDATE:
+                case UPLOADING:
                     imageView.setImageResource(R.drawable.ic_sync_problem_grey);
                     break;
                 case ERROR:

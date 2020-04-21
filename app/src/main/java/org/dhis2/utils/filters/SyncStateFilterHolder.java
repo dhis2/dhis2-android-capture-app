@@ -27,7 +27,8 @@ class SyncStateFilterHolder extends FilterHolder {
         );
         localBinding.filterState.stateNotSynced.setChecked(
                 FilterManager.getInstance().getStateFilters().contains(State.TO_UPDATE) ||
-                        FilterManager.getInstance().getStateFilters().contains(State.TO_POST)
+                        FilterManager.getInstance().getStateFilters().contains(State.TO_POST) ||
+                        FilterManager.getInstance().getStateFilters().contains(State.UPLOADING)
         );
         localBinding.filterState.stateError.setChecked(
                 FilterManager.getInstance().getStateFilters().contains(State.ERROR) ||
@@ -43,6 +44,7 @@ class SyncStateFilterHolder extends FilterHolder {
         localBinding.filterState.stateNotSynced.setOnCheckedChangeListener((compoundButton, b) ->{
                     FilterManager.getInstance().addState(!b, State.TO_UPDATE);
                     FilterManager.getInstance().addState(!b, State.TO_POST);
+                    FilterManager.getInstance().addState(!b, State.UPLOADING);
                 });
         localBinding.filterState.stateError.setOnCheckedChangeListener((compoundButton, b) ->
                 FilterManager.getInstance().addState(!b, State.ERROR));

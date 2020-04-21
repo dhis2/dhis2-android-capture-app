@@ -196,7 +196,7 @@ class GranularSyncPresenterImpl(
                 // TODO: GET ALL ENROLLMENTS FROM TEI
                 val enrollmentUids = UidsHelper.getUidsList(
                     d2.enrollmentModule().enrollments().byTrackedEntityInstance().eq(recordUid)
-                        .byState().`in`(State.TO_POST, State.TO_UPDATE).blockingGet()
+                        .byState().`in`(State.TO_POST, State.TO_UPDATE, State.UPLOADING).blockingGet()
                 )
                 if (enrollmentUids.isNotEmpty()) {
                     smsSender.convertEnrollment(enrollmentUids[0])
@@ -379,7 +379,8 @@ class GranularSyncPresenterImpl(
                 State.SENT_VIA_SMS
             teiRepository.byState().`in`(
                 State.TO_UPDATE,
-                State.TO_POST
+                State.TO_POST,
+                State.UPLOADING
             ).blockingGet().isNotEmpty() ||
                     teiRepository.byDeleted().isTrue.blockingGet().isNotEmpty() ->
                 State.TO_UPDATE
@@ -401,7 +402,8 @@ class GranularSyncPresenterImpl(
                 State.SENT_VIA_SMS
             eventRepository.byState().`in`(
                 State.TO_UPDATE,
-                State.TO_POST
+                State.TO_POST,
+                State.UPLOADING
             ).blockingGet().isNotEmpty() ||
                     eventRepository.byDeleted().isTrue.blockingGet().isNotEmpty() ->
                 State.TO_UPDATE
@@ -434,6 +436,7 @@ class GranularSyncPresenterImpl(
                     stateCandidates.contains(State.SYNCED_VIA_SMS) ->
                 State.SENT_VIA_SMS
             stateCandidates.contains(State.TO_POST) ||
+                    stateCandidates.contains(State.UPLOADING) ||
                     stateCandidates.contains(State.TO_UPDATE) ->
                 State.TO_UPDATE
             else -> State.SYNCED
