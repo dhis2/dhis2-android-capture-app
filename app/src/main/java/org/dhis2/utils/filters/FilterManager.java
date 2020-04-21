@@ -101,10 +101,13 @@ public class FilterManager {
             else if (!stateFilters.contains(stateToAdd))
                 stateFilters.add(stateToAdd);
         }
-        if (stateFilters.contains(State.TO_POST) && stateFilters.contains(State.TO_UPDATE))
+        if (stateFilters.contains(State.TO_POST) &&
+                stateFilters.contains(State.TO_UPDATE) &&
+                stateFilters.contains(State.UPLOADING)) {
             stateFiltersApplied.set(stateFilters.size() - 1);
-        else
+        }else {
             stateFiltersApplied.set(stateFilters.size());
+        }
         filterProcessor.onNext(this);
     }
 

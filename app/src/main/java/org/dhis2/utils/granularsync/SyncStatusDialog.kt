@@ -195,7 +195,8 @@ class SyncStatusDialog private constructor(
         binding!!.syncStatusBar.setBackgroundResource(getColorForState(state))
         when (state) {
             State.TO_POST,
-            State.TO_UPDATE -> setNoConflictMessage(getString(R.string.no_conflicts_update_message))
+            State.TO_UPDATE,
+            State.UPLOADING -> setNoConflictMessage(getString(R.string.no_conflicts_update_message))
             State.SYNCED -> {
                 setNoConflictMessage(getString(R.string.no_conflicts_synced_message))
                 binding!!.syncButton.visibility = View.GONE
@@ -319,7 +320,7 @@ class SyncStatusDialog private constructor(
             State.SYNCED_VIA_SMS, State.SENT_VIA_SMS -> R.string.sync_by_sms
             State.WARNING -> R.string.state_warning
             State.ERROR -> R.string.state_error
-            State.TO_UPDATE -> R.string.state_to_update
+            State.TO_UPDATE, State.UPLOADING -> R.string.state_to_update
             State.TO_POST -> R.string.state_to_post
             else -> R.string.state_synced
         }
@@ -330,7 +331,7 @@ class SyncStatusDialog private constructor(
             State.SYNCED_VIA_SMS, State.SENT_VIA_SMS -> R.color.state_by_sms
             State.WARNING -> R.color.state_warning
             State.ERROR -> R.color.state_error
-            State.TO_UPDATE, State.TO_POST -> R.color.state_to_post
+            State.TO_UPDATE, State.TO_POST, State.UPLOADING -> R.color.state_to_post
             else -> R.color.state_synced
         }
     }
@@ -553,7 +554,8 @@ class SyncStatusDialog private constructor(
         grantResults: IntArray
     ) {
         if (requestCode == SMS_PERMISSIONS_REQ_ID &&
-            grantResults.all { it == PackageManager.PERMISSION_GRANTED }) {
+            grantResults.all { it == PackageManager.PERMISSION_GRANTED }
+        ) {
             syncSMS()
         }
     }
