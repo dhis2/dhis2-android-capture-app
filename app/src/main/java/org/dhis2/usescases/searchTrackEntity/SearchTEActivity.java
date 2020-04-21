@@ -521,8 +521,9 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                     presenter.setProgram((Program) adapterView.getItemAtPosition(pos - 1));
                 } else if (programs.size() == 1 && pos != 0) {
                     presenter.setProgram(programs.get(0));
-                } else
+                } else {
                     presenter.setProgram(null);
+                }
             }
 
             @Override
@@ -538,6 +539,16 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                 binding.programSpinner.setSelection(i + 1);
             }
         }
+    }
+
+    @Override
+    public void showAssignmentFilter(){
+        filtersAdapter.addAssignedToMe();
+    }
+
+    @Override
+    public void hideAssignmentFilter(){
+        filtersAdapter.removeAssignedToMe();
     }
 
     @Override

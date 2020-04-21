@@ -233,4 +233,9 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
         filterManager.clearAllFilters();
         view.clearFilters();
     }
+
+    @Override
+    public boolean hasAssignment() {
+        return eventRepository.hasAssignment();
+    }
 }

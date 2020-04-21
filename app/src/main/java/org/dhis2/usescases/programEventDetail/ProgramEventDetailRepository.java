@@ -42,4 +42,6 @@ public interface ProgramEventDetailRepository {
     Flowable<ProgramEventViewModel> getInfoForEvent(String eventUid);
 
     Single<FeatureType> featureType();
+
+    boolean hasAssignment();
 }

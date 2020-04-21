@@ -2,6 +2,7 @@ package org.dhis2.usescases.searchTrackEntity
 
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
+import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.schedulers.TestScheduler
@@ -80,5 +81,81 @@ class SearchTEPresenterTest {
         verify(view).clearData()
         verify(view).updateFiltersSearch(0)
         verify(view).setFabIcon(false)
+    }
+
+    @Test
+    fun `Should show assign to me filter`() {
+        presenter.setProgramForTesting(
+            Program.builder()
+                .uid("uid")
+                .displayFrontPageList(true)
+                .minAttributesRequiredToSearch(0)
+                .build()
+        )
+        whenever(
+            d2.programModule().programStages()
+                .byProgramUid().eq("uid")
+        ) doReturn mock()
+        whenever(
+            d2.programModule().programStages()
+                .byProgramUid().eq("uid")
+                .byEnableUserAssignment()
+        ) doReturn mock()
+        whenever(
+            d2.programModule().programStages()
+                .byProgramUid().eq("uid")
+                .byEnableUserAssignment().isTrue
+        ) doReturn mock()
+        whenever(
+            d2.programModule().programStages()
+                .byProgramUid().eq("uid")
+                .byEnableUserAssignment().isTrue
+                .blockingIsEmpty()
+        ) doReturn false
+        presenter.initAssignmentFilter()
+        verify(view, times(1)).showAssignmentFilter()
+        verify(view, times(0)).hideAssignmentFilter()
+    }
+
+    @Test
+    fun `Should not show assign to me filter if no stage is configured`() {
+        presenter.setProgramForTesting(
+            Program.builder()
+                .uid("uid")
+                .displayFrontPageList(true)
+                .minAttributesRequiredToSearch(0)
+                .build()
+        )
+        whenever(
+            d2.programModule().programStages()
+                .byProgramUid().eq("uid")
+        ) doReturn mock()
+        whenever(
+            d2.programModule().programStages()
+                .byProgramUid().eq("uid")
+                .byEnableUserAssignment()
+        ) doReturn mock()
+        whenever(
+            d2.programModule().programStages()
+                .byProgramUid().eq("uid")
+                .byEnableUserAssignment().isTrue
+        ) doReturn mock()
+        whenever(
+            d2.programModule().programStages()
+                .byProgramUid().eq("uid")
+                .byEnableUserAssignment().isTrue
+                .blockingIsEmpty()
+        ) doReturn true
+        presenter.initAssignmentFilter()
+        verify(view, times(0)).showAssignmentFilter()
+        verify(view, times(1)).hideAssignmentFilter()
+    }
+
+    @Test
+    fun `Should not show assign to me filter if no program selected`() {
+        presenter.setProgramForTesting(null)
+        presenter.initAssignmentFilter()
+        verify(view, times(0)).showAssignmentFilter()
+        verify(view, times(1)).hideAssignmentFilter()
     }
 }

@@ -132,6 +132,12 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
                 });
     }
 
+    @Override
+    public boolean hasAssignment() {
+        return !d2.programModule().programStages().byProgramUid().eq(programUid)
+                .byEnableUserAssignment().isTrue().blockingIsEmpty();
+    }
+
     private String getCurrentUser() {
         return d2.userModule().user().blockingGet().uid();
     }

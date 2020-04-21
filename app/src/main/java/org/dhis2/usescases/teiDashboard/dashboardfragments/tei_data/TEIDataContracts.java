@@ -113,6 +113,8 @@ public class TEIDataContracts {
         void onAddNewEvent(@NonNull android.view.View anchor, @NonNull ProgramStage programStage);
 
         void getEnrollment(String enrollmentUid);
+
+        boolean hasAssignment();
     }
 
 }
