@@ -4,6 +4,7 @@ import org.dhis2.data.prefs.Preference
 import org.dhis2.data.prefs.PreferenceProvider
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.D2Manager
+import timber.log.Timber
 import java.lang.Exception
 
 class PinPresenter(
@@ -32,7 +33,7 @@ class PinPresenter(
             preferenceProvider.setValue(Preference.PIN, null)
             preferenceProvider.setValue(Preference.SESSION_LOCKED, false)
         } catch (e: Exception) {
-
+            Timber.e(e)
         }
     }
 }
