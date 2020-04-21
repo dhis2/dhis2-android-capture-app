@@ -73,7 +73,7 @@ class ValueStoreImpl(
 
         val valueRepository = d2.trackedEntityModule().trackedEntityAttributeValues()
             .value(uid, recordUid)
-        var newValue = value
+        var newValue = value?:""
         if (d2.trackedEntityModule().trackedEntityAttributes().uid(uid).blockingGet().valueType() ==
             ValueType.IMAGE &&
             value != null
@@ -89,7 +89,7 @@ class ValueStoreImpl(
 
         return if (currentValue != newValue) {
             if (!DhisTextUtils.isEmpty(value)) {
-                valueRepository.blockingSetCheck(d2, uid, newValue!!)
+                valueRepository.blockingSetCheck(d2, uid, newValue)
             } else {
                 valueRepository.blockingDeleteIfExist()
             }
@@ -118,7 +118,7 @@ class ValueStoreImpl(
 
         return if (currentValue != newValue) {
             if (!DhisTextUtils.isEmpty(value)) {
-                valueRepository.blockingSetCheck(d2, uid, newValue!!)
+                valueRepository.blockingSetCheck(d2, uid, newValue)
             } else {
                 valueRepository.blockingDeleteIfExist()
             }
@@ -133,10 +133,10 @@ class ValueStoreImpl(
             val isUnique =
                 d2.trackedEntityModule().trackedEntityAttributes().uid(uid).blockingGet()!!.unique()
                     ?: false
-            val hasValue = d2.trackedEntityModule().trackedEntityAttributeValues()
-                .byTrackedEntityAttribute().eq(uid)
-                .byValue().eq(value).blockingGet().isNotEmpty()
             if (isUnique) {
+                val hasValue = d2.trackedEntityModule().trackedEntityAttributeValues()
+                    .byTrackedEntityAttribute().eq(uid)
+                    .byValue().eq(value).blockingGet().isNotEmpty()
                 !hasValue
             } else {
                 true

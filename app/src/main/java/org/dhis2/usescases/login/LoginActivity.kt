@@ -288,12 +288,13 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
     override fun onUnlockClick(android: View) {
         PinDialog(
             PinDialog.Mode.ASK,
-            true,
+            false,
             {
                 startActivity(MainActivity::class.java, null, true, true, null)
             },
             {
                 analyticsHelper.setEvent(FORGOT_CODE, CLICK, FORGOT_CODE)
+                binding.unlockLayout.visibility = View.GONE
             }
         )
             .show(supportFragmentManager, PIN_DIALOG_TAG)
