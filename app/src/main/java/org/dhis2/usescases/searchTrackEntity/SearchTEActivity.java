@@ -519,21 +519,10 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                     Program selectedProgram = (Program) adapterView.getItemAtPosition(pos - 1);
                     setProgramColor(presenter.getProgramColor(selectedProgram.uid()));
                     presenter.setProgram((Program) adapterView.getItemAtPosition(pos - 1));
-                    if(presenter.programHasAssignment(selectedProgram.uid())){
-                        filtersAdapter.addAssignedToMe();
-                    }else{
-                        filtersAdapter.removeAssignedToMe();
-                    }
                 } else if (programs.size() == 1 && pos != 0) {
                     presenter.setProgram(programs.get(0));
-                    if(presenter.programHasAssignment(programs.get(0).uid())){
-                        filtersAdapter.addAssignedToMe();
-                    }else{
-                        filtersAdapter.removeAssignedToMe();
-                    }
                 } else {
                     presenter.setProgram(null);
-                    filtersAdapter.removeAssignedToMe();
                 }
             }
 
@@ -550,6 +539,16 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                 binding.programSpinner.setSelection(i + 1);
             }
         }
+    }
+
+    @Override
+    public void showAssignmentFilter(){
+        filtersAdapter.addAssignedToMe();
+    }
+
+    @Override
+    public void hideAssignmentFilter(){
+        filtersAdapter.removeAssignedToMe();
     }
 
     @Override

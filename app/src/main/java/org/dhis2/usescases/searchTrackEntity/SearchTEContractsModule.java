@@ -53,6 +53,10 @@ public class SearchTEContractsModule {
 
         void setTutorial();
 
+        void showAssignmentFilter();
+
+        void hideAssignmentFilter();
+
         void setProgramColor(String data);
 
         String fromRelationshipTEI();
@@ -150,6 +154,6 @@ public class SearchTEContractsModule {
 
         int getEnrollmentColor();
 
-        boolean programHasAssignment(String programUid);
+        void initAssignmentFilter();
     }
 }

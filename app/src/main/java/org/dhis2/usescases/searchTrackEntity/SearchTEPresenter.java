@@ -19,7 +19,6 @@ import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.databinding.WidgetDatepickerBinding;
-import org.dhis2.usescases.enrollment.EnrollmentActivity;
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel;
 import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.Constants;
@@ -404,6 +403,8 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
             queryProcessor.onNext(new HashMap<>());
         else
             queryProcessor.onNext(queryData);
+
+        initAssignmentFilter();
     }
 
     @Override
@@ -811,11 +812,16 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     }
 
     @Override
-    public boolean programHasAssignment(String programUid) {
-        return !d2.programModule().programStages()
-                .byProgramUid().eq(programUid)
+    public void initAssignmentFilter() {
+        boolean hasAssignment = selectedProgram != null && !d2.programModule().programStages()
+                .byProgramUid().eq(selectedProgram.uid())
                 .byEnableUserAssignment().isTrue()
                 .blockingIsEmpty();
+        if (hasAssignment) {
+            view.showAssignmentFilter();
+        } else {
+            view.hideAssignmentFilter();
+        }
     }
 
     @RestrictTo(RestrictTo.Scope.TESTS)
