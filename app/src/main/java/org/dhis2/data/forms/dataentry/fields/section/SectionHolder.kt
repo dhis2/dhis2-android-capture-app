@@ -166,12 +166,12 @@ class SectionHolder(
     }
 
     fun handleHeaderClick(x: Float) {
-        if (formBinding.descriptionIcon.visibility == View.VISIBLE) {
-            if (formBinding.descriptionIcon.x <= x && formBinding.descriptionIcon.x + formBinding.descriptionIcon.width >= x) {
-                showDescription()
-            } else {
-                onClick(itemView)
-            }
+        val hasDescription = formBinding.descriptionIcon.visibility == View.VISIBLE;
+        val descriptionClicked =
+            formBinding.descriptionIcon.x <= x &&
+                    formBinding.descriptionIcon.x + formBinding.descriptionIcon.width >= x;
+        if (hasDescription && descriptionClicked) {
+            showDescription()
         } else {
             onClick(itemView)
         }
