@@ -10,7 +10,6 @@ import androidx.databinding.ObservableField
 import io.reactivex.processors.FlowableProcessor
 import org.dhis2.Bindings.dp
 import org.dhis2.Bindings.getThemePrimaryColor
-import org.dhis2.Bindings.px
 import org.dhis2.R
 import org.dhis2.data.forms.dataentry.fields.FormViewHolder
 import org.dhis2.databinding.FormSectionBinding
@@ -36,6 +35,9 @@ class SectionHolder(
             }
         })
         formBinding.root.setOnClickListener(this)
+        formBinding.descriptionIcon.setOnClickListener {
+            showDescription()
+        }
     }
 
     fun update(viewModel: SectionViewModel) {
@@ -81,18 +83,6 @@ class SectionHolder(
             View.GONE
         } else {
             View.VISIBLE
-        }
-
-        formBinding.descriptionIcon.setOnClickListener {
-            CustomDialog(
-                itemView.context,
-                viewModel.label(),
-                viewModel.description() ?: "",
-                itemView.context.getString(R.string.action_close),
-                null,
-                201,
-                null
-            ).show()
         }
 
         setShadows()
@@ -160,6 +150,30 @@ class SectionHolder(
                 formBinding.lastSectionDetails.layoutParams = params
             }
             start()
+        }
+    }
+
+    private fun showDescription() {
+        CustomDialog(
+            itemView.context,
+            viewModel.label(),
+            viewModel.description() ?: "",
+            itemView.context.getString(R.string.action_close),
+            null,
+            201,
+            null
+        ).show()
+    }
+
+    fun handleHeaderClick(x: Float) {
+        val hasDescription = formBinding.descriptionIcon.visibility == View.VISIBLE;
+        val descriptionClicked =
+            formBinding.descriptionIcon.x <= x &&
+                    formBinding.descriptionIcon.x + formBinding.descriptionIcon.width >= x;
+        if (hasDescription && descriptionClicked) {
+            showDescription()
+        } else {
+            onClick(itemView)
         }
     }
 }
