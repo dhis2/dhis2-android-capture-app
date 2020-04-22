@@ -70,7 +70,7 @@ Filter by period, org. Unit, sync state, event status, category option combinati
 
 >**User Assignment**
 >
->Events can be assigned to users. This must be configured in the server and enabled per program. The app will show the events assigned to the user but will not prevent from other users to complete that same event.
+>It is possible to filter events based on its assignment to the current user. The “Assigned to me” filter has been added to the single event program list, the TEI list and the TEI Dashboard and the map views. It will only be displayed when the active program is configured to assign events to users.
 
 ![](resources/images/image96.jpg){ width=25%}
 ![](resources/images/image97.jpg){ width=25%}
@@ -79,6 +79,12 @@ Filters will adapt to the different programs and data sets.
 1. Program without registration: Period, Org. Unit, Sync State, Event Status and, Category Combination.
 2. Program with registration: Period, Org. Unit, and Sync State.
 3. Data Sets: Period, Org. Unit, and Syn State.
+
+### Filtering added in TEI Dashboard:
+
+Filters have been added to the TEI dashboard. It is possible to filter the events of a Tracked Entity Instance enrollment per period, organisation unit, sync status, event status, and user assignment.
+
+![](resources/images/image114.png){ width=25%}
 
 ## Sync Information
 
@@ -174,10 +180,3 @@ When a program stage or tracked entity type have a feature type (and for program
 ![](resources/images/image101.png){ width=25%}
 ![](resources/images/image102.png){ width=25%}
 ![](resources/images/image103.png){ width=25%}
-
-## Event Notes
-
-Notes are available in every program event. Click on "+" to add a new note.
-
-![](resources/images/image106.jpg){ width=25%}
-![](resources/images/image107.jpg){ width=25%}
