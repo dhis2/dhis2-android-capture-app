@@ -201,11 +201,15 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
     }
 
     override fun goToNextScreen() {
-        if (NetworkUtils.isOnline(this)) {
+        if (isNetworkAvailable()) {
             startActivity(SyncActivity::class.java, null, true, true, null)
         } else {
             startActivity(MainActivity::class.java, null, true, true, null)
         }
+    }
+
+    override fun isNetworkAvailable() : Boolean{
+        return NetworkUtils.isOnline(this);
     }
 
     override fun setUrl(url: String) {
