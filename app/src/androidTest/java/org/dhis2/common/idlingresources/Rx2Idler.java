@@ -4,11 +4,13 @@ import androidx.annotation.CheckResult;
 import androidx.annotation.NonNull;
 import androidx.test.espresso.IdlingRegistry;
 import androidx.test.espresso.IdlingResource;
-import io.reactivex.Scheduler;
-import io.reactivex.functions.Function;
+
 import java.util.concurrent.Callable;
 
-//From:  https://github.com/square/RxIdler
+import io.reactivex.Scheduler;
+import io.reactivex.functions.Function;
+
+//Modified From:  https://github.com/square/RxIdler
 /**
  * Factory methods for connecting RxJava's {@link Scheduler} to Espresso's {@link IdlingResource}.
  * <p>
