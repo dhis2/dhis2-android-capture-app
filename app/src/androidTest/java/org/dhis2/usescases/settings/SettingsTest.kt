@@ -4,6 +4,7 @@ import android.Manifest
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
 import org.dhis2.usescases.BaseTest
+import org.dhis2.usescases.login.loginRobot
 import org.dhis2.usescases.main.MainActivity
 import org.dhis2.usescases.main.MainRobot
 import org.dhis2.usescases.main.homeRobot
@@ -85,18 +86,20 @@ class SettingsTest : BaseTest() {
             clickOnSettings()
         }
 
+        // on Manage Reserved 90% view should add ScrollTo
+        // on Refill 90% view check custom view action
+
         settingsRobot {
             clickOnReservedValues()
-            Thread.sleep(1000)
             clickOnManageReservedValues()
             clickOnRefill(0)
-            Thread.sleep(5000)
+            Thread.sleep(8000)
             //is not clicking
             //checkReservedValuesWasRefill(0)
-            /*clickOnRefill(1)
+            clickOnRefill(1)
             checkReservedValuesWasRefill(1)
             clickOnRefill(2)
-            checkReservedValuesWasRefill(2)*/
+            checkReservedValuesWasRefill(2)
         }
     }
 
@@ -129,12 +132,12 @@ class SettingsTest : BaseTest() {
             clickOnAcceptDelete()
             clickOnAcceptDialog()
             checkSnackBarIsShown()
-            //error 90% shown single click
         }
     }
 
     @Test
     fun shouldRedirectToLoginWhenResetAppSucceed() {
+        setupCredentials()
         enableIntents()
         startActivity()
 
@@ -145,10 +148,14 @@ class SettingsTest : BaseTest() {
 
         settingsRobot {
             clickOnResetApp()
+            Thread.sleep(1000)
             checkOnAcceptReset()
             clickOnAcceptDialog()
-            //alert is shown
-            //redirect to home
+        }
+
+        loginRobot {
+            checkUsernameFieldIsClear()
+            checkPasswordFieldIsClear()
         }
     }
 
@@ -162,12 +169,11 @@ class SettingsTest : BaseTest() {
         }
 
         settingsRobot {
+            Thread.sleep(5000)
             clickOnSMSSettings()
-            //checkGatewayNumberFieldIsDisable()
+            checkGatewayNumberFieldIsDisable()
             checkSMSSubmissionIsEnable()
         }
-
-        Thread.sleep(10000)
     }
 
     fun startActivity(){

@@ -2,6 +2,7 @@ package org.dhis2.usescases.settings
 
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
+import androidx.test.espresso.action.ViewActions.scrollTo
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition
 import androidx.test.espresso.matcher.ViewMatchers.*
@@ -73,7 +74,12 @@ class SettingsRobot: BaseRobot() {
     }
 
     fun clickOnRefill(position: Int) {
-        onView(withId(R.id.recycler)).perform(actionOnItemAtPosition<ReservedValueViewHolder>(position, click()))
+        /*onView(allOf(withId(R.id.refill), withId(R.id.recycler)))
+                //.check(matches(allOf(atPosition(position, hasDescendant(withId(R.id.refill))))))
+                //.perform(click())
+                .perform(actionOnItemAtPosition<ReservedValueViewHolder>(position, click()))*/
+        onView(withId(R.id.recycler))
+                .perform(actionOnItemAtPosition<ReservedValueViewHolder>(position, ClickRefillButton()))
     }
 
     fun checkReservedValuesWasRefill(position: Int) {
@@ -82,9 +88,10 @@ class SettingsRobot: BaseRobot() {
     }
 
     fun checkLogViewIsDisplayed() {
-        onView(withId(R.id.errorRecycler)).check(matches(allOf(
+        /*onView(withId(R.id.errorRecycler)).check(matches(allOf(
                 isDisplayed(), not(isNotEmpty())
-        )))
+        )))*/
+        onView(withId(R.id.possitive)).check(matches(isEnabled()))
     }
 
     fun clickOnAcceptDelete() {
@@ -92,15 +99,12 @@ class SettingsRobot: BaseRobot() {
     }
 
     fun clickOnAcceptDialog() {
-        onView(withText("ACCEPT")).perform(click())
+        onView(withText(R.string.wipe_data_ok)).perform(click())
     }
 
     fun checkSnackBarIsShown() {
-        //"Delete local data finished successfully"
-        onView(withText("Delete local data finished successfully"))
-         //onView(rootView)
-                //.inRoot(isToast())
-                .check(matches(isDisplayed()))
+        onView(withId(com.google.android.material.R.id.snackbar_text))
+                .check(matches(withText("Delete local data finished successfully.")))
     }
 
     fun checkOnAcceptReset() {
@@ -108,11 +112,14 @@ class SettingsRobot: BaseRobot() {
     }
 
     fun checkGatewayNumberFieldIsDisable() {
-        onView(withId(R.id.settings_sms_receiver)).check(matches(allOf(isDisplayed(), not(isFocusable()))))
+        onView(withId(R.id.settings_sms_receiver))
+                //.perform(scrollTo())
+                .check(matches(allOf(isDisplayed())))
     }
 
     fun checkSMSSubmissionIsEnable() {
-        onView(withId(R.id.settings_sms_response_wait_switch)).check(matches(isEnabled()))
+        onView(withId(R.id.settings_sms_response_wait_switch))
+                .check(matches(isEnabled()))
     }
 
     companion object {
