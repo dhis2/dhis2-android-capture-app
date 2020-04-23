@@ -21,6 +21,10 @@ import co.infinum.goldfinger.Goldfinger
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import java.io.BufferedReader
+import java.io.InputStreamReader
+import java.io.StringWriter
+import javax.inject.Inject
 import okhttp3.HttpUrl
 import org.dhis2.App
 import org.dhis2.Bindings.app
@@ -32,7 +36,7 @@ import org.dhis2.data.tuples.Trio
 import org.dhis2.databinding.ActivityLoginBinding
 import org.dhis2.usescases.general.ActivityGlobalAbstract
 import org.dhis2.usescases.main.MainActivity
-import org.dhis2.usescases.qrScanner.QRActivity
+import org.dhis2.usescases.qrScanner.ScanActivity
 import org.dhis2.usescases.sync.SyncActivity
 import org.dhis2.utils.Constants
 import org.dhis2.utils.Constants.ACCOUNT_RECOVERY
@@ -48,10 +52,6 @@ import org.dhis2.utils.analytics.FORGOT_CODE
 import org.dhis2.utils.session.PIN_DIALOG_TAG
 import org.dhis2.utils.session.PinDialog
 import timber.log.Timber
-import java.io.BufferedReader
-import java.io.InputStreamReader
-import java.io.StringWriter
-import javax.inject.Inject
 
 class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
 
@@ -150,8 +150,8 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
 
     private fun checkUrl(urlString: String): Boolean {
         return URLUtil.isValidUrl(urlString) &&
-                Patterns.WEB_URL.matcher(urlString).matches() &&
-                HttpUrl.parse(urlString) != null
+            Patterns.WEB_URL.matcher(urlString).matches() &&
+            HttpUrl.parse(urlString) != null
     }
 
     override fun setTestingCredentials() {
@@ -286,13 +286,17 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
     }
 
     override fun onUnlockClick(android: View) {
-        PinDialog(PinDialog.Mode.ASK,
-            true,
+        PinDialog(
+            PinDialog.Mode.ASK,
+            false,
             {
                 startActivity(MainActivity::class.java, null, true, true, null)
-            }, {
+            },
+            {
                 analyticsHelper.setEvent(FORGOT_CODE, CLICK, FORGOT_CODE)
-            })
+                binding.unlockLayout.visibility = View.GONE
+            }
+        )
             .show(supportFragmentManager, PIN_DIALOG_TAG)
     }
 
@@ -405,7 +409,7 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
     }
 
     override fun navigateToQRActivity() {
-        Intent(context, QRActivity::class.java).apply {
+        Intent(context, ScanActivity::class.java).apply {
             startActivityForResult(this, RQ_QR_SCANNER)
         }
     }
@@ -419,7 +423,9 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
     }
 
     private fun setUpLoginInfo() {
-        binding.appBuildInfo.text =
-            buildInfo()
+        binding.appBuildInfo.text = buildInfo()
     }
+
+    override fun getDefaultServerProtocol(): String =
+        getString(R.string.login_https)
 }

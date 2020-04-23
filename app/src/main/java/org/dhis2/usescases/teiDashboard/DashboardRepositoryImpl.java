@@ -1,26 +1,17 @@
 package org.dhis2.usescases.teiDashboard;
 
-import static android.text.TextUtils.isEmpty;
-import static org.hisp.dhis.android.core.arch.db.stores.internal.StoreUtils.sqLiteBind;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import org.dhis2.Bindings.EventExtensionsKt;
 import org.dhis2.R;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Trio;
-import org.dhis2.utils.CodeGenerator;
+import org.dhis2.usescases.teiDashboard.dashboardfragments.relationships.RelationshipViewModel;
+import org.dhis2.utils.AuthorityException;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.ValueUtils;
+import org.dhis2.utils.resources.ResourceManager;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper;
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope;
@@ -31,39 +22,35 @@ import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.android.core.enrollment.EnrollmentCollectionRepository;
+import org.hisp.dhis.android.core.enrollment.EnrollmentObjectRepository;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.event.EventStatus;
-import org.hisp.dhis.android.core.event.EventTableInfo;
-import org.hisp.dhis.android.core.fileresource.FileResource;
+import org.hisp.dhis.android.core.legendset.Legend;
+import org.hisp.dhis.android.core.legendset.LegendSet;
 import org.hisp.dhis.android.core.maintenance.D2Error;
-import org.hisp.dhis.android.core.note.Note;
 import org.hisp.dhis.android.core.note.NoteCreateProjection;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.program.ProgramIndicator;
 import org.hisp.dhis.android.core.program.ProgramStage;
 import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttribute;
+import org.hisp.dhis.android.core.relationship.RelationshipItem;
+import org.hisp.dhis.android.core.relationship.RelationshipItemTrackedEntityInstance;
 import org.hisp.dhis.android.core.relationship.RelationshipType;
+import org.hisp.dhis.android.core.systeminfo.SystemInfo;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceTableInfo;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityType;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityTypeAttribute;
 
-import com.squareup.sqlbrite2.BriteDatabase;
+import java.util.ArrayList;
+import java.util.List;
 
-import android.content.ContentValues;
-import android.content.Context;
-import android.content.res.Resources;
-import android.database.Cursor;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
-import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
+import io.reactivex.Single;
 import io.reactivex.functions.Consumer;
 import timber.log.Timber;
 
@@ -75,78 +62,19 @@ public class DashboardRepositoryImpl
         implements
         DashboardRepository {
 
-    private static final String INSERT_NOTE = "INSERT INTO Note ( "
-            + "uid, enrollment, value, storedBy, storedDate, state" + ") VALUES (?, ?, ?, ?, ?,?);";
-
-    private static final String SELECT_NOTES = "SELECT " + "Note.* FROM Note\n"
-            + "JOIN Enrollment ON Enrollment.uid = Note.enrollment\n"
-            + "WHERE Enrollment.trackedEntityInstance = ? AND Enrollment.program = ?\n" + "ORDER BY Note.storedDate DESC";
-
-    private final String EVENTS_DISPLAY_BOX = String.format(
-            "SELECT Event.* FROM %s " + "JOIN %s ON %s.%s = %s.%s " + "JOIN %s ON %s.%s = %s.%s " + "WHERE %s.%s = ? "
-                    + "AND %s.%s = ? " + "AND %s.%s = ?",
-            "Event", "Enrollment", "Enrollment", "uid", "Event", "enrollment", "ProgramStage", "ProgramStage", "uid",
-            "Event", "programStage", "Enrollment", "program", "Enrollment", "trackedEntityInstance", "ProgramStage",
-            "displayGenerateEventBox");
-
-    private static final Set<String> EVENTS_PROGRAM_STAGE_TABLE = new HashSet<>(
-            Arrays.asList("Event", "Enrollment", "ProgramStage"));
-
-    private final String ATTRIBUTE_VALUES_QUERY = String.format(
-            "SELECT TrackedEntityAttributeValue.*, TrackedEntityAttribute.valueType, TrackedEntityAttribute.optionSet FROM %s "
-                    + "JOIN %s ON %s.%s = %s.%s " + "JOIN %s ON %s.%s = %s.%s " + "WHERE %s.%s = ? " + "AND %s.%s = ? "
-                    + "AND %s.%s = 1 " + "ORDER BY %s.%s",
-            "TrackedEntityAttributeValue", "ProgramTrackedEntityAttribute", "ProgramTrackedEntityAttribute",
-            "trackedEntityAttribute", "TrackedEntityAttributeValue", "trackedEntityAttribute", "TrackedEntityAttribute",
-            "TrackedEntityAttribute", "uid", "TrackedEntityAttributeValue", "trackedEntityAttribute",
-            "ProgramTrackedEntityAttribute", "program", "TrackedEntityAttributeValue", "trackedEntityInstance",
-            "ProgramTrackedEntityAttribute", "displayInList", "ProgramTrackedEntityAttribute", "sortOrder");
-
-    private final String ATTRIBUTE_VALUES_NO_PROGRAM_QUERY = String.format(
-            "SELECT %s.*, TrackedEntityAttribute.valueType, TrackedEntityAttribute.optionSet FROM %s "
-                    + "JOIN %s ON %s.%s = %s.%s " + "JOIN %s ON %s.%s = %s.%s " + "WHERE %s.%s = ? GROUP BY %s.%s",
-            "TrackedEntityAttributeValue", "TrackedEntityAttributeValue", "ProgramTrackedEntityAttribute",
-            "ProgramTrackedEntityAttribute", "trackedEntityAttribute", "TrackedEntityAttributeValue",
-            "trackedEntityAttribute", "TrackedEntityAttribute", "TrackedEntityAttribute", "uid",
-            "TrackedEntityAttributeValue", "trackedEntityAttribute", "TrackedEntityAttributeValue", "trackedEntityInstance",
-            "TrackedEntityAttributeValue", "trackedEntityAttribute");
-
-    private static final Set<String> ATTRIBUTE_VALUES_TABLE = new HashSet<>(
-            Arrays.asList("TrackedEntityAttributeValue", "ProgramTrackedEntityAttribute"));
-
-    private final BriteDatabase briteDatabase;
-
-    private final CodeGenerator codeGenerator;
-
     private final D2 d2;
+    private final ResourceManager resources;
 
     private String teiUid;
 
     private String programUid;
 
-    private static final String SELECT_USERNAME = "SELECT " + "UserCredentials.displayName FROM UserCredentials";
 
-    private static final String SELECT_ENROLLMENT = "SELECT "
-            + "Enrollment.uid FROM Enrollment JOIN Program ON Program.uid = Enrollment.program\n"
-            + "WHERE Program.uid = ? AND Enrollment.status = ? AND Enrollment.trackedEntityInstance = ?";
-
-    private static final String SELECT_LEGEND = String.format(
-            "SELECT %s.%s FROM %s\n" + "JOIN %s ON %s.%s = %s.%s\n" + "JOIN %s ON %s.%s = %s.%s\n" + "WHERE %s.%s = ?\n"
-                    + "AND %s.%s <= ?\n" + "AND %s.%s > ?",
-            "Legend", "color", "Legend", "ProgramIndicatorLegendSetLink", "ProgramIndicatorLegendSetLink", "legendSet",
-            "Legend", "LegendSet", "ProgramIndicator", "ProgramIndicator", "uid", "ProgramIndicatorLegendSetLink",
-            "programIndicator", "ProgramIndicator", "uid", "Legend", "startValue", "Legend", "endValue");
-
-    public DashboardRepositoryImpl(CodeGenerator codeGenerator, BriteDatabase briteDatabase, D2 d2) {
-        this.briteDatabase = briteDatabase;
-        this.codeGenerator = codeGenerator;
+    public DashboardRepositoryImpl(D2 d2, String teiUid, String programUid, ResourceManager resources) {
         this.d2 = d2;
-    }
-
-    @Override
-    public void setDashboardDetails(String teiUid, String programUid) {
         this.teiUid = teiUid;
         this.programUid = programUid;
+        this.resources = resources;
     }
 
     @Override
@@ -203,10 +131,17 @@ public class DashboardRepositoryImpl
 
     @Override
     public Observable<List<Event>> getEnrollmentEventsWithDisplay(String programUid, String teiUid) {
-        String progId = programUid == null ? "" : programUid;
-        String teiId = teiUid == null ? "" : teiUid;
-        return briteDatabase.createQuery(EVENTS_PROGRAM_STAGE_TABLE, EVENTS_DISPLAY_BOX, progId, teiId, "1")
-                .mapToList(Event::create);
+        return getEnrollment(programUid, teiUid)
+                .flatMapSingle(enrollment -> d2.eventModule().events().byEnrollmentUid().eq(enrollment.uid()).get())
+                .map(events -> {
+                    List<Event> finalEvents = new ArrayList<>();
+                    for (Event event : events) {
+                        if (d2.programModule().programStages().uid(event.programStage()).blockingGet().displayGenerateEventBox()) {
+                            finalEvents.add(event);
+                        }
+                    }
+                    return finalEvents;
+                });
     }
 
     @Override
@@ -218,51 +153,54 @@ public class DashboardRepositoryImpl
     @Override
     public Observable<Trio<ProgramIndicator, String, String>> getLegendColorForIndicator(ProgramIndicator indicator,
                                                                                          String value) {
-        String piId = indicator != null && indicator.uid() != null ? indicator.uid() : "";
         String color = "";
-        try (Cursor cursor = briteDatabase.query(SELECT_LEGEND, piId, value == null ? "" : value,
-                value == null ? "" : value)) {
-            if (cursor != null && cursor.moveToFirst() && cursor.getCount() > 0) {
-                color = cursor.getString(0);
-            }
+        if (indicator.legendSets() != null && !indicator.legendSets().isEmpty()) {
+            LegendSet legendSet = indicator.legendSets().get(0);
+            List<Legend> legends = d2.legendSetModule().legends().byStartValue().smallerThan(Double.valueOf(value)).byEndValue().biggerThan(Double.valueOf(value))
+                    .byLegendSet().eq(legendSet.uid()).blockingGet();
+            color = legends.get(0).color();
         }
         return Observable.just(Trio.create(indicator, value, color));
     }
 
     @Override
-    public Integer getObjectStyle(Context context, String uid) {
+    public Integer getObjectStyle(String uid) {
         TrackedEntityType teType = d2.trackedEntityModule().trackedEntityTypes().uid(uid).blockingGet();
-
-        if (teType.style() != null && teType.style().icon() != null) {
-            String iconName = teType.style().icon();
-            Resources resources = context.getResources();
-            iconName = iconName.startsWith("ic_") ? iconName : "ic_" + iconName;
-            return resources.getIdentifier(iconName, "drawable", context.getPackageName());
-        } else
-            return R.drawable.ic_person;
+        return resources.getObjectStyleDrawableResource(
+                teType.style() != null ? teType.style().icon() : null,
+                R.drawable.ic_person
+        );
     }
 
     @Override
     public Observable<List<Pair<RelationshipType, String>>> relationshipsForTeiType(String teType) {
-        String RELATIONSHIP_QUERY = "SELECT FROMTABLE.*, TOTABLE.trackedEntityType AS toTeiType FROM "
-                + "(SELECT RelationshipType.*,RelationshipConstraint.* FROM RelationshipType "
-                + "JOIN RelationshipConstraint ON RelationshipConstraint.relationshipType = RelationshipType.uid WHERE constraintType = 'FROM') "
-                + "AS FROMTABLE " + "JOIN " + "(SELECT RelationshipType.*,RelationshipConstraint.* FROM RelationshipType "
-                + "JOIN RelationshipConstraint ON RelationshipConstraint.relationshipType = RelationshipType.uid WHERE constraintType = 'TO') "
-                + "AS TOTABLE " + "ON TOTABLE.relationshipType = FROMTABLE.relationshipType "
-                + "WHERE FROMTABLE.trackedEntityType = ?";
-        return briteDatabase.createQuery("SystemInfo", "SELECT version FROM SystemInfo")
-                .mapToOne(cursor -> cursor.getString(0)).flatMap(version -> {
+        return d2.systemInfoModule().systemInfo().get().toObservable()
+                .map(SystemInfo::version)
+                .flatMap(version -> {
                     if (version.equals("2.29"))
                         return d2.relationshipModule().relationshipTypes().get().toObservable()
                                 .flatMapIterable(list -> list)
                                 .map(relationshipType -> Pair.create(relationshipType, teType)).toList().toObservable();
                     else
-                        return briteDatabase.createQuery("RelationshipType", RELATIONSHIP_QUERY, teType)
-                                .mapToList(cursor -> Pair.create(RelationshipType.create(cursor),
-                                        cursor.getString(cursor.getColumnIndex("toTeiType"))));
+                        return d2.relationshipModule().relationshipTypes().withConstraints().get()
+                                .map(relationshipTypes -> {
+                                    List<Pair<RelationshipType, String>> relTypeList = new ArrayList<>();
+                                    for (RelationshipType relationshipType : relationshipTypes) {
+                                        if (relationshipType.fromConstraint() != null && relationshipType.fromConstraint().trackedEntityType() != null &&
+                                                relationshipType.fromConstraint().trackedEntityType().uid().equals(teType)) {
+                                            if (relationshipType.toConstraint() != null && relationshipType.toConstraint().trackedEntityType() != null) {
+                                                relTypeList.add(Pair.create(relationshipType, relationshipType.toConstraint().trackedEntityType().uid()));
+                                            }
+                                        } else if (relationshipType.bidirectional() && relationshipType.toConstraint() != null && relationshipType.toConstraint().trackedEntityType() != null &&
+                                                relationshipType.toConstraint().trackedEntityType().uid().equals(teType)) {
+                                            if (relationshipType.fromConstraint() != null && relationshipType.fromConstraint().trackedEntityType() != null) {
+                                                relTypeList.add(Pair.create(relationshipType, relationshipType.fromConstraint().trackedEntityType().uid()));
+                                            }
+                                        }
+                                    }
+                                    return relTypeList;
+                                }).toObservable();
                 });
-
     }
 
     @Override
@@ -308,72 +246,42 @@ public class DashboardRepositoryImpl
     }
 
     @Override
-    public Observable<String> getAttributeImage(String teiUid) {
-        return d2.trackedEntityModule().trackedEntityInstances().uid(teiUid).get().map(tei -> {
-            String path = "";
-            Iterator<TrackedEntityAttribute> iterator = d2.trackedEntityModule().trackedEntityAttributes().byValueType()
-                    .eq(ValueType.IMAGE).blockingGet().iterator();
-            List<String> imageAttributesUids = new ArrayList<>();
-            while (iterator.hasNext())
-                imageAttributesUids.add(iterator.next().uid());
-
-            TrackedEntityAttributeValue attributeValue;
-            if (d2.trackedEntityModule().trackedEntityTypeAttributes().byTrackedEntityTypeUid()
-                    .eq(tei.trackedEntityType()).byTrackedEntityAttributeUid().in(imageAttributesUids).one()
-                    .blockingExists()) {
-
-                String attrUid = Objects.requireNonNull(d2.trackedEntityModule().trackedEntityTypeAttributes()
-                        .byTrackedEntityTypeUid().eq(tei.trackedEntityType()).byTrackedEntityAttributeUid()
-                        .in(imageAttributesUids).one().blockingGet()).trackedEntityAttribute().uid();
-
-                attributeValue = d2.trackedEntityModule().trackedEntityAttributeValues().byTrackedEntityInstance()
-                        .eq(tei.uid()).byTrackedEntityAttribute().eq(attrUid).one().blockingGet();
-
-                if (attributeValue != null && !isEmpty(attributeValue.value())) {
-                    FileResource fileResource = d2.fileResourceModule().fileResources().uid(attributeValue.value())
-                            .blockingGet();
-                    if (fileResource != null) {
-                        path = fileResource.path();
-                    }
-                }
-            }
-            return path;
-
-        }).toObservable();
-    }
-
-    @Override
     public Observable<List<TrackedEntityAttributeValue>> getTEIAttributeValues(String programUid, String teiUid) {
-        if (programUid != null)
-            return briteDatabase
-                    .createQuery(ATTRIBUTE_VALUES_TABLE, ATTRIBUTE_VALUES_QUERY, programUid, teiUid == null ? "" : teiUid)
-                    .mapToList(cursor -> ValueUtils.transform(briteDatabase, cursor))
-                    .map(values -> {
-                        List<TrackedEntityAttributeValue> toRemove = new ArrayList<>();
-                        for (TrackedEntityAttributeValue value : values) {
-                            ValueType type = d2.trackedEntityModule().trackedEntityAttributes().uid(value.trackedEntityAttribute()).blockingGet().valueType();
-                            if (type == ValueType.IMAGE) {
-                                toRemove.add(value);
+        if (programUid != null) {
+            return d2.programModule().programTrackedEntityAttributes()
+                    .byProgram().eq(programUid)
+                    .orderBySortOrder(RepositoryScope.OrderByDirection.ASC).get()
+                    .map(programTrackedEntityAttributes -> {
+                        List<TrackedEntityAttributeValue> attributeValues = new ArrayList<>();
+                        for (ProgramTrackedEntityAttribute programAttribute : programTrackedEntityAttributes) {
+                            if (d2.trackedEntityModule().trackedEntityAttributeValues().value(programAttribute.trackedEntityAttribute().uid(), teiUid).blockingExists()) {
+                                TrackedEntityAttributeValue attributeValue = d2.trackedEntityModule().trackedEntityAttributeValues().value(programAttribute.trackedEntityAttribute().uid(), teiUid).blockingGet();
+                                TrackedEntityAttribute attribute = d2.trackedEntityModule().trackedEntityAttributes().uid(programAttribute.trackedEntityAttribute().uid()).blockingGet();
+                                if (attribute.valueType() != ValueType.IMAGE) {
+                                    attributeValues.add(
+                                            ValueUtils.transform(d2, attributeValue, attribute.valueType(), attribute.optionSet() != null ? attribute.optionSet().uid() : null)
+                                    );
+                                }
                             }
                         }
-                        values.removeAll(toRemove);
-                        return values;
-                    });
-        else
-            return briteDatabase
-                    .createQuery(ATTRIBUTE_VALUES_TABLE, ATTRIBUTE_VALUES_NO_PROGRAM_QUERY, teiUid == null ? "" : teiUid)
-                    .mapToList(cursor -> ValueUtils.transform(briteDatabase, cursor))
-                    .map(values -> {
-                        List<TrackedEntityAttributeValue> toRemove = new ArrayList<>();
-                        for (TrackedEntityAttributeValue value : values) {
-                            ValueType type = d2.trackedEntityModule().trackedEntityAttributes().uid(value.trackedEntityAttribute()).blockingGet().valueType();
-                            if (type == ValueType.IMAGE) {
-                                toRemove.add(value);
+                        return attributeValues;
+                    }).toObservable();
+
+        } else {
+            return d2.trackedEntityModule().trackedEntityAttributeValues().byTrackedEntityInstance().eq(teiUid).get()
+                    .map(attributeValueList -> {
+                        List<TrackedEntityAttributeValue> attributeValues = new ArrayList<>();
+                        for (TrackedEntityAttributeValue attributeValue : attributeValueList) {
+                            TrackedEntityAttribute attribute = d2.trackedEntityModule().trackedEntityAttributes().uid(attributeValue.trackedEntityAttribute()).blockingGet();
+                            if (attribute.valueType() != ValueType.IMAGE) {
+                                attributeValues.add(
+                                        ValueUtils.transform(d2, attributeValue, attribute.valueType(), attribute.optionSet() != null ? attribute.optionSet().uid() : null)
+                                );
                             }
                         }
-                        values.removeAll(toRemove);
-                        return values;
-                    });
+                        return attributeValues;
+                    }).toObservable();
+        }
     }
 
     @Override
@@ -397,13 +305,6 @@ public class DashboardRepositoryImpl
     }
 
     @Override
-    public Flowable<List<Note>> getNotes(String programUid, String teUid) {
-        return briteDatabase
-                .createQuery("Note", SELECT_NOTES, teUid == null ? "" : teUid, programUid == null ? "" : programUid)
-                .mapToList(Note::create).toFlowable(BackpressureStrategy.LATEST);
-    }
-
-    @Override
     public Consumer<Pair<String, Boolean>> handleNote() {
         return stringBooleanPair -> {
             if (stringBooleanPair.val1()) {
@@ -421,18 +322,11 @@ public class DashboardRepositoryImpl
     }
 
     @Override
-    public Flowable<Long> updateEnrollmentStatus(@NonNull String uid, @NonNull EnrollmentStatus value) {
-        return Flowable.defer(() -> {
-            // UPDATE ENROLLMENT
-            Enrollment enrollment = d2.enrollmentModule().enrollments().uid(uid).blockingGet();
-            ContentValues cv = enrollment.toContentValues();
-            cv.put("lastUpdated", DateUtils.databaseDateFormat().format(Calendar.getInstance().getTime()));
-            cv.put("status", value.name());
-            cv.put("state", enrollment.state() == State.TO_POST ? State.TO_POST.name() : State.TO_UPDATE.name());
-            long updated = briteDatabase.update("Enrollment", cv, "uid = ?", enrollment.uid());
-
-            updateTeiState();
-            return Flowable.just(updated);
+    public Flowable<Enrollment> completeEnrollment(@NonNull String enrollmentUid) {
+        return Flowable.fromCallable(() -> {
+            d2.enrollmentModule().enrollments().uid(enrollmentUid)
+                    .setStatus(EnrollmentStatus.COMPLETED);
+            return d2.enrollmentModule().enrollments().uid(enrollmentUid).blockingGet();
         });
     }
 
@@ -505,29 +399,135 @@ public class DashboardRepositoryImpl
 
     @Override
     public void saveCatOption(String eventUid, String catOptionComboUid) {
-        // TODO: we need to use the sdk, when the setAttributeOptionCombo() method on
-        // the EventObjectRepository is available
-        ContentValues event = new ContentValues();
-        event.put(EventTableInfo.Columns.ATTRIBUTE_OPTION_COMBO, catOptionComboUid);
-        briteDatabase.update(EventTableInfo.TABLE_INFO.name(), event, EventTableInfo.Columns.UID + " = ?",
-                eventUid == null ? "" : eventUid);
-    }
-
-    private void updateEnrollmentState(String enrollmentUid) {
-        Enrollment enrollment = d2.enrollmentModule().enrollments().uid(enrollmentUid).blockingGet();
-        ContentValues cv = enrollment.toContentValues();
-        cv.put("lastUpdated", DateUtils.databaseDateFormat().format(Calendar.getInstance().getTime()));
-        cv.put("state", enrollment.state() == State.TO_POST ? State.TO_POST.name() : State.TO_UPDATE.name());
-        long updated = briteDatabase.update("Enrollment", cv, "uid = ?", enrollment.uid());
+        try {
+            d2.eventModule().events().uid(eventUid).setAttributeOptionComboUid(catOptionComboUid);
+        } catch (D2Error d2Error) {
+            Timber.e(d2Error);
+        }
     }
 
     @Override
-    public void updateTeiState() {
-        TrackedEntityInstance tei = d2.trackedEntityModule().trackedEntityInstances().uid(teiUid).blockingGet();
-        ContentValues cv = tei.toContentValues();
-        cv.put(TrackedEntityInstanceTableInfo.Columns.STATE,
-                tei.state() == State.TO_POST ? State.TO_POST.name() : State.TO_UPDATE.name());
-        cv.put("lastUpdated", DateUtils.databaseDateFormat().format(Calendar.getInstance().getTime()));
-        briteDatabase.update("TrackedEntityInstance", cv, "uid = ?", teiUid);
+    public Single<Boolean> deleteTeiIfPossible() {
+        return Single.fromCallable(() -> {
+            boolean local = d2.trackedEntityModule()
+                    .trackedEntityInstances()
+                    .uid(teiUid)
+                    .blockingGet()
+                    .state() == State.TO_POST;
+            boolean hasAuthority = d2.userModule()
+                    .authorities()
+                    .byName().eq("F_TEI_CASCADE_DELETE")
+                    .one().blockingExists();
+            return local || hasAuthority;
+        }).flatMap(canDelete -> {
+            if (canDelete) {
+                return d2.trackedEntityModule()
+                        .trackedEntityInstances()
+                        .uid(teiUid)
+                        .delete()
+                        .andThen(Single.fromCallable(() -> true));
+            } else {
+                return Single.fromCallable(() -> false);
+            }
+        });
+    }
+
+    @Override
+    public Single<Boolean> deleteEnrollmentIfPossible(String enrollmentUid) {
+        return Single.fromCallable(() -> {
+            boolean local = d2.enrollmentModule()
+                    .enrollments()
+                    .uid(enrollmentUid)
+                    .blockingGet().state() == State.TO_POST;
+            boolean hasAuthority = d2.userModule()
+                    .authorities()
+                    .byName().eq("F_ENROLLMENT_CASCADE_DELETE")
+                    .one().blockingExists();
+            return local || hasAuthority;
+        }).flatMap(canDelete -> {
+            if (canDelete) {
+                return Single.fromCallable(() -> {
+                    EnrollmentObjectRepository enrollmentObjectRepository = d2.enrollmentModule()
+                            .enrollments().uid(enrollmentUid);
+                    enrollmentObjectRepository.setStatus(
+                            enrollmentObjectRepository.blockingGet().status()
+                    );
+                    enrollmentObjectRepository.blockingDelete();
+                    return !d2.enrollmentModule().enrollments().byTrackedEntityInstance().eq(teiUid)
+                            .byDeleted().isFalse()
+                            .byStatus().eq(EnrollmentStatus.ACTIVE).blockingGet().isEmpty();
+                });
+            } else {
+                return Single.error(new AuthorityException(null));
+            }
+        });
+    }
+
+    @Override
+    public Flowable<List<RelationshipViewModel>> listTeiRelationships() {
+        return Flowable.fromIterable(
+                d2.relationshipModule().relationships().getByItem(
+                        RelationshipItem.builder().trackedEntityInstance(
+                                RelationshipItemTrackedEntityInstance.builder().trackedEntityInstance(teiUid).build()).build()
+                ))
+                .map(relationship -> {
+                    RelationshipType relationshipType = null;
+                    for (RelationshipType type : d2.relationshipModule().relationshipTypes().blockingGet())
+                        if (type.uid().equals(relationship.relationshipType()))
+                            relationshipType = type;
+
+                    String relationshipTEIUid;
+                    RelationshipViewModel.RelationshipDirection direction;
+                    if (!teiUid.equals(relationship.from().trackedEntityInstance().trackedEntityInstance())) {
+                        relationshipTEIUid = relationship.from().trackedEntityInstance().trackedEntityInstance();
+                        direction = RelationshipViewModel.RelationshipDirection.FROM;
+                    } else {
+                        relationshipTEIUid = relationship.to().trackedEntityInstance().trackedEntityInstance();
+                        direction = RelationshipViewModel.RelationshipDirection.TO;
+                    }
+
+                    TrackedEntityInstance tei = d2.trackedEntityModule().trackedEntityInstances().withTrackedEntityAttributeValues().uid(relationshipTEIUid).blockingGet();
+                    List<TrackedEntityTypeAttribute> typeAttributes = d2.trackedEntityModule().trackedEntityTypeAttributes()
+                            .byTrackedEntityTypeUid().eq(tei.trackedEntityType())
+                            .byDisplayInList().isTrue()
+                            .blockingGet();
+                    List<String> attributeUids = new ArrayList<>();
+                    for (TrackedEntityTypeAttribute typeAttribute : typeAttributes)
+                        attributeUids.add(typeAttribute.trackedEntityAttribute().uid());
+                    List<TrackedEntityAttributeValue> attributeValues = d2.trackedEntityModule().trackedEntityAttributeValues().byTrackedEntityInstance().eq(tei.uid())
+                            .byTrackedEntityAttribute().in(attributeUids).blockingGet();
+
+                    return RelationshipViewModel.create(relationship, relationshipType, direction, relationshipTEIUid, attributeValues);
+                })
+                .toList().toFlowable();
+    }
+
+    @Override
+    public Single<Integer> getNoteCount() {
+        return d2.enrollmentModule().enrollments()
+                .byProgram().eq(programUid)
+                .byTrackedEntityInstance().eq(teiUid)
+                .withNotes()
+                .one()
+                .get()
+                .map(enrollment -> enrollment.notes() != null ? enrollment.notes().size() : 0);
+    }
+
+    @Override
+    public EnrollmentStatus getEnrollmentStatus(String enrollmentUid) {
+        return d2.enrollmentModule().enrollments().uid(enrollmentUid).blockingGet().status();
+    }
+
+    @Override
+    public Observable<Boolean> updateEnrollmentStatus(String enrollmentUid, EnrollmentStatus status) {
+        try {
+            if(d2.programModule().programs().uid(programUid).blockingGet().access().data().write()) {
+                d2.enrollmentModule().enrollments().uid(enrollmentUid).setStatus(status);
+                return Observable.just(true);
+            }
+            return Observable.just(false);
+        } catch (D2Error error){
+            return Observable.just(false);
+        }
     }
 }

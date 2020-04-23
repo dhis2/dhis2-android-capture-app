@@ -4,12 +4,13 @@ import android.content.Context;
 
 import androidx.annotation.NonNull;
 
-import com.squareup.sqlbrite2.BriteDatabase;
-
+import org.dhis2.Bindings.ValueTypeExtensionsKt;
 import org.dhis2.data.dagger.PerActivity;
 import org.dhis2.data.forms.EventRepository;
 import org.dhis2.data.forms.FormRepository;
 import org.dhis2.data.forms.RulesRepository;
+import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory;
+import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactoryImpl;
 import org.dhis2.data.schedulers.SchedulerProvider;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.rules.RuleExpressionEvaluator;
@@ -53,9 +54,11 @@ public class EventSummaryModule {
     @Provides
     @PerActivity
     EventSummaryRepository eventSummaryRepository(@NonNull Context context,
-                                                  @NonNull BriteDatabase briteDatabase,
                                                   @NonNull FormRepository formRepository, D2 d2) {
-        return new EventSummaryRepositoryImpl(context, briteDatabase, formRepository, eventUid, d2);
+        FieldViewModelFactory fieldViewModelFactory = new FieldViewModelFactoryImpl(
+                ValueTypeExtensionsKt.valueTypeHintMap(context)
+        );
+        return new EventSummaryRepositoryImpl(fieldViewModelFactory, formRepository, eventUid, d2);
     }
 
     @Provides

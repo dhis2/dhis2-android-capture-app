@@ -6,6 +6,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.BitmapFactory
 import android.os.Bundle
+import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
@@ -43,10 +44,6 @@ import org.hisp.dhis.android.core.arch.helpers.GeometryHelper
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.Geometry
 import timber.log.Timber
-
-/**
- * Created by Cristian on 15/03/2018.
- */
 
 class MapSelectorActivity :
     ActivityGlobalAbstract(),
@@ -247,6 +244,9 @@ class MapSelectorActivity :
 
     private fun bindPolygon(initial_coordinates: String?) {
         val viewModel = ViewModelProviders.of(this).get(PolygonViewModel::class.java)
+        viewModel.onMessage = {
+            Toast.makeText(this@MapSelectorActivity, it, Toast.LENGTH_SHORT).show()
+        }
         binding.recycler.layoutManager = GridLayoutManager(this, 2)
         viewModel.response.observe(
             this,
@@ -378,36 +378,16 @@ class MapSelectorActivity :
         // Map is set up and the style has loaded. Now you can add data or make other map adjustments
         if (ActivityCompat.checkSelfPermission(
             this,
-            Manifest.permission.ACCESS_COARSE_LOCATION
+            Manifest.permission.ACCESS_FINE_LOCATION
         ) != PackageManager.PERMISSION_GRANTED
         ) {
-            // Should we show an explanation?
-            /*if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_COARSE_LOCATION)) {
-                // TODO CRIS
-                // Show an expanation to the user *asynchronously* -- don't block
-                // this thread waiting for the user's response! After the user
-                // sees the explanation, try again to request the permission.
-
-            }*/
             ActivityCompat.requestPermissions(
                 this,
-                arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION),
-                ACCESS_COARSE_LOCATION_PERMISSION_REQUEST
+                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                ACCESS_LOCATION_PERMISSION_REQUEST
             )
             return
         }
-
-        /* mFusedLocationClient.lastLocation.addOnSuccessListener { location ->
-             if (location != null) {
-                 map.animateCamera(CameraUpdateFactory.newLatLngZoom(LatLng(location.latitude, location.longitude), 13.0))
-
-                 val cameraPosition = CameraPosition.Builder()
-                         .target(LatLng(location.latitude, location.longitude))      // Sets the center of the map to location user
-                         .zoom(15.0)                   // Sets the zoom
-                         .build()                   // Creates a CameraPosition from the builder
-                 map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition))
-             }
-         }*/
     }
 
     override fun onRequestPermissionsResult(
@@ -417,22 +397,23 @@ class MapSelectorActivity :
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         when (requestCode) {
-            ACCESS_COARSE_LOCATION_PERMISSION_REQUEST -> {
+            ACCESS_LOCATION_PERMISSION_REQUEST -> {
                 // If request is cancelled, the result arrays are empty.
-                if (grantResults.size > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                if (grantResults.isNotEmpty() &&
+                    grantResults[0] == PackageManager.PERMISSION_GRANTED
+                ) {
+                    enableLocationComponent()
                     centerMapOnCurrentLocation()
-                } else {
-                    // TODO CRIS
                 }
             }
         }
     }
 
     companion object {
-        private val ACCESS_COARSE_LOCATION_PERMISSION_REQUEST = 102
-        val DATA_EXTRA = "data_extra"
-        val LOCATION_TYPE_EXTRA = "LOCATION_TYPE_EXTRA"
-        val INITIAL_GEOMETRY_COORDINATES = "INITIAL_DATA"
+        private const val ACCESS_LOCATION_PERMISSION_REQUEST = 102
+        const val DATA_EXTRA = "data_extra"
+        const val LOCATION_TYPE_EXTRA = "LOCATION_TYPE_EXTRA"
+        const val INITIAL_GEOMETRY_COORDINATES = "INITIAL_DATA"
 
         fun create(activity: Activity, locationType: FeatureType): Intent {
             val intent = Intent(activity, MapSelectorActivity::class.java)

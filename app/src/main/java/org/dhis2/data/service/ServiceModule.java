@@ -4,10 +4,11 @@ import android.app.NotificationManager;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
-import androidx.work.WorkManager;
 
 import org.dhis2.data.dagger.PerService;
 import org.dhis2.data.prefs.PreferenceProvider;
+import org.dhis2.data.service.workManager.WorkManagerController;
+import org.dhis2.utils.analytics.AnalyticsHelper;
 import org.hisp.dhis.android.core.D2;
 
 import dagger.Module;
@@ -28,8 +29,9 @@ public class ServiceModule {
     SyncPresenter syncPresenter(
             @NonNull D2 d2,
             @NonNull PreferenceProvider preferences,
-            @NonNull WorkManager workManager
+            @NonNull WorkManagerController workManagerController,
+            @NonNull AnalyticsHelper analyticsHelper
     ) {
-        return new SyncPresenterImpl(d2, preferences, workManager);
+        return new SyncPresenterImpl(d2, preferences, workManagerController, analyticsHelper);
     }
 }

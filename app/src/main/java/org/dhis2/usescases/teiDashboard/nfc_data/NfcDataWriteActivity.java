@@ -156,10 +156,8 @@ public class NfcDataWriteActivity extends ActivityGlobalAbstract {
                             .setTitle("NFC Reader")
                             .setMessage("Data was written. Do you want to open dashboard?")
                             .setPositiveButton("Yes", (dialogInterface, i) -> {
-                                Bundle bundle = new Bundle();
-                                bundle.putString("TEI_UID", teiUidWritten);
-                                bundle.putString("PROGRAM_UID", null);
-                                startActivity(TeiDashboardMobileActivity.class, bundle, true, false, null);
+                                startActivity(TeiDashboardMobileActivity.intent(this,teiUidWritten,null,null));
+                                finish();
                             })
                             .setNegativeButton("No", (dialogInterface, i) -> {
                                 binding.currentMessage.setText("Waiting for NFC");

@@ -24,7 +24,6 @@ import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
 import org.dhis2.R;
-import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.databinding.FormCoordinatesAccentBinding;
 import org.dhis2.databinding.FormCoordinatesBinding;
 import org.dhis2.usescases.enrollment.EnrollmentActivity;
@@ -36,10 +35,8 @@ import org.hisp.dhis.android.core.maintenance.D2Error;
 
 import java.util.List;
 
-import io.reactivex.processors.FlowableProcessor;
-
 import static android.text.TextUtils.isEmpty;
-import static org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialPresenter.ACCESS_COARSE_LOCATION_PERMISSION_REQUEST;
+import static org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialPresenter.ACCESS_LOCATION_PERMISSION_REQUEST;
 
 /**
  * QUADRAM. Created by Administrador on 21/03/2018.
@@ -55,10 +52,8 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
     private FusedLocationProviderClient mFusedLocationClient;
     private LocationCallback locationCallback;
     private ImageButton location1;
-    private OnMapPositionClick listener;
-    private OnCurrentLocationClick listener2;
-    private FlowableProcessor<RowAction> processor;
-    private String uid;
+    private OnMapPositionClick mapLocationListener;
+    private OnCurrentLocationClick currentLocationListener;
     private TextView errorView;
     private View clearButton;
     private View polygonInputLayout;
@@ -120,7 +115,7 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
             if (validateCoordinates()) {
                 Double latitudeValue = isEmpty(latitude.getText().toString()) ? null : Double.valueOf(latitude.getText().toString());
                 Double longitudeValue = isEmpty(longitude.getText().toString()) ? null : Double.valueOf(longitude.getText().toString());
-                listener2.onCurrentLocationClick(GeometryHelper.createPointGeometry(longitudeValue, latitudeValue));
+                currentLocationListener.onCurrentLocationClick(GeometryHelper.createPointGeometry(longitudeValue, latitudeValue));
             } else {
                 longitude.requestFocus();
                 longitude.performClick();
@@ -132,7 +127,7 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
             if (validateCoordinates()) {
                 Double latitudeValue = isEmpty(latitude.getText().toString()) ? null : Double.valueOf(latitude.getText().toString());
                 Double longitudeValue = isEmpty(longitude.getText().toString()) ? null : Double.valueOf(longitude.getText().toString());
-                listener2.onCurrentLocationClick(GeometryHelper.createPointGeometry(longitudeValue, latitudeValue));
+                currentLocationListener.onCurrentLocationClick(GeometryHelper.createPointGeometry(longitudeValue, latitudeValue));
             } else {
                 latitude.requestFocus();
                 latitude.performClick();
@@ -164,12 +159,12 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
                 (isEmpty(latitude.getText()) && isEmpty(longitude.getText()));
     }
 
-    public void setMapListener(OnMapPositionClick listener) {
-        this.listener = listener;
+    public void setMapListener(OnMapPositionClick mapLocationListener) {
+        this.mapLocationListener = mapLocationListener;
     }
 
-    public void setCurrentLocationListener(OnCurrentLocationClick listener) {
-        this.listener2 = listener;
+    public void setCurrentLocationListener(OnCurrentLocationClick currentLocationListener) {
+        this.currentLocationListener = currentLocationListener;
     }
 
     public void setLabel(String label) {
@@ -202,7 +197,7 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
     public void setInitialValue(String initialValue) {
         if (featureType == null)
             throw new NullPointerException("use setFeatureType before setting an initial value");
-        updateLocation(
+        setCoordinatesValue(
                 Geometry.builder()
                         .coordinates(initialValue)
                         .type(featureType)
@@ -239,8 +234,8 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
                 getLocation();
                 break;
             case R.id.location2:
-                if (listener != null)
-                    listener.onMapPositionClick(this);
+                if (mapLocationListener != null)
+                    mapLocationListener.onMapPositionClick(this);
                 else
                     ((OnMapPositionClick) getContext()).onMapPositionClick(this);
                 break;
@@ -252,12 +247,10 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
     }
 
     public void getLocation() {
-        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions((ActivityGlobalAbstract) getContext(),
-                    new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
-                    ACCESS_COARSE_LOCATION_PERMISSION_REQUEST);
-            if (getContext() instanceof EnrollmentActivity)
-                ((EnrollmentActivity) getContext()).setCoordinatesView(this);
+        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            if(this.getContext() instanceof ActivityGlobalAbstract){
+                ((ActivityGlobalAbstract)this.getContext()).requestLocationPermission(this);
+            }
         } else {
 
             mFusedLocationClient.getLastLocation().
@@ -284,11 +277,6 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
         findViewById(R.id.location2).setEnabled(editable);
     }
 
-    public void setProcessor(String uid, FlowableProcessor<RowAction> processor) {
-        this.processor = processor;
-        this.uid = uid;
-    }
-
     @Override
     public void onFocusChange(View v, boolean hasFocus) {
         if (hasFocus) {
@@ -309,6 +297,15 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
     @SuppressLint("MissingPermission")
     public void updateLocation(Geometry geometry) {
 
+        setCoordinatesValue(geometry);
+
+        this.currentGeometry = geometry;
+        if (currentLocationListener != null)
+            currentLocationListener.onCurrentLocationClick(geometry);
+        invalidate();
+    }
+
+    private void setCoordinatesValue(Geometry geometry) {
         if (geometry != null && geometry.type() != null) {
             if (geometry.type() == FeatureType.POINT) {
                 try {
@@ -326,11 +323,6 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
             }
             this.clearButton.setVisibility(VISIBLE);
         }
-
-        this.currentGeometry = geometry;
-        if (listener2 != null)
-            listener2.onCurrentLocationClick(geometry);
-        invalidate();
     }
 
     private void startRequestingLocation() {
@@ -351,11 +343,10 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
             }
         };
 
-        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
-                ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions((ActivityGlobalAbstract) getContext(),
-                    new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION},
-                    ACCESS_COARSE_LOCATION_PERMISSION_REQUEST);
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                    ACCESS_LOCATION_PERMISSION_REQUEST);
         } else
             mFusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, null);
 

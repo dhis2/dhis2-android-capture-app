@@ -11,10 +11,10 @@ import android.view.Window
 import android.widget.Toast
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentManager
+import javax.inject.Inject
 import org.dhis2.Bindings.app
 import org.dhis2.R
 import org.dhis2.databinding.DialogPinBinding
-import javax.inject.Inject
 
 const val PIN_DIALOG_TAG: String = "PINDIALOG"
 
@@ -99,7 +99,6 @@ class PinDialog(
         Handler().postDelayed(
             { Process.killProcess(Process.myPid()) }, 1500
         )
-
     }
 
     override fun closeDialog() {
@@ -112,6 +111,7 @@ class PinDialog(
     }
 
     override fun recoverPin() {
+        presenter.logOut()
         forgotPinCallback.invoke()
         dismiss()
     }

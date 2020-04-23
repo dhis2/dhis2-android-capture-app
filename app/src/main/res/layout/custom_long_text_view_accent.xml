@@ -18,20 +18,28 @@
         <variable
             name="isEditable"
             type="androidx.databinding.ObservableBoolean" />
+
+        <variable
+            name="fieldHint"
+            type="String" />
     </data>
 
-    <RelativeLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="5dp"
         android:padding="5dp"
         tools:background="?attr/colorPrimary">
+
         <View
             android:id="@+id/dummyFocusView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:focusable="true"
-            android:focusableInTouchMode="true" />
+            android:focusableInTouchMode="true"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
         <ImageView
             android:id="@+id/renderImage"
             android:layout_width="wrap_content"
@@ -39,35 +47,49 @@
             android:layout_centerHorizontal="true"
             android:layout_marginBottom="5dp"
             android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
             tools:srcCompat="@drawable/sierra_leone"
             tools:visibility="visible" />
+
+        <TextView
+            android:id="@+id/label"
+            style="@style/FieldLabel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@{label}"
+            android:textColor="?colorAccent"
+            app:layout_constraintTop_toBottomOf="@id/renderImage"
+            tools:text="@string/lorem" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/renderImage"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            app:layout_constraintTop_toBottomOf="@id/label">
 
 
             <ImageView
-                android:layout_gravity="center"
                 android:id="@+id/descIcon"
                 android:layout_width="wrap_content"
-                android:layout_marginEnd="8dp"
                 android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:layout_marginEnd="8dp"
                 android:visibility="gone"
                 app:srcCompat="@drawable/ic_info_outline"
-                app:tint="?colorAccent"/>
+                app:tint="?colorAccent" />
 
             <com.google.android.material.textfield.TextInputLayout
-                style="@style/ValueType_LongText"
                 android:id="@+id/input_layout"
+                style="@style/ValueType_LongText"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:hint='@{label}'
-                android:textColorHint="@drawable/edit_text_hint_accent"
-                android:theme="@style/loginInputTextAccent"
+                android:hint='@{fieldHint}'
+                android:textColorHint="@color/text_black_808"
+                android:theme="@style/loginInputText"
                 tools:hint="this is the hint">
 
                 <org.dhis2.utils.customviews.TextInputAutoCompleteTextView
@@ -77,11 +99,14 @@
                     android:enabled="@{isEditable.get()}"
                     android:gravity="start"
                     android:imeOptions="actionNext"
-                    android:textIsSelectable="true"
                     android:maxLines="1"
-                    android:textColor="?colorAccent"
+                    android:paddingStart="12dp"
+                    android:paddingTop="32dp"
+                    android:paddingEnd="12dp"
+                    android:paddingBottom="5dp"
+                    android:textIsSelectable="true"
                     android:textSize="15sp"
-                    tools:text="@string/lorem" />
+                    tools:text="hello" />
 
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -93,5 +118,5 @@
                 app:srcCompat="@drawable/ic_info_outline"
                 app:tint="?colorAccent" />
         </LinearLayout>
-    </RelativeLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

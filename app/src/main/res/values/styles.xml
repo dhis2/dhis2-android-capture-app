@@ -49,7 +49,7 @@
         <item name="tabIndicatorHeight">2dp</item>
         <item name="tabTextAppearance">@style/DhisTabText</item>
         <item name="tabSelectedTextColor">?colorAccent</item>
-        <item name="android:background">?colorPrimary</item>
+        <item name="android:background">?colorPrimaryDark</item>
     </style>
 
     <style name="DhisTabText" parent="TextAppearance.Design.Tab">
@@ -295,6 +295,17 @@
 <!--        <item name="android:windowEnterAnimation">@anim/fscv_fade_in</item>-->
         <item name="android:windowEnterAnimation">@anim/pin_dialog_anim_enter</item>
         <item name="android:windowExitAnimation">@anim/pin_dialog_anim_exit</item>
+    </style>
+
+    <style name="FieldLabel">
+        <item name="android:textSize">@dimen/field_label_size</item>
+        <item name="android:fontFamily">@font/rubik_regular</item>
+        <item name="android:layout_margin">5dp</item>
+        <item name="android:paddingBottom">8dp</item>
+    </style>
+
+    <style name="settingsHint">
+        <item name="android:textSize">10sp</item>
     </style>
 
 </resources>

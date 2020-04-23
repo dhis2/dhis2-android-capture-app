@@ -1,5 +1,6 @@
 package org.dhis2.usescases.datasets.datasetInitial;
 
+import org.dhis2.data.tuples.Pair;
 import org.dhis2.usescases.general.AbstractActivityContracts;
 import org.hisp.dhis.android.core.category.CategoryOption;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
@@ -39,10 +40,12 @@ public class DataSetInitialContract {
         String getPeriodType();
 
         void setOrgUnit(OrganisationUnit organisationUnit);
+
+        void navigateToDataSetTable(String catOptionCombo, String periodId);
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter {
-        void init(View view);
+        void init();
 
         void onBackClick();
 
@@ -52,7 +55,7 @@ public class DataSetInitialContract {
 
         void onCatOptionClick(String catOptionUid);
 
-        void onActionButtonClick();
+        void onActionButtonClick(PeriodType periodType);
     }
 
 

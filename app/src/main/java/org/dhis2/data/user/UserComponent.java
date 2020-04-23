@@ -37,6 +37,12 @@ import org.dhis2.usescases.main.MainComponent;
 import org.dhis2.usescases.main.MainModule;
 import org.dhis2.usescases.main.program.ProgramComponent;
 import org.dhis2.usescases.main.program.ProgramModule;
+import org.dhis2.usescases.notes.NotesComponent;
+import org.dhis2.usescases.notes.NotesModule;
+import org.dhis2.usescases.notes.noteDetail.NoteDetailComponent;
+import org.dhis2.usescases.notes.noteDetail.NoteDetailModule;
+import org.dhis2.usescases.orgunitselector.OUTreeComponent;
+import org.dhis2.usescases.orgunitselector.OUTreeModule;
 import org.dhis2.usescases.programEventDetail.ProgramEventDetailComponent;
 import org.dhis2.usescases.programEventDetail.ProgramEventDetailModule;
 import org.dhis2.usescases.programStageSelection.ProgramStageSelectionComponent;
@@ -47,12 +53,16 @@ import org.dhis2.usescases.qrCodes.eventsworegistration.QrEventsWORegistrationCo
 import org.dhis2.usescases.qrCodes.eventsworegistration.QrEventsWORegistrationModule;
 import org.dhis2.usescases.qrReader.QrReaderComponent;
 import org.dhis2.usescases.qrReader.QrReaderModule;
+import org.dhis2.usescases.qrScanner.ScanComponent;
+import org.dhis2.usescases.qrScanner.ScanModule;
 import org.dhis2.usescases.reservedValue.ReservedValueComponent;
 import org.dhis2.usescases.reservedValue.ReservedValueModule;
 import org.dhis2.usescases.searchTrackEntity.SearchTEComponent;
 import org.dhis2.usescases.searchTrackEntity.SearchTEModule;
 import org.dhis2.usescases.settings.SyncManagerComponent;
 import org.dhis2.usescases.settings.SyncManagerModule;
+import org.dhis2.usescases.settings_program.ProgramSettingsComponent;
+import org.dhis2.usescases.settings_program.SettingsProgramModule;
 import org.dhis2.usescases.sms.SmsComponent;
 import org.dhis2.usescases.sms.SmsModule;
 import org.dhis2.usescases.sync.SyncComponent;
@@ -165,4 +175,19 @@ public interface UserComponent {
 
     @NonNull
     OptionSetComponent plus(OptionSetModule optionSetModule);
+
+    @NonNull
+    NotesComponent plus(NotesModule notesModule);
+
+    @NonNull
+    NoteDetailComponent plus(NoteDetailModule noteDetailModule);
+
+    @NonNull
+    OUTreeComponent plus(OUTreeModule ouTreeModule);
+
+    @NonNull
+    ProgramSettingsComponent plus(SettingsProgramModule settingsProgramModule);
+
+    @NonNull
+    ScanComponent plus(ScanModule scanModule);
 }

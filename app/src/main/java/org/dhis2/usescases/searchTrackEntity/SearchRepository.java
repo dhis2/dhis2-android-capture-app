@@ -3,11 +3,11 @@ package org.dhis2.usescases.searchTrackEntity;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
-import androidx.paging.PagedList;
 
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel;
 import org.hisp.dhis.android.core.common.State;
+import org.hisp.dhis.android.core.common.ValueTypeRenderingType;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.Program;
@@ -30,17 +30,18 @@ import io.reactivex.Observable;
 public interface SearchRepository {
 
     @NonNull
-    Observable<List<TrackedEntityAttribute>> programAttributes(String programId);
+    Observable<SearchProgramAttributes> programAttributes(String programId);
 
     Observable<List<Program>> programsWithRegistration(String programTypeId);
 
     @NonNull
-    LiveData<PagedList<SearchTeiModel>> searchTrackedEntities(@Nullable Program selectedProgram,
+    LiveData searchTrackedEntities(@Nullable Program selectedProgram,
                                                               @NonNull String trackedEntityType,
                                                               @NonNull List<String> orgUnits,
                                                               @Nonnull List<State> states,
                                                               @NonNull List<EventStatus> statuses,
                                                               @Nullable HashMap<String, String> queryData,
+                                                              boolean assignedToMe,
                                                               boolean isOnline);
 
     @NonNull
@@ -48,7 +49,9 @@ public interface SearchRepository {
                                                    @NonNull String trackedEntityType,
                                                    @NonNull List<String> orgUnits,
                                                    @Nonnull List<State> states,
+                                                   @NonNull List<EventStatus> statuses,
                                                    @Nullable HashMap<String, String> queryData,
+                                                   boolean assignedToMe,
                                                    boolean isOnline);
 
     @NonNull

@@ -2,10 +2,8 @@ package org.dhis2.usescases.teiDashboard;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.content.res.Configuration;
-import android.content.res.Resources;
 import android.content.res.TypedArray;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -19,13 +17,17 @@ import android.widget.PopupMenu;
 
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
+import androidx.core.view.ViewCompat;
 import androidx.databinding.DataBindingUtil;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentStatePagerAdapter;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModelProviders;
-import androidx.viewpager.widget.ViewPager;
+import androidx.viewpager2.adapter.FragmentStateAdapter;
+import androidx.viewpager2.widget.ViewPager2;
 
+import com.google.android.material.badge.BadgeDrawable;
 import com.google.android.material.tabs.TabLayout;
+import com.google.android.material.tabs.TabLayoutMediator;
 
 import org.dhis2.App;
 import org.dhis2.R;
@@ -39,6 +41,8 @@ import org.dhis2.usescases.teiDashboard.teiProgramList.TeiProgramListActivity;
 import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.HelpManager;
+import org.dhis2.utils.OrientationUtilsKt;
+import org.dhis2.utils.filters.FilterManager;
 import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.jetbrains.annotations.NotNull;
@@ -50,150 +54,275 @@ import javax.inject.Inject;
 
 import timber.log.Timber;
 
+import static org.dhis2.utils.Constants.ENROLLMENT_UID;
+import static org.dhis2.utils.Constants.PROGRAM_UID;
+import static org.dhis2.utils.Constants.TEI_UID;
 import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
 import static org.dhis2.utils.analytics.AnalyticsConstants.SHOW_HELP;
 
-/**
- * QUADRAM. Created by ppajuelo on 29/11/2017.
- */
-
 public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implements TeiDashboardContracts.View {
+
+    public static final String UNSELECTED_TAB_COLOR = "#B3FFFFFF";
+    public static final int OVERVIEW_POS = 0;
+    public static final int INDICATORS_POS = 1;
+    public static final int RELATIONSHIPS_POS= 2;
+    public static final int NOTES_POS = 3;
+    public static final int INDICATORS_LANDSCAPE_POS = 0;
+    public static final int RELATIONSHIPS_LANDSCAPE_POS = 1;
+    public static final int NOTES_LANDSCAPE_POS = 2;
 
     @Inject
     public TeiDashboardContracts.Presenter presenter;
+
+    @Inject
+    public FilterManager filterManager;
 
     protected DashboardProgramModel programModel;
 
     protected String teiUid;
     protected String programUid;
+    protected String enrollmentUid;
 
     ActivityDashboardMobileBinding binding;
     protected DashboardPagerAdapter adapter;
     protected DashboardPagerTabletAdapter tabletAdapter;
-    protected FragmentStatePagerAdapter currentAdapter;
-    private int orientation;
-    private boolean changingProgram;
+    protected FragmentStateAdapter currentAdapter;
 
     private DashboardViewModel dashboardViewModel;
     private boolean fromRelationship;
 
+    private MutableLiveData<Boolean> groupByStage;
+    private MutableLiveData<Boolean> filtersShowing;
+    private MutableLiveData<String> currentEnrollment;
+    private float elevation = 0f;
+
+    public static Intent intent(Context context,
+                                String teiUid,
+                                String programUid,
+                                String enrollmentUid) {
+        Intent intent = new Intent(context, TeiDashboardMobileActivity.class);
+
+        intent.putExtra(TEI_UID, teiUid);
+        intent.putExtra(PROGRAM_UID, programUid);
+        intent.putExtra(ENROLLMENT_UID, enrollmentUid);
+
+        return intent;
+    }
+
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
-        setTheme(getSharedPreferences().getInt(Constants.PROGRAM_THEME, getSharedPreferences().getInt(Constants.THEME, R.style.AppTheme)));
+
         if (savedInstanceState != null && savedInstanceState.containsKey(Constants.TRACKED_ENTITY_INSTANCE)) {
             teiUid = savedInstanceState.getString(Constants.TRACKED_ENTITY_INSTANCE);
-            programUid = savedInstanceState.getString(Constants.PROGRAM_UID);
+            programUid = savedInstanceState.getString(PROGRAM_UID);
         } else {
-            teiUid = getIntent().getStringExtra("TEI_UID");
-            programUid = getIntent().getStringExtra("PROGRAM_UID");
+            teiUid = getIntent().getStringExtra(TEI_UID);
+            programUid = getIntent().getStringExtra(PROGRAM_UID);
+            enrollmentUid = getIntent().getStringExtra(ENROLLMENT_UID);
         }
-        ((App) getApplicationContext()).createDashboardComponent(new TeiDashboardModule(teiUid, programUid)).inject(this);
+
+        ((App) getApplicationContext()).createDashboardComponent(new TeiDashboardModule(this, teiUid, programUid)).inject(this);
+        setTheme(presenter.getProgramTheme(R.style.AppTheme));
         super.onCreate(savedInstanceState);
+        groupByStage = new MutableLiveData<>(presenter.getProgramGrouping());
+        filtersShowing = new MutableLiveData<>(false);
+        currentEnrollment = new MutableLiveData<>();
         dashboardViewModel = ViewModelProviders.of(this).get(DashboardViewModel.class);
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_dashboard_mobile);
         binding.setPresenter(presenter);
 
-        binding.tabLayout.setupWithViewPager(binding.teiPager);
+        binding.setTotalFilters(filterManager.getTotalFilters());
         binding.tabLayout.setTabMode(TabLayout.MODE_SCROLLABLE);
+        binding.tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                if (tab.getPosition() == getLastTabPosition()) {
+                    BadgeDrawable badge = tab.getOrCreateBadge();
+                    if (badge.hasNumber() && badge.getNumber() > 0) {
+                        badge.setBackgroundColor(Color.WHITE);
+                    }
+                }
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+                if (tab.getPosition() == getLastTabPosition()) {
+                    BadgeDrawable badge = tab.getOrCreateBadge();
+                    if (badge.hasNumber() && badge.getNumber() > 0) {
+                        badge.setBackgroundColor(Color.parseColor(UNSELECTED_TAB_COLOR));
+                    }
+                }
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+                /**/
+            }
+        });
         binding.toolbarTitle.setLines(1);
         binding.toolbarTitle.setEllipsize(TextUtils.TruncateAt.END);
 
-        getSharedPreferences(Constants.SHARE_PREFS, Context.MODE_PRIVATE)
-                .edit().putString(Constants.PREVIOUS_DASHBOARD_PROGRAM, programUid).apply();
-    }
+        presenter.prefSaveCurrentProgram(programUid);
 
+        filtersShowing.observe(this, showFilter -> {
+            if (OrientationUtilsKt.isPortrait()) {
+                presenter.handleShowHideFilters(showFilter);
+            }
+        });
+
+        elevation = ViewCompat.getElevation(binding.toolbar);
+    }
 
     @Override
     protected void onResume() {
         super.onResume();
 
-        if (((App) getApplicationContext()).dashboardComponent() == null)
-            ((App) getApplicationContext())
-                    .createDashboardComponent(new TeiDashboardModule(teiUid, programUid))
-                    .inject(this);
-
-        String prevDashboardProgram = getSharedPreferences(Constants.SHARE_PREFS, Context.MODE_PRIVATE)
-                .getString(Constants.PREVIOUS_DASHBOARD_PROGRAM, null);
-        if (!changingProgram && prevDashboardProgram != null && !prevDashboardProgram.equals(programUid)) {
-            finish();
-        } else {
-            orientation = Resources.getSystem().getConfiguration().orientation;
+        if (currentAdapter == null) {
             restoreAdapter(programUid);
         }
+
+        presenter.refreshTabCounters();
     }
 
     @Override
     protected void onPause() {
         presenter.onDettach();
-        ((App) getApplicationContext()).releaseDashboardComponent();
         super.onPause();
+    }
+
+    @Override
+    protected void onDestroy() {
+        ((App) getApplicationContext()).releaseDashboardComponent();
+        super.onDestroy();
     }
 
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
-        orientation = Resources.getSystem().getConfiguration().orientation;
-        teiUid = savedInstanceState.getString(Constants.TRACKED_ENTITY_INSTANCE);
-        programUid = savedInstanceState.getString(Constants.PROGRAM_UID);
+        teiUid = savedInstanceState.getString(TEI_UID);
+        programUid = savedInstanceState.getString(PROGRAM_UID);
+        enrollmentUid = savedInstanceState.getString(ENROLLMENT_UID);
     }
 
     @Override
     protected void onSaveInstanceState(@NotNull Bundle outState) {
         outState.clear();
-        outState.putString(Constants.TRACKED_ENTITY_INSTANCE, teiUid);
-        outState.putString(Constants.PROGRAM_UID, programUid);
+        outState.putString(TEI_UID, teiUid);
+        outState.putString(PROGRAM_UID, programUid);
+        outState.putString(ENROLLMENT_UID, enrollmentUid);
         super.onSaveInstanceState(outState);
-    }
-
-    @Override
-    public void init(String teiUid, String programUid) {
-        presenter.init(this, teiUid, programUid);
     }
 
     private void setViewpagerAdapter() {
 
-        for (Fragment fragment : getSupportFragmentManager().getFragments())
-            getSupportFragmentManager().beginTransaction().remove(fragment).commitNow();
-
-        binding.teiPager.setAdapter(null);
-        binding.teiPager.invalidate();
-
-        if (orientation == Configuration.ORIENTATION_PORTRAIT) {
-            adapter = new DashboardPagerAdapter(this, getSupportFragmentManager(), programUid);
+        if (OrientationUtilsKt.isPortrait()) {
+            binding.teiPager.setAdapter(null);
+            adapter = new DashboardPagerAdapter(this, programUid, teiUid, enrollmentUid);
             currentAdapter = adapter;
             binding.teiPager.setAdapter(adapter);
-            binding.tabLayout.setVisibility(View.VISIBLE);
+            binding.teiPager.registerOnPageChangeCallback(
+                    new ViewPager2.OnPageChangeCallback() {
+                        @Override
+                        public void onPageSelected(int position) {
+                            if (position != OVERVIEW_POS || programUid == null) {
+                                binding.filterCounter.setVisibility(View.GONE);
+                                binding.searchFilterGeneral.setVisibility(View.GONE);
+                            } else {
+                                binding.filterCounter.setVisibility(View.VISIBLE);
+                                binding.searchFilterGeneral.setVisibility(View.VISIBLE);
+                            }
+                        }
+                    }
+            );
+
             if (fromRelationship)
                 binding.teiPager.setCurrentItem(2, false);
+
+            tabLayoutMediator(binding.teiPager);
         } else {
-            tabletAdapter = new DashboardPagerTabletAdapter(this, getSupportFragmentManager(), programUid);
+            tabletAdapter = new DashboardPagerTabletAdapter(this, programUid, teiUid, enrollmentUid);
             currentAdapter = tabletAdapter;
-            binding.teiPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-                @Override
-                public void onPageScrolled(int i, float v, int i1) {
-                    // nothing
-                }
+            binding.teiTablePager.registerOnPageChangeCallback(
+                    new ViewPager2.OnPageChangeCallback() {
+                        @Override
+                        public void onPageSelected(int position) {
+                            switch (position) {
+                                case INDICATORS_LANDSCAPE_POS:
+                                    binding.sectionTitle.setText(getString(R.string.dashboard_indicators));
+                                    break;
+                                case RELATIONSHIPS_LANDSCAPE_POS:
+                                    binding.sectionTitle.setText(getString(R.string.dashboard_relationships));
+                                    break;
+                                case NOTES_LANDSCAPE_POS:
+                                    binding.sectionTitle.setText(getString(R.string.dashboard_notes));
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
+                    }
+            );
 
-                @Override
-                public void onPageSelected(int i) {
-                    binding.sectionTitle.setText(tabletAdapter.getPageTitle(i));
-                }
-
-                @Override
-                public void onPageScrollStateChanged(int i) {
-                    // nothing
-                }
-            });
-            binding.sectionTitle.setText(tabletAdapter.getPageTitle(0));
-            binding.teiPager.setAdapter(tabletAdapter);
-            binding.tabLayout.setVisibility(View.GONE);
+            binding.teiTablePager.setAdapter(tabletAdapter);
             binding.dotsIndicator.setVisibility(programUid != null ? View.VISIBLE : View.GONE);
-            binding.dotsIndicator.setViewPager(binding.teiPager);
-            if (fromRelationship)
-                binding.teiPager.setCurrentItem(1, false);
-        }
 
+            // TODO look into dots Indicator integration with viewPager 2
+            //binding.dotsIndicator.setViewPager(binding.teiPager);
+            if (fromRelationship)
+                binding.teiTablePager.setCurrentItem(1, false);
+
+            tabLayoutMediator(binding.teiTablePager);
+        }
+    }
+
+    private void tabLayoutMediator(ViewPager2 viewPager) {
+        new TabLayoutMediator(binding.tabLayout, viewPager,
+                (tab, position) -> {
+                    if (OrientationUtilsKt.isLandscape()) {
+                        setupTabletTabTitles(tab, position);
+                    } else {
+                        setupTabTitles(tab, position);
+                    }
+                }).attach();
+    }
+
+    private void setupTabTitles(TabLayout.Tab tab, int position) {
+        switch (position) {
+            case OVERVIEW_POS:
+                tab.setText(getString(R.string.dashboard_overview));
+                break;
+            case INDICATORS_POS:
+                tab.setText(getString(R.string.dashboard_indicators));
+                break;
+            case RELATIONSHIPS_POS:
+                tab.setText(getString(R.string.dashboard_relationships));
+                break;
+            case NOTES_POS:
+                tab.setText(getString(R.string.dashboard_notes));
+                break;
+            default:
+                break;
+        }
+    }
+
+    private void setupTabletTabTitles(TabLayout.Tab tab, int position) {
+        if (programUid != null) {
+            switch (position) {
+                case INDICATORS_LANDSCAPE_POS:
+                    tab.setText(getString(R.string.dashboard_indicators));
+                    break;
+                case RELATIONSHIPS_LANDSCAPE_POS:
+                    tab.setText(getString(R.string.dashboard_relationships));
+                    break;
+                case NOTES_LANDSCAPE_POS:
+                    tab.setText(getString(R.string.dashboard_notes));
+                    break;
+                default:
+                    break;
+            }
+        }
     }
 
     @Override
@@ -215,19 +344,26 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
 
         binding.executePendingBindings();
         this.programModel = program;
+        this.enrollmentUid = program.getCurrentEnrollment().uid();
 
-        if (binding.teiPager.getAdapter() == null) {
-            setViewpagerAdapter();
+        if (OrientationUtilsKt.isLandscape()) {
+            if (binding.teiTablePager.getAdapter() == null) {
+                setViewpagerAdapter();
+            }
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.tei_main_view, TEIDataFragment.newInstance(programUid, teiUid, enrollmentUid))
+                    .commitAllowingStateLoss();
+        } else {
+            if (binding.teiPager.getAdapter() == null) {
+                setViewpagerAdapter();
+            }
         }
 
-        if (orientation == Configuration.ORIENTATION_LANDSCAPE)
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.tei_main_view, new TEIDataFragment())
-                    .commitAllowingStateLoss();
-
-        Boolean enrollmentStatus = program.getCurrentEnrollment() != null && program.getCurrentEnrollment().status() == EnrollmentStatus.ACTIVE;
+        boolean enrollmentStatus = program.getCurrentEnrollment() != null && program.getCurrentEnrollment().status() == EnrollmentStatus.ACTIVE;
         if (getIntent().getStringExtra(Constants.EVENT_UID) != null && enrollmentStatus)
             dashboardViewModel.updateEventUid(getIntent().getStringExtra(Constants.EVENT_UID));
+
+        presenter.initNoteCounter();
     }
 
     @Override
@@ -236,31 +372,32 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
         this.tabletAdapter = null;
         this.currentAdapter = null;
         this.programUid = programUid;
-        binding.teiPager.setAdapter(null);
-        presenter.init(this, teiUid, programUid);
+        presenter.init();
     }
 
     @Override
-    public void handleTEIdeletion() {
+    public void handleTeiDeletion() {
         finish();
     }
 
     @Override
     public void handleEnrollmentDeletion(Boolean hasMoreEnrollments) {
         if (hasMoreEnrollments) {
-            Bundle bundle = new Bundle();
-            bundle.putString("TEI_UID", teiUid);
-            bundle.putString("PROGRAM_UID", null);
-            startActivity(TeiDashboardMobileActivity.class, bundle, true, false, null);
+            startActivity(intent(this, teiUid, null, null));
+            finish();
         } else
             finish();
+    }
+
+    @Override
+    public void authorityErrorMessage() {
+        displayMessage(getString(R.string.delete_authority_error));
     }
 
     @Override
     public void setDataWithOutProgram(DashboardProgramModel program) {
         dashboardViewModel.updateDashboard(program);
         setProgramColor("");
-
         binding.setDashboardModel(program);
         binding.setTrackEntity(program.getTei());
         String title = String.format("%s %s - %s",
@@ -274,16 +411,21 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
 
         setViewpagerAdapter();
 
-        if (orientation == Configuration.ORIENTATION_LANDSCAPE)
+        if (OrientationUtilsKt.isLandscape()) {
             getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.tei_main_view, new TEIDataFragment())
+                    .replace(R.id.tei_main_view, TEIDataFragment.newInstance(programUid, teiUid, enrollmentUid))
                     .commitAllowingStateLoss();
+
+            binding.filterCounter.setVisibility(View.GONE);
+            binding.searchFilterGeneral.setVisibility(View.GONE);
+
+        }
     }
 
     @Override
-    public void goToEnrollmentList(Bundle extras) {
+    public void goToEnrollmentList() {
         Intent intent = new Intent(this, TeiProgramListActivity.class);
-        intent.putExtras(extras);
+        intent.putExtra("TEI_UID", teiUid);
         startActivityForResult(intent, Constants.RQ_ENROLLMENTS);
     }
 
@@ -298,17 +440,15 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
                 Intent intent = EnrollmentActivity.Companion.getIntent(this,
                         data.getStringExtra("GO_TO_ENROLLMENT"),
                         data.getStringExtra("GO_TO_ENROLLMENT_PROGRAM"),
-                        EnrollmentActivity.EnrollmentMode.NEW);
+                        EnrollmentActivity.EnrollmentMode.NEW,
+                        false);
                 startActivity(intent);
                 finish();
             }
 
             if (data.hasExtra("CHANGE_PROGRAM")) {
-                programUid = data.getStringExtra("CHANGE_PROGRAM");
-                adapter = null;
-                tabletAdapter = null;
-                currentAdapter = null;
-                changingProgram = true;
+                startActivity(intent(this, teiUid, data.getStringExtra("CHANGE_PROGRAM"), null));
+                finish();
             }
 
         }
@@ -325,7 +465,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
 
     @Override
     public void showTutorial(boolean shaked) {
-        if (binding.tabLayout.getSelectedTabPosition() == 0 && !changingProgram)
+        if (binding.tabLayout.getSelectedTabPosition() == 0)
             setTutorial();
         else
             showToast(getString(R.string.no_intructions));
@@ -344,34 +484,23 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
         fromRelationship = true;
     }
 
-    public int getOrientation() {
-        return orientation;
-    }
-
-
     private void setProgramColor(String color) {
         int programTheme = ColorUtils.getThemeFromColor(color);
         int programColor = ColorUtils.getColorFrom(color, ColorUtils.getPrimaryColor(this, ColorUtils.ColorType.PRIMARY));
 
-
-        SharedPreferences prefs = getAbstracContext().getSharedPreferences(
-                Constants.SHARE_PREFS, Context.MODE_PRIVATE);
         if (programTheme != -1) {
-            prefs.edit().putInt(Constants.PROGRAM_THEME, programTheme).apply();
+            presenter.saveProgramTheme(programTheme);
             binding.toolbar.setBackgroundColor(programColor);
             binding.tabLayout.setBackgroundColor(programColor);
-            if (getOrientation() == Configuration.ORIENTATION_LANDSCAPE)
+            if (OrientationUtilsKt.isLandscape())
                 if (binding.dotsIndicator.getVisibility() == View.VISIBLE) {
                     binding.dotsIndicator.setDotIndicatorColor(programColor);
                     binding.dotsIndicator.setStrokeDotsIndicatorColor(programColor);
                 }
         } else {
-            prefs.edit().remove(Constants.PROGRAM_THEME).apply();
+            presenter.removeProgramTheme();
             int colorPrimary;
-            switch (prefs.getInt(Constants.THEME, R.style.AppTheme)) {
-                case R.style.AppTheme:
-                    colorPrimary = R.color.colorPrimary;
-                    break;
+            switch (presenter.getProgramTheme(R.style.AppTheme)) {
                 case R.style.RedTheme:
                     colorPrimary = R.color.colorPrimaryRed;
                     break;
@@ -381,13 +510,14 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
                 case R.style.GreenTheme:
                     colorPrimary = R.color.colorPrimaryGreen;
                     break;
+                case R.style.AppTheme:
                 default:
                     colorPrimary = R.color.colorPrimary;
                     break;
             }
             binding.toolbar.setBackgroundColor(ContextCompat.getColor(this, colorPrimary));
             binding.tabLayout.setBackgroundColor(ContextCompat.getColor(this, colorPrimary));
-            if (getOrientation() == Configuration.ORIENTATION_LANDSCAPE)
+            if (OrientationUtilsKt.isLandscape())
                 if (binding.dotsIndicator.getVisibility() == View.VISIBLE) {
                     binding.dotsIndicator.setDotIndicatorColor(ContextCompat.getColor(this, colorPrimary));
                     binding.dotsIndicator.setStrokeDotsIndicatorColor(ContextCompat.getColor(this, colorPrimary));
@@ -395,7 +525,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
         }
 
         binding.executePendingBindings();
-        setTheme(prefs.getInt(Constants.PROGRAM_THEME, prefs.getInt(Constants.THEME, R.style.AppTheme)));
+        setTheme(presenter.getProgramTheme(R.style.AppTheme));
 
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP) {
             Window window = getWindow();
@@ -425,7 +555,28 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
         } catch (Exception e) {
             Timber.e(e);
         }
-        popupMenu.getMenuInflater().inflate(R.menu.dashboard_menu, popupMenu.getMenu());
+
+        int menu;
+        if(enrollmentUid == null) {
+            menu = R.menu.dashboard_tei_menu;
+        } else if (groupByStage.getValue()){
+            menu = R.menu.dashboard_menu_group;
+        } else {
+            menu = R.menu.dashboard_menu;
+        }
+        popupMenu.getMenuInflater().inflate(menu, popupMenu.getMenu());
+
+        if(enrollmentUid != null) {
+            EnrollmentStatus status = presenter.getEnrollmentStatus(enrollmentUid);
+            if (status == EnrollmentStatus.COMPLETED) {
+                popupMenu.getMenu().findItem(R.id.complete).setVisible(false);
+            } else if (status == EnrollmentStatus.CANCELLED) {
+                popupMenu.getMenu().findItem(R.id.deactivate).setVisible(false);
+            } else {
+                popupMenu.getMenu().findItem(R.id.activate).setVisible(false);
+            }
+        }
+
         popupMenu.setOnMenuItemClickListener(item -> {
             switch (item.getItemId()) {
                 case R.id.showHelp:
@@ -438,10 +589,85 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
                 case R.id.deleteEnrollment:
                     presenter.deleteEnrollment();
                     break;
+                case R.id.programSelector:
+                    presenter.onEnrollmentSelectorClick();
+                    break;
+                case R.id.groupEvents:
+                    groupByStage.setValue(true);
+                    break;
+                case R.id.showTimeline:
+                    groupByStage.setValue(false);
+                    break;
+                case R.id.complete:
+                    presenter.updateEnrollmentStatus(enrollmentUid, EnrollmentStatus.COMPLETED);
+                    break;
+                case R.id.activate:
+                    presenter.updateEnrollmentStatus(enrollmentUid, EnrollmentStatus.ACTIVE);
+                    break;
+                case R.id.deactivate:
+                    presenter.updateEnrollmentStatus(enrollmentUid, EnrollmentStatus.CANCELLED);
+                    break;
             }
             return true;
 
         });
         popupMenu.show();
+    }
+
+    @Override
+    public void updateNoteBadge(int numberOfNotes) {
+        if (binding.tabLayout.getTabCount() > 0) {
+            BadgeDrawable badge = binding.tabLayout.getTabAt(getLastTabPosition()).getOrCreateBadge();
+            badge.setVisible(numberOfNotes > 0);
+            badge.setBackgroundColor(Color.WHITE);
+            badge.setBadgeTextColor(ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.PRIMARY));
+            badge.setNumber(numberOfNotes);
+            badge.setMaxCharacterCount(3);
+        }
+    }
+
+    private int getLastTabPosition() {
+        return binding.tabLayout.getTabCount() - 1;
+    }
+
+    public LiveData<Boolean> observeGrouping() {
+        return groupByStage;
+    }
+
+    @Override
+    public void setFiltersLayoutState() {
+        filtersShowing.setValue(!filtersShowing.getValue());
+    }
+
+    public LiveData<Boolean> observeFilters() {
+        return filtersShowing;
+    }
+
+    @Override
+    public void updateTotalFilters(Integer totalFilters) {
+        binding.setTotalFilters(totalFilters);
+    }
+
+    @Override
+    public void hideTabsAndDisableSwipe() {
+        binding.tabLayout.setVisibility(View.GONE);
+        binding.teiPager.setUserInputEnabled(false);
+        ViewCompat.setElevation(binding.toolbar, 0);
+    }
+
+    @Override
+    public void showTabsAndEnableSwipe() {
+        binding.tabLayout.setVisibility(View.VISIBLE);
+        binding.teiPager.setUserInputEnabled(true);
+        ViewCompat.setElevation(binding.toolbar, elevation);
+    }
+
+    @Override
+    public void updateStatus() {
+        currentEnrollment.setValue(programModel.getCurrentEnrollment().uid());
+    }
+
+    public LiveData<String> updatedEnrollment() {
+        return currentEnrollment;
     }
 }

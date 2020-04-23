@@ -60,9 +60,6 @@ public class SpinnerHolder extends FormViewHolder implements View.OnClickListene
         initFieldFocus();
     }
 
-    public void dispose() {
-    }
-
     @Override
     public void onClick(View v) {
         closeKeyboard(v);

@@ -58,7 +58,7 @@ public class EditTextCustomHolder extends FormViewHolder {
             }
 
             if (isSearchMode || (!hasFocus && editTextModel != null && editTextModel.editable())) {
-                if(valueHasChanged())
+                if(isSearchMode || valueHasChanged())
                     sendAction();
                 else
                     closeKeyboard(binding.customEdittext.getEditText());
@@ -77,6 +77,9 @@ public class EditTextCustomHolder extends FormViewHolder {
             binding.customEdittext.getEditText().setFocusableInTouchMode(true);
             binding.customEdittext.getEditText().requestFocus();
             openKeyboard(binding.customEdittext.getEditText());
+            if(isSearchMode){
+                sendAction();
+            }
         });
     }
 
@@ -102,12 +105,13 @@ public class EditTextCustomHolder extends FormViewHolder {
 
         binding.customEdittext.setValueType(editTextModel.valueType());
 
-        binding.customEdittext.setObjectSyle(model.objectStyle());
+        binding.customEdittext.setObjectStyle(model.objectStyle());
         if (model.objectStyle() != null) {
             objectStyle = model.objectStyle();
         }
         label = new StringBuilder(model.label());
         binding.customEdittext.setLabel(model.label(), model.mandatory());
+        binding.customEdittext.setHint(editTextModel.hint());
         descriptionText = model.description();
         binding.customEdittext.setDescription(descriptionText);
 
@@ -173,11 +177,6 @@ public class EditTextCustomHolder extends FormViewHolder {
         }.getType();
 
         return gson.fromJson(json, type);
-    }
-
-
-    public void dispose() {
-
     }
 
     private void setLongClick() {

@@ -36,6 +36,19 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <com.google.android.material.checkbox.MaterialCheckBox
+                android:id="@+id/styleCheck"
+                style="@style/primaryCheckBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="8dp"
+                android:text="@string/dialog_layer_satellite"
+                app:layout_constraintBottom_toTopOf="@id/teiCheck"
+                app:layout_constraintTop_toBottomOf="@id/title"
+                app:layout_constraintVertical_chainStyle="packed" />
+
+            <com.google.android.material.checkbox.MaterialCheckBox
                 android:id="@+id/teiCheck"
                 style="@style/primaryCheckBox"
                 android:layout_width="match_parent"
@@ -43,9 +56,9 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginEnd="16dp"
                 android:layout_marginBottom="8dp"
-                android:text="Show tei coordinates"
+                android:text="@string/dialog_layer_tei_coordinates"
                 app:layout_constraintBottom_toTopOf="@+id/enrollmentCheck"
-                app:layout_constraintTop_toBottomOf="@+id/title"
+                app:layout_constraintTop_toBottomOf="@+id/styleCheck"
                 app:layout_constraintVertical_chainStyle="packed"
                 tools:checked="true" />
 
@@ -66,7 +79,7 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginEnd="16dp"
                 android:layout_marginBottom="8dp"
-                android:text="Show enrollment coordinates"
+                android:text="@string/dialog_layer_enrollment_coordinates"
                 app:layout_constraintBottom_toTopOf="@+id/heatmapCheck"
                 app:layout_constraintTop_toBottomOf="@+id/teiCheck"
                 app:layout_constraintVertical_chainStyle="packed" />
@@ -87,7 +100,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginEnd="16dp"
-                android:text="Show heatmap layer"
+                android:text="@string/dialog_layer_heatmap"
                 app:layout_constraintBottom_toTopOf="@+id/acceptButton"
                 app:layout_constraintTop_toBottomOf="@+id/enrollmentCheck"
                 app:layout_constraintVertical_chainStyle="packed" />

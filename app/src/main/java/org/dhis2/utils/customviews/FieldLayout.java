@@ -9,6 +9,8 @@ import android.widget.RelativeLayout;
 
 import androidx.annotation.Nullable;
 
+import org.hisp.dhis.android.core.common.ValueType;
+
 /**
  * QUADRAM. Created by ppajuelo on 29/01/2019.
  */
@@ -18,6 +20,7 @@ public abstract class FieldLayout extends RelativeLayout {
     protected LayoutInflater inflater;
     protected String label;
     protected OnActivation activationListener;
+    protected ValueType valueType;
 
 
     public FieldLayout(Context context) {

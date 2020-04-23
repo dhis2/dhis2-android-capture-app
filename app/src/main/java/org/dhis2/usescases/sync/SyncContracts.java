@@ -21,7 +21,5 @@ public class SyncContracts {
         void syncReservedValues();
 
         void getTheme();
-
-        void scheduleSync(int metaTime, int dataTime);
     }
 }

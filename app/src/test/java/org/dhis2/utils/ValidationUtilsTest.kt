@@ -34,7 +34,7 @@ class ValidationUtilsTest {
     @Test
     fun `number should have only one decimal and remove left zeroes`() {
         val result = ValidationUtils.validate(ValueType.NUMBER, "0120.123")
-        assertTrue(result == "120.1")
+        assertTrue(result == "120.123")
     }
 
     @Test

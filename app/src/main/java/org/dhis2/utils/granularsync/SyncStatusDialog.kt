@@ -4,6 +4,7 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.DialogInterface
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.drawable.AnimatedVectorDrawable
 import android.os.Build
@@ -24,12 +25,9 @@ import androidx.work.WorkInfo
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import java.text.ParseException
-import java.util.Calendar
-import java.util.Date
-import javax.inject.Inject
 import org.dhis2.App
 import org.dhis2.Bindings.Bindings
+import org.dhis2.Bindings.checkSMSPermission
 import org.dhis2.Bindings.showSMS
 import org.dhis2.R
 import org.dhis2.databinding.SyncBottomDialogBinding
@@ -46,6 +44,10 @@ import org.dhis2.utils.analytics.SYNC_GRANULAR_SMS
 import org.dhis2.utils.customviews.MessageAmountDialog
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.imports.TrackerImportConflict
+import java.text.ParseException
+import java.util.Calendar
+import java.util.Date
+import javax.inject.Inject
 
 private const val SMS_PERMISSIONS_REQ_ID = 102
 
@@ -136,10 +138,10 @@ class SyncStatusDialog private constructor(
         fun build(): SyncStatusDialog {
             if (conflictType == ConflictType.DATA_VALUES &&
                 (
-                    orgUnitDataValue == null ||
-                        attributeComboDataValue == null ||
-                        periodIdDataValue == null
-                    )
+                        orgUnitDataValue == null ||
+                                attributeComboDataValue == null ||
+                                periodIdDataValue == null
+                        )
             ) {
                 throw NullPointerException(
                     "DataSets require non null, orgUnit, attributeOptionCombo and periodId"
@@ -193,7 +195,8 @@ class SyncStatusDialog private constructor(
         binding!!.syncStatusBar.setBackgroundResource(getColorForState(state))
         when (state) {
             State.TO_POST,
-            State.TO_UPDATE -> setNoConflictMessage(getString(R.string.no_conflicts_update_message))
+            State.TO_UPDATE,
+            State.UPLOADING -> setNoConflictMessage(getString(R.string.no_conflicts_update_message))
             State.SYNCED -> {
                 setNoConflictMessage(getString(R.string.no_conflicts_synced_message))
                 binding!!.syncButton.visibility = View.GONE
@@ -218,16 +221,18 @@ class SyncStatusDialog private constructor(
 
     private fun setNetworkMessage() {
         if (!NetworkUtils.isOnline(context)) {
-            if (presenter.isSMSEnabled() && context?.showSMS() == true) {
+            if (presenter.isSMSEnabled(conflictType == ConflictType.TEI) && context?.showSMS() == true) {
                 if (conflictType != ConflictType.PROGRAM &&
-                    conflictType != ConflictType.DATA_SET &&
-                    conflictType != ConflictType.TEI // FYI - Tei sms sync is temporary disabled
+                    conflictType != ConflictType.DATA_SET
                 ) {
                     analyticsHelper.setEvent(SYNC_GRANULAR_SMS, CLICK, SYNC_GRANULAR)
                     binding!!.connectionMessage.setText(R.string.network_unavailable_sms)
                     binding!!.syncButton.setText(R.string.action_sync_sms)
                     binding!!.syncButton.visibility = View.VISIBLE
-                    binding!!.syncButton.setOnClickListener { syncSMS() }
+                    binding!!.syncButton.setOnClickListener {
+                        if (checkSMSPermission(true, SMS_PERMISSIONS_REQ_ID))
+                            syncSMS()
+                    }
                 } else {
                     binding!!.syncButton.visibility = View.GONE
                 }
@@ -315,7 +320,7 @@ class SyncStatusDialog private constructor(
             State.SYNCED_VIA_SMS, State.SENT_VIA_SMS -> R.string.sync_by_sms
             State.WARNING -> R.string.state_warning
             State.ERROR -> R.string.state_error
-            State.TO_UPDATE -> R.string.state_to_update
+            State.TO_UPDATE, State.UPLOADING -> R.string.state_to_update
             State.TO_POST -> R.string.state_to_post
             else -> R.string.state_synced
         }
@@ -326,7 +331,7 @@ class SyncStatusDialog private constructor(
             State.SYNCED_VIA_SMS, State.SENT_VIA_SMS -> R.color.state_by_sms
             State.WARNING -> R.color.state_warning
             State.ERROR -> R.color.state_error
-            State.TO_UPDATE, State.TO_POST -> R.color.state_to_post
+            State.TO_UPDATE, State.TO_POST, State.UPLOADING -> R.color.state_to_post
             else -> R.color.state_synced
         }
     }
@@ -398,7 +403,7 @@ class SyncStatusDialog private constructor(
                 StatusLogItem.create(
                     Date(),
                     StatusText.getTextSubmissionType(resources, inputArguments) + ": " +
-                        StatusText.getTextForStatus(resources, it)
+                            StatusText.getTextForStatus(resources, it)
                 )
             )
         }
@@ -541,5 +546,17 @@ class SyncStatusDialog private constructor(
 
     override fun unsupportedTask(): String {
         return getString(R.string.granular_sync_unsupported_task)
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        if (requestCode == SMS_PERMISSIONS_REQ_ID &&
+            grantResults.all { it == PackageManager.PERMISSION_GRANTED }
+        ) {
+            syncSMS()
+        }
     }
 }

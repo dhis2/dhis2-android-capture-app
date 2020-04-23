@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/shadow_bottom"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/form_field_background"
+            android:scaleType="fitXY"
+            android:src="@drawable/inner_shadow_bottom"
+            android:visibility="gone"
+            app:layout_constraintTop_toBottomOf="@id/section_details"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:visibility="visible" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/section_details"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:animateLayoutChanges="true"
+            android:background="@color/white"
+            android:minHeight="48dp"
+            android:paddingStart="16dp"
+            android:paddingEnd="15dp"
+            app:layout_constraintTop_toBottomOf="@id/shadow_bottom">
+
+            <TextView
+                android:id="@+id/sectionName"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:textColor="@color/text_black_DE3"
+                android:textSize="16sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/descriptionIcon"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="Section name" />
+
+            <ImageView
+                android:id="@+id/descriptionIcon"
+                style="@style/ActionIcon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toBottomOf="@id/sectionName"
+                app:layout_constraintEnd_toStartOf="@id/sectionFieldsInfo"
+                app:layout_constraintTop_toTopOf="@id/sectionName"
+                app:srcCompat="@drawable/ic_info_outline"
+                app:tint="?colorPrimary" />
+
+            <TextView
+                android:id="@+id/sectionFieldsInfo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="1dp"
+                android:padding="4dp"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
+                android:textColor="@color/placeholder"
+                android:textSize="12sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/openIndicator"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="2/6" />
+
+            <ImageView
+                android:id="@+id/openIndicator"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/ic_arrow_up_sections" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/last_section_details"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:background="@color/white"
+            android:paddingStart="16dp"
+            android:paddingEnd="15dp"
+            app:layout_constraintTop_toBottomOf="@id/section_details" />
+
+        <ImageView
+            android:id="@+id/shadow_top"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/form_field_background"
+            android:scaleType="fitXY"
+            android:src="@drawable/inner_shadow_top"
+            android:visibility="gone"
+            app:layout_constraintTop_toBottomOf="@id/last_section_details"
+            tools:visibility="visible" />
+
+        <View
+            android:id="@+id/shadow_end"
+            android:layout_width="match_parent"
+            android:layout_height="8dp"
+            android:background="@drawable/shadow"
+            android:visibility="gone"
+            app:layout_constraintTop_toBottomOf="@id/last_section_details"
+            tools:visibility="visible" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+</layout>

@@ -1,6 +1,5 @@
 package org.dhis2.utils.granularsync
 
-import androidx.work.WorkManager
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
@@ -9,6 +8,7 @@ import java.util.Collections
 import java.util.Date
 import junit.framework.Assert.assertTrue
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
+import org.dhis2.data.service.workManager.WorkManagerController
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.`object`.ReadOnlyOneObjectRepositoryFinalImpl
 import org.hisp.dhis.android.core.common.Access
@@ -34,7 +34,7 @@ class GranularSyncPresenterTest {
     private val d2: D2 = mock(D2::class.java, Mockito.RETURNS_DEEP_STUBS)
     private val view = mock(GranularSyncContracts.View::class.java)
     private val trampolineSchedulerProvider = TrampolineSchedulerProvider()
-    private val workManager = mock(WorkManager::class.java)
+    private val workManager = mock(WorkManagerController::class.java)
     private val programRepoMock = mock(ReadOnlyOneObjectRepositoryFinalImpl::class.java)
 
     private val testProgram = getProgram()

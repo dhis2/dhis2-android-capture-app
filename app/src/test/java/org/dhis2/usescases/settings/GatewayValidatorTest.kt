@@ -6,7 +6,7 @@ import org.junit.Test
 
 class GatewayValidatorTest {
 
-    private lateinit var validator:GatewayValidator
+    private lateinit var validator: GatewayValidator
 
     @Before
     fun setup() {

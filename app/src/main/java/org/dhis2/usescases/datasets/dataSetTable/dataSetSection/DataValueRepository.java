@@ -23,7 +23,6 @@ import io.reactivex.Flowable;
 import io.reactivex.Single;
 
 public interface DataValueRepository {
-
     Flowable<DataSet> getDataSet();
 
     Flowable<List<CategoryCombo>> getCatCombo(String section);

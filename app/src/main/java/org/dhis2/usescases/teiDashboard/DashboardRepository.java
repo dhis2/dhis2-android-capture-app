@@ -1,19 +1,17 @@
 package org.dhis2.usescases.teiDashboard;
 
-import android.content.Context;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Trio;
+import org.dhis2.usescases.teiDashboard.dashboardfragments.relationships.RelationshipViewModel;
 import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryOptionCombo;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.event.EventStatus;
-import org.hisp.dhis.android.core.note.Note;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.program.ProgramIndicator;
@@ -27,6 +25,7 @@ import java.util.List;
 
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
+import io.reactivex.Single;
 import io.reactivex.functions.Consumer;
 
 /**
@@ -49,26 +48,19 @@ public interface DashboardRepository {
 
     boolean setFollowUp(String enrollmentUid);
 
-    Flowable<List<Note>> getNotes(String programUid, String teUid);
-
     Consumer<Pair<String, Boolean>> handleNote();
-
-    void setDashboardDetails(String teiUid, String programUid);
 
     Observable<List<TrackedEntityAttributeValue>> mainTrackedEntityAttributes(String teiUid);
 
     Event updateState(Event event, EventStatus newStatus);
 
-    Flowable<Long> updateEnrollmentStatus(@NonNull String uid, @NonNull EnrollmentStatus value);
+    Flowable<Enrollment> completeEnrollment(@NonNull String enrollmentUid);
 
     Observable<ProgramStage> displayGenerateEvent(String eventUid);
 
     Observable<Trio<ProgramIndicator, String, String>> getLegendColorForIndicator(ProgramIndicator programIndicator, String value);
 
-
-    void updateTeiState();
-
-    Integer getObjectStyle(Context context, String uid);
+    Integer getObjectStyle(String uid);
 
     Observable<List<Pair<RelationshipType, String>>> relationshipsForTeiType(String teType);
 
@@ -77,8 +69,6 @@ public interface DashboardRepository {
     Observable<List<CategoryOptionCombo>> catOptionCombos(String catComboUid);
 
     void setDefaultCatOptCombToEvent(String eventUid);
-
-    Observable<String> getAttributeImage(String uid);
 
     // FROM METADATA REPOSITORY
     Observable<TrackedEntityInstance> getTrackedEntityInstance(String teiUid);
@@ -92,4 +82,16 @@ public interface DashboardRepository {
     Observable<List<Enrollment>> getTEIEnrollments(String teiUid);
 
     void saveCatOption(String eventUid, String catOptionComboUid);
+
+    Single<Boolean> deleteTeiIfPossible();
+
+    Single<Boolean> deleteEnrollmentIfPossible(String enrollmentUid);
+
+    Flowable<List<RelationshipViewModel>> listTeiRelationships();
+
+    Single<Integer> getNoteCount();
+
+    EnrollmentStatus getEnrollmentStatus(String enrollmentUid);
+
+    Observable<Boolean> updateEnrollmentStatus(String enrollmentUid, EnrollmentStatus status);
 }

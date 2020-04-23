@@ -1,5 +1,6 @@
 package org.dhis2.usescases.datasets.dataSetTable;
 
+import org.dhis2.data.prefs.PreferenceProvider;
 import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.data.tuples.Pair;
 import org.hisp.dhis.android.core.common.State;
@@ -141,7 +142,7 @@ public class DataSetTablePresenter implements DataSetTableContract.Presenter {
     }
 
     @Override
-    public void updateState(){
+    public void updateState() {
         disposable.add(
                 tableRepository.dataSetState()
                         .subscribeOn(schedulerProvider.io())
@@ -151,5 +152,4 @@ public class DataSetTablePresenter implements DataSetTableContract.Presenter {
                         )
         );
     }
-
 }

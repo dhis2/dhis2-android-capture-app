@@ -1,5 +1,7 @@
 package org.dhis2.utils;
 
+import org.jetbrains.annotations.Nullable;
+
 /**
  * QUADRAM. Created by ppajuelo on 15/01/2018.
  */
@@ -82,6 +84,7 @@ public class Constants {
     public static final String LAST_META_SYNC_NO_NETWORK = "last_meta_sync_no_network";
 
     public static final String EVENT_UID = "EVENT_UID";
+    public static final String EVENT_MODE = "EVENT_MODE";
 
     public static final String EVENT_CREATION_TYPE = "EVENT_CREATION_TYPE";
     public static final String EVENT_SCHEDULE_INTERVAL = "EVENT_SCHEDULE_INTERVAL";
@@ -121,6 +124,15 @@ public class Constants {
     public static final String DATA_SET = "DataSets";
     public static final String DATASET_UID = "DATASET_UID";
     public static final String TRACKED_ENTITY_UID = "TRACKED_ENTITY_UID";
+    public static final String TEI_UID = "TEI_UID";
+
+    public static final String RESERVED = "TAG_RV";
+
+    // Note
+    public static final String NOTE_ID = "NOTE_ID";
+    public static final String NOTE_TYPE = "NOTE_TYPE";
+
+    public static final String OPTION_SET = "OPTION_SET";
 
     private Constants() {
         // hide public constructor

@@ -41,39 +41,6 @@ abstract class ProgramViewModel : BaseObservable(), Serializable {
 
     companion object {
 
-        /*fun create(
-                uid: String,
-                displayName: String,
-                color: String?,
-                icon: String?,
-                count: Int,
-                type: String?,
-                typeName: String,
-                programType: String,
-                description: String?,
-                onlyEnrollOnce: Boolean,
-                accessDataWrite: Boolean,
-                hasOverdueEvent: Boolean
-
-        ): ProgramViewModel {
-            return AutoValue_ProgramViewModel(
-                    uid,
-                    displayName,
-                    color,
-                    icon,
-                    count,
-                    type,
-                    typeName,
-                    programType,
-                    description,
-                    onlyEnrollOnce,
-                    accessDataWrite,
-                    State.SYNCED.name,
-                    false,
-                    hasOverdueEvent
-            )
-        }*/
-
         fun create(
             uid: String,
             displayName: String,

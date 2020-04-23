@@ -10,7 +10,7 @@
 
     <item android:left="8dp">
         <shape android:shape="rectangle">
-            <solid android:color="@color/white" />
+            <solid android:color="@color/form_field_background" />
             <size android:width="5dp" />
         </shape>
     </item>

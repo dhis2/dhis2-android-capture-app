@@ -30,13 +30,14 @@ class AnalyticsHelper @Inject constructor(
             if (preferencesProvider.contains(Constants.USER)) {
                 analytics.setUserProperty(
                     USER_PROPERTY_NAME,
-                    d2.userModule().userCredentials().blockingGet().username()
+                    d2.userModule().userCredentials().blockingGet()?.username()
                 )
             }
             analytics.setUserProperty(
                 USER_PROPERTY_SERVER,
-                d2.systemInfoModule().systemInfo().blockingGet().contextPath()
+                d2.systemInfoModule().systemInfo().blockingGet()?.contextPath()
             )
+            analytics.setUserId(d2.userModule().user().blockingGet()?.uid())
         }
         params.entries.forEach { bundle.putString(it.key, it.value) }
         logEvent(event, bundle)

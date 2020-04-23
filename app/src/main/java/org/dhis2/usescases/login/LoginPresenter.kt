@@ -1,6 +1,8 @@
 package org.dhis2.usescases.login
 
 import android.os.Build
+import androidx.annotation.RestrictTo
+import androidx.annotation.RestrictTo.Scope
 import co.infinum.goldfinger.Goldfinger
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
@@ -58,32 +60,38 @@ class LoginPresenter(
                     .observeOn(schedulers.ui())
                     .subscribe(
                         { isUserLoggedIn ->
-                            if (isUserLoggedIn && !preferenceProvider.getBoolean(
-                                SESSION_LOCKED,
-                                false
-                            )
-                            ) {
+                            val isSessionLocked =
+                                preferenceProvider.getBoolean(SESSION_LOCKED, false)
+                            if (isUserLoggedIn && !isSessionLocked) {
                                 view.startActivity(MainActivity::class.java, null, true, true, null)
-                            } else if (preferenceProvider.getBoolean(SESSION_LOCKED, false)) {
+                            } else if (isSessionLocked) {
                                 view.showUnlockButton()
+                            }
+                            if (!isUserLoggedIn) {
+                                val serverUrl =
+                                    preferenceProvider.getString(
+                                        SECURE_SERVER_URL,
+                                        view.getDefaultServerProtocol()
+                                    )
+                                val user = preferenceProvider.getString(SECURE_USER_NAME, "")
+                                if (!serverUrl.isNullOrEmpty() && !user.isNullOrEmpty()) {
+                                    view.setUrl(serverUrl)
+                                    view.setUser(user)
+                                } else {
+                                    view.setUrl(view.getDefaultServerProtocol())
+                                }
                             }
                         },
                         { exception -> Timber.e(exception) }
                     )
             )
-        } ?: view.setUrl(view.context.getString(R.string.login_https))
+        } ?: view.setUrl(view.getDefaultServerProtocol())
     }
 
     fun checkServerInfoAndShowBiometricButton() {
         userManager?.let { userManager ->
             disposable.add(
-                Observable.just(
-                    if (userManager.d2.systemInfoModule().systemInfo().blockingGet() != null) {
-                        userManager.d2.systemInfoModule().systemInfo().blockingGet()
-                    } else {
-                        SystemInfo.builder().build()
-                    }
-                )
+                Observable.just(getSystemInfoIfUserIsLogged(userManager))
                     .subscribeOn(schedulers.io())
                     .observeOn(schedulers.ui())
                     .subscribe(
@@ -94,15 +102,40 @@ class LoginPresenter(
                                     view.setUser(it)
                                 }
                             } else {
-                                view.setUrl(view.context.getString(R.string.login_https))
+                                val isSessionLocked =
+                                    preferenceProvider.getBoolean(SESSION_LOCKED, false)
+                                if (!isSessionLocked){
+                                    val serverUrl =
+                                        preferenceProvider.getString(
+                                            SECURE_SERVER_URL,
+                                            view.getDefaultServerProtocol()
+                                        )
+                                    val user = preferenceProvider.getString(SECURE_USER_NAME, "")
+                                    if (!serverUrl.isNullOrEmpty() && !user.isNullOrEmpty()) {
+                                        view.setUrl(serverUrl)
+                                        view.setUser(user)
+                                    }
+                                } else {
+                                    view.setUrl(view.getDefaultServerProtocol())
+                                }
                             }
                         },
                         { Timber.e(it) }
                     )
             )
-        } ?: view.setUrl(view.context.getString(R.string.login_https))
+        } ?: view.setUrl(view.getDefaultServerProtocol())
 
         showBiometricButtonIfVersionIsGreaterThanM(view)
+    }
+
+    private fun getSystemInfoIfUserIsLogged(userManager: UserManager): SystemInfo {
+        return if (userManager.isUserLoggedIn.blockingFirst() &&
+            userManager.d2.systemInfoModule().systemInfo().blockingGet() != null
+        ) {
+            userManager.d2.systemInfoModule().systemInfo().blockingGet()
+        } else {
+            SystemInfo.builder().build()
+        }
     }
 
     private fun showBiometricButtonIfVersionIsGreaterThanM(view: LoginContracts.View) {
@@ -190,8 +223,7 @@ class LoginPresenter(
                     .observeOn(schedulers.ui())
                     .subscribe(
                         {
-                            val prefs = view.abstracContext.sharedPreferences
-                            prefs.edit().putBoolean(SESSION_LOCKED, false).apply()
+                            preferenceProvider.setValue(SESSION_LOCKED, false)
                             view.handleLogout()
                         },
                         { view.handleLogout() }
@@ -205,10 +237,14 @@ class LoginPresenter(
         if (userResponse.isSuccessful) {
             preferenceProvider.setValue(Preference.INITIAL_SYNC_DONE, false)
 
-            val updatedServer =
-                (preferenceProvider.getSet(PREFS_URLS, HashSet()) as HashSet).add(userName)
-            val updatedUsers =
-                (preferenceProvider.getSet(PREFS_USERS, HashSet()) as HashSet).add(server)
+            val updatedServer = (preferenceProvider.getSet(PREFS_URLS, HashSet()) as HashSet)
+            if (!updatedServer.contains(server)) {
+                updatedServer.add(server)
+            }
+            val updatedUsers = (preferenceProvider.getSet(PREFS_USERS, HashSet()) as HashSet)
+            if (!updatedUsers.contains(userName)) {
+                updatedUsers.add(userName)
+            }
 
             preferenceProvider.setValue(PREFS_URLS, updatedServer)
             preferenceProvider.setValue(PREFS_USERS, updatedUsers)
@@ -256,10 +292,10 @@ class LoginPresenter(
             fingerPrintController.authenticate()
                 .map { result ->
                     if (preferenceProvider.contains(
-                        SECURE_SERVER_URL,
-                        SECURE_USER_NAME,
-                        SECURE_PASS
-                    )
+                            SECURE_SERVER_URL,
+                            SECURE_USER_NAME,
+                            SECURE_PASS
+                        )
                     ) {
                         Result.success(result)
                     } else {
@@ -327,6 +363,12 @@ class LoginPresenter(
         preferenceProvider.setValue(PREFS_USERS, HashSet(users))
 
         return Pair(urls, users)
+    }
+
+    //TODO Remove this when we remove the userManager from the presenter
+    @RestrictTo(Scope.TESTS)
+    fun setUserManager(userManager: UserManager) {
+        this.userManager = userManager
     }
 
     companion object {

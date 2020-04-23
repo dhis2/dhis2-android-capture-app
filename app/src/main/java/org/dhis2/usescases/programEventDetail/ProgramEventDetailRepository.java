@@ -22,17 +22,13 @@ import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
 
-/**
- * Created by Cristian E. on 02/11/2017.
- */
-
 public interface ProgramEventDetailRepository {
 
     @NonNull
-    LiveData<PagedList<ProgramEventViewModel>> filteredProgramEvents(List<DatePeriod> dateFilter, List<String> orgUnitFilter, List<CategoryOptionCombo> catOptionComboUid, List<EventStatus> eventStatus, List<State> states);
+    LiveData<PagedList<ProgramEventViewModel>> filteredProgramEvents(List<DatePeriod> dateFilter, List<String> orgUnitFilter, List<CategoryOptionCombo> catOptionComboUid, List<EventStatus> eventStatus, List<State> states, boolean assignedToUser);
 
     @NonNull
-    Flowable<kotlin.Pair<FeatureCollection, BoundingBox>> filteredEventsForMap(List<DatePeriod> dateFilter, List<String> orgUnitFilter, List<CategoryOptionCombo> catOptionComboUid, List<EventStatus> eventStatus, List<State> states);
+    Flowable<kotlin.Pair<FeatureCollection, BoundingBox>> filteredEventsForMap(List<DatePeriod> dateFilter, List<String> orgUnitFilter, List<CategoryOptionCombo> catOptionComboUid, List<EventStatus> eventStatus, List<State> states, boolean assignedToUser);
 
     @NonNull
     Observable<Program> program();
@@ -46,4 +42,6 @@ public interface ProgramEventDetailRepository {
     Flowable<ProgramEventViewModel> getInfoForEvent(String eventUid);
 
     Single<FeatureType> featureType();
+
+    boolean hasAssignment();
 }

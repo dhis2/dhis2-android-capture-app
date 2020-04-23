@@ -18,6 +18,7 @@ import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 import androidx.databinding.DataBindingUtil;
 import androidx.databinding.ViewDataBinding;
+import androidx.fragment.app.FragmentManager;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -53,6 +54,7 @@ public class PictureView extends FieldLayout implements View.OnClickListener, Vi
     private Boolean isEditable;
     private View clearButton;
     private String currentValue;
+    private FragmentManager fm;
 
     public PictureView(Context context) {
         super(context);
@@ -71,8 +73,10 @@ public class PictureView extends FieldLayout implements View.OnClickListener, Vi
 
     @Override
     public void onClick(View v) {
-        if (isEditable && (v == image || v == layout || v == formLabel)) {
+        if (isEditable && (v == layout || v == formLabel)) {
             selectImage();
+        } else if (v == image && currentValue != null) {
+
         }
     }
 
@@ -89,14 +93,14 @@ public class PictureView extends FieldLayout implements View.OnClickListener, Vi
 
         errorView = findViewById(R.id.errorMessage);
         image = findViewById(R.id.image);
-        image.setOnClickListener(this);
+        image.setOnClickListener(view -> showFullPicture());
         layout = findViewById(R.id.layout);
         layout.setOnClickListener(this);
         formLabel = findViewById(R.id.formLabel);
         formLabel.setOnClickListener(this);
         clearButton = findViewById(R.id.clear);
         clearButton.setOnClickListener(view -> {
-                    if (removeFile()) {
+                    if (isEditable && removeFile()) {
                         setTextSelected(null);
                         image.setVisibility(View.GONE);
                         Glide.with(this).clear(image);
@@ -107,7 +111,7 @@ public class PictureView extends FieldLayout implements View.OnClickListener, Vi
     }
 
     private boolean removeFile() {
-        return new File(currentValue).delete();
+        return currentValue != null && new File(currentValue).delete();
     }
 
     public void setLabel(String label) {
@@ -234,12 +238,26 @@ public class PictureView extends FieldLayout implements View.OnClickListener, Vi
         }
     }
 
+    private void showFullPicture() {
+        new ImageDetailBottomDialog(
+                label,
+                new File(currentValue)
+        ).show(
+                fm,
+                ImageDetailBottomDialog.TAG
+        );
+    }
+
     public void setOnImageListener(OnPictureSelected onImageListener) {
         this.imageListener = onImageListener;
     }
 
     public void setEditable(Boolean editable) {
         isEditable = editable;
+    }
+
+    public void setFragmentManager(FragmentManager fm) {
+        this.fm = fm;
     }
 
     public interface OnPictureSelected {
@@ -254,6 +272,5 @@ public class PictureView extends FieldLayout implements View.OnClickListener, Vi
     public void setOnIntentSelected(OnIntentSelected onIntentSelected) {
         this.onIntentSelected = onIntentSelected;
     }
-
 
 }

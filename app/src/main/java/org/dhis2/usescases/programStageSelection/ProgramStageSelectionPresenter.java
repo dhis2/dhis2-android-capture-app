@@ -1,6 +1,7 @@
 package org.dhis2.usescases.programStageSelection;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
 
 import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.utils.Result;
@@ -18,6 +19,8 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import timber.log.Timber;
 
+import static androidx.annotation.VisibleForTesting.PRIVATE;
+
 /**
  * QUADRAM. Created by ppajuelo on 31/10/2017.
  */
@@ -27,10 +30,11 @@ public class ProgramStageSelectionPresenter implements ProgramStageSelectionCont
     private final RulesUtilsProvider ruleUtils;
     private final SchedulerProvider schedulerProvider;
     private ProgramStageSelectionContract.View view;
-    private CompositeDisposable compositeDisposable;
+    public CompositeDisposable compositeDisposable;
     private ProgramStageSelectionRepository programStageSelectionRepository;
 
-    ProgramStageSelectionPresenter(ProgramStageSelectionRepository programStageSelectionRepository, RulesUtilsProvider ruleUtils, SchedulerProvider schedulerProvider) {
+    public ProgramStageSelectionPresenter(ProgramStageSelectionContract.View view, ProgramStageSelectionRepository programStageSelectionRepository, RulesUtilsProvider ruleUtils, SchedulerProvider schedulerProvider) {
+        this.view = view;
         this.programStageSelectionRepository = programStageSelectionRepository;
         this.ruleUtils = ruleUtils;
         this.schedulerProvider = schedulerProvider;
@@ -44,8 +48,7 @@ public class ProgramStageSelectionPresenter implements ProgramStageSelectionCont
     }
 
     @Override
-    public void getProgramStages(String programId, @NonNull String uid, @NonNull ProgramStageSelectionContract.View view) {
-        this.view = view;
+    public void getProgramStages(String programId, @NonNull String uid) {
 
         Flowable<List<ProgramStage>> stagesFlowable = programStageSelectionRepository.enrollmentProgramStages(programId, uid);
         Flowable<Result<RuleEffect>> ruleEffectFlowable = programStageSelectionRepository.calculate();
@@ -64,7 +67,8 @@ public class ProgramStageSelectionPresenter implements ProgramStageSelectionCont
                         Timber::e));
     }
 
-    private List<ProgramStage> applyEffects(List<ProgramStage> stageModels, Result<RuleEffect> calcResult) {
+    @VisibleForTesting()
+    public List<ProgramStage> applyEffects(List<ProgramStage> stageModels, Result<RuleEffect> calcResult) {
         if (calcResult.error() != null) {
             Timber.e(calcResult.error());
             return stageModels;

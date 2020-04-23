@@ -1,47 +1,30 @@
 package org.dhis2.usescases.teiDashboard.teiProgramList;
 
-import android.content.ContentValues;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteConstraintException;
-
 import androidx.annotation.NonNull;
-
-import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.dhis2.usescases.main.program.ProgramViewModel;
 import org.dhis2.utils.CodeGenerator;
 import org.dhis2.utils.DateUtils;
 import org.hisp.dhis.android.core.D2;
-import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
 import org.hisp.dhis.android.core.common.State;
-import org.hisp.dhis.android.core.enrollment.Enrollment;
+import org.hisp.dhis.android.core.enrollment.EnrollmentCreateProjection;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.Program;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
 
 import io.reactivex.Observable;
 
-/**
- * QUADRAM. Created by ppajuelo on 02/11/2017.
- */
-
 public class TeiProgramListRepositoryImpl implements TeiProgramListRepository {
 
-    private final BriteDatabase briteDatabase;
-    private final CodeGenerator codeGenerator;
     private final D2 d2;
 
-    TeiProgramListRepositoryImpl(CodeGenerator codeGenerator, BriteDatabase briteDatabase, D2 d2) {
-        this.briteDatabase = briteDatabase;
-        this.codeGenerator = codeGenerator;
+    TeiProgramListRepositoryImpl(D2 d2) {
         this.d2 = d2;
     }
 
@@ -64,7 +47,7 @@ public class TeiProgramListRepositoryImpl implements TeiProgramListRepository {
                             program.style() != null ? program.style().icon() : null,
                             program.displayName(),
                             orgUnit.displayName(),
-                            enrollment.followUp()!=null?enrollment.followUp():false,
+                            enrollment.followUp() != null ? enrollment.followUp() : false,
                             program.uid()
                     );
                 })
@@ -87,7 +70,7 @@ public class TeiProgramListRepositoryImpl implements TeiProgramListRepository {
                             program.style() != null ? program.style().icon() : null,
                             program.displayName(),
                             orgUnit.displayName(),
-                            enrollment.followUp()!=null?enrollment.followUp():false,
+                            enrollment.followUp() != null ? enrollment.followUp() : false,
                             program.uid()
                     );
                 })
@@ -109,7 +92,7 @@ public class TeiProgramListRepositoryImpl implements TeiProgramListRepository {
                     }
                     return captureOrgUnitUids;
                 })
-                .flatMap(orgUnits->Observable.fromCallable(() -> d2.programModule().programs()
+                .flatMap(orgUnits -> Observable.fromCallable(() -> d2.programModule().programs()
                         .byOrganisationUnitList(orgUnits)
                         .byTrackedEntityTypeUid().eq(trackedEntityType).blockingGet()))
                 .flatMapIterable(programs -> programs)
@@ -148,46 +131,22 @@ public class TeiProgramListRepositoryImpl implements TeiProgramListRepository {
     @NonNull
     @Override
     public Observable<String> saveToEnroll(@NonNull String orgUnit, @NonNull String programUid, @NonNull String teiUid, Date enrollmentDate) {
-        Date currentDate = Calendar.getInstance().getTime();
-        return Observable.defer(() -> {
-
-            ContentValues dataValue = new ContentValues();
-
-            // renderSearchResults time stamp
-            dataValue.put("lastUpdated",
-                    BaseIdentifiableObject.DATE_FORMAT.format(currentDate));
-            dataValue.put("state",
-                    State.TO_POST.toString());
-
-            if (briteDatabase.update("TrackedEntityInstance", dataValue,
-                    "uid = ? ", teiUid == null ? "" : teiUid) <= 0) {
-                String message = String.format(Locale.US, "Failed to update tracked entity " +
-                                "instance for uid=[%s]",
-                        teiUid);
-                return Observable.error(new SQLiteConstraintException(message));
-            }
-
-            Enrollment enrollmentModel = Enrollment.builder()
-                    .uid(codeGenerator.generate())
-                    .created(currentDate)
-                    .lastUpdated(currentDate)
-                    .enrollmentDate(enrollmentDate)
-                    .program(programUid)
-                    .organisationUnit(orgUnit)
-                    .trackedEntityInstance(teiUid)
-                    .status(EnrollmentStatus.ACTIVE)
-                    .followUp(false)
-                    .state(State.TO_POST)
-                    .build();
-
-            if (briteDatabase.insert("Enrollment", enrollmentModel.toContentValues()) < 0) {
-                String message = String.format(Locale.US, "Failed to insert new enrollment " +
-                        "instance for organisationUnit=[%s] and program=[%s]", orgUnit, programUid);
-                return Observable.error(new SQLiteConstraintException(message));
-            }
-
-            return Observable.just(enrollmentModel.uid());
-        });
+        return d2.enrollmentModule().enrollments().add(
+                EnrollmentCreateProjection.builder()
+                        .organisationUnit(orgUnit)
+                        .program(programUid)
+                        .trackedEntityInstance(teiUid)
+                        .build())
+                .map(enrollmentUid ->
+                        d2.enrollmentModule().enrollments().uid(enrollmentUid))
+                .map(enrollmentRepository -> {
+                    if(d2.programModule().programs().uid(programUid).blockingGet().displayIncidentDate()){
+                        enrollmentRepository.setIncidentDate(DateUtils.getInstance().getToday());
+                    }
+                    enrollmentRepository.setEnrollmentDate(enrollmentDate);
+                    enrollmentRepository.setFollowUp(false);
+                    return enrollmentRepository.blockingGet().uid();
+                }).toObservable();
     }
 
     @Override

@@ -11,6 +11,7 @@ import org.dhis2.databinding.CustomCellViewBinding;
 import org.dhis2.utils.DialogClickListener;
 import org.dhis2.utils.customviews.TableFieldDialog;
 import org.dhis2.utils.customviews.YesNoView;
+import org.hisp.dhis.android.core.common.ValueTypeRenderingType;
 
 import io.reactivex.processors.FlowableProcessor;
 
@@ -78,6 +79,7 @@ public class RadioButtonCellHolder extends FormViewHolder {
         YesNoView yesNoView = new YesNoView(context);
         yesNoView.setIsBgTransparent(true);
         yesNoView.setValueType(viewModel.valueType());
+        yesNoView.setRendering(ValueTypeRenderingType.DEFAULT);
         yesNoView.getClearButton().setVisibility(View.GONE);
 
         if (viewModel.value() != null && Boolean.valueOf(viewModel.value()))

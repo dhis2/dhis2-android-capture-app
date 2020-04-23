@@ -18,6 +18,7 @@ import org.dhis2.data.tuples.Sextet;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.usescases.eventsWithoutRegistration.eventSummary.EventSummaryRepository;
 import org.dhis2.utils.DateUtils;
+import org.dhis2.utils.DhisTextUtils;
 import org.dhis2.utils.EventCreationType;
 import org.dhis2.utils.Result;
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper;
@@ -40,7 +41,6 @@ import com.google.android.gms.location.LocationServices;
 import android.Manifest;
 import android.app.DatePickerDialog;
 import android.content.pm.PackageManager;
-import android.text.TextUtils;
 import android.view.View;
 
 import androidx.annotation.NonNull;
@@ -61,7 +61,7 @@ public class EventInitialPresenter
         implements
         EventInitialContract.Presenter {
 
-    public static final int ACCESS_COARSE_LOCATION_PERMISSION_REQUEST = 101;
+    public static final int ACCESS_LOCATION_PERMISSION_REQUEST = 101;
 
     private EventInitialContract.View view;
 
@@ -225,7 +225,7 @@ public class EventInitialPresenter
     private void getProgramStages(String programUid, String programStageUid) {
 
         compositeDisposable
-                .add((TextUtils.isEmpty(programStageId) ? eventInitialRepository.programStage(programUid)
+                .add((DhisTextUtils.Companion.isEmpty(programStageId) ? eventInitialRepository.programStage(programUid)
                         : eventInitialRepository.programStageWithId(programStageUid)).subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.ui())
                         .subscribe(programStage -> view.setProgramStage(programStage),
@@ -304,18 +304,18 @@ public class EventInitialPresenter
     @Override
     public void onLocationClick() {
         if (ActivityCompat.checkSelfPermission(view.getContext(),
-                Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // Should we show an explanation?
             if (ActivityCompat.shouldShowRequestPermissionRationale(view.getAbstractActivity(),
-                    Manifest.permission.ACCESS_COARSE_LOCATION)) {
+                    Manifest.permission.ACCESS_FINE_LOCATION)) {
                 // TODO CRIS: Show an expanation to the user *asynchronously* -- don't block
                 // this thread waiting for the user's response! After the user
                 // sees the explanation, try again to request the permission.
 
             } else {
                 ActivityCompat.requestPermissions(view.getAbstractActivity(),
-                        new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
-                        ACCESS_COARSE_LOCATION_PERMISSION_REQUEST);
+                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                        ACCESS_LOCATION_PERMISSION_REQUEST);
             }
             return;
         }

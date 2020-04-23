@@ -10,7 +10,6 @@ import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.period.DatePeriod;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import io.reactivex.Flowable;
@@ -37,12 +36,14 @@ public class FilterManager {
     private List<DatePeriod> periodFilters;
     private List<CategoryOptionCombo> catOptComboFilters;
     private List<EventStatus> eventStatusFilters;
+    private boolean assignedFilter;
 
     private ObservableField<Integer> ouFiltersApplied;
     private ObservableField<Integer> stateFiltersApplied;
     private ObservableField<Integer> periodFiltersApplied;
     private ObservableField<Integer> catOptCombFiltersApplied;
     private ObservableField<Integer> eventStatusFiltersApplied;
+    private ObservableField<Integer> assignedToMeApplied;
 
     private FlowableProcessor<FilterManager> filterProcessor;
     private FlowableProcessor<Boolean> ouTreeProcessor;
@@ -76,17 +77,18 @@ public class FilterManager {
         periodFiltersApplied = new ObservableField<>(0);
         catOptCombFiltersApplied = new ObservableField<>(0);
         eventStatusFiltersApplied = new ObservableField<>(0);
+        assignedToMeApplied = new ObservableField<>(0);
 
         filterProcessor = PublishProcessor.create();
         ouTreeProcessor = PublishProcessor.create();
         periodRequestProcessor = PublishProcessor.create();
     }
 
-    public void setPeriodIdSelected(int selected){
+    public void setPeriodIdSelected(int selected) {
         this.periodIdSelected = selected;
     }
 
-    public int getPeriodIdSelected(){
+    public int getPeriodIdSelected() {
         return this.periodIdSelected;
     }
 
@@ -96,26 +98,29 @@ public class FilterManager {
         for (State stateToAdd : states) {
             if (remove)
                 stateFilters.remove(stateToAdd);
-            else if(!stateFilters.contains(stateToAdd))
+            else if (!stateFilters.contains(stateToAdd))
                 stateFilters.add(stateToAdd);
         }
-        if(stateFilters.contains(State.TO_POST) && stateFilters.contains(State.TO_UPDATE))
-            stateFiltersApplied.set(stateFilters.size()-1);
-        else
+        if (stateFilters.contains(State.TO_POST) &&
+                stateFilters.contains(State.TO_UPDATE) &&
+                stateFilters.contains(State.UPLOADING)) {
+            stateFiltersApplied.set(stateFilters.size() - 1);
+        }else {
             stateFiltersApplied.set(stateFilters.size());
+        }
         filterProcessor.onNext(this);
     }
 
 //    endregion
 
-    public void addEventStatus(boolean remove, EventStatus... status){
-        for(EventStatus eventStatus: status){
-            if(remove)
+    public void addEventStatus(boolean remove, EventStatus... status) {
+        for (EventStatus eventStatus : status) {
+            if (remove)
                 eventStatusFilters.remove(eventStatus);
-            else if(!eventStatusFilters.contains(eventStatus))
+            else if (!eventStatusFilters.contains(eventStatus))
                 eventStatusFilters.add(eventStatus);
         }
-        if(eventStatusFilters.contains(EventStatus.ACTIVE)) {
+        if (eventStatusFilters.contains(EventStatus.ACTIVE)) {
             eventStatusFiltersApplied.set(eventStatusFilters.size() - 1);
         } else {
             eventStatusFiltersApplied.set(eventStatusFilters.size());
@@ -164,6 +169,8 @@ public class FilterManager {
                 return catOptCombFiltersApplied;
             case EVENT_STATUS:
                 return eventStatusFiltersApplied;
+            case ASSIGNED_TO_ME:
+                return assignedToMeApplied;
             default:
                 return new ObservableField<>(0);
         }
@@ -191,7 +198,9 @@ public class FilterManager {
         int periodIsApplying = periodFilters == null ? 0 : 1;
         int eventStatusApplying = eventStatusFilters.isEmpty() ? 0 : 1;
         int catComboApplying = catOptComboFilters.isEmpty() ? 0 : 1;
-        return ouIsApplying + stateIsApplying + periodIsApplying + eventStatusApplying + catComboApplying;
+        int assignedApplying = assignedFilter ? 1 : 0;
+        return ouIsApplying + stateIsApplying + periodIsApplying +
+                eventStatusApplying + catComboApplying + assignedApplying;
     }
 
     public List<DatePeriod> getPeriodFilters() {
@@ -202,7 +211,7 @@ public class FilterManager {
         return ouFilters;
     }
 
-    public List<CategoryOptionCombo> getCatOptComboFilters(){
+    public List<CategoryOptionCombo> getCatOptComboFilters() {
         return catOptComboFilters;
     }
 
@@ -214,7 +223,9 @@ public class FilterManager {
         return stateFilters;
     }
 
-    public List<EventStatus> getEventStatusFilters(){ return eventStatusFilters; }
+    public List<EventStatus> getEventStatusFilters() {
+        return eventStatusFilters;
+    }
 
     public void addPeriodRequest(PeriodRequest periodRequest) {
         periodRequestProcessor.onNext(periodRequest);
@@ -252,25 +263,33 @@ public class FilterManager {
         filterProcessor.onNext(this);
     }
 
-    public void clearEventStatus(){
+    public void clearEventStatus() {
         eventStatusFilters.clear();
         eventStatusFiltersApplied.set(eventStatusFilters.size());
         filterProcessor.onNext(this);
     }
 
-    public void clearAllFilters(){
+    public void clearAssignToMe(){
+        assignedFilter = false;
+        assignedToMeApplied.set(0);
+        filterProcessor.onNext(this);
+    }
+
+    public void clearAllFilters() {
         eventStatusFilters.clear();
         catOptComboFilters.clear();
         stateFilters.clear();
         ouFilters.clear();
         periodFilters = null;
         periodIdSelected = 0;
+        assignedFilter = false;
 
         eventStatusFiltersApplied.set(eventStatusFilters.size());
         catOptCombFiltersApplied.set(catOptComboFilters.size());
         stateFiltersApplied.set(stateFilters.size());
         ouFiltersApplied.set(ouFilters.size());
         periodFiltersApplied.set(0);
+        assignedToMeApplied.set(0);
 
         filterProcessor.onNext(this);
     }
@@ -281,5 +300,15 @@ public class FilterManager {
 
     public void setTotalSearchTeiFilter(int totalSearchTeiFilter) {
         this.totalSearchTeiFilter = totalSearchTeiFilter;
+    }
+
+    public boolean getAssignedFilter() {
+        return assignedFilter;
+    }
+
+    public void setAssignedToMe(boolean isChecked) {
+        this.assignedFilter = isChecked;
+        assignedToMeApplied.set(isChecked ? 1 : 0);
+        filterProcessor.onNext(this);
     }
 }

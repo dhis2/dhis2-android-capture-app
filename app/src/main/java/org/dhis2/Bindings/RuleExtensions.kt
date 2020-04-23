@@ -86,9 +86,9 @@ fun List<ProgramRuleVariable>.toRuleVariableList(
     dataElementRepository: DataElementCollectionRepository
 ): List<RuleVariable> {
     return filter {
-        if(it.dataElement()!=null){
+        if (it.dataElement() != null) {
             dataElementRepository.uid(it.dataElement()?.uid()).blockingExists()
-        }else{
+        } else {
             attributeRepository.uid(it.trackedEntityAttribute()?.uid()).blockingExists()
         }
     }.map {
@@ -196,7 +196,8 @@ fun ProgramRuleAction.toRuleEngineObject(): RuleAction {
             optionGroup()?.let {
                 RuleActionHideOptionGroup.create(
                     content(),
-                    it.uid()
+                    it.uid(),
+                    field
                 )
             } ?: RuleActionUnsupported.create(
                 "HIDE OPTION GROUP RULE IS MISSING OPTION GROUP",
@@ -298,10 +299,15 @@ fun List<TrackedEntityDataValue>.toRuleDataValue(
                     .blockingIsEmpty()
             ) {
                 value =
-                    if (optionRepository.byOptionSetUid().eq(de.optionSetUid()).byCode().eq(value).one().blockingExists()) {
-                        optionRepository.byOptionSetUid().eq(de.optionSetUid()).byCode().eq(value)
-                            .one()
-                            .blockingGet().name()
+                    if (optionRepository
+                        .byOptionSetUid().eq(de.optionSetUid())
+                        .byCode().eq(value)
+                        .one().blockingExists()
+                    ) {
+                        optionRepository
+                            .byOptionSetUid().eq(de.optionSetUid())
+                            .byCode().eq(value)
+                            .one().blockingGet().name()
                     } else {
                         ""
                     }
@@ -334,15 +340,15 @@ fun List<TrackedEntityAttributeValue>.toRuleAttributeValue(
                 .blockingGet()
         if (!attr.optionSet()?.uid().isNullOrEmpty()) {
             if (d2.programModule().programRuleVariables()
-                    .byProgramUid().eq(program)
-                    .byTrackedEntityAttributeUid().eq(it.trackedEntityAttribute())
-                    .byUseCodeForOptionSet().isTrue
-                    .blockingIsEmpty()
+                .byProgramUid().eq(program)
+                .byTrackedEntityAttributeUid().eq(it.trackedEntityAttribute())
+                .byUseCodeForOptionSet().isTrue
+                .blockingIsEmpty()
             ) {
                 value =
                     if (d2.optionModule().options().byOptionSetUid().eq(attr.optionSet()?.uid())
-                            .byCode().eq(value)
-                            .one().blockingExists()
+                        .byCode().eq(value)
+                        .one().blockingExists()
                     ) {
                         d2.optionModule().options().byOptionSetUid().eq(attr.optionSet()?.uid())
                             .byCode().eq(value)

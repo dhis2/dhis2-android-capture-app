@@ -82,8 +82,6 @@
     <string name="completed">ສໍາເລັດແລ້ວ</string>
     <string name="cancelled">ຍົກເລີກແລ້ວ</string>
     <string name="re_open">ເປີດຄືນໃໝ່</string>
-    <string name="activate">ເປີດນໍາໃຊ້</string>
-
     <!-- State -->
     <string name="state_synced">ໃຫ້ລະບົບທໍາງານຮ່ວມກັນ</string>
     <string name="state_to_post">ເພື່ອລົງ</string>
@@ -174,7 +172,7 @@
     <string name="settingsReset">ຕັ້ງຄ່າໂປຣແກຣມຄືນໃໝ່</string>
     <!--endregion-->
 
-    <string name="enrollmment_date">Enrollement date</string>
+    <string name="enrollmment_date">ວັນທີ່ລົງທະບຽນ</string>
 
     <!-- SEARCH OPTION SET -->
     <string name="search_optionset">ຄົນຫາ</string>
@@ -367,7 +365,6 @@
     <string name="sms_bar_state_sending">ກໍາລັງດໍາເນີນການ</string>
     <string name="sms_bar_state_failed">Failed</string>
 
-    <string name="polygon">Polygon</string>
     <string name="filters_title_period">ຊ່ວງເວລາ</string>
     <string name="filters_title_status">ສະຖານະ</string>
     <string name="filter_period_today">ມື້ນີ້</string>

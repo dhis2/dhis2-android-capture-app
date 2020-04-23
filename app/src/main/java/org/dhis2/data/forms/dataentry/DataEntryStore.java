@@ -15,5 +15,6 @@ public interface DataEntryStore {
         DE, ATTR,DV
     }
 
+    @NonNull
     Flowable<Long> save(@NonNull String uid, @Nullable String value);
 }

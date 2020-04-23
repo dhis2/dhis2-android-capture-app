@@ -3,24 +3,20 @@ package org.dhis2.usescases.enrollment
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
+import android.graphics.Color
 import android.os.Bundle
 import android.text.TextUtils.isEmpty
 import android.view.LayoutInflater
 import android.view.View
-import android.widget.DatePicker
-import android.widget.PopupMenu
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.airbnb.lottie.LottieDrawable.INFINITE
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.bitmap.CircleCrop
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import io.reactivex.Flowable
-import java.io.File
-import java.util.Calendar
-import java.util.Date
-import javax.inject.Inject
 import org.dhis2.App
 import org.dhis2.R
 import org.dhis2.data.forms.dataentry.DataEntryAdapter
@@ -31,41 +27,35 @@ import org.dhis2.data.forms.dataentry.fields.display.DisplayViewModel
 import org.dhis2.databinding.EnrollmentActivityBinding
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity
-import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialPresenter
 import org.dhis2.usescases.general.ActivityGlobalAbstract
 import org.dhis2.usescases.map.MapSelectorActivity
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity
 import org.dhis2.utils.Constants
-import org.dhis2.utils.DatePickerUtils
-import org.dhis2.utils.DateUtils
-import org.dhis2.utils.DialogClickListener
+import org.dhis2.utils.Constants.CAMERA_REQUEST
+import org.dhis2.utils.Constants.ENROLLMENT_UID
+import org.dhis2.utils.Constants.GALLERY_REQUEST
+import org.dhis2.utils.Constants.PROGRAM_UID
+import org.dhis2.utils.Constants.RQ_QR_SCANNER
+import org.dhis2.utils.Constants.TEI_UID
+import org.dhis2.utils.EventMode
 import org.dhis2.utils.FileResourcesUtil
-import org.dhis2.utils.analytics.CLICK
-import org.dhis2.utils.analytics.DELETE_AND_BACK
-import org.dhis2.utils.analytics.SAVE_ENROLL
-import org.dhis2.utils.analytics.STATUS_ENROLLMENT
-import org.dhis2.utils.customviews.CoordinatesView
-import org.dhis2.utils.customviews.CustomDialog
+import org.dhis2.utils.customviews.AlertBottomDialog
+import org.dhis2.utils.recyclers.StickyHeaderItemDecoration
 import org.hisp.dhis.android.core.arch.helpers.FileResourceDirectoryHelper
 import org.hisp.dhis.android.core.arch.helpers.GeometryHelper
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.Geometry
-import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
-import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
-import org.hisp.dhis.android.core.program.Program
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityType
+import java.io.File
+import javax.inject.Inject
 
 class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
 
     enum class EnrollmentMode { NEW, CHECK }
 
+    private var forRelationship: Boolean = false
     @Inject
     lateinit var presenter: EnrollmentPresenterImpl
-
-    var coordinatesView: CoordinatesView? = null
 
     lateinit var binding: EnrollmentActivityBinding
     lateinit var mode: EnrollmentMode
@@ -74,6 +64,7 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
         const val ENROLLMENT_UID_EXTRA = "ENROLLMENT_UID_EXTRA"
         const val PROGRAM_UID_EXTRA = "PROGRAM_UID_EXTRA"
         const val MODE_EXTRA = "MODE_EXTRA"
+        const val FOR_RELATIONSHIP = "FOR_RELATIONSHIP"
         const val RQ_ENROLLMENT_GEOMETRY = 1023
         const val RQ_INCIDENT_GEOMETRY = 1024
         const val RQ_EVENT = 1025
@@ -83,12 +74,17 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
             context: Context,
             enrollmentUid: String,
             programUid: String,
-            enrollmentMode: EnrollmentMode
+            enrollmentMode: EnrollmentMode,
+            forRelationship: Boolean? = false
         ): Intent {
             val intent = Intent(context, EnrollmentActivity::class.java)
             intent.putExtra(ENROLLMENT_UID_EXTRA, enrollmentUid)
             intent.putExtra(PROGRAM_UID_EXTRA, programUid)
             intent.putExtra(MODE_EXTRA, enrollmentMode.name)
+            intent.putExtra(FOR_RELATIONSHIP, forRelationship)
+            if (forRelationship == true) {
+                intent.addFlags(Intent.FLAG_ACTIVITY_FORWARD_RESULT)
+            }
             return intent
         }
     }
@@ -97,92 +93,60 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
 
     /*region LIFECYCLE*/
 
-
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
-        when (requestCode) {
-            EventInitialPresenter.ACCESS_COARSE_LOCATION_PERMISSION_REQUEST -> {
-                // If request is cancelled, the result arrays are empty.
-                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    coordinatesView?.let {
-                        it.getLocation()
-                        coordinatesView = null
-                    }
-                }
-            }
-        }
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         (applicationContext as App).userComponent()!!.plus(
             EnrollmentModule(
                 this,
                 intent.getStringExtra(ENROLLMENT_UID_EXTRA),
-                intent.getStringExtra(PROGRAM_UID_EXTRA)
+                intent.getStringExtra(PROGRAM_UID_EXTRA),
+                EnrollmentMode.valueOf(intent.getStringExtra(MODE_EXTRA))
             )
         ).inject(this)
+        forRelationship = intent.getBooleanExtra(FOR_RELATIONSHIP, false)
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.enrollment_activity)
         binding.view = this
 
         mode = EnrollmentMode.valueOf(intent.getStringExtra(MODE_EXTRA))
 
-        binding.programLockLayout.visibility =
-            if (mode == EnrollmentMode.NEW) View.GONE else View.VISIBLE
-
-        binding.coordinatesView.setIsBgTransparent(true)
-        binding.teiCoordinatesView.setIsBgTransparent(true)
-
         adapter = DataEntryAdapter(
-            LayoutInflater.from(this), supportFragmentManager,
+            LayoutInflater.from(this),
+            supportFragmentManager,
             DataEntryArguments.forEnrollment(intent.getStringExtra(ENROLLMENT_UID_EXTRA))
         )
-        binding.fieldRecycler.isNestedScrollingEnabled = true
+        binding.fieldRecycler.addItemDecoration(
+            StickyHeaderItemDecoration(
+                binding.fieldRecycler,
+                false
+            ) { itemPosition ->
+                itemPosition >= 0 &&
+                        itemPosition < adapter.itemCount &&
+                        adapter.getItemViewType(itemPosition) == adapter.sectionViewType()
+            }
+        )
         binding.fieldRecycler.adapter = adapter
 
-        binding.next.setOnClickListener {
-            if (presenter.dataIntegrityCheck(adapter.mandatoryOk(), adapter.hasError())) {
-                binding.root.requestFocus()
-                analyticsHelper().setEvent(SAVE_ENROLL, CLICK, SAVE_ENROLL)
-                presenter.finish(mode)
-            }
+        binding.save.setOnClickListener {
+            performSaveClick()
         }
 
-        binding.enrollmentDataButton.setOnClickListener {
-            if (binding.enrollmentData.visibility == View.GONE) {
-                binding.enrollmentDataText.text = getString(R.string.enrollment_data_hide)
-                binding.enrollmentData.visibility = View.VISIBLE
-                binding.enrollmentDataArrow.animate().scaleY(-1.0f).setDuration(200).start()
-            } else {
-                binding.enrollmentDataText.text = getString(R.string.enrollment_data_show)
-                binding.enrollmentData.visibility = View.GONE
-                binding.enrollmentDataArrow.animate().scaleY(1.0f).setDuration(200).start()
-            }
-        }
-
-        binding.fieldRecycler.itemAnimator = null
-
-        binding.enrollmentDataText.text = getString(R.string.enrollment_data_hide)
-        binding.enrollmentData.visibility = View.VISIBLE
-        binding.enrollmentDataArrow.animate().scaleY(-1.0f).setDuration(0).start()
-    }
-
-    override fun onResume() {
-        super.onResume()
         presenter.init()
     }
 
-    override fun onPause() {
-        super.onPause()
+    override fun onResume() {
+        presenter.subscribeToBackButton()
+        super.onResume()
+    }
+
+    override fun onDestroy() {
         presenter.onDettach()
+        super.onDestroy()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-
-        when (requestCode) {
-            RQ_INCIDENT_GEOMETRY, RQ_ENROLLMENT_GEOMETRY -> {
-                if (resultCode == Activity.RESULT_OK) {
+        if (resultCode == Activity.RESULT_OK) {
+            when (requestCode) {
+                RQ_INCIDENT_GEOMETRY, RQ_ENROLLMENT_GEOMETRY -> {
                     handleGeometry(
                         FeatureType.valueOfFeatureType(
                             data!!.getStringExtra(MapSelectorActivity.LOCATION_TYPE_EXTRA)
@@ -190,32 +154,42 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
                         data.getStringExtra(MapSelectorActivity.DATA_EXTRA), requestCode
                     )
                 }
-            }
-            Constants.GALLERY_REQUEST -> {
-                if (resultCode == Activity.RESULT_OK) {
+                GALLERY_REQUEST -> {
                     try {
                         val imageUri = data?.data
                         presenter.saveFile(
                             uuid,
                             FileResourcesUtil.getFileFromGallery(this, imageUri).path
                         )
+                        presenter.updateFields()
                     } catch (e: Exception) {
                         e.printStackTrace()
                         Toast.makeText(this, "Something went wrong", Toast.LENGTH_LONG).show()
                     }
                 }
-            }
-            Constants.CAMERA_REQUEST -> {
-                if (resultCode == Activity.RESULT_OK) {
+                CAMERA_REQUEST -> {
                     val file = File(
                         FileResourceDirectoryHelper.getFileResourceDirectory(this),
                         "tempFile.png"
                     )
                     presenter.saveFile(uuid, if (file.exists()) file.path else null)
+                    presenter.updateFields()
                 }
+                RQ_QR_SCANNER -> {
+                    scanTextView.updateScanResult(data!!.getStringExtra(Constants.EXTRA_DATA))
+                }
+                RQ_EVENT -> openDashboard(presenter.getEnrollment().uid()!!)
             }
-            RQ_EVENT -> openDashboard(presenter.getEnrollment().uid()!!)
         }
+        super.onActivityResult(requestCode, resultCode, data)
+    }
+
+    override fun sectionFlowable(): Flowable<String> {
+        return adapter.sectionFlowable()
+    }
+
+    override fun setSelectedSection(selectedSection: String) {
+        adapter.setCurrentSection(selectedSection)
     }
 
     override fun openEvent(eventUid: String) {
@@ -238,7 +212,11 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
         } else {
             val eventCreationIntent = Intent(abstracContext, EventCaptureActivity::class.java)
             eventCreationIntent.putExtras(
-                EventCaptureActivity.getActivityBundle(eventUid, presenter.getProgram().uid())
+                EventCaptureActivity.getActivityBundle(
+                    eventUid,
+                    presenter.getProgram().uid(),
+                    EventMode.CHECK
+                )
             )
             eventCreationIntent.putExtra(
                 Constants.TRACKED_ENTITY_INSTANCE,
@@ -249,10 +227,18 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
     }
 
     override fun openDashboard(enrollmentUid: String) {
-        val bundle = Bundle()
-        bundle.putString("PROGRAM_UID", presenter.getProgram().uid())
-        bundle.putString("TEI_UID", presenter.getEnrollment().trackedEntityInstance())
-        startActivity(TeiDashboardMobileActivity::class.java, bundle, true, false, null)
+        if (forRelationship) {
+            val intent = Intent()
+            intent.putExtra("TEI_A_UID", presenter.getEnrollment().trackedEntityInstance())
+            setResult(Activity.RESULT_OK, intent)
+            finish()
+        } else {
+            val bundle = Bundle()
+            bundle.putString(PROGRAM_UID, presenter.getProgram().uid())
+            bundle.putString(TEI_UID, presenter.getEnrollment().trackedEntityInstance())
+            bundle.putString(ENROLLMENT_UID, enrollmentUid)
+            startActivity(TeiDashboardMobileActivity::class.java, bundle, true, false, null)
+        }
     }
 
     override fun rowActions(): Flowable<RowAction> {
@@ -263,52 +249,42 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
         onBackPressed()
     }
 
-    override fun showMissingMandatoryFieldsMessage() {
-        showInfoDialog(
-            getString(R.string.unable_to_complete),
-            getString(R.string.missing_mandatory_fields)
-        )
+    override fun showMissingMandatoryFieldsMessage(
+        emptyMandatoryFields: MutableMap<String, String>
+    ) {
+        AlertBottomDialog.instance
+            .setTitle(getString(R.string.unable_to_complete))
+            .setMessage(getString(R.string.missing_mandatory_fields))
+            .setEmptyMandatoryFields(emptyMandatoryFields.keys.toList())
+            .show(supportFragmentManager, AlertBottomDialog::class.java.simpleName)
     }
 
-    override fun showErrorFieldsMessage() {
-        showInfoDialog(
-            getString(R.string.unable_to_complete),
-            getString(R.string.field_errors)
-        )
+    override fun showErrorFieldsMessage(errorFields: List<String>) {
+        AlertBottomDialog.instance
+            .setTitle(getString(R.string.unable_to_complete))
+            .setMessage(getString(R.string.field_errors))
+            .setEmptyMandatoryFields(errorFields)
+            .show(supportFragmentManager, AlertBottomDialog::class.java.simpleName)
     }
 
     override fun onBackPressed() {
         if (mode == EnrollmentMode.CHECK) {
-            if (presenter.dataIntegrityCheck(adapter.mandatoryOk(), adapter.hasError())) {
-                binding.root.requestFocus()
-                super.onBackPressed()
-            }
+            presenter.backIsClicked()
         } else {
             showDeleteDialog()
         }
     }
 
     private fun showDeleteDialog() {
-        CustomDialog(
-            this,
-            getString(R.string.title_delete_go_back),
-            getString(R.string.delete_go_back),
-            getString(R.string.cancel),
-            getString(R.string.missing_mandatory_fields_go_back),
-            RQ_GO_BACK,
-            object : DialogClickListener {
-                override fun onPositive() {
-                    // do nothing
-                }
-
-                override fun onNegative() {
-                    analyticsHelper().setEvent(DELETE_AND_BACK, CLICK, DELETE_AND_BACK)
-                    presenter.deleteAllSavedData()
-                    finish()
-                }
+        AlertBottomDialog.instance
+            .setTitle(getString(R.string.title_delete_go_back))
+            .setMessage(getString(R.string.delete_go_back))
+            .setPositiveButton(getString(R.string.missing_mandatory_fields_go_back)) {
+                presenter.deleteAllSavedData()
+                finish()
             }
-        )
-            .show()
+            .setNegativeButton()
+            .show(supportFragmentManager, AlertBottomDialog::class.java.simpleName)
     }
 
     private fun handleGeometry(featureType: FeatureType, dataExtra: String, requestCode: Int) {
@@ -331,31 +307,68 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
 
         if (geometry != null) {
             when (requestCode) {
-                RQ_ENROLLMENT_GEOMETRY -> presenter.saveEnrollmentGeometry(geometry)
-                RQ_INCIDENT_GEOMETRY -> presenter.saveTeiGeometry(geometry)
+                RQ_ENROLLMENT_GEOMETRY -> {
+                    presenter.saveEnrollmentGeometry(geometry)
+                }
+                RQ_INCIDENT_GEOMETRY -> {
+                    presenter.saveTeiGeometry(geometry)
+                }
             }
         }
+    }
+
+    override fun setResultAndFinish() {
+        setResult(RESULT_OK)
+        finish()
     }
 
     /*endregion*/
 
     /*region TEI*/
-    override fun displayTeiInfo(it: List<TrackedEntityAttributeValue>) {
-        binding.title.text =
-            if (mode != EnrollmentMode.NEW) {
-                it.map { it.value() }.joinToString(separator = " ", limit = 3)
-            } else {
-                String.format(getString(R.string.enroll_in), presenter.getProgram().displayName())
+    override fun displayTeiInfo(attrList: List<String>, profileImage: String) {
+        if (mode != EnrollmentMode.NEW) {
+            binding.title.visibility = View.GONE
+            binding.teiDataHeader.root.visibility = View.VISIBLE
+
+            val attrListNotEmpty = attrList.filter { it.isNotEmpty() }
+            binding.teiDataHeader.mainAttributes.apply {
+                when (attrListNotEmpty.size) {
+                    0 -> visibility = View.GONE
+                    1 -> text = attrListNotEmpty[0]
+                    else -> text = String.format("%s %s", attrListNotEmpty[0], attrListNotEmpty[1])
+                }
+                setTextColor(Color.WHITE)
             }
+            binding.teiDataHeader.secundaryAttribute.apply {
+                when (attrListNotEmpty.size) {
+                    0, 1, 2 -> visibility = View.GONE
+                    else -> text = attrListNotEmpty[2]
+                }
+                setTextColor(Color.WHITE)
+            }
+
+            if (profileImage.isEmpty()) {
+                binding.teiDataHeader.teiImage.visibility = View.GONE
+                binding.teiDataHeader.imageSeparator.visibility = View.GONE
+            } else {
+                Glide.with(this).load(File(profileImage))
+                    .transition(DrawableTransitionOptions.withCrossFade())
+                    .transform(CircleCrop())
+                    .into(binding.teiDataHeader.teiImage)
+            }
+        } else {
+            binding.title.visibility = View.VISIBLE
+            binding.teiDataHeader.root.visibility = View.GONE
+            binding.title.text =
+                String.format(getString(R.string.enroll_in), presenter.getProgram().displayName())
+        }
     }
     /*endregion*/
     /*region ACCESS*/
 
     override fun setAccess(access: Boolean?) {
-        binding.coordinatesView.setEditable(access)
-        binding.teiCoordinatesView.setEditable(access)
         if (access == false) {
-            binding.next.visibility = View.GONE
+            binding.save.visibility = View.GONE
         }
     }
     /*endregion*/
@@ -367,182 +380,6 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
     }
 
     override fun showStatusOptions(currentStatus: EnrollmentStatus) {
-        val popup = PopupMenu(this, binding.programLockLayout)
-        popup.setOnMenuItemClickListener { item ->
-            val newStatus = when (item.itemId) {
-                R.id.deactivate -> EnrollmentStatus.CANCELLED
-                R.id.complete -> EnrollmentStatus.COMPLETED
-                R.id.activate -> EnrollmentStatus.ACTIVE
-                R.id.reOpen -> EnrollmentStatus.ACTIVE
-                else -> throw IllegalArgumentException("Can't have other option")
-            }
-            analyticsHelper().setEvent(STATUS_ENROLLMENT, newStatus.name, STATUS_ENROLLMENT)
-            presenter.updateEnrollmentStatus(newStatus)
-        }
-
-        val menuId = when (currentStatus) {
-            EnrollmentStatus.ACTIVE -> R.menu.tei_detail_options_active
-            EnrollmentStatus.CANCELLED -> R.menu.tei_detail_options_cancelled
-            EnrollmentStatus.COMPLETED -> R.menu.tei_detail_options_completed
-        }
-        popup.menuInflater.inflate(menuId, popup.menu)
-        popup.show()
-    }
-
-    /*endregion*/
-
-    /*region ORG UNIT*/
-
-    override fun displayOrgUnit(ou: OrganisationUnit) {
-        binding.orgUnitText.setText(ou.displayName())
-        binding.orgUnitText.isEnabled = false
-    }
-
-    /*endregion*/
-
-    /*region DATES*/
-
-    override fun setDateLabels(enrollmentDateLabel: String?, indicendDateLabel: String?) {
-        binding.incidentDateLayout.hint = indicendDateLabel ?: getString(R.string.incident_date)
-        binding.reportDateLayout.hint = enrollmentDateLabel ?: getString(R.string.report_date)
-    }
-
-    override fun setUpIncidentDate(incidentDate: Date?) {
-        binding.incidentDateLayout.visibility = View.VISIBLE
-        binding.incidentDateText.setText(DateUtils.uiDateFormat().format(incidentDate))
-    }
-
-    override fun setUpEnrollmentDate(enrollmentDate: Date?) {
-        binding.reportDate.setText(DateUtils.uiDateFormat().format(enrollmentDate))
-    }
-
-    override fun blockDates(blockEnrollmentDate: Boolean, blockIncidentDate: Boolean) {
-        if (mode != EnrollmentMode.NEW) {
-            binding.reportDate.isEnabled = !blockEnrollmentDate
-            binding.incidentDateText.isEnabled = !blockIncidentDate
-        }
-    }
-
-    override fun onReportDateClick() {
-        showCalendar(
-            presenter.getEnrollment().enrollmentDate(),
-            presenter.getOrgUnit().openingDate(),
-            presenter.getOrgUnit().closedDate(),
-            binding.reportDateLayout.hint.toString(),
-            presenter.getProgram().selectEnrollmentDatesInFuture() ?: false,
-            object : DatePickerUtils.OnDatePickerClickListener {
-                override fun onNegativeClick() {
-                    val date = Date()
-                    presenter.updateEnrollmentDate(date)
-                }
-
-                override fun onPositiveClick(datePicker: DatePicker) {
-                    val calendar = Calendar.getInstance()
-                    calendar.set(datePicker.year, datePicker.month, datePicker.dayOfMonth)
-                    presenter.updateEnrollmentDate(calendar.time)
-                }
-            }
-        )
-    }
-
-    override fun onIncidentDateClick() {
-        showCalendar(
-            presenter.getEnrollment().incidentDate(),
-            presenter.getOrgUnit().openingDate(),
-            presenter.getOrgUnit().closedDate(),
-            binding.incidentDateLayout.hint.toString(),
-            presenter.getProgram().selectIncidentDatesInFuture() ?: false,
-            object : DatePickerUtils.OnDatePickerClickListener {
-                override fun onNegativeClick() {
-                    val date = Date()
-                    presenter.updateIncidentDate(date)
-                }
-
-                override fun onPositiveClick(datePicker: DatePicker) {
-                    val calendar = Calendar.getInstance()
-                    calendar.set(datePicker.year, datePicker.month, datePicker.dayOfMonth)
-                    presenter.updateIncidentDate(calendar.time)
-                }
-            }
-        )
-    }
-
-    override fun showCalendar(
-        date: Date?,
-        minDate: Date?,
-        maxDate: Date?,
-        label: String,
-        allowFuture: Boolean,
-        listener: DatePickerUtils.OnDatePickerClickListener
-    ) {
-        DatePickerUtils.getDatePickerDialog(
-            this, label, date, minDate, maxDate, allowFuture,
-            listener
-        ).show()
-    }
-
-    /*endregion*/
-
-    /*region GEOMETRY*/
-    override fun displayEnrollmentCoordinates(
-        enrollmentCoordinatesData: Pair<Program, Enrollment>?
-    ) {
-        val featureType = enrollmentCoordinatesData?.first?.featureType()
-        val geometry = enrollmentCoordinatesData?.second?.geometry()
-
-        binding.coordinatesView.visibility =
-            if (featureType != null && featureType != FeatureType.NONE) {
-                View.VISIBLE
-            } else {
-                View.GONE
-            }
-
-        binding.coordinatesView.setLabel(getString(R.string.enrollment_coordinates))
-
-        binding.coordinatesView.featureType = featureType
-        binding.coordinatesView.updateLocation(geometry)
-
-        binding.coordinatesView.setMapListener {
-            startActivityForResult(
-                MapSelectorActivity.create(this, it.featureType, it.currentCoordinates()),
-                RQ_ENROLLMENT_GEOMETRY
-            )
-        }
-        binding.coordinatesView.setCurrentLocationListener {
-            presenter.saveEnrollmentGeometry(it)
-        }
-    }
-
-    override fun displayTeiCoordinates(
-        teiCoordinatesData: Pair<TrackedEntityType, TrackedEntityInstance>?
-    ) {
-        val featureType = teiCoordinatesData!!.first.featureType() ?: FeatureType.NONE
-        binding.teiCoordinatesView.visibility =
-            if (featureType != FeatureType.NONE) {
-                View.VISIBLE
-            } else {
-                View.GONE
-            }
-
-        binding.teiCoordinatesView.setLabel(
-            "${getString(R.string.tei_coordinates)} ${teiCoordinatesData.first.displayName()}"
-        )
-
-        binding.teiCoordinatesView.featureType = teiCoordinatesData.first.featureType()
-        binding.teiCoordinatesView.updateLocation(teiCoordinatesData.second.geometry())
-
-        binding.teiCoordinatesView.setMapListener {
-            startActivityForResult(
-                MapSelectorActivity.create(
-                    this,
-                    it.featureType, it.currentCoordinates()
-                ),
-                RQ_INCIDENT_GEOMETRY
-            )
-        }
-        binding.teiCoordinatesView.setCurrentLocationListener {
-            presenter.saveTeiGeometry(it)
-        }
     }
 
     /*endregion*/
@@ -567,27 +404,27 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
             offset = it.top
         }
 
-        adapter.swap(fields)
+        adapter.swap(fields) { }
 
         myLayoutManager.scrollToPositionWithOffset(myFirstPositionIndex, offset)
     }
+
     /*endregion*/
-
-    override fun showSaveButton() {
-        binding.next.visibility = View.VISIBLE
+    override fun requestFocus() {
+        binding.root.requestFocus()
     }
 
-    override fun hideSaveButton() {
-        binding.next.visibility = View.GONE
+    override fun setSaveButtonVisible(visible: Boolean) {
+        if (visible) {
+            binding.save.show()
+        } else {
+            binding.save.hide()
+        }
     }
 
-    override fun showAdjustingForm() {
-        binding.clIndicatorProgress.root.visibility = View.VISIBLE
-        binding.clIndicatorProgress.lottieView.repeatCount = INFINITE
-    }
-
-    override fun hideAdjustingForm() {
-        binding.clIndicatorProgress.root.visibility = View.GONE
-        binding.clIndicatorProgress.lottieView.repeatCount = 0
+    override fun performSaveClick() {
+        if (presenter.dataIntegrityCheck()) {
+            presenter.finish(mode)
+        }
     }
 }

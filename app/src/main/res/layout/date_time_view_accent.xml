@@ -12,13 +12,12 @@
             type="java.lang.String" />
     </data>
 
-    <RelativeLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="5dp"
         android:padding="5dp"
         tools:background="?attr/colorPrimary">
-
 
         <ImageView
             android:id="@+id/renderImage"
@@ -27,33 +26,46 @@
             android:layout_centerHorizontal="true"
             android:layout_marginBottom="5dp"
             android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
             tools:srcCompat="@drawable/sierra_leone"
             tools:visibility="visible" />
+
+        <TextView
+            android:id="@+id/label"
+            style="@style/FieldLabel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@{label}"
+            android:textColor="?colorAccent"
+            app:layout_constraintTop_toBottomOf="@id/renderImage"
+            tools:text="@string/lorem" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/renderImage"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            app:layout_constraintTop_toBottomOf="@id/label">
 
             <ImageView
-                android:layout_gravity="center"
                 android:id="@+id/descIcon"
                 android:layout_width="wrap_content"
-                android:layout_marginEnd="8dp"
                 android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:layout_marginEnd="8dp"
                 android:visibility="visible"
-                app:tint="?colorAccent"/>
+                app:tint="?colorAccent" />
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/inputLayout"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:hint="@{label}"
+                android:hint="@string/choose_date"
                 android:textColorHint="@drawable/edit_text_hint_accent"
-                android:theme="@style/loginInputTextAccent"
-                tools:hint="Date label">
+                android:theme="@style/loginInputTextAccent">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/inputEditText"
@@ -74,5 +86,5 @@
                 app:srcCompat="@drawable/ic_info_outline"
                 app:tint="?colorAccent" />
         </LinearLayout>
-    </RelativeLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

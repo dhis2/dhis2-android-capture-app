@@ -1,8 +1,6 @@
 package org.dhis2.data.forms.dataentry.fields;
 
 import android.app.Activity;
-import android.graphics.Color;
-import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -14,7 +12,6 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.dhis2.R;
-import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.customviews.CustomDialog;
 import org.hisp.dhis.android.core.common.ObjectStyle;
@@ -50,22 +47,14 @@ public abstract class FormViewHolder extends RecyclerView.ViewHolder {
         }
     }
 
-    public abstract void dispose();
-
     public void initFieldFocus() {
         if (currentUid != null) {
             currentUid.observeForever(fieldUid -> {
                 if (Objects.equals(fieldUid, this.fieldUid)) {
                     Drawable bgDrawable = AppCompatResources.getDrawable(itemView.getContext(), R.drawable.item_selected_bg);
-                    if (objectStyle != null && objectStyle.color() != null) {
-                        bgDrawable.setColorFilter(ColorUtils.parseColor(objectStyle.color()), PorterDuff.Mode.MULTIPLY);
-                    }
                     itemView.setBackground(bgDrawable);
                 } else {
-                    if (objectStyle != null && objectStyle.color() != null)
-                        itemView.setBackgroundColor(ColorUtils.parseColor(objectStyle.color()));
-                    else
-                        itemView.setBackgroundColor(Color.WHITE);
+                    itemView.setBackgroundResource(R.color.form_field_background);
                 }
             });
 
@@ -79,17 +68,14 @@ public abstract class FormViewHolder extends RecyclerView.ViewHolder {
 
     public void openKeyboard(View v) {
         InputMethodManager imm = (InputMethodManager) v.getContext().getSystemService(Activity.INPUT_METHOD_SERVICE);
-        boolean shown = imm.showSoftInput(v.findFocus(),InputMethodManager.SHOW_FORCED);
+        boolean shown = imm.showSoftInput(v.findFocus(), InputMethodManager.SHOW_FORCED);
        /* if (!imm.showSoftInput(v, 0))
             v.postDelayed(() -> openKeyboard(v), 500);*/
     }
 
     public void clearBackground(boolean isSarchMode) {
         if (!isSarchMode) {
-            if (objectStyle != null && objectStyle.color() != null)
-                itemView.setBackgroundColor(ColorUtils.parseColor(objectStyle.color()));
-            else
-                itemView.setBackgroundColor(Color.WHITE);
+            itemView.setBackgroundResource(R.color.form_field_background);
         }
     }
 

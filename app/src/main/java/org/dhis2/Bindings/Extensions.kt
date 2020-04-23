@@ -1,39 +1,15 @@
 package org.dhis2.Bindings
 
-import android.view.MotionEvent
-import android.widget.EditText
+import android.content.res.Resources
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
 import org.dhis2.App
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.ValueType
-import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance
 
-/**
- * QUADRAM. Created by ppajuelo on 11/04/2019.
- */
 fun <T : Any?> MutableLiveData<T>.default(initialValue: T) = this.apply { setValue(initialValue) }
-
-fun EditText.onRightDrawableClicked(onClicked: (view: EditText) -> Unit) {
-    this.setOnTouchListener { v, event ->
-        var hasConsumed = false
-        if (v is EditText) {
-            if (event.x >= v.width - v.totalPaddingRight) {
-                if (event.action == MotionEvent.ACTION_UP) {
-                    onClicked(this)
-                }
-                hasConsumed = true
-            }
-        }
-        hasConsumed
-    }
-}
-
-fun List<Event>.toUids(): List<String> {
-    return map { it.uid() }
-}
 
 fun TrackedEntityInstance.profilePicturePath(d2: D2, programUid: String?): String {
     var path: String? = null
@@ -77,10 +53,16 @@ fun TrackedEntityInstance.profilePicturePath(d2: D2, programUid: String?): Strin
     return path ?: ""
 }
 
-fun Fragment.app() : App {
+fun Fragment.app(): App {
     return context?.applicationContext as App
 }
 
-fun AppCompatActivity.app() : App {
+fun AppCompatActivity.app(): App {
     return applicationContext as App
 }
+
+val Int.dp: Int
+    get() = (this * Resources.getSystem().displayMetrics.density).toInt()
+
+val Int.px: Int
+    get() = (this / Resources.getSystem().displayMetrics.density).toInt()

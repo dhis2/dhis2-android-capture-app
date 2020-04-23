@@ -7,6 +7,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.content.res.AppCompatResources;
+import androidx.databinding.DataBindingUtil;
+
 import com.wangjie.rapidfloatingactionbutton.RapidFloatingActionHelper;
 import com.wangjie.rapidfloatingactionbutton.contentimpl.labellist.RFACLabelItem;
 import com.wangjie.rapidfloatingactionbutton.contentimpl.labellist.RapidFloatingActionContentLabelList;
@@ -18,9 +24,11 @@ import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.databinding.FragmentRelationshipsBinding;
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
+import org.dhis2.usescases.searchTrackEntity.SearchTEActivity;
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity;
 import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.Constants;
+import org.dhis2.utils.OnDialogClickListener;
 import org.hisp.dhis.android.core.relationship.RelationshipType;
 import org.jetbrains.annotations.NotNull;
 
@@ -29,10 +37,6 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.content.res.AppCompatResources;
-import androidx.databinding.DataBindingUtil;
 import io.reactivex.functions.Consumer;
 
 import static android.app.Activity.RESULT_OK;
@@ -41,16 +45,18 @@ import static android.app.Activity.RESULT_OK;
  * QUADRAM. Created by ppajuelo on 29/11/2017.
  */
 
-public class RelationshipFragment extends FragmentGlobalAbstract implements RelationshipContracts.View {
+public class RelationshipFragment extends FragmentGlobalAbstract implements RelationshipView {
 
     @Inject
-    RelationshipContracts.Presenter presenter;
+    RelationshipPresenter presenter;
 
     private FragmentRelationshipsBinding binding;
 
     private RelationshipAdapter relationshipAdapter;
     private RapidFloatingActionHelper rfaHelper;
     private RelationshipType relationshipType;
+
+    public static final String TEI_A_UID = "TEI_A_UID";
 
     @Override
     public void onAttach(@NotNull Context context) {
@@ -59,7 +65,7 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
         if (((App) context.getApplicationContext()).dashboardComponent() != null)
             ((App) context.getApplicationContext())
                     .dashboardComponent()
-                    .plus(new RelationshipModule(activity.getProgramUid(), activity.getTeiUid()))
+                    .plus(new RelationshipModule(this, activity.getProgramUid(), activity.getTeiUid()))
                     .inject(this);
     }
 
@@ -75,7 +81,7 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
     @Override
     public void onResume() {
         super.onResume();
-        presenter.init(this);
+        presenter.init();
 
     }
 
@@ -86,26 +92,28 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
     }
 
     @Override
-    public Consumer<List<RelationshipViewModel>> setRelationships() {
-        return relationships -> {
-            if (relationshipAdapter != null) {
-                relationshipAdapter.addItems(relationships);
-            }
-            if (relationships != null && !relationships.isEmpty()) {
-                binding.emptyRelationships.setVisibility(View.GONE);
-            } else {
-                binding.emptyRelationships.setVisibility(View.VISIBLE);
-            }
-        };
+    public void setRelationships(List<RelationshipViewModel> relationships) {
+        if (relationshipAdapter != null) {
+            relationshipAdapter.addItems(relationships);
+        }
+        if (relationships != null && !relationships.isEmpty()) {
+            binding.emptyRelationships.setVisibility(View.GONE);
+        } else {
+            binding.emptyRelationships.setVisibility(View.VISIBLE);
+        }
     }
 
     @Override
-    public Consumer<List<Trio<RelationshipType, String, Integer>>> setRelationshipTypes() {
-        return this::initFab;
-    }
+    public void goToAddRelationship(String teiUid, String teiTypeToAdd) {
 
-    @Override
-    public void goToAddRelationship(Intent intent) {
+        Intent intent = new Intent(getContext(), SearchTEActivity.class);
+        Bundle extras = new Bundle();
+        extras.putBoolean("FROM_RELATIONSHIP", true);
+        extras.putString("FROM_RELATIONSHIP_TEI", teiUid);
+        extras.putString("TRACKED_ENTITY_UID", teiTypeToAdd);
+        extras.putString("PROGRAM_UID", null);
+        intent.putExtras(extras);
+
         ((TeiDashboardMobileActivity) getActivity()).toRelationships();
         this.startActivityForResult(intent, Constants.REQ_ADD_RELATIONSHIP);
     }
@@ -116,14 +124,15 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
         if (requestCode == Constants.REQ_ADD_RELATIONSHIP) {
             if (resultCode == RESULT_OK) {
                 if (data != null) {
-                    String tei_a = data.getStringExtra("TEI_A_UID");
+                    String tei_a = data.getStringExtra(TEI_A_UID);
                     presenter.addRelationship(tei_a, relationshipType.uid());
                 }
             }
         }
     }
 
-    private void initFab(List<Trio<RelationshipType, String, Integer>> relationshipTypes) {
+    @Override
+    public void initFab(List<Trio<RelationshipType, String, Integer>> relationshipTypes) {
 
         RapidFloatingActionContentLabelList rfaContent = new RapidFloatingActionContentLabelList(getAbstracContext());
         rfaContent.setOnRapidFloatingActionContentLabelListListener(new RapidFloatingActionContentLabelList.OnRapidFloatingActionContentLabelListListener() {
@@ -154,12 +163,11 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
         }
 
         if (!items.isEmpty()) {
-            rfaContent.setItems(items)
+            rfaContent
                     .setItems(items)
                     .setIconShadowRadius(RFABTextUtil.dip2px(getAbstracContext(), 5))
                     .setIconShadowColor(0xff888888)
-                    .setIconShadowDy(RFABTextUtil.dip2px(getAbstracContext(), 5))
-                    .setIconShadowColor(0xff888888);
+                    .setIconShadowDy(RFABTextUtil.dip2px(getAbstracContext(), 1));
 
             rfaHelper = new RapidFloatingActionHelper(getAbstracContext(), binding.rfabLayout, binding.rfab, rfaContent).build();
         }
@@ -170,5 +178,61 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
         rfaHelper.toggleContent();
         relationshipType = relationshipTypeModel;
         presenter.goToAddRelationship(teiTypeUid);
+    }
+
+    @Override
+    public void showPermissionError() {
+        displayMessage(getString(R.string.search_access_error));
+    }
+
+    @Override
+    public void openDashboardFor(@NotNull String teiUid) {
+        getActivity().startActivity(TeiDashboardMobileActivity.intent(getContext(),teiUid,null,null));
+    }
+
+    @Override
+    public void showTeiWithoutEnrollmentError(@NotNull String teiTypeName) {
+        showInfoDialog(
+                String.format(
+                        getString(R.string.resource_not_found),
+                        teiTypeName),
+                getString(R.string.relationship_without_enrollment),
+                getString(R.string.button_ok),
+                getString(R.string.no),
+                new OnDialogClickListener() {
+                    @Override
+                    public void onPossitiveClick(AlertDialog alertDialog) {
+                        //NotUsed
+                    }
+
+                    @Override
+                    public void onNegativeClick(AlertDialog alertDialog) {
+                        //NotUsed
+                    }
+                })
+                .show();
+    }
+
+    @Override
+    public void showRelationshipNotFoundError(@NotNull String teiTypeName) {
+        showInfoDialog(
+                String.format(
+                        getString(R.string.resource_not_found),
+                        teiTypeName),
+                getString(R.string.relationship_not_found_message),
+                getString(R.string.button_ok),
+                getString(R.string.no),
+                new OnDialogClickListener() {
+                    @Override
+                    public void onPossitiveClick(AlertDialog alertDialog) {
+                        //NotUsed
+                    }
+
+                    @Override
+                    public void onNegativeClick(AlertDialog alertDialog) {
+                        //NotUsed
+                    }
+                })
+                .show();
     }
 }

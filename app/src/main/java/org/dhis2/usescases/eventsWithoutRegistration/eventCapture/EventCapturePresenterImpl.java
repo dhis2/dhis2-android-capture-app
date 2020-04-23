@@ -5,32 +5,32 @@ import android.os.Handler;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 import androidx.databinding.ObservableField;
 
 import org.dhis2.R;
 import org.dhis2.data.forms.FormSectionViewModel;
-import org.dhis2.data.forms.dataentry.DataEntryArguments;
 import org.dhis2.data.forms.dataentry.StoreResult;
 import org.dhis2.data.forms.dataentry.ValueStore;
 import org.dhis2.data.forms.dataentry.ValueStoreImpl;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.display.DisplayViewModel;
 import org.dhis2.data.forms.dataentry.fields.image.ImageViewModel;
+import org.dhis2.data.forms.dataentry.fields.option_set.OptionSetViewModel;
+import org.dhis2.data.forms.dataentry.fields.section.SectionViewModel;
 import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel;
 import org.dhis2.data.forms.dataentry.fields.unsupported.UnsupportedViewModel;
 import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Quartet;
-import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureFragment.EventCaptureFormFragment;
 import org.dhis2.utils.AuthorityException;
+import org.dhis2.utils.DhisTextUtils;
 import org.dhis2.utils.Result;
 import org.dhis2.utils.RulesActionCallbacks;
 import org.dhis2.utils.RulesUtilsProvider;
 import org.hisp.dhis.android.core.common.Unit;
 import org.hisp.dhis.android.core.event.EventStatus;
-import org.hisp.dhis.rules.models.RuleAction;
-import org.hisp.dhis.rules.models.RuleActionAssign;
-import org.hisp.dhis.rules.models.RuleActionHideField;
+import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
 import org.hisp.dhis.rules.models.RuleActionShowError;
 import org.hisp.dhis.rules.models.RuleEffect;
 import org.jetbrains.annotations.NotNull;
@@ -43,7 +43,8 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
+
+import javax.inject.Singleton;
 
 import io.reactivex.Flowable;
 import io.reactivex.Single;
@@ -51,13 +52,10 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.flowables.ConnectableFlowable;
 import io.reactivex.processors.FlowableProcessor;
 import io.reactivex.processors.PublishProcessor;
+import io.reactivex.subjects.BehaviorSubject;
 import timber.log.Timber;
 
-import static android.text.TextUtils.isEmpty;
-
-/**
- * QUADRAM. Created by ppajuelo on 19/11/2018.
- */
+@Singleton
 public class EventCapturePresenterImpl implements EventCaptureContract.Presenter, RulesActionCallbacks {
 
     private final EventCaptureContract.EventCaptureRepository eventCaptureRepository;
@@ -78,8 +76,8 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     private Map<String, FieldViewModel> emptyMandatoryFields;
     //Rules data
     private List<String> sectionsToHide;
-    private List<String> optionsToHide = new ArrayList<>();
-    private List<String> optionsGroupsToHide = new ArrayList<>();
+    private Map<String, List<String>> optionsToHide = new HashMap<>();
+    private Map<String, List<String>> optionsGroupsToHide = new HashMap<>();
     private Map<String, List<String>> optionsGroupToShow = new HashMap<>();
     private boolean canComplete;
     private String completeMessage;
@@ -87,23 +85,15 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     private EventStatus eventStatus;
     private boolean hasExpired;
     private final FlowableProcessor<String> sectionProcessor;
-    private boolean isSubscribed;
-    private String lastFocusItem;
     private int unsupportedFields;
     private int totalFields;
     private ConnectableFlowable<List<FieldViewModel>> fieldFlowable;
+    private PublishProcessor<Unit> notesCounterProcessor;
+    private BehaviorSubject<List<FieldViewModel>> formFieldsProcessor;
     private boolean assignedValueChanged;
-    private List<String> assignedFields = new ArrayList<>();
+    private int calculationLoop = 0;
+    private final int MAX_LOOP_CALCULATIONS = 5;
 
-    @Override
-    public String getLastFocusItem() {
-        return lastFocusItem;
-    }
-
-    @Override
-    public void clearLastFocusItem() {
-        this.lastFocusItem = null;
-    }
 
     public EventCapturePresenterImpl(EventCaptureContract.View view, String eventUid,
                                      EventCaptureContract.EventCaptureRepository eventCaptureRepository,
@@ -130,7 +120,8 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
         progressProcessor = PublishProcessor.create();
         sectionAdjustProcessor = PublishProcessor.create();
         formAdjustProcessor = PublishProcessor.create();
-
+        notesCounterProcessor = PublishProcessor.create();
+        formFieldsProcessor = BehaviorSubject.createDefault(new ArrayList<>());
     }
 
     @Override
@@ -143,18 +134,6 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                         .observeOn(schedulerProvider.ui())
                         .subscribe(
                                 checkDidNotPass -> view.showEventIntegrityAlert(),
-                                Timber::e
-                        )
-        );
-
-        compositeDisposable.add(
-                showCalculationProcessor
-                        .startWith(true)
-                        .switchMap(shouldShow -> Flowable.just(shouldShow).delay(shouldShow ? 1 : 0, TimeUnit.SECONDS, schedulerProvider.io()))
-                        .subscribeOn(schedulerProvider.io())
-                        .observeOn(schedulerProvider.ui())
-                        .subscribe(
-                                view::showRuleCalculation,
                                 Timber::e
                         )
         );
@@ -228,91 +207,124 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                         )
         );
 
-        compositeDisposable.add(
-                progressProcessor
-                        .debounce(500, TimeUnit.MILLISECONDS, schedulerProvider.io())
-                        .filter(unit -> getFinalSections().size() > 1)
-                        .map(unit -> {
-                            Iterator<FormSectionViewModel> it = getFinalSections().iterator();
-                            FormSectionViewModel formSectionViewModel;
-                            do {
-                                formSectionViewModel = it.next();
-                            } while (it.hasNext() && !formSectionViewModel.sectionUid().equals(currentSection.get()));
-
-                            return Pair.create(
-                                    getFinalSections().indexOf(formSectionViewModel),
-                                    getFinalSections().size());
-                        })
-                        .subscribeOn(schedulerProvider.io())
-                        .observeOn(schedulerProvider.ui())
-                        .subscribe(
-                                sectionPositionAndTotal -> EventCaptureFormFragment.getInstance().setSectionProgress(
-                                        sectionPositionAndTotal.val0(),
-                                        sectionPositionAndTotal.val1()),
-                                Timber::e
-                        )
-        );
-
         fieldFlowable = getFieldFlowable();
 
         compositeDisposable.add(
                 eventCaptureRepository.eventSections()
-                        .flatMap(sectionList -> fieldFlowable
-                                .map(fields -> {
-                                    totalFields = fields.size();
-                                    unsupportedFields = 0;
-                                    HashMap<String, List<FieldViewModel>> fieldMap = new HashMap<>();
+                        .flatMap(sectionList ->
+                                sectionProcessor.startWith(sectionList.get(0).sectionUid())
+                                        .switchMap(section -> fieldFlowable
+                                                .map(fields -> {
+                                                    totalFields = 0;
+                                                    unsupportedFields = 0;
+                                                    HashMap<String, List<FieldViewModel>> fieldMap = new HashMap<>();
+                                                    List<String> optionSets = new ArrayList<>();
+                                                    for (FieldViewModel fieldViewModel : fields) {
+                                                        String fieldSection = getFieldSection(fieldViewModel);
+                                                        if (!fieldMap.containsKey(fieldSection)) {
+                                                            fieldMap.put(fieldSection, new ArrayList<>());
+                                                        }
+                                                        fieldMap.get(fieldSection).add(fieldViewModel);
 
-                                    for (FieldViewModel fieldViewModel : fields) {
-                                        if (!fieldMap.containsKey(fieldViewModel.programStageSection()))
-                                            fieldMap.put(fieldViewModel.programStageSection(), new ArrayList<>());
-                                        fieldMap.get(fieldViewModel.programStageSection()).add(fieldViewModel);
+                                                        if (fieldViewModel.optionSet() == null || !(fieldViewModel instanceof ImageViewModel)) {
+                                                            totalFields++;
+                                                        } else if (!optionSets.contains(fieldViewModel.optionSet())) {
+                                                            optionSets.add(fieldViewModel.optionSet());
+                                                            totalFields++;
+                                                        }
+                                                        if (fieldViewModel instanceof UnsupportedViewModel || fieldViewModel instanceof DisplayViewModel)
+                                                            unsupportedFields++;
+                                                    }
 
-                                        if (fieldViewModel instanceof UnsupportedViewModel)
-                                            unsupportedFields++;
-                                    }
+                                                    List<EventSectionModel> eventSectionModels = new ArrayList<>();
+                                                    List<FieldViewModel> finalFieldList = new ArrayList<>();
 
-                                    List<EventSectionModel> eventSectionModels = new ArrayList<>();
-                                    for (FormSectionViewModel sectionModel : sectionList) {
-                                        if (sectionList.size() > 1 && !sectionsToHide.contains(sectionModel.sectionUid())) {
-                                            List<FieldViewModel> fieldViewModels = new ArrayList<>();
-                                            if (fieldMap.get(sectionModel.sectionUid()) != null)
-                                                fieldViewModels.addAll(fieldMap.get(sectionModel.sectionUid()));
+                                                    for (FormSectionViewModel sectionModel : sectionList) {
+                                                        if (sectionList.size() > 1 && !sectionsToHide.contains(sectionModel.sectionUid())) {
+                                                            List<FieldViewModel> fieldViewModels = new ArrayList<>();
+                                                            if (fieldMap.get(sectionModel.sectionUid()) != null)
+                                                                fieldViewModels.addAll(fieldMap.get(sectionModel.sectionUid()));
 
-                                            int cont = 0;
+                                                            int cont = 0;
 
-                                            HashMap<String, Boolean> finalFields = new HashMap<>();
-                                            for (FieldViewModel fieldViewModel : fieldViewModels) {
-                                                finalFields.put(fieldViewModel.optionSet() == null ? fieldViewModel.uid() : fieldViewModel.optionSet(), !isEmpty(fieldViewModel.value()));
-                                            }
-                                            for (String key : finalFields.keySet())
-                                                if (finalFields.get(key))
-                                                    cont++;
+                                                            HashMap<String, Boolean> finalFields = new HashMap<>();
+                                                            for (FieldViewModel fieldViewModel : fieldViewModels) {
+                                                                finalFields.put(fieldViewModel.optionSet() == null || !(fieldViewModel instanceof ImageViewModel) ?
+                                                                                fieldViewModel.uid() :
+                                                                                fieldViewModel.optionSet(),
+                                                                        !DhisTextUtils.Companion.isEmpty(fieldViewModel.value()));
+                                                            }
+                                                            for (String key : finalFields.keySet())
+                                                                if (finalFields.get(key))
+                                                                    cont++;
 
-                                            eventSectionModels.add(EventSectionModel.create(sectionModel.label(), sectionModel.sectionUid(), cont, finalFields.keySet().size()));
-                                        } else if (sectionList.size() == 1) {
-                                            int cont = 0;
-                                            HashMap<String, Boolean> finalFields = new HashMap<>();
-                                            for (FieldViewModel fieldViewModel : fields) {
-                                                finalFields.put(fieldViewModel.optionSet() == null ? fieldViewModel.uid() : fieldViewModel.optionSet(), !isEmpty(fieldViewModel.value()));
-                                            }
-                                            for (String key : finalFields.keySet())
-                                                if (finalFields.get(key))
-                                                    cont++;
+                                                            eventSectionModels.add(EventSectionModel.create(sectionModel.label(), sectionModel.sectionUid(), cont, finalFields.keySet().size()));
 
-                                            eventSectionModels.add(EventSectionModel.create("NO_SECTION", "no_section", cont, finalFields.keySet().size()));
-                                        }
-                                    }
-                                    return eventSectionModels;
-                                }))
+                                                            boolean isOpen = sectionModel.sectionUid().equals(section);
+                                                            finalFieldList.add(
+                                                                    SectionViewModel.create(
+                                                                            sectionModel.sectionUid(),
+                                                                            sectionModel.label(),
+                                                                            "",
+                                                                            isOpen,
+                                                                            finalFields.keySet().size(),
+                                                                            cont,
+                                                                            sectionModel.renderType()
+                                                                    ));
+                                                            if (isOpen) {
+                                                                finalFieldList.addAll(fieldMap.get(sectionModel.sectionUid()));
+                                                            }
+
+                                                        } else if (sectionList.size() == 1) {
+                                                            int cont = 0;
+                                                            HashMap<String, Boolean> finalFields = new HashMap<>();
+                                                            for (FieldViewModel fieldViewModel : fields) {
+                                                                if (!(fieldViewModel instanceof DisplayViewModel)) {
+                                                                    finalFields.put(fieldViewModel.optionSet() == null || !(fieldViewModel instanceof ImageViewModel) ?
+                                                                                    fieldViewModel.uid() :
+                                                                                    fieldViewModel.optionSet(),
+                                                                            !DhisTextUtils.Companion.isEmpty(fieldViewModel.value()));
+                                                                }
+                                                            }
+                                                            for (String key : finalFields.keySet())
+                                                                if (finalFields.get(key))
+                                                                    cont++;
+
+                                                            eventSectionModels.add(EventSectionModel.create("NO_SECTION", "no_section", cont, finalFields.keySet().size()));
+                                                            finalFieldList.addAll(fieldMap.get(sectionModel.sectionUid()));
+                                                        }
+                                                    }
+
+                                                    finalFieldList.add(SectionViewModel.createClosingSection());
+
+                                                    if (fieldMap.containsKey("display") && fieldMap.get("display") != null) {
+                                                        finalFieldList.addAll(fieldMap.get("display"));
+                                                    }
+
+                                                    return Pair.create(eventSectionModels, finalFieldList);
+                                                })))
                         .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.ui())
-                        .subscribe(data -> {
-                                    sectionAdjustProcessor.onNext(new Unit());
-                                    subscribeToSection();
-                                    EventCaptureFormFragment.getInstance().setSectionSelector(data, (float) unsupportedFields / (float) totalFields);
-                                }
-                                ,
+                        .subscribe(sectionsAndFields -> {
+                                    if (assignedValueChanged && errors.isEmpty() && calculationLoop < MAX_LOOP_CALCULATIONS) {
+                                        calculationLoop++;
+                                        nextCalculation(true);
+                                    } else {
+                                        if (calculationLoop == 5) {
+                                            view.showLoopWarning();
+                                        }
+                                        calculationLoop = 0;
+                                        formFieldsProcessor.onNext(sectionsAndFields.val1());
+                                        formAdjustProcessor.onNext(new Unit());
+                                        int completedFields = 0;
+                                        for (EventSectionModel sectionModel : sectionsAndFields.val0()) {
+                                            completedFields += sectionModel.numberOfCompletedFields();
+                                        }
+                                        view.updatePercentage(
+                                                calculateCompletionPercentage(completedFields, totalFields),
+                                                calculateCompletionPercentage(unsupportedFields, totalFields));
+                                    }
+                                },
                                 Timber::e
                         ));
 
@@ -329,33 +341,32 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                         )
         );
 
-        compositeDisposable.add(
-                sectionProcessor
-                        .switchMap(section -> fieldFlowable
-                                .subscribeOn(schedulerProvider.io())
-                                .map(fields -> {
-                                    List<FieldViewModel> finalFields = new ArrayList<>();
-                                    for (FieldViewModel fieldViewModel : fields) {
-                                        if (section.equals("NO_SECTION") ||
-                                                section.equals(fieldViewModel.programStageSection()) ||
-                                                fieldViewModel instanceof DisplayViewModel)
-                                            finalFields.add(fieldViewModel);
-                                    }
-                                    return finalFields;
-                                })
-                        )
-                        .observeOn(schedulerProvider.ui())
-                        .subscribe(
-                                updates -> {
-                                    if(assignedValueChanged && errors.isEmpty()){
-                                        nextCalculation(true);
-                                    }else {
-                                        EventCaptureFormFragment.getInstance().showFields(updates, lastFocusItem);
-                                        formAdjustProcessor.onNext(new Unit());
-                                    }
-                                },
-                                Timber::e
-                        ));
+        fieldFlowable.connect();
+    }
+
+    @VisibleForTesting
+    public String getFieldSection(FieldViewModel fieldViewModel) {
+        String fieldSection;
+        if (fieldViewModel instanceof DisplayViewModel) {
+            fieldSection = "display";
+        } else {
+            fieldSection = fieldViewModel.programStageSection() != null ?
+                    fieldViewModel.programStageSection() :
+                    "";
+        }
+        return fieldSection;
+    }
+
+    private float calculateCompletionPercentage(int completedFields, int totals) {
+        if (totals == 0) {
+            return 100;
+        }
+        return (float) completedFields / (float) totals;
+    }
+
+    @Override
+    public BehaviorSubject<List<FieldViewModel>> formFieldsFlowable() {
+        return formFieldsProcessor;
     }
 
     private ConnectableFlowable<List<FieldViewModel>> getFieldFlowable() {
@@ -370,7 +381,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                         {
                             emptyMandatoryFields = new HashMap<>();
                             for (FieldViewModel fieldViewModel : fields) {
-                                if (fieldViewModel.mandatory() && isEmpty(fieldViewModel.value()) && !sectionsToHide.contains(fieldViewModel.programStageSection()))
+                                if (fieldViewModel.mandatory() && DhisTextUtils.Companion.isEmpty(fieldViewModel.value()) && !sectionsToHide.contains(fieldViewModel.programStageSection()))
                                     emptyMandatoryFields.put(fieldViewModel.uid(), fieldViewModel);
                             }
                             return fields;
@@ -387,95 +398,17 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                             .subscribeOn(schedulerProvider.io())
                             .observeOn(schedulerProvider.ui())
                             .subscribe(
-                                    hasExpiredResult -> this.hasExpired = hasExpiredResult && eventCaptureRepository.isEventExpired(eventUid),
+                                    hasExpiredResult -> this.hasExpired = hasExpiredResult && !eventCaptureRepository.isEventEditable(eventUid),
                                     Timber::e
                             )
             );
         else
-            this.hasExpired = eventCaptureRepository.isEventExpired(eventUid);
+            this.hasExpired = !eventCaptureRepository.isEventEditable(eventUid);
     }
 
     @Override
     public void onBackClick() {
-        view.clearFocus();
-
-        new Handler().postDelayed(
-                () -> view.back(),
-                1000);
-    }
-
-    @Override
-    public void subscribeToSection() {
-        if (!isSubscribed) {
-            isSubscribed = true;
-            compositeDisposable.add(
-                    currentSectionPosition
-                            .startWith(0)
-                            .flatMap(position -> {
-                                eventCaptureRepository.setLastUpdated(null);
-                                if (sectionList == null) {
-                                    return eventCaptureRepository.eventSections()
-                                            .map(list -> {
-                                                sectionList = list;
-                                                return position;
-                                            });
-                                } else {
-                                    return Flowable.just(position);
-                                }
-                            })
-                            .subscribeOn(schedulerProvider.io())
-                            .observeOn(schedulerProvider.ui())
-                            .subscribe(
-                                    position -> {
-                                        FormSectionViewModel formSectionViewModel = getFinalSections().get(position);
-                                        currentSection.set(formSectionViewModel.sectionUid());
-                                        if (getFinalSections().size() > 1) {
-                                            DataEntryArguments arguments =
-                                                    DataEntryArguments.forEventSection(formSectionViewModel.uid(),
-                                                            formSectionViewModel.sectionUid(),
-                                                            formSectionViewModel.renderType());
-                                            EventCaptureFormFragment.getInstance().setSectionTitle(arguments, formSectionViewModel);
-                                        } else {
-                                            DataEntryArguments arguments =
-                                                    DataEntryArguments.forEvent(formSectionViewModel.uid(), formSectionViewModel.renderType());
-                                            EventCaptureFormFragment.getInstance().setSingleSection(arguments, formSectionViewModel);
-                                        }
-
-                                        EventCaptureFormFragment.getInstance().setSectionProgress(
-                                                getFinalSections().indexOf(formSectionViewModel),
-                                                getFinalSections().size());
-
-                                        List<FormSectionViewModel> finalSectionList = getFinalSections();
-
-                                        String nextSection = finalSectionList.size() > 0 ?
-                                                finalSectionList.get(position).sectionUid() != null ?
-                                                        finalSectionList.get(position).sectionUid() :
-                                                        "NO_SECTION" :
-                                                "NO_SECTION";
-                                        sectionProcessor.onNext(nextSection);
-                                    },
-                                    Timber::e
-                            )
-            );
-
-            compositeDisposable.add(EventCaptureFormFragment.getInstance().dataEntryFlowable()
-                    .onBackpressureBuffer()
-                    .distinctUntilChanged()
-                    .subscribeOn(schedulerProvider.io())
-                    .observeOn(schedulerProvider.io())
-                    .switchMap(action -> {
-                                if (action.lastFocusPosition() != null && action.lastFocusPosition() >= 0) { //Triggered by form field
-                                    this.lastFocusItem = action.id();
-                                }
-                                eventCaptureRepository.setLastUpdated(action.id());
-                                if (emptyMandatoryFields.containsKey(action.id()) && !isEmpty(action.value()))
-                                    emptyMandatoryFields.remove(action.id());
-                                return valueStore.save(action.id(), action.value());
-                            }
-                    ).subscribe(result -> nextCalculation(true),
-                            Timber::d)
-            );
-        }
+        view.back();
     }
 
     @Override
@@ -492,7 +425,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
             Timber.e(calcResult.error());
             return viewModels;
         }
-        
+
         //Reset effectsT
         assignedValueChanged = false;
         optionsToHide.clear();
@@ -506,39 +439,41 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
         Map<String, FieldViewModel> fieldViewModels = toMap(viewModels);
         rulesUtils.applyRuleEffects(fieldViewModels, calcResult, this);
 
-        //Remove fields for MATRIX/SEQUENTIAL and actions HIDEOPTION/HIDEOPTIONGROUP
-        for (String optionUidToHide : optionsToHide) {
-            Iterator<FieldViewModel> fieldIterator = fieldViewModels.values().iterator();
-            while (fieldIterator.hasNext()) {
-                FieldViewModel field = fieldIterator.next();
-                if (field instanceof ImageViewModel && field.uid().contains(optionUidToHide))
+        //Set/remove for HIDEOPTION/HIDEOPTIONGROUP/SHOWOPTIONGROUP
+        Iterator<FieldViewModel> fieldIterator = fieldViewModels.values().iterator();
+        while (fieldIterator.hasNext()) {
+            FieldViewModel field = fieldIterator.next();
+            if (field instanceof ImageViewModel) {
+                ImageViewModel imageField = (ImageViewModel) field;
+                if (optionsToHide.containsKey(imageField.fieldUid()) && optionsToHide.get(imageField.fieldUid()).contains(imageField.optionUid())) {
                     fieldIterator.remove();
-            }
-        }
-
-        for (String optionGroupToHide : optionsGroupsToHide) {
-            Iterator<FieldViewModel> fieldIterator = fieldViewModels.values().iterator();
-            while (fieldIterator.hasNext()) {
-                FieldViewModel field = fieldIterator.next();
-                if (field instanceof ImageViewModel && eventCaptureRepository.optionIsInOptionGroup(field.uid().split("\\.")[1], optionGroupToHide))
+                } else if (optionsGroupToShow.containsKey(imageField.fieldUid()) &&
+                        !eventCaptureRepository.getOptionsFromGroups(optionsGroupToShow.get(imageField.fieldUid())).contains(imageField.optionUid())) {
                     fieldIterator.remove();
+                }
+            } else if (field instanceof SpinnerViewModel) {
+                ((SpinnerViewModel) field).setOptionsToHide(
+                        optionsToHide.get(field.uid()) != null ? optionsToHide.get(field.uid()) : new ArrayList<>(),
+                        optionsGroupsToHide.get(field.uid()) != null ? optionsGroupsToHide.get(field.uid()) : new ArrayList<>()
+                );
+                if (optionsGroupToShow.keySet().contains(field.uid())) {
+                    ((SpinnerViewModel) field).setOptionGroupsToShow(
+                            optionsGroupToShow.get(field.uid()) != null ? optionsGroupToShow.get(field.uid()) : new ArrayList<>()
+                    );
+                }
+            } else if (field instanceof OptionSetViewModel) {
+                ((OptionSetViewModel) field).setOptionsToHide(
+                        optionsToHide.get(field.uid()) != null ? optionsToHide.get(field.uid()) : new ArrayList<>()
+                );
+                if (optionsGroupToShow.keySet().contains(field.uid())) {
+                    ((OptionSetViewModel) field).setOptionsToShow(
+                            eventCaptureRepository.getOptionsFromGroups(
+                                    optionsGroupToShow.get(field.uid()) != null ? optionsGroupToShow.get(field.uid()) : new ArrayList<>()
+                            )
+                    );
+                }
             }
         }
-
-        //Display the DisplayViewModels only in the last section
-        if (getFinalSections().size() > 1 && !isEmpty(currentSection.get()) && !currentSection.get().equals(sectionList.get(sectionList.size() - 1).sectionUid())) {
-            Iterator<Map.Entry<String, FieldViewModel>> iter = fieldViewModels.entrySet().iterator();
-            while (iter.hasNext())
-                if (iter.next().getValue() instanceof DisplayViewModel)
-                    iter.remove();
-        }
-
-        for (FieldViewModel fieldViewModel : fieldViewModels.values())
-            if (fieldViewModel instanceof SpinnerViewModel) {
-                ((SpinnerViewModel) fieldViewModel).setOptionsToHide(optionsToHide, optionsGroupsToHide);
-                if (optionsGroupToShow.keySet().contains(fieldViewModel.uid()))
-                    ((SpinnerViewModel) fieldViewModel).setOptionGroupsToShow(optionsGroupToShow.get(fieldViewModel.uid()));
-            }
 
         return new ArrayList<>(fieldViewModels.values());
     }
@@ -565,20 +500,27 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
 
     private void changeSection() {
 
-        if (!errors.isEmpty() && errors.get(currentSection.get()) != null) {
-            view.showErrorSnackBar();
-        }
 
         List<FormSectionViewModel> finalSections = getFinalSections();
 
         if (currentPosition < finalSections.size() - 1) {
             currentSectionPosition.onNext(++currentPosition);
         } else {
-            if (eventStatus != EventStatus.ACTIVE) {
-                setUpActionByStatus(eventStatus);
-            } else {
-                view.showCompleteActions(canComplete && eventCaptureRepository.isEnrollmentOpen(), completeMessage, errors, emptyMandatoryFields);
-            }
+
+        }
+    }
+
+    @Override
+    public void attempFinish() {
+
+        if (!errors.isEmpty() && errors.get(currentSection.get()) != null) {
+            view.showErrorSnackBar();
+        }
+
+        if (eventStatus != EventStatus.ACTIVE) {
+            setUpActionByStatus(eventStatus);
+        } else {
+            view.showCompleteActions(canComplete && eventCaptureRepository.isEnrollmentOpen(), completeMessage, errors, emptyMandatoryFields);
         }
     }
 
@@ -619,28 +561,13 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     }
 
     @Override
-    public ObservableField<String> getCurrentSection() {
-        return currentSection;
-    }
-
-    @Override
     public boolean isEnrollmentOpen() {
         return eventCaptureRepository.isEnrollmentOpen();
     }
 
     @Override
-    public void onSectionSelectorClick(boolean isCurrentSection, int position, String sectionUid) {
-        EventCaptureFormFragment.getInstance().showSectionSelector();
-        if (!currentSection.get().equals(sectionUid) && position != -1)
-            goToSection(sectionUid);
-    }
-
-    @Override
     public void goToSection(String sectionUid) {
-        for (FormSectionViewModel sectionModel : getFinalSections())
-            if (sectionModel.sectionUid() != null && sectionModel.sectionUid().equals(sectionUid))
-                currentPosition = getFinalSections().indexOf(sectionModel);
-        currentSectionPosition.onNext(currentPosition);
+        sectionProcessor.onNext(sectionUid);
     }
 
     @Override
@@ -688,6 +615,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                                             currentSectionPosition.onNext(0);
                                             view.showSnackBar(R.string.event_reopened);
                                             eventStatus = EventStatus.ACTIVE;
+                                            goToSection(currentSection.get());
                                         }
                                     }
                                 },
@@ -753,21 +681,6 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     }
 
     @Override
-    public void initCompletionPercentage(FlowableProcessor<Pair<Float, Float>> completionPercentage) {
-        compositeDisposable.add(
-                completionPercentage
-                        .doOnSubscribe(subs -> fieldFlowable.connect(compositeDisposable::add))
-                        .subscribeOn(schedulerProvider.io())
-                        .observeOn(schedulerProvider.ui())
-                        .subscribe(
-                                view.updatePercentage(),
-                                Timber::e
-                        )
-        );
-    }
-
-
-    @Override
     public void onDettach() {
         this.compositeDisposable.clear();
     }
@@ -776,7 +689,6 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     public void displayMessage(String message) {
         view.displayMessage(message);
     }
-
 
     @SuppressLint("CheckResult")
     @Override
@@ -787,7 +699,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     //region ruleActions
 
     @Override
-    public void setCalculatedValue(String calculatedValueVariable, String value) {
+    public void setCalculatedValue(@NonNull String calculatedValueVariable, @NonNull String value) {
 
     }
 
@@ -808,54 +720,103 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     public void save(@NotNull @NonNull String uid, @Nullable String value) {
         if (value == null || !sectionsToHide.contains(eventCaptureRepository.getSectionFor(uid))) {
             StoreResult result = valueStore.saveWithTypeCheck(uid, value).blockingFirst();
-            if(result.component2() == ValueStoreImpl.ValueStoreResult.VALUE_CHANGED){
+            if (result.component2() == ValueStoreImpl.ValueStoreResult.VALUE_CHANGED) {
                 assignedValueChanged = true;
-                if(value != null && !assignedFields.contains(uid)){
-                    assignedFields.add(uid);
-                }else if(value == null && assignedFields.contains(uid)){
-                    assignedFields.remove(uid);
-                }
             }
         }
     }
 
     @Override
-    public void setDisplayKeyValue(String label, String value) {
+    public void setDisplayKeyValue(@NonNull String label, @NonNull String value) {
         //TODO: Implement Indicator tabs to show this field
     }
 
     @Override
-    public void setHideSection(String sectionUid) {
+    public void setHideSection(@NonNull String sectionUid) {
         if (!sectionsToHide.contains(sectionUid))
             sectionsToHide.add(sectionUid);
     }
 
     @Override
-    public void setMessageOnComplete(String message, boolean canComplete) {
+    public void setMessageOnComplete(@NonNull String message, boolean canComplete) {
         this.canComplete = canComplete;
         this.completeMessage = message;
     }
 
     @Override
-    public void setHideProgramStage(String programStageUid) {
+    public void setHideProgramStage(@NonNull String programStageUid) {
         //do not apply
     }
 
     @Override
-    public void setOptionToHide(String optionUid) {
-        optionsToHide.add(optionUid);
+    public void setOptionToHide(@NonNull String optionUid, @NonNull String field) {
+        if (!optionsToHide.containsKey(field)) {
+            optionsToHide.put(field, new ArrayList<>());
+        }
+        optionsToHide.get(field).add(optionUid);
+        StoreResult result = valueStore.deleteOptionValueIfSelected(field, optionUid);
+        if (result.component2() == ValueStoreImpl.ValueStoreResult.VALUE_CHANGED) {
+            assignedValueChanged = true;
+        }
     }
 
     @Override
-    public void setOptionGroupToHide(String optionGroupUid, boolean toHide, String field) {
-        if (toHide)
-            optionsGroupsToHide.add(optionGroupUid);
-        else if (!optionsGroupsToHide.contains(optionGroupUid))//When combined with show option group the hide option group takes precedence.
-            if (optionsGroupToShow.get(field) != null)
+    public void setOptionGroupToHide(@NonNull String optionGroupUid, boolean toHide, @NonNull String field) {
+        if (toHide) {
+            if (!optionsGroupsToHide.containsKey(field)) {
+                optionsGroupsToHide.put(field, new ArrayList<>());
+            }
+            optionsGroupsToHide.get(field).add(optionGroupUid);
+            if (!optionsToHide.containsKey(field)) {
+                optionsToHide.put(field, new ArrayList<>());
+            }
+            optionsToHide.get(field).addAll(eventCaptureRepository.getOptionsFromGroups(Collections.singletonList(optionGroupUid)));
+            StoreResult result = valueStore.deleteOptionValueIfSelectedInGroup(field, optionGroupUid, true);
+            if (result.component2() == ValueStoreImpl.ValueStoreResult.VALUE_CHANGED) {
+                assignedValueChanged = true;
+            }
+        } else if (!optionsGroupsToHide.containsKey(field) || !optionsGroupsToHide.get(field).contains(optionGroupUid)) {
+            if (optionsGroupToShow.get(field) != null) {
                 optionsGroupToShow.get(field).add(optionGroupUid);
-            else
+            } else {
                 optionsGroupToShow.put(field, Collections.singletonList(optionGroupUid));
+            }
+            StoreResult result = valueStore.deleteOptionValueIfSelectedInGroup(field, optionGroupUid, false);
+            if (result.component2() == ValueStoreImpl.ValueStoreResult.VALUE_CHANGED) {
+                assignedValueChanged = true;
+            }
+        }
     }
 
     //endregion
+
+    @Override
+    public void initNoteCounter() {
+        if (!notesCounterProcessor.hasSubscribers()) {
+            compositeDisposable.add(
+                    notesCounterProcessor.startWith(new Unit())
+                            .flatMapSingle(unit ->
+                                    eventCaptureRepository.getNoteCount())
+                            .subscribeOn(schedulerProvider.io())
+                            .observeOn(schedulerProvider.ui())
+                            .subscribe(
+                                    numberOfNotes ->
+                                            view.updateNoteBadge(numberOfNotes),
+                                    Timber::e
+                            )
+            );
+        } else {
+            notesCounterProcessor.onNext(new Unit());
+        }
+    }
+
+    @Override
+    public void refreshTabCounters() {
+        initNoteCounter();
+    }
+
+    @Override
+    public void setLastUpdatedUid(@NonNull String lastUpdatedUid) {
+        eventCaptureRepository.setLastUpdated(lastUpdatedUid);
+    }
 }

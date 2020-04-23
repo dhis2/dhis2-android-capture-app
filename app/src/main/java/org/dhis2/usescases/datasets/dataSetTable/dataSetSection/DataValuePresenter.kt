@@ -6,14 +6,14 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.functions.Function6
 import io.reactivex.processors.FlowableProcessor
 import io.reactivex.processors.PublishProcessor
-import java.util.ArrayList
-import java.util.HashMap
 import org.dhis2.R
+import org.dhis2.data.forms.dataentry.StoreResult
 import org.dhis2.data.forms.dataentry.ValueStore
 import org.dhis2.data.forms.dataentry.ValueStoreImpl
 import org.dhis2.data.forms.dataentry.tablefields.FieldViewModel
 import org.dhis2.data.forms.dataentry.tablefields.FieldViewModelFactoryImpl
 import org.dhis2.data.forms.dataentry.tablefields.RowAction
+import org.dhis2.data.prefs.PreferenceProvider
 import org.dhis2.data.schedulers.SchedulerProvider
 import org.dhis2.data.tuples.Pair
 import org.dhis2.data.tuples.Quartet
@@ -37,13 +37,17 @@ import org.hisp.dhis.android.core.dataset.DataSet
 import org.hisp.dhis.android.core.dataset.Section
 import org.hisp.dhis.android.core.period.Period
 import timber.log.Timber
+import java.util.ArrayList
+import java.util.HashMap
 
 class DataValuePresenter(
     private val view: DataValueContract.View,
     private val repository: DataValueRepository,
     private val valueStore: ValueStore,
     private val schedulerProvider: SchedulerProvider,
-    private val analyticsHelper: AnalyticsHelper
+    private val analyticsHelper: AnalyticsHelper,
+    private val prefs: PreferenceProvider,
+    private val dataSetUid: String
 ) {
 
     var disposable: CompositeDisposable = CompositeDisposable()
@@ -282,8 +286,10 @@ class DataValuePresenter(
             val values = ArrayList<String>()
             val fields = ArrayList<FieldViewModel>()
             var totalRow = 0
-            isNumber = dataElement.valueType() == ValueType.NUMBER ||
-                    dataElement.valueType() == ValueType.INTEGER
+            var fieldIsNumber = dataElement.valueType()!!.isNumeric
+            if(!isNumber) {
+                isNumber = dataElement.valueType()!!.isNumeric
+            }
             val fieldFactory = FieldViewModelFactoryImpl("", "")
 
             for (
@@ -366,8 +372,8 @@ class DataValuePresenter(
                 fields.add(fieldViewModel)
                 values.add(fieldViewModel.value().toString())
 
-                if (!section!!.uid().isEmpty() && section!!.showRowTotals()!! &&
-                    isNumber && !fieldViewModel.value()!!.isEmpty()
+                if (section!!.uid().isNotEmpty() && section!!.showRowTotals()!! &&
+                    fieldIsNumber && fieldViewModel.value()!!.isNotEmpty()
                 ) {
                     totalRow += Integer.parseInt(fieldViewModel.value()!!)
                 }
@@ -379,12 +385,13 @@ class DataValuePresenter(
                 for (compulsoryDataElement in dataTableModel.compulsoryCells()!!)
                     if (compulsoryDataElement.categoryOptionCombo()!!.uid() ==
                         fieldViewModel.categoryOptionCombo() &&
-                        compulsoryDataElement.dataElement()!!.uid() == fieldViewModel.dataElement()
+                        compulsoryDataElement.dataElement()!!.uid() ==
+                        fieldViewModel.dataElement()
                     ) {
                         fields[fields.indexOf(fieldViewModel)] = fieldViewModel.setMandatory()
                     }
 
-            if (!section!!.uid().isEmpty() && section!!.showRowTotals()!! && isNumber) {
+            if (section!!.uid().isNotEmpty() && section!!.showRowTotals()!! && fieldIsNumber) {
                 setTotalRow(totalRow, fields, values, row, column)
             }
 
@@ -641,56 +648,58 @@ class DataValuePresenter(
                 .flatMap { rowAction ->
 
                     var dataSetTableModel: DataSetTableModel? = null
-
-                    for (dataValue in dataTableModel!!.dataValues()!!) {
-                        if (dataValue.dataElement() == rowAction.dataElement() &&
-                            dataValue.categoryOptionCombo() == rowAction.catOptCombo()
-                        ) {
+                    val dataValue = dataTableModel?.dataValues()?.firstOrNull {
+                        it.dataElement() == rowAction.dataElement()
+                                && it.categoryOptionCombo() == rowAction.catOptCombo()
+                    }
+                    when(dataValue) {
+                        null -> if(!rowAction.value().isNullOrEmpty()) {
+                            dataSetTableModel = DataSetTableModel.create(
+                                java.lang.Long.parseLong("0"),
+                                rowAction.dataElement(),
+                                periodId,
+                                orgUnitUid,
+                                rowAction.catOptCombo(),
+                                attributeOptionCombo,
+                                rowAction.value(),
+                                "",
+                                "",
+                                rowAction.listCategoryOption(),
+                                rowAction.catCombo()
+                            ).also {
+                                dataTableModel?.dataValues()?.add(it)
+                            }
+                        }
+                        else ->  {
                             dataSetTableModel = dataValue.setValue(rowAction.value())
-                            if (rowAction.value().isNullOrEmpty()) {
-                                dataTableModel!!.dataValues()?.remove(dataValue)
+                            if(rowAction.value().isNullOrEmpty()) {
+                                dataTableModel?.dataValues()?.remove(dataValue)
                             }
                         }
                     }
 
-                    if (dataSetTableModel == null &&
-                        rowAction.value() != null &&
-                        !rowAction.value()!!.isEmpty()
-                    ) {
-                        dataSetTableModel = DataSetTableModel.create(
-                            java.lang.Long.parseLong("0"),
-                            rowAction.dataElement(),
-                            periodId,
-                            orgUnitUid,
-                            rowAction.catOptCombo(),
-                            attributeOptionCombo,
-                            rowAction.value(),
-                            "",
-                            "",
-                            rowAction.listCategoryOption(),
-                            rowAction.catCombo()
-                        )
-
-                        if (!rowAction.value().isNullOrEmpty()) {
-                            dataTableModel!!.dataValues()!!.add(dataSetTableModel)
-                        }
+                    if ((dataSetSectionFragment.activity as DataSetTableActivity).isBackPressed) {
+                        dataSetSectionFragment.abstractActivity.back()
                     }
 
-                    if ((dataSetSectionFragment.activity as DataSetTableActivity).isBackPressed)
-                        dataSetSectionFragment.abstractActivity.back()
-
-                    dataSetSectionFragment.updateData(rowAction, dataSetTableModel!!.catCombo())
-                    valueStore.save(dataSetTableModel)
+                    dataSetTableModel?.let{
+                        dataSetSectionFragment.updateData(rowAction, it.catCombo())
+                        valueStore.save(it)
+                    } ?: Flowable.just(
+                        StoreResult("", ValueStoreImpl.ValueStoreResult.VALUE_HAS_NOT_CHANGED)
+                    )
                 }
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
                     { storeResult ->
-                        if (storeResult.valueStoreResult == ValueStoreImpl.ValueStoreResult.VALUE_CHANGED) {
+                        val valueChange = ValueStoreImpl.ValueStoreResult.VALUE_CHANGED
+                        if (storeResult.valueStoreResult == valueChange) {
                             view.showSnackBar()
                         }
                     },
-                    { Timber.e(it) })
+                    { Timber.e(it) }
+                )
         )
     }
 
@@ -768,5 +777,21 @@ class DataValuePresenter(
 
     fun getProcessorOptionSet(): FlowableProcessor<Trio<String, String, Int>>? {
         return processorOptionSet
+    }
+
+    fun saveCurrentSectionMeasures(rowHeaderWidth: Int, columnHeaderHeight: Int) {
+        section?.let {
+            prefs.setValue("W${dataSetUid}${it.uid()}", rowHeaderWidth)
+            prefs.setValue("H${dataSetUid}${it.uid()}", columnHeaderHeight)
+        }
+    }
+
+    fun getCurrentSectionMeasure(): kotlin.Pair<Int,Int> {
+        return section?.let {
+            Pair(
+                prefs.getInt("W${dataSetUid}${it.uid()}", 0),
+                prefs.getInt("H${dataSetUid}${it.uid()}", 0)
+            )
+        } ?: Pair(0, 0)
     }
 }

@@ -137,6 +137,8 @@ public interface ITableView {
 
     void setRowHeaderWidth(int rowHeaderWidth);
 
+    void setCellHeight(int hcellHeight);
+
     AbstractTableAdapter getAdapter();
 
     /**

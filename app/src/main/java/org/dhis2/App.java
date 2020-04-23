@@ -24,7 +24,6 @@ import com.mapbox.mapboxsdk.Mapbox;
 import org.dhis2.data.dagger.PerActivity;
 import org.dhis2.data.dagger.PerServer;
 import org.dhis2.data.dagger.PerUser;
-import org.dhis2.data.database.DbModule;
 import org.dhis2.data.prefs.Preference;
 import org.dhis2.data.prefs.PreferenceModule;
 import org.dhis2.data.schedulers.SchedulerModule;
@@ -32,6 +31,7 @@ import org.dhis2.data.schedulers.SchedulersProviderImpl;
 import org.dhis2.data.server.ServerComponent;
 import org.dhis2.data.server.ServerModule;
 import org.dhis2.data.server.UserManager;
+import org.dhis2.data.service.workManager.WorkManagerModule;
 import org.dhis2.data.user.UserComponent;
 import org.dhis2.data.user.UserModule;
 import org.dhis2.usescases.login.LoginComponent;
@@ -91,6 +91,7 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
     private SessionComponent sessionComponent;
 
     private boolean fromBackGround = false;
+    private boolean recreated;
 
     @Override
     public void onCreate() {
@@ -139,7 +140,7 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
     protected void setUpServerComponent() {
         boolean isLogged = D2Manager.blockingInstantiateD2(ServerModule.getD2Configuration(this)).userModule().isLogged().blockingGet();
 
-        serverComponent = appComponent.plus(new ServerModule(), new DbModule(DATABASE_NAME));
+        serverComponent = appComponent.plus(new ServerModule());
 
         if (isLogged)
             setUpUserComponent();
@@ -164,7 +165,8 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
                 .schedulerModule(new SchedulerModule(new SchedulersProviderImpl()))
                 .analyticsModule(new AnalyticsModule())
                 .preferenceModule(new PreferenceModule())
-                .utilModule(new UtilsModule());
+                .utilModule(new UtilsModule())
+                .workManagerController(new WorkManagerModule());
     }
 
     @NonNull
@@ -201,7 +203,7 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
     @Override
     public ServerComponent createServerComponent() {
         if (serverComponent == null)
-            serverComponent = appComponent.plus(new ServerModule(), new DbModule(DATABASE_NAME));
+            serverComponent = appComponent.plus(new ServerModule());
         return serverComponent;
 
     }
@@ -246,7 +248,11 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
     ////////////////////////////////////////////////////////////////////////
     @NonNull
     public TeiDashboardComponent createDashboardComponent(@NonNull TeiDashboardModule dashboardModule) {
-        return (dashboardComponent = userComponent.plus(dashboardModule));
+        if (dashboardComponent != null) {
+            this.recreated = true;
+        }
+        dashboardComponent = userComponent.plus(dashboardModule);
+        return dashboardComponent;
     }
 
     @Nullable
@@ -255,7 +261,11 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
     }
 
     public void releaseDashboardComponent() {
-        dashboardComponent = null;
+        if(!this.recreated) {
+            dashboardComponent = null;
+        }else{
+            recreated = false;
+        }
     }
 
     @NotNull

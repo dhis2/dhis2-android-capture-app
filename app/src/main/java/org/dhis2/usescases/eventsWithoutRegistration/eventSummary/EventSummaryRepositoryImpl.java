@@ -1,12 +1,9 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventSummary;
 
 import android.content.Context;
-import android.database.Cursor;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
-import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.dhis2.R;
 import org.dhis2.data.forms.FormRepository;
@@ -15,6 +12,7 @@ import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactoryImpl;
 import org.dhis2.utils.DateUtils;
+import org.dhis2.utils.DhisTextUtils;
 import org.dhis2.utils.Result;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper;
@@ -41,7 +39,6 @@ import java.util.List;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 
-import static android.text.TextUtils.isEmpty;
 
 /**
  * QUADRAM. Created by Cristian on 22/03/2018.
@@ -53,9 +50,6 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
     private final FieldViewModelFactory fieldFactory;
 
     @NonNull
-    private final BriteDatabase briteDatabase;
-
-    @NonNull
     private final FormRepository formRepository;
 
     @Nullable
@@ -63,25 +57,14 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
 
     private final D2 d2;
 
-    public EventSummaryRepositoryImpl(@NonNull Context context,
-                                      @NonNull BriteDatabase briteDatabase,
+    public EventSummaryRepositoryImpl(@NonNull FieldViewModelFactory fieldFactory,
                                       @NonNull FormRepository formRepository,
                                       @Nullable String eventUid,
                                       @NonNull D2 d2) {
-        this.briteDatabase = briteDatabase;
         this.formRepository = formRepository;
         this.eventUid = eventUid;
         this.d2 = d2;
-        fieldFactory = new FieldViewModelFactoryImpl(
-                context.getString(R.string.enter_text),
-                context.getString(R.string.enter_long_text),
-                context.getString(R.string.enter_number),
-                context.getString(R.string.enter_integer),
-                context.getString(R.string.enter_positive_integer),
-                context.getString(R.string.enter_negative_integer),
-                context.getString(R.string.enter_positive_integer_or_zero),
-                context.getString(R.string.filter_options),
-                context.getString(R.string.choose_date));
+        this.fieldFactory = fieldFactory;
     }
 
     @NonNull
@@ -178,7 +161,7 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
 
         ObjectStyle objectStyle = d2.dataElementModule().dataElements().uid(uid).blockingGet().style();
 
-        if (ValueType.valueOf(valueTypeName) == ValueType.ORGANISATION_UNIT && !isEmpty(dataValue)) {
+        if (ValueType.valueOf(valueTypeName) == ValueType.ORGANISATION_UNIT && !DhisTextUtils.Companion.isEmpty(dataValue)) {
             dataValue = dataValue + "_ou_" + d2.organisationUnitModule().organisationUnits().uid(dataValue).blockingGet().displayName();
         }
         return fieldFactory.create(uid, formName == null ? displayName : formName,

@@ -5,9 +5,6 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.content.res.ColorStateList;
-import android.content.res.Resources;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.SparseBooleanArray;
@@ -20,15 +17,14 @@ import android.widget.PopupMenu;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
-import androidx.core.view.ViewCompat;
 import androidx.databinding.DataBindingUtil;
 
+import com.google.android.material.shape.CornerFamily;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.jakewharton.rxbinding2.view.RxView;
 
 import org.dhis2.App;
-import org.dhis2.Bindings.Bindings;
 import org.dhis2.R;
 import org.dhis2.data.forms.FormSectionViewModel;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
@@ -40,17 +36,21 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureAc
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.usescases.map.MapSelectorActivity;
 import org.dhis2.usescases.qrCodes.eventsworegistration.QrEventsWORegistrationActivity;
+import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.DialogClickListener;
 import org.dhis2.utils.EventCreationType;
+import org.dhis2.utils.EventMode;
 import org.dhis2.utils.HelpManager;
+import org.dhis2.utils.ObjectStyleUtils;
 import org.dhis2.utils.analytics.AnalyticsConstants;
 import org.dhis2.utils.customviews.CategoryOptionPopUp;
 import org.dhis2.utils.customviews.CoordinatesView;
 import org.dhis2.utils.customviews.CustomDialog;
 import org.dhis2.utils.customviews.OrgUnitDialog;
 import org.dhis2.utils.customviews.PeriodDialog;
+import org.dhis2.utils.resources.ResourceManager;
 import org.hisp.dhis.android.core.arch.helpers.GeometryHelper;
 import org.hisp.dhis.android.core.category.Category;
 import org.hisp.dhis.android.core.category.CategoryCombo;
@@ -482,7 +482,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     public void onEventCreated(String eventUid) {
         showToast(getString(R.string.event_created));
         if (eventCreationType != EventCreationType.SCHEDULE && eventCreationType != EventCreationType.REFERAL) {
-            startFormActivity(eventUid);
+            startFormActivity(eventUid, true);
         } else {
             finish();
         }
@@ -490,13 +490,13 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
     @Override
     public void onEventUpdated(String eventUid) {
-        startFormActivity(eventUid);
+        startFormActivity(eventUid, false);
     }
 
-    private void startFormActivity(String eventUid) {
+    private void startFormActivity(String eventUid, boolean isNew) {
         Intent intent = new Intent(this, EventCaptureActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_FORWARD_RESULT);
-        intent.putExtras(EventCaptureActivity.getActivityBundle(eventUid, programUid));
+        intent.putExtras(EventCaptureActivity.getActivityBundle(eventUid, programUid, isNew ? EventMode.NEW : EventMode.CHECK));
         startActivity(intent);
         finish();
     }
@@ -663,10 +663,6 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         }
 
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(getContext(), R.style.DatePickerTheme);
-                /*.setPositiveButton(R.string.action_accept, (dialog, which) -> {
-                    listener.onDateSet(datePicker, datePicker.getYear(), datePicker.getMonth(), datePicker.getDayOfMonth());
-                })
-                .setNeutralButton(getContext().getResources().getString(R.string.change_calendar), (dialog, which) -> showNativeCalendar(listener));*/
 
         alertDialog.setView(widgetBinding.getRoot());
         Dialog dialog = alertDialog.create();
@@ -703,7 +699,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
         switch (requestCode) {
-            case EventInitialPresenter.ACCESS_COARSE_LOCATION_PERMISSION_REQUEST: {
+            case EventInitialPresenter.ACCESS_LOCATION_PERMISSION_REQUEST: {
                 // If request is cancelled, the result arrays are empty.
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     presenter.onLocationClick();
@@ -716,8 +712,8 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == Constants.RQ_MAP_LOCATION && resultCode == RESULT_OK) {
-            FeatureType locationType = FeatureType.valueOf(data.getStringExtra(MapSelectorActivity.Companion.getLOCATION_TYPE_EXTRA()));
-            String dataExtra = data.getStringExtra(MapSelectorActivity.Companion.getDATA_EXTRA());
+            FeatureType locationType = FeatureType.valueOf(data.getStringExtra(MapSelectorActivity.LOCATION_TYPE_EXTRA));
+            String dataExtra = data.getStringExtra(MapSelectorActivity.DATA_EXTRA);
             Geometry geometry;
             if (locationType == FeatureType.POINT) {
                 Type type = new TypeToken<List<Double>>() {
@@ -783,20 +779,20 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
     @Override
     public void renderObjectStyle(ObjectStyle data) {
-        if (data.icon() != null) {
-            Resources resources = getResources();
-            String iconName = data.icon().startsWith("ic_") ? data.icon() : "ic_" + data.icon();
-            int icon = resources.getIdentifier(iconName, "drawable", getPackageName());
-            binding.programStageIcon.setImageResource(icon);
-        }
 
-        if (data.color() != null) {
-            String color = data.color().startsWith("#") ? data.color() : "#" + data.color();
-            int colorRes = Color.parseColor(color);
-            ColorStateList colorStateList = ColorStateList.valueOf(colorRes);
-            ViewCompat.setBackgroundTintList(binding.programStageIcon, colorStateList);
-            Bindings.setFromResBgColor(binding.programStageIcon, colorRes);
-        }
+        binding.programStageIcon.setBackground(
+                ColorUtils.tintDrawableWithColor(
+                        binding.programStageIcon.getBackground(),
+                        ColorUtils.getColorFrom(data.color(),
+                                ColorUtils.getPrimaryColor(this, ColorUtils.ColorType.PRIMARY_LIGHT))
+                )
+        );
+        binding.programStageIcon.setImageResource(
+                new ResourceManager(this).getObjectStyleDrawableResource(
+                        data.icon(),
+                        R.drawable.ic_program_default
+                )
+        );
     }
 
     @Override

@@ -20,7 +20,6 @@ public class ImageHolder extends FormViewHolder {
 
     public static final String NAME_CODE_DELIMITATOR = "_op_";
 
-    private final CompositeDisposable disposable;
     private final FormImageBinding binding;
     private final ObservableField<String> currentSelector;
     private boolean isEditable;
@@ -31,7 +30,6 @@ public class ImageHolder extends FormViewHolder {
         super(mBinding);
         this.binding = mBinding;
         this.currentSelector = imageSelector;
-        this.disposable = new CompositeDisposable();
 
         itemView.setOnClickListener(v -> {
 
@@ -57,6 +55,9 @@ public class ImageHolder extends FormViewHolder {
 
     public void update(ImageViewModel viewModel) {
         this.model = viewModel;
+        if(currentSelector.get() != null && viewModel.value() == null){
+            currentSelector.set("");
+        }
 
         this.isEditable = viewModel.editable();
         descriptionText = viewModel.description();
@@ -86,9 +87,4 @@ public class ImageHolder extends FormViewHolder {
             binding.errorMessage.setText(null);
         }
     }
-
-    public void dispose() {
-        disposable.clear();
-    }
-
 }

@@ -3,7 +3,6 @@ package org.dhis2.data.service;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Build;
 
 import androidx.annotation.NonNull;
@@ -17,6 +16,7 @@ import com.google.firebase.perf.metrics.AddTrace;
 
 import org.dhis2.App;
 import org.dhis2.R;
+import org.dhis2.data.prefs.PreferenceProvider;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.DateUtils;
 
@@ -27,9 +27,7 @@ import javax.inject.Inject;
 
 import timber.log.Timber;
 
-/**
- * QUADRAM. Created by ppajuelo on 23/10/2018.
- */
+import static org.dhis2.utils.analytics.AnalyticsConstants.DATA_TIME;
 
 public class SyncDataWorker extends Worker {
 
@@ -38,6 +36,9 @@ public class SyncDataWorker extends Worker {
 
     @Inject
     SyncPresenter presenter;
+
+    @Inject
+    PreferenceProvider prefs;
 
     public SyncDataWorker(
             @NonNull Context context,
@@ -60,17 +61,21 @@ public class SyncDataWorker extends Worker {
         boolean isTeiOk = true;
         boolean isDataValue = true;
 
+        long init = System.currentTimeMillis();
+
         try {
             presenter.uploadResources();
-        }catch (Exception e){
+        } catch (Exception e){
             Timber.e(e);
         }
+
         try {
             presenter.syncAndDownloadEvents();
         } catch (Exception e) {
             Timber.e(e);
             isEventOk = false;
         }
+
         try {
             presenter.syncAndDownloadTeis();
         } catch (Exception e) {
@@ -90,13 +95,13 @@ public class SyncDataWorker extends Worker {
         } catch (Exception e) {
             Timber.e(e);
         }
+        presenter.logTimeToFinish(System.currentTimeMillis() - init, DATA_TIME);
 
         String lastDataSyncDate = DateUtils.dateTimeFormat().format(Calendar.getInstance().getTime());
         boolean syncOk = presenter.checkSyncStatus();
 
-        SharedPreferences prefs = getApplicationContext().getSharedPreferences(Constants.SHARE_PREFS, Context.MODE_PRIVATE);
-        prefs.edit().putString(Constants.LAST_DATA_SYNC, lastDataSyncDate).apply();
-        prefs.edit().putBoolean(Constants.LAST_DATA_SYNC_STATUS, isEventOk && isTeiOk && isDataValue && syncOk).apply();
+        prefs.setValue(Constants.LAST_DATA_SYNC, lastDataSyncDate);
+        prefs.setValue(Constants.LAST_DATA_SYNC_STATUS, isEventOk && isTeiOk && isDataValue && syncOk);
 
         cancelNotification();
 

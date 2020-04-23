@@ -46,7 +46,7 @@ public class ProgramEventDetailContract {
 
         void openOrgUnitTreeSelector();
 
-        Consumer<kotlin.Pair<FeatureCollection, BoundingBox>> setMap();
+        void setMap(FeatureCollection featureCollection, BoundingBox boundingBox);
 
         void setEventInfo(Pair<ProgramEventViewModel,LatLng> programEventViewModel);
 
@@ -59,10 +59,14 @@ public class ProgramEventDetailContract {
         void startNewEvent();
 
         boolean isMapVisible();
+
+        void navigateToEvent(String eventId, String orgUnit);
+
+        void showSyncDialog(String uid);
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter {
-        void init(View view);
+        void init();
 
         void addEvent();
 
@@ -79,5 +83,7 @@ public class ProgramEventDetailContract {
         void getMapData();
 
         void clearFilterClick();
+
+        boolean hasAssignment();
     }
 }

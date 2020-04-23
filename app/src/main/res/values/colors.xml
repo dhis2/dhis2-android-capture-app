@@ -292,6 +292,12 @@
     <!--endregion-->
     <!--endregion-->
 
+    <!--Widget colors-->
+    <color name="form_field_background">#FAFAFA</color>
+    <color name="form_field_background_shadow_start">#99FAFAFA</color>
+    <color name="form_field_background_shadow_center">#80FAFAFA</color>
+    <color name="form_field_background_shadow_end">#66FAFAFA</color>
+
 
     <!-- region OTHER COLORS-->
 
@@ -312,6 +318,9 @@
     <color name="text_black_333">#333333</color>
     <color name="text_black_808">#808080</color>
     <color name="text_black_4d4d4d">#4d4d4d</color>
+    <color name="text_black_C4C">#C4C4C4</color>
+    <color name="text_black_8A3">#8A333333</color>
+    <color name="text_black_DE3">#DE333333</color>
     <color name="bg_black_e6e">#e6e6e6</color>
     <color name="bg_white_fdf">#fdfdfe</color>
     <color name="bg_gray_ccc">#cccccc</color>
@@ -330,6 +339,7 @@
     <color name="gray_afa">#afafaf</color>
     <color name="gray_b2b">#b2b2b2</color>
     <color name="gray_dfe">#dfe0df</color>
+    <color name="gray_990">#99000000</color>
     <color name="green_7ed">#7ed321</color>
     <color name="green_transparent">#A47ED321</color>
     <color name="red_060">#e06060</color>
@@ -363,6 +373,7 @@
 
     <color name="warning_color">#F19525</color>
     <color name="error_color">#F11E1E</color>
+    <color name="section_error_color">#E91E63</color>
 
     <color name="state_by_sms">#26215E8C</color>
     <color name="state_error">#26FF0000</color>
@@ -373,6 +384,15 @@
     <color name="sms_sync_last_event">#504eba</color>
     <color name="sms_sync_title_bar">#dee7ee</color>
     <color name="sms_sync_title_bar_error">#ffd9d9</color>
+
+    <color name="placeholder">#61333333</color>
+    <color name="default_field_icon_color">#5C5C5C</color>
+
+    <!-- CircularCompletionView -->
+    <color name="percentageColor">#F9FAF9</color>
+    <color name="completionColor">#F0FFFFFF</color>
+    <color name="secondaryColor">#F0858585</color>
+    <color name="circleColor">#4D000000</color>
     <!--endregion-->
 
 </resources>

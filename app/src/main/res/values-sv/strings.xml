@@ -82,8 +82,6 @@
     <string name="completed">Avklarad</string>
     <string name="cancelled">Avbruten</string>
     <string name="re_open">Öppna igen</string>
-    <string name="activate">aktivera</string>
-
     <!-- State -->
     <string name="state_synced">Synkronisera</string>
     <string name="state_to_post">Att lämna</string>

@@ -3,6 +3,7 @@ package org.dhis2.usescases.reservedValue;
 import org.dhis2.data.schedulers.SchedulerProvider;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.maintenance.D2Error;
+import org.hisp.dhis.android.core.trackedentity.ReservedValueSummary;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
@@ -33,21 +34,21 @@ public class ReservedValuePresenter {
         disposable.add(
                 updateProcessor
                         .startWith(true)
-                        .flatMap(update -> repository.getDataElements())
+                        .flatMapSingle(update -> repository.getReservedValues())
                         .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.ui())
                         .subscribe(
-                                view::setDataElements,
+                                view::setReservedValues,
                                 Timber::e
                         )
         );
     }
 
-    public void onClickRefill(ReservedValueModel reservedValue) {
+    public void onClickRefill(ReservedValueSummary reservedValue) {
         disposable.add(
                 d2.trackedEntityModule()
                         .reservedValueManager()
-                        .downloadReservedValues(reservedValue.uid(), 100)
+                        .downloadReservedValues(reservedValue.trackedEntityAttribute().uid(), 100)
                         .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.io())
                         .subscribe(

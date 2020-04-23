@@ -2,10 +2,9 @@ package org.dhis2.usescases.programEventDetail;
 
 import androidx.annotation.NonNull;
 
-import com.squareup.sqlbrite2.BriteDatabase;
-
 import org.dhis2.data.dagger.PerActivity;
 import org.dhis2.data.schedulers.SchedulerProvider;
+import org.dhis2.utils.filters.FilterManager;
 import org.hisp.dhis.android.core.D2;
 
 import dagger.Module;
@@ -20,8 +19,10 @@ public class ProgramEventDetailModule {
 
 
     private final String programUid;
+    private ProgramEventDetailContract.View view;
 
-    public ProgramEventDetailModule(String programUid) {
+    public ProgramEventDetailModule(ProgramEventDetailContract.View view, String programUid) {
+        this.view = view;
         this.programUid = programUid;
     }
 
@@ -34,8 +35,8 @@ public class ProgramEventDetailModule {
     @Provides
     @PerActivity
     ProgramEventDetailContract.Presenter providesPresenter(
-                                                           @NonNull ProgramEventDetailRepository programEventDetailRepository, SchedulerProvider schedulerProvider) {
-        return new ProgramEventDetailPresenter(programUid,programEventDetailRepository, schedulerProvider);
+            @NonNull ProgramEventDetailRepository programEventDetailRepository, SchedulerProvider schedulerProvider, FilterManager filterManager) {
+        return new ProgramEventDetailPresenter(view, programEventDetailRepository, schedulerProvider, filterManager);
     }
 
     @Provides
@@ -46,7 +47,7 @@ public class ProgramEventDetailModule {
 
     @Provides
     @PerActivity
-    ProgramEventDetailRepository eventDetailRepository(BriteDatabase briteDatabase, D2 d2) {
-        return new ProgramEventDetailRepositoryImpl(programUid,briteDatabase, d2);
+    ProgramEventDetailRepository eventDetailRepository(D2 d2) {
+        return new ProgramEventDetailRepositoryImpl(programUid, d2);
     }
 }

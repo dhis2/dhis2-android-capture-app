@@ -10,6 +10,7 @@ import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
 import androidx.databinding.ObservableField;
 import androidx.databinding.ViewDataBinding;
+import androidx.databinding.library.baseAdapters.BR;
 
 import com.google.android.material.textfield.TextInputLayout;
 
@@ -176,7 +177,7 @@ public class OptionSetView extends FieldLayout implements OptionSetOnClickListen
             if (mandatory)
                 labelBuilder.append("*");
             this.label = labelBuilder.toString();
-            inputLayout.setHint(this.label);
+            binding.setVariable(BR.label,this.label);
         }
     }
 

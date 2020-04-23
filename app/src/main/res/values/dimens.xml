@@ -18,5 +18,7 @@ http://developer.android.com/guide/topics/appwidgets/index.html#CreatingLayout
     <dimen name="sectionSelectorWidth">150dp</dimen>
     <dimen name="itemSectionSelectorHeight">48dp</dimen>
     <dimen name="chip_minHeight">32dp</dimen>
+    <dimen name="field_label_size">12sp</dimen>
+    <dimen name="padding_5">5dp</dimen>
 
 </resources>

@@ -21,7 +21,7 @@ public class RelationshipViewHolder extends RecyclerView.ViewHolder {
         this.binding = binding;
     }
 
-    public void bind(RelationshipContracts.Presenter presenter, RelationshipViewModel relationships) {
+    public void bind(RelationshipPresenter presenter, RelationshipViewModel relationships) {
 
         Relationship relationship = relationships.relationship();
 

@@ -4,28 +4,23 @@ import android.content.Context;
 
 import androidx.annotation.NonNull;
 
-import com.squareup.sqlbrite2.BriteDatabase;
-
+import org.dhis2.Bindings.ValueTypeExtensionsKt;
 import org.dhis2.data.dagger.PerActivity;
 import org.dhis2.data.forms.EventRepository;
 import org.dhis2.data.forms.FormRepository;
 import org.dhis2.data.forms.RulesRepository;
 import org.dhis2.data.forms.dataentry.DataEntryStore;
-import org.dhis2.data.forms.dataentry.DataValueStore;
 import org.dhis2.data.forms.dataentry.ValueStore;
 import org.dhis2.data.forms.dataentry.ValueStoreImpl;
+import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory;
+import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactoryImpl;
 import org.dhis2.data.schedulers.SchedulerProvider;
-import org.dhis2.data.user.UserRepository;
 import org.dhis2.utils.RulesUtilsProvider;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.rules.RuleExpressionEvaluator;
 
 import dagger.Module;
 import dagger.Provides;
-
-/**
- * QUADRAM. Created by ppajuelo on 19/11/2018.
- */
 
 @PerActivity
 @Module
@@ -53,7 +48,8 @@ public class EventCaptureModule {
     @PerActivity
     EventCaptureContract.EventCaptureRepository provideRepository(Context context,
                                                                   FormRepository formRepository, D2 d2) {
-        return new EventCaptureRepositoryImpl(context, formRepository, eventUid, d2);
+        FieldViewModelFactory fieldFactory = new FieldViewModelFactoryImpl(ValueTypeExtensionsKt.valueTypeHintMap(context));
+        return new EventCaptureRepositoryImpl(fieldFactory, formRepository, eventUid, d2);
     }
 
     @Provides

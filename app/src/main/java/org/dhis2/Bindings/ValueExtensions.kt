@@ -8,12 +8,17 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValue
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueObjectRepository
 
 fun TrackedEntityAttributeValue.userFriendlyValue(d2: D2): String? {
-    if (value().isNullOrEmpty())
+    if (value().isNullOrEmpty()) {
         return value()
+    }
 
-    val attribute = d2.trackedEntityModule()
-        .trackedEntityAttributes().uid(trackedEntityAttribute())
+    val attribute = d2.trackedEntityModule().trackedEntityAttributes()
+        .uid(trackedEntityAttribute())
         .blockingGet()
+
+    if(attribute == null){
+        return value()
+    }
 
     if (check(d2, attribute.valueType(), attribute.optionSet()?.uid(), value()!!)) {
         attribute.optionSet()?.let {
@@ -28,8 +33,9 @@ fun TrackedEntityDataValue?.userFriendlyValue(d2: D2): String? {
     if (this == null) {
         return null
     } else {
-        if (value().isNullOrEmpty())
+        if (value().isNullOrEmpty()) {
             return value()
+        }
 
         val dataElement = d2.dataElementModule().dataElements()
             .uid(dataElement())
@@ -91,11 +97,11 @@ fun TrackedEntityAttributeValueObjectRepository.blockingGetCheck(
 ): TrackedEntityAttributeValue? {
     return d2.trackedEntityModule().trackedEntityAttributes().uid(attrUid).blockingGet().let {
         if (blockingExists() && check(
-                d2,
-                it.valueType(),
-                it.optionSet()?.uid(),
-                blockingGet().value()!!
-            )
+            d2,
+            it.valueType(),
+            it.optionSet()?.uid(),
+            blockingGet().value()!!
+        )
         ) {
             blockingGet()
         } else {
@@ -112,7 +118,8 @@ fun TrackedEntityDataValueObjectRepository.blockingSetCheck(
 ): Boolean {
     return d2.dataElementModule().dataElements().uid(deUid).blockingGet().let {
         if (check(d2, it.valueType(), it.optionSet()?.uid(), value)) {
-            blockingSet(value)
+            val finalValue = assureCodeForOptionSet(d2, it.optionSet()?.uid(), value)
+            blockingSet(finalValue)
             true
         } else {
             blockingDeleteIfExist()
@@ -127,11 +134,11 @@ fun TrackedEntityDataValueObjectRepository.blockingGetValueCheck(
 ): TrackedEntityDataValue? {
     return d2.dataElementModule().dataElements().uid(deUid).blockingGet().let {
         if (blockingExists() && check(
-                d2,
-                it.valueType(),
-                it.optionSet()?.uid(),
-                blockingGet().value()!!
-            )
+            d2,
+            it.valueType(),
+            it.optionSet()?.uid(),
+            blockingGet().value()!!
+        )
         ) {
             blockingGet()
         } else {
@@ -148,11 +155,13 @@ private fun check(
     value: String
 ): Boolean {
     return when {
-        optionSetUid != null ->
-            d2.optionModule().options().byOptionSetUid().eq(optionSetUid).byCode().eq(value).one().blockingExists() ||
-                    d2.optionModule().options().byOptionSetUid().eq(optionSetUid).byDisplayName().eq(
-                        value
-                    ).one().blockingExists()
+        optionSetUid != null -> {
+            val optionByCodeExist = d2.optionModule().options().byOptionSetUid().eq(optionSetUid)
+                .byCode().eq(value).one().blockingExists()
+            val optionByNameExist = d2.optionModule().options().byOptionSetUid().eq(optionSetUid)
+                .byDisplayName().eq(value).one().blockingExists()
+            optionByCodeExist || optionByNameExist
+        }
         valueType != null -> {
             if (valueType.isNumeric) {
                 try {
@@ -164,10 +173,10 @@ private fun check(
             } else {
                 when (valueType) {
                     ValueType.FILE_RESOURCE, ValueType.IMAGE ->
-                        d2.fileResourceModule().fileResources().byUid().eq(value).one().blockingExists()
-                    ValueType.ORGANISATION_UNIT -> d2.organisationUnitModule().organisationUnits().uid(
-                        value
-                    ).blockingExists()
+                        d2.fileResourceModule().fileResources()
+                            .byUid().eq(value).one().blockingExists()
+                    ValueType.ORGANISATION_UNIT ->
+                        d2.organisationUnitModule().organisationUnits().uid(value).blockingExists()
                     else -> true
                 }
             }
@@ -178,7 +187,11 @@ private fun check(
 
 private fun assureCodeForOptionSet(d2: D2, optionSetUid: String?, value: String): String? {
     return optionSetUid?.let {
-        if (d2.optionModule().options().byOptionSetUid().eq(it).byName().eq(value).one().blockingExists()) {
+        if (d2.optionModule().options()
+            .byOptionSetUid().eq(it)
+            .byName().eq(value)
+            .one().blockingExists()
+        ) {
             d2.optionModule().options().byOptionSetUid().eq(it).byName().eq(value).one()
                 .blockingGet().code()
         } else {

@@ -13,16 +13,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <include
-            android:id="@+id/currentSectionTitle"
-            layout="@layout/item_section_selector"
-            android:layout_width="0dp"
-            android:layout_height="@dimen/itemSectionSelectorHeight"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:presenter="@{presenter}" />
-
 
         <View
             android:id="@+id/dummyFocusView"
@@ -36,40 +26,20 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/formRecycler"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
+            android:layout_height="match_parent"
+            android:background="@color/form_field_background"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            app:layout_constraintBottom_toTopOf="@id/sectionSelector"
-            app:layout_constraintTop_toBottomOf="@id/currentSectionTitle"
+            android:paddingBottom="100dp"
+            android:clipToPadding="false"
             tools:listitem="@layout/custom_text_view" />
 
-        <include
-            android:id="@+id/sectionSelector"
-            layout="@layout/section_selector"
-            android:layout_width="0dp"
-            android:layout_height="@dimen/sectionSelectorHeight"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:presenter="@{presenter}" />
 
-        <androidx.cardview.widget.CardView
-            android:id="@+id/sectionRecyclerCard"
+        <FrameLayout
+            android:id="@+id/header"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:visibility="gone"
-            app:cardElevation="4dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:visibility="visible">
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="parent"/>
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/sectionRecycler"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                tools:listitem="@layout/item_section_selector" />
-        </androidx.cardview.widget.CardView>
 
         <ProgressBar
             android:id="@+id/progress"
@@ -83,6 +53,19 @@
             app:layout_constraintTop_toTopOf="parent"
             app:progressColor="@{@color/colorPrimary}"
             tools:visibility="visible" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/actionButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="16dp"
+            app:backgroundTint="?colorPrimary"
+            app:fabSize="normal"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:srcCompat="@drawable/ic_save_alt"
+            app:tint="?colorAccent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

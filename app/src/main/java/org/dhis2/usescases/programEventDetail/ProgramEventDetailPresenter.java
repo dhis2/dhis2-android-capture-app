@@ -1,16 +1,9 @@
 package org.dhis2.usescases.programEventDetail;
-
-import android.os.Bundle;
-
 import androidx.annotation.NonNull;
-
 import com.mapbox.mapboxsdk.geometry.LatLng;
 
 import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.data.tuples.Pair;
-import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity;
-import org.dhis2.utils.granularsync.SyncStatusDialog;
-import org.dhis2.utils.Constants;
 import org.dhis2.utils.filters.FilterManager;
 import org.hisp.dhis.android.core.common.Unit;
 
@@ -20,10 +13,6 @@ import io.reactivex.processors.FlowableProcessor;
 import io.reactivex.processors.PublishProcessor;
 import timber.log.Timber;
 
-import static org.dhis2.utils.Constants.ORG_UNIT;
-import static org.dhis2.utils.Constants.PROGRAM_UID;
-
-
 /**
  * QUADRAM. Created by Cristian on 13/02/2018.
  */
@@ -32,39 +21,41 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
 
     private final ProgramEventDetailRepository eventRepository;
     private final SchedulerProvider schedulerProvider;
+    private final FilterManager filterManager;
     private ProgramEventDetailContract.View view;
-    protected String programId;
-    private CompositeDisposable compositeDisposable;
+    CompositeDisposable compositeDisposable;
 
     //Search fields
-    private FlowableProcessor<Pair<String, LatLng>> eventInfoProcessor;
-    private FlowableProcessor<Unit> mapProcessor;
+    FlowableProcessor<Pair<String, LatLng>> eventInfoProcessor;
+    FlowableProcessor<Unit> mapProcessor;
 
-    ProgramEventDetailPresenter(
-            @NonNull String programUid, @NonNull ProgramEventDetailRepository programEventDetailRepository, SchedulerProvider schedulerProvider) {
+    public ProgramEventDetailPresenter(
+            ProgramEventDetailContract.View view,
+            @NonNull ProgramEventDetailRepository programEventDetailRepository,
+            SchedulerProvider schedulerProvider,
+            FilterManager filterManager) {
+        this.view = view;
         this.eventRepository = programEventDetailRepository;
-        this.programId = programUid;
         this.schedulerProvider = schedulerProvider;
+        this.filterManager = filterManager;
         eventInfoProcessor = PublishProcessor.create();
         mapProcessor = PublishProcessor.create();
+        compositeDisposable = new CompositeDisposable();
     }
 
     @Override
-    public void init(ProgramEventDetailContract.View view) {
-        this.view = view;
-        compositeDisposable = new CompositeDisposable();
-
+    public void init() {
         compositeDisposable.add(eventRepository.featureType()
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
-                        view.setFeatureType(),
-                        Timber.tag("EVENTLIST")::e
+                        featureType -> view.setFeatureType(),
+                        Timber::e
                 )
         );
 
         compositeDisposable.add(Observable.just(eventRepository.getAccessDataWrite())
-                .subscribeOn(schedulerProvider.computation())
+                .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
                         view::setWritePermission,
@@ -85,7 +76,7 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
         compositeDisposable.add(
                 eventRepository.program()
                         .observeOn(schedulerProvider.ui())
-                        .subscribeOn(schedulerProvider.computation())
+                        .subscribeOn(schedulerProvider.io())
                         .subscribe(
                                 view::setProgram,
                                 Timber::e
@@ -102,16 +93,17 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
         );
 
         compositeDisposable.add(
-                FilterManager.getInstance().asFlowable()
-                        .startWith(FilterManager.getInstance())
+                filterManager.asFlowable()
+                        .startWith(filterManager)
                         .map(filterManager -> eventRepository.filteredProgramEvents(
                                 filterManager.getPeriodFilters(),
                                 filterManager.getOrgUnitUidsFilters(),
                                 filterManager.getCatOptComboFilters(),
                                 filterManager.getEventStatusFilters(),
-                                filterManager.getStateFilters()
+                                filterManager.getStateFilters(),
+                                filterManager.getAssignedFilter()
                         ))
-                        .subscribeOn(schedulerProvider.computation())
+                        .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.ui())
                         .subscribe(
                                 view::setLiveData,
@@ -120,20 +112,22 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
 
         compositeDisposable.add(
                 mapProcessor
-                        .flatMap(unit ->
-                                FilterManager.getInstance().asFlowable()
+                        .observeOn(schedulerProvider.io())
+                        .switchMap(unit ->
+                                filterManager.asFlowable()
                                         .startWith(FilterManager.getInstance())
                                         .flatMap(filterManager -> eventRepository.filteredEventsForMap(
                                                 filterManager.getPeriodFilters(),
                                                 filterManager.getOrgUnitUidsFilters(),
                                                 filterManager.getCatOptComboFilters(),
                                                 filterManager.getEventStatusFilters(),
-                                                filterManager.getStateFilters()
+                                                filterManager.getStateFilters(),
+                                                filterManager.getAssignedFilter()
                                         )))
-                        .subscribeOn(schedulerProvider.computation())
+                        .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.ui())
                         .subscribe(
-                                view.setMap(),
+                                map -> view.setMap(map.component1(), map.component2()),
                                 throwable -> view.renderError(throwable.getMessage())
                         ));
 
@@ -141,7 +135,7 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
                 eventInfoProcessor
                         .flatMap(eventInfo -> eventRepository.getInfoForEvent(eventInfo.val0())
                                 .map(eventData -> Pair.create(eventData, eventInfo.val1())))
-                        .subscribeOn(schedulerProvider.computation())
+                        .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.ui())
                         .subscribe(
                                 view::setEventInfo,
@@ -149,7 +143,7 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
                         ));
 
         compositeDisposable.add(
-                FilterManager.getInstance().ouTreeFlowable()
+                filterManager.ouTreeFlowable()
                         .doOnNext(queryData -> {
                             if (view.isMapVisible())
                                 mapProcessor.onNext(new Unit());
@@ -163,7 +157,7 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
         );
 
         compositeDisposable.add(
-                FilterManager.getInstance().asFlowable()
+                filterManager.asFlowable()
                         .doOnNext(queryData -> {
                             if (view.isMapVisible())
                                 mapProcessor.onNext(new Unit());
@@ -177,7 +171,7 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
         );
 
         compositeDisposable.add(
-                FilterManager.getInstance().getPeriodRequest()
+                filterManager.getPeriodRequest()
                         .doOnNext(queryData -> {
                             if (view.isMapVisible())
                                 mapProcessor.onNext(new Unit());
@@ -192,17 +186,7 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
 
     @Override
     public void onSyncIconClick(String uid) {
-        view.showSyncDialog(
-                new SyncStatusDialog.Builder()
-                .setConflictType(SyncStatusDialog.ConflictType.EVENT)
-                .setUid(uid)
-                .onDismissListener(hasChanged->{
-                    if(hasChanged)
-                        FilterManager.getInstance().publishData();
-
-                })
-                .build()
-        );
+        view.showSyncDialog(uid);
     }
 
     @Override
@@ -217,14 +201,7 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
 
     @Override
     public void onEventClick(String eventId, String orgUnit) {
-        Bundle bundle = new Bundle();
-        bundle.putString(PROGRAM_UID, programId);
-        bundle.putString(Constants.EVENT_UID, eventId);
-        bundle.putString(ORG_UNIT, orgUnit);
-        view.startActivity(EventCaptureActivity.class,
-                EventCaptureActivity.getActivityBundle(eventId, programId),
-                false, false, null
-        );
+        view.navigateToEvent(eventId, orgUnit);
     }
 
     public void addEvent() {
@@ -233,7 +210,6 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
 
     @Override
     public void onBackClick() {
-
         view.back();
     }
 
@@ -254,8 +230,12 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
 
     @Override
     public void clearFilterClick() {
-        FilterManager.getInstance().clearAllFilters();
+        filterManager.clearAllFilters();
         view.clearFilters();
     }
 
+    @Override
+    public boolean hasAssignment() {
+        return eventRepository.hasAssignment();
+    }
 }

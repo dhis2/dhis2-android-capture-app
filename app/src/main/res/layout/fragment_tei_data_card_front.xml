@@ -323,9 +323,9 @@
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/rubik_medium"
                     android:gravity="end"
-                    android:text='@{dashboardModel.getCurrentOrgUnit().displayName(),default="OrgUnit"}'
                     android:textColor="@color/text_black_4d4d4d"
                     android:textSize="12sp"
+                    tools:text="Org Unit Name"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/org_unit_label"
                     app:layout_constraintTop_toTopOf="@id/org_unit_label" />

@@ -14,11 +14,6 @@ public class UnsupportedHolder extends FormViewHolder {
         unsupportedView = binding.unsupportedView;
     }
 
-    @Override
-    public void dispose() {
-
-    }
-
     public void update(UnsupportedViewModel viewModel) {
         unsupportedView.setLabel(viewModel.label());
         descriptionText = viewModel.description();

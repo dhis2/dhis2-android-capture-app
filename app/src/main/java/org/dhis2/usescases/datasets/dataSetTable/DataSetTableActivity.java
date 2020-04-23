@@ -2,8 +2,8 @@ package org.dhis2.usescases.datasets.dataSetTable;
 
 
 import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
 import android.os.Bundle;
-import android.os.Handler;
 import android.view.View;
 
 import androidx.annotation.NonNull;
@@ -19,8 +19,10 @@ import org.dhis2.App;
 import org.dhis2.R;
 import org.dhis2.databinding.ActivityDatasetTableBinding;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
+import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.granularsync.SyncStatusDialog;
+import org.dhis2.utils.resources.ResourceManager;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.dataset.DataSet;
 
@@ -97,6 +99,12 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
     protected void onDestroy() {
         super.onDestroy();
         presenter.onDettach();
+    }
+
+    @Override
+    public void onConfigurationChanged(@NonNull Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        viewPagerAdapter.notifyDataSetChanged();
     }
 
     private void setViewPager() {
@@ -208,6 +216,20 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
         binding.reportPeriod.setText(periodInitialDate);
         binding.catCombo.setText(catComboName);
         binding.datasetDescription.setText(dataSet.displayDescription());
+
+        binding.dataSetIcon.setBackground(
+                ColorUtils.tintDrawableWithColor(
+                        binding.dataSetIcon.getBackground(),
+                        ColorUtils.getPrimaryColor(this, ColorUtils.ColorType.PRIMARY_LIGHT)
+                )
+        );
+        binding.dataSetIcon.setImageResource(
+                new ResourceManager(this).getObjectStyleDrawableResource(
+                        dataSet.style().icon(),
+                        R.drawable.ic_program_default
+                )
+        );
+
     }
 
     @Override
@@ -221,7 +243,7 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
     @Override
     public void setDataSetState(State state) {
         int syncIconRes;
-        switch (state){
+        switch (state) {
 
             case ERROR:
                 syncIconRes = R.drawable.ic_sync_problem_red;
@@ -231,6 +253,7 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
                 break;
             case TO_POST:
             case TO_UPDATE:
+            case UPLOADING:
                 syncIconRes = R.drawable.ic_sync_problem_grey;
                 break;
             case SENT_VIA_SMS:
@@ -253,7 +276,7 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
                 .setPeriodId(periodId)
                 .setAttributeOptionCombo(catOptCombo)
                 .onDismissListener(hasChanged -> {
-                    if(hasChanged){
+                    if (hasChanged) {
                         presenter.updateState();
                     }
                 })
@@ -267,7 +290,7 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
 
     @Override
     public void back() {
-        if(getCurrentFocus() == null || backPressed)
+        if (getCurrentFocus() == null || backPressed)
             super.back();
         else {
             backPressed = true;

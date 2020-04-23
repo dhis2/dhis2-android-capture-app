@@ -1,12 +1,15 @@
 package org.dhis2.usescases.settings;
 
-import org.dhis2.data.tuples.Pair;
 import org.dhis2.usescases.general.AbstractActivityContracts;
-import org.hisp.dhis.android.core.imports.TrackerImportConflict;
+import org.dhis2.usescases.settings.models.DataSettingsViewModel;
+import org.dhis2.usescases.settings.models.MetadataSettingsViewModel;
+import org.dhis2.usescases.settings.models.ReservedValueSettingsViewModel;
+import org.dhis2.usescases.settings.models.SMSSettingsViewModel;
+import org.dhis2.usescases.settings.models.SyncParametersViewModel;
+import org.hisp.dhis.android.core.maintenance.D2Error;
+import org.hisp.dhis.android.core.settings.LimitScope;
 
 import java.util.List;
-
-import io.reactivex.functions.Consumer;
 
 /**
  * QUADRAM. Created by lmartin on 21/03/2018.
@@ -15,8 +18,6 @@ import io.reactivex.functions.Consumer;
 public class SyncManagerContracts {
 
     interface View extends AbstractActivityContracts.View {
-
-        Consumer<Pair<Integer, Integer>> setSyncData();
 
         void showInvalidGatewayError();
 
@@ -28,33 +29,46 @@ public class SyncManagerContracts {
 
         void showTutorial();
 
-        void showSyncErrors(List<TrackerImportConflict> data);
+        void showSyncErrors(List<D2Error> data);
 
         void showLocalDataDeleted(boolean error);
-
-        void showSmsSettings(boolean enabled, String number, boolean waitForResponse,
-                             String responseSender, int waitingForResponseTimeout);
 
         void syncData();
 
         void syncMeta();
 
-        void openItem(int settingsItem);
+        void openItem(SettingItem settingsItem);
 
         void displaySMSRefreshingData();
 
         void displaySMSEnabled(boolean isChecked);
 
         void requestNoEmptySMSGateway();
+
+        void setDataSettings(DataSettingsViewModel dataSettings);
+
+        void setMetadataSettings(MetadataSettingsViewModel metadataSettings);
+
+        void setParameterSettings(SyncParametersViewModel parameterSettings);
+
+        void setSMSSettings(SMSSettingsViewModel smsSettingsViewModel);
+
+        void setReservedValuesSettings(ReservedValueSettingsViewModel reservedValueSettingsViewModel);
+
+        void displaySmsEnableError();
     }
 
     public interface Presenter {
 
+        int getMetadataPeriodSetting();
+
+        int getDataPeriodSetting();
+
         void validateGatewayObservable(String gateway);
 
-        void onItemClick(int itemPosition);
+        void onItemClick(SettingItem settingItem);
 
-        void init(SyncManagerContracts.View view);
+        void init();
 
         void syncData(int seconds, String scheduleTag);
 
@@ -64,7 +78,7 @@ public class SyncManagerContracts {
 
         void syncMeta();
 
-        void disponse();
+        void dispose();
 
         void resetSyncParameters();
 
@@ -84,20 +98,24 @@ public class SyncManagerContracts {
 
         void cancelPendingWork(String meta);
 
-        boolean dataHasErrors();
-
-        boolean dataHasWarnings();
-
-        void smsNumberSet(String number);
-
-        void smsSwitch(boolean isChecked);
-
-        void smsResponseSenderSet(String number);
-
-        void smsWaitForResponse(boolean waitForResponse);
-
-        void smsWaitForResponseTimeout(int timeout);
-
         boolean isGatewaySetAndValid(String gateway);
+
+        void saveLimitScope(LimitScope global);
+
+        void saveEventMaxCount(Integer eventCount);
+
+        void saveTeiMaxCount(Integer teiCount);
+
+        void saveReservedValues(Integer reservedValuesCount);
+
+        void saveGatewayNumber(String gatewayNumber);
+
+        void saveSmsResultSender(String smsResultSender);
+
+        void saveSmsResponseTimeout(Integer smsResponseTimeout);
+
+        void saveWaitForSmsResponse(boolean shouldWait);
+
+        void enableSmsModule(boolean enableSms);
     }
 }

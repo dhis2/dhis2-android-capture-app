@@ -2,6 +2,7 @@ package org.dhis2.data.forms
 
 import android.text.TextUtils.isEmpty
 import io.reactivex.Single
+import org.dhis2.Bindings.toRuleAttributeValue
 import org.dhis2.Bindings.toRuleDataValue
 import org.dhis2.Bindings.toRuleList
 import org.dhis2.Bindings.toRuleVariable
@@ -18,7 +19,6 @@ import org.hisp.dhis.rules.models.RuleAttributeValue
 import org.hisp.dhis.rules.models.RuleEnrollment
 import org.hisp.dhis.rules.models.RuleEvent
 import org.hisp.dhis.rules.models.RuleVariable
-import timber.log.Timber
 import java.util.Calendar
 import java.util.Date
 import java.util.Objects
@@ -290,44 +290,6 @@ class RulesRepository(private val d2: D2) {
     private fun getAttributesValues(enrollment: Enrollment): List<RuleAttributeValue> {
         val attributeValues = d2.trackedEntityModule().trackedEntityAttributeValues()
             .byTrackedEntityInstance().eq(enrollment.trackedEntityInstance()).blockingGet()
-        val ruleAttributeValues = ArrayList<RuleAttributeValue>()
-        for (attributeValue in attributeValues) {
-            val attribute = d2.trackedEntityModule().trackedEntityAttributes()
-                .uid(attributeValue.trackedEntityAttribute()).blockingGet()
-            var value = attributeValue.value()
-            if (attribute!!.optionSet() != null && !isEmpty(attribute.optionSet()!!.uid())) {
-                val useOptionCode = d2.programModule().programRuleVariables().byProgramUid()
-                    .eq(enrollment.program()).byTrackedEntityAttributeUid().eq(attribute.uid())
-                    .byUseCodeForOptionSet().isTrue.blockingIsEmpty()
-                if (!useOptionCode) {
-                    value = if (d2.optionModule().options()
-                            .byOptionSetUid().eq(attribute.optionSet()!!.uid())
-                            .byCode().eq(value)
-                            .one().blockingExists()
-                    ) {
-                        d2.optionModule().options()
-                            .byOptionSetUid().eq(attribute.optionSet()!!.uid())
-                            .byCode().eq(value)
-                            .one().blockingGet()?.name()
-                    } else {
-                        ""
-                    }
-                }
-            } else if (attribute.valueType()?.isNumeric!!) {
-                value = try {
-                    value?.toFloat().toString()
-                } catch (e: Exception) {
-                    Timber.e(e)
-                    ""
-                }
-            }
-            ruleAttributeValues.add(
-                RuleAttributeValue.create(
-                    attributeValue.trackedEntityAttribute()!!,
-                    value!!
-                )
-            )
-        }
-        return ruleAttributeValues
+        return attributeValues.toRuleAttributeValue(d2, enrollment.program()!!)
     }
 }

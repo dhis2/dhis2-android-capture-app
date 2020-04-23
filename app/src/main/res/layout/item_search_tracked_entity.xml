@@ -65,11 +65,11 @@
             android:id="@+id/follow_up"
             android:layout_width="34dp"
             android:layout_height="34dp"
-            app:layout_constraintEnd_toEndOf="@id/tracked_entity_image"
-            app:layout_constraintBottom_toBottomOf="@id/tracked_entity_image"
             android:layout_gravity="center_vertical"
             android:padding="5dp"
             android:visibility='@{followUp ? View.VISIBLE : View.GONE}'
+            app:layout_constraintBottom_toBottomOf="@id/tracked_entity_image"
+            app:layout_constraintEnd_toEndOf="@id/tracked_entity_image"
             app:srcCompat="@drawable/ic_warning_white"
             tools:ignore="ContentDescription"
             tools:tint="@color/red_060" />
@@ -79,10 +79,13 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
-            android:layout_marginTop="8dp"
             android:layout_marginEnd="16dp"
+            android:layout_marginTop="8dp"
             android:visibility="@{isOnline?View.GONE:View.VISIBLE}"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/download"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/overdueIcon"
             app:layout_constraintTop_toTopOf="parent"
             app:stateIcon="@{syncState}"
             tools:src="@drawable/ic_sync_green" />
@@ -97,6 +100,8 @@
             android:tint="@color/colorGreyDefault"
             android:visibility="@{isOnline?View.VISIBLE:View.GONE}"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/syncState"
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/ic_download" />
 
@@ -105,11 +110,12 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:layout_marginEnd="5dp"
+            android:layout_marginEnd="16dp"
             android:layout_toStartOf="@id/syncState"
             android:tint="@color/colorGreyDefault"
             android:visibility="@{overdue? View.VISIBLE: View.GONE}"
-            app:layout_constraintEnd_toStartOf="@id/syncState"
+            app:layout_constraintEnd_toStartOf="@+id/syncState"
+            app:layout_constraintStart_toEndOf="@+id/entity_attribute_1"
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/ic_overdue" />
 
@@ -124,7 +130,7 @@
             android:text='@{attribute.size()>0 ? attribute.get(0).value() : "" , default="attribute 1"}'
             android:textColor="@color/text_black_4d4d4d"
             android:textSize="14sp"
-            android:visibility='@{attribute.size()>0?View.VISIBLE:View.GONE}'
+            android:visibility='@{attribute.size()>0?View.VISIBLE:View.INVISIBLE}'
             app:layout_constraintEnd_toStartOf="@id/overdueIcon"
             app:layout_constraintStart_toEndOf="@id/tracked_entity_image"
             app:layout_constraintTop_toTopOf="parent" />
@@ -139,7 +145,7 @@
             android:text='@{attribute.size() > 1 ? attribute.get(1).value() : "" , default="attribute 2"}'
             android:textColor="@color/text_black_4d4d4d"
             android:textSize="14sp"
-            android:visibility='@{attribute.size() > 1 ? View.VISIBLE : View.GONE}'
+            android:visibility='@{attribute.size() > 1 ? View.VISIBLE : View.INVISIBLE}'
             app:layout_constraintEnd_toStartOf="@id/overdueIcon"
             app:layout_constraintStart_toEndOf="@id/tracked_entity_image"
             app:layout_constraintTop_toBottomOf="@id/entity_attribute_1" />
@@ -153,7 +159,7 @@
             android:text='@{attribute.size() > 2 ? attribute.get(2).value() : "", default="attribute 3"}'
             android:textColor="@color/text_black_4d4d4d"
             android:textSize="12sp"
-            android:visibility='@{attribute.size() > 2 ? View.VISIBLE : View.GONE}'
+            android:visibility='@{attribute.size() > 2 ? View.VISIBLE : View.INVISIBLE}'
             app:layout_constraintEnd_toStartOf="@id/overdueIcon"
             app:layout_constraintStart_toEndOf="@id/tracked_entity_image"
             app:layout_constraintTop_toBottomOf="@id/entity_attribute_2" />
@@ -167,12 +173,12 @@
             android:layout_marginTop="5dp"
             android:layout_marginEnd="16dp"
             android:layout_marginBottom="8dp"
-            app:chipSpacingVertical="1dp"
             app:chipSpacingHorizontal="5dp"
-            app:layout_constraintTop_toBottomOf="@id/tracked_entity_image"
+            app:chipSpacingVertical="1dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"/>
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tracked_entity_image" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

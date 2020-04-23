@@ -199,7 +199,7 @@
                 android:orientation="horizontal">
 
                 <ImageView
-                    android:id="@+id/programStageIcon"
+                    android:id="@+id/dataSetIcon"
                     android:layout_width="50dp"
                     android:layout_height="50dp"
                     android:layout_marginStart="8dp"
@@ -220,7 +220,7 @@
                     android:textColor="@color/white_d6d"
                     android:textSize="13sp"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toEndOf="@+id/programStageIcon"
+                    app:layout_constraintStart_toEndOf="@+id/dataSetIcon"
                     app:layout_constraintTop_toTopOf="parent" />
 
 
