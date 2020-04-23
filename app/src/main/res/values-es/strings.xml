@@ -14,7 +14,6 @@
     <string name="no_value">sin valor</string>
     <string name="no_reserved_values">No quedan valores reservados. Contacta el administrador.</string>
     <string name="no_reserved_values_connection">No quedan valores reservados. Conéctate a internet para recargarlos.</string>
-
     <!-- SyncService strings: -->
     <string name="sync_now">Sincronizar ahora</string>
     <string name="sync_text">Sincronizando con el servidor</string>
@@ -99,11 +98,8 @@
     <string name="completed">Completado</string>
     <string name="cancelled">Cancelar</string>
     <string name="re_open">Reabrir</string>
-    <string name="activate">Activar</string>
-
     <!-- State -->
     <string name="state_synced">Sincronizado</string>
-    <string name="state_to_post">Para enviar</string>
     <string name="state_to_update">Para actualizar</string>
     <string name="state_to_delete">Para borrar</string>
     <string name="state_error">Error</string>
@@ -556,7 +552,7 @@
     <string name="image_selected">Imagen seleccionada</string>
     <string name="show_in_map">Mostrar en el Mapa</string>
     <string name="show_list">Mostrar lista</string>
-    
+
     <!--region TRACKER IMPORT CONFLICT MESSAGES-->
     <string name="value_required_but_not_provided">%s es obligatorio y no tiene valor</string>
     <string name="polygon_captured">Polígono guardado</string>

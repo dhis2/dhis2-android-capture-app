@@ -14,7 +14,6 @@
     <string name="no_value">无值</string>
     <string name="no_reserved_values">没有更多保留值，请联系管理员</string>
     <string name="no_reserved_values_connection">没有更多保留值，连接网络重新填充他们</string>
-
     <!-- SyncService strings: -->
     <string name="sync_now">现在同步</string>
     <string name="sync_text">与服务器同步中</string>
@@ -101,7 +100,6 @@
     <string name="re_open">重新打开</string>
     <!-- State -->
     <string name="state_synced">同步</string>
-    <string name="state_to_post">发帖</string>
     <string name="state_to_update">更新</string>
     <string name="state_to_delete">删除</string>
     <string name="state_error">错误</string>
@@ -556,7 +554,7 @@
     <string name="image_selected">选择的图像</string>
     <string name="show_in_map">地图上显示</string>
     <string name="show_list">显示列表</string>
-    
+
     <!--region TRACKER IMPORT CONFLICT MESSAGES-->
     <string name="value_required_but_not_provided">%s是强制的但是没有提供</string>
     <string name="polygon_captured">采集的多边形。</string>
@@ -612,4 +610,4 @@
     <string name="event_date_in_future_message">事件不能有将来的时间，请修改</string>
     <string name="change_event_date">改变日期</string>
     <string name="go_back">后退</string>
-</resources>
+    </resources>

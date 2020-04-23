@@ -80,11 +80,8 @@
     <string name="completed">Hoàn tất</string>
     <string name="cancelled">Đã hủy</string>
     <string name="re_open">mở lại</string>
-    <string name="activate">kích hoạt</string>
-
     <!-- State -->
     <string name="state_synced">Đồng bộ</string>
-    <string name="state_to_post">Đăng</string>
     <string name="state_to_update">Cập nhật</string>
     <string name="state_to_delete">Xóa</string>
     <string name="state_error">Lỗi</string>

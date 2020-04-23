@@ -14,7 +14,6 @@
     <string name="no_value">pas de valeur</string>
     <string name="no_reserved_values">Il n\'y a plus de valeurs réservées. Veuillez contacter votre administrateur système.</string>
     <string name="no_reserved_values_connection">Il n\'y a plus de valeurs réservées. Veuillez vous connecter pour en obtenir d\'autres.</string>
-
     <!-- SyncService strings: -->
     <string name="sync_now">Synchronisez maintenant</string>
     <string name="sync_text">Synchronisation avec le serveur</string>
@@ -99,11 +98,8 @@
     <string name="completed">Terminé</string>
     <string name="cancelled">Annulé</string>
     <string name="re_open">rouvrir</string>
-    <string name="activate">Activer</string>
-
     <!-- State -->
     <string name="state_synced">Synchronisation</string>
-    <string name="state_to_post">Prêt à poster</string>
     <string name="state_to_update">Prêts à actualiser</string>
     <string name="state_to_delete">A supprimer</string>
     <string name="state_error">Erreur</string>

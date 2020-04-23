@@ -84,11 +84,8 @@
     <string name="completed">បានបញ្ចប់</string>
     <string name="cancelled">បានលុបចោល</string>
     <string name="re_open">បើកឡើងវិញ</string>
-    <string name="activate">បើកអោយដំណើរការ</string>
-
     <!-- State -->
     <string name="state_synced">បញ្ចូន</string>
-    <string name="state_to_post">ដើម្បីប្រកាស</string>
     <string name="state_to_update">ដើម្បីធ្វើបច្ចុប្បន្នភាព</string>
     <string name="state_to_delete">ដើម្បីលុប</string>
     <string name="state_error">កំហុសបច្ចេកទេស</string>

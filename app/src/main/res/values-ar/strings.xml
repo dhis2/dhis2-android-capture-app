@@ -10,7 +10,6 @@
     <string name="no_value">لاتوجد قيمة</string>
     <string name="no_reserved_values">لا يوجد المزيد من القيم المحجوزة. اتصل بمسؤول النظام</string>
     <string name="no_reserved_values_connection">لا يوجد المزيد من القيم المحجوزة. اتصل بالشبكة لإعادة تعبئتها</string>
-
     <!-- SyncService strings: -->
     <string name="sync_now">مزامنة الآن</string>
     <string name="sync_text">مزامنة مع الخادم</string>
@@ -95,8 +94,6 @@
     <string name="completed">مكتمل</string>
     <string name="cancelled">تم الإلغاء</string>
     <string name="re_open">إعادة فتح</string>
-    <string name="activate">تفعيل</string>
-
     <!-- State -->
     <string name="state_synced">زامن</string>
     <string name="state_to_update">للتحديث</string>
@@ -545,7 +542,7 @@
     <string name="image_selected">تم تحديد الصورة</string>
     <string name="show_in_map">إظهار على الخريطة</string>
     <string name="show_list">إظهار القائمة</string>
-    
+
     <!--region TRACKER IMPORT CONFLICT MESSAGES-->
     <string name="value_required_but_not_provided">%s إلزامي ولكن لم يتم توفيره.</string>
     <string name="polygon_captured">تم التقاط المضلع</string>
@@ -600,4 +597,4 @@
     <string name="event_date_in_future_message">لا يمكن أن يكون لهذا الحدث تاريخ في المستقبل. غير التاريخ من فضلك.</string>
     <string name="change_event_date">غير التاريخ</string>
     <string name="go_back">رجوع</string>
-</resources>
+    </resources>
