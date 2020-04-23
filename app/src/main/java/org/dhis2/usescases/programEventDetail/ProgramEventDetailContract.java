@@ -83,5 +83,7 @@ public class ProgramEventDetailContract {
         void getMapData();
 
         void clearFilterClick();
+
+        boolean hasAssignment();
     }
 }

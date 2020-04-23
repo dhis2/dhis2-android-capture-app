@@ -28,12 +28,13 @@ package org.dhis2.utils.session
 import dagger.Module
 import dagger.Provides
 import org.dhis2.data.prefs.PreferenceProvider
+import org.hisp.dhis.android.core.D2Manager
 
 @Module
 class PinModule(val view: PinView) {
 
     @Provides
     fun providesPresenter(preferenceProvider: PreferenceProvider): PinPresenter {
-        return PinPresenter(view, preferenceProvider)
+        return PinPresenter(view, preferenceProvider, D2Manager.getD2())
     }
 }

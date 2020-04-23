@@ -253,6 +253,7 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
                 break;
             case TO_POST:
             case TO_UPDATE:
+            case UPLOADING:
                 syncIconRes = R.drawable.ic_sync_problem_grey;
                 break;
             case SENT_VIA_SMS:

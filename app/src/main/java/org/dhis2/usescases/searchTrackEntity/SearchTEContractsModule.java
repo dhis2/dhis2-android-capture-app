@@ -53,6 +53,10 @@ public class SearchTEContractsModule {
 
         void setTutorial();
 
+        void showAssignmentFilter();
+
+        void hideAssignmentFilter();
+
         void setProgramColor(String data);
 
         String fromRelationshipTEI();
@@ -149,5 +153,7 @@ public class SearchTEContractsModule {
         int getTEIColor();
 
         int getEnrollmentColor();
+
+        void initAssignmentFilter();
     }
 }

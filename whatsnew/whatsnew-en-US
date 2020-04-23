@@ -1,0 +1,10 @@
+The main new features include:
+- Increase data set row headers
+- Grouping events by program stage in the TEI Dashboard
+- Filter events in the TEI Dashboard
+- Improved error messages when saving events and enrollments
+- QR and Barcode support for data elements and attributes
+- Extended rendering options
+- New form section navigation for events and enrollment
+- Notes for events
+- New filter based on user assignment
