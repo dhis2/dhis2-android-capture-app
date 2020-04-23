@@ -97,9 +97,9 @@ Any issues around using a particular feature with Android are highlighted with a
 | d2:split   | Split the text by delimiter, and keep the nth element (0 is the first).       | ![](resources/images/../../admin/icon-complete.png)    | |
 | d2:length  | Find the length of a string.     | ![](resources/images/../../admin/icon-complete.png)    | |
 | d2:zpvc    | Returns the number of numeric zero and positive values among the given object arguments. Can be provided any number of arguments.   | ![](resources/images/../../admin/icon-complete.png)    | |
-| d2:inOrgUnitGroup\* | Evaluates whether the current organization unit is in the argument group. The argument can be defined with either ID or organization unit group code. | ![](resources/images/../../admin/icon-wip.png) | |
-| d2:hasUserRole\** |Returns true if the current user has this role otherwise false.| ![](resources/images/../../admin/icon-wip.png) | |
-| d2:zScoreWFA\*** |Function calculates z-score based on data provided by WHO weight-for-age indicator. Its value varies between -3.5 to 3.5 depending upon the value of weight.| ![](resources/images/../../admin/icon-wip.png) | |
+| d2:inOrgUnitGroup\* | Evaluates whether the current organization unit is in the argument group. The argument can be defined with either ID or organization unit group code. | ![](resources/images/../../admin/icon-complete.png) | |
+| d2:hasUserRole\** |Returns true if the current user has this role otherwise false.| ![](resources/images/../../admin/icon-complete.png) | |
+| d2:zScoreWFA\*** |Function calculates z-score based on data provided by WHO weight-for-age indicator. Its value varies between -3.5 to 3.5 depending upon the value of weight.| ![](resources/images/../../admin/icon-complete.png) | |
 \* Available in DHIS 2 v2.30
 \** Available in DHIS 2 v2.31 onwards
 \*** Available in DHIS 2 v2.32
