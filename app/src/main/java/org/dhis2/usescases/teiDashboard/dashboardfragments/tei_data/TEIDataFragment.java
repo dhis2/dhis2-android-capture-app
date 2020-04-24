@@ -157,6 +157,9 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
         activity.observeFilters().observe(this, showFilters -> showHideFilters(showFilters));
         activity.updatedEnrollment().observe(this, enrollmentUid -> updateEnrollment(enrollmentUid) );
         filtersAdapter = new FiltersAdapter(FiltersAdapter.ProgramType.TRACKER);
+        if(presenter.hasAssignment()){
+            filtersAdapter.addAssignedToMe();
+        }
         filtersAdapter.addEventStatus();
 
         try {

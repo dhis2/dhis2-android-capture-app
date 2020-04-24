@@ -81,7 +81,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
 
     private final FormRepository formRepository;
     private final D2 d2;
-    private final boolean isEventEditable;
+    private boolean isEventEditable;
     private final HashMap<String, ProgramStageSection> sectionMap;
     private final HashMap<String, ProgramStageDataElement> stageDataElementsMap;
     private String lastUpdatedUid;
@@ -108,8 +108,6 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                 .organisationUnitCode(ou.code());
 
         this.fieldFactory = fieldFactory;
-
-        isEventEditable = isEventExpired(eventUid);
 
         List<ProgramStageSection> sections = d2.programModule().programStageSections().byProgramStageUid().eq(currentStage.uid())
                 .withDataElements().withProgramIndicators().blockingGet();
@@ -161,7 +159,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
     }
 
     @Override
-    public boolean isEventExpired(String eventUid) {
+    public boolean isEventEditable(String eventUid) {
         Event event = d2.eventModule().events().uid(eventUid).blockingGet();
         Program program = d2.programModule().programs().uid(event.program()).blockingGet();
         ProgramStage stage = d2.programModule().programStages().uid(event.programStage()).blockingGet();
@@ -172,10 +170,8 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                 .byUid().eq(event.organisationUnit()).one().blockingExists();
         boolean hasCatComboAccess = event.attributeOptionCombo() == null || getCatComboAccess(event);
 
-        boolean editable = isEnrollmentOpen() && !blockAfterComplete && !isExpired &&
+        return isEnrollmentOpen() && !blockAfterComplete && !isExpired &&
                 getAccessDataWrite() && inOrgUnitRange(eventUid) && isInCaptureOrgUnit && hasCatComboAccess;
-
-        return !editable;
     }
 
     private boolean getCatComboAccess(Event event) {
@@ -317,7 +313,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
     @NonNull
     @Override
     public Flowable<List<FieldViewModel>> list() {
-
+        isEventEditable = isEventEditable(eventUid);
         if (!sectionFields.isEmpty()) {
             return Flowable.just(sectionFields)
                     .flatMapIterable(fieldViewModels -> fieldViewModels)
@@ -337,7 +333,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                             }
                         }
                         boolean editable = fieldViewModel.editable() != null ? fieldViewModel.editable() : true;
-                        fieldViewModel = fieldViewModel.withValue(value).withEditMode(editable);
+                        fieldViewModel = fieldViewModel.withValue(value).withEditMode(editable || isEventEditable);
 
                         return fieldViewModel;
                     }).toList().toFlowable()
@@ -418,7 +414,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                         return fieldFactory.create(uid, formName == null ? displayName : formName,
                                 valueType, mandatory, optionSet, dataValue,
                                 programStageSection != null ? programStageSection.uid() : null, allowFurureDates,
-                                !isEventEditable,
+                                isEventEditable,
                                 renderingType, description, fieldRendering, optionCount, objectStyle, de.fieldMask());
                     })
                     .toList().toFlowable()

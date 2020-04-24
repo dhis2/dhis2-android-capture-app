@@ -2,7 +2,6 @@ package org.dhis2.data.forms.dataentry
 
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.ValueType
@@ -182,7 +181,7 @@ class ValueStoreTest {
             .event("recordUid")
             .value("optionCode")
             .build()
-        whenever(d2.dataElementModule().dataElements().uid("fieldUid").blockingGet())doReturn DataElement.builder()
+        whenever(d2.dataElementModule().dataElements().uid("fieldUid").blockingGet()) doReturn DataElement.builder()
             .uid("fieldUid")
             .valueType(ValueType.TEXT)
             .build()
@@ -211,6 +210,73 @@ class ValueStoreTest {
         ) doReturn false
         val storeResult = deValueStore.deleteOptionValueIfSelected("fieldUid", "optionUid")
         assert(storeResult.valueStoreResult == ValueStoreImpl.ValueStoreResult.VALUE_HAS_NOT_CHANGED)
+    }
+
+    @Test
+    fun `Should return VALUE_HAS_NOT_CHANGED when saving null value for a dataElement and no previous value exist`() {
+        val testingUid = "uid"
+        whenever(
+            d2.dataElementModule().dataElements().uid(testingUid).blockingExists()
+        ) doReturn true
+        whenever(
+            d2.trackedEntityModule().trackedEntityDataValues()
+                .value("recordUid", testingUid)
+        ) doReturn mock()
+        whenever(
+            d2.dataElementModule().dataElements().uid(testingUid).blockingGet()
+        ) doReturn DataElement.builder()
+            .uid(testingUid)
+            .valueType(ValueType.TEXT)
+            .build()
+        whenever(
+            d2.trackedEntityModule().trackedEntityDataValues()
+                .value("recordUid", testingUid)
+                .blockingExists()
+        ) doReturn false
+        deValueStore.saveWithTypeCheck(testingUid, null)
+            .test()
+            .assertNoErrors()
+            .assertValue { result ->
+                result.valueStoreResult == ValueStoreImpl.ValueStoreResult.VALUE_HAS_NOT_CHANGED
+            }
+    }
+
+    @Test
+    fun `Should return VALUE_HAS_NOT_CHANGED when saving null value for an attribute and no previous value exist`() {
+        val testingUid = "uid"
+        whenever(
+            d2.dataElementModule().dataElements().uid(testingUid).blockingExists()
+        ) doReturn false
+        whenever(
+            d2.trackedEntityModule().trackedEntityAttributes().uid(testingUid).blockingExists()
+        ) doReturn true
+        whenever(
+            d2.trackedEntityModule().trackedEntityAttributes().uid(testingUid).blockingGet()
+        ) doReturn TrackedEntityAttribute.builder()
+            .uid(testingUid)
+            .unique(false)
+            .build()
+        whenever(
+            d2.trackedEntityModule().trackedEntityAttributeValues()
+                .value(testingUid, "recordUid")
+        ) doReturn mock()
+        whenever(
+            d2.trackedEntityModule().trackedEntityAttributes().uid(testingUid).blockingGet()
+        ) doReturn TrackedEntityAttribute.builder()
+            .uid(testingUid)
+            .valueType(ValueType.TEXT)
+            .build()
+        whenever(
+            d2.trackedEntityModule().trackedEntityAttributeValues()
+                .value(testingUid, "recordUid")
+                .blockingExists()
+        ) doReturn false
+        deValueStore.saveWithTypeCheck(testingUid, null)
+            .test()
+            .assertNoErrors()
+            .assertValue { result ->
+                result.valueStoreResult == ValueStoreImpl.ValueStoreResult.VALUE_HAS_NOT_CHANGED
+            }
     }
 
     fun mockedAttribute(): TrackedEntityAttribute {

@@ -6,7 +6,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import androidx.databinding.DataBindingUtil
-import androidx.fragment.app.DialogFragment
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
@@ -14,7 +13,7 @@ import com.bumptech.glide.request.RequestOptions
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import org.dhis2.Bindings.px
+import org.dhis2.Bindings.dp
 import org.dhis2.Bindings.widthAndHeight
 import org.dhis2.R
 import org.dhis2.databinding.DetailImageBottomDialogBinding
@@ -68,7 +67,7 @@ class ImageDetailBottomDialog(
 
     override fun onResume() {
         super.onResume()
-        val (width, height) = fileToShow.widthAndHeight(300.px)
+        val (width, height) = fileToShow.widthAndHeight(300.dp)
         Glide.with(this)
             .load(fileToShow)
             .apply(RequestOptions.skipMemoryCacheOf(true))
