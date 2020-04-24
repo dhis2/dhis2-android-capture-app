@@ -33,6 +33,7 @@ class SettingsTest : BaseTest() {
     }
 
     @Test
+    @Ignore
     fun shouldFindEditPeriodDisabledWhenClickOnSyncData() {
         startActivity()
 
@@ -105,6 +106,7 @@ class SettingsTest : BaseTest() {
     }
 
     @Test
+    @Ignore
     fun shouldSuccessfullyOpenLogs() {
         startActivity()
 
@@ -120,6 +122,7 @@ class SettingsTest : BaseTest() {
     }
 
     @Test
+    @Ignore
     fun shouldSuccessfullyDeleteLocalData() {
         startActivity()
 
@@ -137,6 +140,7 @@ class SettingsTest : BaseTest() {
     }
 
     @Test
+    @Ignore
     fun shouldRedirectToLoginWhenResetAppSucceed() {
         setupCredentials()
         enableIntents()
