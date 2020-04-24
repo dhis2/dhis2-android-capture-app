@@ -6,8 +6,8 @@ import androidx.test.rule.ActivityTestRule
 import org.dhis2.usescases.BaseTest
 import org.dhis2.usescases.login.loginRobot
 import org.dhis2.usescases.main.MainActivity
-import org.dhis2.usescases.main.MainRobot
 import org.dhis2.usescases.main.homeRobot
+import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -78,6 +78,7 @@ class SettingsTest : BaseTest() {
     }
 
     @Test
+    @Ignore
     fun shouldRefillValuesWhenClickOnReservedValues() {
         startActivity()
 

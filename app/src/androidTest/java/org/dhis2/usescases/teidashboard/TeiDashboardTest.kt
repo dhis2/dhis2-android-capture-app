@@ -11,6 +11,7 @@ import org.dhis2.usescases.searchTrackEntity.SearchTEActivity
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity
 import org.dhis2.usescases.teidashboard.robot.*
 import org.hisp.dhis.android.core.mockwebserver.ResponseController.GET
+import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -150,6 +151,7 @@ class TeiDashboardTest : BaseTest() {
     }
 
     @Test
+    @Ignore
     fun shouldEnrollToOtherProgramWhenClickOnProgramEnrollments() {
         //launch tei
         //click on more options
@@ -199,6 +201,7 @@ class TeiDashboardTest : BaseTest() {
     }
 
     @Test
+    @Ignore
     fun shouldSuccessfullyCreateRelationshipWhenClickAdd() {
         prepareTeiCompletedProgrammeIntentAndLaunchActivity(rule)
 
@@ -218,6 +221,7 @@ class TeiDashboardTest : BaseTest() {
     }
 
     @Test
+    @Ignore
     fun shouldDeleteTeiSuccessfully() {
         // open more options
         // click on delete tei
