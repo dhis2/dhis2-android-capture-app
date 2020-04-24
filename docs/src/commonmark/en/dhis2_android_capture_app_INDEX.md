@@ -1,13 +1,10 @@
 ---
 title: 'DHIS 2 configuration guide for the Android capture app'
 author: 'DHIS 2'
-date:
 year: 2020
-month: January
+month: Apr
 keywords: [DHIS2, Android]
-commit:
-version: master
-applicable_txt: 'Applicable to version 2.0.0'
+applicable_txt: 'Applicable to version 2.1'
 ---
 <!--DHIS2-SECTION-ID:index-->
 
