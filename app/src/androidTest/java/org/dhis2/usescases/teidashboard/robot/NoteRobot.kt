@@ -10,7 +10,6 @@ import org.dhis2.R
 import org.dhis2.common.BaseRobot
 import org.dhis2.common.matchers.RecyclerviewMatchers.Companion.atPosition
 import org.dhis2.common.matchers.RecyclerviewMatchers.Companion.isNotEmpty
-import org.dhis2.common.matchers.isToast
 import org.dhis2.usescases.notes.NotesViewHolder
 import org.hamcrest.CoreMatchers.allOf
 import org.hamcrest.CoreMatchers.not
@@ -24,16 +23,12 @@ fun noteRobot(noteRobot: NoteRobot.() -> Unit) {
 class NoteRobot: BaseRobot() {
 
     fun clickOnFabAddNewNote() {
-        onView(withId(R.id.addNoteButton)).perform(click())
+        onView(withId(R.id.addNoteButton)).check(matches(isDisplayed())).perform(click())
     }
 
     fun clickOnNoteWithPosition(position:Int){
         onView(withId(R.id.notes_recycler))
                 .perform(actionOnItemAtPosition<NotesViewHolder>(position, click()))
-    }
-
-    fun checkFabDisplay() {
-        onView(withId(R.id.addNoteButton)).check(matches(isDisplayed()))
     }
 
     fun typeNote(text: String) {
@@ -49,10 +44,6 @@ class NoteRobot: BaseRobot() {
     fun clickYesOnAlertDialog(){
         onView(withText(R.string.yes))
                 .perform(click())
-    }
-
-    fun checkToastDisplayed(toastText: String) {
-        onView(withText(toastText)).inRoot(isToast()).check(matches(isDisplayed()))
     }
 
     fun checkNoteWasNotCreated(text: String){

@@ -24,23 +24,20 @@ class TeiDashboardTest : BaseTest() {
     @get:Rule
     val ruleSearch = ActivityTestRule(SearchTEActivity::class.java, false, false)
 
-
     @Test
     fun shouldSuccessfullyCreateANoteWhenClickCreateNote() {
         setupCredentials()
+
         prepareTeiCompletedProgrammeIntentAndLaunchActivity(rule)
 
         teiDashboardRobot {
-            waitUntilActivityVisible<TeiDashboardMobileActivity>()
             clickOnNotesTab()
         }
 
         noteRobot {
-            checkFabDisplay()
             clickOnFabAddNewNote()
             typeNote(NOTE_VALID)
             clickOnSaveButton()
-            checkToastDisplayed(TOAST_TEXT_SAVED)
             checkNewNoteWasCreated(NOTE_VALID)
         }
     }
@@ -50,12 +47,10 @@ class TeiDashboardTest : BaseTest() {
         prepareTeiCompletedProgrammeIntentAndLaunchActivity(rule)
 
         teiDashboardRobot {
-            waitUntilActivityVisible<TeiDashboardMobileActivity>()
             clickOnNotesTab()
         }
 
         noteRobot {
-            checkFabDisplay()
             clickOnFabAddNewNote()
             typeNote(NOTE_INVALID)
             clickOnClearButton()
@@ -69,7 +64,6 @@ class TeiDashboardTest : BaseTest() {
         prepareTeiWithExistingNoteIntentAndLaunchActivity(rule)
 
         teiDashboardRobot {
-            waitUntilActivityVisible<TeiDashboardMobileActivity>()
             clickOnNotesTab()
         }
 
@@ -84,7 +78,6 @@ class TeiDashboardTest : BaseTest() {
         prepareTeiCompletedProgrammeIntentAndLaunchActivity(rule)
 
         teiDashboardRobot {
-            waitUntilActivityVisible<TeiDashboardMobileActivity>()
             clickOnMenuMoreOptions()
             clickOnMenuReOpen()
             checkUnlockIconIsDisplay()
@@ -97,7 +90,6 @@ class TeiDashboardTest : BaseTest() {
         prepareTeiOpenedProgrammeIntentAndLaunchActivity(rule)
 
         teiDashboardRobot {
-            waitUntilActivityVisible<TeiDashboardMobileActivity>()
             clickOnMenuMoreOptions()
             clickOnMenuDeactivate()
             checkLockIconIsDisplay()
@@ -110,7 +102,6 @@ class TeiDashboardTest : BaseTest() {
         prepareTeiOpenedForCompleteProgrammeIntentAndLaunchActivity(rule)
 
         teiDashboardRobot {
-            waitUntilActivityVisible<TeiDashboardMobileActivity>()
             clickOnMenuMoreOptions()
             clickOnMenuComplete()
             checkLockCompleteIconIsDisplay()
@@ -123,7 +114,6 @@ class TeiDashboardTest : BaseTest() {
         prepareTeiCompletedProgrammeIntentAndLaunchActivity(rule)
 
         teiDashboardRobot {
-            waitUntilActivityVisible<TeiDashboardMobileActivity>()
             clickOnShareButton()
             clickOnNextQR()
         }
@@ -134,7 +124,6 @@ class TeiDashboardTest : BaseTest() {
         prepareTeiOpenedForReferralProgrammeIntentAndLaunchActivity(rule)
 
         teiDashboardRobot {
-            waitUntilActivityVisible<TeiDashboardMobileActivity>()
             clickOnFab()
             clickOnReferral()
             clickOnFirstReferralEvent()
@@ -150,7 +139,6 @@ class TeiDashboardTest : BaseTest() {
         prepareTeiOpenedWithNoPreviousEventProgrammeIntentAndLaunchActivity(rule)
 
         teiDashboardRobot {
-            waitUntilActivityVisible<TeiDashboardMobileActivity>()
             clickOnFab()
             clickOnScheduleNew()
             clickOnFirstReferralEvent()
@@ -188,7 +176,6 @@ class TeiDashboardTest : BaseTest() {
         prepareTeiOpenedWithFullEvents(rule)
 
         teiDashboardRobot {
-            waitUntilActivityVisible<TeiDashboardMobileActivity>()
             clickOnFab()
             clickOnReferral()
             checkCannotAddMoreEventToastIsShown()
