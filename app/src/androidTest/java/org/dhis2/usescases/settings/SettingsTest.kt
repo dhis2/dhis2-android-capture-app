@@ -23,16 +23,6 @@ class SettingsTest : BaseTest() {
     }
 
     @Test
-    fun openSettings() {
-        startActivity()
-
-        homeRobot {
-            clickOnNavigationDrawerMenu()
-            clickOnSettings()
-        }
-    }
-
-    @Test
     @Ignore
     fun shouldFindEditPeriodDisabledWhenClickOnSyncData() {
         startActivity()
@@ -90,7 +80,6 @@ class SettingsTest : BaseTest() {
 
         // on Manage Reserved 90% view should add ScrollTo
         // on Refill 90% view check custom view action
-
         settingsRobot {
             clickOnReservedValues()
             clickOnManageReservedValues()
@@ -106,7 +95,6 @@ class SettingsTest : BaseTest() {
     }
 
     @Test
-    @Ignore
     fun shouldSuccessfullyOpenLogs() {
         startActivity()
 
@@ -174,7 +162,6 @@ class SettingsTest : BaseTest() {
         }
 
         settingsRobot {
-            Thread.sleep(5000)
             clickOnSMSSettings()
             checkGatewayNumberFieldIsDisable()
             checkSMSSubmissionIsEnable()
