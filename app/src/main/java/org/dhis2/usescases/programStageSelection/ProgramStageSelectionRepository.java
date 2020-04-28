@@ -8,6 +8,7 @@ import java.util.List;
 
 import androidx.annotation.NonNull;
 import io.reactivex.Flowable;
+import io.reactivex.Single;
 
 /**
  * QUADRAM. Created by ppajuelo on 02/11/2017.
@@ -15,7 +16,7 @@ import io.reactivex.Flowable;
 
 public interface ProgramStageSelectionRepository {
     @NonNull
-    Flowable<List<ProgramStage>> enrollmentProgramStages(String programId, String enrollmentUid);
+    Flowable<List<ProgramStage>> enrollmentProgramStages();
 
     Flowable<Result<RuleEffect>> calculate();
 

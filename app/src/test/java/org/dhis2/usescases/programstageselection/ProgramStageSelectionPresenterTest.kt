@@ -79,10 +79,7 @@ class ProgramStageSelectionPresenterTest {
         )
 
         whenever(
-            repository.enrollmentProgramStages(
-                programId,
-                enrollmentUid
-            )
+            repository.enrollmentProgramStages()
         ) doReturn Flowable.just(programStages)
         whenever(repository.calculate()) doReturn Flowable.just(calcResult)
         whenever(
