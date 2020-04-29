@@ -7,7 +7,6 @@ import co.infinum.goldfinger.Goldfinger
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import org.dhis2.App
-import org.dhis2.R
 import org.dhis2.data.fingerprint.FingerPrintController
 import org.dhis2.data.fingerprint.Type
 import org.dhis2.data.prefs.Preference
@@ -286,10 +285,9 @@ class LoginPresenter(
     }
 
     fun onFingerprintClick() {
-        view.showFingerprintDialog()
         disposable.add(
 
-            fingerPrintController.authenticate()
+            fingerPrintController.authenticate(view.getPromptParams())
                 .map { result ->
                     if (preferenceProvider.contains(
                             SECURE_SERVER_URL,
@@ -323,7 +321,6 @@ class LoginPresenter(
                     },
                     {
                         view.displayMessage(AUTH_ERROR)
-                        view.hideFingerprintDialog()
                     }
                 )
         )

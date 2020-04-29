@@ -14,15 +14,15 @@ object FingerPrintModule {
     @JvmStatic
     @Provides
     @PerActivity
-    fun provideFingerPrintController(goldfinger: RxGoldfinger, mapper: FingerPrintMapper):
+    fun provideFingerPrintController(context: Context, goldfinger: RxGoldfinger, mapper: FingerPrintMapper):
         FingerPrintController {
-            return FingerPrintControllerImpl(goldfinger, mapper)
+            return FingerPrintControllerImpl(context,goldfinger, mapper)
         }
 
     @JvmStatic
     @Provides
     fun provideFingerPrintModule(context: Context): RxGoldfinger {
-        return RxGoldfinger.Builder(context).setLogEnabled(BuildConfig.DEBUG).build()
+        return RxGoldfinger.Builder(context).logEnabled(BuildConfig.DEBUG).build()
     }
 
     @JvmStatic
