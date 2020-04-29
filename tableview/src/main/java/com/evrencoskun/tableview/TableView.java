@@ -27,6 +27,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
+import androidx.annotation.AttrRes;
+import androidx.annotation.ColorInt;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.evrencoskun.tableview.adapter.AbstractTableAdapter;
 import com.evrencoskun.tableview.adapter.recyclerview.CellRecyclerView;
 import com.evrencoskun.tableview.adapter.recyclerview.ColumnHeaderRecyclerViewAdapter;
@@ -52,15 +61,6 @@ import com.evrencoskun.tableview.sort.SortState;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import androidx.annotation.AttrRes;
-import androidx.annotation.ColorInt;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
-import androidx.recyclerview.widget.DividerItemDecoration;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 /**
  * Created by evrencoskun on 11/06/2017.
@@ -118,6 +118,7 @@ public class TableView extends FrameLayout implements ITableView {
     private int mHeaderCount = 1;
     private List<CellRecyclerView> mBackupHeaders = new ArrayList<>();
     private AbstractTableAdapter.OnScale scaleListener;
+    private boolean isRTL;
 
     public TableView(@NonNull Context context) {
         super(context);
@@ -139,6 +140,8 @@ public class TableView extends FrameLayout implements ITableView {
     }
 
     private void initialDefaultValues(AttributeSet attrs) {
+        //RTL
+        isRTL = getContext().getResources().getConfiguration().getLayoutDirection() == LAYOUT_DIRECTION_RTL;
         // Dimensions
         mRowHeaderWidth = (int) getResources().getDimension(R.dimen.default_row_header_width);
         mColumnHeaderHeight = (int) getResources().getDimension(R.dimen.default_column_header_height);
@@ -268,7 +271,7 @@ public class TableView extends FrameLayout implements ITableView {
 
         // Set layout params
         LayoutParams layoutParams = new LayoutParams(LayoutParams.WRAP_CONTENT, mHeaderHeight);
-        layoutParams.leftMargin = mRowHeaderWidth;
+        layoutParams.setMarginStart(mRowHeaderWidth);
         layoutParams.topMargin = mHeaderHeight * header;
         recyclerView.setLayoutParams(layoutParams);
 
@@ -292,7 +295,7 @@ public class TableView extends FrameLayout implements ITableView {
 
             // Set layout params
             LayoutParams layoutParams = new LayoutParams(LayoutParams.WRAP_CONTENT, mHeaderHeight);
-            layoutParams.leftMargin = mRowHeaderWidth;
+            layoutParams.setMarginStart(mRowHeaderWidth);
             layoutParams.topMargin = mHeaderHeight * i;
             recyclerView.setLayoutParams(layoutParams);
 
@@ -347,7 +350,7 @@ public class TableView extends FrameLayout implements ITableView {
             // Set layout params
             LayoutParams layoutParams = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams
                     .WRAP_CONTENT);
-            layoutParams.leftMargin = mRowHeaderWidth;
+            layoutParams.setMarginStart(mRowHeaderWidth);
             layoutParams.topMargin = mHeaderHeight * mHeaderCount;
             mCellRecyclerView.setLayoutParams(layoutParams);
 
@@ -418,7 +421,7 @@ public class TableView extends FrameLayout implements ITableView {
                     scrollToColumnPosition(0);
 
                     //Corner
-                    if(getAdapter().getCornerView()!=null) {
+                    if (getAdapter().getCornerView() != null) {
                         FrameLayout.LayoutParams mCornerHeaderParams = ((FrameLayout.LayoutParams) getAdapter().getCornerView().getLayoutParams());
                         mCornerHeaderParams.height = height * mHeaderCount;
                     }
@@ -851,9 +854,9 @@ public class TableView extends FrameLayout implements ITableView {
 
         if (mColumnHeaderRecyclerView != null) {
             // Update ColumnHeaders left margin
-            for(CellRecyclerView mColumnHeaderRecyclerView : mColumnHeaderRecyclerViews) {
+            for (CellRecyclerView mColumnHeaderRecyclerView : mColumnHeaderRecyclerViews) {
                 LayoutParams layoutParams = (LayoutParams) mColumnHeaderRecyclerView.getLayoutParams();
-                layoutParams.leftMargin = rowHeaderWidth;
+                layoutParams.setMarginStart(rowHeaderWidth);
                 mColumnHeaderRecyclerView.setLayoutParams(layoutParams);
                 mColumnHeaderRecyclerView.requestLayout();
             }
@@ -862,16 +865,16 @@ public class TableView extends FrameLayout implements ITableView {
         if (mCellRecyclerView != null) {
             // Update Cells left margin
             LayoutParams layoutParams = (LayoutParams) mCellRecyclerView.getLayoutParams();
-            layoutParams.leftMargin = rowHeaderWidth;
+            layoutParams.setMarginStart(rowHeaderWidth);
             mCellRecyclerView.setLayoutParams(layoutParams);
             mCellRecyclerView.requestLayout();
         }
 
-        if(mBackupHeaders != null) {
+        if (mBackupHeaders != null) {
             // Update BackupHeaders left margin
-            for(CellRecyclerView mBackupHeader : mBackupHeaders) {
+            for (CellRecyclerView mBackupHeader : mBackupHeaders) {
                 LayoutParams layoutParams = (LayoutParams) mBackupHeader.getLayoutParams();
-                layoutParams.leftMargin = rowHeaderWidth;
+                layoutParams.setMarginStart(rowHeaderWidth);
                 mBackupHeader.setLayoutParams(layoutParams);
                 mBackupHeader.requestLayout();
             }
