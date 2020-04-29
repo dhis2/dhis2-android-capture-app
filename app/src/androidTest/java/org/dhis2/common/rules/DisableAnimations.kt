@@ -1,4 +1,4 @@
-package org.dhis2
+package org.dhis2.common.rules
 
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.UiDevice
