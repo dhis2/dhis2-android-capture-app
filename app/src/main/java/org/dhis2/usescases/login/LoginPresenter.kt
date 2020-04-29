@@ -3,6 +3,7 @@ package org.dhis2.usescases.login
 import android.os.Build
 import androidx.annotation.RestrictTo
 import androidx.annotation.RestrictTo.Scope
+import androidx.annotation.VisibleForTesting
 import co.infinum.goldfinger.Goldfinger
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
@@ -232,7 +233,8 @@ class LoginPresenter(
         }
     }
 
-    private fun handleResponse(userResponse: Response<*>, userName: String, server: String) {
+    @VisibleForTesting
+    fun handleResponse(userResponse: Response<*>, userName: String, server: String) {
         view.showLoginProgress(false)
         if (userResponse.isSuccessful) {
             if(view.isNetworkAvailable()) {
