@@ -237,7 +237,7 @@ class LoginPresenterTest {
     }
 
     @Test
-    fun `Should display message and hide fingerprint dialog when authenticate throws an error`() {
+    fun `Should display message when authenticate throws an error`() {
         whenever(
             goldfinger.authenticate(view.getPromptParams())
         ) doReturn Observable.error(Exception(LoginPresenter.AUTH_ERROR))

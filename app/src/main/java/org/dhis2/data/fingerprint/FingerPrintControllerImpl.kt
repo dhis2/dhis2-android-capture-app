@@ -6,7 +6,6 @@ import co.infinum.goldfinger.rx.RxGoldfinger
 import io.reactivex.Observable
 
 class FingerPrintControllerImpl(
-    val context: Context,
     val goldfinger: RxGoldfinger,
     val mapper: FingerPrintMapper
 ) :

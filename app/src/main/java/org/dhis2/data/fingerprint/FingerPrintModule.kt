@@ -14,9 +14,9 @@ object FingerPrintModule {
     @JvmStatic
     @Provides
     @PerActivity
-    fun provideFingerPrintController(context: Context, goldfinger: RxGoldfinger, mapper: FingerPrintMapper):
+    fun provideFingerPrintController(goldfinger: RxGoldfinger, mapper: FingerPrintMapper):
         FingerPrintController {
-            return FingerPrintControllerImpl(context,goldfinger, mapper)
+            return FingerPrintControllerImpl(goldfinger, mapper)
         }
 
     @JvmStatic
