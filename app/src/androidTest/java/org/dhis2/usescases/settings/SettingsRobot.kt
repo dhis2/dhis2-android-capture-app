@@ -2,17 +2,14 @@ package org.dhis2.usescases.settings
 
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
-import androidx.test.espresso.action.ViewActions.scrollTo
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition
 import androidx.test.espresso.matcher.ViewMatchers.*
 import org.dhis2.R
 import org.dhis2.common.BaseRobot
 import org.dhis2.common.matchers.RecyclerviewMatchers.Companion.atPosition
-import org.dhis2.common.matchers.RecyclerviewMatchers.Companion.isNotEmpty
 import org.dhis2.usescases.reservedValue.ReservedValueViewHolder
 import org.hamcrest.CoreMatchers.allOf
-import org.hamcrest.CoreMatchers.not
 
 fun settingsRobot(settingsRobot: SettingsRobot.() -> Unit) {
     SettingsRobot().apply {
@@ -91,7 +88,7 @@ class SettingsRobot: BaseRobot() {
         /*onView(withId(R.id.errorRecycler)).check(matches(allOf(
                 isDisplayed(), not(isNotEmpty())
         )))*/
-        onView(withId(R.id.possitive)).check(matches(isEnabled()))
+        onView(withId(R.id.possitive)).check(matches(isDisplayed()))
     }
 
     fun clickOnAcceptDelete() {
