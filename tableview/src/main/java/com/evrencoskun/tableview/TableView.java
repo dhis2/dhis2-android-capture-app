@@ -118,7 +118,6 @@ public class TableView extends FrameLayout implements ITableView {
     private int mHeaderCount = 1;
     private List<CellRecyclerView> mBackupHeaders = new ArrayList<>();
     private AbstractTableAdapter.OnScale scaleListener;
-    private boolean isRTL;
 
     public TableView(@NonNull Context context) {
         super(context);
@@ -140,8 +139,6 @@ public class TableView extends FrameLayout implements ITableView {
     }
 
     private void initialDefaultValues(AttributeSet attrs) {
-        //RTL
-        isRTL = getContext().getResources().getConfiguration().getLayoutDirection() == LAYOUT_DIRECTION_RTL;
         // Dimensions
         mRowHeaderWidth = (int) getResources().getDimension(R.dimen.default_row_header_width);
         mColumnHeaderHeight = (int) getResources().getDimension(R.dimen.default_column_header_height);
