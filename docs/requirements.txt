@@ -5,8 +5,13 @@ cssselect2==0.2.1
 defusedxml==0.5.0
 html5lib==1.0.1
 idna==2.8
+Markdown==3.2.1
+markdown-captions==2
+mkdocs==1.1.0
+mkdocs-material==4.6.3
+mkdocs-minify-plugin==0.2.1
 pdfrw==0.4
-Pillow==5.2.0
+Pillow==7.1.1
 ply==3.11
 pycparser==2.18
 Pyphen==0.9.5
@@ -15,9 +20,9 @@ PyYAML==4.2b1
 requests==2.21.0
 six==1.11.0
 tinycss2==1.0.0
-transifex-client==0.13.6
+transifex-client==0.13.7
 Unidecode==1.0.23
-urllib3==1.23
+urllib3==1.24.2
 watchdog==0.9.0
-WeasyPrint==47
+WeasyPrint==51
 webencodings==0.5.1
