@@ -6,6 +6,7 @@ import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.schedulers.TestScheduler
+import junit.framework.TestCase.assertTrue
 import org.dhis2.data.schedulers.TestSchedulerProvider
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.hisp.dhis.android.core.D2
@@ -157,5 +158,105 @@ class SearchTEPresenterTest {
         presenter.initAssignmentFilter()
         verify(view, times(0)).showAssignmentFilter()
         verify(view, times(1)).hideAssignmentFilter()
+    }
+
+    @Test
+    fun `Should clear query data if program is changed to a non null object`() {
+        val currentProgram = Program.builder()
+            .uid("program1")
+            .build()
+        val selectedProgram = Program.builder()
+            .uid("program2")
+            .build()
+        whenever(
+            d2.programModule().programStages()
+                .byProgramUid()
+        ) doReturn mock()
+        whenever(
+            d2.programModule().programStages()
+                .byProgramUid().eq(selectedProgram.uid())
+        ) doReturn mock()
+        whenever(
+            d2.programModule().programStages()
+                .byProgramUid().eq(selectedProgram.uid())
+                .byEnableUserAssignment()
+        ) doReturn mock()
+        whenever(
+            d2.programModule().programStages()
+                .byProgramUid().eq(selectedProgram.uid())
+                .byEnableUserAssignment().isTrue
+        ) doReturn mock()
+        whenever(
+            d2.programModule().programStages()
+                .byProgramUid().eq(selectedProgram.uid())
+                .byEnableUserAssignment().isTrue
+                .blockingIsEmpty()
+        ) doReturn true
+        presenter.setProgramForTesting(currentProgram)
+        presenter.queryData["uid"] = "value"
+        presenter.program = selectedProgram
+        assertTrue(presenter.queryData.isEmpty())
+    }
+
+    @Test
+    fun `Should clear query data if existing program is changed to null object`() {
+        presenter.setProgramForTesting(
+            Program.builder()
+                .uid("program1")
+                .build()
+        )
+        presenter.queryData["uid"] = "value"
+        presenter.program = null
+        assertTrue(presenter.queryData.isEmpty())
+    }
+
+    @Test
+    fun `Should not clear query data if program is not changed`() {
+        val currentProgram =
+            Program.builder()
+                .uid("program1")
+                .build();
+        val selectedProgram = Program.builder()
+            .uid("program1")
+            .build()
+        whenever(
+            d2.programModule().programStages()
+                .byProgramUid()
+        ) doReturn mock()
+        whenever(
+            d2.programModule().programStages()
+                .byProgramUid().eq(selectedProgram.uid())
+        ) doReturn mock()
+        whenever(
+            d2.programModule().programStages()
+                .byProgramUid().eq(selectedProgram.uid())
+                .byEnableUserAssignment()
+        ) doReturn mock()
+        whenever(
+            d2.programModule().programStages()
+                .byProgramUid().eq(selectedProgram.uid())
+                .byEnableUserAssignment().isTrue
+        ) doReturn mock()
+        whenever(
+            d2.programModule().programStages()
+                .byProgramUid().eq(selectedProgram.uid())
+                .byEnableUserAssignment().isTrue
+                .blockingIsEmpty()
+        ) doReturn true
+        presenter.setProgramForTesting(
+            currentProgram
+        )
+        presenter.queryData["uid"] = "value"
+
+        presenter.program = selectedProgram
+        assertTrue(presenter.queryData.isNotEmpty())
+    }
+
+    @Test
+    fun `Should not clear query data if null program is not changed`() {
+        presenter.setProgramForTesting(null)
+        presenter.queryData["uid"] = "value"
+        presenter.program = null
+        assertTrue(presenter.queryData.isNotEmpty())
     }
 }
