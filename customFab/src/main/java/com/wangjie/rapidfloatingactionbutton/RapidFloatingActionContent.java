@@ -77,7 +77,7 @@ public abstract class RapidFloatingActionContent extends FrameLayout {
         this.removeAllViews();
         RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) this.getLayoutParams();
         if(null == lp){
-            lp = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            lp = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         }
         this.setLayoutParams(lp);
         this.addView(this.rootView);
