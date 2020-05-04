@@ -104,7 +104,7 @@ class LoginPresenter(
                             } else {
                                 val isSessionLocked =
                                     preferenceProvider.getBoolean(SESSION_LOCKED, false)
-                                if (!isSessionLocked){
+                                if (!isSessionLocked) {
                                     val serverUrl =
                                         preferenceProvider.getString(
                                             SECURE_SERVER_URL,
@@ -200,7 +200,7 @@ class LoginPresenter(
                         this.handleResponse(it, userName, serverUrl)
                     },
                     {
-                        this.handleError(it)
+                        this.handleError(it, serverUrl, userName, pass)
                     }
                 )
         )
@@ -256,15 +256,16 @@ class LoginPresenter(
         }
     }
 
-    private fun handleError(throwable: Throwable) {
+    private fun handleError(
+        throwable: Throwable,
+        serverUrl: String,
+        userName: String,
+        pass: String
+    ) {
         Timber.e(throwable)
         if (throwable is D2Error && throwable.errorCode() == D2ErrorCode.ALREADY_AUTHENTICATED) {
-            preferenceProvider.apply {
-                setValue(SESSION_LOCKED, false)
-
-                setValue(PIN, null)
-            }
-            view.alreadyAuthenticated()
+            userManager?.d2?.userModule()?.blockingLogOut()
+            logIn(serverUrl, userName, pass)
         } else {
             view.renderError(throwable)
         }
@@ -281,7 +282,7 @@ class LoginPresenter(
 
     fun areSameCredentials(serverUrl: String, userName: String, pass: String): Boolean {
         return preferenceProvider.areCredentialsSet() &&
-            preferenceProvider.areSameCredentials(serverUrl, userName, pass)
+                preferenceProvider.areSameCredentials(serverUrl, userName, pass)
     }
 
     fun saveUserCredentials(serverUrl: String, userName: String, pass: String) {
