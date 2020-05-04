@@ -171,7 +171,7 @@ class LoginPresenterTest {
 
     @Test
     fun `Should log in with fingerprint successfully`() {
-        whenever(goldfinger.authenticate()) doReturn Observable.just(
+        whenever(goldfinger.authenticate(view.getPromptParams())) doReturn Observable.just(
             FingerPrintResult(
                 Type.SUCCESS,
                 "none"
@@ -201,7 +201,7 @@ class LoginPresenterTest {
 
     @Test
     fun `Should show credentials data when logging in with fingerprint`() {
-        whenever(goldfinger.authenticate()) doReturn Observable.just(
+        whenever(goldfinger.authenticate(view.getPromptParams())) doReturn Observable.just(
             FingerPrintResult(
                 Type.ERROR,
                 "none"
@@ -221,7 +221,7 @@ class LoginPresenterTest {
 
     @Test
     fun `Should show empty credentials message when trying to log in with fingerprint`() {
-        whenever(goldfinger.authenticate()) doReturn Observable.just(
+        whenever(goldfinger.authenticate(view.getPromptParams())) doReturn Observable.just(
             FingerPrintResult(
                 Type.ERROR,
                 "none"
@@ -240,15 +240,14 @@ class LoginPresenterTest {
     }
 
     @Test
-    fun `Should display message and hide fingerprint dialog when authenticate throws an error`() {
+    fun `Should display message when authenticate throws an error`() {
         whenever(
-            goldfinger.authenticate()
+            goldfinger.authenticate(view.getPromptParams())
         ) doReturn Observable.error(Exception(LoginPresenter.AUTH_ERROR))
 
         loginPresenter.onFingerprintClick()
 
         verify(view).displayMessage(LoginPresenter.AUTH_ERROR)
-        verify(view).hideFingerprintDialog()
     }
 
     @Test
