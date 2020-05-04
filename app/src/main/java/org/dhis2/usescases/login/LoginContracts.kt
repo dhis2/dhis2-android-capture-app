@@ -58,5 +58,6 @@ class LoginContracts {
         fun setTestingCredentials()
         fun setUpFingerPrintDialog()
         fun getDefaultServerProtocol(): String
+        fun isNetworkAvailable(): Boolean
     }
 }
