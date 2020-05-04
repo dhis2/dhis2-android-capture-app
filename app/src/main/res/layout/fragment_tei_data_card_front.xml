@@ -136,20 +136,22 @@
             android:layout_gravity="center_vertical"
             android:background='@{followup ? @drawable/ic_circle_red : null}'
             android:onClick='@{() -> presenter.onFollowUp(dashboardModel)}'
-            app:iconTint="@{followup}"
             android:visibility="@{program!=null?View.VISIBLE:View.GONE}"
+            app:iconTint="@{followup}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/ic_warning_white"
             tools:ignore="ContentDescription"
             tools:tint="@color/text_black_333" />
 
-        <RelativeLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/program_lock_layout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
             android:visibility="@{program!=null?View.VISIBLE:View.GONE}"
             app:layout_constraintEnd_toStartOf="@id/follow_up"
+            app:layout_constraintStart_toEndOf="@id/teiData"
             app:layout_constraintTop_toTopOf="parent">
 
             <ImageView
@@ -157,9 +159,9 @@
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:layout_centerHorizontal="true"
-                android:layout_marginEnd="8dp"
                 app:enrolmentIcon='@{enrollment.status()}'
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/ic_lock_open_green"
                 tools:ignore="ContentDescription" />
@@ -176,14 +178,18 @@
                 android:textColor="#787878"
                 android:textSize="9sp"
                 app:enrolmentText='@{enrollment.status()}'
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/program_lock"
                 tools:text="Completado" />
 
-        </RelativeLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/teiData"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
             app:layout_constraintEnd_toStartOf="@id/program_lock_layout"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
@@ -293,6 +299,7 @@
                     android:layout_marginStart="10dp"
                     android:fontFamily="@font/rubik_medium"
                     android:gravity="end"
+                    android:textAlignment="viewEnd"
                     android:textColor="@color/text_black_4d4d4d"
                     android:textSize="12sp"
                     android:visibility="@{(dashboardModel.currentEnrollment.incidentDate()!=null &amp;&amp; program != null &amp;&amp; program.displayIncidentDate()) ? View.VISIBLE : View.GONE}"
@@ -308,6 +315,7 @@
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/rubik_medium"
                     android:gravity="end"
+                    android:textAlignment="viewEnd"
                     android:textColor="@color/text_black_4d4d4d"
                     android:textSize="12sp"
                     android:visibility="@{dashboardModel.currentEnrollment.enrollmentDate()==null?View.GONE:View.VISIBLE}"
@@ -323,12 +331,13 @@
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/rubik_medium"
                     android:gravity="end"
+                    android:textAlignment="viewEnd"
                     android:textColor="@color/text_black_4d4d4d"
                     android:textSize="12sp"
-                    tools:text="Org Unit Name"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/org_unit_label"
-                    app:layout_constraintTop_toTopOf="@id/org_unit_label" />
+                    app:layout_constraintTop_toTopOf="@id/org_unit_label"
+                    tools:text="Org Unit Name" />
             </androidx.constraintlayout.widget.ConstraintLayout>
         </com.google.android.flexbox.FlexboxLayout>
 
