@@ -54,5 +54,6 @@ class LoginContracts {
         fun setTestingCredentials()
         fun getDefaultServerProtocol(): String
         fun getPromptParams(): Goldfinger.PromptParams
+        fun isNetworkAvailable(): Boolean
     }
 }

@@ -47,7 +47,7 @@ public class ProgramEventDetailModule {
 
     @Provides
     @PerActivity
-    ProgramEventDetailRepository eventDetailRepository(D2 d2) {
-        return new ProgramEventDetailRepositoryImpl(programUid, d2);
+    ProgramEventDetailRepository eventDetailRepository(D2 d2, ProgramEventMapper mapper) {
+        return new ProgramEventDetailRepositoryImpl(programUid, d2, mapper);
     }
 }

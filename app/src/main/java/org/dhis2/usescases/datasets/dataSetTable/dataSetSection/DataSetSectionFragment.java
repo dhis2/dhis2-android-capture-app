@@ -235,10 +235,13 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
                 binding.headerContainer.addView(crv);
 
             View cornerView = LayoutInflater.from(getContext()).inflate(R.layout.table_view_corner_layout, null);
-            cornerView.setLayoutParams(new ViewGroup.LayoutParams(
+            LinearLayout.LayoutParams cornerParams = new LinearLayout.LayoutParams(
                     tableView.getAdapter().getRowHeaderWidth(),
                     binding.headerContainer.getChildAt(0).getLayoutParams().height
-            ));
+            );
+            cornerParams.topMargin = binding.headerContainer.getChildAt(0).getLayoutParams().height *
+                    (binding.headerContainer.getChildCount() - 1);
+            cornerView.setLayoutParams(cornerParams);
             if (binding.headerContainer.getChildCount() > 1)
                 cornerView.setTop((binding.headerContainer.getChildCount() - 2) * binding.headerContainer.getChildAt(0).getLayoutParams().height);
 
