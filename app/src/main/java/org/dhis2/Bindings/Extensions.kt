@@ -1,6 +1,8 @@
 package org.dhis2.Bindings
 
 import android.content.res.Resources
+import android.graphics.Rect
+import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
@@ -66,3 +68,17 @@ val Int.dp: Int
 
 val Int.px: Int
     get() = (this / Resources.getSystem().displayMetrics.density).toInt()
+
+fun AppCompatActivity.isKeyboardOpened(): Boolean {
+    val r = Rect()
+    val keyboardVisibilityThreshold = 100
+
+    val activityRoot = (findViewById<ViewGroup>(android.R.id.content)).getChildAt(0)
+    val visibleThreshold = keyboardVisibilityThreshold.dp
+
+    activityRoot.getWindowVisibleDisplayFrame(r)
+
+    val heightDiff = activityRoot.rootView.height - r.height()
+
+    return heightDiff > visibleThreshold
+}
