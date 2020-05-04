@@ -126,9 +126,6 @@ final class EditTextCellCustomHolder extends FormViewHolder {
                 case LONG_TEXT:
                     editText.setKeyListener(null);
                     editText.setFocusable(false);
-                    editText.setOnClickListener(v -> {
-                        showEditDialog();
-                    });
                     break;
                 case LETTER:
                     editText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS);
@@ -284,9 +281,13 @@ final class EditTextCellCustomHolder extends FormViewHolder {
     public void setSelected(SelectionState selectionState) {
         super.setSelected(selectionState);
         if (selectionState == SelectionState.SELECTED && editTextModel.editable()) {
-            editText.requestFocus();
-            editText.setSelection(editText.getText().length());
-            openKeyboard(editText);
+            if(editTextModel.valueType() != ValueType.LONG_TEXT) {
+                editText.requestFocus();
+                editText.setSelection(editText.getText().length());
+                openKeyboard(editText);
+            }else{
+                showEditDialog();
+            }
         }
     }
 }
