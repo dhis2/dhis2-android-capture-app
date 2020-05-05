@@ -779,12 +779,12 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
     @Override
     public void renderObjectStyle(ObjectStyle data) {
-
+        int color = ColorUtils.getColorFrom(data.color(),
+                ColorUtils.getPrimaryColor(this, ColorUtils.ColorType.PRIMARY_LIGHT));
         binding.programStageIcon.setBackground(
                 ColorUtils.tintDrawableWithColor(
                         binding.programStageIcon.getBackground(),
-                        ColorUtils.getColorFrom(data.color(),
-                                ColorUtils.getPrimaryColor(this, ColorUtils.ColorType.PRIMARY_LIGHT))
+                        color
                 )
         );
         binding.programStageIcon.setImageResource(
@@ -793,6 +793,8 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                         R.drawable.ic_program_default
                 )
         );
+        binding.programStageIcon.setColorFilter(ColorUtils.getContrastColor(color));
+
     }
 
     @Override
