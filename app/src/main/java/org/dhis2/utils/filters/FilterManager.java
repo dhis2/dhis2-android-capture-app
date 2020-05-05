@@ -104,7 +104,7 @@ public class FilterManager {
         if (stateFilters.contains(State.TO_POST) &&
                 stateFilters.contains(State.TO_UPDATE) &&
                 stateFilters.contains(State.UPLOADING)) {
-            stateFiltersApplied.set(stateFilters.size() - 1);
+            stateFiltersApplied.set(stateFilters.size() - 2);
         }else {
             stateFiltersApplied.set(stateFilters.size());
         }
