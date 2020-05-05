@@ -34,6 +34,16 @@
         <item name="android:windowBackground">@drawable/splash_background</item>
     </style>
 
+    <style name="LoginTheme" parent="AppTheme">
+        <item name="colorAccent">@color/colorPrimaryLight</item>
+        <item name="android:buttonStyle">@style/fingerprint_button</item>
+        <item name="buttonBarNegativeButtonStyle">@style/fingerprint_button</item>
+    </style>
+
+    <style name="fingerprint_button" parent="Widget.AppCompat.Button.ButtonBar.AlertDialog">
+        <item name="android:textColor">@color/colorPrimary</item>
+    </style>
+
     <style name="RedTheme" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimaryRed</item>

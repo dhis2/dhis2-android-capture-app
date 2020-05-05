@@ -445,6 +445,10 @@ public class Bindings {
             int icon = resources.getIdentifier(iconName, "drawable", view.getContext().getPackageName());
             if (view instanceof ImageView)
                 ((ImageView) view).setImageResource(icon);
+        }else if(objectStyle != null && objectStyle.icon() == null){
+            Drawable drawable = resources.getDrawable(R.drawable.ic_program_default);
+            if (view instanceof ImageView)
+                ((ImageView) view).setImageDrawable(drawable);
         }
 
         if (objectStyle != null && objectStyle.color() != null) {
@@ -457,7 +461,12 @@ public class Bindings {
 
             itemView.setBackgroundColor(colorRes);
             setFromResBgColor(view, colorRes);
+        }else if(objectStyle!=null && objectStyle.color() ==null){
+            int colorRes = ContextCompat.getColor(view.getContext(), R.color.colorPrimary);
+            itemView.setBackgroundColor(colorRes);
+            setFromResBgColor(view, colorRes);
         }
+
         if (objectStyle == null) {
             Drawable drawable = resources.getDrawable(R.drawable.ic_program_default);
             if (view instanceof ImageView)

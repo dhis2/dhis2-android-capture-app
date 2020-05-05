@@ -176,4 +176,8 @@ class SectionHolder(
             onClick(itemView)
         }
     }
+
+    fun setSectionNumber(sectionNumber:Int){
+        formBinding.sectionNumber.text = sectionNumber.toString()
+    }
 }

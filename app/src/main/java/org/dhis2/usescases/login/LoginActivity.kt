@@ -2,7 +2,6 @@ package org.dhis2.usescases.login
 
 import android.annotation.SuppressLint
 import android.app.Activity
-import android.app.Dialog
 import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
@@ -21,10 +20,6 @@ import co.infinum.goldfinger.Goldfinger
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import java.io.BufferedReader
-import java.io.InputStreamReader
-import java.io.StringWriter
-import javax.inject.Inject
 import okhttp3.HttpUrl
 import org.dhis2.App
 import org.dhis2.Bindings.app
@@ -52,12 +47,15 @@ import org.dhis2.utils.analytics.FORGOT_CODE
 import org.dhis2.utils.session.PIN_DIALOG_TAG
 import org.dhis2.utils.session.PinDialog
 import timber.log.Timber
+import java.io.BufferedReader
+import java.io.InputStreamReader
+import java.io.StringWriter
+import javax.inject.Inject
 
 class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
 
     private lateinit var binding: ActivityLoginBinding
     private lateinit var loginViewModel: LoginViewModel
-    private lateinit var fingerPrintDialog: Dialog
 
     @Inject
     lateinit var presenter: LoginPresenter
@@ -73,6 +71,7 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
+        setTheme(R.style.LoginTheme)
         var loginComponent = app().loginComponent()
         if (loginComponent == null) {
             // in case if we don't have cached presenter
@@ -132,26 +131,13 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
 
         setTestingCredentials()
         setAutocompleteAdapters()
-        setUpFingerPrintDialog()
         setUpLoginInfo()
-    }
-
-    override fun setUpFingerPrintDialog() {
-        fingerPrintDialog = MaterialAlertDialogBuilder(this, R.style.DhisMaterialDialog)
-            .setTitle(R.string.fingerprint_title)
-            .setMessage(R.string.fingerprint_message)
-            .setCancelable(false)
-            .setNegativeButton(R.string.cancel) { dialog, _ ->
-                presenter.stopReadingFingerprint()
-                dialog.dismiss()
-            }
-            .create()
     }
 
     private fun checkUrl(urlString: String): Boolean {
         return URLUtil.isValidUrl(urlString) &&
-            Patterns.WEB_URL.matcher(urlString).matches() &&
-            HttpUrl.parse(urlString) != null
+                Patterns.WEB_URL.matcher(urlString).matches() &&
+                HttpUrl.parse(urlString) != null
     }
 
     override fun setTestingCredentials() {
@@ -201,11 +187,15 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
     }
 
     override fun goToNextScreen() {
-        if (NetworkUtils.isOnline(this)) {
+        if (isNetworkAvailable()) {
             startActivity(SyncActivity::class.java, null, true, true, null)
         } else {
             startActivity(MainActivity::class.java, null, true, true, null)
         }
+    }
+
+    override fun isNetworkAvailable() : Boolean{
+        return NetworkUtils.isOnline(this);
     }
 
     override fun setUrl(url: String) {
@@ -376,13 +366,12 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
     }
 
     override fun showCredentialsData(type: Goldfinger.Type, vararg args: String) {
-        hideFingerprintDialog()
         if (type == Goldfinger.Type.SUCCESS) {
             binding.serverUrlEdit.setText(args[0])
             binding.userNameEdit.setText(args[1])
             binding.userPassEdit.setText(args[2])
             showLoginProgress(true)
-        } else if (type == Goldfinger.Type.ERROR) {
+        } else if (type == Goldfinger.Type.ERROR && args[0] != getString(R.string.cancel)) {
             showInfoDialog(getString(R.string.biometrics_dialog_title), args[0])
         }
     }
@@ -414,18 +403,16 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
         }
     }
 
-    override fun showFingerprintDialog() {
-        fingerPrintDialog.show()
-    }
-
-    override fun hideFingerprintDialog() {
-        fingerPrintDialog.hide()
-    }
-
     private fun setUpLoginInfo() {
         binding.appBuildInfo.text = buildInfo()
     }
 
     override fun getDefaultServerProtocol(): String =
         getString(R.string.login_https)
+
+    override fun getPromptParams(): Goldfinger.PromptParams =
+        Goldfinger.PromptParams.Builder(this)
+            .title(R.string.fingerprint_title)
+            .negativeButtonText(R.string.cancel)
+            .build()
 }

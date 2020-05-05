@@ -3,11 +3,11 @@ package org.dhis2.usescases.login
 import android.os.Build
 import androidx.annotation.RestrictTo
 import androidx.annotation.RestrictTo.Scope
+import androidx.annotation.VisibleForTesting
 import co.infinum.goldfinger.Goldfinger
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import org.dhis2.App
-import org.dhis2.R
 import org.dhis2.data.fingerprint.FingerPrintController
 import org.dhis2.data.fingerprint.Type
 import org.dhis2.data.prefs.Preference
@@ -104,7 +104,7 @@ class LoginPresenter(
                             } else {
                                 val isSessionLocked =
                                     preferenceProvider.getBoolean(SESSION_LOCKED, false)
-                                if (!isSessionLocked){
+                                if (!isSessionLocked) {
                                     val serverUrl =
                                         preferenceProvider.getString(
                                             SECURE_SERVER_URL,
@@ -200,7 +200,7 @@ class LoginPresenter(
                         this.handleResponse(it, userName, serverUrl)
                     },
                     {
-                        this.handleError(it)
+                        this.handleError(it, serverUrl, userName, pass)
                     }
                 )
         )
@@ -232,10 +232,13 @@ class LoginPresenter(
         }
     }
 
-    private fun handleResponse(userResponse: Response<*>, userName: String, server: String) {
+    @VisibleForTesting
+    fun handleResponse(userResponse: Response<*>, userName: String, server: String) {
         view.showLoginProgress(false)
         if (userResponse.isSuccessful) {
-            preferenceProvider.setValue(Preference.INITIAL_SYNC_DONE, false)
+            if(view.isNetworkAvailable()) {
+                preferenceProvider.setValue(Preference.INITIAL_SYNC_DONE, false)
+            }
 
             val updatedServer = (preferenceProvider.getSet(PREFS_URLS, HashSet()) as HashSet)
             if (!updatedServer.contains(server)) {
@@ -253,15 +256,16 @@ class LoginPresenter(
         }
     }
 
-    private fun handleError(throwable: Throwable) {
+    private fun handleError(
+        throwable: Throwable,
+        serverUrl: String,
+        userName: String,
+        pass: String
+    ) {
         Timber.e(throwable)
         if (throwable is D2Error && throwable.errorCode() == D2ErrorCode.ALREADY_AUTHENTICATED) {
-            preferenceProvider.apply {
-                setValue(SESSION_LOCKED, false)
-
-                setValue(PIN, null)
-            }
-            view.alreadyAuthenticated()
+            userManager?.d2?.userModule()?.blockingLogOut()
+            logIn(serverUrl, userName, pass)
         } else {
             view.renderError(throwable)
         }
@@ -278,7 +282,7 @@ class LoginPresenter(
 
     fun areSameCredentials(serverUrl: String, userName: String, pass: String): Boolean {
         return preferenceProvider.areCredentialsSet() &&
-            preferenceProvider.areSameCredentials(serverUrl, userName, pass)
+                preferenceProvider.areSameCredentials(serverUrl, userName, pass)
     }
 
     fun saveUserCredentials(serverUrl: String, userName: String, pass: String) {
@@ -286,10 +290,9 @@ class LoginPresenter(
     }
 
     fun onFingerprintClick() {
-        view.showFingerprintDialog()
         disposable.add(
 
-            fingerPrintController.authenticate()
+            fingerPrintController.authenticate(view.getPromptParams())
                 .map { result ->
                     if (preferenceProvider.contains(
                             SECURE_SERVER_URL,
@@ -323,7 +326,6 @@ class LoginPresenter(
                     },
                     {
                         view.displayMessage(AUTH_ERROR)
-                        view.hideFingerprintDialog()
                     }
                 )
         )
