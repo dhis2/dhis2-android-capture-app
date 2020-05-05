@@ -17,13 +17,13 @@ fun indicatorsRobot(indicatorsRobot: IndicatorsRobot.() -> Unit) {
 
 class IndicatorsRobot: BaseRobot() {
 
-    fun checkDetails(firstIndicator: String, secondIndicator: String) {
+    fun checkDetails(yellowFeverIndicator: String, weightIndicator: String) {
         onView(withId(R.id.indicators_recycler)).check(matches(allOf(isDisplayed(), isNotEmpty(),
-                atPosition(0, hasDescendant(allOf(withText(firstIndicator),
+                atPosition(1, hasDescendant(allOf(withText(yellowFeverIndicator),
                         hasSibling(allOf(withId(R.id.indicator_name), withText("Measles + Yellow fever doses")))))))))
 
         onView(withId(R.id.indicators_recycler)).check(matches(allOf(isDisplayed(), isNotEmpty(),
-                atPosition(1, hasDescendant(allOf(withText(secondIndicator),
+                atPosition(0, hasDescendant(allOf(withText(weightIndicator),
                         hasSibling(allOf(withId(R.id.indicator_name), withText("Average weight (g)")))))))))
     }
 }
