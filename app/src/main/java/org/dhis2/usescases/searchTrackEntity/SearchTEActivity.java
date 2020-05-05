@@ -453,8 +453,9 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                     liveAdapter.submitList(data.val0());
                     binding.progressLayout.setVisibility(View.GONE);
                 } else {
-                    binding.filterCounter.setVisibility(View.GONE);
-                    binding.searchFilterGeneral.setVisibility(View.GONE);
+                    boolean filtersActive = FilterManager.getInstance().getTotalFilters() != 0;
+                    binding.filterCounter.setVisibility(filtersActive ? View.VISIBLE : View.GONE);
+                    binding.searchFilterGeneral.setVisibility(filtersActive ? View.VISIBLE : View.GONE);
 
                     showMap(false);
                     binding.progressLayout.setVisibility(View.GONE);
@@ -542,12 +543,12 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     }
 
     @Override
-    public void showAssignmentFilter(){
+    public void showAssignmentFilter() {
         filtersAdapter.addAssignedToMe();
     }
 
     @Override
-    public void hideAssignmentFilter(){
+    public void hideAssignmentFilter() {
         filtersAdapter.removeAssignedToMe();
     }
 
