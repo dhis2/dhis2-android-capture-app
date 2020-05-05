@@ -23,6 +23,7 @@ import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityType;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 
@@ -155,5 +156,7 @@ public class SearchTEContractsModule {
         int getEnrollmentColor();
 
         void initAssignmentFilter();
+
+        void restoreQueryData(HashMap<String, String> queryData);
     }
 }
