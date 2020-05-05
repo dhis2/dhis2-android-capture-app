@@ -14,13 +14,13 @@ class AppTest : App() {
 
     @Override
     override fun onCreate() {
-        isTesting = true
+        wantToImportDB = true
         super.onCreate()
     }
 
     @Override
     override fun setUpServerComponent() {
-        D2Manager.setTestingDatabase("127-0-0-1-8080_android_unencrypted.db","android")
+        D2Manager.setTestingDatabase(DB_TO_IMPORT,"android")
         D2Manager.blockingInstantiateD2(ServerModule.getD2Configuration(this))
 
         serverComponent = appComponent.plus(ServerModule())
@@ -50,5 +50,9 @@ class AppTest : App() {
                 .preferenceModule(PreferencesTestingModule())
                 .utilModule(UtilsModule())
                 .workManagerController(WorkManagerModule())
+    }
+
+    companion object {
+        const val DB_TO_IMPORT = "127-0-0-1-8080_android_unencrypted.db"
     }
 }

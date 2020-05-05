@@ -67,7 +67,7 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
     }
 
     protected static final String DATABASE_NAME = "dhis.db";
-    protected boolean isTesting = false;
+    protected boolean wantToImportDB = false;
 
     @NonNull
     @Singleton
@@ -114,7 +114,7 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
             upgradeSecurityProviderSync();
 
         setUpAppComponent();
-        if (isTesting) {
+        if (wantToImportDB) {
             populateDBIfNeeded();
         }
         setUpServerComponent();
