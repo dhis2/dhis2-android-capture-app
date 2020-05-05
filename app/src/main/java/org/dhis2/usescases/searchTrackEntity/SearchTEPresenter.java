@@ -39,6 +39,7 @@ import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityType;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -823,6 +824,11 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         } else {
             view.hideAssignmentFilter();
         }
+    }
+
+    @Override
+    public void restoreQueryData(HashMap<String, String> queryData) {
+        this.queryData = queryData;
     }
 
     @RestrictTo(RestrictTo.Scope.TESTS)
