@@ -53,7 +53,7 @@ class LoginTest : BaseTest() {
 
     @Test
     fun shouldGetAuthErrorWhenCredentialsAreWrong() {
-        mockWebServerRobot.addResponse(GET, API_ME_PATH, API_ME_UNAUTHORIZE, 401)
+        mockWebServerRobot.addResponse(GET, API_ME_PATH, API_ME_UNAUTHORIZE, HTTP_UNAUTHORIZE)
 
         startLoginActivity()
 
@@ -153,6 +153,7 @@ class LoginTest : BaseTest() {
     }
 
     companion object {
+        const val HTTP_UNAUTHORIZE = 401
         const val API_ME_RESPONSE_OK = "mocks/user/user.json"
         const val API_ME_UNAUTHORIZE = "mocks/user/unauthorize.json"
         const val API_SYSTEM_INFO_RESPONSE_OK = "mocks/systeminfo/systeminfo.json"

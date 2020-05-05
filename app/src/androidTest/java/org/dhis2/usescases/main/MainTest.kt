@@ -54,7 +54,7 @@ class MainTest : BaseTest() {
 
 //    @Test
 //    fun loginButtonShouldBeDisplayedWhenAllFieldsAreFilled2() {
-    //    startActivity()
+    //    startTeiDashboardActivity()
      //   Thread.sleep(2000)
 
         //  onView(withId(R.id.login)).check(matches(not(isDisplayed())))

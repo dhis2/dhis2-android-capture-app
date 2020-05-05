@@ -28,7 +28,7 @@ class TeiDashboardTest : BaseTest() {
     fun shouldSuccessfullyCreateANoteWhenClickCreateNote() {
         setupCredentials()
 
-        prepareTeiCompletedProgrammeIntentAndLaunchActivity(rule)
+        prepareTeiCompletedProgrammeAndLaunchActivity(rule)
 
         teiDashboardRobot {
             clickOnNotesTab()
@@ -44,7 +44,7 @@ class TeiDashboardTest : BaseTest() {
 
     @Test
     fun shouldNotCreateANoteWhenClickClear() {
-        prepareTeiCompletedProgrammeIntentAndLaunchActivity(rule)
+        prepareTeiCompletedProgrammeAndLaunchActivity(rule)
 
         teiDashboardRobot {
             clickOnNotesTab()
@@ -61,7 +61,7 @@ class TeiDashboardTest : BaseTest() {
 
     @Test
     fun shouldOpenNotesDetailsWhenClickOnNote() {
-        prepareTeiWithExistingNoteIntentAndLaunchActivity(rule)
+        prepareTeiWithExistingNoteAndLaunchActivity(rule)
 
         teiDashboardRobot {
             clickOnNotesTab()
@@ -75,7 +75,7 @@ class TeiDashboardTest : BaseTest() {
 
     @Test
     fun shouldReactivateTEIWhenClickReOpen() {
-        prepareTeiCompletedProgrammeIntentAndLaunchActivity(rule)
+        prepareTeiCompletedProgrammeAndLaunchActivity(rule)
 
         teiDashboardRobot {
             clickOnMenuMoreOptions()
@@ -87,7 +87,7 @@ class TeiDashboardTest : BaseTest() {
 
     @Test
     fun shouldDeactivateTEIWhenClickOpen() {
-        prepareTeiOpenedProgrammeIntentAndLaunchActivity(rule)
+        prepareTeiOpenedProgrammeAndLaunchActivity(rule)
 
         teiDashboardRobot {
             clickOnMenuMoreOptions()
@@ -99,7 +99,7 @@ class TeiDashboardTest : BaseTest() {
 
     @Test
     fun shouldCompleteTEIWhenClickOpen() {
-        prepareTeiOpenedForCompleteProgrammeIntentAndLaunchActivity(rule)
+        prepareTeiOpenedForCompleteProgrammeAndLaunchActivity(rule)
 
         teiDashboardRobot {
             clickOnMenuMoreOptions()
@@ -111,7 +111,7 @@ class TeiDashboardTest : BaseTest() {
 
     @Test
     fun shouldShowQRWhenClickOnShare() {
-        prepareTeiCompletedProgrammeIntentAndLaunchActivity(rule)
+        prepareTeiCompletedProgrammeAndLaunchActivity(rule)
 
         teiDashboardRobot {
             clickOnShareButton()
@@ -121,7 +121,7 @@ class TeiDashboardTest : BaseTest() {
 
     @Test
     fun shouldMakeAReferral() {
-        prepareTeiOpenedForReferralProgrammeIntentAndLaunchActivity(rule)
+        prepareTeiOpenedForReferralProgrammeAndLaunchActivity(rule)
 
         teiDashboardRobot {
             clickOnFab()
@@ -130,13 +130,13 @@ class TeiDashboardTest : BaseTest() {
             clickOnReferralOption()
             clickOnReferralNextButton()
             checkEventCreatedToastIsShown()
-            checkEventWasCreated("Lab monitoring")
+            checkEventWasCreated(LAB_MONITORING)
         }
     }
 
     @Test
     fun shouldSuccessfullyScheduleAnEvent() {
-        prepareTeiOpenedWithNoPreviousEventProgrammeIntentAndLaunchActivity(rule)
+        prepareTeiOpenedWithNoPreviousEventProgrammeAndLaunchActivity(rule)
 
         teiDashboardRobot {
             clickOnFab()
@@ -144,7 +144,7 @@ class TeiDashboardTest : BaseTest() {
             clickOnFirstReferralEvent()
             clickOnReferralNextButton()
             checkEventCreatedToastIsShown()
-            checkEventWasCreated("Lab monitoring")
+            checkEventWasCreated(LAB_MONITORING)
         }
     }
 
@@ -159,7 +159,7 @@ class TeiDashboardTest : BaseTest() {
         // click on save in enrollment
         // if Child Program after save will ask to type AGAR then to choose option (Finish or Finish and Complete)
 
-        prepareTeiOpenedWithNoPreviousEventProgrammeIntentAndLaunchActivity(rule)
+        prepareTeiOpenedWithNoPreviousEventProgrammeAndLaunchActivity(rule)
 
         teiDashboardRobot {
             clickOnMenuMoreOptions()
@@ -173,7 +173,7 @@ class TeiDashboardTest : BaseTest() {
 
     @Test
     fun shouldNotBeAbleToCreateNewEventsWhenFull() {
-        prepareTeiOpenedWithFullEvents(rule)
+        prepareTeiOpenedWithFullEventsAndLaunchActivity(rule)
 
         teiDashboardRobot {
             clickOnFab()
@@ -184,7 +184,7 @@ class TeiDashboardTest : BaseTest() {
 
     @Test
     fun shouldOpenEventAndSaveSuccessfully(){
-        prepareTeiOpenedProgrammeIntentAndLaunchActivity(rule)
+        prepareTeiOpenedProgrammeAndLaunchActivity(rule)
 
         val babyPostNatal = 0
         teiDashboardRobot {
@@ -201,7 +201,7 @@ class TeiDashboardTest : BaseTest() {
     @Test
     @Ignore
     fun shouldSuccessfullyCreateRelationshipWhenClickAdd() {
-        prepareTeiCompletedProgrammeIntentAndLaunchActivity(rule)
+        prepareTeiCompletedProgrammeAndLaunchActivity(rule)
 
     //    Thread.sleep(10000)
         teiDashboardRobot {
@@ -229,7 +229,7 @@ class TeiDashboardTest : BaseTest() {
         mockWebServerRobot.addResponse(GET, "/api/trackedEntityInstances?.*", API_TEI_3_RESPONSE_OK)
         //https://play.dhis2.org/android-current/api/trackedEntityInstances/query?ou=DiszpKrYNg8&ouMode=DESCENDANTS&program=IpHINAT79UW&paging=true&page=1&pageSize=10
         setupCredentials()
-        //prepareTeiToDelete()
+        //prepareTeiToDeleteAndLaunchActivity()
         prepareChildProgrammeIntentAndLaunchActivity(ruleSearch)
 
         teiDashboardRobot {
@@ -245,7 +245,7 @@ class TeiDashboardTest : BaseTest() {
 
     @Test
     fun shouldShowCorrectInfoWhenOpenTEI() {
-        prepareTeiCompletedProgrammeIntentAndLaunchActivity(rule)
+        prepareTeiCompletedProgrammeAndLaunchActivity(rule)
 
         teiDashboardRobot {
             checkUpperInfo("2021-01-10", "2021-01-10", "Ngelehun CHC")
@@ -254,8 +254,7 @@ class TeiDashboardTest : BaseTest() {
 
     @Test
     fun shouldShowTEIDetailsWhenClickOnSeeDetails() {
-        prepareTeiCompletedProgrammeIntentAndLaunchActivity(rule)
-
+        prepareTeiCompletedProgrammeAndLaunchActivity(rule)
         teiDashboardRobot {
             clickOnSeeDetails()
             checkFullDetails("2021-01-10", "2021-01-10", "Ngelehun CHC", "40.48713205295354", "-3.6847423830882633", "Filona", "Ryder", "Female")
@@ -264,7 +263,7 @@ class TeiDashboardTest : BaseTest() {
 
     @Test
     fun shouldShowIndicatorsDetailsWhenClickOnIndicatorsTab() {
-        prepareTeiCompletedProgrammeIntentAndLaunchActivity(rule)
+        prepareTeiCompletedProgrammeAndLaunchActivity(rule)
 
         teiDashboardRobot {
             clickOnIndicatorsTab()
@@ -276,11 +275,12 @@ class TeiDashboardTest : BaseTest() {
     }
 
     companion object{
-        const val TOAST_TEXT_SAVED = "Note saved"
         const val NOTE_VALID = "ThisIsJustATest"
         const val NOTE_INVALID = "InvalidNote"
         const val NOTE_EXISTING_TEXT = "This is a note test"
         const val USER = "android"
+
+        const val LAB_MONITORING = "Lab monitoring"
 
         const val API_TEI_1_RESPONSE_OK = "mocks/teilist/teilist_1.json"
         const val API_TEI_2_RESPONSE_OK = "mocks/teilist/teilist_2.json"
