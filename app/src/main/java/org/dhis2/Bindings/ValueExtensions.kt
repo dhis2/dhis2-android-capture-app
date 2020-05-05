@@ -16,6 +16,10 @@ fun TrackedEntityAttributeValue.userFriendlyValue(d2: D2): String? {
         .uid(trackedEntityAttribute())
         .blockingGet()
 
+    if(attribute == null){
+        return value()
+    }
+
     if (check(d2, attribute.valueType(), attribute.optionSet()?.uid(), value()!!)) {
         attribute.optionSet()?.let {
             return checkOptionSetValue(d2, it.uid(), value()!!)

@@ -91,6 +91,9 @@ class MainActivity : ActivityGlobalAbstract(), MainView, ExporterListener {
         )
 
         adapter = FiltersAdapter(FiltersAdapter.ProgramType.ALL)
+        if(presenter.hasProgramWithAssignment()){
+            adapter!!.addAssignedToMe()
+        }
         binding.filterLayout.adapter = adapter
 
         binding.moreOptions.setOnLongClickListener {

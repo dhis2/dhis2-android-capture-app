@@ -85,6 +85,13 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity
     public AnalyticsHelper analyticsHelper;
     public ScanTextView scanTextView;
 
+    public void requestLocationPermission(CoordinatesView coordinatesView) {
+        this.coordinatesView = coordinatesView;
+        ActivityCompat.requestPermissions((ActivityGlobalAbstract) getContext(),
+                new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                ACCESS_LOCATION_PERMISSION_REQUEST);
+    }
+
     public enum Status {
         ON_PAUSE,
         ON_RESUME

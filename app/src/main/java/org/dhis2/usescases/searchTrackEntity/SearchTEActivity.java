@@ -13,7 +13,6 @@ import android.graphics.RectF;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.StrictMode;
 import android.transition.ChangeBounds;
 import android.transition.Transition;
 import android.transition.TransitionManager;
@@ -65,6 +64,7 @@ import org.dhis2.data.forms.dataentry.ProgramAdapter;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.databinding.ActivitySearchBinding;
+import org.dhis2.usescases.enrollment.EnrollmentActivity;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.usescases.orgunitselector.OUTreeActivity;
 import org.dhis2.usescases.searchTrackEntity.adapters.FormAdapter;
@@ -155,6 +155,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     private SymbolManager symbolManager;
 
     private boolean initSearchNeeded = true;
+    private Snackbar downloadingSnackbar;
     private String currentStyle = Style.MAPBOX_STREETS;
     private boolean changingStyle;
     //---------------------------------------------------------------------------------------------
@@ -461,7 +462,6 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                     binding.message.setText(data.val1());
                     binding.scrollView.setVisibility(View.GONE);
                 }
-
             });
         } else {
             liveData.observeForever(searchTeiModels -> {
@@ -521,8 +521,9 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                     presenter.setProgram((Program) adapterView.getItemAtPosition(pos - 1));
                 } else if (programs.size() == 1 && pos != 0) {
                     presenter.setProgram(programs.get(0));
-                } else
+                } else {
                     presenter.setProgram(null);
+                }
             }
 
             @Override
@@ -538,6 +539,16 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                 binding.programSpinner.setSelection(i + 1);
             }
         }
+    }
+
+    @Override
+    public void showAssignmentFilter(){
+        filtersAdapter.addAssignedToMe();
+    }
+
+    @Override
+    public void hideAssignmentFilter(){
+        filtersAdapter.removeAssignedToMe();
     }
 
     @Override
@@ -702,7 +713,21 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
     @Override
     public void openDashboard(String teiUid, String programUid, String enrollmentUid) {
+        if (downloadingSnackbar != null && downloadingSnackbar.isShown()) {
+            downloadingSnackbar.dismiss();
+        }
         startActivity(TeiDashboardMobileActivity.intent(this, teiUid, programUid, enrollmentUid));
+    }
+
+    @Override
+    public void goToEnrollment(String enrollmentUid, String programUid) {
+        Intent intent = EnrollmentActivity.Companion.getIntent(this,
+                enrollmentUid,
+                programUid,
+                EnrollmentActivity.EnrollmentMode.NEW,
+                fromRelationshipTEI() != null);
+        startActivity(intent);
+        finish();
     }
 
     /*region MAP*/

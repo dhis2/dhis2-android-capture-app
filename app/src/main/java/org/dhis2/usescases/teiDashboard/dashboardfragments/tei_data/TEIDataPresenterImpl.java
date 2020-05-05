@@ -52,6 +52,7 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.processors.BehaviorProcessor;
 import timber.log.Timber;
 
+import static android.text.TextUtils.isEmpty;
 import static org.dhis2.utils.analytics.AnalyticsConstants.ACTIVE_FOLLOW_UP;
 import static org.dhis2.utils.analytics.AnalyticsConstants.FOLLOW_UP;
 import static org.dhis2.utils.analytics.AnalyticsConstants.SHARE_TEI;
@@ -360,7 +361,8 @@ class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
         view.seeDetails(EnrollmentActivity.Companion.getIntent(view.getContext(),
                 dashboardProgramModel.getCurrentEnrollment().uid(),
                 dashboardProgramModel.getCurrentProgram().uid(),
-                EnrollmentActivity.EnrollmentMode.CHECK), options.toBundle());
+                EnrollmentActivity.EnrollmentMode.CHECK,
+                false), options.toBundle());
     }
 
     @Override
@@ -447,6 +449,13 @@ class TEIDataPresenterImpl implements TEIDataContracts.Presenter {
                                 Timber::e
                         )
         );
+    }
+
+    @Override
+    public boolean hasAssignment() {
+        return !isEmpty(programUid) && !d2.programModule().programStages()
+                .byProgramUid().eq(programUid)
+                .byEnableUserAssignment().isTrue().blockingIsEmpty();
     }
 
     private Map<String, Boolean> getGrouping() {

@@ -136,6 +136,11 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
 
         filtersAdapter = new FiltersAdapter(FiltersAdapter.ProgramType.EVENT);
         filtersAdapter.addEventStatus();
+        if(presenter.hasAssignment()){
+            filtersAdapter.addAssignedToMe();
+        }else{
+            filtersAdapter.removeAssignedToMe();
+        }
         try {
             binding.filterLayout.setAdapter(filtersAdapter);
 

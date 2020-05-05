@@ -119,7 +119,7 @@
     <string name="date">Fecha</string>
     <string name="org_unit">Unidad Organizativa</string>
     <string name="no_org_units">No hay Unidades Organizativas abiertas para la fecha seleccionada. Seleccione otra fecha u otra Unidad Organizativa.</string>
-    <string name="category_option">Opcion de categoria</string>
+    <string name="category_option">Opcion de categoría</string>
     <string name="latitude">Latitud</string>
     <string name="longitude">Longitud</string>
     <string name="new_event">Evento nuevo</string>
@@ -411,18 +411,18 @@
     <string name="tuto_search_4_v2">Click aquí para limpiar los campos y reiniciar la búsqueda.</string>
     <string name="tuto_dashboard_1">Este es el Dashboard de entidad</string>
     <string name="tuto_dashboard_2">Puedes ver la información de perfil</string>
-    <string name="tuto_dashboard_3">Compartir información via QR o SMS</string>
+    <string name="tuto_dashboard_3">Compartir información vía QR o SMS</string>
     <string name="tuto_dashboard_4">O marcar una entidad para seguimiento</string>
     <string name="tuto_dashboard_5">Puedes crear o programar un evento, o referir a otra Org. Unit</string>
-    <string name="tuto_dashboard_6">Aquí estan todos los eventos. Pulsa para ver los detalles.</string>
+    <string name="tuto_dashboard_6">Aquí están todos los eventos. Pulsa para ver los detalles.</string>
     <string name="tuto_dashboard_7">Navega el menú para añadir relaciones, ver indicadores o escribir notas.</string>
-    <string name="tuto_dashboard_8">Aqui puedes ver todos los enrolments o crear uno nuevo.</string>
+    <string name="tuto_dashboard_8">Aquí puedes ver todos los enrolments o crear uno nuevo.</string>
     <string name="tuto_tei_event_1">Pulsa para borrar este evento. Esta acción no se puede deshacer.</string>
     <string name="tuto_tei_event_2">Completar el evento.</string>
-    <string name="tuto_program_event_1">Todos los eventos de este programa seran listados aqui.</string>
+    <string name="tuto_program_event_1">Todos los eventos de este programa seran listados aquí.</string>
     <string name="tuto_program_event_2">Haz click para añadir un nuevo evento</string>
     <string name="tuto_event_initial_new_1">Completa todos los campos para crear el evento</string>
-    <string name="tuto_event_initial_1">Aqui puedes ver el % de campos completos en el evento. </string>
+    <string name="tuto_event_initial_1">Aquí puedes ver el % de campos completos en el evento. </string>
     <string name="tuto_event_summary">Haz click para completar o re-abrir un evento</string>
     <string name="tuto_main_7">Lee y almacena información de otros dispositivos a través de códigos QR</string>
     <string name="tuto_main_8">Sincroniza tus datos con el servidor</string>
@@ -448,7 +448,7 @@
     <string name="unselect_enrollment_description">Mostrar todos los programas activos</string>
     <string name="CHECK_SYNC_ERRORS">Comprobar errores de sincronización</string>
     <string name="error_dialog_title">Lista de errores de sincronización</string>
-    <string name="share_with">Compartir con...</string>
+    <string name="share_with">Compartir con…</string>
     <string name="errors_during_sync">La sincronización de configuración ha fallado. Puede haber fallos en el servidor. Haga click aquí para mas información.</string>
     <string name="sectionSelectorPrev">ANTERIOR</string>
     <string name="sectionSelectorNext">SIGUIENTE</string>
@@ -527,7 +527,7 @@
     <string name="record_marked_for_deletion">Este registro ha sido borrado. No puede acceder a el</string>
     <string name="validation_url">La URL no es válida</string>
     <string name="uncomplete_authority_error">No tiene permisos para abrir este evento</string>
-    <string name="adjusting_form">Adaptando el formulario...</string>
+    <string name="adjusting_form">Adaptando el formulario…</string>
 
     <string name="sms_receiver_number">Numero receptor</string>
     <string name="sms_amount_question">Quiere enviar %d SMS?</string>
@@ -563,7 +563,7 @@
     <string name="sms_bar_state_failed">Ha fallado</string>
 
     <string name="start_sync_granular">Iniciando sincronización.</string>
-    <string name="syncing">Sincronizando...</string>
+    <string name="syncing">Sincronizando…</string>
     <string name="end_sync_granular">Sincronización completada</string>
     <string name="error_sync">Ocurrió un error en la sincronización</string>
     <string name="cancel_sync">Cancelar sincronización</string>
@@ -675,4 +675,8 @@
     <string name="dialog_layer_tei_coordinates">Mostrar coordenadas de la entidad</string>
     <string name="dialog_layer_enrollment_coordinates">Mostrar coordinadas del registro</string>
     <string name="dialog_layer_heatmap">Mostrar mapa de calor</string>
+    <string name="filter_sync_synced">Sincronizado</string>
+    <string name="filter_sync_not_synced">No sincronizado</string>
+    <string name="filter_sync_error">Errores de sincro.</string>
+    <string name="filter_sync_sms">Sincronizado por SMS</string>
 </resources>

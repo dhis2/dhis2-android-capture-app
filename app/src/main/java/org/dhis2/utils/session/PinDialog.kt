@@ -110,6 +110,7 @@ class PinDialog(val mode: Mode,
     }
 
     override fun recoverPin() {
+        presenter.logOut()
         forgotPinCallback.invoke()
         dismiss()
     }

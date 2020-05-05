@@ -107,7 +107,7 @@
 
     <!-- State -->
     <string name="state_synced">Sync</string>
-    <string name="state_to_post">To post</string>
+    <string name="state_to_post">To send</string>
     <string name="state_to_update">To update</string>
     <string name="state_to_delete">To delete</string>
     <string name="state_error">Error</string>
@@ -685,4 +685,9 @@
     <string name="dialog_layer_tei_coordinates">Show tei coordinates</string>
     <string name="dialog_layer_enrollment_coordinates">Show enrollment coordinates</string>
     <string name="dialog_layer_heatmap">Show heatmap layer</string>
+    <string name="downloading">Downloading</string>
+    <string name="filter_sync_synced">Synced</string>
+    <string name="filter_sync_not_synced">Not Synced</string>
+    <string name="filter_sync_error">Sync Error</string>
+    <string name="filter_sync_sms">SMS Synced</string>
 </resources>

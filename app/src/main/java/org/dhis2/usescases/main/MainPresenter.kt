@@ -127,4 +127,8 @@ class MainPresenter(
             if (user.surname().isNullOrEmpty()) "" else user.surname()
         )
     }
+
+    fun hasProgramWithAssignment(): Boolean {
+        return !d2.programModule().programStages().byEnableUserAssignment().isTrue.blockingIsEmpty()
+    }
 }

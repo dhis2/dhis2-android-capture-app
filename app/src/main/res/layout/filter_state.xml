@@ -46,7 +46,7 @@
                 android:layout_marginEnd="16dp"
                 android:layout_weight="1"
                 android:gravity="center_vertical"
-                android:text="Synced"
+                android:text="@string/filter_sync_synced"
                 android:textColor="@color/white"
                 android:textSize="12sp" />
 
@@ -76,7 +76,7 @@
                 android:layout_marginEnd="16dp"
                 android:layout_weight="1"
                 android:gravity="center_vertical"
-                android:text="Not Synced"
+                android:text="@string/filter_sync_not_synced"
                 android:textColor="@color/white"
                 android:textSize="12sp" />
 
@@ -107,7 +107,7 @@
                 android:layout_marginEnd="16dp"
                 android:layout_weight="1"
                 android:gravity="center_vertical"
-                android:text="Sync Error"
+                android:text="@string/filter_sync_error"
                 android:textColor="@color/white"
                 android:textSize="12sp" />
 
@@ -137,7 +137,7 @@
                 android:layout_marginEnd="16dp"
                 android:layout_weight="1"
                 android:gravity="center_vertical"
-                android:text="SMS Synced"
+                android:text="@string/filter_sync_sms"
                 android:textColor="@color/white"
                 android:textSize="12sp" />
 

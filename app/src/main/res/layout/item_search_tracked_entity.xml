@@ -115,7 +115,6 @@
             android:tint="@color/colorGreyDefault"
             android:visibility="@{overdue? View.VISIBLE: View.GONE}"
             app:layout_constraintEnd_toStartOf="@+id/syncState"
-            app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toEndOf="@+id/entity_attribute_1"
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/ic_overdue" />
@@ -131,7 +130,7 @@
             android:text='@{attribute.size()>0 ? attribute.get(0).value() : "" , default="attribute 1"}'
             android:textColor="@color/text_black_4d4d4d"
             android:textSize="14sp"
-            android:visibility='@{attribute.size()>0?View.VISIBLE:View.GONE}'
+            android:visibility='@{attribute.size()>0?View.VISIBLE:View.INVISIBLE}'
             app:layout_constraintEnd_toStartOf="@id/overdueIcon"
             app:layout_constraintStart_toEndOf="@id/tracked_entity_image"
             app:layout_constraintTop_toTopOf="parent" />
@@ -146,7 +145,7 @@
             android:text='@{attribute.size() > 1 ? attribute.get(1).value() : "" , default="attribute 2"}'
             android:textColor="@color/text_black_4d4d4d"
             android:textSize="14sp"
-            android:visibility='@{attribute.size() > 1 ? View.VISIBLE : View.GONE}'
+            android:visibility='@{attribute.size() > 1 ? View.VISIBLE : View.INVISIBLE}'
             app:layout_constraintEnd_toStartOf="@id/overdueIcon"
             app:layout_constraintStart_toEndOf="@id/tracked_entity_image"
             app:layout_constraintTop_toBottomOf="@id/entity_attribute_1" />
@@ -160,7 +159,7 @@
             android:text='@{attribute.size() > 2 ? attribute.get(2).value() : "", default="attribute 3"}'
             android:textColor="@color/text_black_4d4d4d"
             android:textSize="12sp"
-            android:visibility='@{attribute.size() > 2 ? View.VISIBLE : View.GONE}'
+            android:visibility='@{attribute.size() > 2 ? View.VISIBLE : View.INVISIBLE}'
             app:layout_constraintEnd_toStartOf="@id/overdueIcon"
             app:layout_constraintStart_toEndOf="@id/tracked_entity_image"
             app:layout_constraintTop_toBottomOf="@id/entity_attribute_2" />

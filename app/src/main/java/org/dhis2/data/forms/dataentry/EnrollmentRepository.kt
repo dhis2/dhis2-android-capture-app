@@ -4,7 +4,6 @@ import androidx.annotation.VisibleForTesting
 import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.Single
-import java.util.ArrayList
 import org.dhis2.Bindings.userFriendlyValue
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory
@@ -20,7 +19,6 @@ import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.ObjectStyle
 import org.hisp.dhis.android.core.common.ValueType
-import org.hisp.dhis.android.core.dataset.Section
 import org.hisp.dhis.android.core.enrollment.EnrollmentObjectRepository
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.program.Program
@@ -29,6 +27,7 @@ import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType
 import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttribute
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute
 import timber.log.Timber
+import java.util.ArrayList
 
 class EnrollmentRepository(
     private val fieldFactory: FieldViewModelFactory,
@@ -100,11 +99,13 @@ class EnrollmentRepository(
             .toList()
             .map {
                 val finalFieldList = mutableListOf<FieldViewModel>()
-                for(field in it){
-                    if(field is OptionSetViewModel){
-                        val options = d2.optionModule().options().byOptionSetUid().eq(field.optionSet()).blockingGet()
+                for (field in it) {
+                    if (field is OptionSetViewModel) {
+                        val options =
+                            d2.optionModule().options().byOptionSetUid().eq(field.optionSet())
+                                .blockingGet()
                         finalFieldList.add(field.withOptions(options))
-                    }else{
+                    } else {
                         finalFieldList.add(field)
                     }
                 }
@@ -269,7 +270,10 @@ class EnrollmentRepository(
         val enrollmentDataList = ArrayList<FieldViewModel>()
         enrollmentDataList.add(getEnrollmentDataSection(program.description()))
 
-        val (enrollmentDateEdition, incidentDateEdition) = areDatesEditable(program.uid())
+        val (enrollmentDateEdition, incidentDateEdition) = areDatesEditable(
+            enrollmentMode == EnrollmentActivity.EnrollmentMode.NEW,
+            program.uid()
+        )
 
         enrollmentDataList.add(
             getEnrollmentDateField(
@@ -287,8 +291,11 @@ class EnrollmentRepository(
                 )
             )
         }
+        val orgUnits = d2.organisationUnitModule().organisationUnits()
+            .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE)
+            .byProgramUids(listOf(enrollmentRepository.blockingGet().program())).blockingCount()
         enrollmentDataList.add(
-            getOrgUnitField(enrollmentMode == EnrollmentActivity.EnrollmentMode.NEW)
+            getOrgUnitField(enrollmentMode == EnrollmentActivity.EnrollmentMode.NEW && orgUnits > 1)
         )
 
         val teiType =
@@ -438,7 +445,10 @@ class EnrollmentRepository(
         }
     }
 
-    private fun areDatesEditable(programUid: String): Pair<Boolean, Boolean> {
+    private fun areDatesEditable(canbeEdited: Boolean, programUid: String): Pair<Boolean, Boolean> {
+        if (canbeEdited) {
+            return Pair(true, true)
+        }
         var enrollmentDateEditable = true
         var incidentDateEditable = true
         val stages = d2.programModule().programStages()

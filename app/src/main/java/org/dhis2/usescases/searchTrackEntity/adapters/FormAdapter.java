@@ -186,7 +186,7 @@ public class FormAdapter extends RecyclerView.Adapter {
     @Override
     public int getItemViewType(int position) {
         if (attributeList.get(position).optionSet() != null)
-            if (renderingTypes != null && renderingTypes.get(position) != null &&
+            if (renderingTypes != null && !renderingTypes.isEmpty() && renderingTypes.get(position) != null &&
                     (renderingTypes.get(position).type() == ValueTypeRenderingType.BAR_CODE ||
                             (renderingTypes.get(position).type() == ValueTypeRenderingType.QR_CODE))) {
                 return SCAN_CODE;
@@ -211,7 +211,7 @@ public class FormAdapter extends RecyclerView.Adapter {
                 case UNIT_INTERVAL:
                 case URL:
                 case LONG_TEXT:
-                    if (renderingTypes != null && renderingTypes.get(position) != null &&
+                    if (renderingTypes != null && !renderingTypes.isEmpty() && renderingTypes.get(position) != null &&
                             (renderingTypes.get(position).type() == ValueTypeRenderingType.BAR_CODE ||
                                     (renderingTypes.get(position).type() == ValueTypeRenderingType.QR_CODE))) {
                         return SCAN_CODE;

@@ -19,7 +19,6 @@ import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.databinding.WidgetDatepickerBinding;
-import org.dhis2.usescases.enrollment.EnrollmentActivity;
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel;
 import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.Constants;
@@ -38,7 +37,6 @@ import org.hisp.dhis.android.core.common.ValueTypeDeviceRendering;
 import org.hisp.dhis.android.core.maintenance.D2Error;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.Program;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityType;
 
 import java.util.ArrayList;
@@ -61,6 +59,7 @@ import io.reactivex.subjects.BehaviorSubject;
 import timber.log.Timber;
 
 import static android.app.Activity.RESULT_OK;
+import static org.dhis2.usescases.teiDashboard.dashboardfragments.relationships.RelationshipFragment.TEI_A_UID;
 import static org.dhis2.utils.analytics.AnalyticsConstants.ADD_RELATIONSHIP;
 import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
 import static org.dhis2.utils.analytics.AnalyticsConstants.CREATE_ENROLL;
@@ -117,18 +116,12 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     @Override
     public void init(String trackedEntityType) {
         this.trackedEntityType = trackedEntityType;
-
+        this.trackedEntity = searchRepository.getTrackedEntityType(trackedEntityType).blockingFirst();
         compositeDisposable.add(
-                searchRepository.getTrackedEntityType(trackedEntityType)
+              searchRepository.programsWithRegistration(trackedEntityType)
                         .subscribeOn(schedulerProvider.io())
-                        .observeOn(schedulerProvider.io())
-                        .flatMap(trackedEntity -> searchRepository.programsWithRegistration(trackedEntityType)
-                                .map(programs -> new kotlin.Pair<>(trackedEntity, programs)))
-                        .subscribeOn(schedulerProvider.ui())
                         .observeOn(schedulerProvider.ui())
-                        .subscribe(data -> {
-                                    this.trackedEntity = data.component1();
-                                    List<Program> programs = data.component2();
+                        .subscribe(programs -> {
                                     Collections.sort(programs, (program1, program2) -> program1.displayName().compareToIgnoreCase(program2.displayName()));
                                     if (selectedProgram != null) {
                                         setProgram(selectedProgram);
@@ -404,6 +397,8 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
             queryProcessor.onNext(new HashMap<>());
         else
             queryProcessor.onNext(queryData);
+
+        initAssignmentFilter();
     }
 
     @Override
@@ -631,13 +626,11 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                         .subscribeOn(schedulerProvider.computation())
                         .observeOn(schedulerProvider.ui())
                         .subscribe(enrollmentAndTEI -> {
-                                    if (view.fromRelationshipTEI() == null) {
-                                        analyticsHelper.setEvent(CREATE_ENROLL, CLICK, CREATE_ENROLL);
-                                        Intent intent = EnrollmentActivity.Companion.getIntent(view.getContext(), enrollmentAndTEI.val0(), selectedProgram.uid(), EnrollmentActivity.EnrollmentMode.NEW);
-                                        view.getContext().startActivity(intent);
-                                    } else {
-                                        addRelationship(enrollmentAndTEI.val1(), null, false);
-                                    }
+                                    analyticsHelper.setEvent(CREATE_ENROLL, CLICK, CREATE_ENROLL);
+                                    view.goToEnrollment(
+                                            enrollmentAndTEI.val0(),
+                                            selectedProgram.uid()
+                                    );
                                 },
                                 Timber::d)
         );
@@ -658,7 +651,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         } else if (!online) {
             analyticsHelper.setEvent(ADD_RELATIONSHIP, CLICK, ADD_RELATIONSHIP);
             Intent intent = new Intent();
-            intent.putExtra("TEI_A_UID", teiUid);
+            intent.putExtra(TEI_A_UID, teiUid);
             if (relationshipTypeUid != null)
                 intent.putExtra("RELATIONSHIP_TYPE_UID", relationshipTypeUid);
             view.getAbstractActivity().setResult(RESULT_OK, intent);
@@ -810,6 +803,19 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
             return ColorUtils.parseColor(selectedProgram.style().color());
         else
             return -1;
+    }
+
+    @Override
+    public void initAssignmentFilter() {
+        boolean hasAssignment = selectedProgram != null && !d2.programModule().programStages()
+                .byProgramUid().eq(selectedProgram.uid())
+                .byEnableUserAssignment().isTrue()
+                .blockingIsEmpty();
+        if (hasAssignment) {
+            view.showAssignmentFilter();
+        } else {
+            view.hideAssignmentFilter();
+        }
     }
 
     @RestrictTo(RestrictTo.Scope.TESTS)

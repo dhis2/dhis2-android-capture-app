@@ -28,8 +28,8 @@ public class ValueUtils {
             }
         } else if (optionSetUid != null) {
             String optionCode = attributeValue.value();
-            if (!d2.optionModule().options().byOptionSetUid().eq(optionSetUid).byCode().eq(optionCode).blockingIsEmpty()) {
-                Option option = d2.optionModule().options().byOptionSetUid().eq(optionSetUid).byCode().eq(optionCode).one().blockingGet();
+            Option option = d2.optionModule().options().byOptionSetUid().eq(optionSetUid).byCode().eq(optionCode).one().blockingGet();
+            if (option != null) {
                 if (option.code().equals(optionCode) || option.name().equals(optionCode)) {
                     teAttrValue = TrackedEntityAttributeValue.builder()
                             .trackedEntityInstance(teAttrValue.trackedEntityInstance())

@@ -914,6 +914,7 @@ public class TableView extends FrameLayout implements ITableView {
 
         // Reload the preferences
         mPreferencesHandler.loadPreferences(savedState.preferences);
+        scrollToColumnPosition(mScrollHandler.getColumnPosition());
     }
 
     public View getCornerView() {

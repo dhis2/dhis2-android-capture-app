@@ -61,7 +61,7 @@ class IndicatorsPresenter(
                             indicatorsMutable.add(indicator)
                         }
                     }
-                    return@BiFunction indicatorsMutable.toList()
+                    return@BiFunction indicatorsMutable.sortedBy { it.val0()?.displayName() }
                 }
             )
                 .subscribeOn(schedulerProvider.io())
