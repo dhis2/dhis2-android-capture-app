@@ -76,6 +76,7 @@ fun AppCompatActivity.isKeyboardOpened(): Boolean {
     val activityRoot = (findViewById<ViewGroup>(android.R.id.content)).getChildAt(0)
     val visibleThreshold = keyboardVisibilityThreshold.dp
 
+    if (activityRoot == null) return false
     activityRoot.getWindowVisibleDisplayFrame(r)
 
     val heightDiff = activityRoot.rootView.height - r.height()
