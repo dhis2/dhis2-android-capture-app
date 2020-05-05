@@ -71,6 +71,7 @@ public class FilterManager {
         periodFilters = null;
         catOptComboFilters = new ArrayList<>();
         eventStatusFilters = new ArrayList<>();
+        assignedFilter = false;
 
         ouFiltersApplied = new ObservableField<>(0);
         stateFiltersApplied = new ObservableField<>(0);
