@@ -221,19 +221,21 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                                                     List<String> optionSets = new ArrayList<>();
                                                     for (FieldViewModel fieldViewModel : fields) {
                                                         String fieldSection = getFieldSection(fieldViewModel);
-                                                        if (!fieldMap.containsKey(fieldSection)) {
-                                                            fieldMap.put(fieldSection, new ArrayList<>());
-                                                        }
-                                                        fieldMap.get(fieldSection).add(fieldViewModel);
+                                                        if(!fieldSection.isEmpty() || sectionList.size() == 1) {
+                                                            if (!fieldMap.containsKey(fieldSection)) {
+                                                                fieldMap.put(fieldSection, new ArrayList<>());
+                                                            }
+                                                            fieldMap.get(fieldSection).add(fieldViewModel);
 
-                                                        if (fieldViewModel.optionSet() == null || !(fieldViewModel instanceof ImageViewModel)) {
-                                                            totalFields++;
-                                                        } else if (!optionSets.contains(fieldViewModel.optionSet())) {
-                                                            optionSets.add(fieldViewModel.optionSet());
-                                                            totalFields++;
+                                                            if (fieldViewModel.optionSet() == null || !(fieldViewModel instanceof ImageViewModel)) {
+                                                                totalFields++;
+                                                            } else if (!optionSets.contains(fieldViewModel.optionSet())) {
+                                                                optionSets.add(fieldViewModel.optionSet());
+                                                                totalFields++;
+                                                            }
+                                                            if (fieldViewModel instanceof UnsupportedViewModel || fieldViewModel instanceof DisplayViewModel)
+                                                                unsupportedFields++;
                                                         }
-                                                        if (fieldViewModel instanceof UnsupportedViewModel || fieldViewModel instanceof DisplayViewModel)
-                                                            unsupportedFields++;
                                                     }
 
                                                     List<EventSectionModel> eventSectionModels = new ArrayList<>();
