@@ -444,19 +444,13 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         if (!fromRelationship) {
             liveData.observe(this, searchTeiModels -> {
                 Trio<PagedList<SearchTeiModel>, String, Boolean> data = presenter.getMessage(searchTeiModels);
+                presenter.checkFilters(data.val1().isEmpty());
                 if (data.val1().isEmpty()) {
-                    binding.filterCounter.setVisibility(View.VISIBLE);
-                    binding.searchFilterGeneral.setVisibility(View.VISIBLE);
-
                     binding.messageContainer.setVisibility(View.GONE);
                     binding.scrollView.setVisibility(View.VISIBLE);
                     liveAdapter.submitList(data.val0());
                     binding.progressLayout.setVisibility(View.GONE);
                 } else {
-                    boolean filtersActive = FilterManager.getInstance().getTotalFilters() != 0;
-                    binding.filterCounter.setVisibility(filtersActive ? View.VISIBLE : View.GONE);
-                    binding.searchFilterGeneral.setVisibility(filtersActive ? View.VISIBLE : View.GONE);
-
                     showMap(false);
                     binding.progressLayout.setVisibility(View.GONE);
                     binding.messageContainer.setVisibility(View.VISIBLE);
@@ -482,6 +476,12 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                     setFabIcon(false);
             });
         }
+    }
+
+    @Override
+    public void setFiltersVisibility(boolean showFilters) {
+        binding.filterCounter.setVisibility(showFilters ? View.VISIBLE : View.GONE);
+        binding.filterCounterSearch.setVisibility(showFilters ? View.VISIBLE : View.GONE);
     }
 
     @Override

@@ -8,6 +8,7 @@ import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.schedulers.TestScheduler
 import org.dhis2.data.schedulers.TestSchedulerProvider
 import org.dhis2.utils.analytics.AnalyticsHelper
+import org.dhis2.utils.filters.FilterManager
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.program.Program
 import org.junit.Before
@@ -157,5 +158,26 @@ class SearchTEPresenterTest {
         presenter.initAssignmentFilter()
         verify(view, times(0)).showAssignmentFilter()
         verify(view, times(1)).hideAssignmentFilter()
+    }
+
+    @Test
+    fun `Should show filters if list is ok`(){
+        presenter.checkFilters(true)
+        verify(view,times(1)).setFiltersVisibility(true);
+    }
+
+    @Test
+    fun `Should show filters if list is not ok but filters are active`(){
+        FilterManager.clearAll()
+        FilterManager.getInstance().setAssignedToMe(true)
+        presenter.checkFilters(false)
+        verify(view,times(1)).setFiltersVisibility(true)
+    }
+
+    @Test
+    fun `Should not show filters if list is not ok and filters are not active`(){
+        FilterManager.clearAll()
+        presenter.checkFilters(false)
+        verify(view,times(1)).setFiltersVisibility(false)
     }
 }
