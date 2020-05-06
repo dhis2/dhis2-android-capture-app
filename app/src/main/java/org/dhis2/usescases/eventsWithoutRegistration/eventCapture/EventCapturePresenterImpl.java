@@ -409,7 +409,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
 
     @Override
     public void onBackClick() {
-        view.back();
+        view.goBack();
     }
 
     @Override
