@@ -21,6 +21,7 @@ import io.reactivex.Flowable
 import java.io.File
 import javax.inject.Inject
 import org.dhis2.App
+import org.dhis2.Bindings.isKeyboardOpened
 import org.dhis2.R
 import org.dhis2.data.forms.dataentry.DataEntryAdapter
 import org.dhis2.data.forms.dataentry.DataEntryArguments
@@ -278,10 +279,15 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
     }
 
     override fun onBackPressed() {
-        if (mode == EnrollmentMode.CHECK) {
-            presenter.backIsClicked()
+        if(!isKeyboardOpened()) {
+            if (mode == EnrollmentMode.CHECK) {
+                presenter.backIsClicked()
+            } else {
+                showDeleteDialog()
+            }
         } else {
-            showDeleteDialog()
+            currentFocus?.apply { clearFocus() }
+            hideKeyboard()
         }
     }
 

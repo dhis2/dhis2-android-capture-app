@@ -39,6 +39,7 @@ import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityType;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -118,7 +119,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         this.trackedEntityType = trackedEntityType;
         this.trackedEntity = searchRepository.getTrackedEntityType(trackedEntityType).blockingFirst();
         compositeDisposable.add(
-              searchRepository.programsWithRegistration(trackedEntityType)
+                searchRepository.programsWithRegistration(trackedEntityType)
                         .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.ui())
                         .subscribe(programs -> {
@@ -382,7 +383,12 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
     @Override
     public void setProgram(Program programSelected) {
-        boolean otherProgramSelected = selectedProgram == programSelected;
+        boolean otherProgramSelected;
+        if (programSelected == null) {
+            otherProgramSelected = selectedProgram != null;
+        } else {
+            otherProgramSelected = !programSelected.equals(selectedProgram);
+        }
         selectedProgram = programSelected;
         currentProgram.onNext(programSelected != null ? programSelected.uid() : "");
         view.clearList(programSelected == null ? null : programSelected.uid());
@@ -390,13 +396,15 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         view.setFabIcon(true);
         showList = true;
 
-        if (!otherProgramSelected)
+        if (otherProgramSelected) {
             queryData.clear();
+        }
 
-        if (queryData.isEmpty())
+        if (queryData.isEmpty()) {
             queryProcessor.onNext(new HashMap<>());
-        else
+        } else {
             queryProcessor.onNext(queryData);
+        }
 
         initAssignmentFilter();
     }
@@ -816,6 +824,11 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         } else {
             view.hideAssignmentFilter();
         }
+    }
+
+    @Override
+    public void restoreQueryData(HashMap<String, String> queryData) {
+        this.queryData = queryData;
     }
 
     @RestrictTo(RestrictTo.Scope.TESTS)

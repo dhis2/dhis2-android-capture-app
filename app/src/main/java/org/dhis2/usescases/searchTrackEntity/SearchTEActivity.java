@@ -239,6 +239,9 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         binding.executePendingBindings();
         showHideFilter();
 
+        if (savedInstanceState != null) {
+            presenter.restoreQueryData((HashMap<String, String>) savedInstanceState.getSerializable(Constants.QUERY_DATA));
+        }
         updateFiltersSearch(presenter.getQueryData().size());
         binding.setTotalFilters(FilterManager.getInstance().getTotalFilters());
         filtersAdapter.notifyDataSetChanged();
@@ -283,6 +286,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     protected void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         binding.mapView.onSaveInstanceState(outState);
+        outState.putSerializable(Constants.QUERY_DATA, presenter.getQueryData());
     }
 
     @Override
