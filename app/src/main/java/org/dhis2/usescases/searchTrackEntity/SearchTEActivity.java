@@ -485,7 +485,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     @Override
     public void setFiltersVisibility(boolean showFilters) {
         binding.filterCounter.setVisibility(showFilters ? View.VISIBLE : View.GONE);
-        binding.filterCounterSearch.setVisibility(showFilters ? View.VISIBLE : View.GONE);
+        binding.searchFilterGeneral.setVisibility(showFilters ? View.VISIBLE : View.GONE);
     }
 
     @Override
