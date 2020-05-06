@@ -66,7 +66,6 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
     }
 
-    protected static final String DATABASE_NAME = "dhis.db";
     protected boolean wantToImportDB = false;
 
     @NonNull

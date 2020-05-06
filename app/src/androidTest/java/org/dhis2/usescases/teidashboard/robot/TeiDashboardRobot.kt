@@ -15,6 +15,8 @@ import org.dhis2.common.matchers.isToast
 import org.dhis2.usescases.programStageSelection.ProgramStageSelectionViewHolder
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTEViewHolder
 import org.dhis2.usescases.teiDashboard.dashboardfragments.tei_data.DashboardProgramViewHolder
+import org.dhis2.usescases.teidashboard.entity.EnrollmentUIModel
+import org.dhis2.usescases.teidashboard.entity.UpperEnrollmentUIModel
 import org.hamcrest.Matchers.allOf
 import org.hamcrest.Matchers.not
 
@@ -152,43 +154,43 @@ class TeiDashboardRobot: BaseRobot () {
         onView(withId(R.id.scrollView)).perform(scrollTo<SearchTEViewHolder>(hasDescendant(withText("Olvia Watts"))), click())
     }
 
-    fun checkUpperInfo(incidentDate: String, enrollmentDate: String, orgUnit: String) {
-        onView(withId(R.id.incident_date)).check(matches(withText(incidentDate)))
-        onView(withId(R.id.enrollment_date)).check(matches(withText(enrollmentDate)))
-        onView(withId(R.id.org_unit)).check(matches(withText(orgUnit)))
+    fun checkUpperInfo(upperInformation: UpperEnrollmentUIModel) {
+        onView(withId(R.id.incident_date)).check(matches(withText(upperInformation.incidentDate)))
+        onView(withId(R.id.enrollment_date)).check(matches(withText(upperInformation.enrollmentDate)))
+        onView(withId(R.id.org_unit)).check(matches(withText(upperInformation.orgUnit)))
     }
 
     fun clickOnSeeDetails() {
         onView(withId(R.id.viewMore)).perform(click())
     }
 
-    fun checkFullDetails(enrollmentDate: String, birthday: String, orgUnit: String, latitude: String, longitude: String, name: String, lastName: String, sex: String) {
+    fun checkFullDetails(enrollmentUIModel: EnrollmentUIModel) {
         onView(withId(R.id.fieldRecycler)).check(matches(allOf(isDisplayed(), isNotEmpty(),
-                atPosition(1, hasDescendant(withText(enrollmentDate))))))
+                atPosition(1, hasDescendant(withText(enrollmentUIModel.enrollmentDate))))))
 
         onView(withId(R.id.fieldRecycler)).check(matches(allOf(isDisplayed(), isNotEmpty(),
-                atPosition(2, hasDescendant(withText(birthday))))))
+                atPosition(2, hasDescendant(withText(enrollmentUIModel.birthday))))))
 
         onView(withId(R.id.fieldRecycler)).check(matches(allOf(isDisplayed(), isNotEmpty(),
-                atPosition(3, hasDescendant(withText(orgUnit))))))
+                atPosition(3, hasDescendant(withText(enrollmentUIModel.orgUnit))))))
 
         onView(withId(R.id.fieldRecycler)).check(matches(allOf(isDisplayed(), isNotEmpty(),
-                atPosition(4, hasDescendant(allOf(withId(R.id.latitude), withText(latitude)))))))
+                atPosition(4, hasDescendant(allOf(withId(R.id.latitude), withText(enrollmentUIModel.latitude)))))))
 
         onView(withId(R.id.fieldRecycler)).check(matches(allOf(isDisplayed(), isNotEmpty(),
-                atPosition(4, hasDescendant(allOf(withId(R.id.longitude), withText(longitude)))))))
+                atPosition(4, hasDescendant(allOf(withId(R.id.longitude), withText(enrollmentUIModel.longitude)))))))
 
         onView(withId(R.id.fieldRecycler))
                 .perform(actionOnItemAtPosition<DashboardProgramViewHolder>(6, click()))
 
         onView(withId(R.id.fieldRecycler)).check(matches(allOf(isDisplayed(), isNotEmpty(),
-                atPosition(2, hasDescendant(withText(name))))))
+                atPosition(2, hasDescendant(withText(enrollmentUIModel.name))))))
 
         onView(withId(R.id.fieldRecycler)).check(matches(allOf(isDisplayed(), isNotEmpty(),
-                atPosition(3, hasDescendant(withText(lastName))))))
+                atPosition(3, hasDescendant(withText(enrollmentUIModel.lastName))))))
 
         onView(withId(R.id.fieldRecycler)).check(matches(allOf(isDisplayed(), isNotEmpty(),
-                atPosition(4, hasDescendant(withText(sex))))))
+                atPosition(4, hasDescendant(withText(enrollmentUIModel.sex))))))
     }
 
     fun clickOnScheduleNew() {

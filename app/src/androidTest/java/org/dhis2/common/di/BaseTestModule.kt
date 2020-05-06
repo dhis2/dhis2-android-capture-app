@@ -3,7 +3,6 @@ package org.dhis2.common.di
 import android.content.Context
 import dagger.Module
 import dagger.Provides
-import org.dhis2.common.BaseRobot
 import org.dhis2.common.keystore.KeyStoreRobot
 import org.dhis2.common.preferences.PreferenceTestingImpl
 import org.dhis2.common.preferences.PreferencesRobot
@@ -25,5 +24,4 @@ class BaseTestModule(val context: Context){
         return PreferencesRobot(PreferenceTestingImpl(context))
     }
 
-    //TO ADD mock server dependency
 }

@@ -114,7 +114,7 @@ class LoginTest : BaseTest() {
     @Test
     fun shouldGoToPinScreenWhenPinWasSet() {
       preferencesRobot.saveValue(SESSION_LOCKED, true)
-      preferencesRobot.saveValue(PIN, "1234")
+      preferencesRobot.saveValue(PIN, PIN_PASSWORD)
 
       startLoginActivity()
 
@@ -161,6 +161,7 @@ class LoginTest : BaseTest() {
         const val API_METADATA_SETTINGS_PROGRAM_RESPONSE_ERROR = "mocks/settingswebapp/programsettings_404.json"
         const val API_METADATA_SETTINGS_DATASET_RESPONSE_ERROR = "mocks/settingswebapp/datasetsettings_404.json"
         const val DB_GENERATED_BY_LOGIN = "127-0-0-1-8080_test_unencrypted.db"
+        const val PIN_PASSWORD = 1234
 
         const val USERNAME = "test"
         const val PASSWORD = "Android123"

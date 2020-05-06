@@ -9,6 +9,8 @@ import org.dhis2.R
 import org.dhis2.usescases.BaseTest
 import org.dhis2.usescases.searchTrackEntity.SearchTEActivity
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity
+import org.dhis2.usescases.teidashboard.entity.EnrollmentUIModel
+import org.dhis2.usescases.teidashboard.entity.UpperEnrollmentUIModel
 import org.dhis2.usescases.teidashboard.robot.*
 import org.hisp.dhis.android.core.mockwebserver.ResponseController.GET
 import org.junit.Ignore
@@ -149,29 +151,6 @@ class TeiDashboardTest : BaseTest() {
     }
 
     @Test
-    @Ignore
-    fun shouldEnrollToOtherProgramWhenClickOnProgramEnrollments() {
-        //launch tei
-        //click on more options
-        // click on Program enrollments
-        // choose a Program to be enroll
-        // choose date and accept
-        // click on save in enrollment
-        // if Child Program after save will ask to type AGAR then to choose option (Finish or Finish and Complete)
-
-        prepareTeiOpenedWithNoPreviousEventProgrammeAndLaunchActivity(rule)
-
-        teiDashboardRobot {
-            clickOnMenuMoreOptions()
-            clickOnMenuProgramEnrollments()
-            clickOnAProgramForEnrollment() // is not clicking on enrollment btn
-            //clickOnAcceptEnrollmentDate()
-            //clickOnSaveEnrollment()
-            Thread.sleep(1000)
-        }
-    }
-
-    @Test
     fun shouldNotBeAbleToCreateNewEventsWhenFull() {
         prepareTeiOpenedWithFullEventsAndLaunchActivity(rule)
 
@@ -199,11 +178,69 @@ class TeiDashboardTest : BaseTest() {
     }
 
     @Test
+    fun shouldShowCorrectInfoWhenOpenTEI() {
+        prepareTeiCompletedProgrammeAndLaunchActivity(rule)
+
+        val upperInformation = createExpectedUpperInformation()
+
+        teiDashboardRobot {
+            checkUpperInfo(upperInformation)
+        }
+    }
+
+    @Test
+    fun shouldShowTEIDetailsWhenClickOnSeeDetails() {
+        prepareTeiCompletedProgrammeAndLaunchActivity(rule)
+
+        val enrollmentFullDetails = createExpectedEnrollmentInformation()
+
+        teiDashboardRobot {
+            clickOnSeeDetails()
+            checkFullDetails(enrollmentFullDetails)
+        }
+    }
+
+    @Test
+    fun shouldShowIndicatorsDetailsWhenClickOnIndicatorsTab() {
+        prepareTeiCompletedProgrammeAndLaunchActivity(rule)
+
+        teiDashboardRobot {
+            clickOnIndicatorsTab()
+        }
+
+        indicatorsRobot {
+            checkDetails("0", "4817")
+        }
+    }
+
+    @Test
+    @Ignore
+    fun shouldEnrollToOtherProgramWhenClickOnProgramEnrollments() {
+        //launch tei
+        //click on more options
+        // click on Program enrollments
+        // choose a Program to be enroll
+        // choose date and accept
+        // click on save in enrollment
+        // if Child Program after save will ask to type AGAR then to choose option (Finish or Finish and Complete)
+
+        prepareTeiOpenedWithNoPreviousEventProgrammeAndLaunchActivity(rule)
+
+        teiDashboardRobot {
+            clickOnMenuMoreOptions()
+            clickOnMenuProgramEnrollments()
+            clickOnAProgramForEnrollment() // is not clicking on enrollment btn
+            //clickOnAcceptEnrollmentDate()
+            //clickOnSaveEnrollment()
+            Thread.sleep(1000)
+        }
+    }
+
+    @Test
     @Ignore
     fun shouldSuccessfullyCreateRelationshipWhenClickAdd() {
         prepareTeiCompletedProgrammeAndLaunchActivity(rule)
 
-    //    Thread.sleep(10000)
         teiDashboardRobot {
             clickOnRelationshipTab()
         }
@@ -243,36 +280,8 @@ class TeiDashboardTest : BaseTest() {
         }
     }
 
-    @Test
-    fun shouldShowCorrectInfoWhenOpenTEI() {
-        prepareTeiCompletedProgrammeAndLaunchActivity(rule)
-
-        teiDashboardRobot {
-            checkUpperInfo("2021-01-10", "2021-01-10", "Ngelehun CHC")
-        }
-    }
-
-    @Test
-    fun shouldShowTEIDetailsWhenClickOnSeeDetails() {
-        prepareTeiCompletedProgrammeAndLaunchActivity(rule)
-        teiDashboardRobot {
-            clickOnSeeDetails()
-            checkFullDetails("2021-01-10", "2021-01-10", "Ngelehun CHC", "40.48713205295354", "-3.6847423830882633", "Filona", "Ryder", "Female")
-        }
-    }
-
-    @Test
-    fun shouldShowIndicatorsDetailsWhenClickOnIndicatorsTab() {
-        prepareTeiCompletedProgrammeAndLaunchActivity(rule)
-
-        teiDashboardRobot {
-            clickOnIndicatorsTab()
-        }
-
-        indicatorsRobot {
-            checkDetails("0", "4817")
-        }
-    }
+    private fun createExpectedUpperInformation() = UpperEnrollmentUIModel("2021-01-10", "2021-01-10", "Ngelehun CHC")
+    private fun createExpectedEnrollmentInformation() = EnrollmentUIModel("2021-01-10", "2021-01-10", "Ngelehun CHC", "40.48713205295354", "-3.6847423830882633", "Filona", "Ryder", "Female")
 
     companion object{
         const val NOTE_VALID = "ThisIsJustATest"

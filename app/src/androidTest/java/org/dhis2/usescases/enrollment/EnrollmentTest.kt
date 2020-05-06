@@ -26,8 +26,7 @@ class EnrollmentTest : BaseTest(){
 
     @Test
     fun openEnrollment() {
-    //    prepareSearchIntentAndLaunchActivity()
-    //    Thread.sleep(10000)
+
     }
 
     private fun prepareSearchIntentAndLaunchActivity() {

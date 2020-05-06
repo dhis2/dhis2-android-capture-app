@@ -50,28 +50,6 @@ class MainTest : BaseTest() {
         }
     }
 
-    //Create tests
-
-//    @Test
-//    fun loginButtonShouldBeDisplayedWhenAllFieldsAreFilled2() {
-    //    startTeiDashboardActivity()
-     //   Thread.sleep(2000)
-
-        //  onView(withId(R.id.login)).check(matches(not(isDisplayed())))
-        //  onView(withId(R.id.server_url_edit)).perform(replaceText(TEST_URL), pressImeActionButton())
-        //  onView(withId(R.id.user_name_edit)).perform(
-        //      replaceText(TEST_USERNAME),
-        //      pressImeActionButton()
-        //  )
-        //  onView(withId(R.id.user_pass_edit)).perform(
-        //     replaceText(TEST_USERNAME),
-        //     pressImeActionButton()
-        // )
-
-        //    onView(withId(R.id.login)).check(matches(isDisplayed()))
- //   }
-
-
     fun startActivity(){
         rule.launchActivity(null)
     }

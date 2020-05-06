@@ -26,7 +26,6 @@ fun loginRobot(loginBody: LoginRobot.() -> Unit) {
     }
 }
 
-
 class LoginRobot : BaseRobot() {
 
     fun typeServer(server: String) {
