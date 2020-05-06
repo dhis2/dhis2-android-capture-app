@@ -835,4 +835,14 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     public void setProgramForTesting(Program program) {
         selectedProgram = program;
     }
+
+    @Override
+    public void checkFilters(boolean listResultIsOk) {
+        if(listResultIsOk){
+            view.setFiltersVisibility(true);
+        }else {
+            boolean filtersActive = FilterManager.getInstance().getTotalFilters() != 0;
+            view.setFiltersVisibility(filtersActive);
+        }
+    }
 }

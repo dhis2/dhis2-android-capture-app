@@ -46,6 +46,8 @@ public class SearchTEContractsModule {
 
         void setPrograms(List<Program> programModels);
 
+        void setFiltersVisibility(boolean showFilters);
+
         void clearList(String uid);
 
         Flowable<RowAction> rowActionss();
@@ -156,6 +158,8 @@ public class SearchTEContractsModule {
         int getEnrollmentColor();
 
         void initAssignmentFilter();
+
+        void checkFilters(boolean listResultIsOk);
 
         void restoreQueryData(HashMap<String, String> queryData);
     }
