@@ -19,14 +19,7 @@ class SearchTETest : BaseTest(){
 
     @Test
     fun openSearchTE() {
-    //    prepareChildProgrammeIntentAndLaunchActivity()
 
-    //Working on it
-    //     onView(withId(R.id.scrollView))
-    //             .perform(RecyclerViewActions.actionOnItemAtPosition<SearchTEViewHolder>(0, click()))
-
-    // onView(withRecyclerView(R.id.scrollView)).perform(RecyclerViewActions.scrollToPosition<SearchTEViewHolder>(15))
-    //    RecyclerViewActions.scrollToPosition<SearchTEViewHolder>(15)
     }
 
     private fun prepareChildProgrammeIntentAndLaunchActivity() {
