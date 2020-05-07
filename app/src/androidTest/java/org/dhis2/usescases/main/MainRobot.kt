@@ -56,10 +56,8 @@ class MainRobot : BaseRobot(){
     }
 
     fun filterByPeriodToday() {
-        // click on filter, find PERIOD filter and click, today and click
         onView(withId(R.id.filter)).perform(click())
         onView(withId(R.id.filterLayout))
         onView(withId(R.id.today)).perform(click())
     }
-
 }
