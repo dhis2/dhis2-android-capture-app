@@ -12,7 +12,7 @@ class FingerPrintControllerImpl(
     FingerPrintController {
 
     override fun hasFingerPrint(): Boolean {
-        return goldfinger.hasEnrolledFingerprint()
+        return goldfinger.hasFingerprintHardware() && goldfinger.hasEnrolledFingerprint()
     }
 
     override fun authenticate(promptParams: Goldfinger.PromptParams): Observable<FingerPrintResult> {
