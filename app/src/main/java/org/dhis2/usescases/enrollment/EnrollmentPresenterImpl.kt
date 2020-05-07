@@ -7,7 +7,6 @@ import io.reactivex.flowables.ConnectableFlowable
 import io.reactivex.functions.BiFunction
 import io.reactivex.processors.FlowableProcessor
 import io.reactivex.processors.PublishProcessor
-import java.util.concurrent.TimeUnit
 import kotlin.collections.set
 import org.dhis2.Bindings.profilePicturePath
 import org.dhis2.Bindings.toDate
@@ -354,8 +353,6 @@ class EnrollmentPresenterImpl(
     fun subscribeToBackButton() {
         disposable.add(
             backButtonProcessor
-                .doOnNext { view.requestFocus() }
-                .debounce(1, TimeUnit.SECONDS, schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
                     { view.performSaveClick() },

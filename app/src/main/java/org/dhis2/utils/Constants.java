@@ -133,6 +133,9 @@ public class Constants {
     public static final String NOTE_TYPE = "NOTE_TYPE";
 
     public static final String OPTION_SET = "OPTION_SET";
+    @Nullable
+    public static final String SCAN_RENDERING_TYPE = "SCAN_RENDERING_TYPE";
+    public static final String QUERY_DATA = "QUERY_DATA";
 
     private Constants() {
         // hide public constructor

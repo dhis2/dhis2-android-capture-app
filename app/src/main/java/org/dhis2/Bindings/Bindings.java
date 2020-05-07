@@ -28,6 +28,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import org.dhis2.R;
 import org.dhis2.usescases.datasets.dataSetTable.dataSetSection.DataSetTableAdapter;
 import org.dhis2.usescases.programEventDetail.ProgramEventViewModel;
+import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.DateUtils;
 import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.common.State;
@@ -445,24 +446,33 @@ public class Bindings {
             int icon = resources.getIdentifier(iconName, "drawable", view.getContext().getPackageName());
             if (view instanceof ImageView)
                 ((ImageView) view).setImageResource(icon);
+        }else if(objectStyle != null && objectStyle.icon() == null){
+            Drawable drawable = resources.getDrawable(R.drawable.ic_program_default);
+            if (view instanceof ImageView)
+                ((ImageView) view).setImageDrawable(drawable);
         }
 
         if (objectStyle != null && objectStyle.color() != null) {
             String color = objectStyle.color().startsWith("#") ? objectStyle.color() : "#" + objectStyle.color();
             int colorRes;
             if (color.length() == 4)
-                colorRes = ContextCompat.getColor(view.getContext(), R.color.colorPrimary);
+                colorRes = ColorUtils.getPrimaryColor(view.getContext(), ColorUtils.ColorType.PRIMARY);
             else
                 colorRes = Color.parseColor(color);
 
             itemView.setBackgroundColor(colorRes);
             setFromResBgColor(view, colorRes);
+        }else if(objectStyle!=null && objectStyle.color() ==null){
+            int colorRes = ColorUtils.getPrimaryColor(view.getContext(), ColorUtils.ColorType.PRIMARY);
+            itemView.setBackgroundColor(colorRes);
+            setFromResBgColor(view, colorRes);
         }
+
         if (objectStyle == null) {
             Drawable drawable = resources.getDrawable(R.drawable.ic_program_default);
             if (view instanceof ImageView)
                 ((ImageView) view).setImageDrawable(drawable);
-            int colorRes = ContextCompat.getColor(view.getContext(), R.color.colorPrimary);
+            int colorRes = ColorUtils.getPrimaryColor(view.getContext(), ColorUtils.ColorType.PRIMARY);
             itemView.setBackgroundColor(colorRes);
             setFromResBgColor(view, colorRes);
         }

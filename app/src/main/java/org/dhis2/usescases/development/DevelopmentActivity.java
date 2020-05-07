@@ -1,6 +1,10 @@
 package org.dhis2.usescases.development;
 
+import android.content.res.Configuration;
+import android.content.res.Resources;
+import android.os.Build;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.widget.CompoundButton;
 
 import androidx.annotation.Nullable;
@@ -12,6 +16,7 @@ import com.google.gson.reflect.TypeToken;
 import org.dhis2.R;
 import org.dhis2.databinding.DevelopmentActivityBinding;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
+import org.dhis2.usescases.main.MainActivity;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -21,6 +26,7 @@ import java.io.Reader;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * QUADRAM. Created by ppajuelo on 15/04/2019.
@@ -70,6 +76,22 @@ public class DevelopmentActivity extends ActivityGlobalAbstract {
         });
 
         renderIconForPosition(count);
+
+        binding.localeButton.setOnClickListener(view->{
+            if(binding.locale.getText().toString()!=null){
+                String localeCode = binding.locale.getText().toString();
+                Resources resources = getResources();
+                DisplayMetrics dm = resources.getDisplayMetrics();
+                Configuration config = resources.getConfiguration();
+                if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.JELLY_BEAN_MR1){
+                    config.setLocale(new Locale(localeCode.toLowerCase()));
+                } else {
+                    config.locale = new Locale(localeCode.toLowerCase());
+                }
+                resources.updateConfiguration(config, dm);
+                startActivity(MainActivity.class,null,true,true,null);
+            }
+        });
     }
 
     private void renderIconForPosition(int position) {
