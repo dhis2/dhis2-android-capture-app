@@ -22,7 +22,7 @@ object FingerPrintModule {
     @JvmStatic
     @Provides
     fun provideFingerPrintModule(context: Context): RxGoldfinger {
-        return RxGoldfinger.Builder(context).setLogEnabled(BuildConfig.DEBUG).build()
+        return RxGoldfinger.Builder(context).logEnabled(BuildConfig.DEBUG).build()
     }
 
     @JvmStatic

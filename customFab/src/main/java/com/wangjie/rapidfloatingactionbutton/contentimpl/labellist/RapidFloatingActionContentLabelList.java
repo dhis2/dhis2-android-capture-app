@@ -14,6 +14,9 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
+
+import androidx.constraintlayout.widget.ConstraintLayout;
+
 import com.wangjie.rapidfloatingactionbutton.R;
 import com.wangjie.rapidfloatingactionbutton.RapidFloatingActionContent;
 import com.wangjie.rapidfloatingactionbutton.constants.RFABConstants;
@@ -76,7 +79,7 @@ public class RapidFloatingActionContentLabelList extends RapidFloatingActionCont
         rfacItemDrawableSizePx = RFABTextUtil.dip2px(getContext(), RFABConstants.SIZE.RFAC_ITEM_DRAWABLE_SIZE_DP);
 
         contentView = new LinearLayout(getContext());
-        contentView.setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        contentView.setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT));
         contentView.setOrientation(LinearLayout.VERTICAL);
         setRootView(contentView);
     }
@@ -135,12 +138,12 @@ public class RapidFloatingActionContentLabelList extends RapidFloatingActionCont
 
             // 设置iconIv的位置（需要与RFAB居中）
             int realItemSize = circleButtonProperties.getRealSizePx(getContext());
-            LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams) iconIv.getLayoutParams();
+            ConstraintLayout.LayoutParams lp = (ConstraintLayout.LayoutParams) iconIv.getLayoutParams();
             if (null == lp) {
-                lp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                lp = new ConstraintLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
             }
             int rfabRealSize = onRapidFloatingActionListener.obtainRFAButton().getRfabProperties().getRealSizePx(getContext());
-            lp.rightMargin = (rfabRealSize - realItemSize) / 2;
+            lp.setMarginEnd((rfabRealSize - realItemSize) / 2);
             lp.width = realItemSize;
             lp.height = realItemSize;
             iconIv.setLayoutParams(lp);

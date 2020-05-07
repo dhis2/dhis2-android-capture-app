@@ -48,12 +48,17 @@ import org.dhis2.utils.timber.ReleaseTree;
 import org.hisp.dhis.android.core.D2Manager;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.IOException;
+import java.net.SocketException;
+
 import javax.inject.Singleton;
 
 import io.fabric.sdk.android.Fabric;
 import io.reactivex.Scheduler;
 import io.reactivex.android.plugins.RxAndroidPlugins;
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.exceptions.UndeliverableException;
+import io.reactivex.plugins.RxJavaPlugins;
 import timber.log.Timber;
 
 /**
@@ -111,9 +116,7 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
 
         setUpAppComponent();
         setUpServerComponent();
-
-        Scheduler asyncMainThreadScheduler = AndroidSchedulers.from(Looper.getMainLooper(), true);
-        RxAndroidPlugins.setInitMainThreadSchedulerHandler(schedulerCallable -> asyncMainThreadScheduler);
+        setUpRxPlugin();
     }
 
     private void upgradeSecurityProviderSync() {
@@ -261,9 +264,9 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
     }
 
     public void releaseDashboardComponent() {
-        if(!this.recreated) {
+        if (!this.recreated) {
             dashboardComponent = null;
-        }else{
+        } else {
             recreated = false;
         }
     }
@@ -292,5 +295,29 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
         boolean shouldShowPinDialog = fromBackGround && appComponent().preferenceProvider().getBoolean(Preference.SESSION_LOCKED, false);
         fromBackGround = false;
         return shouldShowPinDialog;
+    }
+
+    private void setUpRxPlugin() {
+        Scheduler asyncMainThreadScheduler = AndroidSchedulers.from(Looper.getMainLooper(), true);
+        RxAndroidPlugins.setInitMainThreadSchedulerHandler(schedulerCallable -> asyncMainThreadScheduler);
+        RxJavaPlugins.setErrorHandler(e -> {
+            if (e instanceof UndeliverableException) {
+                e = e.getCause();
+            }
+            if ((e instanceof IOException) || (e instanceof SocketException)) {
+                return;
+            }
+            if ((e instanceof NullPointerException) || (e instanceof IllegalArgumentException)) {
+                Timber.d("Error in app");
+                Thread.currentThread().getUncaughtExceptionHandler()
+                        .uncaughtException(Thread.currentThread(),e);
+            }
+            if (e instanceof IllegalStateException) {
+                Timber.d("Error in RxJava");
+                Thread.currentThread().getUncaughtExceptionHandler()
+                        .uncaughtException(Thread.currentThread(),e);
+            }
+            Timber.d(e);
+        });
     }
 }

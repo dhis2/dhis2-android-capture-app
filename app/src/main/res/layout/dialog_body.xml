@@ -31,6 +31,7 @@
         app:layout_constraintEnd_toEndOf="parent" />
 
     <Button
+        style="@style/Widget.MaterialComponents.Button"
         android:id="@+id/dialogCancel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

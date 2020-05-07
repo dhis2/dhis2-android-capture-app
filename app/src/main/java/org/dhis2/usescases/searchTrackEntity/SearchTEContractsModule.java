@@ -23,6 +23,7 @@ import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityType;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 
@@ -44,6 +45,8 @@ public class SearchTEContractsModule {
                      List<ValueTypeDeviceRendering> renderingTypes);
 
         void setPrograms(List<Program> programModels);
+
+        void setFiltersVisibility(boolean showFilters);
 
         void clearList(String uid);
 
@@ -155,5 +158,9 @@ public class SearchTEContractsModule {
         int getEnrollmentColor();
 
         void initAssignmentFilter();
+
+        void checkFilters(boolean listResultIsOk);
+
+        void restoreQueryData(HashMap<String, String> queryData);
     }
 }

@@ -118,7 +118,7 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity
             prefs.edit().remove(Constants.PROGRAM_THEME).apply();
         }
 
-        if (!(this instanceof SplashActivity))
+        if (!(this instanceof SplashActivity) && !(this instanceof LoginActivity))
             setTheme(prefs.getInt(Constants.PROGRAM_THEME, prefs.getInt(Constants.THEME, R.style.AppTheme)));
 
         Crashlytics.setString(Constants.SERVER, prefs.getString(Constants.SERVER, null));

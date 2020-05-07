@@ -14,10 +14,14 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CircleCrop
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
+import com.crashlytics.android.Crashlytics
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import io.reactivex.Flowable
+import java.io.File
+import javax.inject.Inject
 import org.dhis2.App
+import org.dhis2.Bindings.isKeyboardOpened
 import org.dhis2.R
 import org.dhis2.data.forms.dataentry.DataEntryAdapter
 import org.dhis2.data.forms.dataentry.DataEntryArguments
@@ -46,8 +50,6 @@ import org.hisp.dhis.android.core.arch.helpers.GeometryHelper
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.Geometry
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
-import java.io.File
-import javax.inject.Inject
 
 class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
 
@@ -120,8 +122,8 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
                 false
             ) { itemPosition ->
                 itemPosition >= 0 &&
-                        itemPosition < adapter.itemCount &&
-                        adapter.getItemViewType(itemPosition) == adapter.sectionViewType()
+                    itemPosition < adapter.itemCount &&
+                    adapter.getItemViewType(itemPosition) == adapter.sectionViewType()
             }
         )
         binding.fieldRecycler.adapter = adapter
@@ -164,7 +166,9 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
                         presenter.updateFields()
                     } catch (e: Exception) {
                         e.printStackTrace()
-                        Toast.makeText(this, "Something went wrong", Toast.LENGTH_LONG).show()
+                        Toast.makeText(
+                            this, getString(R.string.something_wrong), Toast.LENGTH_LONG
+                        ).show()
                     }
                 }
                 CAMERA_REQUEST -> {
@@ -172,8 +176,15 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
                         FileResourceDirectoryHelper.getFileResourceDirectory(this),
                         "tempFile.png"
                     )
-                    presenter.saveFile(uuid, if (file.exists()) file.path else null)
-                    presenter.updateFields()
+                    try {
+                        presenter.saveFile(uuid, if (file.exists()) file.path else null)
+                        presenter.updateFields()
+                    } catch (e: Exception) {
+                        Crashlytics.logException(e)
+                        Toast.makeText(
+                            this, getString(R.string.something_wrong), Toast.LENGTH_LONG
+                        ).show()
+                    }
                 }
                 RQ_QR_SCANNER -> {
                     scanTextView.updateScanResult(data!!.getStringExtra(Constants.EXTRA_DATA))
@@ -268,10 +279,15 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
     }
 
     override fun onBackPressed() {
-        if (mode == EnrollmentMode.CHECK) {
-            presenter.backIsClicked()
+        if(!isKeyboardOpened()) {
+            if (mode == EnrollmentMode.CHECK) {
+                presenter.backIsClicked()
+            } else {
+                showDeleteDialog()
+            }
         } else {
-            showDeleteDialog()
+            currentFocus?.apply { clearFocus() }
+            hideKeyboard()
         }
     }
 
