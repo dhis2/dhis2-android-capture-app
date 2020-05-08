@@ -1,32 +1,26 @@
 package org.dhis2.usescases.datasets.dataSetTable;
 
-import org.dhis2.data.prefs.PreferenceProvider;
 import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.data.tuples.Pair;
+import org.dhis2.data.tuples.Trio;
 import org.dhis2.utils.analytics.AnalyticsHelper;
-
-import java.util.List;
 
 import io.reactivex.Flowable;
 import io.reactivex.disposables.CompositeDisposable;
 import timber.log.Timber;
-
-import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
-import static org.dhis2.utils.analytics.AnalyticsConstants.INFO_DATASET_TABLE;
 
 public class DataSetTablePresenter implements DataSetTableContract.Presenter {
 
     private final DataSetTableRepository tableRepository;
     private final SchedulerProvider schedulerProvider;
     private final AnalyticsHelper analyticsHelper;
-    DataSetTableContract.View view;
+    private DataSetTableContract.View view;
     public CompositeDisposable disposable;
 
     private String orgUnitUid;
     private String periodTypeName;
     private String periodFinalDate;
     private String catCombo;
-    private boolean open = true;
     private String periodId;
 
     public DataSetTablePresenter(
@@ -61,31 +55,14 @@ public class DataSetTablePresenter implements DataSetTableContract.Presenter {
                 Flowable.zip(
                         tableRepository.getDataSet(),
                         tableRepository.getCatComboName(catCombo),
-                        Pair::create
+                        tableRepository.getPeriod(),
+                        Trio::create
                 )
                         .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.ui())
                         .subscribe(
-                                data -> view.renderDetails(data.val0(), data.val1()),
+                                data -> view.renderDetails(data.val0(), data.val1(),data.val2()),
                                 Timber::e
-                        )
-        );
-
-        disposable.add(
-                tableRepository.dataSetStatus()
-                        .subscribeOn(schedulerProvider.io())
-                        .observeOn(schedulerProvider.ui())
-                        .subscribe(view::isDataSetOpen,
-                                Timber::d
-                        )
-        );
-
-        disposable.add(
-                tableRepository.dataSetState()
-                        .subscribeOn(schedulerProvider.io())
-                        .observeOn(schedulerProvider.ui())
-                        .subscribe(view::setDataSetState,
-                                Timber::d
                         )
         );
     }
@@ -93,11 +70,6 @@ public class DataSetTablePresenter implements DataSetTableContract.Presenter {
     @Override
     public void onBackClick() {
         view.back();
-    }
-
-    @Override
-    public void onSyncClick() {
-        view.showSyncDialog();
     }
 
     @Override
@@ -128,34 +100,5 @@ public class DataSetTablePresenter implements DataSetTableContract.Presenter {
 
     public String getCatCombo() {
         return catCombo;
-    }
-
-    @Override
-    public void optionsClick() {
-        analyticsHelper.setEvent(INFO_DATASET_TABLE, CLICK, INFO_DATASET_TABLE);
-        view.showOptions(open);
-        open = !open;
-    }
-
-    @Override
-    public void onClickSelectTable(int numTable) {
-        view.goToTable(numTable);
-    }
-
-    @Override
-    public String getCatOptComboFromOptionList(List<String> catOpts) {
-        return tableRepository.getCatOptComboFromOptionList(catOpts);
-    }
-
-    @Override
-    public void updateState() {
-        disposable.add(
-                tableRepository.dataSetState()
-                        .subscribeOn(schedulerProvider.io())
-                        .observeOn(schedulerProvider.ui())
-                        .subscribe(view::setDataSetState,
-                                Timber::d
-                        )
-        );
     }
 }

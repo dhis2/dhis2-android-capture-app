@@ -509,7 +509,7 @@
     <string name="no_conflicts_synced_message">¡Estas al día! Todos tus datos se han enviado al servidor.</string>
     <string name="relationship_error_recursive">No se puede relacionar un registro con el mismo</string>
     <string name="unblock_session">Desbloquear sesión</string>
-    <string name="data_set_closed">Cerrar</string>
+    <string name="data_set_closed">Cerrado</string>
     <string name="data_set_open">Abierto</string>
     <string name="unsupported_value_type">Tipo de valor no admitido</string>
     <string name="change_calendar_view">Cambiar vista</string>

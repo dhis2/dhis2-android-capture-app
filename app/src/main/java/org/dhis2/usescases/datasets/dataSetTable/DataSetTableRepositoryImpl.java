@@ -1,18 +1,20 @@
 package org.dhis2.usescases.datasets.dataSetTable;
 
 import org.hisp.dhis.android.core.D2;
+import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.dataset.DataSet;
 import org.hisp.dhis.android.core.dataset.DataSetCompleteRegistration;
-import org.hisp.dhis.android.core.dataset.DataSetElement;
 import org.hisp.dhis.android.core.dataset.DataSetInstance;
 import org.hisp.dhis.android.core.dataset.Section;
-import org.hisp.dhis.android.core.datavalue.DataValue;
+import org.hisp.dhis.android.core.period.Period;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import io.reactivex.Flowable;
+import io.reactivex.Single;
 
 public class DataSetTableRepositoryImpl implements DataSetTableRepository {
 
@@ -34,6 +36,20 @@ public class DataSetTableRepositoryImpl implements DataSetTableRepository {
     @Override
     public Flowable<DataSet> getDataSet() {
         return Flowable.fromCallable(() -> d2.dataSetModule().dataSets().byUid().eq(dataSetUid).one().blockingGet());
+    }
+
+    @Override
+    public Flowable<Period> getPeriod() {
+        return d2.periodModule().periodHelper().getPeriodForPeriodId(periodId).toFlowable();
+    }
+
+    @Override
+    public Single<DataSetInstance> dataSetInstance() {
+        return d2.dataSetModule().dataSetInstances()
+                .byDataSetUid().eq(dataSetUid)
+                .byAttributeOptionComboUid().eq(catOptCombo)
+                .byOrganisationUnitUid().eq(orgUnitUid)
+                .byPeriod().eq(periodId).one().get();
     }
 
     @Override
@@ -64,8 +80,8 @@ public class DataSetTableRepositoryImpl implements DataSetTableRepository {
         return Flowable.just(dscr != null && (dscr.deleted() == null || !dscr.deleted()));
     }
 
-    public Flowable<State> dataSetState(){
-        return Flowable.defer(() ->{
+    public Flowable<State> dataSetState() {
+        return Flowable.defer(() -> {
             State state;
             DataSetInstance dataSetInstance = d2.dataSetModule().dataSetInstances()
                     .byDataSetUid().eq(dataSetUid)
@@ -81,7 +97,7 @@ public class DataSetTableRepositoryImpl implements DataSetTableRepository {
                     .byOrganisationUnitUid().eq(orgUnitUid)
                     .byPeriod().eq(periodId).one().blockingGet();
 
-            if(state == State.SYNCED && dscr!=null){
+            if (state == State.SYNCED && dscr != null) {
                 state = dscr.state();
             }
 
@@ -96,11 +112,21 @@ public class DataSetTableRepositoryImpl implements DataSetTableRepository {
 
     @Override
     public String getCatOptComboFromOptionList(List<String> catOpts) {
-        if(catOpts.isEmpty())
+        if (catOpts.isEmpty())
             return d2.categoryModule().categoryOptionCombos().byDisplayName().like("default").one().blockingGet().uid();
         else
             return d2.categoryModule().categoryOptionCombos().byCategoryOptions(catOpts).one().blockingGet().uid();
     }
 
-
+    @Override
+    public @NotNull Single<String> getDataSetCatComboName() {
+        if (catOptCombo != null) {
+            return d2.categoryModule().categoryOptionCombos().uid(catOptCombo).get()
+                    .map(categoryOptionCombo -> categoryOptionCombo.categoryCombo().uid())
+                    .flatMap(catComboUid -> d2.categoryModule().categoryCombos().uid(catComboUid).get())
+                    .map(BaseIdentifiableObject::displayName);
+        } else {
+            return Single.just("");
+        }
+    }
 }
