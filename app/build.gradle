@@ -356,7 +356,8 @@ dependencies {
     implementation 'com.google.guava:guava:27.0.1-android'
     implementation 'cat.ereza:customactivityoncrash:2.2.0'
     implementation "com.google.android.gms:play-services-analytics:${libraries.analytics}"
-    implementation 'co.infinum:goldfinger-rx:1.2.1'
+    //implementation 'com.github.pwittchen:rxbiometric:0.1.0'
+    implementation 'co.infinum:goldfinger-rx:2.0.1'
     implementation "de.adorsys.android:securestoragelibrary:${libraries.latestSecureStorageVersion}"
     implementation 'com.github.prabhat1707:DbExporterHelper:v1.0'
 

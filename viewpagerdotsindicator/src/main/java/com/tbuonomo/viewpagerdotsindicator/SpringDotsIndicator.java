@@ -18,10 +18,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import androidx.appcompat.content.res.AppCompatResources;
-import androidx.core.content.ContextCompat;
 import androidx.dynamicanimation.animation.SpringAnimation;
 import androidx.dynamicanimation.animation.SpringForce;
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
+import androidx.viewpager2.widget.ViewPager2;
 
 import static android.widget.LinearLayout.HORIZONTAL;
 import static com.tbuonomo.viewpagerdotsindicator.UiUtils.getThemePrimaryColor;
@@ -32,7 +33,7 @@ public class SpringDotsIndicator extends FrameLayout {
 
     private List<ImageView> strokeDots;
     private View dotIndicatorView;
-    private ViewPager viewPager;
+    private ViewPager2 viewPager;
 
     // Attributes
     private int dotsStrokeSize;
@@ -51,7 +52,7 @@ public class SpringDotsIndicator extends FrameLayout {
     private LinearLayout strokeDotsLinearLayout;
 
     private boolean dotsClickable;
-    private ViewPager.OnPageChangeListener pageChangedListener;
+    private ViewPager2.OnPageChangeCallback pageChangeCallback;
 
     public SpringDotsIndicator(Context context) {
         this(context, null);
@@ -123,10 +124,10 @@ public class SpringDotsIndicator extends FrameLayout {
 
         if (viewPager != null && viewPager.getAdapter() != null) {
             // Check if we need to refresh the strokeDots count
-            if (strokeDots.size() < viewPager.getAdapter().getCount()) {
-                addStrokeDots(viewPager.getAdapter().getCount() - strokeDots.size());
-            } else if (strokeDots.size() > viewPager.getAdapter().getCount()) {
-                removeDots(strokeDots.size() - viewPager.getAdapter().getCount());
+            if (strokeDots.size() < viewPager.getAdapter().getItemCount()) {
+                addStrokeDots(viewPager.getAdapter().getItemCount() - strokeDots.size());
+            } else if (strokeDots.size() > viewPager.getAdapter().getItemCount()) {
+                removeDots(strokeDots.size() - viewPager.getAdapter().getItemCount());
             }
             setUpDotsAnimators();
         } else {
@@ -151,7 +152,7 @@ public class SpringDotsIndicator extends FrameLayout {
             dot.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (dotsClickable && viewPager != null && viewPager.getAdapter() != null && finalI < viewPager.getAdapter().getCount()) {
+                    if (dotsClickable && viewPager != null && viewPager.getAdapter() != null && finalI < viewPager.getAdapter().getItemCount()) {
                         viewPager.setCurrentItem(finalI, true);
                     }
                 }
@@ -195,17 +196,17 @@ public class SpringDotsIndicator extends FrameLayout {
     }
 
     private void setUpDotsAnimators() {
-        if (viewPager != null && viewPager.getAdapter() != null && viewPager.getAdapter().getCount() > 0) {
-            if (pageChangedListener != null) {
-                viewPager.removeOnPageChangeListener(pageChangedListener);
+        if (viewPager != null && viewPager.getAdapter() != null && viewPager.getAdapter().getItemCount() > 0) {
+            if (pageChangeCallback != null) {
+                viewPager.unregisterOnPageChangeCallback(pageChangeCallback);
             }
             setUpOnPageChangedListener();
-            viewPager.addOnPageChangeListener(pageChangedListener);
+            viewPager.registerOnPageChangeCallback(pageChangeCallback);
         }
     }
 
     private void setUpOnPageChangedListener() {
-        pageChangedListener = new ViewPager.OnPageChangeListener() {
+        pageChangeCallback = new ViewPager2.OnPageChangeCallback() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
                 float globalPositionOffsetPixels = position * (dotsStrokeSize + dotsSpacing * 2) + (dotsStrokeSize + dotsSpacing * 2) * positionOffset;
@@ -219,19 +220,19 @@ public class SpringDotsIndicator extends FrameLayout {
 
             @Override
             public void onPageSelected(int position) {
-                // do nothing
+                super.onPageSelected(position);
             }
 
             @Override
             public void onPageScrollStateChanged(int state) {
-                // do nothing
+                super.onPageScrollStateChanged(state);
             }
         };
     }
 
     private void setUpViewPager() {
         if (viewPager.getAdapter() != null) {
-            viewPager.getAdapter().registerDataSetObserver(new DataSetObserver() {
+            viewPager.getAdapter().registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
                 @Override
                 public void onChanged() {
                     super.onChanged();
@@ -284,7 +285,7 @@ public class SpringDotsIndicator extends FrameLayout {
         this.dotsClickable = dotsClickable;
     }
 
-    public void setViewPager(ViewPager viewPager) {
+    public void setViewPager(ViewPager2 viewPager) {
         this.viewPager = viewPager;
         setUpViewPager();
         refreshDots();

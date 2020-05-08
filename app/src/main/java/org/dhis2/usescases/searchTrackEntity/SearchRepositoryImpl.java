@@ -40,6 +40,7 @@ import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitMode;
 import org.hisp.dhis.android.core.period.DatePeriod;
+import org.hisp.dhis.android.core.period.PeriodType;
 import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttribute;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute;
@@ -355,9 +356,13 @@ public class SearchRepositoryImpl implements SearchRepository {
                                 .build())
                         .map(enrollmentUid -> {
                             boolean displayIncidentDate = d2.programModule().programs().uid(programUid).blockingGet().displayIncidentDate();
-                            d2.enrollmentModule().enrollments().uid(enrollmentUid).setEnrollmentDate(enrollmentDate);
-                            if (displayIncidentDate)
-                                d2.enrollmentModule().enrollments().uid(enrollmentUid).setIncidentDate(new Date());
+                            Date enrollmentDateNoTime = DateUtils.getInstance().getNextPeriod(PeriodType.Daily, enrollmentDate, 0);
+                            d2.enrollmentModule().enrollments().uid(enrollmentUid).setEnrollmentDate(enrollmentDateNoTime);
+                            if (displayIncidentDate) {
+                                d2.enrollmentModule().enrollments().uid(enrollmentUid).setIncidentDate(
+                                        DateUtils.getInstance().getToday()
+                                );
+                            }
                             d2.enrollmentModule().enrollments().uid(enrollmentUid).setFollowUp(false);
                             return Pair.create(enrollmentUid, uid);
                         })

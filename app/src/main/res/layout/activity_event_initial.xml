@@ -125,7 +125,6 @@
                                 android:layout_height="48dp"
                                 android:contentDescription='@{name}'
                                 android:padding="4dp"
-                                android:tint="?colorPrimaryDark"
                                 android:background="@drawable/rounded_square"
                                 app:srcCompat="@drawable/ic_clinical_f_outline" />
 

@@ -65,6 +65,8 @@ public class EventCaptureContract {
         void updateNoteBadge(int numberOfNotes);
 
         void showLoopWarning();
+
+        void goBack();
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter {

@@ -78,7 +78,6 @@ We plan to expand the collection of icons on each future version of DHIS2- for t
 
 ## Colour palette for metadata
 
-
 Tracker and Event capture now have the ability to render colours for programs, stages, data elements and options in option sets. A colour picker is integrated in the Maintenance App, which shows as a palette, except for options which allows the selection of any colour.
 
 ![](resources/images/image20.png){width=80% }
@@ -124,5 +123,27 @@ This is available when:
 > 
 > For Android versions 4.4,  5.1 and small devices, the Accept option is not visible in the second calendar view.
 
+## Render types
 
+The available rendering options have been expanded to include horizontal and vertical radio buttons, checkboxes and toggles. The allowed options depend on the value type.
 
+- Yes Only: can be rendered as radio button or checkbox.
+
+![](resources/images/image111.jpg){ width=25%}
+
+- Yes/No: can be rendered as horizontal/vertical radio buttons or horizontal/vertical checkboxes or toggle.
+
+![](resources/images/image112.jpg){ width=25%}
+
+- Text: When is linked to an option set can be rendered as horizontal/vertical radio buttons or horizontal/vertical checkboxes.
+
+![](resources/images/image110.jpg){ width=25%}
+
+### QR and Barcodes
+
+Data elements or attributes or type text can be also configured as QR or barcodes. When a Data Element or Attribute is rendered as QR/Barcode, the app will open the device camera to read the code image. When the QR/Barcode is a TEI attribute configured as searchable, the user will be allowed to scan the code in order to search and identify the Tracked Entity Instance. This will also work for option sets.
+
+![](resources/images/image118.png){ width=25%}
+![](resources/images/image119.png){ width=25%}
+![](resources/images/image120.png){ width=25%}
+![](resources/images/image121.png){ width=25%}
