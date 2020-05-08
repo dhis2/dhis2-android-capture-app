@@ -268,8 +268,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
             binding.teiTablePager.setAdapter(tabletAdapter);
             binding.dotsIndicator.setVisibility(programUid != null ? View.VISIBLE : View.GONE);
 
-            // TODO look into dots Indicator integration with viewPager 2
-            //binding.dotsIndicator.setViewPager(binding.teiPager);
+            binding.dotsIndicator.setViewPager(binding.teiTablePager);
             if (fromRelationship)
                 binding.teiTablePager.setCurrentItem(1, false);
 

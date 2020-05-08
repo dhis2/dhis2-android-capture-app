@@ -1,33 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:id="@+id/rfab__content_label_list_root_view"
-              android:orientation="horizontal"
-              android:layout_width="wrap_content"
-              android:layout_height="wrap_content"
-              android:layout_gravity="right|bottom"
-              android:gravity="center_vertical|right"
-        >
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/rfab__content_label_list_root_view"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="end|bottom"
+    android:gravity="center_vertical|end">
 
     <TextView
-            android:id="@+id/rfab__content_label_list_label_tv"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingTop="6dp"
-            android:paddingBottom="6dp"
-            android:paddingLeft="10dp"
-            android:paddingRight="10dp"
-            android:minWidth="50dp"
-            android:background="@drawable/rfab__shape_corners_background_label_shadow_selector"
-            android:textSize="14sp"
-            android:textColor="@color/rfab__color_text_label_item"
-            android:singleLine="true"
-            />
+        android:id="@+id/rfab__content_label_list_label_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/rfab__shape_corners_background_label_shadow_selector"
+        android:minWidth="50dp"
+        android:paddingStart="10dp"
+        android:paddingEnd="10dp"
+        android:singleLine="true"
+        android:paddingBottom="6dp"
+        android:paddingTop="6dp"
+        android:textColor="@color/rfab__color_text_label_item"
+        android:textSize="14sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/rfab__content_label_list_icon_iv"
+        tools:text="text"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
-            android:id="@+id/rfab__content_label_list_icon_iv"
-            android:layout_width="40dp" android:layout_height="40dp"
-            android:padding="8dp"
-            android:layout_marginLeft="10dp"
-            />
+        android:id="@+id/rfab__content_label_list_icon_iv"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginStart="10dp"
+        android:padding="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

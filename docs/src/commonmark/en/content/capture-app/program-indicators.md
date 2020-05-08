@@ -20,7 +20,7 @@ Any issues around using a particular feature with Android are highlighted with a
 |Sync Date\*<br/>sync_date|The date of when the event or enrollment was last synchronized with the Android app.|![](resources/images/../../admin/icon-wip.png)||
 |Incident Date<br/>incident_date|The date of the incidence of the event.|![](resources/images/../../admin/icon-complete.png)||
 |Enrollment Date (not visible on UI)<br/>enrollment_date|The date of when the tracked entity instance was enrolled in the program.|![](resources/images/../../admin/icon-complete.png)||
-|Enrollment Status<br/>enrollment_status|Can be used to include or exclude enrollments in certain statuses.|![](resources/images/../../admin/icon-incomplete.png)||
+|Enrollment Status<br/>enrollment_status|Can be used to include or exclude enrollments in certain statuses.|![](resources/images/../../admin/icon-complete.png)||
 |Current Date<br/>current_date|The current date.|![](resources/images/../../admin/icon-complete.png)||
 |Completed Date|The date the event is completed.|![](resources/images/../../admin/icon-wip.png)||
 |Value Count<br/>value_count|The number of non-null values in the expression part of the event.|![](resources/images/../../admin/icon-complete.png)||

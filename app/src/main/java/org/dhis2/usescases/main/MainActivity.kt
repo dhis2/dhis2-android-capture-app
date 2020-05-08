@@ -18,8 +18,8 @@ import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ObservableInt
 import com.android.dbexporterlibrary.ExporterListener
-import javax.inject.Inject
 import org.dhis2.Bindings.app
+import org.dhis2.BuildConfig
 import org.dhis2.R
 import org.dhis2.data.prefs.Preference
 import org.dhis2.databinding.ActivityMainBinding
@@ -28,6 +28,7 @@ import org.dhis2.usescases.development.DevelopmentActivity
 import org.dhis2.usescases.general.ActivityGlobalAbstract
 import org.dhis2.usescases.general.FragmentGlobalAbstract
 import org.dhis2.usescases.jira.JiraFragment
+import org.dhis2.usescases.login.LoginActivity
 import org.dhis2.usescases.main.program.ProgramFragment
 import org.dhis2.usescases.qrReader.QrReaderFragment
 import org.dhis2.usescases.settings.SyncManagerFragment
@@ -37,10 +38,12 @@ import org.dhis2.utils.DateUtils
 import org.dhis2.utils.analytics.BLOCK_SESSION
 import org.dhis2.utils.analytics.CLICK
 import org.dhis2.utils.analytics.CLOSE_SESSION
+import org.dhis2.utils.extension.navigateTo
 import org.dhis2.utils.filters.FilterManager
 import org.dhis2.utils.filters.FiltersAdapter
 import org.dhis2.utils.session.PIN_DIALOG_TAG
 import org.dhis2.utils.session.PinDialog
+import javax.inject.Inject
 
 private const val FRAGMENT = "Fragment"
 private const val PERMISSION_REQUEST = 1987
@@ -67,7 +70,9 @@ class MainActivity : ActivityGlobalAbstract(), MainView, ExporterListener {
     //region LIFECYCLE
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        app().userComponent()?.plus(MainModule(this))!!.inject(this)
+        app().userComponent()?.let {
+            it.plus(MainModule(this)).inject(this)
+        } ?: navigateTo<LoginActivity>(true)
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
         binding.presenter = presenter
@@ -91,14 +96,16 @@ class MainActivity : ActivityGlobalAbstract(), MainView, ExporterListener {
         )
 
         adapter = FiltersAdapter(FiltersAdapter.ProgramType.ALL)
-        if(presenter.hasProgramWithAssignment()){
+        if (presenter.hasProgramWithAssignment()) {
             adapter!!.addAssignedToMe()
         }
         binding.filterLayout.adapter = adapter
 
-        binding.moreOptions.setOnLongClickListener {
-            startActivity(DevelopmentActivity::class.java, null, false, false, null)
-            false
+        if (BuildConfig.DEBUG) {
+            binding.moreOptions.setOnLongClickListener {
+                startActivity(DevelopmentActivity::class.java, null, false, false, null)
+                false
+            }
         }
     }
 
@@ -113,9 +120,9 @@ class MainActivity : ActivityGlobalAbstract(), MainView, ExporterListener {
         presenter.initFilters()
 
         if (ContextCompat.checkSelfPermission(
-            this,
-            Manifest.permission.WRITE_EXTERNAL_STORAGE
-        ) != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE
+            ) != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(
                 this,
                 Manifest.permission.CAMERA
             ) != PackageManager.PERMISSION_GRANTED

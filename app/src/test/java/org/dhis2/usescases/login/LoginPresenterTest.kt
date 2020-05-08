@@ -14,6 +14,7 @@ import junit.framework.Assert.assertTrue
 import org.dhis2.data.fingerprint.FingerPrintController
 import org.dhis2.data.fingerprint.FingerPrintResult
 import org.dhis2.data.fingerprint.Type
+import org.dhis2.data.prefs.Preference
 import org.dhis2.data.prefs.PreferenceProvider
 import org.dhis2.data.schedulers.SchedulerProvider
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
@@ -27,9 +28,11 @@ import org.dhis2.utils.analytics.AnalyticsHelper
 import org.dhis2.utils.analytics.CLICK
 import org.dhis2.utils.analytics.LOGIN
 import org.dhis2.utils.analytics.SERVER_QR_SCANNER
+import org.hisp.dhis.android.core.user.User
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito
+import retrofit2.Response
 
 class LoginPresenterTest {
 
@@ -168,7 +171,7 @@ class LoginPresenterTest {
 
     @Test
     fun `Should log in with fingerprint successfully`() {
-        whenever(goldfinger.authenticate()) doReturn Observable.just(
+        whenever(goldfinger.authenticate(view.getPromptParams())) doReturn Observable.just(
             FingerPrintResult(
                 Type.SUCCESS,
                 "none"
@@ -198,7 +201,7 @@ class LoginPresenterTest {
 
     @Test
     fun `Should show credentials data when logging in with fingerprint`() {
-        whenever(goldfinger.authenticate()) doReturn Observable.just(
+        whenever(goldfinger.authenticate(view.getPromptParams())) doReturn Observable.just(
             FingerPrintResult(
                 Type.ERROR,
                 "none"
@@ -218,7 +221,7 @@ class LoginPresenterTest {
 
     @Test
     fun `Should show empty credentials message when trying to log in with fingerprint`() {
-        whenever(goldfinger.authenticate()) doReturn Observable.just(
+        whenever(goldfinger.authenticate(view.getPromptParams())) doReturn Observable.just(
             FingerPrintResult(
                 Type.ERROR,
                 "none"
@@ -237,15 +240,14 @@ class LoginPresenterTest {
     }
 
     @Test
-    fun `Should display message and hide fingerprint dialog when authenticate throws an error`() {
+    fun `Should display message when authenticate throws an error`() {
         whenever(
-            goldfinger.authenticate()
+            goldfinger.authenticate(view.getPromptParams())
         ) doReturn Observable.error(Exception(LoginPresenter.AUTH_ERROR))
 
         loginPresenter.onFingerprintClick()
 
         verify(view).displayMessage(LoginPresenter.AUTH_ERROR)
-        verify(view).hideFingerprintDialog()
     }
 
     @Test
@@ -308,5 +310,18 @@ class LoginPresenterTest {
         loginPresenter.logOut()
 
         verify(view).handleLogout()
+    }
+
+    @Test
+    fun `Should clear INITIAL_SYNC_DONE preference if network is available`(){
+        val response = Response.success(
+            User.builder()
+                .uid("userUid")
+                .build()
+        )
+        whenever(view.isNetworkAvailable()) doReturn true
+        loginPresenter.handleResponse(response,"userName","serverUrl")
+        verify(view, times(1)).isNetworkAvailable()
+        verify(preferenceProvider, times(1)).setValue(Preference.INITIAL_SYNC_DONE, false)
     }
 }
