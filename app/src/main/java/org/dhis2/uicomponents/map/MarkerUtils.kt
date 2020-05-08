@@ -1,4 +1,4 @@
-package org.dhis2.utils.maps
+package org.dhis2.uicomponents.map
 
 import android.content.Context
 import android.graphics.Bitmap

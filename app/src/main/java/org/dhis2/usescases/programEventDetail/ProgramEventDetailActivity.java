@@ -48,6 +48,7 @@ import org.dhis2.R;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.databinding.ActivityProgramEventDetailBinding;
 import org.dhis2.databinding.InfoWindowEventBinding;
+import org.dhis2.uicomponents.map.camera.CameraExtensionKt;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity;
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
@@ -61,7 +62,6 @@ import org.dhis2.utils.analytics.AnalyticsConstants;
 import org.dhis2.utils.filters.FilterManager;
 import org.dhis2.utils.filters.FiltersAdapter;
 import org.dhis2.utils.granularsync.SyncStatusDialog;
-import org.dhis2.utils.maps.MapboxExtensionKt;
 import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryOptionCombo;
 import org.hisp.dhis.android.core.common.FeatureType;
@@ -393,7 +393,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
 
     private void initCameraPosition(MapboxMap map,Context context, BoundingBox bbox) {
         LatLngBounds bounds = LatLngBounds.from(bbox.north(), bbox.east(), bbox.south(), bbox.west());
-        MapboxExtensionKt.initDefaultCamera(map, context, bounds);
+        CameraExtensionKt.initDefaultCamera(map, context, bounds);
     }
 
     private void setSource(Style style, FeatureCollection featureCollection) {

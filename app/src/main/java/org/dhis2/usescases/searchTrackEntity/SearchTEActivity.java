@@ -64,6 +64,10 @@ import org.dhis2.data.forms.dataentry.ProgramAdapter;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.databinding.ActivitySearchBinding;
+import org.dhis2.uicomponents.map.MarkerUtils;
+import org.dhis2.uicomponents.map.camera.CameraExtensionKt;
+import org.dhis2.uicomponents.map.layer.MapLayerDialog;
+import org.dhis2.uicomponents.map.layer.MapLayerManager;
 import org.dhis2.usescases.enrollment.EnrollmentActivity;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.usescases.orgunitselector.OUTreeActivity;
@@ -81,10 +85,6 @@ import org.dhis2.utils.customviews.CoordinatesView;
 import org.dhis2.utils.customviews.ScanTextView;
 import org.dhis2.utils.filters.FilterManager;
 import org.dhis2.utils.filters.FiltersAdapter;
-import org.dhis2.utils.maps.MapLayerDialog;
-import org.dhis2.utils.maps.MapLayerManager;
-import org.dhis2.utils.maps.MapboxExtensionKt;
-import org.dhis2.utils.maps.MarkerUtils;
 import org.hisp.dhis.android.core.arch.call.D2Progress;
 import org.hisp.dhis.android.core.common.FeatureType;
 import org.hisp.dhis.android.core.common.ValueTypeDeviceRendering;
@@ -770,7 +770,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                             boundingBox.south(),
                             boundingBox.west());
 
-                    MapboxExtensionKt.initDefaultCamera(map, this, bounds);
+                    CameraExtensionKt.initDefaultCamera(map, this, bounds);
                 }
             });
         } else if (changingStyle) {
@@ -787,7 +787,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                         boundingBox.south(),
                         boundingBox.west());
 
-                MapboxExtensionKt.initDefaultCamera(map, this, bounds);
+                CameraExtensionKt.initDefaultCamera(map, this, bounds);
             } else {
                 map.easeCamera(CameraUpdateFactory.zoomTo(map.getMinZoomLevel()));
             }
@@ -826,7 +826,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                 bbox.south(),
                 bbox.west());
 
-        MapboxExtensionKt.initDefaultCamera(map, this, bounds);
+        CameraExtensionKt.initDefaultCamera(map, this, bounds);
 
         if (markerViewManager == null) {
             markerViewManager = new MarkerViewManager(binding.mapView, map);

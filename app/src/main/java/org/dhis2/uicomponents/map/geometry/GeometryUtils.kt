@@ -1,10 +1,6 @@
-package org.dhis2.utils.maps
+package org.dhis2.uicomponents.map.geometry
 
-import com.mapbox.geojson.BoundingBox
-import com.mapbox.geojson.Feature
-import com.mapbox.geojson.FeatureCollection
-import com.mapbox.geojson.Point
-import com.mapbox.geojson.Polygon
+import com.mapbox.geojson.*
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel
 import org.hisp.dhis.android.core.arch.helpers.GeometryHelper
 import org.hisp.dhis.android.core.common.FeatureType
