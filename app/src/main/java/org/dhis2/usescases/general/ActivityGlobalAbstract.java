@@ -70,9 +70,6 @@ import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
 import static org.dhis2.utils.analytics.AnalyticsConstants.SHOW_HELP;
 import static org.dhis2.utils.session.PinDialogKt.PIN_DIALOG_TAG;
 
-/**
- * QUADRAM. Created by Javi on 28/07/2017.
- */
 
 public abstract class ActivityGlobalAbstract extends AppCompatActivity
         implements AbstractActivityContracts.View, CoordinatesView.OnMapPositionClick,
@@ -97,8 +94,6 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity
         ON_RESUME
     }
 
-    //****************
-    //LIFECYCLE REGION
 
     public void setScreenName(String name) {
         Crashlytics.setString(Constants.SCREEN_NAME, name);
@@ -161,10 +156,6 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity
                 break;
         }
     }
-
-    //****************
-    //PUBLIC METHOD REGION
-
 
     @Override
     public void setTutorial() {

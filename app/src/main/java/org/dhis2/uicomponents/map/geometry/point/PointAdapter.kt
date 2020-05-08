@@ -28,9 +28,7 @@ class PointAdapter(
 
     inner class Holder(val binding: ItemPointGeoBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind() {
-            binding.let {
-                it.viewModel = viewModel
-            }
+            binding.viewModel = viewModel
         }
     }
 }

@@ -71,8 +71,8 @@ class MapSelectorActivity :
                         latLng.longitude
                     )
                 ) // Sets the center of the map to location user
-                .zoom(15.0) // Sets the zoom
-                .build() // Creates a CameraPosition from the builder
+                .zoom(15.0)
+                .build()
             map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition))
         }
     }
@@ -80,9 +80,9 @@ class MapSelectorActivity :
     lateinit var mapView: MapView
     lateinit var map: MapboxMap
     var style: Style? = null
-    lateinit var location_type: FeatureType
+    private lateinit var location_type: FeatureType
     lateinit var binding: ActivityMapSelectorBinding
-    val arrayOfIds = mutableListOf<String>()
+    private val arrayOfIds = mutableListOf<String>()
     var init: Boolean = false
 
     var initial_coordinates: String? = null
@@ -276,11 +276,11 @@ class MapSelectorActivity :
             val sourceName = "polygon_source"
             style.removeLayer(sourceName)
             style.removeSource(sourceName)
-            arrayOfIds.forEach {
-                style.getLayer(it)?.let { layer ->
+            arrayOfIds.forEach { id ->
+                style.getLayer(id)?.let { layer ->
                     style.removeLayer(layer)
                 }
-                style.getSource(it)?.let {
+                style.getSource(id)?.let {
                     style.removeSource(it)
                 }
             }
