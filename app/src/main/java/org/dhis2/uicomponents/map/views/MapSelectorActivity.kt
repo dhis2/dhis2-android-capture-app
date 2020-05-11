@@ -18,8 +18,6 @@ import com.mapbox.android.core.permissions.PermissionsManager
 import com.mapbox.geojson.Feature
 import com.mapbox.geojson.Point
 import com.mapbox.geojson.Polygon
-import com.mapbox.mapboxsdk.camera.CameraPosition
-import com.mapbox.mapboxsdk.camera.CameraUpdateFactory
 import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.location.LocationComponentActivationOptions
 import com.mapbox.mapboxsdk.location.modes.CameraMode
@@ -34,6 +32,7 @@ import com.mapbox.mapboxsdk.style.layers.SymbolLayer
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource
 import org.dhis2.R
 import org.dhis2.databinding.ActivityMapSelectorBinding
+import org.dhis2.uicomponents.map.camera.moveCameraToPosition
 import org.dhis2.uicomponents.map.geometry.point.PointAdapter
 import org.dhis2.uicomponents.map.geometry.point.PointViewModel
 import org.dhis2.uicomponents.map.geometry.polygon.PolygonAdapter
@@ -54,26 +53,7 @@ class MapSelectorActivity :
 
         if (!init) {
             init = true
-            map.animateCamera(
-                CameraUpdateFactory.newLatLngZoom(
-                    LatLng(
-                        latLng.latitude,
-                        latLng.longitude
-                    ),
-                    13.0
-                )
-            )
-
-            val cameraPosition = CameraPosition.Builder()
-                .target(
-                    LatLng(
-                        latLng.latitude,
-                        latLng.longitude
-                    )
-                ) // Sets the center of the map to location user
-                .zoom(15.0)
-                .build()
-            map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition))
+            map.moveCameraToPosition(latLng)
         }
     }
 
@@ -85,14 +65,14 @@ class MapSelectorActivity :
     private val arrayOfIds = mutableListOf<String>()
     var init: Boolean = false
 
-    var initial_coordinates: String? = null
+    private var initialCoordinates: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_map_selector)
         binding.back.setOnClickListener { v -> finish() }
         location_type = FeatureType.valueOf(intent.getStringExtra(LOCATION_TYPE_EXTRA))
-        initial_coordinates = intent.getStringExtra(INITIAL_GEOMETRY_COORDINATES)
+        initialCoordinates = intent.getStringExtra(INITIAL_GEOMETRY_COORDINATES)
         mapView = binding.mapView
         mapView.onCreate(savedInstanceState)
         mapView.getMapAsync { mapboxMap ->
@@ -102,8 +82,8 @@ class MapSelectorActivity :
                 enableLocationComponent()
                 centerMapOnCurrentLocation()
                 when (location_type) {
-                    FeatureType.POINT -> bindPoint(initial_coordinates)
-                    FeatureType.POLYGON -> bindPolygon(initial_coordinates)
+                    FeatureType.POINT -> bindPoint(initialCoordinates)
+                    FeatureType.POLYGON -> bindPolygon(initialCoordinates)
                     else -> finish()
                 }
             }

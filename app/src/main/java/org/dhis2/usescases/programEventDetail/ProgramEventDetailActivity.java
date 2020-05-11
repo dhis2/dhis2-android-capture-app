@@ -393,7 +393,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
 
     private void initCameraPosition(MapboxMap map,Context context, BoundingBox bbox) {
         LatLngBounds bounds = LatLngBounds.from(bbox.north(), bbox.east(), bbox.south(), bbox.west());
-        CameraExtensionKt.initDefaultCamera(map, context, bounds);
+        CameraExtensionKt.initCameraToViewAllElements(map, context, bounds);
     }
 
     private void setSource(Style style, FeatureCollection featureCollection) {

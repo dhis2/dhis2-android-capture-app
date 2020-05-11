@@ -1,4 +1,4 @@
-package org.dhis2.utils.customviews;
+package org.dhis2.usescases.coodinates;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -27,6 +27,7 @@ import org.dhis2.R;
 import org.dhis2.databinding.FormCoordinatesAccentBinding;
 import org.dhis2.databinding.FormCoordinatesBinding;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
+import org.dhis2.utils.customviews.FieldLayout;
 import org.hisp.dhis.android.core.arch.helpers.GeometryHelper;
 import org.hisp.dhis.android.core.common.FeatureType;
 import org.hisp.dhis.android.core.common.Geometry;

@@ -64,10 +64,11 @@ import org.dhis2.data.forms.dataentry.ProgramAdapter;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.databinding.ActivitySearchBinding;
-import org.dhis2.uicomponents.map.MarkerUtils;
+import org.dhis2.uicomponents.map.TeiMarkers;
 import org.dhis2.uicomponents.map.camera.CameraExtensionKt;
 import org.dhis2.uicomponents.map.layer.MapLayerDialog;
 import org.dhis2.uicomponents.map.layer.MapLayerManager;
+import org.dhis2.usescases.coodinates.CoordinatesView;
 import org.dhis2.usescases.enrollment.EnrollmentActivity;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.usescases.orgunitselector.OUTreeActivity;
@@ -81,7 +82,6 @@ import org.dhis2.utils.Constants;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.FileResourcesUtil;
 import org.dhis2.utils.HelpManager;
-import org.dhis2.utils.customviews.CoordinatesView;
 import org.dhis2.utils.customviews.ScanTextView;
 import org.dhis2.utils.filters.FilterManager;
 import org.dhis2.utils.filters.FiltersAdapter;
@@ -751,12 +751,12 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                         if (file.exists()) {
                             Style style = mapboxMap.getStyle();
                             if (style != null) {
-                                style.addImageAsync(filePath, MarkerUtils.INSTANCE.getMarker(this, FileResourcesUtil.getSmallImage(this, filePath), presenter.getTEIColor()));
+                                style.addImageAsync(filePath, TeiMarkers.INSTANCE.getMarker(this, FileResourcesUtil.getSmallImage(this, filePath), presenter.getTEIColor()));
                             }
                         } else {
                             Style style = mapboxMap.getStyle();
                             if (style != null) {
-                                style.addImageAsync(filePath, MarkerUtils.INSTANCE.getMarker(this, presenter.getSymbolIcon(), presenter.getTEIColor()));
+                                style.addImageAsync(filePath, TeiMarkers.INSTANCE.getMarker(this, presenter.getSymbolIcon(), presenter.getTEIColor()));
                             }
                         }
                     });
@@ -770,7 +770,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                             boundingBox.south(),
                             boundingBox.west());
 
-                    CameraExtensionKt.initDefaultCamera(map, this, bounds);
+                    CameraExtensionKt.initCameraToViewAllElements(map, this, bounds);
                 }
             });
         } else if (changingStyle) {
@@ -787,7 +787,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                         boundingBox.south(),
                         boundingBox.west());
 
-                CameraExtensionKt.initDefaultCamera(map, this, bounds);
+                CameraExtensionKt.initCameraToViewAllElements(map, this, bounds);
             } else {
                 map.easeCamera(CameraUpdateFactory.zoomTo(map.getMinZoomLevel()));
             }
@@ -814,8 +814,8 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         }
         map.addOnMapClickListener(this);
 
-        style.addImage("ICON_ID", MarkerUtils.INSTANCE.getMarker(this, presenter.getSymbolIcon(), presenter.getTEIColor()));
-        style.addImage("ICON_ENROLLMENT_ID", MarkerUtils.INSTANCE.getMarker(this, presenter.getEnrollmentSymbolIcon(), presenter.getEnrollmentColor()));
+        style.addImage("ICON_ID", TeiMarkers.INSTANCE.getMarker(this, presenter.getSymbolIcon(), presenter.getTEIColor()));
+        style.addImage("ICON_ENROLLMENT_ID", TeiMarkers.INSTANCE.getMarker(this, presenter.getEnrollmentSymbolIcon(), presenter.getEnrollmentColor()));
 
         setSource(style, teiFeatureCollection);
 
@@ -826,7 +826,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                 bbox.south(),
                 bbox.west());
 
-        CameraExtensionKt.initDefaultCamera(map, this, bounds);
+        CameraExtensionKt.initCameraToViewAllElements(map, this, bounds);
 
         if (markerViewManager == null) {
             markerViewManager = new MarkerViewManager(binding.mapView, map);
