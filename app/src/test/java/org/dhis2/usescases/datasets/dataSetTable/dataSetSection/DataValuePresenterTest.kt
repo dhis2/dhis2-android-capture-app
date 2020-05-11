@@ -1,7 +1,11 @@
 package org.dhis2.usescases.datasets.dataSetTable.dataSetSection
 
+import com.nhaarman.mockitokotlin2.any
+import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
+import com.nhaarman.mockitokotlin2.whenever
+import io.reactivex.Flowable
 import junit.framework.TestCase.assertFalse
 import junit.framework.TestCase.assertTrue
 import org.dhis2.data.forms.dataentry.ValueStore
@@ -90,6 +94,36 @@ class DataValuePresenterTest {
 
         assertFalse(presenter.checkMandatoryField(tableCells, dataValues))
         verify(view).highligthHeaderRow(0, 0, true)
+    }
+
+    @Test
+    fun `Should check if validation rules are optional to be run`() {
+        presenter.checkValidationRules()
+
+        verify(view).showValidationRuleDialog()
+    }
+
+    @Test
+    fun `Should execute validation rules and a successful response be returned`() {
+        presenter.executeValidationRules()
+
+        verify(view).showSuccessValidationDialog()
+    }
+
+    @Test
+    fun `Should complete the data set`() {
+        presenter.orgUnitUid = "orgUnit"
+        presenter.periodId = "periodId"
+        presenter.attributeOptionCombo = "attrOptionCombo"
+
+        whenever(
+            dataValueRepository.completeDataSet(any(), any(), any())
+        ) doReturn Flowable.just(true)
+
+        presenter.completeDataSet()
+
+        verify(view).setCompleteReopenText(true)
+        verify(view).update(true)
     }
 
     private fun createDataValues(): List<DataSetTableModel> {

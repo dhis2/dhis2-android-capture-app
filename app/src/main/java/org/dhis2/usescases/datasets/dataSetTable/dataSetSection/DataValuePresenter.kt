@@ -52,13 +52,15 @@ class DataValuePresenter(
 
     var disposable: CompositeDisposable = CompositeDisposable()
 
-    private var orgUnitUid: String? = null
-    private var periodTypeName: String? = null
-    private var attributeOptionCombo: String? = null
+    // TODO: Change tu public for testing purposes. Should refactor
+    var orgUnitUid: String? = null
+    var attributeOptionCombo: String? = null
+    var periodId: String? = null
+    //
 
     private var dataValuesChanged: MutableList<DataSetTableModel>? = null
+    private var periodTypeName: String? = null
     private var dataTableModel: DataTableModel? = null
-    private var periodId: String? = null
     private var period: Period? = null
 
     private lateinit var tableCells: MutableList<List<List<FieldViewModel>>>
@@ -565,7 +567,8 @@ class DataValuePresenter(
         }
     }
 
-    private fun checkValidationRules() {
+    @VisibleForTesting
+    fun checkValidationRules() {
         if(isValidationRuleOptional()) {
             view.showValidationRuleDialog()
         } else {
@@ -573,35 +576,31 @@ class DataValuePresenter(
         }
     }
 
-    fun executeValidationRules(): Function0<Unit> {
-        return {
-            var isOk = false
-            // TODO: ValidationRules - execute mandatory validation rules
-            isOk = true
+    fun executeValidationRules() {
+        var isOk = false
+        // TODO: ValidationRules - execute mandatory validation rules
+        isOk = true
 
-            if (isOk) {
-                view.showSuccessValidationDialog()
-            } else {
-                view.showErrorsValidationDialog()
-            }
+        if (isOk) {
+            view.showSuccessValidationDialog()
+        } else {
+            view.showErrorsValidationDialog()
         }
     }
 
-    fun completeDataSet(): Function0<Unit> {
-        return {
-            disposable.add(
-                repository.completeDataSet(orgUnitUid, periodId, attributeOptionCombo)
-                    .subscribeOn(schedulerProvider.io())
-                    .observeOn(schedulerProvider.ui())
-                    .subscribe(
-                        { completed ->
-                            view.setCompleteReopenText(true)
-                            view.update(completed!!)
-                        },
-                        { Timber.e(it) }
-                    )
-            )
-        }
+    fun completeDataSet() {
+        disposable.add(
+            repository.completeDataSet(orgUnitUid, periodId, attributeOptionCombo)
+                .subscribeOn(schedulerProvider.io())
+                .observeOn(schedulerProvider.ui())
+                .subscribe(
+                    { completed ->
+                        view.setCompleteReopenText(true)
+                        view.update(completed!!)
+                    },
+                    { Timber.e(it) }
+                )
+        )
     }
 
     // TODO: ValidationRules- This is temporary until the SDK has a method to ask for this
