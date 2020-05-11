@@ -690,4 +690,9 @@
     <string name="filter_sync_not_synced">Not Synced</string>
     <string name="filter_sync_error">Sync Error</string>
     <string name="filter_sync_sms">SMS Synced</string>
+
+    <string name="saved">Saved!</string>
+    <string name="run_validation_rules">"Do you want to run the validation rules?"</string>
+    <string name="validation_success_title">"Everything looks good"</string>
+    <string name="mark_dataset_complete">"Do you want to mark the data set as complete?"</string>
 </resources>

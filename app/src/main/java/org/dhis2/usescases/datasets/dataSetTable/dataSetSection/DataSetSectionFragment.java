@@ -34,6 +34,7 @@ import org.dhis2.usescases.general.FragmentGlobalAbstract;
 import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.OrientationUtilsKt;
+import org.dhis2.utils.customviews.AlertBottomDialog;
 import org.hisp.dhis.android.core.category.CategoryOption;
 import org.hisp.dhis.android.core.dataset.DataSet;
 import org.hisp.dhis.android.core.dataset.Section;
@@ -383,5 +384,36 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
         if (modified) {
             activity.update();
         }
+    }
+
+    @Override
+    public void showValidationRuleDialog() {
+        AlertBottomDialog.Companion.getInstance()
+                .setTitle(getString(R.string.saved))
+                .setMessage(getString(R.string.run_validation_rules))
+                .setPositiveButton(getString(R.string.yes), presenterFragment.executeValidationRules())
+                .setNegativeButton(getString(R.string.no), null)
+                .show(getFragmentManager(), AlertBottomDialog.class.getSimpleName());
+    }
+
+    @Override
+    public void showSuccessValidationDialog() {
+        AlertBottomDialog.Companion.getInstance()
+                .setTitle(getString(R.string.validation_success_title))
+                .setMessage(getString(R.string.mark_dataset_complete))
+                .setPositiveButton(getString(R.string.yes), presenterFragment.completeDataSet())
+                .setNegativeButton(getString(R.string.no), null)
+                .show(getFragmentManager(), AlertBottomDialog.class.getSimpleName());
+
+    }
+
+    @Override
+    public void showErrorsValidationDialog() {
+        //TODO - Validation rules - This should be updated to show the info the SDK gives us.
+        AlertBottomDialog.Companion.getInstance()
+                .setTitle(getString(R.string.error_dialog_title))
+                .setMessage("A list of errors will be shown here.")
+                .setPositiveButton("", null)
+                .show(getFragmentManager(), AlertBottomDialog.class.getSimpleName());
     }
 }

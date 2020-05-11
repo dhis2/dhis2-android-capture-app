@@ -530,28 +530,12 @@ class DataValuePresenter(
         if ((!isApproval)) {
             analyticsHelper.setEvent(COMPLETE_REOPEN, CLICK, COMPLETE_REOPEN)
             if (view.isOpenOrReopen) {
-                if ((
-                            !dataSet!!.fieldCombinationRequired()!! ||
-                                    checkAllFieldRequired(
-                                        tableCells,
-                                        dataTableModel?.dataValues()
-                                    ) &&
-                                    dataSet!!.fieldCombinationRequired()!!
-                            ) &&
-                    checkMandatoryField(tableCells, dataTableModel?.dataValues())
-                ) {
-                    disposable.add(
-                        repository.completeDataSet(orgUnitUid, periodId, attributeOptionCombo)
-                            .subscribeOn(schedulerProvider.io())
-                            .observeOn(schedulerProvider.ui())
-                            .subscribe(
-                                { completed ->
-                                    view.setCompleteReopenText(true)
-                                    view.update(completed!!)
-                                },
-                                { Timber.e(it) }
-                            )
-                    )
+                if (checkAllCombinedRequiredAndMandatoryFields()) {
+                    if(needsValidationRules()) {
+                        checkValidationRules()
+                    } else {
+                        completeDataSet()
+                    }
                 } else if (!checkMandatoryField(tableCells, dataTableModel?.dataValues())) {
                     view.showAlertDialog(
                         view.context.getString(R.string.missing_mandatory_fields_title),
@@ -579,6 +563,56 @@ class DataValuePresenter(
                 )
             }
         }
+    }
+
+    private fun checkValidationRules() {
+        if(isValidationRuleOptional()) {
+            view.showValidationRuleDialog()
+        } else {
+            executeValidationRules()
+        }
+    }
+
+    fun executeValidationRules(): Function0<Unit> {
+        return {
+            var isOk = false
+            // TODO: ValidationRules - execute mandatory validation rules
+            isOk = true
+
+            if (isOk) {
+                view.showSuccessValidationDialog()
+            } else {
+                view.showErrorsValidationDialog()
+            }
+        }
+    }
+
+    fun completeDataSet(): Function0<Unit> {
+        return {
+            disposable.add(
+                repository.completeDataSet(orgUnitUid, periodId, attributeOptionCombo)
+                    .subscribeOn(schedulerProvider.io())
+                    .observeOn(schedulerProvider.ui())
+                    .subscribe(
+                        { completed ->
+                            view.setCompleteReopenText(true)
+                            view.update(completed!!)
+                        },
+                        { Timber.e(it) }
+                    )
+            )
+        }
+    }
+
+    // TODO: ValidationRules- This is temporary until the SDK has a method to ask for this
+    private fun needsValidationRules() = true
+    private fun isValidationRuleOptional() = true
+
+    private fun checkAllCombinedRequiredAndMandatoryFields(): Boolean {
+        return (!dataSet!!.fieldCombinationRequired()!! ||
+            checkAllFieldRequired(tableCells, dataTableModel?.dataValues()) &&
+            dataSet!!.fieldCombinationRequired()!!) &&
+            checkMandatoryField(tableCells, dataTableModel?.dataValues())
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
