@@ -4,9 +4,14 @@ import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.utils.analytics.AnalyticsHelper;
+import org.hisp.dhis.android.core.common.Unit;
 
+import java.util.concurrent.TimeUnit;
+
+import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.processors.FlowableProcessor;
 import timber.log.Timber;
 
 public class DataSetTablePresenter implements DataSetTableContract.Presenter {
@@ -61,7 +66,23 @@ public class DataSetTablePresenter implements DataSetTableContract.Presenter {
                         .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.ui())
                         .subscribe(
-                                data -> view.renderDetails(data.val0(), data.val1(),data.val2()),
+                                data -> view.renderDetails(data.val0(), data.val1(), data.val2()),
+                                Timber::e
+                        )
+        );
+
+        disposable.add(
+                view.observeSaveButtonClicks()
+                        .subscribeOn(schedulerProvider.ui())
+                        .toFlowable(BackpressureStrategy.LATEST)
+                        .debounce(500, TimeUnit.MILLISECONDS, schedulerProvider.io())
+                        .switchMap(o -> tableRepository.completeDataSetInstance())
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.io())
+                        .subscribe(
+                                completed -> {
+
+                                },
                                 Timber::e
                         )
         );

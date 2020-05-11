@@ -13,7 +13,9 @@ import io.reactivex.Single;
 public interface DataSetTableRepository {
     Flowable<DataSet> getDataSet();
 
-    Single<DataSetInstance> dataSetInstance();
+    Flowable<DataSetInstance> dataSetInstance();
+
+    Flowable<DataSetInstance> defaultDataSetInstance();
 
     Flowable<List<String>> getSections();
 
@@ -28,4 +30,6 @@ public interface DataSetTableRepository {
     Single<String> getDataSetCatComboName();
 
     Flowable<Period> getPeriod();
+
+    Flowable<Boolean> completeDataSetInstance();
 }

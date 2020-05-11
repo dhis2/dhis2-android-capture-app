@@ -154,7 +154,7 @@ class DataSetDetailFragment private constructor() : FragmentGlobalAbstract(), Da
             style?.color(),
             ColorUtils.getPrimaryColor(
                 mContext,
-                ColorUtils.ColorType.PRIMARY_LIGHT
+                ColorUtils.ColorType.PRIMARY
             )
         )
         binding.dataSetIcon.background = ColorUtils.tintDrawableWithColor(

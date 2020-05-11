@@ -91,5 +91,18 @@
             app:layout_constraintVertical_bias="1.0"
             tools:background="@color/red_060" />
 
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/saveButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="15dp"
+            android:tint="@color/white"
+            app:backgroundTint="?attr/colorPrimary"
+            app:elevation="7dp"
+            app:fabSize="normal"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:srcCompat="@drawable/ic_save" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

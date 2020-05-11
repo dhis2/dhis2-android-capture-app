@@ -3,6 +3,7 @@ package org.dhis2.usescases.datasets.dataSetTable;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
 import org.hisp.dhis.android.core.common.State;
+import org.hisp.dhis.android.core.common.Unit;
 import org.hisp.dhis.android.core.dataset.DataSet;
 import org.hisp.dhis.android.core.dataset.DataSetCompleteRegistration;
 import org.hisp.dhis.android.core.dataset.DataSetInstance;
@@ -13,9 +14,14 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Singleton;
+
 import io.reactivex.Flowable;
 import io.reactivex.Single;
+import io.reactivex.processors.FlowableProcessor;
+import io.reactivex.processors.PublishProcessor;
 
+@Singleton
 public class DataSetTableRepositoryImpl implements DataSetTableRepository {
 
     private final String dataSetUid;
@@ -23,6 +29,7 @@ public class DataSetTableRepositoryImpl implements DataSetTableRepository {
     private final String periodId;
     private final String orgUnitUid;
     private final String catOptCombo;
+    private FlowableProcessor<Unit> dataSetInstanceProcessor = PublishProcessor.create();
 
     public DataSetTableRepositoryImpl(D2 d2, String dataSetUid,
                                       String periodId, String orgUnitUid, String catOptCombo) {
@@ -44,12 +51,49 @@ public class DataSetTableRepositoryImpl implements DataSetTableRepository {
     }
 
     @Override
-    public Single<DataSetInstance> dataSetInstance() {
-        return d2.dataSetModule().dataSetInstances()
-                .byDataSetUid().eq(dataSetUid)
-                .byAttributeOptionComboUid().eq(catOptCombo)
-                .byOrganisationUnitUid().eq(orgUnitUid)
-                .byPeriod().eq(periodId).one().get();
+    public Flowable<DataSetInstance> dataSetInstance() {
+        return dataSetInstanceProcessor.startWith(new Unit())
+                .switchMap(next -> d2.dataSetModule().dataSetInstances()
+                        .byDataSetUid().eq(dataSetUid)
+                        .byAttributeOptionComboUid().eq(catOptCombo)
+                        .byOrganisationUnitUid().eq(orgUnitUid)
+                        .byPeriod().eq(periodId).one().exists().toFlowable())
+                .flatMap(exist -> {
+                    if (exist) {
+                        return d2.dataSetModule().dataSetInstances()
+                                .byDataSetUid().eq(dataSetUid)
+                                .byAttributeOptionComboUid().eq(catOptCombo)
+                                .byOrganisationUnitUid().eq(orgUnitUid)
+                                .byPeriod().eq(periodId).one().get().toFlowable();
+                    } else {
+                        return defaultDataSetInstance();
+                    }
+                });
+
+    }
+
+    @Override
+    public Flowable<DataSetInstance> defaultDataSetInstance() {
+        return Single.zip(
+                d2.dataSetModule().dataSets().uid(dataSetUid).get(),
+                d2.categoryModule().categoryOptionCombos().uid(catOptCombo).get(),
+                d2.organisationUnitModule().organisationUnits().uid(orgUnitUid).get(),
+                d2.periodModule().periodHelper().getPeriodForPeriodId(periodId),
+                (dataSet, catOptComb, orgUnit, period) ->
+                        DataSetInstance.builder()
+                                .dataSetUid(dataSetUid)
+                                .dataSetDisplayName(dataSet.displayName())
+                                .attributeOptionComboUid(catOptComb.uid())
+                                .attributeOptionComboDisplayName(catOptComb.displayName())
+                                .organisationUnitUid(orgUnitUid)
+                                .organisationUnitDisplayName(orgUnit.displayName())
+                                .periodType(period.periodType())
+                                .period(period.periodId())
+                                .valueCount(0)
+                                .completed(false)
+                                .state(State.SYNCED)
+                                .build()
+        ).toFlowable();
     }
 
     @Override
@@ -128,5 +172,20 @@ public class DataSetTableRepositoryImpl implements DataSetTableRepository {
         } else {
             return Single.just("");
         }
+    }
+
+    @Override
+    public Flowable<Boolean> completeDataSetInstance() {
+        return d2.dataSetModule().dataSetCompleteRegistrations()
+                .value(periodId, orgUnitUid, dataSetUid, catOptCombo).exists()
+                .map(alreadyCompleted -> {
+                    if (!alreadyCompleted) {
+                        d2.dataSetModule().dataSetCompleteRegistrations()
+                                .value(periodId, orgUnitUid, dataSetUid, catOptCombo)
+                                .blockingSet();
+                        dataSetInstanceProcessor.onNext(new Unit());
+                    }
+                    return true;
+                }).toFlowable();
     }
 }

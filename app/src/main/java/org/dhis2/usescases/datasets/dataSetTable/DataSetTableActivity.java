@@ -4,13 +4,13 @@ package org.dhis2.usescases.datasets.dataSetTable;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.os.Bundle;
-import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
 
 import com.google.android.material.tabs.TabLayoutMediator;
+import com.jakewharton.rxbinding2.view.RxView;
 
 import org.dhis2.App;
 import org.dhis2.R;
@@ -25,6 +25,8 @@ import java.util.List;
 import java.util.Locale;
 
 import javax.inject.Inject;
+
+import io.reactivex.Observable;
 
 public class DataSetTableActivity extends ActivityGlobalAbstract implements DataSetTableContract.View {
 
@@ -86,7 +88,6 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_dataset_table);
         binding.setPresenter(presenter);
-
         setViewPager();
 
         presenter.init(orgUnitUid, periodTypeName, catOptCombo, periodInitialDate, periodId);
@@ -125,18 +126,9 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
     }
 
     public void updateTabLayout(String section, int numTables) {
-
-        if (section.equals("NO_SECTION")) {
-            if (numTables > 1) {
-                sections.remove("NO_SECTION");
-                sections.add(getString(R.string.tab_tables));
-                viewPagerAdapter.swapData(sections);
-            } else
-                binding.tabLayout.setVisibility(View.GONE);
-        } else {
-            if (numTables > 1)
-                viewPagerAdapter.swapData(sections);
-        }
+        sections.remove("NO_SECTION");
+        sections.add(getString(R.string.tab_tables));
+        viewPagerAdapter.swapData(sections);
     }
 
     public DataSetTableContract.Presenter getPresenter() {
@@ -199,5 +191,10 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
 
     public DataSetTableComponent getDataSetTableComponent() {
         return dataSetTableComponent;
+    }
+
+    @Override
+    public Observable<Object> observeSaveButtonClicks(){
+        return RxView.clicks(binding.saveButton);
     }
 }

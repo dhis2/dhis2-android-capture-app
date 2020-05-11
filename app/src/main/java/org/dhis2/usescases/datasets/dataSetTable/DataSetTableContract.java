@@ -6,6 +6,8 @@ import org.hisp.dhis.android.core.period.Period;
 
 import java.util.List;
 
+import io.reactivex.Observable;
+
 public class DataSetTableContract {
 
     public interface View extends AbstractActivityContracts.View {
@@ -19,6 +21,8 @@ public class DataSetTableContract {
         String getOrgUnitName();
 
         void renderDetails(DataSet dataSet, String catcomboName, Period period);
+
+        Observable<Object> observeSaveButtonClicks();
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter {

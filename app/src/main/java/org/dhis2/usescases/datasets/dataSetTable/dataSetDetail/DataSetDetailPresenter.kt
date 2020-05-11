@@ -1,5 +1,6 @@
 package org.dhis2.usescases.datasets.dataSetTable.dataSetDetail
 
+import io.reactivex.Flowable
 import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.functions.BiFunction
@@ -36,10 +37,10 @@ class DataSetDetailPresenter(
         )
         disposable.add(
             updateProcessor.startWith(true)
-                .switchMapSingle {
-                    Single.zip<DataSetInstance, Period, Pair<DataSetInstance, Period>>(
+                .switchMap {
+                    Flowable.combineLatest<DataSetInstance, Period, Pair<DataSetInstance, Period>>(
                         repository.dataSetInstance(),
-                        repository.period.singleOrError(),
+                        repository.period,
                         BiFunction { t1, t2 -> Pair(t1, t2) })
                 }
                 .subscribeOn(schedulers.io())
