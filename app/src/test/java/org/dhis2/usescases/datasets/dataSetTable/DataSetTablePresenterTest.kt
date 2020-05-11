@@ -5,6 +5,7 @@ import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Flowable
+import io.reactivex.Observable
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.hisp.dhis.android.core.common.State
@@ -54,6 +55,7 @@ class DataSetTablePresenterTest {
         whenever(repository.period) doReturn Flowable.just(period)
         whenever(repository.dataSetStatus()) doReturn Flowable.just(true)
         whenever(repository.dataSetState()) doReturn Flowable.just(State.SYNCED)
+        whenever(view.observeSaveButtonClicks()) doReturn Observable.empty()
 
         presenter.init(orgUnit, periodTypeName, catCombo, periodFinalDate, periodId)
 
