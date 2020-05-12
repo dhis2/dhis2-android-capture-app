@@ -1,18 +1,21 @@
 package org.dhis2.usescases.datasets.dataSetTable
 
-import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Flowable
+import io.reactivex.Observable
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.dataset.DataSet
+import org.hisp.dhis.android.core.period.Period
+import org.hisp.dhis.android.core.period.PeriodType
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
+import java.util.Date
 
 class DataSetTablePresenterTest {
 
@@ -39,20 +42,25 @@ class DataSetTablePresenterTest {
         val sections = listOf("section_1")
         val dataSet = DataSet.builder().uid("datasetUid").build()
         val catComboName = "catComboName"
+        val period = Period.builder().periodType(PeriodType.Daily)
+            .startDate(Date())
+            .endDate(Date())
+            .periodId("periodId")
+            .build()
 
 
         whenever(repository.sections) doReturn Flowable.just(sections)
         whenever(repository.dataSet) doReturn Flowable.just(dataSet)
         whenever(repository.getCatComboName(catCombo)) doReturn Flowable.just(catComboName)
+        whenever(repository.period) doReturn Flowable.just(period)
         whenever(repository.dataSetStatus()) doReturn Flowable.just(true)
         whenever(repository.dataSetState()) doReturn Flowable.just(State.SYNCED)
+        whenever(view.observeSaveButtonClicks()) doReturn Observable.empty()
 
         presenter.init(orgUnit, periodTypeName, catCombo, periodFinalDate, periodId)
 
         verify(view).setSections(sections)
-        verify(view).renderDetails(dataSet, catComboName)
-        verify(view).isDataSetOpen(true)
-        verify(view).setDataSetState(State.SYNCED)
+        verify(view).renderDetails(dataSet, catComboName, period)
     }
 
     @Test
@@ -60,13 +68,6 @@ class DataSetTablePresenterTest {
         presenter.onBackClick()
 
         verify(view).back()
-    }
-
-    @Test
-    fun `Should show syncDialog when button is clicked`() {
-        presenter.onSyncClick()
-
-        verify(view).showSyncDialog()
     }
 
     @Test
@@ -85,45 +86,5 @@ class DataSetTablePresenterTest {
         presenter.displayMessage(message)
 
         verify(view).displayMessage(message)
-    }
-
-    @Test
-    fun `Should show options`(){
-        presenter.optionsClick()
-
-        verify(analyticsHelper).setEvent(any(), any(), any())
-        verify(view).showOptions(true)
-    }
-
-    @Test
-    fun `Should go on selected table`() {
-        val table = 1
-
-        presenter.onClickSelectTable(table)
-
-        verify(view).goToTable(table)
-    }
-
-    @Test
-    fun `Should return the CategoryOptionCombo from list`() {
-        val categoryOptions = listOf("option_1", "option_2", "option_3")
-        val categoryOptionCombo = "category_option_combo"
-        whenever(
-            repository.getCatOptComboFromOptionList(categoryOptions)
-        ) doReturn categoryOptionCombo
-
-        val result = presenter.getCatOptComboFromOptionList(categoryOptions)
-
-        assert(result == categoryOptionCombo)
-    }
-
-    @Test
-    fun `Should set the dataset state`() {
-        val state = State.SYNCED
-        whenever(repository.dataSetState()) doReturn Flowable.just(state)
-
-        presenter.updateState()
-
-        verify(view).setDataSetState(state)
     }
 }

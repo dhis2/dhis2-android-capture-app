@@ -47,8 +47,8 @@
                 android:ellipsize="end"
                 android:maxLines="1"
                 android:textColor="@android:color/white"
-                android:textSize="16sp"
-                app:layout_constraintEnd_toStartOf="@+id/more"
+                android:textSize="17sp"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/menu"
                 app:layout_constraintTop_toTopOf="parent"
                 tools:text="DATA_SET_TITLE" />
@@ -62,77 +62,12 @@
                 android:ellipsize="end"
                 android:maxLines="1"
                 android:textColor="@android:color/white"
-                android:textSize="12sp"
+                android:textSize="10sp"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/more"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="@+id/dataSetName"
                 app:layout_constraintTop_toBottomOf="@+id/dataSetName"
                 tools:text="DATA_SET_SUBTITLE" />
-
-            <ImageView
-                android:id="@+id/more"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="12dp"
-                android:onClick="@{()->presenter.optionsClick()}"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/syncLayout"
-                app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/ic_arrow_down_white" />
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/syncLayout"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:background="@drawable/bg_rounded_top_left"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
-
-                <ImageView
-                    android:id="@+id/program_lock"
-                    android:layout_width="24dp"
-                    android:layout_height="29dp"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginEnd="12dp"
-                    app:layout_constraintBottom_toTopOf="@+id/program_lock_text"
-                    app:layout_constraintEnd_toStartOf="@id/syncState"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:srcCompat="@drawable/ic_edit_green"
-                    tools:ignore="ContentDescription,MissingConstraints" />
-
-                <TextView
-                    android:id="@+id/program_lock_text"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="sans-serif"
-                    android:gravity="center_horizontal"
-                    android:maxWidth="60dp"
-                    android:textColor="@color/green_7ed"
-                    android:textSize="11sp"
-                    android:textStyle="normal"
-                    android:text="@string/data_set_open"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="@id/program_lock"
-                    app:layout_constraintStart_toStartOf="@+id/program_lock" />
-
-                <ImageView
-                    android:id="@+id/syncState"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentEnd="true"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginEnd="8dp"
-                    android:layout_marginBottom="8dp"
-                    android:onClick="@{()->presenter.onSyncClick()}"
-                    app:layout_constraintBottom_toTopOf="@+id/program_lock_text"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="@+id/program_lock"
-                    app:srcCompat="@drawable/ic_sync_green" />
-
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -147,162 +82,27 @@
             app:tabMode="scrollable"
             app:tabTextAppearance="@style/DhisTabText" />
 
-        <androidx.viewpager.widget.ViewPager
+        <androidx.viewpager2.widget.ViewPager2
             android:id="@+id/viewPager"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/selector_layout"
+            app:layout_constraintTop_toBottomOf="@id/tab_layout"
             app:layout_constraintVertical_bias="1.0"
             tools:background="@color/red_060" />
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/selector_layout"
-            android:layout_width="match_parent"
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/saveButton"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="?colorPrimary"
-            android:visibility="gone"
-            app:layout_constraintTop_toBottomOf="@id/tab_layout"
-            tools:visibility="visible">
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/tableRecycler"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
-
-            </androidx.recyclerview.widget.RecyclerView>
-
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-        <LinearLayout
-            android:id="@+id/infoContainer"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="?colorPrimary"
-            android:orientation="vertical"
-            android:padding="10dp"
-            android:visibility="gone"
-            app:layout_constraintTop_toTopOf="@+id/tab_layout">
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:baselineAligned="false"
-                android:orientation="horizontal">
-
-                <ImageView
-                    android:id="@+id/dataSetIcon"
-                    android:layout_width="50dp"
-                    android:layout_height="50dp"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginBottom="8dp"
-                    android:background="@drawable/bg_rounded_corners_white"
-                    android:padding="7dp"
-                    android:tint="?colorPrimaryDark"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:srcCompat="@drawable/ic_clinical_f_outline" />
-
-                <TextView
-                    android:id="@+id/dataset_description"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginBottom="8dp"
-                    android:textColor="@color/white_d6d"
-                    android:textSize="13sp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toEndOf="@+id/dataSetIcon"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
-
-                <TextView
-                    android:id="@+id/report_period_label"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:text="@string/report_period"
-                    android:textColor="@color/white"
-                    android:textSize="14sp"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <TextView
-                    android:id="@+id/org_unit_label"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:text="@string/org_unit"
-                    android:textColor="@color/white"
-                    android:textSize="14sp"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/report_period_label" />
-
-                <TextView
-                    android:id="@+id/cat_combo_label"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:text="@string/cat_combo"
-                    android:textColor="@color/white"
-                    android:textSize="14sp"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/org_unit_label" />
-
-                <TextView
-                    android:id="@+id/report_period"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="10dp"
-                    android:gravity="end"
-                    android:textColor="@color/white_d6d"
-                    android:textSize="14sp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toEndOf="@id/report_period_label"
-                    app:layout_constraintTop_toTopOf="@id/report_period_label"
-                    tools:text="DD/MM/YYYY" />
-
-                <TextView
-                    android:id="@+id/org_unit"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:gravity="end"
-                    android:textColor="@color/white_d6d"
-                    android:textSize="14sp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toEndOf="@+id/org_unit_label"
-                    app:layout_constraintTop_toTopOf="@id/org_unit_label"
-                    tools:text="DD/MM/YYYY" />
-
-                <TextView
-                    android:id="@+id/cat_combo"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:gravity="end"
-                    android:textColor="@color/white_d6d"
-                    android:textSize="14sp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toEndOf="@+id/cat_combo_label"
-                    app:layout_constraintTop_toTopOf="@id/cat_combo_label" />
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
-        </LinearLayout>
+            android:layout_margin="15dp"
+            android:tint="@color/white"
+            app:backgroundTint="?attr/colorPrimary"
+            app:elevation="7dp"
+            app:fabSize="normal"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:srcCompat="@drawable/ic_save" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

@@ -514,8 +514,8 @@
     <string name="no_conflicts_synced_message">You are up to date! All your data is sent to the server.</string>
     <string name="relationship_error_recursive">You can\'t relate a record with itself</string>
     <string name="unblock_session">Unblock session</string>
-    <string name="data_set_closed">Close</string>
-    <string name="data_set_open">Open</string>
+    <string name="data_set_closed">Closed</string>
+    <string name="data_set_open">Opened</string>
     <string name="unsupported_value_type">Unsupported value type</string>
     <string name="change_calendar_view">Change calendar view</string>
     <string name="data_every_fifteen_minutes">15 minutes</string>
@@ -690,4 +690,6 @@
     <string name="filter_sync_not_synced">Not Synced</string>
     <string name="filter_sync_error">Sync Error</string>
     <string name="filter_sync_sms">SMS Synced</string>
+    <string name="dataset_overview">Details</string>
+    <string name="dataset_comments">Comments</string>
 </resources>
