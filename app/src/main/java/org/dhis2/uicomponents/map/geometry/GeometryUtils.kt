@@ -100,12 +100,10 @@ object GeometryUtils {
         eastBound = 0.0
         westBound = 0.0
 
-        val features = eventList
-            .filter { it.geometry() != null }
-            .map {
-                handleGeometry(it.geometry()!!, "eventUid", it.uid()!!)
-            }
-            .filter { it != null }
+        val features = eventList.filter { it.geometry() != null }.mapNotNull {
+                    handleGeometry(it.geometry()!!, "eventUid", it.uid()!!)
+        }
+
         return Pair<FeatureCollection, BoundingBox>(
             FeatureCollection.fromFeatures(features),
             BoundingBox.fromLngLats(westBound, southBound, eastBound, northBound)
@@ -117,16 +115,18 @@ object GeometryUtils {
         property: String,
         propertyValue: String
     ): Feature? {
-        if (geometry.type() == FeatureType.POINT) {
-            val point = getPointFeature(geometry)
-            point?.addStringProperty(property, propertyValue)
-            return point
-        } else if (geometry.type() == FeatureType.POLYGON) {
-            val polygon = getPolygonFeature(geometry)
-            polygon.addStringProperty(property, propertyValue)
-            return polygon
-        } else {
-            return null
+        return when {
+            geometry.type() == FeatureType.POINT -> {
+                val point = getPointFeature(geometry)
+                point?.addStringProperty(property, propertyValue)
+                point
+            }
+            geometry.type() == FeatureType.POLYGON -> {
+                val polygon = getPolygonFeature(geometry)
+                polygon.addStringProperty(property, propertyValue)
+                polygon
+            }
+            else -> null
         }
     }
 

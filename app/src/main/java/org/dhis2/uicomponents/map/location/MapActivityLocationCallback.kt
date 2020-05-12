@@ -1,4 +1,4 @@
-package org.dhis2.uicomponents.map.views.callbacks
+package org.dhis2.uicomponents.map.location
 
 import android.location.Location
 import android.widget.Toast

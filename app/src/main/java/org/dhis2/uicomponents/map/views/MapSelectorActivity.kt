@@ -37,7 +37,7 @@ import org.dhis2.uicomponents.map.geometry.point.PointAdapter
 import org.dhis2.uicomponents.map.geometry.point.PointViewModel
 import org.dhis2.uicomponents.map.geometry.polygon.PolygonAdapter
 import org.dhis2.uicomponents.map.geometry.polygon.PolygonViewModel
-import org.dhis2.uicomponents.map.views.callbacks.MapActivityLocationCallback
+import org.dhis2.uicomponents.map.location.MapActivityLocationCallback
 import org.dhis2.usescases.general.ActivityGlobalAbstract
 import org.hisp.dhis.android.core.arch.helpers.GeometryHelper
 import org.hisp.dhis.android.core.common.FeatureType
