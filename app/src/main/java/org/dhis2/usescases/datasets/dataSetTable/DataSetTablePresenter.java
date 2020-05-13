@@ -1,17 +1,16 @@
 package org.dhis2.usescases.datasets.dataSetTable;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.dhis2.data.schedulers.SchedulerProvider;
-import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.utils.analytics.AnalyticsHelper;
-import org.hisp.dhis.android.core.common.Unit;
 
 import java.util.concurrent.TimeUnit;
 
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.processors.FlowableProcessor;
 import timber.log.Timber;
 
 public class DataSetTablePresenter implements DataSetTableContract.Presenter {
@@ -76,12 +75,15 @@ public class DataSetTablePresenter implements DataSetTableContract.Presenter {
                         .subscribeOn(schedulerProvider.ui())
                         .toFlowable(BackpressureStrategy.LATEST)
                         .debounce(500, TimeUnit.MILLISECONDS, schedulerProvider.io())
-                        .switchMap(o -> tableRepository.completeDataSetInstance())
                         .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.io())
                         .subscribe(
-                                completed -> {
-
+                                o -> {
+                                    if (tableRepository.hasToRunValidationRules()) {
+                                        checkValidationRules();
+                                    } else {
+                                        completeDataSet();
+                                    }
                                 },
                                 Timber::e
                         )
@@ -121,5 +123,40 @@ public class DataSetTablePresenter implements DataSetTableContract.Presenter {
 
     public String getCatCombo() {
         return catCombo;
+    }
+
+    @VisibleForTesting
+    public void checkValidationRules() {
+        if (tableRepository.isValidationRuleOptional()) {
+            view.showValidationRuleDialog();
+        } else {
+            executeValidationRules();
+        }
+    }
+
+    @Override
+    public void executeValidationRules() {
+        boolean wasSuccessful;
+        wasSuccessful = tableRepository.executeValidationRules();
+        if (wasSuccessful) {
+            view.showSuccessValidationDialog();
+        } else {
+            view.showErrorsValidationDialog();
+        }
+    }
+
+    @Override
+    public void completeDataSet() {
+        disposable.add(
+                tableRepository.completeDataSetInstance()
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
+                        .subscribe(
+                                completed -> {
+
+                                },
+                                Timber::e
+                        )
+        );
     }
 }

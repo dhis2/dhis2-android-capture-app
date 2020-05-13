@@ -32,4 +32,10 @@ public interface DataSetTableRepository {
     Flowable<Period> getPeriod();
 
     Flowable<Boolean> completeDataSetInstance();
+
+    boolean hasToRunValidationRules();
+
+    boolean isValidationRuleOptional();
+
+    boolean executeValidationRules();
 }

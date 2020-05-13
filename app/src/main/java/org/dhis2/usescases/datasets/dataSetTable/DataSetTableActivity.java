@@ -1,6 +1,5 @@
 package org.dhis2.usescases.datasets.dataSetTable;
 
-
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.os.Bundle;
@@ -18,6 +17,7 @@ import org.dhis2.databinding.ActivityDatasetTableBinding;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.DateUtils;
+import org.dhis2.utils.customviews.AlertBottomDialog;
 import org.hisp.dhis.android.core.dataset.DataSet;
 import org.hisp.dhis.android.core.period.Period;
 
@@ -27,6 +27,7 @@ import java.util.Locale;
 import javax.inject.Inject;
 
 import io.reactivex.Observable;
+import kotlin.Unit;
 
 public class DataSetTableActivity extends ActivityGlobalAbstract implements DataSetTableContract.View {
 
@@ -196,5 +197,42 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
     @Override
     public Observable<Object> observeSaveButtonClicks(){
         return RxView.clicks(binding.saveButton);
+    }
+
+    @Override
+    public void showValidationRuleDialog() {
+        AlertBottomDialog.Companion.getInstance()
+                .setTitle(getString(R.string.saved))
+                .setMessage(getString(R.string.run_validation_rules))
+                .setPositiveButton(getString(R.string.yes), () -> {
+                    presenter.executeValidationRules();
+                    return Unit.INSTANCE;
+                })
+                .setNegativeButton(getString(R.string.no), null)
+                .show(getSupportFragmentManager(), AlertBottomDialog.class.getSimpleName());
+    }
+
+    @Override
+    public void showSuccessValidationDialog() {
+        AlertBottomDialog.Companion.getInstance()
+                .setTitle(getString(R.string.validation_success_title))
+                .setMessage(getString(R.string.mark_dataset_complete))
+                .setPositiveButton(getString(R.string.yes), ()-> {
+                    presenter.completeDataSet();
+                    return Unit.INSTANCE;
+                })
+                .setNegativeButton(getString(R.string.no), null)
+                .show(getSupportFragmentManager(), AlertBottomDialog.class.getSimpleName());
+    }
+
+    @Override
+    public void showErrorsValidationDialog() {
+        //TODO - Validation rules - This should be updated to show the info the SDK gives us.
+        AlertBottomDialog.Companion.getInstance()
+                .setTitle(getString(R.string.error_dialog_title))
+                .setMessage("A list of errors will be shown here.")
+                .setPositiveButton("", null)
+                .show(getSupportFragmentManager(), AlertBottomDialog.class.getSimpleName());
+
     }
 }
