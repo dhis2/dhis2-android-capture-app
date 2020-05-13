@@ -392,34 +392,6 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
         }
     }
 
-    override fun showValidationRuleDialog() {
-        AlertBottomDialog.instance
-            .setTitle(getString(R.string.saved))
-            .setMessage(getString(R.string.run_validation_rules))
-            .setPositiveButton(getString(R.string.yes)) { presenterFragment.executeValidationRules() }
-            .setNegativeButton(getString(R.string.no))
-            .show(fragmentManager!!, AlertBottomDialog::class.java.simpleName)
-    }
-
-    override fun showSuccessValidationDialog() {
-        AlertBottomDialog.instance
-            .setTitle(getString(R.string.validation_success_title))
-            .setMessage(getString(R.string.mark_dataset_complete))
-            .setPositiveButton(getString(R.string.yes)) { presenterFragment.completeDataSet() }
-            .setNegativeButton(getString(R.string.no))
-            .show(fragmentManager!!, AlertBottomDialog::class.java.simpleName)
-
-    }
-
-    override fun showErrorsValidationDialog() {
-        //TODO - Validation rules - This should be updated to show the info the SDK gives us.
-        AlertBottomDialog.instance
-            .setTitle(getString(R.string.error_dialog_title))
-            .setMessage("A list of errors will be shown here.")
-            .setPositiveButton("")
-            .show(fragmentManager!!, AlertBottomDialog::class.java.simpleName)
-    }
-
     companion object {
 
         @JvmStatic

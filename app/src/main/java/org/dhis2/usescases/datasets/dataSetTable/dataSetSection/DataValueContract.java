@@ -33,11 +33,5 @@ public class DataValueContract {
         void updateTabLayout(int count);
 
         void setDataAccess(boolean accessDataWrite);
-
-        void showValidationRuleDialog();
-
-        void showSuccessValidationDialog();
-
-        void showErrorsValidationDialog();
     }
 }

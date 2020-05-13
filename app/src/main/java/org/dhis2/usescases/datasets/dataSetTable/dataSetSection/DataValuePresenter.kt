@@ -52,15 +52,13 @@ class DataValuePresenter(
 
     var disposable: CompositeDisposable = CompositeDisposable()
 
-    // TODO: Change tu public for testing purposes. Should refactor
-    var orgUnitUid: String? = null
-    var attributeOptionCombo: String? = null
-    var periodId: String? = null
-    //
+    private var orgUnitUid: String? = null
+    private var periodTypeName: String? = null
+    private var attributeOptionCombo: String? = null
 
     private var dataValuesChanged: MutableList<DataSetTableModel>? = null
-    private var periodTypeName: String? = null
     private var dataTableModel: DataTableModel? = null
+    private var periodId: String? = null
     private var period: Period? = null
 
     private lateinit var tableCells: MutableList<List<List<FieldViewModel>>>
@@ -532,12 +530,24 @@ class DataValuePresenter(
         if ((!isApproval)) {
             analyticsHelper.setEvent(COMPLETE_REOPEN, CLICK, COMPLETE_REOPEN)
             if (view.isOpenOrReopen) {
-                if (checkAllCombinedRequiredAndMandatoryFields()) {
-                    if(needsValidationRules()) {
-                        checkValidationRules()
-                    } else {
-                        completeDataSet()
-                    }
+                if ((!dataSet!!.fieldCombinationRequired()!! || checkAllFieldRequired(
+                            tableCells,
+                            dataTableModel?.dataValues()
+                        ) && dataSet!!.fieldCombinationRequired()!!) &&
+                    checkMandatoryField(tableCells, dataTableModel?.dataValues())
+                ) {
+                    disposable.add(
+                        repository.completeDataSet(orgUnitUid, periodId, attributeOptionCombo)
+                            .subscribeOn(schedulerProvider.io())
+                            .observeOn(schedulerProvider.ui())
+                            .subscribe(
+                                { completed ->
+                                    view.setCompleteReopenText(true)
+                                    view.update(completed!!)
+                                },
+                                { Timber.e(it) }
+                            )
+                    )
                 } else if (!checkMandatoryField(tableCells, dataTableModel?.dataValues())) {
                     view.showAlertDialog(
                         view.context.getString(R.string.missing_mandatory_fields_title),
@@ -565,53 +575,6 @@ class DataValuePresenter(
                 )
             }
         }
-    }
-
-    @VisibleForTesting
-    fun checkValidationRules() {
-        if(isValidationRuleOptional()) {
-            view.showValidationRuleDialog()
-        } else {
-            executeValidationRules()
-        }
-    }
-
-    fun executeValidationRules() {
-        var isOk = false
-        // TODO: ValidationRules - execute mandatory validation rules
-        isOk = true
-
-        if (isOk) {
-            view.showSuccessValidationDialog()
-        } else {
-            view.showErrorsValidationDialog()
-        }
-    }
-
-    fun completeDataSet() {
-        disposable.add(
-            repository.completeDataSet(orgUnitUid, periodId, attributeOptionCombo)
-                .subscribeOn(schedulerProvider.io())
-                .observeOn(schedulerProvider.ui())
-                .subscribe(
-                    { completed ->
-                        view.setCompleteReopenText(true)
-                        view.update(completed!!)
-                    },
-                    { Timber.e(it) }
-                )
-        )
-    }
-
-    // TODO: ValidationRules- This is temporary until the SDK has a method to ask for this
-    private fun needsValidationRules() = true
-    private fun isValidationRuleOptional() = true
-
-    private fun checkAllCombinedRequiredAndMandatoryFields(): Boolean {
-        return (!dataSet!!.fieldCombinationRequired()!! ||
-            checkAllFieldRequired(tableCells, dataTableModel?.dataValues()) &&
-            dataSet!!.fieldCombinationRequired()!!) &&
-            checkMandatoryField(tableCells, dataTableModel?.dataValues())
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
