@@ -3,9 +3,6 @@ package org.dhis2.uicomponents
 import androidx.core.content.ContextCompat
 import com.mapbox.geojson.BoundingBox
 import com.mapbox.geojson.FeatureCollection
-import com.mapbox.mapboxsdk.camera.CameraUpdateFactory
-import com.mapbox.mapboxsdk.geometry.LatLngBounds
-import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.maps.Style
 import com.mapbox.mapboxsdk.plugins.annotation.SymbolManager
 import com.mapbox.mapboxsdk.plugins.markerview.MarkerViewManager
@@ -20,19 +17,37 @@ import org.dhis2.R
 import org.dhis2.utils.ColorUtils
 import org.dhis2.utils.maps.MapLayerManager
 import org.dhis2.utils.maps.MarkerUtils
-import org.dhis2.utils.maps.initDefaultCamera
 import org.hisp.dhis.android.core.common.FeatureType
 import java.util.HashMap
 
-class TeiMapManager(mapView: MapView): MapManager(mapView) {
+class TeiMapManager(
+    private val teiFeatureCollections: HashMap<String, FeatureCollection>,
+    private val boundingBox: BoundingBox
+): MapManager() {
 
-    fun setStyle(
-        teiFeatureCollections: HashMap<String, FeatureCollection>,
-        boundingBox: BoundingBox
-    ) {
-        if (map == null) {
-            mapView.getMapAsync {
-                map = it
+    companion object {
+        const val TEIS_TAG = "teis"
+        const val ENROLLMENT_TAG = "enrollments"
+
+    }
+
+    override fun setStyle() {
+        when {
+            map == null -> {
+                mapView.getMapAsync {
+                    map = it
+                    map?.setStyle(
+                        Style.MAPBOX_STREETS
+                    ) { style: Style ->
+                        loadDataForStyle(
+                            style,
+                            teiFeatureCollections,
+                            boundingBox
+                        )
+                    }
+                }
+            }
+            changingStyle -> {
                 map?.setStyle(
                     Style.MAPBOX_STREETS
                 ) { style: Style ->
@@ -43,31 +58,12 @@ class TeiMapManager(mapView: MapView): MapManager(mapView) {
                     )
                 }
             }
-        } else if (changingStyle) {
-            map?.setStyle(
-                Style.MAPBOX_STREETS
-            ) { style: Style ->
-                loadDataForStyle(
-                    style,
-                    teiFeatureCollections,
-                    boundingBox
+            else -> {
+                (map?.style?.getSource(TEIS_TAG) as GeoJsonSource?)?.setGeoJson(teiFeatureCollections["TEI"])
+                (map?.style?.getSource(ENROLLMENT_TAG) as GeoJsonSource?)?.setGeoJson(
+                    teiFeatureCollections["ENROLLMENT"]
                 )
-            }
-        } else {
-            (map?.style?.getSource("teis") as GeoJsonSource?)?.setGeoJson(teiFeatureCollections["TEI"])
-            (map?.style?.getSource("enrollments") as GeoJsonSource?)?.setGeoJson(
-                teiFeatureCollections["ENROLLMENT"]
-            )
-            if (boundingBox.north() != 0.0 && boundingBox.east() != 0.0 && boundingBox.south() != 0.0 && boundingBox.west() != 0.0) {
-                val bounds = LatLngBounds.from(
-                    boundingBox.north(),
-                    boundingBox.east(),
-                    boundingBox.south(),
-                    boundingBox.west()
-                )
-                map?.initDefaultCamera(mapView.context, bounds)
-            } else {
-                map?.easeCamera(CameraUpdateFactory.zoomTo(map!!.minZoomLevel))
+                initCameraPosition(map!!, boundingBox)
             }
         }
     }
@@ -80,7 +76,7 @@ class TeiMapManager(mapView: MapView): MapManager(mapView) {
         MapLayerManager.run {
             when {
                 !changingStyle -> {
-                    init(style, "teis", featureType ?: FeatureType.NONE)
+                    init(style, TEIS_TAG, featureType ?: FeatureType.NONE)
                     instance().setEnrollmentLayerData(
                         ColorUtils.getColorFrom(
                             mapStyle?.programColor,
@@ -95,9 +91,6 @@ class TeiMapManager(mapView: MapView): MapManager(mapView) {
                         ),
                         featureType ?: FeatureType.NONE
                     )
-                    /*instance().showEnrollmentLayer().observe(this,
-                        Observer { show: Boolean -> if (show) presenter.getEnrollmentMapData() }
-                    )*/
                 }
                 else -> instance().updateStyle(style)
             }
@@ -125,15 +118,9 @@ class TeiMapManager(mapView: MapView): MapManager(mapView) {
                 mapStyle?.enrollmentColor!!
             )
         )
-        setSource(style, teiFeatureCollection)
+        setSource(style)
         setLayer(style)
-        val bounds = LatLngBounds.from(
-            boundingBox.north(),
-            boundingBox.east(),
-            boundingBox.south(),
-            boundingBox.west()
-        )
-        map?.initDefaultCamera(mapView.context, bounds)
+        initCameraPosition(map!!, boundingBox)
         if(markerViewManager == null) {
             markerViewManager = MarkerViewManager(mapView, map)
         }
@@ -153,16 +140,13 @@ class TeiMapManager(mapView: MapView): MapManager(mapView) {
         }
     }
 
-    private fun setSource(
-        style: Style,
-        featCollectionMap: HashMap<String, FeatureCollection>
-    ) {
-        style.addSource(GeoJsonSource("teis", featCollectionMap["TEI"]))
-        style.addSource(GeoJsonSource("enrollments", featCollectionMap["ENROLLMENT"]))
+    override fun setSource(style: Style) {
+        style.addSource(GeoJsonSource(TEIS_TAG, teiFeatureCollections["TEI"]))
+        style.addSource(GeoJsonSource(ENROLLMENT_TAG, teiFeatureCollections["ENROLLMENT"]))
     }
 
-    private fun setLayer(style: Style) {
-        val symbolLayer = SymbolLayer("POINT_LAYER", "teis").withProperties(
+    override fun setLayer(style: Style) {
+        val symbolLayer = SymbolLayer("POINT_LAYER", TEIS_TAG).withProperties(
             PropertyFactory.iconImage(
                 Expression.get(
                     "teiImage"
@@ -187,7 +171,7 @@ class TeiMapManager(mapView: MapView): MapManager(mapView) {
         style.addLayer(symbolLayer)
         if (featureType != FeatureType.POINT) {
             style.addLayerBelow(
-                FillLayer("POLYGON_LAYER", "teis")
+                FillLayer("POLYGON_LAYER", TEIS_TAG)
                     .withProperties(
                         PropertyFactory.fillColor(
                             ColorUtils.getPrimaryColorWithAlpha(
@@ -207,7 +191,7 @@ class TeiMapManager(mapView: MapView): MapManager(mapView) {
                 "POINT_LAYER"
             )
             style.addLayerAbove(
-                LineLayer("POLYGON_BORDER_LAYER", "teis")
+                LineLayer("POLYGON_BORDER_LAYER", TEIS_TAG)
                     .withProperties(
                         PropertyFactory.lineColor(
                             ColorUtils.getPrimaryColor(

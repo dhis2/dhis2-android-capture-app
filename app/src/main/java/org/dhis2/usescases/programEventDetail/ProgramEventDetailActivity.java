@@ -133,7 +133,6 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
         } catch (Exception e) {
             Timber.e(e);
         }
-        eventMapManager = new EventMapManager(binding.mapView);
     }
 
     @Override
@@ -163,7 +162,9 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        eventMapManager.onDestroy();
+        if(eventMapManager != null) {
+            eventMapManager.onDestroy();
+        }
         binding.mapView.onDestroy();
 
         FilterManager.getInstance().clearEventStatus();
@@ -342,10 +343,11 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
 
     @Override
     public void setMap(FeatureCollection featureCollection, BoundingBox boundingBox) {
-
+        eventMapManager = new EventMapManager(featureCollection, boundingBox);
+        eventMapManager.setMapView(binding.mapView);
         eventMapManager.setFeatureType(featureType);
         eventMapManager.setOnMapClickListener(this);
-        eventMapManager.setStyle(featureCollection, boundingBox);
+        eventMapManager.setStyle();
     }
 
     @Override

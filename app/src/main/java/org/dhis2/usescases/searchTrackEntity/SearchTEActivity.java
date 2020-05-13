@@ -209,7 +209,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             Timber.e(e);
         }
 
-        teiMapManager = new TeiMapManager(binding.mapView);
+
         binding.mapLayerButton.setOnClickListener(view ->
                 new MapLayerDialog(teiMapManager.getMap().getStyle().getImage("ICON_ID"),
                         teiMapManager.getMap().getStyle().getImage("ICON_ENROLLMENT_ID"),
@@ -260,7 +260,9 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     @Override
     protected void onDestroy() {
         binding.mapView.onDestroy();
-        teiMapManager.onDestroy();
+        if (teiMapManager != null) {
+            teiMapManager.onDestroy();
+        }
         MapLayerManager.Companion.onDestroy();
         presenter.onDestroy();
         super.onDestroy();
@@ -724,6 +726,8 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     public void setMap(HashMap<String, FeatureCollection> teiFeatureCollections, BoundingBox boundingBox) {
         binding.progressLayout.setVisibility(View.GONE);
 
+        teiMapManager = new TeiMapManager(teiFeatureCollections, boundingBox);
+        teiMapManager.setMapView(binding.mapView);
         teiMapManager.setFeatureType(featureType);
         teiMapManager.setChangingStyle(changingStyle);
         teiMapManager.setMapStyle(new MapStyle(
@@ -734,7 +738,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                 presenter.getEnrollmentSymbolIcon()
                 ));
         teiMapManager.setOnMapClickListener(this);
-        teiMapManager.setStyle(teiFeatureCollections, boundingBox);
+        teiMapManager.setStyle();
 
     }
 

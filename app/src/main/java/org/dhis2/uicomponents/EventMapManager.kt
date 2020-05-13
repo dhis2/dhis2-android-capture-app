@@ -19,12 +19,12 @@ import org.dhis2.utils.ColorUtils
 import org.dhis2.utils.maps.initDefaultCamera
 import org.hisp.dhis.android.core.common.FeatureType
 
-class EventMapManager(mapView: MapView): MapManager(mapView) {
+class EventMapManager(
+    private val featureCollection: FeatureCollection,
+    private val boundingBox: BoundingBox
+): MapManager() {
 
-    fun setStyle(
-        featureCollection: FeatureCollection,
-        boundingBox: BoundingBox
-    ) {
+    override fun setStyle() {
         if (map == null) {
             mapView.getMapAsync {
                 map = it
@@ -40,8 +40,8 @@ class EventMapManager(mapView: MapView): MapManager(mapView) {
                             R.drawable.mapbox_marker_icon_default
                         )
                     )
-                    setSource(style, featureCollection)
-                    setEventLayer(style)
+                    setSource(style)
+                    setLayer(style)
 
                     initCameraPosition(map!!, boundingBox)
 
@@ -62,14 +62,11 @@ class EventMapManager(mapView: MapView): MapManager(mapView) {
         }
     }
 
-    private fun setSource(
-        style: Style,
-        featureCollection: FeatureCollection
-    ) {
+    override fun setSource(style: Style) {
         style.addSource(GeoJsonSource("events", featureCollection))
     }
 
-    private fun setEventLayer(style: Style) {
+    override fun setLayer(style: Style) {
         val symbolLayer = SymbolLayer("POINT_LAYER", "events")
             .withProperties(
                 PropertyFactory.iconImage("ICON_ID"),
@@ -94,14 +91,5 @@ class EventMapManager(mapView: MapView): MapManager(mapView) {
                 )
             ), "settlement-label"
         )
-    }
-
-    private fun initCameraPosition(
-        map: MapboxMap,
-        bbox: BoundingBox
-    ) {
-        val bounds =
-            LatLngBounds.from(bbox.north(), bbox.east(), bbox.south(), bbox.west())
-        map.initDefaultCamera(mapView.context, bounds)
     }
 }
