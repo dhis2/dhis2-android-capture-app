@@ -4,31 +4,29 @@ package org.dhis2.usescases.datasets.dataSetTable;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.os.Bundle;
-import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
 
-import com.google.android.flexbox.FlexDirection;
-import com.google.android.flexbox.FlexboxLayoutManager;
-import com.google.android.flexbox.JustifyContent;
-import com.google.android.material.tabs.TabLayout;
+import com.google.android.material.tabs.TabLayoutMediator;
+import com.jakewharton.rxbinding2.view.RxView;
 
 import org.dhis2.App;
 import org.dhis2.R;
 import org.dhis2.databinding.ActivityDatasetTableBinding;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
-import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.Constants;
-import org.dhis2.utils.granularsync.SyncStatusDialog;
-import org.dhis2.utils.resources.ResourceManager;
-import org.hisp.dhis.android.core.common.State;
+import org.dhis2.utils.DateUtils;
 import org.hisp.dhis.android.core.dataset.DataSet;
+import org.hisp.dhis.android.core.period.Period;
 
 import java.util.List;
+import java.util.Locale;
 
 import javax.inject.Inject;
+
+import io.reactivex.Observable;
 
 public class DataSetTableActivity extends ActivityGlobalAbstract implements DataSetTableContract.View {
 
@@ -49,6 +47,7 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
     private ActivityDatasetTableBinding binding;
     private DataSetSectionAdapter viewPagerAdapter;
     private boolean backPressed;
+    private DataSetTableComponent dataSetTableComponent;
 
     public static Bundle getBundle(@NonNull String dataSetUid,
                                    @NonNull String orgUnitUid,
@@ -80,7 +79,8 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
         dataSetUid = getIntent().getStringExtra(Constants.DATA_SET_UID);
         accessDataWrite = getIntent().getBooleanExtra(Constants.ACCESS_DATA, true);
 
-        ((App) getApplicationContext()).userComponent().plus(new DataSetTableModule(this, dataSetUid, periodId, orgUnitUid, catOptCombo)).inject(this);
+        dataSetTableComponent = ((App) getApplicationContext()).userComponent().plus(new DataSetTableModule(this, dataSetUid, periodId, orgUnitUid, catOptCombo));
+        dataSetTableComponent.inject(this);
         super.onCreate(savedInstanceState);
 
         //Orientation
@@ -88,8 +88,6 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_dataset_table);
         binding.setPresenter(presenter);
-        binding.dataSetName.setText(String.format("%s - %s", orgUnitName, periodInitialDate));
-
         setViewPager();
 
         presenter.init(orgUnitUid, periodTypeName, catOptCombo, periodInitialDate, periodId);
@@ -108,39 +106,15 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
     }
 
     private void setViewPager() {
-        viewPagerAdapter = new DataSetSectionAdapter(getSupportFragmentManager(), accessDataWrite, getIntent().getStringExtra(Constants.DATA_SET_UID), this);
+        viewPagerAdapter = new DataSetSectionAdapter(this, accessDataWrite, getIntent().getStringExtra(Constants.DATA_SET_UID));
         binding.viewPager.setAdapter(viewPagerAdapter);
-        binding.tabLayout.setupWithViewPager(binding.viewPager);
-        binding.tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-            @Override
-            public void onTabSelected(TabLayout.Tab tab) {
-                binding.selectorLayout.setVisibility(View.GONE);
-                tableSelectorVisible = false;
+        new TabLayoutMediator(binding.tabLayout, binding.viewPager, (tab, position) -> {
+            if (position == 0) {
+                tab.setText(R.string.dataset_overview);
+            } else {
+                tab.setText(viewPagerAdapter.getSectionTitle(position));
             }
-
-            @Override
-            public void onTabUnselected(TabLayout.Tab tab) {
-            }
-
-            @Override
-            public void onTabReselected(TabLayout.Tab tab) {
-                if (viewPagerAdapter.getCurrentItem(binding.tabLayout.getSelectedTabPosition()).currentNumTables() > 1)
-                    if (tableSelectorVisible)
-                        binding.selectorLayout.setVisibility(View.GONE);
-                    else {
-                        binding.selectorLayout.setVisibility(View.VISIBLE);
-                        FlexboxLayoutManager layoutManager = new FlexboxLayoutManager(getContext());
-                        layoutManager.setFlexDirection(FlexDirection.ROW);
-                        layoutManager.setJustifyContent(JustifyContent.FLEX_START);
-                        binding.tableRecycler.setLayoutManager(layoutManager);
-
-                        binding.tableRecycler.setAdapter(new TableCheckboxAdapter(presenter, getContext()));
-                        ((TableCheckboxAdapter) binding.tableRecycler.getAdapter()).swapData(viewPagerAdapter.getCurrentItem(binding.tabLayout.getSelectedTabPosition()).currentNumTables());
-                    }
-
-                tableSelectorVisible = !tableSelectorVisible;
-            }
-        });
+        }).attach();
     }
 
     @Override
@@ -152,42 +126,19 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
     }
 
     public void updateTabLayout(String section, int numTables) {
-
-        if (section.equals("NO_SECTION")) {
-            if (numTables > 1) {
-                sections.remove("NO_SECTION");
-                sections.add(getString(R.string.tab_tables));
-                viewPagerAdapter.swapData(sections);
-            } else
-                binding.tabLayout.setVisibility(View.GONE);
-        } else {
-            if (numTables > 1)
-                viewPagerAdapter.swapData(sections);
-        }
-    }
-
-    @Override
-    public void setDataValue(List<DataSetTableModel> data) {
+        sections.remove("NO_SECTION");
+        sections.add(getString(R.string.tab_tables));
+        viewPagerAdapter.swapData(sections);
     }
 
     public DataSetTableContract.Presenter getPresenter() {
         return presenter;
     }
 
-
     @Override
     public Boolean accessDataWrite() {
         return accessDataWrite;
     }
-
-    @Override
-    public void showOptions(boolean open) {
-        if (open)
-            binding.infoContainer.setVisibility(View.VISIBLE);
-        else
-            binding.infoContainer.setVisibility(View.GONE);
-    }
-
 
     @Override
     public String getDataSetUid() {
@@ -200,88 +151,18 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
     }
 
     @Override
-    public void goToTable(int numTable) {
-        ((TableCheckboxAdapter) binding.tableRecycler.getAdapter()).setSelectedPosition(numTable);
-        viewPagerAdapter.getCurrentItem(binding.tabLayout.getSelectedTabPosition()).goToTable(numTable);
-    }
-
-    @Override
-    public void renderDetails(DataSet dataSet, String catComboName) {
-        binding.dataSetSubtitle.setText(String.format("%s %s", dataSet.displayName(), !catComboName.equals("default") ? "- " + catComboName : ""));
-        if (catComboName.equals("default")) {
-            binding.catCombo.setVisibility(View.GONE);
-            binding.catComboLabel.setVisibility(View.GONE);
+    public void renderDetails(DataSet dataSet, String catComboName, Period period) {
+        binding.dataSetName.setText(dataSet.displayName());
+        StringBuilder subtitle = new StringBuilder(
+                DateUtils.getInstance().getPeriodUIString(period.periodType(), period.startDate(), Locale.getDefault())
+        )
+                .append("|")
+                .append(orgUnitName);
+        if (!catComboName.equals("default")) {
+            subtitle.append("|")
+                    .append(catComboName);
         }
-        binding.orgUnit.setText(orgUnitName);
-        binding.reportPeriod.setText(periodInitialDate);
-        binding.catCombo.setText(catComboName);
-        binding.datasetDescription.setText(dataSet.displayDescription());
-
-        binding.dataSetIcon.setBackground(
-                ColorUtils.tintDrawableWithColor(
-                        binding.dataSetIcon.getBackground(),
-                        ColorUtils.getPrimaryColor(this, ColorUtils.ColorType.PRIMARY_LIGHT)
-                )
-        );
-        binding.dataSetIcon.setImageResource(
-                new ResourceManager(this).getObjectStyleDrawableResource(
-                        dataSet.style().icon(),
-                        R.drawable.ic_program_default
-                )
-        );
-
-    }
-
-    @Override
-    public void isDataSetOpen(boolean dataSetIsOpen) {
-        boolean editStatus = !dataSetIsOpen && accessDataWrite;
-        binding.programLock.setImageResource(editStatus ? R.drawable.ic_edit_green : R.drawable.ic_visibility);
-        binding.programLockText.setText(!dataSetIsOpen ? getString(org.dhis2.R.string.event_open) : getString(org.dhis2.R.string.completed));
-        binding.programLockText.setTextColor(editStatus ? getResources().getColor(R.color.green_7ed) : getResources().getColor(R.color.gray_666));
-    }
-
-    @Override
-    public void setDataSetState(State state) {
-        int syncIconRes;
-        switch (state) {
-
-            case ERROR:
-                syncIconRes = R.drawable.ic_sync_problem_red;
-                break;
-            case WARNING:
-                syncIconRes = R.drawable.ic_sync_warning;
-                break;
-            case TO_POST:
-            case TO_UPDATE:
-            case UPLOADING:
-                syncIconRes = R.drawable.ic_sync_problem_grey;
-                break;
-            case SENT_VIA_SMS:
-            case SYNCED_VIA_SMS:
-                syncIconRes = R.drawable.ic_sync_sms;
-                break;
-            default:
-                syncIconRes = R.drawable.ic_sync_green;
-                break;
-        }
-        binding.syncState.setImageResource(syncIconRes);
-    }
-
-    @Override
-    public void showSyncDialog() {
-        SyncStatusDialog dialog = new SyncStatusDialog.Builder()
-                .setConflictType(SyncStatusDialog.ConflictType.DATA_VALUES)
-                .setUid(dataSetUid)
-                .setOrgUnit(orgUnitUid)
-                .setPeriodId(periodId)
-                .setAttributeOptionCombo(catOptCombo)
-                .onDismissListener(hasChanged -> {
-                    if (hasChanged) {
-                        presenter.updateState();
-                    }
-                })
-                .build();
-        dialog.show(getSupportFragmentManager(), dialog.getDialogTag());
+        binding.dataSetSubtitle.setText(subtitle);
     }
 
     public void update() {
@@ -306,5 +187,14 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
 
     public boolean isBackPressed() {
         return backPressed;
+    }
+
+    public DataSetTableComponent getDataSetTableComponent() {
+        return dataSetTableComponent;
+    }
+
+    @Override
+    public Observable<Object> observeSaveButtonClicks(){
+        return RxView.clicks(binding.saveButton);
     }
 }
