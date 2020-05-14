@@ -96,6 +96,7 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
     /*region LIFECYCLE*/
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
         (applicationContext as App).userComponent()!!.plus(
             EnrollmentModule(
                 this,
@@ -105,7 +106,6 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
             )
         ).inject(this)
         forRelationship = intent.getBooleanExtra(FOR_RELATIONSHIP, false)
-        super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.enrollment_activity)
         binding.view = this
 
