@@ -5,7 +5,7 @@ import com.mapbox.geojson.FeatureCollection
 import org.dhis2.uicomponents.map.geometry.bound.BoundsModel
 import org.hisp.dhis.android.core.event.Event
 
-class MapEventToFeatureCollection(private val mapGeometryToFeature: MapGeometryToFeature, private val boundsModel: BoundsModel = BoundsModel()) {
+class MapEventToFeatureCollection(private val mapGeometryToFeature: MapGeometryToFeature, private val boundsModel: BoundsModel) {
 
     fun map (eventList: List<Event>): Pair<FeatureCollection, BoundingBox> {
 
