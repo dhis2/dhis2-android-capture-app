@@ -1,4 +1,4 @@
-package org.dhis2.uicomponents
+package org.dhis2.uicomponents.map
 
 import android.graphics.BitmapFactory
 import com.mapbox.geojson.BoundingBox
@@ -12,7 +12,6 @@ import com.mapbox.mapboxsdk.style.layers.SymbolLayer
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource
 import org.dhis2.R
 import org.dhis2.utils.ColorUtils
-import org.dhis2.utils.maps.MapLayerManager
 import org.hisp.dhis.android.core.common.FeatureType
 
 class EventMapManager(
@@ -60,7 +59,10 @@ class EventMapManager(
     }
 
     override fun setLayer(style: Style) {
-        val symbolLayer = SymbolLayer(MapLayerManager.POINT_LAYER_ID, EVENTS)
+        val symbolLayer = SymbolLayer(
+            POINT_LAYER,
+            EVENTS
+        )
             .withProperties(
                 PropertyFactory.iconImage(ICON_ID),
                 PropertyFactory.iconAllowOverlap(true),
@@ -75,7 +77,10 @@ class EventMapManager(
         style.addLayer(symbolLayer)
         if (featureType != FeatureType.POINT) {
             style.addLayerBelow(
-                FillLayer(MapLayerManager.POLYGON_LAYER_ID, EVENTS)
+                FillLayer(
+                    POLYGON_LAYER,
+                    EVENTS
+                )
                     .withProperties(
                         PropertyFactory.fillColor(
                             ColorUtils.getPrimaryColorWithAlpha(

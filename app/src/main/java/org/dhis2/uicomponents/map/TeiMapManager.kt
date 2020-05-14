@@ -1,4 +1,4 @@
-package org.dhis2.uicomponents
+package org.dhis2.uicomponents.map
 
 import androidx.core.content.ContextCompat
 import com.mapbox.geojson.BoundingBox
@@ -14,9 +14,8 @@ import com.mapbox.mapboxsdk.style.layers.SymbolLayer
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource
 import java.util.HashMap
 import org.dhis2.R
+import org.dhis2.uicomponents.map.layer.MapLayerManager
 import org.dhis2.utils.ColorUtils
-import org.dhis2.utils.maps.MapLayerManager
-import org.dhis2.utils.maps.MarkerUtils
 import org.hisp.dhis.android.core.common.FeatureType
 
 class TeiMapManager(
@@ -35,9 +34,6 @@ class TeiMapManager(
         const val ENROLLMENT = "ENROLLMENT"
         const val TEI_ICON_ID = "ICON_ID"
         const val ENROLLMENT_ICON_ID = "ICON_ENROLLMENT_ID"
-        const val POINT_LAYER = "POINT_LAYER"
-        const val POLYGON_LAYER = "POLYGON_LAYER"
-        const val POLYGON_BORDER_LAYER = "POLYGON_BORDER_LAYER"
     }
     override fun init() {
         when {
@@ -86,7 +82,8 @@ class TeiMapManager(
         MapLayerManager.run {
             when {
                 !changingStyle -> {
-                    init(style, TEIS_TAG, featureType)
+                    init(style,
+                        TEIS_TAG, featureType)
                     instance().setEnrollmentLayerData(
                         ColorUtils.getColorFrom(
                             mapStyle.programColor,
@@ -108,7 +105,7 @@ class TeiMapManager(
 
         style.addImage(
             TEI_ICON_ID,
-            MarkerUtils.getMarker(
+            TeiMarkers.getMarker(
                 mapView.context,
                 mapStyle.teiSymbolIcon ?: ContextCompat.getDrawable(
                     mapView.context,
@@ -122,7 +119,7 @@ class TeiMapManager(
         )
         style.addImage(
             ENROLLMENT_ICON_ID,
-            MarkerUtils.getMarker(
+            TeiMarkers.getMarker(
                 mapView.context,
                 mapStyle.enrollmentSymbolIcon!!,
                 mapStyle.enrollmentColor!!
@@ -142,7 +139,9 @@ class TeiMapManager(
     }
 
     override fun setLayer(style: Style) {
-        val symbolLayer = SymbolLayer(POINT_LAYER, TEIS_TAG).withProperties(
+        val symbolLayer = SymbolLayer(POINT_LAYER,
+            TEIS_TAG
+        ).withProperties(
             PropertyFactory.iconImage(
                 Expression.get(
                     "teiImage"
@@ -168,7 +167,9 @@ class TeiMapManager(
         style.addLayer(symbolLayer)
         if (featureType != FeatureType.POINT) {
             style.addLayerBelow(
-                FillLayer(POLYGON_LAYER, TEIS_TAG)
+                FillLayer(POLYGON_LAYER,
+                    TEIS_TAG
+                )
                     .withProperties(
                         PropertyFactory.fillColor(
                             ColorUtils.getPrimaryColorWithAlpha(
@@ -189,7 +190,9 @@ class TeiMapManager(
                 POINT_LAYER
             )
             style.addLayerAbove(
-                LineLayer(POLYGON_BORDER_LAYER, TEIS_TAG)
+                LineLayer(POLYGON_BORDER_LAYER,
+                    TEIS_TAG
+                )
                     .withProperties(
                         PropertyFactory.lineColor(
                             ColorUtils.getPrimaryColor(

@@ -1,4 +1,4 @@
-package org.dhis2.uicomponents
+package org.dhis2.uicomponents.map
 
 import android.graphics.drawable.Drawable
 

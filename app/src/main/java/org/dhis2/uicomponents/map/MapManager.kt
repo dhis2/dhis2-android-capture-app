@@ -1,4 +1,4 @@
-package org.dhis2.uicomponents
+package org.dhis2.uicomponents.map
 
 import com.mapbox.geojson.BoundingBox
 import com.mapbox.geojson.FeatureCollection
@@ -9,10 +9,15 @@ import com.mapbox.mapboxsdk.maps.Style
 import com.mapbox.mapboxsdk.plugins.annotation.SymbolManager
 import com.mapbox.mapboxsdk.plugins.markerview.MarkerViewManager
 import com.mapbox.mapboxsdk.style.sources.GeoJsonOptions
-import org.dhis2.utils.maps.initDefaultCamera
+import org.dhis2.uicomponents.map.camera.initCameraToViewAllElements
 
 abstract class MapManager {
 
+    companion object {
+        const val POINT_LAYER = "POINT_LAYER"
+        const val POLYGON_LAYER = "POLYGON_LAYER"
+        const val POLYGON_BORDER_LAYER = "POLYGON_BORDER_LAYER"
+    }
     open lateinit var mapView: MapView
     var map: MapboxMap? = null
     var markerViewManager: MarkerViewManager? = null
@@ -48,7 +53,7 @@ abstract class MapManager {
             boundingBox.south(),
             boundingBox.west()
         )
-        map?.initDefaultCamera(mapView.context, bounds)
+        map?.initCameraToViewAllElements(mapView.context, bounds)
     }
 
     fun onStart() {
