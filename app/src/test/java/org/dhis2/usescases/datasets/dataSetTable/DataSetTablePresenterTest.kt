@@ -3,6 +3,7 @@ package org.dhis2.usescases.datasets.dataSetTable
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
+import com.nhaarman.mockitokotlin2.verifyZeroInteractions
 import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Flowable
 import io.reactivex.Observable
@@ -64,7 +65,7 @@ class DataSetTablePresenterTest {
     }
 
     @Test
-    fun `Should go back when bakc button is clicked`() {
+    fun `Should go back when back button is clicked`() {
         presenter.onBackClick()
 
         verify(view).back()
@@ -86,5 +87,51 @@ class DataSetTablePresenterTest {
         presenter.displayMessage(message)
 
         verify(view).displayMessage(message)
+    }
+
+    @Test
+    fun `Should check if ValidationRules are optional and show appropriate dialog`() {
+        whenever(repository.isValidationRuleOptional) doReturn true
+
+        presenter.checkValidationRules()
+
+        verify(view).showValidationRuleDialog()
+    }
+
+    @Test
+    fun `Should check if ValidationRules are mandatory and are executed without errors`() {
+        whenever(repository.isValidationRuleOptional) doReturn false
+        whenever(repository.executeValidationRules()) doReturn true
+
+        presenter.checkValidationRules()
+
+        verify(view).showSuccessValidationDialog()
+    }
+
+    @Test
+    fun `Should execute ValidationRules and the result is without errors`() {
+        whenever(repository.executeValidationRules()) doReturn true
+
+        presenter.executeValidationRules()
+
+        verify(view).showSuccessValidationDialog()
+    }
+
+    @Test
+    fun `Should execute ValidationRules and the result is with errors`() {
+        whenever(repository.executeValidationRules()) doReturn false
+
+        presenter.executeValidationRules()
+
+        verify(view).showErrorsValidationDialog()
+    }
+
+    @Test
+    fun `Should mark the dataset as complete` () {
+        whenever(repository.completeDataSetInstance()) doReturn Flowable.just(true)
+
+        presenter.completeDataSet()
+
+        verifyZeroInteractions(view)
     }
 }
