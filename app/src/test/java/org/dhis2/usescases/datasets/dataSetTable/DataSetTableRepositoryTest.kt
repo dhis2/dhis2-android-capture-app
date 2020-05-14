@@ -274,6 +274,50 @@ class DataSetTableRepositoryTest {
         assert(returnedValue == "uid_1")
     }
 
+    @Test
+    fun `Should return true if dataset was successfully marked as completed`() {
+        whenever(d2.dataSetModule().dataSetCompleteRegistrations()) doReturn mock()
+        whenever(
+            d2.dataSetModule().dataSetCompleteRegistrations()
+                .value(periodId, orgUnitUid, dataSetUid, catOptCombo)
+        ) doReturn mock()
+        whenever(
+            d2.dataSetModule().dataSetCompleteRegistrations()
+                .value(periodId, orgUnitUid, dataSetUid, catOptCombo).exists()
+        ) doReturn Single.just(true)
+
+        val testObserver = repository.completeDataSetInstance().test()
+
+        testObserver.assertNoErrors()
+        testObserver.assertValue {
+            it
+        }
+    }
+
+    // TODO: ValidationRules - Need to add different paths of this method when SDK has functionality
+    @Test
+    fun `Should return true if the dataset has validation rules to execute`() {
+        val hasValidationRules = repository.hasToRunValidationRules()
+
+        assert(hasValidationRules)
+    }
+
+    // TODO: ValidationRules - Need to add different paths of this method when SDK has functionality
+    @Test
+    fun `Should return true if the validation rules are optional to execute`() {
+        val isOptional = repository.isValidationRuleOptional()
+
+        assert(isOptional)
+    }
+
+    // TODO: ValidationRules - Need to add different paths of this method when SDK has functionality
+    @Test
+    fun `Should return true if the validation rules execution does not have errors`() {
+        val wasSuccessful = repository.executeValidationRules()
+
+        assert(wasSuccessful)
+    }
+
     private fun dummyDataSet() = DataSet.builder().uid(dataSetUid).build()
 
     private fun dummySection(uid: String) = Section.builder().uid(uid).displayName(uid).build()
