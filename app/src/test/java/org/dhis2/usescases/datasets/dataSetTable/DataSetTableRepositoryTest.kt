@@ -3,6 +3,7 @@ package org.dhis2.usescases.datasets.dataSetTable
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
+import io.reactivex.Single
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.category.CategoryOption
 import org.hisp.dhis.android.core.category.CategoryOptionCombo
@@ -271,6 +272,50 @@ class DataSetTableRepositoryTest {
         val returnedValue = repository.getCatOptComboFromOptionList(catOptionUids)
 
         assert(returnedValue == "uid_1")
+    }
+
+    @Test
+    fun `Should return true if dataset was successfully marked as completed`() {
+        whenever(d2.dataSetModule().dataSetCompleteRegistrations()) doReturn mock()
+        whenever(
+            d2.dataSetModule().dataSetCompleteRegistrations()
+                .value(periodId, orgUnitUid, dataSetUid, catOptCombo)
+        ) doReturn mock()
+        whenever(
+            d2.dataSetModule().dataSetCompleteRegistrations()
+                .value(periodId, orgUnitUid, dataSetUid, catOptCombo).exists()
+        ) doReturn Single.just(true)
+
+        val testObserver = repository.completeDataSetInstance().test()
+
+        testObserver.assertNoErrors()
+        testObserver.assertValue {
+            it
+        }
+    }
+
+    // TODO: ValidationRules - Need to add different paths of this method when SDK has functionality
+    @Test
+    fun `Should return true if the dataset has validation rules to execute`() {
+        val hasValidationRules = repository.hasToRunValidationRules()
+
+        assert(hasValidationRules)
+    }
+
+    // TODO: ValidationRules - Need to add different paths of this method when SDK has functionality
+    @Test
+    fun `Should return true if the validation rules are optional to execute`() {
+        val isOptional = repository.isValidationRuleOptional()
+
+        assert(isOptional)
+    }
+
+    // TODO: ValidationRules - Need to add different paths of this method when SDK has functionality
+    @Test
+    fun `Should return true if the validation rules execution does not have errors`() {
+        val wasSuccessful = repository.executeValidationRules()
+
+        assert(wasSuccessful)
     }
 
     private fun dummyDataSet() = DataSet.builder().uid(dataSetUid).build()
