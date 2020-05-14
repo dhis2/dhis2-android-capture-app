@@ -54,7 +54,6 @@ import org.dhis2.data.forms.dataentry.ProgramAdapter;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.databinding.ActivitySearchBinding;
-import org.dhis2.uicomponents.MapManager;
 import org.dhis2.uicomponents.MapStyle;
 import org.dhis2.uicomponents.TeiMapManager;
 import org.dhis2.usescases.enrollment.EnrollmentActivity;
@@ -150,7 +149,9 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     @Override
     protected void onStart() {
         super.onStart();
-        binding.mapView.onStart();
+        if(teiMapManager != null) {
+            teiMapManager.onStart();
+        }
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -211,8 +212,8 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
 
         binding.mapLayerButton.setOnClickListener(view ->
-                new MapLayerDialog(teiMapManager.getMap().getStyle().getImage("ICON_ID"),
-                        teiMapManager.getMap().getStyle().getImage("ICON_ENROLLMENT_ID"),
+                new MapLayerDialog(teiMapManager.getMap().getStyle().getImage(TeiMapManager.TEI_ICON_ID),
+                        teiMapManager.getMap().getStyle().getImage(TeiMapManager.ENROLLMENT_ICON_ID),
                         isSatelliteStyle -> {
                             if (isSatelliteStyle) {
                                 currentStyle = Style.SATELLITE_STREETS;
@@ -237,7 +238,9 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     @Override
     protected void onResume() {
         super.onResume();
-        binding.mapView.onResume();
+        if (teiMapManager != null) {
+            teiMapManager.onResume();
+        }
         if (isMapVisible()) {
             binding.progressLayout.setVisibility(View.GONE);
         }
@@ -253,13 +256,14 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         if (initSearchNeeded) {
             presenter.onDestroy();
         }
-        binding.mapView.onPause();
+        if (teiMapManager != null) {
+            teiMapManager.onPause();
+        }
         super.onPause();
     }
 
     @Override
     protected void onDestroy() {
-        binding.mapView.onDestroy();
         if (teiMapManager != null) {
             teiMapManager.onDestroy();
         }
@@ -726,19 +730,22 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     public void setMap(HashMap<String, FeatureCollection> teiFeatureCollections, BoundingBox boundingBox) {
         binding.progressLayout.setVisibility(View.GONE);
 
-        teiMapManager = new TeiMapManager(teiFeatureCollections, boundingBox);
-        teiMapManager.setMapView(binding.mapView);
-        teiMapManager.setFeatureType(featureType);
-        teiMapManager.setChangingStyle(changingStyle);
-        teiMapManager.setMapStyle(new MapStyle(
-                presenter.getProgram().style().color(),
-                presenter.getTEIColor(),
-                presenter.getSymbolIcon(),
-                presenter.getEnrollmentColor(),
-                presenter.getEnrollmentSymbolIcon()
-                ));
+        teiMapManager = new TeiMapManager(
+                binding.mapView,
+                teiFeatureCollections,
+                boundingBox,
+                changingStyle,
+                featureType,
+                new MapStyle(
+                        presenter.getProgram().style().color(),
+                        presenter.getTEIColor(),
+                        presenter.getSymbolIcon(),
+                        presenter.getEnrollmentColor(),
+                        presenter.getEnrollmentSymbolIcon()
+                )
+        );
         teiMapManager.setOnMapClickListener(this);
-        teiMapManager.setStyle();
+        teiMapManager.init();
 
     }
 

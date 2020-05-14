@@ -138,7 +138,9 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
     @Override
     protected void onStart() {
         super.onStart();
-        binding.mapView.onStart();
+        if(eventMapManager != null) {
+            eventMapManager.onStart();
+        }
     }
 
 
@@ -146,7 +148,9 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
     protected void onResume() {
         super.onResume();
         presenter.init();
-        binding.mapView.onResume();
+        if(eventMapManager != null) {
+            eventMapManager.onResume();
+        }
         binding.addEventButton.setEnabled(true);
         binding.setTotalFilters(FilterManager.getInstance().getTotalFilters());
         filtersAdapter.notifyDataSetChanged();
@@ -155,7 +159,9 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
     @Override
     protected void onPause() {
         presenter.onDettach();
-        binding.mapView.onPause();
+        if(eventMapManager != null) {
+            eventMapManager.onPause();
+        }
         super.onPause();
     }
 
@@ -343,11 +349,14 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
 
     @Override
     public void setMap(FeatureCollection featureCollection, BoundingBox boundingBox) {
-        eventMapManager = new EventMapManager(featureCollection, boundingBox);
-        eventMapManager.setMapView(binding.mapView);
-        eventMapManager.setFeatureType(featureType);
+        eventMapManager = new EventMapManager(
+                binding.mapView,
+                featureCollection,
+                boundingBox,
+                featureType
+        );
         eventMapManager.setOnMapClickListener(this);
-        eventMapManager.setStyle();
+        eventMapManager.init();
     }
 
     @Override

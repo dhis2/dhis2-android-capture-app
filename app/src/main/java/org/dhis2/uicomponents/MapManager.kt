@@ -1,34 +1,45 @@
 package org.dhis2.uicomponents
 
 import com.mapbox.geojson.BoundingBox
+import com.mapbox.geojson.FeatureCollection
 import com.mapbox.mapboxsdk.geometry.LatLngBounds
 import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.Style
 import com.mapbox.mapboxsdk.plugins.annotation.SymbolManager
 import com.mapbox.mapboxsdk.plugins.markerview.MarkerViewManager
+import com.mapbox.mapboxsdk.style.sources.GeoJsonOptions
 import org.dhis2.utils.maps.initDefaultCamera
-import org.hisp.dhis.android.core.common.FeatureType
 
 abstract class MapManager {
 
-    lateinit var mapView: MapView
+    open lateinit var mapView: MapView
     var map: MapboxMap? = null
-    var changingStyle = false
-    var featureType: FeatureType? = null
-    var mapStyle: MapStyle? = null
     var markerViewManager: MarkerViewManager? = null
-    protected var symbolManager: SymbolManager? = null
+    var symbolManager: SymbolManager? = null
     var onMapClickListener: MapboxMap.OnMapClickListener? = null
 
-    abstract fun setStyle()
+    abstract fun init()
 
     abstract fun setSource(style: Style)
 
     abstract fun setLayer(style: Style)
 
+    fun setSymbolManager(style: Style, featureCollection: FeatureCollection) {
+        symbolManager = SymbolManager(
+            mapView, map!!, style, null,
+            GeoJsonOptions().withTolerance(0.4f)
+        ).apply {
+            iconAllowOverlap = true
+            textAllowOverlap = true
+            iconIgnorePlacement = true
+            textIgnorePlacement = true
+            symbolPlacement = "line-center"
+            create(featureCollection)
+        }
+    }
+
     fun initCameraPosition(
-        map: MapboxMap,
         boundingBox: BoundingBox
     ) {
         val bounds = LatLngBounds.from(
@@ -37,7 +48,19 @@ abstract class MapManager {
             boundingBox.south(),
             boundingBox.west()
         )
-        map.initDefaultCamera(mapView.context, bounds)
+        map?.initDefaultCamera(mapView.context, bounds)
+    }
+
+    fun onStart() {
+        mapView.onStart()
+    }
+
+    fun onResume() {
+        mapView.onResume()
+    }
+
+    fun onPause() {
+        mapView.onPause()
     }
 
     fun onDestroy() {

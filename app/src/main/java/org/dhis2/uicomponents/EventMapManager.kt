@@ -3,38 +3,39 @@ package org.dhis2.uicomponents
 import android.graphics.BitmapFactory
 import com.mapbox.geojson.BoundingBox
 import com.mapbox.geojson.FeatureCollection
-import com.mapbox.mapboxsdk.geometry.LatLngBounds
 import com.mapbox.mapboxsdk.maps.MapView
-import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.Style
-import com.mapbox.mapboxsdk.plugins.annotation.SymbolManager
 import com.mapbox.mapboxsdk.plugins.markerview.MarkerViewManager
 import com.mapbox.mapboxsdk.style.layers.FillLayer
 import com.mapbox.mapboxsdk.style.layers.PropertyFactory
 import com.mapbox.mapboxsdk.style.layers.SymbolLayer
-import com.mapbox.mapboxsdk.style.sources.GeoJsonOptions
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource
 import org.dhis2.R
 import org.dhis2.utils.ColorUtils
-import org.dhis2.utils.maps.initDefaultCamera
+import org.dhis2.utils.maps.MapLayerManager
 import org.hisp.dhis.android.core.common.FeatureType
 
 class EventMapManager(
+    override var mapView: MapView,
     private val featureCollection: FeatureCollection,
-    private val boundingBox: BoundingBox
-): MapManager() {
+    private val boundingBox: BoundingBox,
+    private val featureType: FeatureType
+) : MapManager() {
 
-    override fun setStyle() {
+    companion object {
+        const val ICON_ID = "ICON_ID"
+        const val EVENTS = "events"
+    }
+
+    override fun init() {
         if (map == null) {
             mapView.getMapAsync {
                 map = it
                 map?.setStyle(
                     Style.MAPBOX_STREETS
                 ) { style: Style ->
-                    onMapClickListener?.let { map?.addOnMapClickListener(it) }
-
                     style.addImage(
-                        "ICON_ID",
+                        ICON_ID,
                         BitmapFactory.decodeResource(
                             mapView.resources,
                             R.drawable.mapbox_marker_icon_default
@@ -42,34 +43,26 @@ class EventMapManager(
                     )
                     setSource(style)
                     setLayer(style)
-
-                    initCameraPosition(map!!, boundingBox)
-
-                    markerViewManager = MarkerViewManager(mapView, map)
-                    symbolManager = SymbolManager(
-                        mapView, map!!, style, null,
-                        GeoJsonOptions().withTolerance(0.4f)
-                    )
-
-                    symbolManager?.iconAllowOverlap = true
-                    symbolManager?.textAllowOverlap = true
-                    symbolManager?.create(featureCollection)
+                    setSymbolManager(style, featureCollection)
                 }
+                onMapClickListener?.let { map?.addOnMapClickListener(it) }
+                initCameraPosition(boundingBox)
+                markerViewManager = MarkerViewManager(mapView, map)
             }
         } else {
-            (map!!.style!!.getSource("events") as GeoJsonSource?)!!.setGeoJson(featureCollection)
-            initCameraPosition(map!!, boundingBox)
+            (map?.style?.getSource(EVENTS) as GeoJsonSource?)?.setGeoJson(featureCollection)
+            initCameraPosition(boundingBox)
         }
     }
 
     override fun setSource(style: Style) {
-        style.addSource(GeoJsonSource("events", featureCollection))
+        style.addSource(GeoJsonSource(EVENTS, featureCollection))
     }
 
     override fun setLayer(style: Style) {
-        val symbolLayer = SymbolLayer("POINT_LAYER", "events")
+        val symbolLayer = SymbolLayer(MapLayerManager.POINT_LAYER_ID, EVENTS)
             .withProperties(
-                PropertyFactory.iconImage("ICON_ID"),
+                PropertyFactory.iconImage(ICON_ID),
                 PropertyFactory.iconAllowOverlap(true),
                 PropertyFactory.iconOffset(
                     arrayOf(
@@ -80,16 +73,20 @@ class EventMapManager(
             )
         symbolLayer.minZoom = 0f
         style.addLayer(symbolLayer)
-        if (featureType != FeatureType.POINT) style.addLayerBelow(
-            FillLayer("POLYGON_LAYER", "events").withProperties(
-                PropertyFactory.fillColor(
-                    ColorUtils.getPrimaryColorWithAlpha(
-                        mapView.context,
-                        ColorUtils.ColorType.PRIMARY_LIGHT,
-                        150f
-                    )
-                )
-            ), "settlement-label"
-        )
+        if (featureType != FeatureType.POINT) {
+            style.addLayerBelow(
+                FillLayer(MapLayerManager.POLYGON_LAYER_ID, EVENTS)
+                    .withProperties(
+                        PropertyFactory.fillColor(
+                            ColorUtils.getPrimaryColorWithAlpha(
+                                mapView.context,
+                                ColorUtils.ColorType.PRIMARY_LIGHT,
+                                150f
+                            )
+                        )
+                    ),
+                "settlement-label"
+            )
+        }
     }
 }
