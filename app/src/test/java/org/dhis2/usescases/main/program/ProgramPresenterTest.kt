@@ -78,7 +78,6 @@ class ProgramPresenterTest {
         schedulers.io().advanceTimeBy(1, TimeUnit.SECONDS)
 
         verify(view).showFilterProgress()
-        verify(view).renderError("")
         verify(view).openOrgUnitTreeSelector()
     }
 

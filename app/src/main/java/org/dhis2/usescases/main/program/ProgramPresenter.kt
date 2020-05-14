@@ -30,14 +30,18 @@ class ProgramPresenter internal constructor(
                         filterManager.orgUnitUidsFilters,
                         filterManager.stateFilters,
                         filterManager.assignedFilter
-                    )
+                    ).onErrorReturn { t ->
+                        arrayListOf()
+                    }
                         .mergeWith(
                             homeRepository.aggregatesModels(
                                 filterManager.periodFilters,
                                 filterManager.orgUnitUidsFilters,
                                 filterManager.stateFilters,
                                 filterManager.assignedFilter
-                            )
+                            ).onErrorReturn { t ->
+                                arrayListOf()
+                            }
                         )
                         .doOnNext { Timber.tag("INIT DATA").d("LIST READY TO BE SORTED SORTED") }
                         .flatMapIterable { data -> data }
@@ -45,12 +49,13 @@ class ProgramPresenter internal constructor(
                         .toList().toFlowable()
                         .subscribeOn(schedulerProvider.io())
                         .doOnNext { Timber.tag("INIT DATA").d("LIST SORTED") }
+                        .onErrorReturn { arrayListOf() }
                 }
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
                     { programs -> view.swapProgramModelData(programs) },
-                    { throwable -> view.renderError(throwable.message ?: "") },
+                    { throwable -> Timber.d(throwable) },
                     { Timber.tag("INIT DATA").d("LOADING ENDED") }
                 )
         )

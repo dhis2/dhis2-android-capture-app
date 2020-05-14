@@ -5,6 +5,7 @@ import org.dhis2.data.prefs.PreferenceProvider;
 import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.usescases.datasets.datasetInitial.DataSetInitialRepository;
 import org.dhis2.usescases.datasets.datasetInitial.DataSetInitialRepositoryImpl;
+import org.dhis2.utils.analytics.AnalyticsHelper;
 import org.hisp.dhis.android.core.D2;
 
 import dagger.Module;
@@ -30,8 +31,11 @@ public class DataSetTableModule {
 
     @Provides
     @PerActivity
-    DataSetTableContract.Presenter providesPresenter(DataSetTableRepository DataSetTableRepository, SchedulerProvider schedulerProvider) {
-        return new DataSetTablePresenter(view, DataSetTableRepository, schedulerProvider);
+    DataSetTableContract.Presenter providesPresenter(
+            DataSetTableRepository DataSetTableRepository,
+            SchedulerProvider schedulerProvider,
+            AnalyticsHelper analyticsHelper) {
+        return new DataSetTablePresenter(view, DataSetTableRepository, schedulerProvider, analyticsHelper);
     }
 
     @Provides

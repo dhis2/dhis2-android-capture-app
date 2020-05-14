@@ -11,7 +11,7 @@ import org.dhis2.utils.Constants.SECURE_PASS
 import org.dhis2.utils.Constants.SECURE_SERVER_URL
 import org.dhis2.utils.Constants.SECURE_USER_NAME
 
-class PreferenceProviderImpl(val context: Context) : PreferenceProvider {
+open class PreferenceProviderImpl(val context: Context) : PreferenceProvider {
 
     private val sharedPreferences: SharedPreferences =
         context.getSharedPreferences(Constants.SHARE_PREFS, Context.MODE_PRIVATE)

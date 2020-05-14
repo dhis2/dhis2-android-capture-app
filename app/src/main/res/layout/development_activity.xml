@@ -9,6 +9,18 @@
         android:orientation="vertical"
         android:padding="5dp">
 
+        <EditText
+            android:id="@+id/locale"
+            android:hint="Locale"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+        <com.google.android.material.button.MaterialButton
+            style="@style/Widget.MaterialComponents.Button"
+            android:id="@+id/localeButton"
+            android:text="Set locale"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

@@ -19,6 +19,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.databinding.ObservableInt
 import com.android.dbexporterlibrary.ExporterListener
 import org.dhis2.Bindings.app
+import org.dhis2.BuildConfig
 import org.dhis2.R
 import org.dhis2.data.prefs.Preference
 import org.dhis2.databinding.ActivityMainBinding
@@ -100,9 +101,11 @@ class MainActivity : ActivityGlobalAbstract(), MainView, ExporterListener {
         }
         binding.filterLayout.adapter = adapter
 
-        binding.moreOptions.setOnLongClickListener {
-            startActivity(DevelopmentActivity::class.java, null, false, false, null)
-            false
+        if (BuildConfig.DEBUG) {
+            binding.moreOptions.setOnLongClickListener {
+                startActivity(DevelopmentActivity::class.java, null, false, false, null)
+                false
+            }
         }
     }
 

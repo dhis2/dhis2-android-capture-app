@@ -33,7 +33,7 @@ import org.dhis2.Bindings.setDateInterval
 import org.dhis2.databinding.ItemNoteBinding
 import org.hisp.dhis.android.core.note.Note
 
-class NotesViewHolder(private val binding: ItemNoteBinding) :
+class NotesViewHolder(val binding: ItemNoteBinding) :
     RecyclerView.ViewHolder(binding.root) {
 
     fun bind(note: Note, listener: NoteItemClickListener) {
