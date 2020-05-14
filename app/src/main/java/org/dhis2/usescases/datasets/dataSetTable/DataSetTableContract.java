@@ -23,6 +23,12 @@ public class DataSetTableContract {
         void renderDetails(DataSet dataSet, String catcomboName, Period period);
 
         Observable<Object> observeSaveButtonClicks();
+
+        void showValidationRuleDialog();
+
+        void showSuccessValidationDialog();
+
+        void showErrorsValidationDialog();
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter {
@@ -40,6 +46,10 @@ public class DataSetTableContract {
         String getCatCombo();
 
         String getPeriodId();
+
+        void executeValidationRules();
+
+        void completeDataSet();
     }
 
 }

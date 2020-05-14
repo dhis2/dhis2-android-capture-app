@@ -1,0 +1,64 @@
+{
+  "created": "2015-03-31T13:31:09.324",
+  "lastUpdated": "2018-03-09T23:06:54.424",
+  "name": "John Barnes",
+  "id": "DXyJmlo9rge",
+  "displayName": "John Barnes",
+  "firstName": "John",
+  "surname": "Barnes",
+  "email": "john@hmail.com",
+  "userCredentials": {
+    "lastUpdated": "2016-04-06T00:05:57.493",
+    "code": "android",
+    "created": "2015-03-31T13:31:09.206",
+    "name": "John Barnes",
+    "id": "M0fCOxtkURr",
+    "displayName": "John Barnes",
+    "username": "test",
+    "userRoles": [
+      {
+        "lastUpdated": "2019-04-25T14:22:00.262",
+        "created": "2019-04-25T14:22:00.262",
+        "name": "Superuser",
+        "id": "Ufph3mGRmMo",
+        "displayName": "Superuser"
+      },
+      {
+        "lastUpdated": "2018-02-19T14:49:54.911",
+        "created": "2012-11-13T15:56:57.955",
+        "name": "Data entry clerk",
+        "id": "Euq3XfEIEbx",
+        "displayName": "Data entry clerk"
+      },
+      {
+        "lastUpdated": "2014-11-20T15:57:19.613",
+        "created": "2013-04-09T21:47:12.114",
+        "name": "Inpatient program",
+        "id": "DRdaVRtwmG5",
+        "displayName": "Inpatient program"
+      },
+      {
+        "lastUpdated": "2018-02-19T12:04:00.600",
+        "created": "2013-04-09T21:48:27.303",
+        "name": "TB program",
+        "id": "cUlTcejWree",
+        "displayName": "TB program"
+      },
+      {
+        "lastUpdated": "2018-12-03T12:45:35.034",
+        "created": "2018-12-03T12:45:35.034",
+        "name": "M and E Officer",
+        "id": "jRWSNIHdKww",
+        "displayName": "M and E Officer"
+      },
+      {
+        "lastUpdated": "2018-02-19T14:47:44.781",
+        "created": "2012-11-20T22:07:53.822",
+        "name": "Facility tracker",
+        "id": "txB7vu1w2Pr",
+        "displayName": "Facility tracker"
+      }
+    ]
+  }
+}
+

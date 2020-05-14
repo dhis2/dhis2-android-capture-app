@@ -1,30 +1,15 @@
 package org.dhis2.usescases.datasets.dataSetTable.dataSetSection;
 
-import androidx.annotation.NonNull;
-
 import org.dhis2.data.forms.dataentry.tablefields.FieldViewModel;
-import org.dhis2.data.forms.dataentry.tablefields.RowAction;
-import org.dhis2.data.tuples.Pair;
-import org.dhis2.data.tuples.Trio;
 import org.dhis2.usescases.general.AbstractActivityContracts;
-import org.hisp.dhis.android.core.category.Category;
-import org.hisp.dhis.android.core.category.CategoryOption;
-import org.hisp.dhis.android.core.dataelement.DataElement;
-import org.hisp.dhis.android.core.dataset.DataInputPeriod;
 import org.hisp.dhis.android.core.dataset.DataSet;
 import org.hisp.dhis.android.core.dataset.Section;
-import org.hisp.dhis.android.core.period.Period;
 
 import java.util.List;
-import java.util.Map;
-
-import javax.annotation.Nullable;
-
-import io.reactivex.processors.FlowableProcessor;
 
 public class DataValueContract {
 
-    public interface View extends AbstractActivityContracts.View{
+    public interface View extends AbstractActivityContracts.View {
         void showSnackBar();
 
         void goToTable(int numTable);
@@ -48,23 +33,5 @@ public class DataValueContract {
         void updateTabLayout(int count);
 
         void setDataAccess(boolean accessDataWrite);
-    }
-
-    public interface Presenter extends AbstractActivityContracts.Presenter{
-        void init(View view, String orgUnitUid, String periodTypeName, String periodInitialDate, String catCombo, String section, String periodId);
-
-        void complete();
-
-        void initializeProcessor(@NonNull DataSetSectionFragment dataSetSectionFragment);
-
-        Map<String, List<List<CategoryOption>>> transformCategories(@NonNull Map<String, List<List<Pair<CategoryOption, Category>>>> map);
-
-        List<List<String>> getCatOptionCombos(List<List<Pair<CategoryOption, Category>>> listCategories, int num ,List<List<String>> result, List<String> current);
-
-        FlowableProcessor<RowAction> getProcessor();
-
-        FlowableProcessor<Trio<String, String, Integer>> getProcessorOptionSet();
-
-        DataInputPeriod checkHasInputPeriod();
     }
 }

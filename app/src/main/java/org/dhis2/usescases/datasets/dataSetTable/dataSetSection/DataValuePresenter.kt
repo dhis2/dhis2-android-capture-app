@@ -530,14 +530,10 @@ class DataValuePresenter(
         if ((!isApproval)) {
             analyticsHelper.setEvent(COMPLETE_REOPEN, CLICK, COMPLETE_REOPEN)
             if (view.isOpenOrReopen) {
-                if ((
-                            !dataSet!!.fieldCombinationRequired()!! ||
-                                    checkAllFieldRequired(
-                                        tableCells,
-                                        dataTableModel?.dataValues()
-                                    ) &&
-                                    dataSet!!.fieldCombinationRequired()!!
-                            ) &&
+                if ((!dataSet!!.fieldCombinationRequired()!! || checkAllFieldRequired(
+                            tableCells,
+                            dataTableModel?.dataValues()
+                        ) && dataSet!!.fieldCombinationRequired()!!) &&
                     checkMandatoryField(tableCells, dataTableModel?.dataValues())
                 ) {
                     disposable.add(

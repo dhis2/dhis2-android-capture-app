@@ -188,4 +188,23 @@ public class DataSetTableRepositoryImpl implements DataSetTableRepository {
                     return true;
                 }).toFlowable();
     }
+
+    // TODO: ValidationRules - This is temporary until the SDK has a method to ask for this
+    @Override
+    public boolean hasToRunValidationRules() {
+        return true;
+    }
+
+    // TODO: ValidationRules - This is temporary until the SDK has a method to ask for this
+    @Override
+    public boolean isValidationRuleOptional() {
+        return true;
+    }
+
+    // TODO: ValidationRules - This is temporary until the SDK has a method to ask for this
+    @Override
+    public boolean executeValidationRules() {
+        boolean isSuccessful = true;
+        return isSuccessful;
+    }
 }
