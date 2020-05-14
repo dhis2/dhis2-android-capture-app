@@ -37,6 +37,7 @@ import org.dhis2.utils.customviews.AlertBottomDialog
 import org.dhis2.utils.isPortrait
 import org.hisp.dhis.android.core.dataset.DataSet
 import org.hisp.dhis.android.core.dataset.Section
+import java.lang.NullPointerException
 import java.util.ArrayList
 import javax.inject.Inject
 
@@ -68,7 +69,11 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
     override fun onAttach(context: Context) {
         super.onAttach(context)
         activity = context as DataSetTableActivity
-        dataSetUid = arguments!!.getString(DATA_SET_UID, dataSetUid)
+        arguments?.let {
+            dataSetUid = it.getString(DATA_SET_UID)
+                ?: throw NullPointerException("dataSet should not be null. Before initializing the fragment make sure to set the correct arguments")
+
+        }
         app().userComponent()!!.plus(DataValueModule(dataSetUid, this)).inject(this)
     }
 
@@ -98,10 +103,6 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
     override fun onDestroyView() {
         super.onDestroyView()
         presenterFragment.onDettach()
-    }
-
-    override fun setDataAccess(accessDataWrite: Boolean) {
-        binding.actionLayout.visibility = if (accessDataWrite) View.VISIBLE else View.GONE
     }
 
     override fun setTableData(
@@ -200,8 +201,7 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
         presenterFragment.initializeProcessor(this)
 
 
-        binding.scroll.setOnScrollChangeListener{
-                _: NestedScrollView?, _: Int, scrollY: Int, _: Int, _: Int ->
+        binding.scroll.setOnScrollChangeListener { _: NestedScrollView?, _: Int, scrollY: Int, _: Int, _: Int ->
             var position = -1
             if (checkTableHeights())
                 for (i in heights.indices) {
@@ -352,17 +352,6 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
 
     override fun showAlertDialog(title: String, message: String) {
         super.showInfoDialog(title, message)
-    }
-
-    override fun isOpenOrReopen(): Boolean {
-        return binding.actionButton.text == getString(R.string.complete)
-    }
-
-    override fun setCompleteReopenText(isCompleted: Boolean) {
-        if ((!isCompleted))
-            binding.actionButton.text = activity!!.getString(R.string.complete)
-        else
-            binding.actionButton.text = activity!!.getString(R.string.re_open)
     }
 
     override fun highligthHeaderRow(table: Int, row: Int, mandatory: Boolean) {

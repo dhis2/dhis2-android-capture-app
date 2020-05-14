@@ -10,12 +10,13 @@ import java.util.concurrent.TimeUnit;
 
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
+import io.reactivex.Single;
 import io.reactivex.disposables.CompositeDisposable;
 import timber.log.Timber;
 
 public class DataSetTablePresenter implements DataSetTableContract.Presenter {
 
-    private final DataSetTableRepository tableRepository;
+    private final DataSetTableRepositoryImpl tableRepository;
     private final SchedulerProvider schedulerProvider;
     private final AnalyticsHelper analyticsHelper;
     private DataSetTableContract.View view;
@@ -29,7 +30,7 @@ public class DataSetTablePresenter implements DataSetTableContract.Presenter {
 
     public DataSetTablePresenter(
             DataSetTableContract.View view,
-            DataSetTableRepository dataSetTableRepository,
+            DataSetTableRepositoryImpl dataSetTableRepository,
             SchedulerProvider schedulerProvider,
             AnalyticsHelper analyticsHelper) {
         this.view = view;
@@ -57,9 +58,9 @@ public class DataSetTablePresenter implements DataSetTableContract.Presenter {
 
         disposable.add(
                 Flowable.zip(
-                        tableRepository.getDataSet(),
+                        tableRepository.getDataSet().toFlowable(),
                         tableRepository.getCatComboName(catCombo),
-                        tableRepository.getPeriod(),
+                        tableRepository.getPeriod().toFlowable(),
                         Trio::create
                 )
                         .subscribeOn(schedulerProvider.io())
@@ -75,6 +76,21 @@ public class DataSetTablePresenter implements DataSetTableContract.Presenter {
                         .subscribeOn(schedulerProvider.ui())
                         .toFlowable(BackpressureStrategy.LATEST)
                         .debounce(500, TimeUnit.MILLISECONDS, schedulerProvider.io())
+                        .flatMapSingle(o -> tableRepository.checkMandatoryFields())
+                        .flatMapSingle(missingMandatoryFields -> {
+                            if (missingMandatoryFields.isEmpty()) {
+                                return tableRepository.checkFieldCombination();
+                            } else {
+                                return Single.error(new Exception());
+                            }
+                        })
+                        .flatMapSingle(missingCompleteDataElements -> {
+                            if (missingCompleteDataElements.isEmpty()) {
+                                return Single.just(true);
+                            } else {
+                                return Single.error(new Exception());
+                            }
+                        })
                         .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.io())
                         .subscribe(
@@ -152,11 +168,9 @@ public class DataSetTablePresenter implements DataSetTableContract.Presenter {
                         .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.ui())
                         .subscribe(
-                                completed -> {
-
+                                () -> {
                                 },
-                                Timber::e
-                        )
+                                Timber::e)
         );
     }
 }

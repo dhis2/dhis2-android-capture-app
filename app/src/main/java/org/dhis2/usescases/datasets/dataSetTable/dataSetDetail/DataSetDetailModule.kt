@@ -4,7 +4,7 @@ import dagger.Module
 import dagger.Provides
 import org.dhis2.data.dagger.PerFragment
 import org.dhis2.data.schedulers.SchedulerProvider
-import org.dhis2.usescases.datasets.dataSetTable.DataSetTableRepository
+import org.dhis2.usescases.datasets.dataSetTable.DataSetTableRepositoryImpl
 
 @Module
 @PerFragment
@@ -15,7 +15,7 @@ class DataSetDetailModule(
     @Provides
     @PerFragment
     fun providePresenter(
-        dataSetTableRepository: DataSetTableRepository,
+        dataSetTableRepository: DataSetTableRepositoryImpl,
         schedulers: SchedulerProvider
     ): DataSetDetailPresenter {
         return DataSetDetailPresenter(dataSetDetailView, dataSetTableRepository, schedulers)

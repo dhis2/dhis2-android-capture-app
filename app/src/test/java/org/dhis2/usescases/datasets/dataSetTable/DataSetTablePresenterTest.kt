@@ -6,6 +6,7 @@ import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Flowable
 import io.reactivex.Observable
+import io.reactivex.Single
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.hisp.dhis.android.core.common.State
@@ -22,7 +23,7 @@ class DataSetTablePresenterTest {
     private lateinit var presenter: DataSetTablePresenter
 
     private val view: DataSetTableContract.View = mock()
-    private val repository: DataSetTableRepository = mock()
+    private val repository: DataSetTableRepositoryImpl = mock()
     private val scheduler = TrampolineSchedulerProvider()
     private val analyticsHelper: AnalyticsHelper = mock()
 
@@ -49,10 +50,10 @@ class DataSetTablePresenterTest {
             .build()
 
 
-        whenever(repository.sections) doReturn Flowable.just(sections)
-        whenever(repository.dataSet) doReturn Flowable.just(dataSet)
+        whenever(repository.getSections()) doReturn Flowable.just(sections)
+        whenever(repository.getDataSet()) doReturn Single.just(dataSet)
         whenever(repository.getCatComboName(catCombo)) doReturn Flowable.just(catComboName)
-        whenever(repository.period) doReturn Flowable.just(period)
+        whenever(repository.getPeriod()) doReturn Single.just(period)
         whenever(repository.dataSetStatus()) doReturn Flowable.just(true)
         whenever(repository.dataSetState()) doReturn Flowable.just(State.SYNCED)
         whenever(view.observeSaveButtonClicks()) doReturn Observable.empty()

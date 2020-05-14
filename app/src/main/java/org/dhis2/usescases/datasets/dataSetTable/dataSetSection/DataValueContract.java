@@ -16,10 +16,6 @@ public class DataValueContract {
 
         void showAlertDialog(String title, String message);
 
-        boolean isOpenOrReopen();
-
-        void setCompleteReopenText(Boolean isCompleted);
-
         void highligthHeaderRow(int table, int row, boolean mandatory);
 
         void update(boolean modified);
@@ -31,7 +27,5 @@ public class DataValueContract {
         void setSection(Section section);
 
         void updateTabLayout(int count);
-
-        void setDataAccess(boolean accessDataWrite);
     }
 }

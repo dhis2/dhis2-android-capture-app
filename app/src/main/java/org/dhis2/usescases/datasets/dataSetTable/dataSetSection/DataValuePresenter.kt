@@ -122,7 +122,6 @@ class DataValuePresenter(
                         this.period = data.val3()
                         this.dataInputPeriodModel = data.val4()
                         this.isApproval = data.val5()
-                        view.setDataAccess(accessDataWrite)
                         view.setDataSet(dataSet)
                         view.setSection(section)
                         initTable()
@@ -139,15 +138,6 @@ class DataValuePresenter(
                     { view.updateTabLayout(it) },
                     { Timber.e(it) }
                 )
-        )
-
-        disposable.add(
-            repository.isCompleted(orgUnitUid, periodId, attributeOptionCombo)
-                .subscribeOn(schedulerProvider.io())
-                .observeOn(schedulerProvider.ui())
-                .subscribe(
-                    view::setCompleteReopenText
-                ) { Timber.e(it) }
         )
     }
 
@@ -526,7 +516,7 @@ class DataValuePresenter(
         }
     }
 
-    fun complete() {
+    /*fun complete() {
         if ((!isApproval)) {
             analyticsHelper.setEvent(COMPLETE_REOPEN, CLICK, COMPLETE_REOPEN)
             if (view.isOpenOrReopen) {
@@ -542,7 +532,6 @@ class DataValuePresenter(
                             .observeOn(schedulerProvider.ui())
                             .subscribe(
                                 { completed ->
-                                    view.setCompleteReopenText(true)
                                     view.update(completed!!)
                                 },
                                 { Timber.e(it) }
@@ -560,14 +549,12 @@ class DataValuePresenter(
                     )
                 }
             } else {
-                view.isOpenOrReopen
                 disposable.add(
                     repository.reopenDataSet(orgUnitUid, periodId, attributeOptionCombo)
                         .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.ui())
                         .subscribe(
                             { reopen ->
-                                view.setCompleteReopenText(false)
                                 view.update(reopen!!)
                             },
                             { Timber.e(it) }
@@ -575,7 +562,7 @@ class DataValuePresenter(
                 )
             }
         }
-    }
+    }*/
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     fun checkAllFieldRequired(

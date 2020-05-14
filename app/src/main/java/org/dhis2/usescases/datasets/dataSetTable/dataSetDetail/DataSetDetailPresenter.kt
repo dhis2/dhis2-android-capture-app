@@ -7,13 +7,14 @@ import io.reactivex.functions.BiFunction
 import io.reactivex.processors.PublishProcessor
 import org.dhis2.data.schedulers.SchedulerProvider
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableRepository
+import org.dhis2.usescases.datasets.dataSetTable.DataSetTableRepositoryImpl
 import org.hisp.dhis.android.core.dataset.DataSetInstance
 import org.hisp.dhis.android.core.period.Period
 import timber.log.Timber
 
 class DataSetDetailPresenter(
     val view: DataSetDetailView,
-    val repository: DataSetTableRepository,
+    val repository: DataSetTableRepositoryImpl,
     val schedulers: SchedulerProvider
 ) {
     private val disposable = CompositeDisposable()
@@ -21,7 +22,7 @@ class DataSetDetailPresenter(
 
     fun init() {
         disposable.add(
-            repository.dataSetCatComboName
+            repository.getDataSetCatComboName()
                 .subscribeOn(schedulers.io())
                 .observeOn(schedulers.ui())
                 .subscribe(
@@ -40,7 +41,7 @@ class DataSetDetailPresenter(
                 .switchMap {
                     Flowable.combineLatest<DataSetInstance, Period, Pair<DataSetInstance, Period>>(
                         repository.dataSetInstance(),
-                        repository.period,
+                        repository.getPeriod().toFlowable(),
                         BiFunction { t1, t2 -> Pair(t1, t2) })
                 }
                 .subscribeOn(schedulers.io())
@@ -51,7 +52,7 @@ class DataSetDetailPresenter(
                 )
         )
         disposable.add(
-            repository.dataSet
+            repository.getDataSet()
                 .map { dataSet -> dataSet.style() }
                 .subscribeOn(schedulers.io())
                 .observeOn(schedulers.ui())

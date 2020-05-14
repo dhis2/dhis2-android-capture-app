@@ -3,6 +3,7 @@ package org.dhis2.usescases.datasets.dataSetTable
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
+import io.reactivex.Single
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.category.CategoryOption
 import org.hisp.dhis.android.core.category.CategoryOptionCombo
@@ -20,7 +21,7 @@ import org.mockito.Mockito.mock
 
 class DataSetTableRepositoryTest {
 
-    private lateinit var repository: DataSetTableRepository
+    private lateinit var repository: DataSetTableRepositoryImpl
 
     private val d2: D2 = mock(D2::class.java, RETURNS_DEEP_STUBS)
     private val dataSetUid = "dataSetUid"
@@ -34,7 +35,7 @@ class DataSetTableRepositoryTest {
     }
 
     @Test
-    fun `Should return dataSet`(){
+    fun `Should return dataSet`() {
         whenever(d2.dataSetModule().dataSets().byUid()) doReturn mock()
         whenever(d2.dataSetModule().dataSets().byUid().eq(dataSetUid)) doReturn mock()
         whenever(d2.dataSetModule().dataSets().byUid().eq(dataSetUid).one()) doReturn mock()
@@ -42,7 +43,7 @@ class DataSetTableRepositoryTest {
             d2.dataSetModule().dataSets().byUid().eq(dataSetUid).one().blockingGet()
         ) doReturn dummyDataSet()
 
-        val testObserver = repository.dataSet.test()
+        val testObserver = repository.getDataSet().test()
 
         testObserver.assertNoErrors()
         testObserver.assertValueAt(0) {
@@ -57,15 +58,15 @@ class DataSetTableRepositoryTest {
         whenever(d2.dataSetModule().sections().byDataSetUid()) doReturn mock()
         whenever(d2.dataSetModule().sections().byDataSetUid().eq(dataSetUid)) doReturn mock()
         whenever(
-            d2.dataSetModule().sections().byDataSetUid().eq(dataSetUid).blockingGet()
-        ) doReturn sections
+            d2.dataSetModule().sections().byDataSetUid().eq(dataSetUid).get()
+        ) doReturn Single.just(sections)
 
-        val testObserver = repository.sections.test()
+        val testObserver = repository.getSections().test()
 
         testObserver.assertNoErrors()
         testObserver.assertValue {
             it[0] == "section_1" &&
-            it[1] == "section_2"
+                    it[1] == "section_2"
         }
     }
 
@@ -76,10 +77,10 @@ class DataSetTableRepositoryTest {
         whenever(d2.dataSetModule().sections().byDataSetUid()) doReturn mock()
         whenever(d2.dataSetModule().sections().byDataSetUid().eq(dataSetUid)) doReturn mock()
         whenever(
-            d2.dataSetModule().sections().byDataSetUid().eq(dataSetUid).blockingGet()
-        ) doReturn sections
+            d2.dataSetModule().sections().byDataSetUid().eq(dataSetUid).get()
+        ) doReturn Single.just(sections)
 
-        val testObserver = repository.sections.test()
+        val testObserver = repository.getSections().test()
 
         testObserver.assertNoErrors()
         testObserver.assertValue {
@@ -215,7 +216,7 @@ class DataSetTableRepositoryTest {
         val testObserver = repository.getCatComboName(uid).test()
 
         testObserver.assertNoErrors()
-        testObserver.assertValue{ it == name }
+        testObserver.assertValue { it == name }
     }
 
     @Test
