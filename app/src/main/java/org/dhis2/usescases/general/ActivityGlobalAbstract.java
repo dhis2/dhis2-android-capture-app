@@ -32,17 +32,17 @@ import com.google.gson.reflect.TypeToken;
 import org.dhis2.Bindings.ExtensionsKt;
 import org.dhis2.BuildConfig;
 import org.dhis2.R;
+import org.dhis2.uicomponents.map.views.MapSelectorActivity;
+import org.dhis2.usescases.coodinates.CoordinatesView;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity;
 import org.dhis2.usescases.login.LoginActivity;
 import org.dhis2.usescases.main.MainActivity;
-import org.dhis2.usescases.map.MapSelectorActivity;
 import org.dhis2.usescases.splash.SplashActivity;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.HelpManager;
 import org.dhis2.utils.OnDialogClickListener;
 import org.dhis2.utils.analytics.AnalyticsConstants;
 import org.dhis2.utils.analytics.AnalyticsHelper;
-import org.dhis2.utils.customviews.CoordinatesView;
 import org.dhis2.utils.customviews.CustomDialog;
 import org.dhis2.utils.customviews.PictureView;
 import org.dhis2.utils.customviews.ScanTextView;
@@ -70,9 +70,6 @@ import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
 import static org.dhis2.utils.analytics.AnalyticsConstants.SHOW_HELP;
 import static org.dhis2.utils.session.PinDialogKt.PIN_DIALOG_TAG;
 
-/**
- * QUADRAM. Created by Javi on 28/07/2017.
- */
 
 public abstract class ActivityGlobalAbstract extends AppCompatActivity
         implements AbstractActivityContracts.View, CoordinatesView.OnMapPositionClick,
@@ -97,8 +94,6 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity
         ON_RESUME
     }
 
-    //****************
-    //LIFECYCLE REGION
 
     public void setScreenName(String name) {
         Crashlytics.setString(Constants.SCREEN_NAME, name);
@@ -161,10 +156,6 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity
                 break;
         }
     }
-
-    //****************
-    //PUBLIC METHOD REGION
-
 
     @Override
     public void setTutorial() {

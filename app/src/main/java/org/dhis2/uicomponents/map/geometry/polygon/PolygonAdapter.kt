@@ -1,4 +1,4 @@
-package org.dhis2.usescases.map.polygon
+package org.dhis2.uicomponents.map.geometry.polygon
 
 import android.view.LayoutInflater
 import android.view.ViewGroup

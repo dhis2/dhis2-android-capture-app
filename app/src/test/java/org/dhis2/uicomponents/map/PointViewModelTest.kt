@@ -1,7 +1,7 @@
-package org.dhis2.usescases.map
+package org.dhis2.uicomponents.map
 
 import com.mapbox.geojson.Point
-import org.dhis2.usescases.map.point.PointViewModel
+import org.dhis2.uicomponents.map.geometry.point.PointViewModel
 import org.junit.Before
 import org.junit.Test
 

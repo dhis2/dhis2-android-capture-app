@@ -1,10 +1,11 @@
-package org.dhis2.usescases.map
+package org.dhis2.uicomponents.map.location
 
 import android.location.Location
 import android.widget.Toast
 import com.mapbox.android.core.location.LocationEngineCallback
 import com.mapbox.android.core.location.LocationEngineResult
 import com.mapbox.mapboxsdk.geometry.LatLng
+import org.dhis2.uicomponents.map.views.MapSelectorActivity
 import java.lang.ref.WeakReference
 
 class MapActivityLocationCallback(activity: MapSelectorActivity) :

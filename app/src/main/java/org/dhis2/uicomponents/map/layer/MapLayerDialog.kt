@@ -1,4 +1,4 @@
-package org.dhis2.utils.maps
+package org.dhis2.uicomponents.map.layer
 
 import android.app.Dialog
 import android.content.Context

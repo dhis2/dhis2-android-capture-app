@@ -1,8 +1,8 @@
-package org.dhis2.usescases.map
+package org.dhis2.uicomponents.map
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.mapbox.geojson.Point
-import org.dhis2.usescases.map.polygon.PolygonViewModel
+import org.dhis2.uicomponents.map.geometry.polygon.PolygonViewModel
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test

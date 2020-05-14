@@ -1,4 +1,4 @@
-package org.dhis2.utils.customviews;
+package org.dhis2.usescases.coodinates;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -26,8 +26,8 @@ import com.google.android.material.textfield.TextInputLayout;
 import org.dhis2.R;
 import org.dhis2.databinding.FormCoordinatesAccentBinding;
 import org.dhis2.databinding.FormCoordinatesBinding;
-import org.dhis2.usescases.enrollment.EnrollmentActivity;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
+import org.dhis2.utils.customviews.FieldLayout;
 import org.hisp.dhis.android.core.arch.helpers.GeometryHelper;
 import org.hisp.dhis.android.core.common.FeatureType;
 import org.hisp.dhis.android.core.common.Geometry;
@@ -37,10 +37,6 @@ import java.util.List;
 
 import static android.text.TextUtils.isEmpty;
 import static org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialPresenter.ACCESS_LOCATION_PERMISSION_REQUEST;
-
-/**
- * QUADRAM. Created by Administrador on 21/03/2018.
- */
 
 public class CoordinatesView extends FieldLayout implements View.OnClickListener, View.OnFocusChangeListener {
 
@@ -139,11 +135,11 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
         polygon.setFocusable(false);
         polygon.setClickable(false);
 
-        latitude.setFocusable(true); //Makes editText editable
-        latitude.setClickable(true);//  and clickable
+        latitude.setFocusable(true);
+        latitude.setClickable(true);
 
-        longitude.setFocusable(true); //Makes editText editable
-        longitude.setClickable(true);//  and clickable
+        longitude.setFocusable(true);
+        longitude.setClickable(true);
 
         ImageButton position = findViewById(R.id.location1);
         ImageButton map = findViewById(R.id.location2);
@@ -205,7 +201,6 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
         this.clearButton.setVisibility(VISIBLE);
 
     }
-
 
     public void setWarning(String msg) {
         if (!isEmpty(msg)) {

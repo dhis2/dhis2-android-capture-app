@@ -1,4 +1,4 @@
-package org.dhis2.usescases.map.point
+package org.dhis2.uicomponents.map.geometry.point
 
 import androidx.databinding.ObservableField
 import androidx.lifecycle.ViewModel
