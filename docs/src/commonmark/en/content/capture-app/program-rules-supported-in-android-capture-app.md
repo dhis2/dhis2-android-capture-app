@@ -149,6 +149,7 @@ For the examples belows consider the following:
 * prv_boolean_two: is a program rule variable that has been configured to get the value of a 'Yes/No' data element
 * prv_boolean_one_to_number: is a program rule variable with calculated value
 * prv_boolean_two_to_number: is a program rule variable with calculated value
+* sometimes true is used as program rule condition meaning the action is always performed
 * The following acronyms are used: 
 	* DE (Data Elemetn)
 	* PR (Program Rule)
@@ -160,12 +161,21 @@ For the examples belows consider the following:
 
 | Program Rule Condition(s) | Program Rule Action(s) | Web version | Android version | Comment |
 | ----------- | ----------- | :---: | :---: | ----- |
-| PR1: d2:hasValue('yn_prv1') \|\| d2:hasValue('yn_prv2') | Assign fixed value to Data Element | ![](resources/images/../../admin/icon-complete.png) | ![](resources/images/../../admin/icon-complete.png) | |
-| PR1: #{yn_prv1} \|\| #{yn_prv2} | Assign fixed value to DE | ![](resources/images/../../admin/icon-complete.png) | ![](resources/images/../../admin/icon-complete.png) | |
-| PR1: d2:hasValue('yn_prv1') \|\| d2:hasValue('yn_prv2') | Assign value to DE: #{yn_prv1} + #{yn_prv2} + 1 | ![](resources/images/../../admin/icon-complete.png) | ![](resources/images/../../admin/icon-negative.png) | Crashes in Android  whenver a boolean is marked as the expression would result in *true*+*false*+1 |
-| PR1: d2:hasValue('yn_prv1') \|\| d2:hasValue('yn_prv2') | Assign value to DE: #{yn_prv1} + #{yn_prv2} + 1 | ![](resources/images/../../admin/icon-complete.png) | ![](resources/images/../../admin/icon-negative.png) | Crashes in Android  whenver a boolean is marked as the expression would result in *true*+*false*+1 |
+| d2:hasValue('yn_prv1') \|\| d2:hasValue('yn_prv2') | Assign fixed value to DE | ![](resources/images/../../admin/icon-complete.png) | ![](resources/images/../../admin/icon-complete.png) | |
+| #{yn_prv1} \|\| #{yn_prv2} | Assign fixed value to DE | ![](resources/images/../../admin/icon-complete.png) | ![](resources/images/../../admin/icon-complete.png) | |
+| d2:hasValue('yn_prv1') \|\| d2:hasValue('yn_prv2') | Assign value to DE: #{yn_prv1} + #{yn_prv2} + 1 | ![](resources/images/../../admin/icon-complete.png) | ![](resources/images/../../admin/icon-negative.png) | Crashes in Android  whenver a boolean is marked as the expression would result in *true*+*false*+1 |
+| d2:hasValue('yn_prv1') \|\| d2:hasValue('yn_prv2') | Assign value to DE: #{yn_prv1} + #{yn_prv2} + 1 | ![](resources/images/../../admin/icon-complete.png) | ![](resources/images/../../admin/icon-negative.png) | Crashes in Android  whenver a boolean is marked as the expression would result in *true*+*false*+1 |
 | PR1: #{prv_boolean_one} <br /><br />PR2: #{prv_boolean_two} <br /><br />PR3: #{prv_boolean_one} \|\| #{prv_boolean_two} | PRA1. Assign value  "1" to PRV "#{prv_bool_one_to_number}" <br /><br />PRA2. Assign value: "1" to PRV "#{prv_bool_two_to_number}" <br /><br />PRA3. Assign value to DE: "#{prv_bool_one_to_number} + #{prv_bool_two_to_number} + 1"| ![](resources/images/../../admin/icon-negative.png) | ![](resources/images/../../admin/icon-negative.png) | There are 2 variables for boolean, one gets the value via a PRV definition “value form DE” and the other one via a PRA. If a boolean is not marked it is counted as string instead of a number |
 | Four PR to assign 1 or 0 to the booleans and an additional for the addition. Priorities go from top to bottom <br /><br />PRC1: !d2:hasValue('prv_boolean_one')  \|\| !#{prv_boolean_one} <br /><br />PRC2: d2:hasValue('prv_boolean_one') && #{prv_boolean_one}<br /><br />PRC3: !d2:hasValue('prv_boolean_two')  \|\| !#{prv_boolean_two} <br /><br />PRC4: d2:hasValue('prv_boolean_two') && #{prv_boolean_two} <br /><br />PRC5: true | PRA1: Assign value: "0" to PRV "#{prv_bool_one_to_number}" <br /><br />PRA2: Assign value: "1" to PRV "#{prv_bool_one_to_number}" <br /><br />PRA3: Assign value: "0" to PRV "#{prv_bool_two_to_number}" <br /><br />PRA4: Assign value: "1" to PRV "#{prv_bool_two_to_number}" <br /><br />PRA5: Assign value: "#{prv_bool_one_to_number} + #{prv_bool_two_to_number} + 1" to DE <br /> | ![](resources/images/../../admin/icon-complete.png) | ![](resources/images/../../admin/icon-complete.png) | There are 2 variables for boolean, one gets the value via a PRV definition “value form DE” and the other one via a PRA.
 
+### Evaluation of numbers
+
+DHIS2 web version evaluate numbers in a more flexible way casting values from integer to floats if required for a division, however, Android take numbers as such (without a casting) which my end up giving unexpected results. Check the table below for examples and possible solutions.
+
+
+| Program Rule Condition(s) | Program Rule Action(s) | Web version | Android version | Comment |
+| ----------- | ----------- | :---: | :---: | ----- |
+| true | Assign value to DE: d2:daysBetween('2020-05-13', '2020-05-17') / 3 | ![](resources/images/../../admin/icon-complete.png) | ![](resources/images/../../admin/icon-negative.png) | The user would expect the division to be calculated as 4/3 with a result of 1.3333. However, Android does not cast 4 to a float (4.0 as the web version does) so the result in Android is a pure 1 as the result of the integer division 4/3 |
+| true | Assign value to DE: d2:daysBetween('2020-05-13', '2020-05-17') / 3.0 | ![](resources/images/../../admin/icon-complete.png) | ![](resources/images/../../admin/icon-complete.png) | Division results in 1.33333 in both web and Android | 
 
 ---
