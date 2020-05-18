@@ -4,9 +4,9 @@ import androidx.annotation.NonNull;
 
 import org.dhis2.data.dagger.PerActivity;
 import org.dhis2.data.schedulers.SchedulerProvider;
-import org.dhis2.uicomponents.map.geometry.bound.BoundsModel;
-import org.dhis2.uicomponents.map.geometry.common.MapEventToFeatureCollection;
-import org.dhis2.uicomponents.map.geometry.common.MapGeometryToFeature;
+import org.dhis2.uicomponents.map.geometry.bound.BoundsGeometry;
+import org.dhis2.uicomponents.map.geometry.mapper.MapEventToFeatureCollection;
+import org.dhis2.uicomponents.map.geometry.mapper.MapGeometryToFeature;
 import org.dhis2.uicomponents.map.geometry.point.MapPointToFeature;
 import org.dhis2.uicomponents.map.geometry.polygon.MapPolygonToFeature;
 import org.dhis2.utils.filters.FilterManager;
@@ -57,7 +57,7 @@ public class ProgramEventDetailModule {
     @PerActivity
     MapEventToFeatureCollection provideMapEventToFeatureCollection(MapGeometryToFeature mapGeometryToFeature){
         return new MapEventToFeatureCollection(mapGeometryToFeature,
-                new BoundsModel(0.0,0.0,0.0,0.0));
+                new BoundsGeometry(0.0,0.0,0.0,0.0));
     }
 
     @Provides

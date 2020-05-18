@@ -1,7 +1,7 @@
-package org.dhis2.uicomponents.map.geometry.common
+package org.dhis2.uicomponents.map.geometry.mapper
 
 import com.mapbox.geojson.Feature
-import org.dhis2.uicomponents.map.geometry.bound.BoundsModel
+import org.dhis2.uicomponents.map.geometry.bound.BoundsGeometry
 import org.dhis2.uicomponents.map.geometry.point.MapPointToFeature
 import org.dhis2.uicomponents.map.geometry.polygon.MapPolygonToFeature
 import org.hisp.dhis.android.core.common.FeatureType
@@ -11,7 +11,7 @@ class MapGeometryToFeature (private val pointMapper: MapPointToFeature,
                             private val polygonMapper: MapPolygonToFeature){
 
     fun map (geometry: Geometry, property: String, propertyValue: String,
-             bounds: BoundsModel) : Feature? {
+             bounds: BoundsGeometry) : Feature? {
         return when {
             geometry.type() == FeatureType.POINT -> {
                 val pairPointBounds = pointMapper.map(geometry, bounds)

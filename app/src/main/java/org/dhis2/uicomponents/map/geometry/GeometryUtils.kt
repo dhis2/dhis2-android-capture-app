@@ -19,6 +19,7 @@ object GeometryUtils {
     fun getSourceFromTeis(
         teiList: List<SearchTeiModel>
     ): Pair<HashMap<String, FeatureCollection>, BoundingBox> {
+        //MOVE INIT INSIDE en bounds model NOT CREATION
         boundsInt = false
         northBound = 0.0
         southBound = 0.0

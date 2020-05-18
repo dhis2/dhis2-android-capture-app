@@ -2,14 +2,14 @@ package org.dhis2.uicomponents.map.geometry.point
 
 import com.mapbox.geojson.Feature
 import com.mapbox.geojson.Point
-import org.dhis2.uicomponents.map.geometry.bound.BoundsModel
+import org.dhis2.uicomponents.map.geometry.bound.BoundsGeometry
 import org.hisp.dhis.android.core.arch.helpers.GeometryHelper
 import org.hisp.dhis.android.core.common.Geometry
 import timber.log.Timber
 
 class MapPointToFeature {
 
-     fun map(item: Geometry, bounds: BoundsModel): Pair<Feature, BoundsModel>? {
+     fun map(item: Geometry, bounds: BoundsGeometry): Pair<Feature, BoundsGeometry>? {
         val sdkPoint = GeometryHelper.getPoint(item)
         val lat = sdkPoint[1]
         val lon = sdkPoint[0]
