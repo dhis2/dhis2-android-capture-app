@@ -289,9 +289,7 @@ class DataSetTableRepositoryTest {
         val testObserver = repository.completeDataSetInstance().test()
 
         testObserver.assertNoErrors()
-        testObserver.assertValue {
-            it
-        }
+        testObserver.assertComplete()
     }
 
     // TODO: ValidationRules - Need to add different paths of this method when SDK has functionality

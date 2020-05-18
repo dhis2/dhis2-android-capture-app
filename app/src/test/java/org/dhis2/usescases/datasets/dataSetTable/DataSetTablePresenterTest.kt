@@ -5,6 +5,7 @@ import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.verifyZeroInteractions
 import com.nhaarman.mockitokotlin2.whenever
+import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.Single
@@ -92,7 +93,7 @@ class DataSetTablePresenterTest {
 
     @Test
     fun `Should check if ValidationRules are optional and show appropriate dialog`() {
-        whenever(repository.isValidationRuleOptional) doReturn true
+        whenever(repository.isValidationRuleOptional()) doReturn true
 
         presenter.checkValidationRules()
 
@@ -101,7 +102,7 @@ class DataSetTablePresenterTest {
 
     @Test
     fun `Should check if ValidationRules are mandatory and are executed without errors`() {
-        whenever(repository.isValidationRuleOptional) doReturn false
+        whenever(repository.isValidationRuleOptional()) doReturn false
         whenever(repository.executeValidationRules()) doReturn true
 
         presenter.checkValidationRules()
@@ -129,7 +130,7 @@ class DataSetTablePresenterTest {
 
     @Test
     fun `Should mark the dataset as complete` () {
-        whenever(repository.completeDataSetInstance()) doReturn Flowable.just(true)
+        whenever(repository.completeDataSetInstance()) doReturn Completable.complete()
 
         presenter.completeDataSet()
 

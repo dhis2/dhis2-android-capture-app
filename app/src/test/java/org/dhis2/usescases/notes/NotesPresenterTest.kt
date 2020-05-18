@@ -57,7 +57,7 @@ class NotesPresenterTest {
             repository.getEnrollmentNotes(uid)
         ) doReturn Single.just(notes)
         whenever(
-            repository.hasProgramWritePermission()
+            repository.hasProgramWritePermission(NoteType.ENROLLMENT)
         ) doReturn true
 
         noteProcessor.onNext(true)
@@ -75,7 +75,7 @@ class NotesPresenterTest {
             repository.getEventNotes(uid)
         ) doReturn Single.just(notes)
         whenever(
-            repository.hasProgramWritePermission()
+            repository.hasProgramWritePermission(NoteType.EVENT)
         ) doReturn false
 
         noteProcessor.onNext(true)
@@ -90,7 +90,7 @@ class NotesPresenterTest {
             repository.getEnrollmentNotes(uid)
         ) doReturn Single.just(listOf())
         whenever(
-            repository.hasProgramWritePermission()
+            repository.hasProgramWritePermission(NoteType.ENROLLMENT)
         ) doReturn true
 
         noteProcessor.onNext(true)
@@ -107,7 +107,7 @@ class NotesPresenterTest {
             repository.getEnrollmentNotes(uid)
         ) doReturn Single.just(notes)
         whenever(
-            repository.hasProgramWritePermission()
+            repository.hasProgramWritePermission(NoteType.EVENT)
         ) doReturn false
 
         noteProcessor.onNext(true)

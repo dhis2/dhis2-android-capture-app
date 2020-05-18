@@ -1,5 +1,6 @@
 package org.dhis2.usescases.notes
 
+import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
@@ -8,6 +9,7 @@ import java.util.UUID
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.Access
 import org.hisp.dhis.android.core.common.DataAccess
+import org.hisp.dhis.android.core.dataset.DataSet
 import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.note.Note
 import org.hisp.dhis.android.core.program.Program
@@ -76,6 +78,19 @@ class NotesRepositoryTest {
     }
 
     @Test
+    fun `Should return notes for dataset`() {
+        val notes = listOf(dummyNote(), dummyNote())
+        val datasetUid = UUID.randomUUID().toString()
+
+        val testObserver = repository.getDatasetNotes().test()
+
+        testObserver.assertNoErrors()
+        testObserver.assertValue(emptyList())
+
+        testObserver.dispose()
+    }
+
+    @Test
     fun `Should check program write permission`() {
         val dummyProgram = Program.builder()
             .uid(UUID.randomUUID().toString())
@@ -93,7 +108,28 @@ class NotesRepositoryTest {
                 .blockingGet()
         ) doReturn dummyProgram
 
-        assert(repository.hasProgramWritePermission())
+        assert(repository.hasProgramWritePermission(NoteType.EVENT))
+    }
+
+    @Test
+    fun `Should check dataset write permission`() {
+        val dummyDataSet = DataSet.builder()
+            .uid(UUID.randomUUID().toString())
+            .access(
+                Access.builder().data(
+                    DataAccess.builder()
+                        .read(true)
+                        .write(true)
+                        .build()
+                ).build()
+            ).build()
+        whenever(
+            d2.dataSetModule().dataSets()
+                .uid(any())
+                .blockingGet()
+        ) doReturn dummyDataSet
+
+        assert(repository.hasProgramWritePermission(NoteType.DATASET, "uid"))
     }
 
     private fun dummyNote(): Note =
