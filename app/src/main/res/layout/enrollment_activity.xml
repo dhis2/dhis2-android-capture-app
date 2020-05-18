@@ -89,7 +89,7 @@
             app:backgroundTint="?colorPrimary"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:srcCompat="@drawable/ic_save_alt"
+            app:srcCompat="@drawable/ic_save"
             app:tint="@color/white" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

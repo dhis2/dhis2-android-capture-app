@@ -40,6 +40,16 @@ If the user forgets the PIN number, log in by entering the credentials is also a
 ![](resources/images/image65.PNG){width=25%}
 ![](resources/images/image63.jpg){width=25%}
 
+## Fingerprint
+
+User is able to use the fingerprint scanner if the feature is activated in the device.
+
+* When the fingerprint scanner is enable and not the PIN, every time the app closes, goes to background or the device is blocked, the session will be locked. Once the app is open again, the user needs to tap the fingerprint icon to activate the scanner.
+* If the PIN and the fingerprint are set, when the session is locked and the user open the app again, the PIN will be asked.
+
+![](resources/images/image104.jpg){width=25%}
+![](resources/images/image105.jpg){width=25%}
+
 ## Instructions/ information buttons
 
 A contextual guide opens the first time the user opens the App.
@@ -56,16 +66,25 @@ A contextual guide opens the first time the user opens the App.
 <!-- PALD alternative: "The Filter allows you to narrow down the data available from the ..." -->
 The app has new and improved filters for all listing screens (home, event listing, tei search and dataSets).
 
-Filter by period, org. Unit, sync state, event status and category option combination.
+Filter by period, org. Unit, sync state, event status, category option combination and "assigned to me".
 
-![](resources/images/image96.png){ width=25%}
+>**User Assignment**
+>
+>It is possible to filter events based on its assignment to the current user. The “Assigned to me” filter has been added to the single event program list, the TEI list and the TEI Dashboard and the map views. It will only be displayed when the active program is configured to assign events to users.
 
-![](resources/images/image97.png){ width=25%}
+![](resources/images/image96.jpg){ width=25%}
+![](resources/images/image97.jpg){ width=25%}
 
 Filters will adapt to the different programs and data sets. 
 1. Program without registration: Period, Org. Unit, Sync State, Event Status and, Category Combination.
 2. Program with registration: Period, Org. Unit, and Sync State.
 3. Data Sets: Period, Org. Unit, and Syn State.
+
+### Filtering added in TEI Dashboard:
+
+Filters have been added to the TEI dashboard. It is possible to filter the events of a Tracked Entity Instance enrollment per period, organisation unit, sync status, event status, and user assignment.
+
+![](resources/images/image114.png){ width=25%}
 
 ## Sync Information
 

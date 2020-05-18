@@ -45,8 +45,12 @@ import org.dhis2.utils.session.PinModule;
 import org.dhis2.utils.session.SessionComponent;
 import org.dhis2.utils.timber.DebugTree;
 import org.dhis2.utils.timber.ReleaseTree;
+import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.D2Manager;
 import org.jetbrains.annotations.NotNull;
+
+import java.io.IOException;
+import java.net.SocketException;
 
 import javax.inject.Singleton;
 
@@ -54,6 +58,8 @@ import io.fabric.sdk.android.Fabric;
 import io.reactivex.Scheduler;
 import io.reactivex.android.plugins.RxAndroidPlugins;
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.exceptions.UndeliverableException;
+import io.reactivex.plugins.RxJavaPlugins;
 import timber.log.Timber;
 
 /**
@@ -65,7 +71,7 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
     }
 
-    protected static final String DATABASE_NAME = "dhis.db";
+    protected boolean wantToImportDB = false;
 
     @NonNull
     @Singleton
@@ -96,6 +102,8 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
     @Override
     public void onCreate() {
         super.onCreate();
+
+
         Timber.plant(BuildConfig.DEBUG ? new DebugTree() : new ReleaseTree());
         ProcessLifecycleOwner.get().getLifecycle().addObserver(this);
 
@@ -110,10 +118,16 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
             upgradeSecurityProviderSync();
 
         setUpAppComponent();
+        if (wantToImportDB) {
+            populateDBIfNeeded();
+        }
         setUpServerComponent();
+        setUpRxPlugin();
+    }
 
-        Scheduler asyncMainThreadScheduler = AndroidSchedulers.from(Looper.getMainLooper(), true);
-        RxAndroidPlugins.setInitMainThreadSchedulerHandler(schedulerCallable -> asyncMainThreadScheduler);
+    private void populateDBIfNeeded() {
+        DBTestLoader dbTestLoader = new DBTestLoader(getApplicationContext());
+        dbTestLoader.copyDatabaseFromAssetsIfNeeded();
     }
 
     private void upgradeSecurityProviderSync() {
@@ -138,7 +152,8 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
     }
 
     protected void setUpServerComponent() {
-        boolean isLogged = D2Manager.blockingInstantiateD2(ServerModule.getD2Configuration(this)).userModule().isLogged().blockingGet();
+        D2 d2Configuration = D2Manager.blockingInstantiateD2(ServerModule.getD2Configuration(this));
+        boolean isLogged = d2Configuration.userModule().isLogged().blockingGet();
 
         serverComponent = appComponent.plus(new ServerModule());
 
@@ -261,9 +276,9 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
     }
 
     public void releaseDashboardComponent() {
-        if(!this.recreated) {
+        if (!this.recreated) {
             dashboardComponent = null;
-        }else{
+        } else {
             recreated = false;
         }
     }
@@ -292,5 +307,29 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
         boolean shouldShowPinDialog = fromBackGround && appComponent().preferenceProvider().getBoolean(Preference.SESSION_LOCKED, false);
         fromBackGround = false;
         return shouldShowPinDialog;
+    }
+
+    private void setUpRxPlugin() {
+        Scheduler asyncMainThreadScheduler = AndroidSchedulers.from(Looper.getMainLooper(), true);
+        RxAndroidPlugins.setInitMainThreadSchedulerHandler(schedulerCallable -> asyncMainThreadScheduler);
+        RxJavaPlugins.setErrorHandler(e -> {
+            if (e instanceof UndeliverableException) {
+                e = e.getCause();
+            }
+            if ((e instanceof IOException) || (e instanceof SocketException)) {
+                return;
+            }
+            if ((e instanceof NullPointerException) || (e instanceof IllegalArgumentException)) {
+                Timber.d("Error in app");
+                Thread.currentThread().getUncaughtExceptionHandler()
+                        .uncaughtException(Thread.currentThread(),e);
+            }
+            if (e instanceof IllegalStateException) {
+                Timber.d("Error in RxJava");
+                Thread.currentThread().getUncaughtExceptionHandler()
+                        .uncaughtException(Thread.currentThread(),e);
+            }
+            Timber.d(e);
+        });
     }
 }

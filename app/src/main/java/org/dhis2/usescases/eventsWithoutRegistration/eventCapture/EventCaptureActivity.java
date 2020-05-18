@@ -116,28 +116,31 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
 
     @Override
     public void onBackPressed() {
-        clearFocus();
-        if (eventMode == EventMode.NEW) {
-            new CustomDialog(
-                    this,
-                    getString(R.string.title_delete_go_back),
-                    getString(R.string.delete_go_back),
-                    getString(R.string.cancel),
-                    getString(R.string.missing_mandatory_fields_go_back),
-                    RQ_GO_BACK,
-                    new DialogClickListener() {
-                        @Override
-                        public void onPositive() {
-                        }
+        if(!ExtensionsKt.isKeyboardOpened(this)) {
+            if (eventMode == EventMode.NEW) {
+                new CustomDialog(
+                        this,
+                        getString(R.string.title_delete_go_back),
+                        getString(R.string.delete_go_back),
+                        getString(R.string.cancel),
+                        getString(R.string.missing_mandatory_fields_go_back),
+                        RQ_GO_BACK,
+                        new DialogClickListener() {
+                            @Override
+                            public void onPositive() {
+                            }
 
-                        @Override
-                        public void onNegative() {
-                            presenter.deleteEvent();
+                            @Override
+                            public void onNegative() {
+                                presenter.deleteEvent();
+                            }
                         }
-                    }
-            ).show();
+                ).show();
+            } else {
+                finishDataEntry();
+            }
         } else {
-            finishDataEntry();
+            hideKeyboard();
         }
     }
 
@@ -444,7 +447,7 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
     }
 
     @Override
-    public void back() {
+    public void goBack() {
         onBackPressed();
     }
 

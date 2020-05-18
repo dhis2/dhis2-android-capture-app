@@ -203,7 +203,18 @@ public final class DataEntryAdapter extends ListAdapter<FieldViewModel, ViewHold
                     position > 0 && getItemViewType(position - 1) != SECTION);
             ((SectionHolder) holder).setLastSectionHeight(
                     position == getItemCount()-1 && getItemViewType(position - 1) != SECTION);
+            ((SectionHolder)holder).setSectionNumber(getSectionNumber(position));
         }
+    }
+
+    private int getSectionNumber(int sectionPosition){
+        int sectionNumber = 1;
+        for(int i = 0; i < sectionPosition;i++){
+            if(getItemViewType(i) == SECTION){
+                sectionNumber++;
+            }
+        }
+        return sectionNumber;
     }
 
     @Override
