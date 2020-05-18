@@ -7,6 +7,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
+import androidx.viewpager2.widget.ViewPager2;
 
 import com.google.android.material.tabs.TabLayoutMediator;
 import com.jakewharton.rxbinding2.view.RxView;
@@ -112,10 +113,24 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
         new TabLayoutMediator(binding.tabLayout, binding.viewPager, (tab, position) -> {
             if (position == 0) {
                 tab.setText(R.string.dataset_overview);
+            } else if (position == viewPagerAdapter.getItemCount() - 1) {
+                tab.setText(R.string.dashboard_notes);
             } else {
                 tab.setText(viewPagerAdapter.getSectionTitle(position));
             }
         }).attach();
+
+        binding.viewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
+            @Override
+            public void onPageSelected(int position) {
+                super.onPageSelected(position);
+                if (position == viewPagerAdapter.getItemCount() -1) {
+                    binding.saveButton.hide();
+                } else {
+                    binding.saveButton.show();
+                }
+            }
+        });
     }
 
     @Override
@@ -127,9 +142,11 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
     }
 
     public void updateTabLayout(String section, int numTables) {
-        sections.remove("NO_SECTION");
-        sections.add(getString(R.string.tab_tables));
-        viewPagerAdapter.swapData(sections);
+        if (sections.get(0) == "NO_SECTION"){
+            sections.remove("NO_SECTION");
+            sections.add(getString(R.string.tab_tables));
+            viewPagerAdapter.swapData(sections);
+        }
     }
 
     public DataSetTableContract.Presenter getPresenter() {

@@ -7,6 +7,7 @@ import androidx.viewpager2.adapter.FragmentStateAdapter;
 
 import org.dhis2.usescases.datasets.dataSetTable.dataSetDetail.DataSetDetailFragment;
 import org.dhis2.usescases.datasets.dataSetTable.dataSetSection.DataSetSectionFragment;
+import org.dhis2.usescases.notes.NotesFragment;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,9 +34,10 @@ public final class DataSetSectionAdapter extends FragmentStateAdapter {
     @Override
     public Fragment createFragment(int position) {
         Fragment fragment;
-        //TODO (ANDROAPP-2588): SUPPORT FOR NOTES FRAGMENT
         if (position == 0) {
             fragment = DataSetDetailFragment.create(dataSetUid, accessDataWrite);
+        } else if (position == getItemCount() - 1) {
+            fragment = NotesFragment.newDatasetInstance(dataSetUid);
         } else {
             fragment = DataSetSectionFragment.create(sections.get(position - 1), accessDataWrite, dataSetUid);
         }
@@ -44,8 +46,7 @@ public final class DataSetSectionAdapter extends FragmentStateAdapter {
 
     @Override
     public int getItemCount() {
-        //TODO (ANDROAPP-2588): SUPPORT FOR NOTES FRAGMENT
-        return sections.size() + 1;
+        return sections.size() + 2;
     }
 
     String getSectionTitle(int position) {
