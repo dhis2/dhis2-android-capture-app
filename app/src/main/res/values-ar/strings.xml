@@ -188,7 +188,7 @@
     <string name="Manual">يدوياً</string>
     <string name="Automatic_Sync_Metadata">مزامنة التهيئة والتكوين تلقائياً كل:</string>
     <string name="a_week">1 اسبوع</string>
-    <string name="sync_max_parameters">معاملات المزامنة الحالية</string>
+    <string name="sync_max_parameters">عوامل المزامنة الحالية:</string>
     <string name="sync_default_parameters">إعادة تعيين إلى الافتراضي</string>
     <string name="wipe_data_meesage">سيتم حذف قاعدة البيانات. سيُطلب منك تسجيل الدخول مرة أخرى.</string>
     <string name="wipe_data_ok">قبول</string>
@@ -219,7 +219,7 @@
     <!--region SETTINCS-->
     <string name="settingsSyncData">مزامنة البيانات</string>
     <string name="settingsSyncMetadata">مزامنة التهيئة والتكوين</string>
-    <string name="settingsSyncParameters">معاملات المزامنة</string>
+    <string name="settingsSyncParameters">مزامنة العوامل</string>
     <string name="settingsReservedValues">القيم المحجوزة</string>
     <string name="settingsReservedValues_descr">هنا يمكنك رؤية عدد القيم المتاحة بلا اتصال بالإنترنت وحجز قيم جديدة.</string>
     <string name="settingsErrorLog">افتح سجل أخطاء المزامنة</string>
@@ -229,7 +229,7 @@
     <string name="settingsReset">إعادة تعيين بيانات التطبيق و إعدادات التهيئة و التكوين</string>
     <string name="settingsReset_descr">سيتم حذف بيانات التهيئة والتطبيق المخزنة في الجهاز. سيُطلب منك تسجيل الدخول مرة أخرى وستفقد البيانات التي لم تتم مزامنتها مع الخادم.</string>
     <string name="settingsSms">إعدادات الرسائل النصية القصيرة</string>
-    <string name="settingsSms_descr">فحص وتحرير المعلمات المتعلقة ببوابة الرسائل القصيرة</string>
+    <string name="settingsSms_descr">فحص وتعديل العوامل المتعلقة ببوابة الرسائل القصيرة</string>
     <!--endregion-->
 
     <string name="enrollmment_date">تاريخ التسجيل</string>
@@ -405,7 +405,7 @@
     <string name="tuto_search_3_v2">بحث أو إضافة كيانات جديدة. تحتاج إلى البحث قبل أن تتمكن من إضافة أي جديد!</string>
     <string name="tuto_search_4_v2">انقر هنا لتنظيف الحقول وإعادة البحث.</string>
     <string name="tuto_dashboard_1">هذه لوحة معلومات الكيان المسجل</string>
-    <string name="tuto_dashboard_2">الإطلاع على المعلومات الخاصة بالكيانات...</string>
+    <string name="tuto_dashboard_2">الإطلاع على معلومات الكيانات الخاصة...</string>
     <string name="tuto_dashboard_3">...مشاركة المعلومات عبر QR أو SMS...</string>
     <string name="tuto_dashboard_4">...أو ضع علامة على الكيان للمتابعة</string>
     <string name="tuto_dashboard_5">انقر لإنشاء أو جدولة حدث أو الإحالة إلى وحدة تنظيمية أخرى.</string>
@@ -420,7 +420,7 @@
     <string name="tuto_event_initial_1">انقر للتحقق من حالة إكتمال الحدث</string>
     <string name="tuto_event_summary">انقر لإكمال أو لإعادة فتح حدث</string>
     <string name="tuto_main_7">قراءة وتخزين المعلومات من أجهزة أخرى عبر QR</string>
-    <string name="tuto_main_8">زامن بياناتك مع الخادم</string>
+    <string name="tuto_main_8">مزامنة بياناتك مع الخادم</string>
     <string name="tuto_main_9">حظر العمل برمز مكون من 4 أرقام. لا تنس الرمز الخاص بك!</string>
     <string name="tuto_main_10">قم بتسجيل الخروج لتغيير المستخدم أو الخادم. ستتمكن من تسجيل الدخول مرة أخرى حتى إذا لم يكن هناك اتصال بالإنترنت.</string>
     <string name="text_plus_colon">%s:</string>
@@ -441,8 +441,8 @@
     <string name="field_errors">تحتوي بعض الحقول على أخطاء. من فضلك ، تحقق منها حتى تتمكن من الإكمال</string>
     <string name="unselect_enrollment">كل التسجيلات</string>
     <string name="unselect_enrollment_description">عرض لوحة معلومات بجميع البرامج النشطة</string>
-    <string name="CHECK_SYNC_ERRORS">فتح سجل أخطاء التزامن</string>
-    <string name="error_dialog_title">سجل أخطاء التزامن</string>
+    <string name="CHECK_SYNC_ERRORS">فتح سجل أخطاء المزامنة</string>
+    <string name="error_dialog_title">سجل أخطاء المزامنة</string>
     <string name="share_with">مشاركة مع...</string>
     <string name="errors_during_sync">فشلت مزامنة التهيئة والتكوين الخاصة بك. قد تكون هناك أخطاء في الخادم الخاص بك. انقر هنا للمزيد من المعلومات.</string>
     <string name="sectionSelectorPrev">السابق</string>
@@ -507,13 +507,13 @@
     <string name="data_set_closed">إغلاق</string>
     <string name="data_set_open">فتح</string>
     <string name="unsupported_value_type">نوع القيمة غير مدعوم</string>
-    <string name="change_calendar_view">غير طريقة عرض التقويم</string>
+    <string name="change_calendar_view">تغيير طريقة عرض التقويم</string>
     <string name="data_every_fifteen_minutes">15 دقيقة</string>
     <string name="data_every_hour">كل ساعة</string>
     <string name="data_every_day">يومي</string>
     <string name="data_every_week">أسبوعي</string>
     <string name="period_week">Week</string>
-    <string name="sync_setting">إعداد التزامن: %s</string>
+    <string name="sync_setting">إعداد المزامنة: %s</string>
     <string name="relationship_without_enrollment">السجل الذي تحاول الوصول إليه ليس لديه تسجيل. لا يمكنك الوصول إلى لوحة المعلومات.</string>
     <string name="formatting_error">خطأ في التنسيق</string>
     <string name="dashboard_menu_delete_tei">حذف الـ TEI</string>
@@ -587,7 +587,7 @@
     <string name="filters_title_period">الفترة الزمنية</string>
     <string name="filters_title_org_unit">الوحدة التنظيمية</string>
     <string name="filters_title_status">الحالة</string>
-    <string name="filters_title_state">زامن</string>
+    <string name="filters_title_state">مزامنة</string>
     <string name="filters_title_assigned">تم تعيينه لي</string>
     <string name="filter_period_today">اليوم</string>
     <string name="filter_period_yesterday">الأمس</string>
@@ -664,7 +664,7 @@
     <string name="limit_scope_ou_program_trailing">لكل وحدة تنظيمية وبرنامج</string>
     <string name="activity_program_settings">إعداد مزامنة البرنامج</string>
     <string name="syncing_period_not_editable">فترة المزامنة غير قابلة للتعديل</string>
-    <string name="sync_parameters_not_editable">معلمات المزامنة غير قابلة للتعديل</string>
+    <string name="sync_parameters_not_editable">عوامل المزامنة غير قابلة للتعديل</string>
     <string name="rv_no_editable">عدد القيم المحجوزة التي تم تنزيلها غير قابل للتعديل</string>
     <string name="dialog_layer_satellite">إظهار عرض القمر الصناعي</string>
     <string name="dialog_layer_tei_coordinates">إظهار إحداثيات tei</string>
@@ -672,6 +672,6 @@
     <string name="downloading">تنزيل</string>
     <string name="filter_sync_synced">المتزامن</string>
     <string name="filter_sync_not_synced">الغير متزامن</string>
-    <string name="filter_sync_error">مع أخطاء في المزامنة</string>
+    <string name="filter_sync_error">تحوي أخطاء في المزامنة</string>
     <string name="filter_sync_sms">تمت مزامنة SMS</string>
 </resources>
