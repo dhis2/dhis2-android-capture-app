@@ -1,12 +1,10 @@
 package org.dhis2.usescases.datasets.dataSetTable.dataSetDetail
 
 import io.reactivex.Flowable
-import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.functions.BiFunction
 import io.reactivex.processors.PublishProcessor
 import org.dhis2.data.schedulers.SchedulerProvider
-import org.dhis2.usescases.datasets.dataSetTable.DataSetTableRepository
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableRepositoryImpl
 import org.hisp.dhis.android.core.dataset.DataSetInstance
 import org.hisp.dhis.android.core.period.Period
