@@ -66,7 +66,4 @@ public class ProgramEventDetailModule {
                                                        MapEventToFeatureCollection mapEventToFeatureCollection){
         return new ProgramEventDetailRepositoryImpl(programUid, d2, mapper, mapEventToFeatureCollection);
     }
-
-
-
 }

@@ -3,7 +3,7 @@ package org.dhis2.uicomponents.map.geometry.bound
 class BoundsGeometry(var northBound:Double = 0.0, var southBound:Double = 0.0,
                      var eastBound:Double = 0.0, var westBound:Double = 0.0) {
 
-    fun init(){
+    fun initOrReset(){
         northBound = 0.0
         southBound = 0.0
         eastBound = 0.0
