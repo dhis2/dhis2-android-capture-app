@@ -87,7 +87,6 @@ class ValueStoreImpl(
         } else {
             ""
         }
-
         return if (currentValue != newValue) {
             if (!DhisTextUtils.isEmpty(value)) {
                 valueRepository.blockingSetCheck(d2, uid, newValue)
