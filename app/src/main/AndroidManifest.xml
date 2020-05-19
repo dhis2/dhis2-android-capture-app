@@ -100,7 +100,7 @@
         <activity android:name=".usescases.development.DevelopmentActivity" />
 
         <service android:name=".usescases.sms.SmsSendingService" />
-        <activity android:name=".usescases.teiDashboard.nfc_data.NfcDataWriteActivity" />
+        <activity android:name=".usescases.teiDashboard.nfcdata.NfcDataWriteActivity" />
 
         <provider
             android:name="androidx.core.content.FileProvider"
@@ -121,7 +121,7 @@
 
         <activity android:name=".usescases.notes.noteDetail.NoteDetailActivity"
             android:windowSoftInputMode="adjustResize" />
-        <activity android:name=".usescases.settings_program.SettingsProgramActivity" />
+        <activity android:name=".usescases.settingsprogram.SettingsProgramActivity" />
 
         <service
             android:name=".data.notifications.DhisFirebaseMessagingService"

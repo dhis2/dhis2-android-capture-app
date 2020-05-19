@@ -142,7 +142,6 @@ class TeiDashboardPresenterTest {
             filterManager.asFlowable()
         ) doReturn Flowable.just(filterManager)
 
-
         presenter.init()
 
         verify(view).setDataWithOutProgram(presenter.dashboardProgramModel)
@@ -310,7 +309,7 @@ class TeiDashboardPresenterTest {
     @Test
     fun `Should return true program grouping from preferences if setting set to true`() {
         val typeToken: TypeToken<HashMap<String, Boolean>> =
-            object: TypeToken<HashMap<String, Boolean>>() {}
+            object : TypeToken<HashMap<String, Boolean>>() {}
         val returnedHashMap = hashMapOf(programUid to true)
 
         whenever(
@@ -325,7 +324,7 @@ class TeiDashboardPresenterTest {
     @Test
     fun `Should return false program grouping from preferences if setting is set to false`() {
         val typeToken: TypeToken<HashMap<String, Boolean>> =
-            object: TypeToken<HashMap<String, Boolean>>() {}
+            object : TypeToken<HashMap<String, Boolean>>() {}
         val returnedHashMap = hashMapOf(programUid to false)
 
         whenever(
@@ -340,7 +339,7 @@ class TeiDashboardPresenterTest {
     @Test
     fun `Should return false program grouping if the programUid not = presenter's programUid`() {
         val typeToken: TypeToken<HashMap<String, Boolean>> =
-            object: TypeToken<HashMap<String, Boolean>>() {}
+            object : TypeToken<HashMap<String, Boolean>>() {}
         val returnedHashMap = hashMapOf("otherProgramUid" to true)
 
         whenever(
@@ -399,7 +398,7 @@ class TeiDashboardPresenterTest {
     }
 
     @Test
-    fun `Should update the status of the enrollment`(){
+    fun `Should update the status of the enrollment`() {
         whenever(
             repository.updateEnrollmentStatus("uid", EnrollmentStatus.COMPLETED)
         ) doReturn Observable.just(true)
@@ -421,5 +420,4 @@ class TeiDashboardPresenterTest {
         verify(view).displayMessage(any())
         verifyNoMoreInteractions(view)
     }
-
 }

@@ -36,8 +36,10 @@ class RecyclerviewMatchers {
             }
         }
 
-        fun atPosition(position: Int,
-                       @NonNull itemMatcher: Matcher<View>): Matcher<View> {
+        fun atPosition(
+            position: Int,
+            @NonNull itemMatcher: Matcher<View>
+        ): Matcher<View> {
             return object : BoundedMatcher<View, RecyclerView>(RecyclerView::class.java) {
                 override fun describeTo(description: Description) {
                     description.appendText("has item in recyclerview  at position $position")

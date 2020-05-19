@@ -405,7 +405,7 @@ class DataValueRepositoryImpl(private val d2: D2, private val dataSetUid: String
             for (dataSetElement in dataSetElements!!) {
                 if (dataSetElement.categoryCombo() != null &&
                     categoryCombo.uid() == dataSetElement.categoryCombo()!!.uid()
-                ){
+                ) {
                     dataElementUids.add(dataSetElement.dataElement().uid())
                 } else {
                     val uid = d2.dataElementModule().dataElements()
@@ -437,28 +437,29 @@ class DataValueRepositoryImpl(private val d2: D2, private val dataSetUid: String
         return d2.dataSetModule().dataSets().uid(dataSetUid).get().toFlowable()
             .flatMap { dataSet: DataSet ->
                 when {
-                    dataSet.access().data().write() -> d2.categoryModule()
-                        .categoryOptionCombos().withCategoryOptions()
-                        .byCategoryComboUid().eq(dataSet.categoryCombo()?.uid())
-                        .get().toFlowable()
-                        .map { categoryOptionCombos: List<CategoryOptionCombo> ->
-                            val canWriteCatOption = categoryOptionCombos.any { catOptionCombo ->
-                                catOptionCombo.categoryOptions()?.any{
-                                    it.access().data().write()
-                                } ?: false
+                    dataSet.access().data().write() ->
+                        d2.categoryModule()
+                            .categoryOptionCombos().withCategoryOptions()
+                            .byCategoryComboUid().eq(dataSet.categoryCombo()?.uid())
+                            .get().toFlowable()
+                            .map { categoryOptionCombos: List<CategoryOptionCombo> ->
+                                val canWriteCatOption = categoryOptionCombos.any { catOptionCombo ->
+                                    catOptionCombo.categoryOptions()?.any {
+                                        it.access().data().write()
+                                    } ?: false
+                                }
+                                var canWriteOrgUnit = false
+                                if (canWriteCatOption) {
+                                    val organisationUnits =
+                                        d2.organisationUnitModule().organisationUnits()
+                                            .byDataSetUids(listOf(dataSetUid))
+                                            .byOrganisationUnitScope(
+                                                OrganisationUnit.Scope.SCOPE_DATA_CAPTURE
+                                            ).blockingGet()
+                                    canWriteOrgUnit = organisationUnits.isNotEmpty()
+                                }
+                                canWriteCatOption && canWriteOrgUnit
                             }
-                            var canWriteOrgUnit = false
-                            if (canWriteCatOption) {
-                                val organisationUnits =
-                                    d2.organisationUnitModule().organisationUnits()
-                                        .byDataSetUids(listOf(dataSetUid))
-                                        .byOrganisationUnitScope(
-                                            OrganisationUnit.Scope.SCOPE_DATA_CAPTURE
-                                        ).blockingGet()
-                                canWriteOrgUnit = organisationUnits.isNotEmpty()
-                            }
-                            canWriteCatOption && canWriteOrgUnit
-                        }
                     else -> Flowable.just(false)
                 }
             }

@@ -14,20 +14,19 @@ class OrgUnitSelectorTest : BaseTest() {
     @get:Rule
     val mainRule = ActivityTestRule(OUTreeActivity::class.java, false, false)
 
-    fun startActivityWithIntent(){
+    fun startActivityWithIntent() {
         Intent().apply {
-            putExtra(PROGRAM,"asd" )
+            putExtra(PROGRAM, "asd")
         }.also { mainRule.launchActivity(it) }
     }
 
-    fun startActivityWithOutIntent(){
-         mainRule.launchActivity(null)
+    fun startActivityWithOutIntent() {
+        mainRule.launchActivity(null)
     }
-
 
     @Test
     fun shouldOpenOrgUnitSelector() {
-     //   startActivityWithOutIntent()
+        //   startActivityWithOutIntent()
     }
 
     companion object {

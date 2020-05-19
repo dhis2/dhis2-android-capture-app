@@ -1,6 +1,10 @@
 package org.dhis2.uicomponents.map.geometry
 
-import com.mapbox.geojson.*
+import com.mapbox.geojson.BoundingBox
+import com.mapbox.geojson.Feature
+import com.mapbox.geojson.FeatureCollection
+import com.mapbox.geojson.Point
+import com.mapbox.geojson.Polygon
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel
 import org.hisp.dhis.android.core.arch.helpers.GeometryHelper
 import org.hisp.dhis.android.core.common.FeatureType
@@ -38,7 +42,7 @@ object GeometryUtils {
                     if (point != null) {
                         point.addStringProperty("teiUid", it.tei.uid())
                         point.addStringProperty("teiImage", it.profilePicturePath)
-                        if (it.selectedEnrollment != null){
+                        if (it.selectedEnrollment != null) {
                             point.addStringProperty("enrollmentUid", it.selectedEnrollment.uid())
                         }
                         featureMap["TEI"]!!.add(point)
@@ -47,7 +51,7 @@ object GeometryUtils {
                     val polygon = getPolygonFeature(geometry)
                     polygon.addStringProperty("teiUid", it.tei.uid())
                     polygon.addStringProperty("teiImage", it.profilePicturePath)
-                    if (it.selectedEnrollment != null){
+                    if (it.selectedEnrollment != null) {
                         polygon.addStringProperty("enrollmentUid", it.selectedEnrollment.uid())
                     }
                     featureMap["TEI"]!!.add(polygon)
@@ -101,7 +105,7 @@ object GeometryUtils {
         westBound = 0.0
 
         val features = eventList.filter { it.geometry() != null }.mapNotNull {
-                    handleGeometry(it.geometry()!!, "eventUid", it.uid()!!)
+            handleGeometry(it.geometry()!!, "eventUid", it.uid()!!)
         }
 
         return Pair<FeatureCollection, BoundingBox>(
