@@ -61,6 +61,7 @@ class NotesPresenter(
                     when (noteType) {
                         NoteType.EVENT -> notesRepository.getEventNotes(uid)
                         NoteType.ENROLLMENT -> notesRepository.getEnrollmentNotes(uid)
+                        NoteType.DATASET -> notesRepository.getDatasetNotes()
                     }
                 }
                 .subscribeOn(schedulerProvider.io())
@@ -72,7 +73,7 @@ class NotesPresenter(
         )
 
         compositeDisposable.add(
-            Flowable.just(notesRepository.hasProgramWritePermission())
+            Flowable.just(notesRepository.hasProgramWritePermission(noteType, uid))
                 .subscribeOn(schedulerProvider.computation())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
