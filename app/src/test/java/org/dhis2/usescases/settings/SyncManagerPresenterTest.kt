@@ -270,7 +270,6 @@ class SyncManagerPresenterTest {
         verify(view, times(1)).wipeDatabase()
     }
 
-
     @Test
     fun `Should open clicked item`() {
         presenter.onItemClick(SettingItem.DATA_SYNC)

@@ -35,4 +35,3 @@ class ScanRepository(private val d2: D2, private val optionsSetUid: String?) {
     fun getOptions(): MutableList<Option> =
         d2.optionModule().options().byOptionSetUid().eq(optionsSetUid).blockingGet()
 }
-

@@ -105,7 +105,7 @@
         <activity android:name=".usescases.development.DevelopmentActivity" />
 
         <service android:name=".usescases.sms.SmsSendingService" />
-        <activity android:name=".usescases.teiDashboard.nfc_data.NfcDataWriteActivity" />
+        <activity android:name=".usescases.teiDashboard.nfcdata.NfcDataWriteActivity" />
 
         <provider
             android:name="androidx.core.content.FileProvider"

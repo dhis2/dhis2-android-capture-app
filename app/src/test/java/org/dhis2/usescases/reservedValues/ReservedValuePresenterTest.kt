@@ -5,13 +5,10 @@ import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.verifyZeroInteractions
 import com.nhaarman.mockitokotlin2.whenever
-import io.reactivex.BackpressureStrategy
-import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.Single
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.dhis2.usescases.reservedValue.ReservedValueContracts
-import org.dhis2.usescases.reservedValue.ReservedValueModel
 import org.dhis2.usescases.reservedValue.ReservedValuePresenter
 import org.dhis2.usescases.reservedValue.ReservedValueRepository
 import org.hisp.dhis.android.core.D2

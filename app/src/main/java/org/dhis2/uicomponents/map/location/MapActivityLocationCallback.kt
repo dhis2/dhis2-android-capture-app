@@ -5,8 +5,8 @@ import android.widget.Toast
 import com.mapbox.android.core.location.LocationEngineCallback
 import com.mapbox.android.core.location.LocationEngineResult
 import com.mapbox.mapboxsdk.geometry.LatLng
-import org.dhis2.uicomponents.map.views.MapSelectorActivity
 import java.lang.ref.WeakReference
+import org.dhis2.uicomponents.map.views.MapSelectorActivity
 
 class MapActivityLocationCallback(activity: MapSelectorActivity) :
     LocationEngineCallback<LocationEngineResult> {
