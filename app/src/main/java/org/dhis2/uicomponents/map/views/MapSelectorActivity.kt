@@ -46,7 +46,7 @@ import timber.log.Timber
 
 class MapSelectorActivity :
     ActivityGlobalAbstract(),
-        MapActivityLocationCallback.OnLocationChanged {
+    MapActivityLocationCallback.OnLocationChanged {
 
     override fun onLocationChanged(latLng: LatLng) {
         Timber.d("NEW LOCATION %s, %s", latLng.latitude, latLng.longitude)
@@ -108,7 +108,7 @@ class MapSelectorActivity :
             locationComponent.zoomWhileTracking(13.0)
 
             LocationEngineProvider.getBestLocationEngine(this).getLastLocation(
-                    MapActivityLocationCallback(this)
+                MapActivityLocationCallback(this)
             )
         }
     }
@@ -344,7 +344,7 @@ class MapSelectorActivity :
             ActivityCompat.requestPermissions(
                 this,
                 arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-                    ACCESS_LOCATION_PERMISSION_REQUEST
+                ACCESS_LOCATION_PERMISSION_REQUEST
             )
             return
         }

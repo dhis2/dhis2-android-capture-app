@@ -15,7 +15,6 @@ import org.hamcrest.Description
 import org.hamcrest.Matcher
 import org.hamcrest.TypeSafeMatcher
 
-
 fun withErrorEnabledTil(): Matcher<View> {
     return object : BoundedMatcher<View, TextInputLayout>(TextInputLayout::class.java) {
         override fun describeTo(description: Description) {
@@ -34,7 +33,7 @@ fun withErrorMessageShownTil(): Matcher<View> {
             description.appendText("message shown ")
         }
 
-        override  fun matchesSafely(item: TextInputLayout): Boolean {
+        override fun matchesSafely(item: TextInputLayout): Boolean {
             return item.error!!.isNotEmpty()
         }
     }
@@ -44,8 +43,10 @@ fun clickOnTab(tabIndex: Int): Matcher<View> {
     return nthChildOf(withClassName(containsString("SlidingTab")), tabIndex)
 }
 
-fun nthChildOf(parentMatcher: Matcher<View>,
-               childPosition: Int): Matcher<View> {
+fun nthChildOf(
+    parentMatcher: Matcher<View>,
+    childPosition: Int
+): Matcher<View> {
     return object : TypeSafeMatcher<View>() {
         override fun describeTo(description: Description) {
             description.appendText("with $childPosition child is view of type SlidingTab")
@@ -97,7 +98,7 @@ fun isToast(): Matcher<Root> {
     }
 }
 
-fun findChildFabButton(childToClick:Int) : Matcher<View> {
+fun findChildFabButton(childToClick: Int): Matcher<View> {
     return object : TypeSafeMatcher<View>() {
         override fun matchesSafely(view: View): Boolean {
             val rootView = (view as FrameLayout)

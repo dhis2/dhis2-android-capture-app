@@ -42,7 +42,8 @@ class LoginPresenterTest {
     private val preferenceProvider: PreferenceProvider = mock()
     private val goldfinger: FingerPrintController = mock()
     private val view: LoginContracts.View = mock()
-    private val userManager: UserManager = Mockito.mock(UserManager::class.java, Mockito.RETURNS_DEEP_STUBS)
+    private val userManager: UserManager =
+        Mockito.mock(UserManager::class.java, Mockito.RETURNS_DEEP_STUBS)
     private val analyticsHelper: AnalyticsHelper = mock()
 
     @Before
@@ -313,14 +314,14 @@ class LoginPresenterTest {
     }
 
     @Test
-    fun `Should clear INITIAL_SYNC_DONE preference if network is available`(){
+    fun `Should clear INITIAL_SYNC_DONE preference if network is available`() {
         val response = Response.success(
             User.builder()
                 .uid("userUid")
                 .build()
         )
         whenever(view.isNetworkAvailable()) doReturn true
-        loginPresenter.handleResponse(response,"userName","serverUrl")
+        loginPresenter.handleResponse(response, "userName", "serverUrl")
         verify(view, times(1)).isNetworkAvailable()
         verify(preferenceProvider, times(1)).setValue(Preference.INITIAL_SYNC_DONE, false)
     }

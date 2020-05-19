@@ -14,17 +14,17 @@ object TeiMarkers {
 
     private fun initMarkerCanvas(context: Context, color: Int): Pair<Canvas, Bitmap> {
         val drawable: Drawable =
-                ContextCompat.getDrawable(context, R.drawable.ic_img_marker_frame)!!
+            ContextCompat.getDrawable(context, R.drawable.ic_img_marker_frame)!!
         tintDrawable(drawable, color)
         drawable.mutate()
 
         val canvasMarker = Bitmap.createBitmap(
-                drawable.intrinsicWidth,
-                drawable.intrinsicHeight,
-                Bitmap.Config.ARGB_8888
+            drawable.intrinsicWidth,
+            drawable.intrinsicHeight,
+            Bitmap.Config.ARGB_8888
         )
         val markerBitmap =
-                Bitmap.createBitmap(canvasMarker.width, canvasMarker.height, canvasMarker.config)
+            Bitmap.createBitmap(canvasMarker.width, canvasMarker.height, canvasMarker.config)
         val canvas = Canvas(markerBitmap)
 
         drawable.setBounds(0, 0, canvas.width, canvas.height)

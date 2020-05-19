@@ -11,7 +11,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
-class EnrollmentTest : BaseTest(){
+class EnrollmentTest : BaseTest() {
 
     @get:Rule
     val ruleSearch = ActivityTestRule(SearchTEActivity::class.java, false, false)
@@ -21,12 +21,11 @@ class EnrollmentTest : BaseTest(){
 
     override fun setUp() {
         super.setUp()
-        //init robot
+        // init robot
     }
 
     @Test
     fun openEnrollment() {
-
     }
 
     private fun prepareSearchIntentAndLaunchActivity() {

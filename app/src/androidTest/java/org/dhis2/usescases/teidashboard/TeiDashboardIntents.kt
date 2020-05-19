@@ -19,11 +19,15 @@ private const val TEI_UID_VALUE_WITH_NOTE = "UtDZmrX5lSd"
 private const val TEI_UID_VALUE_TO_DELETE = "SHnmavBQu72"
 private const val TEI_UID_VALUE_TO_SCHEDULE = "uh47DXf1St9"
 
-fun prepareTeiCompletedProgrammeAndLaunchActivity(rule: ActivityTestRule<TeiDashboardMobileActivity>) {
+fun prepareTeiCompletedProgrammeAndLaunchActivity(
+    rule: ActivityTestRule<TeiDashboardMobileActivity>
+) {
     startTeiDashboardActivity(CHILD_PROGRAM_UID_VALUE, TEI_UID_VALUE_COMPLETED, rule)
 }
 
-fun prepareTeiOpenedForReferralProgrammeAndLaunchActivity(rule: ActivityTestRule<TeiDashboardMobileActivity>) {
+fun prepareTeiOpenedForReferralProgrammeAndLaunchActivity(
+    rule: ActivityTestRule<TeiDashboardMobileActivity>
+) {
     startTeiDashboardActivity(TB_PROGRAM_UID, TEI_UID_VALUE_OPEN_REFERRAL, rule)
 }
 
@@ -31,27 +35,47 @@ fun prepareTeiOpenedProgrammeAndLaunchActivity(rule: ActivityTestRule<TeiDashboa
     startTeiDashboardActivity(CHILD_PROGRAM_UID_VALUE, TEI_UID_VALUE_OPENED, rule)
 }
 
-fun prepareTeiOpenedForCompleteProgrammeAndLaunchActivity(rule: ActivityTestRule<TeiDashboardMobileActivity>) {
-    startTeiDashboardActivity(CHILD_PROGRAM_UID_VALUE, TEI_UID_VALUE_OPEN_TO_COMPLETE, rule)
+fun prepareTeiOpenedForCompleteProgrammeAndLaunchActivity(
+    rule: ActivityTestRule<TeiDashboardMobileActivity>
+) {
+    startTeiDashboardActivity(
+        CHILD_PROGRAM_UID_VALUE,
+        TEI_UID_VALUE_OPEN_TO_COMPLETE,
+        rule
+    )
 }
 
-fun prepareTeiWithExistingNoteAndLaunchActivity(rule: ActivityTestRule<TeiDashboardMobileActivity>) {
-    startTeiDashboardActivity(CHILD_PROGRAM_UID_VALUE, TEI_UID_VALUE_WITH_NOTE, rule)
+fun prepareTeiWithExistingNoteAndLaunchActivity(
+    rule: ActivityTestRule<TeiDashboardMobileActivity>
+) {
+    startTeiDashboardActivity(
+        CHILD_PROGRAM_UID_VALUE,
+        TEI_UID_VALUE_WITH_NOTE,
+        rule
+    )
 }
 
-fun prepareTeiOpenedWithFullEventsAndLaunchActivity(rule: ActivityTestRule<TeiDashboardMobileActivity>){
+fun prepareTeiOpenedWithFullEventsAndLaunchActivity(
+    rule: ActivityTestRule<TeiDashboardMobileActivity>
+) {
     startTeiDashboardActivity(CHILD_PROGRAM_UID_VALUE, TEI_UID_VALUE_OPENED_FULL, rule)
 }
 
-fun prepareTeiToDeleteAndLaunchActivity(rule: ActivityTestRule<TeiDashboardMobileActivity>){
+fun prepareTeiToDeleteAndLaunchActivity(rule: ActivityTestRule<TeiDashboardMobileActivity>) {
     startTeiDashboardActivity(CHILD_PROGRAM_UID_VALUE, TEI_UID_VALUE_TO_DELETE, rule)
 }
 
-fun prepareTeiOpenedWithNoPreviousEventProgrammeAndLaunchActivity(rule: ActivityTestRule<TeiDashboardMobileActivity>) {
+fun prepareTeiOpenedWithNoPreviousEventProgrammeAndLaunchActivity(
+    rule: ActivityTestRule<TeiDashboardMobileActivity>
+) {
     startTeiDashboardActivity(TB_PROGRAM_UID, TEI_UID_VALUE_TO_SCHEDULE, rule)
 }
 
-fun startTeiDashboardActivity(programUID: String, teiUID: String, rule: ActivityTestRule<TeiDashboardMobileActivity>){
+fun startTeiDashboardActivity(
+    programUID: String,
+    teiUID: String,
+    rule: ActivityTestRule<TeiDashboardMobileActivity>
+) {
     Intent().apply {
         putExtra(PROGRAM_UID, programUID)
         putExtra(TEI_UID, teiUID)
@@ -64,5 +88,3 @@ fun prepareChildProgrammeIntentAndLaunchActivity(ruleSearch: ActivityTestRule<Se
         putExtra(SearchTETest.CHILD_TE_TYPE, SearchTETest.CHILD_TE_TYPE_VALUE)
     }.also { ruleSearch.launchActivity(it) }
 }
-
-

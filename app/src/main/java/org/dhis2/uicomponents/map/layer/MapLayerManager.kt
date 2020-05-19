@@ -3,9 +3,29 @@ package org.dhis2.uicomponents.map.layer
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.mapbox.mapboxsdk.maps.Style
-import com.mapbox.mapboxsdk.style.expressions.Expression.*
-import com.mapbox.mapboxsdk.style.layers.*
-import com.mapbox.mapboxsdk.style.layers.PropertyFactory.*
+import com.mapbox.mapboxsdk.style.expressions.Expression.eq
+import com.mapbox.mapboxsdk.style.expressions.Expression.heatmapDensity
+import com.mapbox.mapboxsdk.style.expressions.Expression.interpolate
+import com.mapbox.mapboxsdk.style.expressions.Expression.linear
+import com.mapbox.mapboxsdk.style.expressions.Expression.literal
+import com.mapbox.mapboxsdk.style.expressions.Expression.rgb
+import com.mapbox.mapboxsdk.style.expressions.Expression.rgba
+import com.mapbox.mapboxsdk.style.expressions.Expression.stop
+import com.mapbox.mapboxsdk.style.expressions.Expression.zoom
+import com.mapbox.mapboxsdk.style.layers.FillLayer
+import com.mapbox.mapboxsdk.style.layers.HeatmapLayer
+import com.mapbox.mapboxsdk.style.layers.LineLayer
+import com.mapbox.mapboxsdk.style.layers.Property
+import com.mapbox.mapboxsdk.style.layers.PropertyFactory
+import com.mapbox.mapboxsdk.style.layers.PropertyFactory.fillColor
+import com.mapbox.mapboxsdk.style.layers.PropertyFactory.heatmapColor
+import com.mapbox.mapboxsdk.style.layers.PropertyFactory.heatmapRadius
+import com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconAllowOverlap
+import com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconOffset
+import com.mapbox.mapboxsdk.style.layers.PropertyFactory.lineColor
+import com.mapbox.mapboxsdk.style.layers.PropertyFactory.lineWidth
+import com.mapbox.mapboxsdk.style.layers.PropertyFactory.visibility
+import com.mapbox.mapboxsdk.style.layers.SymbolLayer
 import io.reactivex.disposables.CompositeDisposable
 import org.dhis2.utils.ColorUtils
 import org.hisp.dhis.android.core.common.FeatureType
@@ -210,7 +230,7 @@ class MapLayerManager private constructor(
                                 fillColor(ColorUtils.withAlpha(enrollmentColor))
                             )
                             .withFilter(eq(literal("\$type"), literal("Polygon"))),
-                            ENROLLMENT_POINT_LAYER_ID
+                        ENROLLMENT_POINT_LAYER_ID
                     )
                     style.addLayerAbove(
                         LineLayer(ENROLLMENT_POLYGON_BORDER_LAYER_ID, "enrollments")
@@ -219,7 +239,7 @@ class MapLayerManager private constructor(
                                 lineWidth(2f)
                             )
                             .withFilter(eq(literal("\$type"), literal("Polygon"))),
-                            ENROLLMENT_POLYGON_LAYER_ID
+                        ENROLLMENT_POLYGON_LAYER_ID
                     )
                 }
             }

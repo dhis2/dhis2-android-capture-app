@@ -7,7 +7,7 @@ import java.lang.IllegalStateException
 import org.dhis2.usescases.notes.NotesFragment
 import org.dhis2.usescases.teiDashboard.dashboardfragments.indicators.IndicatorsFragment
 import org.dhis2.usescases.teiDashboard.dashboardfragments.relationships.RelationshipFragment
-import org.dhis2.usescases.teiDashboard.dashboardfragments.tei_data.TEIDataFragment
+import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TEIDataFragment
 
 class DashboardPagerAdapter(
     fa: FragmentActivity,
