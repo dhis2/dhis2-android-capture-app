@@ -45,6 +45,7 @@ import org.dhis2.utils.session.PinModule;
 import org.dhis2.utils.session.SessionComponent;
 import org.dhis2.utils.timber.DebugTree;
 import org.dhis2.utils.timber.ReleaseTree;
+import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.D2Manager;
 import org.jetbrains.annotations.NotNull;
 
@@ -70,7 +71,7 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
     }
 
-    protected static final String DATABASE_NAME = "dhis.db";
+    protected boolean wantToImportDB = false;
 
     @NonNull
     @Singleton
@@ -101,6 +102,8 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
     @Override
     public void onCreate() {
         super.onCreate();
+
+
         Timber.plant(BuildConfig.DEBUG ? new DebugTree() : new ReleaseTree());
         ProcessLifecycleOwner.get().getLifecycle().addObserver(this);
 
@@ -115,8 +118,16 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
             upgradeSecurityProviderSync();
 
         setUpAppComponent();
+        if (wantToImportDB) {
+            populateDBIfNeeded();
+        }
         setUpServerComponent();
         setUpRxPlugin();
+    }
+
+    private void populateDBIfNeeded() {
+        DBTestLoader dbTestLoader = new DBTestLoader(getApplicationContext());
+        dbTestLoader.copyDatabaseFromAssetsIfNeeded();
     }
 
     private void upgradeSecurityProviderSync() {
@@ -141,7 +152,8 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
     }
 
     protected void setUpServerComponent() {
-        boolean isLogged = D2Manager.blockingInstantiateD2(ServerModule.getD2Configuration(this)).userModule().isLogged().blockingGet();
+        D2 d2Configuration = D2Manager.blockingInstantiateD2(ServerModule.getD2Configuration(this));
+        boolean isLogged = d2Configuration.userModule().isLogged().blockingGet();
 
         serverComponent = appComponent.plus(new ServerModule());
 
