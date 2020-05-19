@@ -1,4 +1,4 @@
-package org.dhis2.uicomponents.map.geometry.mapper
+package org.dhis2.uicomponents.map.geometry.polygon
 
 import com.mapbox.geojson.Feature
 import com.mapbox.geojson.Point
