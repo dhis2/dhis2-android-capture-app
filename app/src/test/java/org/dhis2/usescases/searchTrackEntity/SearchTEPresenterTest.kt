@@ -1,13 +1,10 @@
 package org.dhis2.usescases.searchTrackEntity
 
-import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.times
-import com.nhaarman.mockitokotlin2.verify
-import com.nhaarman.mockitokotlin2.whenever
+import com.nhaarman.mockitokotlin2.*
 import io.reactivex.schedulers.TestScheduler
 import junit.framework.TestCase.assertTrue
 import org.dhis2.data.schedulers.TestSchedulerProvider
+import org.dhis2.uicomponents.map.geometry.mapper.MapTeisToFeatureCollection
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.dhis2.utils.filters.FilterManager
 import org.hisp.dhis.android.core.D2
@@ -26,6 +23,7 @@ class SearchTEPresenterTest {
     private val repository: SearchRepository = mock()
     private val schedulers: TestSchedulerProvider = TestSchedulerProvider(TestScheduler())
     private val analyticsHelper: AnalyticsHelper = mock()
+    private val mapTeisToFeatureCollection: MapTeisToFeatureCollection = mock()
     private val initialProgram = "programUid"
 
     @Before
@@ -36,7 +34,7 @@ class SearchTEPresenterTest {
             .displayFrontPageList(true)
             .minAttributesRequiredToSearch(0).build()
         presenter =
-            SearchTEPresenter(view, d2, repository, schedulers, analyticsHelper, initialProgram)
+            SearchTEPresenter(view, d2, repository, schedulers, analyticsHelper, initialProgram, mapTeisToFeatureCollection)
     }
 
     @Test
