@@ -31,7 +31,7 @@
     <string name="sync_error_title">خطأ في المزامنة</string>
     <string name="sync_error_text">حدث خطأ أثناء المزامنة. الرجاء اعادة المحاولة.</string>
     <string name="metadata_sync_error">فشل: حدث خطأ في عملية المزامنة. إذا كنت متصلاً بالشبكة يرجى المحاولة مرة أخرى. إذا استمر الخطأ ، فاتصل بالمسؤول.</string>
-    <string name="data_sync_warning">تحذير: تم مزامنة معظم البيانات الخاصة بك ولكن وجدت تعارضات في بعض الحقول. زامن التهيئة والتكوين الخاصة بك وحاول مرة أخرى. تحقق من حالة المزامنة لكل حقل: يتم وضع علامة @ على البرامج و TEI والأحداث المتعارضة.</string>
+    <string name="data_sync_warning">تحذير: تم مزامنة معظم البيانات الخاصة بك ولكن وجدت تعارضات في بعض الحقول. قم بمزامنة التهيئة والتكوين الخاصة بك وحاول مرة أخرى. تحقق من حالة المزامنة لكل حقل: يتم وضع علامة @ على البرامج و TEI والأحداث المتعارضة.</string>
     <string name="data_sync_warning_program">تحذير: تم مزامنة معظم البيانات الخاصة بك ولكن وجدت تعارضات في بعض الحقول. قم بمزامنة التهيئة والتكوين الخاصة بك وحاول مرة أخرى. إذا استمر التحذير ، فتحقق من حالة المزامنة لكل حقل: يتم وضع علامة @ على البرامج و TEI والأحداث المتعارضة.</string>
     <string name="data_sync_error">خطأ: تعذرت مزامنة بعض بياناتك. تحقق من حالة المزامنة: يتم وضع علامة @ على البرامج التي بها أخطاء، و TEI والأحداث التي فيها تعارض بـ $ \".</string>
     <string name="data_sync_error_program">خطأ: تعذرت مزامنة بعض بياناتك. تحقق من حالة المزامنة: الأحداث  و الـ TEI المتضاربة تم وضع علامة $ عليها\".</string>
@@ -51,7 +51,7 @@
     <string name="syncing_configuration">مزامنة التهيئة والتكوين الخاصة بك</string>
     <string name="syncing_data_shortly">ستتم مزامنة بياناتك بعد لحظات</string>
     <string name="syncing_data">مزامنة بياناتك</string>
-    <string name="configuration_ready">التهيئة والتكوين الخاصة بك جاهزة</string>
+    <string name="configuration_ready">التهيئة والتكوين الخاص بك جاهز</string>
     <string name="data_ready">بياناتك جاهزة</string>
     <string name="configuration_sync_failed">فشل مزامنة التهيئة</string>
     <string name="data_sync_failed">فشل مزامنة البيانات</string>
@@ -189,7 +189,7 @@
     <string name="Automatic_Sync_Metadata">مزامنة التهيئة والتكوين تلقائياً كل:</string>
     <string name="a_week">1 اسبوع</string>
     <string name="sync_max_parameters">عوامل المزامنة الحالية:</string>
-    <string name="sync_default_parameters">إعادة تعيين إلى الافتراضي</string>
+    <string name="sync_default_parameters">إعادة التعيين إلى الافتراضي</string>
     <string name="wipe_data_meesage">سيتم حذف قاعدة البيانات. سيُطلب منك تسجيل الدخول مرة أخرى.</string>
     <string name="wipe_data_ok">قبول</string>
     <string name="wipe_data_no">إلغاء</string>
@@ -346,7 +346,7 @@
     <string name="about_sdk">إصدار الـ SDK: %s</string>
     <string name="about_connected">مرتبط بـ: %s</string>
     <string name="about_user">المستخدم الحالي: %s</string>
-    <string name="about_more">المزيد حول هذا التطبيق: اقرأ <a href="https://drive.google.com/open?id=1YHRBk6LSp6uROfs19-wCfQGc-rgl2f5iDrhCDasTR8M">هنا</a> ما هو مدعوم وما هو غير مدعوم</string>
+    <string name="about_more">للمزيد حول هذا التطبيق: اقرأ <a href="https://drive.google.com/open?id=1YHRBk6LSp6uROfs19-wCfQGc-rgl2f5iDrhCDasTR8M">هنا</a> ما هو مدعوم وما هو غير مدعوم</string>
     <string name="about_git">يتوفر هذا الإصدار والإصدارات السابقة من هذا التطبيق، بالإضافة إلى الكود على <a href="https://github.com/dhis2/dhis2-android-capture-app">GitHub</a>. تم ترخيص DHIS2 Android Capture بموجب شروط رخصة GNU General Public License كما نشرتها مؤسسة البرمجيات الحرة - انظر <a href="http://www.gnu.org/licenses/gpl-3.0.html">http://www.gnu.org/licenses/gpl-3.0.html</a></string>
     <string name="about_dev">يتم تطويره وصيانته عبر مشروع <a href="https://www.dhis2.org/">DHIS2</a>، وهو جزء من جامعة أوسلو ، <a href="https://www.mn.uio.no/ifi/english/">قسم المعلوماتية</a>.</string>
     <string name="about_contact">لمزيد من المعلومات أو الأسئلة حول هذا التطبيق ، يرجى الكتابة إلى <a href="mailto:android@dhis2.org">android@dhis2.org</a></string>
@@ -438,7 +438,7 @@
     <string name="empty_indicators">لا توجد مؤشرات لهذا البرنامج.</string>
     <string name="dashboard_notes">ملاحظات</string>
     <string name="unable_to_complete">غير قادر على الإكمال</string>
-    <string name="field_errors">تحتوي بعض الحقول على أخطاء. من فضلك ، تحقق منها حتى تتمكن من الإكمال</string>
+    <string name="field_errors">تحتوي بعض الحقول على أخطاء. من فضلك، تحقق منها حتى تتمكن من الإكمال</string>
     <string name="unselect_enrollment">كل التسجيلات</string>
     <string name="unselect_enrollment_description">عرض لوحة معلومات بجميع البرامج النشطة</string>
     <string name="CHECK_SYNC_ERRORS">فتح سجل أخطاء المزامنة</string>
@@ -458,9 +458,9 @@
     <string name="error_fields_title">الحقول التي بها أخطاء</string>
     <string name="error_fields_events">تحتوي بعض الحقول على أخطاء. لم يتم حفظها. يرجى التحقق منها.</string>
     <string name="event_reopened">بالإمكان الآن تعديل هذا الحدث</string>
-    <string name="unique_warning">يجب أن تكون القيمة فريدة، يوجد تعارض تكرار لنفس القيمة. لم يتم الحفظ. يرجى التأكد.</string>
+    <string name="unique_warning">يجب أن تكون القيمة فريدة، يوجد تعارض تكرار لنفس القيمة. لم يتم الحفظ. يرجى التحقق.</string>
     <string name="unique_coincidence_found">وجد تعارض في حقل ذو قيمة فريدة. لحفظ التسجيل يرجي التحقق من النموذج.</string>
-    <string name="please_wait">الرجاء الانتظار</string>
+    <string name="please_wait">يرجى الإنتظار</string>
     <string name="skip">تخطى</string>
     <string name="reschedule">اعادة جدولة</string>
     <string name="event_was_skipped">تم وضع علامة على الحدث بأنه تم تخطيه</string>
@@ -470,15 +470,15 @@
     <string name="delete_event_error">لم يتم إنشاء هذا الحدث بعد</string>
     <string name="empty_description">لا توجد معلومات عن هذا الحقل</string>
     <string name="biometrics_dialog_title">إعتمادات فارغة</string>
-    <string name="biometrics_first_use_text">لتتمكن من تسجيل الدخول باستخدام الماسح الضوئي لبصمات الأصابع ، تحتاج أولاً إلى تسجيل الدخول بإستخدام الطريقة الافتراضية</string>
+    <string name="biometrics_first_use_text">لتتمكن من تسجيل الدخول باستخدام ماسح بصمة الإصبع ، تحتاج أولاً إلى تسجيل الدخول بإستخدام الطريقة الافتراضية</string>
     <string name="biometrics_security_title">الأمن البيومتري</string>
-    <string name="biometrics_security_text">استخدم بصمة إصبعك لتسجيل الدخول مع هذا المستخدم؟</string>
+    <string name="biometrics_security_text">استخدام بصمة إصبعك لتسجيل الدخول مع هذا المستخدم؟</string>
     <string name="tab_tables">جداول</string>
     <string name="table">الجدول</string>
     <string name="login_https">https://</string>
     <string name="delete_local_data_message">ستفقد البيانات غير المتزامنة. هل تريد حقاً المتابعة؟</string>
     <string name="local_data_accept">قبول</string>
-    <string name="delete_local_data_error">لا يمكن حذف البيانات. الرجاء اعادة المحاولة.</string>
+    <string name="delete_local_data_error">تعذر حذف البيانات. يرجى اعادة المحاولة.</string>
     <string name="delete_local_data_done">انتهاء عملية حذف البيانات المحلية بنجاح.</string>
     <string name="org_unit_selection_warning">يجب تحديد وحدة تنظيمية واحدة على الأقل</string>
     <string name="send_user_name_title">إرسال البيانات</string>
@@ -577,7 +577,7 @@
 
     <string name="wrong_pattern">ليس تنسيق صحيح.</string>
     <string name="fingerprint_title">البصمة</string>
-    <string name="fingerprint_message">من فضلك ، ضع إصبعك في قارئ بصمات الأصابع الخاص بك.</string>
+    <string name="fingerprint_message">من فضلك ، ضع إصبعك في قارئ بصمة الإصبع الخاص بك.</string>
     <string name="security_title">الأمان</string>
     <string name="security_rooted_message">لأسباب أمنية ، لا يُسمح باستخدام هذا الإصدار من التطبيق في الأجهزة الـ rooted. يرجى استخدام النسخة التدريبية.</string>
     <string name="fix_error">هناك بعض الأخطاء. يرجى إصلاحها قبل المتابعة.</string>
