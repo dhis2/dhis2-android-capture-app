@@ -302,6 +302,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                 }
             } else if (fieldViewModel instanceof OptionSetViewModel) {
                 List<Option> options = d2.optionModule().options().byOptionSetUid().eq(fieldViewModel.optionSet() == null ? "" : fieldViewModel.optionSet())
+                        .orderBySortOrder(RepositoryScope.OrderByDirection.ASC)
                         .blockingGet();
                 renderList.add(((OptionSetViewModel) fieldViewModel).withOptions(options));
             } else
