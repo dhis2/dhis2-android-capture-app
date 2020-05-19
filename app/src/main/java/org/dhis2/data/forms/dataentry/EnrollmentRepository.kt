@@ -16,6 +16,7 @@ import org.dhis2.usescases.enrollment.EnrollmentActivity
 import org.dhis2.utils.DateUtils
 import org.dhis2.utils.DhisTextUtils
 import org.hisp.dhis.android.core.D2
+import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.ObjectStyle
 import org.hisp.dhis.android.core.common.ValueType
@@ -92,7 +93,7 @@ class EnrollmentRepository(
     @VisibleForTesting
     fun getFieldsForSingleSection(programUid: String): Single<List<FieldViewModel>> {
         return d2.programModule().programTrackedEntityAttributes().withRenderType()
-            .byProgram().eq(programUid).get()
+            .byProgram().eq(programUid).orderBySortOrder(RepositoryScope.OrderByDirection.ASC).get()
             .toFlowable()
             .flatMapIterable { programTrackedEntityAttributes -> programTrackedEntityAttributes }
             .map { transform(it) }
