@@ -1,4 +1,4 @@
-package org.dhis2.usescases.map.polygon
+package org.dhis2.uicomponents.map.geometry.polygon
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -7,7 +7,7 @@ import com.google.gson.Gson
 import com.mapbox.geojson.Point
 import com.mapbox.mapboxsdk.style.layers.SymbolLayer
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource
-import java.util.UUID
+import java.util.*
 
 class PolygonViewModel : ViewModel() {
 

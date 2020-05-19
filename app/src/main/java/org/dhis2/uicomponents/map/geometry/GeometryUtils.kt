@@ -1,10 +1,6 @@
-package org.dhis2.utils.maps
+package org.dhis2.uicomponents.map.geometry
 
-import com.mapbox.geojson.BoundingBox
-import com.mapbox.geojson.Feature
-import com.mapbox.geojson.FeatureCollection
-import com.mapbox.geojson.Point
-import com.mapbox.geojson.Polygon
+import com.mapbox.geojson.*
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel
 import org.hisp.dhis.android.core.arch.helpers.GeometryHelper
 import org.hisp.dhis.android.core.common.FeatureType
@@ -104,12 +100,10 @@ object GeometryUtils {
         eastBound = 0.0
         westBound = 0.0
 
-        val features = eventList
-            .filter { it.geometry() != null }
-            .map {
-                handleGeometry(it.geometry()!!, "eventUid", it.uid()!!)
-            }
-            .filter { it != null }
+        val features = eventList.filter { it.geometry() != null }.mapNotNull {
+                    handleGeometry(it.geometry()!!, "eventUid", it.uid()!!)
+        }
+
         return Pair<FeatureCollection, BoundingBox>(
             FeatureCollection.fromFeatures(features),
             BoundingBox.fromLngLats(westBound, southBound, eastBound, northBound)
@@ -121,16 +115,18 @@ object GeometryUtils {
         property: String,
         propertyValue: String
     ): Feature? {
-        if (geometry.type() == FeatureType.POINT) {
-            val point = getPointFeature(geometry)
-            point?.addStringProperty(property, propertyValue)
-            return point
-        } else if (geometry.type() == FeatureType.POLYGON) {
-            val polygon = getPolygonFeature(geometry)
-            polygon.addStringProperty(property, propertyValue)
-            return polygon
-        } else {
-            return null
+        return when {
+            geometry.type() == FeatureType.POINT -> {
+                val point = getPointFeature(geometry)
+                point?.addStringProperty(property, propertyValue)
+                point
+            }
+            geometry.type() == FeatureType.POLYGON -> {
+                val polygon = getPolygonFeature(geometry)
+                polygon.addStringProperty(property, propertyValue)
+                polygon
+            }
+            else -> null
         }
     }
 
