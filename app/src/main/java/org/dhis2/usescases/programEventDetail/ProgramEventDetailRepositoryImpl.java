@@ -96,7 +96,6 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
             eventRepo = eventRepo.byAssignedUser().eq(getCurrentUser());
 
         return eventRepo.byDeleted().isFalse().orderByEventDate(RepositoryScope.OrderByDirection.DESC).withTrackedEntityDataValues().get()
-                //.map(GeometryUtils.INSTANCE::getSourceFromEvent)
                 .map(listEvents-> mapEventToFeatureCollection.map(listEvents))
                 .toFlowable();
     }
