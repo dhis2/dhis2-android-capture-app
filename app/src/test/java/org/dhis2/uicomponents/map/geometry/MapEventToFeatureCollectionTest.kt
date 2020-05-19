@@ -31,18 +31,14 @@ class MapEventToFeatureCollectionTest{
 
     @Test
     fun `Should map events to feature collection`(){
-        val firstFeature = Feature.fromGeometry(Point.fromLngLat(FIRST_FEATURE_LONGITUDE, FIRST_FEATURE_LATITUDE))
-                .also { it.addStringProperty(UID, UID_FIRST_EVENT_VALUE) }
-        val secondFeature = Feature.fromGeometry(Point.fromLngLat(SECOND_FEATURE_LONGITUDE, SECOND_FEATURE_LATITUDE))
-                .also {it.addStringProperty(UID, UID_SECOND_EVENT_VALUE)  }
+        val(firstFeature, secondFeature) = createFeatures()
         whenever(mapGeometryToFeature.map(any(), any(), any(), any())) doReturn firstFeature doReturn secondFeature
-
         val firstEvent = createEvent("[$FIRST_FEATURE_LONGITUDE, $FIRST_FEATURE_LATITUDE]", UID_FIRST_EVENT_VALUE)
         val secondEvent = createEvent(" [$SECOND_FEATURE_LONGITUDE, $SECOND_FEATURE_LATITUDE]", UID_SECOND_EVENT_VALUE)
+
         val result = mapEventToFeatureCollection.map(listOf(firstEvent, secondEvent))
 
         val (featureList, bounding) = result
-
         val firstUid = featureList.features()?.get(0)?.getStringProperty(UID)
         val secondUid = featureList.features()?.get(1)?.getStringProperty(UID)
         val firstCoordinates = featureList.features()?.get(0)?.geometry() as Point
@@ -62,6 +58,12 @@ class MapEventToFeatureCollectionTest{
         assertThat(bounding.east(), `is`(0.0))
     }
 
+    private fun createFeatures() : Pair<Feature, Feature> {
+        return Pair(Feature.fromGeometry(Point.fromLngLat(FIRST_FEATURE_LONGITUDE, FIRST_FEATURE_LATITUDE))
+                .also { it.addStringProperty(UID, UID_FIRST_EVENT_VALUE) },
+                Feature.fromGeometry(Point.fromLngLat(SECOND_FEATURE_LONGITUDE, SECOND_FEATURE_LATITUDE))
+                        .also {it.addStringProperty(UID, UID_SECOND_EVENT_VALUE)})
+    }
 
     private fun createEvent(coordinates: String, uid:String) : Event {
         val geometry = Geometry.builder()
