@@ -212,8 +212,8 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
 
         binding.mapLayerButton.setOnClickListener(view ->
-                new MapLayerDialog(teiMapManager.getMap().getStyle().getImage(TeiMapManager.TEI_ICON_ID),
-                        teiMapManager.getMap().getStyle().getImage(TeiMapManager.ENROLLMENT_ICON_ID),
+                new MapLayerDialog(teiMapManager.getStyle().getImage(TeiMapManager.TEI_ICON_ID),
+                        teiMapManager.getStyle().getImage(TeiMapManager.ENROLLMENT_ICON_ID),
                         isSatelliteStyle -> {
                             if (isSatelliteStyle) {
                                 currentStyle = Style.SATELLITE_STREETS;
@@ -238,9 +238,6 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     @Override
     protected void onResume() {
         super.onResume();
-        if (teiMapManager != null) {
-            teiMapManager.onResume();
-        }
         if (isMapVisible()) {
             binding.progressLayout.setVisibility(View.GONE);
         }
@@ -248,6 +245,20 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             presenter.init(tEType);
         } else {
             initSearchNeeded = true;
+        }
+        if (teiMapManager != null) {
+            teiMapManager.onResume();
+        } else {
+            teiMapManager =  new TeiMapManager(
+                    new MapStyle(
+                            presenter.getProgram().style().color(),
+                            presenter.getTEIColor(),
+                            presenter.getSymbolIcon(),
+                            presenter.getEnrollmentColor(),
+                            presenter.getEnrollmentSymbolIcon()
+                    ));
+            teiMapManager.init(binding.mapView);
+            teiMapManager.setOnMapClickListener(this);
         }
     }
 
@@ -730,23 +741,12 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     public void setMap(HashMap<String, FeatureCollection> teiFeatureCollections, BoundingBox boundingBox) {
         binding.progressLayout.setVisibility(View.GONE);
 
-        teiMapManager = new TeiMapManager(
-                binding.mapView,
+        teiMapManager.update(
                 teiFeatureCollections,
                 boundingBox,
                 changingStyle,
-                featureType,
-                new MapStyle(
-                        presenter.getProgram().style().color(),
-                        presenter.getTEIColor(),
-                        presenter.getSymbolIcon(),
-                        presenter.getEnrollmentColor(),
-                        presenter.getEnrollmentSymbolIcon()
-                )
+                featureType
         );
-        teiMapManager.setOnMapClickListener(this);
-        teiMapManager.init();
-
     }
 
 

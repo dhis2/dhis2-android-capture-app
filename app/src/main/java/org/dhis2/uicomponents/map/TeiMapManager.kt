@@ -19,13 +19,10 @@ import org.dhis2.utils.ColorUtils
 import org.hisp.dhis.android.core.common.FeatureType
 
 class TeiMapManager(
-    override var mapView: MapView,
-    private val teiFeatureCollections: HashMap<String, FeatureCollection>,
-    private val boundingBox: BoundingBox,
-    private val changingStyle: Boolean,
-    private val featureType: FeatureType,
-    private val mapStyle: MapStyle
+    val mapStyle: MapStyle
 ) : MapManager() {
+
+    private lateinit var teiFeatureCollections: HashMap<String, FeatureCollection>
 
     companion object {
         const val TEIS_TAG = "teis"
@@ -35,50 +32,71 @@ class TeiMapManager(
         const val TEI_ICON_ID = "ICON_ID"
         const val ENROLLMENT_ICON_ID = "ICON_ENROLLMENT_ID"
     }
-    override fun init() {
+
+    fun update(
+        teiFeatureCollections: HashMap<String, FeatureCollection>,
+        boundingBox: BoundingBox,
+        changingStyle: Boolean,
+        featureType: FeatureType
+    ) {
+        this.featureType = featureType
+        this.teiFeatureCollections = teiFeatureCollections
         when {
-            map == null -> {
-                mapView.getMapAsync {
-                    map = it
-                    map?.setStyle(
-                        Style.MAPBOX_STREETS
-                    ) { style: Style ->
-                        loadDataForStyle(
-                            style,
-                            teiFeatureCollections,
-                            boundingBox
-                        )
-                    }
-                }
-            }
             changingStyle -> {
-                map?.setStyle(
+                map.setStyle(
                     Style.MAPBOX_STREETS
                 ) { style: Style ->
-                    loadDataForStyle(
-                        style,
-                        teiFeatureCollections,
-                        boundingBox
-                    )
+                    this.style = style
+                    setLayerManager(changingStyle)
+                    loadDataForStyle()
                 }
             }
             else -> {
-                (map?.style?.getSource(TEIS_TAG) as GeoJsonSource?)?.setGeoJson(
-                    teiFeatureCollections[TEI]
-                )
-                (map?.style?.getSource(ENROLLMENT_TAG) as GeoJsonSource?)?.setGeoJson(
-                    teiFeatureCollections[ENROLLMENT]
-                )
-                initCameraPosition(boundingBox)
+                (style.getSource(TEIS_TAG) as GeoJsonSource?)
+                    ?.setGeoJson(teiFeatureCollections[TEI])
+                    .also {
+                        (style.getSource(ENROLLMENT_TAG) as GeoJsonSource?)
+                            ?.setGeoJson(teiFeatureCollections[ENROLLMENT])
+                    } ?: run {
+                    setLayerManager(changingStyle)
+                    loadDataForStyle()
+                }
             }
         }
+        initCameraPosition(boundingBox)
     }
 
-    private fun loadDataForStyle(
-        style: Style,
-        teiFeatureCollection: HashMap<String, FeatureCollection>,
-        boundingBox: BoundingBox
-    ) {
+    override fun loadDataForStyle() {
+        with(style) {
+            addImage(
+                TEI_ICON_ID,
+                TeiMarkers.getMarker(
+                    mapView.context,
+                    mapStyle.teiSymbolIcon ?: ContextCompat.getDrawable(
+                        mapView.context,
+                        R.drawable.mapbox_marker_icon_default
+                    )!!,
+                    mapStyle.teiColor ?: ColorUtils.getPrimaryColor(
+                        mapView.context,
+                        ColorUtils.ColorType.PRIMARY
+                    )
+                )
+            )
+            addImage(
+                ENROLLMENT_ICON_ID,
+                TeiMarkers.getMarker(
+                    mapView.context,
+                    mapStyle.enrollmentSymbolIcon!!,
+                    mapStyle.enrollmentColor!!
+                )
+            )
+        }
+        setSource()
+        setLayer()
+        teiFeatureCollections[TEI]?.let { setSymbolManager(it) }
+    }
+
+    private fun setLayerManager(changingStyle: Boolean) {
         MapLayerManager.run {
             when {
                 !changingStyle -> {
@@ -102,43 +120,13 @@ class TeiMapManager(
                 else -> instance().updateStyle(style)
             }
         }
-
-        style.addImage(
-            TEI_ICON_ID,
-            TeiMarkers.getMarker(
-                mapView.context,
-                mapStyle.teiSymbolIcon ?: ContextCompat.getDrawable(
-                    mapView.context,
-                    R.drawable.mapbox_marker_icon_default
-                )!!,
-                mapStyle.teiColor ?: ColorUtils.getPrimaryColor(
-                    mapView.context,
-                    ColorUtils.ColorType.PRIMARY
-                )
-            )
-        )
-        style.addImage(
-            ENROLLMENT_ICON_ID,
-            TeiMarkers.getMarker(
-                mapView.context,
-                mapStyle.enrollmentSymbolIcon!!,
-                mapStyle.enrollmentColor!!
-            )
-        )
-        setSource(style)
-        setLayer(style)
-        teiFeatureCollection[TEI]?.let { setSymbolManager(style, it) }
-        onMapClickListener?.let { map?.addOnMapClickListener(it) }
-        initCameraPosition(boundingBox)
-        markerViewManager = MarkerViewManager(mapView, map)
     }
-
-    override fun setSource(style: Style) {
+    override fun setSource() {
         style.addSource(GeoJsonSource(TEIS_TAG, teiFeatureCollections[TEI]))
         style.addSource(GeoJsonSource(ENROLLMENT_TAG, teiFeatureCollections[ENROLLMENT]))
     }
 
-    override fun setLayer(style: Style) {
+    override fun setLayer() {
         val symbolLayer = SymbolLayer(POINT_LAYER,
             TEIS_TAG
         ).withProperties(

@@ -14,51 +14,45 @@ import org.dhis2.R
 import org.dhis2.utils.ColorUtils
 import org.hisp.dhis.android.core.common.FeatureType
 
-class EventMapManager(
-    override var mapView: MapView,
-    private val featureCollection: FeatureCollection,
-    private val boundingBox: BoundingBox,
-    private val featureType: FeatureType
-) : MapManager() {
+class EventMapManager: MapManager() {
+
+    private lateinit var featureCollection: FeatureCollection
 
     companion object {
         const val ICON_ID = "ICON_ID"
         const val EVENTS = "events"
     }
 
-    override fun init() {
-        if (map == null) {
-            mapView.getMapAsync {
-                map = it
-                map?.setStyle(
-                    Style.MAPBOX_STREETS
-                ) { style: Style ->
-                    style.addImage(
-                        ICON_ID,
-                        BitmapFactory.decodeResource(
-                            mapView.resources,
-                            R.drawable.mapbox_marker_icon_default
-                        )
-                    )
-                    setSource(style)
-                    setLayer(style)
-                    setSymbolManager(style, featureCollection)
-                }
-                onMapClickListener?.let { map?.addOnMapClickListener(it) }
-                initCameraPosition(boundingBox)
-                markerViewManager = MarkerViewManager(mapView, map)
-            }
-        } else {
-            (map?.style?.getSource(EVENTS) as GeoJsonSource?)?.setGeoJson(featureCollection)
-            initCameraPosition(boundingBox)
-        }
+    fun update(
+        featureCollection: FeatureCollection,
+        boundingBox: BoundingBox,
+        featureType: FeatureType?
+    ) {
+        this.featureType = featureType ?: FeatureType.POINT
+        this.featureCollection = featureCollection
+        (style.getSource(EVENTS) as GeoJsonSource?)?.setGeoJson(featureCollection)
+            ?: loadDataForStyle()
+        initCameraPosition(boundingBox)
     }
 
-    override fun setSource(style: Style) {
+    override fun loadDataForStyle() {
+        style.addImage(
+            ICON_ID,
+            BitmapFactory.decodeResource(
+                mapView.resources,
+                R.drawable.mapbox_marker_icon_default
+            )
+        )
+        setSource()
+        setLayer()
+        setSymbolManager(featureCollection)
+    }
+
+    override fun setSource() {
         style.addSource(GeoJsonSource(EVENTS, featureCollection))
     }
 
-    override fun setLayer(style: Style) {
+    override fun setLayer() {
         val symbolLayer = SymbolLayer(
             POINT_LAYER,
             EVENTS

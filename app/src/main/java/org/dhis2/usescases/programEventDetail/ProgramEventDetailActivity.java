@@ -133,6 +133,10 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
         } catch (Exception e) {
             Timber.e(e);
         }
+
+        eventMapManager = new EventMapManager();
+        eventMapManager.setOnMapClickListener(this);
+        eventMapManager.init(binding.mapView);
     }
 
     @Override
@@ -349,14 +353,11 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
 
     @Override
     public void setMap(FeatureCollection featureCollection, BoundingBox boundingBox) {
-        eventMapManager = new EventMapManager(
-                binding.mapView,
+        eventMapManager.update(
                 featureCollection,
                 boundingBox,
                 featureType
         );
-        eventMapManager.setOnMapClickListener(this);
-        eventMapManager.init();
     }
 
     @Override
