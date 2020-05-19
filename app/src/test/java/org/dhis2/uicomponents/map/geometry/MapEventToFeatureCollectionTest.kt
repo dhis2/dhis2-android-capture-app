@@ -32,9 +32,10 @@ class MapEventToFeatureCollectionTest{
     @Test
     fun `Should map events to feature collection`(){
         val(firstFeature, secondFeature) = createFeatures()
-        whenever(mapGeometryToFeature.map(any(), any(), any(), any())) doReturn firstFeature doReturn secondFeature
         val firstEvent = createEvent("[$FIRST_FEATURE_LONGITUDE, $FIRST_FEATURE_LATITUDE]", UID_FIRST_EVENT_VALUE)
         val secondEvent = createEvent(" [$SECOND_FEATURE_LONGITUDE, $SECOND_FEATURE_LATITUDE]", UID_SECOND_EVENT_VALUE)
+
+        whenever(mapGeometryToFeature.map(any(), any(), any(), any())) doReturn firstFeature doReturn secondFeature
 
         val result = mapEventToFeatureCollection.map(listOf(firstEvent, secondEvent))
 

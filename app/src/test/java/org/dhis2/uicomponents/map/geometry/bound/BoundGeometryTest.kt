@@ -6,7 +6,7 @@ import org.junit.Test
 
 class BoundGeometryTest  {
 
-    lateinit var boundsGeometry: BoundsGeometry
+    private lateinit var boundsGeometry: BoundsGeometry
 
     @Test
     fun `Should init or reset`() {
