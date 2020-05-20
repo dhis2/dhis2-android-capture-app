@@ -32,7 +32,9 @@ class MapTeisToFeatureCollection(private val bounds: BoundsGeometry,
                 } else if (geometry.type() == FeatureType.POLYGON) {
                     mapToPolygonTei(searchTeiModel, featureMap, geometry)
                 }
-            } else if (teiEnrollmentHasCoordinates(searchTeiModel)){
+            }
+
+            if (teiEnrollmentHasCoordinates(searchTeiModel)){
                 val geometry = searchTeiModel.selectedEnrollment.geometry()!!
 
                 if (geometry.type() == FeatureType.POINT) {
