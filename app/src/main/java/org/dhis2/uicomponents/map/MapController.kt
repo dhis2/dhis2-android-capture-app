@@ -8,23 +8,23 @@ import org.jetbrains.annotations.Nullable
 class MapController {
 
     companion object {
-        fun init(@NonNull context : Context, @Nullable accessToken: String?){
+        fun init(@NonNull context: Context, @Nullable accessToken: String?) {
             Mapbox.getInstance(context, accessToken)
         }
 
-        fun getAccessToken() : String? {
+        fun getAccessToken(): String? {
             return Mapbox.getAccessToken()
         }
 
-        fun setAccessToken(token:String?){
+        fun setAccessToken(token: String?) {
             Mapbox.setAccessToken(token)
         }
 
-        fun setConnected(connection:Boolean){
+        fun setConnected(connection: Boolean) {
             Mapbox.setConnected(connection)
         }
 
-        fun isConnected() : Boolean {
+        fun isConnected(): Boolean {
             return Mapbox.isConnected()
         }
     }

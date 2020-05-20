@@ -1,10 +1,10 @@
 package org.dhis2.common
 
 import android.content.Context
-import org.hisp.dhis.android.core.arch.file.IFileReader
 import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.nio.charset.Charset
+import org.hisp.dhis.android.core.arch.file.IFileReader
 
 class FileReader(val context: Context) : IFileReader {
     override fun getStringFromFile(filename: String): String {

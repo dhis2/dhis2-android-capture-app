@@ -17,7 +17,6 @@ import org.junit.Test
 import org.mockito.Mockito.RETURNS_DEEP_STUBS
 import org.mockito.Mockito.mock
 
-
 class DataSetTableRepositoryTest {
 
     private lateinit var repository: DataSetTableRepository
@@ -34,7 +33,7 @@ class DataSetTableRepositoryTest {
     }
 
     @Test
-    fun `Should return dataSet`(){
+    fun `Should return dataSet`() {
         whenever(d2.dataSetModule().dataSets().byUid()) doReturn mock()
         whenever(d2.dataSetModule().dataSets().byUid().eq(dataSetUid)) doReturn mock()
         whenever(d2.dataSetModule().dataSets().byUid().eq(dataSetUid).one()) doReturn mock()
@@ -65,7 +64,7 @@ class DataSetTableRepositoryTest {
         testObserver.assertNoErrors()
         testObserver.assertValue {
             it[0] == "section_1" &&
-            it[1] == "section_2"
+                it[1] == "section_2"
         }
     }
 
@@ -215,7 +214,7 @@ class DataSetTableRepositoryTest {
         val testObserver = repository.getCatComboName(uid).test()
 
         testObserver.assertNoErrors()
-        testObserver.assertValue{ it == name }
+        testObserver.assertValue { it == name }
     }
 
     @Test

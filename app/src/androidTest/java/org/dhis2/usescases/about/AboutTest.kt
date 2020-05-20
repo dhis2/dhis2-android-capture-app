@@ -13,7 +13,6 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
-
 @RunWith(AndroidJUnit4::class)
 class AboutTest : BaseTest() {
 
@@ -41,11 +40,11 @@ class AboutTest : BaseTest() {
         }
     }
 
-    private fun startActivity(){
+    private fun startActivity() {
         rule.launchActivity(null)
     }
 
-    private fun getAppVersionName() : String {
+    private fun getAppVersionName(): String {
         try {
             val pInfo = context.packageManager.getPackageInfo(context.packageName, 0)
             return pInfo.versionName
@@ -56,5 +55,5 @@ class AboutTest : BaseTest() {
     }
 
     private fun getSDKVersionName() =
-         String.format(context.getString(R.string.about_sdk), BuildConfig.SDK_VERSION)
+        String.format(context.getString(R.string.about_sdk), BuildConfig.SDK_VERSION)
 }

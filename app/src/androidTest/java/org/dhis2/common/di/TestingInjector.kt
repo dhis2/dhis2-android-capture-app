@@ -12,14 +12,14 @@ import org.hisp.dhis.android.core.mockwebserver.Dhis2MockServer
 class TestingInjector {
 
     companion object {
-        fun providesKeyStoreRobot(context: Context) : KeyStoreRobot {
+        fun providesKeyStoreRobot(context: Context): KeyStoreRobot {
             return KeyStoreRobot(AndroidSecureStore(context))
         }
-        fun providesPreferencesRobot(context:Context) : PreferencesRobot {
+        fun providesPreferencesRobot(context: Context): PreferencesRobot {
             return PreferencesRobot(PreferenceTestingImpl(context))
         }
-        fun providesMockWebserverRobot(context:Context) : MockWebServerRobot {
-                return MockWebServerRobot(Dhis2MockServer(FileReader(context),8080))
+        fun providesMockWebserverRobot(context: Context): MockWebServerRobot {
+            return MockWebServerRobot(Dhis2MockServer(FileReader(context), 8080))
         }
     }
 }

@@ -3,7 +3,6 @@ package org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureF
 import dagger.Subcomponent
 import org.dhis2.data.dagger.PerFragment
 
-
 @PerFragment
 @Subcomponent(modules = [EventCaptureFormModule::class])
 interface EventCaptureFormComponent {

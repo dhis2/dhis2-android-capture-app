@@ -14,13 +14,13 @@ import org.dhis2.common.matchers.RecyclerviewMatchers.Companion.isNotEmpty
 import org.dhis2.usescases.login.LoginActivity
 import org.hamcrest.CoreMatchers.allOf
 
-fun homeRobot(robotBody: MainRobot.() -> Unit){
+fun homeRobot(robotBody: MainRobot.() -> Unit) {
     MainRobot().apply {
         robotBody()
     }
 }
 
-class MainRobot : BaseRobot(){
+class MainRobot : BaseRobot() {
 
     fun clickOnNavigationDrawerMenu() = apply {
         onView(withId(R.id.menu)).perform(click())
@@ -48,10 +48,10 @@ class MainRobot : BaseRobot(){
 
     fun checkViewIsNotEmpty() {
         onView(withId(R.id.program_recycler))
-                .check(matches(allOf(isDisplayed(),isNotEmpty())))
+            .check(matches(allOf(isDisplayed(), isNotEmpty())))
     }
 
-    fun checkLogInIsLaunched(){
+    fun checkLogInIsLaunched() {
         Intents.intended(allOf(IntentMatchers.hasComponent(LoginActivity::class.java.name)))
     }
 

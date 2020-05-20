@@ -80,7 +80,8 @@ class MapLayerDialog(
     }
 
     private fun initLiveData() {
-        layerManager.setSatelliteStyle().observe(this,
+        layerManager.setSatelliteStyle().observe(
+            this,
             Observer {
                 binding.styleCheck.isChecked = it
             }

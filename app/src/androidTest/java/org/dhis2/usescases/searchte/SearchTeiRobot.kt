@@ -8,7 +8,4 @@ fun indicatorsRobot(searchteiRobot: SearchTeiRobot.() -> Unit) {
     }
 }
 
-class SearchTeiRobot : BaseRobot() {
-
-
-}
+class SearchTeiRobot : BaseRobot()

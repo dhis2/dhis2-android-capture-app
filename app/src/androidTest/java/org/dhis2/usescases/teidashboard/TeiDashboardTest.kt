@@ -11,7 +11,11 @@ import org.dhis2.usescases.searchTrackEntity.SearchTEActivity
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity
 import org.dhis2.usescases.teidashboard.entity.EnrollmentUIModel
 import org.dhis2.usescases.teidashboard.entity.UpperEnrollmentUIModel
-import org.dhis2.usescases.teidashboard.robot.*
+import org.dhis2.usescases.teidashboard.robot.eventRobot
+import org.dhis2.usescases.teidashboard.robot.indicatorsRobot
+import org.dhis2.usescases.teidashboard.robot.noteRobot
+import org.dhis2.usescases.teidashboard.robot.relationshipRobot
+import org.dhis2.usescases.teidashboard.robot.teiDashboardRobot
 import org.hisp.dhis.android.core.mockwebserver.ResponseController.GET
 import org.junit.Ignore
 import org.junit.Rule
@@ -71,7 +75,7 @@ class TeiDashboardTest : BaseTest() {
 
         noteRobot {
             clickOnNoteWithPosition(0)
-            checkNoteDetails("@${USER}", NOTE_EXISTING_TEXT)
+            checkNoteDetails("@$USER", NOTE_EXISTING_TEXT)
         }
     }
 
@@ -162,7 +166,7 @@ class TeiDashboardTest : BaseTest() {
     }
 
     @Test
-    fun shouldOpenEventAndSaveSuccessfully(){
+    fun shouldOpenEventAndSaveSuccessfully() {
         prepareTeiOpenedProgrammeAndLaunchActivity(rule)
 
         val babyPostNatal = 0
@@ -216,8 +220,8 @@ class TeiDashboardTest : BaseTest() {
     @Test
     @Ignore
     fun shouldEnrollToOtherProgramWhenClickOnProgramEnrollments() {
-        //launch tei
-        //click on more options
+        // launch tei
+        // click on more options
         // click on Program enrollments
         // choose a Program to be enroll
         // choose date and accept
@@ -230,8 +234,8 @@ class TeiDashboardTest : BaseTest() {
             clickOnMenuMoreOptions()
             clickOnMenuProgramEnrollments()
             clickOnAProgramForEnrollment() // is not clicking on enrollment btn
-            //clickOnAcceptEnrollmentDate()
-            //clickOnSaveEnrollment()
+            // clickOnAcceptEnrollmentDate()
+            // clickOnSaveEnrollment()
             Thread.sleep(1000)
         }
     }
@@ -264,9 +268,9 @@ class TeiDashboardTest : BaseTest() {
         mockWebServerRobot.addResponse(GET, "/api/trackedEntityInstances?.*", API_TEI_1_RESPONSE_OK)
         mockWebServerRobot.addResponse(GET, "/api/trackedEntityInstances?.*", API_TEI_2_RESPONSE_OK)
         mockWebServerRobot.addResponse(GET, "/api/trackedEntityInstances?.*", API_TEI_3_RESPONSE_OK)
-        //https://play.dhis2.org/android-current/api/trackedEntityInstances/query?ou=DiszpKrYNg8&ouMode=DESCENDANTS&program=IpHINAT79UW&paging=true&page=1&pageSize=10
+        // https://play.dhis2.org/android-current/api/trackedEntityInstances/query?ou=DiszpKrYNg8&ouMode=DESCENDANTS&program=IpHINAT79UW&paging=true&page=1&pageSize=10
         setupCredentials()
-        //prepareTeiToDeleteAndLaunchActivity()
+        // prepareTeiToDeleteAndLaunchActivity()
         prepareChildProgrammeIntentAndLaunchActivity(ruleSearch)
 
         teiDashboardRobot {
@@ -280,10 +284,26 @@ class TeiDashboardTest : BaseTest() {
         }
     }
 
-    private fun createExpectedUpperInformation() = UpperEnrollmentUIModel("2021-01-10", "2021-01-10", "Ngelehun CHC")
-    private fun createExpectedEnrollmentInformation() = EnrollmentUIModel("2021-01-10", "2021-01-10", "Ngelehun CHC", "40.48713205295354", "-3.6847423830882633", "Filona", "Ryder", "Female")
+    private fun createExpectedUpperInformation() =
+        UpperEnrollmentUIModel(
+            "2021-01-10",
+            "2021-01-10",
+            "Ngelehun CHC"
+        )
 
-    companion object{
+    private fun createExpectedEnrollmentInformation() =
+        EnrollmentUIModel(
+            "2021-01-10",
+            "2021-01-10",
+            "Ngelehun CHC",
+            "40.48713205295354",
+            "-3.6847423830882633",
+            "Filona",
+            "Ryder",
+            "Female"
+        )
+
+    companion object {
         const val NOTE_VALID = "ThisIsJustATest"
         const val NOTE_INVALID = "InvalidNote"
         const val NOTE_EXISTING_TEXT = "This is a note test"

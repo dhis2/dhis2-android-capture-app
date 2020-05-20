@@ -25,5 +25,4 @@ class EventCaptureFormModule(
     ): EventCaptureFormPresenter {
         return EventCaptureFormPresenter(view, activityPresenter, d2, valueStore, schedulerProvider)
     }
-
 }

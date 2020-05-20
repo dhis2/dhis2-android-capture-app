@@ -7,7 +7,7 @@ import org.junit.rules.TestWatcher
 import org.junit.runner.Description
 
 class DataBindingIdlingResourceRule(
-        activityTestRule: ActivityTestRule<*>
+    activityTestRule: ActivityTestRule<*>
 ) : TestWatcher() {
     private val idlingResource = DataBindingIdlingResource(activityTestRule)
 

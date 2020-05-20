@@ -14,11 +14,7 @@ repositories {
     maven {
         url("https://maven.fabric.io/public")
     }
-
-    // used by sdk
-    maven {
-        url("https://oss.sonatype.org/content/repositories/snapshots")
-    }
+    maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
     mavenCentral()
 }
 
