@@ -691,6 +691,22 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
                 return false;
             }
         });
+
+        binding.eventsEditText.setOnFocusChangeListener((v, hasFocus) -> {
+            if(!hasFocus) {
+                if (!binding.eventsEditText.getText().toString().isEmpty()) {
+                    presenter.saveEventMaxCount(Integer.valueOf(binding.eventsEditText.getText().toString()));
+                }
+            }
+        });
+
+        binding.teiEditText.setOnFocusChangeListener((v, hasFocus) -> {
+            if(!hasFocus){
+                if (!binding.teiEditText.getText().toString().isEmpty()) {
+                    presenter.saveTeiMaxCount(Integer.valueOf(binding.teiEditText.getText().toString()));
+                }
+            }
+        });
     }
 
     @Override
