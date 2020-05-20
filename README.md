@@ -6,4 +6,4 @@ Check the [Wiki](https://github.com/dhis2/dhis2-android-capture-app/wiki) for in
 
 ### What is this repository for? ###
 
-DHIS2 Android application.
+DHIS2 Android application - [Simprints Integration](https://sites.google.com/simprints.com/simprints-for-developers/custom-integrations).
