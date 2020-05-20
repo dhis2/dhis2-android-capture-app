@@ -146,7 +146,8 @@ class RulesUtilsProviderImpl : RulesUtilsProvider {
         val model = fieldViewModels[showError.field()]
 
         if (model != null) {
-            fieldViewModels[showError.field()] = model.withError("${showError.content()} $effectData" )
+            fieldViewModels[showError.field()] =
+                model.withError("${showError.content()} $effectData")
         }
 
         rulesActionCallbacks.setShowError(showError, model)
