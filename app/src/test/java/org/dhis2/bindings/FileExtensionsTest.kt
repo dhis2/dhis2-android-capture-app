@@ -22,7 +22,6 @@ class FileExtensionsTest {
     fun `Should return minimum width if minimum is provided`() {
         val (width, height) = resizeToMinimum(400, 300, 200)
         assertTrue(width == 400 && height == 266)
-
     }
 
     @Test
@@ -35,7 +34,5 @@ class FileExtensionsTest {
     fun `Should return defaults if width bigger than minimum`() {
         val (width, height) = resizeToMinimum(100, 300, 200)
         assertTrue(width == 300 && height == 200)
-
     }
-
 }

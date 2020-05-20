@@ -13,7 +13,7 @@ inline fun <reified T> Activity.navigateTo(
             putExtra(T::class.java.name, Bundle().also(this))
         }
         startActivity(this)
-        if(finishCurrent){
+        if (finishCurrent) {
             finish()
         }
     }

@@ -16,7 +16,6 @@ import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito
 
-
 class SearchTEPresenterTest {
 
     lateinit var presenter: SearchTEPresenter
@@ -30,18 +29,18 @@ class SearchTEPresenterTest {
 
     @Before
     fun setUp() {
-        whenever(d2.programModule().programs().uid(initialProgram).blockingGet()) doReturn Program.builder().uid(
-            initialProgram
-        )
-            .displayFrontPageList(true)
-            .minAttributesRequiredToSearch(0).build()
+        whenever(d2.programModule().programs().uid(initialProgram).blockingGet()) doReturn
+            Program.builder().uid(
+                initialProgram
+            )
+                .displayFrontPageList(true)
+                .minAttributesRequiredToSearch(0).build()
         presenter =
             SearchTEPresenter(view, d2, repository, schedulers, analyticsHelper, initialProgram)
     }
 
     @Test
-    fun `Should set fabIcon to search when displayFrontPageList is true and minAttributes isgreater than querydata`() {
-
+    fun `Should set fabIcon to search if displayFrontPageList and minAttributes is ok`() {
         presenter.setProgramForTesting(
             Program.builder()
                 .uid("uid")
@@ -55,11 +54,10 @@ class SearchTEPresenterTest {
         verify(view).clearData()
         verify(view).updateFiltersSearch(0)
         verify(view).setFabIcon(true)
-
     }
 
     @Test
-    fun `Should set fabIcon to add when displayFrontPageList is true and does not hava a minAttributes required`() {
+    fun `Should set fabIcon to add when displayFrontPageList and minAttributes is 0`() {
         presenter.setProgramForTesting(
             Program.builder()
                 .uid("uid")
@@ -216,7 +214,7 @@ class SearchTEPresenterTest {
         val currentProgram =
             Program.builder()
                 .uid("program1")
-                .build();
+                .build()
         val selectedProgram = Program.builder()
             .uid("program1")
             .build()
@@ -262,23 +260,23 @@ class SearchTEPresenterTest {
     }
 
     @Test
-    fun `Should show filters if list is ok`(){
+    fun `Should show filters if list is ok`() {
         presenter.checkFilters(true)
-        verify(view,times(1)).setFiltersVisibility(true);
+        verify(view, times(1)).setFiltersVisibility(true)
     }
 
     @Test
-    fun `Should show filters if list is not ok but filters are active`(){
+    fun `Should show filters if list is not ok but filters are active`() {
         FilterManager.clearAll()
         FilterManager.getInstance().setAssignedToMe(true)
         presenter.checkFilters(false)
-        verify(view,times(1)).setFiltersVisibility(true)
+        verify(view, times(1)).setFiltersVisibility(true)
     }
 
     @Test
-    fun `Should not show filters if list is not ok and filters are not active`(){
+    fun `Should not show filters if list is not ok and filters are not active`() {
         FilterManager.clearAll()
         presenter.checkFilters(false)
-        verify(view,times(1)).setFiltersVisibility(false)
+        verify(view, times(1)).setFiltersVisibility(false)
     }
 }

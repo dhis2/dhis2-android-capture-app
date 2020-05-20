@@ -11,17 +11,18 @@ import android.view.Window
 import android.widget.Toast
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentManager
+import javax.inject.Inject
 import org.dhis2.Bindings.app
 import org.dhis2.R
 import org.dhis2.databinding.DialogPinBinding
-import javax.inject.Inject
 
 const val PIN_DIALOG_TAG: String = "PINDIALOG"
 
-class PinDialog(val mode: Mode,
-                private val canBeClosed: Boolean,
-                private val unlockCallback: (Boolean) -> Unit,
-                private val forgotPinCallback: () -> Unit
+class PinDialog(
+    val mode: Mode,
+    private val canBeClosed: Boolean,
+    private val unlockCallback: (Boolean) -> Unit,
+    private val forgotPinCallback: () -> Unit
 ) : DialogFragment(), PinView {
 
     private lateinit var binding: DialogPinBinding

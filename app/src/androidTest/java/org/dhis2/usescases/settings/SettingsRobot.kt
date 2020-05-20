@@ -4,7 +4,11 @@ import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition
-import androidx.test.espresso.matcher.ViewMatchers.*
+import androidx.test.espresso.matcher.ViewMatchers.hasDescendant
+import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
+import androidx.test.espresso.matcher.ViewMatchers.isEnabled
+import androidx.test.espresso.matcher.ViewMatchers.withId
+import androidx.test.espresso.matcher.ViewMatchers.withText
 import org.dhis2.R
 import org.dhis2.common.BaseRobot
 import org.dhis2.common.matchers.RecyclerviewMatchers.Companion.atPosition
@@ -17,9 +21,9 @@ fun settingsRobot(settingsRobot: SettingsRobot.() -> Unit) {
     }
 }
 
-class SettingsRobot: BaseRobot() {
+class SettingsRobot : BaseRobot() {
 
-    fun clickOnSyncData () {
+    fun clickOnSyncData() {
         onView(withId(R.id.settingsItemData)).perform(click())
     }
 
@@ -43,26 +47,41 @@ class SettingsRobot: BaseRobot() {
         onView(withId(R.id.settingsItemDeleteData)).perform(click())
     }
 
-    fun clickOnResetApp () {
+    fun clickOnResetApp() {
         onView(withId(R.id.settingsReset)).perform(click())
     }
 
-    fun clickOnSMSSettings () {
+    fun clickOnSMSSettings() {
         onView(withId(R.id.smsSettings)).perform(click())
     }
 
-    fun checkEditPeriodIsDisableForData () {
+    fun checkEditPeriodIsDisableForData() {
         onView(withId(R.id.dataPeriodsNoEdition)).check(matches(withText(NOT_EDIT_TEXT)))
-        onView(withId(R.id.buttonSyncData)).check(matches(allOf(withText(SYNC_DATA), isDisplayed())))
+        onView(withId(R.id.buttonSyncData)).check(
+            matches(
+                allOf(
+                    withText(SYNC_DATA),
+                    isDisplayed()
+                )
+            )
+        )
     }
 
     fun checkEditPeriodIsDisableForConfiguration() {
         onView(withId(R.id.metaPeriodsNoEdition)).check(matches(withText(NOT_EDIT_TEXT)))
-        onView(withId(R.id.buttonSyncMeta)).check(matches(allOf(withText("SYNC CONFIGURATION NOW"), isDisplayed())))
+        onView(withId(R.id.buttonSyncMeta)).check(
+            matches(
+                allOf(
+                    withText("SYNC CONFIGURATION NOW"),
+                    isDisplayed()
+                )
+            )
+        )
     }
 
     fun checkEditPeriodIsDisableForParameters() {
-        onView(withId(R.id.parametersNoEdition)).check(matches(withText("Sync parameters are not editable")))
+        onView(withId(R.id.parametersNoEdition))
+            .check(matches(withText("Sync parameters are not editable")))
     }
 
     fun clickOnManageReservedValues() {
@@ -76,12 +95,17 @@ class SettingsRobot: BaseRobot() {
                 //.perform(click())
                 .perform(actionOnItemAtPosition<ReservedValueViewHolder>(position, click()))*/
         onView(withId(R.id.recycler))
-                .perform(actionOnItemAtPosition<ReservedValueViewHolder>(position, ClickRefillButton()))
+            .perform(actionOnItemAtPosition<ReservedValueViewHolder>(position, ClickRefillButton()))
     }
 
     fun checkReservedValuesWasRefill(position: Int) {
-        onView(withId(R.id.recycler)).check(matches(allOf(
-                atPosition(position, hasDescendant(withText("100 reserved values left"))))))
+        onView(withId(R.id.recycler)).check(
+            matches(
+                allOf(
+                    atPosition(position, hasDescendant(withText("100 reserved values left")))
+                )
+            )
+        )
     }
 
     fun checkLogViewIsDisplayed() {
@@ -101,7 +125,7 @@ class SettingsRobot: BaseRobot() {
 
     fun checkSnackBarIsShown() {
         onView(withId(com.google.android.material.R.id.snackbar_text))
-                .check(matches(withText("Delete local data finished successfully.")))
+            .check(matches(withText("Delete local data finished successfully.")))
     }
 
     fun checkOnAcceptReset() {
@@ -110,18 +134,17 @@ class SettingsRobot: BaseRobot() {
 
     fun checkGatewayNumberFieldIsDisable() {
         onView(withId(R.id.settings_sms_receiver))
-                //.perform(scrollTo())
-                .check(matches(allOf(isDisplayed())))
+            // .perform(scrollTo())
+            .check(matches(allOf(isDisplayed())))
     }
 
     fun checkSMSSubmissionIsEnable() {
         onView(withId(R.id.settings_sms_response_wait_switch))
-                .check(matches(isEnabled()))
+            .check(matches(isEnabled()))
     }
 
     companion object {
         const val NOT_EDIT_TEXT = "Syncing period is not editable"
         const val SYNC_DATA = "SYNC DATA NOW"
     }
-
 }

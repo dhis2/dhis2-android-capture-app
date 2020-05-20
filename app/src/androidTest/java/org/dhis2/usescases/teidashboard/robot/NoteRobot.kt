@@ -5,7 +5,10 @@ import androidx.test.espresso.action.TypeTextAction
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition
-import androidx.test.espresso.matcher.ViewMatchers.*
+import androidx.test.espresso.matcher.ViewMatchers.hasDescendant
+import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
+import androidx.test.espresso.matcher.ViewMatchers.withId
+import androidx.test.espresso.matcher.ViewMatchers.withText
 import org.dhis2.R
 import org.dhis2.common.BaseRobot
 import org.dhis2.common.matchers.RecyclerviewMatchers.Companion.atPosition
@@ -20,15 +23,15 @@ fun noteRobot(noteRobot: NoteRobot.() -> Unit) {
     }
 }
 
-class NoteRobot: BaseRobot() {
+class NoteRobot : BaseRobot() {
 
     fun clickOnFabAddNewNote() {
         onView(withId(R.id.addNoteButton)).check(matches(isDisplayed())).perform(click())
     }
 
-    fun clickOnNoteWithPosition(position:Int){
+    fun clickOnNoteWithPosition(position: Int) {
         onView(withId(R.id.notes_recycler))
-                .perform(actionOnItemAtPosition<NotesViewHolder>(position, click()))
+            .perform(actionOnItemAtPosition<NotesViewHolder>(position, click()))
     }
 
     fun typeNote(text: String) {
@@ -38,21 +41,36 @@ class NoteRobot: BaseRobot() {
 
     fun clickOnSaveButton() {
         onView(withId(R.id.saveButton))
-                .perform(click())
+            .perform(click())
     }
 
-    fun clickYesOnAlertDialog(){
+    fun clickYesOnAlertDialog() {
         onView(withText(R.string.yes))
-                .perform(click())
+            .perform(click())
     }
 
-    fun checkNoteWasNotCreated(text: String){
-        onView(withId(R.id.notes_recycler)).check(matches(not(atPosition(0, hasDescendant((withText(text)))))))
+    fun checkNoteWasNotCreated(text: String) {
+        onView(withId(R.id.notes_recycler)).check(
+            matches(
+                not(
+                    atPosition(
+                        0,
+                        hasDescendant((withText(text)))
+                    )
+                )
+            )
+        )
     }
 
     fun checkNewNoteWasCreated(text: String) {
-        onView(withId(R.id.notes_recycler)).check(matches(allOf(isDisplayed(), isNotEmpty(),
-                atPosition(0, hasDescendant(withText(text))))))
+        onView(withId(R.id.notes_recycler)).check(
+            matches(
+                allOf(
+                    isDisplayed(), isNotEmpty(),
+                    atPosition(0, hasDescendant(withText(text)))
+                )
+            )
+        )
     }
 
     fun clickOnClearButton() {

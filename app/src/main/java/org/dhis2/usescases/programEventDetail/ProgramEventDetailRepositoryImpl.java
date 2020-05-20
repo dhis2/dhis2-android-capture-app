@@ -10,7 +10,7 @@ import com.mapbox.geojson.BoundingBox;
 import com.mapbox.geojson.FeatureCollection;
 
 import org.dhis2.data.tuples.Pair;
-import org.dhis2.utils.maps.GeometryUtils;
+import org.dhis2.uicomponents.map.geometry.GeometryUtils;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper;
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope;
