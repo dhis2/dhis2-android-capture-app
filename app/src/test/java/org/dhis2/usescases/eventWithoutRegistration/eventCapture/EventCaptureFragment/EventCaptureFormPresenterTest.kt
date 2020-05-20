@@ -54,11 +54,12 @@ class EventCaptureFormPresenterTest {
         whenever(activityPresenter.formFieldsFlowable()) doReturn BehaviorSubject.create()
         presenter.init()
 
-        assert(view.dataEntryFlowable()
-            .onBackpressureBuffer()
-            .distinctUntilChanged()
-            .test()
-            .hasSubscription()
+        assert(
+            view.dataEntryFlowable()
+                .onBackpressureBuffer()
+                .distinctUntilChanged()
+                .test()
+                .hasSubscription()
         )
         assert(view.sectionSelectorFlowable().distinctUntilChanged().test().hasSubscription())
         assert(activityPresenter.formFieldsFlowable().hasObservers())
@@ -125,7 +126,7 @@ class EventCaptureFormPresenterTest {
         whenever(activityPresenter.formFieldsFlowable()) doReturn BehaviorSubject.create()
         presenter.init()
         processor.onNext("sectionUid")
-        verify(activityPresenter,times(1)).goToSection("sectionUid")
+        verify(activityPresenter, times(1)).goToSection("sectionUid")
     }
 
     @Test
@@ -139,7 +140,7 @@ class EventCaptureFormPresenterTest {
         whenever(activityPresenter.formFieldsFlowable()) doReturn BehaviorSubject.create()
         presenter.init()
         activityPresenter.formFieldsFlowable().onNext(mutableListOf())
-        verify(view,times(1)).showFields(any(), any())
+        verify(view, times(1)).showFields(any(), any())
     }
 
     @Test
@@ -161,6 +162,4 @@ class EventCaptureFormPresenterTest {
         presenter.onActionButtonClick()
         verify(activityPresenter).attempFinish()
     }
-
-
 }

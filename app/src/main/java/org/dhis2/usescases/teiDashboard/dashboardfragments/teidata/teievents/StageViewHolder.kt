@@ -1,4 +1,4 @@
-package org.dhis2.usescases.teiDashboard.dashboardfragments.tei_data.tei_events
+package org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents
 
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
@@ -6,7 +6,7 @@ import io.reactivex.processors.FlowableProcessor
 import org.dhis2.Bindings.toDateSpan
 import org.dhis2.R
 import org.dhis2.databinding.ItemStageSectionBinding
-import org.dhis2.usescases.teiDashboard.dashboardfragments.tei_data.TEIDataContracts
+import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TEIDataContracts
 import org.dhis2.utils.ColorUtils
 import org.dhis2.utils.resources.ResourceManager
 
@@ -40,15 +40,19 @@ internal class StageViewHolder(
         )
         binding.lastUpdatedEvent.text = eventItem.lastUpdate.toDateSpan(itemView.context)
         val stageNotRepeatableZeroCount = stage.repeatable() != true &&
-                eventItem.eventCount == 0
+            eventItem.eventCount == 0
         val stageRepeatableZeroCount = stage.repeatable() == true &&
-                eventItem.eventCount == 0
+            eventItem.eventCount == 0
         val stageRepeatableCountSelected = stage.repeatable() == true &&
-                eventItem.eventCount > 0 && eventItem.isSelected
+            eventItem.eventCount > 0 && eventItem.isSelected
 
         binding.addStageButton.visibility =
             if (eventItem.canAddNewEvent &&
-                (stageNotRepeatableZeroCount || stageRepeatableZeroCount || stageRepeatableCountSelected)
+                (
+                    stageNotRepeatableZeroCount ||
+                        stageRepeatableZeroCount ||
+                        stageRepeatableCountSelected
+                    )
             ) {
                 View.VISIBLE
             } else {
