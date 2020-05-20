@@ -15,7 +15,8 @@ fun ValueType.toHint(context: Context): String {
         ValueType.INTEGER -> context.getString(R.string.enter_number)
         ValueType.INTEGER_POSITIVE -> context.getString(R.string.enter_positive_integer)
         ValueType.INTEGER_NEGATIVE -> context.getString(R.string.enter_negative_integer)
-        ValueType.INTEGER_ZERO_OR_POSITIVE -> context.getString(R.string.enter_positive_integer_or_zero)
+        ValueType.INTEGER_ZERO_OR_POSITIVE ->
+            context.getString(R.string.enter_positive_integer_or_zero)
         ValueType.PHONE_NUMBER -> context.getString(R.string.enter_phone_number)
         ValueType.EMAIL -> context.getString(R.string.enter_email)
         ValueType.ORGANISATION_UNIT -> context.getString(R.string.choose_ou)

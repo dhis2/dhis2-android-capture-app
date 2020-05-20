@@ -153,11 +153,12 @@ class ValueStoreTest {
 
     @Test
     fun `Should not delete data element value if field is option set`() {
-        whenever(d2.optionModule().options().uid("optionUid").blockingGet()) doReturn Option.builder()
-            .name("optionName")
-            .uid("optionUid")
-            .code("optionCode")
-            .build()
+        whenever(d2.optionModule().options().uid("optionUid").blockingGet()) doReturn
+            Option.builder()
+                .name("optionName")
+                .uid("optionUid")
+                .code("optionCode")
+                .build()
         whenever(
             d2.trackedEntityModule().trackedEntityAttributeValues().value(
                 "recordUid",
@@ -181,21 +182,29 @@ class ValueStoreTest {
             .event("recordUid")
             .value("optionCode")
             .build()
-        whenever(d2.dataElementModule().dataElements().uid("fieldUid").blockingGet()) doReturn DataElement.builder()
-            .uid("fieldUid")
-            .valueType(ValueType.TEXT)
-            .build()
-        val storeResult = deValueStore.deleteOptionValueIfSelected("fieldUid", "optionUid")
+        whenever(
+            d2.dataElementModule().dataElements()
+                .uid("fieldUid").blockingGet()
+        ) doReturn
+            DataElement.builder()
+                .uid("fieldUid")
+                .valueType(ValueType.TEXT)
+                .build()
+        val storeResult = deValueStore.deleteOptionValueIfSelected(
+            "fieldUid",
+            "optionUid"
+        )
         assert(storeResult.valueStoreResult == ValueStoreImpl.ValueStoreResult.VALUE_CHANGED)
     }
 
     @Test
     fun `Should delete data element value if field is option set`() {
-        whenever(d2.optionModule().options().uid("optionUid").blockingGet()) doReturn Option.builder()
-            .name("optionName")
-            .uid("optionUid")
-            .code("optionCode")
-            .build()
+        whenever(d2.optionModule().options().uid("optionUid").blockingGet()) doReturn
+            Option.builder()
+                .name("optionName")
+                .uid("optionUid")
+                .code("optionCode")
+                .build()
         whenever(
             d2.trackedEntityModule().trackedEntityDataValues().value(
                 "recordUid",
@@ -209,11 +218,13 @@ class ValueStoreTest {
             ).blockingExists()
         ) doReturn false
         val storeResult = deValueStore.deleteOptionValueIfSelected("fieldUid", "optionUid")
-        assert(storeResult.valueStoreResult == ValueStoreImpl.ValueStoreResult.VALUE_HAS_NOT_CHANGED)
+        assert(
+            storeResult.valueStoreResult == ValueStoreImpl.ValueStoreResult.VALUE_HAS_NOT_CHANGED
+        )
     }
 
     @Test
-    fun `Should return VALUE_HAS_NOT_CHANGED when saving null value for a dataElement and no previous value exist`() {
+    fun `Should return error when saving null value for a DE and no previous value exist`() {
         val testingUid = "uid"
         whenever(
             d2.dataElementModule().dataElements().uid(testingUid).blockingExists()
@@ -242,7 +253,7 @@ class ValueStoreTest {
     }
 
     @Test
-    fun `Should return VALUE_HAS_NOT_CHANGED when saving null value for an attribute and no previous value exist`() {
+    fun `Should return error when saving null value for an attr and no previous value exist`() {
         val testingUid = "uid"
         whenever(
             d2.dataElementModule().dataElements().uid(testingUid).blockingExists()
