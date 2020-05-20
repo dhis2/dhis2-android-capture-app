@@ -59,6 +59,7 @@ ext {
             powermock        : "1.7.0RC2",
             assertj          : "2.5.0",
             junit            : "4.12",
-            spoon            : "1.7.0"
+            spoon            : "1.7.0",
+            libSimprintsVersion : "2020.2.0"
     ]
 }

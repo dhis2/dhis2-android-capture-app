@@ -390,6 +390,8 @@ dependencies {
     /*region SECURITY*/
     implementation 'com.scottyab:rootbeer-lib:0.0.7'
 
+    implementation "com.simprints:libsimprints:${libraries.libSimprintsVersion}"
+
 }
 
 apply plugin: 'com.google.gms.google-services'
