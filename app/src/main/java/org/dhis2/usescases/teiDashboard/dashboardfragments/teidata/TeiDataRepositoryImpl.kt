@@ -1,10 +1,10 @@
-package org.dhis2.usescases.teiDashboard.dashboardfragments.tei_data
+package org.dhis2.usescases.teiDashboard.dashboardfragments.teidata
 
 import io.reactivex.Single
 import org.dhis2.Bindings.applyFilters
 import org.dhis2.Bindings.primaryDate
-import org.dhis2.usescases.teiDashboard.dashboardfragments.tei_data.tei_events.EventViewModel
-import org.dhis2.usescases.teiDashboard.dashboardfragments.tei_data.tei_events.EventViewModelType
+import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewModel
+import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewModelType
 import org.dhis2.utils.DateUtils
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope

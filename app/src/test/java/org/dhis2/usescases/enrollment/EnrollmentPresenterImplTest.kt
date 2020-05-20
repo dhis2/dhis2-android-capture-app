@@ -70,15 +70,21 @@ class EnrollmentPresenterImplTest {
 
     @Test
     fun `Should delete option value if selected in group to hide`() {
-        whenever(formRepository.getOptionsFromGroups(arrayListOf("optionGroupToHide")))doReturn arrayListOf("option1","option2")
+        whenever(formRepository.getOptionsFromGroups(arrayListOf("optionGroupToHide"))) doReturn
+            arrayListOf("option1", "option2")
         presenter.setOptionGroupToHide("optionGroupToHide", true, "field")
-        verify(valueStore).deleteOptionValueIfSelectedInGroup("field","optionGroupToHide",true)
+        verify(valueStore)
+            .deleteOptionValueIfSelectedInGroup(
+                "field",
+                "optionGroupToHide",
+                true
+            )
     }
 
     @Test
     fun `Should delete option value if selected not in group to hide`() {
         presenter.setOptionGroupToHide("optionGroupToHide", false, "field")
-        verify(valueStore).deleteOptionValueIfSelectedInGroup("field","optionGroupToHide",false)
+        verify(valueStore).deleteOptionValueIfSelectedInGroup("field", "optionGroupToHide", false)
     }
 
     @Test
@@ -169,7 +175,8 @@ class EnrollmentPresenterImplTest {
                 .blockingGet()
         ) doReturn listOf(
             TrackedEntityAttributeValue.builder().value("1").build(),
-            TrackedEntityAttributeValue.builder().value("1").build())
+            TrackedEntityAttributeValue.builder().value("1").build()
+        )
         whenever(enrollmentView.context) doReturn mock()
 
         presenter.setFieldsToShow("testSection", fields)
@@ -369,7 +376,12 @@ class EnrollmentPresenterImplTest {
         return list
     }
 
-    private fun dummyEditTextViewModel(uid: String, label: String, value: String? = null, mandatory: Boolean = false) =
+    private fun dummyEditTextViewModel(
+        uid: String,
+        label: String,
+        value: String? = null,
+        mandatory: Boolean = false
+    ) =
         EditTextViewModel.create(
             uid,
             label,

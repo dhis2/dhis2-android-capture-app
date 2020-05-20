@@ -1,4 +1,4 @@
-package org.dhis2.data.forms.dataentry.fields.option_set
+package org.dhis2.data.forms.dataentry.fields.optionset
 
 import androidx.lifecycle.MutableLiveData
 import io.reactivex.processors.FlowableProcessor

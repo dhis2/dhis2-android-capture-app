@@ -1,4 +1,4 @@
-package org.dhis2.usescases.teiDashboard.dashboardfragments.tei_data;
+package org.dhis2.usescases.teiDashboard.dashboardfragments.teidata;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -30,9 +30,9 @@ import org.dhis2.usescases.programStageSelection.ProgramStageSelectionActivity;
 import org.dhis2.usescases.teiDashboard.DashboardProgramModel;
 import org.dhis2.usescases.teiDashboard.DashboardViewModel;
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity;
-import org.dhis2.usescases.teiDashboard.dashboardfragments.tei_data.tei_events.EventAdapter;
-import org.dhis2.usescases.teiDashboard.dashboardfragments.tei_data.tei_events.EventViewModel;
-import org.dhis2.usescases.teiDashboard.dashboardfragments.tei_data.tei_events.EventViewModelType;
+import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventAdapter;
+import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewModel;
+import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewModelType;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.DialogClickListener;
