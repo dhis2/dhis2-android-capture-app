@@ -17,7 +17,7 @@
 
         <variable
             name="presenter"
-            type="org.dhis2.usescases.teiDashboard.dashboardfragments.tei_data.TEIDataContracts.Presenter" />
+            type="org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TEIDataContracts.Presenter" />
 
         <variable
             name="dashboardModel"

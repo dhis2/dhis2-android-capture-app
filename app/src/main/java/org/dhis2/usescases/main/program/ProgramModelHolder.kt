@@ -1,13 +1,10 @@
 package org.dhis2.usescases.main.program
 
-import androidx.appcompat.content.res.AppCompatResources
 import androidx.recyclerview.widget.RecyclerView
 import org.dhis2.R
 import org.dhis2.databinding.ItemProgramModelBinding
 import org.dhis2.utils.ColorUtils
-import org.dhis2.utils.ObjectStyleUtils
 import org.dhis2.utils.resources.ResourceManager
-import timber.log.Timber
 
 /**
  * QUADRAM. Created by ppajuelo on 13/06/2018.
