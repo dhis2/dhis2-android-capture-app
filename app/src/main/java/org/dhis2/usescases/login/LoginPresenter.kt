@@ -236,7 +236,7 @@ class LoginPresenter(
     fun handleResponse(userResponse: Response<*>, userName: String, server: String) {
         view.showLoginProgress(false)
         if (userResponse.isSuccessful) {
-            if(view.isNetworkAvailable()) {
+            if (view.isNetworkAvailable()) {
                 preferenceProvider.setValue(Preference.INITIAL_SYNC_DONE, false)
             }
 
@@ -282,7 +282,7 @@ class LoginPresenter(
 
     fun areSameCredentials(serverUrl: String, userName: String, pass: String): Boolean {
         return preferenceProvider.areCredentialsSet() &&
-                preferenceProvider.areSameCredentials(serverUrl, userName, pass)
+            preferenceProvider.areSameCredentials(serverUrl, userName, pass)
     }
 
     fun saveUserCredentials(serverUrl: String, userName: String, pass: String) {
@@ -295,10 +295,10 @@ class LoginPresenter(
             fingerPrintController.authenticate(view.getPromptParams())
                 .map { result ->
                     if (preferenceProvider.contains(
-                            SECURE_SERVER_URL,
-                            SECURE_USER_NAME,
-                            SECURE_PASS
-                        )
+                        SECURE_SERVER_URL,
+                        SECURE_USER_NAME,
+                        SECURE_PASS
+                    )
                     ) {
                         Result.success(result)
                     } else {
@@ -367,7 +367,7 @@ class LoginPresenter(
         return Pair(urls, users)
     }
 
-    //TODO Remove this when we remove the userManager from the presenter
+    // TODO Remove this when we remove the userManager from the presenter
     @RestrictTo(Scope.TESTS)
     fun setUserManager(userManager: UserManager) {
         this.userManager = userManager
