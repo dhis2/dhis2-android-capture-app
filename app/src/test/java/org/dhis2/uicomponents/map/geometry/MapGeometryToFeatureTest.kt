@@ -21,7 +21,7 @@ import org.junit.Test
 
 class MapGeometryToFeatureTest {
 
-    private lateinit var mapGeometryToFeature : MapGeometryToFeature
+    private lateinit var mapGeometryToFeature: MapGeometryToFeature
     private val pointMapper: MapPointToFeature = mock()
     private val polygonMapper: MapPolygonToFeature = mock()
     private val longitudePoint = -11.96
@@ -38,14 +38,18 @@ class MapGeometryToFeatureTest {
     }
 
     @Test
-    fun `Should map single point to feature`(){
+    fun `Should map single point to feature`() {
         val geometry = GeometryHelper.createPointGeometry(listOf(longitudePoint, latitudePoint))
         val boundsGeometry = BoundsGeometry()
         val featurePoint = createFeaturePoint(longitudePoint, latitudePoint)
 
-        whenever(pointMapper.map(geometry, boundsGeometry)) doReturn Pair(featurePoint, boundsGeometry)
+        whenever(pointMapper.map(geometry, boundsGeometry)) doReturn Pair(
+            featurePoint,
+            boundsGeometry
+        )
 
-        val featureResult = mapGeometryToFeature.map(geometry, EVENT, EVENT_UID_VALUE, boundsGeometry)
+        val featureResult =
+            mapGeometryToFeature.map(geometry, EVENT, EVENT_UID_VALUE, boundsGeometry)
 
         val property = featureResult?.getStringProperty(EVENT)
         val pointResult = featureResult?.geometry() as Point
@@ -55,17 +59,23 @@ class MapGeometryToFeatureTest {
     }
 
     @Test
-    fun `Should map single polygon to feature`(){
-        val coordinates = listOf(listOf(
+    fun `Should map single polygon to feature`() {
+        val coordinates = listOf(
+            listOf(
                 listOf(longitude1Polygon, latitude1Polygon),
                 listOf(longitude2Polygon, latitude2Polygon)
-        ))
+            )
+        )
         val boundsGeometry = BoundsGeometry()
         val geometry = GeometryHelper.createPolygonGeometry(coordinates)
         val featurePolygon = createFeaturePolygon()
-        whenever(polygonMapper.map(geometry, boundsGeometry)) doReturn Pair(featurePolygon, boundsGeometry)
+        whenever(polygonMapper.map(geometry, boundsGeometry)) doReturn Pair(
+            featurePolygon,
+            boundsGeometry
+        )
 
-        val featureResult = mapGeometryToFeature.map(geometry, EVENT, EVENT_UID_VALUE, boundsGeometry)
+        val featureResult =
+            mapGeometryToFeature.map(geometry, EVENT, EVENT_UID_VALUE, boundsGeometry)
 
         val property = featureResult?.getStringProperty(EVENT)
         val polygonResult = featureResult?.geometry() as Polygon
@@ -79,30 +89,34 @@ class MapGeometryToFeatureTest {
     }
 
     @Test
-    fun `Should not map point or polygon when feature type is unknown`(){
+    fun `Should not map point or polygon when feature type is unknown`() {
         val geometry = Geometry.builder().coordinates("[-$longitudePoint, $latitudePoint]").build()
         val boundsGeometry = BoundsGeometry()
         val featurePoint = createFeaturePoint(longitudePoint, latitudePoint)
 
-        whenever(pointMapper.map(geometry, boundsGeometry)) doReturn Pair(featurePoint, boundsGeometry)
+        whenever(pointMapper.map(geometry, boundsGeometry)) doReturn Pair(
+            featurePoint,
+            boundsGeometry
+        )
 
         val result = mapGeometryToFeature.map(geometry, EVENT, EVENT_UID_VALUE, boundsGeometry)
 
         assertEquals(result, null)
     }
 
-
-    private fun createFeaturePoint(longitude:Double, latitude: Double) : Feature {
+    private fun createFeaturePoint(longitude: Double, latitude: Double): Feature {
         return Feature.fromGeometry(Point.fromLngLat(longitude, latitude)).also {
             it.addStringProperty(EVENT, EVENT_UID_VALUE)
         }
     }
 
-    private fun createFeaturePolygon() : Feature{
-        val coordinates = listOf(listOf(
+    private fun createFeaturePolygon(): Feature {
+        val coordinates = listOf(
+            listOf(
                 Point.fromLngLat(longitude1Polygon, latitude1Polygon),
                 Point.fromLngLat(longitude2Polygon, latitude2Polygon)
-        ))
+            )
+        )
 
         return Feature.fromGeometry(Polygon.fromLngLats(coordinates))
     }

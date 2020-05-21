@@ -9,7 +9,7 @@ import timber.log.Timber
 
 class MapPointToFeature {
 
-     fun map(item: Geometry, bounds: BoundsGeometry): Pair<Feature, BoundsGeometry>? {
+    fun map(item: Geometry, bounds: BoundsGeometry): Pair<Feature, BoundsGeometry>? {
         val sdkPoint = GeometryHelper.getPoint(item)
         val lat = sdkPoint[1]
         val lon = sdkPoint[0]

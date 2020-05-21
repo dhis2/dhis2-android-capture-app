@@ -6,7 +6,6 @@ import com.mapbox.mapboxsdk.Mapbox
 import org.jetbrains.annotations.Nullable
 
 class MapController {
-
     companion object {
         fun init(@NonNull context: Context, @Nullable accessToken: String?) {
             Mapbox.getInstance(context, accessToken)

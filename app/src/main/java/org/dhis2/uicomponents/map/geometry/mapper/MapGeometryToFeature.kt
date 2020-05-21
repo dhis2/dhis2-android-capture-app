@@ -7,11 +7,16 @@ import org.dhis2.uicomponents.map.geometry.polygon.MapPolygonToFeature
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.Geometry
 
-class MapGeometryToFeature (private val pointMapper: MapPointToFeature,
-                            private val polygonMapper: MapPolygonToFeature){
-
-    fun map (geometry: Geometry, property: String, propertyValue: String,
-             bounds: BoundsGeometry) : Feature? {
+class MapGeometryToFeature(
+    private val pointMapper: MapPointToFeature,
+    private val polygonMapper: MapPolygonToFeature
+) {
+    fun map(
+        geometry: Geometry,
+        property: String,
+        propertyValue: String,
+        bounds: BoundsGeometry
+    ): Feature? {
         return when {
             geometry.type() == FeatureType.POINT -> {
                 val pairPointBounds = pointMapper.map(geometry, bounds)

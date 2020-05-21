@@ -9,8 +9,8 @@ import org.junit.Test
 
 class MapPolygonToFeatureTest {
 
-    private lateinit var mapPolygonToFeature : MapPolygonToFeature
-    private val boundsGeometry : BoundsGeometry = BoundsGeometry()
+    private lateinit var mapPolygonToFeature: MapPolygonToFeature
+    private val boundsGeometry: BoundsGeometry = BoundsGeometry()
 
     private val longitude1 = 43.34532
     private val latitude1 = -23.98234
@@ -23,18 +23,21 @@ class MapPolygonToFeatureTest {
     }
 
     @Test
-    fun `Should polygon to feature`(){
-        val coordinates = listOf(listOf(
+    fun `Should polygon to feature`() {
+        val coordinates = listOf(
+            listOf(
                 listOf(longitude1, latitude1),
                 listOf(longitude2, latitude2)
-        ))
+            )
+        )
 
         val geometry = GeometryHelper.createPolygonGeometry(coordinates)
         val result = mapPolygonToFeature.map(geometry, boundsGeometry)
 
-        val expectedResult = "{\"type\":\"Polygon\",\"coordinates\":[[[43.34532,-23.98234],[-10.02322,3.74597]]]}"
+        val expectedResult =
+            "{\"type\":\"Polygon\",\"coordinates\":[[[43.34532,-23.98234],[-10.02322,3.74597]]]}"
 
-        assertThat(result?.first?.geometry()?.toJson(),`is`(expectedResult))
+        assertThat(result?.first?.geometry()?.toJson(), `is`(expectedResult))
         result?.second?.let {
             assertThat(it.northBound, `is`(latitude2))
             assertThat(it.southBound, `is`(latitude1))

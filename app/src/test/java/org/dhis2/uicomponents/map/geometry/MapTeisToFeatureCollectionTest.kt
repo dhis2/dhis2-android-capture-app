@@ -36,22 +36,28 @@ class MapTeisToFeatureCollectionTest {
 
     @Before
     fun setup() {
-        mapTeisToFeatureCollection = MapTeisToFeatureCollection(bounds, mapPointToFeature,
-                mapPolygonToFeature, mapPolygonPointToFeature)
+        mapTeisToFeatureCollection = MapTeisToFeatureCollection(
+            bounds, mapPointToFeature,
+            mapPolygonToFeature, mapPolygonPointToFeature
+        )
     }
 
     @Test
-    fun `Should map tei models to point feature collection`(){
+    fun `Should map tei models to point feature collection`() {
         val teiList = createSearchTeiModelList()
         val featurePoint = Feature.fromGeometry(Point.fromLngLat(POINT_LONGITUDE, POINT_LATITUDE))
 
-        whenever(mapPointToFeature.map(teiList[0].tei.geometry()!!, bounds)) doReturn Pair(featurePoint, bounds)
+        whenever(mapPointToFeature.map(teiList[0].tei.geometry()!!, bounds)) doReturn Pair(
+            featurePoint,
+            bounds
+        )
 
-        val result =  mapTeisToFeatureCollection.map(teiList)
+        val result = mapTeisToFeatureCollection.map(teiList)
         val featureCollectionResults = result?.first?.get(TEI)
 
         val pointFeatureResult = featureCollectionResults?.features()?.get(0)?.geometry() as Point
-        val uid = featureCollectionResults.features()?.get(0)?.getStringProperty(MapTeisToFeatureCollection.TEI_UID)
+        val uid = featureCollectionResults.features()?.get(0)
+            ?.getStringProperty(MapTeisToFeatureCollection.TEI_UID)
         val image = featureCollectionResults.features()?.get(0)?.getStringProperty(TEI_IMAGE)
         assertThat(pointFeatureResult.longitude(), `is`(POINT_LONGITUDE))
         assertThat(pointFeatureResult.latitude(), `is`(POINT_LATITUDE))
@@ -60,68 +66,116 @@ class MapTeisToFeatureCollectionTest {
     }
 
     @Test
-    fun `Should map tei models to point enrollment feature collection`(){
+    fun `Should map tei models to point enrollment feature collection`() {
         val teiList = createSearchTeiModelWithEnrollment()
-        val enrollmentFeaturePoint = Feature.fromGeometry(Point.fromLngLat(POINT_LONGITUDE_ENROLLMENT, POINT_LATITUDE_ENROLLMENT))
-        val teiFeaturePoint = Feature.fromGeometry(Point.fromLngLat(POINT_LONGITUDE, POINT_LATITUDE))
+        val enrollmentFeaturePoint = Feature.fromGeometry(
+            Point.fromLngLat(
+                POINT_LONGITUDE_ENROLLMENT,
+                POINT_LATITUDE_ENROLLMENT
+            )
+        )
+        val teiFeaturePoint =
+            Feature.fromGeometry(Point.fromLngLat(POINT_LONGITUDE, POINT_LATITUDE))
 
-        whenever(mapPointToFeature.map(teiList[0].tei.geometry()!!, bounds)) doReturn Pair(teiFeaturePoint, bounds)
-        whenever(mapPointToFeature.map(teiList[0].selectedEnrollment.geometry()!!, bounds)) doReturn Pair(enrollmentFeaturePoint, bounds)
+        whenever(mapPointToFeature.map(teiList[0].tei.geometry()!!, bounds)) doReturn Pair(
+            teiFeaturePoint,
+            bounds
+        )
+        whenever(
+            mapPointToFeature.map(
+                teiList[0].selectedEnrollment.geometry()!!,
+                bounds
+            )
+        ) doReturn Pair(enrollmentFeaturePoint, bounds)
 
-        val result =  mapTeisToFeatureCollection.map(teiList)
+        val result = mapTeisToFeatureCollection.map(teiList)
         val featureTeiCollectionResults = result?.first?.get(TEI)
         val featureEnrollmentCollectionResults = result?.first?.get(ENROLLMENT)
 
-        val teiPointFeatureResult = featureTeiCollectionResults?.features()?.get(0)?.geometry() as Point
-        val uid = featureTeiCollectionResults.features()?.get(0)?.getStringProperty(MapTeisToFeatureCollection.TEI_UID)
+        val teiPointFeatureResult =
+            featureTeiCollectionResults?.features()?.get(0)?.geometry() as Point
+        val uid = featureTeiCollectionResults.features()?.get(0)
+            ?.getStringProperty(MapTeisToFeatureCollection.TEI_UID)
         assertThat(teiPointFeatureResult.longitude(), `is`(POINT_LONGITUDE))
         assertThat(teiPointFeatureResult.latitude(), `is`(POINT_LATITUDE))
         assertThat(uid, `is`(TEI_UID))
 
-        val enrollmentUid = featureEnrollmentCollectionResults?.features()?.get(0)?.getStringProperty(ENROLLMENT_UID)
-        val enrollmentPointFeatureResult = featureEnrollmentCollectionResults?.features()?.get(0)?.geometry() as Point
+        val enrollmentUid = featureEnrollmentCollectionResults?.features()?.get(0)
+            ?.getStringProperty(ENROLLMENT_UID)
+        val enrollmentPointFeatureResult =
+            featureEnrollmentCollectionResults?.features()?.get(0)?.geometry() as Point
         assertThat(enrollmentPointFeatureResult.longitude(), `is`(POINT_LONGITUDE_ENROLLMENT))
         assertThat(enrollmentPointFeatureResult.latitude(), `is`(POINT_LATITUDE_ENROLLMENT))
         assertThat(enrollmentUid, `is`("enrollment_uid"))
     }
 
     @Test
-    fun `Should map tei models to polygon enrollment feature collection`(){
+    fun `Should map tei models to polygon enrollment feature collection`() {
         val teiList = createSearchTeiModelListWithEnrollmentPolygon()
         val polygonTei = listOf(listOf(Point.fromLngLat(POINT_LONGITUDE, POINT_LATITUDE)))
-        val polygonEnrollment = listOf(listOf(Point.fromLngLat(POINT_LONGITUDE_ENROLLMENT, POINT_LATITUDE_ENROLLMENT)))
+        val polygonEnrollment =
+            listOf(listOf(Point.fromLngLat(POINT_LONGITUDE_ENROLLMENT, POINT_LATITUDE_ENROLLMENT)))
         val teiFeaturePoint = Feature.fromGeometry(Polygon.fromLngLats(polygonTei))
         val enrollmentFeaturePoint = Feature.fromGeometry(Polygon.fromLngLats(polygonEnrollment))
 
-        whenever(mapPolygonToFeature.map(any(), any())) doReturn Pair(teiFeaturePoint, bounds) doReturn Pair(enrollmentFeaturePoint, bounds)
+        whenever(mapPolygonToFeature.map(any(), any())) doReturn Pair(
+            teiFeaturePoint,
+            bounds
+        ) doReturn Pair(enrollmentFeaturePoint, bounds)
         whenever(mapPolygonPointToFeature.map(any())) doReturn enrollmentFeaturePoint
 
-        val result =  mapTeisToFeatureCollection.map(teiList)
+        val result = mapTeisToFeatureCollection.map(teiList)
         val featureTeiCollectionResults = result?.first?.get(TEI)
         val featureEnrollmentCollectionResults = result?.first?.get(ENROLLMENT)
 
-        val featureTeiResult = featureTeiCollectionResults?.features()?.get(0)?.geometry() as Polygon
-        val uidTeiFeature = featureTeiCollectionResults.features()?.get(0)?.getStringProperty(MapTeisToFeatureCollection.TEI_UID)
+        val featureTeiResult =
+            featureTeiCollectionResults?.features()?.get(0)?.geometry() as Polygon
+        val uidTeiFeature = featureTeiCollectionResults.features()?.get(0)
+            ?.getStringProperty(MapTeisToFeatureCollection.TEI_UID)
         assertThat(featureTeiResult.coordinates()[0][0].longitude(), `is`(POINT_LONGITUDE))
         assertThat(featureTeiResult.coordinates()[0][0].latitude(), `is`(POINT_LATITUDE))
         assertThat(uidTeiFeature, `is`(TEI_UID))
 
-        val featureTeiEnrollmentResult = featureTeiCollectionResults.features()?.get(1)?.geometry() as Polygon
-        val uidTeiEnrollmentFeature = featureTeiCollectionResults.features()?.get(1)?.getStringProperty(MapTeisToFeatureCollection.TEI_UID)
-        assertThat(featureTeiEnrollmentResult.coordinates()[0][0].longitude(), `is`(POINT_LONGITUDE_ENROLLMENT))
-        assertThat(featureTeiEnrollmentResult.coordinates()[0][0].latitude(), `is`(POINT_LATITUDE_ENROLLMENT))
+        val featureTeiEnrollmentResult =
+            featureTeiCollectionResults.features()?.get(1)?.geometry() as Polygon
+        val uidTeiEnrollmentFeature = featureTeiCollectionResults.features()?.get(1)
+            ?.getStringProperty(MapTeisToFeatureCollection.TEI_UID)
+        assertThat(
+            featureTeiEnrollmentResult.coordinates()[0][0].longitude(),
+            `is`(POINT_LONGITUDE_ENROLLMENT)
+        )
+        assertThat(
+            featureTeiEnrollmentResult.coordinates()[0][0].latitude(),
+            `is`(POINT_LATITUDE_ENROLLMENT)
+        )
         assertThat(uidTeiEnrollmentFeature, `is`(TEI_UID))
 
-        val featureEnrollmentFirstResult = featureEnrollmentCollectionResults?.features()?.get(0)?.geometry() as Polygon
-        val featureEnrollmentFirstUid = featureEnrollmentCollectionResults.features()?.get(0)?.getStringProperty(MapTeisToFeatureCollection.TEI_UID)
-        assertThat(featureEnrollmentFirstResult.coordinates()[0][0].longitude(), `is`(POINT_LONGITUDE_ENROLLMENT))
-        assertThat(featureEnrollmentFirstResult.coordinates()[0][0].latitude(), `is`(POINT_LATITUDE_ENROLLMENT))
+        val featureEnrollmentFirstResult =
+            featureEnrollmentCollectionResults?.features()?.get(0)?.geometry() as Polygon
+        val featureEnrollmentFirstUid = featureEnrollmentCollectionResults.features()?.get(0)
+            ?.getStringProperty(MapTeisToFeatureCollection.TEI_UID)
+        assertThat(
+            featureEnrollmentFirstResult.coordinates()[0][0].longitude(),
+            `is`(POINT_LONGITUDE_ENROLLMENT)
+        )
+        assertThat(
+            featureEnrollmentFirstResult.coordinates()[0][0].latitude(),
+            `is`(POINT_LATITUDE_ENROLLMENT)
+        )
         assertThat(featureEnrollmentFirstUid, `is`(TEI_UID))
 
-        val featureEnrollmentSecondResult = featureEnrollmentCollectionResults.features()?.get(1)?.geometry() as Polygon
-        val featureEnrollmentSecondUid = featureEnrollmentCollectionResults.features()?.get(1)?.getStringProperty(MapTeisToFeatureCollection.TEI_UID)
-        assertThat(featureEnrollmentSecondResult.coordinates()[0][0].longitude(), `is`(POINT_LONGITUDE_ENROLLMENT))
-        assertThat(featureEnrollmentSecondResult.coordinates()[0][0].latitude(), `is`(POINT_LATITUDE_ENROLLMENT))
+        val featureEnrollmentSecondResult =
+            featureEnrollmentCollectionResults.features()?.get(1)?.geometry() as Polygon
+        val featureEnrollmentSecondUid = featureEnrollmentCollectionResults.features()?.get(1)
+            ?.getStringProperty(MapTeisToFeatureCollection.TEI_UID)
+        assertThat(
+            featureEnrollmentSecondResult.coordinates()[0][0].longitude(),
+            `is`(POINT_LONGITUDE_ENROLLMENT)
+        )
+        assertThat(
+            featureEnrollmentSecondResult.coordinates()[0][0].latitude(),
+            `is`(POINT_LATITUDE_ENROLLMENT)
+        )
         assertThat(featureEnrollmentSecondUid, `is`(TEI_UID))
     }
 
@@ -150,21 +204,26 @@ class MapTeisToFeatureCollectionTest {
         return listOf(searchTeiModel)
     }
 
-    private fun createTeiEnrollment(type: FeatureType) : Enrollment {
+    private fun createTeiEnrollment(type: FeatureType): Enrollment {
         return Enrollment.builder()
-                .id(1L)
-                .uid("enrollment_uid")
-                .trackedEntityInstance("tracked_entity_instance")
-                .geometry(Geometry.builder()
-                        .type(type)
-                        .coordinates("[$POINT_LONGITUDE_ENROLLMENT, $POINT_LATITUDE_ENROLLMENT]").build())
-                .build()
+            .id(1L)
+            .uid("enrollment_uid")
+            .trackedEntityInstance("tracked_entity_instance")
+            .geometry(
+                Geometry.builder()
+                    .type(type)
+                    .coordinates("[$POINT_LONGITUDE_ENROLLMENT, $POINT_LATITUDE_ENROLLMENT]")
+                    .build()
+            )
+            .build()
     }
 
-    private fun createTeiModel(type: FeatureType) : TrackedEntityInstance{
+    private fun createTeiModel(type: FeatureType): TrackedEntityInstance {
         return TrackedEntityInstance.builder().uid(TEI_UID)
-                .geometry(Geometry.builder().coordinates("[$POINT_LONGITUDE,$POINT_LATITUDE]")
-                        .type(type).build()).build()
+            .geometry(
+                Geometry.builder().coordinates("[$POINT_LONGITUDE,$POINT_LATITUDE]")
+                    .type(type).build()
+            ).build()
     }
 
     companion object {

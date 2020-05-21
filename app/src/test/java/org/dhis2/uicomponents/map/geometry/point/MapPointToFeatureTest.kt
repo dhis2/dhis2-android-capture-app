@@ -15,7 +15,7 @@ import org.junit.Test
 class MapPointToFeatureTest {
 
     private lateinit var mapPointToFeature: MapPointToFeature
-    private val boundsGeometry : BoundsGeometry = mock()
+    private val boundsGeometry: BoundsGeometry = mock()
 
     @Before
     fun setup() {
@@ -23,15 +23,20 @@ class MapPointToFeatureTest {
     }
 
     @Test
-    fun `Should map point to feature`(){
+    fun `Should map point to feature`() {
         val latitude = 11.00
         val longitude = -30.00
         val geometry = Geometry.builder()
-                .coordinates("[-30.00, 11.00]")
-                .type(FeatureType.POINT)
-                .build()
+            .coordinates("[-30.00, 11.00]")
+            .type(FeatureType.POINT)
+            .build()
 
-        whenever(boundsGeometry.update(latitude, longitude)) doReturn BoundsGeometry(latitude,latitude, longitude, longitude)
+        whenever(boundsGeometry.update(latitude, longitude)) doReturn BoundsGeometry(
+            latitude,
+            latitude,
+            longitude,
+            longitude
+        )
 
         val result = mapPointToFeature.map(geometry, boundsGeometry)
 
@@ -39,21 +44,21 @@ class MapPointToFeatureTest {
         assertThat(result?.first?.geometry()?.toJson(), `is`(expectedResult))
         result?.second?.let {
             assertThat(it.northBound, `is`(latitude))
-            assertThat(it.southBound,`is`(latitude))
+            assertThat(it.southBound, `is`(latitude))
             assertThat(it.eastBound, `is`(longitude))
             assertThat(it.westBound, `is`(longitude))
         }
     }
 
     @Test
-    fun `Should not map point to feature`(){
-       val geometry = Geometry.builder()
-               .coordinates("[-181.00, 11.00]")
-               .type(FeatureType.POINT)
-               .build()
+    fun `Should not map point to feature`() {
+        val geometry = Geometry.builder()
+            .coordinates("[-181.00, 11.00]")
+            .type(FeatureType.POINT)
+            .build()
 
         val result = mapPointToFeature.map(geometry, boundsGeometry)
 
-        assertEquals(result,null)
+        assertEquals(result, null)
     }
 }

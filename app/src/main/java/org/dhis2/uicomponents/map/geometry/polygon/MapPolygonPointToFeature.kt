@@ -6,8 +6,7 @@ import org.hisp.dhis.android.core.arch.helpers.GeometryHelper
 import org.hisp.dhis.android.core.common.Geometry
 
 class MapPolygonPointToFeature {
-
-    fun map(geometry: Geometry) : Feature{
+    fun map(geometry: Geometry): Feature {
         val sdkPolygon = GeometryHelper.getPolygon(geometry)
         val lat = sdkPolygon[0][0][1]
         val lon = sdkPolygon[0][0][0]

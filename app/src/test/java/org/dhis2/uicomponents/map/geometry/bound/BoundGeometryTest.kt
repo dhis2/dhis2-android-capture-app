@@ -4,7 +4,7 @@ import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Test
 
-class BoundGeometryTest  {
+class BoundGeometryTest {
 
     private lateinit var boundsGeometry: BoundsGeometry
 
@@ -13,10 +13,10 @@ class BoundGeometryTest  {
         boundsGeometry = BoundsGeometry()
 
         boundsGeometry.initOrReset()
-        assertThat(boundsGeometry.eastBound,`is`(0.0))
-        assertThat(boundsGeometry.northBound,`is`(0.0))
-        assertThat(boundsGeometry.southBound,`is`(0.0))
-        assertThat(boundsGeometry.westBound,`is`(0.0))
+        assertThat(boundsGeometry.eastBound, `is`(0.0))
+        assertThat(boundsGeometry.northBound, `is`(0.0))
+        assertThat(boundsGeometry.southBound, `is`(0.0))
+        assertThat(boundsGeometry.westBound, `is`(0.0))
     }
 
     @Test
@@ -41,7 +41,7 @@ class BoundGeometryTest  {
         val newLatitude = 39.979898
         val newLongitude = -3.155605
 
-        boundsGeometry = BoundsGeometry(latitude,latitude,longitude,longitude)
+        boundsGeometry = BoundsGeometry(latitude, latitude, longitude, longitude)
         boundsGeometry.update(newLatitude, newLongitude)
 
         assertThat(boundsGeometry.northBound, `is`(latitude))

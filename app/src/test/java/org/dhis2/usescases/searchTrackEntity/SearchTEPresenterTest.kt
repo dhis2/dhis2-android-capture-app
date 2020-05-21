@@ -1,6 +1,10 @@
 package org.dhis2.usescases.searchTrackEntity
 
-import com.nhaarman.mockitokotlin2.*
+import com.nhaarman.mockitokotlin2.doReturn
+import com.nhaarman.mockitokotlin2.mock
+import com.nhaarman.mockitokotlin2.times
+import com.nhaarman.mockitokotlin2.verify
+import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.schedulers.TestScheduler
 import junit.framework.TestCase.assertTrue
 import org.dhis2.data.schedulers.TestSchedulerProvider
@@ -33,8 +37,15 @@ class SearchTEPresenterTest {
             )
                 .displayFrontPageList(true)
                 .minAttributesRequiredToSearch(0).build()
-        presenter =
-            SearchTEPresenter(view, d2, repository, schedulers, analyticsHelper, initialProgram, mapTeisToFeatureCollection)
+        presenter = SearchTEPresenter(
+            view,
+            d2,
+            repository,
+            schedulers,
+            analyticsHelper,
+            initialProgram,
+            mapTeisToFeatureCollection
+        )
     }
 
     @Test
