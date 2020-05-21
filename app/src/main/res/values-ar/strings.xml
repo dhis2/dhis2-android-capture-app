@@ -23,7 +23,7 @@
 
     <string name="sync_metadata">البيانات الوصفية</string>
     <string name="sync_events">الأحداث</string>
-    <string name="sync_tei">الكيانات المتتبعة</string>
+    <string name="sync_tei">الكيانات المتعقبة</string>
 
     <string name="sync_complete_title">إنتهى</string>
     <string name="sync_complete_text">اكتملت المزامنة</string>
@@ -31,10 +31,10 @@
     <string name="sync_error_title">خطأ في المزامنة</string>
     <string name="sync_error_text">حدث خطأ أثناء المزامنة. يرجى اعادة المحاولة.</string>
     <string name="metadata_sync_error">فشل: حدث خطأ في عملية المزامنة. إذا كنت متصلاً بالشبكة يرجى المحاولة مرة أخرى. إذا استمر الخطأ ، فاتصل بالمسؤول.</string>
-    <string name="data_sync_warning">تحذير: تم مزامنة معظم البيانات الخاصة بك ولكن وجدت تعارضات في بعض الحقول. قم بمزامنة التهيئة والتكوين الخاصة بك وحاول مرة أخرى. تحقق من حالة المزامنة لكل حقل: يتم وضع علامة @ على البرامج و TEI والأحداث المتعارضة.</string>
+    <string name="data_sync_warning">تحذير: تم مزامنة معظم البيانات الخاصة بك ولكن يوجد تعارضات في بعض الحقول. قم بمزامنة التهيئة والتكوين الخاصة بك وحاول مرة أخرى. تحقق من حالة المزامنة لكل حقل: يتم وضع علامة @ على البرامج و TEI والأحداث المتعارضة.</string>
     <string name="data_sync_warning_program">تحذير: تم مزامنة معظم البيانات الخاصة بك ولكن وجدت تعارضات في بعض الحقول. قم بمزامنة التهيئة والتكوين الخاصة بك وحاول مرة أخرى. إذا استمر التحذير ، فتحقق من حالة المزامنة لكل حقل: يتم وضع علامة @ على البرامج و TEI والأحداث المتعارضة.</string>
-    <string name="data_sync_error">خطأ: تعذر مزامنة بعض بياناتك. تحقق من حالة المزامنة: يتم وضع علامة @ على البرامج التي بها أخطاء، و TEI والأحداث التي فيها تعارض بـ $ \".</string>
-    <string name="data_sync_error_program">خطأ: تعذر مزامنة بعض بياناتك. تحقق من حالة المزامنة: الأحداث  و الـ TEI المتضاربة تم وضع علامة $ عليها\".</string>
+    <string name="data_sync_error">خطأ: تعذر مزامنة بعض بياناتك. تحقق من حالة المزامنة: يتم وضع علامة @ على البرامج التي بها أخطاء، و $ على TEI والأحداث التي فيها تعارض\".</string>
+    <string name="data_sync_error_program">خطأ: تعذر مزامنة بعض بياناتك. تحقق من حالة المزامنة: يتم وضع علامة $ على الأحداث  و TEI التي تحوي على تعارضات\".</string>
 
     <string name="search_result_text">تم العثور على %s نتيجة</string>
     <string name="add_new">إضافة جديد</string>
@@ -79,7 +79,7 @@
     <string name="enter_positive_integer">أدخل عدداً صحيحاً موجباً</string>
     <string name="filter_options">خيارات التصفية</string>
     <string name="choose_date">اختر التاريخ</string>
-    <string name="change_calendar">تغيير التقويم</string>
+    <string name="change_calendar">تغيير طريقة عرض التقويم</string>
 
     <!-- Status -->
     <string name="program_completed">تم اكمال البرنامج</string>
@@ -108,7 +108,7 @@
     <string name="state_to_update">للتحديث</string>
     <string name="state_to_delete">للحذف</string>
     <string name="state_error">خطأ</string>
-    <string name="action_sync">زامن</string>
+    <string name="action_sync">مزامنة</string>
     <string name="action_sync_sms">مزامنة sms</string>
 
     <!--Completion-->
@@ -199,10 +199,10 @@
     <string name="last_data_sync_date">آخر عملية مزامنة في: %s</string>
     <string name="last_metadata_sync_date">آخر عملية مزامنة في: %s</string>
     <string name="refill_reserved_values">إعادة ملء</string>
-    <string name="settings_sms_module_title">وحدة الـ sms: </string>
-    <string name="settings_sms_receiver_number">بوابة الـ sms</string>
-    <string name="settings_sms_result_sender_number">مرسل نتيجة الـ sms</string>
-    <string name="settings_sms_result_timeout">مهلة نتيجة الـ sms</string>
+    <string name="settings_sms_module_title">وحدة sms: </string>
+    <string name="settings_sms_receiver_number">بوابة sms</string>
+    <string name="settings_sms_result_sender_number">مرسل نتيجة sms</string>
+    <string name="settings_sms_result_timeout">مهلة نتيجة sms</string>
     <string name="settings_sms_result_timeout_hint">ثواني</string>
     <string name="settings_sms_result_sender_hint">رقم</string>
     <string name="settings_sms_receiver_number_hint">رقم</string>
@@ -223,7 +223,7 @@
     <string name="settingsReservedValues">القيم المحجوزة</string>
     <string name="settingsReservedValues_descr">هنا يمكنك رؤية عدد القيم المتاحة بلا اتصال بالإنترنت وحجز قيم جديدة.</string>
     <string name="settingsErrorLog">فتح سجل أخطاء المزامنة</string>
-    <string name="settingsErrorLog_descr">يحتوي هذا السجل على جميع الأخطاء الناتجة عن مزامنة بياناتك والبيانات التعريفية.</string>
+    <string name="settingsErrorLog_descr">يحتوي هذا السجل على جميع الأخطاء الناتجة عن مزامنة بياناتك والبيانات الوصفية.</string>
     <string name="settingsDeleteLocalData">حذف البيانات المحفوظة محلياً في هذا الجهاز</string>
     <string name="settingsDeleteLocalData_descr">سيتم حذف جميع بيانات تطبيق Capture المخزنة في جهازك. سيتم فقدان البيانات التي لم تتم مزامنتها مع الخادم.</string>
     <string name="settingsReset">إعادة تعيين بيانات التطبيق و إعدادات التهيئة و التكوين</string>
@@ -294,7 +294,7 @@
     <string name="next">التالي</string>
     <string name="search_min_num_attr">تحتاج إلى ادخال على الأقل %d من الميزات للقيام بالبحث</string>
     <string name="search_attr">تحتاج إلى ادخال على الأقل واحدة من الميزات للقيام بالبحث</string>
-    <string name="search_max_tei_reached">هناك أكثر من %d نتيجة. الرجاء إدخال معايير بحث أكثر</string>
+    <string name="search_max_tei_reached">هناك أكثر من %d نتيجة. يرجى إدخال معايير بحث أكثر</string>
     <string name="search_criteria_not_met">لم يتم ايجاد أي نتيجة لمعايير البحث التي ادخلتها.\n راجعها أو قم بتسجيل %s جديد</string>
     <string name="search_init">ادخل معايير البحث التي تريد</string>
 
@@ -323,7 +323,7 @@
     <string name="empty_program_list">لا توجد معلومات لعوامل التصفية المحددة. يرجى محاولة تغييرها.</string>
     <string name="share">مشاركة</string>
     <string name="share_qr">مشاركة رمز الـ QR</string>
-    <string name="teiType_search_online">البحث حسب النوع غير ممكن للبحث عبر الإنترنت.\n الرجاء تحديد برنامج من القائمة.</string>
+    <string name="teiType_search_online">البحث حسب النوع غير ممكن للبحث عبر الإنترنت.\n يرجى تحديد برنامج من القائمة.</string>
     <string name="max">الأعلى</string>
     <string name="current">الحالي</string>
     <string name="tei">TEI</string>
@@ -385,7 +385,7 @@
     <string name="dialog_generate_new_event">توليد حدث جديد</string>
     <string name="message_generate_new_event">هل تريد إنشاء حدث جديد</string>
     <string name="event_completed_title">اكتملت الأحداث</string>
-    <string name="event_completed_message">اكتمال جميع الأحداث في هذا البرنامج. هل ترغب في إغلاق البرنامج أيضاً؟</string>
+    <string name="event_completed_message">اكتمال جميع الأحداث في هذا البرنامج. هل ترغب في تعيين البرنامج كمغلق أيضاً؟</string>
     <string name="complete_enrollment_message">هل ترغب في إكمال التسجيل أيضاً؟</string>
     <string name="check_event">تحقق</string>
 
@@ -444,7 +444,7 @@
     <string name="CHECK_SYNC_ERRORS">فتح سجل أخطاء المزامنة</string>
     <string name="error_dialog_title">سجل أخطاء المزامنة</string>
     <string name="share_with">مشاركة مع...</string>
-    <string name="errors_during_sync">فشلت مزامنة التهيئة والتكوين الخاصة بك. قد تكون هناك أخطاء في الخادم الخاص بك. انقر هنا للمزيد من المعلومات.</string>
+    <string name="errors_during_sync">فشلت مزامنة التهيئة والتكوين الخاصة بك. قد يكون هناك أخطاء في الخادم الخاص بك. انقر هنا للمزيد من المعلومات.</string>
     <string name="sectionSelectorPrev">السابق</string>
     <string name="sectionSelectorNext">التالي</string>
     <string name="event_overview">التفاصيل</string>
@@ -476,7 +476,7 @@
     <string name="tab_tables">جداول</string>
     <string name="table">الجدول</string>
     <string name="login_https">https://</string>
-    <string name="delete_local_data_message">ستفقد البيانات غير المتزامنة. هل تريد حقاً المتابعة؟</string>
+    <string name="delete_local_data_message">سيتم فقدان البيانات التي لم يتم مزامنتها. هل تريد حقاً المتابعة؟</string>
     <string name="local_data_accept">قبول</string>
     <string name="delete_local_data_error">تعذر حذف البيانات. يرجى اعادة المحاولة.</string>
     <string name="delete_local_data_done">انتهاء عملية حذف البيانات المحلية بنجاح.</string>
@@ -484,7 +484,7 @@
     <string name="send_user_name_title">إرسال البيانات</string>
     <string name="send_user_name_mesage">ساعد DHIS2 في تحسين هذا التطبيق من خلال مشاركة سجلات الأخطاء المرتبطة بمعرف المستخدم الخاص بك.</string>
     <string name="check_mandatory_field">التحقق من الحقول</string>
-    <string name="error_no_network_during_sync">فقدت الاتصال بالإنترنت أثناء إجراء مزامنة التهيئة والتكوين. الرجاء معاودة المحاولة في وقت لاحق</string>
+    <string name="error_no_network_during_sync">فقدان الإتصال بالإنترنت أثناء عملية مزامنة التهيئة والتكوين. يرجى معاودة المحاولة في وقت لاحق</string>
     <string name="action_agree">قبول</string>
     <string name="login_server_info_title">رابط الخادم</string>
     <string name="login_server_info_message">أدخل عنوان URL لخادم DHIS 2 لمؤسستك على النحو الذي حصلت عليه من مسؤول النظام.\n\n أو بدلاً من ذلك ، يمكنك مسح رمز الـ QR الذي يحتوي على عنوان الـ URL لخادمك</string>
@@ -587,7 +587,7 @@
     <string name="filters_title_period">الفترة الزمنية</string>
     <string name="filters_title_org_unit">الوحدة التنظيمية</string>
     <string name="filters_title_status">الحالة</string>
-    <string name="filters_title_state">مزامنة</string>
+    <string name="filters_title_state">حالة المزامنة</string>
     <string name="filters_title_assigned">تم تعيينه لي</string>
     <string name="filter_period_today">اليوم</string>
     <string name="filter_period_yesterday">الأمس</string>
@@ -601,7 +601,7 @@
     <string name="filter_period_form_to">من - إلى</string>
     <string name="filter_period_other">أخرى</string>
     <string name="filter_period_any">في أي وقت</string>
-    <string name="data_values_error_sync_message">فشلت المزامنة. تحقق من قيم البيانات وحاول حل المشكلة ثم حاول مرة أخرى. إذا استمر المشكلة بالظهور اتصل بمسؤول النظام</string>
+    <string name="data_values_error_sync_message">فشلت المزامنة. تحقق من قيم البيانات وحاول حل المشكلة ثم حاول مرة أخرى. إذا استمرت المشكلة بالظهور اتصل بمسؤول النظام</string>
     <string name="sms_synced_message">تم إرسال هذه البيانات إلى الخادم ولكن ليس مضموناً أنه تم تخزينها</string>
     <string name="filter_event_status_open">المفتوحة</string>
     <string name="filter_event_status_schedule">المجدولة زمنياً</string>
@@ -616,14 +616,14 @@
     <string name="enrollment_data_section_label">بيانات التسجيل</string>
     <string name="sms_enabled">وحدة الرسائل مفعلة</string>
     <string name="sms_disabled">وحدة الرسائل غير مفعلة</string>
-    <string name="sms_downloading_data">تحميل البيانات لوحدة الرسائل القصيرة. نرجوا الإنتظار</string>
+    <string name="sms_downloading_data">تحميل البيانات لوحدة الرسائل القصيرة. يرجى الإنتظار</string>
     <string name="sms_empty_gateway">لايمكن ترك بوابة عبور رسائل الـ sms فارغ</string>
     <string name="granular_sync_enrollments_empty">لا توجد تسجيلات ليتم رفعها</string>
     <string name="granular_sync_unsupported_task">هذه الـ convertTask غير مدعومة</string>
     <string name="disable_pin_locked">لا تظهر مرة أخرى قفل الشاشة</string>
     <string name="set_pin">تعيين رمز</string>
     <string name="conflict">تعارض</string>
-    <string name="event_date_in_future_message">لا يمكن أن يكون لهذا الحدث تاريخ في المستقبل. غير التاريخ من فضلك.</string>
+    <string name="event_date_in_future_message">لا يمكن أن يكون لهذا الحدث تاريخ في المستقبل. يرجى تغيير التاريخ.</string>
     <string name="change_event_date">غير التاريخ</string>
     <string name="go_back">رجوع</string>
     <string name="data_sets">حزم البيانات</string>
@@ -669,6 +669,7 @@
     <string name="dialog_layer_satellite">إظهار عرض القمر الصناعي</string>
     <string name="dialog_layer_tei_coordinates">إظهار إحداثيات tei</string>
     <string name="dialog_layer_enrollment_coordinates">عرض إحداثيات التسجيل</string>
+    <string name="dialog_layer_heatmap">إظهار طبقة مخطط الحرارة</string>
     <string name="downloading">تنزيل</string>
     <string name="filter_sync_synced">المتزامنة</string>
     <string name="filter_sync_not_synced">الغير متزامنة</string>
