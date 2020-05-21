@@ -420,7 +420,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
     @Override
     public void onBackClick() {
-        view.back();
+        view.onBackClicked();
     }
 
     @Override
