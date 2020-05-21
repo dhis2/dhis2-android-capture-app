@@ -163,6 +163,8 @@ class TeiDashboardTest : BaseTest() {
 
     @Test
     fun shouldOpenEventAndSaveSuccessfully(){
+        setupCredentials()
+
         prepareTeiOpenedProgrammeAndLaunchActivity(rule)
 
         val babyPostNatal = 0
@@ -172,6 +174,7 @@ class TeiDashboardTest : BaseTest() {
 
         eventRobot {
             scrollToBottomFormulary()
+            //editFormTypeComment() after scrolling should type a comment
             clickOnFormularyFabButton()
             clickOnFinish()
         }

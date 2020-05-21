@@ -43,6 +43,7 @@ class SettingsTest : BaseTest() {
         }
     }
 
+    //To check
     @Test
     fun shouldFindEditDisabledWhenClickOnSyncConfiguration() {
         startActivity()
@@ -157,6 +158,7 @@ class SettingsTest : BaseTest() {
         }
     }
 
+    //To check
     @Test
     fun shouldShowGatewayNumberDisableWhenClickOnSMSSettings() {
         startActivity()
