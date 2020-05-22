@@ -17,6 +17,7 @@ import org.dhis2.usescases.enrollment.EnrollmentActivity
 import org.dhis2.utils.DateUtils
 import org.dhis2.utils.DhisTextUtils
 import org.hisp.dhis.android.core.D2
+import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.ObjectStyle
 import org.hisp.dhis.android.core.common.ValueType
@@ -103,6 +104,7 @@ class EnrollmentRepository(
                     if (field is OptionSetViewModel) {
                         val options =
                             d2.optionModule().options().byOptionSetUid().eq(field.optionSet())
+                                .orderBySortOrder(RepositoryScope.OrderByDirection.ASC)
                                 .blockingGet()
                         finalFieldList.add(field.withOptions(options))
                     } else {
