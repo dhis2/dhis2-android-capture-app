@@ -42,7 +42,6 @@ class SettingsTest : BaseTest() {
         }
     }
 
-    //To check
     @Test
     fun shouldFindEditDisabledWhenClickOnSyncConfiguration() {
         startActivity()
@@ -74,7 +73,6 @@ class SettingsTest : BaseTest() {
     }
 
     @Test
-
     fun shouldRefillValuesWhenClickOnReservedValues() {
         startActivity()
 
@@ -86,6 +84,7 @@ class SettingsTest : BaseTest() {
         // on Manage Reserved 90% view should add ScrollTo
         // on Refill 90% view check custom view action
         settingsRobot {
+            checkReservedValuesIsDisable()
             clickOnReservedValues()
             clickOnManageReservedValues()
         //    clickOnRefill(0)

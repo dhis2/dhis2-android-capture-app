@@ -54,19 +54,24 @@ class SettingsRobot: BaseRobot() {
 
     fun checkEditPeriodIsDisableForData () {
         onView(withId(R.id.dataPeriodsNoEdition)).check(matches(withText(NOT_EDIT_TEXT)))
-        //onView(withId(R.id.buttonSyncData)).check(matches(allOf(withText(SYNC_DATA), isDisplayed())))
         onView(withId(R.id.dataPeriods)).check(matches(not(isDisplayed())))
     }
 
     fun checkEditPeriodIsDisableForConfiguration() {
         onView(withId(R.id.metaPeriodsNoEdition)).check(matches(withText(NOT_EDIT_TEXT)))
-        //onView(withId(R.id.buttonSyncMeta)).check(matches(allOf(withText("SYNC CONFIGURATION NOW"), isDisplayed())))
-        //check spinner is hide (btn works for both cases so no need to check it)
+        onView(withId(R.id.metadataPeriods)).check(matches(not(isDisplayed())))
+        onView(withId(R.id.buttonSyncMeta)).check(matches(allOf(withText("SYNC CONFIGURATION NOW"), isDisplayed())))
     }
 
     fun checkEditPeriodIsDisableForParameters() {
         onView(withId(R.id.parametersNoEdition)).check(matches(withText("Sync parameters are not editable")))
-        //check spinner
+        onView(withId(R.id.downloadLimitScope)).check(matches(not(isDisplayed())))
+        onView(withId(R.id.eventsEditText)).check(matches(not(isDisplayed())))
+        onView(withId(R.id.teiEditText)).check(matches(not(isDisplayed())))
+    }
+
+    fun checkReservedValuesIsDisable() {
+        onView(withId(R.id.reservedValueEditText)).check(matches(not(isDisplayed())))
     }
 
     fun clickOnManageReservedValues() {
