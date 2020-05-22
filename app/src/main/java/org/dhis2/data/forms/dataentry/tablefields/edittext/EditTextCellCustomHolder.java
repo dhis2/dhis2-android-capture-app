@@ -26,13 +26,9 @@ import org.hisp.dhis.android.core.common.ValueType;
 
 import io.reactivex.processors.FlowableProcessor;
 
-
-/**
- * QUADRAM. Created by frodriguez on 18/01/2018..
- */
-
 final class EditTextCellCustomHolder extends FormViewHolder {
 
+    private static final int DEFAULT_CELL_OFFSET = 3;
     private EditText editText;
     private EditTextModel editTextModel;
     private boolean accessDataWrite;
@@ -72,8 +68,8 @@ final class EditTextCellCustomHolder extends FormViewHolder {
                 );
             }
 
-            if (hasFocus && itemView.getLeft() > 5) {
-                tableView.scrollToColumnPosition(getAdapterPosition(),3);
+            if (hasFocus) {
+                tableView.scrollToColumnPosition(getAdapterPosition(),DEFAULT_CELL_OFFSET);
             }
         });
     }
@@ -274,7 +270,6 @@ final class EditTextCellCustomHolder extends FormViewHolder {
     public void selectNext() {
         if (tableView.getColumnHeaderRecyclerView().get(tableView.getColumnHeaderRecyclerView().size() - 1).getAdapter().getItemCount() > tableView.getSelectedColumn() + 1) {
             tableView.setSelectedCell(tableView.getSelectedColumn() + 1, tableView.getSelectedRow());
-//            tableView.scrollToNextField();
         } else if (tableView.getRowHeaderRecyclerView().getAdapter().getItemCount() > tableView.getSelectedRow() + 1) {
             tableView.scrollToStart();
             tableView.setSelectedCell(0, tableView.getSelectedRow() + 1);

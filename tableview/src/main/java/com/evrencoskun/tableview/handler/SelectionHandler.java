@@ -185,26 +185,6 @@ public class SelectionHandler {
         // Change background color of the column header which is located on X Position of the cell
         // view.
         setHeaderSelection(SelectionState.SHADOWED, shadowColor);
-       /* AbstractViewHolder columnHeader = (AbstractViewHolder) mColumnHeaderRecyclerView
-                .findViewHolderForAdapterPosition(mSelectedColumnPosition);
-
-        AbstractViewHolder columnBackUpHeader = (AbstractViewHolder) mTableView.getBackupHeaders().get(mTableView.getHeaderCount() - 1)
-                .findViewHolderForAdapterPosition(mSelectedColumnPosition);
-
-        if (columnHeader != null) {
-            // Change color
-            columnHeader.setBackgroundColor(shadowColor);
-            // Change state
-            columnHeader.setSelected(SelectionState.SHADOWED);
-        }
-
-        if (columnBackUpHeader != null) {
-            // Change color
-            columnBackUpHeader.setBackgroundColor(shadowColor);
-            // Change state
-            columnBackUpHeader.setSelected(SelectionState.SHADOWED);
-        }*/
-
     }
 
     private void setHeaderSelection(SelectionState selectionState, int shadowColor) {
@@ -251,25 +231,6 @@ public class SelectionHandler {
         // Change background color of the column header which is located on X Position of the cell
         // view.
         setHeaderSelection(SelectionState.UNSELECTED, unSelectedColor);
-       /* AbstractViewHolder columnHeader = (AbstractViewHolder) mColumnHeaderRecyclerView
-                .findViewHolderForAdapterPosition(mSelectedColumnPosition);
-
-        AbstractViewHolder columnBackUpHeader = (AbstractViewHolder) mTableView.getBackupHeaders().get(mTableView.getHeaderCount() - 1)
-                .findViewHolderForAdapterPosition(mSelectedColumnPosition);
-
-        if (columnHeader != null) {
-            // Change color
-            columnHeader.setBackgroundColor(unSelectedColor);
-            // Change state
-            columnHeader.setSelected(SelectionState.UNSELECTED);
-        }
-
-        if (columnBackUpHeader != null) {
-            // Change color
-            columnBackUpHeader.setBackgroundColor(unSelectedColor);
-            // Change state
-            columnBackUpHeader.setSelected(SelectionState.UNSELECTED);
-        }*/
     }
 
     private void selectedColumnHeader() {
