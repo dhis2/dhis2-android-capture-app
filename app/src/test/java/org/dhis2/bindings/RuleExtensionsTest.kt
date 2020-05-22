@@ -3,6 +3,7 @@ package org.dhis2.bindings
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
+import java.util.Date
 import junit.framework.Assert.assertTrue
 import org.dhis2.Bindings.toRuleAttributeValue
 import org.dhis2.Bindings.toRuleDataValue
@@ -20,7 +21,6 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValue
 import org.junit.Test
 import org.mockito.Mockito
-import java.util.Date
 
 class RuleExtensionsTest {
 
@@ -132,11 +132,12 @@ class RuleExtensionsTest {
 
     @Test
     fun `Should transform trackedEntityDataValues to ruleDataValues with optionCode value`() {
-        whenever(dataElementRepository.uid("dataElementUid").blockingGet()) doReturn DataElement.builder()
-            .uid("dataElementUid")
-            .optionSet(ObjectWithUid.create("optionSetUid"))
-            .valueType(ValueType.TEXT)
-            .build()
+        whenever(dataElementRepository.uid("dataElementUid").blockingGet()) doReturn
+            DataElement.builder()
+                .uid("dataElementUid")
+                .optionSet(ObjectWithUid.create("optionSetUid"))
+                .valueType(ValueType.TEXT)
+                .build()
 
         whenever(ruleVariableRepository.byProgramUid().eq("programUid")) doReturn mock()
         whenever(

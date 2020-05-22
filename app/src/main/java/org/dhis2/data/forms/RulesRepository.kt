@@ -2,6 +2,9 @@ package org.dhis2.data.forms
 
 import android.text.TextUtils.isEmpty
 import io.reactivex.Single
+import java.util.Calendar
+import java.util.Date
+import java.util.Objects
 import org.dhis2.Bindings.toRuleAttributeValue
 import org.dhis2.Bindings.toRuleDataValue
 import org.dhis2.Bindings.toRuleList
@@ -19,9 +22,6 @@ import org.hisp.dhis.rules.models.RuleAttributeValue
 import org.hisp.dhis.rules.models.RuleEnrollment
 import org.hisp.dhis.rules.models.RuleEvent
 import org.hisp.dhis.rules.models.RuleVariable
-import java.util.Calendar
-import java.util.Date
-import java.util.Objects
 
 class RulesRepository(private val d2: D2) {
 
