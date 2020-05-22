@@ -93,7 +93,7 @@ class EnrollmentRepository(
     @VisibleForTesting
     fun getFieldsForSingleSection(programUid: String): Single<List<FieldViewModel>> {
         return d2.programModule().programTrackedEntityAttributes().withRenderType()
-            .byProgram().eq(programUid).get()
+            .byProgram().eq(programUid).orderBySortOrder(RepositoryScope.OrderByDirection.ASC).get()
             .toFlowable()
             .flatMapIterable { programTrackedEntityAttributes -> programTrackedEntityAttributes }
             .map { transform(it) }
