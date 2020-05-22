@@ -6,6 +6,7 @@ import org.dhis2.Bindings.blockingSetCheck
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableModel
 import org.dhis2.utils.DhisTextUtils
 import org.hisp.dhis.android.core.D2
+import org.hisp.dhis.android.core.arch.helpers.FileResizerHelper
 import org.hisp.dhis.android.core.common.ValueType
 
 class ValueStoreImpl(
@@ -86,7 +87,6 @@ class ValueStoreImpl(
         } else {
             ""
         }
-
         return if (currentValue != newValue) {
             if (!DhisTextUtils.isEmpty(value)) {
                 valueRepository.blockingSetCheck(d2, uid, newValue)
@@ -147,7 +147,7 @@ class ValueStoreImpl(
     }
 
     private fun saveFileResource(path: String): String {
-        val file = File(path)
+        val file = FileResizerHelper.resizeFile(File(path), FileResizerHelper.Dimension.MEDIUM)
         return d2.fileResourceModule().fileResources().blockingAdd(file)
     }
 
