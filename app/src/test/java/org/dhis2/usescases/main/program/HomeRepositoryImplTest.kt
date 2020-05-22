@@ -5,6 +5,8 @@ import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
+import java.time.Instant
+import java.util.Date
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.Access
@@ -18,8 +20,6 @@ import org.junit.Before
 import org.junit.Test
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Mockito
-import java.time.Instant
-import java.util.Date
 
 class HomeRepositoryImplTest {
 
@@ -58,7 +58,6 @@ class HomeRepositoryImplTest {
 
     @Test
     fun `Should return list of data set ProgramViewModel`() {
-
         whenever(
             d2.dataSetModule().dataSetInstances()
                 .byDataSetUid().eq(anyString())
@@ -135,7 +134,10 @@ class HomeRepositoryImplTest {
                 .byDataSetUid().eq(anyString())
                 .byOrganisationUnitUid().`in`(orgUnitFilter)
         ) doReturn mock()
-        whenever(d2.dataSetModule().dataSetInstances().byDataSetUid().eq(anyString()).blockingGet()) doReturn emptyList()
+        whenever(
+            d2.dataSetModule().dataSetInstances()
+                .byDataSetUid().eq(anyString()).blockingGet()
+        ) doReturn emptyList()
 
         val testObserver = homeRepository.aggregatesModels(
             emptyList(),
@@ -175,7 +177,6 @@ class HomeRepositoryImplTest {
                 .byDataSetUid().eq(anyString())
                 .blockingGet()
         ) doReturn mockedDataSetInstanceList()
-
 
         val testObserver = homeRepository.aggregatesModels(
             emptyList(),
@@ -225,8 +226,8 @@ class HomeRepositoryImplTest {
         for (i in 1..10) {
             list.add(
                 DataSet.builder()
-                    .uid("dataSetUid_${i}")
-                    .displayName("dataSetName_${i}")
+                    .uid("dataSetUid_$i")
+                    .displayName("dataSetName_$i")
                     .access(
                         Access.create(
                             true,
@@ -279,5 +280,4 @@ class HomeRepositoryImplTest {
                 .build()
         )
     }
-
 }

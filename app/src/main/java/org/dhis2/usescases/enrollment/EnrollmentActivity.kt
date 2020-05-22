@@ -279,7 +279,7 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
     }
 
     override fun onBackPressed() {
-        if(!isKeyboardOpened()) {
+        if (!isKeyboardOpened()) {
             if (mode == EnrollmentMode.CHECK) {
                 presenter.backIsClicked()
             } else {

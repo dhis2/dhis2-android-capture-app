@@ -4,6 +4,7 @@ import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Single
+import java.util.Date
 import org.dhis2.data.forms.RulesRepository
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.`object`.ReadOnlyOneObjectRepositoryFinalImpl
@@ -18,8 +19,6 @@ import org.hisp.dhis.rules.RuleExpressionEvaluator
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito
-import java.time.Instant
-import java.util.Date
 
 class EnrollmentFormRepositoryTest {
 
@@ -32,7 +31,10 @@ class EnrollmentFormRepositoryTest {
 
     @Before
     fun setUp() {
-        whenever((programRepository as ReadOnlyOneObjectRepositoryFinalImpl<Program>).blockingGet()) doReturn Program.builder()
+        whenever(
+            (programRepository as ReadOnlyOneObjectRepositoryFinalImpl<Program>)
+                .blockingGet()
+        ) doReturn Program.builder()
             .uid("programUid")
             .displayName("programName")
             .build()
@@ -42,14 +44,22 @@ class EnrollmentFormRepositoryTest {
             .enrollmentDate(Date())
             .status(EnrollmentStatus.ACTIVE)
             .build()
-        whenever(rulesRepository.rulesNew("programUid")) doReturn Single.just(emptyList())
-        whenever(rulesRepository.ruleVariables("programUid")) doReturn Single.just(emptyList())
-        whenever(rulesRepository.enrollmentEvents("enrollmentUid")) doReturn Single.just(emptyList())
-        whenever(rulesRepository.queryConstants()) doReturn Single.just(emptyMap())
-        whenever(rulesRepository.supplementaryData("enrollmentOrgUnitUid")) doReturn Single.just(
-            emptyMap()
-        )
-        whenever(d2.organisationUnitModule().organisationUnits().uid("enrollmentOrgUnitUid").blockingGet()) doReturn OrganisationUnit.builder()
+        whenever(rulesRepository.rulesNew("programUid")) doReturn
+            Single.just(emptyList())
+        whenever(rulesRepository.ruleVariables("programUid")) doReturn
+            Single.just(emptyList())
+        whenever(rulesRepository.enrollmentEvents("enrollmentUid")) doReturn
+            Single.just(emptyList())
+        whenever(rulesRepository.queryConstants()) doReturn
+            Single.just(emptyMap())
+        whenever(rulesRepository.supplementaryData("enrollmentOrgUnitUid")) doReturn
+            Single.just(
+                emptyMap()
+            )
+        whenever(
+            d2.organisationUnitModule().organisationUnits()
+                .uid("enrollmentOrgUnitUid").blockingGet()
+        ) doReturn OrganisationUnit.builder()
             .uid("enrollmentOrgUnitUid")
             .code("orgUnitCode")
             .build()
@@ -67,8 +77,14 @@ class EnrollmentFormRepositoryTest {
         val optionGroupUids = arrayListOf("optionGroup1", "optionGroup2")
         whenever(d2.optionModule().optionGroups().withOptions()) doReturn mock()
         whenever(d2.optionModule().optionGroups().withOptions().byUid()) doReturn mock()
-        whenever(d2.optionModule().optionGroups().withOptions().byUid().`in`(optionGroupUids)) doReturn mock()
-        whenever(d2.optionModule().optionGroups().withOptions().byUid().`in`(optionGroupUids).blockingGet()) doReturn arrayListOf(
+        whenever(
+            d2.optionModule().optionGroups()
+                .withOptions().byUid().`in`(optionGroupUids)
+        ) doReturn mock()
+        whenever(
+            d2.optionModule().optionGroups()
+                .withOptions().byUid().`in`(optionGroupUids).blockingGet()
+        ) doReturn arrayListOf(
             OptionGroup.builder()
                 .uid("optionGroup1")
                 .options(
