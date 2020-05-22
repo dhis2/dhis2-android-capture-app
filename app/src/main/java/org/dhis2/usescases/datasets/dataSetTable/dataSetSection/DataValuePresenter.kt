@@ -72,6 +72,7 @@ class DataValuePresenter(
     private var section: Section? = null
     private var catOptionOrder: List<List<CategoryOption>>? = null
     private var transformCategories: MutableList<List<CategoryOption>>? = null
+    private var processorCompleteness: FlowableProcessor<Unit> = PublishProcessor.create()
 
     fun init(
         view: DataValueContract.View,
@@ -142,7 +143,10 @@ class DataValuePresenter(
         )
 
         disposable.add(
-            repository.isCompleted(orgUnitUid, periodId, attributeOptionCombo)
+            processorCompleteness.startWith(Unit)
+                .switchMap {
+                    repository.isCompleted(orgUnitUid, periodId, attributeOptionCombo)
+                }
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
@@ -287,7 +291,7 @@ class DataValuePresenter(
             val fields = ArrayList<FieldViewModel>()
             var totalRow = 0
             var fieldIsNumber = dataElement.valueType()!!.isNumeric
-            if(!isNumber) {
+            if (!isNumber) {
                 isNumber = dataElement.valueType()!!.isNumeric
             }
             val fieldFactory = FieldViewModelFactoryImpl("", "")
@@ -652,8 +656,8 @@ class DataValuePresenter(
                         it.dataElement() == rowAction.dataElement()
                                 && it.categoryOptionCombo() == rowAction.catOptCombo()
                     }
-                    when(dataValue) {
-                        null -> if(!rowAction.value().isNullOrEmpty()) {
+                    when (dataValue) {
+                        null -> if (!rowAction.value().isNullOrEmpty()) {
                             dataSetTableModel = DataSetTableModel.create(
                                 java.lang.Long.parseLong("0"),
                                 rowAction.dataElement(),
@@ -670,9 +674,9 @@ class DataValuePresenter(
                                 dataTableModel?.dataValues()?.add(it)
                             }
                         }
-                        else ->  {
+                        else -> {
                             dataSetTableModel = dataValue.setValue(rowAction.value())
-                            if(rowAction.value().isNullOrEmpty()) {
+                            if (rowAction.value().isNullOrEmpty()) {
                                 dataTableModel?.dataValues()?.remove(dataValue)
                             }
                         }
@@ -682,7 +686,7 @@ class DataValuePresenter(
                         dataSetSectionFragment.abstractActivity.back()
                     }
 
-                    dataSetTableModel?.let{
+                    dataSetTableModel?.let {
                         dataSetSectionFragment.updateData(rowAction, it.catCombo())
                         valueStore.save(it)
                     } ?: Flowable.just(
@@ -786,12 +790,16 @@ class DataValuePresenter(
         }
     }
 
-    fun getCurrentSectionMeasure(): kotlin.Pair<Int,Int> {
+    fun getCurrentSectionMeasure(): kotlin.Pair<Int, Int> {
         return section?.let {
             Pair(
                 prefs.getInt("W${dataSetUid}${it.uid()}", 0),
                 prefs.getInt("H${dataSetUid}${it.uid()}", 0)
             )
         } ?: Pair(0, 0)
+    }
+
+    fun checkComplete() {
+        processorCompleteness.onNext(Unit)
     }
 }
