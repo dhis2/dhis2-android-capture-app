@@ -527,10 +527,10 @@
     <string name="sms_receiver_number">رقم المستلم</string>
     <string name="sms_amount_question">هل تقبل بإرسال %d رسالة؟</string>
     <string name="sms_sending">ارسال %1$d/%2$d</string>
-    <string name="sms_waiting_amount_confirm">انتظار تأكيد الكمية - %d</string>
+    <string name="sms_waiting_amount_confirm">مقدار انتظار التأكيد - %d</string>
     <string name="sms_all_sent">تم إرسال الكل</string>
     <string name="sms_submission_completed">إكتمال الإرسال</string>
-    <string name="sms_waiting_confirmation">في انتظار رسالة تأكيد</string>
+    <string name="sms_waiting_confirmation">في انتظار رسالة التأكيد</string>
     <string name="sms_waiting_timeout">لم يتم استلام رسالة تأكيد</string>
     <string name="sms_confirmed">تم استلام رسالة تأكيد</string>
     <string name="sms_error">خطأ في الإرسال</string>
@@ -541,8 +541,8 @@
     <string name="sms_error_no_send_sms_permission">لا توجد صلاحية إرسال</string>
     <string name="sms_error_no_gateway_set">لم يتم تعيين بوابة عبور</string>
     <string name="sms_error_no_user_login">المستخدم لم يقم بتسجيل الدخول</string>
-    <string name="sms_error_module_disabled">وحدة الرسائل غير مفعلة</string>
-    <string name="sms_error_ongoing_sunmission">إرسال رسالة SMS أخرى جارية</string>
+    <string name="sms_error_module_disabled">وحدة الرسائل القصيرة غير مفعلة</string>
+    <string name="sms_error_ongoing_sunmission">جاري إرسال رسالة SMS أخرى</string>
     <string name="sms_metadata_empty">لم تبدأ وحدة SMS ، لم يتم العثور على البيانات الوصفية المطلوبة</string>
     <string name="sms_completed">مكتمل</string>
     <string name="sms_count_error">لم يتم قبول عدد الرسائل القصيرة</string>
@@ -575,15 +575,15 @@
     <string name="map_layers">طبقات الخريطة</string>
     <!--endregion-->
 
-    <string name="wrong_pattern">ليس تنسيق صحيح.</string>
+    <string name="wrong_pattern">ليس تنسيقاً صحيحاً.</string>
     <string name="fingerprint_title">البصمة</string>
     <string name="fingerprint_message">من فضلك ، ضع إصبعك في قارئ بصمة الإصبع الخاص بك.</string>
     <string name="security_title">الأمان</string>
     <string name="security_rooted_message">لأسباب أمنية ، لا يُسمح باستخدام هذا الإصدار من التطبيق في الأجهزة الـ rooted. يرجى استخدام النسخة التدريبية.</string>
     <string name="fix_error">هناك بعض الأخطاء. يرجى إصلاحها قبل المتابعة.</string>
 
-    <string name="filters_active">تطبيق عوامل التصفية</string>
-    <string name="filters_disabled">لم يتم تطبيق أي عامل تصفية</string>
+    <string name="filters_active">تطبيق عوامل تصفية</string>
+    <string name="filters_disabled">لم يتم تطبيق عوامل تصفية</string>
     <string name="filters_title_period">الفترة الزمنية</string>
     <string name="filters_title_org_unit">الوحدة التنظيمية</string>
     <string name="filters_title_status">الحالة</string>
@@ -615,12 +615,12 @@
     <string name="enrollment_data_show">إظهار بيانات التسجيل</string>
     <string name="enrollment_data_section_label">بيانات التسجيل</string>
     <string name="sms_enabled">وحدة الرسائل مفعلة</string>
-    <string name="sms_disabled">وحدة الرسائل غير مفعلة</string>
+    <string name="sms_disabled">وحدة الرسائل القصيرة غير مفعلة</string>
     <string name="sms_downloading_data">تحميل البيانات لوحدة الرسائل القصيرة. يرجى الإنتظار</string>
-    <string name="sms_empty_gateway">لايمكن ترك بوابة عبور رسائل الـ sms فارغ</string>
+    <string name="sms_empty_gateway">لايمكن ترك بوابة عبور رسائل sms فارغ</string>
     <string name="granular_sync_enrollments_empty">لا توجد تسجيلات ليتم رفعها</string>
     <string name="granular_sync_unsupported_task">هذه الـ convertTask غير مدعومة</string>
-    <string name="disable_pin_locked">لا تظهر مرة أخرى قفل الشاشة</string>
+    <string name="disable_pin_locked">لا تظهر قفل الشاشة مرة أخرى</string>
     <string name="set_pin">تعيين رمز</string>
     <string name="conflict">تعارض</string>
     <string name="event_date_in_future_message">لا يمكن أن يكون لهذا الحدث تاريخ في المستقبل. يرجى تغيير التاريخ.</string>
