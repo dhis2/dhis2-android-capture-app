@@ -92,6 +92,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
     private boolean scopeLimitInit;
     private boolean dataWorkRunning;
     private boolean metadataWorkRunning;
+//    scopeLimitInit = false;
 
     public SyncManagerFragment() {
         // Required empty public constructor
@@ -561,7 +562,6 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
 
     @Override
     public void setParameterSettings(SyncParametersViewModel parameterSettings) {
-        scopeLimitInit = false;
         String eventMax = String.valueOf(parameterSettings.getNumberOfEventsToDownload());
         String teiMax = String.valueOf(parameterSettings.getNumberOfTeiToDownload());
         String eventCurrent = String.valueOf(parameterSettings.getCurrentEventCount());
@@ -610,8 +610,8 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
             binding.specificSettingsButton.setVisibility(View.GONE);
         }
 
-        binding.downloadLimitScope.setAdapter(new ArrayAdapter<>(context, R.layout.spinner_settings_item,
-                context.getResources().getStringArray(R.array.download_limit_scope)));
+        /*binding.downloadLimitScope.setAdapter(new ArrayAdapter<>(context, R.layout.spinner_settings_item,
+                context.getResources().getStringArray(R.array.download_limit_scope)));*/
 
         if (parameterSettings.getLimitScopeIsEditable()) {
             binding.downloadLimitScopeHint.setVisibility(View.VISIBLE);
@@ -638,35 +638,37 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
     }
 
     private void setUpSyncParameterListeners() {
-        binding.downloadLimitScope.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int position, long l) {
-                if (scopeLimitInit) {
-                    switch (position) {
-                        case 0:
-                        default:
-                            presenter.saveLimitScope(LimitScope.GLOBAL);
-                            break;
-                        case 1:
-                            presenter.saveLimitScope(LimitScope.PER_ORG_UNIT);
-                            break;
-                        case 2:
-                            presenter.saveLimitScope(LimitScope.PER_PROGRAM);
-                            break;
-                        case 3:
-                            presenter.saveLimitScope(LimitScope.PER_OU_AND_PROGRAM);
-                            break;
+        if(binding.downloadLimitScope.getOnItemSelectedListener()==null) {
+            binding.downloadLimitScope.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> adapterView, View view, int position, long l) {
+                    if (scopeLimitInit) {
+                        switch (position) {
+                            case 0:
+                            default:
+                                presenter.saveLimitScope(LimitScope.GLOBAL);
+                                break;
+                            case 1:
+                                presenter.saveLimitScope(LimitScope.PER_ORG_UNIT);
+                                break;
+                            case 2:
+                                presenter.saveLimitScope(LimitScope.PER_PROGRAM);
+                                break;
+                            case 3:
+                                presenter.saveLimitScope(LimitScope.PER_OU_AND_PROGRAM);
+                                break;
+                        }
+                    } else {
+                        scopeLimitInit = true;
                     }
-                } else {
-                    scopeLimitInit = true;
                 }
-            }
 
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-                /*do nothing*/
-            }
-        });
+                @Override
+                public void onNothingSelected(AdapterView<?> adapterView) {
+                    /*do nothing*/
+                }
+            });
+        }
 
         binding.eventsEditText.setOnEditorActionListener((view, actionId, keyEvent) -> {
             if (actionId == EditorInfo.IME_ACTION_DONE) {
@@ -693,7 +695,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
         });
 
         binding.eventsEditText.setOnFocusChangeListener((v, hasFocus) -> {
-            if(!hasFocus) {
+            if (!hasFocus) {
                 if (!binding.eventsEditText.getText().toString().isEmpty()) {
                     presenter.saveEventMaxCount(Integer.valueOf(binding.eventsEditText.getText().toString()));
                 }
@@ -701,7 +703,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
         });
 
         binding.teiEditText.setOnFocusChangeListener((v, hasFocus) -> {
-            if(!hasFocus){
+            if (!hasFocus) {
                 if (!binding.teiEditText.getText().toString().isEmpty()) {
                     presenter.saveTeiMaxCount(Integer.valueOf(binding.teiEditText.getText().toString()));
                 }
