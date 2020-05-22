@@ -72,6 +72,7 @@ class DataValuePresenter(
     private var section: Section? = null
     private var catOptionOrder: List<List<CategoryOption>>? = null
     private var transformCategories: MutableList<List<CategoryOption>>? = null
+    private var processorCompleteness: FlowableProcessor<Unit> = PublishProcessor.create()
 
     fun init(
         view: DataValueContract.View,
@@ -142,7 +143,10 @@ class DataValuePresenter(
         )
 
         disposable.add(
-            repository.isCompleted(orgUnitUid, periodId, attributeOptionCombo)
+            processorCompleteness.startWith(Unit)
+                .switchMap {
+                    repository.isCompleted(orgUnitUid, periodId, attributeOptionCombo)
+                }
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
@@ -793,5 +797,9 @@ class DataValuePresenter(
                 prefs.getInt("H${dataSetUid}${it.uid()}", 0)
             )
         } ?: Pair(0, 0)
+    }
+
+    fun checkComplete() {
+        processorCompleteness.onNext(Unit)
     }
 }
