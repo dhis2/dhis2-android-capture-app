@@ -47,7 +47,7 @@ public class SelectionHandler {
 
     public SelectionHandler(ITableView tableView) {
         this.mTableView = tableView;
-        this.mColumnHeaderRecyclerView = mTableView.getColumnHeaderRecyclerView(tableView.getHeaderCount()-1);
+        this.mColumnHeaderRecyclerView = mTableView.getColumnHeaderRecyclerView(tableView.getHeaderCount() - 1);
         this.mRowHeaderRecyclerView = mTableView.getRowHeaderRecyclerView();
         this.mCellLayoutManager = mTableView.getCellLayoutManager();
     }
@@ -70,10 +70,10 @@ public class SelectionHandler {
         this.mPreviousSelectedViewHolder = selectedViewHolder;
 
         // Change color
-        if(mTableView != null && mPreviousSelectedViewHolder != null)
+        if (mTableView != null && mPreviousSelectedViewHolder != null)
             mPreviousSelectedViewHolder.setBackgroundColor(mTableView.getSelectedColor());
         // Change state
-        if(mPreviousSelectedViewHolder != null)
+        if (mPreviousSelectedViewHolder != null)
             mPreviousSelectedViewHolder.setSelected(SelectionState.SELECTED);
 
         if (shadowEnabled) {
@@ -184,10 +184,11 @@ public class SelectionHandler {
 
         // Change background color of the column header which is located on X Position of the cell
         // view.
-        AbstractViewHolder columnHeader = (AbstractViewHolder) mColumnHeaderRecyclerView
+        setHeaderSelection(SelectionState.SHADOWED, shadowColor);
+       /* AbstractViewHolder columnHeader = (AbstractViewHolder) mColumnHeaderRecyclerView
                 .findViewHolderForAdapterPosition(mSelectedColumnPosition);
 
-        AbstractViewHolder columnBackUpHeader = (AbstractViewHolder) mTableView.getBackupHeaders().get(mTableView.getHeaderCount()-1)
+        AbstractViewHolder columnBackUpHeader = (AbstractViewHolder) mTableView.getBackupHeaders().get(mTableView.getHeaderCount() - 1)
                 .findViewHolderForAdapterPosition(mSelectedColumnPosition);
 
         if (columnHeader != null) {
@@ -202,8 +203,33 @@ public class SelectionHandler {
             columnBackUpHeader.setBackgroundColor(shadowColor);
             // Change state
             columnBackUpHeader.setSelected(SelectionState.SHADOWED);
-        }
+        }*/
 
+    }
+
+    private void setHeaderSelection(SelectionState selectionState, int shadowColor) {
+        int totalCorrection = mTableView.getAdapter().hasTotal() ? 1 : 0;
+        for (int i = 0; i < mTableView.getHeaderCount(); i++) {
+            int step = (mTableView.getBackupHeaders().get(mTableView.getHeaderCount() - 1).getAdapter().getItemCount() - totalCorrection) /
+                    (mTableView.getBackupHeaders().get(i).getAdapter().getItemCount() - totalCorrection);
+
+            int correctedColumn = mSelectedColumnPosition / step;
+
+            AbstractViewHolder columnHeader = (AbstractViewHolder) mTableView.getColumnHeaderRecyclerView(i)
+                    .findViewHolderForAdapterPosition(correctedColumn);
+
+            AbstractViewHolder columnBackUpHeader = (AbstractViewHolder) mTableView.getBackupHeaders().get(i)
+                    .findViewHolderForAdapterPosition(correctedColumn);
+
+            if (columnBackUpHeader != null && columnHeader != null) {
+                // Change color
+                columnHeader.setBackgroundColor(shadowColor);
+                columnBackUpHeader.setBackgroundColor(shadowColor);
+                // Change state
+                columnBackUpHeader.setSelected(selectionState);
+                columnBackUpHeader.setSelected(selectionState);
+            }
+        }
     }
 
     private void unselectedCellView() {
@@ -224,10 +250,11 @@ public class SelectionHandler {
 
         // Change background color of the column header which is located on X Position of the cell
         // view.
-        AbstractViewHolder columnHeader = (AbstractViewHolder) mColumnHeaderRecyclerView
+        setHeaderSelection(SelectionState.UNSELECTED, unSelectedColor);
+       /* AbstractViewHolder columnHeader = (AbstractViewHolder) mColumnHeaderRecyclerView
                 .findViewHolderForAdapterPosition(mSelectedColumnPosition);
 
-        AbstractViewHolder columnBackUpHeader = (AbstractViewHolder) mTableView.getBackupHeaders().get(mTableView.getHeaderCount()-1)
+        AbstractViewHolder columnBackUpHeader = (AbstractViewHolder) mTableView.getBackupHeaders().get(mTableView.getHeaderCount() - 1)
                 .findViewHolderForAdapterPosition(mSelectedColumnPosition);
 
         if (columnHeader != null) {
@@ -242,7 +269,7 @@ public class SelectionHandler {
             columnBackUpHeader.setBackgroundColor(unSelectedColor);
             // Change state
             columnBackUpHeader.setSelected(SelectionState.UNSELECTED);
-        }
+        }*/
     }
 
     private void selectedColumnHeader() {
@@ -426,7 +453,7 @@ public class SelectionHandler {
     public void clearSelection() {
         unselectedCellView();
         mSelectedColumnPosition = UNSELECTED_POSITION;
-        mSelectedRowPosition= UNSELECTED_POSITION;
+        mSelectedRowPosition = UNSELECTED_POSITION;
     }
 
     public void setSelectedRowPosition(int row) {

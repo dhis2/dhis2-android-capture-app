@@ -77,6 +77,8 @@ public interface ITableView {
 
     ITableViewListener getTableViewListener();
 
+    int getSelectedRow();
+
     SelectionHandler getSelectionHandler();
 
     ColumnSortHandler getColumnSortHandler();
@@ -90,6 +92,8 @@ public interface ITableView {
     SortState getRowHeaderSortingStatus();
 
     void scrollToColumnPosition(int column);
+
+    void scrollToNextField();
 
     void scrollToColumnPosition(int column, int offset);
 
@@ -166,4 +170,5 @@ public interface ITableView {
 
     List<CellRecyclerView> getBackupHeaders();
 
+    void scrollToStart();
 }

@@ -57,7 +57,7 @@ final class EditTextCellCustomHolder extends FormViewHolder {
         });
 
         editText.setOnFocusChangeListener((v, hasFocus) -> {
-            if (!hasFocus  && editTextModel != null && editTextModel.editable() &&
+            if (!hasFocus && editTextModel != null && editTextModel.editable() &&
                     !editText.getText().toString().equals(editTextModel.value()) && validate()) {
                 processor.onNext(
                         RowAction.create(
@@ -70,6 +70,10 @@ final class EditTextCellCustomHolder extends FormViewHolder {
                                 editTextModel.column()
                         )
                 );
+            }
+
+            if (hasFocus && itemView.getLeft() > 5) {
+                tableView.scrollToColumnPosition(getAdapterPosition(),3);
             }
         });
     }
@@ -101,10 +105,10 @@ final class EditTextCellCustomHolder extends FormViewHolder {
 
         customBinding.executePendingBindings();
 
-        if(tableView.getSelectedRow() == SelectionHandler.UNSELECTED_POSITION){
+        if (tableView.getSelectedRow() == SelectionHandler.UNSELECTED_POSITION) {
             closeKeyboard(editText);
             editText.clearFocus();
-        } else if(editTextModel.column() == tableView.getSelectedColumn() && editTextModel.row() == tableView.getSelectedRow())
+        } else if (editTextModel.column() == tableView.getSelectedColumn() && editTextModel.row() == tableView.getSelectedRow())
             setSelected(SelectionState.SELECTED);
     }
 
@@ -270,7 +274,9 @@ final class EditTextCellCustomHolder extends FormViewHolder {
     public void selectNext() {
         if (tableView.getColumnHeaderRecyclerView().get(tableView.getColumnHeaderRecyclerView().size() - 1).getAdapter().getItemCount() > tableView.getSelectedColumn() + 1) {
             tableView.setSelectedCell(tableView.getSelectedColumn() + 1, tableView.getSelectedRow());
+//            tableView.scrollToNextField();
         } else if (tableView.getRowHeaderRecyclerView().getAdapter().getItemCount() > tableView.getSelectedRow() + 1) {
+            tableView.scrollToStart();
             tableView.setSelectedCell(0, tableView.getSelectedRow() + 1);
         } else {
             setSelected(SelectionState.UNSELECTED);
