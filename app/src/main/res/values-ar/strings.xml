@@ -208,6 +208,14 @@
     <string name="settings_sms_receiver_number_hint">رقم</string>
     <string name="settings_sms_module_switch">تمكين إرسال الرسائل النصية</string>
     <string name="settings_sms_response_wait_switch">إنتظر لرد ونتيجة الـ sms</string>
+    <plurals name="settings_specific_programs">
+        <item quantity="zero">يوجد %s برامج ذات إعدادات محددة</item>
+        <item quantity="one">يوجد %s برنامج مع إعدادات محددة</item>
+        <item quantity="two">يوجد %s برامج ذات إعدادات محددة</item>
+        <item quantity="few">يوجد %s برامج ذات إعدادات محددة</item>
+        <item quantity="many">يوجد %s برامج ذات إعدادات محددة</item>
+        <item quantity="other">يوجد %s برامج ذات إعدادات محددة</item>
+    </plurals>
     <string name="settings_sync_period">فترة المزامنة</string>
     <string name="settings_limit_scope">الإعدادات محدودة</string>
     <string name="settings_limit_globally">بشكل عام</string>
@@ -225,9 +233,9 @@
     <string name="settingsErrorLog">فتح سجل أخطاء المزامنة</string>
     <string name="settingsErrorLog_descr">يحتوي هذا السجل على جميع الأخطاء الناتجة عن مزامنة بياناتك والبيانات الوصفية.</string>
     <string name="settingsDeleteLocalData">حذف البيانات المحفوظة محلياً في هذا الجهاز</string>
-    <string name="settingsDeleteLocalData_descr">سيتم حذف جميع بيانات تطبيق Capture المخزنة في جهازك. سيتم فقدان البيانات التي لم تتم مزامنتها مع الخادم.</string>
+    <string name="settingsDeleteLocalData_descr">سيتم حذف جميع بيانات التطبيق المخزنة في الجهاز. سيتم فقدان البيانات التي لم يتم مزامنتها مع الخادم.</string>
     <string name="settingsReset">إعادة تعيين بيانات التطبيق و إعدادات التهيئة و التكوين</string>
-    <string name="settingsReset_descr">سيتم حذف بيانات التهيئة والتطبيق المخزنة في الجهاز. سيُطلب منك تسجيل الدخول مرة أخرى وستفقد البيانات التي لم تتم مزامنتها مع الخادم.</string>
+    <string name="settingsReset_descr">سيتم حذف بيانات التهيئة والتطبيق المخزنة في الجهاز. سيُطلب منك تسجيل الدخول مرة أخرى وستفقد البيانات التي لم يتم مزامنتها مع الخادم.</string>
     <string name="settingsSms">إعدادات الرسائل النصية القصيرة</string>
     <string name="settingsSms_descr">فحص وتعديل العوامل المتعلقة ببوابة الرسائل القصيرة</string>
     <!--endregion-->
@@ -260,7 +268,7 @@
 
     <!--EVENT SUMMARY-->
     <string name="section_list">قائمة الأقسام</string>
-    <string name="event_summary_header" formatted="false">تم إكمال %s أسئلة من %s</string>
+    <string name="event_summary_header" formatted="false">تم إكمال %s سؤال من %s</string>
     <string name="event_summary_sections_header" formatted="false">إكتمال %s من %s</string>
     <string name="complete_and_close">مكتمل ومغلق</string>
 
@@ -269,7 +277,7 @@
     <string name="hint_month">الأشهر</string>
     <string name="hint_year">السنوات</string>
     <string name="week">الأسابيع</string>
-    <string name="incident_date">تاريخ الواقعة</string>
+    <string name="incident_date">تاريخ وقوع الحدث</string>
     <string name="local_results">النتائج المحفوظة محلياً</string>
     <string name="online_results">النتائج المحفوظة على الإنترنت</string>
     <string name="past_programs">البرامج الماضية</string>
@@ -307,7 +315,7 @@
     <string name="qr_enrollment">التسجيلات</string>
     <string name="qr_events">الأحداث</string>
     <string name="qr_relationships">علاقات</string>
-    <string name="read_more_qr">اقرأ رمز الـ QR التالي للحصول على مزيد من المعلومات.</string>
+    <string name="read_more_qr">اقرأ رمز QR التالي للحصول على مزيد من المعلومات.</string>
     <string name="save_qr">أوقف القراءة واحفظ البيانات</string>
     <string name="qr_no_data">لا وجود لبيانات</string>
     <string name="qr_error_id">رمز QR غير صالح</string>
@@ -316,7 +324,7 @@
     <string name="qr_error_event">هذا الحدث لا يمكن إضافته</string>
 
     <string name="jira_report">ابلاغ مشكلة إلى Jira</string>
-    <string name="about">عن التطبيق</string>
+    <string name="about">حول التطبيق</string>
     <string name="programs_to_enroll">برامج للتسجيل</string>
     <string name="select_all">تحديد الكل</string>
     <string name="clear_all">الغاء التحديد</string>
@@ -343,7 +351,7 @@
 
     <!--ABOUT-->
     <string name="about_app">إصدار التطبيق: %s</string>
-    <string name="about_sdk">إصدار الـ SDK: %s</string>
+    <string name="about_sdk">إصدار SDK: %s</string>
     <string name="about_connected">مرتبط بـ: %s</string>
     <string name="about_user">المستخدم الحالي: %s</string>
     <string name="about_more">للمزيد حول هذا التطبيق: اقرأ <a href="https://drive.google.com/open?id=1YHRBk6LSp6uROfs19-wCfQGc-rgl2f5iDrhCDasTR8M">هنا</a> ما هو مدعوم وما هو غير مدعوم</string>
@@ -379,14 +387,14 @@
     <string name="date_dialog_tigle">حدد التواريخ للتصفية</string>
     <string name="select_option">تحديد الخيار</string>
     <string name="issue_reported">تم الإبلاغ عن المشكلة</string>
-    <string name="jira_credential_error">تحقق من صحة مستخدم وكلمة المرور jira الخاصين بك</string>
+    <string name="jira_credential_error">تحقق من صحة مستخدم وكلمة مرور Jira الخاصين بك</string>
     <string name="jira_issue_error">حدث خطأ أثناء محاولة الإبلاغ عن المشكلة</string>
     <string name="jira_fields_error">كل الحقول إلزامية</string>
     <string name="dialog_generate_new_event">توليد حدث جديد</string>
     <string name="message_generate_new_event">هل تريد إنشاء حدث جديد</string>
     <string name="event_completed_title">اكتملت الأحداث</string>
-    <string name="event_completed_message">اكتمال جميع الأحداث في هذا البرنامج. هل ترغب في تعيين البرنامج كمغلق أيضاً؟</string>
-    <string name="complete_enrollment_message">هل ترغب في إكمال التسجيل أيضاً؟</string>
+    <string name="event_completed_message">اكتمال جميع الأحداث في هذا البرنامج. هل ترغب أيضاً في تعيين البرنامج كمغلق؟</string>
+    <string name="complete_enrollment_message">هل ترغب أيضاً في تعيين التسجيل كمكتمل؟</string>
     <string name="check_event">تحقق</string>
 
     <string name="menu_home">الرئيسية</string>
@@ -405,7 +413,7 @@
     <string name="tuto_search_3_v2">بحث أو إضافة كيانات جديدة. تحتاج إلى البحث قبل أن تتمكن من إضافة أي جديد!</string>
     <string name="tuto_search_4_v2">انقر هنا لتنظيف الحقول وإعادة البحث.</string>
     <string name="tuto_dashboard_1">هذه لوحة معلومات الكيان المسجل</string>
-    <string name="tuto_dashboard_2">الإطلاع على معلومات الكيانات الخاصة...</string>
+    <string name="tuto_dashboard_2">الإطلاع على المعلومات الخاصة بالكيانات...</string>
     <string name="tuto_dashboard_3">...مشاركة المعلومات عبر QR أو SMS...</string>
     <string name="tuto_dashboard_4">...أو ضع علامة على الكيان للمتابعة</string>
     <string name="tuto_dashboard_5">انقر لإنشاء أو جدولة حدث أو الإحالة إلى وحدة تنظيمية أخرى.</string>
