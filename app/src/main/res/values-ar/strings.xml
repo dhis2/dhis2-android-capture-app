@@ -96,7 +96,7 @@
     <string name="event_inactive">الحدث غير نشط</string>
     <string name="read_only">للقراءة فقط</string>
     <string name="complete">مكتمل</string>
-    <string name="finish_and_complete">إنهاء وإكمال</string>
+    <string name="finish_and_complete">إنهاء ومكتمل</string>
     <string name="completed">مكتمل</string>
     <string name="cancelled">تم الإلغاء</string>
     <string name="re_open">إعادة فتح</string>
@@ -187,7 +187,7 @@
     <string name="Automatic_Sync_Data">مزامنة البيانات تلقائياً كل:</string>
     <string name="Manual">يدوياً</string>
     <string name="Automatic_Sync_Metadata">مزامنة التهيئة والتكوين تلقائياً كل:</string>
-    <string name="a_week">1 اسبوع</string>
+    <string name="a_week">1 أسبوع</string>
     <string name="sync_max_parameters">عوامل المزامنة الحالية:</string>
     <string name="sync_default_parameters">إعادة التعيين إلى الافتراضي</string>
     <string name="wipe_data_meesage">سيتم حذف قاعدة البيانات. سيُطلب منك تسجيل الدخول مرة أخرى.</string>
@@ -262,7 +262,7 @@
     <string name="missing_mandatory_fields_events_2.0">بعض الحقول الإلزامية مفقودة:\n%s\n يمكنك الرجوع الآن ، ولكن لن تتمكن من إكمال هذا الحدث.</string>
     <string name="missing_mandatory_fields_go_back">الحذف والرجوع للخلف</string>
     <string name="error_fields">تحتوي بعض الحقول على أخطاء:\n%s\n يرجى التحقق منها.</string>
-    <string name="missing_mandatory_fields_finish">بعض الحقول الإلزامية مفقودة. يمكنك إنهاء إدخال البيانات والخروج، لكن لا يمكن إكمال الحدث.</string>
+    <string name="missing_mandatory_fields_finish">بعض الحقول الإلزامية مفقودة. يمكنك إنهاء إدخال البيانات والخروج، لكن لا يمكن تعيين الحدث كمكتمل.</string>
     <string name="enrollment_coordinates">إحداثيات التسجيل</string>
     <string name="tei_coordinates">إحداثيات لـ </string>
 
@@ -394,7 +394,7 @@
     <string name="message_generate_new_event">هل تريد إنشاء حدث جديد</string>
     <string name="event_completed_title">اكتملت الأحداث</string>
     <string name="event_completed_message">اكتمال جميع الأحداث في هذا البرنامج. هل ترغب أيضاً في تعيين البرنامج كمغلق؟</string>
-    <string name="complete_enrollment_message">هل ترغب أيضاً في تعيين التسجيل كمكتمل؟</string>
+    <string name="complete_enrollment_message">هل ترغب أيضاً في تعيين هذا التسجيل كمكتمل؟</string>
     <string name="check_event">تحقق</string>
 
     <string name="menu_home">الرئيسية</string>
@@ -520,7 +520,7 @@
     <string name="data_every_hour">كل ساعة</string>
     <string name="data_every_day">يومي</string>
     <string name="data_every_week">أسبوعي</string>
-    <string name="period_week">Week</string>
+    <string name="period_week">أسبوع</string>
     <string name="sync_setting">إعداد المزامنة: %s</string>
     <string name="relationship_without_enrollment">السجل الذي تحاول الوصول إليه ليس لديه تسجيل. لا يمكنك الوصول إلى لوحة المعلومات.</string>
     <string name="formatting_error">خطأ في التنسيق</string>
@@ -600,7 +600,7 @@
     <string name="filter_period_today">اليوم</string>
     <string name="filter_period_yesterday">الأمس</string>
     <string name="filter_period_tomorrow">غداً</string>
-    <string name="filter_period_this_week">الأسبوع الحالي</string>
+    <string name="filter_period_this_week">هذا الأسبوع</string>
     <string name="filter_period_last_week">الأسبوع الماضي</string>
     <string name="filter_perdior_next_week">الأسبوع القادم</string>
     <string name="filter_period_this_month">الشهر الحالي</string>
