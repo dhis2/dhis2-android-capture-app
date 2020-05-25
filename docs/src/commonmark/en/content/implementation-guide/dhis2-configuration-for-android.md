@@ -211,6 +211,13 @@ A value is considered as "expired" when one of the following conditions is true:
 - "expiryDate" is overdue. By default, the server sets the expiry period to 2 months.
 - If the attribute pattern is dependent on time, i.e., it contains the segment \`CURRENT\_DATE(format)\`, the app calculates an extra expiry date based on that pattern.
 
+> **Caution**
+>
+> When using auto-generated unique values which contain dates as part of the pattern the expiryDate of those values will be linked to that date pattern which might result in unexpected behavior if the pattern is not defined well.
+>
+> *Example*: The value *UniqueID* has been configured with a pattern like CURRENT_DATE(MM)-SEQUENTIAL(###) and today is 31st of January, the application would download 100 values (from 01-001 to 01-101) to allow the application working offline and having enough values, but tomorrow, 1st of February, the applicataion would not have any available values as all would have been marked as expired and so it would display such message. 
+>
+
 On the App, the user can also check the available values and refill them in the settings menu.
 
 |||
