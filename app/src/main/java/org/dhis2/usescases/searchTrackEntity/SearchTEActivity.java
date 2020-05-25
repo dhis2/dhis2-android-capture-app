@@ -748,7 +748,6 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                 EnrollmentActivity.EnrollmentMode.NEW,
                 fromRelationshipTEI() != null);
         startActivity(intent);
-        finish();
     }
 
     /*region MAP*/
