@@ -125,7 +125,7 @@ android {
             versionName versions.vName
         }
 
-        dhisTesting {
+        dhisUITesting {
             applicationId "com.dhis2"
             dimension "default"
             versionCode versions.vCode
