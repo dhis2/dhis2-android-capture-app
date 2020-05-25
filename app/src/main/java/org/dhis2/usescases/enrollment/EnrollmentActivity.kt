@@ -18,6 +18,8 @@ import com.crashlytics.android.Crashlytics
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import io.reactivex.Flowable
+import java.io.File
+import javax.inject.Inject
 import org.dhis2.App
 import org.dhis2.Bindings.isKeyboardOpened
 import org.dhis2.R
@@ -48,8 +50,6 @@ import org.hisp.dhis.android.core.arch.helpers.GeometryHelper
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.Geometry
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
-import java.io.File
-import javax.inject.Inject
 
 class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
 
@@ -122,8 +122,8 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
                 false
             ) { itemPosition ->
                 itemPosition >= 0 &&
-                        itemPosition < adapter.itemCount &&
-                        adapter.getItemViewType(itemPosition) == adapter.sectionViewType()
+                    itemPosition < adapter.itemCount &&
+                    adapter.getItemViewType(itemPosition) == adapter.sectionViewType()
             }
         )
         binding.fieldRecycler.adapter = adapter
