@@ -256,10 +256,6 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
         return adapter.asFlowable()
     }
 
-    override fun goBack() {
-        onBackPressed()
-    }
-
     override fun showMissingMandatoryFieldsMessage(
         emptyMandatoryFields: MutableMap<String, String>
     ) {
@@ -278,16 +274,25 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
             .show(supportFragmentManager, AlertBottomDialog::class.java.simpleName)
     }
 
+    override fun goBack() {
+        hideKeyboard()
+        attemptFinish()
+    }
+
     override fun onBackPressed() {
         if (!isKeyboardOpened()) {
-            if (mode == EnrollmentMode.CHECK) {
-                presenter.backIsClicked()
-            } else {
-                showDeleteDialog()
-            }
+            attemptFinish()
         } else {
             currentFocus?.apply { clearFocus() }
             hideKeyboard()
+        }
+    }
+
+    private fun attemptFinish() {
+        if (mode == EnrollmentMode.CHECK) {
+            presenter.backIsClicked()
+        } else {
+            showDeleteDialog()
         }
     }
 
