@@ -5,7 +5,11 @@ import androidx.annotation.VisibleForTesting;
 import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.utils.analytics.AnalyticsHelper;
+import org.hisp.dhis.android.core.validation.engine.ValidationResult;
+import org.hisp.dhis.android.core.validation.engine.ValidationResult.ValidationResultStatus;
+import org.hisp.dhis.android.core.validation.engine.ValidationResultViolation;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import io.reactivex.BackpressureStrategy;
@@ -152,13 +156,22 @@ public class DataSetTablePresenter implements DataSetTableContract.Presenter {
 
     @Override
     public void executeValidationRules() {
-        boolean wasSuccessful;
-        wasSuccessful = tableRepository.executeValidationRules();
-        if (wasSuccessful) {
-            view.showSuccessValidationDialog();
-        } else {
-            view.showErrorsValidationDialog();
-        }
+        disposable.add(
+                tableRepository.executeValidationRules()
+                .subscribeOn(schedulerProvider.io())
+                .observeOn(schedulerProvider.ui())
+                .subscribe(
+                        result -> {
+                            if (result.status() == ValidationResultStatus.OK) {
+                                view.showSuccessValidationDialog();
+                            } else {
+                                List<ValidationResultViolation> violations = result.violations();
+                                view.showErrorsValidationDialog();
+                            }
+                        },
+                        Timber::e
+                )
+        );
     }
 
     @Override

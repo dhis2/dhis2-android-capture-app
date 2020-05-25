@@ -91,7 +91,7 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
         binding = DataBindingUtil.setContentView(this, R.layout.activity_dataset_table);
         binding.setPresenter(presenter);
         setViewPager();
-
+        observeSaveButtonClicks();
         presenter.init(orgUnitUid, periodTypeName, catOptCombo, periodInitialDate, periodId);
     }
 

@@ -6,6 +6,7 @@ import io.reactivex.Single
 import io.reactivex.functions.Function4
 import io.reactivex.processors.FlowableProcessor
 import io.reactivex.processors.PublishProcessor
+import javax.inject.Singleton
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper
 import org.hisp.dhis.android.core.category.CategoryCombo
@@ -17,7 +18,7 @@ import org.hisp.dhis.android.core.dataset.DataSet
 import org.hisp.dhis.android.core.dataset.DataSetInstance
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.period.Period
-import javax.inject.Singleton
+import org.hisp.dhis.android.core.validation.engine.ValidationResult
 
 @Singleton
 class DataSetTableRepositoryImpl(
@@ -70,7 +71,11 @@ class DataSetTableRepositoryImpl(
             d2.categoryModule().categoryOptionCombos().uid(catOptCombo).get(),
             d2.organisationUnitModule().organisationUnits().uid(orgUnitUid).get(),
             d2.periodModule().periodHelper().getPeriodForPeriodId(periodId),
-            Function4 { dataSet: DataSet, catOptComb: CategoryOptionCombo, orgUnit: OrganisationUnit, period: Period ->
+            Function4 {
+                dataSet: DataSet,
+                catOptComb: CategoryOptionCombo,
+                orgUnit: OrganisationUnit,
+                period: Period ->
                 DataSetInstance.builder()
                     .dataSetUid(dataSetUid)
                     .dataSetDisplayName(dataSet.displayName())
@@ -161,16 +166,18 @@ class DataSetTableRepositoryImpl(
     }
 
     fun completeDataSetInstance(): Completable {
-        return Completable.fromSingle(d2.dataSetModule().dataSetCompleteRegistrations()
-            .value(periodId, orgUnitUid, dataSetUid, catOptCombo).exists()
-            .map { alreadyCompleted: Boolean? ->
-                if (!alreadyCompleted!!) {
-                    d2.dataSetModule().dataSetCompleteRegistrations()
-                        .value(periodId, orgUnitUid, dataSetUid, catOptCombo)
-                        .blockingSet()
+        return Completable.fromSingle(
+            d2.dataSetModule().dataSetCompleteRegistrations()
+                .value(periodId, orgUnitUid, dataSetUid, catOptCombo).exists()
+                .map { alreadyCompleted: Boolean? ->
+                    if (!alreadyCompleted!!) {
+                        d2.dataSetModule().dataSetCompleteRegistrations()
+                            .value(periodId, orgUnitUid, dataSetUid, catOptCombo)
+                            .blockingSet()
+                    }
+                    true
                 }
-                true
-            }).doOnComplete { dataSetInstanceProcessor.onNext(Unit()) }
+        ).doOnComplete { dataSetInstanceProcessor.onNext(Unit()) }
     }
 
     fun reopenDataSet(): Flowable<Boolean> {
@@ -225,10 +232,13 @@ class DataSetTableRepositoryImpl(
                     dataSet.dataSetElements()
                         ?.filter { dataSetElement ->
                             val catComboUid = dataSetElement.categoryCombo()?.uid()
-                                ?: d2.dataElementModule().dataElements().uid(dataSetElement.dataElement().uid()).blockingGet().categoryComboUid()
+                                ?: d2.dataElementModule().dataElements()
+                                    .uid(
+                                        dataSetElement.dataElement().uid()
+                                    ).blockingGet().categoryComboUid()
                             val categoryOptionCombos =
                                 d2.categoryModule().categoryOptionCombos().byCategoryComboUid()
-                                    .eq(catComboUid).blockingGet();
+                                    .eq(catComboUid).blockingGet()
                             val dataValueRepository = d2.dataValueModule().dataValues()
                                 .byPeriod().eq(periodId)
                                 .byOrganisationUnitUid().eq(orgUnitUid)
@@ -236,7 +246,8 @@ class DataSetTableRepositoryImpl(
                                 .byDataElementUid().eq(dataSetElement.dataElement().uid())
                                 .byCategoryOptionComboUid()
                                 .`in`(UidsHelper.getUidsList(categoryOptionCombos))
-                            dataValueRepository.blockingGet().isNotEmpty() && dataValueRepository.blockingGet().size != categoryOptionCombos.size
+                            dataValueRepository.blockingGet().isNotEmpty() &&
+                                dataValueRepository.blockingGet().size != categoryOptionCombos.size
                         }?.map { dataSetElement -> dataSetElement.dataElement().uid() }
                         ?: emptyList()
                 } else {
@@ -250,19 +261,19 @@ class DataSetTableRepositoryImpl(
             }
     }
 
-    // TODO: ValidationRules - This is temporary until the SDK has a method to ask for this
     fun hasToRunValidationRules(): Boolean {
-        return true
+        return d2.dataSetModule()
+            .dataSets().uid(dataSetUid)
+            .blockingGet().validCompleteOnly() ?: false
     }
 
-    // TODO: ValidationRules - This is temporary until the SDK has a method to ask for this
     fun isValidationRuleOptional(): Boolean {
-        return true
+        return d2.validationModule().validationRules().blockingIsEmpty()
     }
 
-    // TODO: ValidationRules - This is temporary until the SDK has a method to ask for this
-    fun executeValidationRules(): Boolean {
-        return true
+    fun executeValidationRules(): Flowable<ValidationResult> {
+        return d2.validationModule()
+            .validationEngine().validate(dataSetUid, periodId, orgUnitUid, catOptCombo)
+            .toFlowable()
     }
-
 }

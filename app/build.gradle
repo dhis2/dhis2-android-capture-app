@@ -55,9 +55,6 @@ android {
         testInstrumentationRunner "org.dhis2.Dhis2Runner"
         vectorDrawables.useSupportLibrary = true
         multiDexEnabled true
-        ndk {
-            abiFilters "x86"
-        }
 
         setProperty("archivesBaseName", "dhis2-v" + versions.vName)
 
