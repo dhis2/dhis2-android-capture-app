@@ -294,7 +294,8 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
     @Override
     public void onBackClicked() {
-        onBackPressed();
+        hideKeyboard();
+        finish();
     }
 
     @Override
