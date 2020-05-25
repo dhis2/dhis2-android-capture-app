@@ -18,7 +18,7 @@ class SettingsTest : BaseTest() {
 
     @get:Rule
     val rule = ActivityTestRule(MainActivity::class.java, false, false)
-    
+
     @Rule
     @JvmField
     val dataBindingIdlingResourceRule = DataBindingIdlingResourceRule(rule)
@@ -87,11 +87,11 @@ class SettingsTest : BaseTest() {
             checkReservedValuesIsDisable()
             clickOnReservedValues()
             clickOnManageReservedValues()
-        //    clickOnRefill(0)
-              // Thread.sleep(8000)
+            clickOnRefill(0)
+            Thread.sleep(8000)
             //is not clicking
             //checkReservedValuesWasRefill(0)
-         //   clickOnRefill(1)
+            //   clickOnRefill(1)
             //   checkReservedValuesWasRefill(1)
             //    clickOnRefill(2)
             //    checkReservedValuesWasRefill(2)
@@ -173,7 +173,7 @@ class SettingsTest : BaseTest() {
         }
     }
 
-    fun startActivity(){
+    fun startActivity() {
         rule.launchActivity(null)
     }
 }

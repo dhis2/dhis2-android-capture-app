@@ -80,9 +80,9 @@ class SettingsRobot: BaseRobot() {
     }
 
     fun clickOnRefill(position: Int) {
-        /*onView(allOf(withId(R.id.refill), withId(R.id.recycler)))
-                //.check(matches(allOf(atPosition(position, hasDescendant(withId(R.id.refill))))))
-                //.perform(click())
+        /*onView(withId(R.id.recycler))
+                .check(matches(allOf(atPosition(position, hasDescendant(withId(R.id.refill))))))
+                .perform(click())
                 .perform(actionOnItemAtPosition<ReservedValueViewHolder>(position, click()))*/
         onView(withId(R.id.recycler))
                 .perform(actionOnItemAtPosition<ReservedValueViewHolder>(position, ClickRefillButton()))
@@ -97,7 +97,7 @@ class SettingsRobot: BaseRobot() {
         /*onView(withId(R.id.errorRecycler)).check(matches(allOf(
                 isDisplayed(), not(isNotEmpty())
         )))*/
-        onView(withId(R.id.possitive)).check(matches(isDisplayed()))
+        onView(withId(R.id.errorRecycler)).check(matches(isDisplayed()))
     }
 
     fun clickOnAcceptDelete() {
