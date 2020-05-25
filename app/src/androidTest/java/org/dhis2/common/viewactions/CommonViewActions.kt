@@ -6,11 +6,15 @@ import androidx.appcompat.widget.SwitchCompat
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.espresso.UiController
 import androidx.test.espresso.ViewAction
-import androidx.test.espresso.matcher.ViewMatchers.*
+import androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom
+import androidx.test.espresso.matcher.ViewMatchers.isCompletelyDisplayed
+import androidx.test.espresso.matcher.ViewMatchers.isRoot
+import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.util.TreeIterables
 import com.wangjie.rapidfloatingactionbutton.RapidFloatingActionLayout
 import org.hamcrest.CoreMatchers.allOf
 import org.hamcrest.Matcher
+
 
 fun openSpinnerPopup(): ViewAction {
     return object : ViewAction {
@@ -44,6 +48,24 @@ fun setSwitchCheckTo(checkValue: Boolean) : ViewAction {
             } else {
                 throw IllegalArgumentException("Error the view is not a switch")
             }
+        }
+    }
+}
+
+fun clickChildViewWithId(id : Int) : ViewAction {
+    return object : ViewAction {
+        override fun getDescription(): String {
+            return "Click on a child view with specified id"
+        }
+
+        override fun getConstraints(): Matcher<View>? {
+           return null
+        }
+
+        override fun perform(uiController: UiController?, view: View?) {
+            val v = view?.findViewById<View>(id)
+            v?.performClick()
+            uiController?.loopMainThreadUntilIdle()
         }
     }
 }

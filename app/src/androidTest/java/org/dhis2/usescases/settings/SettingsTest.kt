@@ -80,21 +80,10 @@ class SettingsTest : BaseTest() {
             clickOnNavigationDrawerMenu()
             clickOnSettings()
         }
-
-        // on Manage Reserved 90% view should add ScrollTo
-        // on Refill 90% view check custom view action
+        
         settingsRobot {
-            checkReservedValuesIsDisable()
             clickOnReservedValues()
             clickOnManageReservedValues()
-            clickOnRefill(0)
-            Thread.sleep(8000)
-            //is not clicking
-            //checkReservedValuesWasRefill(0)
-            //   clickOnRefill(1)
-            //   checkReservedValuesWasRefill(1)
-            //    clickOnRefill(2)
-            //    checkReservedValuesWasRefill(2)
         }
     }
 

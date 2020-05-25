@@ -4,7 +4,11 @@ import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition
-import androidx.test.espresso.matcher.ViewMatchers.*
+import androidx.test.espresso.matcher.ViewMatchers.hasDescendant
+import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
+import androidx.test.espresso.matcher.ViewMatchers.isEnabled
+import androidx.test.espresso.matcher.ViewMatchers.withId
+import androidx.test.espresso.matcher.ViewMatchers.withText
 import org.dhis2.R
 import org.dhis2.common.BaseRobot
 import org.dhis2.common.matchers.RecyclerviewMatchers.Companion.atPosition
@@ -84,8 +88,8 @@ class SettingsRobot: BaseRobot() {
                 .check(matches(allOf(atPosition(position, hasDescendant(withId(R.id.refill))))))
                 .perform(click())
                 .perform(actionOnItemAtPosition<ReservedValueViewHolder>(position, click()))*/
-        onView(withId(R.id.recycler))
-                .perform(actionOnItemAtPosition<ReservedValueViewHolder>(position, ClickRefillButton()))
+        onView(allOf(withId(R.id.recycler), hasDescendant(withId(R.id.refill))))
+                .perform(actionOnItemAtPosition<ReservedValueViewHolder>(position, click()))
     }
 
     fun checkReservedValuesWasRefill(position: Int) {
