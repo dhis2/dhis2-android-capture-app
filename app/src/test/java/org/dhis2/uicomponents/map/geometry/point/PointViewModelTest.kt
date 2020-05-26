@@ -1,7 +1,6 @@
-package org.dhis2.uicomponents.map
+package org.dhis2.uicomponents.map.geometry.point
 
 import com.mapbox.geojson.Point
-import org.dhis2.uicomponents.map.geometry.point.PointViewModel
 import org.junit.Before
 import org.junit.Test
 
