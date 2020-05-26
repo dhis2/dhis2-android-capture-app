@@ -1,8 +1,11 @@
 package org.dhis2.uicomponents.map.layer
 
 import com.mapbox.mapboxsdk.maps.MapboxMap
-import com.mapbox.mapboxsdk.maps.Style
 import org.dhis2.uicomponents.map.MapStyle
+import org.dhis2.uicomponents.map.layer.types.EnrollmentMapLayer
+import org.dhis2.uicomponents.map.layer.types.HeatmapMapLayer
+import org.dhis2.uicomponents.map.layer.types.SatelliteMapLayer
+import org.dhis2.uicomponents.map.layer.types.TeiMapLayer
 import org.hisp.dhis.android.core.common.FeatureType
 
 class MapLayerManager {
@@ -34,8 +37,14 @@ class MapLayerManager {
                 mapStyle.enrollmentColor,
                 mapStyle.programDarkColor
             ),
-            LayerType.HEATMAP_LAYER to HeatmapMapLayer(style, featureType),
-            LayerType.SATELLITE_LAYER to SatelliteMapLayer(mapboxMap, styleChangeCallback)
+            LayerType.HEATMAP_LAYER to HeatmapMapLayer(
+                style,
+                featureType
+            ),
+            LayerType.SATELLITE_LAYER to SatelliteMapLayer(
+                mapboxMap,
+                styleChangeCallback
+            )
         )
     }
 

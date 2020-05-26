@@ -1,4 +1,4 @@
-package org.dhis2.uicomponents.map.layer
+package org.dhis2.uicomponents.map.layer.types
 
 import com.mapbox.mapboxsdk.maps.Style
 import com.mapbox.mapboxsdk.style.expressions.Expression
@@ -6,10 +6,12 @@ import com.mapbox.mapboxsdk.style.layers.HeatmapLayer
 import com.mapbox.mapboxsdk.style.layers.Layer
 import com.mapbox.mapboxsdk.style.layers.Property
 import com.mapbox.mapboxsdk.style.layers.PropertyFactory
+import org.dhis2.uicomponents.map.layer.MapLayer
 import org.dhis2.uicomponents.map.managers.TeiMapManager
 import org.hisp.dhis.android.core.common.FeatureType
 
-class HeatmapMapLayer(val style: Style, val featureType: FeatureType) : MapLayer {
+class HeatmapMapLayer(val style: Style, val featureType: FeatureType) :
+    MapLayer {
 
     private val layerId = "HEATMAP_LAYER"
 

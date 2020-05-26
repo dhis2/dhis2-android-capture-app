@@ -11,7 +11,7 @@ import org.hisp.dhis.android.core.common.FeatureType
 import java.util.HashMap
 
 class TeiMapManager(
-    val mapStyle: MapStyle
+    private val mapStyle: MapStyle
 ) : MapManager() {
 
     private lateinit var teiFeatureCollections: HashMap<String, FeatureCollection>

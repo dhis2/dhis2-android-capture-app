@@ -1,4 +1,4 @@
-package org.dhis2.uicomponents.map.layer
+package org.dhis2.uicomponents.map.layer.types
 
 import com.mapbox.mapboxsdk.maps.Style
 import com.mapbox.mapboxsdk.style.expressions.Expression
@@ -8,20 +8,22 @@ import com.mapbox.mapboxsdk.style.layers.LineLayer
 import com.mapbox.mapboxsdk.style.layers.Property
 import com.mapbox.mapboxsdk.style.layers.PropertyFactory
 import com.mapbox.mapboxsdk.style.layers.SymbolLayer
-import org.dhis2.uicomponents.map.managers.TeiMapManager.Companion.ENROLLMENT_SOURCE_ID
+import org.dhis2.uicomponents.map.layer.MapLayer
+import org.dhis2.uicomponents.map.layer.MapLayerManager
+import org.dhis2.uicomponents.map.managers.TeiMapManager.Companion.TEIS_SOURCE_ID
 import org.dhis2.utils.ColorUtils
 import org.hisp.dhis.android.core.common.FeatureType
 
-class EnrollmentMapLayer(
-    val style: Style,
-    val featureType: FeatureType,
+class TeiMapLayer(
+    var style: Style,
+    var featureType: FeatureType,
     private val enrollmentColor: Int,
     private val enrollmentDarkColor: Int
 ) : MapLayer {
 
-    private var POINT_LAYER_ID: String = "ENROLLMENT_POINT_LAYER_ID"
-    private var POLYGON_LAYER_ID: String = "ENROLLMENT_POLYGON_LAYER_ID"
-    private var POLYGON_BORDER_LAYER_ID: String = "ENROLLMENT_POLYGON_BORDER_LAYER_ID"
+    private var POINT_LAYER_ID: String = "TEI_POINT_LAYER_ID"
+    private var POLYGON_LAYER_ID: String = "TEI_POLYGON_LAYER_ID"
+    private var POLYGON_BORDER_LAYER_ID: String = "TEI_POLYGON_BORDER_LAYER_ID"
 
     init {
         when (featureType) {
@@ -36,12 +38,12 @@ class EnrollmentMapLayer(
 
     private val pointLayer: Layer
         get() = style.getLayer(POINT_LAYER_ID)
-            ?: SymbolLayer(POINT_LAYER_ID, ENROLLMENT_SOURCE_ID)
+            ?: SymbolLayer(POINT_LAYER_ID, TEIS_SOURCE_ID)
                 .withProperties(
-                    PropertyFactory.iconImage(MapLayerManager.ENROLLMENT_ICON_ID),
+                    PropertyFactory.iconImage(MapLayerManager.TEI_ICON_ID),
                     PropertyFactory.iconOffset(arrayOf(0f, -25f)),
                     PropertyFactory.iconAllowOverlap(true),
-                    PropertyFactory.visibility(Property.NONE)
+                    PropertyFactory.textAllowOverlap(true)
                 ).withFilter(
                     Expression.eq(
                         Expression.literal("\$type"),
@@ -51,11 +53,10 @@ class EnrollmentMapLayer(
 
     private val polygonLayer: Layer
         get() = style.getLayer(POLYGON_LAYER_ID)
-            ?: FillLayer(POLYGON_LAYER_ID, ENROLLMENT_SOURCE_ID)
+            ?: FillLayer(POLYGON_LAYER_ID, TEIS_SOURCE_ID)
                 .withProperties(
                     PropertyFactory.fillColor(ColorUtils.withAlpha(enrollmentColor))
-                )
-                .withFilter(
+                ).withFilter(
                     Expression.eq(
                         Expression.literal("\$type"),
                         Expression.literal("Polygon")
@@ -64,18 +65,16 @@ class EnrollmentMapLayer(
 
     private val polygonBorderLayer: Layer
         get() = style.getLayer(POLYGON_BORDER_LAYER_ID)
-            ?: LineLayer(POLYGON_BORDER_LAYER_ID, ENROLLMENT_SOURCE_ID)
+            ?: LineLayer(POLYGON_BORDER_LAYER_ID, TEIS_SOURCE_ID)
                 .withProperties(
                     PropertyFactory.lineColor(enrollmentDarkColor),
                     PropertyFactory.lineWidth(2f)
-                )
-                .withFilter(
+                ).withFilter(
                     Expression.eq(
                         Expression.literal("\$type"),
                         Expression.literal("Polygon")
                     )
                 )
-
 
     private fun setVisibility(visibility: String) {
         when (featureType) {
