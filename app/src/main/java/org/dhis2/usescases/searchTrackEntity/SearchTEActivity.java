@@ -142,7 +142,8 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     private boolean initSearchNeeded = true;
     private Snackbar downloadingSnackbar;
     private String currentStyle = Style.MAPBOX_STREETS;
-    private boolean changingStyle;
+    private MapLayerDialog mapLayerDialog;
+
     //---------------------------------------------------------------------------------------------
 
     //region LIFECYCLE
@@ -210,20 +211,10 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             Timber.e(e);
         }
 
-
         binding.mapLayerButton.setOnClickListener(view ->
-                new MapLayerDialog(teiMapManager.getStyle().getImage(TeiMapManager.TEI_ICON_ID),
-                        teiMapManager.getStyle().getImage(TeiMapManager.ENROLLMENT_ICON_ID),
-                        isSatelliteStyle -> {
-                            if (isSatelliteStyle) {
-                                currentStyle = Style.SATELLITE_STREETS;
-                            } else {
-                                currentStyle = Style.MAPBOX_STREETS;
-                            }
-                            changingStyle = true;
-                            presenter.getMapData();
-                            return null;
-                        }).show(getSupportFragmentManager(), MapLayerDialog.class.getName()));
+                mapLayerDialog.show(getSupportFragmentManager(), MapLayerDialog.class.getName())
+        );
+
         binding.executePendingBindings();
         showHideFilter();
 
@@ -249,17 +240,19 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         if (teiMapManager != null) {
             teiMapManager.onResume();
         } else {
-            teiMapManager =  new TeiMapManager(
+            teiMapManager = new TeiMapManager(
                     new MapStyle(
                             presenter.getProgram().style().color(),
                             presenter.getTEIColor(),
                             presenter.getSymbolIcon(),
                             presenter.getEnrollmentColor(),
-                            presenter.getEnrollmentSymbolIcon()
+                            presenter.getEnrollmentSymbolIcon(),
+                            ColorUtils.getPrimaryColor(this, ColorUtils.ColorType.PRIMARY_DARK)
                     ));
             teiMapManager.init(binding.mapView);
             teiMapManager.setOnMapClickListener(this);
         }
+        mapLayerDialog = new MapLayerDialog(teiMapManager);
     }
 
     @Override
@@ -278,7 +271,6 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         if (teiMapManager != null) {
             teiMapManager.onDestroy();
         }
-        MapLayerManager.Companion.onDestroy();
         presenter.onDestroy();
         super.onDestroy();
     }
@@ -744,7 +736,6 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         teiMapManager.update(
                 teiFeatureCollections,
                 boundingBox,
-                changingStyle,
                 featureType
         );
     }

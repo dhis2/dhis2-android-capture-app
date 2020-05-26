@@ -30,13 +30,13 @@ class EventMapManager: MapManager() {
     ) {
         this.featureType = featureType ?: FeatureType.POINT
         this.featureCollection = featureCollection
-        (style.getSource(EVENTS) as GeoJsonSource?)?.setGeoJson(featureCollection)
+        (style?.getSource(EVENTS) as GeoJsonSource?)?.setGeoJson(featureCollection)
             ?: loadDataForStyle()
         initCameraPosition(boundingBox)
     }
 
     override fun loadDataForStyle() {
-        style.addImage(
+        style?.addImage(
             ICON_ID,
             BitmapFactory.decodeResource(
                 mapView.resources,
@@ -49,12 +49,12 @@ class EventMapManager: MapManager() {
     }
 
     override fun setSource() {
-        style.addSource(GeoJsonSource(EVENTS, featureCollection))
+        style?.addSource(GeoJsonSource(EVENTS, featureCollection))
     }
 
     override fun setLayer() {
         val symbolLayer = SymbolLayer(
-            POINT_LAYER,
+            "POINT_LAYER",
             EVENTS
         )
             .withProperties(
@@ -68,11 +68,11 @@ class EventMapManager: MapManager() {
                 )
             )
         symbolLayer.minZoom = 0f
-        style.addLayer(symbolLayer)
+        style?.addLayer(symbolLayer)
         if (featureType != FeatureType.POINT) {
-            style.addLayerBelow(
+            style?.addLayerBelow(
                 FillLayer(
-                    POLYGON_LAYER,
+                    "POLYGON_LAYER",
                     EVENTS
                 )
                     .withProperties(

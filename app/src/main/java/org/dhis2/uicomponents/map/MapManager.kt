@@ -10,23 +10,20 @@ import com.mapbox.mapboxsdk.plugins.annotation.SymbolManager
 import com.mapbox.mapboxsdk.plugins.markerview.MarkerViewManager
 import com.mapbox.mapboxsdk.style.sources.GeoJsonOptions
 import org.dhis2.uicomponents.map.camera.initCameraToViewAllElements
+import org.dhis2.uicomponents.map.layer.MapLayerManager
 import org.hisp.dhis.android.core.common.FeatureType
 
 abstract class MapManager {
 
-    companion object {
-        const val POINT_LAYER = "POINT_LAYER"
-        const val POLYGON_LAYER = "POLYGON_LAYER"
-        const val POLYGON_BORDER_LAYER = "POLYGON_BORDER_LAYER"
-    }
-
-    open lateinit var mapView: MapView
-    open lateinit var map: MapboxMap
-    open lateinit var style: Style
+    lateinit var mapView: MapView
+    lateinit var map: MapboxMap
     open lateinit var featureType: FeatureType
-    var markerViewManager: MarkerViewManager? = null
+    lateinit var mapLayerManager: MapLayerManager
+    lateinit var markerViewManager: MarkerViewManager
     var symbolManager: SymbolManager? = null
     var onMapClickListener: MapboxMap.OnMapClickListener? = null
+    val style: Style?
+        get() = map.style
 
     fun init(mapView: MapView) {
         this.mapView = mapView
@@ -34,13 +31,14 @@ abstract class MapManager {
             this.map = it
             map.setStyle(
                 Style.MAPBOX_STREETS
-            ) { style: Style ->
-                this.style = style
-            }
+            )
             onMapClickListener?.let { mapClickListener ->
                 map.addOnMapClickListener(mapClickListener)
             }
             markerViewManager = MarkerViewManager(mapView, map)
+            mapLayerManager = MapLayerManager().apply {
+                styleChangeCallback = { loadDataForStyle() }
+            }
         }
     }
 
@@ -50,7 +48,7 @@ abstract class MapManager {
 
     fun setSymbolManager(featureCollection: FeatureCollection) {
         symbolManager = SymbolManager(
-            mapView, map, style, null,
+            mapView, map, style!!, null,
             GeoJsonOptions().withTolerance(0.4f)
         ).apply {
             iconAllowOverlap = true
