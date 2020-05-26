@@ -10,7 +10,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
-class SearchTETest : BaseTest(){
+class SearchTETest : BaseTest() {
 
     private lateinit var searchTETest: SearchTETest
 
@@ -19,7 +19,6 @@ class SearchTETest : BaseTest(){
 
     @Test
     fun openSearchTE() {
-
     }
 
     private fun prepareChildProgrammeIntentAndLaunchActivity() {
@@ -29,7 +28,7 @@ class SearchTETest : BaseTest(){
         }.also { rule.launchActivity(it) }
     }
 
-    companion object{
+    companion object {
         const val CHILD_PROGRAM_UID = "PROGRAM_UID"
         const val CHILD_PROGRAM_UID_VALUE = "IpHINAT79UW"
 

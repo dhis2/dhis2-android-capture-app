@@ -6,11 +6,11 @@
 
         <variable
             name="mapListener"
-            type="org.dhis2.utils.customviews.CoordinatesView.OnMapPositionClick" />
+            type="org.dhis2.usescases.coodinates.CoordinatesView.OnMapPositionClick" />
 
     </data>
 
-    <org.dhis2.utils.customviews.CoordinatesView
+    <org.dhis2.usescases.coodinates.CoordinatesView
         android:id="@+id/formCoordinates"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

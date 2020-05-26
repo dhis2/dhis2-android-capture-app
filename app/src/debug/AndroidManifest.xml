@@ -66,7 +66,7 @@
         <activity android:name=".usescases.teiDashboard.TeiDashboardMobileActivity" />
         <activity android:name=".usescases.qrScanner.QRActivity" />
         <activity android:name=".usescases.teiDashboard.teiProgramList.TeiProgramListActivity" />
-        <activity android:name=".usescases.map.MapSelectorActivity" />
+        <activity android:name="org.dhis2.uicomponents.map.views.MapSelectorActivity" />
         <activity android:name=".usescases.programStageSelection.ProgramStageSelectionActivity" />
         <activity android:name=".utils.WebViewActivity" />
         <activity
@@ -105,7 +105,7 @@
         <activity android:name=".usescases.development.DevelopmentActivity" />
 
         <service android:name=".usescases.sms.SmsSendingService" />
-        <activity android:name=".usescases.teiDashboard.nfc_data.NfcDataWriteActivity" />
+        <activity android:name=".usescases.teiDashboard.nfcdata.NfcDataWriteActivity" />
 
         <provider
             android:name="androidx.core.content.FileProvider"

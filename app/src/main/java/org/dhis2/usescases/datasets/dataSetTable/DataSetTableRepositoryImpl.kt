@@ -233,9 +233,8 @@ class DataSetTableRepositoryImpl(
                         ?.filter { dataSetElement ->
                             val catComboUid = dataSetElement.categoryCombo()?.uid()
                                 ?: d2.dataElementModule().dataElements()
-                                    .uid(
-                                        dataSetElement.dataElement().uid()
-                                    ).blockingGet().categoryComboUid()
+                                    .uid(dataSetElement.dataElement().uid())
+                                    .blockingGet().categoryComboUid()
                             val categoryOptionCombos =
                                 d2.categoryModule().categoryOptionCombos().byCategoryComboUid()
                                     .eq(catComboUid).blockingGet()
@@ -247,7 +246,8 @@ class DataSetTableRepositoryImpl(
                                 .byCategoryOptionComboUid()
                                 .`in`(UidsHelper.getUidsList(categoryOptionCombos))
                             dataValueRepository.blockingGet().isNotEmpty() &&
-                                dataValueRepository.blockingGet().size != categoryOptionCombos.size
+                                dataValueRepository
+                                .blockingGet().size != categoryOptionCombos.size
                         }?.map { dataSetElement -> dataSetElement.dataElement().uid() }
                         ?: emptyList()
                 } else {

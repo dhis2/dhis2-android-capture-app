@@ -11,7 +11,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
-class JiraTest: BaseTest() {
+class JiraTest : BaseTest() {
     private lateinit var mainRobot: MainRobot
 
     @get:Rule
@@ -30,10 +30,10 @@ class JiraTest: BaseTest() {
     fun openOnJiraIssue() {
         startActivity()
         mainRobot.clickOnNavigationDrawerMenu()
-                .clickJiraIssue()
+            .clickJiraIssue()
     }
 
-    fun startActivity(){
+    fun startActivity() {
         rule.launchActivity(null)
     }
 }

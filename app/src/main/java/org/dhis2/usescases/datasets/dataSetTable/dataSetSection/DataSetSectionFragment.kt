@@ -18,6 +18,8 @@ import com.evrencoskun.tableview.adapter.recyclerview.holder.AbstractViewHolder.
 import com.google.android.material.snackbar.Snackbar
 import io.reactivex.Flowable
 import io.reactivex.processors.FlowableProcessor
+import java.util.ArrayList
+import javax.inject.Inject
 import org.dhis2.Bindings.app
 import org.dhis2.Bindings.maxLengthLabel
 import org.dhis2.Bindings.measureText
@@ -33,13 +35,9 @@ import org.dhis2.utils.ColorUtils
 import org.dhis2.utils.Constants.ACCESS_DATA
 import org.dhis2.utils.Constants.DATA_SET_SECTION
 import org.dhis2.utils.Constants.DATA_SET_UID
-import org.dhis2.utils.customviews.AlertBottomDialog
 import org.dhis2.utils.isPortrait
 import org.hisp.dhis.android.core.dataset.DataSet
 import org.hisp.dhis.android.core.dataset.Section
-import java.lang.NullPointerException
-import java.util.ArrayList
-import javax.inject.Inject
 
 class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View {
 
@@ -71,8 +69,10 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
         activity = context as DataSetTableActivity
         arguments?.let {
             dataSetUid = it.getString(DATA_SET_UID)
-                ?: throw NullPointerException("dataSet should not be null. Before initializing the fragment make sure to set the correct arguments")
-
+                ?: throw NullPointerException(
+                    "dataSet should not be null. " +
+                        "Before initializing the fragment make sure to set the correct arguments"
+                )
         }
         app().userComponent()!!.plus(DataValueModule(dataSetUid, this)).inject(this)
     }
@@ -163,9 +163,7 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
             adapter.setMaxLabel(dataTableModel.rows()?.maxLengthLabel())
             tableView.setRowHeaderWidth(first)
             adapter.columnHeaderHeight = second
-
         } else {
-
             val widthFactor: Int
             val maxColumns = dataTableModel.header()!![dataTableModel.header()!!.size - 1].size
             widthFactor = if (isPortrait()) {
@@ -197,20 +195,25 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
             adapter.showRowTotal!!
         )
 
-
         presenterFragment.initializeProcessor(this)
 
-
-        binding.scroll.setOnScrollChangeListener { _: NestedScrollView?, _: Int, scrollY: Int, _: Int, _: Int ->
+        binding.scroll.setOnScrollChangeListener { _: NestedScrollView?,
+            _: Int,
+            scrollY: Int,
+            _: Int,
+            _: Int ->
             var position = -1
-            if (checkTableHeights())
+            if (checkTableHeights()) {
                 for (i in heights.indices) {
-                    if (scrollY < heights[i])
+                    if (scrollY < heights[i]) {
                         position = if (position == -1) i else position
+                    }
                 }
+            }
 
-            if (position != -1 && currentTablePosition.value != position)
+            if (position != -1 && currentTablePosition.value != position) {
                 currentTablePosition.value = position
+            }
         }
         currentTablePosition.value = 0
     }
@@ -245,13 +248,15 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
                 binding.headerContainer.getChildAt(0).layoutParams.height
             )
             cornerParams.topMargin =
-                binding.headerContainer.getChildAt(0).layoutParams.height * (binding.headerContainer.childCount - 1)
+                binding.headerContainer.getChildAt(0).layoutParams.height *
+                (binding.headerContainer.childCount - 1)
             cornerView.layoutParams = cornerParams
-            if (binding.headerContainer.childCount > 1)
+            if (binding.headerContainer.childCount > 1) {
                 cornerView.top =
-                    (binding.headerContainer.childCount - 2) * binding.headerContainer.getChildAt(0).layoutParams.height
-
-            cornerView.findViewById<View>(R.id.buttonRowScaleAdd).setOnClickListener { view ->
+                    (binding.headerContainer.childCount - 2) *
+                    binding.headerContainer.getChildAt(0).layoutParams.height
+            }
+            cornerView.findViewById<View>(R.id.buttonRowScaleAdd).setOnClickListener {
                 for (i in 0 until binding.tableLayout.childCount) {
                     if (binding.tableLayout.getChildAt(i) is TableView) {
                         val table = binding.tableLayout.getChildAt(i) as TableView
@@ -308,18 +313,30 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
             for (i in 0 until (binding.scroll.getChildAt(0) as LinearLayout).childCount) {
                 val view = (binding.scroll.getChildAt(0) as LinearLayout).getChildAt(i)
                 if (view is TableView) {
-                    if (i == (binding.scroll.getChildAt(0) as LinearLayout).childCount - 1)
-                        heights.add(if (i != 0) heights[heights.size - 1] + view.getHeight() else view.getHeight())
-                    else {
+                    if (i == (binding.scroll.getChildAt(0) as LinearLayout).childCount - 1) {
+                        heights.add(
+                            if (i != 0) {
+                                heights[heights.size - 1] + view.getHeight()
+                            } else {
+                                view.getHeight()
+                            }
+                        )
+                    } else {
                         val separator =
-                            (binding.scroll.getChildAt(0) as LinearLayout).getChildAt(i + 1)
-                        heights.add(if (i / 2 != 0) heights[i / 2 - 1] + view.getHeight() + separator.height else view.getHeight() + separator.height)
+                            (binding.scroll.getChildAt(0) as LinearLayout)
+                                .getChildAt(i + 1)
+                        heights.add(
+                            if (i / 2 != 0) {
+                                heights[i / 2 - 1] + view.getHeight() + separator.height
+                            } else {
+                                view.getHeight() + separator.height
+                            }
+                        )
                     }
                 }
             }
-
         }
-        return !heights.isEmpty()
+        return heights.isNotEmpty()
     }
 
     fun rowActions(): Flowable<RowAction> {
@@ -332,8 +349,9 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
 
     fun updateData(rowAction: RowAction, catCombo: String?) {
         for (adapter in adapters)
-            if (adapter.catCombo == catCombo)
+            if (adapter.catCombo == catCombo) {
                 adapter.updateValue(rowAction)
+            }
     }
 
     override fun showSnackBar() {
@@ -361,16 +379,17 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
         if (columnHeader != null) {
             columnHeader.setSelected(UNSELECTED)
             columnHeader.setBackgroundColor(
-                if (mandatory)
+                if (mandatory) {
                     ContextCompat.getColor(
                         context!!,
                         R.color.table_view_default_mandatory_background_color
                     )
-                else
+                } else {
                     ContextCompat.getColor(
                         context!!,
                         R.color.table_view_default_all_required_background_color
                     )
+                }
             )
         }
     }

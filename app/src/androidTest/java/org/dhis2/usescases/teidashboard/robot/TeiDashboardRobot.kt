@@ -5,7 +5,12 @@ import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition
 import androidx.test.espresso.contrib.RecyclerViewActions.scrollTo
-import androidx.test.espresso.matcher.ViewMatchers.*
+import androidx.test.espresso.matcher.ViewMatchers.hasDescendant
+import androidx.test.espresso.matcher.ViewMatchers.hasSibling
+import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
+import androidx.test.espresso.matcher.ViewMatchers.isEnabled
+import androidx.test.espresso.matcher.ViewMatchers.withId
+import androidx.test.espresso.matcher.ViewMatchers.withText
 import org.dhis2.R
 import org.dhis2.common.BaseRobot
 import org.dhis2.common.matchers.RecyclerviewMatchers.Companion.atPosition
@@ -14,12 +19,11 @@ import org.dhis2.common.matchers.clickOnTab
 import org.dhis2.common.matchers.isToast
 import org.dhis2.usescases.programStageSelection.ProgramStageSelectionViewHolder
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTEViewHolder
-import org.dhis2.usescases.teiDashboard.dashboardfragments.tei_data.DashboardProgramViewHolder
+import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.DashboardProgramViewHolder
 import org.dhis2.usescases.teidashboard.entity.EnrollmentUIModel
 import org.dhis2.usescases.teidashboard.entity.UpperEnrollmentUIModel
 import org.hamcrest.Matchers.allOf
 import org.hamcrest.Matchers.not
-
 
 fun teiDashboardRobot(teiDashboardRobot: TeiDashboardRobot.() -> Unit) {
     TeiDashboardRobot().apply {
@@ -27,23 +31,23 @@ fun teiDashboardRobot(teiDashboardRobot: TeiDashboardRobot.() -> Unit) {
     }
 }
 
-class TeiDashboardRobot: BaseRobot () {
+class TeiDashboardRobot : BaseRobot() {
 
     fun clickOnNotesTab() {
         onView(clickOnTab(3)).perform(click())
-        //onView(isRoot()).perform(waitForTransitionUntil(R.id.addNoteButton))
+        // onView(isRoot()).perform(waitForTransitionUntil(R.id.addNoteButton))
         Thread.sleep(500)
     }
 
     fun clickOnRelationshipTab() {
         onView(clickOnTab(2)).perform(click())
-        //onView(isRoot()).perform(waitForTransitionUntil(R.id.addNoteButton))
+        // onView(isRoot()).perform(waitForTransitionUntil(R.id.addNoteButton))
         Thread.sleep(500)
     }
 
     fun clickOnIndicatorsTab() {
         onView(clickOnTab(1)).perform(click())
-        //onView(isRoot()).perform(waitForTransitionUntil(R.id.addNoteButton))
+        // onView(isRoot()).perform(waitForTransitionUntil(R.id.addNoteButton))
         Thread.sleep(500)
     }
 
@@ -68,27 +72,28 @@ class TeiDashboardRobot: BaseRobot () {
         onView(withId(R.id.addnew)).check(matches(isDisplayed()))
     }
 
-    fun clickOnEventWithPosition(position : Int){
+    fun clickOnEventWithPosition(position: Int) {
         onView(withId(R.id.tei_recycler))
-                .perform(actionOnItemAtPosition<DashboardProgramViewHolder>(position, click()))
+            .perform(actionOnItemAtPosition<DashboardProgramViewHolder>(position, click()))
     }
 
-    fun clickOnFab(){
+    fun clickOnFab() {
         onView(withId(R.id.fab)).perform(click())
     }
 
-    fun clickOnReferral(){
+    fun clickOnReferral() {
         onView(withId(R.id.referral)).perform(click())
     }
 
     fun checkCannotAddMoreEventToastIsShown() {
-        onView(withText(R.string.program_not_allow_events)).inRoot(isToast()).check(matches(isDisplayed()))
+        onView(withText(R.string.program_not_allow_events)).inRoot(isToast())
+            .check(matches(isDisplayed()))
     }
 
-    fun clickOnFirstReferralEvent(){
+    fun clickOnFirstReferralEvent() {
         onView(withId(R.id.recycler_view))
-                .check(matches(allOf(atPosition(0, hasDescendant(withText("Lab monitoring"))))))
-                .perform(actionOnItemAtPosition<ProgramStageSelectionViewHolder>(0, click()))
+            .check(matches(allOf(atPosition(0, hasDescendant(withText("Lab monitoring"))))))
+            .perform(actionOnItemAtPosition<ProgramStageSelectionViewHolder>(0, click()))
     }
 
     fun clickOnReferralOption() {
@@ -103,11 +108,25 @@ class TeiDashboardRobot: BaseRobot () {
         onView(withText(R.string.event_created)).inRoot(isToast()).check(matches(isDisplayed()))
     }
 
-    fun checkEventWasCreated(eventName:String){
-        onView(withId(R.id.tei_recycler)).check(matches(allOf(
-                isDisplayed(), isNotEmpty(),
-                atPosition(0, hasDescendant(hasSibling(allOf(withId(R.id.event_name), withText(eventName)))))
-        )))
+    fun checkEventWasCreated(eventName: String) {
+        onView(withId(R.id.tei_recycler)).check(
+            matches(
+                allOf(
+                    isDisplayed(), isNotEmpty(),
+                    atPosition(
+                        0,
+                        hasDescendant(
+                            hasSibling(
+                                allOf(
+                                    withId(R.id.event_name),
+                                    withText(eventName)
+                                )
+                            )
+                        )
+                    )
+                )
+            )
+        )
     }
 
     fun clickOnMenuDeactivate() {
@@ -132,7 +151,7 @@ class TeiDashboardRobot: BaseRobot () {
 
     fun clickOnNextQR() {
         var qrLenght = 1
-       // onView(withId(R.id.page)).check(matches(withText("8")))
+        // onView(withId(R.id.page)).check(matches(withText("8")))
 
         while (qrLenght < 8) {
             onView(withId(R.id.next)).perform(click())
@@ -146,18 +165,36 @@ class TeiDashboardRobot: BaseRobot () {
 
     fun checkTEIIsDelete() {
         // Olvia Watts
-        onView(withId(R.id.scrollView)).check(matches(allOf(isDisplayed(), isNotEmpty(),
-                not(hasDescendant(withText("Olvia Watts"))))))
+        onView(withId(R.id.scrollView)).check(
+            matches(
+                allOf(
+                    isDisplayed(), isNotEmpty(),
+                    not(hasDescendant(withText("Olvia Watts")))
+                )
+            )
+        )
     }
 
     fun clickOnTEI() {
-        onView(withId(R.id.scrollView)).perform(scrollTo<SearchTEViewHolder>(hasDescendant(withText("Olvia Watts"))), click())
+        onView(withId(R.id.scrollView)).perform(
+            scrollTo<SearchTEViewHolder>(
+                hasDescendant(
+                    withText(
+                        "Olvia Watts"
+                    )
+                )
+            ),
+            click()
+        )
     }
 
     fun checkUpperInfo(upperInformation: UpperEnrollmentUIModel) {
-        onView(withId(R.id.incident_date)).check(matches(withText(upperInformation.incidentDate)))
-        onView(withId(R.id.enrollment_date)).check(matches(withText(upperInformation.enrollmentDate)))
-        onView(withId(R.id.org_unit)).check(matches(withText(upperInformation.orgUnit)))
+        onView(withId(R.id.incident_date))
+            .check(matches(withText(upperInformation.incidentDate)))
+        onView(withId(R.id.enrollment_date))
+            .check(matches(withText(upperInformation.enrollmentDate)))
+        onView(withId(R.id.org_unit))
+            .check(matches(withText(upperInformation.orgUnit)))
     }
 
     fun clickOnSeeDetails() {
@@ -165,32 +202,96 @@ class TeiDashboardRobot: BaseRobot () {
     }
 
     fun checkFullDetails(enrollmentUIModel: EnrollmentUIModel) {
-        onView(withId(R.id.fieldRecycler)).check(matches(allOf(isDisplayed(), isNotEmpty(),
-                atPosition(1, hasDescendant(withText(enrollmentUIModel.enrollmentDate))))))
+        onView(withId(R.id.fieldRecycler)).check(
+            matches(
+                allOf(
+                    isDisplayed(), isNotEmpty(),
+                    atPosition(1, hasDescendant(withText(enrollmentUIModel.enrollmentDate)))
+                )
+            )
+        )
 
-        onView(withId(R.id.fieldRecycler)).check(matches(allOf(isDisplayed(), isNotEmpty(),
-                atPosition(2, hasDescendant(withText(enrollmentUIModel.birthday))))))
+        onView(withId(R.id.fieldRecycler)).check(
+            matches(
+                allOf(
+                    isDisplayed(), isNotEmpty(),
+                    atPosition(2, hasDescendant(withText(enrollmentUIModel.birthday)))
+                )
+            )
+        )
 
-        onView(withId(R.id.fieldRecycler)).check(matches(allOf(isDisplayed(), isNotEmpty(),
-                atPosition(3, hasDescendant(withText(enrollmentUIModel.orgUnit))))))
+        onView(withId(R.id.fieldRecycler)).check(
+            matches(
+                allOf(
+                    isDisplayed(), isNotEmpty(),
+                    atPosition(3, hasDescendant(withText(enrollmentUIModel.orgUnit)))
+                )
+            )
+        )
 
-        onView(withId(R.id.fieldRecycler)).check(matches(allOf(isDisplayed(), isNotEmpty(),
-                atPosition(4, hasDescendant(allOf(withId(R.id.latitude), withText(enrollmentUIModel.latitude)))))))
+        onView(withId(R.id.fieldRecycler)).check(
+            matches(
+                allOf(
+                    isDisplayed(), isNotEmpty(),
+                    atPosition(
+                        4,
+                        hasDescendant(
+                            allOf(
+                                withId(R.id.latitude),
+                                withText(enrollmentUIModel.latitude)
+                            )
+                        )
+                    )
+                )
+            )
+        )
 
-        onView(withId(R.id.fieldRecycler)).check(matches(allOf(isDisplayed(), isNotEmpty(),
-                atPosition(4, hasDescendant(allOf(withId(R.id.longitude), withText(enrollmentUIModel.longitude)))))))
+        onView(withId(R.id.fieldRecycler)).check(
+            matches(
+                allOf(
+                    isDisplayed(), isNotEmpty(),
+                    atPosition(
+                        4,
+                        hasDescendant(
+                            allOf(
+                                withId(R.id.longitude),
+                                withText(enrollmentUIModel.longitude)
+                            )
+                        )
+                    )
+                )
+            )
+        )
 
         onView(withId(R.id.fieldRecycler))
-                .perform(actionOnItemAtPosition<DashboardProgramViewHolder>(6, click()))
+            .perform(actionOnItemAtPosition<DashboardProgramViewHolder>(6, click()))
 
-        onView(withId(R.id.fieldRecycler)).check(matches(allOf(isDisplayed(), isNotEmpty(),
-                atPosition(2, hasDescendant(withText(enrollmentUIModel.name))))))
+        onView(withId(R.id.fieldRecycler)).check(
+            matches(
+                allOf(
+                    isDisplayed(), isNotEmpty(),
+                    atPosition(2, hasDescendant(withText(enrollmentUIModel.name)))
+                )
+            )
+        )
 
-        onView(withId(R.id.fieldRecycler)).check(matches(allOf(isDisplayed(), isNotEmpty(),
-                atPosition(3, hasDescendant(withText(enrollmentUIModel.lastName))))))
+        onView(withId(R.id.fieldRecycler)).check(
+            matches(
+                allOf(
+                    isDisplayed(), isNotEmpty(),
+                    atPosition(3, hasDescendant(withText(enrollmentUIModel.lastName)))
+                )
+            )
+        )
 
-        onView(withId(R.id.fieldRecycler)).check(matches(allOf(isDisplayed(), isNotEmpty(),
-                atPosition(4, hasDescendant(withText(enrollmentUIModel.sex))))))
+        onView(withId(R.id.fieldRecycler)).check(
+            matches(
+                allOf(
+                    isDisplayed(), isNotEmpty(),
+                    atPosition(4, hasDescendant(withText(enrollmentUIModel.sex)))
+                )
+            )
+        )
     }
 
     fun clickOnScheduleNew() {
@@ -200,9 +301,15 @@ class TeiDashboardRobot: BaseRobot () {
     fun clickOnMenuProgramEnrollments() {
         onView(withText("Program enrollments")).perform(click())
     }
+
     fun clickOnAProgramForEnrollment() {
         onView(withId(R.id.recycler))
-                .perform(actionOnItemAtPosition<DashboardProgramViewHolder>(4, click())) //action_button
+            .perform(
+                actionOnItemAtPosition<DashboardProgramViewHolder>(
+                    4,
+                    click()
+                )
+            ) // action_button
     }
 
     fun clickOnAcceptEnrollmentDate() {

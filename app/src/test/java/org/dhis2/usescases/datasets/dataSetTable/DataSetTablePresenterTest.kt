@@ -9,6 +9,7 @@ import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.Single
+import java.util.Date
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.hisp.dhis.android.core.common.State
@@ -18,7 +19,6 @@ import org.hisp.dhis.android.core.period.PeriodType
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
-import java.util.Date
 
 class DataSetTablePresenterTest {
 
@@ -50,7 +50,6 @@ class DataSetTablePresenterTest {
             .endDate(Date())
             .periodId("periodId")
             .build()
-
 
         whenever(repository.getSections()) doReturn Flowable.just(sections)
         whenever(repository.getDataSet()) doReturn Single.just(dataSet)
@@ -129,7 +128,7 @@ class DataSetTablePresenterTest {
     }
 
     @Test
-    fun `Should mark the dataset as complete` () {
+    fun `Should mark the dataset as complete`() {
         whenever(repository.completeDataSetInstance()) doReturn Completable.complete()
 
         presenter.completeDataSet()

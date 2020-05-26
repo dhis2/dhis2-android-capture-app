@@ -18,7 +18,6 @@ import org.junit.Test
 import org.mockito.Mockito.RETURNS_DEEP_STUBS
 import org.mockito.Mockito.mock
 
-
 class DataSetTableRepositoryTest {
 
     private lateinit var repository: DataSetTableRepositoryImpl
@@ -66,7 +65,7 @@ class DataSetTableRepositoryTest {
         testObserver.assertNoErrors()
         testObserver.assertValue {
             it[0] == "section_1" &&
-                    it[1] == "section_2"
+                it[1] == "section_2"
         }
     }
 
