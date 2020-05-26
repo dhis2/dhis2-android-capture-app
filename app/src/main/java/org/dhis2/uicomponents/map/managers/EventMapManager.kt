@@ -1,11 +1,8 @@
-package org.dhis2.uicomponents.map
+package org.dhis2.uicomponents.map.managers
 
 import android.graphics.BitmapFactory
 import com.mapbox.geojson.BoundingBox
 import com.mapbox.geojson.FeatureCollection
-import com.mapbox.mapboxsdk.maps.MapView
-import com.mapbox.mapboxsdk.maps.Style
-import com.mapbox.mapboxsdk.plugins.markerview.MarkerViewManager
 import com.mapbox.mapboxsdk.style.layers.FillLayer
 import com.mapbox.mapboxsdk.style.layers.PropertyFactory
 import com.mapbox.mapboxsdk.style.layers.SymbolLayer
@@ -14,7 +11,7 @@ import org.dhis2.R
 import org.dhis2.utils.ColorUtils
 import org.hisp.dhis.android.core.common.FeatureType
 
-class EventMapManager: MapManager() {
+class EventMapManager : MapManager() {
 
     private lateinit var featureCollection: FeatureCollection
 

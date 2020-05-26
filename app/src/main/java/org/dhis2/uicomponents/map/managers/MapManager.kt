@@ -1,4 +1,4 @@
-package org.dhis2.uicomponents.map
+package org.dhis2.uicomponents.map.managers
 
 import com.mapbox.geojson.BoundingBox
 import com.mapbox.geojson.FeatureCollection

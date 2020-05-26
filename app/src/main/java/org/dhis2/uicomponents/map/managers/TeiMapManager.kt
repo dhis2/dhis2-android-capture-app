@@ -1,9 +1,10 @@
-package org.dhis2.uicomponents.map
+package org.dhis2.uicomponents.map.managers
 
 import com.mapbox.geojson.BoundingBox
 import com.mapbox.geojson.FeatureCollection
-import com.mapbox.mapboxsdk.maps.Style
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource
+import org.dhis2.uicomponents.map.MapStyle
+import org.dhis2.uicomponents.map.TeiMarkers
 import org.dhis2.uicomponents.map.layer.LayerType
 import org.dhis2.uicomponents.map.layer.MapLayerManager
 import org.hisp.dhis.android.core.common.FeatureType

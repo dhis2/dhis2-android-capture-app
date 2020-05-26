@@ -37,7 +37,7 @@ import org.dhis2.R;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.databinding.ActivityProgramEventDetailBinding;
 import org.dhis2.databinding.InfoWindowEventBinding;
-import org.dhis2.uicomponents.map.EventMapManager;
+import org.dhis2.uicomponents.map.managers.EventMapManager;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity;
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
@@ -122,9 +122,9 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
 
         filtersAdapter = new FiltersAdapter(FiltersAdapter.ProgramType.EVENT);
         filtersAdapter.addEventStatus();
-        if(presenter.hasAssignment()){
+        if (presenter.hasAssignment()) {
             filtersAdapter.addAssignedToMe();
-        }else{
+        } else {
             filtersAdapter.removeAssignedToMe();
         }
         try {
@@ -142,7 +142,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
     @Override
     protected void onStart() {
         super.onStart();
-        if(eventMapManager != null) {
+        if (eventMapManager != null) {
             eventMapManager.onStart();
         }
     }
@@ -152,7 +152,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
     protected void onResume() {
         super.onResume();
         presenter.init();
-        if(eventMapManager != null) {
+        if (eventMapManager != null) {
             eventMapManager.onResume();
         }
         binding.addEventButton.setEnabled(true);
@@ -163,7 +163,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
     @Override
     protected void onPause() {
         presenter.onDettach();
-        if(eventMapManager != null) {
+        if (eventMapManager != null) {
             eventMapManager.onPause();
         }
         super.onPause();
@@ -172,7 +172,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if(eventMapManager != null) {
+        if (eventMapManager != null) {
             eventMapManager.onDestroy();
         }
         binding.mapView.onDestroy();
@@ -446,8 +446,8 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
         SyncStatusDialog dialog = new SyncStatusDialog.Builder()
                 .setConflictType(SyncStatusDialog.ConflictType.EVENT)
                 .setUid(uid)
-                .onDismissListener(hasChanged->{
-                    if(hasChanged)
+                .onDismissListener(hasChanged -> {
+                    if (hasChanged)
                         FilterManager.getInstance().publishData();
 
                 })

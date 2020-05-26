@@ -55,9 +55,8 @@ import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.databinding.ActivitySearchBinding;
 import org.dhis2.uicomponents.map.MapStyle;
-import org.dhis2.uicomponents.map.TeiMapManager;
+import org.dhis2.uicomponents.map.managers.TeiMapManager;
 import org.dhis2.uicomponents.map.layer.MapLayerDialog;
-import org.dhis2.uicomponents.map.layer.MapLayerManager;
 import org.dhis2.usescases.coodinates.CoordinatesView;
 import org.dhis2.usescases.enrollment.EnrollmentActivity;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
@@ -150,7 +149,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     @Override
     protected void onStart() {
         super.onStart();
-        if(teiMapManager != null) {
+        if (teiMapManager != null) {
             teiMapManager.onStart();
         }
     }

@@ -10,7 +10,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.DialogFragment
 import org.dhis2.R
 import org.dhis2.databinding.DialogMapLayerBinding
-import org.dhis2.uicomponents.map.TeiMapManager
+import org.dhis2.uicomponents.map.managers.TeiMapManager
 
 class MapLayerDialog(
     private val teiMapManager: TeiMapManager
@@ -74,7 +74,7 @@ class MapLayerDialog(
                 teiMapManager.mapLayerManager.handleLayer(LayerType.TEI_LAYER, it)
                 teiValue = null
             }
-            enrollmentValue?.let{
+            enrollmentValue?.let {
                 teiMapManager.mapLayerManager.handleLayer(LayerType.ENROLLMENT_LAYER, it)
                 enrollmentValue = null
             }

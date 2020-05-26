@@ -8,7 +8,7 @@ import com.mapbox.mapboxsdk.style.layers.LineLayer
 import com.mapbox.mapboxsdk.style.layers.Property
 import com.mapbox.mapboxsdk.style.layers.PropertyFactory
 import com.mapbox.mapboxsdk.style.layers.SymbolLayer
-import org.dhis2.uicomponents.map.TeiMapManager.Companion.TEIS_SOURCE_ID
+import org.dhis2.uicomponents.map.managers.TeiMapManager.Companion.TEIS_SOURCE_ID
 import org.dhis2.utils.ColorUtils
 import org.hisp.dhis.android.core.common.FeatureType
 
@@ -17,14 +17,14 @@ class TeiMapLayer(
     var featureType: FeatureType,
     private val enrollmentColor: Int,
     private val enrollmentDarkColor: Int
-): MapLayer {
+) : MapLayer {
 
     private var POINT_LAYER_ID: String = "TEI_POINT_LAYER_ID"
     private var POLYGON_LAYER_ID: String = "TEI_POLYGON_LAYER_ID"
     private var POLYGON_BORDER_LAYER_ID: String = "TEI_POLYGON_BORDER_LAYER_ID"
 
     init {
-        when(featureType) {
+        when (featureType) {
             FeatureType.POINT -> style.addLayer(pointLayer)
             FeatureType.POLYGON -> {
                 style.addLayer(polygonLayer)
@@ -75,7 +75,7 @@ class TeiMapLayer(
                 )
 
     private fun setVisibility(visibility: String) {
-        when(featureType) {
+        when (featureType) {
             FeatureType.POINT -> pointLayer.setProperties(PropertyFactory.visibility(visibility))
             FeatureType.POLYGON -> {
                 polygonLayer.setProperties(PropertyFactory.visibility(visibility))
