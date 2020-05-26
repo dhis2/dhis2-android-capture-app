@@ -13,12 +13,12 @@ import com.bumptech.glide.request.RequestOptions
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import java.io.File
 import org.dhis2.Bindings.dp
 import org.dhis2.Bindings.widthAndHeight
 import org.dhis2.R
 import org.dhis2.databinding.DetailImageBottomDialogBinding
 import org.dhis2.utils.ColorUtils
-import java.io.File
 
 class ImageDetailBottomDialog(
     val label: String?,

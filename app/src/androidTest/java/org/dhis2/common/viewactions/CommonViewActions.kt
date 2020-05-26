@@ -6,7 +6,10 @@ import androidx.appcompat.widget.SwitchCompat
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.espresso.UiController
 import androidx.test.espresso.ViewAction
-import androidx.test.espresso.matcher.ViewMatchers.*
+import androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom
+import androidx.test.espresso.matcher.ViewMatchers.isCompletelyDisplayed
+import androidx.test.espresso.matcher.ViewMatchers.isRoot
+import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.util.TreeIterables
 import com.wangjie.rapidfloatingactionbutton.RapidFloatingActionLayout
 import org.hamcrest.CoreMatchers.allOf
@@ -28,7 +31,7 @@ fun openSpinnerPopup(): ViewAction {
         }
     }
 }
-fun setSwitchCheckTo(checkValue: Boolean) : ViewAction {
+fun setSwitchCheckTo(checkValue: Boolean): ViewAction {
     return object : ViewAction {
         override fun getDescription(): String {
             return "Setting switch check"
@@ -48,7 +51,7 @@ fun setSwitchCheckTo(checkValue: Boolean) : ViewAction {
     }
 }
 
-fun scrollToBottomRecyclerView() : ViewAction {
+fun scrollToBottomRecyclerView(): ViewAction {
     return object : ViewAction {
         override fun getDescription(): String {
             return "Recyclerview scrolling until the end"
@@ -68,7 +71,7 @@ fun scrollToBottomRecyclerView() : ViewAction {
     }
 }
 
-fun clickOnFabChild() : ViewAction {
+fun clickOnFabChild(): ViewAction {
     return object : ViewAction {
         override fun getDescription(): String {
             return "searching for fab child"
@@ -90,7 +93,7 @@ fun clickOnFabChild() : ViewAction {
     }
 }
 
-fun waitForTransitionUntil(idView:Int) : ViewAction {
+fun waitForTransitionUntil(idView: Int): ViewAction {
     return object : ViewAction {
         override fun getDescription(): String {
             return "Checking tabLayoutTransition"

@@ -1,19 +1,16 @@
 package org.dhis2.usescases.programEventDetail
 
+import java.util.Date
+import javax.inject.Inject
 import org.dhis2.Bindings.userFriendlyValue
 import org.dhis2.data.tuples.Pair
 import org.dhis2.utils.DateUtils
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
-import org.hisp.dhis.android.core.category.CategoryOptionCombo
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.event.Event
-import org.hisp.dhis.android.core.program.ProgramStageSection
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValue
-import java.util.Collections
-import java.util.Date
-import javax.inject.Inject
 
 class ProgramEventMapper @Inject constructor(val d2: D2) {
 
@@ -22,7 +19,7 @@ class ProgramEventMapper @Inject constructor(val d2: D2) {
         val showInReportsDataElements = mutableListOf<String>()
         val programStageDataElements = getProgramStageDataElements(event.programStage())
         programStageDataElements.forEach {
-            if(it.displayInReports() == true) {
+            if (it.displayInReports() == true) {
                 it.dataElement()?.let { dataElement ->
                     showInReportsDataElements.add(dataElement.uid())
                 }
@@ -70,7 +67,6 @@ class ProgramEventMapper @Inject constructor(val d2: D2) {
         showInReportsDataElements: MutableList<String>,
         programStage: String?
     ): List<Pair<String, String>> {
-
         val data: MutableList<Pair<String, String>> = mutableListOf()
 
         dataValues?.let {
@@ -90,20 +86,22 @@ class ProgramEventMapper @Inject constructor(val d2: D2) {
                 }
             }
 
-            dataValues.sortedWith(Comparator { de1, de2 ->
-                val pos1 = dataElementsOrder.indexOf(de1.dataElement())
-                val pos2 = dataElementsOrder.indexOf(de2.dataElement())
-                pos1.compareTo(pos2)
-            }).forEach {
+            dataValues.sortedWith(
+                Comparator { de1, de2 ->
+                    val pos1 = dataElementsOrder.indexOf(de1.dataElement())
+                    val pos2 = dataElementsOrder.indexOf(de2.dataElement())
+                    pos1.compareTo(pos2)
+                }
+            ).forEach {
                 val dataElement = getDataElement(it.dataElement())
                 if (dataElement != null && showInReportsDataElements.contains(dataElement.uid())) {
                     val displayName = if (!dataElement.displayFormName().isNullOrEmpty()) {
                         dataElement.displayFormName()
-                    } else if (!dataElement.displayName().isNullOrEmpty()){
+                    } else if (!dataElement.displayName().isNullOrEmpty()) {
                         dataElement.displayName()
-                    } else if (!dataElement.name().isNullOrEmpty())
+                    } else if (!dataElement.name().isNullOrEmpty()) {
                         dataElement.name()
-                    else {
+                    } else {
                         dataElement.uid()
                     }
                     val value = it.userFriendlyValue(d2) ?: ""
@@ -132,10 +130,12 @@ class ProgramEventMapper @Inject constructor(val d2: D2) {
     private fun checkOrgUnitRange(orgUnitUid: String?, eventDate: Date): Boolean {
         var inRange = true
         val orgUnit = d2.organisationUnitModule().organisationUnits().uid(orgUnitUid).blockingGet()
-        if (orgUnit.openingDate() != null && eventDate.before(orgUnit.openingDate()))
+        if (orgUnit.openingDate() != null && eventDate.before(orgUnit.openingDate())) {
             inRange = false
-        if (orgUnit.closedDate() != null && eventDate.after(orgUnit.closedDate()))
+        }
+        if (orgUnit.closedDate() != null && eventDate.after(orgUnit.closedDate())) {
             inRange = false
+        }
 
         return inRange
     }

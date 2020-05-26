@@ -36,6 +36,8 @@ import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.observers.DisposableCompletableObserver
 import io.reactivex.schedulers.Schedulers
+import java.util.Collections
+import java.util.Date
 import org.dhis2.data.schedulers.SchedulerProvider
 import org.dhis2.data.service.workManager.WorkManagerController
 import org.dhis2.data.service.workManager.WorkerItem
@@ -61,8 +63,6 @@ import org.hisp.dhis.android.core.sms.domain.interactor.SmsSubmitCase
 import org.hisp.dhis.android.core.sms.domain.repository.SmsRepository
 import org.hisp.dhis.android.core.systeminfo.SMSVersion
 import timber.log.Timber
-import java.util.Collections
-import java.util.Date
 
 class GranularSyncPresenterImpl(
     val d2: D2,
@@ -196,16 +196,24 @@ class GranularSyncPresenterImpl(
                 // TODO: GET ALL ENROLLMENTS FROM TEI
                 val enrollmentUids = UidsHelper.getUidsList(
                     d2.enrollmentModule().enrollments().byTrackedEntityInstance().eq(recordUid)
-                        .byState().`in`(State.TO_POST, State.TO_UPDATE, State.UPLOADING).blockingGet()
+                        .byState().`in`(
+                            State.TO_POST,
+                            State.TO_UPDATE,
+                            State.UPLOADING
+                        ).blockingGet()
                 )
                 if (enrollmentUids.isNotEmpty()) {
                     smsSender.convertEnrollment(enrollmentUids[0])
-
-                } else if( !d2.enrollmentModule().enrollments().byTrackedEntityInstance().eq(recordUid).blockingIsEmpty()){
+                } else if (!d2.enrollmentModule().enrollments().byTrackedEntityInstance().eq(
+                    recordUid
+                ).blockingIsEmpty()
+                ) {
                     smsSender.convertEnrollment(
-                        d2.enrollmentModule().enrollments().byTrackedEntityInstance().eq(recordUid).one().blockingGet().uid()
+                        d2.enrollmentModule().enrollments()
+                            .byTrackedEntityInstance().eq(recordUid)
+                            .one().blockingGet().uid()
                     )
-                }else {
+                } else {
                     Single.error(Exception(view.emptyEnrollmentError()))
                 }
             }
@@ -220,7 +228,11 @@ class GranularSyncPresenterImpl(
                 .subscribe(
                     { count ->
                         reportState(SmsSendingService.State.CONVERTED, 0, count!!)
-                        reportState(SmsSendingService.State.WAITING_COUNT_CONFIRMATION, 0, count)
+                        reportState(
+                            SmsSendingService.State.WAITING_COUNT_CONFIRMATION,
+                            0,
+                            count
+                        )
                     },
                     { this.reportError(it) }
                 )
@@ -284,8 +296,8 @@ class GranularSyncPresenterImpl(
         if (statesList.isEmpty()) return false
         val last = statesList[statesList.size - 1]
         return last.state == SmsSendingService.State.SENDING &&
-                last.sent == sent &&
-                last.total == total
+            last.sent == sent &&
+            last.total == total
     }
 
     override fun reportState(state: SmsSendingService.State, sent: Int, total: Int) {
@@ -382,7 +394,7 @@ class GranularSyncPresenterImpl(
                 State.TO_POST,
                 State.UPLOADING
             ).blockingGet().isNotEmpty() ||
-                    teiRepository.byDeleted().isTrue.blockingGet().isNotEmpty() ->
+                teiRepository.byDeleted().isTrue.blockingGet().isNotEmpty() ->
                 State.TO_UPDATE
             else -> State.SYNCED
         }
@@ -405,7 +417,7 @@ class GranularSyncPresenterImpl(
                 State.TO_POST,
                 State.UPLOADING
             ).blockingGet().isNotEmpty() ||
-                    eventRepository.byDeleted().isTrue.blockingGet().isNotEmpty() ->
+                eventRepository.byDeleted().isTrue.blockingGet().isNotEmpty() ->
                 State.TO_UPDATE
             else -> State.SYNCED
         }
@@ -433,11 +445,11 @@ class GranularSyncPresenterImpl(
             stateCandidates.contains(State.ERROR) -> State.ERROR
             stateCandidates.contains(State.WARNING) -> State.WARNING
             stateCandidates.contains(State.SENT_VIA_SMS) ||
-                    stateCandidates.contains(State.SYNCED_VIA_SMS) ->
+                stateCandidates.contains(State.SYNCED_VIA_SMS) ->
                 State.SENT_VIA_SMS
             stateCandidates.contains(State.TO_POST) ||
-                    stateCandidates.contains(State.UPLOADING) ||
-                    stateCandidates.contains(State.TO_UPDATE) ->
+                stateCandidates.contains(State.UPLOADING) ||
+                stateCandidates.contains(State.TO_UPDATE) ->
                 State.TO_UPDATE
             else -> State.SYNCED
         }

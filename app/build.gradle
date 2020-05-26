@@ -14,11 +14,7 @@ repositories {
     maven {
         url("https://maven.fabric.io/public")
     }
-
-    // used by sdk
-    maven {
-        url("https://oss.sonatype.org/content/repositories/snapshots")
-    }
+    maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
     mavenCentral()
 }
 
@@ -55,9 +51,6 @@ android {
         testInstrumentationRunner "org.dhis2.Dhis2Runner"
         vectorDrawables.useSupportLibrary = true
         multiDexEnabled true
-        ndk {
-            abiFilters "x86"
-        }
 
         setProperty("archivesBaseName", "dhis2-v" + versions.vName)
 
@@ -303,7 +296,7 @@ dependencies {
 
     // Kujaku dependencies
 //    implementation 'io.ona.kujaku:library:0.7.7'
-    implementation 'com.mapbox.mapboxsdk:mapbox-android-sdk:8.3.0'
+    implementation 'com.mapbox.mapboxsdk:mapbox-android-sdk:9.2.0'
     implementation 'com.mapbox.mapboxsdk:mapbox-android-plugin-markerview-v8:0.3.0'
     implementation 'com.mapbox.mapboxsdk:mapbox-android-plugin-annotation-v9:0.8.0'
 

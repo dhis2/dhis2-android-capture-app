@@ -18,7 +18,6 @@ import org.junit.Test
 import org.mockito.Mockito.RETURNS_DEEP_STUBS
 import org.mockito.Mockito.mock
 
-
 class DataSetTableRepositoryTest {
 
     private lateinit var repository: DataSetTableRepositoryImpl

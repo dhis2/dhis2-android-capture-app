@@ -8,7 +8,7 @@ import org.dhis2.utils.Constants
 class PreferenceTestingImpl(context: Context) : PreferenceProviderImpl(context) {
 
     private val sharedPreferences: SharedPreferences =
-            context.getSharedPreferences(Constants.SHARE_PREFS, Context.MODE_PRIVATE)
+        context.getSharedPreferences(Constants.SHARE_PREFS, Context.MODE_PRIVATE)
 
     override fun setValue(key: String, value: Any?) {
         value?.let {
