@@ -24,6 +24,8 @@ public class DataSetTableContract {
 
         Observable<Object> observeSaveButtonClicks();
 
+        void showInfoDialog(boolean isMandatoryFields);
+
         void showValidationRuleDialog();
 
         void showSuccessValidationDialog();

@@ -16,6 +16,7 @@ import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.dataset.DataSet
 import org.hisp.dhis.android.core.period.Period
 import org.hisp.dhis.android.core.period.PeriodType
+import org.hisp.dhis.android.core.validation.engine.ValidationResult
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
@@ -91,27 +92,32 @@ class DataSetTablePresenterTest {
     }
 
     @Test
-    fun `Should check if ValidationRules are optional and show appropriate dialog`() {
-        whenever(repository.isValidationRuleOptional()) doReturn true
+    fun `Should check if DataSet does have ValidationRules and show appropriate dialog`() {
+        whenever(repository.doesDatasetHasValidationRulesAssociated()) doReturn true
 
-        presenter.checkValidationRules()
+        presenter.checkIfValidationRulesExecutionIsOptional()
 
         verify(view).showValidationRuleDialog()
     }
 
     @Test
-    fun `Should check if ValidationRules are mandatory and are executed without errors`() {
-        whenever(repository.isValidationRuleOptional()) doReturn false
-        whenever(repository.executeValidationRules()) doReturn true
+    fun `Should check if DataSet does not have ValidationRules associated and complete DataSet`() {
+        whenever(repository.doesDatasetHasValidationRulesAssociated()) doReturn false
+        whenever(repository.completeDataSetInstance()) doReturn Completable.complete()
 
-        presenter.checkValidationRules()
+        presenter.checkIfValidationRulesExecutionIsOptional()
 
-        verify(view).showSuccessValidationDialog()
+        verifyZeroInteractions(view)
     }
 
     @Test
-    fun `Should execute ValidationRules and the result is without errors`() {
-        whenever(repository.executeValidationRules()) doReturn true
+    fun `Should execute ValidationRules without errors`() {
+        val resultOk =
+            ValidationResult.builder()
+                .status(ValidationResult.ValidationResultStatus.OK)
+                .violations(emptyList()).build()
+
+        whenever(repository.executeValidationRules()) doReturn Flowable.just(resultOk)
 
         presenter.executeValidationRules()
 
@@ -120,7 +126,12 @@ class DataSetTablePresenterTest {
 
     @Test
     fun `Should execute ValidationRules and the result is with errors`() {
-        whenever(repository.executeValidationRules()) doReturn false
+        val resultError =
+            ValidationResult.builder()
+                .status(ValidationResult.ValidationResultStatus.ERROR)
+                .violations(emptyList()).build()
+
+        whenever(repository.executeValidationRules()) doReturn Flowable.just(resultError)
 
         presenter.executeValidationRules()
 

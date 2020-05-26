@@ -7,6 +7,7 @@ import io.reactivex.functions.Function4
 import io.reactivex.processors.FlowableProcessor
 import io.reactivex.processors.PublishProcessor
 import javax.inject.Singleton
+import org.dhis2.data.tuples.Pair
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper
 import org.hisp.dhis.android.core.category.CategoryCombo
@@ -225,7 +226,7 @@ class DataSetTableRepositoryImpl(
             }
     }
 
-    fun checkFieldCombination(): Single<List<String>> {
+    fun checkFieldCombination(): Single<Pair<Boolean, List<String>>> {
         return d2.dataSetModule().dataSets().withDataSetElements().uid(dataSetUid).get()
             .map { dataSet ->
                 if (dataSet.fieldCombinationRequired() == true) {
@@ -257,18 +258,21 @@ class DataSetTableRepositoryImpl(
                 if (dataElementsUids.isNotEmpty()) {
                     missingCompleteDataElementsProcessor.onNext(dataElementsUids)
                 }
-                dataElementsUids
+                Pair.create(true, dataElementsUids)
             }
     }
 
-    fun hasToRunValidationRules(): Boolean {
+    fun runMandatoryValidationRules(): Boolean {
         return d2.dataSetModule()
             .dataSets().uid(dataSetUid)
             .blockingGet().validCompleteOnly() ?: false
     }
 
-    fun isValidationRuleOptional(): Boolean {
-        return d2.validationModule().validationRules().blockingIsEmpty()
+    fun doesDatasetHasValidationRulesAssociated(): Boolean {
+        return d2.validationModule().validationRules()
+            .byDataSetUids(listOf(dataSetUid))
+            .bySkipFormValidation().isFalse
+            .blockingIsEmpty()
     }
 
     fun executeValidationRules(): Flowable<ValidationResult> {

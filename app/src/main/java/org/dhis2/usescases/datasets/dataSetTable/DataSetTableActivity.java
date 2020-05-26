@@ -217,6 +217,18 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
     }
 
     @Override
+    public void showInfoDialog(boolean isMandatoryFields) {
+        String title = getString(R.string.missing_mandatory_fields_title);
+        String message;
+        if (isMandatoryFields) {
+            message = getString(R.string.field_mandatory);
+        } else {
+            message = getString(R.string.field_required);
+        }
+        super.showInfoDialog(title, message);
+    }
+
+    @Override
     public void showValidationRuleDialog() {
         AlertBottomDialog.Companion.getInstance()
                 .setTitle(getString(R.string.saved))
