@@ -92,10 +92,10 @@ class SettingsTest : BaseTest() {
             Thread.sleep(8000)
             // is not clicking
             // checkReservedValuesWasRefill(0)
-            //   clickOnRefill(1)
-            //   checkReservedValuesWasRefill(1)
-            //    clickOnRefill(2)
-            //    checkReservedValuesWasRefill(2)
+            // clickOnRefill(1)
+            // checkReservedValuesWasRefill(1)
+            // clickOnRefill(2)
+            // checkReservedValuesWasRefill(2)
         }
     }
 
