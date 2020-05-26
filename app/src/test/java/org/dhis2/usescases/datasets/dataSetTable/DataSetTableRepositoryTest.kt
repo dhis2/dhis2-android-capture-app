@@ -65,7 +65,7 @@ class DataSetTableRepositoryTest {
         testObserver.assertNoErrors()
         testObserver.assertValue {
             it[0] == "section_1" &&
-                    it[1] == "section_2"
+                it[1] == "section_2"
         }
     }
 

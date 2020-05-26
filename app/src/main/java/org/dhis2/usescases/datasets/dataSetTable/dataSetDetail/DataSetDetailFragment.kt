@@ -6,6 +6,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import java.util.Locale
+import javax.inject.Inject
 import org.dhis2.Bindings.Bindings
 import org.dhis2.Bindings.toDateSpan
 import org.dhis2.R
@@ -20,8 +22,6 @@ import org.dhis2.utils.resources.ResourceManager
 import org.hisp.dhis.android.core.common.ObjectStyle
 import org.hisp.dhis.android.core.dataset.DataSetInstance
 import org.hisp.dhis.android.core.period.Period
-import java.util.Locale
-import javax.inject.Inject
 
 const val DATASET_UID = "DATASET_UID"
 const val DATASET_ACCESS = "DATASET_ACCESS"
@@ -113,7 +113,7 @@ class DataSetDetailFragment private constructor() : FragmentGlobalAbstract(), Da
         dataSetInstance: DataSetInstance,
         period: Period
     ) {
-        this.dataSetInstance = dataSetInstance;
+        this.dataSetInstance = dataSetInstance
         binding.apply {
             dataSetName.text = dataSetInstance.dataSetDisplayName()
             if (dataSetInstance.completed()) {
@@ -169,6 +169,4 @@ class DataSetDetailFragment private constructor() : FragmentGlobalAbstract(), Da
         )
         binding.dataSetIcon.setColorFilter(ColorUtils.getContrastColor(color))
     }
-
-
 }

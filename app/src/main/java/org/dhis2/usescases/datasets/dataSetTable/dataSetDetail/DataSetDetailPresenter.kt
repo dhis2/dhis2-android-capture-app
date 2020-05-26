@@ -40,7 +40,8 @@ class DataSetDetailPresenter(
                     Flowable.combineLatest<DataSetInstance, Period, Pair<DataSetInstance, Period>>(
                         repository.dataSetInstance(),
                         repository.getPeriod().toFlowable(),
-                        BiFunction { t1, t2 -> Pair(t1, t2) })
+                        BiFunction { t1, t2 -> Pair(t1, t2) }
+                    )
                 }
                 .subscribeOn(schedulers.io())
                 .observeOn(schedulers.ui())

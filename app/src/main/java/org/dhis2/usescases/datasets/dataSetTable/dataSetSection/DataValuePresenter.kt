@@ -8,7 +8,6 @@ import io.reactivex.processors.FlowableProcessor
 import io.reactivex.processors.PublishProcessor
 import java.util.ArrayList
 import java.util.HashMap
-import org.dhis2.R
 import org.dhis2.data.forms.dataentry.StoreResult
 import org.dhis2.data.forms.dataentry.ValueStore
 import org.dhis2.data.forms.dataentry.ValueStoreImpl
@@ -25,8 +24,6 @@ import org.dhis2.usescases.datasets.dataSetTable.DataSetTableActivity
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableModel
 import org.dhis2.utils.DateUtils
 import org.dhis2.utils.analytics.AnalyticsHelper
-import org.dhis2.utils.analytics.CLICK
-import org.dhis2.utils.analytics.COMPLETE_REOPEN
 import org.hisp.dhis.android.core.category.Category
 import org.hisp.dhis.android.core.category.CategoryCombo
 import org.hisp.dhis.android.core.category.CategoryOption
