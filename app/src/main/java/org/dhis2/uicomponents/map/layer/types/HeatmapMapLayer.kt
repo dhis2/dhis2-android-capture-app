@@ -52,5 +52,4 @@ class HeatmapMapLayer(val style: Style, val featureType: FeatureType) :
     override fun hideLayer() {
         layer.setProperties(PropertyFactory.visibility(Property.NONE))
     }
-
 }

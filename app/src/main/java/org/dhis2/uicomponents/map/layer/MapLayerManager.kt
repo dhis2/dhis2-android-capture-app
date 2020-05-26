@@ -48,7 +48,7 @@ class MapLayerManager {
         )
     }
 
-    fun handleLayer(type: LayerType, check: Boolean){
+    fun handleLayer(type: LayerType, check: Boolean) {
         when {
             check -> mapLayers[type]?.showLayer()
             else -> mapLayers[type]?.hideLayer()

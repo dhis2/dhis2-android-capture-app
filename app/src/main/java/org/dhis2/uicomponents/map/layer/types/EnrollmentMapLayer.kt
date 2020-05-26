@@ -78,7 +78,6 @@ class EnrollmentMapLayer(
                     )
                 )
 
-
     private fun setVisibility(visibility: String) {
         when (featureType) {
             FeatureType.POINT -> pointLayer.setProperties(PropertyFactory.visibility(visibility))
