@@ -1,6 +1,5 @@
 package org.dhis2.data.fingerprint
 
-import android.content.Context
 import co.infinum.goldfinger.Goldfinger
 import co.infinum.goldfinger.rx.RxGoldfinger
 import io.reactivex.Observable
@@ -15,7 +14,9 @@ class FingerPrintControllerImpl(
         return goldfinger.hasFingerprintHardware() && goldfinger.hasEnrolledFingerprint()
     }
 
-    override fun authenticate(promptParams: Goldfinger.PromptParams): Observable<FingerPrintResult> {
+    override fun authenticate(
+        promptParams: Goldfinger.PromptParams
+    ): Observable<FingerPrintResult> {
         return goldfinger.authenticate(promptParams).map {
             mapper.mapFromGoldFingerToFingerPrint(it)
         }

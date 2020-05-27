@@ -23,7 +23,6 @@ import org.dhis2.data.forms.dataentry.DataEntryArguments;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.data.forms.dataentry.fields.section.SectionHolder;
-import org.dhis2.data.forms.dataentry.fields.section.SectionViewModel;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.databinding.FormSectionBinding;
 import org.dhis2.databinding.SectionSelectorFragmentBinding;
@@ -38,11 +37,8 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import io.reactivex.Flowable;
 import io.reactivex.processors.FlowableProcessor;
 import io.reactivex.processors.PublishProcessor;
-import kotlin.jvm.functions.Function1;
-import timber.log.Timber;
 
 import static android.text.TextUtils.isEmpty;
 
@@ -109,6 +105,7 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
         super.onDestroy();
         presenter.onDetach();
     }
+
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {

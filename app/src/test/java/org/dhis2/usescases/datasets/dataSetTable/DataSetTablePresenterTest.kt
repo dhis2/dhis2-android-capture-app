@@ -48,7 +48,6 @@ class DataSetTablePresenterTest {
             .periodId("periodId")
             .build()
 
-
         whenever(repository.sections) doReturn Flowable.just(sections)
         whenever(repository.dataSet) doReturn Flowable.just(dataSet)
         whenever(repository.getCatComboName(catCombo)) doReturn Flowable.just(catComboName)
