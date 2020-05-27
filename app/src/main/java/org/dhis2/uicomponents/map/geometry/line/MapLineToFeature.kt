@@ -6,7 +6,7 @@ import com.mapbox.geojson.Point
 
 class MapLineToFeature {
 
-    fun map(line: List<Point>) : Feature {
+    fun map(line: List<Point>): Feature {
         val lineString = LineString.fromLngLats(line)
         return Feature.fromGeometry(lineString)
     }

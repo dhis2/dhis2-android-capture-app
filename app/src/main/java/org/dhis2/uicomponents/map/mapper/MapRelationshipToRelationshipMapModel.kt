@@ -7,22 +7,26 @@ import org.dhis2.usescases.teiDashboard.dashboardfragments.relationships.Relatio
 
 class MapRelationshipToRelationshipMapModel {
 
-    fun map(relationshipViewModel: RelationshipViewModel) : RelationshipMapModel? {
-        if (relationshipViewModel.fromGeometry() == null ||
-            relationshipViewModel.toGeometry() == null){
-            return null
-        }
+    fun mapList(relationshipViewModels: List<RelationshipViewModel>): List<RelationshipMapModel> {
+        return relationshipViewModels.filter { it.toGeometry() != null && it.fromGeometry() != null }
+            .mapNotNull { map(it) }
+    }
+
+    private fun map(relationshipViewModel: RelationshipViewModel): RelationshipMapModel? {
         val displayName = relationshipViewModel.relationshipType().displayName()
         val typeUid = relationshipViewModel.relationshipType().uid()
         val bidirectional = relationshipViewModel.relationshipType().bidirectional()
-        val direction = if (relationshipViewModel.relationshipDirection() == RelationshipViewModel.RelationshipDirection.TO){
-            RelationshipDirection.TO
-        } else {
-            RelationshipDirection.FROM
-        }
+        val direction =
+            if (relationshipViewModel.relationshipDirection() == RelationshipViewModel.RelationshipDirection.TO) {
+                RelationshipDirection.TO
+            } else {
+                RelationshipDirection.FROM
+            }
 
-        val teiFromUid = relationshipViewModel.relationship().from()?.trackedEntityInstance()?.trackedEntityInstance()
-        val teiToUid = relationshipViewModel.relationship().to()?.trackedEntityInstance()?.trackedEntityInstance()
+        val teiFromUid = relationshipViewModel.relationship().from()?.trackedEntityInstance()
+            ?.trackedEntityInstance()
+        val teiToUid = relationshipViewModel.relationship().to()?.trackedEntityInstance()
+            ?.trackedEntityInstance()
 
         val teiFrom = TeiMap(teiFromUid, relationshipViewModel.fromGeometry())
         val teiTo = TeiMap(teiToUid, relationshipViewModel.toGeometry())

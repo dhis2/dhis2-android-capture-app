@@ -1,6 +1,7 @@
 package org.dhis2.uicomponents.map.geometry.mapper
 
 import com.mapbox.geojson.Feature
+import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapTeisToFeatureCollection
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel
 
 fun Feature?.addTeiInfo(searchTeiModel: SearchTeiModel): Feature? {
