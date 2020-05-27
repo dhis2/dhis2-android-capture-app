@@ -9,6 +9,8 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue;
 
 import java.util.List;
 
+import javax.annotation.Nullable;
+
 @AutoValue
 public abstract class RelationshipViewModel {
 
@@ -16,8 +18,10 @@ public abstract class RelationshipViewModel {
 
     public abstract Relationship relationship();
 
+    @Nullable
     public abstract Geometry fromGeometry();
 
+    @Nullable
     public abstract Geometry toGeometry();
 
     public abstract RelationshipType relationshipType();
@@ -35,7 +39,8 @@ public abstract class RelationshipViewModel {
                                                List<TrackedEntityAttributeValue> attributeValues,
                                                Geometry fromGeometry,
                                                Geometry toGeometry) {
-        return new AutoValue_RelationshipViewModel(relationship, relationshipType, relationshipDirection, teiUid, attributeValues, fromGeometry, toGeometry);
+        return new AutoValue_RelationshipViewModel(relationship, fromGeometry, toGeometry,
+                relationshipType, relationshipDirection, teiUid, attributeValues);
     }
 
 }
