@@ -1,7 +1,6 @@
 package org.dhis2.usescases.datasets.dataSetTable.dataSetDetail
 
 import io.reactivex.Flowable
-import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.functions.BiFunction
 import io.reactivex.processors.PublishProcessor
@@ -41,7 +40,8 @@ class DataSetDetailPresenter(
                     Flowable.combineLatest<DataSetInstance, Period, Pair<DataSetInstance, Period>>(
                         repository.dataSetInstance(),
                         repository.period,
-                        BiFunction { t1, t2 -> Pair(t1, t2) })
+                        BiFunction { t1, t2 -> Pair(t1, t2) }
+                    )
                 }
                 .subscribeOn(schedulers.io())
                 .observeOn(schedulers.ui())
