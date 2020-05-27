@@ -18,9 +18,10 @@ import org.dhis2.databinding.ActivityDatasetTableBinding;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.DateUtils;
-import org.dhis2.utils.customviews.AlertBottomDialog;
+import org.dhis2.utils.validationrules.ValidationRulesBottomDialog;
 import org.hisp.dhis.android.core.dataset.DataSet;
 import org.hisp.dhis.android.core.period.Period;
+import org.hisp.dhis.android.core.validation.engine.ValidationResultViolation;
 
 import java.util.List;
 import java.util.Locale;
@@ -230,7 +231,7 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
 
     @Override
     public void showValidationRuleDialog() {
-        AlertBottomDialog.Companion.getInstance()
+        ValidationRulesBottomDialog.Companion.getInstance()
                 .setTitle(getString(R.string.saved))
                 .setMessage(getString(R.string.run_validation_rules))
                 .setPositiveButton(getString(R.string.yes), () -> {
@@ -238,12 +239,12 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
                     return Unit.INSTANCE;
                 })
                 .setNegativeButton(getString(R.string.no), null)
-                .show(getSupportFragmentManager(), AlertBottomDialog.class.getSimpleName());
+                .show(getSupportFragmentManager(), ValidationRulesBottomDialog.class.getSimpleName());
     }
 
     @Override
     public void showSuccessValidationDialog() {
-        AlertBottomDialog.Companion.getInstance()
+        ValidationRulesBottomDialog.Companion.getInstance()
                 .setTitle(getString(R.string.validation_success_title))
                 .setMessage(getString(R.string.mark_dataset_complete))
                 .setPositiveButton(getString(R.string.yes), ()-> {
@@ -251,17 +252,16 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
                     return Unit.INSTANCE;
                 })
                 .setNegativeButton(getString(R.string.no), null)
-                .show(getSupportFragmentManager(), AlertBottomDialog.class.getSimpleName());
+                .show(getSupportFragmentManager(), ValidationRulesBottomDialog.class.getSimpleName());
     }
 
     @Override
-    public void showErrorsValidationDialog() {
-        //TODO - Validation rules - This should be updated to show the info the SDK gives us.
-        AlertBottomDialog.Companion.getInstance()
-                .setTitle(getString(R.string.error_dialog_title))
-                .setMessage("A list of errors will be shown here.")
-                .setPositiveButton("", null)
-                .show(getSupportFragmentManager(), AlertBottomDialog.class.getSimpleName());
+    public void showErrorsValidationDialog(List<ValidationResultViolation> violations) {
+        ValidationRulesBottomDialog.Companion.getInstance()
+                .setTitle(getString(R.string.error))
+                .setPositiveButton(getString(R.string.complete_anyway), null)
+                .setViolations(violations)
+                .show(getSupportFragmentManager(), ValidationRulesBottomDialog.class.getSimpleName());
 
     }
 }

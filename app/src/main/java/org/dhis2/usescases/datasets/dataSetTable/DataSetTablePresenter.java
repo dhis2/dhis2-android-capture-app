@@ -2,6 +2,7 @@ package org.dhis2.usescases.datasets.dataSetTable;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.dhis2.R;
 import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Trio;
@@ -178,7 +179,7 @@ public class DataSetTablePresenter implements DataSetTableContract.Presenter {
                                 view.showSuccessValidationDialog();
                             } else {
                                 List<ValidationResultViolation> violations = result.violations();
-                                view.showErrorsValidationDialog();
+                                view.showErrorsValidationDialog(violations);
                             }
                         },
                         Timber::e
@@ -194,7 +195,7 @@ public class DataSetTablePresenter implements DataSetTableContract.Presenter {
                         .observeOn(schedulerProvider.ui())
                         .subscribe(
                                 () -> {
-                                    view.displayMessage("Mark as complete!");
+                                    view.displayMessage(view.getContext().getString(R.string.dataset_completed));
                                 },
                                 Timber::e)
         );
