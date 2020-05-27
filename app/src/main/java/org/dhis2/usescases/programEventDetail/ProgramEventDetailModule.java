@@ -4,15 +4,17 @@ import androidx.annotation.NonNull;
 
 import org.dhis2.data.dagger.PerActivity;
 import org.dhis2.data.schedulers.SchedulerProvider;
+import org.dhis2.uicomponents.map.geometry.bound.BoundsGeometry;
+import org.dhis2.uicomponents.map.geometry.mapper.MapEventToFeatureCollection;
+import org.dhis2.uicomponents.map.geometry.mapper.MapGeometryToFeature;
+import org.dhis2.uicomponents.map.geometry.point.MapPointToFeature;
+import org.dhis2.uicomponents.map.geometry.polygon.MapPolygonToFeature;
 import org.dhis2.utils.filters.FilterManager;
 import org.hisp.dhis.android.core.D2;
 
 import dagger.Module;
 import dagger.Provides;
 
-/**
- * Created by Cristian on 13/02/2018.
- */
 @PerActivity
 @Module
 public class ProgramEventDetailModule {
@@ -47,7 +49,21 @@ public class ProgramEventDetailModule {
 
     @Provides
     @PerActivity
-    ProgramEventDetailRepository eventDetailRepository(D2 d2, ProgramEventMapper mapper) {
-        return new ProgramEventDetailRepositoryImpl(programUid, d2, mapper);
+    MapGeometryToFeature provideMapGeometryToFeature(){
+        return new MapGeometryToFeature(new MapPointToFeature(), new MapPolygonToFeature());
+    }
+
+    @Provides
+    @PerActivity
+    MapEventToFeatureCollection provideMapEventToFeatureCollection(MapGeometryToFeature mapGeometryToFeature){
+        return new MapEventToFeatureCollection(mapGeometryToFeature,
+                new BoundsGeometry(0.0,0.0,0.0,0.0));
+    }
+
+    @Provides
+    @PerActivity
+    ProgramEventDetailRepository eventDetailRepository(D2 d2, ProgramEventMapper mapper,
+                                                       MapEventToFeatureCollection mapEventToFeatureCollection){
+        return new ProgramEventDetailRepositoryImpl(programUid, d2, mapper, mapEventToFeatureCollection);
     }
 }
