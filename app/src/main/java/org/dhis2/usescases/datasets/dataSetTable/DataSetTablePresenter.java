@@ -3,9 +3,14 @@ package org.dhis2.usescases.datasets.dataSetTable;
 import androidx.annotation.VisibleForTesting;
 
 import org.dhis2.data.schedulers.SchedulerProvider;
+import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.utils.analytics.AnalyticsHelper;
+import org.hisp.dhis.android.core.validation.engine.ValidationResult.ValidationResultStatus;
+import org.hisp.dhis.android.core.validation.engine.ValidationResultViolation;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import io.reactivex.BackpressureStrategy;
@@ -77,28 +82,39 @@ public class DataSetTablePresenter implements DataSetTableContract.Presenter {
                         .toFlowable(BackpressureStrategy.LATEST)
                         .debounce(500, TimeUnit.MILLISECONDS, schedulerProvider.io())
                         .flatMapSingle(o -> tableRepository.checkMandatoryFields())
+                        .observeOn(schedulerProvider.ui())
                         .flatMapSingle(missingMandatoryFields -> {
                             if (missingMandatoryFields.isEmpty()) {
                                 return tableRepository.checkFieldCombination();
                             } else {
-                                return Single.error(new Exception());
+                                view.showInfoDialog(true);
+                                return Single.just(Pair.create(false, new ArrayList<String>()));
                             }
                         })
-                        .flatMapSingle(missingCompleteDataElements -> {
-                            if (missingCompleteDataElements.isEmpty()) {
-                                return Single.just(true);
+                        .flatMapSingle(pair -> {
+                            boolean mustCheckMissingFields = pair.val0();
+                            List<String> missingCompleteDataElements = pair.val1();
+
+                            if (mustCheckMissingFields) {
+                                if (missingCompleteDataElements.isEmpty()) {
+                                    return Single.just(true);
+                                } else
+                                    view.showInfoDialog(false);
+                                    return Single.just(false);
                             } else {
-                                return Single.error(new Exception());
+                                return Single.just(false);
                             }
                         })
                         .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.io())
                         .subscribe(
-                                o -> {
-                                    if (tableRepository.hasToRunValidationRules()) {
-                                        checkValidationRules();
-                                    } else {
-                                        completeDataSet();
+                                allOk -> {
+                                    if (allOk) {
+                                        if (tableRepository.runMandatoryValidationRules()) {
+                                            executeValidationRules();
+                                        } else {
+                                            checkIfValidationRulesExecutionIsOptional();
+                                        }
                                     }
                                 },
                                 Timber::e
@@ -142,23 +158,32 @@ public class DataSetTablePresenter implements DataSetTableContract.Presenter {
     }
 
     @VisibleForTesting
-    public void checkValidationRules() {
-        if (tableRepository.isValidationRuleOptional()) {
+    public void checkIfValidationRulesExecutionIsOptional() {
+        if (tableRepository.doesDatasetHasValidationRulesAssociated()) {
             view.showValidationRuleDialog();
         } else {
-            executeValidationRules();
+            completeDataSet();
         }
     }
 
     @Override
     public void executeValidationRules() {
-        boolean wasSuccessful;
-        wasSuccessful = tableRepository.executeValidationRules();
-        if (wasSuccessful) {
-            view.showSuccessValidationDialog();
-        } else {
-            view.showErrorsValidationDialog();
-        }
+        disposable.add(
+                tableRepository.executeValidationRules()
+                .subscribeOn(schedulerProvider.io())
+                .observeOn(schedulerProvider.ui())
+                .subscribe(
+                        result -> {
+                            if (result.status() == ValidationResultStatus.OK) {
+                                view.showSuccessValidationDialog();
+                            } else {
+                                List<ValidationResultViolation> violations = result.violations();
+                                view.showErrorsValidationDialog();
+                            }
+                        },
+                        Timber::e
+                )
+        );
     }
 
     @Override
@@ -169,6 +194,7 @@ public class DataSetTablePresenter implements DataSetTableContract.Presenter {
                         .observeOn(schedulerProvider.ui())
                         .subscribe(
                                 () -> {
+                                    view.displayMessage("Mark as complete!");
                                 },
                                 Timber::e)
         );

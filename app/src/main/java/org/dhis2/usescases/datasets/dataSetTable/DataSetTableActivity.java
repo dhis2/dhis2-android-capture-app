@@ -91,7 +91,7 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
         binding = DataBindingUtil.setContentView(this, R.layout.activity_dataset_table);
         binding.setPresenter(presenter);
         setViewPager();
-
+        observeSaveButtonClicks();
         presenter.init(orgUnitUid, periodTypeName, catOptCombo, periodInitialDate, periodId);
     }
 
@@ -214,6 +214,18 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
     @Override
     public Observable<Object> observeSaveButtonClicks(){
         return RxView.clicks(binding.saveButton);
+    }
+
+    @Override
+    public void showInfoDialog(boolean isMandatoryFields) {
+        String title = getString(R.string.missing_mandatory_fields_title);
+        String message;
+        if (isMandatoryFields) {
+            message = getString(R.string.field_mandatory);
+        } else {
+            message = getString(R.string.field_required);
+        }
+        super.showInfoDialog(title, message);
     }
 
     @Override

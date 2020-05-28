@@ -291,18 +291,64 @@ class DataSetTableRepositoryTest {
         testObserver.assertComplete()
     }
 
-    // TODO: ValidationRules - Need to add different paths of this method when SDK has functionality
     @Test
-    fun `Should return true if the dataset has validation rules to execute`() {
-        val hasValidationRules = repository.hasToRunValidationRules()
+    fun `Should verify if dataset has validCompleteOnly as true`() {
+        val dataSet = dummyDataSet().toBuilder().validCompleteOnly(true).build()
 
-        assert(hasValidationRules)
+        whenever(d2.dataSetModule().dataSets().uid(dataSetUid)) doReturn mock()
+        whenever(d2.dataSetModule().dataSets().uid(dataSetUid).blockingGet()) doReturn dataSet
+
+        val hasMandatoryValidationRules = repository.runMandatoryValidationRules()
+
+        assert(hasMandatoryValidationRules)
     }
 
-    // TODO: ValidationRules - Need to add different paths of this method when SDK has functionality
+    @Test
+    fun `Should return false if dataset has validCompleteOnly as null`() {
+        val dataSet = dummyDataSet()
+
+        whenever(d2.dataSetModule().dataSets().uid(dataSetUid)) doReturn mock()
+        whenever(d2.dataSetModule().dataSets().uid(dataSetUid).blockingGet()) doReturn dataSet
+
+        val hasMandatoryValidationRules = repository.runMandatoryValidationRules()
+
+        assert(!hasMandatoryValidationRules)
+    }
+
+    @Test
+    fun `Should return false if dataset does not has validCompleteOnly as true`() {
+        val dataSet = dummyDataSet().toBuilder().validCompleteOnly(false).build()
+
+        whenever(d2.dataSetModule().dataSets().uid(dataSetUid)) doReturn mock()
+        whenever(d2.dataSetModule().dataSets().uid(dataSetUid).blockingGet()) doReturn dataSet
+
+        val hasMandatoryValidationRules = repository.runMandatoryValidationRules()
+
+        assert(!hasMandatoryValidationRules)
+    }
+
+    /* // TODO: ValidationRules - Need to add different paths of this method when SDK has functionality
     @Test
     fun `Should return true if the validation rules are optional to execute`() {
-        val isOptional = repository.isValidationRuleOptional()
+
+        whenever(
+            d2.validationModule().validationRules().byDataSetUids(listOf(dataSetUid))
+        ) doReturn mock()
+        whenever(
+            d2.validationModule().validationRules().byDataSetUids(listOf(dataSetUid))
+                .bySkipFormValidation()
+        ) doReturn mock()
+        whenever(
+            d2.validationModule().validationRules().byDataSetUids(listOf(dataSetUid))
+                .bySkipFormValidation().isFalse
+        ) doReturn mock()
+        whenever(
+            d2.validationModule().validationRules().byDataSetUids(listOf(dataSetUid))
+                .bySkipFormValidation().isFalse
+                .blockingIsEmpty()
+        ) doReturn mock()
+
+        val isOptional = repository.doesDatasetHasValidationRulesAssociated()
 
         assert(isOptional)
     }
@@ -313,7 +359,7 @@ class DataSetTableRepositoryTest {
         val wasSuccessful = repository.executeValidationRules()
 
         assert(wasSuccessful)
-    }
+    }*/
 
     private fun dummyDataSet() = DataSet.builder().uid(dataSetUid).build()
 

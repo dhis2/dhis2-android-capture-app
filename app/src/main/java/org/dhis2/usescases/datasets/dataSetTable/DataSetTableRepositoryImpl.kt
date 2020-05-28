@@ -7,6 +7,7 @@ import io.reactivex.functions.Function4
 import io.reactivex.processors.FlowableProcessor
 import io.reactivex.processors.PublishProcessor
 import javax.inject.Singleton
+import org.dhis2.data.tuples.Pair
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper
 import org.hisp.dhis.android.core.category.CategoryCombo
@@ -18,6 +19,7 @@ import org.hisp.dhis.android.core.dataset.DataSet
 import org.hisp.dhis.android.core.dataset.DataSetInstance
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.period.Period
+import org.hisp.dhis.android.core.validation.engine.ValidationResult
 
 @Singleton
 class DataSetTableRepositoryImpl(
@@ -70,7 +72,8 @@ class DataSetTableRepositoryImpl(
             d2.categoryModule().categoryOptionCombos().uid(catOptCombo).get(),
             d2.organisationUnitModule().organisationUnits().uid(orgUnitUid).get(),
             d2.periodModule().periodHelper().getPeriodForPeriodId(periodId),
-            Function4 { dataSet: DataSet,
+            Function4 {
+                dataSet: DataSet,
                 catOptComb: CategoryOptionCombo,
                 orgUnit: OrganisationUnit,
                 period: Period ->
@@ -223,7 +226,7 @@ class DataSetTableRepositoryImpl(
             }
     }
 
-    fun checkFieldCombination(): Single<List<String>> {
+    fun checkFieldCombination(): Single<Pair<Boolean, List<String>>> {
         return d2.dataSetModule().dataSets().withDataSetElements().uid(dataSetUid).get()
             .map { dataSet ->
                 if (dataSet.fieldCombinationRequired() == true) {
@@ -255,22 +258,26 @@ class DataSetTableRepositoryImpl(
                 if (dataElementsUids.isNotEmpty()) {
                     missingCompleteDataElementsProcessor.onNext(dataElementsUids)
                 }
-                dataElementsUids
+                Pair.create(true, dataElementsUids)
             }
     }
 
-    // TODO: ValidationRules - This is temporary until the SDK has a method to ask for this
-    fun hasToRunValidationRules(): Boolean {
-        return true
+    fun runMandatoryValidationRules(): Boolean {
+        return d2.dataSetModule()
+            .dataSets().uid(dataSetUid)
+            .blockingGet().validCompleteOnly() ?: false
     }
 
-    // TODO: ValidationRules - This is temporary until the SDK has a method to ask for this
-    fun isValidationRuleOptional(): Boolean {
-        return true
+    fun doesDatasetHasValidationRulesAssociated(): Boolean {
+        return !d2.validationModule().validationRules()
+            .byDataSetUids(listOf(dataSetUid))
+            .bySkipFormValidation().isFalse
+            .blockingIsEmpty()
     }
 
-    // TODO: ValidationRules - This is temporary until the SDK has a method to ask for this
-    fun executeValidationRules(): Boolean {
-        return true
+    fun executeValidationRules(): Flowable<ValidationResult> {
+        return d2.validationModule()
+            .validationEngine().validate(dataSetUid, periodId, orgUnitUid, catOptCombo)
+            .toFlowable()
     }
 }
