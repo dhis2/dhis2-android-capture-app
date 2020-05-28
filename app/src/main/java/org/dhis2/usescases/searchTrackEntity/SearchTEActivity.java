@@ -241,7 +241,6 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         } else {
             teiMapManager = new TeiMapManager(
                     new MapStyle(
-                            presenter.getProgram().style().color(),
                             presenter.getTEIColor(),
                             presenter.getSymbolIcon(),
                             presenter.getEnrollmentColor(),

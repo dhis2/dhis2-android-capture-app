@@ -2,6 +2,7 @@ package org.dhis2.usescases.teiDashboard.dashboardfragments.relationships;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,6 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.content.res.AppCompatResources;
+import androidx.core.content.ContextCompat;
 import androidx.databinding.DataBindingUtil;
 
 import com.wangjie.rapidfloatingactionbutton.RapidFloatingActionHelper;
@@ -23,6 +25,8 @@ import org.dhis2.R;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.databinding.FragmentRelationshipsBinding;
+import org.dhis2.uicomponents.map.MapStyle;
+import org.dhis2.uicomponents.map.managers.TeiMapManager;
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
 import org.dhis2.usescases.searchTrackEntity.SearchTEActivity;
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity;
@@ -55,6 +59,7 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
     private RelationshipAdapter relationshipAdapter;
     private RapidFloatingActionHelper rfaHelper;
     private RelationshipType relationshipType;
+    private TeiMapManager teiMapManager;
 
     public static final String TEI_A_UID = "TEI_A_UID";
 
@@ -75,6 +80,20 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_relationships, container, false);
         relationshipAdapter = new RelationshipAdapter(presenter);
         binding.relationshipRecycler.setAdapter(relationshipAdapter);
+        TeiDashboardMobileActivity activity = (TeiDashboardMobileActivity) getContext();
+        activity.relationshipMap().observe(this, showMap -> {
+            binding.relationshipRecycler.setVisibility(showMap ? View.GONE : View.VISIBLE);
+            binding.mapView.setVisibility(showMap ? View.VISIBLE : View.GONE);
+        });
+        teiMapManager = new TeiMapManager(
+               new MapStyle(
+                       ColorUtils.getPrimaryColor(getAbstracContext(), ColorUtils.ColorType.PRIMARY),
+                       ContextCompat.getDrawable(activity, R.drawable.ic_tei_default),
+                       ColorUtils.getPrimaryColor(getAbstracContext(), ColorUtils.ColorType.PRIMARY),
+                       ContextCompat.getDrawable(activity, R.drawable.ic_tei_default),
+                       ColorUtils.getPrimaryColor(getAbstracContext(), ColorUtils.ColorType.PRIMARY_DARK))
+        );
+        teiMapManager.init(binding.mapView);
         return binding.getRoot();
     }
 
@@ -82,13 +101,20 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
     public void onResume() {
         super.onResume();
         presenter.init();
-
+        teiMapManager.onResume();
     }
 
     @Override
     public void onPause() {
         presenter.onDettach();
+        teiMapManager.onPause();
         super.onPause();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        teiMapManager.onDestroy();
     }
 
     @Override
