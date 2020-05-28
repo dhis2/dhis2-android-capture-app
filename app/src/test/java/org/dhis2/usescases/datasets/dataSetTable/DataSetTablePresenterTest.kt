@@ -1,9 +1,9 @@
 package org.dhis2.usescases.datasets.dataSetTable
 
+import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
-import com.nhaarman.mockitokotlin2.verifyZeroInteractions
 import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Completable
 import io.reactivex.Flowable
@@ -107,7 +107,7 @@ class DataSetTablePresenterTest {
 
         presenter.checkIfValidationRulesExecutionIsOptional()
 
-        verifyZeroInteractions(view)
+        verify(view).showCompleteToast()
     }
 
     @Test
@@ -135,7 +135,7 @@ class DataSetTablePresenterTest {
 
         presenter.executeValidationRules()
 
-        verify(view).showErrorsValidationDialog()
+        verify(view).showErrorsValidationDialog(any())
     }
 
     @Test
@@ -144,6 +144,6 @@ class DataSetTablePresenterTest {
 
         presenter.completeDataSet()
 
-        verifyZeroInteractions(view)
+        verify(view).showCompleteToast()
     }
 }
