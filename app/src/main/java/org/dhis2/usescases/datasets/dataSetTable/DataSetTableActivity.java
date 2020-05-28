@@ -268,4 +268,9 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
                 .show(getSupportFragmentManager(), ValidationRulesBottomDialog.class.getSimpleName());
 
     }
+
+    @Override
+    public void showCompleteToast() {
+        super.displayMessage(getString(R.string.dataset_completed));
+    }
 }

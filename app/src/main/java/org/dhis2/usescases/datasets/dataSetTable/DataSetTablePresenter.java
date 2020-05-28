@@ -178,8 +178,7 @@ public class DataSetTablePresenter implements DataSetTableContract.Presenter {
                             if (result.status() == ValidationResultStatus.OK) {
                                 view.showSuccessValidationDialog();
                             } else {
-                                List<ValidationResultViolation> violations = result.violations();
-                                view.showErrorsValidationDialog(violations);
+                                view.showErrorsValidationDialog(result.violations());
                             }
                         },
                         Timber::e
@@ -195,7 +194,7 @@ public class DataSetTablePresenter implements DataSetTableContract.Presenter {
                         .observeOn(schedulerProvider.ui())
                         .subscribe(
                                 () -> {
-                                    view.displayMessage(view.getContext().getString(R.string.dataset_completed));
+                                    view.showCompleteToast();
                                 },
                                 Timber::e)
         );

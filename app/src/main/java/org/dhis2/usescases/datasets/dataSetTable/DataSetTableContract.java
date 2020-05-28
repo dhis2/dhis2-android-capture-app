@@ -32,6 +32,8 @@ public class DataSetTableContract {
         void showSuccessValidationDialog();
 
         void showErrorsValidationDialog(List<ValidationResultViolation> violations);
+
+        void showCompleteToast();
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter {
