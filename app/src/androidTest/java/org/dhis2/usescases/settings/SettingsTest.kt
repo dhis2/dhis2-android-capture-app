@@ -158,6 +158,7 @@ class SettingsTest : BaseTest() {
     }
 
     @Test
+    @Ignore
     fun shouldShowGatewayNumberDisableWhenClickOnSMSSettings() {
         startActivity()
 
