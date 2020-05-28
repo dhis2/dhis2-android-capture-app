@@ -269,7 +269,7 @@ class DataSetTableRepositoryImpl(
     }
 
     fun doesDatasetHasValidationRulesAssociated(): Boolean {
-        return d2.validationModule().validationRules()
+        return !d2.validationModule().validationRules()
             .byDataSetUids(listOf(dataSetUid))
             .bySkipFormValidation().isFalse
             .blockingIsEmpty()
