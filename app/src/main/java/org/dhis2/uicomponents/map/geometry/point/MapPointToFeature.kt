@@ -2,6 +2,7 @@ package org.dhis2.uicomponents.map.geometry.point
 
 import com.mapbox.geojson.Feature
 import com.mapbox.geojson.Point
+import org.dhis2.uicomponents.map.geometry.areLngLatCorrect
 import org.dhis2.uicomponents.map.geometry.bound.BoundsGeometry
 import org.hisp.dhis.android.core.arch.helpers.GeometryHelper
 import org.hisp.dhis.android.core.common.Geometry
@@ -14,7 +15,7 @@ class MapPointToFeature {
         val lat = sdkPoint[1]
         val lon = sdkPoint[0]
 
-        return if (lat >= -90 && lat <= 90 && lon >= -180 && lon <= 180) {
+        return if (areLngLatCorrect(lon, lat)) {
             val updatedBounds = bounds.update(lat, lon)
             val point = Point.fromLngLat(lon, lat)
             Pair(Feature.fromGeometry(point), updatedBounds)
