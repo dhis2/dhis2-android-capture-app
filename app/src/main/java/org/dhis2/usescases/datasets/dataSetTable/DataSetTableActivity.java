@@ -259,7 +259,11 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
     public void showErrorsValidationDialog(List<ValidationResultViolation> violations) {
         ValidationRulesBottomDialog.Companion.getInstance()
                 .setTitle(getString(R.string.error))
-                .setPositiveButton(getString(R.string.complete_anyway), null)
+                .setPositiveButton(getString(R.string.complete_anyway), () -> {
+                    presenter.completeDataSet();
+                    return Unit.INSTANCE;
+                })
+                .setNegativeButton(getString(R.string.cancel), null)
                 .setViolations(violations)
                 .show(getSupportFragmentManager(), ValidationRulesBottomDialog.class.getSimpleName());
 

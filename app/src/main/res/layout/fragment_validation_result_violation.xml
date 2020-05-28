@@ -99,17 +99,6 @@
                 tools:text="Value name 1 + Value name 2 >= Value name 3" />
 
             <TextView
-                android:id="@+id/numbersValueEquation"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:textSize="12sp"
-                app:layout_constraintEnd_toStartOf="@id/endGuideline"
-                app:layout_constraintStart_toEndOf="@id/startGuideline"
-                app:layout_constraintTop_toBottomOf="@id/textValueEquation"
-                tools:text="400 + 35 >= 200 + 345" />
-
-            <TextView
                 android:id="@+id/resultEquation"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -119,7 +108,7 @@
                 android:textSize="12sp"
                 app:layout_constraintEnd_toStartOf="@id/endGuideline"
                 app:layout_constraintStart_toEndOf="@id/startGuideline"
-                app:layout_constraintTop_toBottomOf="@id/numbersValueEquation"
+                app:layout_constraintTop_toBottomOf="@id/textValueEquation"
                 tools:text="435 >= 545" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
