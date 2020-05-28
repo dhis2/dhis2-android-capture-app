@@ -1,6 +1,7 @@
 package org.dhis2.uicomponents.map.managers
 
 import com.mapbox.geojson.BoundingBox
+import com.mapbox.geojson.Feature
 import com.mapbox.geojson.FeatureCollection
 import com.mapbox.mapboxsdk.geometry.LatLngBounds
 import com.mapbox.mapboxsdk.maps.MapView
@@ -19,7 +20,7 @@ abstract class MapManager {
     lateinit var map: MapboxMap
     open lateinit var featureType: FeatureType
     lateinit var mapLayerManager: MapLayerManager
-    lateinit var markerViewManager: MarkerViewManager
+    var markerViewManager: MarkerViewManager? = null
     var symbolManager: SymbolManager? = null
     var onMapClickListener: MapboxMap.OnMapClickListener? = null
     val style: Style?
@@ -70,6 +71,12 @@ abstract class MapManager {
             boundingBox.west()
         )
         map.initCameraToViewAllElements(mapView.context, bounds)
+    }
+
+    fun findFeatureFor(featureUidProperty: String): Feature? {
+        return mapLayerManager.getLayers().mapNotNull { mapLayer ->
+            mapLayer.findFeatureWithUid(featureUidProperty)
+        }.firstOrNull()
     }
 
     fun onStart() {

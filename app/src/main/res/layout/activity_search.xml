@@ -300,7 +300,20 @@
                     android:visibility="gone"
                     app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/filterOpen" />
+                    app:layout_constraintTop_toBottomOf="@id/filterOpen"
+                    tools:visibility="visible" />
+
+                <org.dhis2.uicomponents.map.views.CarouselView
+                    android:id="@+id/map_carousel"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    android:clipToPadding="false"
+                    android:paddingStart="16dp"
+                    android:paddingEnd="16dp"
+                    app:layout_constraintBottom_toBottomOf="@id/mapView"
+                    app:layout_constraintStart_toStartOf="@id/mapView"
+                    tools:listitem="@layout/item_carousel_tei" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/mapLayerButton"

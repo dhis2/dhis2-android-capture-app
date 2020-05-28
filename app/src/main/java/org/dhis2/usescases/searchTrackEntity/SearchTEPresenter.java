@@ -238,12 +238,12 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                                                         query,
                                                         FilterManager.getInstance().getAssignedFilter(),
                                                         NetworkUtils.isOnline(view.getContext())))
-                                        .map(teis -> mapTeisToFeatureCollection.map(teis))
+                                        .map(teis -> new kotlin.Pair<>(teis, mapTeisToFeatureCollection.map(teis)))
                         )
                         .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.ui())
                         .subscribe(
-                                map -> view.setMap(map.component1(), map.component2()),
+                                teiAndMap -> view.setMap(teiAndMap.component1(), teiAndMap.component2().component1(), teiAndMap.component2().component2()),
                                 Timber::e,
                                 () -> Timber.d("COMPLETED")
                         ));
@@ -840,9 +840,9 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
     @Override
     public void checkFilters(boolean listResultIsOk) {
-        if(listResultIsOk){
+        if (listResultIsOk) {
             view.setFiltersVisibility(true);
-        }else {
+        } else {
             boolean filtersActive = FilterManager.getInstance().getTotalFilters() != 0;
             view.setFiltersVisibility(filtersActive);
         }

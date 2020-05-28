@@ -26,6 +26,7 @@ import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.PopupMenu;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -55,8 +56,10 @@ import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.databinding.ActivitySearchBinding;
 import org.dhis2.uicomponents.map.MapStyle;
-import org.dhis2.uicomponents.map.managers.TeiMapManager;
+import org.dhis2.uicomponents.map.carousel.CarouselAdapter;
+import org.dhis2.uicomponents.map.layer.LayerType;
 import org.dhis2.uicomponents.map.layer.MapLayerDialog;
+import org.dhis2.uicomponents.map.managers.TeiMapManager;
 import org.dhis2.usescases.coodinates.CoordinatesView;
 import org.dhis2.usescases.enrollment.EnrollmentActivity;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
@@ -89,17 +92,10 @@ import javax.inject.Inject;
 
 import io.reactivex.Flowable;
 import io.reactivex.functions.Consumer;
+import kotlin.jvm.functions.Function1;
+import kotlin.jvm.functions.Function3;
 import timber.log.Timber;
 
-import static com.mapbox.mapboxsdk.style.expressions.Expression.eq;
-import static com.mapbox.mapboxsdk.style.expressions.Expression.get;
-import static com.mapbox.mapboxsdk.style.expressions.Expression.literal;
-import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.fillColor;
-import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconAllowOverlap;
-import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconOffset;
-import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.lineColor;
-import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.lineWidth;
-import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.textAllowOverlap;
 import static org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialPresenter.ACCESS_LOCATION_PERMISSION_REQUEST;
 import static org.dhis2.utils.analytics.AnalyticsConstants.CHANGE_PROGRAM;
 import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
@@ -662,7 +658,24 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             initSet.connect(R.id.mainLayout, ConstraintSet.TOP, R.id.backdropGuideTop, ConstraintSet.BOTTOM, 0);
         }
 
+        setFabVisibility(backDropActive);
+        setCarouselVisibility(backDropActive);
+
         initSet.applyTo(binding.backdropLayout);
+    }
+
+    private void setFabVisibility(boolean backDropActive) {
+        binding.enrollmentButton.animate()
+                .setDuration(500)
+                .translationX(backDropActive ? 0 : 500)
+                .start();
+    }
+
+    private void setCarouselVisibility(boolean backDropActive) {
+        binding.mapCarousel.animate()
+                .setDuration(500)
+                .translationY(backDropActive ? 600 : 0)
+                .start();
     }
 
     @Override
@@ -729,7 +742,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
     /*region MAP*/
     @Override
-    public void setMap(HashMap<String, FeatureCollection> teiFeatureCollections, BoundingBox boundingBox) {
+    public void setMap(List<SearchTeiModel> teis, HashMap<String, FeatureCollection> teiFeatureCollections, BoundingBox boundingBox) {
         binding.progressLayout.setVisibility(View.GONE);
 
         teiMapManager.update(
@@ -737,6 +750,31 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                 boundingBox,
                 featureType
         );
+
+        CarouselAdapter carouselAdapter = new CarouselAdapter();
+        carouselAdapter.addOnTeiClickListener(new Function3<String, String, Boolean, Boolean>() {
+            @Override
+            public Boolean invoke(String teiUid, String enrollmentUid, Boolean isDeleted) {
+                presenter.onTEIClick(teiUid, enrollmentUid, isDeleted);
+                return true;
+            }
+        });
+        carouselAdapter.addOnSyncClickListener(new Function1<String, Boolean>() {
+            @Override
+            public Boolean invoke(String teiUid) {
+                presenter.onSyncIconClick(teiUid);
+                return true;
+            }
+        });
+        binding.mapCarousel.setAdapter(carouselAdapter);
+
+        binding.mapCarousel.attachToMapManager(teiMapManager, () ->
+                {
+                    Toast.makeText(this, "Item does not have coordinates", Toast.LENGTH_SHORT).show();
+                    return true;
+                }
+        );
+        carouselAdapter.addItems(teis);
     }
 
 
@@ -755,11 +793,11 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     public boolean onMapClick(@NonNull LatLng point) {
         PointF pointf = teiMapManager.getMap().getProjection().toScreenLocation(point);
         RectF rectF = new RectF(pointf.x - 10, pointf.y - 10, pointf.x + 10, pointf.y + 10);
-        List<Feature> features = teiMapManager.getMap().queryRenderedFeatures(rectF, featureType == FeatureType.POINT ? "POINT_LAYER" : "POLYGON_LAYER");
+        List<Feature> features = teiMapManager.getMap()
+                .queryRenderedFeatures(rectF, featureType == FeatureType.POINT ? "TEI_POINT_LAYER_ID" : "TEI_POLYGON_LAYER_ID");
         if (!features.isEmpty()) {
-            presenter.onTEIClick(features.get(0).getStringProperty("teiUid"),
-                    features.get(0).getStringProperty("enrollmentUid"),
-                    false);
+            teiMapManager.mapLayerManager.getLayer(LayerType.TEI_LAYER).setSelectedItem(features.get(0));
+            binding.mapCarousel.scrollToFeature(features.get(0));
             return true;
         }
 

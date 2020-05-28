@@ -1,5 +1,6 @@
 package org.dhis2.uicomponents.map.layer
 
+import com.mapbox.geojson.Feature
 import com.mapbox.mapboxsdk.maps.MapboxMap
 import org.dhis2.uicomponents.map.MapStyle
 import org.dhis2.uicomponents.map.layer.types.EnrollmentMapLayer
@@ -53,5 +54,19 @@ class MapLayerManager {
             check -> mapLayers[type]?.showLayer()
             else -> mapLayers[type]?.hideLayer()
         }
+    }
+
+    fun getLayer(type: LayerType): MapLayer? {
+        return mapLayers[type]
+    }
+
+    fun selectFeature(feature: Feature?) {
+        mapLayers.entries.forEach {
+            it.value.setSelectedItem(feature)
+        }
+    }
+
+    fun getLayers(): Collection<MapLayer> {
+        return mapLayers.values
     }
 }
