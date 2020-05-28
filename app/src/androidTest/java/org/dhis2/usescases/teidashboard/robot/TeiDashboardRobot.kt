@@ -212,4 +212,13 @@ class TeiDashboardRobot: BaseRobot () {
     fun clickOnSaveEnrollment() {
         onView(withId(R.id.save)).perform(click())
     }
+
+    fun clickOnCreateNewEvent() {
+        onView(withId(R.id.addnew)).perform(click())
+    }
+
+    fun clickOnRadioButtonForm(position: Int) {
+        onView(allOf(withId(R.id.formRecycler), hasDescendant(withId(R.id.yes))))
+            .perform(actionOnItemAtPosition<DashboardProgramViewHolder>(position, click())) //check viewholder
+    }
 }

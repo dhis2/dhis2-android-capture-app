@@ -174,7 +174,6 @@ class TeiDashboardTest : BaseTest() {
 
         eventRobot {
             scrollToBottomFormulary()
-            //editFormTypeComment() after scrolling should type a comment
             clickOnFormularyFabButton()
             clickOnFinish()
         }
@@ -213,6 +212,27 @@ class TeiDashboardTest : BaseTest() {
 
         indicatorsRobot {
             checkDetails("0", "4817")
+        }
+    }
+
+    @Test
+    @Ignore
+    fun shouldSuccessfullyCreateANewEvent() {
+        /*
+        * prepare a tei TB program
+        * click on new event
+        *
+        * */
+
+        prepareTeiToCreateANewEventAndLaunchActivity(rule)
+
+        teiDashboardRobot {
+            clickOnFab()
+            clickOnCreateNewEvent()
+            clickOnFirstReferralEvent()
+            clickOnReferralNextButton()
+            //click on radio btn
+            // click on finish
         }
     }
 
