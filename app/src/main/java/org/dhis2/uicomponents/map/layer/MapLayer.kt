@@ -11,5 +11,4 @@ interface MapLayer {
     fun setSelectedItem(feature: Feature?)
 
     fun findFeatureWithUid(featureUidProperty: String): Feature?
-
 }

@@ -6,13 +6,13 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CircleCrop
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade
+import java.io.File
 import org.dhis2.R
 import org.dhis2.databinding.ItemCarouselTeiBinding
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel
 import org.dhis2.utils.ObjectStyleUtils
 import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue
-import java.io.File
 
 class CarouselTeiHolder(
     val binding: ItemCarouselTeiBinding,
@@ -37,7 +37,9 @@ class CarouselTeiHolder(
             AppCompatResources.getDrawable(itemView.context, R.drawable.ic_circle_red)
 
         binding.syncState.setOnClickListener {
-            if (data.tei.deleted() == true || data.selectedEnrollment != null && data.selectedEnrollment.deleted() == true) {
+            if (data.tei.deleted() == true ||
+                data.selectedEnrollment != null && data.selectedEnrollment.deleted() == true
+            ) {
                 Toast.makeText(
                     itemView.context,
                     itemView.context.getString(R.string.record_marked_for_deletion),
@@ -56,7 +58,6 @@ class CarouselTeiHolder(
                 if (data.selectedEnrollment != null) data.selectedEnrollment.uid() else null,
                 data.isOnline
             )
-
         }
 
         val file = File(data.profilePicturePath)

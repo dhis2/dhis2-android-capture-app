@@ -13,16 +13,17 @@ class CarouselAdapter<T> : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         TEI, RELATIONSHIP, EVENT
     }
 
-    private var onSyncClickListener: (String) -> Boolean = {true}
+    private var onSyncClickListener: (String) -> Boolean = { true }
     val items: MutableList<T> = mutableListOf()
 
     private var onTeiClickListener: (String, String?, Boolean) -> Boolean =
-        { _: String, _: String?, _: Boolean -> true}
+        { _: String, _: String?, _: Boolean -> true }
 
     fun addOnTeiClickListener(
         onTeiClick: (
             teiUid: String,
-            enrollmentUid: String?, isOnline: Boolean
+            enrollmentUid: String?,
+            isOnline: Boolean
         ) -> Boolean
     ) {
         this.onTeiClickListener = onTeiClick
@@ -79,7 +80,6 @@ class CarouselAdapter<T> : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         return item?.let {
             items.indexOf(item)
         } ?: 0
-
     }
 
     fun getUidProperty(selectedPosition: Int): String {
