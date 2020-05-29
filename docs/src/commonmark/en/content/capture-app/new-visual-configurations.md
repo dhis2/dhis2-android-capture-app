@@ -139,6 +139,13 @@ The available rendering options have been expanded to include horizontal and ver
 
 ![](resources/images/image110.jpg){ width=25%}
 
+> **Note** 
+>
+> The default rendering option will automatically display a search box whenever there are more than 15 elements in the option set to ease the selection.
+> 
+> ![](resources/images/options_no_search.png){ width=25% } ![](resources/images/options_search.png){ width=60% }
+
+
 ### QR and Barcodes
 
 Data elements or attributes or type text can be also configured as QR or barcodes. When a Data Element or Attribute is rendered as QR/Barcode, the app will open the device camera to read the code image. When the QR/Barcode is a TEI attribute configured as searchable, the user will be allowed to scan the code in order to search and identify the Tracked Entity Instance. This will also work for option sets.
