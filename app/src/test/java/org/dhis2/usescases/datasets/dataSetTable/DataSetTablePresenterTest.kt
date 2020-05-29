@@ -6,7 +6,6 @@ import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.verifyZeroInteractions
 import com.nhaarman.mockitokotlin2.whenever
-import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.Single
@@ -104,11 +103,11 @@ class DataSetTablePresenterTest {
     @Test
     fun `Should check if DataSet does not have ValidationRules associated and complete DataSet`() {
         whenever(repository.doesDatasetHasValidationRulesAssociated()) doReturn false
-        whenever(repository.completeDataSetInstance()) doReturn Completable.complete()
+        whenever(repository.completeDataSetInstance()) doReturn Single.just(false)
 
         presenter.checkIfValidationRulesExecutionIsOptional()
 
-        verifyZeroInteractions(view)
+        verify(view).showCompleteToast()
     }
 
     @Test
@@ -140,8 +139,17 @@ class DataSetTablePresenterTest {
     }
 
     @Test
-    fun `Should mark the dataset as complete`() {
-        whenever(repository.completeDataSetInstance()) doReturn Completable.complete()
+    fun `Should show the mark as complete snackbar if dataset was not previously completed`() {
+        whenever(repository.completeDataSetInstance()) doReturn Single.just(false)
+
+        presenter.completeDataSet()
+
+        verify(view).showCompleteToast()
+    }
+
+    @Test
+    fun `Should not show the mark as complete snackbar if dataset was previously completed`() {
+        whenever(repository.completeDataSetInstance()) doReturn Single.just(true)
 
         presenter.completeDataSet()
 

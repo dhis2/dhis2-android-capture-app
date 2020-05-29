@@ -9,6 +9,7 @@ import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
 import androidx.viewpager2.widget.ViewPager2;
 
+import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.tabs.TabLayoutMediator;
 import com.jakewharton.rxbinding2.view.RxView;
 
@@ -271,6 +272,7 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
 
     @Override
     public void showCompleteToast() {
-        super.displayMessage(getString(R.string.dataset_completed));
+        Snackbar.make(binding.viewPager, R.string.dataset_completed, Snackbar.LENGTH_SHORT)
+                .show();
     }
 }

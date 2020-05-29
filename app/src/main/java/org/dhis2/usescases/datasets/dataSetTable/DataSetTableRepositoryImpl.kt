@@ -1,6 +1,5 @@
 package org.dhis2.usescases.datasets.dataSetTable
 
-import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Single
 import io.reactivex.functions.Function4
@@ -166,19 +165,18 @@ class DataSetTableRepositoryImpl(
         }
     }
 
-    fun completeDataSetInstance(): Completable {
-        return Completable.fromSingle(
-            d2.dataSetModule().dataSetCompleteRegistrations()
-                .value(periodId, orgUnitUid, dataSetUid, catOptCombo).exists()
-                .map { alreadyCompleted: Boolean? ->
-                    if (!alreadyCompleted!!) {
-                        d2.dataSetModule().dataSetCompleteRegistrations()
-                            .value(periodId, orgUnitUid, dataSetUid, catOptCombo)
-                            .blockingSet()
-                    }
-                    true
+    fun completeDataSetInstance(): Single<Boolean> {
+        return d2.dataSetModule().dataSetCompleteRegistrations()
+            .value(periodId, orgUnitUid, dataSetUid, catOptCombo).exists()
+            .map { alreadyCompleted: Boolean? ->
+                if (!alreadyCompleted!!) {
+                    d2.dataSetModule().dataSetCompleteRegistrations()
+                        .value(periodId, orgUnitUid, dataSetUid, catOptCombo)
+                        .blockingSet()
+                    return@map false
                 }
-        ).doOnComplete { dataSetInstanceProcessor.onNext(Unit()) }
+                return@map true
+            }.doOnSuccess { dataSetInstanceProcessor.onNext(Unit()) }
     }
 
     fun reopenDataSet(): Flowable<Boolean> {
