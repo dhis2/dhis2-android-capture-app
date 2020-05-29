@@ -193,7 +193,7 @@ public class DataSetTablePresenter implements DataSetTableContract.Presenter {
                         .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.ui())
                         .subscribe(
-                                () -> view.showCompleteToast(),
+                                () -> {},
                                 Timber::e)
         );
     }
