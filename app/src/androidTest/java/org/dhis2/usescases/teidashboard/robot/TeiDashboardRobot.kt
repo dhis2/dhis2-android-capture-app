@@ -1,6 +1,7 @@
 package org.dhis2.usescases.teidashboard.robot
 
 import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.action.TypeTextAction
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition
@@ -219,6 +220,26 @@ class TeiDashboardRobot: BaseRobot () {
 
     fun clickOnRadioButtonForm(position: Int) {
         onView(allOf(withId(R.id.formRecycler), hasDescendant(withId(R.id.yes))))
-            .perform(actionOnItemAtPosition<DashboardProgramViewHolder>(position, click())) //check viewholder
+            .perform(actionOnItemAtPosition<DashboardProgramViewHolder>(position, click()))
+    }
+
+    fun clickOnNumberField() {
+        onView(allOf(withId(R.id.formRecycler), hasDescendant(withId(R.id.input_editText))))
+            .perform(actionOnItemAtPosition<DashboardProgramViewHolder>(0, click()))
+        closeKeyboard()
+    }
+
+    fun typeNumber(number: String) {
+        onView(withText(number)).perform(click())
+    }
+
+    fun clickOnSecondStageEvent(){
+        onView(withId(R.id.recycler_view))
+            .check(matches(allOf(atPosition(1, hasDescendant(withText("Sputum smear microscopy test"))))))
+            .perform(actionOnItemAtPosition<ProgramStageSelectionViewHolder>(1, click()))
+    }
+
+    fun clickOnEventFab() {
+        onView(withId(R.id.actionButton)).perform(click())
     }
 }

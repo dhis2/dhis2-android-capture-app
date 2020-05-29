@@ -216,22 +216,27 @@ class TeiDashboardTest : BaseTest() {
     }
 
     @Test
-    @Ignore
     fun shouldSuccessfullyCreateANewEvent() {
-        /*
-        * prepare a tei TB program
-        * click on new event
-        *
-        * */
-
         prepareTeiToCreateANewEventAndLaunchActivity(rule)
 
         teiDashboardRobot {
             clickOnFab()
             clickOnCreateNewEvent()
             clickOnFirstReferralEvent()
+            /*clickOnSecondStageEvent()
             clickOnReferralNextButton()
-            //click on radio btn
+            Thread.sleep(1000)
+            clickOnNumberField()
+            Thread.sleep(1000)
+            typeNumber("1") //90 percent of the view
+            Thread.sleep(1000)
+            clickOnEventFab()*/
+            clickOnReferralNextButton()
+            Thread.sleep(1000)
+            clickOnRadioButtonForm(0) //not sure why is not clicking but in case it's clicking, yes is not selected
+            Thread.sleep(2500)
+            clickOnRadioButtonForm(1)
+            clickOnRadioButtonForm(2)
             // click on finish
         }
     }
