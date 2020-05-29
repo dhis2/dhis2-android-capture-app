@@ -166,6 +166,13 @@ android {
             versionCode versions.vCode
             versionName "1.0.0"
         }
+
+        psi {
+            applicationId "org.dhis2.psi"
+            dimension "default"
+            versionCode 7
+            versionName "2.0.0"
+        }
     }
 
     applicationVariants.all { variant ->
