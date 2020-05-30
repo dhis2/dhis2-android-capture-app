@@ -1,6 +1,7 @@
 package org.dhis2.usescases.teidashboard.robot
 
 import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.action.TypeTextAction
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition
@@ -12,6 +13,8 @@ import org.dhis2.common.matchers.RecyclerviewMatchers.Companion.atPosition
 import org.dhis2.common.matchers.RecyclerviewMatchers.Companion.isNotEmpty
 import org.dhis2.common.matchers.clickOnTab
 import org.dhis2.common.matchers.isToast
+import org.dhis2.common.viewactions.clickChildViewWithId
+import org.dhis2.common.viewactions.scrollToBottomRecyclerView
 import org.dhis2.usescases.programStageSelection.ProgramStageSelectionViewHolder
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTEViewHolder
 import org.dhis2.usescases.teiDashboard.dashboardfragments.tei_data.DashboardProgramViewHolder
@@ -200,9 +203,10 @@ class TeiDashboardRobot: BaseRobot () {
     fun clickOnMenuProgramEnrollments() {
         onView(withText("Program enrollments")).perform(click())
     }
-    fun clickOnAProgramForEnrollment() {
+    fun clickOnAProgramForEnrollment(position: Int) {
         onView(withId(R.id.recycler))
-                .perform(actionOnItemAtPosition<DashboardProgramViewHolder>(4, click())) //action_button
+                //.perform(actionOnItemAtPosition<DashboardProgramViewHolder>(4, click())) //action_button
+            .perform(actionOnItemAtPosition<DashboardProgramViewHolder>(position, clickChildViewWithId(R.id.action_button)))
     }
 
     fun clickOnAcceptEnrollmentDate() {
@@ -237,5 +241,28 @@ class TeiDashboardRobot: BaseRobot () {
             .check(matches(
                 atPosition(position, hasDescendant(hasSibling(withText("Event Completed"))))
             ))
+    }
+
+    fun clickOnPersonAttributes () {
+        onView(withId(R.id.fieldRecycler))
+            .perform(actionOnItemAtPosition<DashboardProgramViewHolder>(5, click()))
+    }
+
+    fun scrollToBottomProgramForm () {
+        onView(withId(R.id.fieldRecycler)).perform(scrollToBottomRecyclerView())
+    }
+
+    fun scrollToBottomEventForm () {
+        onView(withId(R.id.formRecycler)).perform(scrollToBottomRecyclerView())
+    }
+
+    fun typeOnRequiredTextField (text: String, position: Int) {
+        onView(withId(R.id.fieldRecycler))
+            .perform(actionOnItemAtPosition<DashboardProgramViewHolder>(position, clickChildViewWithId(R.id.input_editText)))
+
+        onView(allOf(withId(R.id.fieldRecycler), hasDescendant(withId(R.id.input_editText))))
+            .perform(actionOnItemAtPosition<DashboardProgramViewHolder>(position, TypeTextAction(text)))
+
+        closeKeyboard()
     }
 }

@@ -277,25 +277,37 @@ class TeiDashboardTest : BaseTest() {
     }
 
     @Test
-    @Ignore
     fun shouldEnrollToOtherProgramWhenClickOnProgramEnrollments() {
-        //launch tei
+        //launch tei child program
         //click on more options
         // click on Program enrollments
-        // choose a Program to be enroll
+        // choose a Program to be enroll TB program
         // choose date and accept
+        // open personal tab
+        // scroll to the end
+        // add text
         // click on save in enrollment
-        // if Child Program after save will ask to type AGAR then to choose option (Finish or Finish and Complete)
 
-        prepareTeiOpenedWithNoPreviousEventProgrammeAndLaunchActivity(rule)
+        val provider = 5
+        //prepareTeiOpenedWithNoPreviousEventProgrammeAndLaunchActivity(rule)
+        prepareTeiToEnrollToOtherProgramAndLaunchActivity(rule)
 
         teiDashboardRobot {
             clickOnMenuMoreOptions()
             clickOnMenuProgramEnrollments()
-            clickOnAProgramForEnrollment() // is not clicking on enrollment btn
-            //clickOnAcceptEnrollmentDate()
+            clickOnAProgramForEnrollment(provider)
+            clickOnAcceptEnrollmentDate()
+            clickOnPersonAttributes()
+            typeOnRequiredTextField("test", 2) //not sure why is not typing to check
+            clickOnSaveEnrollment()
+
+            //scrollToBottomProgramForm()
             //clickOnSaveEnrollment()
-            Thread.sleep(1000)
+            // check event created 0 open
+        }
+
+        eventRobot {
+            clickOnFinish()
         }
     }
 

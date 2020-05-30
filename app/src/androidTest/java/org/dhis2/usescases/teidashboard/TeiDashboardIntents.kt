@@ -20,6 +20,7 @@ private const val TEI_UID_VALUE_TO_DELETE = "SHnmavBQu72"
 private const val TEI_UID_VALUE_TO_SCHEDULE = "uh47DXf1St9"
 private const val TEI_UID_VALUE_TO_CREATE_EVENT = "xWGaOQL0INS"
 private const val TEI_UID_VALUE_TO_EDIT_EVENT =  "PQfMcpmXeFE"
+private const val TEI_UID_VALUE_TO_ENROLL = "tIJu6iqQxNV" //"qwo2b1UsgB5"
 
 fun prepareTeiCompletedProgrammeAndLaunchActivity(rule: ActivityTestRule<TeiDashboardMobileActivity>) {
     startTeiDashboardActivity(CHILD_PROGRAM_UID_VALUE, TEI_UID_VALUE_COMPLETED, rule)
@@ -59,6 +60,10 @@ fun prepareTeiToCreateANewEventAndLaunchActivity(rule: ActivityTestRule<TeiDashb
 
 fun prepareTeiOpenedToEditAndLaunchActivity(rule: ActivityTestRule<TeiDashboardMobileActivity>) {
     startTeiDashboardActivity(TB_PROGRAM_UID, TEI_UID_VALUE_TO_EDIT_EVENT,rule)
+}
+
+fun prepareTeiToEnrollToOtherProgramAndLaunchActivity(rule: ActivityTestRule<TeiDashboardMobileActivity>) {
+    startTeiDashboardActivity(CHILD_PROGRAM_UID_VALUE, TEI_UID_VALUE_TO_ENROLL, rule)
 }
 
 fun startTeiDashboardActivity(programUID: String, teiUID: String, rule: ActivityTestRule<TeiDashboardMobileActivity>){
