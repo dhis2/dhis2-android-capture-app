@@ -174,7 +174,7 @@ class TeiDashboardTest : BaseTest() {
 
         eventRobot {
             scrollToBottomFormulary()
-            clickOnFormularyFabButton()
+            clickOnFormFabButton()
             clickOnFinish()
         }
     }
@@ -223,21 +223,56 @@ class TeiDashboardTest : BaseTest() {
             clickOnFab()
             clickOnCreateNewEvent()
             clickOnFirstReferralEvent()
-            /*clickOnSecondStageEvent()
             clickOnReferralNextButton()
-            Thread.sleep(1000)
-            clickOnNumberField()
-            Thread.sleep(1000)
-            typeNumber("1") //90 percent of the view
-            Thread.sleep(1000)
-            clickOnEventFab()*/
-            clickOnReferralNextButton()
-            Thread.sleep(1000)
-            clickOnRadioButtonForm(0) //not sure why is not clicking but in case it's clicking, yes is not selected
-            Thread.sleep(2500)
-            clickOnRadioButtonForm(1)
-            clickOnRadioButtonForm(2)
-            // click on finish
+            Thread.sleep(1000) //not sure why sometimes shows error if I don't use sleep
+        }
+
+        eventRobot {
+            clickOnRadioButtonForm()
+            clickOnFormFabButton()
+            clickOnFinish()
+        }
+
+        teiDashboardRobot {
+            checkEventWasCreatedAndOpen(LAB_MONITORING)
+        }
+    }
+
+    @Test
+    fun shouldOpenEventEditAndSaveSuccessfully() {
+        /*
+         * launch TEI
+         *  open event
+         *  if it's overdue update the date
+         *  edit event
+         *  save it finish and complete
+         *  check event completed
+         * */
+
+        prepareTeiOpenedToEditAndLaunchActivity(rule)
+
+        val labMonitoring = 2
+
+        teiDashboardRobot {
+            clickOnEventWithPosition(labMonitoring)
+            Thread.sleep(4000) //not sure why sometimes shows error if I don't use sleep
+        }
+
+        eventRobot {
+            clickOnChangeDate()
+            clickOnEditDate()
+            acceptUpdateEventDate()
+            clickOnUpdate()
+
+            Thread.sleep(4000)
+            clickOnRadioButtonForm()
+            clickOnFormFabButton()
+            clickOnFinishAndComplete()
+            Thread.sleep(4000)
+        }
+
+        teiDashboardRobot {
+            checkEventWasCreatedAndClosed(LAB_MONITORING, 3)
         }
     }
 
