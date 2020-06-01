@@ -224,30 +224,22 @@ class TeiDashboardTest : BaseTest() {
             clickOnCreateNewEvent()
             clickOnFirstReferralEvent()
             clickOnReferralNextButton()
-            Thread.sleep(1000) //not sure why sometimes shows error if I don't use sleep
+            waitToDebounce(600)
         }
 
         eventRobot {
-            clickOnRadioButtonForm()
+            fillRadioButtonForm(4)
             clickOnFormFabButton()
             clickOnFinish()
         }
 
         teiDashboardRobot {
-            checkEventWasCreatedAndOpen(LAB_MONITORING)
+            checkEventWasCreatedAndOpen(LAB_MONITORING, 0)
         }
     }
 
     @Test
     fun shouldOpenEventEditAndSaveSuccessfully() {
-        /*
-         * launch TEI
-         *  open event
-         *  if it's overdue update the date
-         *  edit event
-         *  save it finish and complete
-         *  check event completed
-         * */
 
         prepareTeiOpenedToEditAndLaunchActivity(rule)
 
@@ -255,7 +247,7 @@ class TeiDashboardTest : BaseTest() {
 
         teiDashboardRobot {
             clickOnEventWithPosition(labMonitoring)
-            Thread.sleep(4000) //not sure why sometimes shows error if I don't use sleep
+            waitToDebounce(600)
         }
 
         eventRobot {
@@ -263,12 +255,11 @@ class TeiDashboardTest : BaseTest() {
             clickOnEditDate()
             acceptUpdateEventDate()
             clickOnUpdate()
-
-            Thread.sleep(4000)
-            clickOnRadioButtonForm()
+            waitToDebounce(600)
+            fillRadioButtonForm(4)
             clickOnFormFabButton()
             clickOnFinishAndComplete()
-            Thread.sleep(4000)
+            waitToDebounce(600)
         }
 
         teiDashboardRobot {
@@ -277,6 +268,7 @@ class TeiDashboardTest : BaseTest() {
     }
 
     @Test
+    @Ignore
     fun shouldEnrollToOtherProgramWhenClickOnProgramEnrollments() {
         //launch tei child program
         //click on more options
@@ -289,7 +281,6 @@ class TeiDashboardTest : BaseTest() {
         // click on save in enrollment
 
         val provider = 5
-        //prepareTeiOpenedWithNoPreviousEventProgrammeAndLaunchActivity(rule)
         prepareTeiToEnrollToOtherProgramAndLaunchActivity(rule)
 
         teiDashboardRobot {
@@ -297,9 +288,10 @@ class TeiDashboardTest : BaseTest() {
             clickOnMenuProgramEnrollments()
             clickOnAProgramForEnrollment(provider)
             clickOnAcceptEnrollmentDate()
-            clickOnPersonAttributes()
+            clickOnPersonAttributes(5)
             typeOnRequiredTextField("test", 2) //not sure why is not typing to check
             clickOnSaveEnrollment()
+            Thread.sleep(8000)
 
             //scrollToBottomProgramForm()
             //clickOnSaveEnrollment()

@@ -1,7 +1,6 @@
 package org.dhis2.usescases.teidashboard.robot
 
 import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.action.TypeTextAction
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition
@@ -15,6 +14,7 @@ import org.dhis2.common.matchers.clickOnTab
 import org.dhis2.common.matchers.isToast
 import org.dhis2.common.viewactions.clickChildViewWithId
 import org.dhis2.common.viewactions.scrollToBottomRecyclerView
+import org.dhis2.common.viewactions.typeChildViewWithId
 import org.dhis2.usescases.programStageSelection.ProgramStageSelectionViewHolder
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTEViewHolder
 import org.dhis2.usescases.teiDashboard.dashboardfragments.tei_data.DashboardProgramViewHolder
@@ -135,7 +135,6 @@ class TeiDashboardRobot: BaseRobot () {
 
     fun clickOnNextQR() {
         var qrLenght = 1
-       // onView(withId(R.id.page)).check(matches(withText("8")))
 
         while (qrLenght < 8) {
             onView(withId(R.id.next)).perform(click())
@@ -148,7 +147,6 @@ class TeiDashboardRobot: BaseRobot () {
     }
 
     fun checkTEIIsDelete() {
-        // Olvia Watts
         onView(withId(R.id.scrollView)).check(matches(allOf(isDisplayed(), isNotEmpty(),
                 not(hasDescendant(withText("Olvia Watts"))))))
     }
@@ -205,7 +203,6 @@ class TeiDashboardRobot: BaseRobot () {
     }
     fun clickOnAProgramForEnrollment(position: Int) {
         onView(withId(R.id.recycler))
-                //.perform(actionOnItemAtPosition<DashboardProgramViewHolder>(4, click())) //action_button
             .perform(actionOnItemAtPosition<DashboardProgramViewHolder>(position, clickChildViewWithId(R.id.action_button)))
     }
 
@@ -221,14 +218,11 @@ class TeiDashboardRobot: BaseRobot () {
         onView(withId(R.id.addnew)).perform(click())
     }
 
-    fun checkEventWasCreatedAndOpen(eventName: String) {
+    fun checkEventWasCreatedAndOpen(eventName: String, position: Int) {
         onView(withId(R.id.tei_recycler))
             .check(matches(allOf(
                 isDisplayed(), isNotEmpty(),
-                atPosition(0, hasDescendant(hasSibling(withText(eventName))))
-            )))
-            .check(matches(
-                atPosition(0, hasDescendant(hasSibling(withText("Open"))))
+                atPosition(position, allOf(hasDescendant(withText(eventName)), hasDescendant(withText(R.string.event_open)))))
             ))
     }
 
@@ -236,16 +230,14 @@ class TeiDashboardRobot: BaseRobot () {
         onView(withId(R.id.tei_recycler))
             .check(matches(allOf(
                 isDisplayed(), isNotEmpty(),
-                atPosition(position, hasDescendant(hasSibling(withText(eventName))))
+                atPosition(position, allOf(hasDescendant(withText(eventName)), hasDescendant(
+                    withText(R.string.event_completed))))
             )))
-            .check(matches(
-                atPosition(position, hasDescendant(hasSibling(withText("Event Completed"))))
-            ))
     }
 
-    fun clickOnPersonAttributes () {
+    fun clickOnPersonAttributes (position: Int) {
         onView(withId(R.id.fieldRecycler))
-            .perform(actionOnItemAtPosition<DashboardProgramViewHolder>(5, click()))
+            .perform(actionOnItemAtPosition<DashboardProgramViewHolder>(position, click()))
     }
 
     fun scrollToBottomProgramForm () {
@@ -258,11 +250,7 @@ class TeiDashboardRobot: BaseRobot () {
 
     fun typeOnRequiredTextField (text: String, position: Int) {
         onView(withId(R.id.fieldRecycler))
-            .perform(actionOnItemAtPosition<DashboardProgramViewHolder>(position, clickChildViewWithId(R.id.input_editText)))
-
-        onView(allOf(withId(R.id.fieldRecycler), hasDescendant(withId(R.id.input_editText))))
-            .perform(actionOnItemAtPosition<DashboardProgramViewHolder>(position, TypeTextAction(text)))
-
-        closeKeyboard()
+            .perform(actionOnItemAtPosition<DashboardProgramViewHolder>(position, typeChildViewWithId(text, R.id.input_editText)))
+        //closeKeyboard()
     }
 }

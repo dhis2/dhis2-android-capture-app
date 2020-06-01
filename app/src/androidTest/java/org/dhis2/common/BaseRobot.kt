@@ -2,14 +2,12 @@ package org.dhis2.common
 
 import android.app.Activity
 import android.app.ActivityManager
-import android.content.Context
 import android.content.Context.ACTIVITY_SERVICE
 import android.widget.EditText
 import androidx.annotation.IdRes
 import androidx.test.espresso.action.ViewActions.closeSoftKeyboard
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions
-import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
@@ -38,6 +36,10 @@ open class BaseRobot {
         } else {
             onView(allOf(isAssignableFrom(EditText::class.java), hasFocus())).perform(ViewActions.pressImeActionButton())
         }
+    }
+
+    fun waitToDebounce(millis: Long) {
+        Thread.sleep(millis)
     }
 
     inline fun <reified T : Activity> waitUntilActivityVisible() {

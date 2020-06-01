@@ -1,6 +1,7 @@
 package org.dhis2.common.viewactions
 
 import android.view.View
+import android.widget.EditText
 import android.widget.Spinner
 import androidx.appcompat.widget.SwitchCompat
 import androidx.recyclerview.widget.RecyclerView
@@ -65,6 +66,26 @@ fun clickChildViewWithId(id : Int) : ViewAction {
         override fun perform(uiController: UiController?, view: View?) {
             val v = view?.findViewById<View>(id)
             v?.performClick()
+            uiController?.loopMainThreadUntilIdle()
+        }
+    }
+}
+
+fun typeChildViewWithId(string: String, id: Int) : ViewAction {
+    return object : ViewAction {
+        override fun getDescription(): String {
+            return "Type a text on a child view with specified id"
+        }
+
+        override fun getConstraints(): Matcher<View>? {
+            return null
+        }
+
+        override fun perform(uiController: UiController?, view: View?) {
+            val v = view?.findViewById<View>(id) as EditText
+            //TypeTextAction(string)
+            v.performClick()
+            v.setText(string)
             uiController?.loopMainThreadUntilIdle()
         }
     }

@@ -34,16 +34,14 @@ class EventRobot: BaseRobot() {
         onView(withId(R.id.complete)).perform(click())
     }
 
-    fun clickOnRadioButtonForm() {
+    fun fillRadioButtonForm(numberFields: Int) {
         var formLength = 0
 
-        while (formLength < 4) {
+        while (formLength < numberFields) {
             onView(withId(R.id.formRecycler))
                 .perform(actionOnItemAtPosition<DashboardProgramViewHolder>(formLength, clickChildViewWithId(R.id.yes)))
             formLength++
         }
-        /*onView(withId(R.id.formRecycler))
-            .perform(actionOnItemAtPosition<DashboardProgramViewHolder>(position, clickChildViewWithId(R.id.yes)))*/
     }
 
     fun clickOnChangeDate() {
