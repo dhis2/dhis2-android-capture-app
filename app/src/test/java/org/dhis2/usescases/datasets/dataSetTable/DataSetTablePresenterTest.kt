@@ -155,4 +155,25 @@ class DataSetTablePresenterTest {
 
         verifyZeroInteractions(view)
     }
+
+    @Test
+    fun `Should close or expand the bottom sheet`() {
+        presenter.closeExpandBottomSheet()
+
+        verify(view).closeExpandBottom()
+    }
+
+    @Test
+    fun `Should close bottom sheet on cancel click`() {
+        presenter.onCancelBottomSheet()
+
+        verify(view).cancelBottomSheet()
+    }
+
+    @Test
+    fun `Should close bottom sheet on complete click`() {
+        presenter.onCompleteBottomSheet()
+
+        verify(view).completeBottomSheet()
+    }
 }
