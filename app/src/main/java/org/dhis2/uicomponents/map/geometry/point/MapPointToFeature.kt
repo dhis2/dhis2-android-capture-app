@@ -10,6 +10,7 @@ import timber.log.Timber
 
 class MapPointToFeature {
 
+    //To remove this with bounds
     fun map(item: Geometry, bounds: BoundsGeometry): Pair<Feature, BoundsGeometry>? {
         val sdkPoint = GeometryHelper.getPoint(item)
         val lat = sdkPoint[1]
@@ -19,6 +20,20 @@ class MapPointToFeature {
             val updatedBounds = bounds.update(lat, lon)
             val point = Point.fromLngLat(lon, lat)
             Pair(Feature.fromGeometry(point), updatedBounds)
+        } else {
+            Timber.tag(javaClass.simpleName).d("INVALID COORDINATES lat :%s. lon: %s", lat, lon)
+            null
+        }
+    }
+
+    fun map(item: Geometry): Feature? {
+        val sdkPoint = GeometryHelper.getPoint(item)
+        val lat = sdkPoint[1]
+        val lon = sdkPoint[0]
+
+        return if (areLngLatCorrect(lon, lat)) {
+            val point = Point.fromLngLat(lon, lat)
+            Feature.fromGeometry(point)
         } else {
             Timber.tag(javaClass.simpleName).d("INVALID COORDINATES lat :%s. lon: %s", lat, lon)
             null

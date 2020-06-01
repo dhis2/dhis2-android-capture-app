@@ -13,8 +13,10 @@ class MapEventToFeatureCollection(
     fun map(eventList: List<Event>): Pair<FeatureCollection, BoundingBox> {
         bounds.initOrReset()
         val features = eventList.filter { it.geometry() != null }.mapNotNull {
-            mapGeometryToFeature.map(it.geometry()!!,
-                EVENT, it.uid()!!, bounds)
+            mapGeometryToFeature.map(
+                it.geometry()!!,
+                EVENT, it.uid()!!, bounds
+            )
         }
 
         return Pair<FeatureCollection, BoundingBox>(
