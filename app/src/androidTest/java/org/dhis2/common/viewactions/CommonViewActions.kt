@@ -33,7 +33,8 @@ fun openSpinnerPopup(): ViewAction {
         }
     }
 }
-fun setSwitchCheckTo(checkValue: Boolean) : ViewAction {
+
+fun setSwitchCheckTo(checkValue: Boolean): ViewAction {
     return object : ViewAction {
         override fun getDescription(): String {
             return "Setting switch check"
@@ -53,14 +54,14 @@ fun setSwitchCheckTo(checkValue: Boolean) : ViewAction {
     }
 }
 
-fun clickChildViewWithId(id : Int) : ViewAction {
+fun clickChildViewWithId(id: Int): ViewAction {
     return object : ViewAction {
         override fun getDescription(): String {
             return "Click on a child view with specified id"
         }
 
         override fun getConstraints(): Matcher<View>? {
-           return null
+            return null
         }
 
         override fun perform(uiController: UiController?, view: View?) {
@@ -71,7 +72,7 @@ fun clickChildViewWithId(id : Int) : ViewAction {
     }
 }
 
-fun typeChildViewWithId(string: String, id: Int) : ViewAction {
+fun typeChildViewWithId(string: String, id: Int): ViewAction {
     return object : ViewAction {
         override fun getDescription(): String {
             return "Type a text on a child view with specified id"
@@ -91,7 +92,7 @@ fun typeChildViewWithId(string: String, id: Int) : ViewAction {
     }
 }
 
-fun scrollToBottomRecyclerView() : ViewAction {
+fun scrollToBottomRecyclerView(): ViewAction {
     return object : ViewAction {
         override fun getDescription(): String {
             return "Recyclerview scrolling until the end"
@@ -111,7 +112,7 @@ fun scrollToBottomRecyclerView() : ViewAction {
     }
 }
 
-fun clickOnFabChild() : ViewAction {
+fun clickOnFabChild(): ViewAction {
     return object : ViewAction {
         override fun getDescription(): String {
             return "searching for fab child"
@@ -133,7 +134,7 @@ fun clickOnFabChild() : ViewAction {
     }
 }
 
-fun waitForTransitionUntil(idView:Int) : ViewAction {
+fun waitForTransitionUntil(idView: Int): ViewAction {
     return object : ViewAction {
         override fun getDescription(): String {
             return "Checking tabLayoutTransition"

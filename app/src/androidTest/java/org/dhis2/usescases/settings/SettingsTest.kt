@@ -80,7 +80,7 @@ class SettingsTest : BaseTest() {
             clickOnNavigationDrawerMenu()
             clickOnSettings()
         }
-        
+
         settingsRobot {
             clickOnReservedValues()
             clickOnManageReservedValues()

@@ -22,7 +22,7 @@ open class BaseRobot {
         return this
     }
 
-    fun acceptGenericDialog(){
+    fun acceptGenericDialog() {
         onView(withId(R.id.dialogAccept)).perform(ViewActions.click())
     }
 
@@ -34,7 +34,12 @@ open class BaseRobot {
         if (editTextId != null) {
             onView(withId(editTextId)).perform(ViewActions.pressImeActionButton())
         } else {
-            onView(allOf(isAssignableFrom(EditText::class.java), hasFocus())).perform(ViewActions.pressImeActionButton())
+            onView(
+                allOf(
+                    isAssignableFrom(EditText::class.java),
+                    hasFocus()
+                )
+            ).perform(ViewActions.pressImeActionButton())
         }
     }
 
@@ -52,13 +57,15 @@ open class BaseRobot {
         }
     }
 
-    inline fun <reified T : Activity> isVisible() : Boolean {
-        val am = InstrumentationRegistry.getInstrumentation().targetContext.getSystemService(ACTIVITY_SERVICE) as ActivityManager
+    inline fun <reified T : Activity> isVisible(): Boolean {
+        val am = InstrumentationRegistry.getInstrumentation().targetContext.getSystemService(
+            ACTIVITY_SERVICE
+        ) as ActivityManager
         val visibleActivityName = am.appTasks[0].taskInfo.baseActivity.className
         return visibleActivityName == T::class.java.name
     }
 
-    companion object{
+    companion object {
         const val TIMEOUT = 5000L
         const val CONDITION_CHECK_INTERVAL = 200L
     }

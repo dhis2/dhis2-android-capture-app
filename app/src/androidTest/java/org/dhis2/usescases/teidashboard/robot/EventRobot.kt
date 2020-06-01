@@ -16,21 +16,21 @@ fun eventRobot(eventRobot: EventRobot.() -> Unit) {
     }
 }
 
-class EventRobot: BaseRobot() {
+class EventRobot : BaseRobot() {
 
-    fun scrollToBottomFormulary(){
+    fun scrollToBottomFormulary() {
         onView(withId(R.id.formRecycler)).perform(scrollToBottomRecyclerView())
     }
 
-    fun clickOnFormFabButton(){
+    fun clickOnFormFabButton() {
         onView(withId(R.id.actionButton)).perform(click())
     }
 
-    fun clickOnFinish(){
+    fun clickOnFinish() {
         onView(withId(R.id.finish)).perform(click())
     }
 
-    fun clickOnFinishAndComplete(){
+    fun clickOnFinishAndComplete() {
         onView(withId(R.id.complete)).perform(click())
     }
 
@@ -39,7 +39,12 @@ class EventRobot: BaseRobot() {
 
         while (formLength < numberFields) {
             onView(withId(R.id.formRecycler))
-                .perform(actionOnItemAtPosition<DashboardProgramViewHolder>(formLength, clickChildViewWithId(R.id.yes)))
+                .perform(
+                    actionOnItemAtPosition<DashboardProgramViewHolder>(
+                        formLength,
+                        clickChildViewWithId(R.id.yes)
+                    )
+                )
             formLength++
         }
     }

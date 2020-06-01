@@ -23,6 +23,7 @@ class TeiDashboardTest : BaseTest() {
 
     @get:Rule
     val rule = ActivityTestRule(TeiDashboardMobileActivity::class.java, false, false)
+
     @get:Rule
     val ruleSearch = ActivityTestRule(SearchTEActivity::class.java, false, false)
 
@@ -162,7 +163,7 @@ class TeiDashboardTest : BaseTest() {
     }
 
     @Test
-    fun shouldOpenEventAndSaveSuccessfully(){
+    fun shouldOpenEventAndSaveSuccessfully() {
         setupCredentials()
 
         prepareTeiOpenedProgrammeAndLaunchActivity(rule)
@@ -347,10 +348,21 @@ class TeiDashboardTest : BaseTest() {
         }
     }
 
-    private fun createExpectedUpperInformation() = UpperEnrollmentUIModel("2021-01-10", "2021-01-10", "Ngelehun CHC")
-    private fun createExpectedEnrollmentInformation() = EnrollmentUIModel("2021-01-10", "2021-01-10", "Ngelehun CHC", "40.48713205295354", "-3.6847423830882633", "Filona", "Ryder", "Female")
+    private fun createExpectedUpperInformation() =
+        UpperEnrollmentUIModel("2021-01-10", "2021-01-10", "Ngelehun CHC")
 
-    companion object{
+    private fun createExpectedEnrollmentInformation() = EnrollmentUIModel(
+        "2021-01-10",
+        "2021-01-10",
+        "Ngelehun CHC",
+        "40.48713205295354",
+        "-3.6847423830882633",
+        "Filona",
+        "Ryder",
+        "Female"
+    )
+
+    companion object {
         const val NOTE_VALID = "ThisIsJustATest"
         const val NOTE_INVALID = "InvalidNote"
         const val NOTE_EXISTING_TEXT = "This is a note test"

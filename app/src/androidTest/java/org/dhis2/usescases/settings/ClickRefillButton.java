@@ -10,16 +10,19 @@ import org.hamcrest.Matcher;
 
 import static androidx.test.espresso.action.ViewActions.click;
 
-public class ClickRefillButton implements ViewAction{
+public class ClickRefillButton implements ViewAction {
     ViewAction toClick = click();
+
     @Override
     public Matcher<View> getConstraints() {
         return toClick.getConstraints();
     }
+
     @Override
     public String getDescription() {
         return " click on custom image view";
     }
+
     @Override
     public void perform(UiController uiController, View view) {
         //toClick.perform(uiController, view.findViewById(R.id.refill));

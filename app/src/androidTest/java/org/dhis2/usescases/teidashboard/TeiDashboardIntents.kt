@@ -19,7 +19,7 @@ private const val TEI_UID_VALUE_WITH_NOTE = "UtDZmrX5lSd"
 private const val TEI_UID_VALUE_TO_DELETE = "SHnmavBQu72"
 private const val TEI_UID_VALUE_TO_SCHEDULE = "uh47DXf1St9"
 private const val TEI_UID_VALUE_TO_CREATE_EVENT = "xWGaOQL0INS"
-private const val TEI_UID_VALUE_TO_EDIT_EVENT =  "PQfMcpmXeFE"
+private const val TEI_UID_VALUE_TO_EDIT_EVENT = "PQfMcpmXeFE"
 private const val TEI_UID_VALUE_TO_ENROLL = "tIJu6iqQxNV" //"qwo2b1UsgB5"
 
 fun prepareTeiCompletedProgrammeAndLaunchActivity(rule: ActivityTestRule<TeiDashboardMobileActivity>) {
@@ -42,11 +42,11 @@ fun prepareTeiWithExistingNoteAndLaunchActivity(rule: ActivityTestRule<TeiDashbo
     startTeiDashboardActivity(CHILD_PROGRAM_UID_VALUE, TEI_UID_VALUE_WITH_NOTE, rule)
 }
 
-fun prepareTeiOpenedWithFullEventsAndLaunchActivity(rule: ActivityTestRule<TeiDashboardMobileActivity>){
+fun prepareTeiOpenedWithFullEventsAndLaunchActivity(rule: ActivityTestRule<TeiDashboardMobileActivity>) {
     startTeiDashboardActivity(CHILD_PROGRAM_UID_VALUE, TEI_UID_VALUE_OPENED_FULL, rule)
 }
 
-fun prepareTeiToDeleteAndLaunchActivity(rule: ActivityTestRule<TeiDashboardMobileActivity>){
+fun prepareTeiToDeleteAndLaunchActivity(rule: ActivityTestRule<TeiDashboardMobileActivity>) {
     startTeiDashboardActivity(CHILD_PROGRAM_UID_VALUE, TEI_UID_VALUE_TO_DELETE, rule)
 }
 
@@ -55,18 +55,22 @@ fun prepareTeiOpenedWithNoPreviousEventProgrammeAndLaunchActivity(rule: Activity
 }
 
 fun prepareTeiToCreateANewEventAndLaunchActivity(rule: ActivityTestRule<TeiDashboardMobileActivity>) {
-    startTeiDashboardActivity(TB_PROGRAM_UID, TEI_UID_VALUE_TO_CREATE_EVENT,rule)
+    startTeiDashboardActivity(TB_PROGRAM_UID, TEI_UID_VALUE_TO_CREATE_EVENT, rule)
 }
 
 fun prepareTeiOpenedToEditAndLaunchActivity(rule: ActivityTestRule<TeiDashboardMobileActivity>) {
-    startTeiDashboardActivity(TB_PROGRAM_UID, TEI_UID_VALUE_TO_EDIT_EVENT,rule)
+    startTeiDashboardActivity(TB_PROGRAM_UID, TEI_UID_VALUE_TO_EDIT_EVENT, rule)
 }
 
 fun prepareTeiToEnrollToOtherProgramAndLaunchActivity(rule: ActivityTestRule<TeiDashboardMobileActivity>) {
     startTeiDashboardActivity(CHILD_PROGRAM_UID_VALUE, TEI_UID_VALUE_TO_ENROLL, rule)
 }
 
-fun startTeiDashboardActivity(programUID: String, teiUID: String, rule: ActivityTestRule<TeiDashboardMobileActivity>){
+fun startTeiDashboardActivity(
+    programUID: String,
+    teiUID: String,
+    rule: ActivityTestRule<TeiDashboardMobileActivity>
+) {
     Intent().apply {
         putExtra(PROGRAM_UID, programUID)
         putExtra(TEI_UID, teiUID)
