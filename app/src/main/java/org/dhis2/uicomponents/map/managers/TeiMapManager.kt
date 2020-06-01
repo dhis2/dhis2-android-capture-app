@@ -71,9 +71,12 @@ class TeiMapManager(
     }
 
     override fun setLayer() {
-        mapLayerManager.apply {
-            init(map, featureType, mapStyle)
-            handleLayer(LayerType.TEI_LAYER, true)
-        }
+        mapLayerManager.initMap(map)
+            .withFeatureType(featureType)
+            .withMapStyle(mapStyle)
+            .addStartLayer(LayerType.TEI_LAYER, TEIS_SOURCE_ID)
+            .addLayer(LayerType.ENROLLMENT_LAYER, ENROLLMENT_SOURCE_ID)
+            .addLayer(LayerType.HEATMAP_LAYER)
+            .addLayer(LayerType.SATELLITE_LAYER)
     }
 }
