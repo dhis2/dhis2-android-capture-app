@@ -34,6 +34,12 @@ public class DataSetTableContract {
         void showErrorsValidationDialog(List<ValidationResultViolation> violations);
 
         void showCompleteToast();
+
+        void closeExpandBottom();
+
+        void cancelBottomSheet();
+
+        void completeBottomSheet();
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter {
@@ -55,6 +61,12 @@ public class DataSetTableContract {
         void executeValidationRules();
 
         void completeDataSet();
+
+        void closeExpandBottomSheet();
+
+        void onCancelBottomSheet();
+
+        void onCompleteBottomSheet();
     }
 
 }

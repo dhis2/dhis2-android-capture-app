@@ -1,13 +1,14 @@
 package org.dhis2.utils.validationrules
 
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import org.hisp.dhis.android.core.validation.engine.ValidationResultViolation
 
 class ValidationResultViolationsAdapter(
-    fragment: Fragment,
+    fa: FragmentActivity,
     private val violations: List<ValidationResultViolation>
-) : FragmentStateAdapter(fragment) {
+) : FragmentStateAdapter(fa) {
 
     override fun getItemCount() = violations.size
 

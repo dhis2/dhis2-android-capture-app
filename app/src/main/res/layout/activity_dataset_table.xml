@@ -7,6 +7,10 @@
     <data>
 
         <variable
+            name="errorCount"
+            type="java.lang.Integer" />
+
+        <variable
             name="presenter"
             type="org.dhis2.usescases.datasets.dataSetTable.DataSetTableContract.Presenter" />
     </data>
@@ -106,9 +110,16 @@
             android:layout_gravity="bottom|end"
             android:tint="@color/white"
             app:backgroundTint="?attr/colorPrimary"
-            app:elevation="7dp"
             app:fabSize="normal"
             app:srcCompat="@drawable/ic_save" />
+
+        <include
+            android:id="@+id/BSLayout"
+            layout="@layout/violation_rules_bottom_sheet"
+            app:errorCount="@{ errorCount }"
+            app:presenter="@{ presenter }"
+            />
+
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 </layout>

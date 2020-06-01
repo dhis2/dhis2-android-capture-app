@@ -2,13 +2,11 @@ package org.dhis2.usescases.datasets.dataSetTable;
 
 import androidx.annotation.VisibleForTesting;
 
-import org.dhis2.R;
 import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.utils.analytics.AnalyticsHelper;
 import org.hisp.dhis.android.core.validation.engine.ValidationResult.ValidationResultStatus;
-import org.hisp.dhis.android.core.validation.engine.ValidationResultViolation;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -201,4 +199,17 @@ public class DataSetTablePresenter implements DataSetTableContract.Presenter {
                                 Timber::e)
         );
     }
+
+    @Override
+    public void closeExpandBottomSheet() {
+        view.closeExpandBottom();
+    }
+
+    @Override
+    public void onCancelBottomSheet() {
+        view.cancelBottomSheet();
+    }
+
+    @Override
+    public void onCompleteBottomSheet() { view.completeBottomSheet(); }
 }
