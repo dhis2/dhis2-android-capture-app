@@ -3,6 +3,10 @@ package org.dhis2.uicomponents.map.camera
 import android.content.Context
 import android.widget.Toast
 import android.widget.Toast.LENGTH_LONG
+import com.mapbox.geojson.Feature
+import com.mapbox.geojson.LineString
+import com.mapbox.geojson.Point
+import com.mapbox.geojson.Polygon
 import com.mapbox.mapboxsdk.camera.CameraPosition
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory
 import com.mapbox.mapboxsdk.geometry.LatLng
@@ -42,4 +46,27 @@ fun MapboxMap.moveCameraToPosition(latLng: LatLng) {
         .zoom(15.0)
         .build()
     this.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition))
+}
+
+fun MapboxMap.centerCameraOnFeature(feature: Feature) {
+    when (val geometry = feature.geometry()) {
+        is Point -> {
+            this.easeCamera(
+                CameraUpdateFactory.newLatLng(
+                    LatLng(
+                        geometry.latitude(),
+                        geometry.longitude()
+                    )
+                )
+            )
+        }
+        is Polygon -> {
+            val boundsBuilder = LatLngBounds.Builder()
+            (geometry.outer() as LineString).coordinates().forEach {
+                boundsBuilder.include(LatLng(it.latitude(), it.longitude()))
+            }
+            this.easeCamera(CameraUpdateFactory.newLatLng(boundsBuilder.build().center))
+        }
+    }
+
 }

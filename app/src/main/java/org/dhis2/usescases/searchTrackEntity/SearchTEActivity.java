@@ -92,8 +92,6 @@ import javax.inject.Inject;
 
 import io.reactivex.Flowable;
 import io.reactivex.functions.Consumer;
-import kotlin.jvm.functions.Function1;
-import kotlin.jvm.functions.Function3;
 import timber.log.Timber;
 
 import static org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialPresenter.ACCESS_LOCATION_PERMISSION_REQUEST;
@@ -751,23 +749,20 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                 featureType
         );
 
-        CarouselAdapter carouselAdapter = new CarouselAdapter();
-        carouselAdapter.addOnTeiClickListener(new Function3<String, String, Boolean, Boolean>() {
-            @Override
-            public Boolean invoke(String teiUid, String enrollmentUid, Boolean isDeleted) {
-                presenter.onTEIClick(teiUid, enrollmentUid, isDeleted);
-                return true;
-            }
-        });
-        carouselAdapter.addOnSyncClickListener(new Function1<String, Boolean>() {
-            @Override
-            public Boolean invoke(String teiUid) {
-                presenter.onSyncIconClick(teiUid);
-                return true;
-            }
-        });
-        binding.mapCarousel.setAdapter(carouselAdapter);
+        CarouselAdapter<SearchTeiModel> carouselAdapter = new CarouselAdapter.Builder<SearchTeiModel>()
+                .addOnTeiClickListener(
+                        (teiUid, enrollmentUid, isDeleted) -> {
+                            presenter.onTEIClick(teiUid, enrollmentUid, isDeleted);
+                            return true;
+                        })
+                .addOnSyncClickListener(
+                        teiUid -> {
+                            presenter.onSyncIconClick(teiUid);
+                            return true;
+                        })
+                .build();
 
+        binding.mapCarousel.setAdapter(carouselAdapter);
         binding.mapCarousel.attachToMapManager(teiMapManager, () ->
                 {
                     Toast.makeText(this, "Item does not have coordinates", Toast.LENGTH_SHORT).show();
