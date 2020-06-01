@@ -50,7 +50,7 @@ class MainTest : BaseTest() {
         }
     }
 
-    fun startActivity(){
+    fun startActivity() {
         rule.launchActivity(null)
     }
 }

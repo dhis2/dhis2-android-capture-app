@@ -148,5 +148,4 @@ class SettingsRobot : BaseRobot() {
         const val NOT_EDIT_TEXT = "Syncing period is not editable"
         const val SYNC_DATA = "SYNC DATA NOW"
     }
-
 }

@@ -8,7 +8,9 @@ import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent
 import androidx.test.espresso.intent.matcher.IntentMatchers.hasExtra
-import androidx.test.espresso.matcher.ViewMatchers.*
+import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
+import androidx.test.espresso.matcher.ViewMatchers.withId
+import androidx.test.espresso.matcher.ViewMatchers.withText
 import org.dhis2.R
 import org.dhis2.common.BaseRobot
 import org.dhis2.common.viewactions.ClickDrawableAction
@@ -21,7 +23,7 @@ import org.hamcrest.CoreMatchers.not
 import org.hamcrest.Matchers.isEmptyString
 
 fun loginRobot(loginBody: LoginRobot.() -> Unit) {
-    LoginRobot().apply{
+    LoginRobot().apply {
         loginBody()
     }
 }
@@ -33,7 +35,7 @@ class LoginRobot : BaseRobot() {
         closeKeyboard()
     }
 
-    fun clearServerField(){
+    fun clearServerField() {
         onView(withId(R.id.server_url_edit)).perform(clearText())
     }
 
@@ -55,11 +57,11 @@ class LoginRobot : BaseRobot() {
         onView(withId(R.id.clearPassButton)).perform(click())
     }
 
-    fun clickLoginButton(){
+    fun clickLoginButton() {
         onView(withId(R.id.login)).perform(click())
     }
 
-    fun clickQRButton(){
+    fun clickQRButton() {
         onView(withId(R.id.server_url_edit)).perform(ClickDrawableAction(ClickDrawableAction.RIGHT))
     }
 
@@ -67,11 +69,11 @@ class LoginRobot : BaseRobot() {
         onView(withId(R.id.login)).check(matches(not(isDisplayed())))
     }
 
-    fun checkAuthErrorAlertIsVisible(){
+    fun checkAuthErrorAlertIsVisible() {
         onView(withId(R.id.dialogTitle)).check(matches(withText(containsString(LOGIN_ERROR_TITLE))))
     }
 
-    fun checkUnblockSessionViewIsVisible(){
+    fun checkUnblockSessionViewIsVisible() {
         onView(withId(R.id.cardview_pin)).check(matches(isDisplayed()))
     }
 
@@ -87,13 +89,19 @@ class LoginRobot : BaseRobot() {
         onView(withId(R.id.account_recovery)).perform(click())
     }
 
-    fun checkWebviewWithRecoveryAccountIsOpened(){
-        Intents.intended(CoreMatchers.allOf(hasExtra(WebViewActivity.WEB_VIEW_URL,
-                "${BaseTest.MOCK_SERVER_URL}/dhis-web-commons/security/recovery.action"),
-                hasComponent(WebViewActivity::class.java.name)))
+    fun checkWebviewWithRecoveryAccountIsOpened() {
+        Intents.intended(
+            CoreMatchers.allOf(
+                hasExtra(
+                    WebViewActivity.WEB_VIEW_URL,
+                    "${BaseTest.MOCK_SERVER_URL}/dhis-web-commons/security/recovery.action"
+                ),
+                hasComponent(WebViewActivity::class.java.name)
+            )
+        )
     }
 
-    fun checkQRScanIsOpened(){
+    fun checkQRScanIsOpened() {
         Intents.intended(CoreMatchers.allOf(hasComponent(ScanActivity::class.java.name)))
     }
 

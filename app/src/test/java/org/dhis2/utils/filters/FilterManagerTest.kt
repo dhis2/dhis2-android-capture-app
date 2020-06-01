@@ -1,5 +1,6 @@
 package org.dhis2.utils.filters
 
+import java.util.Date
 import org.hisp.dhis.android.core.category.CategoryOptionCombo
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.event.EventStatus
@@ -8,7 +9,6 @@ import org.hisp.dhis.android.core.period.DatePeriod
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
-import java.util.Date
 
 class FilterManagerTest {
 
@@ -34,7 +34,6 @@ class FilterManagerTest {
         assertTrue(filterManager.observeField(Filters.CAT_OPT_COMB).get() == 0)
         assertTrue(filterManager.observeField(Filters.EVENT_STATUS).get() == 0)
         assertTrue(filterManager.observeField(Filters.ASSIGNED_TO_ME).get() == 0)
-
     }
 
     @Test
@@ -89,7 +88,6 @@ class FilterManagerTest {
         )
         assertTrue(filterManager.totalFilters == 1)
         assertTrue(filterManager.observeField(Filters.ORG_UNIT).get() == 2)
-
     }
 
     @Test

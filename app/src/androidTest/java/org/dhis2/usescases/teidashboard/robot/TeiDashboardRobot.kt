@@ -5,7 +5,12 @@ import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition
 import androidx.test.espresso.contrib.RecyclerViewActions.scrollTo
-import androidx.test.espresso.matcher.ViewMatchers.*
+import androidx.test.espresso.matcher.ViewMatchers.hasDescendant
+import androidx.test.espresso.matcher.ViewMatchers.hasSibling
+import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
+import androidx.test.espresso.matcher.ViewMatchers.isEnabled
+import androidx.test.espresso.matcher.ViewMatchers.withId
+import androidx.test.espresso.matcher.ViewMatchers.withText
 import org.dhis2.R
 import org.dhis2.common.BaseRobot
 import org.dhis2.common.matchers.RecyclerviewMatchers.Companion.atPosition
@@ -17,12 +22,11 @@ import org.dhis2.common.viewactions.scrollToBottomRecyclerView
 import org.dhis2.common.viewactions.typeChildViewWithId
 import org.dhis2.usescases.programStageSelection.ProgramStageSelectionViewHolder
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTEViewHolder
-import org.dhis2.usescases.teiDashboard.dashboardfragments.tei_data.DashboardProgramViewHolder
+import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.DashboardProgramViewHolder
 import org.dhis2.usescases.teidashboard.entity.EnrollmentUIModel
 import org.dhis2.usescases.teidashboard.entity.UpperEnrollmentUIModel
 import org.hamcrest.Matchers.allOf
 import org.hamcrest.Matchers.not
-
 
 fun teiDashboardRobot(teiDashboardRobot: TeiDashboardRobot.() -> Unit) {
     TeiDashboardRobot().apply {
@@ -34,19 +38,19 @@ class TeiDashboardRobot : BaseRobot() {
 
     fun clickOnNotesTab() {
         onView(clickOnTab(3)).perform(click())
-        //onView(isRoot()).perform(waitForTransitionUntil(R.id.addNoteButton))
+        // onView(isRoot()).perform(waitForTransitionUntil(R.id.addNoteButton))
         Thread.sleep(500)
     }
 
     fun clickOnRelationshipTab() {
         onView(clickOnTab(2)).perform(click())
-        //onView(isRoot()).perform(waitForTransitionUntil(R.id.addNoteButton))
+        // onView(isRoot()).perform(waitForTransitionUntil(R.id.addNoteButton))
         Thread.sleep(500)
     }
 
     fun clickOnIndicatorsTab() {
         onView(clickOnTab(1)).perform(click())
-        //onView(isRoot()).perform(waitForTransitionUntil(R.id.addNoteButton))
+        // onView(isRoot()).perform(waitForTransitionUntil(R.id.addNoteButton))
         Thread.sleep(500)
     }
 
@@ -150,7 +154,7 @@ class TeiDashboardRobot : BaseRobot() {
 
     fun clickOnNextQR() {
         var qrLenght = 1
-
+      
         while (qrLenght < 8) {
             onView(withId(R.id.next)).perform(click())
             qrLenght++
@@ -185,9 +189,12 @@ class TeiDashboardRobot : BaseRobot() {
     }
 
     fun checkUpperInfo(upperInformation: UpperEnrollmentUIModel) {
-        onView(withId(R.id.incident_date)).check(matches(withText(upperInformation.incidentDate)))
-        onView(withId(R.id.enrollment_date)).check(matches(withText(upperInformation.enrollmentDate)))
-        onView(withId(R.id.org_unit)).check(matches(withText(upperInformation.orgUnit)))
+        onView(withId(R.id.incident_date))
+            .check(matches(withText(upperInformation.incidentDate)))
+        onView(withId(R.id.enrollment_date))
+            .check(matches(withText(upperInformation.enrollmentDate)))
+        onView(withId(R.id.org_unit))
+            .check(matches(withText(upperInformation.orgUnit)))
     }
 
     fun clickOnSeeDetails() {

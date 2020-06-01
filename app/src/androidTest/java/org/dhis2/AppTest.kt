@@ -20,7 +20,7 @@ class AppTest : App() {
 
     @Override
     override fun setUpServerComponent() {
-        D2Manager.setTestingDatabase(DB_TO_IMPORT,"android")
+        D2Manager.setTestingDatabase(DB_TO_IMPORT, "android")
         D2Manager.blockingInstantiateD2(ServerModule.getD2Configuration(this))
 
         serverComponent = appComponent.plus(ServerModule())
@@ -32,11 +32,11 @@ class AppTest : App() {
     override fun setUpUserComponent() {
         super.setUpUserComponent()
 
-        val userManager = if (serverComponent == null)
+        val userManager = if (serverComponent == null) {
             null
-        else
+        } else {
             serverComponent!!.userManager()
-
+        }
         if (userManager != null) {
             userComponent = serverComponent!!.plus(UserModule())
         }
@@ -44,12 +44,12 @@ class AppTest : App() {
 
     override fun prepareAppComponent(): AppComponent.Builder {
         return DaggerAppComponent.builder()
-                .appModule(AppModule(this))
-                .schedulerModule(SchedulerModule(SchedulersProviderImpl()))
-                .analyticsModule(AnalyticsModule())
-                .preferenceModule(PreferencesTestingModule())
-                .utilModule(UtilsModule())
-                .workManagerController(WorkManagerModule())
+            .appModule(AppModule(this))
+            .schedulerModule(SchedulerModule(SchedulersProviderImpl()))
+            .analyticsModule(AnalyticsModule())
+            .preferenceModule(PreferencesTestingModule())
+            .utilModule(UtilsModule())
+            .workManagerController(WorkManagerModule())
     }
 
     companion object {

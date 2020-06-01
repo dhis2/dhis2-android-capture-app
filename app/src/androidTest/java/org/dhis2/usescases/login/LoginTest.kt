@@ -7,7 +7,9 @@ import org.dhis2.data.prefs.Preference.Companion.PIN
 import org.dhis2.data.prefs.Preference.Companion.SESSION_LOCKED
 import org.dhis2.usescases.BaseTest
 import org.dhis2.usescases.main.MainActivity
-import org.hisp.dhis.android.core.mockwebserver.ResponseController.*
+import org.hisp.dhis.android.core.mockwebserver.ResponseController.API_ME_PATH
+import org.hisp.dhis.android.core.mockwebserver.ResponseController.API_SYSTEM_INFO_PATH
+import org.hisp.dhis.android.core.mockwebserver.ResponseController.GET
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -34,7 +36,11 @@ class LoginTest : BaseTest() {
     fun shouldLoginSuccessfullyWhenCredentialsAreRight() {
         mockWebServerRobot.addResponse(GET, API_ME_PATH, API_ME_RESPONSE_OK)
         mockWebServerRobot.addResponse(GET, API_SYSTEM_INFO_PATH, API_SYSTEM_INFO_RESPONSE_OK)
-        mockWebServerRobot.addResponse(GET, "/api/dataStore/ANDROID_SETTING_APP/general_settings?.*", API_METADATA_SETTINGS_RESPONSE_ERROR)
+        mockWebServerRobot.addResponse(
+            GET,
+            "/api/dataStore/ANDROID_SETTING_APP/general_settings?.*",
+            API_METADATA_SETTINGS_RESPONSE_ERROR
+        )
 
         enableIntents()
         startLoginActivity()
@@ -70,29 +76,29 @@ class LoginTest : BaseTest() {
 
     @Test
     fun shouldHideLoginButtonIfPasswordIsMissing() {
-      startLoginActivity()
+        startLoginActivity()
 
-      loginRobot {
-          clearServerField()
-          typeServer(MOCK_SERVER_URL)
-          typeUsername(USERNAME)
-          typePassword(PASSWORD)
-          clearPasswordField()
-          checkLoginButtonIsHidden()
-      }
+        loginRobot {
+            clearServerField()
+            typeServer(MOCK_SERVER_URL)
+            typeUsername(USERNAME)
+            typePassword(PASSWORD)
+            clearPasswordField()
+            checkLoginButtonIsHidden()
+        }
     }
 
     @Test
     fun shouldLaunchWebViewWhenClickAccountRecoveryAndServerIsFilled() {
-      enableIntents()
-      startLoginActivity()
+        enableIntents()
+        startLoginActivity()
 
-      loginRobot {
-          clearServerField()
-          typeServer(MOCK_SERVER_URL)
-          clickAccountRecovery()
-          checkWebviewWithRecoveryAccountIsOpened()
-      }
+        loginRobot {
+            clearServerField()
+            typeServer(MOCK_SERVER_URL)
+            clickAccountRecovery()
+            checkWebviewWithRecoveryAccountIsOpened()
+        }
     }
 
     @Test
@@ -113,14 +119,14 @@ class LoginTest : BaseTest() {
 
     @Test
     fun shouldGoToPinScreenWhenPinWasSet() {
-      preferencesRobot.saveValue(SESSION_LOCKED, true)
-      preferencesRobot.saveValue(PIN, PIN_PASSWORD)
+        preferencesRobot.saveValue(SESSION_LOCKED, true)
+        preferencesRobot.saveValue(PIN, PIN_PASSWORD)
 
-      startLoginActivity()
+        startLoginActivity()
 
-      loginRobot {
-          checkUnblockSessionViewIsVisible()
-      }
+        loginRobot {
+            checkUnblockSessionViewIsVisible()
+        }
     }
 
     @Test
@@ -140,15 +146,15 @@ class LoginTest : BaseTest() {
         }
     }
 
-    fun startMainActivity(){
+    fun startMainActivity() {
         mainRule.launchActivity(null)
     }
 
-    private fun startLoginActivity(){
+    private fun startLoginActivity() {
         ruleLogin.launchActivity(null)
     }
 
-    private fun cleanDatabase(){
+    private fun cleanDatabase() {
         context.deleteDatabase(DB_GENERATED_BY_LOGIN)
     }
 
@@ -157,9 +163,12 @@ class LoginTest : BaseTest() {
         const val API_ME_RESPONSE_OK = "mocks/user/user.json"
         const val API_ME_UNAUTHORIZE = "mocks/user/unauthorize.json"
         const val API_SYSTEM_INFO_RESPONSE_OK = "mocks/systeminfo/systeminfo.json"
-        const val API_METADATA_SETTINGS_RESPONSE_ERROR = "mocks/settingswebapp/generalsettings_404.json"
-        const val API_METADATA_SETTINGS_PROGRAM_RESPONSE_ERROR = "mocks/settingswebapp/programsettings_404.json"
-        const val API_METADATA_SETTINGS_DATASET_RESPONSE_ERROR = "mocks/settingswebapp/datasetsettings_404.json"
+        const val API_METADATA_SETTINGS_RESPONSE_ERROR =
+            "mocks/settingswebapp/generalsettings_404.json"
+        const val API_METADATA_SETTINGS_PROGRAM_RESPONSE_ERROR =
+            "mocks/settingswebapp/programsettings_404.json"
+        const val API_METADATA_SETTINGS_DATASET_RESPONSE_ERROR =
+            "mocks/settingswebapp/datasetsettings_404.json"
         const val DB_GENERATED_BY_LOGIN = "127-0-0-1-8080_test_unencrypted.db"
         const val PIN_PASSWORD = 1234
 

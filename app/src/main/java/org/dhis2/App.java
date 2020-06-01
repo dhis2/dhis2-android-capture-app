@@ -19,7 +19,6 @@ import com.facebook.stetho.Stetho;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.security.ProviderInstaller;
-import com.mapbox.mapboxsdk.Mapbox;
 
 import org.dhis2.data.dagger.PerActivity;
 import org.dhis2.data.dagger.PerServer;
@@ -34,6 +33,7 @@ import org.dhis2.data.server.UserManager;
 import org.dhis2.data.service.workManager.WorkManagerModule;
 import org.dhis2.data.user.UserComponent;
 import org.dhis2.data.user.UserModule;
+import org.dhis2.uicomponents.map.MapController;
 import org.dhis2.usescases.login.LoginComponent;
 import org.dhis2.usescases.login.LoginContracts;
 import org.dhis2.usescases.login.LoginModule;
@@ -103,14 +103,13 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
     public void onCreate() {
         super.onCreate();
 
-
         Timber.plant(BuildConfig.DEBUG ? new DebugTree() : new ReleaseTree());
         ProcessLifecycleOwner.get().getLifecycle().addObserver(this);
 
         if (BuildConfig.DEBUG)
             Stetho.initializeWithDefaults(this);
 
-        Mapbox.getInstance(this, BuildConfig.MAPBOX_ACCESS_TOKEN);
+        MapController.Companion.init(this, BuildConfig.MAPBOX_ACCESS_TOKEN);
 
         Fabric.with(this, new Crashlytics());
 
