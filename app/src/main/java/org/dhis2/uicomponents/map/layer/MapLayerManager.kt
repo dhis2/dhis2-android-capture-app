@@ -4,6 +4,7 @@ import android.graphics.Color
 import com.mapbox.mapboxsdk.maps.MapboxMap
 import org.dhis2.uicomponents.map.MapStyle
 import org.dhis2.uicomponents.map.layer.types.EnrollmentMapLayer
+import org.dhis2.uicomponents.map.layer.types.EventMapLayer
 import org.dhis2.uicomponents.map.layer.types.HeatmapMapLayer
 import org.dhis2.uicomponents.map.layer.types.RelationshipMapLayer
 import org.dhis2.uicomponents.map.layer.types.SatelliteMapLayer
@@ -66,6 +67,11 @@ class MapLayerManager {
                 featureType,
                 sourceId!!,
                 relationShipColors.firstOrNull()?.also { relationShipColors.removeAt(0) }
+            )
+            LayerType.EVENT_LAYER -> EventMapLayer(
+                style,
+                featureType,
+                relationShipColors.first()
             )
         }
     }

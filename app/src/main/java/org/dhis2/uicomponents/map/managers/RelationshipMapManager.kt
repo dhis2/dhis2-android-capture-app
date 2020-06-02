@@ -33,7 +33,7 @@ class RelationshipMapManager : MapManager() {
             RELATIONSHIP_ICON,
             AppCompatResources.getDrawable(
                 mapView.context,
-                R.drawable.relationship_map_marker
+                R.drawable.map_marker
             )!!
         )
         setSource()
