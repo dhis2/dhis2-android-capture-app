@@ -2,10 +2,9 @@ package org.dhis2.uicomponents.map.geometry.line
 
 import com.mapbox.geojson.LineString
 import junit.framework.Assert.assertTrue
-import org.dhis2.uicomponents.map.mocks.GeometryDummy
-import org.dhis2.uicomponents.map.model.RelationshipDirection
-import org.dhis2.uicomponents.map.model.RelationshipUiComponentModel
-import org.dhis2.uicomponents.map.model.TeiMap
+import org.dhis2.uicomponents.map.mocks.RelationshipUiCompomentDummy.LINE_STRING
+import org.dhis2.uicomponents.map.mocks.RelationshipUiCompomentDummy.relationshipUiComponentModel
+import org.dhis2.uicomponents.map.mocks.RelationshipUiCompomentDummy.relationshipUiComponentModelWrongCoordinates
 import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Test
@@ -35,41 +34,5 @@ class MapLineToRelationshipFeatureTest {
         val result = mapper.map(relationshipModel)
 
         assertTrue(result == null)
-    }
-
-    private fun relationshipUiComponentModelWrongCoordinates(): RelationshipUiComponentModel {
-        val geometryFrom = GeometryDummy.getGeometryAsPointWrong()
-        val geometryTo = GeometryDummy.getGeometryAsPointWrong()
-
-        return RelationshipUiComponentModel(
-            DISPLAY_NAME,
-            RELATIONSHIP_TYPE,
-            RelationshipDirection.FROM,
-            false,
-            TeiMap(TEIUID_FROM, geometryFrom, "", ""),
-            TeiMap(TEIUID_TO, geometryTo, "", "")
-        )
-    }
-
-    private fun relationshipUiComponentModel(): RelationshipUiComponentModel {
-        val geometryFrom = GeometryDummy.getGeometryAsPointFrom()
-        val geometryTo = GeometryDummy.getGeometryAsPointTo()
-
-        return RelationshipUiComponentModel(
-            DISPLAY_NAME,
-            RELATIONSHIP_TYPE,
-            RelationshipDirection.FROM,
-            false,
-            TeiMap(TEIUID_FROM, geometryFrom, "", ""),
-            TeiMap(TEIUID_TO, geometryTo, "", "")
-        )
-    }
-
-    companion object {
-        const val LINE_STRING = "LineString"
-        const val DISPLAY_NAME = "displayName"
-        const val TEIUID_FROM = "456"
-        const val TEIUID_TO = "567"
-        const val RELATIONSHIP_TYPE = "123"
     }
 }

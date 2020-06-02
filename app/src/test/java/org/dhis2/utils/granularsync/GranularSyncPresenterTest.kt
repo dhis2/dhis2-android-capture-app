@@ -4,8 +4,6 @@ import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Single
-import java.util.Collections
-import java.util.Date
 import junit.framework.Assert.assertTrue
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.dhis2.data.service.workManager.WorkManagerController
@@ -28,6 +26,8 @@ import org.junit.Test
 import org.mockito.BDDMockito.then
 import org.mockito.Mockito
 import org.mockito.Mockito.mock
+import java.util.Collections
+import java.util.Date
 
 class GranularSyncPresenterTest {
 
@@ -62,7 +62,7 @@ class GranularSyncPresenterTest {
         // WHEN
         presenter.configure(view)
         // THEN
-        then(view).should().showTitle("DISPLAY_NAME")
+        then(view).should().showTitle("DISPLAY_NAME_FIRST")
     }
 
     @Test
@@ -284,7 +284,7 @@ class GranularSyncPresenterTest {
             .uid("test_uid")
             .code("CODE")
             .name("NAME")
-            .displayName("DISPLAY_NAME")
+            .displayName("DISPLAY_NAME_FIRST")
             .created(Date())
             .lastUpdated(Date())
             .build()
