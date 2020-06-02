@@ -356,7 +356,6 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
         ShapeAppearanceModel appearanceModel = new ShapeAppearanceModel().toBuilder()
                 .setTopLeftCorner(CornerFamily.ROUNDED, cornerSize)
                 .setTopRightCorner(CornerFamily.ROUNDED, cornerSize)
-                .setTopRightCornerSize(cornerSize)
                 .build();
 
         int elevation = getResources().getDimensionPixelSize(R.dimen.elevation);
