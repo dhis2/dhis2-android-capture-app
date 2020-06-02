@@ -13,7 +13,7 @@ import org.hisp.dhis.android.core.common.FeatureType
 
 class MapLayerManager {
 
-    private lateinit var mapLayers: HashMap<String, MapLayer>
+    lateinit var mapLayers: HashMap<String, MapLayer>
     private lateinit var mapboxMap: MapboxMap
     private var mapStyle: MapStyle? = null
     private var featureType: FeatureType = FeatureType.POINT
