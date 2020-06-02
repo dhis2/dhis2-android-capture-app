@@ -6,7 +6,7 @@ import org.dhis2.uicomponents.map.model.TeiMap
 
 object RelationshipUiCompomentDummy {
 
-     fun relationshipUiComponentModelWrongCoordinates(): RelationshipUiComponentModel {
+    fun relationshipUiComponentModelWrongCoordinates(): RelationshipUiComponentModel {
         val geometryFrom = GeometryDummy.getGeometryAsPointWrong()
         val geometryTo = GeometryDummy.getGeometryAsPointWrong()
 
@@ -15,8 +15,18 @@ object RelationshipUiCompomentDummy {
             RELATIONSHIP_TYPE,
             RelationshipDirection.FROM,
             false,
-            TeiMap(TEIUID_FROM, geometryFrom, "", ""),
-            TeiMap(TEIUID_TO, geometryTo, "", "")
+            TeiMap(
+                TEIUID_FROM,
+                geometryFrom,
+                "",
+                ""
+            ),
+            TeiMap(
+                TEIUID_TO,
+                geometryTo,
+                "",
+                ""
+            )
         )
     }
 
@@ -29,8 +39,18 @@ object RelationshipUiCompomentDummy {
             RELATIONSHIP_TYPE,
             RelationshipDirection.FROM,
             false,
-            TeiMap(TEIUID_FROM, geometryFrom, "", ""),
-            TeiMap(TEIUID_TO, geometryTo, "", "")
+            TeiMap(
+                TEIUID_FROM,
+                geometryFrom,
+                "",
+                ""
+            ),
+            TeiMap(
+                TEIUID_TO,
+                geometryTo,
+                "",
+                ""
+            )
         )
     }
 

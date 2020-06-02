@@ -9,7 +9,6 @@ object GeometryDummy {
             .type(FeatureType.POINT)
             .coordinates(FROM_COORDINATES)
             .build()
-
     }
 
     fun getGeometryAsPointTo(): Geometry {
@@ -17,7 +16,6 @@ object GeometryDummy {
             .type(FeatureType.POINT)
             .coordinates(TO_COORDINATES)
             .build()
-
     }
 
     fun getGeometryAsPointWrong(): Geometry {

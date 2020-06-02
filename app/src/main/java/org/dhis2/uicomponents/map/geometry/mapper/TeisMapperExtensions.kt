@@ -31,7 +31,9 @@ fun Feature?.addTeiEnrollmentInfo(searchTeiModel: SearchTeiModel): Feature? {
     return this
 }
 
-fun Feature?.addRelationshipInfo(relationshipUiComponentModel: RelationshipUiComponentModel): Feature? {
+fun Feature?.addRelationshipInfo(
+    relationshipUiComponentModel: RelationshipUiComponentModel
+): Feature? {
     if (this != null) {
         addStringProperty(
             MapRelationshipsToFeatureCollection.RELATIONSHIP,
@@ -53,18 +55,34 @@ fun Feature?.addRelationshipInfo(relationshipUiComponentModel: RelationshipUiCom
     return this
 }
 
-fun Feature?.addRelationFromInfo(relationshipUiComponentModel: RelationshipUiComponentModel): Feature? {
+fun Feature?.addRelationFromInfo(
+    relationshipUiComponentModel: RelationshipUiComponentModel
+): Feature? {
     if (this != null) {
-        addStringProperty(MapTeisToFeatureCollection.TEI_UID, relationshipUiComponentModel.from.teiUid)
-        addStringProperty(MapTeisToFeatureCollection.TEI_IMAGE, relationshipUiComponentModel.from.defaultImage)
+        addStringProperty(
+            MapTeisToFeatureCollection.TEI_UID,
+            relationshipUiComponentModel.from.teiUid
+        )
+        addStringProperty(
+            MapTeisToFeatureCollection.TEI_IMAGE,
+            relationshipUiComponentModel.from.defaultImage
+        )
     }
     return this
 }
 
-fun Feature?.addRelationToInfo(relationshipUiComponentModel: RelationshipUiComponentModel): Feature? {
+fun Feature?.addRelationToInfo(
+    relationshipUiComponentModel: RelationshipUiComponentModel
+): Feature? {
     if (this != null) {
-        addStringProperty(MapTeisToFeatureCollection.TEI_UID, relationshipUiComponentModel.To.teiUid)
-        addStringProperty(MapTeisToFeatureCollection.TEI_IMAGE, relationshipUiComponentModel.To.defaultImage)
+        addStringProperty(
+            MapTeisToFeatureCollection.TEI_UID,
+            relationshipUiComponentModel.To.teiUid
+        )
+        addStringProperty(
+            MapTeisToFeatureCollection.TEI_IMAGE,
+            relationshipUiComponentModel.To.defaultImage
+        )
     }
     return this
 }

@@ -29,9 +29,9 @@ class GetBoundingBoxTest {
     }
 
     private fun prepareCoordinates(): List<LatLng> {
-        val below = LatLng(-54.367759,-68.552575)
+        val below = LatLng(-54.367759, -68.552575)
         val upper = LatLng(72.501722, 52.131954)
-        val medium = LatLng(20.632784,-0.285835)
+        val medium = LatLng(20.632784, -0.285835)
         return listOf(below, upper, medium)
     }
 }

@@ -7,7 +7,6 @@ import org.hisp.dhis.android.core.relationship.RelationshipType
 import java.text.ParseException
 import java.util.Date
 
-
 object RelationshipViewModelDummy {
 
     fun getViewModelTypeFull(): RelationshipViewModel {

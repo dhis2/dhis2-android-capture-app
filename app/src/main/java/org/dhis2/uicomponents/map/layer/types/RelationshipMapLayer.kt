@@ -19,7 +19,6 @@ class RelationshipMapLayer(val style: Style, val featureType: FeatureType) : Map
         when (featureType) {
             FeatureType.POINT -> style.addLayer(lineLayer)
             FeatureType.POLYGON -> {
-
             }
             else -> Unit
         }
@@ -28,7 +27,11 @@ class RelationshipMapLayer(val style: Style, val featureType: FeatureType) : Map
     private val lineLayer: Layer
         get() = style.getLayer(POINT_LAYER_ID)
             ?: LineLayer(POINT_LAYER_ID, RELATIONSHIPS_SOURCE_ID)
-                .withProperties(lineColor(LINE_COLOR), lineWidth(LINE_WIDTH), lineCap(LINE_CAP_SQUARE))
+                .withProperties(
+                    lineColor(LINE_COLOR),
+                    lineWidth(LINE_WIDTH),
+                    lineCap(LINE_CAP_SQUARE)
+                )
 
     override fun showLayer() {
         setVisibility(Property.VISIBLE)
@@ -42,7 +45,6 @@ class RelationshipMapLayer(val style: Style, val featureType: FeatureType) : Map
         when (featureType) {
             FeatureType.POINT -> lineLayer.setProperties(PropertyFactory.visibility(visibility))
             FeatureType.POLYGON -> {
-
             }
             else -> Unit
         }

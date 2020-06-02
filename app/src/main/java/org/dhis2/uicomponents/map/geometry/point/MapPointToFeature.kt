@@ -10,7 +10,7 @@ import timber.log.Timber
 
 class MapPointToFeature {
 
-    //To remove this with bounds
+    // To remove this with bounds
     fun map(item: Geometry, bounds: BoundsGeometry): Pair<Feature, BoundsGeometry>? {
         val sdkPoint = GeometryHelper.getPoint(item)
         val lat = sdkPoint[1]

@@ -42,11 +42,21 @@ class MapRelationshipsToFeatureCollectionTest {
             listOf(relationshipUiComponentModel(), relationshipUiComponentModelSecond())
 
         whenever(mapLineToFeature.map(firstRelationship)) doReturn getLineFeature(firstRelationship)
-        whenever(mapLineToFeature.map(secondRelationship)) doReturn getLineFeature(secondRelationship)
-        whenever(mapPointToFeature.map(firstRelationship.from.geometry!!)) doReturn getPointFromFeature(firstRelationship)
-        whenever(mapPointToFeature.map(secondRelationship.from.geometry!!)) doReturn getPointFromFeature(secondRelationship)
-        whenever(mapPointToFeature.map(firstRelationship.To.geometry!!)) doReturn getPointToFeature(firstRelationship)
-        whenever(mapPointToFeature.map(secondRelationship.To.geometry!!)) doReturn getPointToFeature(secondRelationship)
+        whenever(
+            mapLineToFeature.map(secondRelationship)
+        ) doReturn getLineFeature(secondRelationship)
+        whenever(
+            mapPointToFeature.map(firstRelationship.from.geometry!!)
+        ) doReturn getPointFromFeature(firstRelationship)
+        whenever(
+            mapPointToFeature.map(secondRelationship.from.geometry!!)
+        ) doReturn getPointFromFeature(secondRelationship)
+        whenever(
+            mapPointToFeature.map(firstRelationship.To.geometry!!)
+        ) doReturn getPointToFeature(firstRelationship)
+        whenever(
+            mapPointToFeature.map(secondRelationship.To.geometry!!)
+        ) doReturn getPointToFeature(secondRelationship)
         whenever(bounds.getEnclosingBoundingBox(any())) doReturn BoundingBox.fromLngLats(
             0.0,
             0.0,
@@ -73,7 +83,6 @@ class MapRelationshipsToFeatureCollectionTest {
         val pointTo = relationshipFirstType.features()?.get(2)?.geometry() as Point
         assertThat(pointTo.longitude(), `is`(TO_LONGITUDE))
         assertThat(pointTo.latitude(), `is`(TO_LATITUDE))
-
 
         val relationshipSecondType = result.first[SECOND_RELATIONSHIP_TYPE]
         assertThat(relationshipSecondType?.features()?.size, `is`(3))
@@ -112,14 +121,14 @@ class MapRelationshipsToFeatureCollectionTest {
         )
     }
 
-    private fun getPointFromFeature(model: RelationshipUiComponentModel): Feature{
+    private fun getPointFromFeature(model: RelationshipUiComponentModel): Feature {
         val coordinates1 = GeometryHelper.getPoint(model.from.geometry!!)
 
         val point = Point.fromLngLat(coordinates1[0], coordinates1[1])
         return Feature.fromGeometry(point)
     }
 
-    private fun getPointToFeature(model: RelationshipUiComponentModel): Feature{
+    private fun getPointToFeature(model: RelationshipUiComponentModel): Feature {
         val coordinates1 = GeometryHelper.getPoint(model.To.geometry!!)
 
         val point = Point.fromLngLat(coordinates1[0], coordinates1[1])

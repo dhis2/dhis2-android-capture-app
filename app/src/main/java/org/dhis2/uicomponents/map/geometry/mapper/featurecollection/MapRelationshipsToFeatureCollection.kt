@@ -19,9 +19,12 @@ class MapRelationshipsToFeatureCollection(
     private val mapPointToFeature: MapPointToFeature,
     private val bounds: GetBoundingBox
 ) {
-    fun map(relationships: List<RelationshipUiComponentModel>): Pair<Map<String?, FeatureCollection>, BoundingBox> {
-        val relationshipByName =
-            relationships.groupBy { it.displayName }.mapValues { relationModels ->
+    fun map(
+        relationships: List<RelationshipUiComponentModel>
+    ): Pair<Map<String?, FeatureCollection>, BoundingBox> {
+        val relationshipByName = relationships
+            .groupBy { it.displayName }
+            .mapValues { relationModels ->
                 val lineFeatures = relationModels.value.map {
                     val feature = mapLineToFeature.map(it)
                     feature?.addRelationshipInfo(it)
@@ -44,8 +47,12 @@ class MapRelationshipsToFeatureCollection(
         val featuresList = relationshipByName.values.flatten()
         val latLongList = getLngLatAsCoordinateList(featuresList)
 
-        return Pair<Map<String?, FeatureCollection>, BoundingBox> (
-            relationshipByName.mapValues { FeatureCollection.fromFeatures(it.value) },
+        return Pair<Map<String?, FeatureCollection>, BoundingBox>(
+            relationshipByName.mapValues {
+                FeatureCollection.fromFeatures(
+                    it.value
+                )
+            },
             bounds.getEnclosingBoundingBox(latLongList)
         )
     }

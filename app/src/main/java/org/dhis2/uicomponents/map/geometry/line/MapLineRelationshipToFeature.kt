@@ -19,7 +19,8 @@ class MapLineRelationshipToFeature {
         val latLineEnd = lineEndPoint[1]
 
         if (areLngLatCorrect(lonLineStart, latLineStart) &&
-            areLngLatCorrect(lonLineEnd, latLineEnd)) {
+            areLngLatCorrect(lonLineEnd, latLineEnd)
+        ) {
             val firstPoint = Point.fromLngLat(lonLineStart, latLineStart)
             val secondPoint = Point.fromLngLat(lonLineEnd, latLineEnd)
             return Feature.fromGeometry(LineString.fromLngLats(listOf(firstPoint, secondPoint)))

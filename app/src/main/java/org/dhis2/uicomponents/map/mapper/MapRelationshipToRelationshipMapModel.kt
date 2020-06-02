@@ -7,9 +7,11 @@ import org.dhis2.usescases.teiDashboard.dashboardfragments.relationships.Relatio
 
 class MapRelationshipToRelationshipMapModel {
 
-    fun mapList(relationshipViewModels: List<RelationshipViewModel>): List<RelationshipUiComponentModel> {
-        return relationshipViewModels.filter { it.toGeometry() != null && it.fromGeometry() != null }
-            .mapNotNull { map(it) }
+    fun mapList(
+        relationshipViewModels: List<RelationshipViewModel>
+    ): List<RelationshipUiComponentModel> {
+        return relationshipViewModels
+            .filter { it.toGeometry() != null && it.fromGeometry() != null }.mapNotNull { map(it) }
     }
 
     private fun map(relationshipViewModel: RelationshipViewModel): RelationshipUiComponentModel? {
@@ -17,7 +19,9 @@ class MapRelationshipToRelationshipMapModel {
         val typeUid = relationshipViewModel.relationshipType().uid()
         val bidirectional = relationshipViewModel.relationshipType().bidirectional()
         val direction =
-            if (relationshipViewModel.relationshipDirection() == RelationshipViewModel.RelationshipDirection.TO) {
+            if (relationshipViewModel.relationshipDirection()
+                == RelationshipViewModel.RelationshipDirection.TO
+            ) {
                 RelationshipDirection.TO
             } else {
                 RelationshipDirection.FROM
@@ -28,9 +32,16 @@ class MapRelationshipToRelationshipMapModel {
         val teiToUid = relationshipViewModel.relationship().to()?.trackedEntityInstance()
             ?.trackedEntityInstance()
 
-        val teiFrom = TeiMap(teiFromUid, relationshipViewModel.fromGeometry(),"","")
-        val teiTo = TeiMap(teiToUid, relationshipViewModel.toGeometry(),"", "")
+        val teiFrom = TeiMap(teiFromUid, relationshipViewModel.fromGeometry(), "", "")
+        val teiTo = TeiMap(teiToUid, relationshipViewModel.toGeometry(), "", "")
 
-        return RelationshipUiComponentModel(displayName, typeUid, direction, bidirectional, teiFrom, teiTo)
+        return RelationshipUiComponentModel(
+            displayName,
+            typeUid,
+            direction,
+            bidirectional,
+            teiFrom,
+            teiTo
+        )
     }
 }
