@@ -62,7 +62,7 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
     private boolean backPressed;
     private DataSetTableComponent dataSetTableComponent;
 
-    private BottomSheetBehavior behavior;
+    private BottomSheetBehavior<View> behavior;
     private boolean errorsIsShowing = false;
 
     public static Bundle getBundle(@NonNull String dataSetUid,
@@ -161,7 +161,7 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
     }
 
     public void updateTabLayout(String section, int numTables) {
-        if (sections.get(0) == "NO_SECTION"){
+        if (sections.get(0).equals("NO_SECTION")){
             sections.remove("NO_SECTION");
             sections.add(getString(R.string.tab_tables));
             viewPagerAdapter.swapData(sections);
