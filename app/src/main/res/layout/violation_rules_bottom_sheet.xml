@@ -23,17 +23,9 @@
         app:behavior_hideable="false"
         app:behavior_peekHeight="85dp">
 
-        <View
-            android:id="@+id/shadow"
-            android:layout_width="match_parent"
-            android:layout_height="8dp"
-            android:background="@drawable/shadow_top"
-            app:layout_anchor="@id/bottomSheetLayout" />
-
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@color/white">
+            android:layout_height="match_parent">
 
             <androidx.constraintlayout.widget.Guideline
                 android:id="@+id/startGuideline"
@@ -102,7 +94,7 @@
                 android:id="@+id/dotsIndicator"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="15dp"
+                android:layout_marginTop="20dp"
                 app:dotsColor="@color/dots_error_selected"
                 app:dotsSize="12dp"
                 app:layout_constraintEnd_toEndOf="@id/endGuideline"

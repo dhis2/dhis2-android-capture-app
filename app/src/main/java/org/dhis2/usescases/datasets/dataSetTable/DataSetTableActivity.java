@@ -1,16 +1,23 @@
 package org.dhis2.usescases.datasets.dataSetTable;
 
 import android.content.pm.ActivityInfo;
+import android.content.res.ColorStateList;
 import android.content.res.Configuration;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.res.ResourcesCompat;
+import androidx.core.view.ViewCompat;
 import androidx.databinding.DataBindingUtil;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
+import com.google.android.material.shape.CornerFamily;
+import com.google.android.material.shape.MaterialShapeDrawable;
+import com.google.android.material.shape.ShapeAppearanceModel;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.tabs.TabLayoutMediator;
 import com.jakewharton.rxbinding2.view.RxView;
@@ -268,6 +275,7 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
 
     @Override
     public void showErrorsValidationDialog(List<ValidationResultViolation> violations) {
+        configureShapeDrawable();
 
         errorsIsShowing = true;
         binding.saveButton.hide();
@@ -341,5 +349,26 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
     public void completeBottomSheet() {
         cancelBottomSheet();
         presenter.completeDataSet();
+    }
+
+    private void configureShapeDrawable() {
+        int cornerSize = getResources().getDimensionPixelSize(R.dimen.rounded_16);
+        ShapeAppearanceModel appearanceModel = new ShapeAppearanceModel().toBuilder()
+                .setTopLeftCorner(CornerFamily.ROUNDED, cornerSize)
+                .setTopRightCorner(CornerFamily.ROUNDED, cornerSize)
+                .setTopRightCornerSize(cornerSize)
+                .build();
+
+        int elevation = getResources().getDimensionPixelSize(R.dimen.elevation);
+        MaterialShapeDrawable shapeDrawable = new MaterialShapeDrawable(appearanceModel);
+        int color = ResourcesCompat.getColor(getResources(), R.color.white, null);
+        shapeDrawable.setFillColor(ColorStateList.valueOf(color));
+
+        binding.BSLayout.bottomSheetLayout.setBackground(shapeDrawable);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            binding.BSLayout.bottomSheetLayout.setElevation(elevation);
+        } else {
+            ViewCompat.setElevation(binding.BSLayout.bottomSheetLayout, elevation);
+        }
     }
 }
