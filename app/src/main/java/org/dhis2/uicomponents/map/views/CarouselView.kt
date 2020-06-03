@@ -8,7 +8,6 @@ import androidx.recyclerview.widget.LinearSnapHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.mapbox.geojson.Feature
 import org.dhis2.uicomponents.map.camera.centerCameraOnFeature
-import org.dhis2.uicomponents.map.camera.moveCameraToPosition
 import org.dhis2.uicomponents.map.carousel.CarouselAdapter
 import org.dhis2.uicomponents.map.managers.MapManager
 
@@ -41,7 +40,7 @@ class CarouselView<T> @JvmOverloads constructor(
                     mapManager.mapLayerManager.selectFeature(feature)
                     if (feature == null) {
                         callback.invoke()
-                    }else{
+                    } else {
                         mapManager.map.centerCameraOnFeature(feature)
                     }
                     selectedFeature == null

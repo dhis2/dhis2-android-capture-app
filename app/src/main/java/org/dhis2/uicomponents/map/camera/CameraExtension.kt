@@ -68,5 +68,4 @@ fun MapboxMap.centerCameraOnFeature(feature: Feature) {
             this.easeCamera(CameraUpdateFactory.newLatLng(boundsBuilder.build().center))
         }
     }
-
 }

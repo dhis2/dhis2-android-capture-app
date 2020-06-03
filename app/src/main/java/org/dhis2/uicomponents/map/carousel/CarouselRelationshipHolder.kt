@@ -7,12 +7,12 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CircleCrop
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
+import java.io.File
 import org.dhis2.R
 import org.dhis2.databinding.ItemCarouselRelationshipBinding
 import org.dhis2.uicomponents.map.model.RelationshipMapModel
 import org.dhis2.uicomponents.map.model.TeiMap
 import org.dhis2.utils.ObjectStyleUtils
-import java.io.File
 
 class CarouselRelationshipHolder(
     val binding: ItemCarouselRelationshipBinding,
