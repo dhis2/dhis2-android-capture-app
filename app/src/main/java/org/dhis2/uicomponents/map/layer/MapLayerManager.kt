@@ -2,13 +2,13 @@ package org.dhis2.uicomponents.map.layer
 
 import android.graphics.Color
 import com.mapbox.mapboxsdk.maps.MapboxMap
-import org.dhis2.uicomponents.map.MapStyle
 import org.dhis2.uicomponents.map.layer.types.EnrollmentMapLayer
 import org.dhis2.uicomponents.map.layer.types.EventMapLayer
 import org.dhis2.uicomponents.map.layer.types.HeatmapMapLayer
 import org.dhis2.uicomponents.map.layer.types.RelationshipMapLayer
 import org.dhis2.uicomponents.map.layer.types.SatelliteMapLayer
 import org.dhis2.uicomponents.map.layer.types.TeiMapLayer
+import org.dhis2.uicomponents.map.model.MapStyle
 import org.hisp.dhis.android.core.common.FeatureType
 
 class MapLayerManager {
