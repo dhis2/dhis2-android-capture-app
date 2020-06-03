@@ -15,10 +15,10 @@ class RelationshipMapManager : MapManager() {
         const val RELATIONSHIP_ICON = "RELATIONSHIP_ICON"
     }
 
-    private lateinit var featureCollections: HashMap<String, FeatureCollection>
+    private lateinit var featureCollections: Map<String, FeatureCollection>
 
     fun update(
-        featureCollections: HashMap<String, FeatureCollection>,
+        featureCollections: Map<String, FeatureCollection>,
         boundingBox: BoundingBox,
         featureType: FeatureType
     ) {

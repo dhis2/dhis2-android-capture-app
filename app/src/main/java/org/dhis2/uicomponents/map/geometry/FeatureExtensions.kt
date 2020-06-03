@@ -6,5 +6,5 @@ import com.mapbox.mapboxsdk.geometry.LatLng
 
 fun Feature?.getPointLatLng(): LatLng {
     val point = this?.geometry() as Point
-    return LatLng(point.longitude(), point.latitude())
+    return LatLng(point.latitude(), point.longitude())
 }

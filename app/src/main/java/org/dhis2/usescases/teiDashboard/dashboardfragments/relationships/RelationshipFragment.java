@@ -2,7 +2,6 @@ package org.dhis2.usescases.teiDashboard.dashboardfragments.relationships;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,12 +11,10 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.content.res.AppCompatResources;
-import androidx.core.content.ContextCompat;
 import androidx.databinding.DataBindingUtil;
 
-import com.mapbox.geojson.Feature;
+import com.mapbox.geojson.BoundingBox;
 import com.mapbox.geojson.FeatureCollection;
-import com.mapbox.geojson.LineString;
 import com.wangjie.rapidfloatingactionbutton.RapidFloatingActionHelper;
 import com.wangjie.rapidfloatingactionbutton.contentimpl.labellist.RFACLabelItem;
 import com.wangjie.rapidfloatingactionbutton.contentimpl.labellist.RapidFloatingActionContentLabelList;
@@ -28,24 +25,22 @@ import org.dhis2.R;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.databinding.FragmentRelationshipsBinding;
-import org.dhis2.uicomponents.map.MapStyle;
 import org.dhis2.uicomponents.map.managers.RelationshipMapManager;
-import org.dhis2.uicomponents.map.managers.TeiMapManager;
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
 import org.dhis2.usescases.searchTrackEntity.SearchTEActivity;
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity;
 import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.OnDialogClickListener;
+import org.hisp.dhis.android.core.common.FeatureType;
 import org.hisp.dhis.android.core.relationship.RelationshipType;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
-
-import io.reactivex.functions.Consumer;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -257,5 +252,14 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
                     }
                 })
                 .show();
+    }
+
+    @Override
+    public void setFeatureCollection(@NotNull kotlin.Pair<? extends Map<String, FeatureCollection>, ? extends BoundingBox> map) {
+       relationshipMapManager.update(
+               map.getFirst(),
+               map.getSecond(),
+               FeatureType.POINT
+       );
     }
 }
