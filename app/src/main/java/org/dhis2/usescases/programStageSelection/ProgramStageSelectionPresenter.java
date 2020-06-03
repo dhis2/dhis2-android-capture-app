@@ -50,7 +50,7 @@ public class ProgramStageSelectionPresenter implements ProgramStageSelectionCont
     @Override
     public void getProgramStages(String programId, @NonNull String uid) {
 
-        Flowable<List<ProgramStage>> stagesFlowable = programStageSelectionRepository.enrollmentProgramStages();
+        Flowable<List<ProgramStage>> stagesFlowable = programStageSelectionRepository.enrollmentProgramStages(programId, uid);
         Flowable<Result<RuleEffect>> ruleEffectFlowable = programStageSelectionRepository.calculate();
 
         // Combining results of two repositories into a single stream.
