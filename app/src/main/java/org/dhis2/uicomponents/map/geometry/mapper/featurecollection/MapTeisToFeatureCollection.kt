@@ -1,9 +1,11 @@
-package org.dhis2.uicomponents.map.geometry.mapper
+package org.dhis2.uicomponents.map.geometry.mapper.featurecollection
 
 import com.mapbox.geojson.BoundingBox
 import com.mapbox.geojson.Feature
 import com.mapbox.geojson.FeatureCollection
 import org.dhis2.uicomponents.map.geometry.bound.BoundsGeometry
+import org.dhis2.uicomponents.map.geometry.mapper.addTeiEnrollmentInfo
+import org.dhis2.uicomponents.map.geometry.mapper.addTeiInfo
 import org.dhis2.uicomponents.map.geometry.point.MapPointToFeature
 import org.dhis2.uicomponents.map.geometry.polygon.MapPolygonPointToFeature
 import org.dhis2.uicomponents.map.geometry.polygon.MapPolygonToFeature

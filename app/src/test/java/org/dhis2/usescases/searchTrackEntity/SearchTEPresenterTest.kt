@@ -8,7 +8,7 @@ import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.schedulers.TestScheduler
 import junit.framework.TestCase.assertTrue
 import org.dhis2.data.schedulers.TestSchedulerProvider
-import org.dhis2.uicomponents.map.geometry.mapper.MapTeisToFeatureCollection
+import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapTeisToFeatureCollection
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.dhis2.utils.filters.FilterManager
 import org.hisp.dhis.android.core.D2

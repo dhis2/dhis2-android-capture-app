@@ -18,6 +18,7 @@ import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope;
 import org.hisp.dhis.android.core.category.Category;
 import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryOptionCombo;
+import org.hisp.dhis.android.core.common.Geometry;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
@@ -497,7 +498,13 @@ public class DashboardRepositoryImpl
                     List<TrackedEntityAttributeValue> attributeValues = d2.trackedEntityModule().trackedEntityAttributeValues().byTrackedEntityInstance().eq(tei.uid())
                             .byTrackedEntityAttribute().in(attributeUids).blockingGet();
 
-                    return RelationshipViewModel.create(relationship, relationshipType, direction, relationshipTEIUid, attributeValues);
+                    String fromTeiUid = relationship.from().trackedEntityInstance().trackedEntityInstance();
+                    String toTeiUid = relationship.to().trackedEntityInstance().trackedEntityInstance();
+                    Geometry fromGeometry = d2.trackedEntityModule().trackedEntityInstances().uid(fromTeiUid).blockingGet().geometry();
+                    Geometry toGeometry = d2.trackedEntityModule().trackedEntityInstances().uid(toTeiUid).blockingGet().geometry();
+
+                    return RelationshipViewModel.create(relationship, relationshipType, direction,
+                            relationshipTEIUid, attributeValues, fromGeometry, toGeometry);
                 })
                 .toList().toFlowable();
     }

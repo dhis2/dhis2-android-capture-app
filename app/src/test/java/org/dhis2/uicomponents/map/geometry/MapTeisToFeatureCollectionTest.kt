@@ -8,11 +8,11 @@ import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
 import org.dhis2.uicomponents.map.geometry.bound.BoundsGeometry
-import org.dhis2.uicomponents.map.geometry.mapper.MapTeisToFeatureCollection
-import org.dhis2.uicomponents.map.geometry.mapper.MapTeisToFeatureCollection.Companion.ENROLLMENT
-import org.dhis2.uicomponents.map.geometry.mapper.MapTeisToFeatureCollection.Companion.ENROLLMENT_UID
-import org.dhis2.uicomponents.map.geometry.mapper.MapTeisToFeatureCollection.Companion.TEI
-import org.dhis2.uicomponents.map.geometry.mapper.MapTeisToFeatureCollection.Companion.TEI_IMAGE
+import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapTeisToFeatureCollection
+import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapTeisToFeatureCollection.Companion.ENROLLMENT
+import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapTeisToFeatureCollection.Companion.ENROLLMENT_UID
+import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapTeisToFeatureCollection.Companion.TEI
+import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapTeisToFeatureCollection.Companion.TEI_IMAGE
 import org.dhis2.uicomponents.map.geometry.point.MapPointToFeature
 import org.dhis2.uicomponents.map.geometry.polygon.MapPolygonPointToFeature
 import org.dhis2.uicomponents.map.geometry.polygon.MapPolygonToFeature
@@ -36,10 +36,11 @@ class MapTeisToFeatureCollectionTest {
 
     @Before
     fun setup() {
-        mapTeisToFeatureCollection = MapTeisToFeatureCollection(
-            bounds, mapPointToFeature,
-            mapPolygonToFeature, mapPolygonPointToFeature
-        )
+        mapTeisToFeatureCollection =
+            MapTeisToFeatureCollection(
+                bounds, mapPointToFeature,
+                mapPolygonToFeature, mapPolygonPointToFeature
+            )
     }
 
     @Test
