@@ -24,7 +24,6 @@ class MapGeometryToFeature(
                 point?.addStringProperty(property, propertyValue)
                 point
             }
-
             geometry.type() == FeatureType.POLYGON -> {
                 val polygon = polygonMapper.map(geometry, bounds)?.first
                 polygon?.addStringProperty(property, propertyValue)

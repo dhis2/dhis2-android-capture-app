@@ -3,9 +3,10 @@ package org.dhis2.usescases.searchTrackEntity;
 import androidx.annotation.NonNull;
 
 import org.dhis2.data.dagger.PerActivity;
+import org.dhis2.data.prefs.PreferenceProvider;
 import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.uicomponents.map.geometry.bound.BoundsGeometry;
-import org.dhis2.uicomponents.map.geometry.mapper.MapTeisToFeatureCollection;
+import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapTeisToFeatureCollection;
 import org.dhis2.uicomponents.map.geometry.point.MapPointToFeature;
 import org.dhis2.uicomponents.map.geometry.polygon.MapPolygonPointToFeature;
 import org.dhis2.uicomponents.map.geometry.polygon.MapPolygonToFeature;
@@ -43,9 +44,11 @@ public class SearchTEModule {
                                                        SearchRepository searchRepository,
                                                        SchedulerProvider schedulerProvider,
                                                        AnalyticsHelper analyticsHelper,
-                                                       MapTeisToFeatureCollection mapTeisToFeatureCollection) {
+                                                       MapTeisToFeatureCollection mapTeisToFeatureCollection,
+                                                       PreferenceProvider preferenceProvider) {
         return new SearchTEPresenter(view, d2, searchRepository, schedulerProvider,
-                analyticsHelper, initialProgram, mapTeisToFeatureCollection);
+                analyticsHelper, initialProgram, mapTeisToFeatureCollection,
+                preferenceProvider);
     }
 
     @Provides

@@ -8,8 +8,8 @@ import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
 import junit.framework.Assert.assertEquals
 import org.dhis2.uicomponents.map.geometry.bound.BoundsGeometry
-import org.dhis2.uicomponents.map.geometry.mapper.MapEventToFeatureCollection.Companion.EVENT
 import org.dhis2.uicomponents.map.geometry.mapper.MapGeometryToFeature
+import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapEventToFeatureCollection.Companion.EVENT
 import org.dhis2.uicomponents.map.geometry.point.MapPointToFeature
 import org.dhis2.uicomponents.map.geometry.polygon.MapPolygonToFeature
 import org.hamcrest.CoreMatchers.`is`

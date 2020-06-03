@@ -7,8 +7,9 @@ import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.schedulers.TestScheduler
 import junit.framework.TestCase.assertTrue
+import org.dhis2.data.prefs.PreferenceProvider
 import org.dhis2.data.schedulers.TestSchedulerProvider
-import org.dhis2.uicomponents.map.geometry.mapper.MapTeisToFeatureCollection
+import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapTeisToFeatureCollection
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.dhis2.utils.filters.FilterManager
 import org.hisp.dhis.android.core.D2
@@ -28,6 +29,7 @@ class SearchTEPresenterTest {
     private val analyticsHelper: AnalyticsHelper = mock()
     private val mapTeisToFeatureCollection: MapTeisToFeatureCollection = mock()
     private val initialProgram = "programUid"
+    private val preferenceProvider: PreferenceProvider = mock()
 
     @Before
     fun setUp() {
@@ -44,7 +46,8 @@ class SearchTEPresenterTest {
             schedulers,
             analyticsHelper,
             initialProgram,
-            mapTeisToFeatureCollection
+            mapTeisToFeatureCollection,
+            preferenceProvider
         )
     }
 
