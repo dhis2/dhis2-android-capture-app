@@ -43,22 +43,27 @@ class TeiMapManager(
 
     override fun loadDataForStyle() {
         style?.apply {
-            addImage(
-                MapLayerManager.TEI_ICON_ID,
-                TeiMarkers.getMarker(
-                    mapView.context,
-                    mapStyle.teiSymbolIcon,
-                    mapStyle.teiColor
+            mapStyle.teiSymbolIcon?.let {
+                addImage(
+                    MapLayerManager.TEI_ICON_ID,
+                    TeiMarkers.getMarker(
+                        mapView.context,
+                        it,
+                        mapStyle.teiColor
+                    )
                 )
-            )
-            addImage(
-                MapLayerManager.ENROLLMENT_ICON_ID,
-                TeiMarkers.getMarker(
-                    mapView.context,
-                    mapStyle.enrollmentSymbolIcon,
-                    mapStyle.enrollmentColor
+            }
+            mapStyle.enrollmentSymbolIcon?.let {
+                addImage(
+                    MapLayerManager.ENROLLMENT_ICON_ID,
+                    TeiMarkers.getMarker(
+                        mapView.context,
+                        it,
+                        mapStyle.enrollmentColor
+                    )
                 )
-            )
+            }
+
         }
         setSource()
         setLayer()
