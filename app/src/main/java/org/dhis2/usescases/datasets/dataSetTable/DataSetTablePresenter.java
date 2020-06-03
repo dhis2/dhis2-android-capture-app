@@ -7,7 +7,6 @@ import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.utils.analytics.AnalyticsHelper;
 import org.hisp.dhis.android.core.validation.engine.ValidationResult.ValidationResultStatus;
-import org.hisp.dhis.android.core.validation.engine.ValidationResultViolation;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -177,8 +176,7 @@ public class DataSetTablePresenter implements DataSetTableContract.Presenter {
                             if (result.status() == ValidationResultStatus.OK) {
                                 view.showSuccessValidationDialog();
                             } else {
-                                List<ValidationResultViolation> violations = result.violations();
-                                view.showErrorsValidationDialog();
+                                view.showErrorsValidationDialog(result.violations());
                             }
                         },
                         Timber::e
@@ -193,10 +191,25 @@ public class DataSetTablePresenter implements DataSetTableContract.Presenter {
                         .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.ui())
                         .subscribe(
-                                () -> {
-                                    view.displayMessage("Mark as complete!");
+                                alreadyCompleted -> {
+                                    if (!alreadyCompleted) {
+                                        view.showCompleteToast();
+                                    }
                                 },
                                 Timber::e)
         );
     }
+
+    @Override
+    public void closeExpandBottomSheet() {
+        view.closeExpandBottom();
+    }
+
+    @Override
+    public void onCancelBottomSheet() {
+        view.cancelBottomSheet();
+    }
+
+    @Override
+    public void onCompleteBottomSheet() { view.completeBottomSheet(); }
 }

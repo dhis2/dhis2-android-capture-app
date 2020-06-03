@@ -4,8 +4,8 @@ import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
+import com.nhaarman.mockitokotlin2.verifyZeroInteractions
 import com.nhaarman.mockitokotlin2.whenever
-import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.Single
@@ -103,11 +103,11 @@ class DataSetTablePresenterTest {
     @Test
     fun `Should check if DataSet does not have ValidationRules associated and complete DataSet`() {
         whenever(repository.doesDatasetHasValidationRulesAssociated()) doReturn false
-        whenever(repository.completeDataSetInstance()) doReturn Completable.complete()
+        whenever(repository.completeDataSetInstance()) doReturn Single.just(false)
 
         presenter.checkIfValidationRulesExecutionIsOptional()
 
-        verify(view).displayMessage(any())
+        verify(view).showCompleteToast()
     }
 
     @Test
@@ -135,15 +135,45 @@ class DataSetTablePresenterTest {
 
         presenter.executeValidationRules()
 
-        verify(view).showErrorsValidationDialog()
+        verify(view).showErrorsValidationDialog(any())
     }
 
     @Test
-    fun `Should mark the dataset as complete`() {
-        whenever(repository.completeDataSetInstance()) doReturn Completable.complete()
+    fun `Should show the mark as complete snackbar if dataset was not previously completed`() {
+        whenever(repository.completeDataSetInstance()) doReturn Single.just(false)
 
         presenter.completeDataSet()
 
-        verify(view).displayMessage(any())
+        verify(view).showCompleteToast()
+    }
+
+    @Test
+    fun `Should not show the mark as complete snackbar if dataset was previously completed`() {
+        whenever(repository.completeDataSetInstance()) doReturn Single.just(true)
+
+        presenter.completeDataSet()
+
+        verifyZeroInteractions(view)
+    }
+
+    @Test
+    fun `Should close or expand the bottom sheet`() {
+        presenter.closeExpandBottomSheet()
+
+        verify(view).closeExpandBottom()
+    }
+
+    @Test
+    fun `Should close bottom sheet on cancel click`() {
+        presenter.onCancelBottomSheet()
+
+        verify(view).cancelBottomSheet()
+    }
+
+    @Test
+    fun `Should close bottom sheet on complete click`() {
+        presenter.onCompleteBottomSheet()
+
+        verify(view).completeBottomSheet()
     }
 }

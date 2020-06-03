@@ -696,4 +696,8 @@
     <string name="run_validation_rules">"Do you want to run the validation rules?"</string>
     <string name="validation_success_title">"Everything looks good"</string>
     <string name="mark_dataset_complete">"Do you want to mark the data set as complete?"</string>
+    <string name="dataset_completed">"Mark as completed"</string>
+    <string name="name">Name</string>
+    <string name="formula">Formula</string>
+    <string name="complete_anyway">Complete anyway</string>
 </resources>

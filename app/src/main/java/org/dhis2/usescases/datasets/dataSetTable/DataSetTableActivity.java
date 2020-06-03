@@ -1,14 +1,24 @@
 package org.dhis2.usescases.datasets.dataSetTable;
 
 import android.content.pm.ActivityInfo;
+import android.content.res.ColorStateList;
 import android.content.res.Configuration;
+import android.os.Build;
 import android.os.Bundle;
+import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.res.ResourcesCompat;
+import androidx.core.view.ViewCompat;
 import androidx.databinding.DataBindingUtil;
 import androidx.viewpager2.widget.ViewPager2;
 
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
+import com.google.android.material.shape.CornerFamily;
+import com.google.android.material.shape.MaterialShapeDrawable;
+import com.google.android.material.shape.ShapeAppearanceModel;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.tabs.TabLayoutMediator;
 import com.jakewharton.rxbinding2.view.RxView;
 
@@ -19,8 +29,10 @@ import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.customviews.AlertBottomDialog;
+import org.dhis2.utils.validationrules.ValidationResultViolationsAdapter;
 import org.hisp.dhis.android.core.dataset.DataSet;
 import org.hisp.dhis.android.core.period.Period;
+import org.hisp.dhis.android.core.validation.engine.ValidationResultViolation;
 
 import java.util.List;
 import java.util.Locale;
@@ -41,7 +53,6 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
     String periodId;
 
     boolean accessDataWrite;
-    boolean tableSelectorVisible = false;
     private List<String> sections;
 
     @Inject
@@ -50,6 +61,9 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
     private DataSetSectionAdapter viewPagerAdapter;
     private boolean backPressed;
     private DataSetTableComponent dataSetTableComponent;
+
+    private BottomSheetBehavior<View> behavior;
+    private boolean errorsIsShowing = false;
 
     public static Bundle getBundle(@NonNull String dataSetUid,
                                    @NonNull String orgUnitUid,
@@ -90,6 +104,7 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_dataset_table);
         binding.setPresenter(presenter);
+        binding.BSLayout.bottomSheetLayout.setVisibility(View.GONE);
         setViewPager();
         observeSaveButtonClicks();
         presenter.init(orgUnitUid, periodTypeName, catOptCombo, periodInitialDate, periodId);
@@ -124,10 +139,14 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
             @Override
             public void onPageSelected(int position) {
                 super.onPageSelected(position);
-                if (position == viewPagerAdapter.getItemCount() -1) {
-                    binding.saveButton.hide();
+                if (!errorsIsShowing) {
+                    if (position == viewPagerAdapter.getItemCount() - 1) {
+                        binding.saveButton.hide();
+                    } else {
+                        binding.saveButton.show();
+                    }
                 } else {
-                    binding.saveButton.show();
+                    binding.saveButton.hide();
                 }
             }
         });
@@ -142,7 +161,7 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
     }
 
     public void updateTabLayout(String section, int numTables) {
-        if (sections.get(0) == "NO_SECTION"){
+        if (sections.get(0).equals("NO_SECTION")){
             sections.remove("NO_SECTION");
             sections.add(getString(R.string.tab_tables));
             viewPagerAdapter.swapData(sections);
@@ -246,7 +265,7 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
         AlertBottomDialog.Companion.getInstance()
                 .setTitle(getString(R.string.validation_success_title))
                 .setMessage(getString(R.string.mark_dataset_complete))
-                .setPositiveButton(getString(R.string.yes), ()-> {
+                .setPositiveButton(getString(R.string.yes), () -> {
                     presenter.completeDataSet();
                     return Unit.INSTANCE;
                 })
@@ -255,13 +274,100 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
     }
 
     @Override
-    public void showErrorsValidationDialog() {
-        //TODO - Validation rules - This should be updated to show the info the SDK gives us.
-        AlertBottomDialog.Companion.getInstance()
-                .setTitle(getString(R.string.error_dialog_title))
-                .setMessage("A list of errors will be shown here.")
-                .setPositiveButton("", null)
-                .show(getSupportFragmentManager(), AlertBottomDialog.class.getSimpleName());
+    public void showErrorsValidationDialog(List<ValidationResultViolation> violations) {
+        configureShapeDrawable();
 
+        errorsIsShowing = true;
+        binding.saveButton.hide();
+        binding.BSLayout.bottomSheetLayout.setVisibility(View.VISIBLE);
+        binding.BSLayout.setErrorCount(violations.size());
+        binding.BSLayout.violationsViewPager.setAdapter(new ValidationResultViolationsAdapter(this, violations));
+        binding.BSLayout.dotsIndicator.setViewPager(binding.BSLayout.violationsViewPager);
+
+        behavior = BottomSheetBehavior.from(binding.BSLayout.bottomSheetLayout);
+        behavior.addBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
+            @Override
+            public void onStateChanged(@NonNull View bottomSheet, int newState) {
+                switch (newState) {
+                    case BottomSheetBehavior.STATE_EXPANDED:
+                        animateArrowDown();
+                        break;
+                    case BottomSheetBehavior.STATE_COLLAPSED:
+                        animateArrowUp();
+                        break;
+                    case BottomSheetBehavior.STATE_DRAGGING:
+                    case BottomSheetBehavior.STATE_HALF_EXPANDED:
+                    case BottomSheetBehavior.STATE_HIDDEN:
+                    case BottomSheetBehavior.STATE_SETTLING:
+                    default:
+                        break;
+                }
+            }
+
+            @Override
+            public void onSlide(@NonNull View bottomSheet, float slideOffset) {
+
+            }
+
+            private void animateArrowDown() {
+                binding.BSLayout.collapseExpand.animate()
+                        .scaleY(-1f).setDuration(200)
+                        .start();
+            }
+
+            private void animateArrowUp() {
+                binding.BSLayout.collapseExpand.animate()
+                        .scaleY(1f).setDuration(200)
+                        .start();
+            }
+        });
+    }
+
+    @Override
+    public void showCompleteToast() {
+        Snackbar.make(binding.viewPager, R.string.dataset_completed, Snackbar.LENGTH_SHORT)
+                .show();
+    }
+
+    @Override
+    public void closeExpandBottom() {
+        if(behavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
+            behavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+        } else if (behavior.getState() == BottomSheetBehavior.STATE_COLLAPSED) {
+            behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+        }
+    }
+
+    @Override
+    public void cancelBottomSheet() {
+        binding.BSLayout.bottomSheetLayout.setVisibility(View.GONE);
+        binding.saveButton.show();
+        errorsIsShowing = false;
+    }
+
+    @Override
+    public void completeBottomSheet() {
+        cancelBottomSheet();
+        presenter.completeDataSet();
+    }
+
+    private void configureShapeDrawable() {
+        int cornerSize = getResources().getDimensionPixelSize(R.dimen.rounded_16);
+        ShapeAppearanceModel appearanceModel = new ShapeAppearanceModel().toBuilder()
+                .setTopLeftCorner(CornerFamily.ROUNDED, cornerSize)
+                .setTopRightCorner(CornerFamily.ROUNDED, cornerSize)
+                .build();
+
+        int elevation = getResources().getDimensionPixelSize(R.dimen.elevation);
+        MaterialShapeDrawable shapeDrawable = new MaterialShapeDrawable(appearanceModel);
+        int color = ResourcesCompat.getColor(getResources(), R.color.white, null);
+        shapeDrawable.setFillColor(ColorStateList.valueOf(color));
+
+        binding.BSLayout.bottomSheetLayout.setBackground(shapeDrawable);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            binding.BSLayout.bottomSheetLayout.setElevation(elevation);
+        } else {
+            ViewCompat.setElevation(binding.BSLayout.bottomSheetLayout, elevation);
+        }
     }
 }
