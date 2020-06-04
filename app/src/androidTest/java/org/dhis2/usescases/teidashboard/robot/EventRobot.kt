@@ -19,11 +19,11 @@ fun eventRobot(eventRobot: EventRobot.() -> Unit) {
 
 class EventRobot : BaseRobot() {
 
-    fun scrollToBottomFormulary() {
+    fun scrollToBottomForm() {
         onView(withId(R.id.formRecycler)).perform(scrollToBottomRecyclerView())
     }
 
-    fun clickOnFormularyFabButton() {
+    fun clickOnFormFabButton() {
         onView(withId(R.id.actionButton)).perform(click())
     }
     fun clickOnFinish() {

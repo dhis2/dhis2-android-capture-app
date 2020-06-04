@@ -177,7 +177,7 @@ class TeiDashboardTest : BaseTest() {
         }
 
         eventRobot {
-            scrollToBottomFormulary()
+            scrollToBottomForm()
             clickOnFormFabButton()
             clickOnFinish()
         }
