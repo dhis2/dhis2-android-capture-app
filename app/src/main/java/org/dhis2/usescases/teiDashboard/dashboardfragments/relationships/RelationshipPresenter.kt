@@ -39,19 +39,30 @@ class RelationshipPresenter internal constructor(
             .withTrackedEntityAttributeValues()
             .uid(teiUid)
             .blockingGet().trackedEntityType()
-    private var updateRelationships: FlowableProcessor<Boolean> = PublishProcessor.create()
+    var updateRelationships: FlowableProcessor<Boolean> = PublishProcessor.create()
+    private var showOnMap: Boolean = false
 
     fun init() {
         compositeDisposable.add(
-            updateRelationships.startWith(true)
+            updateRelationships.startWith(false)
+                .map { this.showOnMap = it }
                 .flatMap { dashboardRepository.listTeiRelationships() }
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
                     {
-                        view.setRelationships(it)
-                        val relationshipModel = mapRelationshipToRelationshipMapModel.mapList(it)
-                        view.setFeatureCollection(mapRelationshipsToFeatureCollection.map(relationshipModel))
+                        when(showOnMap){
+                            false -> view.setRelationships(it)
+                            true -> {
+                                val relationshipModel =
+                                    mapRelationshipToRelationshipMapModel.mapList(it)
+                                view.setFeatureCollection(
+                                    mapRelationshipsToFeatureCollection.map(relationshipModel)
+                                )
+                            }
+                        }
+
+
                     },
                     { Timber.d(it) }
                 )
@@ -96,7 +107,7 @@ class RelationshipPresenter internal constructor(
             Timber.d(e)
         } finally {
             analyticsHelper.setEvent(DELETE_RELATIONSHIP, CLICK, DELETE_RELATIONSHIP)
-            updateRelationships.onNext(true)
+            updateRelationships.onNext(showOnMap)
         }
     }
 
@@ -124,7 +135,7 @@ class RelationshipPresenter internal constructor(
         } catch (e: D2Error) {
             view.displayMessage(e.errorDescription())
         } finally {
-            updateRelationships.onNext(true)
+            updateRelationships.onNext(showOnMap)
         }
     }
 

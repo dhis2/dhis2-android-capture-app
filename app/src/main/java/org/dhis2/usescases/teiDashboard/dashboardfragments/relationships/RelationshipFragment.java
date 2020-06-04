@@ -79,13 +79,17 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_relationships, container, false);
         relationshipAdapter = new RelationshipAdapter(presenter);
         binding.relationshipRecycler.setAdapter(relationshipAdapter);
-        TeiDashboardMobileActivity activity = (TeiDashboardMobileActivity) getContext();
-        activity.relationshipMap().observe(this, showMap -> {
-            binding.relationshipRecycler.setVisibility(showMap ? View.GONE : View.VISIBLE);
-            binding.mapView.setVisibility(showMap ? View.VISIBLE : View.GONE);
-        });
+
         relationshipMapManager = new RelationshipMapManager();
         relationshipMapManager.init(binding.mapView);
+
+        TeiDashboardMobileActivity activity = (TeiDashboardMobileActivity) getContext();
+        activity.relationshipMap().observe(this, showMap -> {
+            binding.mapView.setVisibility(showMap ? View.VISIBLE : View.GONE);
+            binding.relationshipRecycler.setVisibility(showMap ? View.GONE : View.VISIBLE);
+            presenter.getUpdateRelationships().onNext(showMap);
+        });
+
         return binding.getRoot();
     }
 

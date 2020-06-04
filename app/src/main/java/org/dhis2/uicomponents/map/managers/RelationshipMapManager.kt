@@ -15,6 +15,7 @@ class RelationshipMapManager : MapManager() {
         const val RELATIONSHIP_ICON = "RELATIONSHIP_ICON"
     }
 
+    private lateinit var boundingBox: BoundingBox
     private lateinit var featureCollections: Map<String, FeatureCollection>
 
     fun update(
@@ -24,8 +25,10 @@ class RelationshipMapManager : MapManager() {
     ) {
         this.featureCollections = featureCollections
         this.featureType = featureType
-        loadDataForStyle()
-        initCameraPosition(boundingBox)
+        this.boundingBox = boundingBox
+        if(isMapReady()) {
+            loadDataForStyle()
+        }
     }
 
     override fun loadDataForStyle() {
@@ -38,11 +41,13 @@ class RelationshipMapManager : MapManager() {
         )
         setSource()
         setLayer()
+        //initCameraPosition(boundingBox)
     }
 
     override fun setSource() {
         featureCollections.keys.forEach {
-            style?.addSource(GeoJsonSource(it, featureCollections[it]))
+            style?.getSourceAs<GeoJsonSource>(it)?.setGeoJson(featureCollections[it])
+                ?: style?.addSource(GeoJsonSource(it, featureCollections[it]))
         }
     }
 
