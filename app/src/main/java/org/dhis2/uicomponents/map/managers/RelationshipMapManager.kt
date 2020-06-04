@@ -41,7 +41,7 @@ class RelationshipMapManager : MapManager() {
         )
         setSource()
         setLayer()
-        //initCameraPosition(boundingBox)
+        initCameraPosition(boundingBox)
     }
 
     override fun setSource() {
