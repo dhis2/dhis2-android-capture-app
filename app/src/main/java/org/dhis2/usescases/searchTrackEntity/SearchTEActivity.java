@@ -596,7 +596,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     @Override
     public void setFabIcon(boolean needsSearch) {
         this.needsSearch.set(needsSearch);
-        animSearchFab(needsSearch);
+     //   animSearchFab(needsSearch);
     }
 
     private void animSearchFab(boolean hasQuery) {
