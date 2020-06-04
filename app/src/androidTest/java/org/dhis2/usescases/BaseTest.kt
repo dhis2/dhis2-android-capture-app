@@ -26,7 +26,6 @@ open class BaseTest {
     lateinit var preferencesRobot: PreferencesRobot
     lateinit var mockWebServerRobot: MockWebServerRobot
 
-
     protected open fun getPermissionsToBeAccepted() = arrayOf<String>()
 
     @Before
@@ -37,11 +36,11 @@ open class BaseTest {
     }
 
     private fun allowPermissions() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             getPermissionsToBeAccepted().forEach {
                 InstrumentationRegistry.getInstrumentation()
-                        .uiAutomation
-                        .executeShellCommand("pm grant ${context.packageName} $it")
+                    .uiAutomation
+                    .executeShellCommand("pm grant ${context.packageName} $it")
             }
         }
     }
@@ -68,7 +67,7 @@ open class BaseTest {
     }
 
     fun enableIntents() {
-        if (!isIntentsEnable){
+        if (!isIntentsEnable) {
             Intents.init()
             isIntentsEnable = true
         }
@@ -83,13 +82,13 @@ open class BaseTest {
     }
 
     private fun disableIntents() {
-        if (isIntentsEnable){
+        if (isIntentsEnable) {
             Intents.release()
             isIntentsEnable = false
         }
     }
 
-    private fun cleanPreferences(){
+    private fun cleanPreferences() {
         preferencesRobot.cleanPreferences()
     }
 
@@ -100,7 +99,7 @@ open class BaseTest {
         }
     }
 
-    private fun stopMockServer(){
+    private fun stopMockServer() {
         mockWebServerRobot.shutdown()
     }
 

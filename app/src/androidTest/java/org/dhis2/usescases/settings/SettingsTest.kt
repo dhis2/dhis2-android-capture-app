@@ -80,7 +80,7 @@ class SettingsTest : BaseTest() {
             clickOnNavigationDrawerMenu()
             clickOnSettings()
         }
-        
+
         settingsRobot {
             clickOnReservedValues()
             clickOnManageReservedValues()
@@ -147,6 +147,7 @@ class SettingsTest : BaseTest() {
 
     //To check
     @Test
+    @Ignore
     fun shouldShowGatewayNumberDisableWhenClickOnSMSSettings() {
         startActivity()
 
@@ -157,8 +158,8 @@ class SettingsTest : BaseTest() {
 
         settingsRobot {
             clickOnSMSSettings()
-            //checkGatewayNumberFieldIsDisable()
-            //checkSMSSubmissionIsEnable()
+            checkGatewayNumberFieldIsDisable()
+            checkSMSSubmissionIsEnable()
         }
     }
 

@@ -2,6 +2,7 @@ package org.dhis2.usescases.main
 
 import android.view.Gravity
 import io.reactivex.disposables.CompositeDisposable
+import org.dhis2.data.prefs.Preference
 import org.dhis2.data.prefs.Preference.Companion.DEFAULT_CAT_COMBO
 import org.dhis2.data.prefs.Preference.Companion.PREF_DEFAULT_CAT_OPTION_COMBO
 import org.dhis2.data.prefs.PreferenceProvider
@@ -27,6 +28,7 @@ class MainPresenter(
     var disposable: CompositeDisposable = CompositeDisposable()
 
     fun init() {
+        preferences.removeValue(Preference.CURRENT_ORG_UNIT)
         disposable.add(
             d2.userModule().user().get()
                 .map { username(it) }

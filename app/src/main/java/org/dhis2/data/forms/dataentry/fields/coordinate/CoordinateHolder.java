@@ -8,7 +8,7 @@ import androidx.lifecycle.MutableLiveData;
 import org.dhis2.data.forms.dataentry.fields.FormViewHolder;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.databinding.CustomFormCoordinateBinding;
-import org.dhis2.utils.customviews.CoordinatesView;
+import org.dhis2.usescases.coodinates.CoordinatesView;
 
 import io.reactivex.processors.FlowableProcessor;
 

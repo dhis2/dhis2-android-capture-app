@@ -1,8 +1,8 @@
 package org.dhis2.common.di
 
 import dagger.Component
-import org.dhis2.usescases.BaseTest
 import javax.inject.Singleton
+import org.dhis2.usescases.BaseTest
 
 @Singleton
 @Component(modules = [BaseTestModule::class])

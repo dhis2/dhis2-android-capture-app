@@ -40,7 +40,6 @@ class DataSetTablePresenterTest {
         val dataSet = DataSet.builder().uid("datasetUid").build()
         val catComboName = "catComboName"
 
-
         whenever(repository.sections) doReturn Flowable.just(sections)
         whenever(repository.dataSet) doReturn Flowable.just(dataSet)
         whenever(repository.getCatComboName(catCombo)) doReturn Flowable.just(catComboName)
@@ -88,7 +87,7 @@ class DataSetTablePresenterTest {
     }
 
     @Test
-    fun `Should show options`(){
+    fun `Should show options`() {
         presenter.optionsClick()
 
         verify(analyticsHelper).setEvent(any(), any(), any())

@@ -20,7 +20,6 @@ class PinPresenterTest {
     private var preferenceProvider: PreferenceProvider = mock()
     private val d2: D2 = Mockito.mock(D2::class.java, Mockito.RETURNS_DEEP_STUBS)
 
-
     @Before
     fun setUp() {
         presenter = PinPresenter(pinView, preferenceProvider, d2)

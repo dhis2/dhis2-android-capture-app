@@ -7,7 +7,9 @@ import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.schedulers.TestScheduler
 import junit.framework.TestCase.assertTrue
+import org.dhis2.data.prefs.PreferenceProvider
 import org.dhis2.data.schedulers.TestSchedulerProvider
+import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapTeisToFeatureCollection
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.dhis2.utils.filters.FilterManager
 import org.hisp.dhis.android.core.D2
@@ -15,7 +17,6 @@ import org.hisp.dhis.android.core.program.Program
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito
-
 
 class SearchTEPresenterTest {
 
@@ -26,22 +27,32 @@ class SearchTEPresenterTest {
     private val repository: SearchRepository = mock()
     private val schedulers: TestSchedulerProvider = TestSchedulerProvider(TestScheduler())
     private val analyticsHelper: AnalyticsHelper = mock()
+    private val mapTeisToFeatureCollection: MapTeisToFeatureCollection = mock()
     private val initialProgram = "programUid"
+    private val preferenceProvider: PreferenceProvider = mock()
 
     @Before
     fun setUp() {
-        whenever(d2.programModule().programs().uid(initialProgram).blockingGet()) doReturn Program.builder().uid(
-            initialProgram
+        whenever(d2.programModule().programs().uid(initialProgram).blockingGet()) doReturn
+            Program.builder().uid(
+                initialProgram
+            )
+                .displayFrontPageList(true)
+                .minAttributesRequiredToSearch(0).build()
+        presenter = SearchTEPresenter(
+            view,
+            d2,
+            repository,
+            schedulers,
+            analyticsHelper,
+            initialProgram,
+            mapTeisToFeatureCollection,
+            preferenceProvider
         )
-            .displayFrontPageList(true)
-            .minAttributesRequiredToSearch(0).build()
-        presenter =
-            SearchTEPresenter(view, d2, repository, schedulers, analyticsHelper, initialProgram)
     }
 
     @Test
-    fun `Should set fabIcon to search when displayFrontPageList is true and minAttributes isgreater than querydata`() {
-
+    fun `Should set fabIcon to search if displayFrontPageList and minAttributes is ok`() {
         presenter.setProgramForTesting(
             Program.builder()
                 .uid("uid")
@@ -55,11 +66,10 @@ class SearchTEPresenterTest {
         verify(view).clearData()
         verify(view).updateFiltersSearch(0)
         verify(view).setFabIcon(true)
-
     }
 
     @Test
-    fun `Should set fabIcon to add when displayFrontPageList is true and does not hava a minAttributes required`() {
+    fun `Should set fabIcon to add when displayFrontPageList and minAttributes is 0`() {
         presenter.setProgramForTesting(
             Program.builder()
                 .uid("uid")
@@ -216,7 +226,7 @@ class SearchTEPresenterTest {
         val currentProgram =
             Program.builder()
                 .uid("program1")
-                .build();
+                .build()
         val selectedProgram = Program.builder()
             .uid("program1")
             .build()
@@ -262,23 +272,23 @@ class SearchTEPresenterTest {
     }
 
     @Test
-    fun `Should show filters if list is ok`(){
+    fun `Should show filters if list is ok`() {
         presenter.checkFilters(true)
-        verify(view,times(1)).setFiltersVisibility(true);
+        verify(view, times(1)).setFiltersVisibility(true)
     }
 
     @Test
-    fun `Should show filters if list is not ok but filters are active`(){
+    fun `Should show filters if list is not ok but filters are active`() {
         FilterManager.clearAll()
         FilterManager.getInstance().setAssignedToMe(true)
         presenter.checkFilters(false)
-        verify(view,times(1)).setFiltersVisibility(true)
+        verify(view, times(1)).setFiltersVisibility(true)
     }
 
     @Test
-    fun `Should not show filters if list is not ok and filters are not active`(){
+    fun `Should not show filters if list is not ok and filters are not active`() {
         FilterManager.clearAll()
         presenter.checkFilters(false)
-        verify(view,times(1)).setFiltersVisibility(false)
+        verify(view, times(1)).setFiltersVisibility(false)
     }
 }

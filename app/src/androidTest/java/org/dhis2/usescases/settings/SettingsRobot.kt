@@ -24,7 +24,7 @@ fun settingsRobot(settingsRobot: SettingsRobot.() -> Unit) {
 
 class SettingsRobot: BaseRobot() {
 
-    fun clickOnSyncData () {
+    fun clickOnSyncData() {
         onView(withId(R.id.settingsItemData)).perform(click())
     }
 
@@ -48,15 +48,15 @@ class SettingsRobot: BaseRobot() {
         onView(withId(R.id.settingsItemDeleteData)).perform(click())
     }
 
-    fun clickOnResetApp () {
+    fun clickOnResetApp() {
         onView(withId(R.id.settingsReset)).perform(click())
     }
 
-    fun clickOnSMSSettings () {
+    fun clickOnSMSSettings() {
         onView(withId(R.id.smsSettings)).perform(click())
     }
 
-    fun checkEditPeriodIsDisableForData () {
+    fun checkEditPeriodIsDisableForData() {
         onView(withId(R.id.dataPeriodsNoEdition)).check(matches(withText(NOT_EDIT_TEXT)))
         onView(withId(R.id.dataPeriods)).check(matches(not(isDisplayed())))
     }
@@ -136,5 +136,4 @@ class SettingsRobot: BaseRobot() {
         const val NOT_EDIT_TEXT = "Syncing period is not editable"
         const val SYNC_DATA = "SYNC DATA NOW"
     }
-
 }
