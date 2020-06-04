@@ -1,13 +1,10 @@
 package org.dhis2.usescases.teidashboard
 
-import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.action.ViewActions.click
-import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
-import org.dhis2.R
 import org.dhis2.usescases.BaseTest
 import org.dhis2.usescases.searchTrackEntity.SearchTEActivity
+import org.dhis2.usescases.searchte.searchTeiRobot
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity
 import org.dhis2.usescases.teidashboard.entity.EnrollmentUIModel
 import org.dhis2.usescases.teidashboard.entity.UpperEnrollmentUIModel
@@ -16,7 +13,6 @@ import org.dhis2.usescases.teidashboard.robot.indicatorsRobot
 import org.dhis2.usescases.teidashboard.robot.noteRobot
 import org.dhis2.usescases.teidashboard.robot.relationshipRobot
 import org.dhis2.usescases.teidashboard.robot.teiDashboardRobot
-import org.hisp.dhis.android.core.mockwebserver.ResponseController.GET
 import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
@@ -330,23 +326,33 @@ class TeiDashboardTest : BaseTest() {
     fun shouldDeleteTeiSuccessfully() {
         // open more options
         // click on delete tei
-        // check tei was deleted and not show on reclycler view
-        mockWebServerRobot.addResponse(GET, "/api/trackedEntityInstances?.*", API_TEI_1_RESPONSE_OK)
-        mockWebServerRobot.addResponse(GET, "/api/trackedEntityInstances?.*", API_TEI_2_RESPONSE_OK)
-        mockWebServerRobot.addResponse(GET, "/api/trackedEntityInstances?.*", API_TEI_3_RESPONSE_OK)
-        // https://play.dhis2.org/android-current/api/trackedEntityInstances/query?ou=DiszpKrYNg8&ouMode=DESCENDANTS&program=IpHINAT79UW&paging=true&page=1&pageSize=10
+        // check tei was deleted and not show on recycler view
+
+        val teiName = "Olvia Watts"
+
         setupCredentials()
-        // prepareTeiToDeleteAndLaunchActivity()
+       /* mockWebServerRobot.addResponse(GET, "/api/trackedEntityInstances?.*", API_TEI_1_RESPONSE_OK)
+        mockWebServerRobot.addResponse(GET, "/api/trackedEntityInstances?.*", API_TEI_2_RESPONSE_OK)
+        mockWebServerRobot.addResponse(GET, "/api/trackedEntityInstances?.*", API_TEI_3_RESPONSE_OK)*/
+        // https://play.dhis2.org/android-current/api/trackedEntityInstances/query?ou=DiszpKrYNg8&ouMode=DESCENDANTS&program=IpHINAT79UW&paging=true&page=1&pageSize=10
+        //prepareTeiToDeleteAndLaunchActivity(rule)
         prepareChildProgrammeIntentAndLaunchActivity(ruleSearch)
 
+        searchTeiRobot {
+            closeSearchForm()
+            clickOnSearchFab()
+            clickOnTEI(0, teiName)
+        }
+
         teiDashboardRobot {
-            /*clickOnMenu()
+           /* clickOnMenuMoreOptions()
             clickOnMenuDeleteTEI()
-            checkTEIIsDelete()*/
-            onView(withId(R.id.close_filter)).perform(click())
-            clickOnTEI()
             // rule.getactivity == null assert
-            Thread.sleep(10000)
+            Thread.sleep(10000)*/
+        }
+
+        searchTeiRobot {
+            //checkTEIsDelete(teiName)
         }
     }
 

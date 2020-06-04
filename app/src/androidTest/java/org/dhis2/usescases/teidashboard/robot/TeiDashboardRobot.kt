@@ -154,30 +154,6 @@ class TeiDashboardRobot : BaseRobot() {
         onView(withText(R.string.dashboard_menu_delete_tei)).perform(click())
     }
 
-    fun checkTEIIsDelete() {
-        onView(withId(R.id.scrollView)).check(
-            matches(
-                allOf(
-                    isDisplayed(), isNotEmpty(),
-                    not(hasDescendant(withText("Olvia Watts")))
-                )
-            )
-        )
-    }
-
-    fun clickOnTEI() {
-        onView(withId(R.id.scrollView)).perform(
-            scrollTo<SearchTEViewHolder>(
-                hasDescendant(
-                    withText(
-                        "Olvia Watts"
-                    )
-                )
-            ),
-            click()
-        )
-    }
-
     fun checkUpperInfo(upperInformation: UpperEnrollmentUIModel) {
         onView(withId(R.id.incident_date))
             .check(matches(withText(upperInformation.incidentDate)))
