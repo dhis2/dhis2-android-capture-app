@@ -75,7 +75,7 @@ class TeiDashboardTest : BaseTest() {
 
         noteRobot {
             clickOnNoteWithPosition(0)
-            checkNoteDetails("@${USER}", NOTE_EXISTING_TEXT)
+            checkNoteDetails("@$USER", NOTE_EXISTING_TEXT)
         }
     }
 
@@ -166,7 +166,7 @@ class TeiDashboardTest : BaseTest() {
     }
 
     @Test
-    fun shouldOpenEventAndSaveSuccessfully(){
+    fun shouldOpenEventAndSaveSuccessfully() {
         setupCredentials()
 
         prepareTeiOpenedProgrammeAndLaunchActivity(rule)
@@ -244,7 +244,6 @@ class TeiDashboardTest : BaseTest() {
 
     @Test
     fun shouldOpenEventEditAndSaveSuccessfully() {
-
         prepareTeiOpenedToEditAndLaunchActivity(rule)
 
         val labMonitoring = 2
@@ -274,8 +273,8 @@ class TeiDashboardTest : BaseTest() {
     @Test
     @Ignore
     fun shouldEnrollToOtherProgramWhenClickOnProgramEnrollments() {
-        //launch tei child program
-        //click on more options
+        // launch tei child program
+        // click on more options
         // click on Program enrollments
         // choose a Program to be enroll TB program
         // choose date and accept
@@ -293,12 +292,12 @@ class TeiDashboardTest : BaseTest() {
             clickOnAProgramForEnrollment(provider)
             clickOnAcceptEnrollmentDate()
             clickOnPersonAttributes(5)
-            typeOnRequiredTextField("test", 2) //not sure why is not typing to check
+            typeOnRequiredTextField("test", 2) // not sure why is not typing to check
             clickOnSaveEnrollment()
             Thread.sleep(8000)
 
-            //scrollToBottomProgramForm()
-            //clickOnSaveEnrollment()
+            // scrollToBottomProgramForm()
+            // clickOnSaveEnrollment()
             // check event created 0 open
         }
 

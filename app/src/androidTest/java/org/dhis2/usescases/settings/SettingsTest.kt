@@ -145,7 +145,7 @@ class SettingsTest : BaseTest() {
         }
     }
 
-    //To check
+    // To check
     @Test
     @Ignore
     fun shouldShowGatewayNumberDisableWhenClickOnSMSSettings() {

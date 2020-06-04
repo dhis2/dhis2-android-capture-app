@@ -22,7 +22,7 @@ fun settingsRobot(settingsRobot: SettingsRobot.() -> Unit) {
     }
 }
 
-class SettingsRobot: BaseRobot() {
+class SettingsRobot : BaseRobot() {
 
     fun clickOnSyncData() {
         onView(withId(R.id.settingsItemData)).perform(click())
@@ -64,11 +64,19 @@ class SettingsRobot: BaseRobot() {
     fun checkEditPeriodIsDisableForConfiguration() {
         onView(withId(R.id.metaPeriodsNoEdition)).check(matches(withText(NOT_EDIT_TEXT)))
         onView(withId(R.id.metadataPeriods)).check(matches(not(isDisplayed())))
-        onView(withId(R.id.buttonSyncMeta)).check(matches(allOf(withText("SYNC CONFIGURATION NOW"), isDisplayed())))
+        onView(withId(R.id.buttonSyncMeta)).check(
+            matches(
+                allOf(
+                    withText("SYNC CONFIGURATION NOW"), isDisplayed()
+                )
+            )
+        )
     }
 
     fun checkEditPeriodIsDisableForParameters() {
-        onView(withId(R.id.parametersNoEdition)).check(matches(withText("Sync parameters are not editable")))
+        onView(withId(R.id.parametersNoEdition)).check(
+            matches(withText("Sync parameters are not editable"))
+        )
         onView(withId(R.id.downloadLimitScope)).check(matches(not(isDisplayed())))
         onView(withId(R.id.eventsEditText)).check(matches(not(isDisplayed())))
         onView(withId(R.id.teiEditText)).check(matches(not(isDisplayed())))
@@ -89,12 +97,17 @@ class SettingsRobot: BaseRobot() {
                 .perform(click())
                 .perform(actionOnItemAtPosition<ReservedValueViewHolder>(position, click()))*/
         onView(allOf(withId(R.id.recycler), hasDescendant(withId(R.id.refill))))
-                .perform(actionOnItemAtPosition<ReservedValueViewHolder>(position, click()))
+            .perform(actionOnItemAtPosition<ReservedValueViewHolder>(position, click()))
     }
 
     fun checkReservedValuesWasRefill(position: Int) {
-        onView(withId(R.id.recycler)).check(matches(allOf(
-                atPosition(position, hasDescendant(withText("100 reserved values left"))))))
+        onView(withId(R.id.recycler)).check(
+            matches(
+                allOf(
+                    atPosition(position, hasDescendant(withText("100 reserved values left")))
+                )
+            )
+        )
     }
 
     fun checkLogViewIsDisplayed() {
@@ -114,7 +127,7 @@ class SettingsRobot: BaseRobot() {
 
     fun checkSnackBarIsShown() {
         onView(withId(com.google.android.material.R.id.snackbar_text))
-                .check(matches(withText("Delete local data finished successfully.")))
+            .check(matches(withText("Delete local data finished successfully.")))
     }
 
     fun checkOnAcceptReset() {
@@ -123,13 +136,13 @@ class SettingsRobot: BaseRobot() {
 
     fun checkGatewayNumberFieldIsDisable() {
         onView(withId(R.id.settings_sms_receiver))
-                //.perform(scrollTo())
-                .check(matches(allOf(isDisplayed())))
+            // .perform(scrollTo())
+            .check(matches(allOf(isDisplayed())))
     }
 
     fun checkSMSSubmissionIsEnable() {
         onView(withId(R.id.settings_sms_response_wait_switch))
-                .check(matches(isEnabled()))
+            .check(matches(isEnabled()))
     }
 
     companion object {

@@ -3,12 +3,13 @@ package org.dhis2.usescases.teidashboard.robot
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition
-import androidx.test.espresso.matcher.ViewMatchers.*
+import androidx.test.espresso.matcher.ViewMatchers.withId
+import androidx.test.espresso.matcher.ViewMatchers.withText
 import org.dhis2.R
 import org.dhis2.common.BaseRobot
 import org.dhis2.common.viewactions.clickChildViewWithId
 import org.dhis2.common.viewactions.scrollToBottomRecyclerView
-import org.dhis2.usescases.teiDashboard.dashboardfragments.tei_data.DashboardProgramViewHolder
+import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.DashboardProgramViewHolder
 
 fun eventRobot(eventRobot: EventRobot.() -> Unit) {
     EventRobot().apply {
@@ -29,7 +30,7 @@ class EventRobot : BaseRobot() {
         onView(withId(R.id.finish)).perform(click())
     }
 
-    fun clickOnFinishAndComplete(){
+    fun clickOnFinishAndComplete() {
         onView(withId(R.id.complete)).perform(click())
     }
 
@@ -38,7 +39,12 @@ class EventRobot : BaseRobot() {
 
         while (formLength < numberFields) {
             onView(withId(R.id.formRecycler))
-                .perform(actionOnItemAtPosition<DashboardProgramViewHolder>(formLength, clickChildViewWithId(R.id.yes)))
+                .perform(
+                    actionOnItemAtPosition<DashboardProgramViewHolder>(
+                        formLength,
+                        clickChildViewWithId(R.id.yes)
+                    )
+                )
             formLength++
         }
     }

@@ -52,14 +52,14 @@ fun setSwitchCheckTo(checkValue: Boolean): ViewAction {
     }
 }
 
-fun clickChildViewWithId(id : Int) : ViewAction {
+fun clickChildViewWithId(id: Int): ViewAction {
     return object : ViewAction {
         override fun getDescription(): String {
             return "Click on a child view with specified id"
         }
 
         override fun getConstraints(): Matcher<View>? {
-           return null
+            return null
         }
 
         override fun perform(uiController: UiController?, view: View?) {
@@ -70,7 +70,7 @@ fun clickChildViewWithId(id : Int) : ViewAction {
     }
 }
 
-fun typeChildViewWithId(string: String, id: Int) : ViewAction {
+fun typeChildViewWithId(string: String, id: Int): ViewAction {
     return object : ViewAction {
         override fun getDescription(): String {
             return "Type a text on a child view with specified id"
@@ -82,7 +82,7 @@ fun typeChildViewWithId(string: String, id: Int) : ViewAction {
 
         override fun perform(uiController: UiController?, view: View?) {
             val v = view?.findViewById<View>(id) as EditText
-            //TypeTextAction(string)
+            // TypeTextAction(string)
             v.performClick()
             v.setText(string)
             uiController?.loopMainThreadUntilIdle()
