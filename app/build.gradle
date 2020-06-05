@@ -101,15 +101,11 @@ android {
 
             // Using dataentry.jks to sign debug build type.
             signingConfig = signingConfigs.debug
-
-            resValue "string", "content_provider", "com.dhis2.debug.provider"
         }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             ext.enableCrashlytics = true
-
-            resValue "string", "content_provider", "com.dhis2.provider"
         }
 
         training {
@@ -133,22 +129,17 @@ android {
             jniDebuggable = true
             renderscriptDebuggable = true
             matchingFallbacks = ['debug']
-
-            resValue "string", "content_provider", "com.dhis2.experimental.provider"
-
         }
         beta {
             applicationIdSuffix = ".beta"
             matchingFallbacks = ['debug']
             signingConfig signingConfigs.debug
-            resValue "string", "content_provider", "com.dhis2.beta.provider"
         }
 
         alpha {
             applicationIdSuffix = ".alpha"
             matchingFallbacks = ['debug']
             signingConfig signingConfigs.debug
-            resValue "string", "content_provider", "com.dhis2.alpha.provider"
         }
     }
 
@@ -168,6 +159,24 @@ android {
             versionCode versions.vCode
             versionName versions.vName
         }
+
+        widp {
+            applicationId "com.eyeseetea.widp"
+            dimension "default"
+            versionCode versions.vCode
+            versionName "1.0.0"
+        }
+
+        psi {
+            applicationId "org.dhis2.psi"
+            dimension "default"
+            versionCode 7
+            versionName "2.0.0"
+        }
+    }
+
+    applicationVariants.all { variant ->
+        variant.resValue  "string", "content_provider", applicationId + ".provider"
     }
 
     compileOptions {
@@ -177,6 +186,10 @@ android {
 
     dataBinding {
         enabled = true
+    }
+
+    configurations {
+        compile.exclude group: "junit", module: "junit"
     }
 
     packagingOptions {
