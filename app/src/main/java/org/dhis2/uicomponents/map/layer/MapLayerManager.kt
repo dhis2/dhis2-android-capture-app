@@ -87,7 +87,7 @@ class MapLayerManager {
 
     fun addLayers(layerType: LayerType, sourceIds: List<String>, visible: Boolean? = null) {
         mapLayers.keys.forEach {
-            if(!sourceIds.contains(it)) {
+            if (!sourceIds.contains(it)) {
                 mapLayers[it]?.hideLayer()
             }
         }
