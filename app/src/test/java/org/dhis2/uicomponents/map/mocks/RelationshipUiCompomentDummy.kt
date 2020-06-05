@@ -12,6 +12,7 @@ object RelationshipUiCompomentDummy {
 
         return RelationshipUiComponentModel(
             DISPLAY_NAME_FIRST,
+            UID_FIRST,
             RELATIONSHIP_TYPE,
             RelationshipDirection.FROM,
             false,
@@ -19,12 +20,14 @@ object RelationshipUiCompomentDummy {
                 TEIUID_FROM,
                 geometryFrom,
                 "",
+                -1,
                 ""
             ),
             TeiMap(
                 TEIUID_TO,
                 geometryTo,
                 "",
+                -1,
                 ""
             )
         )
@@ -36,6 +39,7 @@ object RelationshipUiCompomentDummy {
 
         return RelationshipUiComponentModel(
             DISPLAY_NAME_FIRST,
+            UID_FIRST,
             RELATIONSHIP_TYPE,
             RelationshipDirection.FROM,
             false,
@@ -43,12 +47,14 @@ object RelationshipUiCompomentDummy {
                 TEIUID_FROM,
                 geometryFrom,
                 "",
+                -1,
                 ""
             ),
             TeiMap(
                 TEIUID_TO,
                 geometryTo,
                 "",
+                -1,
                 ""
             )
         )
@@ -60,16 +66,19 @@ object RelationshipUiCompomentDummy {
 
         return RelationshipUiComponentModel(
             DISPLAY_NAME_SECOND,
+            UID_SECOND,
             RELATIONSHIP_TYPE,
             RelationshipDirection.FROM,
             false,
-            TeiMap(TEIUID_FROM, geometryFrom, "", ""),
-            TeiMap(TEIUID_TO, geometryTo, "", "")
+            TeiMap(TEIUID_FROM, geometryFrom, "", -1, ""),
+            TeiMap(TEIUID_TO, geometryTo, "", -1, "")
         )
     }
 
     const val LINE_STRING = "LineString"
     const val DISPLAY_NAME_FIRST = "displayNameFirst"
+    const val UID_FIRST = "uid"
+    const val UID_SECOND = "uid2"
     const val DISPLAY_NAME_SECOND = "displayNameSecond"
     const val TEIUID_FROM = "456"
     const val TEIUID_TO = "567"

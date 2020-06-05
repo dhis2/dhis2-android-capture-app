@@ -65,7 +65,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
     public static final String UNSELECTED_TAB_COLOR = "#B3FFFFFF";
     public static final int OVERVIEW_POS = 0;
     public static final int INDICATORS_POS = 1;
-    public static final int RELATIONSHIPS_POS= 2;
+    public static final int RELATIONSHIPS_POS = 2;
     public static final int NOTES_POS = 3;
     public static final int INDICATORS_LANDSCAPE_POS = 0;
     public static final int RELATIONSHIPS_LANDSCAPE_POS = 1;
@@ -177,7 +177,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
         elevation = ViewCompat.getElevation(binding.toolbar);
 
         binding.relationshipMapIcon.setOnClickListener(v -> {
-                    if(!relationshipMap.getValue()) {
+                    if (!relationshipMap.getValue()) {
                         binding.relationshipMapIcon.setImageResource(R.drawable.ic_list);
                     } else {
                         binding.relationshipMapIcon.setImageResource(R.drawable.ic_map);
@@ -185,6 +185,10 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
                     relationshipMap.setValue(!relationshipMap.getValue());
                 }
         );
+
+        relationshipMap().observe(this, value -> {
+            binding.teiPager.setUserInputEnabled(!value);
+        });
     }
 
     @Override
@@ -579,16 +583,16 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
         }
 
         int menu;
-        if(enrollmentUid == null) {
+        if (enrollmentUid == null) {
             menu = R.menu.dashboard_tei_menu;
-        } else if (groupByStage.getValue()){
+        } else if (groupByStage.getValue()) {
             menu = R.menu.dashboard_menu_group;
         } else {
             menu = R.menu.dashboard_menu;
         }
         popupMenu.getMenuInflater().inflate(menu, popupMenu.getMenu());
 
-        if(enrollmentUid != null) {
+        if (enrollmentUid != null) {
             EnrollmentStatus status = presenter.getEnrollmentStatus(enrollmentUid);
             if (status == EnrollmentStatus.COMPLETED) {
                 popupMenu.getMenu().findItem(R.id.complete).setVisible(false);

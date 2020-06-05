@@ -113,12 +113,24 @@ class TeiDashboardRobot : BaseRobot() {
 
     fun checkEventWasCreated(eventName: String) {
         onView(withId(R.id.tei_recycler))
-            .check(matches(allOf(isDisplayed(), isNotEmpty(), atPosition(
-                        0, hasDescendant(
-                            hasSibling(
-                                allOf(
-                            withId(R.id.event_name),
-                            withText(eventName))))))))
+            .check(
+                matches(
+                    allOf(
+                        isDisplayed(), isNotEmpty(),
+                        atPosition(
+                            0,
+                            hasDescendant(
+                                hasSibling(
+                                    allOf(
+                                        withId(R.id.event_name),
+                                        withText(eventName)
+                                    )
+                                )
+                            )
+                        )
+                    )
+                )
+            )
     }
 
     fun clickOnMenuDeactivate() {
@@ -193,41 +205,95 @@ class TeiDashboardRobot : BaseRobot() {
 
     fun checkFullDetails(enrollmentUIModel: EnrollmentUIModel) {
         onView(withId(R.id.fieldRecycler))
-            .check(matches(allOf(isDisplayed(), isNotEmpty(),
-                    atPosition(1, hasDescendant(withText(enrollmentUIModel.enrollmentDate))))))
-
-        onView(withId(R.id.fieldRecycler)).check(
-            matches(allOf(
-                    isDisplayed(), isNotEmpty(),
-                    atPosition(2, hasDescendant(withText(enrollmentUIModel.birthday))))))
+            .check(
+                matches(
+                    allOf(
+                        isDisplayed(), isNotEmpty(),
+                        atPosition(1, hasDescendant(withText(enrollmentUIModel.enrollmentDate)))
+                    )
+                )
+            )
 
         onView(withId(R.id.fieldRecycler)).check(
             matches(
-                allOf(isDisplayed(), isNotEmpty(),
-                    atPosition(3, hasDescendant(withText(enrollmentUIModel.orgUnit))))))
+                allOf(
+                    isDisplayed(), isNotEmpty(),
+                    atPosition(2, hasDescendant(withText(enrollmentUIModel.birthday)))
+                )
+            )
+        )
 
-        onView(withId(R.id.fieldRecycler)).check(matches(allOf(isDisplayed(), isNotEmpty(),
-            atPosition(4, hasDescendant(allOf(withId(R.id.latitude),
-                withText(enrollmentUIModel.latitude)))))))
+        onView(withId(R.id.fieldRecycler)).check(
+            matches(
+                allOf(
+                    isDisplayed(), isNotEmpty(),
+                    atPosition(3, hasDescendant(withText(enrollmentUIModel.orgUnit)))
+                )
+            )
+        )
 
-        onView(withId(R.id.fieldRecycler)).check(matches(allOf(isDisplayed(), isNotEmpty(),
-                    atPosition(4, hasDescendant(allOf(
-                        withId(R.id.longitude), withText(enrollmentUIModel.longitude)))))))
+        onView(withId(R.id.fieldRecycler)).check(
+            matches(
+                allOf(
+                    isDisplayed(), isNotEmpty(),
+                    atPosition(
+                        4,
+                        hasDescendant(
+                            allOf(
+                                withId(R.id.latitude),
+                                withText(enrollmentUIModel.latitude)
+                            )
+                        )
+                    )
+                )
+            )
+        )
+
+        onView(withId(R.id.fieldRecycler)).check(
+            matches(
+                allOf(
+                    isDisplayed(), isNotEmpty(),
+                    atPosition(
+                        4,
+                        hasDescendant(
+                            allOf(
+                                withId(R.id.longitude), withText(enrollmentUIModel.longitude)
+                            )
+                        )
+                    )
+                )
+            )
+        )
 
         onView(withId(R.id.fieldRecycler))
             .perform(actionOnItemAtPosition<DashboardProgramViewHolder>(6, click()))
 
         onView(withId(R.id.fieldRecycler)).check(
-            matches(allOf(isDisplayed(), isNotEmpty(),
-                atPosition(2, hasDescendant(withText(enrollmentUIModel.name))))))
+            matches(
+                allOf(
+                    isDisplayed(), isNotEmpty(),
+                    atPosition(2, hasDescendant(withText(enrollmentUIModel.name)))
+                )
+            )
+        )
 
         onView(withId(R.id.fieldRecycler)).check(
-            matches(allOf(isDisplayed(), isNotEmpty(),
-                atPosition(3, hasDescendant(withText(enrollmentUIModel.lastName))))))
+            matches(
+                allOf(
+                    isDisplayed(), isNotEmpty(),
+                    atPosition(3, hasDescendant(withText(enrollmentUIModel.lastName)))
+                )
+            )
+        )
 
         onView(withId(R.id.fieldRecycler)).check(
-            matches(allOf(isDisplayed(), isNotEmpty(),
-                    atPosition(4, hasDescendant(withText(enrollmentUIModel.sex))))))
+            matches(
+                allOf(
+                    isDisplayed(), isNotEmpty(),
+                    atPosition(4, hasDescendant(withText(enrollmentUIModel.sex)))
+                )
+            )
+        )
     }
 
     fun clickOnScheduleNew() {
@@ -260,18 +326,38 @@ class TeiDashboardRobot : BaseRobot() {
 
     fun checkEventWasCreatedAndOpen(eventName: String, position: Int) {
         onView(withId(R.id.tei_recycler))
-            .check(matches(allOf(isDisplayed(), isNotEmpty(),
-                        atPosition(position, allOf(
-                            hasDescendant(withText(eventName)),
-                            hasDescendant(withText(R.string.event_open)))))))
+            .check(
+                matches(
+                    allOf(
+                        isDisplayed(), isNotEmpty(),
+                        atPosition(
+                            position,
+                            allOf(
+                                hasDescendant(withText(eventName)),
+                                hasDescendant(withText(R.string.event_open))
+                            )
+                        )
+                    )
+                )
+            )
     }
 
     fun checkEventWasCreatedAndClosed(eventName: String, position: Int) {
         onView(withId(R.id.tei_recycler))
-            .check(matches(allOf(isDisplayed(), isNotEmpty(),
-                        atPosition(position, allOf(
+            .check(
+                matches(
+                    allOf(
+                        isDisplayed(), isNotEmpty(),
+                        atPosition(
+                            position,
+                            allOf(
                                 hasDescendant(withText(eventName)),
-                                hasDescendant(withText(R.string.event_completed)))))))
+                                hasDescendant(withText(R.string.event_completed))
+                            )
+                        )
+                    )
+                )
+            )
     }
 
     fun clickOnPersonAttributes(position: Int) {

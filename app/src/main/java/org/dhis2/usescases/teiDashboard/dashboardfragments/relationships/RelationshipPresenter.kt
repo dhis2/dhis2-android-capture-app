@@ -92,18 +92,6 @@ class RelationshipPresenter internal constructor(
         }
     }
 
-    fun deleteRelationship(relationship: Relationship) {
-        try {
-            d2.relationshipModule().relationships().withItems().uid(relationship.uid())
-                .blockingDelete()
-        } catch (e: D2Error) {
-            Timber.d(e)
-        } finally {
-            analyticsHelper.setEvent(DELETE_RELATIONSHIP, CLICK, DELETE_RELATIONSHIP)
-            updateRelationships.onNext(true)
-        }
-    }
-
     fun deleteRelationship(relationshipUid: String) {
         try {
             d2.relationshipModule().relationships().withItems().uid(relationshipUid)

@@ -19,7 +19,7 @@ class GetBoundingBoxTest {
 
         val belowLongitudeWithPadding = -68.56257500000001
         val belowLatitudeWithPadding = -54.377759
-        val mediumLongitudeWithPadding = -1.7976931348623157E308
+        val mediumLongitudeWithPadding = 52.141954
         val upperLatitudeWithPadding = 72.511722
 
         assertThat(limitSouthWest.longitude(), `is`(belowLongitudeWithPadding))
