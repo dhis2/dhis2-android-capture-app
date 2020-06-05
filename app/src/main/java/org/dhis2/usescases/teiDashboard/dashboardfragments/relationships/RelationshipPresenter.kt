@@ -51,7 +51,9 @@ class RelationshipPresenter internal constructor(
                     {
                         view.setRelationships(it)
                         val relationshipModel = mapRelationshipToRelationshipMapModel.mapList(it)
-                        view.setFeatureCollection(mapRelationshipsToFeatureCollection.map(relationshipModel))
+                        view.setFeatureCollection(
+                            mapRelationshipsToFeatureCollection.map(relationshipModel)
+                        )
                     },
                     { Timber.d(it) }
                 )

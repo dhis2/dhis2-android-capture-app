@@ -4,7 +4,6 @@ import androidx.appcompat.content.res.AppCompatResources
 import com.mapbox.geojson.BoundingBox
 import com.mapbox.geojson.FeatureCollection
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource
-import java.util.HashMap
 import org.dhis2.R
 import org.dhis2.uicomponents.map.layer.LayerType
 import org.hisp.dhis.android.core.common.FeatureType
@@ -26,7 +25,7 @@ class RelationshipMapManager : MapManager() {
         this.featureCollections = featureCollections
         this.featureType = featureType
         this.boundingBox = boundingBox
-        if(isMapReady()) {
+        if (isMapReady()) {
             loadDataForStyle()
         }
     }

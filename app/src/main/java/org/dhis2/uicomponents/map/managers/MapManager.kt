@@ -32,7 +32,7 @@ abstract class MapManager {
             map.setStyle(
                 Style.MAPBOX_STREETS
             ) {
-                if(this::featureType.isInitialized) {
+                if (this::featureType.isInitialized) {
                     loadDataForStyle()
                 }
             }

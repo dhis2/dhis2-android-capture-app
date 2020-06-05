@@ -63,7 +63,6 @@ class TeiMapManager(
                     )
                 )
             }
-
         }
         setSource()
         setLayer()
