@@ -33,7 +33,12 @@ class MapRelationshipsToFeatureCollectionTest {
     @Before
     fun setup() {
         mapRelationshipsToFeatureCollection =
-            MapRelationshipsToFeatureCollection(mapLineToFeature, mapPointToFeature, mapPolygonToFeature, bounds)
+            MapRelationshipsToFeatureCollection(
+                mapLineToFeature,
+                mapPointToFeature,
+                mapPolygonToFeature,
+                bounds
+            )
     }
 
     @Test
