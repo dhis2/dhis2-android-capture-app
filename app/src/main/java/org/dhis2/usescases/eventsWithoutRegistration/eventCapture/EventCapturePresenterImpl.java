@@ -241,7 +241,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                                                     List<FieldViewModel> finalFieldList = new ArrayList<>();
 
                                                     for (FormSectionViewModel sectionModel : sectionList) {
-                                                        if (sectionList.size() > 1 && !sectionsToHide.contains(sectionModel.sectionUid())) {
+                                                        if (sectionList.size() >= 1 && !sectionModel.sectionUid().isEmpty() && !sectionsToHide.contains(sectionModel.sectionUid())) {
                                                             List<FieldViewModel> fieldViewModels = new ArrayList<>();
                                                             if (fieldMap.get(sectionModel.sectionUid()) != null)
                                                                 fieldViewModels.addAll(fieldMap.get(sectionModel.sectionUid()));
@@ -276,7 +276,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                                                                 finalFieldList.addAll(fieldMap.get(sectionModel.sectionUid()));
                                                             }
 
-                                                        } else if (sectionList.size() == 1) {
+                                                        } else if (sectionList.size() == 1 && sectionModel.sectionUid().isEmpty()) {
                                                             int cont = 0;
                                                             HashMap<String, Boolean> finalFields = new HashMap<>();
                                                             for (FieldViewModel fieldViewModel : fields) {
@@ -296,7 +296,9 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                                                         }
                                                     }
 
-                                                    finalFieldList.add(SectionViewModel.createClosingSection());
+                                                    if(!eventSectionModels.get(0).sectionName().equals("NO_SECTION")) {
+                                                        finalFieldList.add(SectionViewModel.createClosingSection());
+                                                    }
 
                                                     if (fieldMap.containsKey("display") && fieldMap.get("display") != null) {
                                                         finalFieldList.addAll(fieldMap.get("display"));
