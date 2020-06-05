@@ -4,34 +4,33 @@ import androidx.appcompat.content.res.AppCompatResources
 import com.mapbox.geojson.BoundingBox
 import com.mapbox.geojson.FeatureCollection
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource
+import java.util.HashMap
 import org.dhis2.R
 import org.dhis2.uicomponents.map.layer.LayerType
 import org.hisp.dhis.android.core.common.FeatureType
 
-class EventMapManager : MapManager() {
-
-    private lateinit var featureCollection: FeatureCollection
+class RelationshipMapManager : MapManager() {
 
     companion object {
-        const val ICON_ID = "ICON_ID"
-        const val EVENTS = "events"
+        const val RELATIONSHIP_ICON = "RELATIONSHIP_ICON"
     }
 
+    private lateinit var featureCollections: Map<String, FeatureCollection>
+
     fun update(
-        featureCollection: FeatureCollection,
+        featureCollections: Map<String, FeatureCollection>,
         boundingBox: BoundingBox,
-        featureType: FeatureType?
+        featureType: FeatureType
     ) {
-        this.featureType = featureType ?: FeatureType.POINT
-        this.featureCollection = featureCollection
-        (style?.getSource(EVENTS) as GeoJsonSource?)?.setGeoJson(featureCollection)
-            ?: loadDataForStyle()
+        this.featureCollections = featureCollections
+        this.featureType = featureType
+        loadDataForStyle()
         initCameraPosition(boundingBox)
     }
 
     override fun loadDataForStyle() {
         style?.addImage(
-            ICON_ID,
+            RELATIONSHIP_ICON,
             AppCompatResources.getDrawable(
                 mapView.context,
                 R.drawable.map_marker
@@ -39,16 +38,17 @@ class EventMapManager : MapManager() {
         )
         setSource()
         setLayer()
-        setSymbolManager(featureCollection)
     }
 
     override fun setSource() {
-        style?.addSource(GeoJsonSource(EVENTS, featureCollection))
+        featureCollections.keys.forEach {
+            style?.addSource(GeoJsonSource(it, featureCollections[it]))
+        }
     }
 
     override fun setLayer() {
         mapLayerManager.initMap(map)
             .withFeatureType(featureType)
-            .addStartLayer(LayerType.EVENT_LAYER)
+            .addLayers(LayerType.RELATIONSHIP_LAYER, featureCollections.keys.toList(), true)
     }
 }

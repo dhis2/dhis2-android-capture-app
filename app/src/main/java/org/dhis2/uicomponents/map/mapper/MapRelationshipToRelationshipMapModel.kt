@@ -15,6 +15,7 @@ class MapRelationshipToRelationshipMapModel {
     }
 
     private fun map(relationshipViewModel: RelationshipViewModel): RelationshipUiComponentModel? {
+        val relationshipUid = relationshipViewModel.relationship().uid()!!
         val displayName = relationshipViewModel.relationshipType().displayName()
         val typeUid = relationshipViewModel.relationshipType().uid()
         val bidirectional = relationshipViewModel.relationshipType().bidirectional()
@@ -32,11 +33,29 @@ class MapRelationshipToRelationshipMapModel {
         val teiToUid = relationshipViewModel.relationship().to()?.trackedEntityInstance()
             ?.trackedEntityInstance()
 
-        val teiFrom = TeiMap(teiFromUid, relationshipViewModel.fromGeometry(), "", "")
-        val teiTo = TeiMap(teiToUid, relationshipViewModel.toGeometry(), "", "")
+        val fromAttr =
+            relationshipViewModel.fromAttributes().firstOrNull()?.let { it.value() ?: "" } ?: ""
+        val toAttr =
+            relationshipViewModel.toAttributes().firstOrNull()?.let { it.value() ?: "" } ?: ""
+
+        val teiFrom = TeiMap(
+            teiFromUid,
+            relationshipViewModel.fromGeometry(),
+            relationshipViewModel.fromImage(),
+            relationshipViewModel.fromDefaultImageResource(),
+            fromAttr
+        )
+        val teiTo = TeiMap(
+            teiToUid,
+            relationshipViewModel.toGeometry(),
+            relationshipViewModel.toImage(),
+            relationshipViewModel.toDefaultImageResource(),
+            toAttr
+        )
 
         return RelationshipUiComponentModel(
             displayName,
+            relationshipUid,
             typeUid,
             direction,
             bidirectional,

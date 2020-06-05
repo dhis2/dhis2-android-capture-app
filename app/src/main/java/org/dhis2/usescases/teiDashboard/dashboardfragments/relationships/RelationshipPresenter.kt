@@ -6,6 +6,8 @@ import io.reactivex.processors.PublishProcessor
 import java.util.ArrayList
 import org.dhis2.data.schedulers.SchedulerProvider
 import org.dhis2.data.tuples.Trio
+import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapRelationshipsToFeatureCollection
+import org.dhis2.uicomponents.map.mapper.MapRelationshipToRelationshipMapModel
 import org.dhis2.usescases.teiDashboard.DashboardRepository
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.dhis2.utils.analytics.CLICK
@@ -26,7 +28,9 @@ class RelationshipPresenter internal constructor(
     private val teiUid: String,
     private val dashboardRepository: DashboardRepository,
     private val schedulerProvider: SchedulerProvider,
-    private val analyticsHelper: AnalyticsHelper
+    private val analyticsHelper: AnalyticsHelper,
+    private val mapRelationshipToRelationshipMapModel: MapRelationshipToRelationshipMapModel,
+    private val mapRelationshipsToFeatureCollection: MapRelationshipsToFeatureCollection
 ) {
 
     private val compositeDisposable: CompositeDisposable = CompositeDisposable()
@@ -44,7 +48,11 @@ class RelationshipPresenter internal constructor(
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
-                    { view.setRelationships(it) },
+                    {
+                        view.setRelationships(it)
+                        val relationshipModel = mapRelationshipToRelationshipMapModel.mapList(it)
+                        view.setFeatureCollection(teiUid,relationshipModel, mapRelationshipsToFeatureCollection.map(relationshipModel))
+                    },
                     { Timber.d(it) }
                 )
         )
@@ -83,6 +91,18 @@ class RelationshipPresenter internal constructor(
     fun deleteRelationship(relationship: Relationship) {
         try {
             d2.relationshipModule().relationships().withItems().uid(relationship.uid())
+                .blockingDelete()
+        } catch (e: D2Error) {
+            Timber.d(e)
+        } finally {
+            analyticsHelper.setEvent(DELETE_RELATIONSHIP, CLICK, DELETE_RELATIONSHIP)
+            updateRelationships.onNext(true)
+        }
+    }
+
+    fun deleteRelationship(relationshipUid: String) {
+        try {
+            d2.relationshipModule().relationships().withItems().uid(relationshipUid)
                 .blockingDelete()
         } catch (e: D2Error) {
             Timber.d(e)

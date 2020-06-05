@@ -1,27 +1,26 @@
 package org.dhis2.uicomponents.map.carousel
 
-import android.graphics.drawable.Drawable
 import android.view.View
 import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CircleCrop
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
-import java.io.File
-import org.dhis2.R
 import org.dhis2.databinding.ItemCarouselRelationshipBinding
-import org.dhis2.uicomponents.map.model.RelationshipMapModel
+import org.dhis2.uicomponents.map.model.RelationshipUiComponentModel
 import org.dhis2.uicomponents.map.model.TeiMap
-import org.dhis2.utils.ObjectStyleUtils
+import java.io.File
 
 class CarouselRelationshipHolder(
     val binding: ItemCarouselRelationshipBinding,
-    val delete: (String) -> Unit
+    private val currentTei: String,
+    val delete: (String) -> Boolean,
+    val clickListener: (String) -> Boolean
 ) :
     RecyclerView.ViewHolder(binding.root),
-    CarouselBinder<RelationshipMapModel> {
+    CarouselBinder<RelationshipUiComponentModel> {
 
-    override fun bind(data: RelationshipMapModel) {
+    override fun bind(data: RelationshipUiComponentModel) {
         binding.clearButton.visibility = if (data.canBeDeleted == true) {
             View.VISIBLE
         } else {
@@ -30,26 +29,37 @@ class CarouselRelationshipHolder(
         binding.clearButton.setOnClickListener {
             delete(data.relationshipUid)
         }
+        itemView.setOnClickListener {
+            clickListener(
+                if (currentTei == data.from.teiUid) {
+                    data.to.teiUid!!
+                } else {
+                    data.from.teiUid!!
+                }
+            )
+        }
         binding.relationshipTypeName.text = data.displayName
-        setImage(data.from, binding.fromTeiImage)
-        setImage(data.to, binding.toTeiImage)
+        if (currentTei == data.from.teiUid) {
+            setImage(data.from, binding.fromTeiImage)
+            setImage(data.to, binding.toTeiImage)
+        } else {
+            setImage(data.to, binding.fromTeiImage)
+            setImage(data.from, binding.toTeiImage)
+        }
+
+        binding.toRelationshipName.text = if (currentTei == data.from.teiUid) {
+            data.to.mainAttribute
+        } else {
+            data.from.mainAttribute
+        }
     }
 
     private fun setImage(tei: TeiMap, target: ImageView) {
-        val placeholderDrawable = placeholderDrawable(tei.defaultIcon)
         Glide.with(itemView.context).load(File(tei.image))
-            .placeholder(placeholderDrawable)
-            .error(placeholderDrawable)
+            .placeholder(tei.defaultImage)
+            .error(tei.defaultImage)
             .transition(DrawableTransitionOptions.withCrossFade())
             .transform(CircleCrop())
             .into(target)
-    }
-
-    private fun placeholderDrawable(resourceName: String): Drawable {
-        return ObjectStyleUtils.getIconResource(
-            itemView.context,
-            resourceName,
-            R.drawable.photo_temp_gray
-        )
     }
 }

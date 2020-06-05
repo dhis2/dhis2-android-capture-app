@@ -29,4 +29,24 @@ class MapPolygonToFeature {
         val polygon = Polygon.fromLngLats(polygonArray as List<MutableList<Point>>)
         return Pair(Feature.fromGeometry(polygon), bounds)
     }
+
+    fun map(geometry: Geometry): Feature? {
+        val sdkPolygon = GeometryHelper.getPolygon(geometry)
+        val pointList = ArrayList<Point>()
+
+        sdkPolygon.forEach {
+            it.forEach { coordinates ->
+                val lat = coordinates[1]
+                val lon = coordinates[0]
+                pointList.add(Point.fromLngLat(lon, lat))
+            }
+        }
+
+        val polygonArray = ArrayList<ArrayList<Point>>().apply {
+            add(pointList)
+        }
+
+        val polygon = Polygon.fromLngLats(polygonArray as List<MutableList<Point>>)
+        return Feature.fromGeometry(polygon)
+    }
 }

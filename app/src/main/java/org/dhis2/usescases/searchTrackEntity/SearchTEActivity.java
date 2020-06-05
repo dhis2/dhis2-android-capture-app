@@ -55,13 +55,12 @@ import org.dhis2.data.forms.dataentry.ProgramAdapter;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.databinding.ActivitySearchBinding;
-import org.dhis2.uicomponents.map.MapStyle;
 import org.dhis2.uicomponents.map.carousel.CarouselAdapter;
 import org.dhis2.uicomponents.map.layer.LayerType;
 import org.dhis2.uicomponents.map.layer.MapLayerDialog;
+import org.dhis2.uicomponents.map.layer.types.TeiMapLayer;
 import org.dhis2.uicomponents.map.managers.TeiMapManager;
 import org.dhis2.uicomponents.map.model.MapStyle;
-import org.dhis2.uicomponents.map.managers.TeiMapManager;
 import org.dhis2.usescases.coodinates.CoordinatesView;
 import org.dhis2.usescases.enrollment.EnrollmentActivity;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
@@ -237,7 +236,6 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         } else {
             teiMapManager = new TeiMapManager(
                     new MapStyle(
-                            presenter.getProgram().style().color(),
                             presenter.getTEIColor(),
                             presenter.getSymbolIcon(),
                             presenter.getEnrollmentColor(),
@@ -793,7 +791,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         List<Feature> features = teiMapManager.getMap()
                 .queryRenderedFeatures(rectF, featureType == FeatureType.POINT ? "TEI_POINT_LAYER_ID" : "TEI_POLYGON_LAYER_ID");
         if (!features.isEmpty()) {
-            teiMapManager.mapLayerManager.getLayer(LayerType.TEI_LAYER).setSelectedItem(features.get(0));
+            teiMapManager.mapLayerManager.getLayer(TeiMapManager.TEIS_SOURCE_ID).setSelectedItem(features.get(0));
             binding.mapCarousel.scrollToFeature(features.get(0));
             return true;
         }

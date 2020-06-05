@@ -67,5 +67,12 @@ fun MapboxMap.centerCameraOnFeature(feature: Feature) {
             }
             this.easeCamera(CameraUpdateFactory.newLatLng(boundsBuilder.build().center))
         }
+        is LineString -> {
+            val boundsBuilder = LatLngBounds.Builder()
+            geometry.coordinates().forEach {
+                boundsBuilder.include(LatLng(it.latitude(), it.longitude()))
+            }
+            this.easeCamera(CameraUpdateFactory.newLatLng(boundsBuilder.build().center))
+        }
     }
 }
