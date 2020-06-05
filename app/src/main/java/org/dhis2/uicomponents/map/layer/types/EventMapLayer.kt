@@ -62,7 +62,6 @@ class EventMapLayer(
     }
 
     override fun setSelectedItem(feature: Feature?) {
-
     }
 
     override fun findFeatureWithUid(featureUidProperty: String): Feature? {

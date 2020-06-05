@@ -13,9 +13,7 @@ import org.hisp.dhis.android.core.common.Geometry
 class MapLineRelationshipToFeature {
 
     fun map(relationshipUiComponentModel: RelationshipUiComponentModel): Feature? {
-        /*val lineStartPoint = getPoint(relationshipUiComponentModel.from.geometry!!)
-        val lineEndPoint = getPoint(relationshipUiComponentModel.to.geometry!!)*/
-        val (lineStartPoint,lineEndPoint) = getStartPoints(
+        val (lineStartPoint, lineEndPoint) = getStartPoints(
             relationshipUiComponentModel.from.geometry!!,
             relationshipUiComponentModel.to.geometry!!
         )
@@ -49,9 +47,13 @@ class MapLineRelationshipToFeature {
         fromGeometry: Geometry,
         toGeometry: Geometry
     ): Pair<List<Double>, List<Double>> {
-        return if (fromGeometry.type() == FeatureType.POINT && toGeometry.type() == FeatureType.POINT) {
+        return if (fromGeometry.type() == FeatureType.POINT &&
+            toGeometry.type() == FeatureType.POINT
+        ) {
             Pair(GeometryHelper.getPoint(fromGeometry), GeometryHelper.getPoint(toGeometry))
-        } else if (fromGeometry.type() == FeatureType.POINT && toGeometry.type() == FeatureType.POLYGON) {
+        } else if (fromGeometry.type() == FeatureType.POINT &&
+            toGeometry.type() == FeatureType.POLYGON
+        ) {
             Pair(
                 GeometryHelper.getPoint(fromGeometry),
                 getPolygonCloserPoint(
@@ -59,7 +61,9 @@ class MapLineRelationshipToFeature {
                     GeometryHelper.getPoint(fromGeometry)
                 )
             )
-        } else if (fromGeometry.type() == FeatureType.POLYGON && toGeometry.type() == FeatureType.POINT) {
+        } else if (fromGeometry.type() == FeatureType.POLYGON &&
+            toGeometry.type() == FeatureType.POINT
+        ) {
             Pair(
                 getPolygonCloserPoint(
                     GeometryHelper.getPolygon(fromGeometry),
@@ -67,7 +71,9 @@ class MapLineRelationshipToFeature {
                 ),
                 GeometryHelper.getPoint(toGeometry)
             )
-        } else if (fromGeometry.type() == FeatureType.POLYGON && toGeometry.type() == FeatureType.POLYGON) {
+        } else if (fromGeometry.type() == FeatureType.POLYGON &&
+            toGeometry.type() == FeatureType.POLYGON
+        ) {
             getCloserPoints(
                 GeometryHelper.getPolygon(fromGeometry),
                 GeometryHelper.getPolygon(toGeometry)
@@ -107,5 +113,4 @@ class MapLineRelationshipToFeature {
             )
         } ?: Pair(arrayListOf(0.0, 0.0), arrayListOf(0.0, 0.0))
     }
-
 }

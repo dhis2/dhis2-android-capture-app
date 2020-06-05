@@ -53,7 +53,8 @@ class CarouselAdapter<T> private constructor(
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder) {
             is CarouselTeiHolder -> holder.bind(items[position] as SearchTeiModel)
-            is CarouselRelationshipHolder -> holder.bind(items[position] as RelationshipUiComponentModel)
+            is CarouselRelationshipHolder ->
+                holder.bind(items[position] as RelationshipUiComponentModel)
         }
     }
 

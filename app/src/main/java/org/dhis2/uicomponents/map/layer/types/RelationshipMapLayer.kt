@@ -3,7 +3,6 @@ package org.dhis2.uicomponents.map.layer.types
 import android.graphics.Color
 import com.mapbox.geojson.Feature
 import com.mapbox.geojson.FeatureCollection
-import com.mapbox.geojson.LineString
 import com.mapbox.mapboxsdk.maps.Style
 import com.mapbox.mapboxsdk.style.expressions.Expression
 import com.mapbox.mapboxsdk.style.layers.FillLayer
@@ -20,7 +19,6 @@ import com.mapbox.mapboxsdk.style.sources.GeoJsonSource
 import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapRelationshipsToFeatureCollection
 import org.dhis2.uicomponents.map.layer.MapLayer
 import org.dhis2.uicomponents.map.managers.RelationshipMapManager
-import org.dhis2.uicomponents.map.managers.TeiMapManager
 import org.dhis2.utils.ColorUtils
 import org.hisp.dhis.android.core.common.FeatureType
 
@@ -176,7 +174,6 @@ class RelationshipMapLayer(
     }
 
     private fun selectPolygon(feature: Feature) {
-
     }
 
     private fun deselectCurrent() {
@@ -188,7 +185,6 @@ class RelationshipMapLayer(
                 PropertyFactory.iconSize(1f)
             )
         } else {
-
         }
     }
 
