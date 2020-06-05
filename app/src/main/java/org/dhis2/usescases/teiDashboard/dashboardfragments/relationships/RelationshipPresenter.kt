@@ -40,29 +40,18 @@ class RelationshipPresenter internal constructor(
             .uid(teiUid)
             .blockingGet().trackedEntityType()
     var updateRelationships: FlowableProcessor<Boolean> = PublishProcessor.create()
-    private var showOnMap: Boolean = false
 
     fun init() {
         compositeDisposable.add(
-            updateRelationships.startWith(false)
-                .map { this.showOnMap = it }
+            updateRelationships.startWith(true)
                 .flatMap { dashboardRepository.listTeiRelationships() }
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
                     {
-                        when(showOnMap){
-                            false -> view.setRelationships(it)
-                            true -> {
-                                val relationshipModel =
-                                    mapRelationshipToRelationshipMapModel.mapList(it)
-                                view.setFeatureCollection(
-                                    mapRelationshipsToFeatureCollection.map(relationshipModel)
-                                )
-                            }
-                        }
-
-
+                        view.setRelationships(it)
+                        val relationshipModel = mapRelationshipToRelationshipMapModel.mapList(it)
+                        view.setFeatureCollection(mapRelationshipsToFeatureCollection.map(relationshipModel))
                     },
                     { Timber.d(it) }
                 )
@@ -107,7 +96,7 @@ class RelationshipPresenter internal constructor(
             Timber.d(e)
         } finally {
             analyticsHelper.setEvent(DELETE_RELATIONSHIP, CLICK, DELETE_RELATIONSHIP)
-            updateRelationships.onNext(showOnMap)
+            updateRelationships.onNext(true)
         }
     }
 
@@ -135,7 +124,7 @@ class RelationshipPresenter internal constructor(
         } catch (e: D2Error) {
             view.displayMessage(e.errorDescription())
         } finally {
-            updateRelationships.onNext(showOnMap)
+            updateRelationships.onNext(true)
         }
     }
 

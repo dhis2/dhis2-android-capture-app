@@ -87,7 +87,6 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
         activity.relationshipMap().observe(this, showMap -> {
             binding.mapView.setVisibility(showMap ? View.VISIBLE : View.GONE);
             binding.relationshipRecycler.setVisibility(showMap ? View.GONE : View.VISIBLE);
-            presenter.getUpdateRelationships().onNext(showMap);
         });
 
         return binding.getRoot();
