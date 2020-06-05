@@ -167,6 +167,8 @@ class TeiDashboardTest : BaseTest() {
 
     @Test
     fun shouldOpenEventAndSaveSuccessfully() {
+        setupCredentials()
+
         prepareTeiOpenedProgrammeAndLaunchActivity(rule)
 
         val babyPostNatal = 0
@@ -175,8 +177,8 @@ class TeiDashboardTest : BaseTest() {
         }
 
         eventRobot {
-            scrollToBottomFormulary()
-            clickOnFormularyFabButton()
+            scrollToBottomForm()
+            clickOnFormFabButton()
             clickOnFinish()
         }
     }
@@ -218,25 +220,89 @@ class TeiDashboardTest : BaseTest() {
     }
 
     @Test
+    fun shouldSuccessfullyCreateANewEvent() {
+        prepareTeiToCreateANewEventAndLaunchActivity(rule)
+
+        teiDashboardRobot {
+            clickOnFab()
+            clickOnCreateNewEvent()
+            clickOnFirstReferralEvent()
+            clickOnReferralNextButton()
+            waitToDebounce(600)
+        }
+
+        eventRobot {
+            fillRadioButtonForm(4)
+            clickOnFormFabButton()
+            clickOnFinish()
+        }
+
+        teiDashboardRobot {
+            checkEventWasCreatedAndOpen(LAB_MONITORING, 0)
+        }
+    }
+
+    @Test
+    fun shouldOpenEventEditAndSaveSuccessfully() {
+        prepareTeiOpenedToEditAndLaunchActivity(rule)
+
+        val labMonitoring = 2
+
+        teiDashboardRobot {
+            clickOnEventWithPosition(labMonitoring)
+            waitToDebounce(600)
+        }
+
+        eventRobot {
+            clickOnChangeDate()
+            clickOnEditDate()
+            acceptUpdateEventDate()
+            clickOnUpdate()
+            waitToDebounce(600)
+            fillRadioButtonForm(4)
+            clickOnFormFabButton()
+            clickOnFinishAndComplete()
+            waitToDebounce(600)
+        }
+
+        teiDashboardRobot {
+            checkEventWasCreatedAndClosed(LAB_MONITORING, 3)
+        }
+    }
+
+    @Test
     @Ignore
     fun shouldEnrollToOtherProgramWhenClickOnProgramEnrollments() {
-        // launch tei
+        // launch tei child program
         // click on more options
         // click on Program enrollments
-        // choose a Program to be enroll
+        // choose a Program to be enroll TB program
         // choose date and accept
+        // open personal tab
+        // scroll to the end
+        // add text
         // click on save in enrollment
-        // if Child Program after save will ask to type AGAR then to choose option (Finish or Finish and Complete)
 
-        prepareTeiOpenedWithNoPreviousEventProgrammeAndLaunchActivity(rule)
+        val provider = 5
+        prepareTeiToEnrollToOtherProgramAndLaunchActivity(rule)
 
         teiDashboardRobot {
             clickOnMenuMoreOptions()
             clickOnMenuProgramEnrollments()
-            clickOnAProgramForEnrollment() // is not clicking on enrollment btn
-            // clickOnAcceptEnrollmentDate()
+            clickOnAProgramForEnrollment(provider)
+            clickOnAcceptEnrollmentDate()
+            clickOnPersonAttributes(5)
+            typeOnRequiredTextField("test", 2) // not sure why is not typing to check
+            clickOnSaveEnrollment()
+            Thread.sleep(8000)
+
+            // scrollToBottomProgramForm()
             // clickOnSaveEnrollment()
-            Thread.sleep(1000)
+            // check event created 0 open
+        }
+
+        eventRobot {
+            clickOnFinish()
         }
     }
 

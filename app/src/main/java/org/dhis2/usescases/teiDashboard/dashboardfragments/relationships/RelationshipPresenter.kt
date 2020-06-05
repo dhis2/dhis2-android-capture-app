@@ -39,7 +39,7 @@ class RelationshipPresenter internal constructor(
             .withTrackedEntityAttributeValues()
             .uid(teiUid)
             .blockingGet().trackedEntityType()
-    private var updateRelationships: FlowableProcessor<Boolean> = PublishProcessor.create()
+    var updateRelationships: FlowableProcessor<Boolean> = PublishProcessor.create()
 
     fun init() {
         compositeDisposable.add(

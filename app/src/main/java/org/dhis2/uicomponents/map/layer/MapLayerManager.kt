@@ -14,7 +14,7 @@ import org.hisp.dhis.android.core.common.FeatureType
 
 class MapLayerManager {
 
-    lateinit var mapLayers: HashMap<String, MapLayer>
+    var mapLayers: HashMap<String, MapLayer> = hashMapOf()
     private lateinit var mapboxMap: MapboxMap
     private var mapStyle: MapStyle? = null
     private var featureType: FeatureType = FeatureType.POINT
@@ -29,7 +29,6 @@ class MapLayerManager {
 
     fun initMap(mapboxMap: MapboxMap) = apply {
         this.mapboxMap = mapboxMap
-        mapLayers = hashMapOf()
     }
 
     fun withFeatureType(featureType: FeatureType) = apply {
@@ -42,38 +41,40 @@ class MapLayerManager {
 
     fun addLayer(layerType: LayerType, sourceId: String? = null) = apply {
         val style = mapboxMap.style!!
-        mapLayers[sourceId ?: layerType.name] = when (layerType) {
-            LayerType.TEI_LAYER -> TeiMapLayer(
-                style,
-                featureType,
-                mapStyle?.teiColor!!,
-                mapStyle?.programDarkColor!!
-            )
-            LayerType.ENROLLMENT_LAYER -> EnrollmentMapLayer(
-                style,
-                featureType,
-                mapStyle?.enrollmentColor!!,
-                mapStyle?.programDarkColor!!
-            )
-            LayerType.HEATMAP_LAYER -> HeatmapMapLayer(
-                style,
-                featureType
-            )
-            LayerType.SATELLITE_LAYER -> SatelliteMapLayer(
-                mapboxMap,
-                styleChangeCallback
-            )
-            LayerType.RELATIONSHIP_LAYER -> RelationshipMapLayer(
-                style,
-                featureType,
-                sourceId!!,
-                relationShipColors.firstOrNull()?.also { relationShipColors.removeAt(0) }
-            )
-            LayerType.EVENT_LAYER -> EventMapLayer(
-                style,
-                featureType,
-                relationShipColors.first()
-            )
+        mapLayers[sourceId ?: layerType.name] ?: run {
+            mapLayers[sourceId ?: layerType.name] = when (layerType) {
+                LayerType.TEI_LAYER -> TeiMapLayer(
+                    style,
+                    featureType,
+                    mapStyle?.teiColor!!,
+                    mapStyle?.programDarkColor!!
+                )
+                LayerType.ENROLLMENT_LAYER -> EnrollmentMapLayer(
+                    style,
+                    featureType,
+                    mapStyle?.enrollmentColor!!,
+                    mapStyle?.programDarkColor!!
+                )
+                LayerType.HEATMAP_LAYER -> HeatmapMapLayer(
+                    style,
+                    featureType
+                )
+                LayerType.SATELLITE_LAYER -> SatelliteMapLayer(
+                    mapboxMap,
+                    styleChangeCallback
+                )
+                LayerType.RELATIONSHIP_LAYER -> RelationshipMapLayer(
+                    style,
+                    featureType,
+                    sourceId!!,
+                    relationShipColors.firstOrNull()?.also { relationShipColors.removeAt(0) }
+                )
+                LayerType.EVENT_LAYER -> EventMapLayer(
+                    style,
+                    featureType,
+                    relationShipColors.first()
+                )
+            }
         }
     }
 
@@ -86,6 +87,11 @@ class MapLayerManager {
     }
 
     fun addLayers(layerType: LayerType, sourceIds: List<String>, visible: Boolean? = null) {
+        mapLayers.keys.forEach {
+            if (!sourceIds.contains(it)) {
+                mapLayers[it]?.hideLayer()
+            }
+        }
         sourceIds.forEach {
             when (visible) {
                 true -> addStartLayer(layerType, it)

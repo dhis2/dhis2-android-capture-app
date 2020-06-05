@@ -115,7 +115,7 @@ class RelationshipMapLayer(
         get() = style.getLayer(POLYGON_LAYER_ID)
             ?: FillLayer(POLYGON_LAYER_ID, sourceId)
                 .withProperties(
-                    PropertyFactory.fillColor(ColorUtils.withAlpha(LINE_COLOR ?: -1))
+                    PropertyFactory.fillColor(ColorUtils.withAlpha(lineColor?:LINE_COLOR ?: -1))
                 ).withFilter(
                     Expression.eq(
                         Expression.literal("\$type"),
@@ -203,6 +203,10 @@ class RelationshipMapLayer(
         when (featureType) {
             FeatureType.POINT -> {
                 linesLayer.setProperties(PropertyFactory.visibility(visibility))
+                pointLayer.setProperties(PropertyFactory.visibility(visibility))
+                polygonLayer.setProperties(PropertyFactory.visibility(visibility))
+                selectedLineLayer.setProperties(PropertyFactory.visibility(visibility))
+                selectedPointLayer.setProperties(PropertyFactory.visibility(visibility))
                 pointLayer.setProperties(PropertyFactory.visibility(visibility))
             }
             FeatureType.POLYGON -> {

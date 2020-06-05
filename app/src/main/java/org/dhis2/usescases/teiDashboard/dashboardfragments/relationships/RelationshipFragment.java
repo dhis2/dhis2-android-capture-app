@@ -16,6 +16,8 @@ import androidx.appcompat.content.res.AppCompatResources;
 import androidx.databinding.DataBindingUtil;
 
 import com.mapbox.geojson.BoundingBox;
+import com.mapbox.geojson.FeatureCollection;
+import com.mapbox.geojson.BoundingBox;
 import com.mapbox.geojson.Feature;
 import com.mapbox.geojson.FeatureCollection;
 import com.mapbox.mapboxsdk.geometry.LatLng;
@@ -30,6 +32,7 @@ import org.dhis2.R;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.databinding.FragmentRelationshipsBinding;
+import org.dhis2.uicomponents.map.managers.RelationshipMapManager;
 import org.dhis2.uicomponents.map.carousel.CarouselAdapter;
 import org.dhis2.uicomponents.map.managers.RelationshipMapManager;
 import org.dhis2.uicomponents.map.model.RelationshipUiComponentModel;
@@ -45,6 +48,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Map;
 import java.util.Set;
 
@@ -89,6 +93,11 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_relationships, container, false);
         relationshipAdapter = new RelationshipAdapter(presenter);
         binding.relationshipRecycler.setAdapter(relationshipAdapter);
+
+        relationshipMapManager = new RelationshipMapManager();
+        relationshipMapManager.init(binding.mapView);
+        relationshipMapManager.setOnMapClickListener(this);
+
         TeiDashboardMobileActivity activity = (TeiDashboardMobileActivity) getContext();
         activity.relationshipMap().observe(this, showMap -> {
             binding.relationshipRecycler.setVisibility(showMap ? View.GONE : View.VISIBLE);
@@ -96,9 +105,7 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
             binding.mapCarousel.setVisibility(showMap ? View.VISIBLE : View.GONE);
             binding.rfabLayout.setVisibility(showMap ? View.GONE : View.VISIBLE);
         });
-        relationshipMapManager = new RelationshipMapManager();
-        relationshipMapManager.init(binding.mapView);
-        relationshipMapManager.setOnMapClickListener(this);
+
         return binding.getRoot();
     }
 
