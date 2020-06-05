@@ -4,6 +4,7 @@ import android.app.DatePickerDialog;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import org.dhis2.data.forms.FormSectionViewModel;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
@@ -24,10 +25,6 @@ import java.util.List;
 import java.util.Map;
 
 import io.reactivex.functions.Consumer;
-
-/**
- * QUADRAM. Created by Cristian on 01/03/2018.
- */
 
 public class EventInitialContract {
 
@@ -81,7 +78,7 @@ public class EventInitialContract {
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter {
-        void init(EventInitialContract.View view, String programId, String eventId, String orgUnitId, String programStageId);
+        void init(String programId, String eventId, String orgUnitId, String programStageId);
 
         void getProgramStage(String programStageUid);
 
@@ -107,15 +104,14 @@ public class EventInitialContract {
 
         void onOrgUnitButtonClick();
 
-        void onLocationClick();
-
         void onFieldChanged(CharSequence s, int start, int before, int count);
 
         void getSectionCompletion(@Nullable String sectionUid);
 
-        void getEventSections(@NonNull String eventId);
+        @VisibleForTesting
+        String getCurrentOrgUnit(String orgUnitUid);
 
-        List<OrganisationUnit> getOrgUnits();
+        void getEventSections(@NonNull String eventId);
 
         void onShareClick(android.view.View mView);
 

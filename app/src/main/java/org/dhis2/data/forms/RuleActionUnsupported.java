@@ -30,6 +30,6 @@ public abstract class RuleActionUnsupported extends RuleAction {
     @Nonnull
     public static RuleActionUnsupported create(
             @NonNull String content, @Nonnull String actionValueType) {
-        return new AutoValue_RuleActionUnsupported(content, actionValueType);
+        return new AutoValue_RuleActionUnsupported("", content, actionValueType);
     }
 }
