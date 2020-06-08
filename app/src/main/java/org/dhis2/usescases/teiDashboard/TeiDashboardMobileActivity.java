@@ -187,7 +187,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
         );
 
         relationshipMap().observe(this, value -> {
-            binding.teiPager.setUserInputEnabled(!value);
+            enablePagerScrolling(!value);
         });
     }
 
@@ -252,10 +252,10 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
                             }
                             if (position == RELATIONSHIPS_POS) {
                                 binding.relationshipMapIcon.setVisibility(View.VISIBLE);
-                                binding.teiPager.setUserInputEnabled(!relationshipMap().getValue());
+                                enablePagerScrolling(!relationshipMap().getValue());
                             } else {
                                 binding.relationshipMapIcon.setVisibility(View.GONE);
-                                binding.teiPager.setUserInputEnabled(true);
+                                enablePagerScrolling(true);
                             }
                         }
                     }
@@ -300,6 +300,14 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
                 binding.teiTablePager.setCurrentItem(1, false);
 
             tabLayoutMediator(binding.teiTablePager);
+        }
+    }
+
+    private void enablePagerScrolling(boolean enable){
+        if(OrientationUtilsKt.isPortrait()){
+            binding.teiPager.setUserInputEnabled(enable);
+        }else{
+            binding.teiTablePager.setUserInputEnabled(enable);
         }
     }
 
@@ -681,14 +689,14 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
     @Override
     public void hideTabsAndDisableSwipe() {
         binding.tabLayout.setVisibility(View.GONE);
-        binding.teiPager.setUserInputEnabled(false);
+        enablePagerScrolling(false);
         ViewCompat.setElevation(binding.toolbar, 0);
     }
 
     @Override
     public void showTabsAndEnableSwipe() {
         binding.tabLayout.setVisibility(View.VISIBLE);
-        binding.teiPager.setUserInputEnabled(true);
+        enablePagerScrolling(true);
         ViewCompat.setElevation(binding.toolbar, elevation);
     }
 
