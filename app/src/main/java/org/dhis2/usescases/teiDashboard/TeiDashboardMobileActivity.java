@@ -94,6 +94,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
     private MutableLiveData<Boolean> groupByStage;
     private MutableLiveData<Boolean> filtersShowing;
     private MutableLiveData<String> currentEnrollment;
+    private MutableLiveData<Boolean> relationshipMap;
     private float elevation = 0f;
 
     public static Intent intent(Context context,
@@ -128,6 +129,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
         groupByStage = new MutableLiveData<>(presenter.getProgramGrouping());
         filtersShowing = new MutableLiveData<>(false);
         currentEnrollment = new MutableLiveData<>();
+        relationshipMap = new MutableLiveData<>(false);
         dashboardViewModel = ViewModelProviders.of(this).get(DashboardViewModel.class);
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_dashboard_mobile);
@@ -173,6 +175,16 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
         });
 
         elevation = ViewCompat.getElevation(binding.toolbar);
+
+        binding.relationshipMapIcon.setOnClickListener(v -> {
+                    if(!relationshipMap.getValue()) {
+                        binding.relationshipMapIcon.setImageResource(R.drawable.ic_list);
+                    } else {
+                        binding.relationshipMapIcon.setImageResource(R.drawable.ic_map);
+                    }
+                    relationshipMap.setValue(!relationshipMap.getValue());
+                }
+        );
     }
 
     @Override
@@ -230,8 +242,14 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
                                 binding.filterCounter.setVisibility(View.GONE);
                                 binding.searchFilterGeneral.setVisibility(View.GONE);
                             } else {
+
                                 binding.filterCounter.setVisibility(View.VISIBLE);
                                 binding.searchFilterGeneral.setVisibility(View.VISIBLE);
+                            }
+                            if (position == RELATIONSHIPS_POS) {
+                                binding.relationshipMapIcon.setVisibility(View.VISIBLE);
+                            } else {
+                                binding.relationshipMapIcon.setVisibility(View.GONE);
                             }
                         }
                     }
@@ -251,12 +269,15 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
                             switch (position) {
                                 case INDICATORS_LANDSCAPE_POS:
                                     binding.sectionTitle.setText(getString(R.string.dashboard_indicators));
+                                    binding.relationshipMapIcon.setVisibility(View.GONE);
                                     break;
                                 case RELATIONSHIPS_LANDSCAPE_POS:
                                     binding.sectionTitle.setText(getString(R.string.dashboard_relationships));
+                                    binding.relationshipMapIcon.setVisibility(View.VISIBLE);
                                     break;
                                 case NOTES_LANDSCAPE_POS:
                                     binding.sectionTitle.setText(getString(R.string.dashboard_notes));
+                                    binding.relationshipMapIcon.setVisibility(View.GONE);
                                     break;
                                 default:
                                     break;
@@ -631,6 +652,10 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
 
     public LiveData<Boolean> observeGrouping() {
         return groupByStage;
+    }
+
+    public LiveData<Boolean> relationshipMap() {
+        return relationshipMap;
     }
 
     @Override

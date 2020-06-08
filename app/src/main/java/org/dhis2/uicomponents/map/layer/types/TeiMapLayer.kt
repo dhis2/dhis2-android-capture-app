@@ -17,8 +17,8 @@ import org.hisp.dhis.android.core.common.FeatureType
 class TeiMapLayer(
     var style: Style,
     var featureType: FeatureType,
-    private val enrollmentColor: Int,
-    private val enrollmentDarkColor: Int
+    private val enrollmentColor: Int?,
+    private val enrollmentDarkColor: Int?
 ) : MapLayer {
 
     private var POINT_LAYER_ID: String = "TEI_POINT_LAYER_ID"
@@ -55,7 +55,7 @@ class TeiMapLayer(
         get() = style.getLayer(POLYGON_LAYER_ID)
             ?: FillLayer(POLYGON_LAYER_ID, TEIS_SOURCE_ID)
                 .withProperties(
-                    PropertyFactory.fillColor(ColorUtils.withAlpha(enrollmentColor))
+                    PropertyFactory.fillColor(ColorUtils.withAlpha(enrollmentColor ?: -1))
                 ).withFilter(
                     Expression.eq(
                         Expression.literal("\$type"),
@@ -67,7 +67,7 @@ class TeiMapLayer(
         get() = style.getLayer(POLYGON_BORDER_LAYER_ID)
             ?: LineLayer(POLYGON_BORDER_LAYER_ID, TEIS_SOURCE_ID)
                 .withProperties(
-                    PropertyFactory.lineColor(enrollmentDarkColor),
+                    PropertyFactory.lineColor(enrollmentDarkColor ?: -1),
                     PropertyFactory.lineWidth(2f)
                 ).withFilter(
                     Expression.eq(

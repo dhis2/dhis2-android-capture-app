@@ -31,7 +31,11 @@ abstract class MapManager {
             this.map = it
             map.setStyle(
                 Style.MAPBOX_STREETS
-            )
+            ) {
+                if (this::featureType.isInitialized) {
+                    loadDataForStyle()
+                }
+            }
             onMapClickListener?.let { mapClickListener ->
                 map.addOnMapClickListener(mapClickListener)
             }
@@ -71,6 +75,8 @@ abstract class MapManager {
         )
         map.initCameraToViewAllElements(mapView.context, bounds)
     }
+
+    fun isMapReady() = ::map.isInitialized
 
     fun onStart() {
         mapView.onStart()

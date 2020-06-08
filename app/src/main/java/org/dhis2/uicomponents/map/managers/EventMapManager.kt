@@ -1,14 +1,11 @@
 package org.dhis2.uicomponents.map.managers
 
-import android.graphics.BitmapFactory
+import androidx.appcompat.content.res.AppCompatResources
 import com.mapbox.geojson.BoundingBox
 import com.mapbox.geojson.FeatureCollection
-import com.mapbox.mapboxsdk.style.layers.FillLayer
-import com.mapbox.mapboxsdk.style.layers.PropertyFactory
-import com.mapbox.mapboxsdk.style.layers.SymbolLayer
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource
 import org.dhis2.R
-import org.dhis2.utils.ColorUtils
+import org.dhis2.uicomponents.map.layer.LayerType
 import org.hisp.dhis.android.core.common.FeatureType
 
 class EventMapManager : MapManager() {
@@ -35,10 +32,10 @@ class EventMapManager : MapManager() {
     override fun loadDataForStyle() {
         style?.addImage(
             ICON_ID,
-            BitmapFactory.decodeResource(
-                mapView.resources,
-                R.drawable.mapbox_marker_icon_default
-            )
+            AppCompatResources.getDrawable(
+                mapView.context,
+                R.drawable.map_marker
+            )!!
         )
         setSource()
         setLayer()
@@ -50,39 +47,8 @@ class EventMapManager : MapManager() {
     }
 
     override fun setLayer() {
-        val symbolLayer = SymbolLayer(
-            "POINT_LAYER",
-            EVENTS
-        )
-            .withProperties(
-                PropertyFactory.iconImage(ICON_ID),
-                PropertyFactory.iconAllowOverlap(true),
-                PropertyFactory.iconOffset(
-                    arrayOf(
-                        0f,
-                        -9f
-                    )
-                )
-            )
-        symbolLayer.minZoom = 0f
-        style?.addLayer(symbolLayer)
-        if (featureType != FeatureType.POINT) {
-            style?.addLayerBelow(
-                FillLayer(
-                    "POLYGON_LAYER",
-                    EVENTS
-                )
-                    .withProperties(
-                        PropertyFactory.fillColor(
-                            ColorUtils.getPrimaryColorWithAlpha(
-                                mapView.context,
-                                ColorUtils.ColorType.PRIMARY_LIGHT,
-                                150f
-                            )
-                        )
-                    ),
-                "settlement-label"
-            )
-        }
+        mapLayerManager.initMap(map)
+            .withFeatureType(featureType)
+            .addStartLayer(LayerType.EVENT_LAYER)
     }
 }

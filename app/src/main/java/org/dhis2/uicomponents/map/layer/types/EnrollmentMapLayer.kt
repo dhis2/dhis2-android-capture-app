@@ -17,8 +17,8 @@ import org.hisp.dhis.android.core.common.FeatureType
 class EnrollmentMapLayer(
     val style: Style,
     val featureType: FeatureType,
-    private val enrollmentColor: Int,
-    private val enrollmentDarkColor: Int
+    private val enrollmentColor: Int?,
+    private val enrollmentDarkColor: Int?
 ) : MapLayer {
 
     private var POINT_LAYER_ID: String = "ENROLLMENT_POINT_LAYER_ID"
@@ -55,7 +55,7 @@ class EnrollmentMapLayer(
         get() = style.getLayer(POLYGON_LAYER_ID)
             ?: FillLayer(POLYGON_LAYER_ID, ENROLLMENT_SOURCE_ID)
                 .withProperties(
-                    PropertyFactory.fillColor(ColorUtils.withAlpha(enrollmentColor))
+                    PropertyFactory.fillColor(ColorUtils.withAlpha(enrollmentColor ?: -1))
                 )
                 .withFilter(
                     Expression.eq(
@@ -68,7 +68,7 @@ class EnrollmentMapLayer(
         get() = style.getLayer(POLYGON_BORDER_LAYER_ID)
             ?: LineLayer(POLYGON_BORDER_LAYER_ID, ENROLLMENT_SOURCE_ID)
                 .withProperties(
-                    PropertyFactory.lineColor(enrollmentDarkColor),
+                    PropertyFactory.lineColor(enrollmentDarkColor ?: -1),
                     PropertyFactory.lineWidth(2f)
                 )
                 .withFilter(
