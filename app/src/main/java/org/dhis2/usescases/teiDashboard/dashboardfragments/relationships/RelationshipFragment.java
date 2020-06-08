@@ -16,8 +16,6 @@ import androidx.appcompat.content.res.AppCompatResources;
 import androidx.databinding.DataBindingUtil;
 
 import com.mapbox.geojson.BoundingBox;
-import com.mapbox.geojson.FeatureCollection;
-import com.mapbox.geojson.BoundingBox;
 import com.mapbox.geojson.Feature;
 import com.mapbox.geojson.FeatureCollection;
 import com.mapbox.mapboxsdk.geometry.LatLng;
@@ -32,7 +30,6 @@ import org.dhis2.R;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.databinding.FragmentRelationshipsBinding;
-import org.dhis2.uicomponents.map.managers.RelationshipMapManager;
 import org.dhis2.uicomponents.map.carousel.CarouselAdapter;
 import org.dhis2.uicomponents.map.managers.RelationshipMapManager;
 import org.dhis2.uicomponents.map.model.RelationshipUiComponentModel;
@@ -48,7 +45,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Map;
 import java.util.Set;
 
@@ -308,15 +304,17 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
         PointF pointf = relationshipMapManager.getMap().getProjection().toScreenLocation(point);
         RectF rectF = new RectF(pointf.x - 10, pointf.y - 10, pointf.x + 10, pointf.y + 10);
 
-        List<Feature> features = relationshipMapManager.getMap()
-                .queryRenderedFeatures(rectF,
-                        "RELATIONSHIP_POINT_LAYER_ID_" + sources.toArray(new String[sources.size()])[0],
-                        "RELATIONSHIP_LINE_LAYER_ID_" + sources.toArray(new String[sources.size()])[0]
-                );
-        if (!features.isEmpty()) {
-            relationshipMapManager.mapLayerManager.getLayer(sources.toArray(new String[sources.size()])[0]).setSelectedItem(features.get(0));
-            binding.mapCarousel.scrollToFeature(features.get(0));
-            return true;
+        for (String sourceId : sources) {
+            String lineLayerId = "RELATIONSHIP_LINE_LAYER_ID_" + sourceId;
+            String pointLayerId = "RELATIONSHIP_LINE_LAYER_ID_" + sourceId;
+
+            List<Feature> features = relationshipMapManager.getMap()
+                    .queryRenderedFeatures(rectF, lineLayerId, pointLayerId);
+            if (!features.isEmpty()) {
+                relationshipMapManager.mapLayerManager.getLayer(sourceId).setSelectedItem(features.get(0));
+                binding.mapCarousel.scrollToFeature(features.get(0));
+                return true;
+            }
         }
 
         return false;

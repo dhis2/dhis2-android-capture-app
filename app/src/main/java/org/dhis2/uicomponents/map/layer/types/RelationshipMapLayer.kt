@@ -243,7 +243,10 @@ class RelationshipMapLayer(
                     featureUidProperty
                 )
             )
-            ?.firstOrNull()
+            ?.firstOrNull()?.let {
+                setSelectedItem(it)
+                it
+            }
     }
 
     private fun setVisibility(visibility: String) {
