@@ -2,11 +2,14 @@ package org.dhis2.usescases.teiDashboard.dashboardfragments.relationships;
 
 import com.google.auto.value.AutoValue;
 
+import org.hisp.dhis.android.core.common.Geometry;
 import org.hisp.dhis.android.core.relationship.Relationship;
 import org.hisp.dhis.android.core.relationship.RelationshipType;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue;
 
 import java.util.List;
+
+import javax.annotation.Nullable;
 
 @AutoValue
 public abstract class RelationshipViewModel {
@@ -14,6 +17,12 @@ public abstract class RelationshipViewModel {
     public enum RelationshipDirection {FROM, TO}
 
     public abstract Relationship relationship();
+
+    @Nullable
+    public abstract Geometry fromGeometry();
+
+    @Nullable
+    public abstract Geometry toGeometry();
 
     public abstract RelationshipType relationshipType();
 
@@ -27,8 +36,11 @@ public abstract class RelationshipViewModel {
                                                RelationshipType relationshipType,
                                                RelationshipDirection relationshipDirection,
                                                String teiUid,
-                                               List<TrackedEntityAttributeValue> attributeValues) {
-        return new AutoValue_RelationshipViewModel(relationship, relationshipType, relationshipDirection, teiUid, attributeValues);
+                                               List<TrackedEntityAttributeValue> attributeValues,
+                                               Geometry fromGeometry,
+                                               Geometry toGeometry) {
+        return new AutoValue_RelationshipViewModel(relationship, fromGeometry, toGeometry,
+                relationshipType, relationshipDirection, teiUid, attributeValues);
     }
 
 }

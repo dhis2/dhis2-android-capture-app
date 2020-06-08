@@ -4,7 +4,6 @@ import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.SparseBooleanArray;
@@ -19,9 +18,6 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.databinding.DataBindingUtil;
 
-import com.google.android.material.shape.CornerFamily;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import com.jakewharton.rxbinding2.view.RxView;
 
 import org.dhis2.App;
@@ -32,9 +28,9 @@ import org.dhis2.data.forms.dataentry.fields.unsupported.UnsupportedViewModel;
 import org.dhis2.databinding.ActivityEventInitialBinding;
 import org.dhis2.databinding.CategorySelectorBinding;
 import org.dhis2.databinding.WidgetDatepickerBinding;
+import org.dhis2.usescases.coodinates.CoordinatesView;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
-import org.dhis2.usescases.map.MapSelectorActivity;
 import org.dhis2.usescases.qrCodes.eventsworegistration.QrEventsWORegistrationActivity;
 import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.Constants;
@@ -43,15 +39,12 @@ import org.dhis2.utils.DialogClickListener;
 import org.dhis2.utils.EventCreationType;
 import org.dhis2.utils.EventMode;
 import org.dhis2.utils.HelpManager;
-import org.dhis2.utils.ObjectStyleUtils;
 import org.dhis2.utils.analytics.AnalyticsConstants;
 import org.dhis2.utils.customviews.CategoryOptionPopUp;
-import org.dhis2.utils.customviews.CoordinatesView;
 import org.dhis2.utils.customviews.CustomDialog;
 import org.dhis2.utils.customviews.OrgUnitDialog;
 import org.dhis2.utils.customviews.PeriodDialog;
 import org.dhis2.utils.resources.ResourceManager;
-import org.hisp.dhis.android.core.arch.helpers.GeometryHelper;
 import org.hisp.dhis.android.core.category.Category;
 import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryOption;
@@ -69,7 +62,6 @@ import org.hisp.dhis.android.core.program.ProgramStage;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.lang.reflect.Type;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -101,11 +93,6 @@ import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
 import static org.dhis2.utils.analytics.AnalyticsConstants.CREATE_EVENT;
 import static org.dhis2.utils.analytics.AnalyticsConstants.DELETE_EVENT;
 import static org.dhis2.utils.analytics.AnalyticsConstants.SHOW_HELP;
-
-
-/**
- * QUADRAM. Created by Cristian on 01/03/2018.
- */
 
 public class EventInitialActivity extends ActivityGlobalAbstract implements EventInitialContract.View, DatePickerDialog.OnDateSetListener {
 
@@ -141,15 +128,13 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     private boolean fixedOrgUnit;
     private String catOptionComboUid;
     private CategoryCombo catCombo;
-    private Map<String, CategoryOption> selectedCatOption;
+    private Map<String, CategoryOption> selectedCatOption = new HashMap<>();
     private OrgUnitDialog orgUnitDialog;
     private Program program;
-    private String savedLat;
-    private String savedLon;
     private ArrayList<String> sectionsToHide;
     private Boolean accessData;
 
-    private CompositeDisposable disposable;
+    private CompositeDisposable disposable = new CompositeDisposable();
     private Geometry newGeometry;
 
     public static Bundle getBundle(String programUid, String eventUid, String eventCreationType,
@@ -169,8 +154,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         return bundle;
     }
 
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
+    private void initVariables() {
         programUid = getIntent().getStringExtra(PROGRAM_UID);
         eventUid = getIntent().getStringExtra(Constants.EVENT_UID);
         eventCreationType = getIntent().getStringExtra(EVENT_CREATION_TYPE) != null ?
@@ -183,87 +167,85 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         programStageUid = getIntent().getStringExtra(Constants.PROGRAM_STAGE_UID);
         enrollmentStatus = (EnrollmentStatus) getIntent().getSerializableExtra(Constants.ENROLLMENT_STATUS);
         eventScheduleInterval = getIntent().getIntExtra(Constants.EVENT_SCHEDULE_INTERVAL, 0);
-        setScreenName(this.getLocalClassName());
-        ((App) getApplicationContext()).userComponent().plus(new EventInitialModule(eventUid)).inject(this);
-        super.onCreate(savedInstanceState);
+    }
 
-        disposable = new CompositeDisposable();
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        initVariables();
+        setScreenName(this.getLocalClassName());
+        ((App) getApplicationContext()).userComponent().plus(
+                new EventInitialModule(this,
+                        eventUid)
+        ).inject(this);
+        super.onCreate(savedInstanceState);
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_event_initial);
         binding.setPresenter(presenter);
-        this.selectedCatOption = new HashMap<>();
-
-        setUpScrenByCreatinType(eventCreationType);
 
         initProgressBar();
 
-        if (eventUid == null) {
-            binding.shareContainer.setVisibility(View.GONE);
-            if (binding.actionButton != null)
-                binding.actionButton.setText(R.string.next);
-        } else {
-            if (binding.actionButton != null)
-                binding.actionButton.setText(R.string.update);
-        }
+        setUpScreenByCreationType();
 
-        if (binding.actionButton != null) {
-            disposable.add(RxView.clicks(binding.actionButton)
-                    .debounce(500, TimeUnit.MILLISECONDS, AndroidSchedulers.mainThread())
-                    .subscribe(v -> {
-                                binding.actionButton.setEnabled(false);
-                                String programStageModelUid = programStage == null ? "" : programStage.uid();
-                                if (eventUid == null) { // This is a new Event
-                                    analyticsHelper().setEvent(CREATE_EVENT, AnalyticsConstants.DATA_CREATION, CREATE_EVENT);
-                                    if (eventCreationType == EventCreationType.REFERAL && tempCreate.equals(PERMANENT)) {
-                                        presenter.scheduleEventPermanent(
-                                                enrollmentUid,
-                                                getTrackedEntityInstance,
-                                                programStageModelUid,
-                                                selectedDate,
-                                                selectedOrgUnit,
-                                                null,
-                                                catOptionComboUid,
-                                                newGeometry
-                                        );
-                                    } else if (eventCreationType == EventCreationType.SCHEDULE || eventCreationType == EventCreationType.REFERAL) {
-                                        presenter.scheduleEvent(
-                                                enrollmentUid,
-                                                programStageModelUid,
-                                                selectedDate,
-                                                selectedOrgUnit,
-                                                null,
-                                                catOptionComboUid,
-                                                newGeometry
-                                        );
-                                    } else {
-                                        presenter.createEvent(
-                                                enrollmentUid,
-                                                programStageModelUid,
-                                                selectedDate,
-                                                selectedOrgUnit,
-                                                null,
-                                                catOptionComboUid,
-                                                newGeometry,
-                                                getTrackedEntityInstance);
-                                    }
-                                } else {
-                                    presenter.editEvent(getTrackedEntityInstance,
+        initActionButton();
+        binding.actionButton.setEnabled(true);
+        presenter.init(programUid, eventUid, selectedOrgUnit, programStageUid);
+    }
+
+    private void initActionButton(){
+
+        disposable.add(RxView.clicks(binding.actionButton)
+                .debounce(500, TimeUnit.MILLISECONDS, AndroidSchedulers.mainThread())
+                .subscribe(v -> {
+                            binding.actionButton.setEnabled(false);
+                            String programStageModelUid = programStage == null ? "" : programStage.uid();
+                            if (eventUid == null) { // This is a new Event
+                                analyticsHelper().setEvent(CREATE_EVENT, AnalyticsConstants.DATA_CREATION, CREATE_EVENT);
+                                if (eventCreationType == EventCreationType.REFERAL && tempCreate.equals(PERMANENT)) {
+                                    presenter.scheduleEventPermanent(
+                                            enrollmentUid,
+                                            getTrackedEntityInstance,
                                             programStageModelUid,
-                                            eventUid,
-                                            DateUtils.databaseDateFormat().format(selectedDate), selectedOrgUnit, null,
+                                            selectedDate,
+                                            selectedOrgUnit,
+                                            null,
                                             catOptionComboUid,
                                             newGeometry
                                     );
+                                } else if (eventCreationType == EventCreationType.SCHEDULE || eventCreationType == EventCreationType.REFERAL) {
+                                    presenter.scheduleEvent(
+                                            enrollmentUid,
+                                            programStageModelUid,
+                                            selectedDate,
+                                            selectedOrgUnit,
+                                            null,
+                                            catOptionComboUid,
+                                            newGeometry
+                                    );
+                                } else {
+                                    presenter.createEvent(
+                                            enrollmentUid,
+                                            programStageModelUid,
+                                            selectedDate,
+                                            selectedOrgUnit,
+                                            null,
+                                            catOptionComboUid,
+                                            newGeometry,
+                                            getTrackedEntityInstance);
                                 }
-                            },
-                            Timber::e));
-        }
-
-        binding.actionButton.setEnabled(true);
-        presenter.init(this, programUid, eventUid, selectedOrgUnit, programStageUid);
+                            } else {
+                                presenter.editEvent(getTrackedEntityInstance,
+                                        programStageModelUid,
+                                        eventUid,
+                                        DateUtils.databaseDateFormat().format(selectedDate), selectedOrgUnit, null,
+                                        catOptionComboUid,
+                                        newGeometry
+                                );
+                            }
+                        },
+                        Timber::e));
     }
 
-    private void setUpScrenByCreatinType(EventCreationType eventCreationType) {
+    private void setUpScreenByCreationType() {
 
         if (eventCreationType == EventCreationType.REFERAL) {
             binding.temp.setVisibility(View.VISIBLE);
@@ -295,17 +277,13 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
             });
         }
 
-    }
+        if (eventUid == null) {
+            binding.shareContainer.setVisibility(View.GONE);
+            binding.actionButton.setText(R.string.next);
+        } else {
+            binding.actionButton.setText(R.string.update);
+        }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
     }
 
     @Override
@@ -368,18 +346,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     public void setProgram(@NonNull Program program) {
         this.program = program;
 
-        String activityTitle;
-        if (eventCreationType == EventCreationType.REFERAL) {
-            activityTitle = program.displayName() + " - " + getString(R.string.referral);
-        } else {
-            if (eventModel != null && !isEmpty(eventModel.enrollment()) && eventCreationType != EventCreationType.ADDNEW) {
-                binding.orgUnit.setEnabled(false);
-                binding.orgUnitLayout.setVisibility(View.GONE);
-            }
-
-            activityTitle = eventUid == null ? program.displayName() + " - " + getString(R.string.new_event) : program.displayName();
-        }
-        binding.setName(activityTitle);
+        setUpActivityTitle();
 
         if (eventModel == null) {
             Calendar now = DateUtils.getInstance().getCalendar();
@@ -457,6 +424,21 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
         }
 
+    }
+
+    private void setUpActivityTitle(){
+        String activityTitle;
+        if (eventCreationType == EventCreationType.REFERAL) {
+            activityTitle = program.displayName() + " - " + getString(R.string.referral);
+        } else {
+            if (eventModel != null && !isEmpty(eventModel.enrollment()) && eventCreationType != EventCreationType.ADDNEW) {
+                binding.orgUnit.setEnabled(false);
+                binding.orgUnitLayout.setVisibility(View.GONE);
+            }
+
+            activityTitle = eventUid == null ? program.displayName() + " - " + getString(R.string.new_event) : program.displayName();
+        }
+        binding.setName(activityTitle);
     }
 
     @Override
@@ -697,42 +679,6 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
-        switch (requestCode) {
-            case EventInitialPresenter.ACCESS_LOCATION_PERMISSION_REQUEST: {
-                // If request is cancelled, the result arrays are empty.
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    presenter.onLocationClick();
-                }
-            }
-        }
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == Constants.RQ_MAP_LOCATION && resultCode == RESULT_OK) {
-            FeatureType locationType = FeatureType.valueOf(data.getStringExtra(MapSelectorActivity.LOCATION_TYPE_EXTRA));
-            String dataExtra = data.getStringExtra(MapSelectorActivity.DATA_EXTRA);
-            Geometry geometry;
-            if (locationType == FeatureType.POINT) {
-                Type type = new TypeToken<List<Double>>() {
-                }.getType();
-                geometry = GeometryHelper.createPointGeometry(new Gson().fromJson(dataExtra, type));
-            } else if (locationType == FeatureType.POLYGON) {
-                Type type = new TypeToken<List<List<List<Double>>>>() {
-                }.getType();
-                geometry = GeometryHelper.createPolygonGeometry(new Gson().fromJson(dataExtra, type));
-            } else {
-                Type type = new TypeToken<List<List<List<List<Double>>>>>() {
-                }.getType();
-                geometry = GeometryHelper.createMultiPolygonGeometry(new Gson().fromJson(dataExtra, type));
-            }
-//            setLocation(geometry);
-        }
-    }
-
-    @Override
     public void onEventSections(List<FormSectionViewModel> formSectionViewModels) {
         for (FormSectionViewModel formSectionViewModel : formSectionViewModels) {
             presenter.getSectionCompletion(formSectionViewModel.sectionUid());
@@ -807,7 +753,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         if (organisationUnit != null) {
             this.selectedOrgUnit = organisationUnit.uid();
             binding.orgUnit.setText(organisationUnit.displayName());
-            binding.orgUnit.setEnabled(false);
+            binding.orgUnit.setEnabled(eventUid == null);
         } else
             binding.orgUnit.setText("");
     }

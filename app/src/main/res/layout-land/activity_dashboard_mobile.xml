@@ -87,9 +87,20 @@
                 style="@style/ActionIcon"
                 android:onClick="@{ () -> presenter.generalFiltersClick() }"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/moreOptions"
+                app:layout_constraintEnd_toStartOf="@id/relationshipMapIcon"
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/ic_filter"
+                tools:ignore="ContentDescription" />
+
+            <ImageView
+                android:id="@+id/relationshipMapIcon"
+                style="@style/ActionIcon"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/moreOptions"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/ic_map"
+                android:visibility="gone"
+                android:tint="@color/white"
                 tools:ignore="ContentDescription" />
 
             <ImageView

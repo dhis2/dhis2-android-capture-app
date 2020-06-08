@@ -13,6 +13,8 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.databinding.DataBindingUtil;
 
+import com.mapbox.geojson.BoundingBox;
+import com.mapbox.geojson.FeatureCollection;
 import com.wangjie.rapidfloatingactionbutton.RapidFloatingActionHelper;
 import com.wangjie.rapidfloatingactionbutton.contentimpl.labellist.RFACLabelItem;
 import com.wangjie.rapidfloatingactionbutton.contentimpl.labellist.RapidFloatingActionContentLabelList;
@@ -23,21 +25,22 @@ import org.dhis2.R;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.databinding.FragmentRelationshipsBinding;
+import org.dhis2.uicomponents.map.managers.RelationshipMapManager;
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
 import org.dhis2.usescases.searchTrackEntity.SearchTEActivity;
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity;
 import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.OnDialogClickListener;
+import org.hisp.dhis.android.core.common.FeatureType;
 import org.hisp.dhis.android.core.relationship.RelationshipType;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
-
-import io.reactivex.functions.Consumer;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -55,6 +58,7 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
     private RelationshipAdapter relationshipAdapter;
     private RapidFloatingActionHelper rfaHelper;
     private RelationshipType relationshipType;
+    private RelationshipMapManager relationshipMapManager;
 
     public static final String TEI_A_UID = "TEI_A_UID";
 
@@ -75,6 +79,16 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_relationships, container, false);
         relationshipAdapter = new RelationshipAdapter(presenter);
         binding.relationshipRecycler.setAdapter(relationshipAdapter);
+
+        relationshipMapManager = new RelationshipMapManager();
+        relationshipMapManager.init(binding.mapView);
+
+        TeiDashboardMobileActivity activity = (TeiDashboardMobileActivity) getContext();
+        activity.relationshipMap().observe(this, showMap -> {
+            binding.mapView.setVisibility(showMap ? View.VISIBLE : View.GONE);
+            binding.relationshipRecycler.setVisibility(showMap ? View.GONE : View.VISIBLE);
+        });
+
         return binding.getRoot();
     }
 
@@ -82,13 +96,20 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
     public void onResume() {
         super.onResume();
         presenter.init();
-
+        relationshipMapManager.onResume();
     }
 
     @Override
     public void onPause() {
         presenter.onDettach();
+        relationshipMapManager.onPause();
         super.onPause();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        relationshipMapManager.onDestroy();
     }
 
     @Override
@@ -234,5 +255,14 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
                     }
                 })
                 .show();
+    }
+
+    @Override
+    public void setFeatureCollection(@NotNull kotlin.Pair<? extends Map<String, FeatureCollection>, ? extends BoundingBox> map) {
+       relationshipMapManager.update(
+               map.getFirst(),
+               map.getSecond(),
+               FeatureType.POINT
+       );
     }
 }

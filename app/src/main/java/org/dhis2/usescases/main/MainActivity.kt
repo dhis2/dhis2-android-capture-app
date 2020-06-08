@@ -33,7 +33,7 @@ import org.dhis2.usescases.login.LoginActivity
 import org.dhis2.usescases.main.program.ProgramFragment
 import org.dhis2.usescases.qrReader.QrReaderFragment
 import org.dhis2.usescases.settings.SyncManagerFragment
-import org.dhis2.usescases.teiDashboard.nfc_data.NfcDataWriteActivity
+import org.dhis2.usescases.teiDashboard.nfcdata.NfcDataWriteActivity
 import org.dhis2.utils.Constants
 import org.dhis2.utils.DateUtils
 import org.dhis2.utils.analytics.BLOCK_SESSION

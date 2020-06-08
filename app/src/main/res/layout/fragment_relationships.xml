@@ -31,6 +31,16 @@
             android:text="@string/empty_relationships"
             android:textSize="@dimen/primaryTextSize" />
 
+        <com.mapbox.mapboxsdk.maps.MapView
+            android:id="@+id/mapView"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:background="@drawable/ic_front_backdrop_bg"
+            android:visibility="gone"
+            app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
         <com.wangjie.rapidfloatingactionbutton.RapidFloatingActionLayout
             android:id="@+id/rfabLayout"
             android:layout_width="match_parent"
