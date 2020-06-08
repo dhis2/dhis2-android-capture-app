@@ -15,11 +15,13 @@ import androidx.appcompat.content.res.AppCompatResources;
 import androidx.paging.PagedList;
 
 import org.dhis2.R;
+import org.dhis2.data.prefs.Preference;
+import org.dhis2.data.prefs.PreferenceProvider;
 import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.databinding.WidgetDatepickerBinding;
-import org.dhis2.uicomponents.map.geometry.GeometryUtils;
+import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapTeisToFeatureCollection;
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel;
 import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.Constants;
@@ -74,6 +76,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     private final SearchTEContractsModule.View view;
     private final AnalyticsHelper analyticsHelper;
     private final BehaviorSubject<String> currentProgram;
+    private final PreferenceProvider preferences;
     private Program selectedProgram;
 
     private CompositeDisposable compositeDisposable;
@@ -89,18 +92,23 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     private Dialog dialogDisplayed;
 
     private boolean showList = true;
+    private MapTeisToFeatureCollection mapTeisToFeatureCollection;
 
     public SearchTEPresenter(SearchTEContractsModule.View view,
                              D2 d2,
                              SearchRepository searchRepository,
                              SchedulerProvider schedulerProvider,
                              AnalyticsHelper analyticsHelper,
-                             @Nullable String initialProgram) {
+                             @Nullable String initialProgram,
+                             MapTeisToFeatureCollection mapTeisToFeatureCollection,
+                             PreferenceProvider preferenceProvider) {
         this.view = view;
+        this.preferences = preferenceProvider;
         this.searchRepository = searchRepository;
         this.d2 = d2;
         this.schedulerProvider = schedulerProvider;
         this.analyticsHelper = analyticsHelper;
+        this.mapTeisToFeatureCollection = mapTeisToFeatureCollection;
         compositeDisposable = new CompositeDisposable();
         queryData = new HashMap<>();
         queryProcessor = PublishProcessor.create();
@@ -235,7 +243,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                                                         query,
                                                         FilterManager.getInstance().getAssignedFilter(),
                                                         NetworkUtils.isOnline(view.getContext())))
-                                        .map(GeometryUtils.INSTANCE::getSourceFromTeis)
+                                        .map(teis -> mapTeisToFeatureCollection.map(teis))
                         )
                         .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.ui())
@@ -396,6 +404,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         showList = true;
 
         if (otherProgramSelected) {
+            preferences.removeValue(Preference.CURRENT_ORG_UNIT);
             queryData.clear();
         }
 

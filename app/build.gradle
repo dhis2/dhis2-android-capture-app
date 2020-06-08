@@ -10,7 +10,6 @@ def libraries = rootProject.ext.libraries
 def versions = rootProject.ext.versions
 
 repositories {
-    // required by crashlytics
     maven {
         url("https://maven.fabric.io/public")
     }
@@ -26,7 +25,6 @@ paperwork {
 }
 
 android {
-
     testOptions {
         execution 'ANDROIDX_TEST_ORCHESTRATOR'
         unitTests {
@@ -51,9 +49,6 @@ android {
         testInstrumentationRunner "org.dhis2.Dhis2Runner"
         vectorDrawables.useSupportLibrary = true
         multiDexEnabled true
-        ndk {
-            abiFilters "x86"
-        }
 
         setProperty("archivesBaseName", "dhis2-v" + versions.vName)
 
@@ -72,7 +67,6 @@ android {
     }
 
     configurations.all*.exclude module: 'jsr305'
-
 
     packagingOptions {
         // excluding duplicate license files
@@ -109,45 +103,6 @@ android {
 
             resValue "string", "content_provider", "com.dhis2.provider"
         }
-
-        training {
-            applicationIdSuffix = ".training"
-            matchingFallbacks = ['release']
-            signingConfig = signingConfigs.debug
-        }
-
-        experimental {
-            // custom application suffix which allows to
-            // install debug and release builds at the same time
-            applicationIdSuffix = ".experimental"
-
-            // jacoco test coverage reports both for
-            // androidTest and test source sets
-            testCoverageEnabled = false
-
-            // Using dataentry.jks to sign debug build type.
-            signingConfig = signingConfigs.debug
-            debuggable = true
-            jniDebuggable = true
-            renderscriptDebuggable = true
-            matchingFallbacks = ['debug']
-
-            resValue "string", "content_provider", "com.dhis2.experimental.provider"
-
-        }
-        beta {
-            applicationIdSuffix = ".beta"
-            matchingFallbacks = ['debug']
-            signingConfig signingConfigs.debug
-            resValue "string", "content_provider", "com.dhis2.beta.provider"
-        }
-
-        alpha {
-            applicationIdSuffix = ".alpha"
-            matchingFallbacks = ['debug']
-            signingConfig signingConfigs.debug
-            resValue "string", "content_provider", "com.dhis2.alpha.provider"
-        }
     }
 
     flavorDimensions "default"
@@ -161,6 +116,13 @@ android {
         }
 
         dhisNoSMS {
+            applicationId "com.dhis2"
+            dimension "default"
+            versionCode versions.vCode
+            versionName versions.vName
+        }
+
+        dhisUITesting {
             applicationId "com.dhis2"
             dimension "default"
             versionCode versions.vCode
@@ -213,12 +175,10 @@ sonarqube {
 
 dependencies {
     debugImplementation project(':core')
-    betaImplementation project(':core')
 
     implementation project(':customFab')
 
     debugImplementation project(':dhis2-rule-engine')
-    betaImplementation project(':dhis2-rule-engine')
     releaseImplementation project(':dhis2-rule-engine')
 
     implementation project(':viewpagerdotsindicator')
@@ -288,10 +248,7 @@ dependencies {
     kapt "com.ryanharter.auto.value:auto-value-parcel:${libraries.autovalueparcel}"
     //endregion
 
-    //endregion
-
     //region PLAY SERVICES
-
     //LOCATION
     implementation 'com.google.android.gms:play-services-basement:17.1.1'
     implementation 'com.google.android.gms:play-services-location:17.0.0'
@@ -299,7 +256,7 @@ dependencies {
 
     // Kujaku dependencies
 //    implementation 'io.ona.kujaku:library:0.7.7'
-    implementation 'com.mapbox.mapboxsdk:mapbox-android-sdk:8.3.0'
+    implementation 'com.mapbox.mapboxsdk:mapbox-android-sdk:9.2.0'
     implementation 'com.mapbox.mapboxsdk:mapbox-android-plugin-markerview-v8:0.3.0'
     implementation 'com.mapbox.mapboxsdk:mapbox-android-plugin-annotation-v9:0.8.0'
 
@@ -372,12 +329,6 @@ dependencies {
     testImplementation 'org.mockito:mockito-inline:2.13.0'
     testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:2.1.0"
     testImplementation 'com.google.truth:truth:0.43'
-
-
-   // androidTestImplementation "com.google.dagger:dagger:${libraries.dagger}"
-   // kaptTest "com.google.dagger:dagger-compiler:${libraries.dagger}"
-   // kaptAndroidTest "com.google.dagger:dagger-compiler:${libraries.dagger}"
-   // androidTestImplementation "com.google.dagger:dagger:${libraries.dagger}"
 
     androidTestUtil 'androidx.test:orchestrator:1.2.0'
     androidTestImplementation "androidx.test:runner:1.2.0"

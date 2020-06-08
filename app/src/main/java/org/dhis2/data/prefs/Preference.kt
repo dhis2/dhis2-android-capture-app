@@ -37,5 +37,7 @@ class Preference {
         const val DEFAULT_NUMBER_RV = 100
 
         const val GROUPING = "GROUPING"
+
+        const val CURRENT_ORG_UNIT = "CURRENT_ORG_UNIT"
     }
 }

@@ -46,6 +46,10 @@ open class BaseRobot {
         }
     }
 
+    fun waitToDebounce(millis: Long) {
+        Thread.sleep(millis)
+    }
+
     inline fun <reified T : Activity> waitUntilActivityVisible() {
         val startTime = System.currentTimeMillis()
         while (!isVisible<T>()) {

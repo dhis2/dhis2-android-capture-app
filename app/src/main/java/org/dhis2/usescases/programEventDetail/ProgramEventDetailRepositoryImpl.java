@@ -10,7 +10,7 @@ import com.mapbox.geojson.BoundingBox;
 import com.mapbox.geojson.FeatureCollection;
 
 import org.dhis2.data.tuples.Pair;
-import org.dhis2.uicomponents.map.geometry.GeometryUtils;
+import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapEventToFeatureCollection;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper;
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope;
@@ -37,11 +37,13 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
     private final String programUid;
     private D2 d2;
     private ProgramEventMapper mapper;
+    private MapEventToFeatureCollection mapEventToFeatureCollection;
 
-    ProgramEventDetailRepositoryImpl(String programUid, D2 d2, ProgramEventMapper mapper) {
+    ProgramEventDetailRepositoryImpl(String programUid, D2 d2, ProgramEventMapper mapper, MapEventToFeatureCollection mapEventToFeatureCollection) {
         this.programUid = programUid;
         this.d2 = d2;
         this.mapper = mapper;
+        this.mapEventToFeatureCollection = mapEventToFeatureCollection;
     }
 
     @NonNull
@@ -94,7 +96,7 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
             eventRepo = eventRepo.byAssignedUser().eq(getCurrentUser());
 
         return eventRepo.byDeleted().isFalse().orderByEventDate(RepositoryScope.OrderByDirection.DESC).withTrackedEntityDataValues().get()
-                .map(GeometryUtils.INSTANCE::getSourceFromEvent)
+                .map(listEvents-> mapEventToFeatureCollection.map(listEvents))
                 .toFlowable();
     }
 

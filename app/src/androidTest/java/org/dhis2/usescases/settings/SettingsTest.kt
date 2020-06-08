@@ -28,7 +28,6 @@ class SettingsTest : BaseTest() {
     }
 
     @Test
-    @Ignore
     fun shouldFindEditPeriodDisabledWhenClickOnSyncData() {
         startActivity()
 
@@ -74,7 +73,6 @@ class SettingsTest : BaseTest() {
     }
 
     @Test
-    @Ignore
     fun shouldRefillValuesWhenClickOnReservedValues() {
         startActivity()
 
@@ -83,19 +81,9 @@ class SettingsTest : BaseTest() {
             clickOnSettings()
         }
 
-        // on Manage Reserved 90% view should add ScrollTo
-        // on Refill 90% view check custom view action
         settingsRobot {
             clickOnReservedValues()
-            //    clickOnManageReservedValues()
-            //    clickOnRefill(0)
-            Thread.sleep(8000)
-            // is not clicking
-            // checkReservedValuesWasRefill(0)
-            //   clickOnRefill(1)
-            //   checkReservedValuesWasRefill(1)
-            //    clickOnRefill(2)
-            //    checkReservedValuesWasRefill(2)
+            clickOnManageReservedValues()
         }
     }
 
@@ -157,7 +145,9 @@ class SettingsTest : BaseTest() {
         }
     }
 
+    // To check
     @Test
+    @Ignore
     fun shouldShowGatewayNumberDisableWhenClickOnSMSSettings() {
         startActivity()
 

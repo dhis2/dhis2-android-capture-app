@@ -14,6 +14,7 @@ import org.dhis2.common.BaseRobot
 import org.dhis2.common.matchers.RecyclerviewMatchers.Companion.atPosition
 import org.dhis2.usescases.reservedValue.ReservedValueViewHolder
 import org.hamcrest.CoreMatchers.allOf
+import org.hamcrest.CoreMatchers.not
 
 fun settingsRobot(settingsRobot: SettingsRobot.() -> Unit) {
     SettingsRobot().apply {
@@ -57,31 +58,32 @@ class SettingsRobot : BaseRobot() {
 
     fun checkEditPeriodIsDisableForData() {
         onView(withId(R.id.dataPeriodsNoEdition)).check(matches(withText(NOT_EDIT_TEXT)))
-        onView(withId(R.id.buttonSyncData)).check(
-            matches(
-                allOf(
-                    withText(SYNC_DATA),
-                    isDisplayed()
-                )
-            )
-        )
+        onView(withId(R.id.dataPeriods)).check(matches(not(isDisplayed())))
     }
 
     fun checkEditPeriodIsDisableForConfiguration() {
         onView(withId(R.id.metaPeriodsNoEdition)).check(matches(withText(NOT_EDIT_TEXT)))
+        onView(withId(R.id.metadataPeriods)).check(matches(not(isDisplayed())))
         onView(withId(R.id.buttonSyncMeta)).check(
             matches(
                 allOf(
-                    withText("SYNC CONFIGURATION NOW"),
-                    isDisplayed()
+                    withText("SYNC CONFIGURATION NOW"), isDisplayed()
                 )
             )
         )
     }
 
     fun checkEditPeriodIsDisableForParameters() {
-        onView(withId(R.id.parametersNoEdition))
-            .check(matches(withText("Sync parameters are not editable")))
+        onView(withId(R.id.parametersNoEdition)).check(
+            matches(withText("Sync parameters are not editable"))
+        )
+        onView(withId(R.id.downloadLimitScope)).check(matches(not(isDisplayed())))
+        onView(withId(R.id.eventsEditText)).check(matches(not(isDisplayed())))
+        onView(withId(R.id.teiEditText)).check(matches(not(isDisplayed())))
+    }
+
+    fun checkReservedValuesIsDisable() {
+        onView(withId(R.id.reservedValueEditText)).check(matches(not(isDisplayed())))
     }
 
     fun clickOnManageReservedValues() {
@@ -90,12 +92,12 @@ class SettingsRobot : BaseRobot() {
     }
 
     fun clickOnRefill(position: Int) {
-        /*onView(allOf(withId(R.id.refill), withId(R.id.recycler)))
-                //.check(matches(allOf(atPosition(position, hasDescendant(withId(R.id.refill))))))
-                //.perform(click())
+        /*onView(withId(R.id.recycler))
+                .check(matches(allOf(atPosition(position, hasDescendant(withId(R.id.refill))))))
+                .perform(click())
                 .perform(actionOnItemAtPosition<ReservedValueViewHolder>(position, click()))*/
-        onView(withId(R.id.recycler))
-            .perform(actionOnItemAtPosition<ReservedValueViewHolder>(position, ClickRefillButton()))
+        onView(allOf(withId(R.id.recycler), hasDescendant(withId(R.id.refill))))
+            .perform(actionOnItemAtPosition<ReservedValueViewHolder>(position, click()))
     }
 
     fun checkReservedValuesWasRefill(position: Int) {
@@ -112,7 +114,7 @@ class SettingsRobot : BaseRobot() {
         /*onView(withId(R.id.errorRecycler)).check(matches(allOf(
                 isDisplayed(), not(isNotEmpty())
         )))*/
-        onView(withId(R.id.possitive)).check(matches(isDisplayed()))
+        onView(withId(R.id.errorRecycler)).check(matches(isDisplayed()))
     }
 
     fun clickOnAcceptDelete() {

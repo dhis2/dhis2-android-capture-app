@@ -3,7 +3,8 @@ package org.dhis2.usescases.teiDashboard.teiProgramList;
 import androidx.annotation.NonNull;
 
 import org.dhis2.data.dagger.PerActivity;
-import org.dhis2.utils.CodeGenerator;
+import org.dhis2.data.prefs.PreferenceProvider;
+import org.dhis2.utils.analytics.AnalyticsHelper;
 import org.hisp.dhis.android.core.D2;
 
 import dagger.Module;
@@ -31,8 +32,10 @@ public class TeiProgramListModule {
 
     @Provides
     @PerActivity
-    TeiProgramListContract.Presenter providesPresenter(TeiProgramListContract.Interactor interactor) {
-        return new TeiProgramListPresenter(interactor, teiUid);
+    TeiProgramListContract.Presenter providesPresenter(TeiProgramListContract.Interactor interactor,
+                                                       PreferenceProvider preferenceProvider,
+                                                       AnalyticsHelper analyticsHelper) {
+        return new TeiProgramListPresenter(interactor, teiUid, preferenceProvider, analyticsHelper);
     }
 
     @Provides
