@@ -26,6 +26,7 @@ import org.dhis2.utils.Constants.SERVER
 import org.dhis2.utils.Constants.USER
 import org.dhis2.utils.Constants.USER_ASKED_CRASHLYTICS
 import org.dhis2.utils.Constants.USER_TEST_ANDROID
+import org.dhis2.utils.DEFAULT_URL
 import org.dhis2.utils.TestingCredential
 import org.dhis2.utils.analytics.ACCOUNT_RECOVERY
 import org.dhis2.utils.analytics.AnalyticsHelper
@@ -78,7 +79,11 @@ class LoginPresenter(
                                     view.setUrl(serverUrl)
                                     view.setUser(user)
                                 } else {
-                                    view.setUrl(view.getDefaultServerProtocol())
+                                    val defaultUrl = {
+                                        if (DEFAULT_URL.isEmpty()) view.getDefaultServerProtocol() else DEFAULT_URL
+                                    }
+
+                                    view.setUrl(defaultUrl())
                                 }
                             }
                         },
@@ -236,7 +241,7 @@ class LoginPresenter(
     fun handleResponse(userResponse: Response<*>, userName: String, server: String) {
         view.showLoginProgress(false)
         if (userResponse.isSuccessful) {
-            if(view.isNetworkAvailable()) {
+            if (view.isNetworkAvailable()) {
                 preferenceProvider.setValue(Preference.INITIAL_SYNC_DONE, false)
             }
 
@@ -282,7 +287,7 @@ class LoginPresenter(
 
     fun areSameCredentials(serverUrl: String, userName: String, pass: String): Boolean {
         return preferenceProvider.areCredentialsSet() &&
-                preferenceProvider.areSameCredentials(serverUrl, userName, pass)
+            preferenceProvider.areSameCredentials(serverUrl, userName, pass)
     }
 
     fun saveUserCredentials(serverUrl: String, userName: String, pass: String) {
