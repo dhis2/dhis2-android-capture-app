@@ -81,17 +81,6 @@ class NotesFragment : FragmentGlobalAbstract(), NotesView, NoteItemClickListener
             instance.arguments = args
             return instance
         }
-
-        @JvmStatic
-        fun newDatasetInstance(datasetUid: String): NotesFragment {
-            val instance = NotesFragment()
-            val args = Bundle()
-            args.putString(Constants.PROGRAM_UID, "")
-            args.putString(Constants.UID, datasetUid)
-            args.putSerializable(Constants.NOTE_TYPE, NoteType.DATASET)
-            instance.arguments = args
-            return instance
-        }
     }
 
     override fun onAttach(context: Context) {

@@ -128,8 +128,6 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
         new TabLayoutMediator(binding.tabLayout, binding.viewPager, (tab, position) -> {
             if (position == 0) {
                 tab.setText(R.string.dataset_overview);
-            } else if (position == viewPagerAdapter.getItemCount() - 1) {
-                tab.setText(R.string.dashboard_notes);
             } else {
                 tab.setText(viewPagerAdapter.getSectionTitle(position));
             }
@@ -140,11 +138,7 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
             public void onPageSelected(int position) {
                 super.onPageSelected(position);
                 if (!errorsIsShowing) {
-                    if (position == viewPagerAdapter.getItemCount() - 1) {
-                        binding.saveButton.hide();
-                    } else {
-                        binding.saveButton.show();
-                    }
+                    binding.saveButton.show();
                 } else {
                     binding.saveButton.hide();
                 }
