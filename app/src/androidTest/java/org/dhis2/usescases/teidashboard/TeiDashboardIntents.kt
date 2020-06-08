@@ -20,7 +20,7 @@ private const val TEI_UID_VALUE_TO_DELETE = "SHnmavBQu72"
 private const val TEI_UID_VALUE_TO_SCHEDULE = "uh47DXf1St9"
 private const val TEI_UID_VALUE_TO_CREATE_EVENT = "xWGaOQL0INS"
 private const val TEI_UID_VALUE_TO_EDIT_EVENT = "PQfMcpmXeFE"
-private const val TEI_UID_VALUE_TO_ENROLL = "tIJu6iqQxNV"
+private const val TEI_UID_VALUE_TO_ENROLL = "tIJu6iqQxNV" // "EQAYnCupJ1J" // "EaOyKGOIGRp" //"kfwLSxq7mXk" // "tIJu6iqQxNV" //"osF4RF4EiqP" //Heather Greene
 
 fun prepareTeiCompletedProgrammeAndLaunchActivity(
     rule: ActivityTestRule<TeiDashboardMobileActivity>
@@ -88,6 +88,7 @@ fun prepareTeiToEnrollToOtherProgramAndLaunchActivity(
     rule: ActivityTestRule<TeiDashboardMobileActivity>
 ) {
     startTeiDashboardActivity(CHILD_PROGRAM_UID_VALUE, TEI_UID_VALUE_TO_ENROLL, rule)
+   // startTeiDashboardActivity(TB_PROGRAM_UID, TEI_UID_VALUE_TO_ENROLL, rule)
 }
 
 fun startTeiDashboardActivity(

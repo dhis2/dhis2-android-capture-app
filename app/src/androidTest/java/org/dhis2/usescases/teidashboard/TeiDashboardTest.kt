@@ -8,6 +8,7 @@ import org.dhis2.usescases.searchte.searchTeiRobot
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity
 import org.dhis2.usescases.teidashboard.entity.EnrollmentUIModel
 import org.dhis2.usescases.teidashboard.entity.UpperEnrollmentUIModel
+import org.dhis2.usescases.teidashboard.robot.enrollmentRobot
 import org.dhis2.usescases.teidashboard.robot.eventRobot
 import org.dhis2.usescases.teidashboard.robot.indicatorsRobot
 import org.dhis2.usescases.teidashboard.robot.noteRobot
@@ -16,6 +17,7 @@ import org.dhis2.usescases.teidashboard.robot.teiDashboardRobot
 import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
+import org.junit.experimental.theories.Theories
 import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
@@ -267,7 +269,6 @@ class TeiDashboardTest : BaseTest() {
     }
 
     @Test
-    @Ignore
     fun shouldEnrollToOtherProgramWhenClickOnProgramEnrollments() {
         // launch tei child program
         // click on more options
@@ -279,27 +280,73 @@ class TeiDashboardTest : BaseTest() {
         // add text
         // click on save in enrollment
 
-        val provider = 5
+        val providerFollowUpProgram = 5
+        val womanProgram = 4
+        val tbProgram = 6
+        val childProgram = 4
+        val personalTabPosition = 5
         prepareTeiToEnrollToOtherProgramAndLaunchActivity(rule)
 
         teiDashboardRobot {
             clickOnMenuMoreOptions()
             clickOnMenuProgramEnrollments()
-            clickOnAProgramForEnrollment(provider)
+
+            // Provider
+            // clickOnAProgramForEnrollment(providerFollowUpProgram)
+            // clickOnAcceptEnrollmentDate()
+            //clickOnPersonAttributes(5)
+            // typeOnRequiredTextField("test", 2)
+            //            clickOnSaveEnrollment()
+
+            // tbProgram
+            /*clickOnAProgramForEnrollment(tbProgram)
+            clickOnAcceptEnrollmentDate()
+            clickOnPersonAttributes(4)
+            typeOnRequiredTextField("0137979511", 5)
+            scrollToBottomProgramForm()
+            typeOnRequiredTextField("test", 4)
+            clickOnSaveEnrollment()*/
+
+            // woman adult
+            /*clickOnAProgramForEnrollment(womanProgram)
+            clickOnAcceptEnrollmentDate()
+            clickOnPersonAttributes(personalTabPosition)
+            clickOnCalendarItem(5)
+            clickOnAcceptEnrollmentDate()
+            scrollToBottomProgramForm()
+            clickOnSaveEnrollment()*/
+        }
+
+        enrollmentRobot {
+            /*clickOnAProgramForEnrollment(childProgram)
+            clickOnAcceptEnrollmentDate()
+            clickOnPersonAttributes(6)
+            typeOnRequiredTextField("test", 5)
+            Thread.sleep(4000)
+            clickOnSaveEnrollment()*/
+
+            clickOnAProgramForEnrollment(providerFollowUpProgram)
             clickOnAcceptEnrollmentDate()
             clickOnPersonAttributes(5)
-            typeOnRequiredTextField("test", 2) // not sure why is not typing to check
+            typeOnRequiredTextField("test", 2)
             clickOnSaveEnrollment()
-            Thread.sleep(8000)
-
-            // scrollToBottomProgramForm()
-            // clickOnSaveEnrollment()
-            // check event created 0 open
         }
 
         eventRobot {
+            //typeOnRequiredEventForm("test", 4)
+            scrollToBottomForm()
+            clickOnFormFabButton()
             clickOnFinish()
+            Thread.sleep(10000)
         }
+
+        teiDashboardRobot {
+            //check event was created
+            //checkEventWasCreatedAndOpen("ANC 1st visit", 3)
+            //checkEventWasScheduled("Baby Postnatal", 0)
+            //checkEventWasCreatedAndOpen("Birth", 1)
+        }
+
     }
 
     @Test
