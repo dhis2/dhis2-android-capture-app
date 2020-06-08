@@ -33,13 +33,6 @@ class NotesRepository(private val d2: D2, val programUid: String) {
                 )
             }
 
-    fun hasProgramWritePermission(noteType: NoteType, dataSetUid: String? = null): Boolean {
-        return if (noteType == NoteType.DATASET) {
-            d2.dataSetModule().dataSets().uid(dataSetUid).blockingGet().access().data().write()
-        } else {
-            d2.programModule().programs().uid(programUid).blockingGet().access().data().write()
-        }
-    }
-
-    fun getDatasetNotes(): Single<List<Note>> = Single.just(emptyList())
+    fun hasProgramWritePermission(): Boolean =
+        d2.programModule().programs().uid(programUid).blockingGet().access().data().write()
 }

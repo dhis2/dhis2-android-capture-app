@@ -40,7 +40,6 @@ class NoteDetailRepositoryImpl(
                         .build()
                 )
             }
-            NoteType.DATASET -> Single.just("Note Saved")
         }
     }
 }

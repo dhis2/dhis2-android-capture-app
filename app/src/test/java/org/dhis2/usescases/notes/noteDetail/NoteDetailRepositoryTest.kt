@@ -94,16 +94,6 @@ class NoteDetailRepositoryTest {
         }
     }
 
-    @Test
-    fun `Should save an Dataset note`() {
-        val testObserver = repository.saveNote(NoteType.EVENT, "uid", "message").test()
-
-        testObserver.assertValueCount(1)
-        testObserver.assertValueAt(0) {
-            it == "Note Saved"
-        }
-    }
-
     private fun dummyNote() =
         Note.builder()
             .uid("noteId")
