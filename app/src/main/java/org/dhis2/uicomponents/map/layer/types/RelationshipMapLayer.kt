@@ -244,9 +244,9 @@ class RelationshipMapLayer(
                 )
             )
             ?.firstOrNull()?.let {
-                setSelectedItem(it)
-                it
-            }
+            setSelectedItem(it)
+            it
+        }
     }
 
     private fun setVisibility(visibility: String) {
