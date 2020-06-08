@@ -36,19 +36,24 @@ class RelationshipMapLayer(
     private val SELECTED_POINT_LAYER_ID: String = "SELECTED_RELATIONSHIP_POINT_LAYER_ID_$sourceId"
 
     private val POLYGON_LAYER_ID: String = "RELATIONSHIP_POLYGON_LAYER_ID$sourceId"
+    private val SELECTED_POLYGON_LAYER_ID: String = "SEL_RELATIONSHIP_POLYGON_LAYER_ID$sourceId"
     private val POLYGON_BORDER_LAYER_ID: String = "RELATIONSHIP_POLYGON_BORDER_LAYER_ID$sourceId"
+    private val SELECTED_POLYGON_BORDER_LAYER_ID: String =
+        "SEL_RELATIONSHIP_POLYGON_BORDER_LAYER_ID$sourceId"
 
     private val SELECTED_SOURCE: String = "SELECTED_SOURCE_$sourceId"
 
     init {
         when (featureType) {
             FeatureType.POINT -> {
+                style.addSource(GeoJsonSource(SELECTED_SOURCE))
                 style.addLayer(linesLayer)
-                style.addLayer(pointLayer)
+                style.addLayer(selectedLineLayer)
                 style.addLayer(polygonLayer)
                 style.addLayer(polygonBorderLayer)
-                style.addSource(GeoJsonSource(SELECTED_SOURCE))
-                style.addLayer(selectedLineLayer)
+                style.addLayer(selectedPolygonLayer)
+                style.addLayer(selectedPolygonBorderLayer)
+                style.addLayer(pointLayer)
                 style.addLayer(selectedPointLayer)
             }
             FeatureType.POLYGON -> {
@@ -127,7 +132,32 @@ class RelationshipMapLayer(
         get() = style.getLayer(POLYGON_BORDER_LAYER_ID)
             ?: LineLayer(POLYGON_BORDER_LAYER_ID, sourceId)
                 .withProperties(
-                    lineColor(LINE_COLOR),
+                    lineColor(lineColor ?: LINE_COLOR),
+                    lineWidth(LINE_WIDTH)
+                ).withFilter(
+                    Expression.eq(
+                        Expression.literal("\$type"),
+                        Expression.literal("Polygon")
+                    )
+                )
+
+    private val selectedPolygonLayer: Layer
+        get() = style.getLayer(SELECTED_POLYGON_LAYER_ID)
+            ?: FillLayer(SELECTED_POLYGON_LAYER_ID, SELECTED_SOURCE)
+                .withProperties(
+                    PropertyFactory.fillColor(ColorUtils.withAlpha(lineColor ?: LINE_COLOR ?: -1))
+                ).withFilter(
+                    Expression.eq(
+                        Expression.literal("\$type"),
+                        Expression.literal("Polygon")
+                    )
+                )
+
+    private val selectedPolygonBorderLayer: Layer
+        get() = style.getLayer(SELECTED_POLYGON_BORDER_LAYER_ID)
+            ?: LineLayer(SELECTED_POLYGON_BORDER_LAYER_ID, SELECTED_SOURCE)
+                .withProperties(
+                    lineColor(lineColor ?: LINE_COLOR),
                     lineWidth(LINE_WIDTH)
                 ).withFilter(
                     Expression.eq(
@@ -174,6 +204,19 @@ class RelationshipMapLayer(
     }
 
     private fun selectPolygon(feature: Feature) {
+        deselectCurrent()
+
+        style.getSourceAs<GeoJsonSource>(SELECTED_SOURCE)?.apply {
+            setGeoJson(
+                FeatureCollection.fromFeatures(
+                    arrayListOf(Feature.fromGeometry(feature.geometry()))
+                )
+            )
+        }
+
+        selectedPolygonBorderLayer.setProperties(
+            lineWidth(4.0f)
+        )
     }
 
     private fun deselectCurrent() {
@@ -183,6 +226,10 @@ class RelationshipMapLayer(
             )
             selectedPointLayer.setProperties(
                 PropertyFactory.iconSize(1f)
+            )
+
+            selectedPolygonBorderLayer.setProperties(
+                lineWidth(LINE_WIDTH)
             )
         } else {
         }

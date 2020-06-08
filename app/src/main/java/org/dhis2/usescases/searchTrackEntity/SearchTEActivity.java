@@ -56,9 +56,7 @@ import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.databinding.ActivitySearchBinding;
 import org.dhis2.uicomponents.map.carousel.CarouselAdapter;
-import org.dhis2.uicomponents.map.layer.LayerType;
 import org.dhis2.uicomponents.map.layer.MapLayerDialog;
-import org.dhis2.uicomponents.map.layer.types.TeiMapLayer;
 import org.dhis2.uicomponents.map.managers.TeiMapManager;
 import org.dhis2.uicomponents.map.model.MapStyle;
 import org.dhis2.usescases.coodinates.CoordinatesView;
@@ -388,6 +386,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         binding.scrollView.setVisibility(showMap ? View.GONE : View.VISIBLE);
         binding.mapView.setVisibility(showMap ? View.VISIBLE : View.GONE);
         binding.mapLayerButton.setVisibility(showMap ? View.VISIBLE : View.GONE);
+        binding.mapCarousel.setVisibility(showMap ? View.VISIBLE : View.GONE);
 
         if (showMap)
             presenter.getMapData();
