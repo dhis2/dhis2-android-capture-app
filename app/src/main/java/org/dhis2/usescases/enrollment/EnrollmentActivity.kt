@@ -419,7 +419,9 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
             binding.fieldRecycler.layoutManager as LinearLayoutManager
 
         adapter.swap(fields) {
-            myLayoutManager.scrollToPositionWithOffset(adapter.openSectionPos, 0)
+            if (!adapter.isSectionAlreadyOpen) {
+                myLayoutManager.scrollToPositionWithOffset(adapter.openSectionPos, 0)
+            }
         }
     }
 
