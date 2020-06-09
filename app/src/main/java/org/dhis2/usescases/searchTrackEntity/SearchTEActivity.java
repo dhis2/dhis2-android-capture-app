@@ -790,7 +790,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         List<Feature> features = teiMapManager.getMap()
                 .queryRenderedFeatures(rectF, featureType == FeatureType.POINT ? "TEI_POINT_LAYER_ID" : "TEI_POLYGON_LAYER_ID");
         if (!features.isEmpty()) {
-            teiMapManager.mapLayerManager.getLayer(TeiMapManager.TEIS_SOURCE_ID).setSelectedItem(features.get(0));
+            teiMapManager.mapLayerManager.getLayer(TeiMapManager.TEIS_SOURCE_ID,false).setSelectedItem(features.get(0));
             binding.mapCarousel.scrollToFeature(features.get(0));
             return true;
         }

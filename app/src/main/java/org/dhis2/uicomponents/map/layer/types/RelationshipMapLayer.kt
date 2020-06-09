@@ -43,18 +43,23 @@ class RelationshipMapLayer(
 
     private val SELECTED_SOURCE: String = "SELECTED_SOURCE_$sourceId"
 
+    private val BASE_RELATIONSHIP_LAYER_ID = "BASE_RELATIONSHIP_LAYER"
+
     init {
         when (featureType) {
             FeatureType.POINT -> {
+                if (style.getLayer(BASE_RELATIONSHIP_LAYER_ID) == null) {
+                    style.addLayer(baseRelationshipLayer)
+                }
                 style.addSource(GeoJsonSource(SELECTED_SOURCE))
-                style.addLayer(linesLayer)
-                style.addLayer(selectedLineLayer)
-                style.addLayer(polygonLayer)
-                style.addLayer(polygonBorderLayer)
-                style.addLayer(selectedPolygonLayer)
-                style.addLayer(selectedPolygonBorderLayer)
-                style.addLayer(pointLayer)
-                style.addLayer(selectedPointLayer)
+                style.addLayerBelow(polygonLayer, BASE_RELATIONSHIP_LAYER_ID)
+                style.addLayerBelow(polygonBorderLayer, BASE_RELATIONSHIP_LAYER_ID)
+                style.addLayerBelow(selectedPolygonLayer, BASE_RELATIONSHIP_LAYER_ID)
+                style.addLayerBelow(selectedPolygonBorderLayer, BASE_RELATIONSHIP_LAYER_ID)
+                style.addLayerAbove(pointLayer, BASE_RELATIONSHIP_LAYER_ID)
+                style.addLayerAbove(selectedPointLayer, BASE_RELATIONSHIP_LAYER_ID)
+                style.addLayerAbove(linesLayer, BASE_RELATIONSHIP_LAYER_ID)
+                style.addLayerAbove(selectedLineLayer, BASE_RELATIONSHIP_LAYER_ID)
             }
             FeatureType.POLYGON -> {
                 style.addLayer(linesLayer)
@@ -64,6 +69,10 @@ class RelationshipMapLayer(
             else -> Unit
         }
     }
+
+    private val baseRelationshipLayer: Layer
+        get() = style.getLayer(BASE_RELATIONSHIP_LAYER_ID)
+            ?: LineLayer(BASE_RELATIONSHIP_LAYER_ID, sourceId)
 
     private val linesLayer: Layer
         get() = style.getLayer(LINE_LAYER_ID)
@@ -120,7 +129,7 @@ class RelationshipMapLayer(
         get() = style.getLayer(POLYGON_LAYER_ID)
             ?: FillLayer(POLYGON_LAYER_ID, sourceId)
                 .withProperties(
-                    PropertyFactory.fillColor(ColorUtils.withAlpha(lineColor ?: LINE_COLOR ?: -1))
+                    PropertyFactory.fillColor(ColorUtils.withAlpha(lineColor ?: LINE_COLOR ?: -1,50))
                 ).withFilter(
                     Expression.eq(
                         Expression.literal("\$type"),
@@ -244,9 +253,9 @@ class RelationshipMapLayer(
                 )
             )
             ?.firstOrNull()?.let {
-            setSelectedItem(it)
-            it
-        }
+                setSelectedItem(it)
+                it
+            }
     }
 
     private fun setVisibility(visibility: String) {

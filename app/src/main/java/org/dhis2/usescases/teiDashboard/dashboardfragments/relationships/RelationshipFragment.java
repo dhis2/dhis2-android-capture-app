@@ -311,7 +311,8 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
             List<Feature> features = relationshipMapManager.getMap()
                     .queryRenderedFeatures(rectF, lineLayerId, pointLayerId);
             if (!features.isEmpty()) {
-                relationshipMapManager.mapLayerManager.getLayer(sourceId).setSelectedItem(features.get(0));
+                relationshipMapManager.mapLayerManager.selectFeature(null);
+                relationshipMapManager.mapLayerManager.getLayer(sourceId,true).setSelectedItem(features.get(0));
                 binding.mapCarousel.scrollToFeature(features.get(0));
                 return true;
             }

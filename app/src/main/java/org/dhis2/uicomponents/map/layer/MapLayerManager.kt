@@ -14,6 +14,7 @@ import org.hisp.dhis.android.core.common.FeatureType
 
 class MapLayerManager {
 
+    private var currentLayerSelection: MapLayer? = null
     var mapLayers: HashMap<String, MapLayer> = hashMapOf()
     private lateinit var mapboxMap: MapboxMap
     private var mapStyle: MapStyle? = null
@@ -107,8 +108,14 @@ class MapLayerManager {
         }
     }
 
-    fun getLayer(sourceId: String): MapLayer? {
-        return mapLayers[sourceId]
+    fun getLayer(sourceId: String, shouldSaveLayer: Boolean? = false): MapLayer? {
+        return mapLayers[sourceId].let {
+            currentLayerSelection?.setSelectedItem(null)
+            if (shouldSaveLayer == true) {
+                this.currentLayerSelection = it
+            }
+            it
+        }
     }
 
     fun selectFeature(feature: Feature?) {

@@ -36,8 +36,8 @@ class CarouselView<T> @JvmOverloads constructor(
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
                 super.onScrollStateChanged(recyclerView, newState)
                 if (newState == SCROLL_STATE_IDLE) {
+                    mapManager.mapLayerManager.selectFeature(null)
                     val feature = selectedFeature ?: mapManager.findFeatureFor(currentItem())
-//                    mapManager.mapLayerManager.selectFeature(feature)
                     if (feature == null) {
                         callback.invoke()
                     } else {
