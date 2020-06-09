@@ -106,6 +106,8 @@ public final class DataEntryAdapter extends ListAdapter<FieldViewModel, ViewHold
     private String rendering = ProgramStageSectionRenderingType.LISTING.name();
     private Integer totalFields = 0;
     private int openSectionPos = 0;
+    private boolean sectionAlreadyOpen = false;
+    private String lastOpenedSectionUid = "";
 
     public DataEntryAdapter(@NonNull LayoutInflater layoutInflater,
                             @NonNull FragmentManager fragmentManager,
@@ -290,7 +292,9 @@ public final class DataEntryAdapter extends ListAdapter<FieldViewModel, ViewHold
                 if (((SectionViewModel) fieldViewModel).isOpen()) {
                     rendering = ((SectionViewModel) fieldViewModel).rendering();
                     totalFields = ((SectionViewModel) fieldViewModel).totalFields();
-                    setOpenSectionPos(updates.indexOf(fieldViewModel));
+                    setOpenSectionPos(updates.indexOf(fieldViewModel), fieldViewModel.uid());
+                } else if (fieldViewModel.uid().equals(lastOpenedSectionUid)){
+                    openSectionPos = -1;
                 }
             } else if (fieldViewModel instanceof ImageViewModel) {
                 imageFields++;
@@ -369,11 +373,17 @@ public final class DataEntryAdapter extends ListAdapter<FieldViewModel, ViewHold
         return SECTION;
     }
 
-    private void setOpenSectionPos(int sectionOpened) {
+    private void setOpenSectionPos(int sectionOpened, String openSectionUid) {
+        lastOpenedSectionUid = openSectionUid;
+        sectionAlreadyOpen = openSectionPos == sectionOpened;
         openSectionPos = sectionOpened;
     }
 
     public int getOpenSectionPos() {
         return openSectionPos;
+    }
+
+    public boolean isSectionAlreadyOpen() {
+        return sectionAlreadyOpen;
     }
 }
