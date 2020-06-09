@@ -44,9 +44,9 @@ class ClosestPointCalculatorExtensionTest {
         val result = testingPolygonA.closestPointTo(testingPolygonB)
         assertTrue(
             result.first[0] == 1.0 &&
-            result.first[1] == 1.0 &&
-            result.second[0] == 2.0 &&
-            result.second[1] == 1.0
+                result.first[1] == 1.0 &&
+                result.second[0] == 2.0 &&
+                result.second[1] == 1.0
         )
     }
 }
