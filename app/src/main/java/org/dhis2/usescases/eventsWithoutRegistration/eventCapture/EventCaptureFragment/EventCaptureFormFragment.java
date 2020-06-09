@@ -22,9 +22,7 @@ import org.dhis2.data.forms.dataentry.DataEntryAdapter;
 import org.dhis2.data.forms.dataentry.DataEntryArguments;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
-import org.dhis2.data.forms.dataentry.fields.section.SectionHolder;
 import org.dhis2.data.tuples.Trio;
-import org.dhis2.databinding.FormSectionBinding;
 import org.dhis2.databinding.SectionSelectorFragmentBinding;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity;
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
@@ -123,8 +121,11 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
 
         LinearLayoutManager myLayoutManager = (LinearLayoutManager) binding.formRecycler.getLayoutManager();
         dataEntryAdapter.swap(updates, () -> {
-            if (myLayoutManager != null)
-                myLayoutManager.scrollToPositionWithOffset(dataEntryAdapter.getOpenSectionPos(), 0);
+            if (myLayoutManager != null) {
+                if(!dataEntryAdapter.isSectionAlreadyOpen()) {
+                    myLayoutManager.scrollToPositionWithOffset(dataEntryAdapter.getOpenSectionPos(), 0);
+                }
+            }
         });
     }
 
