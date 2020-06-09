@@ -129,7 +129,9 @@ class RelationshipMapLayer(
         get() = style.getLayer(POLYGON_LAYER_ID)
             ?: FillLayer(POLYGON_LAYER_ID, sourceId)
                 .withProperties(
-                    PropertyFactory.fillColor(ColorUtils.withAlpha(lineColor ?: LINE_COLOR ?: -1,50))
+                    PropertyFactory.fillColor(
+                        ColorUtils.withAlpha(lineColor ?: LINE_COLOR ?: -1, 50)
+                    )
                 ).withFilter(
                     Expression.eq(
                         Expression.literal("\$type"),
