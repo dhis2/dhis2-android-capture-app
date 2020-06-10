@@ -16,7 +16,6 @@ import org.dhis2.utils.analytics.NEW_RELATIONSHIP
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.maintenance.D2Error
-import org.hisp.dhis.android.core.relationship.Relationship
 import org.hisp.dhis.android.core.relationship.RelationshipHelper
 import org.hisp.dhis.android.core.relationship.RelationshipType
 import timber.log.Timber
@@ -52,6 +51,8 @@ class RelationshipPresenter internal constructor(
                         view.setRelationships(it)
                         val relationshipModel = mapRelationshipToRelationshipMapModel.mapList(it)
                         view.setFeatureCollection(
+                            teiUid,
+                            relationshipModel,
                             mapRelationshipsToFeatureCollection.map(relationshipModel)
                         )
                     },
@@ -90,9 +91,9 @@ class RelationshipPresenter internal constructor(
         }
     }
 
-    fun deleteRelationship(relationship: Relationship) {
+    fun deleteRelationship(relationshipUid: String) {
         try {
-            d2.relationshipModule().relationships().withItems().uid(relationship.uid())
+            d2.relationshipModule().relationships().withItems().uid(relationshipUid)
                 .blockingDelete()
         } catch (e: D2Error) {
             Timber.d(e)

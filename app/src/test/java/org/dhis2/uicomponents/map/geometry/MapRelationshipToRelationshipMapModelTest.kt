@@ -30,11 +30,11 @@ class MapRelationshipToRelationshipMapModelTest {
         assertThat(result[0].bidirectional, `is`(false))
         assertThat(result[0].relationshipTypeUid, `is`(UID))
         assertThat(result[0].direction, `is`(RelationshipDirection.FROM))
-        assertThat(result[0].from.defaultImage, `is`(EMPTY))
+        assertThat(result[0].from.defaultImage, `is`(-1))
         assertThat(result[0].from.image, `is`(""))
         assertThat(result[0].from.geometry?.coordinates(), `is`(FROM_COORDINATES))
-        assertThat(result[0].To.geometry?.coordinates(), `is`(TO_COORDINATES))
-        assertThat(result[0].To.defaultImage, `is`(EMPTY))
-        assertThat(result[0].To.image, `is`(EMPTY))
+        assertThat(result[0].to.geometry?.coordinates(), `is`(TO_COORDINATES))
+        assertThat(result[0].to.defaultImage, `is`(-1))
+        assertThat(result[0].to.image, `is`(EMPTY))
     }
 }

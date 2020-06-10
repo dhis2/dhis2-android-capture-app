@@ -86,7 +86,7 @@ public class SearchTEContractsModule {
 
         Consumer<FeatureType> featureType();
 
-        void setMap(HashMap<String, FeatureCollection> teiFeatureCollections, BoundingBox boundingBox);
+        void setMap(List<SearchTeiModel> teis, HashMap<String, FeatureCollection> teiFeatureCollections, BoundingBox boundingBox);
 
         Consumer<D2Progress> downloadProgress();
 
@@ -121,7 +121,7 @@ public class SearchTEContractsModule {
 
         void addRelationship(@NonNull String teiUid, @Nullable String relationshipTypeUid, boolean online);
 
-        void downloadTei(String teiUid,String enrollmentUid);
+        void downloadTei(String teiUid, String enrollmentUid);
 
         void downloadTeiForRelationship(String TEIuid, String relationshipTypeUid);
 

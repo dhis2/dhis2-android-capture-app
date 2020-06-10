@@ -108,7 +108,7 @@ class RelationshipPresenterTest {
 
     @Test
     fun `Should delete relationship`() {
-        presenter.deleteRelationship(getMockedRelationship())
+        presenter.deleteRelationship(getMockedRelationship().uid()!!)
         verify(analyticsHelper).setEvent(DELETE_RELATIONSHIP, CLICK, DELETE_RELATIONSHIP)
     }
 

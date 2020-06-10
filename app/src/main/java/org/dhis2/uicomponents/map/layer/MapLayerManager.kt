@@ -1,6 +1,7 @@
 package org.dhis2.uicomponents.map.layer
 
 import android.graphics.Color
+import com.mapbox.geojson.Feature
 import com.mapbox.mapboxsdk.maps.MapboxMap
 import org.dhis2.uicomponents.map.layer.types.EnrollmentMapLayer
 import org.dhis2.uicomponents.map.layer.types.EventMapLayer
@@ -13,6 +14,7 @@ import org.hisp.dhis.android.core.common.FeatureType
 
 class MapLayerManager {
 
+    private var currentLayerSelection: MapLayer? = null
     var mapLayers: HashMap<String, MapLayer> = hashMapOf()
     private lateinit var mapboxMap: MapboxMap
     private var mapStyle: MapStyle? = null
@@ -40,19 +42,19 @@ class MapLayerManager {
 
     fun addLayer(layerType: LayerType, sourceId: String? = null) = apply {
         val style = mapboxMap.style!!
-        mapLayers[sourceId ?: layerType.toString()] ?: run {
-            mapLayers[sourceId ?: layerType.toString()] = when (layerType) {
+        mapLayers[sourceId ?: layerType.name] ?: run {
+            mapLayers[sourceId ?: layerType.name] = when (layerType) {
                 LayerType.TEI_LAYER -> TeiMapLayer(
                     style,
                     featureType,
-                    mapStyle?.teiColor,
-                    mapStyle?.programDarkColor
+                    mapStyle?.teiColor!!,
+                    mapStyle?.programDarkColor!!
                 )
                 LayerType.ENROLLMENT_LAYER -> EnrollmentMapLayer(
                     style,
                     featureType,
-                    mapStyle?.enrollmentColor,
-                    mapStyle?.programDarkColor
+                    mapStyle?.enrollmentColor!!,
+                    mapStyle?.programDarkColor!!
                 )
                 LayerType.HEATMAP_LAYER -> HeatmapMapLayer(
                     style,
@@ -104,6 +106,26 @@ class MapLayerManager {
             check -> mapLayers[sourceId]?.showLayer()
             else -> mapLayers[sourceId]?.hideLayer()
         }
+    }
+
+    fun getLayer(sourceId: String, shouldSaveLayer: Boolean? = false): MapLayer? {
+        return mapLayers[sourceId].let {
+            currentLayerSelection?.setSelectedItem(null)
+            if (shouldSaveLayer == true) {
+                this.currentLayerSelection = it
+            }
+            it
+        }
+    }
+
+    fun selectFeature(feature: Feature?) {
+        mapLayers.entries.forEach {
+            it.value.setSelectedItem(feature)
+        }
+    }
+
+    fun getLayers(): Collection<MapLayer> {
+        return mapLayers.values
     }
 
     fun handleLayer(layerType: LayerType, check: Boolean) {

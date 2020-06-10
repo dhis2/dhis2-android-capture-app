@@ -6,6 +6,7 @@ import org.dhis2.uicomponents.map.geometry.bound.GetBoundingBox;
 import org.dhis2.uicomponents.map.geometry.line.MapLineRelationshipToFeature;
 import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapRelationshipsToFeatureCollection;
 import org.dhis2.uicomponents.map.geometry.point.MapPointToFeature;
+import org.dhis2.uicomponents.map.geometry.polygon.MapPolygonToFeature;
 import org.dhis2.uicomponents.map.mapper.MapRelationshipToRelationshipMapModel;
 import org.dhis2.usescases.teiDashboard.DashboardRepository;
 import org.dhis2.utils.analytics.AnalyticsHelper;
@@ -47,6 +48,7 @@ public class RelationshipModule {
         return new MapRelationshipsToFeatureCollection(
                 new MapLineRelationshipToFeature(),
                 new MapPointToFeature(),
+                new MapPolygonToFeature(),
                 new GetBoundingBox()
         );
     }
