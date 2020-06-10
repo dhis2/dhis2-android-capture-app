@@ -100,9 +100,14 @@ Any issues around using a particular feature with Android are highlighted with a
 | d2:inOrgUnitGroup\* | Evaluates whether the current organization unit is in the argument group. The argument can be defined with either ID or organization unit group code. | ![](resources/images/../../admin/icon-complete.png) | |
 | d2:hasUserRole\** |Returns true if the current user has this role otherwise false.| ![](resources/images/../../admin/icon-complete.png) | |
 | d2:zScoreWFA\*** |Function calculates z-score based on data provided by WHO weight-for-age indicator. Its value varies between -3.5 to 3.5 depending upon the value of weight.| ![](resources/images/../../admin/icon-complete.png) | |
-\* Available in DHIS 2 v2.30
-\** Available in DHIS 2 v2.31 onwards
-\*** Available in DHIS 2 v2.32
+
+> Notes:
+>
+> \* Available in DHIS 2 v2.30
+> 
+> \** Available in DHIS 2 v2.31 onwards
+> 
+> \*** Available in DHIS 2 v2.32
 
 ## Standard variables to use in program rule expressions
 
@@ -124,6 +129,53 @@ Available in DHIS2 v2.30
 | V{program_stage_id}   | Contains the ID of the current program stage that triggered the rules. This can be used to run rules in specific program stages, or avoid execution in certain stages. When executing the rules in the context of a TEI registration form the variable will be empty.   | ![](resources/images/../../admin/icon-complete.png)      | |
 | V{program_stage_name} | Contains the name of the current program stage that triggered the rules. This can be used to run rules in specific program stages, or avoid execution in certain stages. When executing the rules in the context of a TEI registration form the variable will be empty. | ![](resources/images/../../admin/icon-complete.png)      | |
 
-\*Only applies to tracker
+> Notes:
+> 
+> \* Only applies to tracker
+
+## Differences between the Program Rules in the web and the Android version
+
+As the web and the Android application are currently using a different *program rule engine* there might be programs rule that work in one system and not in the other. In general terms it can be said that the Android *program rule engine* is more strict and so, some Program Rules that work in the web version of DHIS2 will fail in Android. This subsection describes the main differences and how to adapt the rules in order to have them working in both systems.
+
+### Evaluation of type Boolean
+
+DHIS2 web version considers the type boolean as 0 or 1 (which can be evaluated to true or false), however Android evaluates them only as true or false. While this makes possible the addition of booleans in web, it will fail in Android; in order to fix this an additional *program rule variable* is needed to transform the boolean into an number that can be operated. Check the table below for examples and possible solutions.
+
+For the examples belows consider the following:
+
+* yn_prv1: is a program rule variable that has been configured to get the value of a 'Yes/No' data element
+* yn_prv2: is a program rule variable that has been configured to get the value of a 'Yes/No' data element
+* prv_boolean_one: is a program rule variable that has been configured to get the value of a 'Yes/No' data element
+* prv_boolean_two: is a program rule variable that has been configured to get the value of a 'Yes/No' data element
+* prv_boolean_one_to_number: is a program rule variable with calculated value
+* prv_boolean_two_to_number: is a program rule variable with calculated value
+* sometimes true is used as program rule condition meaning the action is always performed
+* The following acronyms are used: 
+	* DE (Data Elemetn)
+	* PR (Program Rule)
+	* PRE (Program Rule Expression)
+	* PRC (Program Rule Condition)
+	* PRV (Program Rule Variable)
+	* PRA (Program Rule Action)
+
+
+| Program Rule Condition(s) | Program Rule Action(s) | Web version | Android version | Comment |
+| ----------- | ----------- | :---: | :---: | ----- |
+| d2:hasValue('yn_prv1') \|\| d2:hasValue('yn_prv2') | Assign fixed value to DE | ![](resources/images/../../admin/icon-complete.png) | ![](resources/images/../../admin/icon-complete.png) | |
+| #{yn_prv1} \|\| #{yn_prv2} | Assign fixed value to DE | ![](resources/images/../../admin/icon-complete.png) | ![](resources/images/../../admin/icon-complete.png) | |
+| d2:hasValue('yn_prv1') \|\| d2:hasValue('yn_prv2') | Assign value to DE: #{yn_prv1} + #{yn_prv2} + 1 | ![](resources/images/../../admin/icon-complete.png) | ![](resources/images/../../admin/icon-negative.png) | Crashes in Android  whenver a boolean is marked as the expression would result in *true*+*false*+1 |
+| d2:hasValue('yn_prv1') \|\| d2:hasValue('yn_prv2') | Assign value to DE: #{yn_prv1} + #{yn_prv2} + 1 | ![](resources/images/../../admin/icon-complete.png) | ![](resources/images/../../admin/icon-negative.png) | Crashes in Android  whenver a boolean is marked as the expression would result in *true*+*false*+1 |
+| PR1: #{prv_boolean_one} <br /><br />PR2: #{prv_boolean_two} <br /><br />PR3: #{prv_boolean_one} \|\| #{prv_boolean_two} | PRA1. Assign value  "1" to PRV "#{prv_bool_one_to_number}" <br /><br />PRA2. Assign value: "1" to PRV "#{prv_bool_two_to_number}" <br /><br />PRA3. Assign value to DE: "#{prv_bool_one_to_number} + #{prv_bool_two_to_number} + 1"| ![](resources/images/../../admin/icon-negative.png) | ![](resources/images/../../admin/icon-negative.png) | There are 2 variables for boolean, one gets the value via a PRV definition “value form DE” and the other one via a PRA. If a boolean is not marked it is counted as string instead of a number |
+| Four PR to assign 1 or 0 to the booleans and an additional for the addition. Priorities go from top to bottom <br /><br />PRC1: !d2:hasValue('prv_boolean_one')  \|\| !#{prv_boolean_one} <br /><br />PRC2: d2:hasValue('prv_boolean_one') && #{prv_boolean_one}<br /><br />PRC3: !d2:hasValue('prv_boolean_two')  \|\| !#{prv_boolean_two} <br /><br />PRC4: d2:hasValue('prv_boolean_two') && #{prv_boolean_two} <br /><br />PRC5: true | PRA1: Assign value: "0" to PRV "#{prv_bool_one_to_number}" <br /><br />PRA2: Assign value: "1" to PRV "#{prv_bool_one_to_number}" <br /><br />PRA3: Assign value: "0" to PRV "#{prv_bool_two_to_number}" <br /><br />PRA4: Assign value: "1" to PRV "#{prv_bool_two_to_number}" <br /><br />PRA5: Assign value: "#{prv_bool_one_to_number} + #{prv_bool_two_to_number} + 1" to DE <br /> | ![](resources/images/../../admin/icon-complete.png) | ![](resources/images/../../admin/icon-complete.png) | There are 2 variables for boolean, one gets the value via a PRV definition “value form DE” and the other one via a PRA.
+
+### Evaluation of numbers
+
+DHIS2 web version evaluate numbers in a more flexible way casting values from integer to floats if required for a division, however, Android take numbers as such (without a casting) which my end up giving unexpected results. Check the table below for examples and possible solutions.
+
+
+| Program Rule Condition(s) | Program Rule Action(s) | Web version | Android version | Comment |
+| ----------- | ----------- | :---: | :---: | ----- |
+| true | Assign value to DE: d2:daysBetween('2020-05-13', '2020-05-17') / 3 | ![](resources/images/../../admin/icon-complete.png) | ![](resources/images/../../admin/icon-negative.png) | The user would expect the division to be calculated as 4/3 with a result of 1.3333. However, Android does not cast 4 to a float (4.0 as the web version does) so the result in Android is a pure 1 as the result of the integer division 4/3 |
+| true | Assign value to DE: d2:daysBetween('2020-05-13', '2020-05-17') / 3.0 | ![](resources/images/../../admin/icon-complete.png) | ![](resources/images/../../admin/icon-complete.png) | Division results in 1.33333 in both web and Android | 
 
 ---

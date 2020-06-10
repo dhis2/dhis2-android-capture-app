@@ -2,6 +2,8 @@ package org.dhis2.usescases.teiDashboard.dashboardfragments.relationships;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.PointF;
+import android.graphics.RectF;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,7 +16,10 @@ import androidx.appcompat.content.res.AppCompatResources;
 import androidx.databinding.DataBindingUtil;
 
 import com.mapbox.geojson.BoundingBox;
+import com.mapbox.geojson.Feature;
 import com.mapbox.geojson.FeatureCollection;
+import com.mapbox.mapboxsdk.geometry.LatLng;
+import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.wangjie.rapidfloatingactionbutton.RapidFloatingActionHelper;
 import com.wangjie.rapidfloatingactionbutton.contentimpl.labellist.RFACLabelItem;
 import com.wangjie.rapidfloatingactionbutton.contentimpl.labellist.RapidFloatingActionContentLabelList;
@@ -25,7 +30,9 @@ import org.dhis2.R;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.databinding.FragmentRelationshipsBinding;
+import org.dhis2.uicomponents.map.carousel.CarouselAdapter;
 import org.dhis2.uicomponents.map.managers.RelationshipMapManager;
+import org.dhis2.uicomponents.map.model.RelationshipUiComponentModel;
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
 import org.dhis2.usescases.searchTrackEntity.SearchTEActivity;
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity;
@@ -39,7 +46,9 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
+import javax.annotation.Nonnull;
 import javax.inject.Inject;
 
 import static android.app.Activity.RESULT_OK;
@@ -48,7 +57,7 @@ import static android.app.Activity.RESULT_OK;
  * QUADRAM. Created by ppajuelo on 29/11/2017.
  */
 
-public class RelationshipFragment extends FragmentGlobalAbstract implements RelationshipView {
+public class RelationshipFragment extends FragmentGlobalAbstract implements RelationshipView, MapboxMap.OnMapClickListener {
 
     @Inject
     RelationshipPresenter presenter;
@@ -61,6 +70,7 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
     private RelationshipMapManager relationshipMapManager;
 
     public static final String TEI_A_UID = "TEI_A_UID";
+    private Set<String> sources;
 
     @Override
     public void onAttach(@NotNull Context context) {
@@ -82,11 +92,14 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
 
         relationshipMapManager = new RelationshipMapManager();
         relationshipMapManager.init(binding.mapView);
+        relationshipMapManager.setOnMapClickListener(this);
 
         TeiDashboardMobileActivity activity = (TeiDashboardMobileActivity) getContext();
         activity.relationshipMap().observe(this, showMap -> {
-            binding.mapView.setVisibility(showMap ? View.VISIBLE : View.GONE);
             binding.relationshipRecycler.setVisibility(showMap ? View.GONE : View.VISIBLE);
+            binding.mapView.setVisibility(showMap ? View.VISIBLE : View.GONE);
+            binding.mapCarousel.setVisibility(showMap ? View.VISIBLE : View.GONE);
+            binding.rfabLayout.setVisibility(showMap ? View.GONE : View.VISIBLE);
         });
 
         return binding.getRoot();
@@ -208,7 +221,7 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
 
     @Override
     public void openDashboardFor(@NotNull String teiUid) {
-        getActivity().startActivity(TeiDashboardMobileActivity.intent(getContext(),teiUid,null,null));
+        getActivity().startActivity(TeiDashboardMobileActivity.intent(getContext(), teiUid, null, null));
     }
 
     @Override
@@ -258,11 +271,53 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
     }
 
     @Override
-    public void setFeatureCollection(@NotNull kotlin.Pair<? extends Map<String, FeatureCollection>, ? extends BoundingBox> map) {
-       relationshipMapManager.update(
-               map.getFirst(),
-               map.getSecond(),
-               FeatureType.POINT
-       );
+    public void setFeatureCollection(
+            @Nonnull String currentTei,
+            @Nonnull List<RelationshipUiComponentModel> relationships,
+            @NotNull kotlin.Pair<? extends Map<String, FeatureCollection>, ? extends BoundingBox> map) {
+        relationshipMapManager.update(
+                map.getFirst(),
+                map.getSecond(),
+                FeatureType.POINT
+        );
+        this.sources = map.getFirst().keySet();
+
+        CarouselAdapter<RelationshipUiComponentModel> carouselAdapter =
+                new CarouselAdapter.Builder<RelationshipUiComponentModel>()
+                        .addCurrentTei(currentTei)
+                        .addOnDeleteRelationshipListener(relationshipUid -> {
+                            presenter.deleteRelationship(relationshipUid);
+                            return true;
+                        })
+                        .addOnRelationshipClickListener(teiUid -> {
+                            presenter.openDashboard(teiUid);
+                            return true;
+                        })
+                        .build();
+        binding.mapCarousel.setAdapter(carouselAdapter);
+        binding.mapCarousel.attachToMapManager(relationshipMapManager, () -> true);
+        carouselAdapter.addItems(relationships);
+    }
+
+    @Override
+    public boolean onMapClick(@NonNull LatLng point) {
+        PointF pointf = relationshipMapManager.getMap().getProjection().toScreenLocation(point);
+        RectF rectF = new RectF(pointf.x - 10, pointf.y - 10, pointf.x + 10, pointf.y + 10);
+
+        for (String sourceId : sources) {
+            String lineLayerId = "RELATIONSHIP_LINE_LAYER_ID_" + sourceId;
+            String pointLayerId = "RELATIONSHIP_LINE_LAYER_ID_" + sourceId;
+
+            List<Feature> features = relationshipMapManager.getMap()
+                    .queryRenderedFeatures(rectF, lineLayerId, pointLayerId);
+            if (!features.isEmpty()) {
+                relationshipMapManager.mapLayerManager.selectFeature(null);
+                relationshipMapManager.mapLayerManager.getLayer(sourceId,true).setSelectedItem(features.get(0));
+                binding.mapCarousel.scrollToFeature(features.get(0));
+                return true;
+            }
+        }
+
+        return false;
     }
 }

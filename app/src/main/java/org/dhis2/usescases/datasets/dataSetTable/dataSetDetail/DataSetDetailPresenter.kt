@@ -39,7 +39,7 @@ class DataSetDetailPresenter(
                 .switchMap {
                     Flowable.combineLatest<DataSetInstance, Period, Pair<DataSetInstance, Period>>(
                         repository.dataSetInstance(),
-                        repository.getPeriod().toFlowable(),
+                        repository.period,
                         BiFunction { t1, t2 -> Pair(t1, t2) }
                     )
                 }

@@ -65,7 +65,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
     public static final String UNSELECTED_TAB_COLOR = "#B3FFFFFF";
     public static final int OVERVIEW_POS = 0;
     public static final int INDICATORS_POS = 1;
-    public static final int RELATIONSHIPS_POS= 2;
+    public static final int RELATIONSHIPS_POS = 2;
     public static final int NOTES_POS = 3;
     public static final int INDICATORS_LANDSCAPE_POS = 0;
     public static final int RELATIONSHIPS_LANDSCAPE_POS = 1;
@@ -177,7 +177,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
         elevation = ViewCompat.getElevation(binding.toolbar);
 
         binding.relationshipMapIcon.setOnClickListener(v -> {
-                    if(!relationshipMap.getValue()) {
+                    if (!relationshipMap.getValue()) {
                         binding.relationshipMapIcon.setImageResource(R.drawable.ic_list);
                     } else {
                         binding.relationshipMapIcon.setImageResource(R.drawable.ic_map);
@@ -185,6 +185,10 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
                     relationshipMap.setValue(!relationshipMap.getValue());
                 }
         );
+
+        relationshipMap().observe(this, value -> {
+            enablePagerScrolling(!value);
+        });
     }
 
     @Override
@@ -248,8 +252,10 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
                             }
                             if (position == RELATIONSHIPS_POS) {
                                 binding.relationshipMapIcon.setVisibility(View.VISIBLE);
+                                enablePagerScrolling(!relationshipMap().getValue());
                             } else {
                                 binding.relationshipMapIcon.setVisibility(View.GONE);
+                                enablePagerScrolling(true);
                             }
                         }
                     }
@@ -294,6 +300,14 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
                 binding.teiTablePager.setCurrentItem(1, false);
 
             tabLayoutMediator(binding.teiTablePager);
+        }
+    }
+
+    private void enablePagerScrolling(boolean enable){
+        if(OrientationUtilsKt.isPortrait()){
+            binding.teiPager.setUserInputEnabled(enable);
+        }else{
+            binding.teiTablePager.setUserInputEnabled(enable);
         }
     }
 
@@ -577,16 +591,16 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
         }
 
         int menu;
-        if(enrollmentUid == null) {
+        if (enrollmentUid == null) {
             menu = R.menu.dashboard_tei_menu;
-        } else if (groupByStage.getValue()){
+        } else if (groupByStage.getValue()) {
             menu = R.menu.dashboard_menu_group;
         } else {
             menu = R.menu.dashboard_menu;
         }
         popupMenu.getMenuInflater().inflate(menu, popupMenu.getMenu());
 
-        if(enrollmentUid != null) {
+        if (enrollmentUid != null) {
             EnrollmentStatus status = presenter.getEnrollmentStatus(enrollmentUid);
             if (status == EnrollmentStatus.COMPLETED) {
                 popupMenu.getMenu().findItem(R.id.complete).setVisible(false);
@@ -675,14 +689,14 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
     @Override
     public void hideTabsAndDisableSwipe() {
         binding.tabLayout.setVisibility(View.GONE);
-        binding.teiPager.setUserInputEnabled(false);
+        enablePagerScrolling(false);
         ViewCompat.setElevation(binding.toolbar, 0);
     }
 
     @Override
     public void showTabsAndEnableSwipe() {
         binding.tabLayout.setVisibility(View.VISIBLE);
-        binding.teiPager.setUserInputEnabled(true);
+        enablePagerScrolling(true);
         ViewCompat.setElevation(binding.toolbar, elevation);
     }
 

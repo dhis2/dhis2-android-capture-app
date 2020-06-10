@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="72dp"
+        android:layout_marginEnd="8.6dp"
+        android:elevation="7dp"
+        app:cardBackgroundColor="@color/white"
+        app:cardCornerRadius="6dp">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:id="@+id/toTeiImage"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginStart="16dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:src="@tools:sample/avatars" />
+
+            <ImageView
+                android:id="@+id/fromTeiImage"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginStart="16dp"
+                android:translationX="4dp"
+                android:translationY="4dp"
+                app:layout_constraintBottom_toBottomOf="@id/toTeiImage"
+                app:layout_constraintEnd_toEndOf="@id/toTeiImage"
+                tools:src="@tools:sample/avatars" />
+
+            <TextView
+                android:id="@+id/toRelationshipName"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:textColor="@color/text_black_DE3"
+                android:textSize="14sp"
+                app:layout_constraintEnd_toStartOf="@id/clearButton"
+                app:layout_constraintStart_toEndOf="@id/toTeiImage"
+                app:layout_constraintTop_toTopOf="@id/toTeiImage"
+                tools:text="@tools:sample/full_names" />
+
+            <TextView
+                android:id="@+id/relationshipTypeName"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginEnd="16dp"
+                android:textColor="@color/text_black_8A3"
+                android:textSize="12sp"
+                app:layout_constraintEnd_toStartOf="@id/clearButton"
+                app:layout_constraintStart_toEndOf="@id/toTeiImage"
+                app:layout_constraintTop_toBottomOf="@id/toRelationshipName"
+                tools:text="@tools:sample/full_names" />
+
+            <ImageView
+                android:id="@+id/clearButton"
+                style="@style/ActionIconNoPadding"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_margin="16dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/ic_delete_forever"
+                app:tint="@color/text_black_8A3" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </com.google.android.material.card.MaterialCardView>
+</layout>

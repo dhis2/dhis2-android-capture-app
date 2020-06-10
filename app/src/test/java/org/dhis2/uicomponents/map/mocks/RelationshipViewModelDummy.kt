@@ -35,8 +35,13 @@ object RelationshipViewModelDummy {
             RelationshipViewModel.RelationshipDirection.FROM,
             UID,
             emptyList(),
+            emptyList(),
             geometryFrom,
-            geometryTo
+            geometryTo,
+            "",
+            "",
+            -1,
+            -1
         )
     }
 
@@ -63,8 +68,13 @@ object RelationshipViewModelDummy {
             RelationshipViewModel.RelationshipDirection.FROM,
             UID,
             emptyList(),
+            emptyList(),
             null,
-            null
+            null,
+            "",
+            "",
+            -1,
+            -1
         )
     }
 

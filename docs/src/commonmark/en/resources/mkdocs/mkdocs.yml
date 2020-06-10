@@ -1,0 +1,74 @@
+site_name: DHIS2 Documentation
+site_description: Official documentation of the DHIS 2 platform
+site_author: DHIS2 Documentation Team
+# site_url sets the canonical url - we want this to point to the latest version
+site_url: 'https://docs.dhis2.org/2.33/<language>/'
+copyright: 'Copyright &copy; 2008-2020 DHIS2 Team'
+# edit_uri: ''
+repo_url: https://github.com/dhis2/dhis2-docs
+repo_name: 'dhis2-docs on GitHub'
+# Query string example
+# edit_uri: tree/master/src/commonmark/en/content/
+use_directory_urls: false
+# docs_dir:
+
+extra:
+    dhis2_version: '<version>'
+    dhis2_versions:
+        - 'master'
+        - '2.33'
+        - '2.32'
+        - '2.31'
+        - '2.30'
+        - '2.29'
+    dhis2_language: '<language>'
+    dhis2_languages:
+        en: 'English'
+        fr: 'Français'
+
+theme:
+    name: material
+    logo: 'resources/images/logo.svg'
+    favicon: 'resources/images/favicon.ico'
+    feature:
+      tabs: true
+    custom_dir: 'theme'
+    palette:
+      primary: 'white'
+      accent: 'blue'
+    language: '<language>'
+
+# our css
+extra_css:
+    - resources/css/mkdocs_dhis2.css
+
+plugins:
+    - search
+    - edit_url
+
+markdown_extensions:
+    - codehilite:
+        guess_lang: false
+    - markdown_captions
+    - toc:
+        permalink: true
+    - attr_list
+    - def_list
+    - footnotes
+    - pymdownx.betterem:
+        smart_enable: all
+    - pymdownx.caret
+    - pymdownx.critic
+    - pymdownx.emoji
+    - pymdownx.inlinehilite
+    - pymdownx.magiclink
+    - pymdownx.mark
+    - pymdownx.smartsymbols
+    - pymdownx.superfences
+    - pymdownx.tilde
+
+# output when building
+site_dir: ../../target/commonmark/<language>/
+
+
+nav:

@@ -1,5 +1,6 @@
 package org.dhis2.uicomponents.map.layer.types
 
+import com.mapbox.geojson.Feature
 import com.mapbox.mapboxsdk.maps.Style
 import com.mapbox.mapboxsdk.style.layers.FillLayer
 import com.mapbox.mapboxsdk.style.layers.Layer
@@ -58,5 +59,12 @@ class EventMapLayer(
 
     override fun hideLayer() {
         setVisibility(Property.NONE)
+    }
+
+    override fun setSelectedItem(feature: Feature?) {
+    }
+
+    override fun findFeatureWithUid(featureUidProperty: String): Feature? {
+        return null
     }
 }

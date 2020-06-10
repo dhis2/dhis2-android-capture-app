@@ -12,12 +12,16 @@ import org.dhis2.uicomponents.map.geometry.mapper.addRelationFromInfo
 import org.dhis2.uicomponents.map.geometry.mapper.addRelationToInfo
 import org.dhis2.uicomponents.map.geometry.mapper.addRelationshipInfo
 import org.dhis2.uicomponents.map.geometry.point.MapPointToFeature
+import org.dhis2.uicomponents.map.geometry.polygon.MapPolygonToFeature
 import org.dhis2.uicomponents.map.model.RelationshipUiComponentModel
+import org.hisp.dhis.android.core.common.FeatureType
+import org.jetbrains.annotations.NotNull
 
 class MapRelationshipsToFeatureCollection(
-    private val mapLineToFeature: MapLineRelationshipToFeature,
-    private val mapPointToFeature: MapPointToFeature,
-    private val bounds: GetBoundingBox
+    private val mapLineToFeature: @NotNull MapLineRelationshipToFeature,
+    private val mapPointToFeature: @NotNull MapPointToFeature,
+    private val mapPolygonToFeature: MapPolygonToFeature,
+    private val bounds: @NotNull GetBoundingBox
 ) {
     fun map(
         relationships: List<RelationshipUiComponentModel>
@@ -31,13 +35,21 @@ class MapRelationshipsToFeatureCollection(
                 }
                 val pointFromFeatures = relationModels.value.map { relationModel ->
                     relationModel.from.geometry?.let {
-                        val feature = mapPointToFeature.map(it)
+                        val feature = if (it.type() == FeatureType.POINT) {
+                            mapPointToFeature.map(it)
+                        } else {
+                            mapPolygonToFeature.map(it)
+                        }
                         feature?.addRelationFromInfo(relationModel)
                     }
                 }
                 val pointToFeatures = relationModels.value.map { relationModel ->
-                    relationModel.To.geometry?.let {
-                        val feature = mapPointToFeature.map(it)
+                    relationModel.to.geometry?.let {
+                        val feature = if (it.type() == FeatureType.POINT) {
+                            mapPointToFeature.map(it)
+                        } else {
+                            mapPolygonToFeature.map(it)
+                        }
                         feature?.addRelationToInfo(relationModel)
                     }
                 }
@@ -66,5 +78,6 @@ class MapRelationshipsToFeatureCollection(
         const val TO_TEI = "toTeiUid"
         const val RELATIONSHIP = "relationshipTypeUid"
         const val BIDIRECTIONAL = "bidirectional"
+        const val RELATIONSHIP_UID = "relationshipUid"
     }
 }
