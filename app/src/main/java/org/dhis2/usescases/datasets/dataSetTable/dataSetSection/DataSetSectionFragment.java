@@ -369,7 +369,6 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
             binding.actionButton.setText(activity.getString(R.string.complete));
         else
             binding.actionButton.setText(activity.getString(R.string.re_open));
-        activity.isDataSetOpen(isCompleted);
     }
 
     @Override
