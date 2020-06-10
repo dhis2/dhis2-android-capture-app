@@ -26,6 +26,8 @@
         android:layout_height="@dimen/default_cell_height">
 
         <EditText
+            android:focusable="true"
+            android:focusableInTouchMode="true"
             android:id="@+id/input_editText"
             android:layout_width="0dp"
             android:layout_height="0dp"

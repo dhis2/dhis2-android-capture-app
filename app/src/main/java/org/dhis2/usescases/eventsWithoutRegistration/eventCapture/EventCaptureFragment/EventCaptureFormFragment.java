@@ -22,9 +22,7 @@ import org.dhis2.data.forms.dataentry.DataEntryAdapter;
 import org.dhis2.data.forms.dataentry.DataEntryArguments;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
-import org.dhis2.data.forms.dataentry.fields.section.SectionHolder;
 import org.dhis2.data.tuples.Trio;
-import org.dhis2.databinding.FormSectionBinding;
 import org.dhis2.databinding.SectionSelectorFragmentBinding;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity;
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
@@ -53,8 +51,6 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
     private FlowableProcessor<RowAction> flowableProcessor;
     private FlowableProcessor<String> sectionProcessor;
     private FlowableProcessor<Trio<String, String, Integer>> flowableOptions;
-    private FormSectionBinding headerBinding;
-    private SectionHolder headerHolder;
 
     public static EventCaptureFormFragment newInstance(String eventUid) {
         EventCaptureFormFragment fragment = new EventCaptureFormFragment();
@@ -119,22 +115,18 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
             dataEntryAdapter.setLastFocusItem(lastFocusItem);
         }
 
-        LinearLayoutManager myLayoutManager = (LinearLayoutManager) binding.formRecycler.getLayoutManager();
-        int myFirstPositionIndex = myLayoutManager.findFirstVisibleItemPosition();
-        View myFirstPositionView = myLayoutManager.findViewByPosition(myFirstPositionIndex);
-        int offset = 0;
-        if (myFirstPositionView != null) {
-            offset = myFirstPositionView.getTop();
-        }
-
         if (dataEntryAdapter == null) {
             createDataEntry();
         }
 
-        dataEntryAdapter.swap(updates, () -> { });
-
-        myLayoutManager.scrollToPositionWithOffset(myFirstPositionIndex, offset);
-
+        LinearLayoutManager myLayoutManager = (LinearLayoutManager) binding.formRecycler.getLayoutManager();
+        dataEntryAdapter.swap(updates, () -> {
+            if (myLayoutManager != null) {
+                if(!dataEntryAdapter.isSectionAlreadyOpen()) {
+                    myLayoutManager.scrollToPositionWithOffset(dataEntryAdapter.getOpenSectionPos(), 0);
+                }
+            }
+        });
     }
 
     @Override

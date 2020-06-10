@@ -50,6 +50,7 @@ import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.mapboxsdk.maps.Style;
 
 import org.dhis2.App;
+import org.dhis2.Bindings.ExtensionsKt;
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.ProgramAdapter;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
@@ -264,6 +265,21 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         }
         presenter.onDestroy();
         super.onDestroy();
+    }
+
+    @Override
+    public void onBackPressed() {
+        if(!ExtensionsKt.isKeyboardOpened(this)) {
+            super.onBackPressed();
+        } else {
+            hideKeyboard();
+        }
+    }
+
+    @Override
+    public void onBackClicked() {
+        hideKeyboard();
+        finish();
     }
 
     @Override
@@ -734,7 +750,6 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                 EnrollmentActivity.EnrollmentMode.NEW,
                 fromRelationshipTEI() != null);
         startActivity(intent);
-        finish();
     }
 
     /*region MAP*/

@@ -266,7 +266,10 @@ class SettingsRepositoryTest {
         whenever(d2.eventModule().events().byState().`in`(State.WARNING).blockingGet()) doReturn
             emptyList()
 
-        whenever(d2.trackedEntityModule().trackedEntityInstances().byState()) doReturn mock()
+        whenever(
+            d2.trackedEntityModule().trackedEntityInstances()
+                .byState()
+        ) doReturn mock()
         whenever(
             d2.trackedEntityModule().trackedEntityInstances()
                 .byState().`in`(State.ERROR)

@@ -95,6 +95,8 @@ public class SearchTEContractsModule {
         void openDashboard(String teiUid, String programUid, String enrollmentUid);
 
         void goToEnrollment(String enrollmentUid, String programUid);
+
+        void onBackClicked();
     }
 
     public interface Presenter {
