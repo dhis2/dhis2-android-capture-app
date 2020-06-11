@@ -1,12 +1,7 @@
 package org.dhis2.usescases.teidashboard
 
-import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.contrib.RecyclerViewActions
-import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
-import org.dhis2.R
-import org.dhis2.data.forms.dataentry.fields.edittext.EditTextCustomHolder
 import org.dhis2.usescases.BaseTest
 import org.dhis2.usescases.searchTrackEntity.SearchTEActivity
 import org.dhis2.usescases.searchte.searchTeiRobot
@@ -386,11 +381,7 @@ class TeiDashboardTest : BaseTest() {
 
     @Test
     fun shouldDeleteTeiSuccessfully() {
-        // open more options
-        // click on delete tei
-        // check tei was deleted and not show on recycler view
-
-        val teiName = "Tim" //"Anna Jones" //"Tim Johnson"
+        val teiName = "Tim" //"Anna Jones"
         val teiLastName = "Johnson"
 
         setupCredentials()
@@ -399,7 +390,7 @@ class TeiDashboardTest : BaseTest() {
         searchTeiRobot {
             closeSearchForm()
             Thread.sleep(10000)
-            clickOnTEI(0)
+            clickOnTEI(teiName, teiLastName)
         }
 
         teiDashboardRobot {
@@ -408,8 +399,8 @@ class TeiDashboardTest : BaseTest() {
         }
 
         searchTeiRobot {
+            Thread.sleep(10000)
             checkTEIsDelete(teiName, teiLastName)
-            // check size - 1, check teiName is not part of recycler,
         }
     }
 
