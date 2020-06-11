@@ -1,5 +1,7 @@
 # Rollout
 
+<!--DHIS2-SECTION-ID:rollout-->
+
 At this stage you should be ready to roll out the devices and the App to your end users. In this step you will have to prepare for the cut-over and coordinate the go-live, you will need to decide if you will keep parallel systems in case you are using other Apps or do a straight replacement. As far as paper and manual processes go, you will also need to decide if you want to eliminate them, replicate them or keep a duplicate. Make sure you pick carefully the time to go live. Pick a time where teams will be available to spend the extra time and effort adapting to using the new App and also make sure extra support is available during the initial stages.
 
 ![](resources/images/image27.png){ .center width=60% }

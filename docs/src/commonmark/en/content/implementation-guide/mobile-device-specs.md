@@ -1,8 +1,10 @@
 # Mobile Device Specifications
 
+<!--DHIS2-SECTION-ID:mobile_specs-->
+
 If your project plans to do a large acquisition of devices, it is good practice to delay the bulk of the acquisition as much as possible. The idea is to get the best device that you can afford. Technology, and particularly mobile devices, evolves very rapidly. A given model is normally refreshed on an annual cycle, giving consumers access to significant technical improvements year-on-year, but with similar price point. More recommendations on acquisitions can be found in the [<span class="underline">Scale Up</span>](#scale-up) section.
 
-Specifications for mobile devices to use the new DHIS 2 Capture Android App deployment are included in the following table (for the most up to date version of this recommendations please visit [<span class="underline">this link</span>](https://docs.google.com/document/d/1jZjw-hb1W8sszkPU9yPWrPoow91gEkTb0nyZJh3IJQQ/edit?usp=sharing)).
+Specifications for mobile devices to use the new DHIS 2 Capture Android App deployment are included in the following table:
 
 <table>
 <thead>
