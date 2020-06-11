@@ -1,7 +1,12 @@
 package org.dhis2.usescases.teidashboard
 
+import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.contrib.RecyclerViewActions
+import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
+import org.dhis2.R
+import org.dhis2.data.forms.dataentry.fields.edittext.EditTextCustomHolder
 import org.dhis2.usescases.BaseTest
 import org.dhis2.usescases.searchTrackEntity.SearchTEActivity
 import org.dhis2.usescases.searchte.searchTeiRobot
@@ -330,6 +335,17 @@ class TeiDashboardTest : BaseTest() {
             clickOnPersonAttributes(5)
             typeOnRequiredTextField("test", 2)
             clickOnSaveEnrollment()
+
+           /* clickOnAProgramForEnrollment(tbProgram)
+            clickOnAcceptEnrollmentDate()
+            clickOnPersonAttributes(4)
+            typeOnRequiredTextField("0137979511", 5)
+           // scrollToBottomProgramForm()
+            onView(withId(R.id.fieldRecycler))
+                .perform(RecyclerViewActions.scrollToPosition<EditTextCustomHolder>(22))
+          //  typeOnRequiredTextField("test", 22) // doesn't type on second required
+           // clickOnSaveEnrollment()*/
+            Thread.sleep(5000)
         }
 
         eventRobot {
@@ -369,37 +385,31 @@ class TeiDashboardTest : BaseTest() {
     }
 
     @Test
-    @Ignore
     fun shouldDeleteTeiSuccessfully() {
         // open more options
         // click on delete tei
         // check tei was deleted and not show on recycler view
 
-        val teiName = "Olvia Watts"
+        val teiName = "Tim" //"Anna Jones" //"Tim Johnson"
+        val teiLastName = "Johnson"
 
         setupCredentials()
-       /* mockWebServerRobot.addResponse(GET, "/api/trackedEntityInstances?.*", API_TEI_1_RESPONSE_OK)
-        mockWebServerRobot.addResponse(GET, "/api/trackedEntityInstances?.*", API_TEI_2_RESPONSE_OK)
-        mockWebServerRobot.addResponse(GET, "/api/trackedEntityInstances?.*", API_TEI_3_RESPONSE_OK)*/
-        // https://play.dhis2.org/android-current/api/trackedEntityInstances/query?ou=DiszpKrYNg8&ouMode=DESCENDANTS&program=IpHINAT79UW&paging=true&page=1&pageSize=10
-        //prepareTeiToDeleteAndLaunchActivity(rule)
         prepareChildProgrammeIntentAndLaunchActivity(ruleSearch)
 
         searchTeiRobot {
             closeSearchForm()
-            clickOnSearchFab()
-            clickOnTEI(0, teiName)
+            Thread.sleep(10000)
+            clickOnTEI(0)
         }
 
         teiDashboardRobot {
-           /* clickOnMenuMoreOptions()
+            clickOnMenuMoreOptions()
             clickOnMenuDeleteTEI()
-            // rule.getactivity == null assert
-            Thread.sleep(10000)*/
         }
 
         searchTeiRobot {
-            //checkTEIsDelete(teiName)
+            checkTEIsDelete(teiName, teiLastName)
+            // check size - 1, check teiName is not part of recycler,
         }
     }
 
