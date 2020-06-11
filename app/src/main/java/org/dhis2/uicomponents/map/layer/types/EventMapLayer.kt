@@ -19,6 +19,7 @@ class EventMapLayer(
 
     private val POINT_LAYER_ID = "POINT_LAYER"
     private val POLYGON_LAYER_ID = "POLYGON_LAYER"
+    override var visible = false
 
     init {
         when (featureType) {
@@ -51,6 +52,7 @@ class EventMapLayer(
                 polygonLayer.setProperties(PropertyFactory.visibility(visibility))
             else -> Unit
         }
+        visible = visibility == Property.VISIBLE
     }
 
     override fun showLayer() {
