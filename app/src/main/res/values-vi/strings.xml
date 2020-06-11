@@ -82,7 +82,6 @@
     <string name="re_open">mở lại</string>
     <!-- State -->
     <string name="state_synced">Đồng bộ</string>
-    <string name="state_to_post">Đăng</string>
     <string name="state_to_update">Cập nhật</string>
     <string name="state_to_delete">Xóa</string>
     <string name="state_error">Lỗi</string>
