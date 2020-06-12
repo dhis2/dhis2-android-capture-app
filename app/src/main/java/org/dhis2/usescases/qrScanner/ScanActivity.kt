@@ -10,9 +10,9 @@ import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import com.google.zxing.BarcodeFormat.AZTEC
 import com.google.zxing.BarcodeFormat.CODABAR
+import com.google.zxing.BarcodeFormat.CODE_128
 import com.google.zxing.BarcodeFormat.CODE_39
 import com.google.zxing.BarcodeFormat.CODE_93
-import com.google.zxing.BarcodeFormat.CODE_128
 import com.google.zxing.BarcodeFormat.DATA_MATRIX
 import com.google.zxing.BarcodeFormat.EAN_13
 import com.google.zxing.BarcodeFormat.EAN_8
@@ -26,6 +26,7 @@ import com.google.zxing.BarcodeFormat.UPC_A
 import com.google.zxing.BarcodeFormat.UPC_E
 import com.google.zxing.BarcodeFormat.UPC_EAN_EXTENSION
 import com.google.zxing.Result
+import javax.inject.Inject
 import me.dm7.barcodescanner.zxing.ZXingScannerView
 import org.dhis2.App
 import org.dhis2.R
@@ -33,7 +34,6 @@ import org.dhis2.databinding.ActivityScanBinding
 import org.dhis2.usescases.general.ActivityGlobalAbstract
 import org.dhis2.utils.Constants
 import org.hisp.dhis.android.core.common.ValueTypeRenderingType
-import javax.inject.Inject
 
 class ScanActivity : ActivityGlobalAbstract(), ZXingScannerView.ResultHandler {
     private lateinit var binding: ActivityScanBinding
@@ -58,17 +58,19 @@ class ScanActivity : ActivityGlobalAbstract(), ZXingScannerView.ResultHandler {
             ?.inject(this)
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_scan)
-        renderingType = intent.getSerializableExtra(Constants.SCAN_RENDERING_TYPE) as ValueTypeRenderingType?
+        renderingType =
+            intent.getSerializableExtra(Constants.SCAN_RENDERING_TYPE) as ValueTypeRenderingType?
         mScannerView = binding.scannerView
         mScannerView.apply {
             setAutoFocus(true)
-            when(renderingType) {
+            when (renderingType) {
                 ValueTypeRenderingType.BAR_CODE -> {
                     setFormats(
                         listOf(
                             CODE_39, CODE_128, CODE_93, CODABAR,
                             EAN_13, EAN_8, UPC_A, UPC_E, UPC_EAN_EXTENSION,
-                            ITF, PDF_417, RSS_14, RSS_EXPANDED)
+                            ITF, PDF_417, RSS_14, RSS_EXPANDED
+                        )
                     )
                 }
                 ValueTypeRenderingType.QR_CODE -> {
@@ -82,9 +84,9 @@ class ScanActivity : ActivityGlobalAbstract(), ZXingScannerView.ResultHandler {
     override fun onResume() {
         super.onResume()
         if (ContextCompat.checkSelfPermission(
-                this,
-                Manifest.permission.CAMERA
-            ) == PackageManager.PERMISSION_GRANTED
+            this,
+            Manifest.permission.CAMERA
+        ) == PackageManager.PERMISSION_GRANTED
         ) {
             initScanner()
         } else if (!isPermissionRequested) {
@@ -129,17 +131,16 @@ class ScanActivity : ActivityGlobalAbstract(), ZXingScannerView.ResultHandler {
     }
 
     override fun handleResult(result: Result) {
-
         var url = result.text
 
         if (optionSetUid != null) {
             val option = scanRepository.getOptions()
                 .firstOrNull {
                     it.displayName() == result.text ||
-                            it.name() == result.text ||
-                            it.code() == result.text
+                        it.name() == result.text ||
+                        it.code() == result.text
                 }
-            if (option!=null) {
+            if (option != null) {
                 url = option.displayName()
             } else {
                 finish()

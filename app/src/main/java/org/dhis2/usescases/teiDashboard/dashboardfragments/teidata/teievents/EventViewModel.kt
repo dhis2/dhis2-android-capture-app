@@ -1,4 +1,4 @@
-package org.dhis2.usescases.teiDashboard.dashboardfragments.tei_data.tei_events
+package org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents
 
 import java.util.Date
 import org.hisp.dhis.android.core.event.Event

@@ -20,6 +20,10 @@ import co.infinum.goldfinger.Goldfinger
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import java.io.BufferedReader
+import java.io.InputStreamReader
+import java.io.StringWriter
+import javax.inject.Inject
 import okhttp3.HttpUrl
 import org.dhis2.App
 import org.dhis2.Bindings.app
@@ -47,10 +51,6 @@ import org.dhis2.utils.analytics.FORGOT_CODE
 import org.dhis2.utils.session.PIN_DIALOG_TAG
 import org.dhis2.utils.session.PinDialog
 import timber.log.Timber
-import java.io.BufferedReader
-import java.io.InputStreamReader
-import java.io.StringWriter
-import javax.inject.Inject
 
 class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
 
@@ -136,8 +136,8 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
 
     private fun checkUrl(urlString: String): Boolean {
         return URLUtil.isValidUrl(urlString) &&
-                Patterns.WEB_URL.matcher(urlString).matches() &&
-                HttpUrl.parse(urlString) != null
+            Patterns.WEB_URL.matcher(urlString).matches() &&
+            HttpUrl.parse(urlString) != null
     }
 
     override fun setTestingCredentials() {
@@ -194,8 +194,8 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
         }
     }
 
-    override fun isNetworkAvailable() : Boolean{
-        return NetworkUtils.isOnline(this);
+    override fun isNetworkAvailable(): Boolean {
+        return NetworkUtils.isOnline(this)
     }
 
     override fun setUrl(url: String) {

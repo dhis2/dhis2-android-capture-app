@@ -256,10 +256,6 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
         return adapter.asFlowable()
     }
 
-    override fun goBack() {
-        onBackPressed()
-    }
-
     override fun showMissingMandatoryFieldsMessage(
         emptyMandatoryFields: MutableMap<String, String>
     ) {
@@ -278,16 +274,25 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
             .show(supportFragmentManager, AlertBottomDialog::class.java.simpleName)
     }
 
+    override fun goBack() {
+        hideKeyboard()
+        attemptFinish()
+    }
+
     override fun onBackPressed() {
-        if(!isKeyboardOpened()) {
-            if (mode == EnrollmentMode.CHECK) {
-                presenter.backIsClicked()
-            } else {
-                showDeleteDialog()
-            }
+        if (!isKeyboardOpened()) {
+            attemptFinish()
         } else {
             currentFocus?.apply { clearFocus() }
             hideKeyboard()
+        }
+    }
+
+    private fun attemptFinish() {
+        if (mode == EnrollmentMode.CHECK) {
+            presenter.backIsClicked()
+        } else {
+            showDeleteDialog()
         }
     }
 
@@ -412,17 +417,12 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
 
         val myLayoutManager: LinearLayoutManager =
             binding.fieldRecycler.layoutManager as LinearLayoutManager
-        val myFirstPositionIndex = myLayoutManager.findFirstVisibleItemPosition()
-        val myFirstPositionView = myLayoutManager.findViewByPosition(myFirstPositionIndex)
 
-        var offset = 0
-        myFirstPositionView?.let {
-            offset = it.top
+        adapter.swap(fields) {
+            if (!adapter.isSectionAlreadyOpen) {
+                myLayoutManager.scrollToPositionWithOffset(adapter.openSectionPos, 0)
+            }
         }
-
-        adapter.swap(fields) { }
-
-        myLayoutManager.scrollToPositionWithOffset(myFirstPositionIndex, offset)
     }
 
     /*endregion*/

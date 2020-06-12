@@ -26,13 +26,9 @@ import org.hisp.dhis.android.core.common.ValueType;
 
 import io.reactivex.processors.FlowableProcessor;
 
-
-/**
- * QUADRAM. Created by frodriguez on 18/01/2018..
- */
-
 final class EditTextCellCustomHolder extends FormViewHolder {
 
+    private static final int DEFAULT_CELL_OFFSET = 3;
     private EditText editText;
     private EditTextModel editTextModel;
     private boolean accessDataWrite;
@@ -57,7 +53,7 @@ final class EditTextCellCustomHolder extends FormViewHolder {
         });
 
         editText.setOnFocusChangeListener((v, hasFocus) -> {
-            if (!hasFocus  && editTextModel != null && editTextModel.editable() &&
+            if (!hasFocus && editTextModel != null && editTextModel.editable() &&
                     !editText.getText().toString().equals(editTextModel.value()) && validate()) {
                 processor.onNext(
                         RowAction.create(
@@ -70,6 +66,10 @@ final class EditTextCellCustomHolder extends FormViewHolder {
                                 editTextModel.column()
                         )
                 );
+            }
+
+            if (hasFocus) {
+                tableView.scrollToColumnPosition(getAdapterPosition(),DEFAULT_CELL_OFFSET);
             }
         });
     }
@@ -101,10 +101,10 @@ final class EditTextCellCustomHolder extends FormViewHolder {
 
         customBinding.executePendingBindings();
 
-        if(tableView.getSelectedRow() == SelectionHandler.UNSELECTED_POSITION){
+        if (tableView.getSelectedRow() == SelectionHandler.UNSELECTED_POSITION) {
             closeKeyboard(editText);
             editText.clearFocus();
-        } else if(editTextModel.column() == tableView.getSelectedColumn() && editTextModel.row() == tableView.getSelectedRow())
+        } else if (editTextModel.column() == tableView.getSelectedColumn() && editTextModel.row() == tableView.getSelectedRow())
             setSelected(SelectionState.SELECTED);
     }
 
@@ -271,6 +271,7 @@ final class EditTextCellCustomHolder extends FormViewHolder {
         if (tableView.getColumnHeaderRecyclerView().get(tableView.getColumnHeaderRecyclerView().size() - 1).getAdapter().getItemCount() > tableView.getSelectedColumn() + 1) {
             tableView.setSelectedCell(tableView.getSelectedColumn() + 1, tableView.getSelectedRow());
         } else if (tableView.getRowHeaderRecyclerView().getAdapter().getItemCount() > tableView.getSelectedRow() + 1) {
+            tableView.scrollToStart();
             tableView.setSelectedCell(0, tableView.getSelectedRow() + 1);
         } else {
             setSelected(SelectionState.UNSELECTED);

@@ -228,6 +228,7 @@ public class TableView extends FrameLayout implements ITableView {
 
         // It handles Horizontal scroll listener
         mHorizontalRecyclerViewListener = new HorizontalRecyclerViewListener(this);
+
         // Set scroll listener to be able to scroll all rows synchrony.
         for (int i = 0; i < mHeaderCount; i++) {
             mColumnHeaderRecyclerViews.get(i).addOnItemTouchListener(mHorizontalRecyclerViewListener);
@@ -590,6 +591,16 @@ public class TableView extends FrameLayout implements ITableView {
     }
 
     @Override
+    public void scrollToNextField(){
+        mScrollHandler.scrollToNextField();
+    }
+
+    @Override
+    public void scrollToStart() {
+        mScrollHandler.scrollToColumnPosition(0);
+    }
+
+    @Override
     public void scrollToColumnPosition(int column, int offset) {
         mScrollHandler.scrollToColumnPosition(column, offset);
     }
@@ -671,6 +682,7 @@ public class TableView extends FrameLayout implements ITableView {
     /**
      * Returns the index of the selected row, -1 if no row is selected.
      */
+    @Override
     public int getSelectedRow() {
         return mSelectionHandler.getSelectedRowPosition();
     }

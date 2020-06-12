@@ -55,7 +55,8 @@ public class SyncDataWorker extends Worker {
 
         triggerNotification(
                 getApplicationContext().getString(R.string.app_name),
-                getApplicationContext().getString(R.string.syncing_data));
+                getApplicationContext().getString(R.string.syncing_data),
+                0);
 
         boolean isEventOk = true;
         boolean isTeiOk = true;
@@ -65,9 +66,14 @@ public class SyncDataWorker extends Worker {
 
         try {
             presenter.uploadResources();
-        } catch (Exception e){
+        } catch (Exception e) {
             Timber.e(e);
         }
+
+        triggerNotification(
+                getApplicationContext().getString(R.string.app_name),
+                "Syncing events",
+                25);
 
         try {
             presenter.syncAndDownloadEvents();
@@ -76,12 +82,22 @@ public class SyncDataWorker extends Worker {
             isEventOk = false;
         }
 
+        triggerNotification(
+                getApplicationContext().getString(R.string.app_name),
+                "Syncing tracked entities",
+                50);
+
         try {
             presenter.syncAndDownloadTeis();
         } catch (Exception e) {
             Timber.e(e);
             isTeiOk = false;
         }
+
+        triggerNotification(
+                getApplicationContext().getString(R.string.app_name),
+                "Syncing data sets",
+                75);
 
         try {
             presenter.syncAndDownloadDataValues();
@@ -90,11 +106,22 @@ public class SyncDataWorker extends Worker {
             isDataValue = false;
         }
 
+        triggerNotification(
+                getApplicationContext().getString(R.string.app_name),
+                "Syncing resources",
+                90);
+
         try {
             presenter.downloadResources();
         } catch (Exception e) {
             Timber.e(e);
         }
+
+        triggerNotification(
+                getApplicationContext().getString(R.string.app_name),
+                "Syncing done",
+                100);
+
         presenter.logTimeToFinish(System.currentTimeMillis() - init, DATA_TIME);
 
         String lastDataSyncDate = DateUtils.dateTimeFormat().format(Calendar.getInstance().getTime());
@@ -116,7 +143,7 @@ public class SyncDataWorker extends Worker {
                 .build();
     }
 
-    private void triggerNotification(String title, String content) {
+    private void triggerNotification(String title, String content, int progress) {
         NotificationManager notificationManager = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -128,9 +155,11 @@ public class SyncDataWorker extends Worker {
                 new NotificationCompat.Builder(getApplicationContext(), DATA_CHANNEL)
                         .setSmallIcon(R.drawable.ic_sync)
                         .setContentTitle(title)
-                        .setOngoing(true)
                         .setContentText(content)
+                        .setOngoing(true)
+                        .setOnlyAlertOnce(true)
                         .setAutoCancel(false)
+                        .setProgress(100, progress, false)
                         .setPriority(NotificationCompat.PRIORITY_DEFAULT);
 
         notificationManager.notify(SyncDataWorker.SYNC_DATA_ID, notificationBuilder.build());

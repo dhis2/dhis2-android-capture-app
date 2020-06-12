@@ -1,4 +1,4 @@
-package org.dhis2.usescases.teiDashboard.dashboardfragments.tei_data;
+package org.dhis2.usescases.teiDashboard.dashboardfragments.teidata;
 
 import android.content.Intent;
 import android.view.View;
@@ -23,8 +23,8 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialAc
 import org.dhis2.usescases.qrCodes.QrActivity;
 import org.dhis2.usescases.teiDashboard.DashboardProgramModel;
 import org.dhis2.usescases.teiDashboard.DashboardRepository;
-import org.dhis2.usescases.teiDashboard.dashboardfragments.tei_data.tei_events.EventViewModel;
-import org.dhis2.usescases.teiDashboard.dashboardfragments.tei_data.tei_events.EventViewModelType;
+import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewModel;
+import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewModelType;
 import org.dhis2.utils.EventCreationType;
 import org.dhis2.utils.EventMode;
 import org.dhis2.utils.Result;
