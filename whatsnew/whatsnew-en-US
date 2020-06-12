@@ -1,10 +1,10 @@
 This is a patch version which fixes:
-- ANDROAPP-3093 Events: Show section label for events with just one section
-- ANDROAPP-3038 DataSets: Values not rendering for selected field
-- ANDROAPP-3041 Search: User is sent to home when keyboard is closed
-- ANDROAPP-2812 Tracker: Attributes sorted randomly in section
-- ANDROAPP-3036 Sync settings: Sync parameters not working properly
-- ANDROAPP-3037 DataSets: Inconsistent behaviour with complete/reopen action
-- ANDROAPP-3073 OptionSets: Sorting when using non default rendering type
-- ANDROAPP-3076 ValueTypes: Images are compressed
-- ANDROAPP-3109 Crash - Events: Form crashed in android 4.4
+- ANDROAPP-3093
+- ANDROAPP-3038
+- ANDROAPP-3041
+- ANDROAPP-2812
+- ANDROAPP-3036
+- ANDROAPP-3037
+- ANDROAPP-3073
+- ANDROAPP-3076
+- ANDROAPP-3109
