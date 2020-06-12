@@ -1,10 +1,10 @@
-The main new features include:
-- Increase data set row headers
-- Grouping events by program stage in the TEI Dashboard
-- Filter events in the TEI Dashboard
-- Improved error messages when saving events and enrollments
-- QR and Barcode support for data elements and attributes
-- Extended rendering options
-- New form section navigation for events and enrollment
-- Notes for events
-- New filter based on user assignment
+This is a patch version which fixes:
+- ANDROAPP-3093 Events: Show section label for events with just one section
+- ANDROAPP-3038 DataSets: Values not rendering for selected field
+- ANDROAPP-3041 Search: User is sent to home when keyboard is closed
+- ANDROAPP-2812 Tracker: Attributes sorted randomly in section
+- ANDROAPP-3036 Sync settings: Sync parameters not working properly
+- ANDROAPP-3037 DataSets: Inconsistent behaviour with complete/reopen action
+- ANDROAPP-3073 OptionSets: Sorting when using non default rendering type
+- ANDROAPP-3076 ValueTypes: Images are compressed
+- ANDROAPP-3109 Crash - Events: Form crashed in android 4.4
