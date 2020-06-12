@@ -8,6 +8,7 @@ import org.dhis2.uicomponents.map.layer.types.EventMapLayer
 import org.dhis2.uicomponents.map.layer.types.HeatmapMapLayer
 import org.dhis2.uicomponents.map.layer.types.RelationshipMapLayer
 import org.dhis2.uicomponents.map.layer.types.SatelliteMapLayer
+import org.dhis2.uicomponents.map.layer.types.TeiEventMapLayer
 import org.dhis2.uicomponents.map.layer.types.TeiMapLayer
 import org.dhis2.uicomponents.map.model.MapStyle
 import org.hisp.dhis.android.core.common.FeatureType
@@ -26,6 +27,7 @@ class MapLayerManager {
     companion object {
         const val TEI_ICON_ID = "TEI_ICON_ID"
         const val ENROLLMENT_ICON_ID = "ENROLLMENT_ICON_ID"
+        const val EVENT_ICON_ID = "EVENT_ICON_ID"
     }
 
     fun initMap(mapboxMap: MapboxMap) = apply {
@@ -74,6 +76,11 @@ class MapLayerManager {
                     style,
                     featureType,
                     relationShipColors.first()
+                )
+                LayerType.TEI_EVENT_LAYER -> TeiEventMapLayer(
+                    style,
+                    featureType,
+                    mapStyle?.programDarkColor!!
                 )
             }
         }

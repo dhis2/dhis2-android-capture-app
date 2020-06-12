@@ -14,6 +14,9 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.paging.PagedList;
 
+import com.mapbox.geojson.BoundingBox;
+import com.mapbox.geojson.FeatureCollection;
+
 import org.dhis2.R;
 import org.dhis2.data.prefs.Preference;
 import org.dhis2.data.prefs.PreferenceProvider;
@@ -21,7 +24,12 @@ import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.databinding.WidgetDatepickerBinding;
+import org.dhis2.uicomponents.map.geometry.FeatureExtensionsKt;
+import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.FeatureCollectionExtensionsKt;
+import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapTeiEventsToFeatureCollection;
 import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapTeisToFeatureCollection;
+import org.dhis2.uicomponents.map.mapper.EventToEventUiComponent;
+import org.dhis2.uicomponents.map.model.EventUiComponentModel;
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel;
 import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.Constants;
@@ -58,6 +66,7 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.processors.FlowableProcessor;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.subjects.BehaviorSubject;
+import kotlin.Triple;
 import timber.log.Timber;
 
 import static android.app.Activity.RESULT_OK;
@@ -93,6 +102,8 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
     private boolean showList = true;
     private MapTeisToFeatureCollection mapTeisToFeatureCollection;
+    private MapTeiEventsToFeatureCollection mapTeiEventsToFeatureCollection;
+    private EventToEventUiComponent eventToEventUiComponent;
 
     public SearchTEPresenter(SearchTEContractsModule.View view,
                              D2 d2,
@@ -101,6 +112,8 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                              AnalyticsHelper analyticsHelper,
                              @Nullable String initialProgram,
                              MapTeisToFeatureCollection mapTeisToFeatureCollection,
+                             MapTeiEventsToFeatureCollection mapTeiEventsToFeatureCollection,
+                             EventToEventUiComponent eventToEventUiComponent,
                              PreferenceProvider preferenceProvider) {
         this.view = view;
         this.preferences = preferenceProvider;
@@ -109,6 +122,8 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         this.schedulerProvider = schedulerProvider;
         this.analyticsHelper = analyticsHelper;
         this.mapTeisToFeatureCollection = mapTeisToFeatureCollection;
+        this.mapTeiEventsToFeatureCollection = mapTeiEventsToFeatureCollection;
+        this.eventToEventUiComponent = eventToEventUiComponent;
         compositeDisposable = new CompositeDisposable();
         queryData = new HashMap<>();
         queryProcessor = PublishProcessor.create();
@@ -243,12 +258,32 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                                                         query,
                                                         FilterManager.getInstance().getAssignedFilter(),
                                                         NetworkUtils.isOnline(view.getContext())))
-                                        .map(teis -> new kotlin.Pair<>(teis, mapTeisToFeatureCollection.map(teis)))
+                                        .map(teis -> new kotlin.Pair<>(teis, searchRepository.getEventsForMap(teis)))
+                                        .map(teis -> {
+                                                    List<EventUiComponentModel> eventsUi = eventToEventUiComponent.mapList(teis.component2());
+                                                    return new kotlin.Pair<>(teis.component1(), eventsUi);
+                                                }
+                                            )
+                                        .map(teisAndEvents -> new Triple<>(teisAndEvents.component1(),
+                                                mapTeisToFeatureCollection.map(teisAndEvents.component1()),
+                                                mapTeiEventsToFeatureCollection.map(teisAndEvents.component2()))
+                                        )
+                                .map(triple -> {
+                                    HashMap<String, FeatureCollection> teis = triple.component2().component1();
+                                    HashMap<String, FeatureCollection> events = triple.component3().component1();
+                                    HashMap<String, FeatureCollection> complete = FeatureCollectionExtensionsKt.appendFeatureCollection(teis, events);
+                                    kotlin.Pair<HashMap<String, FeatureCollection>, BoundingBox> pair = new kotlin.Pair<>(complete, triple.component2().component2());
+                                    return new kotlin.Pair<>(triple.component1(), pair);
+                                })
+
                         )
                         .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.ui())
                         .subscribe(
-                                teiAndMap -> view.setMap(teiAndMap.component1(), teiAndMap.component2().component1(), teiAndMap.component2().component2()),
+                                teiAndMap -> view.setMap(
+                                        teiAndMap.component1(),
+                                        teiAndMap.component2().component1(),
+                                        teiAndMap.component2().component2()),
                                 Timber::e,
                                 () -> Timber.d("COMPLETED")
                         ));

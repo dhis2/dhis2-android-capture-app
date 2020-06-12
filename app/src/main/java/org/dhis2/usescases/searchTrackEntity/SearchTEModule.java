@@ -6,10 +6,12 @@ import org.dhis2.data.dagger.PerActivity;
 import org.dhis2.data.prefs.PreferenceProvider;
 import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.uicomponents.map.geometry.bound.BoundsGeometry;
+import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapTeiEventsToFeatureCollection;
 import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapTeisToFeatureCollection;
 import org.dhis2.uicomponents.map.geometry.point.MapPointToFeature;
 import org.dhis2.uicomponents.map.geometry.polygon.MapPolygonPointToFeature;
 import org.dhis2.uicomponents.map.geometry.polygon.MapPolygonToFeature;
+import org.dhis2.uicomponents.map.mapper.EventToEventUiComponent;
 import org.dhis2.utils.analytics.AnalyticsHelper;
 import org.hisp.dhis.android.core.D2;
 
@@ -45,10 +47,11 @@ public class SearchTEModule {
                                                        SchedulerProvider schedulerProvider,
                                                        AnalyticsHelper analyticsHelper,
                                                        MapTeisToFeatureCollection mapTeisToFeatureCollection,
+                                                       MapTeiEventsToFeatureCollection mapTeiEventsToFeatureCollection,
                                                        PreferenceProvider preferenceProvider) {
         return new SearchTEPresenter(view, d2, searchRepository, schedulerProvider,
-                analyticsHelper, initialProgram, mapTeisToFeatureCollection,
-                preferenceProvider);
+                analyticsHelper, initialProgram, mapTeisToFeatureCollection, mapTeiEventsToFeatureCollection,
+                new EventToEventUiComponent(), preferenceProvider);
     }
 
     @Provides
@@ -56,6 +59,13 @@ public class SearchTEModule {
     MapTeisToFeatureCollection provideMapTeisToFeatureCollection(){
         return new MapTeisToFeatureCollection(new BoundsGeometry(),
                 new MapPointToFeature(), new MapPolygonToFeature(), new MapPolygonPointToFeature());
+    }
+
+    @Provides
+    @PerActivity
+    MapTeiEventsToFeatureCollection provideMapTeiEventsToFeatureCollection(){
+        return new MapTeiEventsToFeatureCollection(new BoundsGeometry(),
+                new MapPointToFeature(), new MapPolygonToFeature());
     }
 
     @Provides

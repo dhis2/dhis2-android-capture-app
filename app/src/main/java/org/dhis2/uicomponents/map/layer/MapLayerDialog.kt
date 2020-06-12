@@ -76,6 +76,7 @@ class MapLayerDialog(
             }
             enrollmentValue?.let {
                 teiMapManager.mapLayerManager.handleLayer(TeiMapManager.ENROLLMENT_SOURCE_ID, it)
+                teiMapManager.mapLayerManager.handleLayer(TeiMapManager.EVENT_SOURCE_ID, it)
                 enrollmentValue = null
             }
             heatmapValue?.let {

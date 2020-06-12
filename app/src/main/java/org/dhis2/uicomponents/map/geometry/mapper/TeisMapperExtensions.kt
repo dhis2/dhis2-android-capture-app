@@ -2,7 +2,9 @@ package org.dhis2.uicomponents.map.geometry.mapper
 
 import com.mapbox.geojson.Feature
 import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapRelationshipsToFeatureCollection
+import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapTeiEventsToFeatureCollection
 import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapTeisToFeatureCollection
+import org.dhis2.uicomponents.map.model.EventUiComponentModel
 import org.dhis2.uicomponents.map.model.RelationshipUiComponentModel
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel
 
@@ -88,5 +90,13 @@ fun Feature?.addRelationToInfo(
             relationshipUiComponentModel.to.defaultImage
         )
     }
+    return this
+}
+
+fun Feature?.addTeiEventInfo(eventUiComponentModel: EventUiComponentModel): Feature? {
+    this?.addStringProperty(
+        MapTeiEventsToFeatureCollection.EVENT_UID,
+        eventUiComponentModel.event.uid()
+    )
     return this
 }

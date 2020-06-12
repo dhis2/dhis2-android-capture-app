@@ -20,6 +20,8 @@ import org.dhis2.data.forms.dataentry.ValueStoreImpl;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel;
+import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewModel;
+import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewModelType;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.ValueUtils;
@@ -35,6 +37,7 @@ import org.hisp.dhis.android.core.common.ValueTypeDeviceRendering;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.android.core.enrollment.EnrollmentCreateProjection;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
+import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.event.EventCollectionRepository;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
@@ -42,6 +45,7 @@ import org.hisp.dhis.android.core.organisationunit.OrganisationUnitMode;
 import org.hisp.dhis.android.core.period.DatePeriod;
 import org.hisp.dhis.android.core.period.PeriodType;
 import org.hisp.dhis.android.core.program.Program;
+import org.hisp.dhis.android.core.program.ProgramStage;
 import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttribute;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue;
@@ -510,6 +514,32 @@ public class SearchRepositoryImpl implements SearchRepository {
         }
         return teis;
     }
+
+    @Override
+    public List<EventViewModel> getEventsForMap(List<SearchTeiModel> teis) {
+        List<EventViewModel> eventViewModels = new ArrayList<>();
+        List<String> teiUidList = new ArrayList<>();
+        for (SearchTeiModel tei : teis) {
+            teiUidList.add(tei.getTei().uid());
+        }
+
+        List<Event> events = d2.eventModule().events()
+                .byTrackedEntityInstanceUids(teiUidList)
+                .byDeleted().isFalse()
+                .blockingGet();
+
+        for (Event event : events) {
+            ProgramStage stage = d2.programModule().programStages()
+                    .uid(event.programStage())
+                    .blockingGet();
+
+            eventViewModels.add(new EventViewModel(EventViewModelType.EVENT, stage, event, 0, null, true, true));
+        }
+
+        return eventViewModels;
+    }
+
+    // Private Region Start//
 
     private List<TrackedEntityInstance> filterDeleted(List<TrackedEntityInstance> teis) {
         Iterator<TrackedEntityInstance> iterator = teis.iterator();

@@ -6,5 +6,6 @@ enum class LayerType {
     HEATMAP_LAYER,
     SATELLITE_LAYER,
     RELATIONSHIP_LAYER,
-    EVENT_LAYER
+    EVENT_LAYER,
+    TEI_EVENT_LAYER
 }
