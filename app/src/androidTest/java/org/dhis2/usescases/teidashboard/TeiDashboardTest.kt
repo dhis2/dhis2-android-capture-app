@@ -381,8 +381,8 @@ class TeiDashboardTest : BaseTest() {
 
     @Test
     fun shouldDeleteTeiSuccessfully() {
-        val teiName = "Tim" //"Anna Jones"
-        val teiLastName = "Johnson"
+        val teiName = "Anthony"
+        val teiLastName = "Banks"
 
         setupCredentials()
         prepareChildProgrammeIntentAndLaunchActivity(ruleSearch)
