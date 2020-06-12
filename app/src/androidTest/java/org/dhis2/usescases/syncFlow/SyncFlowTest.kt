@@ -7,6 +7,7 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventSummary.EventSummaryAc
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity
 import org.dhis2.usescases.teidashboard.TeiDashboardTest
 import org.dhis2.usescases.teidashboard.robot.teiDashboardRobot
+import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -20,6 +21,7 @@ class SyncFlowTest : BaseTest() {
     val ruleDataSet = ActivityTestRule(EventSummaryActivity::class.java, false, false)
 
     @Test
+    @Ignore
     fun shouldSuccessfullySyncAChangedEvent() {
         /*
         * launch tei
