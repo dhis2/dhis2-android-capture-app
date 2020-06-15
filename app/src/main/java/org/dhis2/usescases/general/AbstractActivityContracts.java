@@ -3,13 +3,15 @@ package org.dhis2.usescases.general;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.ActivityOptionsCompat;
-import android.support.v7.app.AlertDialog;
-import android.view.View;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.core.app.ActivityOptionsCompat;
+
+import org.dhis2.utils.granularsync.SyncStatusDialog;
 import org.dhis2.utils.OnDialogClickListener;
+import org.dhis2.utils.analytics.AnalyticsHelper;
 
 import java.util.List;
 
@@ -31,23 +33,31 @@ public class AbstractActivityContracts {
         void back();
 
         void displayMessage(String message);
+
         void showInfoDialog(String title, String message);
+
         AlertDialog showInfoDialog(String title, String message, OnDialogClickListener dialogListener);
+
         void setTutorial();
 
         void showTutorial(boolean shaked);
-
-        <T> void saveListToPreference(String key, List<T> list);
-
-        <T> List<T> getListFromPreference(String key);
 
         void hideKeyboard();
 
         void showToast(String message);
 
+        AlertDialog showInfoDialog(String title, String message, String possitiveButtonText, String negativeButtonText, OnDialogClickListener clickListener);
+
         void showDescription(String description);
 
+        @Deprecated
         SharedPreferences getSharedPreferences();
+
+        @Deprecated
+        void showSyncDialog(SyncStatusDialog dialog);
+
+        @Deprecated
+        AnalyticsHelper analyticsHelper();
     }
 
     public interface Presenter {

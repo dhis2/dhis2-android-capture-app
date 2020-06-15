@@ -1,6 +1,6 @@
 package org.dhis2.usescases.qrCodes.eventsworegistration;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import org.dhis2.usescases.qrCodes.QrViewModel;
 

@@ -5,6 +5,8 @@
 
     <data>
 
+        <import type="android.view.View" />
+
         <variable
             name="title"
             type="String" />
@@ -15,11 +17,15 @@
 
         <variable
             name="trackEntity"
-            type="org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel" />
+            type="org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance" />
 
         <variable
             name="dashboardModel"
             type="org.dhis2.usescases.teiDashboard.DashboardProgramModel" />
+
+        <variable
+            name="totalFilters"
+            type="Integer" />
     </data>
 
     <LinearLayout
@@ -27,21 +33,23 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <android.support.constraint.ConstraintLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
+            android:elevation="8dp"
+            app:elevation="8dp"
             android:background="?colorPrimary"
-            android:clipToPadding="false"
-            android:elevation="8dp">
+            android:clipToPadding="false">
 
             <ImageView
                 android:id="@+id/back"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
+                style="@style/ActionIcon"
                 android:onClick='@{()->presenter.onBackPressed()}'
-                android:padding="10dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/ic_arrow_back"
+                app:layout_constraintStart_toStartOf="parent"
                 tools:ignore="ContentDescription" />
 
             <TextView
@@ -52,38 +60,61 @@
                 android:text='@{title}'
                 android:textColor="?colorAccent"
                 android:textSize="20sp"
-                app:layout_constraintEnd_toStartOf="@id/program_selector_button"
+                app:layout_constraintEnd_toStartOf="@id/search_filter_general"
                 app:layout_constraintStart_toEndOf="@id/back"
                 tools:text="TEI NAME" />
 
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/filterCounter"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginStart="24dp"
+                android:layout_marginTop="24dp"
+                android:padding="2dp"
+                app:layout_constraintStart_toStartOf="@id/search_filter_general"
+                app:layout_constraintTop_toTopOf="@id/search_filter_general">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/ic_oval_shape_white"
+                    android:gravity="center"
+                    android:includeFontPadding="false"
+                    android:text='@{""+totalFilters}'
+                    android:textColor="?colorPrimary"
+                    android:textSize="10sp"
+                    android:visibility="@{totalFilters>0?View.VISIBLE:View.GONE}"
+                    tools:text="1" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
             <ImageView
-                android:id="@+id/program_selector_button"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:onClick="@{()->presenter.onEnrollmentSelectorClick()}"
-                android:padding="10dp"
+                android:id="@+id/search_filter_general"
+                style="@style/ActionIcon"
+                android:onClick="@{ () -> presenter.generalFiltersClick() }"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@id/moreOptions"
-                app:srcCompat="@drawable/ic_program_border"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/ic_filter"
                 tools:ignore="ContentDescription" />
 
             <ImageView
                 android:id="@+id/moreOptions"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
+                style="@style/ActionIcon"
                 android:onClick="showMoreOptions"
-                android:padding="10dp"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/ic_more"
                 tools:ignore="ContentDescription" />
 
-            <android.support.constraint.Guideline
+            <androidx.constraintlayout.widget.Guideline
                 android:id="@+id/guideline"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 app:layout_constraintGuide_end="10dp" />
 
-            <android.support.v4.widget.ContentLoadingProgressBar
+            <androidx.core.widget.ContentLoadingProgressBar
                 android:id="@+id/toolbarProgress"
                 style="?android:attr/progressBarStyleHorizontal"
                 android:layout_width="match_parent"
@@ -94,18 +125,21 @@
                 app:layout_constraintTop_toBottomOf="@id/guideline"
                 tools:visibility="visible" />
 
-        </android.support.constraint.ConstraintLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <android.support.design.widget.TabLayout
+        <com.google.android.material.tabs.TabLayout
             android:id="@+id/tab_layout"
             style="@style/DhisTabLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:clipToPadding="false"
+            android:elevation="8dp"
             app:elevation="8dp"
+            app:tabPaddingEnd="16dp"
+            app:tabPaddingStart="16dp"
             app:tabTextAppearance="@style/DhisTabText" />
 
-        <android.support.v4.view.ViewPager
+        <androidx.viewpager2.widget.ViewPager2
             android:id="@+id/tei_pager"
             android:layout_width="match_parent"
             android:layout_height="match_parent"

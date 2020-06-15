@@ -7,77 +7,109 @@
 
     </data>
 
-    <android.support.v4.widget.NestedScrollView
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <android.support.constraint.ConstraintLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/no_permission_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/bg_white_f9f">
+            android:layout_margin="16dp"
+            android:layout_marginTop="24dp"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:visibility="visible">
 
-            <EditText
-                android:id="@+id/edit_note"
-                android:layout_width="match_parent"
-                android:layout_height="100dp"
-                android:layout_marginEnd="9dp"
-                android:layout_marginStart="9dp"
-                android:layout_marginTop="30dp"
-                android:background="@drawable/gray_border_box"
-                android:fadeScrollbars="true"
-                android:gravity="start"
-                android:hint="@string/write_new_note"
-                android:inputType="textMultiLine"
-                android:maxHeight="200dp"
-                android:overScrollMode="always"
-                android:padding="16dp"
-                android:scrollbars="vertical"
-                android:textColor="@color/gray_444"
-                android:textColorHighlight="?colorPrimary"
-                android:textColorHint="@color/gray_d7d"
-                android:textCursorDrawable="@null"
+            <TextView
+                android:id="@+id/no_permission"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/no_add_notes"
+                android:textAlignment="center"
+                android:textColor="@color/text_black_808"
+                android:textSize="14sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                tools:text="@tools:sample/lorem/random" />
+                app:layout_constraintTop_toTopOf="parent" />
 
-            <Button
-                android:id="@+id/button_delete"
-                style="@style/ButtonRoundedGrey"
+            <TextView
+                android:id="@+id/reason"
                 android:layout_width="wrap_content"
-                android:layout_height="36dp"
-                android:layout_marginEnd="9dp"
-                android:layout_marginTop="16dp"
-                android:text="@string/clear"
-                app:backgroundTint="@color/red_060"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/edit_note" />
-
-            <Button
-                android:id="@+id/button_add"
-                style="@style/ButtonRoundedGrey"
-                android:layout_width="wrap_content"
-                android:layout_height="36dp"
-                android:layout_marginEnd="16dp"
-                android:layout_marginTop="16dp"
-                android:text="@string/add_note"
-                android:textStyle="bold"
-                app:layout_constraintEnd_toStartOf="@id/button_delete"
-                app:layout_constraintTop_toBottomOf="@id/edit_note" />
-
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/notes_recycler"
-                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="30dp"
-                android:background="@android:color/white"
-                app:layoutManager="android.support.v7.widget.LinearLayoutManager"
+                android:text="@string/permission_denied"
+                android:textAlignment="center"
+                android:textColor="@color/text_black_808"
+                android:textSize="12sp"
+                app:layout_constraintEnd_toEndOf="@+id/no_permission"
+                app:layout_constraintStart_toStartOf="@+id/no_permission"
+                app:layout_constraintTop_toBottomOf="@+id/no_permission" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            android:id="@+id/swiperefresh"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/no_permission_layout">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/notes_recycler"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:paddingBottom="50dp"
+                android:clipToPadding="false"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                tools:listitem="@layout/item_note" />
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/no_notes_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone">
+
+            <ImageView
+                android:id="@+id/image_no_notes"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:rotation="20"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/button_add"
-                tools:listitem="@layout/item_notes" />
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/ic_no_notes" />
 
-        </android.support.constraint.ConstraintLayout>
-    </android.support.v4.widget.NestedScrollView>
+            <TextView
+                android:id="@+id/no_notes"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:text="@string/no_notes"
+                android:textColor="@color/text_black_808"
+                android:textSize="17sp"
+                app:layout_constraintEnd_toEndOf="@+id/image_no_notes"
+                app:layout_constraintStart_toStartOf="@+id/image_no_notes"
+                app:layout_constraintTop_toBottomOf="@+id/image_no_notes" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/addNoteButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="15dp"
+            android:tint="@color/white"
+            app:backgroundTint="?attr/colorPrimary"
+            app:elevation="7dp"
+            app:fabSize="normal"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:srcCompat="@drawable/ic_add_accent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

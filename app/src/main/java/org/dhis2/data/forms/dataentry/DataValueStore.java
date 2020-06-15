@@ -1,125 +1,154 @@
 package org.dhis2.data.forms.dataentry;
 
-import android.content.ContentValues;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
-import org.dhis2.data.user.UserRepository;
-import com.squareup.sqlbrite2.BriteDatabase;
+import org.hisp.dhis.android.core.D2;
+import org.hisp.dhis.android.core.enrollment.EnrollmentObjectRepository;
+import org.hisp.dhis.android.core.event.EventObjectRepository;
+import org.hisp.dhis.android.core.maintenance.D2Error;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueObjectRepository;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueObjectRepository;
 
-import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
-import org.hisp.dhis.android.core.common.State;
-import org.hisp.dhis.android.core.event.EventModel;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueModel;
-import org.hisp.dhis.android.core.user.UserCredentialsModel;
+import java.util.Objects;
 
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Locale;
+import javax.annotation.Nonnull;
 
-import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
+import timber.log.Timber;
 
-final class DataValueStore implements DataEntryStore {
-    private static final String SELECT_EVENT = "SELECT * FROM " + EventModel.TABLE +
-            " WHERE " + EventModel.Columns.UID + " = ? AND " + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "' LIMIT 1";
+import static android.text.TextUtils.isEmpty;
+import static org.dhis2.data.forms.dataentry.DataEntryStore.valueType.ATTR;
+import static org.dhis2.data.forms.dataentry.DataEntryStore.valueType.DATA_ELEMENT;
 
-    @NonNull
-    private final BriteDatabase briteDatabase;
-    @NonNull
-    private final Flowable<UserCredentialsModel> userCredentials;
+public final class DataValueStore implements DataEntryStore {
 
     @NonNull
     private final String eventUid;
+    private final D2 d2;
+    private final EventObjectRepository eventRepository;
+    private final EnrollmentObjectRepository enrollmentRepository;
 
-    DataValueStore(@NonNull BriteDatabase briteDatabase,
-                   @NonNull UserRepository userRepository,
-                   @NonNull String eventUid) {
-        this.briteDatabase = briteDatabase;
+    public DataValueStore(@NonNull D2 d2,
+                          @NonNull String eventUid) {
+        this.d2 = d2;
         this.eventUid = eventUid;
+        this.eventRepository = d2.eventModule().events().uid(eventUid);
+        if (eventRepository.blockingGet().enrollment() != null)
+            this.enrollmentRepository = d2.enrollmentModule().enrollments().uid(eventRepository.blockingGet().enrollment());
+        else
+            this.enrollmentRepository = null;
 
-        // we want to re-use results of the user credentials query
-        this.userCredentials = userRepository.credentials()
-                .cacheWithInitialCapacity(1);
     }
 
     @NonNull
     @Override
     public Flowable<Long> save(@NonNull String uid, @Nullable String value) {
-        return userCredentials
-                .switchMap((userCredentials) -> {
-                    if (value == null)
-                        return Flowable.just(delete(uid));
-
-                    long updated = update(uid, value);
-                    if (updated > 0) {
-                        return Flowable.just(updated);
+        return Flowable.fromCallable(() -> getValueType(uid))
+                .filter(valueType -> currentValue(uid, valueType, value))
+                .switchMap(valueType -> {
+                    if (isEmpty(value))
+                        return Flowable.just(delete(uid, valueType));
+                    else {
+                        long updated = update(uid, value, valueType);
+                        if (updated > 0)
+                            return Flowable.just(updated);
+                        else
+                            return Flowable.just(insert(uid, value, valueType));
                     }
-
-                    return Flowable.just(insert(uid, value, userCredentials.username()));
-                })
-                .switchMap(this::updateEvent);
+                });
     }
 
-    private long update(@NonNull String uid, @Nullable String value) {
-        ContentValues dataValue = new ContentValues();
+    private long update(@NonNull String uid, @Nullable String value, valueType valueType) {
+        if (valueType == ATTR) {
+            try {
+                d2.trackedEntityModule().trackedEntityAttributeValues().value(uid,
+                        enrollmentRepository.blockingGet().trackedEntityInstance()).blockingSet(value);
+                return 1;
+            } catch (D2Error d2Error) {
+                Timber.e(d2Error);
+                return -1;
+            }
 
-        // renderSearchResults time stamp
-        dataValue.put(TrackedEntityDataValueModel.Columns.LAST_UPDATED,
-                BaseIdentifiableObject.DATE_FORMAT.format(Calendar.getInstance().getTime()));
-        if (value == null) {
-            dataValue.putNull(TrackedEntityDataValueModel.Columns.VALUE);
         } else {
-            dataValue.put(TrackedEntityDataValueModel.Columns.VALUE, value);
+            try {
+                d2.trackedEntityModule().trackedEntityDataValues().value(eventUid, uid).blockingSet(value);
+                return 1;
+            } catch (D2Error d2Error) {
+                Timber.e(d2Error);
+                return -1;
+            }
+        }
+    }
+
+    private valueType getValueType(@Nonnull String uid) {
+        return d2.trackedEntityModule().trackedEntityAttributes().uid(uid).blockingExists() ? ATTR : DATA_ELEMENT;
+    }
+
+    private boolean currentValue(@NonNull String uid, valueType valueType, String currentValue) {
+        String value;
+        if (currentValue != null && (currentValue.equals("0.0") || currentValue.isEmpty()))
+            currentValue = null;
+
+        if (valueType == ATTR) {
+            TrackedEntityAttributeValueObjectRepository attrValueRepository =
+                    d2.trackedEntityModule().trackedEntityAttributeValues().value(uid,
+                            enrollmentRepository.blockingGet().trackedEntityInstance());
+            value = attrValueRepository.blockingExists() ? attrValueRepository.blockingGet().value() : null;
+
+        } else {
+            TrackedEntityDataValueObjectRepository dataValueRepository =
+                    d2.trackedEntityModule().trackedEntityDataValues().value(eventUid, uid);
+            value = dataValueRepository.blockingExists() ? dataValueRepository.blockingGet().value() : null;
         }
 
-        // ToDo: write test cases for different events
-        return (long) briteDatabase.update(TrackedEntityDataValueModel.TABLE, dataValue,
-                TrackedEntityDataValueModel.Columns.DATA_ELEMENT + " = ? AND " +
-                        TrackedEntityDataValueModel.Columns.EVENT + " = ?", uid == null ? "" : uid, eventUid == null ? "" : eventUid);
+        return !Objects.equals(value, currentValue);
     }
 
-    private long insert(@NonNull String uid, @Nullable String value, @NonNull String storedBy) {
-        Date created = Calendar.getInstance().getTime();
-        TrackedEntityDataValueModel dataValueModel =
-                TrackedEntityDataValueModel.builder()
-                        .created(created)
-                        .lastUpdated(created)
-                        .dataElement(uid)
-                        .event(eventUid)
-                        .value(value)
-                        .storedBy(storedBy)
-                        .build();
-        return briteDatabase.insert(TrackedEntityDataValueModel.TABLE,
-                dataValueModel.toContentValues());
+    private long insert(@NonNull String uid, @Nullable String value, valueType valueType) {
+        if (valueType == ATTR) {
+            String teiUid = enrollmentRepository.blockingGet().trackedEntityInstance();
+            try {
+                d2.trackedEntityModule().trackedEntityAttributeValues().value(uid, teiUid)
+                        .blockingSet(value);
+                return 1;
+            } catch (D2Error d2Error) {
+                Timber.e(d2Error);
+                return -1;
+            }
+        } else {
+            try {
+                d2.trackedEntityModule().trackedEntityDataValues().value(eventUid, uid)
+                        .blockingSet(value);
+                return 1;
+            } catch (D2Error d2Error) {
+                Timber.e(d2Error);
+                return -1;
+            }
+        }
     }
 
-    private long delete(@NonNull String uid) {
-        return (long) briteDatabase.delete(TrackedEntityDataValueModel.TABLE,
-                TrackedEntityDataValueModel.Columns.DATA_ELEMENT + " = ? AND " +
-                        TrackedEntityDataValueModel.Columns.EVENT + " = ?",
-                uid == null ? "" : uid, eventUid == null ? "" : eventUid);
-    }
-
-    private Flowable<Long> updateEvent(long status) {
-        return briteDatabase.createQuery(EventModel.TABLE, SELECT_EVENT, eventUid == null ? "" : eventUid)
-                .mapToOne(EventModel::create).take(1).toFlowable(BackpressureStrategy.LATEST)
-                .switchMap(eventModel -> {
-                    if (State.SYNCED.equals(eventModel.state()) || State.TO_DELETE.equals(eventModel.state()) ||
-                            State.ERROR.equals(eventModel.state())) {
-
-                        ContentValues values = eventModel.toContentValues();
-                        values.put(EventModel.Columns.STATE, State.TO_UPDATE.toString());
-
-                        if (briteDatabase.update(EventModel.TABLE, values,
-                                EventModel.Columns.UID + " = ?", eventUid == null ? "" : eventUid) <= 0) {
-
-                            throw new IllegalStateException(String.format(Locale.US, "Event=[%s] " +
-                                    "has not been successfully updated", eventUid));
-                        }
-                    }
-
-                    return Flowable.just(status);
-                });
+    private long delete(@NonNull String uid, valueType valueType) {
+        if (valueType == ATTR) {
+            try {
+                d2.trackedEntityModule().trackedEntityAttributeValues().value(uid,
+                        enrollmentRepository.blockingGet().trackedEntityInstance()).blockingSet(null);
+                d2.trackedEntityModule().trackedEntityAttributeValues().value(uid,
+                        enrollmentRepository.blockingGet().trackedEntityInstance()).blockingDelete();
+                return 1;
+            } catch (D2Error d2Error) {
+                d2Error.printStackTrace();
+                return -1;
+            }
+        } else {
+            try {
+                d2.trackedEntityModule().trackedEntityDataValues().value(eventUid, uid).blockingSet(null);
+                d2.trackedEntityModule().trackedEntityDataValues().value(eventUid, uid).blockingDelete();
+                return 1;
+            } catch (D2Error d2Error) {
+                d2Error.printStackTrace();
+                return -1;
+            }
+        }
     }
 }

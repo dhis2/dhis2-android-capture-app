@@ -1,23 +1,21 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventInitial;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
+import org.dhis2.Bindings.ValueTypeExtensionsKt;
 import org.dhis2.data.dagger.PerActivity;
 import org.dhis2.data.forms.EventRepository;
 import org.dhis2.data.forms.FormRepository;
 import org.dhis2.data.forms.RulesRepository;
-import org.dhis2.data.metadata.MetadataRepository;
+import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory;
+import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactoryImpl;
 import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.usescases.eventsWithoutRegistration.eventSummary.EventSummaryRepository;
 import org.dhis2.usescases.eventsWithoutRegistration.eventSummary.EventSummaryRepositoryImpl;
-import org.dhis2.usescases.programDetail.ProgramRepository;
-import org.dhis2.usescases.programDetail.ProgramRepositoryImpl;
-import org.dhis2.utils.CodeGenerator;
-import com.squareup.sqlbrite2.BriteDatabase;
-
-import org.hisp.dhis.android.core.data.database.DatabaseAdapter;
+import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.rules.RuleExpressionEvaluator;
 
 import dagger.Module;
@@ -47,41 +45,36 @@ public class EventInitialModule {
     @PerActivity
     EventInitialContract.Presenter providesPresenter(@NonNull EventSummaryRepository eventSummaryRepository,
                                                      @NonNull EventInitialRepository eventInitialRepository,
-                                                     @NonNull MetadataRepository metadataRepository,
                                                      @NonNull SchedulerProvider schedulerProvider) {
-        return new EventInitialPresenter(eventSummaryRepository, eventInitialRepository, metadataRepository, schedulerProvider);
+        return new EventInitialPresenter(eventSummaryRepository, eventInitialRepository, schedulerProvider);
     }
 
 
     @Provides
     @PerActivity
     EventSummaryRepository eventSummaryRepository(@NonNull Context context,
-                                                  @NonNull BriteDatabase briteDatabase,
-                                                  @NonNull FormRepository formRepository) {
-        return new EventSummaryRepositoryImpl(context, briteDatabase, formRepository, eventUid);
+                                                  @NonNull FormRepository formRepository, D2 d2) {
+        FieldViewModelFactory fieldViewModelFactory = new FieldViewModelFactoryImpl(
+                ValueTypeExtensionsKt.valueTypeHintMap(context)
+        );
+        return new EventSummaryRepositoryImpl(fieldViewModelFactory, formRepository, eventUid, d2);
     }
 
     @Provides
-    FormRepository formRepository(@NonNull BriteDatabase briteDatabase,
-                                  @NonNull RuleExpressionEvaluator evaluator,
-                                  @NonNull RulesRepository rulesRepository) {
-        return new EventRepository(briteDatabase, evaluator, rulesRepository, eventUid);
+    FormRepository formRepository(@NonNull RuleExpressionEvaluator evaluator,
+                                  @NonNull RulesRepository rulesRepository,
+                                  @NonNull D2 d2) {
+        return new EventRepository(evaluator, rulesRepository, eventUid, d2);
     }
 
     @Provides
-    RulesRepository rulesRepository(@NonNull BriteDatabase briteDatabase) {
-        return new RulesRepository(briteDatabase);
-    }
-
-    @Provides
-    @PerActivity
-    EventInitialRepository eventDetailRepository(@NonNull CodeGenerator codeGenerator, BriteDatabase briteDatabase, DatabaseAdapter databaseAdapter) {
-        return new EventInitialRepositoryImpl(codeGenerator, briteDatabase, databaseAdapter);
+    RulesRepository rulesRepository(@NonNull D2 d2) {
+        return new RulesRepository(d2);
     }
 
     @Provides
     @PerActivity
-    ProgramRepository homeRepository(BriteDatabase briteDatabase) {
-        return new ProgramRepositoryImpl(briteDatabase);
+    EventInitialRepository eventDetailRepository(D2 d2) {
+        return new EventInitialRepositoryImpl(eventUid, d2);
     }
 }

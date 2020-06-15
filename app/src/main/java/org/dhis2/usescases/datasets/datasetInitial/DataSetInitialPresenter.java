@@ -1,37 +1,62 @@
 package org.dhis2.usescases.datasets.datasetInitial;
 
-import android.os.Bundle;
-
-import org.dhis2.usescases.datasets.dataSetTable.DataSetTableActivity;
-import org.dhis2.utils.DateUtils;
+import org.dhis2.data.schedulers.SchedulerProvider;
+import org.dhis2.data.tuples.Pair;
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.period.PeriodType;
 
-import io.reactivex.android.schedulers.AndroidSchedulers;
+import java.util.ArrayList;
+import java.util.List;
+
+import io.reactivex.Flowable;
 import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
 public class DataSetInitialPresenter implements DataSetInitialContract.Presenter {
 
-    private CompositeDisposable compositeDisposable;
+    private final SchedulerProvider schedulerProvider;
+    public CompositeDisposable compositeDisposable;
     private DataSetInitialRepository dataSetInitialRepository;
     private DataSetInitialContract.View view;
+    private String catCombo;
+    private Integer openFuturePeriods = 0;
+    private List<OrganisationUnit> orgUnits = new ArrayList<>();
 
-    public DataSetInitialPresenter(DataSetInitialRepository dataSetInitialRepository) {
+    public DataSetInitialPresenter(DataSetInitialContract.View view, DataSetInitialRepository dataSetInitialRepository, SchedulerProvider schedulerProvider) {
+        this.view = view;
         this.dataSetInitialRepository = dataSetInitialRepository;
+        this.schedulerProvider = schedulerProvider;
+        compositeDisposable = new CompositeDisposable();
     }
 
 
     @Override
-    public void init(DataSetInitialContract.View view) {
-        this.view = view;
-        compositeDisposable = new CompositeDisposable();
+    public void init() {
+
+        compositeDisposable.add(
+                dataSetInitialRepository.orgUnits()
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
+                        .subscribe(
+                                data -> {
+                                    this.orgUnits = data;
+                                    if(data.size() == 1)
+                                        view.setOrgUnit(data.get(0));
+                                },
+                                Timber::d
+                        )
+        );
+
         compositeDisposable.add(
                 dataSetInitialRepository.dataSet()
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
                         .subscribe(
-                                view::setData,
+                                dataSetInitialModel -> {
+                                    catCombo = dataSetInitialModel.categoryCombo();
+                                    openFuturePeriods = dataSetInitialModel.openFuturePeriods();
+                                    view.setData(dataSetInitialModel);
+                                },
                                 Timber::d
                         ));
     }
@@ -43,28 +68,29 @@ public class DataSetInitialPresenter implements DataSetInitialContract.Presenter
 
     @Override
     public void onOrgUnitSelectorClick() {
-        compositeDisposable.add(
-                dataSetInitialRepository.orgUnits()
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(
-                                data -> view.showOrgUnitDialog(data),
-                                Timber::d
-                        )
-        );
+        view.showOrgUnitDialog(orgUnits);
+
     }
 
     @Override
     public void onReportPeriodClick(PeriodType periodType) {
-        view.showPeriodSelector(periodType);
+        compositeDisposable.add(
+                dataSetInitialRepository.getDataInputPeriod()
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
+                        .subscribe(data -> {
+                                    view.showPeriodSelector(periodType, data, openFuturePeriods);
+                                },
+                                Timber::e)
+        );
     }
 
     @Override
     public void onCatOptionClick(String catOptionUid) {
         compositeDisposable.add(
                 dataSetInitialRepository.catCombo(catOptionUid)
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
                         .subscribe(
                                 data -> view.showCatComboSelector(catOptionUid, data),
                                 Timber::d
@@ -73,15 +99,20 @@ public class DataSetInitialPresenter implements DataSetInitialContract.Presenter
     }
 
     @Override
-    public void onActionButtonClick() {
-        Bundle bundle = DataSetTableActivity.getBundle(
-                view.getDataSetUid(),
-                view.getSelectedOrgUnit(),
-                view.getPeriodType(),
-                DateUtils.databaseDateFormat().format(view.getSelectedPeriod()),
-                view.getSelectedCatOptions()
+    public void onActionButtonClick(PeriodType periodType) {
+        compositeDisposable.add(
+                Flowable.zip(
+                        dataSetInitialRepository.getCategoryOptionCombo(view.getSelectedCatOptions(), catCombo),
+                        dataSetInitialRepository.getPeriodId(periodType, view.getSelectedPeriod()),
+                        Pair::create
+                )
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
+                        .subscribe(response -> view.navigateToDataSetTable(response.val0(), response.val1()),
+                                Timber::e
+                        )
         );
-        view.startActivity(DataSetTableActivity.class, bundle, true, false, null);
+
     }
 
 

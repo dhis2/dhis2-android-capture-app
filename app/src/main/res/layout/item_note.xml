@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+    </data>
+
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardCornerRadius="4dp"
+        android:minHeight="72dp"
+        app:cardElevation="0dp"
+        app:cardBackgroundColor="@color/white"
+        app:cardUseCompatPadding="false">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_marginBottom="16dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/userImage"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginTop="16dp"
+                android:tint="?colorPrimary"
+                android:transitionName="userImage"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/photo_temp_gray" />
+
+            <TextView
+                android:id="@+id/userInit"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginTop="16dp"
+                android:gravity="center"
+                android:textAllCaps="true"
+                android:textColor="@color/white"
+                android:textSize="20sp"
+                android:transitionName="userInit"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="MF" />
+
+            <TextView
+                android:id="@+id/storeBy"
+                android:layout_width="0dp"
+                android:layout_height="31dp"
+                android:layout_marginStart="16dp"
+                android:gravity="start|bottom"
+                android:layout_marginEnd="16dp"
+                android:includeFontPadding="false"
+                android:textColor="@color/text_black_DE3"
+                android:textSize="16sp"
+                android:transitionName="storeBy"
+                app:layout_constraintEnd_toStartOf="@id/date"
+                app:layout_constraintStart_toEndOf="@id/userImage"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="Marcos Fernando Costa" />
+
+
+            <TextView
+                android:id="@+id/note_text"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:ellipsize="end"
+                android:includeFontPadding="false"
+                android:maxLines="3"
+                android:textColor="@color/text_black_8A3"
+                android:textSize="14sp"
+                android:transitionName="note_text"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/storeBy"
+                app:layout_constraintTop_toBottomOf="@id/storeBy"
+                tools:text="@string/lorem" />
+
+            <TextView
+                android:id="@+id/date"
+                android:layout_width="wrap_content"
+                android:layout_height="31dp"
+                android:gravity="end|bottom"
+                android:includeFontPadding="false"
+                android:textColor="@color/text_black_C4C"
+                android:textSize="12sp"
+                app:layout_constraintTop_toTopOf="parent"
+                android:transitionName="date"
+                app:layout_constraintEnd_toEndOf="parent"
+                tools:text="2019/06/10" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </com.google.android.material.card.MaterialCardView>
+</layout>

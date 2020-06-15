@@ -1,9 +1,13 @@
 apply plugin: 'com.android.application'
+apply plugin: 'com.google.firebase.firebase-perf'
 apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-kapt'
+apply plugin: 'kotlin-android-extensions'
 apply plugin: 'io.fabric'
-//apply from: rootProject.file("plugins/android-paperwork.gradle")
+apply plugin: 'hu.supercluster.paperwork'
 
 def libraries = rootProject.ext.libraries
+def versions = rootProject.ext.versions
 
 repositories {
     // required by crashlytics
@@ -18,28 +22,55 @@ repositories {
     mavenCentral()
 }
 
+paperwork {
+    set = [
+            buildTime: buildTime("yyyy-MM-dd HH:mm"),
+            gitSha   : gitSha()
+    ]
+}
+
 android {
+
+    testOptions {
+        unitTests {
+            includeAndroidResources = true
+            returnDefaultValues = true
+        }
+    }
 
     lintOptions {
         checkReleaseBuilds false
         abortOnError false
     }
 
-    compileSdkVersion 28
-    buildToolsVersion '27.0.3'
+    compileSdkVersion versions.sdk
+    buildToolsVersion versions.tools
     defaultConfig {
         applicationId "com.dhis2"
-        minSdkVersion 19
-        targetSdkVersion 28
-        versionCode 34
-        versionName "1.0.3"
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        minSdkVersion versions.minSdk
+        targetSdkVersion versions.sdk
+        versionCode versions.vCode
+        versionName versions.vName
+//        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "org.dhis2.usescases.MockRunner"
         vectorDrawables.useSupportLibrary = true
         multiDexEnabled true
 
-        setProperty("archivesBaseName","dhis2-v"+versionName)
+        setProperty("archivesBaseName", "dhis2-v" + versions.vName)
 
         buildConfigField "String", "SDK_VERSION", "\"" + libraries.dhis2sdk + "\""
+        buildConfigField "String", "MAPBOX_ACCESS_TOKEN", "\"pk.eyJ1Ijoib3Jpa2dnIiwiYSI6ImNqdWpqb24zYTFsOXo0M2xwcXRseGx3aXkifQ.6N9aqvpqdrrSBwO9GyfjUw\""
+
+
+        javaCompileOptions {
+            annotationProcessorOptions {
+                includeCompileClasspath true
+            }
+        }
+    }
+
+    testOptions {
+        unitTests.returnDefaultValues = true
     }
 
     configurations.all*.exclude module: 'jsr305'
@@ -55,21 +86,11 @@ android {
         exclude 'META-INF/rxjava.properties'
     }
 
-    signingConfigs {
-        release {
-            storeFile file('dhis_keystore.jks')
-            storePassword KEYSTORE_PASSWORD
-            keyAlias KEY_ALIAS
-            keyPassword KEYSTORE_PASSWORD
-        }
-    }
-
     buildTypes {
         debug {
             // custom application suffix which allows to
             // install debug and release builds at the same time
             applicationIdSuffix = ".debug"
-            versionNameSuffix = "_training"
 
             // jacoco test coverage reports both for
             // androidTest and test source sets
@@ -80,18 +101,78 @@ android {
 
             // Using dataentry.jks to sign debug build type.
             signingConfig = signingConfigs.debug
+
+            resValue "string", "content_provider", "com.dhis2.debug.provider"
         }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             ext.enableCrashlytics = true
-            signingConfig signingConfigs.release
+
+            resValue "string", "content_provider", "com.dhis2.provider"
+        }
+
+        training {
+            applicationIdSuffix = ".training"
+            matchingFallbacks = ['release']
+            signingConfig = signingConfigs.debug
+        }
+
+        experimental {
+            // custom application suffix which allows to
+            // install debug and release builds at the same time
+            applicationIdSuffix = ".experimental"
+
+            // jacoco test coverage reports both for
+            // androidTest and test source sets
+            testCoverageEnabled = false
+
+            // Using dataentry.jks to sign debug build type.
+            signingConfig = signingConfigs.debug
+            debuggable = true
+            jniDebuggable = true
+            renderscriptDebuggable = true
+            matchingFallbacks = ['debug']
+
+            resValue "string", "content_provider", "com.dhis2.experimental.provider"
+
+        }
+        beta {
+            applicationIdSuffix = ".beta"
+            matchingFallbacks = ['debug']
+            signingConfig signingConfigs.debug
+            resValue "string", "content_provider", "com.dhis2.beta.provider"
+        }
+
+        alpha {
+            applicationIdSuffix = ".alpha"
+            matchingFallbacks = ['debug']
+            signingConfig signingConfigs.debug
+            resValue "string", "content_provider", "com.dhis2.alpha.provider"
+        }
+    }
+
+    flavorDimensions "default"
+
+    productFlavors {
+        dhis {
+            applicationId "com.dhis2"
+            dimension "default"
+            versionCode versions.vCode
+            versionName versions.vName
+        }
+
+        dhisNoSMS {
+            applicationId "com.dhis2"
+            dimension "default"
+            versionCode versions.vCode
+            versionName versions.vName
         }
     }
 
     compileOptions {
-        targetCompatibility JavaVersion.VERSION_1_8
-        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility = "8"
+        sourceCompatibility = "8"
     }
 
     dataBinding {
@@ -112,120 +193,163 @@ android {
     }
 
     configurations.all {
-        resolutionStrategy.force 'junit:junit:4.12'
+        resolutionStrategy {
+            preferProjectModules()
+
+            force 'junit:junit:4.12', 'com.squareup.okhttp3:okhttp:3.12.0'
+
+            forcedModules = ['com.squareup.okhttp3:okhttp:3.12.0']
+        }
+    }
+
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+}
+
+sonarqube {
+    properties {
+        property "sonar.language", "java"
     }
 }
 
 dependencies {
+    debugImplementation project(':core')
+    betaImplementation project(':core')
 
-    implementation project(":customFab")
+    implementation project(':customFab')
 
-    implementation "hu.supercluster:paperwork:${libraries.paperwork}"
+    debugImplementation project(':dhis2-rule-engine')
+    betaImplementation project(':dhis2-rule-engine')
+    releaseImplementation project(':dhis2-rule-engine')
 
-    //Support libraries
-    implementation "com.android.support:appcompat-v7:28.0.0"
-    implementation "com.android.support:support-annotations:28.0.0"
-    implementation "com.android.support:cardview-v7:28.0.0"
-    implementation "com.android.support:design:28.0.0"
-    //implementation "com.android.support:multidex:${libraries.multidex}"
-    implementation "com.android.support:multidex:1.0.3"
-    implementation 'com.android.support.constraint:constraint-layout:1.1.2'
+    implementation project(':viewpagerdotsindicator')
+    implementation project(':tableview')
 
-    // Core module of the DHIS 2 Android SDK
-    implementation("org.hisp.dhis:android-core:${libraries.dhis2sdk}") {
+    //region AndroidX
+    implementation 'androidx.appcompat:appcompat:1.1.0'
+    implementation 'androidx.annotation:annotation:1.1.0'
+    implementation 'androidx.cardview:cardview:1.0.0'
+    implementation 'com.google.android.material:material:1.1.0-rc02'
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+    implementation "androidx.multidex:multidex:${libraries.multidex}"
+    implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
+    implementation "androidx.lifecycle:lifecycle-extensions:${libraries.lifecycle}"
+    //JOB SCHEDULER
+    implementation "androidx.work:work-runtime:2.2.0"
+    implementation "androidx.work:work-rxjava2:2.2.0"
+    //endregion
+
+    //region DHIS2 LIBRARIES
+
+    releaseImplementation("org.hisp.dhis:android-core:${libraries.dhis2sdk}") {
         exclude group: "org.hisp.dhis", module: "core-rules"
     }
-    // RuleEngine module of the DHIS 2 Android SDK
-    implementation("org.hisp.dhis:core-rules:${libraries.dhis2sdk}") {
-        exclude group: "com.google.code.findbugs", module: "jsr305"
-    }
-    implementation("org.hisp.dhis:android-rules:${libraries.dhis2sdk}") {
-        exclude group: "com.google.code.findbugs", module: "jsr305"
-//        exclude group: "org.hisp.dhis", module: "core-rules"
-    }
 
-//    implementation"org.hisp.dhis.rules:rule-engine:${libraries.ruleEngine}"
+  /*  releaseImplementation("org.hisp.dhis.rules:rule-engine:${libraries.ruleEngine}") {
+        exclude group: "junit", module: "junit"
+    }*/
+    //endregion
 
-    //TreeView
-    implementation 'com.github.bmelnychuk:atv:1.2.9'
-    implementation 'com.android.support:support-v4:28.0.0'
+    //region UI LIBRARIES
+    //AndroidTreeView
+    implementation "com.github.bmelnychuk:atv:${libraries.atv}"
+    //FAB
+    implementation "com.github.dekoservidoni:omfm:${libraries.omfm}"
+    //FLEXBOX
+    implementation "com.google.android:flexbox:${libraries.flexbox}"
 
-    // ReactiveX
+    //PIN LOCK
+    implementation 'com.andrognito.pinlockview:pinlockview:2.1.0'
+    //endregion
+
+    //region RXJAVA
     implementation "io.reactivex.rxjava2:rxandroid:${libraries.rxandroid}"
     implementation "io.reactivex.rxjava2:rxjava:${libraries.rxjava}"
     implementation "com.github.akarnokd:rxjava2-interop:${libraries.rxjavainteroperop}"
+    implementation 'io.reactivex.rxjava2:rxkotlin:2.3.0'
 
-    // Google dagger
-    implementation 'com.google.dagger:dagger:2.14.1'
-    annotationProcessor 'com.google.dagger:dagger-compiler:2.14.1'
+    //rxbinding
+    implementation "com.jakewharton.rxbinding2:rxbinding:${libraries.rxbindings}"
+    implementation "com.jakewharton.rxbinding2:rxbinding-appcompat-v7:${libraries.rxbindings}"
+    //endregion
 
+    //region DAGGER
+    implementation "com.google.dagger:dagger:${libraries.dagger}"
+    kapt "com.google.dagger:dagger-compiler:${libraries.dagger}"
+    //endregion
+
+    //region GOOGLE AUTO VALUE
     // Google's auto-value. Annotations are used only during compilation time, as well as
     // annotation processor which hoops up into compilation process
-    compileOnly "com.google.auto.value:auto-value:${libraries.autovalue}"
-    annotationProcessor "com.google.auto.value:auto-value:${libraries.autovalue}"
+    api "com.google.auto.value:auto-value:${libraries.autovalue}"
+    kapt "com.google.auto.value:auto-value:${libraries.autovalue}"
 
     // Extension which generates mappers for work with cursors
-    annotationProcessor "com.gabrielittner.auto.value:auto-value-cursor:${libraries.autovaluecursor}"
-    annotationProcessor "com.ryanharter.auto.value:auto-value-parcel:${libraries.autovalueparcel}"
+    kapt "com.gabrielittner.auto.value:auto-value-cursor:${libraries.autovaluecursor}"
+    kapt "com.ryanharter.auto.value:auto-value-parcel:${libraries.autovalueparcel}"
+    //endregion
 
-    //square
-    implementation "com.squareup.sqlbrite3:sqlbrite:${libraries.sqlbrite}"
-//    implementation "com.squareup.sqlbrite2:sqlbrite-interop:${libraries.sqlbrite}"
-    implementation "com.github.lykmapipo:sqlbrite-migrations:v1.0.1"
+    //endregion
+
+    //region PLAY SERVICES
+
+    //LOCATION
+    implementation 'com.google.android.gms:play-services-basement:17.1.1'
+    implementation 'com.google.android.gms:play-services-location:17.0.0'
+    //endregion
+
+    // Kujaku dependencies
+//    implementation 'io.ona.kujaku:library:0.7.7'
+    implementation 'com.mapbox.mapboxsdk:mapbox-android-sdk:8.3.0'
+    implementation 'com.mapbox.mapboxsdk:mapbox-android-plugin-markerview-v8:0.3.0'
+    implementation 'com.mapbox.mapboxsdk:mapbox-android-plugin-annotation-v9:0.8.0'
+
+
 
     // Jake Wharton libraries
     //timber
     implementation "com.jakewharton.timber:timber:${libraries.timber}"
-    //rxbinding
-    implementation "com.jakewharton.rxbinding2:rxbinding:${libraries.rxbindings}"
-    implementation "com.jakewharton.rxbinding2:rxbinding-appcompat-v7:${libraries.rxbindings}"
-
-    //FAB
-    implementation 'com.github.dekoservidoni:omfm:1.0.3'
-
-    //FLEXBOX
-    implementation 'com.google.android:flexbox:0.3.1'
-
-    //TABLEVIEW
-    implementation 'com.evrencoskun.library:tableview:0.8.8'
-
-    //PIN LOCK
-    implementation 'com.andrognito.pinlockview:pinlockview:2.1.0'
-
-    //VISION (QR SCANNER)
-    implementation("com.google.android.gms:play-services-vision:${libraries.gmsVersion}") {
-        force = true
-    }
-
-    //LOCATION15.0.1
-    implementation("com.google.android.gms:play-services-location:15.0.1")
-    implementation("com.google.android.gms:play-services-maps:15.0.1")
 
     //GSON
-    implementation 'com.google.code.gson:gson:2.8.2'
+    implementation 'com.google.code.gson:gson:2.8.5'
 
-    //FIREBASE
-    implementation 'com.firebase:firebase-jobdispatcher:0.8.5'
 
     //CRASHLYTICS
     implementation('com.crashlytics.sdk.android:crashlytics:2.9.5@aar') {
         transitive = true
     }
 
+    //FIREBASE
+    implementation 'com.google.firebase:firebase-core:17.2.0'
+    implementation 'com.google.firebase:firebase-perf:19.0.0'
+    implementation 'com.google.firebase:firebase-messaging:20.0.0'
+
     //Test
-
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
-    androidTestImplementation('com.android.support.test.espresso:espresso-core:2.2.2', {
-        exclude group: 'com.android.support', module: 'support-annotations'
-        exclude group: 'com.google.code.findbugs'
-
-    })
+    testImplementation "androidx.arch.core:core-testing:2.1.0"
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+    androidTestImplementation "androidx.test:core:1.2.0"
+    testImplementation "androidx.test:core:1.2.0"
+    androidTestImplementation 'androidx.test:rules:1.2.0'
+    androidTestImplementation "androidx.test:core-ktx:1.2.0"
+    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
+    androidTestImplementation "androidx.test.ext:junit-ktx:1.1.1"
 
     testImplementation 'junit:junit:4.12'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    testImplementation 'org.robolectric:robolectric:4.2.1'
+    testImplementation "org.robolectric:shadows-multidex:4.0.1"
+    androidTestImplementation 'org.mockito:mockito-android:2.28.2'
+    androidTestImplementation 'org.mockito:mockito-core:2.28.2'
+    testImplementation 'org.mockito:mockito-core:2.28.2'
+    testImplementation 'org.mockito:mockito-inline:2.13.0'
+    testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:2.1.0"
 
+    testImplementation 'com.google.truth:truth:0.43'
     implementation 'com.facebook.stetho:stetho:1.5.0'
     implementation 'com.facebook.stetho:stetho-okhttp3:1.5.0'
+    implementation 'com.squareup.okhttp3:okhttp:3.12.0'
 
     //RXLint
     implementation 'nl.littlerobots.rxlint:rxlint:1.6'
@@ -239,15 +363,33 @@ dependencies {
     implementation 'com.journeyapps:zxing-android-embedded:3.2.0@aar'
 
     //FancyShowCase
-    implementation 'com.github.faruktoptas:FancyShowCaseView:1.0.0'
+    implementation 'me.toptas.fancyshowcase:fancyshowcaseview:1.1.5'
 
     //Lottie animations
-    implementation 'com.airbnb.android:lottie:2.5.4'
+    implementation 'com.airbnb.android:lottie:3.4.0'
 
     //Glide load images
-    implementation 'com.github.bumptech.glide:glide:4.7.1'
-    annotationProcessor 'com.github.bumptech.glide:compiler:4.7.1'
-    implementation 'com.tbuonomo.andrui:viewpagerdotsindicator:2.1.2'
+    implementation 'com.github.bumptech.glide:glide:4.9.0'
+    kapt 'com.github.bumptech.glide:compiler:4.9.0'
+
+    //Paperwork
+    implementation "hu.supercluster:paperwork:${libraries.paperwork}"
+
+    implementation 'com.google.guava:guava:27.0.1-android'
+
+    implementation 'cat.ereza:customactivityoncrash:2.2.0'
+
+    implementation "com.google.android.gms:play-services-analytics:${libraries.analytics}"
+    //implementation 'com.github.pwittchen:rxbiometric:0.1.0'
+    implementation 'co.infinum:goldfinger-rx:2.0.1'
+    implementation "de.adorsys.android:securestoragelibrary:${libraries.latestSecureStorageVersion}"
+
+
+    implementation 'com.github.prabhat1707:DbExporterHelper:v1.0'
+
+    /*region SECURITY*/
+    implementation 'com.scottyab:rootbeer-lib:0.0.7'
+
 }
 
-apply plugin: 'kotlin-android-extensions'
+apply plugin: 'com.google.gms.google-services'

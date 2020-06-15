@@ -1,9 +1,11 @@
 package org.dhis2.data.forms.dataentry.fields;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import org.hisp.dhis.android.core.common.ObjectStyle;
 
 import javax.annotation.Nonnull;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 public abstract class FieldViewModel {
 
@@ -50,4 +52,13 @@ public abstract class FieldViewModel {
 
     @Nonnull
     public abstract FieldViewModel withValue(String data);
+
+    @NonNull
+    public abstract FieldViewModel withEditMode(boolean isEditable);
+
+    @NonNull
+    public abstract ObjectStyle objectStyle();
+
+    @Nullable
+    public abstract String fieldMask();
 }

@@ -2,7 +2,7 @@ package org.dhis2.data.user;
 
 
 import org.dhis2.data.dagger.PerUser;
-import com.squareup.sqlbrite2.BriteDatabase;
+import org.hisp.dhis.android.core.D2;
 
 import dagger.Module;
 import dagger.Provides;
@@ -13,8 +13,8 @@ public class UserModule {
 
     @Provides
     @PerUser
-    UserRepository userRepository(BriteDatabase briteDatabase) {
-        return new UserRepositoryImpl(briteDatabase);
+    UserRepository userRepository(D2 d2) {
+        return new UserRepositoryImpl(d2);
     }
 
 }

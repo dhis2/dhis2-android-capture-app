@@ -6,7 +6,7 @@
 
         <variable
             name="program"
-            type="org.hisp.dhis.android.core.program.ProgramModel" />
+            type="org.hisp.dhis.android.core.program.Program" />
 
         <variable
             name="programTitle"

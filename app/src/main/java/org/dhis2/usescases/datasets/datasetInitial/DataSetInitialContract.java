@@ -1,12 +1,12 @@
 package org.dhis2.usescases.datasets.datasetInitial;
 
+import org.dhis2.data.tuples.Pair;
 import org.dhis2.usescases.general.AbstractActivityContracts;
-import org.hisp.dhis.android.core.category.CategoryOptionModel;
-import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
+import org.hisp.dhis.android.core.category.CategoryOption;
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.period.PeriodType;
 
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 
 public class DataSetInitialContract {
@@ -23,22 +23,29 @@ public class DataSetInitialContract {
 
         void setData(DataSetInitialModel dataSetInitialModel);
 
-        void showOrgUnitDialog(List<OrganisationUnitModel> data);
+        void showOrgUnitDialog(List<OrganisationUnit> data);
 
-        void showPeriodSelector(PeriodType periodType);
+        void showPeriodSelector(PeriodType periodType, List<DateRangeInputPeriodModel> periods, Integer openFuturePeriods);
 
-        void showCatComboSelector(String catOptionUid, List<CategoryOptionModel> data);
+        void showCatComboSelector(String catOptionUid, List<CategoryOption> data);
 
         String getDataSetUid();
-        String getSelectedOrgUnit();
+
+        OrganisationUnit getSelectedOrgUnit();
+
         Date getSelectedPeriod();
-        String getSelectedCatOptions();
+
+        List<String> getSelectedCatOptions();
 
         String getPeriodType();
+
+        void setOrgUnit(OrganisationUnit organisationUnit);
+
+        void navigateToDataSetTable(String catOptionCombo, String periodId);
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter {
-        void init(View view);
+        void init();
 
         void onBackClick();
 
@@ -48,7 +55,7 @@ public class DataSetInitialContract {
 
         void onCatOptionClick(String catOptionUid);
 
-        void onActionButtonClick();
+        void onActionButtonClick(PeriodType periodType);
     }
 
 

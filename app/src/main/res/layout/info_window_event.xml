@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <import type="android.view.View" />
+
+        <variable
+            name="presenter"
+            type="org.dhis2.usescases.programEventDetail.ProgramEventDetailContract.Presenter" />
+
+        <variable
+            name="event"
+            type="org.dhis2.usescases.programEventDetail.ProgramEventViewModel" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:paddingStart="14dp"
+        android:paddingTop="8dp"
+        android:paddingEnd="14dp"
+        android:paddingBottom="8dp">
+
+        <TextView
+            android:id="@+id/eventDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:fontFamily="@font/rubik_regular"
+            android:maxLines="1"
+            android:textColor="@color/black_de0"
+            android:textSize="10sp"
+            android:textStyle="bold"
+            app:date="@{event.date()}"
+            app:layout_constraintBottom_toBottomOf="@id/orgUnit"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="04/10/2017 - 8:55 AM" />
+
+        <TextView
+            android:id="@+id/orgUnit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:fontFamily="@font/rubik_regular"
+            android:maxLines="1"
+            android:text="@{event.orgUnitName()}"
+            android:textColor="@color/black_de0"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/sync_icon"
+            tools:text="OrgUnit" />
+
+        <TextView
+            android:id="@+id/optionCombo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:fontFamily="@font/rubik_regular"
+            android:maxLines="1"
+            android:text="@{event.attributeOptionComboName()}"
+            android:textColor="@color/black_de0"
+            android:textSize="10sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/orgUnit"
+            tools:text="Cat combo" />
+
+        <ImageView
+            android:id="@+id/sync_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:stateIcon='@{event.eventState()}'
+            tools:ignore="ContentDescription"
+            tools:src="@drawable/ic_sync" />
+
+        <ImageView
+            android:id="@+id/status_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:tint="@color/text_black_333"
+            app:eventWithoutRegistrationStatusIcon='@{event}'
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/sync_icon"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="ContentDescription"
+            tools:src="@drawable/ic_edit" />
+
+        <TextView
+            android:id="@+id/status_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginStart="6dp"
+            android:layout_marginEnd="6dp"
+            android:fontFamily="@font/rubik_regular"
+            android:gravity="end"
+            android:maxWidth="40dp"
+            android:textColor="@color/text_black_333"
+            android:textSize="7sp"
+            app:eventWithoutRegistrationStatusText='@{event}'
+            app:layout_constraintBottom_toBottomOf="@id/status_icon"
+            app:layout_constraintEnd_toStartOf="@id/status_icon"
+            app:layout_constraintStart_toEndOf="@id/eventDate"
+            app:layout_constraintTop_toTopOf="@id/status_icon"
+            tools:text="Event completed" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

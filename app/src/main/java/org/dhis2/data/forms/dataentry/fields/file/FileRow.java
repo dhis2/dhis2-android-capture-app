@@ -1,10 +1,12 @@
 package org.dhis2.data.forms.dataentry.fields.file;
 
-import android.databinding.DataBindingUtil;
-import android.support.annotation.NonNull;
-import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
+
+import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
+import androidx.databinding.DataBindingUtil;
+import androidx.lifecycle.MutableLiveData;
 
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.Row;
@@ -19,25 +21,32 @@ import io.reactivex.processors.FlowableProcessor;
 
 public class FileRow implements Row<FileHolder, FileViewModel> {
     private final String renderType;
-    FormButtonBinding binding;
+    private final MutableLiveData<String> currentSelection;
+    private FormButtonBinding binding;
     @NonNull
     private final LayoutInflater inflater;
     @NonNull
     private final FlowableProcessor<RowAction> processor;
     private final boolean isBgTransparent;
+    private boolean isSearchMode = false;
+
 
     public FileRow(@NonNull LayoutInflater layoutInflater, @NonNull FlowableProcessor<RowAction> processor, boolean isBgTransparent) {
         this.inflater = layoutInflater;
         this.processor = processor;
         this.isBgTransparent = isBgTransparent;
         this.renderType = null;
+        isSearchMode = true;
+        this.currentSelection = null;
     }
 
-    public FileRow(LayoutInflater layoutInflater, FlowableProcessor<RowAction> processor, boolean isBgTransparent, String renderType) {
+    public FileRow(@NonNull LayoutInflater layoutInflater, @NonNull FlowableProcessor<RowAction> processor
+            , boolean isBgTransparent, String renderType, MutableLiveData<String> currentSelection) {
         this.inflater = layoutInflater;
         this.processor = processor;
         this.isBgTransparent = isBgTransparent;
         this.renderType = renderType;
+        this.currentSelection = currentSelection;
     }
 
     @NonNull
@@ -49,16 +58,11 @@ public class FileRow implements Row<FileHolder, FileViewModel> {
         else
             binding.formButton.setTextColor(ContextCompat.getColor(parent.getContext(), R.color.colorAccent));
 
-        return new FileHolder(binding);
+        return new FileHolder(binding,currentSelection);
     }
 
     @Override
     public void onBind(@NonNull FileHolder viewHolder, @NonNull FileViewModel viewModel) {
         binding.setLabel(viewModel.label());
-    }
-
-    @Override
-    public void deAttach(@NonNull FileHolder viewHolder) {
-
     }
 }

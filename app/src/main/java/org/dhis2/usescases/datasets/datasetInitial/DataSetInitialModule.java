@@ -1,8 +1,8 @@
 package org.dhis2.usescases.datasets.datasetInitial;
 
-import com.squareup.sqlbrite2.BriteDatabase;
-
 import org.dhis2.data.dagger.PerActivity;
+import org.dhis2.data.schedulers.SchedulerProvider;
+import org.hisp.dhis.android.core.D2;
 
 import dagger.Module;
 import dagger.Provides;
@@ -14,8 +14,10 @@ import dagger.Provides;
 @Module
 public class DataSetInitialModule {
     private final String dataSetUid;
+    private final DataSetInitialContract.View view;
 
-    DataSetInitialModule(String dataSetUid) {
+    DataSetInitialModule(DataSetInitialContract.View view, String dataSetUid) {
+        this.view = view;
         this.dataSetUid = dataSetUid;
     }
 
@@ -27,13 +29,13 @@ public class DataSetInitialModule {
 
     @Provides
     @PerActivity
-    DataSetInitialContract.Presenter providesPresenter(DataSetInitialRepository dataSetInitialRepository) {
-        return new DataSetInitialPresenter(dataSetInitialRepository);
+    DataSetInitialContract.Presenter providesPresenter(DataSetInitialRepository dataSetInitialRepository, SchedulerProvider schedulerProvider) {
+        return new DataSetInitialPresenter(view, dataSetInitialRepository, schedulerProvider);
     }
 
     @Provides
     @PerActivity
-    DataSetInitialRepository dataSetInitialRepository(BriteDatabase briteDatabase) {
-        return new DataSetInitialRepositoryImpl(briteDatabase, dataSetUid);
+    DataSetInitialRepository dataSetInitialRepository(D2 d2) {
+        return new DataSetInitialRepositoryImpl(d2, dataSetUid);
     }
 }

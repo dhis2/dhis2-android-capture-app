@@ -1,6 +1,8 @@
 package org.dhis2.usescases.qrCodes;
 
-import android.support.annotation.NonNull;
+import android.graphics.Bitmap;
+
+import androidx.annotation.NonNull;
 
 import java.util.List;
 
@@ -14,6 +16,8 @@ public class QrContracts {
         void onPrevQr();
 
         void onNextQr();
+
+        void showQRBitmap(Bitmap bitmap);
     }
 
     public interface Presenter {
@@ -24,5 +28,7 @@ public class QrContracts {
         void onPrevQr();
 
         void onNextQr();
+
+        void onDetach();
     }
 }

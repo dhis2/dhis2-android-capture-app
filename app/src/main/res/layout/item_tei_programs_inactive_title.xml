@@ -5,19 +5,9 @@
 
         <import type="android.view.View" />
 
-        <import type="java.lang.String" />
-
         <variable
             name="presenter"
             type="org.dhis2.usescases.teiDashboard.teiProgramList.TeiProgramListContract.Presenter" />
-
-        <variable
-            name="enrollment"
-            type="org.hisp.dhis.android.core.enrollment.EnrollmentModel" />
-
-        <variable
-            name="program"
-            type="org.hisp.dhis.android.core.program.ProgramModel" />
     </data>
 
     <TextView

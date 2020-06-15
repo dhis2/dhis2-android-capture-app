@@ -1,14 +1,13 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventSummary;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import org.dhis2.data.forms.FormSectionViewModel;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.usescases.general.AbstractActivityContracts;
-
-import org.hisp.dhis.android.core.event.EventModel;
-import org.hisp.dhis.android.core.program.ProgramModel;
+import org.hisp.dhis.android.core.event.Event;
+import org.hisp.dhis.android.core.program.Program;
 
 import java.util.List;
 
@@ -22,16 +21,16 @@ public class EventSummaryContract {
 
     public interface View extends AbstractActivityContracts.View {
 
-        void setProgram(@NonNull ProgramModel program);
+        void setProgram(@NonNull Program program);
 
         void onEventSections(List<FormSectionViewModel> formSectionViewModels);
 
         @NonNull
         Consumer<List<FieldViewModel>> showFields(String sectionUid);
 
-        void onStatusChanged(EventModel event);
+        void onStatusChanged(Event event);
 
-        void setActionButton(EventModel eventModel);
+        void setActionButton(Event eventModel);
 
         void messageOnComplete(String content, boolean canComplete);
 

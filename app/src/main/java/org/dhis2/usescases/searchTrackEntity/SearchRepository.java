@@ -1,20 +1,24 @@
 package org.dhis2.usescases.searchTrackEntity;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.lifecycle.LiveData;
 
+import org.dhis2.data.tuples.Pair;
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel;
-
-import org.hisp.dhis.android.core.option.OptionModel;
-import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
-import org.hisp.dhis.android.core.program.ProgramModel;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
+import org.hisp.dhis.android.core.common.State;
+import org.hisp.dhis.android.core.common.ValueTypeRenderingType;
+import org.hisp.dhis.android.core.event.EventStatus;
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
+import org.hisp.dhis.android.core.program.Program;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityType;
 
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+
+import javax.annotation.Nonnull;
 
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
@@ -26,30 +30,38 @@ import io.reactivex.Observable;
 public interface SearchRepository {
 
     @NonNull
-    Observable<List<TrackedEntityAttributeModel>> programAttributes(String programId);
+    Observable<SearchProgramAttributes> programAttributes(String programId);
 
-    Observable<List<TrackedEntityAttributeModel>> programAttributes();
-
-    Observable<List<OptionModel>> optionSet(String optionSetId);
-
-    Observable<List<ProgramModel>> programsWithRegistration(String programTypeId);
-
-    Observable<List<TrackedEntityInstanceModel>> trackedEntityInstances(@NonNull String teType,
-                                                                        @Nullable ProgramModel selectedProgram,
-                                                                        @Nullable HashMap<String, String> queryData, Integer page);
-
-    Observable<List<TrackedEntityInstanceModel>> trackedEntityInstancesToUpdate(@NonNull String teType,
-                                                                                @Nullable ProgramModel selectedProgram,
-                                                                                @Nullable HashMap<String, String> queryData);
+    Observable<List<Program>> programsWithRegistration(String programTypeId);
 
     @NonNull
-    Observable<String> saveToEnroll(@NonNull String teiType, @NonNull String orgUnitUID, @NonNull String programUid, @Nullable String teiUid, HashMap<String, String> queryDatam,Date enrollmentDate);
+    LiveData searchTrackedEntities(@Nullable Program selectedProgram,
+                                                              @NonNull String trackedEntityType,
+                                                              @NonNull List<String> orgUnits,
+                                                              @Nonnull List<State> states,
+                                                              @NonNull List<EventStatus> statuses,
+                                                              @Nullable HashMap<String, String> queryData,
+                                                              boolean assignedToMe,
+                                                              boolean isOnline);
 
-    Observable<List<OrganisationUnitModel>> getOrgUnits(@Nullable String selectedProgramUid);
+    @NonNull
+    Flowable<List<SearchTeiModel>> searchTeiForMap(@Nullable Program selectedProgram,
+                                                   @NonNull String trackedEntityType,
+                                                   @NonNull List<String> orgUnits,
+                                                   @Nonnull List<State> states,
+                                                   @NonNull List<EventStatus> statuses,
+                                                   @Nullable HashMap<String, String> queryData,
+                                                   boolean assignedToMe,
+                                                   boolean isOnline);
 
-    Observable<List<TrackedEntityInstance>> isOnLocalStorage(List<TrackedEntityInstance> tei);
+    @NonNull
+    Observable<Pair<String, String>> saveToEnroll(@NonNull String teiType, @NonNull String orgUnitUID, @NonNull String programUid, @Nullable String teiUid, HashMap<String, String> queryDatam, Date enrollmentDate);
 
-    Flowable<List<SearchTeiModel>> transformIntoModel(List<SearchTeiModel> teiList, @Nullable ProgramModel selectedProgram);
+    Observable<List<OrganisationUnit>> getOrgUnits(@Nullable String selectedProgramUid);
 
     String getProgramColor(@NonNull String programUid);
+
+    Observable<List<TrackedEntityAttribute>> trackedEntityTypeAttributes();
+
+    Observable<TrackedEntityType> getTrackedEntityType(String trackedEntityUid);
 }

@@ -1,6 +1,6 @@
 package org.dhis2.utils;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 /**
  * Created by ppajuelo on 09/01/2018.

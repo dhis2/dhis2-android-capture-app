@@ -1,36 +1,42 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventInitial;
 
-import android.content.ContentValues;
 import android.content.Context;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteConstraintException;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 
-import com.squareup.sqlbrite2.BriteDatabase;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
-import org.dhis2.utils.CodeGenerator;
 import org.dhis2.utils.DateUtils;
-import org.hisp.dhis.android.core.category.CategoryComboModel;
-import org.hisp.dhis.android.core.category.CategoryOptionComboCategoryOptionLinkModel;
-import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
-import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
-import org.hisp.dhis.android.core.common.State;
-import org.hisp.dhis.android.core.data.database.DatabaseAdapter;
-import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
-import org.hisp.dhis.android.core.event.EventModel;
+import org.hisp.dhis.android.core.D2;
+import org.hisp.dhis.android.core.arch.helpers.UidsHelper;
+import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope;
+import org.hisp.dhis.android.core.category.Category;
+import org.hisp.dhis.android.core.category.CategoryCombo;
+import org.hisp.dhis.android.core.category.CategoryOption;
+import org.hisp.dhis.android.core.category.CategoryOptionCombo;
+import org.hisp.dhis.android.core.common.FeatureType;
+import org.hisp.dhis.android.core.common.Geometry;
+import org.hisp.dhis.android.core.common.ObjectStyle;
+import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
+import org.hisp.dhis.android.core.event.Event;
+import org.hisp.dhis.android.core.event.EventCreateProjection;
+import org.hisp.dhis.android.core.event.EventObjectRepository;
 import org.hisp.dhis.android.core.event.EventStatus;
-import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
-import org.hisp.dhis.android.core.program.ProgramModel;
-import org.hisp.dhis.android.core.program.ProgramStageModel;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
+import org.hisp.dhis.android.core.maintenance.D2Error;
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
+import org.hisp.dhis.android.core.program.Program;
+import org.hisp.dhis.android.core.program.ProgramStage;
 
-import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
+import java.util.Map;
 
+import io.reactivex.BackpressureStrategy;
+import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import timber.log.Timber;
 
@@ -40,78 +46,124 @@ import timber.log.Timber;
 
 public class EventInitialRepositoryImpl implements EventInitialRepository {
 
-    private static final String SELECT_ORG_UNITS = "SELECT * FROM OrganisationUnit " +
-            "JOIN OrganisationUnitProgramLink ON OrganisationUnitProgramLink .organisationUnit = OrganisationUnit.uid " +
-            "WHERE OrganisationUnitProgramLink .program = ?";
+    private final String eventUid;
+    private final D2 d2;
 
-    private static final String SELECT_ORG_UNITS_FILTERED = "SELECT * FROM " + OrganisationUnitModel.TABLE +
-            " JOIN OrganisationUnitProgramLink ON OrganisationUnitProgramLink .organisationUnit = OrganisationUnit.uid " +
-            " WHERE ("
-            + OrganisationUnitModel.Columns.OPENING_DATE + " IS NULL OR " +
-            " date(" + OrganisationUnitModel.Columns.OPENING_DATE + ") <= date(?)) AND ("
-            + OrganisationUnitModel.Columns.CLOSED_DATE + " IS NULL OR " +
-            " date(" + OrganisationUnitModel.Columns.CLOSED_DATE + ") >= date(?)) " +
-            "AND OrganisationUnitProgramLink .program = ?";
-
-    private static final String SELECT_CAT_OPTION_FROM_OPTION_COMBO = String.format(
-            "SELECT %s.%s FROM %s WHERE %s.%s = ?",
-            CategoryOptionComboCategoryOptionLinkModel.TABLE, CategoryOptionComboCategoryOptionLinkModel.Columns.CATEGORY_OPTION, CategoryOptionComboCategoryOptionLinkModel.TABLE,
-            CategoryOptionComboCategoryOptionLinkModel.TABLE, CategoryOptionComboCategoryOptionLinkModel.Columns.CATEGORY_OPTION_COMBO
-    );
-
-    private final BriteDatabase briteDatabase;
-    private final CodeGenerator codeGenerator;
-    private final DatabaseAdapter databaseAdapter;
-
-    EventInitialRepositoryImpl(CodeGenerator codeGenerator, BriteDatabase briteDatabase, DatabaseAdapter databaseAdapter) {
-        this.briteDatabase = briteDatabase;
-        this.codeGenerator = codeGenerator;
-        this.databaseAdapter = databaseAdapter;
-    }
-
-
-    @NonNull
-    @Override
-    public Observable<EventModel> event(String eventId) {
-        String id = eventId == null ? "" : eventId;
-        String SELECT_EVENT_WITH_ID = "SELECT * FROM " + EventModel.TABLE + " WHERE " + EventModel.Columns.UID + " = '" + id + "' AND " + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "' LIMIT 1";
-        return briteDatabase.createQuery(EventModel.TABLE, SELECT_EVENT_WITH_ID)
-                .mapToOne(EventModel::create);
+    EventInitialRepositoryImpl(String eventUid, D2 d2) {
+        this.eventUid = eventUid;
+        this.d2 = d2;
     }
 
     @NonNull
     @Override
-    public Observable<List<OrganisationUnitModel>> orgUnits(String programId) {
-        return briteDatabase.createQuery(OrganisationUnitModel.TABLE, SELECT_ORG_UNITS, programId == null ? "" : programId)
-                .mapToList(OrganisationUnitModel::create);
+    public Observable<Event> event(String eventId) {
+        return d2.eventModule().events().uid(eventId).get().toObservable();
     }
 
     @NonNull
     @Override
-    public Observable<CategoryComboModel> catComboModel(String programUid) {
-        String catComboQuery = "SELECT * FROM CategoryCombo JOIN Program ON Program.categoryCombo = CategoryCombo.uid WHERE Program.uid = ?";
-        return briteDatabase.createQuery(CategoryComboModel.TABLE, catComboQuery, programUid).mapToOne(CategoryComboModel::create);
-    }
-
-    @NonNull
-    @Override
-    public Observable<List<CategoryOptionComboModel>> catCombo(String programUid) {
-        String catComboQuery = "SELECT CategoryOptionCombo.* FROM CategoryOptionCombo JOIN CategoryCombo ON CategoryCombo.uid= CategoryOptionCombo.categoryCombo " +
-                "JOIN Program ON Program.categoryCombo = CategoryCombo.uid WHERE program.uid = ?";
-        return briteDatabase.createQuery(CategoryOptionComboModel.TABLE, catComboQuery,programUid)
-                .mapToList(CategoryOptionComboModel::create);
-    }
-
-    @NonNull
-    @Override
-    public Observable<List<OrganisationUnitModel>> filteredOrgUnits(String date, String programId) {
+    public Observable<List<OrganisationUnit>> filteredOrgUnits(String date, String programId, String parentId) {
         if (date == null)
-            return orgUnits(programId);
-        return briteDatabase.createQuery(OrganisationUnitModel.TABLE, SELECT_ORG_UNITS_FILTERED,
-                date == null ? "" : date,
-                date == null ? "" : date,
-                programId == null ? "" : programId)
-                .mapToList(OrganisationUnitModel::create);
+            return parentId == null ? orgUnits(programId) : orgUnits(programId, parentId);
+        else
+            return (parentId == null ? orgUnits(programId) : orgUnits(programId, parentId))
+                    .map(organisationUnits -> {
+                        Iterator<OrganisationUnit> iterator = organisationUnits.iterator();
+                        while (iterator.hasNext()) {
+                            OrganisationUnit organisationUnit = iterator.next();
+                            if (organisationUnit.openingDate() != null && organisationUnit.openingDate().after(DateUtils.uiDateFormat().parse(date))
+                                    || organisationUnit.closedDate() != null && organisationUnit.closedDate().before(DateUtils.uiDateFormat().parse(date)))
+                                iterator.remove();
+                        }
+                        return organisationUnits;
+                    });
+    }
+
+    @NonNull
+    @Override
+    public Observable<List<OrganisationUnit>> orgUnits(String programId) {
+        return d2.organisationUnitModule().organisationUnits().byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE)
+                .byProgramUids(Collections.singletonList(programId)).get().toObservable();
+    }
+
+    public Observable<List<OrganisationUnit>> orgUnits(String programId, String parentUid) {
+        return d2.organisationUnitModule().organisationUnits()
+                .byProgramUids(Collections.singletonList(programId))
+                .byParentUid().eq(parentUid)
+                .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE)
+                .get()
+                .toObservable();
+    }
+
+    @NonNull
+    @Override
+    public Observable<CategoryCombo> catCombo(String programUid) {
+        return d2.programModule().programs().uid(programUid).get()
+                .flatMap(program ->
+                        d2.categoryModule().categoryCombos().withCategories().withCategoryOptionCombos().uid(program.categoryComboUid()).get())
+                .map(categoryCombo -> {
+                    List<Category> fullCategories = new ArrayList<>();
+                    List<CategoryOptionCombo> fullOptionCombos = new ArrayList<>();
+                    for (Category category : categoryCombo.categories()) {
+                        fullCategories.add(d2.categoryModule().categories().withCategoryOptions().uid(category.uid()).blockingGet());
+                    }
+                    List<CategoryOptionCombo> catOptionCombos = d2.categoryModule().categoryOptionCombos()
+                            .byCategoryComboUid().eq(categoryCombo.uid())
+                            .blockingGet();
+                    for (CategoryOptionCombo categoryOptionCombo : catOptionCombos)
+                        fullOptionCombos.add(d2.categoryModule().categoryOptionCombos().withCategoryOptions().uid(categoryOptionCombo.uid()).blockingGet());
+                    return categoryCombo.toBuilder().categories(fullCategories).categoryOptionCombos(fullOptionCombos).build();
+                }).toObservable();
+    }
+
+    @Override
+    public Observable<List<CategoryOptionCombo>> catOptionCombos(String catOptionComboUid) {
+        return d2.categoryModule().categoryOptionCombos().byCategoryComboUid().eq(catOptionComboUid).get().toObservable();
+    }
+
+    @Override
+    public Flowable<Map<String, CategoryOption>> getOptionsFromCatOptionCombo(String eventId) {
+        return d2.eventModule().events().uid(eventUid).get().toFlowable()
+                .flatMap(event -> catCombo(event.program()).toFlowable(BackpressureStrategy.LATEST)
+                        .flatMap(categoryCombo -> {
+                            Map<String, CategoryOption> map = new HashMap<>();
+                            if (!categoryCombo.isDefault() && event.attributeOptionCombo() != null) {
+                                List<CategoryOption> selectedCatOptions = d2.categoryModule().categoryOptionCombos().withCategoryOptions().uid(event.attributeOptionCombo()).blockingGet().categoryOptions();
+                                for (Category category : categoryCombo.categories()) {
+                                    for (CategoryOption categoryOption : selectedCatOptions)
+                                        if (category.categoryOptions().contains(categoryOption))
+                                            map.put(category.uid(), categoryOption);
+                                }
+                            }
+
+                            return Flowable.just(map);
+                        }));
+    }
+
+    @Override
+    public Date getStageLastDate(String programStageUid, String enrollmentUid) {
+        List<Event> activeEvents = d2.eventModule().events().byEnrollmentUid().eq(enrollmentUid).byProgramStageUid().eq(programStageUid)
+                .orderByEventDate(RepositoryScope.OrderByDirection.DESC).blockingGet();
+        List<Event> scheduleEvents = d2.eventModule().events().byEnrollmentUid().eq(enrollmentUid).byProgramStageUid().eq(programStageUid)
+                .orderByDueDate(RepositoryScope.OrderByDirection.DESC).blockingGet();
+
+        Date activeDate = null;
+        Date scheduleDate = null;
+        if (!activeEvents.isEmpty()) {
+            activeDate = activeEvents.get(0).eventDate();
+        }
+        if (!scheduleEvents.isEmpty())
+            scheduleDate = scheduleEvents.get(0).dueDate();
+
+        if (activeDate != null && scheduleDate != null) {
+            return activeDate.before(scheduleDate) ? scheduleDate : activeDate;
+        } else if (activeDate != null) {
+            return activeDate;
+        } else if (scheduleDate != null) {
+            return scheduleDate;
+        } else {
+            return Calendar.getInstance().getTime();
+        }
     }
 
     @Override
@@ -119,10 +171,8 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
                                           @NonNull Context context, @NonNull String programUid,
                                           @NonNull String programStage, @NonNull Date date,
                                           @NonNull String orgUnitUid, @Nullable String categoryOptionsUid,
-                                          @Nullable String categoryOptionComboUid, @NonNull String latitude, @NonNull String longitude) {
+                                          @Nullable String categoryOptionComboUid, @NonNull Geometry geometry) {
 
-
-        Date createDate = Calendar.getInstance().getTime();
         Calendar cal = Calendar.getInstance();
         cal.setTime(date);
         cal.set(Calendar.HOUR_OF_DAY, 0);
@@ -130,67 +180,40 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
         cal.set(Calendar.SECOND, 0);
         cal.set(Calendar.MILLISECOND, 0);
 
-        //If we are creating a new event, do not schedule it
-        /*if (date != null && date.after(createDate))
-            return scheduleEvent(enrollmentUid, trackedEntityInstanceUid, context, programUid, programStage,
-                    date, orgUnitUid, categoryOptionsUid, categoryOptionComboUid, latitude, longitude);*/
-
-
-        String uid = codeGenerator.generate();
-
-        if (categoryOptionComboUid != null) {
-            Cursor cursorCatOpt = briteDatabase.query(SELECT_CAT_OPTION_FROM_OPTION_COMBO, categoryOptionComboUid == null ? "" : categoryOptionComboUid);
-            if (cursorCatOpt != null && cursorCatOpt.moveToFirst()) {
-                categoryOptionsUid = cursorCatOpt.getString(0);
-                cursorCatOpt.close();
-            }
-        }
-
-        EventModel eventModel = EventModel.builder()
-                .uid(uid)
-                .enrollment(enrollmentUid)
-                .created(createDate)
-                .lastUpdated(createDate)
-                .status(EventStatus.ACTIVE)
-                .latitude(latitude)
-                .longitude(longitude)
-                .program(programUid)
-                .programStage(programStage)
-                .organisationUnit(orgUnitUid)
-                .eventDate(cal.getTime())
-                .completedDate(null)
-                .dueDate(null)
-                .state(State.TO_POST)
-                .attributeCategoryOptions(categoryOptionsUid)//TODO: For now categoryOptionsUid is always null. Should check SELECT_CAT_OPTION_FROM_OPTION_COMBO
-                .attributeOptionCombo(categoryOptionComboUid)
-                .build();
-
-        long row = -1;
-
-        try {
-            row = briteDatabase.insert(EventModel.TABLE,
-                    eventModel.toContentValues());
-        } catch (Exception e) {
-            Timber.e(e);
-        }
-
-        if (row < 0) {
-            String message = String.format(Locale.US, "Failed to insert new event " +
-                            "instance for organisationUnit=[%s] and programStage=[%s]",
-                    orgUnitUid, programStage);
-            return Observable.error(new SQLiteConstraintException(message));
-        } else {
-            updateProgramTable(createDate, programUid);
-            return Observable.just(uid);
-        }
+        return Observable.fromCallable(() ->
+                d2.eventModule().events().blockingAdd(
+                        EventCreateProjection.builder()
+                                .enrollment(enrollmentUid)
+                                .program(programUid)
+                                .programStage(programStage)
+                                .organisationUnit(orgUnitUid)
+                                .attributeOptionCombo(categoryOptionComboUid)
+                                .build()
+                )
+        ).map(uid -> {
+            EventObjectRepository eventRepository = d2.eventModule().events().uid(uid);
+            eventRepository.setEventDate(cal.getTime());
+            if (d2.programModule().programStages().uid(eventRepository.blockingGet().programStage()).blockingGet().featureType() != null)
+                switch (d2.programModule().programStages().uid(eventRepository.blockingGet().programStage()).blockingGet().featureType()) {
+                    case NONE:
+                        break;
+                    case POINT:
+                    case POLYGON:
+                    case MULTI_POLYGON:
+                        eventRepository.setGeometry(geometry);
+                        break;
+                    default:
+                        break;
+                }
+            return uid;
+        });
     }
 
     @Override
     public Observable<String> scheduleEvent(String enrollmentUid, @Nullable String trackedEntityInstanceUid,
-                                            @NonNull Context context, @NonNull String program, @NonNull String programStage,
+                                            @NonNull Context context, @NonNull String programUid, @NonNull String programStage,
                                             @NonNull Date dueDate, @NonNull String orgUnitUid, @Nullable String categoryOptionsUid,
-                                            @Nullable String categoryOptionComboUid, @NonNull String latitude, @NonNull String longitude) {
-        Date createDate = Calendar.getInstance().getTime();
+                                            @Nullable String categoryOptionComboUid, @NonNull Geometry geometry) {
         Calendar cal = Calendar.getInstance();
         cal.setTime(dueDate);
         cal.set(Calendar.HOUR_OF_DAY, 0);
@@ -198,205 +221,182 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
         cal.set(Calendar.SECOND, 0);
         cal.set(Calendar.MILLISECOND, 0);
 
-        String uid = codeGenerator.generate();
-
-        EventModel eventModel = EventModel.builder()
-                .uid(uid)
-                .enrollment(enrollmentUid)
-                .created(createDate)
-                .lastUpdated(createDate)
-                .status(EventStatus.SCHEDULE)
-                .latitude(latitude)
-                .longitude(longitude)
-                .program(program)
-                .programStage(programStage)
-                .organisationUnit(orgUnitUid)
-                .eventDate(cal.getTime())
-                .completedDate(null)
-                .dueDate(cal.getTime())
-                .state(State.TO_POST)
-                .attributeCategoryOptions(categoryOptionsUid)
-                .attributeOptionCombo(categoryOptionComboUid)
-                .build();
-
-        long row = -1;
-
-        try {
-            row = briteDatabase.insert(EventModel.TABLE,
-                    eventModel.toContentValues());
-        } catch (Exception e) {
-            Timber.e(e);
-        }
-
-        if (row < 0) {
-            String message = String.format(Locale.US, "Failed to insert new event " +
-                            "instance for organisationUnit=[%s] and programStage=[%s]",
-                    orgUnitUid, programStage);
-            return Observable.error(new SQLiteConstraintException(message));
-        } else {
-            updateProgramTable(createDate, program);
-            return Observable.just(uid);
-        }
-    }
-
-    private void updateProgramTable(Date lastUpdated, String programUid) {
-        //TODO: Update program causes crash
-        /* ContentValues program = new ContentValues();
-        program.put(EnrollmentModel.Columns.LAST_UPDATED, BaseIdentifiableObject.DATE_FORMAT.format(lastUpdated));
-        briteDatabase.update(ProgramModel.TABLE, program, ProgramModel.Columns.UID + " = ?", programUid);*/
-    }
-
-    @Override
-    public Observable<String> updateTrackedEntityInstance(String eventId, String trackedEntityInstanceUid, String orgUnitUid) {
-        String TEI_QUERY = "SELECT * FROM TrackedEntityInstance WHERE TrackedEntityInstance.uid = ? LIMIT 1";
-        return briteDatabase.createQuery(TrackedEntityInstanceModel.TABLE, TEI_QUERY, trackedEntityInstanceUid == null ? "" : trackedEntityInstanceUid)
-                .mapToOne(TrackedEntityInstanceModel::create).distinctUntilChanged()
-                .map(trackedEntityInstanceModel -> {
-                    ContentValues contentValues = trackedEntityInstanceModel.toContentValues();
-                    contentValues.put(TrackedEntityInstanceModel.Columns.ORGANISATION_UNIT, orgUnitUid);
-                    long row = -1;
-                    try {
-                        row = briteDatabase.update(TrackedEntityInstanceModel.TABLE, contentValues, "TrackedEntityInstance.uid = ?", trackedEntityInstanceUid == null ? "" : trackedEntityInstanceUid);
-                    } catch (Exception e) {
-                        Timber.e(e);
-                    }
-                    if (row != -1) {
-                        return eventId; //Event created and referral complete
-                    }
-                    return eventId;
-                });
-    }
-
-
-    @NonNull
-    @Override
-    public Observable<EventModel> newlyCreatedEvent(long rowId) {
-        String SELECT_EVENT_WITH_ROWID = "SELECT * FROM " + EventModel.TABLE + " WHERE " + EventModel.Columns.ID + " = '" + rowId + "'" + " AND " + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "' LIMIT 1";
-        return briteDatabase.createQuery(EventModel.TABLE, SELECT_EVENT_WITH_ROWID).mapToOne(EventModel::create);
-    }
-
-    @NonNull
-    @Override
-    public Observable<ProgramStageModel> programStage(String programUid) {
-        String id = programUid == null ? "" : programUid;
-        String SELECT_PROGRAM_STAGE = "SELECT * FROM " + ProgramStageModel.TABLE + " WHERE " + ProgramStageModel.Columns.PROGRAM + " = '" + id + "' LIMIT 1";
-        return briteDatabase.createQuery(ProgramStageModel.TABLE, SELECT_PROGRAM_STAGE)
-                .mapToOne(ProgramStageModel::create);
-    }
-
-    @NonNull
-    @Override
-    public Observable<ProgramStageModel> programStageWithId(String programStageUid) {
-        String id = programStageUid == null ? "" : programStageUid;
-        String SELECT_PROGRAM_STAGE_WITH_ID = "SELECT * FROM " + ProgramStageModel.TABLE + " WHERE " + ProgramStageModel.Columns.UID + " = '" + id + "' LIMIT 1";
-        return briteDatabase.createQuery(ProgramStageModel.TABLE, SELECT_PROGRAM_STAGE_WITH_ID)
-                .mapToOne(ProgramStageModel::create);
-    }
-
-
-    @NonNull
-    @Override
-    public Observable<EventModel> editEvent(String eventUid, String date, String orgUnitUid, String catComboUid, String catOptionCombo, String latitude, String longitude) {
-
-        Date currentDate = Calendar.getInstance().getTime();
-        Date dueDate = null;
-        try {
-            dueDate = DateUtils.databaseDateFormat().parse(date);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(dueDate);
-        cal.set(Calendar.HOUR_OF_DAY, 0);
-        cal.set(Calendar.MINUTE, 0);
-        cal.set(Calendar.SECOND, 0);
-        cal.set(Calendar.MILLISECOND, 0);
-
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(EventModel.Columns.EVENT_DATE, DateUtils.databaseDateFormat().format(cal.getTime()));
-        contentValues.put(EventModel.Columns.ORGANISATION_UNIT, orgUnitUid);
-        // TODO CRIS: CHECK IF THESE ARE WORKING...
-        contentValues.put(EventModel.Columns.LATITUDE, latitude);
-        contentValues.put(EventModel.Columns.LONGITUDE, longitude);
-        contentValues.put(EventModel.Columns.ATTRIBUTE_OPTION_COMBO, catComboUid);
-        contentValues.put(EventModel.Columns.ATTRIBUTE_CATEGORY_OPTIONS, catOptionCombo);
-        contentValues.put(EventModel.Columns.LAST_UPDATED, BaseIdentifiableObject.DATE_FORMAT.format(currentDate));
-
-        long row = -1;
-
-        String id = eventUid == null ? "" : eventUid;
-
-        try {
-            row = briteDatabase.update(EventModel.TABLE, contentValues, EventModel.Columns.UID + " = ?", id);
-        } catch (Exception e) {
-            Timber.e(e);
-        }
-
-        if (row <= 0) {
-            String message = String.format(Locale.US, "Failed to update event for uid=[%s]", id);
-            return Observable.error(new SQLiteConstraintException(message));
-        }
-
-        return event(id).map(eventModel1 -> {
-//            updateProgramTable(currentDate, eventModel1.program()); //TODO: This is crashing the app
-            return eventModel1;
+        return Observable.fromCallable(() ->
+                d2.eventModule().events().blockingAdd(
+                        EventCreateProjection.builder()
+                                .enrollment(enrollmentUid)
+                                .program(programUid)
+                                .programStage(programStage)
+                                .organisationUnit(orgUnitUid)
+                                .attributeOptionCombo(categoryOptionComboUid)
+                                .build()
+                )
+        ).map(uid -> {
+            EventObjectRepository eventRepository = d2.eventModule().events().uid(uid);
+            eventRepository.setDueDate(cal.getTime());
+            eventRepository.setStatus(EventStatus.SCHEDULE);
+            if (d2.programModule().programStages().uid(eventRepository.blockingGet().programStage()).blockingGet().featureType() != null)
+                switch (d2.programModule().programStages().uid(eventRepository.blockingGet().programStage()).blockingGet().featureType()) {
+                    case NONE:
+                        break;
+                    case POINT:
+                    case POLYGON:
+                    case MULTI_POLYGON:
+                        eventRepository.setGeometry(geometry);
+                        break;
+                    default:
+                        break;
+                }
+            return uid;
         });
     }
 
     @NonNull
     @Override
-    public Observable<List<EventModel>> getEventsFromProgramStage(String programUid, String enrollmentUid, String programStageUid) {
-        String EVENTS_QUERY = String.format(
-                "SELECT Event.* FROM %s JOIN %s " +
-                        "ON %s.%s = %s.%s " +
-                        "WHERE %s.%s = ? " +
-                        "AND %s.%s = ? " +
-                        "AND %s.%s = ? " +
-                        "AND " + EventModel.TABLE + "." + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "'" +
-                        "AND " + EventModel.TABLE + "." + EventModel.Columns.EVENT_DATE + " > DATE() " +
-                        "ORDER BY CASE WHEN %s.%s > %s.%s " +
-                        "THEN %s.%s ELSE %s.%s END ASC",
-                EventModel.TABLE, EnrollmentModel.TABLE,
-                EnrollmentModel.TABLE, EnrollmentModel.Columns.UID, EventModel.TABLE, EventModel.Columns.ENROLLMENT,
-                EnrollmentModel.TABLE, EnrollmentModel.Columns.PROGRAM,
-                EnrollmentModel.TABLE, EnrollmentModel.Columns.UID,
-                EventModel.TABLE, EventModel.Columns.PROGRAM_STAGE,
-                EventModel.TABLE, EventModel.Columns.DUE_DATE, EventModel.TABLE, EventModel.Columns.EVENT_DATE,
-                EventModel.TABLE, EventModel.Columns.DUE_DATE, EventModel.TABLE, EventModel.Columns.EVENT_DATE);
+    public Observable<ProgramStage> programStage(String programUid) {
+        return d2.programModule().programStages().byProgramUid().eq(programUid).one().get().toObservable();
+    }
 
-        return briteDatabase.createQuery(EventModel.TABLE, EVENTS_QUERY, programUid == null ? "" : programUid,
-                enrollmentUid == null ? "" : enrollmentUid,
-                programStageUid == null ? "" : programStageUid)
-                .mapToList(EventModel::create);
+    @NonNull
+    @Override
+    public Observable<ProgramStage> programStageWithId(String programStageUid) {
+        return d2.programModule().programStages().byUid().eq(programStageUid).one().get().toObservable();
+    }
+
+
+    @NonNull
+    @Override
+    public Observable<Event> editEvent(String trackedEntityInstance,
+                                       String eventUid,
+                                       String date,
+                                       String orgUnitUid,
+                                       String catComboUid,
+                                       String catOptionCombo,
+                                       Geometry geometry) {
+
+        return Observable.fromCallable(() -> d2.eventModule().events().uid(eventUid))
+                .map(eventRepository -> {
+                    eventRepository.setEventDate(DateUtils.databaseDateFormat().parse(date));
+                    eventRepository.setOrganisationUnitUid(orgUnitUid);
+                    eventRepository.setAttributeOptionComboUid(catOptionCombo);
+                    FeatureType featureType = d2.programModule().programStages().uid(eventRepository.blockingGet().programStage()).blockingGet().featureType();
+                    if (featureType != null)
+                        switch (featureType) {
+                            case NONE:
+                                break;
+                            case POINT:
+                            case POLYGON:
+                            case MULTI_POLYGON:
+                                eventRepository.setGeometry(geometry);
+                                break;
+                            default:
+                                break;
+                        }
+                    return eventRepository.blockingGet();
+                });
     }
 
     @Override
-    public Observable<Boolean> accessDataWrite(String programId) {
-        String WRITE_PERMISSION = "SELECT ProgramStage.accessDataWrite FROM ProgramStage WHERE ProgramStage.program = ? LIMIT 1";
-        String PROGRAM_WRITE_PERMISSION = "SELECT Program.accessDataWrite FROM Program WHERE Program.uid = ? LIMIT 1";
-        return briteDatabase.createQuery(ProgramStageModel.TABLE, WRITE_PERMISSION, programId == null ? "" : programId)
-                .mapToOne(cursor -> cursor.getInt(0) == 1)
-                .flatMap(programStageAccessDataWrite ->
-                        briteDatabase.createQuery(ProgramModel.TABLE, PROGRAM_WRITE_PERMISSION, programId == null ? "" : programId)
-                                .mapToOne(cursor -> (cursor.getInt(0) == 1) && programStageAccessDataWrite));
+    public Observable<Boolean> accessDataWrite(String programUid) {
+        if (eventUid != null)
+            return d2.eventModule().events().uid(eventUid).get().toObservable()
+                    .flatMap(event -> {
+                        if (event.attributeOptionCombo() != null)
+                            return accessWithCatOption(programUid, event.attributeOptionCombo());
+                        else
+                            return programAccess(programUid);
+                    });
+        else
+            return programAccess(programUid);
+
+
+    }
+
+    private Observable<Boolean> accessWithCatOption(String programUid, String catOptionCombo) {
+        return d2.categoryModule().categoryOptionCombos().withCategoryOptions().uid(catOptionCombo).get()
+                .map(data -> UidsHelper.getUidsList(data.categoryOptions()))
+                .flatMap(categoryOptionsUids -> d2.categoryModule().categoryOptions().byUid().in(categoryOptionsUids).get())
+                .toObservable()
+                .map(categoryOptions -> {
+                    boolean access = true;
+                    for (CategoryOption option : categoryOptions) {
+                        if (!option.access().data().write())
+                            access = false;
+                    }
+                    return access;
+                }).flatMap(catComboAccess -> {
+                    if (catComboAccess)
+                        return programAccess(programUid);
+                    else
+                        return Observable.just(catComboAccess);
+                });
+    }
+
+    private Observable<Boolean> programAccess(String programUid) {
+        return Observable.fromCallable(() ->
+                d2.programModule().programStages().byProgramUid().eq(programUid).one().blockingGet().access().data().write() &&
+                        d2.programModule().programs().uid(programUid).blockingGet().access().data().write()
+
+        );
     }
 
     @Override
-    public void deleteEvent(String eventId) {
-        Cursor eventCursor = briteDatabase.query("SELECT Event.* FROM Event WHERE Event.uid = ?", eventId);
-        if (eventCursor != null && eventCursor.moveToNext()) {
-            EventModel eventModel = EventModel.create(eventCursor);
-            if (eventModel.state() == State.TO_POST) {
-                String DELETE_WHERE = String.format(
-                        "%s.%s = ?",
-                        EventModel.TABLE, EventModel.Columns.UID
-                );
-                briteDatabase.delete(EventModel.TABLE, DELETE_WHERE, eventId);
-            } else {
-                ContentValues contentValues = eventModel.toContentValues();
-                contentValues.put(EventModel.Columns.STATE, State.TO_DELETE.name());
-                briteDatabase.update(EventModel.TABLE, contentValues, EventModel.Columns.UID + " = ?", eventId);
-            }
+    public void deleteEvent(String eventId, String trackedEntityInstance) {
+        try {
+            d2.eventModule().events().uid(eventId).blockingDelete();
+        } catch (D2Error d2Error) {
+            Timber.e(d2Error);
         }
+    }
+
+    @Override
+    public boolean isEnrollmentOpen() {
+        Event event = d2.eventModule().events().uid(eventUid).blockingGet();
+        return event == null || event.enrollment() == null || d2.enrollmentModule().enrollments().uid(event.enrollment()).blockingGet().status() == EnrollmentStatus.ACTIVE;
+    }
+
+
+    @Override
+    public Observable<Program> getProgramWithId(String programUid) {
+        return d2.programModule().programs()
+                .withTrackedEntityType().byUid().eq(programUid).one().get().toObservable();
+    }
+
+    @Override
+    public Flowable<ProgramStage> programStageForEvent(String eventId) {
+        return d2.eventModule().events().byUid().eq(eventId).one().get().toFlowable()
+                .map(event -> d2.programModule().programStages().byUid().eq(event.programStage()).one().blockingGet());
+    }
+
+    @Override
+    public Observable<OrganisationUnit> getOrganisationUnit(String orgUnitUid) {
+        return d2.organisationUnitModule().organisationUnits().byUid().eq(orgUnitUid).one().get().toObservable();
+    }
+
+    @Override
+    public Observable<ObjectStyle> getObjectStyle(String uid) {
+        return d2.programModule().programStages().uid(uid).get()
+                .map(programStage -> {
+                    Program program = d2.programModule().programs().uid(programStage.program().uid()).blockingGet();
+                    ObjectStyle programStyle = program.style() != null ? program.style() : ObjectStyle.builder().build();
+                    if (programStage.style() != null) {
+                        programStage.style().icon();
+                        programStage.style().color();
+                        return ObjectStyle.builder()
+                                .icon(programStage.style().icon() != null ? programStage.style().icon() : programStyle.icon())
+                                .color(programStage.style().color() != null ? programStage.style().color() : programStyle.color())
+                                .build();
+                    } else {
+                        return programStyle;
+                    }
+                }).toObservable();
+    }
+
+    @Override
+    public String getCategoryOptionCombo(String categoryComboUid, List<String> categoryOptionsUid) {
+        return d2.categoryModule().categoryOptionCombos()
+                .byCategoryComboUid().eq(categoryComboUid)
+                .byCategoryOptions(categoryOptionsUid)
+                .one().blockingGet().uid();
     }
 }

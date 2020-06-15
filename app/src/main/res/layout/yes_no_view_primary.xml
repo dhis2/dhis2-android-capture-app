@@ -7,10 +7,6 @@
         <import type="android.view.View" />
 
         <variable
-            name="attribute"
-            type="org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel" />
-
-        <variable
             name="label"
             type="java.lang.String" />
 
@@ -42,7 +38,6 @@
             android:orientation="vertical">
 
             <TextView
-                android:id="@+id/button"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="5dp"
@@ -51,60 +46,109 @@
                 android:textAllCaps="false"
                 android:textColor="@color/text_black_808"
                 android:textSize="16sp"
+                android:visibility="@{label!=null ? View.VISIBLE : View.GONE}"
                 tools:text="WHOMCH Smocking cessation counselling provided fdsfsdfsdfsdfsdfsdfsdfsdfsdfsdfdfsfsdfsdf" />
 
 
             <LinearLayout
+                android:id="@+id/checkLayouts"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="50dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
 
                 <RadioGroup
                     android:id="@+id/radiogroup"
-                    android:layout_width="0dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="center_vertical">
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
 
                     <RadioButton
                         android:id="@+id/yes"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginEnd="32dp"
                         android:checked="false"
                         android:text="@string/yes"
                         android:textColor="@color/text_black_333"
                         app:buttonTint="@color/text_black_333"
-                        tools:checked="true"/>
+                        tools:checked="true" />
 
                     <RadioButton
                         android:id="@+id/no"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginEnd="25dp"
                         android:checked="false"
                         android:text="@string/no"
                         android:textColor="@color/text_black_333"
                         app:buttonTint="@color/text_black_333" />
-
-                    <RadioButton
-                        android:id="@+id/no_value"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:checked="false"
-                        android:text="@string/no_value"
-                        android:textColor="@color/text_black_333"
-                        app:buttonTint="@color/text_black_333" />
-
                 </RadioGroup>
 
+                <LinearLayout
+                    android:id="@+id/checkGroup"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <com.google.android.material.checkbox.MaterialCheckBox
+                        android:id="@+id/checkYes"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="32dp"
+                        android:checked="false"
+                        android:text="@string/yes"
+                        android:textColor="@color/text_black_333"
+                        app:buttonTint="@color/text_black_333"
+                        tools:checked="true" />
+
+                    <com.google.android.material.checkbox.MaterialCheckBox
+                        android:id="@+id/checkNo"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="25dp"
+                        android:checked="false"
+                        android:text="@string/no"
+                        android:textColor="@color/text_black_333"
+                        app:buttonTint="@color/text_black_333" />
+                </LinearLayout>
+
+                <ImageView
+                    android:id="@+id/clearSelection"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:padding="10dp"
+                    android:tint="@color/icon_color"
+                    app:srcCompat="@drawable/ic_clear" />
+
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" />
 
                 <ImageView
                     android:id="@+id/descriptionLabel"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="bottom"
                     android:visibility="@{(label.length()>16 || description!=null)?View.VISIBLE : View.GONE}"
                     app:srcCompat="@drawable/ic_info_outline"
                     app:tint="?colorPrimary" />
             </LinearLayout>
+
+            <com.google.android.material.switchmaterial.SwitchMaterial
+                android:id="@+id/yesOnlyToggle"
+                style="@style/Widget.AppCompat.CompoundButton.Switch"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/yes"
+                android:textAppearance="@style/TextPrimary"
+                android:textSize="14sp"
+                app:switchPadding="20dp"
+                app:thumbTint="@drawable/selector_material_thumb_field"
+                app:trackTint="@drawable/selector_material_track_field"
+                app:useMaterialThemeColors="false" />
         </LinearLayout>
     </RelativeLayout>
 </layout>

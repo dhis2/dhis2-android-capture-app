@@ -1,60 +1,29 @@
 package org.dhis2.usescases.teiDashboard;
 
-import android.annotation.SuppressLint;
-import android.content.Intent;
-import android.os.Bundle;
-import android.support.v4.app.ActivityOptionsCompat;
-import android.support.v4.app.Fragment;
-import android.support.v7.widget.PopupMenu;
-import android.text.format.DateUtils;
-import android.util.Log;
-import android.view.Menu;
-import android.view.View;
-import android.widget.TextView;
+import com.google.gson.reflect.TypeToken;
 
-import org.dhis2.R;
-import org.dhis2.data.metadata.MetadataRepository;
-import org.dhis2.data.tuples.Pair;
-import org.dhis2.data.tuples.Trio;
-import org.dhis2.usescases.searchTrackEntity.SearchTEActivity;
-import org.dhis2.usescases.teiDashboard.adapters.ScheduleAdapter;
-import org.dhis2.usescases.teiDashboard.dashboardfragments.IndicatorsFragment;
-import org.dhis2.usescases.teiDashboard.dashboardfragments.NotesFragment;
-import org.dhis2.usescases.teiDashboard.dashboardfragments.RelationshipFragment;
-import org.dhis2.usescases.teiDashboard.dashboardfragments.ScheduleFragment;
-import org.dhis2.usescases.teiDashboard.dashboardfragments.TEIDataFragment;
-import org.dhis2.usescases.teiDashboard.eventDetail.EventDetailActivity;
-import org.dhis2.usescases.teiDashboard.mobile.TeiDashboardMobileActivity;
-import org.dhis2.usescases.teiDashboard.teiDataDetail.TeiDataDetailActivity;
+import org.dhis2.data.prefs.Preference;
+import org.dhis2.data.prefs.PreferenceProvider;
+import org.dhis2.data.schedulers.SchedulerProvider;
+import org.dhis2.utils.AuthorityException;
 import org.dhis2.utils.Constants;
-import org.hisp.dhis.android.core.D2;
-import org.hisp.dhis.android.core.common.D2CallException;
+import org.dhis2.utils.analytics.AnalyticsHelper;
+import org.dhis2.utils.filters.FilterManager;
+import org.hisp.dhis.android.core.common.Unit;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
-import org.hisp.dhis.android.core.event.EventModel;
-import org.hisp.dhis.android.core.event.EventStatus;
-import org.hisp.dhis.android.core.program.ProgramModel;
-import org.hisp.dhis.android.core.relationship.Relationship;
-import org.hisp.dhis.android.core.relationship.RelationshipHelper;
-import org.hisp.dhis.android.core.relationship.RelationshipItem;
-import org.hisp.dhis.android.core.relationship.RelationshipItemTrackedEntityInstance;
-import org.hisp.dhis.android.core.relationship.RelationshipModel;
-import org.hisp.dhis.android.core.relationship.RelationshipType;
-import org.hisp.dhis.android.core.relationship.RelationshipTypeModel;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
+import org.hisp.dhis.android.core.program.Program;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
-import io.reactivex.Flowable;
 import io.reactivex.Observable;
-import io.reactivex.Single;
-import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.schedulers.Schedulers;
+import io.reactivex.processors.PublishProcessor;
 import timber.log.Timber;
 
-import static org.hisp.dhis.android.core.common.D2ErrorCode.CANT_CREATE_EXISTING_OBJECT;
+import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
+import static org.dhis2.utils.analytics.AnalyticsConstants.DELETE_ENROLL;
+import static org.dhis2.utils.analytics.AnalyticsConstants.DELETE_TEI;
 
 /**
  * QUADRAM. Created by ppajuelo on 30/11/2017.
@@ -63,483 +32,156 @@ import static org.hisp.dhis.android.core.common.D2ErrorCode.CANT_CREATE_EXISTING
 public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
 
     private final DashboardRepository dashboardRepository;
-    private final MetadataRepository metadataRepository;
-    private final D2 d2;
+    private final SchedulerProvider schedulerProvider;
+    private final AnalyticsHelper analyticsHelper;
+    private final PreferenceProvider preferenceProvider;
+    private final FilterManager filterManager;
     private TeiDashboardContracts.View view;
 
-    private String teUid;
-    private String teType;
-    private String programUid;
-    private boolean programWritePermission;
+    private String teiUid;
+    public String programUid;
 
-    private CompositeDisposable compositeDisposable;
-    private DashboardProgramModel dashboardProgramModel;
-    private TEIDataFragment teiDataFragment;
-    private String eventUid;
+    public CompositeDisposable compositeDisposable;
+    public DashboardProgramModel dashboardProgramModel;
+    private PublishProcessor<Unit> notesCounterProcessor;
 
-    TeiDashboardPresenter(D2 d2, DashboardRepository dashboardRepository, MetadataRepository metadataRepository) {
-        this.d2 = d2;
-        this.dashboardRepository = dashboardRepository;
-        this.metadataRepository = metadataRepository;
-        compositeDisposable = new CompositeDisposable();
-    }
 
-    @Override
-    public void init(TeiDashboardContracts.View view, String teiUid, String programUid) {
+    public TeiDashboardPresenter(
+            TeiDashboardContracts.View view,
+            String teiUid, String programUid,
+            DashboardRepository dashboardRepository,
+            SchedulerProvider schedulerProvider,
+            AnalyticsHelper analyticsHelper,
+            PreferenceProvider preferenceProvider,
+            FilterManager filterManager
+    ) {
         this.view = view;
-        this.teUid = teiUid;
+        this.teiUid = teiUid;
         this.programUid = programUid;
-
-        dashboardRepository.setDashboardDetails(teiUid, programUid);
-
-        getData();
+        this.analyticsHelper = analyticsHelper;
+        this.dashboardRepository = dashboardRepository;
+        this.schedulerProvider = schedulerProvider;
+        this.preferenceProvider = preferenceProvider;
+        this.filterManager = filterManager;
+        compositeDisposable = new CompositeDisposable();
+        notesCounterProcessor = PublishProcessor.create();
     }
 
-    @SuppressLint({"CheckResult"})
     @Override
-    public void getData() {
+    public void init() {
         if (programUid != null)
             compositeDisposable.add(Observable.zip(
-                    metadataRepository.getTrackedEntityInstance(teUid),
-                    dashboardRepository.getEnrollment(programUid, teUid),
+                    dashboardRepository.getTrackedEntityInstance(teiUid),
+                    dashboardRepository.getEnrollment(programUid, teiUid),
                     dashboardRepository.getProgramStages(programUid),
-                    dashboardRepository.getTEIEnrollmentEvents(programUid, teUid),
-                    metadataRepository.getProgramTrackedEntityAttributes(programUid),
-                    dashboardRepository.getTEIAttributeValues(programUid, teUid),
-                    metadataRepository.getTeiOrgUnit(teUid, programUid),
-                    metadataRepository.getTeiActivePrograms(teUid),
+                    dashboardRepository.getTEIEnrollmentEvents(programUid, teiUid),
+                    dashboardRepository.getProgramTrackedEntityAttributes(programUid),
+                    dashboardRepository.getTEIAttributeValues(programUid, teiUid),
+                    dashboardRepository.getTeiOrgUnits(teiUid, programUid),
+                    dashboardRepository.getTeiActivePrograms(teiUid, false),
                     DashboardProgramModel::new)
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribeOn(schedulerProvider.io())
+                    .observeOn(schedulerProvider.ui())
                     .subscribe(
-                            (dashboardProgramModel) -> {
-                                this.dashboardProgramModel = dashboardProgramModel;
-                                this.programWritePermission = dashboardProgramModel.getCurrentProgram().accessDataWrite();
-                                this.teType = dashboardProgramModel.getTei().trackedEntityType();
-                                view.setData(dashboardProgramModel);
+                            dashboardModel -> {
+                                this.dashboardProgramModel = dashboardModel;
+                                view.setData(dashboardModel);
                             },
-                            throwable -> Log.d("ERROR", throwable.getMessage())
+                            Timber::e
                     )
             );
 
         else {
             compositeDisposable.add(Observable.zip(
-                    metadataRepository.getTrackedEntityInstance(teUid),
-                    metadataRepository.getProgramTrackedEntityAttributes(null),
-                    dashboardRepository.getTEIAttributeValues(null, teUid),
-                    metadataRepository.getTeiOrgUnit(teUid),
-                    metadataRepository.getTeiActivePrograms(teUid),
-                    metadataRepository.getTEIEnrollments(teUid),
+                    dashboardRepository.getTrackedEntityInstance(teiUid),
+                    dashboardRepository.getProgramTrackedEntityAttributes(null),
+                    dashboardRepository.getTEIAttributeValues(null, teiUid),
+                    dashboardRepository.getTeiOrgUnits(teiUid, null),
+                    dashboardRepository.getTeiActivePrograms(teiUid, true),
+                    dashboardRepository.getTEIEnrollments(teiUid),
                     DashboardProgramModel::new)
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribeOn(schedulerProvider.io())
+                    .observeOn(schedulerProvider.ui())
                     .subscribe(
-                            view::setDataWithOutProgram,
-                            throwable -> Log.d("ERROR", throwable.getMessage()))
+                            dashboardModel -> {
+                                this.dashboardProgramModel = dashboardModel;
+                                view.setDataWithOutProgram(dashboardProgramModel);
+                            },
+                            Timber::e)
             );
         }
-    }
 
-    @Override
-    public DashboardProgramModel getDashBoardData() {
-        return dashboardProgramModel;
-    }
-
-    @Override
-    public void getTEIEvents(TEIDataFragment teiFragment) {
         compositeDisposable.add(
-                dashboardRepository.getTEIEnrollmentEvents(programUid, teUid)
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
+                filterManager.asFlowable()
+                        .startWith(filterManager)
+                        .map(FilterManager::getTotalFilters)
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
                         .subscribe(
-                                teiFragment.setEvents(),
-                                Timber::d
+                                totalFilters -> view.updateTotalFilters(totalFilters),
+                                Timber::e
                         )
         );
-    }
-
-    @Override
-    public void areEventsCompleted(TEIDataFragment teiDataFragment) {
-        compositeDisposable.add(
-                dashboardRepository.getEnrollmentEventsWithDisplay(programUid, teUid)
-                        .flatMap(events -> events.isEmpty() ? dashboardRepository.getTEIEnrollmentEvents(programUid, teUid) : Observable.just(events))
-                        .map(events -> Observable.fromIterable(events).all(event -> event.status() == EventStatus.COMPLETED))
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(
-                                teiDataFragment.areEventsCompleted(),
-                                Timber::d
-                        )
-        );
-    }
-
-    @Override
-    public void displayGenerateEvent(TEIDataFragment teiDataFragment, String eventUid) {
-        compositeDisposable.add(
-                dashboardRepository.displayGenerateEvent(eventUid)
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(
-                                teiDataFragment.displayGenerateEvent(),
-                                Timber::d
-                        )
-        );
-    }
-
-    @Override
-    public void generateEvent(String lastModifiedEventUid, Integer standardInterval) {
-        compositeDisposable.add(
-                dashboardRepository.generateNewEvent(lastModifiedEventUid, standardInterval)
-                        .take(1)
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(
-                                result -> view.displayMessage(result),
-                                Timber::d
-                        )
-        );
-    }
-
-    @Override
-    public void generateEventFromDate(String lastModifiedEventUid, Calendar chosenDate) {
-        compositeDisposable.add(
-                dashboardRepository.generateNewEventFromDate(lastModifiedEventUid, chosenDate)
-                        .take(1)
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(
-                                result -> view.displayMessage(result),
-                                Timber::d
-                        )
-        );
-    }
-
-
-    @Override
-    public void onShareClick(View mView) {
-        PopupMenu menu = new PopupMenu(view.getContext(), mView);
-
-        menu.getMenu().add(Menu.NONE, Menu.NONE, 0, "QR");
-        //menu.getMenu().add(Menu.NONE, Menu.NONE, 1, "SMS"); TODO: When SMS is ready, reactivate option
-
-        menu.setOnMenuItemClickListener(item -> {
-            switch (item.getOrder()) {
-                case 0:
-                    view.showQR();
-                    return true;
-                case 1:
-                    view.displayMessage(view.getContext().getString(R.string.feature_unavaible));
-                    return true;
-                default:
-                    return true;
-            }
-        });
-
-        menu.show();
     }
 
     @Override
     public void onEnrollmentSelectorClick() {
-        Bundle extras = new Bundle();
-        extras.putString("TEI_UID", teUid);
-        view.goToEnrollmentList(extras);
+        view.goToEnrollmentList();
     }
 
     @Override
-    public void onShareQRClick() {
-        view.showQR();
-    }
-
-    @Override
-    public void setProgram(ProgramModel program) {
+    public void setProgram(Program program) {
         this.programUid = program.uid();
-        getData();
+        view.restoreAdapter(programUid);
+        init();
     }
 
     @Override
-    public void seeDetails(View sharedView, DashboardProgramModel dashboardProgramModel) {
-        Fragment teiFragment = TEIDataFragment.getInstance();
-        Intent intent = new Intent(view.getContext(), TeiDataDetailActivity.class);
-        Bundle extras = new Bundle();
-        extras.putString("TEI_UID", teUid);
-        extras.putString("PROGRAM_UID", programUid);
-        if (dashboardProgramModel.getCurrentEnrollment() != null)
-            extras.putString("ENROLLMENT_UID", dashboardProgramModel.getCurrentEnrollment().uid());
-        intent.putExtras(extras);
-        ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(view.getAbstractActivity(), sharedView, "user_info");
-        teiFragment.startActivityForResult(intent, TEIDataFragment.getDetailsRequestCode(), options.toBundle());
+    public void deleteTei() {
+        compositeDisposable.add(
+                dashboardRepository.deleteTeiIfPossible()
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
+                        .subscribe(
+                                canDelete -> {
+                                    if (canDelete) {
+                                        analyticsHelper.setEvent(DELETE_TEI, CLICK, DELETE_TEI);
+                                        view.handleTeiDeletion();
+                                    } else {
+                                        view.authorityErrorMessage();
+                                    }
+                                },
+                                Timber::e
+                        )
+        );
     }
 
     @Override
-    public void onEventSelected(String uid, View sharedView) {
-        Fragment teiFragment = TEIDataFragment.getInstance();
-        if (teiFragment != null && teiFragment.getContext() != null && teiFragment.isAdded()) {
-            Intent intent = new Intent(teiFragment.getContext(), EventDetailActivity.class);
-            Bundle extras = new Bundle();
-            extras.putString("EVENT_UID", uid);
-            extras.putString("TOOLBAR_TITLE", view.getToolbarTitle());
-            intent.putExtras(extras);
-            ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(view.getAbstractActivity(), sharedView, "shared_view");
-            teiFragment.startActivityForResult(intent, TEIDataFragment.getEventRequestCode(), options.toBundle());
-        }
-    }
-
-    @Override
-    public void onFollowUp(DashboardProgramModel dashboardProgramModel) {
-        int success = dashboardRepository.setFollowUp(dashboardProgramModel.getCurrentEnrollment().program(), dashboardProgramModel.getCurrentEnrollment().uid(),
-                dashboardProgramModel.getCurrentEnrollment().followUp() == null || !dashboardProgramModel.getCurrentEnrollment().followUp());
-        if (success > 0) {
-
-            boolean followUp = false;
-            if (dashboardProgramModel.getCurrentEnrollment() != null && dashboardProgramModel.getCurrentEnrollment().followUp() != null) {
-                followUp = dashboardProgramModel.getCurrentEnrollment().followUp();
-            }
-
-            view.showToast(!followUp ?
-                    view.getContext().getString(R.string.follow_up_enabled) :
-                    view.getContext().getString(R.string.follow_up_disabled));
-            getData();
-        }
+    public void deleteEnrollment() {
+        compositeDisposable.add(
+                dashboardRepository.deleteEnrollmentIfPossible(
+                        dashboardProgramModel.getCurrentEnrollment().uid()
+                )
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
+                        .subscribe(
+                                hasMoreEnrollments -> {
+                                    analyticsHelper.setEvent(DELETE_ENROLL, CLICK, DELETE_ENROLL);
+                                    view.handleEnrollmentDeletion(hasMoreEnrollments);
+                                },
+                                error -> {
+                                    if (error instanceof AuthorityException)
+                                        view.authorityErrorMessage();
+                                    else
+                                        Timber.e(error);
+                                }
+                        )
+        );
     }
 
     @Override
     public void onDettach() {
         compositeDisposable.clear();
-    }
-
-    public Observable<List<TrackedEntityAttributeValueModel>> getTEIMainAttributes(String teiUid) {
-        return dashboardRepository.mainTrackedEntityAttributes(teiUid)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread());
-    }
-
-
-    @Override
-    public void goToAddRelationship(String teiTypeToAdd) {
-        if (programWritePermission) {
-            Fragment relationshipFragment = RelationshipFragment.getInstance();
-            Intent intent = new Intent(view.getContext(), SearchTEActivity.class);
-            Bundle extras = new Bundle();
-            extras.putBoolean("FROM_RELATIONSHIP", true);
-            extras.putString("FROM_RELATIONSHIP_TEI", teUid);
-            extras.putString("TRACKED_ENTITY_UID", teiTypeToAdd);
-            extras.putString("PROGRAM_UID", null);
-            intent.putExtras(extras);
-            relationshipFragment.startActivityForResult(intent, Constants.REQ_ADD_RELATIONSHIP);
-        } else
-            view.displayMessage(view.getContext().getString(R.string.search_access_error));
-    }
-
-    @Override
-    public void addRelationship(String trackEntityInstance_A, String relationshipType) {
-        try {
-            Relationship relationship = RelationshipHelper.teiToTeiRelationship(teUid, trackEntityInstance_A, relationshipType);
-            d2.relationshipModule().relationships.add(relationship);
-//            dashboardRepository.updateTeiState(); SDK now updating TEI state
-        } catch (D2CallException e) {
-            if (e.errorCode() == CANT_CREATE_EXISTING_OBJECT)
-                view.displayMessage(e.errorDescription());
-            else
-                Timber.d(e);
-        }
-    }
-
-
-    @Override
-    public void deleteRelationship(Relationship relationship) {
-        try {
-            d2.relationshipModule().relationships.uid(relationship.uid()).delete();
-        } catch (D2CallException e) {
-            Timber.d(e);
-        } finally {
-            subscribeToRelationships(RelationshipFragment.getInstance());
-        }
-    }
-
-    @Override
-    public void subscribeToRelationships(RelationshipFragment relationshipFragment) {
-        compositeDisposable.add(
-                Flowable.just(
-                        d2.relationshipModule().relationships.getByItem(
-                                RelationshipItem.builder().trackedEntityInstance(
-                                        RelationshipItemTrackedEntityInstance.builder().trackedEntityInstance(teUid).build()).build()
-                        ))
-                        .flatMapIterable(list -> list)
-                        .filter(relationship -> relationship.from().trackedEntityInstance().trackedEntityInstance().equals(teUid))
-                        .map(relationship -> {
-                            RelationshipType relationshipType = null;
-                            for (RelationshipType type : d2.relationshipModule().relationshipTypes.getSet())
-                                if (type.uid().equals(relationship.relationshipType()))
-                                    relationshipType = type;
-                            return Pair.create(relationship, relationshipType);
-                        })
-                        .toList()
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(
-                                RelationshipFragment.getInstance().setRelationships(),
-                                Timber::d
-                        )
-        );
-    }
-
-
-    @Override
-    public void subscribeToRelationshipTypes(RelationshipFragment relationshipFragment) {
-        compositeDisposable.add(
-                dashboardRepository.relationshipsForTeiType(teType)
-                        .map(list -> {
-                            List<Trio<RelationshipTypeModel, String, Integer>> finalList = new ArrayList<>();
-                            for (Pair<RelationshipTypeModel, String> rType : list) {
-                                finalList.add(Trio.create(rType.val0(), rType.val1(), R.drawable.ic_person));
-                            }
-                            return finalList;
-                        })
-                        /*.filter(relationshipType -> {
-                            if (relationshipType.fromConstraint() != null)
-                                return relationshipType.fromConstraint().trackedEntityType().uid().equals(teType);
-                            else
-                                return true;
-                        })
-                        .flatMap(relationshipType ->
-                                dashboardRepository.getObjectStyle(view.getContext(), relationshipType.toConstraint() != null ? relationshipType.toConstraint().trackedEntityType().uid() : teUid)
-                                        .map(objectStyleModel -> Pair.create(relationshipType, objectStyleModel.val1())).toFlowable(BackpressureStrategy.LATEST)
-                        )
-                        .toList()*/
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(
-                                RelationshipFragment.getInstance().setRelationshipTypes()
-                                , t -> Log.d("RELATIONSHIP TYPE SIZE", "RelationshipType error")
-                        )
-        );
-    }
-
-    @Override
-    public void subscribeToIndicators(IndicatorsFragment indicatorsFragment) {
-        compositeDisposable.add(dashboardRepository.getIndicators(programUid)
-                .map(indicators ->
-                        Observable.fromIterable(indicators)
-                                .filter(indicator -> indicator.displayInForm())
-                                .map(indicator -> {
-                                    String indcatorValue = d2.evaluateProgramIndicator(
-                                            dashboardProgramModel.getCurrentEnrollment().uid(),
-                                            null,
-                                            indicator.uid());
-                                    return Pair.create(indicator, indcatorValue == null ? "" : indcatorValue);
-                                })
-                                .filter(pair -> !pair.val1().isEmpty())
-                                .flatMap(pair -> dashboardRepository.getLegendColorForIndicator(pair.val0(), pair.val1()))
-                                .toList()
-                )
-                .flatMap(Single::toFlowable)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .map(data -> {
-                    Log.d("INDICATOR SIZE", "IS" + data.size());
-                    return data;
-                })
-                .subscribe(
-                        indicatorsFragment.swapIndicators(),
-                        Timber::d
-                )
-        );
-    }
-
-    @Override
-    public void onDescriptionClick(String description) {
-        view.showDescription(description);
-    }
-
-
-    @Override
-    public void subscribeToScheduleEvents(ScheduleFragment scheduleFragment) {
-        compositeDisposable.add(
-                scheduleFragment.filterProcessor()
-                        .startWith(ScheduleAdapter.Filter.ALL)
-                        .map(filter -> {
-                            if (filter == ScheduleAdapter.Filter.SCHEDULE)
-                                return EventStatus.SCHEDULE.name();
-                            else if (filter == ScheduleAdapter.Filter.OVERDUE)
-                                return EventStatus.SKIPPED.name();
-                            else
-                                return EventStatus.SCHEDULE.name() + "," + EventStatus.SKIPPED.name();
-                        })
-                        .flatMap(filter -> dashboardRepository.getScheduleEvents(programUid, teUid, filter))
-                        .map(eventModels -> {
-                            for (EventModel eventModel : eventModels) {
-                                if (DateUtils.isToday(eventModel.dueDate().getTime())) { //If a event dueDate is Today, mark as Active
-                                    dashboardRepository.updateState(eventModel, EventStatus.ACTIVE);
-                                } else if (eventModel.dueDate().before(Calendar.getInstance().getTime()) && eventModel.status() != EventStatus.SKIPPED) { //If a event dueDate is before today and its status is not skipped, the event is skipped
-                                    dashboardRepository.updateState(eventModel, EventStatus.SKIPPED);
-                                }
-                            }
-                            return eventModels;
-                        })
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(
-                                scheduleFragment.swapEvents(),
-                                Timber::d
-                        )
-        );
-    }
-
-
-    @Override
-    public void setNoteProcessor(Flowable<Pair<String, Boolean>> noteProcessor) {
-        compositeDisposable.add(noteProcessor
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        dashboardRepository.handleNote(),
-                        Timber::d
-                ));
-    }
-
-    @Override
-    public void subscribeToNotes(NotesFragment notesFragment) {
-        compositeDisposable.add(dashboardRepository.getNotes(programUid, teUid)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        notesFragment.swapNotes(),
-                        Timber::d
-                )
-        );
-    }
-
-    @Override
-    public void openDashboard(String teiUid) {
-        Intent intent = new Intent(view.getContext(), TeiDashboardMobileActivity.class);
-        Bundle bundle = new Bundle();
-        bundle.putString("TEI_UID", teiUid);
-        bundle.putString("PROGRAM_UID", null);
-        intent.putExtras(bundle);
-        view.getAbstractActivity().startActivity(intent);
-    }
-
-    @Override
-    public void subscribeToRelationshipLabel(RelationshipModel relationship, TextView textView) {
-
-       /*
-        compositeDisposable.add(
-                metadataRepository.getRelationshipTypeList()
-                        .subscribeOn(Schedulers.computation())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .flatMapIterable(data -> data)
-                        .filter(relationshipTypeModel -> relationshipTypeModel.uid().equals(relationship.relationshipType()))
-                        .map(item -> {
-                            if (teUid.equals(relationship.trackedEntityInstanceA()))
-                                return item.bIsToA();
-                            else
-                                return item.aIsToB();
-                        })
-                        .subscribe(
-                                textView::setText,
-                                t -> view.displayMessage(view.getContext().getString(R.string.relationship_label_error)))
-
-        );*/
     }
 
     @Override
@@ -548,42 +190,113 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
     }
 
     @Override
-    public String getTeUid() {
-        return teUid;
-    }
-
-    @Override
     public String getProgramUid() {
         return programUid;
     }
 
     @Override
-    public Boolean hasProgramWritePermission() {
-        return programWritePermission;
-    }
-
-    @Override
-    public void completeEnrollment(TEIDataFragment teiDataFragment) {
-        if (programWritePermission) {
-            Flowable<Long> flowable = null;
-            EnrollmentStatus newStatus = EnrollmentStatus.COMPLETED;
-
-            flowable = dashboardRepository.updateEnrollmentStatus(dashboardProgramModel.getCurrentEnrollment().uid(), newStatus);
-            compositeDisposable.add(flowable
-                    .subscribeOn(Schedulers.computation())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .map(result -> newStatus)
-                    .subscribe(
-                            teiDataFragment.enrollmentCompleted(),
-                            Timber::d
-                    )
-            );
-        } else
-            view.displayMessage(null);
-    }
-
-    @Override
     public void showDescription(String description) {
         view.showDescription(description);
+    }
+
+    @Override
+    public void initNoteCounter() {
+        if (!notesCounterProcessor.hasSubscribers()) {
+            compositeDisposable.add(
+                    notesCounterProcessor.startWith(new Unit())
+                            .flatMapSingle(unit ->
+                                    dashboardRepository.getNoteCount())
+                            .subscribeOn(schedulerProvider.io())
+                            .observeOn(schedulerProvider.ui())
+                            .subscribe(
+                                    numberOfNotes ->
+                                            view.updateNoteBadge(numberOfNotes),
+                                    Timber::e
+                            )
+            );
+        } else {
+            notesCounterProcessor.onNext(new Unit());
+        }
+    }
+
+    @Override
+    public void refreshTabCounters() {
+        initNoteCounter();
+    }
+
+    @Override
+    public int getProgramTheme(int appTheme) {
+        return preferenceProvider.getInt(Constants.PROGRAM_THEME, preferenceProvider.getInt(Constants.THEME, appTheme));
+    }
+
+    @Override
+    public void prefSaveCurrentProgram(String programUid) {
+        preferenceProvider.setValue(Constants.PREVIOUS_DASHBOARD_PROGRAM, programUid);
+    }
+
+    @Override
+    public void saveProgramTheme(int programTheme) {
+        preferenceProvider.setValue(Constants.PROGRAM_THEME, programTheme);
+    }
+
+    @Override
+    public void removeProgramTheme() {
+        preferenceProvider.removeValue(Constants.PROGRAM_THEME);
+    }
+
+    @Override
+    public Boolean getProgramGrouping() {
+        if (programUid != null) {
+            return getGrouping().containsKey(programUid) ? getGrouping().get(programUid) : false;
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public void generalFiltersClick() {
+        view.setFiltersLayoutState();
+    }
+
+    @Override
+    public void handleShowHideFilters(boolean showFilters) {
+        if (showFilters) {
+            view.hideTabsAndDisableSwipe();
+        } else {
+            view.showTabsAndEnableSwipe();
+        }
+    }
+
+    @Override
+    public EnrollmentStatus getEnrollmentStatus(String enrollmentUid) {
+        return dashboardRepository.getEnrollmentStatus(enrollmentUid);
+    }
+
+    @Override
+    public void updateEnrollmentStatus(String enrollmentUid, EnrollmentStatus status) {
+        compositeDisposable.add(
+                dashboardRepository.updateEnrollmentStatus(enrollmentUid, status)
+                .subscribeOn(schedulerProvider.io())
+                .observeOn(schedulerProvider.ui())
+                .subscribe(updated -> {
+                    if (updated) {
+                        view.updateStatus();
+                    } else {
+                        view.displayMessage("There was an error updating the status");
+                    }
+                }, Timber::e)
+        );
+    }
+
+
+
+    private Map<String, Boolean> getGrouping() {
+        TypeToken<HashMap<String, Boolean>> typeToken =
+                new TypeToken<HashMap<String, Boolean>>() {
+                };
+        return preferenceProvider.getObjectFromJson(
+                Preference.GROUPING,
+                typeToken,
+                new HashMap<>());
     }
 }

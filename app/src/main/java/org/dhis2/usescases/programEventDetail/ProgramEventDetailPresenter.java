@@ -1,31 +1,17 @@
 package org.dhis2.usescases.programEventDetail;
+import androidx.annotation.NonNull;
+import com.mapbox.mapboxsdk.geometry.LatLng;
 
-import android.os.Bundle;
-import android.support.annotation.NonNull;
-
-import org.dhis2.data.metadata.MetadataRepository;
-import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity;
-import org.dhis2.utils.Constants;
-import org.dhis2.utils.OrgUnitUtils;
-import org.dhis2.utils.Period;
-import org.hisp.dhis.android.core.category.CategoryComboModel;
-import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
-import org.hisp.dhis.android.core.event.EventModel;
-import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
-import org.hisp.dhis.android.core.program.ProgramModel;
-
-import java.util.Date;
-import java.util.List;
+import org.dhis2.data.schedulers.SchedulerProvider;
+import org.dhis2.data.tuples.Pair;
+import org.dhis2.utils.filters.FilterManager;
+import org.hisp.dhis.android.core.common.Unit;
 
 import io.reactivex.Observable;
-import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.schedulers.Schedulers;
+import io.reactivex.processors.FlowableProcessor;
+import io.reactivex.processors.PublishProcessor;
 import timber.log.Timber;
-
-import static org.dhis2.utils.Constants.ORG_UNIT;
-import static org.dhis2.utils.Constants.PROGRAM_UID;
-
 
 /**
  * QUADRAM. Created by Cristian on 13/02/2018.
@@ -34,150 +20,192 @@ import static org.dhis2.utils.Constants.PROGRAM_UID;
 public class ProgramEventDetailPresenter implements ProgramEventDetailContract.Presenter {
 
     private final ProgramEventDetailRepository eventRepository;
-    private final MetadataRepository metaRepository;
+    private final SchedulerProvider schedulerProvider;
+    private final FilterManager filterManager;
     private ProgramEventDetailContract.View view;
-    public ProgramModel program;
-    public String programId;
-    private CompositeDisposable compositeDisposable;
-    private CategoryOptionComboModel categoryOptionComboModel;
-    private List<OrganisationUnitModel> orgUnits;
+    CompositeDisposable compositeDisposable;
 
     //Search fields
-    private CategoryComboModel mCatCombo;
-    private List<Date> dates;
-    private Period period;
-    private String orgUnitQuery;
+    FlowableProcessor<Pair<String, LatLng>> eventInfoProcessor;
+    FlowableProcessor<Unit> mapProcessor;
 
-    ProgramEventDetailPresenter(
+    public ProgramEventDetailPresenter(
+            ProgramEventDetailContract.View view,
             @NonNull ProgramEventDetailRepository programEventDetailRepository,
-            @NonNull MetadataRepository metadataRepository) {
+            SchedulerProvider schedulerProvider,
+            FilterManager filterManager) {
+        this.view = view;
         this.eventRepository = programEventDetailRepository;
-        this.metaRepository = metadataRepository;
-    }
-
-    @Override
-    public void init(ProgramEventDetailContract.View mview, String programId, Period period) {
-        view = mview;
+        this.schedulerProvider = schedulerProvider;
+        this.filterManager = filterManager;
+        eventInfoProcessor = PublishProcessor.create();
+        mapProcessor = PublishProcessor.create();
         compositeDisposable = new CompositeDisposable();
-        this.programId = programId;
+    }
 
-        compositeDisposable.add(metaRepository.getProgramWithId(programId)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
+    @Override
+    public void init() {
+        compositeDisposable.add(eventRepository.featureType()
+                .subscribeOn(schedulerProvider.io())
+                .observeOn(schedulerProvider.ui())
                 .subscribe(
-                        programModel -> {
-                            view.setProgram(programModel);
-                            view.setWritePermission(programModel.accessDataWrite());
-                            getCatCombo(programModel);
-                        },
-                        Timber::d)
+                        featureType -> view.setFeatureType(),
+                        Timber::e
+                )
         );
 
-        compositeDisposable.add(eventRepository.orgUnits()
-                .map(orgUnits -> {
-                    this.orgUnits = orgUnits;
-                    return OrgUnitUtils.renderTree(view.getContext(), orgUnits, true);
-                })
-                .subscribeOn(Schedulers.computation())
-                .observeOn(AndroidSchedulers.mainThread())
+        compositeDisposable.add(Observable.just(eventRepository.getAccessDataWrite())
+                .subscribeOn(schedulerProvider.io())
+                .observeOn(schedulerProvider.ui())
                 .subscribe(
-                        treeNode -> view.addTree(treeNode),
-                        throwable -> view.renderError(throwable.getMessage())
-                ));
-
-        getProgramEventsWithDates();
-
-    }
-
-    private void getCatCombo(ProgramModel programModel) {
-        compositeDisposable.add(metaRepository.getCategoryComboWithId(programModel.categoryCombo())
-                .filter(categoryComboModel -> categoryComboModel != null && !categoryComboModel.isDefault() && !categoryComboModel.uid().equals(CategoryComboModel.DEFAULT_UID))
-                .flatMap(catCombo -> {
-                    this.mCatCombo = catCombo;
-                    return eventRepository.catCombo(programModel.categoryCombo());
-                })
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(catComboOptions -> view.setCatComboOptions(mCatCombo, catComboOptions), Timber::d)
+                        view::setWritePermission,
+                        Timber::e)
         );
-    }
 
-    @Override
-    public void onTimeButtonClick() {
-        view.showTimeUnitPicker();
-    }
 
-    @Override
-    public void onDateRangeButtonClick() {
-        view.showRageDatePicker();
-    }
-
-    @Override
-    public void onOrgUnitButtonClick() {
-        view.openDrawer();
-    }
-
-    @Override
-    public void setProgram(ProgramModel program) {
-
-        this.program = program;
-    }
-
-    @Override
-    public void getProgramEventsWithDates() {
         compositeDisposable.add(
-                view.currentPage()
-                        .startWith(0)
-                        .flatMap(page -> eventRepository.filteredProgramEvents(programId, dates, period, categoryOptionComboModel, orgUnitQuery, page).distinctUntilChanged())
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
+                eventRepository.hasAccessToAllCatOptions()
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
                         .subscribe(
-                                view::setData,
-                                throwable -> view.renderError(throwable.getMessage())));
+                                view::setOptionComboAccess,
+                                Timber::e
+                        )
+        );
+
+        compositeDisposable.add(
+                eventRepository.program()
+                        .observeOn(schedulerProvider.ui())
+                        .subscribeOn(schedulerProvider.io())
+                        .subscribe(
+                                view::setProgram,
+                                Timber::e
+                        )
+        );
+
+        compositeDisposable.add(
+                eventRepository.catOptionCombos()
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
+                        .subscribe(view::setCatOptionComboFilter,
+                                Timber::e
+                        )
+        );
+
+        compositeDisposable.add(
+                filterManager.asFlowable()
+                        .startWith(filterManager)
+                        .map(filterManager -> eventRepository.filteredProgramEvents(
+                                filterManager.getPeriodFilters(),
+                                filterManager.getOrgUnitUidsFilters(),
+                                filterManager.getCatOptComboFilters(),
+                                filterManager.getEventStatusFilters(),
+                                filterManager.getStateFilters(),
+                                filterManager.getAssignedFilter()
+                        ))
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
+                        .subscribe(
+                                view::setLiveData,
+                                throwable -> view.renderError(throwable.getMessage())
+                        ));
+
+        compositeDisposable.add(
+                mapProcessor
+                        .observeOn(schedulerProvider.io())
+                        .switchMap(unit ->
+                                filterManager.asFlowable()
+                                        .startWith(FilterManager.getInstance())
+                                        .flatMap(filterManager -> eventRepository.filteredEventsForMap(
+                                                filterManager.getPeriodFilters(),
+                                                filterManager.getOrgUnitUidsFilters(),
+                                                filterManager.getCatOptComboFilters(),
+                                                filterManager.getEventStatusFilters(),
+                                                filterManager.getStateFilters(),
+                                                filterManager.getAssignedFilter()
+                                        )))
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
+                        .subscribe(
+                                map -> view.setMap(map.component1(), map.component2()),
+                                throwable -> view.renderError(throwable.getMessage())
+                        ));
+
+        compositeDisposable.add(
+                eventInfoProcessor
+                        .flatMap(eventInfo -> eventRepository.getInfoForEvent(eventInfo.val0())
+                                .map(eventData -> Pair.create(eventData, eventInfo.val1())))
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
+                        .subscribe(
+                                view::setEventInfo,
+                                throwable -> view.renderError(throwable.getMessage())
+                        ));
+
+        compositeDisposable.add(
+                filterManager.ouTreeFlowable()
+                        .doOnNext(queryData -> {
+                            if (view.isMapVisible())
+                                mapProcessor.onNext(new Unit());
+                        })
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
+                        .subscribe(
+                                open -> view.openOrgUnitTreeSelector(),
+                                Timber::e
+                        )
+        );
+
+        compositeDisposable.add(
+                filterManager.asFlowable()
+                        .doOnNext(queryData -> {
+                            if (view.isMapVisible())
+                                mapProcessor.onNext(new Unit());
+                        })
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
+                        .subscribe(
+                                filterManager -> view.updateFilters(filterManager.getTotalFilters()),
+                                Timber::e
+                        )
+        );
+
+        compositeDisposable.add(
+                filterManager.getPeriodRequest()
+                        .doOnNext(queryData -> {
+                            if (view.isMapVisible())
+                                mapProcessor.onNext(new Unit());
+                        })
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
+                        .subscribe(
+                                periodRequest -> view.showPeriodRequest(periodRequest),
+                                Timber::e
+                        ));
     }
 
     @Override
-    public List<OrganisationUnitModel> getOrgUnits() {
-        return this.orgUnits;
+    public void onSyncIconClick(String uid) {
+        view.showSyncDialog(uid);
     }
 
     @Override
-    public void setFilters(List<Date> selectedDates, Period currentPeriod, String orgUnits) {
-        this.dates = selectedDates;
-        this.period = currentPeriod;
-        this.orgUnitQuery = orgUnits;
+    public void getEventInfo(String eventUid, LatLng latLng) {
+        eventInfoProcessor.onNext(Pair.create(eventUid, latLng));
     }
 
     @Override
-    public void onCatComboSelected(CategoryOptionComboModel categoryOptionComboModel, String orgUnitQuery) {
-        this.categoryOptionComboModel = categoryOptionComboModel;
-
-    }
-
-    @Override
-    public void clearCatComboFilters(String orgUnitQuery) {
-        this.categoryOptionComboModel = null;
-
+    public void getMapData() {
+        mapProcessor.onNext(new Unit());
     }
 
     @Override
     public void onEventClick(String eventId, String orgUnit) {
-        Bundle bundle = new Bundle();
-        bundle.putString(PROGRAM_UID, programId);
-        bundle.putString(Constants.EVENT_UID, eventId);
-        bundle.putString(ORG_UNIT, orgUnit);
-        view.startActivity(EventInitialActivity.class, bundle, false, false, null);
-    }
-
-    @Override
-    public Observable<List<String>> getEventDataValueNew(EventModel event) {
-        return eventRepository.eventDataValuesNew(event);
+        view.navigateToEvent(eventId, orgUnit);
     }
 
     public void addEvent() {
-        Bundle bundle = new Bundle();
-        bundle.putString(PROGRAM_UID, programId);
-        view.startActivity(EventInitialActivity.class, bundle, false, false, null);
+        view.startNewEvent();
     }
 
     @Override
@@ -198,5 +226,16 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
     @Override
     public void showFilter() {
         view.showHideFilter();
+    }
+
+    @Override
+    public void clearFilterClick() {
+        filterManager.clearAllFilters();
+        view.clearFilters();
+    }
+
+    @Override
+    public boolean hasAssignment() {
+        return eventRepository.hasAssignment();
     }
 }

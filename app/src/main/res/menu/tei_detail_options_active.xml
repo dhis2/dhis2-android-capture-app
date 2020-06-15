@@ -2,11 +2,6 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/main_option"
-        android:icon="@drawable/ic_add"
-        android:title="" />
-
-    <item
         android:id="@+id/complete"
         android:icon="@drawable/ic_lock_white"
         android:title="@string/complete" />

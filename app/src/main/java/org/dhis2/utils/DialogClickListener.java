@@ -5,7 +5,6 @@ package org.dhis2.utils;
  */
 
 public interface DialogClickListener {
-
     void onPositive();
     void onNegative();
 }

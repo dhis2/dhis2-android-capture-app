@@ -1,9 +1,9 @@
 package org.dhis2.usescases.teiDashboard.teiProgramList;
 
-import android.databinding.DataBindingUtil;
-import android.databinding.ViewDataBinding;
-import android.support.annotation.NonNull;
-import android.support.v7.widget.RecyclerView;
+import androidx.databinding.DataBindingUtil;
+import androidx.databinding.ViewDataBinding;
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
@@ -135,6 +135,7 @@ public class TeiProgramListAdapter extends RecyclerView.Adapter<TeiProgramListEn
     }
 
     private void orderList() {
+        possibleEnrollmentPrograms.clear();
         listItems.clear();
 
         TeiProgramListItem allProgramsDashBoardItem = new TeiProgramListItem(null, null, TeiProgramListItem.TeiProgramListItemViewType.ALL_PROGRAMS_DASHBOARD);

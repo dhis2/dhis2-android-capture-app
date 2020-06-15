@@ -1,20 +1,17 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventSummary;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.util.Log;
 
-import org.dhis2.Bindings.Bindings;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
-import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.utils.Result;
-
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.rules.models.RuleAction;
 import org.hisp.dhis.rules.models.RuleActionErrorOnCompletion;
 import org.hisp.dhis.rules.models.RuleActionHideField;
-import org.hisp.dhis.rules.models.RuleActionHideProgramStage;
 import org.hisp.dhis.rules.models.RuleActionHideSection;
 import org.hisp.dhis.rules.models.RuleActionSetMandatoryField;
 import org.hisp.dhis.rules.models.RuleActionShowError;
@@ -40,8 +37,7 @@ import timber.log.Timber;
 
 public class EventSummaryInteractor implements EventSummaryContract.Interactor {
     private EventSummaryContract.View view;
-    @NonNull
-    private final MetadataRepository metadataRepository;
+
     @NonNull
     private final EventSummaryRepository eventSummaryRepository;
     @NonNull
@@ -54,12 +50,10 @@ public class EventSummaryInteractor implements EventSummaryContract.Interactor {
 
 
     EventSummaryInteractor(@NonNull EventSummaryRepository eventSummaryRepository,
-                           @NonNull MetadataRepository metadataRepository,
                            @NonNull SchedulerProvider schedulerProvider) {
-        this.metadataRepository = metadataRepository;
+
         this.eventSummaryRepository = eventSummaryRepository;
         this.schedulerProvider = schedulerProvider;
-        Bindings.setMetadataRepository(metadataRepository);
         compositeDisposable = new CompositeDisposable();
     }
 
@@ -73,6 +67,7 @@ public class EventSummaryInteractor implements EventSummaryContract.Interactor {
 
         compositeDisposable.add(
                 eventSummaryRepository.accessDataWrite(eventId)
+                        .map(hasDataAccess -> hasDataAccess && eventSummaryRepository.isEnrollmentOpen())
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
@@ -96,7 +91,7 @@ public class EventSummaryInteractor implements EventSummaryContract.Interactor {
 
     @Override
     public void getProgram(@NonNull String programUid) {
-        compositeDisposable.add(metadataRepository.getProgramWithId(programUid)
+        compositeDisposable.add(eventSummaryRepository.getProgramWithId(programUid)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
@@ -125,7 +120,8 @@ public class EventSummaryInteractor implements EventSummaryContract.Interactor {
     public void getSectionCompletion(@Nullable String sectionUid) {
         Flowable<List<FieldViewModel>> fieldsFlowable = eventSummaryRepository.list(sectionUid, eventUid);
 
-        Flowable<Result<RuleEffect>> ruleEffectFlowable = eventSummaryRepository.calculate().subscribeOn(schedulerProvider.computation());
+        Flowable<Result<RuleEffect>> ruleEffectFlowable = eventSummaryRepository.calculate().subscribeOn(schedulerProvider.computation())
+                .onErrorReturn(throwable -> Result.failure(new Exception(throwable)));
 
         // Combining results of two repositories into a single stream.
         Flowable<List<FieldViewModel>> viewModelsFlowable = Flowable.zip(fieldsFlowable, ruleEffectFlowable, this::applyEffects);
@@ -163,7 +159,7 @@ public class EventSummaryInteractor implements EventSummaryContract.Interactor {
             @NonNull List<FieldViewModel> viewModels,
             @NonNull Result<RuleEffect> calcResult) {
         if (calcResult.error() != null) {
-            calcResult.error().printStackTrace();
+            Timber.e(calcResult.error());
             return viewModels;
         }
 
@@ -219,8 +215,8 @@ public class EventSummaryInteractor implements EventSummaryContract.Interactor {
                 FieldViewModel model = fieldViewModels.get(mandatoryField.field());
                 if (model != null)
                     fieldViewModels.put(mandatoryField.field(), model.setMandatory());
-            }else if(ruleAction instanceof RuleActionHideSection){
-                RuleActionHideSection hideSection = (RuleActionHideSection)ruleAction;
+            } else if (ruleAction instanceof RuleActionHideSection) {
+                RuleActionHideSection hideSection = (RuleActionHideSection) ruleAction;
                 view.setHideSection(hideSection.programStageSection());
             }
         }

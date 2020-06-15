@@ -1,17 +1,22 @@
 package org.dhis2.utils;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import android.graphics.drawable.RippleDrawable;
 import android.util.TypedValue;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import org.dhis2.R;
 
 import java.util.ArrayList;
+
+import static android.text.TextUtils.isEmpty;
 
 /**
  * QUADRAM. Created by ppajuelo on 12/06/2018.
@@ -19,28 +24,38 @@ import java.util.ArrayList;
 
 public class ColorUtils {
 
+    public static int parseColor(@NonNull String hexColor) {
+        if (hexColor.length() == 4) {//Color is formatted as #fff
+            char r = hexColor.charAt(1);
+            char g = hexColor.charAt(2);
+            char b = hexColor.charAt(3);
+            hexColor = "#" + r + r + g + g + b + b; //formatted to #ffff
+        }
+        return Color.parseColor(hexColor);
+    }
+
+    public static int getPrimaryColorWithAlpha(Context context, ColorType primaryLight, float alpha) {
+        int primayColor = getPrimaryColor(context, primaryLight);
+        return androidx.core.graphics.ColorUtils.setAlphaComponent(primayColor, 155);
+    }
+
+    public static int withAlpha(int color) {
+        return androidx.core.graphics.ColorUtils.setAlphaComponent(color, 155);
+    }
+
     public enum ColorType {
         PRIMARY, PRIMARY_LIGHT, PRIMARY_DARK, ACCENT
     }
 
-    public static int getColorFrom(Context context, @Nullable String hexColor) {
+    public static int getColorFrom(@Nullable String hexColor, int defaultPrimaryColor) {
 
         int colorToReturn = Color.BLACK;
 
-        if (hexColor != null) {
-            if (hexColor.length() == 4) {//Color is formatted as #fff
-                char r = hexColor.charAt(1);
-                char g = hexColor.charAt(2);
-                char b = hexColor.charAt(3);
-                hexColor = "#" + r + r + g + g + b + b; //formatted to #ffff
-            }
-            colorToReturn = Color.parseColor(hexColor);
+        if (!isEmpty(hexColor)) {
+            colorToReturn = parseColor(hexColor);
         }
-        if (hexColor == null || colorToReturn == Color.BLACK || colorToReturn == Color.WHITE) {
-            TypedValue typedValue = new TypedValue();
-            TypedArray a = context.obtainStyledAttributes(typedValue.data, new int[]{R.attr.colorPrimaryLight});
-            colorToReturn = a.getColor(0, 0);
-            a.recycle();
+        if (isEmpty(hexColor) || colorToReturn == Color.BLACK || colorToReturn == Color.WHITE) {
+            colorToReturn = defaultPrimaryColor;
         }
 
         return colorToReturn;
@@ -51,7 +66,7 @@ public class ColorUtils {
         return drawableToTint;
     }
 
-    public static Drawable tintDrawableWithColor(@NonNull Drawable drawableToTint, int tintColor){
+    public static Drawable tintDrawableWithColor(@NonNull Drawable drawableToTint, int tintColor) {
         drawableToTint.setColorFilter(tintColor, PorterDuff.Mode.SRC_IN);
         return drawableToTint;
     }

@@ -1,14 +1,14 @@
 package org.dhis2.usescases.programEventDetail;
 
-import android.databinding.DataBindingUtil;
-import android.support.annotation.NonNull;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
+import androidx.databinding.DataBindingUtil;
+import androidx.recyclerview.widget.RecyclerView;
+
 import org.dhis2.R;
 import org.dhis2.databinding.ItemProgramEventBinding;
-import org.hisp.dhis.android.core.event.EventModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,7 +20,7 @@ import java.util.List;
 public class ProgramEventDetailAdapter extends RecyclerView.Adapter<ProgramEventDetailViewHolder> {
 
     private ProgramEventDetailContract.Presenter presenter;
-    private List<EventModel> events;
+    private List<ProgramEventViewModel> events;
 
     ProgramEventDetailAdapter(ProgramEventDetailContract.Presenter presenter) {
         this.presenter = presenter;
@@ -37,8 +37,7 @@ public class ProgramEventDetailAdapter extends RecyclerView.Adapter<ProgramEvent
 
     @Override
     public void onBindViewHolder(@NonNull ProgramEventDetailViewHolder holder, int position) {
-        EventModel event = events.get(position);
-        holder.bind(presenter, event);
+        holder.bind(presenter, events.get(position));
     }
 
     @Override
@@ -46,16 +45,15 @@ public class ProgramEventDetailAdapter extends RecyclerView.Adapter<ProgramEvent
         return events != null ? events.size() : 0;
     }
 
-    public void setEvents(List<EventModel> events, int currentPage) {
+    public void setEvents(List<ProgramEventViewModel> events, int currentPage) {
 
         if (currentPage == 0)
             this.events = new ArrayList<>();
-//        DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new ProgramEventDiffCallback(this.events, newList));
+
         this.events.addAll(events);
 
         notifyDataSetChanged();
 
-//        diffResult.dispatchUpdatesTo(this);
     }
 
     public void clearData() {

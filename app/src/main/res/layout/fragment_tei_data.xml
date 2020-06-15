@@ -6,19 +6,20 @@
     <data>
 
         <import type="android.view.View" />
-        <import type="org.hisp.dhis.android.core.enrollment.EnrollmentStatus"/>
+
+        <import type="org.hisp.dhis.android.core.enrollment.EnrollmentStatus" />
 
         <variable
             name="enrollment"
-            type="org.hisp.dhis.android.core.enrollment.EnrollmentModel" />
+            type="org.hisp.dhis.android.core.enrollment.Enrollment" />
 
         <variable
             name="trackEntity"
-            type="org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel" />
+            type="org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance" />
 
         <variable
             name="presenter"
-            type="org.dhis2.usescases.teiDashboard.TeiDashboardContracts.Presenter" />
+            type="org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TEIDataContracts.Presenter" />
 
         <variable
             name="dashboardModel"
@@ -26,62 +27,111 @@
 
         <variable
             name="program"
-            type="org.hisp.dhis.android.core.program.ProgramModel" />
+            type="org.hisp.dhis.android.core.program.Program" />
+
+        <variable
+            name="followup"
+            type="androidx.databinding.ObservableBoolean" />
+
+        <variable
+            name="isGrouping"
+            type="java.lang.Boolean" />
 
     </data>
 
-    <android.support.constraint.ConstraintLayout
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <RelativeLayout
-            android:id="@+id/tei_data"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:id="@+id/cardLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            android:layout_marginTop="10dp"
-            android:background="@color/bg_white_f9f">
+            android:orientation="vertical">
 
-            <include
-                android:id="@+id/card_front"
-                layout="@layout/fragment_tei_data_card_front"
-                app:dashboardModel="@{dashboardModel}"
-                app:enrollment="@{enrollment}"
-                app:presenter="@{presenter}"
-                app:program="@{program}"
-                app:trackEntity="@{trackEntity}" />
-        </RelativeLayout>
+            <androidx.cardview.widget.CardView
+                android:id="@+id/tei_data"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:cardElevation="4dp">
 
-        <android.support.v7.widget.RecyclerView
+                <include
+                    android:id="@+id/card_front"
+                    layout="@layout/fragment_tei_data_card_front"
+                    app:dashboardModel="@{dashboardModel}"
+                    app:enrollment="@{enrollment}"
+                    app:followup="@{followup}"
+                    app:presenter="@{presenter}"
+                    app:program="@{program}"
+                    app:trackEntity="@{trackEntity}" />
+            </androidx.cardview.widget.CardView>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/filterLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="?colorPrimary"
+                android:visibility="gone"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:listitem="@layout/item_filter" />
+
+        </LinearLayout>
+
+
+        <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/tei_recycler"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:clipToPadding="false"
             android:paddingBottom="200dp"
-            android:paddingTop="10dp"
-            app:layoutManager="android.support.v7.widget.LinearLayoutManager"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tei_data"
+            app:layout_constraintTop_toBottomOf="@id/cardLayout"
             tools:listitem="@layout/item_event" />
+
+        <TextView
+            android:id="@+id/empty_teis"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/cardLayout"
+            android:gravity="center"
+            android:padding="42dp"
+            android:background="@color/white"
+            android:text="@string/empty_tei_add"
+            android:visibility="gone"
+            android:textSize="@dimen/primaryTextSize" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
         <com.dekoservidoni.omfm.OneMoreFabMenu
             android:id="@+id/fab"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:visibility="@{enrollment==null || enrollment.enrollmentStatus() == EnrollmentStatus.CANCELLED ? View.GONE : View.VISIBLE}"
+            android:layout_gravity="bottom|end"
+            android:visibility="@{enrollment==null || enrollment.status() != EnrollmentStatus.ACTIVE || isGrouping ? View.GONE : View.VISIBLE}"
             app:close_on_click="true"
             app:color_main_button="?colorPrimary"
             app:color_secondary_buttons="?colorPrimaryDark"
             app:content_options="@menu/schedule_content_options"
             app:expanded_background_color="@android:color/transparent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
             app:size_main_button="@integer/omfm_fab_size_normal"
             app:size_secondary_buttons="@integer/omfm_fab_size_mini" />
 
-    </android.support.constraint.ConstraintLayout>
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
 </layout>

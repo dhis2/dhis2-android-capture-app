@@ -7,10 +7,6 @@
         <import type="android.view.View" />
 
         <variable
-            name="attribute"
-            type="org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel" />
-
-        <variable
             name="label"
             type="java.lang.String" />
 
@@ -60,20 +56,24 @@
 
 
             <LinearLayout
+                android:id="@+id/checkLayouts"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="50dp"
+                android:gravity="center_vertical">
 
                 <RadioGroup
                     android:id="@+id/radiogroup"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:gravity="center_vertical">
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
 
                     <RadioButton
                         android:id="@+id/yes"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginEnd="32dp"
                         android:buttonTint="@color/white"
                         android:checked="false"
                         android:text="@string/yes"
@@ -87,26 +87,66 @@
                         android:checked="false"
                         android:text="@string/no"
                         android:textColor="@color/white" />
+                </RadioGroup>
 
-                    <RadioButton
-                        android:id="@+id/no_value"
+                <LinearLayout
+                    android:id="@+id/checkGroup"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <com.google.android.material.checkbox.MaterialCheckBox
+                        android:id="@+id/checkYes"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:buttonTint="@color/white"
+                        android:layout_marginEnd="32dp"
                         android:checked="false"
-                        android:text="@string/no_value"
-                        android:textColor="@color/white" />
-                </RadioGroup>
+                        android:text="@string/yes"
+                        android:textColor="@color/white"
+                        app:buttonTint="@color/white"
+                        tools:checked="true" />
+
+                    <com.google.android.material.checkbox.MaterialCheckBox
+                        android:id="@+id/checkNo"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="25dp"
+                        android:checked="false"
+                        android:text="@string/no"
+                        android:textColor="@color/white"
+                        app:buttonTint="@color/white" />
+                </LinearLayout>
+
+                <ImageView
+                    android:id="@+id/clearSelection"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:padding="10dp"
+                    app:srcCompat="@drawable/ic_clear" />
 
                 <ImageView
                     android:id="@+id/descriptionLabel"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="bottom"
                     android:visibility="@{(label.length()>16 || description!=null)?View.VISIBLE : View.GONE}"
                     app:srcCompat="@drawable/ic_info_outline"
                     app:tint="?colorAccent" />
             </LinearLayout>
+
+            <com.google.android.material.switchmaterial.SwitchMaterial
+                android:id="@+id/yesOnlyToggle"
+                style="@style/Widget.AppCompat.CompoundButton.Switch"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/yes"
+                android:textAppearance="@style/TextPrimary"
+                android:textSize="14sp"
+                android:textColor="@color/white"
+                app:switchPadding="20dp"
+                app:thumbTint="@drawable/selector_material_thumb_field"
+                app:trackTint="@drawable/selector_material_track_field"
+                app:useMaterialThemeColors="false" />
         </LinearLayout>
     </RelativeLayout>
 </layout>

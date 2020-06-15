@@ -9,34 +9,38 @@
 
         <variable
             name="event"
-            type="org.hisp.dhis.android.core.event.EventModel" />
+            type="org.hisp.dhis.android.core.event.Event" />
 
         <variable
             name="stage"
-            type="org.hisp.dhis.android.core.program.ProgramStageModel" />
+            type="org.hisp.dhis.android.core.program.ProgramStage" />
 
         <variable
             name="enrollment"
-            type="org.hisp.dhis.android.core.enrollment.EnrollmentModel" />
+            type="org.hisp.dhis.android.core.enrollment.Enrollment" />
+
+        <variable
+            name="program"
+            type="org.hisp.dhis.android.core.program.Program" />
     </data>
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="56dp"
-        android:layout_marginBottom="1dp"
+        android:layout_height="48dp"
         app:eventColor="@{event}"
+        app:eventProgram="@{program}"
         app:eventProgramStage="@{stage}"
         tools:background="@color/event_green">
 
-        <android.support.constraint.ConstraintLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/shared_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:fitsSystemWindows="false"
-            android:paddingBottom="8dp"
-            android:paddingEnd="15dp"
-            android:paddingStart="15dp"
+            android:paddingStart="16dp"
             android:paddingTop="8dp"
+            android:paddingEnd="16dp"
+            android:paddingBottom="8dp"
             android:transitionName="shared_view">
 
 
@@ -44,12 +48,11 @@
                 android:id="@+id/event_date"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="5dp"
                 android:fontFamily="sans-serif"
-                android:text="@{DateUtils.getInstance().getPeriodUIString(stage.periodType(),event.eventDate())}"
                 android:textColor="#444444"
-                android:textSize="14sp"
+                android:textSize="10sp"
                 android:textStyle="normal"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 tools:text="03/10/2017" />
             <!--app:date='@{event.eventDate()}'-->
@@ -61,10 +64,9 @@
                 android:ellipsize="end"
                 android:gravity="start|center"
                 android:maxLines="1"
-                android:text='@{stage.displayName,default="Stage Name"}'
+                android:text='@{stage.displayName(),default="Stage Name"}'
                 android:textColor="@color/text_black_333"
-                android:textSize="16sp"
-                android:textStyle="bold"
+                android:textSize="14sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@id/status_layout"
                 app:layout_constraintStart_toStartOf="parent"
@@ -76,33 +78,37 @@
                 android:layout_width="wrap_content"
                 android:layout_height="0dp"
                 android:gravity="center"
-                android:orientation="vertical"
+                android:orientation="horizontal"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
 
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/status_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:gravity="center_horizontal"
+                    android:textColor="@color/icon_color"
+                    android:textSize="9sp"
+                    app:enrollmentStatus="@{enrollment}"
+                    app:eventProgram="@{program}"
+                    app:eventProgramStage="@{stage}"
+                    app:eventStatusText='@{event}'
+                    tools:text="Read only" />
+
                 <ImageView
                     android:id="@+id/event_icon"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     app:enrollmentStatusIcon="@{enrollment}"
+                    app:eventProgram="@{program}"
                     app:eventProgramStage="@{stage}"
                     app:eventStatusIcon="@{event}"
                     app:srcCompat="@drawable/ic_edit"
                     tools:ignore="ContentDescription" />
 
-                <android.support.v7.widget.AppCompatTextView
-                    android:id="@+id/status_text"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_horizontal"
-                    android:textColor="@color/icon_color"
-                    android:textSize="12sp"
-                    app:enrollmentStatus="@{enrollment}"
-                    app:eventProgramStage="@{stage}"
-                    app:eventStatusText='@{event}'
-                    tools:text="Read only" />
             </LinearLayout>
-        </android.support.constraint.ConstraintLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
     </RelativeLayout>
 </layout>

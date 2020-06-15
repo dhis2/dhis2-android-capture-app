@@ -6,7 +6,7 @@
 
     </data>
 
-    <android.support.v4.widget.NestedScrollView
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
@@ -121,7 +121,7 @@
                 tools:text="ORG UNITS" />
 
             <TextView
-                android:id="@+id/enrollments"
+                android:id="@+id/enrollmentModels"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:gravity="center_vertical"
@@ -327,5 +327,5 @@
                 android:text="@string/action_sync" />
 
         </LinearLayout>
-    </android.support.v4.widget.NestedScrollView>
+    </androidx.core.widget.NestedScrollView>
 </layout>

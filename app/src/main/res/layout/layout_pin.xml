@@ -1,16 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout>
+<layout xmlns:tools="http://schemas.android.com/tools">
 
     <data />
 
-    <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/bg_gray_ccc"
+        android:background="@color/white"
         android:clickable="true"
         android:focusable="true"
-        android:visibility="gone">
+        android:visibility="gone"
+        tools:visibility="visible">
 
         <RelativeLayout
             android:id="@+id/header"
@@ -20,8 +21,13 @@
             android:gravity="center"
             app:layout_constraintTop_toTopOf="parent">
 
-            <include layout="@layout/logo_dhis" />
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:layout_centerInParent="true"
+                app:srcCompat="@drawable/ic_dhis_white" />
         </RelativeLayout>
+
 
         <TextView
             android:id="@+id/title"
@@ -29,9 +35,9 @@
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:layout_margin="16dp"
-            android:text="@string/block_session"
-            android:textColor="?colorPrimary"
-            android:textSize="16sp"
+            android:text="@string/set_pin"
+            android:textColor="@android:color/black"
+            android:textSize="20sp"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -40,28 +46,56 @@
         <com.andrognito.pinlockview.IndicatorDots
             android:id="@+id/indicator_dots"
             android:layout_width="match_parent"
-            android:layout_height="16dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:gravity="center"
+            app:dotDiameter="12dp"
+            app:dotFilledBackground="@drawable/primary_dot_indicator"
+            app:dotSpacing="27dp"
+            app:layout_constraintTop_toBottomOf="@id/title" />
+
+        <TextView
+            android:id="@+id/forgotCode"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_centerHorizontal="true"
             android:layout_margin="16dp"
             android:gravity="center"
-            app:layout_constraintTop_toBottomOf="@id/title" />
+            android:text="@string/forgot_your_code"
+            android:textColor="?colorPrimary"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:visibility="gone"
+            app:layout_constraintTop_toBottomOf="@id/indicator_dots"
+            tools:visibility="visible" />
+
+        <CheckBox
+            android:buttonTint="?colorPrimary"
+            android:checked="true"
+            android:id="@+id/lockPin"
+            android:layout_margin="8dp"
+            android:text="@string/disable_pin_locked"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/forgotCode"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
 
         <com.andrognito.pinlockview.PinLockView
             android:id="@+id/pin_lock_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/indicator_dots"
-            android:layout_centerInParent="true"
             app:indicatorType="fillWithAnimation"
-            app:keypadButtonSize="48dp"
             app:keypadDeleteButtonSize="24dp"
             app:keypadShowDeleteButton="true"
             app:keypadTextColor="?colorPrimary"
-            app:keypadTextSize="30sp"
+            app:keypadTextSize="24sp"
             app:keypadVerticalSpacing="24dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/indicator_dots"
+            app:layout_constraintTop_toBottomOf="@id/lockPin"
             app:pinLength="4" />
-    </android.support.constraint.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

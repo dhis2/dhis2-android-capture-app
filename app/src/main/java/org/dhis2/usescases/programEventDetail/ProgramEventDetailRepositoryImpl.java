@@ -1,275 +1,187 @@
 package org.dhis2.usescases.programEventDetail;
 
-import android.content.ContentValues;
-import android.database.Cursor;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
+import androidx.lifecycle.LiveData;
+import androidx.paging.DataSource;
+import androidx.paging.LivePagedListBuilder;
+import androidx.paging.PagedList;
 
-import com.squareup.sqlbrite2.BriteDatabase;
+import com.mapbox.geojson.BoundingBox;
+import com.mapbox.geojson.FeatureCollection;
 
-import org.dhis2.utils.DateUtils;
-import org.dhis2.utils.Period;
-import org.dhis2.utils.ValueUtils;
-import org.hisp.dhis.android.core.category.CategoryComboModel;
-import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
+import org.dhis2.data.tuples.Pair;
+import org.dhis2.utils.maps.GeometryUtils;
+import org.hisp.dhis.android.core.D2;
+import org.hisp.dhis.android.core.arch.helpers.UidsHelper;
+import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope;
+import org.hisp.dhis.android.core.category.Category;
+import org.hisp.dhis.android.core.category.CategoryCombo;
+import org.hisp.dhis.android.core.category.CategoryOption;
+import org.hisp.dhis.android.core.category.CategoryOptionCombo;
+import org.hisp.dhis.android.core.common.FeatureType;
 import org.hisp.dhis.android.core.common.State;
-import org.hisp.dhis.android.core.common.ValueType;
-import org.hisp.dhis.android.core.event.EventModel;
+import org.hisp.dhis.android.core.event.EventCollectionRepository;
 import org.hisp.dhis.android.core.event.EventStatus;
-import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
-import org.hisp.dhis.android.core.program.ProgramModel;
-import org.hisp.dhis.android.core.program.ProgramStageModel;
+import org.hisp.dhis.android.core.period.DatePeriod;
+import org.hisp.dhis.android.core.program.Program;
 
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
-import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
+import io.reactivex.Single;
 
-/**
- * QUADRAM. Created by ppajuelo on 02/11/2017.
- */
 
 public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepository {
 
-    private final String EVENT_DATA_VALUES_NEW = "SELECT " +
-            "TrackedEntityDataValue.*, " +
-            "DataElement.valueType, " +
-            "DataElement.optionSet " +
-            "FROM TrackedEntityDataValue " +
-            "JOIN DataElement ON DataElement.uid = TrackedEntityDataValue.dataElement WHERE TrackedEntityDataValue.event = ?\n" +
-            "AND TrackedEntityDataValue.dataElement IN\n" +
-            "(SELECT ProgramStageDataElement.dataElement FROM ProgramStageDataElement\n" +
-            "WHERE ProgramStageDataElement.displayInReports = '1'\n" +
-            "ORDER BY ProgramStageDataElement.sortOrder ASC LIMIT 3\n" +
-            ")";
+    private final String programUid;
+    private D2 d2;
+    private ProgramEventMapper mapper;
 
-    private final String EVENT_DATA_VALUES = "SELECT " +
-            "DE.uid, " +
-            "DE.displayName, " +
-            "DE.valueType, " +
-            "DE.optionSet, " +
-            "TrackedEntityDataValue.value " +
-            "FROM TrackedEntityDataValue " +
-            "JOIN (" +
-            "SELECT DataElement.uid AS uid, " +
-            "DataElement.displayName AS displayName, " +
-            "DataElement.valueType AS valueType, " +
-            "DataElement.optionSet AS optionSet " +
-            "FROM ProgramStageDataElement " +
-            "JOIN DataElement ON DataElement.uid = ProgramStageDataElement.dataElement " +
-            "WHERE ProgramStageDataElement.displayInReports = 1 GROUP BY DataElement.uid) AS DE ON DE.uid = TrackedEntityDataValue.dataElement " +
-            "WHERE TrackedEntityDataValue.event = ?";
-
-    private final BriteDatabase briteDatabase;
-
-    ProgramEventDetailRepositoryImpl(BriteDatabase briteDatabase) {
-        this.briteDatabase = briteDatabase;
+    ProgramEventDetailRepositoryImpl(String programUid, D2 d2, ProgramEventMapper mapper) {
+        this.programUid = programUid;
+        this.d2 = d2;
+        this.mapper = mapper;
     }
 
     @NonNull
-    private Flowable<List<EventModel>> programEvents(String programUid, List<Date> dates, Period period, String orgUnitQuery, int page) {
-        String pageQuery = String.format(Locale.US, " LIMIT %d,%d", page * 20, 20);
+    @Override
+    public LiveData<PagedList<ProgramEventViewModel>> filteredProgramEvents(List<DatePeriod> dateFilter, List<String> orgUnitFilter, List<CategoryOptionCombo> catOptCombList,
+                                                                            List<EventStatus> eventStatus, List<State> states, boolean assignedToUser) {
+        EventCollectionRepository eventRepo = d2.eventModule().events().byProgramUid().eq(programUid).byDeleted().isFalse();
+        if (!dateFilter.isEmpty())
+            eventRepo = eventRepo.byEventDate().inDatePeriods(dateFilter);
+        if (!orgUnitFilter.isEmpty())
+            eventRepo = eventRepo.byOrganisationUnitUid().in(orgUnitFilter);
+        if (!catOptCombList.isEmpty())
+            eventRepo = eventRepo.byAttributeOptionComboUid().in(UidsHelper.getUids(catOptCombList));
+        if (!eventStatus.isEmpty())
+            eventRepo = eventRepo.byStatus().in(eventStatus);
+        if (!states.isEmpty())
+            eventRepo = eventRepo.byState().in(states);
+        if (assignedToUser)
+            eventRepo = eventRepo.byAssignedUser().eq(getCurrentUser());
 
-        if (dates != null) {
-            String SELECT_EVENT_WITH_PROGRAM_UID_AND_DATES = "SELECT * FROM " + EventModel.TABLE + " WHERE " + EventModel.Columns.PROGRAM + "='%s' AND (%s) " +
-                    "AND " + EventModel.TABLE + "." + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "'";
+        DataSource dataSource = eventRepo.orderByEventDate(RepositoryScope.OrderByDirection.DESC).withTrackedEntityDataValues().getDataSource().map(event -> mapper.eventToProgramEvent(event));
 
-            StringBuilder dateQuery = new StringBuilder();
-            String queryFormat = "(%s BETWEEN '%s' AND '%s') ";
-            for (int i = 0; i < dates.size(); i++) {
-                Date[] datesToQuery = DateUtils.getInstance().getDateFromDateAndPeriod(dates.get(i), period);
-                dateQuery.append(String.format(queryFormat, EventModel.Columns.EVENT_DATE, DateUtils.databaseDateFormat().format(datesToQuery[0]), DateUtils.databaseDateFormat().format(datesToQuery[1])));
-                if (i < dates.size() - 1)
-                    dateQuery.append("OR ");
+        return new LivePagedListBuilder(new DataSource.Factory() {
+            @Override
+            public DataSource create() {
+                return dataSource;
             }
-
-            if (orgUnitQuery != null && !orgUnitQuery.isEmpty())
-                SELECT_EVENT_WITH_PROGRAM_UID_AND_DATES += " AND " + EventModel.TABLE + "." + EventModel.Columns.ORGANISATION_UNIT + " IN (" + orgUnitQuery + ")";
-
-            SELECT_EVENT_WITH_PROGRAM_UID_AND_DATES += " ORDER BY " + EventModel.TABLE + "." + EventModel.Columns.EVENT_DATE + " DESC";
-
-            return briteDatabase.createQuery(EventModel.TABLE, String.format(SELECT_EVENT_WITH_PROGRAM_UID_AND_DATES + pageQuery,
-                    programUid == null ? "" : programUid,
-                    dateQuery == null ? "" : dateQuery))
-                    .mapToList(EventModel::create).toFlowable(BackpressureStrategy.LATEST);
-        } else {
-            String SELECT_EVENT_WITH_PROGRAM_UID_AND_DATES = "SELECT * FROM " + EventModel.TABLE + " WHERE " + EventModel.Columns.PROGRAM + "='%s' " +
-                    "AND " + EventModel.TABLE + "." + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "'";
-
-            if (orgUnitQuery != null && !orgUnitQuery.isEmpty())
-                SELECT_EVENT_WITH_PROGRAM_UID_AND_DATES += " AND " + EventModel.TABLE + "." + EventModel.Columns.ORGANISATION_UNIT + " IN (" + orgUnitQuery + ")";
-
-            SELECT_EVENT_WITH_PROGRAM_UID_AND_DATES += " ORDER BY " + EventModel.TABLE + "." + EventModel.Columns.EVENT_DATE + " DESC";
-
-            return briteDatabase.createQuery(EventModel.TABLE, String.format(SELECT_EVENT_WITH_PROGRAM_UID_AND_DATES + pageQuery, programUid == null ? "" : programUid))
-                    .mapToList(cursor -> {
-                        EventModel eventModel = EventModel.create(cursor);
-
-                        Cursor program = briteDatabase.query("SELECT * FROM Program WHERE uid = ?", programUid);
-                        if (program != null && program.moveToFirst()) {
-                            ProgramModel programModel = ProgramModel.create(program);
-                            if (DateUtils.getInstance().hasExpired(eventModel, programModel.expiryDays(), programModel.completeEventsExpiryDays(), programModel.expiryPeriodType())) {
-                                ContentValues contentValues = eventModel.toContentValues();
-                                contentValues.put(EventModel.Columns.STATUS, EventStatus.SKIPPED.toString());
-                                briteDatabase.update(EventModel.TABLE, contentValues, "uid = ?", eventModel.uid());
-                            }
-                            program.close();
-                        }
-                        return eventModel;
-                    }).toFlowable(BackpressureStrategy.LATEST);
-        }
+        }, 20).build();
     }
 
-    /*@NonNull
+    @NonNull
     @Override
-    public Observable<List<EventModel>> filteredProgramEvents(String programUid, String fromDate, String toDate, CategoryOptionComboModel categoryOptionComboModel, String orgUnitQuery) {
-        if (categoryOptionComboModel == null) {
-            return programEvents(programUid, fromDate, toDate);
-        }
-        String SELECT_EVENT_WITH_PROGRAM_UID_AND_DATES_AND_CAT_COMBO = "SELECT * FROM " + EventModel.TABLE + " WHERE " + EventModel.Columns.PROGRAM + "='%s' AND " + EventModel.Columns.EVENT_DATE + " BETWEEN '%s' and '%s'"
-                + " AND " + EventModel.Columns.ATTRIBUTE_OPTION_COMBO + "='%s'"
-                + " AND " + EventModel.TABLE + "." + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "'";
-        if (orgUnitQuery != null && !orgUnitQuery.isEmpty())
-            SELECT_EVENT_WITH_PROGRAM_UID_AND_DATES_AND_CAT_COMBO += " AND " + EventModel.TABLE + "." + EventModel.Columns.ORGANISATION_UNIT + " IN (" + orgUnitQuery + ")";
+    public Flowable<kotlin.Pair<FeatureCollection, BoundingBox>> filteredEventsForMap(
+            List<DatePeriod> dateFilter, List<String> orgUnitFilter,
+            List<CategoryOptionCombo> catOptCombList, List<EventStatus> eventStatus,
+            List<State> states, boolean assignedToUser
+    ) {
+        EventCollectionRepository eventRepo = d2.eventModule().events().byProgramUid().eq(programUid).byDeleted().isFalse();
+        if (!dateFilter.isEmpty())
+            eventRepo = eventRepo.byEventDate().inDatePeriods(dateFilter);
+        if (!orgUnitFilter.isEmpty())
+            eventRepo = eventRepo.byOrganisationUnitUid().in(orgUnitFilter);
+        if (!catOptCombList.isEmpty())
+            eventRepo = eventRepo.byAttributeOptionComboUid().in(UidsHelper.getUids(catOptCombList));
+        if (!eventStatus.isEmpty())
+            eventRepo = eventRepo.byStatus().in(eventStatus);
+        if (!states.isEmpty())
+            eventRepo = eventRepo.byState().in(states);
+        if (assignedToUser)
+            eventRepo = eventRepo.byAssignedUser().eq(getCurrentUser());
 
-        String id = categoryOptionComboModel == null || categoryOptionComboModel.uid() == null ? "" : categoryOptionComboModel.uid();
-        return briteDatabase.createQuery(EventModel.TABLE, String.format(SELECT_EVENT_WITH_PROGRAM_UID_AND_DATES_AND_CAT_COMBO,
-                programUid == null ? "" : programUid,
-                fromDate == null ? "" : fromDate,
-                toDate == null ? "" : toDate,
-                id))
-                .mapToList(cursor -> {
-                    EventModel eventModel = EventModel.create(cursor);
+        return eventRepo.byDeleted().isFalse().orderByEventDate(RepositoryScope.OrderByDirection.DESC).withTrackedEntityDataValues().get()
+                .map(GeometryUtils.INSTANCE::getSourceFromEvent)
+                .toFlowable();
+    }
 
-                    Cursor program = briteDatabase.query("SELECT * FROM Program WHERE uid = ?", programUid);
-                    if (program != null && program.moveToFirst()) {
-                        ProgramModel programModel = ProgramModel.create(program);
-                        if (DateUtils.getInstance().hasExpired(eventModel, programModel.expiryDays(), programModel.completeEventsExpiryDays(), programModel.expiryPeriodType())) {
-                            ContentValues contentValues = eventModel.toContentValues();
-                            contentValues.put(EventModel.Columns.STATUS, EventStatus.SKIPPED.toString());
-                            briteDatabase.update(EventModel.TABLE, contentValues, "uid = ?", eventModel.uid());
-                        }
-                        program.close();
-                    }
-                    return eventModel;
+    @Override
+    public Flowable<ProgramEventViewModel> getInfoForEvent(String eventUid) {
+        return d2.eventModule().events().byUid().eq(eventUid).withTrackedEntityDataValues().one().get()
+                .map(event -> mapper.eventToProgramEvent(event))
+                .toFlowable();
+    }
+
+    @Override
+    public Single<FeatureType> featureType() {
+        return d2.programModule().programStages()
+                .byProgramUid().eq(programUid).one().get()
+                .map(stage -> {
+                    if (stage.featureType() != null)
+                        return stage.featureType();
+                    else
+                        return FeatureType.NONE;
                 });
-    }*/
+    }
+
+    @Override
+    public boolean hasAssignment() {
+        return !d2.programModule().programStages().byProgramUid().eq(programUid)
+                .byEnableUserAssignment().isTrue().blockingIsEmpty();
+    }
+
+    private String getCurrentUser() {
+        return d2.userModule().user().blockingGet().uid();
+    }
 
     @NonNull
     @Override
-    public Flowable<List<EventModel>> filteredProgramEvents(String programUid, List<Date> dates,
-                                                            Period period,
-                                                            CategoryOptionComboModel categoryOptionComboModel,
-                                                            String orgUnitQuery,
-                                                            int page) {
+    public Observable<Program> program() {
+        return Observable.just(d2.programModule().programs().uid(programUid).blockingGet());
+    }
 
-        String pageQuery = String.format(Locale.US, " LIMIT %d,%d", page * 20, 20);
+    @Override
+    public boolean getAccessDataWrite() {
+        boolean canWrite;
+        canWrite = d2.programModule().programs().uid(programUid).blockingGet().access().data().write();
+        if (canWrite && d2.programModule().programStages().byProgramUid().eq(programUid).one().blockingGet() != null)
+            canWrite = d2.programModule().programStages().byProgramUid().eq(programUid).one().blockingGet().access().data().write();
+        else if (d2.programModule().programStages().byProgramUid().eq(programUid).one().blockingGet() == null)
+            canWrite = false;
 
-        if (categoryOptionComboModel == null) {
-            return programEvents(programUid, dates, period, orgUnitQuery, page);
-        }
-        if (dates != null) {
-            String SELECT_EVENT_WITH_PROGRAM_UID_AND_DATES_AND_CAT_COMBO = "SELECT * FROM " + EventModel.TABLE + " WHERE " + EventModel.Columns.PROGRAM + "='%s' AND " + EventModel.Columns.ATTRIBUTE_OPTION_COMBO + "='%s' AND (%s) " +
-                    "AND " + EventModel.TABLE + "." + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "'";
-            StringBuilder dateQuery = new StringBuilder();
-            String queryFormat = "(%s BETWEEN '%s' AND '%s') ";
-            for (int i = 0; i < dates.size(); i++) {
-                Date[] datesToQuery = DateUtils.getInstance().getDateFromDateAndPeriod(dates.get(i), period);
-                dateQuery.append(String.format(queryFormat, EventModel.Columns.EVENT_DATE, DateUtils.getInstance().formatDate(datesToQuery[0]), DateUtils.getInstance().formatDate(datesToQuery[1])));
-                if (i < dates.size() - 1)
-                    dateQuery.append("OR ");
-            }
+        return canWrite;
+    }
 
-            if (orgUnitQuery != null && !orgUnitQuery.isEmpty())
-                SELECT_EVENT_WITH_PROGRAM_UID_AND_DATES_AND_CAT_COMBO += " AND " + EventModel.TABLE + "." + EventModel.Columns.ORGANISATION_UNIT + " IN (" + orgUnitQuery + ")";
+    @Override
+    public Single<Pair<CategoryCombo, List<CategoryOptionCombo>>> catOptionCombos() {
+        return d2.programModule().programs().uid(programUid).get()
+                .filter(program -> program.categoryCombo() != null)
+                .flatMapSingle(program -> d2.categoryModule().categoryCombos().uid(program.categoryComboUid()).get())
+                .filter(categoryCombo -> !categoryCombo.isDefault())
+                .flatMapSingle(categoryCombo -> Single.zip(
+                        d2.categoryModule().categoryCombos()
+                                .uid(categoryCombo.uid()).get(),
+                        d2.categoryModule().categoryOptionCombos()
+                                .byCategoryComboUid().eq(categoryCombo.uid()).get(),
+                        Pair::create
+                ));
+    }
 
-            String id = categoryOptionComboModel == null || categoryOptionComboModel.uid() == null ? "" : categoryOptionComboModel.uid();
-            return briteDatabase.createQuery(EventModel.TABLE, String.format(SELECT_EVENT_WITH_PROGRAM_UID_AND_DATES_AND_CAT_COMBO + pageQuery,
-                    programUid == null ? "" : programUid,
-                    id,
-                    dateQuery))
-                    .mapToList(EventModel::create).toFlowable(BackpressureStrategy.LATEST);
-        } else {
-            String SELECT_EVENT_WITH_PROGRAM_UID_AND_DATES_AND_CAT_COMBO = "SELECT * FROM " + EventModel.TABLE + " WHERE " + EventModel.Columns.PROGRAM + "='%s' AND " + EventModel.Columns.ATTRIBUTE_OPTION_COMBO + "='%s' " +
-                    "AND " + EventModel.TABLE + "." + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "'";
-
-            if (orgUnitQuery != null && !orgUnitQuery.isEmpty())
-                SELECT_EVENT_WITH_PROGRAM_UID_AND_DATES_AND_CAT_COMBO += " AND " + EventModel.TABLE + "." + EventModel.Columns.ORGANISATION_UNIT + " IN (" + orgUnitQuery + ")";
-
-            String id = categoryOptionComboModel == null || categoryOptionComboModel.uid() == null ? "" : categoryOptionComboModel.uid();
-            return briteDatabase.createQuery(EventModel.TABLE, String.format(SELECT_EVENT_WITH_PROGRAM_UID_AND_DATES_AND_CAT_COMBO + pageQuery,
-                    programUid == null ? "" : programUid,
-                    id))
-                    .mapToList(cursor -> {
-                        EventModel eventModel = EventModel.create(cursor);
-
-                        Cursor program = briteDatabase.query("SELECT * FROM Program WHERE uid = ?", programUid);
-                        if (program != null && program.moveToFirst()) {
-                            ProgramModel programModel = ProgramModel.create(program);
-                            if (DateUtils.getInstance().hasExpired(eventModel, programModel.expiryDays(), programModel.completeEventsExpiryDays(), programModel.expiryPeriodType())) {
-                                ContentValues contentValues = eventModel.toContentValues();
-                                contentValues.put(EventModel.Columns.STATUS, EventStatus.SKIPPED.toString());
-                                briteDatabase.update(EventModel.TABLE, contentValues, "uid = ?", eventModel.uid());
-                            }
-                            program.close();
+    @Override
+    public Single<Boolean> hasAccessToAllCatOptions() {
+        return d2.programModule().programs().uid(programUid).get()
+                .filter(program -> program.categoryComboUid() != null)
+                .map(program -> d2.categoryModule().categoryCombos().withCategories().withCategoryOptionCombos().uid(program.categoryComboUid()).blockingGet())
+                .filter(catCombo -> !catCombo.isDefault())
+                .map(catCombo -> {
+                    boolean hasAccess = true;
+                    for (Category category : catCombo.categories()) {
+                        List<CategoryOption> options = d2.categoryModule().categories().withCategoryOptions().uid(category.uid()).blockingGet().categoryOptions();
+                        int accesibleOptions = options.size();
+                        for (CategoryOption categoryOption : options) {
+                            if (!d2.categoryModule().categoryOptions().uid(categoryOption.uid()).blockingGet().access().data().write())
+                                accesibleOptions--;
                         }
-                        return eventModel;
-                    }).toFlowable(BackpressureStrategy.LATEST);
-        }
+                        if (accesibleOptions == 0) {
+                            hasAccess = false;
+                            break;
+                        }
+                    }
+                    return hasAccess;
+                }).toSingle();
     }
 
-    @NonNull
-    @Override
-    public Observable<List<OrganisationUnitModel>> orgUnits() {
-        String SELECT_ORG_UNITS = "SELECT * FROM " + OrganisationUnitModel.TABLE;
-        return briteDatabase.createQuery(OrganisationUnitModel.TABLE, SELECT_ORG_UNITS)
-                .mapToList(OrganisationUnitModel::create);
-    }
-
-    @NonNull
-    @Override
-    public Observable<List<CategoryOptionComboModel>> catCombo(String categoryComboUid) {
-        String id = categoryComboUid == null ? "" : categoryComboUid;
-        String SELECT_CATEGORY_COMBO = "SELECT " + CategoryOptionComboModel.TABLE + ".* FROM " + CategoryOptionComboModel.TABLE + " INNER JOIN " + CategoryComboModel.TABLE +
-                " ON " + CategoryOptionComboModel.TABLE + "." + CategoryOptionComboModel.Columns.CATEGORY_COMBO + " = " + CategoryComboModel.TABLE + "." + CategoryComboModel.Columns.UID
-                + " WHERE " + CategoryComboModel.TABLE + "." + CategoryComboModel.Columns.UID + " = '" + id + "'";
-        return briteDatabase.createQuery(CategoryOptionComboModel.TABLE, SELECT_CATEGORY_COMBO)
-                .mapToList(CategoryOptionComboModel::create);
-    }
-
-    @Override
-    public Observable<List<String>> eventDataValuesNew(EventModel eventModel) {
-        List<String> values = new ArrayList<>();
-        String id = eventModel == null || eventModel.uid() == null ? "" : eventModel.uid();
-        Cursor cursor = briteDatabase.query(EVENT_DATA_VALUES, id);
-        if (cursor != null && cursor.moveToFirst()) {
-            for (int i = 0; i < cursor.getCount(); i++) {
-                String value = cursor.getString(cursor.getColumnIndex("value"));
-                if(cursor.getString(cursor.getColumnIndex("optionSet"))!=null)
-                    value = ValueUtils.optionSetCodeToDisplayName(briteDatabase,cursor.getString(cursor.getColumnIndex("optionSet")),value);
-                else if(cursor.getString(cursor.getColumnIndex("valueType")).equals(ValueType.ORGANISATION_UNIT.name()))
-                    value = ValueUtils.orgUnitUidToDisplayName(briteDatabase,value);
-
-                values.add(value);
-                cursor.moveToNext();
-            }
-            cursor.close();
-        }
-
-        return Observable.just(values);
-    }
-
-    @Override
-    public Observable<Boolean> writePermission(String programId) {
-        String WRITE_PERMISSION = "SELECT ProgramStage.accessDataWrite FROM ProgramStage WHERE ProgramStage.program = ? LIMIT 1";
-        String PROGRAM_WRITE_PERMISSION = "SELECT Program.accessDataWrite FROM Program WHERE Program.uid = ? LIMIT 1";
-        return briteDatabase.createQuery(ProgramStageModel.TABLE, WRITE_PERMISSION, programId == null ? "" : programId)
-                .mapToOne(cursor -> cursor.getInt(0) == 1)
-                .flatMap(programStageAccessDataWrite ->
-                        briteDatabase.createQuery(ProgramModel.TABLE, PROGRAM_WRITE_PERMISSION, programId == null ? "" : programId)
-                                .mapToOne(cursor -> (cursor.getInt(0) == 1) && programStageAccessDataWrite));
-    }
 }

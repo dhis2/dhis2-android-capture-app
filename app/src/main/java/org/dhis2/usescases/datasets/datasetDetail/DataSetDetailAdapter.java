@@ -1,27 +1,26 @@
 package org.dhis2.usescases.datasets.datasetDetail;
 
-import android.databinding.DataBindingUtil;
-import android.support.annotation.NonNull;
-import android.support.v7.util.DiffUtil;
-import android.support.v7.widget.RecyclerView;
+import androidx.databinding.DataBindingUtil;
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.DiffUtil;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import org.dhis2.R;
 import org.dhis2.databinding.ItemDatasetBinding;
-import org.hisp.dhis.android.core.dataset.DataSetModel;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class DataSetDetailAdapter extends RecyclerView.Adapter<DataSetDetailViewHolder> {
 
-    private DataSetDetailContract.Presenter presenter;
-    private List<DataSetDetailModel> datasets;
+    private DataSetDetailPresenter presenter;
+    private List<DataSetDetailModel> dataSets;
 
-    public DataSetDetailAdapter(DataSetDetailContract.Presenter presenter) {
+    public DataSetDetailAdapter(DataSetDetailPresenter presenter) {
         this.presenter = presenter;
-        this.datasets = new ArrayList<>();
+        this.dataSets = new ArrayList<>();
     }
 
     @NonNull
@@ -35,19 +34,19 @@ public class DataSetDetailAdapter extends RecyclerView.Adapter<DataSetDetailView
 
     @Override
     public void onBindViewHolder(@NonNull DataSetDetailViewHolder holder, int position) {
-        DataSetDetailModel dataSetModel = datasets.get(position);
+        DataSetDetailModel dataSetModel = dataSets.get(position);
         holder.bind(presenter, dataSetModel);
     }
 
     @Override
     public int getItemCount() {
-        return datasets.size();
+        return dataSets.size();
     }
 
-    public void setDatasets(List<DataSetDetailModel> datasets){
-        DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new DataSetDiffCallback(this.datasets, datasets));
-        this.datasets.clear();
-        this.datasets.addAll(datasets);
+    public void setDataSets(List<DataSetDetailModel> dataSets){
+        DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new DataSetDiffCallback(this.dataSets, dataSets));
+        this.dataSets.clear();
+        this.dataSets.addAll(dataSets);
         diffResult.dispatchUpdatesTo(this);
     }
 }

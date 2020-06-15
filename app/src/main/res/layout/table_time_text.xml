@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+        <variable
+            name="label"
+            type="java.lang.String" />
+
+        <variable
+            name="description"
+            type="java.lang.String" />
+
+        <variable
+            name="initData"
+            type="java.lang.String" />
+
+        <variable
+            name="allowFutureDates"
+            type="java.lang.Boolean" />
+    </data>
+
+    <org.dhis2.utils.customviews.TimeTableView
+        android:id="@+id/timeView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:initData="@{initData}"
+        app:label="@{label}"
+        app:description="@{description}"/>
+
+</layout>

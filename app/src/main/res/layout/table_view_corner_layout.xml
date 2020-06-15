@@ -1,18 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="55dp"
-    android:layout_height="40dp"
-    android:background="@color/white_faf">
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/table_view_default_separator_color"
+    android:minHeight="@dimen/default_cell_height">
 
-    <View
-        android:layout_width="1px"
-        android:layout_height="match_parent"
-        android:layout_alignParentEnd="true"
-        android:background="?colorPrimary"/>
+    <ImageView
+        android:id="@+id/buttonRowScaleMinus"
+        style="@style/ActionIcon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:tint="#333333"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/buttonRowScaleAdd"
+        app:srcCompat="@drawable/ic_reduce_width" />
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1px"
-        android:layout_alignParentBottom="true"
-        android:background="?colorPrimaryDark"/>
-</RelativeLayout>
+    <ImageView
+        android:id="@+id/buttonRowScaleAdd"
+        style="@style/ActionIcon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:tint="#333333"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:srcCompat="@drawable/ic_increase_width" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

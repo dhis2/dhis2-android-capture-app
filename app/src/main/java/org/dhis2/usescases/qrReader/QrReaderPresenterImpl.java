@@ -3,23 +3,30 @@ package org.dhis2.usescases.qrReader;
 import android.database.Cursor;
 import android.util.Log;
 
-import com.squareup.sqlbrite2.BriteDatabase;
-
+import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.utils.DateUtils;
 import org.hisp.dhis.android.core.D2;
+import org.hisp.dhis.android.core.common.Coordinates;
 import org.hisp.dhis.android.core.common.State;
-import org.hisp.dhis.android.core.dataelement.DataElementModel;
-import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
+import org.hisp.dhis.android.core.dataelement.DataElement;
+import org.hisp.dhis.android.core.dataelement.DataElementTableInfo;
+import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
-import org.hisp.dhis.android.core.event.EventModel;
+import org.hisp.dhis.android.core.enrollment.EnrollmentTableInfo;
+import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.event.EventStatus;
-import org.hisp.dhis.android.core.program.ProgramModel;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueModel;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
+import org.hisp.dhis.android.core.event.EventTableInfo;
+import org.hisp.dhis.android.core.program.Program;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeTableInfo;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueTableInfo;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValue;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueTableInfo;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceTableInfo;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -30,11 +37,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import io.reactivex.BackpressureStrategy;
-import io.reactivex.Observable;
-import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
 import static org.dhis2.utils.DateUtils.DATABASE_FORMAT_EXPRESSION;
@@ -45,8 +48,8 @@ import static org.dhis2.utils.DateUtils.DATABASE_FORMAT_EXPRESSION;
 
 class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
 
-    private final BriteDatabase briteDatabase;
     private final D2 d2;
+    private final SchedulerProvider schedulerProvider;
     private QrReaderContracts.View view;
     private CompositeDisposable compositeDisposable;
 
@@ -62,10 +65,10 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
     private ArrayList<JSONObject> eventsJson = new ArrayList<>();
     private String teiUid;
 
-    QrReaderPresenterImpl(BriteDatabase briteDatabase, D2 d2) {
-        this.briteDatabase = briteDatabase;
+    QrReaderPresenterImpl(D2 d2, SchedulerProvider schedulerProvider) {
         this.d2 = d2;
         this.compositeDisposable = new CompositeDisposable();
+        this.schedulerProvider = schedulerProvider;
     }
 
     @Override
@@ -83,13 +86,13 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
 
     @Override
     public void handleDataWORegistrationInfo(JSONArray jsonArray) {
-        ArrayList<Trio<TrackedEntityDataValueModel, String, Boolean>> attributes = new ArrayList<>();
+        ArrayList<Trio<TrackedEntityDataValue, String, Boolean>> attributes = new ArrayList<>();
         if (eventUid != null) {
             try {
                 // LOOK FOR TRACKED ENTITY ATTRIBUTES ON LOCAL DATABASE
                 for (int i = 0; i < jsonArray.length(); i++) {
                     JSONObject attrValue = jsonArray.getJSONObject(i);
-                    TrackedEntityDataValueModel.Builder trackedEntityDataValueModelBuilder = TrackedEntityDataValueModel.builder();
+                    TrackedEntityDataValue.Builder trackedEntityDataValueModelBuilder = TrackedEntityDataValue.builder();
 
                     SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DATABASE_FORMAT_EXPRESSION, Locale.getDefault());
                     trackedEntityDataValueModelBuilder.event(eventUid);
@@ -114,15 +117,16 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
 
                     if (attrValue.has("dataElement") && attrValue.getString("dataElement") != null) {
                         // LOOK FOR dataElement ON LOCAL DATABASE.
-                        Cursor cursor = briteDatabase.query("SELECT * FROM " + DataElementModel.TABLE +
-                                " WHERE " + DataElementModel.Columns.UID + " = ?", attrValue.getString("dataElement"));
                         // IF FOUND, OPEN DASHBOARD
-                        if (cursor != null && cursor.moveToFirst() && cursor.getCount() > 0) {
+
+                        if (d2.dataElementModule().dataElements().uid(attrValue.getString("dataElement")).blockingExists()) {
                             this.dataJson.add(attrValue);
-                            attributes.add(Trio.create(trackedEntityDataValueModelBuilder.build(), cursor.getString(cursor.getColumnIndex("formName")), true));
+                            DataElement de = d2.dataElementModule().dataElements().uid(attrValue.getString("dataElement")).blockingGet();
+                            attributes.add(Trio.create(trackedEntityDataValueModelBuilder.build(), de.formName(), true));
                         } else {
                             attributes.add(Trio.create(trackedEntityDataValueModelBuilder.build(), null, false));
                         }
+
                     } else {
                         attributes.add(Trio.create(trackedEntityDataValueModelBuilder.build(), null, false));
                     }
@@ -137,12 +141,12 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
 
     @Override
     public void handleDataInfo(JSONArray jsonArray) {
-        ArrayList<Trio<TrackedEntityDataValueModel, String, Boolean>> attributes = new ArrayList<>();
+        ArrayList<Trio<TrackedEntityDataValue, String, Boolean>> attributes = new ArrayList<>();
         try {
             // LOOK FOR TRACKED ENTITY ATTRIBUTES ON LOCAL DATABASE
             for (int i = 0; i < jsonArray.length(); i++) {
                 JSONObject attrValue = jsonArray.getJSONObject(i);
-                TrackedEntityDataValueModel.Builder trackedEntityDataValueModelBuilder = TrackedEntityDataValueModel.builder();
+                TrackedEntityDataValue.Builder trackedEntityDataValueModelBuilder = TrackedEntityDataValue.builder();
 
                 SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DATABASE_FORMAT_EXPRESSION, Locale.getDefault());
 
@@ -170,12 +174,11 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
 
                 if (attrValue.has("dataElement") && attrValue.getString("dataElement") != null) {
                     // LOOK FOR dataElement ON LOCAL DATABASE.
-                    Cursor cursor = briteDatabase.query("SELECT * FROM " + DataElementModel.TABLE +
-                            " WHERE " + DataElementModel.Columns.UID + " = ?", attrValue.getString("dataElement"));
                     // IF FOUND, OPEN DASHBOARD
-                    if (cursor != null && cursor.moveToFirst() && cursor.getCount() > 0) {
-                        this.teiDataJson.add(attrValue);
-                        attributes.add(Trio.create(trackedEntityDataValueModelBuilder.build(), cursor.getString(cursor.getColumnIndex("formName")), true));
+                    if (d2.dataElementModule().dataElements().uid(attrValue.getString("dataElement")).blockingExists()) {
+                        this.dataJson.add(attrValue);
+                        DataElement de = d2.dataElementModule().dataElements().uid(attrValue.getString("dataElement")).blockingGet();
+                        attributes.add(Trio.create(trackedEntityDataValueModelBuilder.build(), de.formName(), true));
                     } else {
                         attributes.add(Trio.create(trackedEntityDataValueModelBuilder.build(), null, false));
                     }
@@ -202,13 +205,9 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
 
         // IF TEI READ
         if (teiUid != null) {
-            // LOOK FOR TEI ON LOCAL DATABASE.
-            Cursor cursor = briteDatabase.query("SELECT * FROM " + TrackedEntityInstanceModel.TABLE +
-                    " WHERE " + TrackedEntityInstanceModel.Columns.UID + " = ?", teiUid == null ? "" : teiUid);
             // IF FOUND, OPEN DASHBOARD
-            if (cursor != null && cursor.moveToFirst() && cursor.getCount() > 0) {
+            if (d2.trackedEntityModule().trackedEntityInstances().uid(teiUid).blockingExists()) {
                 view.goToDashBoard(teiUid);
-                cursor.close();
             }
             // IF NOT FOUND, TRY TO DOWNLOAD ONLINE, OR PROMPT USER TO SCAN MORE QR CODES
             else {
@@ -229,16 +228,10 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
             for (int i = 0; i < jsonArray.length(); i++) {
                 JSONObject attrValue = jsonArray.getJSONObject(i);
                 if (attrValue.has("trackedEntityAttribute") && attrValue.getString("trackedEntityAttribute") != null) {
-                    Cursor cursor = briteDatabase.query("SELECT " +
-                                    TrackedEntityAttributeModel.Columns.UID + ", " +
-                                    TrackedEntityAttributeModel.Columns.DISPLAY_NAME +
-                                    " FROM " + TrackedEntityAttributeModel.TABLE +
-                                    " WHERE " + TrackedEntityAttributeModel.Columns.UID + " = ?",
-                            attrValue.getString("trackedEntityAttribute"));
                     // TRACKED ENTITY ATTRIBUTE FOUND, TRACKED ENTITY ATTRIBUTE VALUE CAN BE SAVED.
-                    if (cursor != null && cursor.moveToFirst() && cursor.getCount() > 0) {
-                        attributes.add(Trio.create(cursor.getString(1), attrValue.getString("value"), true));
-                        cursor.close();
+                    if (d2.trackedEntityModule().trackedEntityAttributes().uid(attrValue.getString("trackedEntityAttribute")).blockingExists()) {
+                        TrackedEntityAttribute attribute = d2.trackedEntityModule().trackedEntityAttributes().uid(attrValue.getString("trackedEntityAttribute")).blockingGet();
+                        attributes.add(Trio.create(attribute.displayName(), attrValue.getString("value"), true));
                     }
                     // TRACKED ENTITY ATTRIBUTE NOT FOUND, TRACKED ENTITY ATTRIBUTE VALUE CANNOT BE SAVED.
                     else {
@@ -262,16 +255,10 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
             for (int i = 0; i < jsonArray.length(); i++) {
                 JSONObject attrValue = jsonArray.getJSONObject(i);
                 if (attrValue.has("program") && attrValue.getString("program") != null) {
-                    Cursor cursor = briteDatabase.query("SELECT " +
-                                    ProgramModel.Columns.UID + ", " +
-                                    ProgramModel.Columns.DISPLAY_NAME +
-                                    " FROM " + ProgramModel.TABLE +
-                                    " WHERE " + ProgramModel.Columns.UID + " = ?",
-                            attrValue.getString("program"));
                     // PROGRAM FOUND, ENROLLMENT CAN BE SAVED
-                    if (cursor != null && cursor.moveToFirst() && cursor.getCount() > 0) {
-                        enrollments.add(Pair.create(cursor.getString(1), true));
-                        cursor.close();
+                    if (d2.programModule().programs().uid(attrValue.getString("program")).blockingExists()) {
+                        Program program = d2.programModule().programs().uid(attrValue.getString("program")).blockingGet();
+                        enrollments.add(Pair.create(program.displayName(), true));
                     }
                     // PROGRAM NOT FOUND, ENROLLMENT CANNOT BE SAVED
                     else {
@@ -294,15 +281,9 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
         try {
             // LOOK FOR ENROLLMENT ON LOCAL DATABASE
             if (jsonObject.has("enrollment") && jsonObject.getString("enrollment") != null) {
-                Cursor cursor = briteDatabase.query("SELECT " +
-                                EnrollmentModel.Columns.UID +
-                                " FROM " + EnrollmentModel.TABLE +
-                                " WHERE " + EnrollmentModel.Columns.UID + " = ?",
-                        jsonObject.getString("enrollment"));
                 // ENROLLMENT FOUND, EVENT CAN BE SAVED
-                if (cursor != null && cursor.moveToFirst() && cursor.getCount() > 0) {
+                if (d2.enrollmentModule().enrollments().uid(jsonObject.getString("enrollment")).blockingExists()) {
                     events.add(Pair.create(jsonObject.getString("enrollment"), true));
-                    cursor.close();
                 }
                 // ENROLLMENT NOT FOUND IN LOCAL DATABASE, CHECK IF IT WAS READ FROM A QR
                 else if (enrollmentJson != null) {
@@ -311,7 +292,7 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
                         JSONArray enrollmentArray = enrollmentJson.get(i);
                         for (int j = 0; j < enrollmentArray.length(); j++) {
                             JSONObject enrollment = enrollmentArray.getJSONObject(j);
-                            if (jsonObject.getString("enrollment").equals(enrollment.getString(EnrollmentModel.Columns.UID))) {
+                            if (jsonObject.getString("enrollment").equals(enrollment.getString("uid"))) {
                                 isEnrollmentReadFromQr = true;
                                 break;
                             }
@@ -362,7 +343,7 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
     public void download() {
         try {
             if (teiJson != null) {
-                TrackedEntityInstanceModel.Builder teiModelBuilder = TrackedEntityInstanceModel.builder();
+                TrackedEntityInstance.Builder teiModelBuilder = TrackedEntityInstance.builder();
                 if (teiJson.has("uid"))
                     teiModelBuilder.uid(teiJson.getString("uid"));
                 if (teiJson.has("created"))
@@ -376,10 +357,11 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
                 if (teiJson.has("trackedEntityType"))
                     teiModelBuilder.trackedEntityType(teiJson.getString("trackedEntityType"));
 
-                TrackedEntityInstanceModel teiModel = teiModelBuilder.build();
+                TrackedEntityInstance teiModel = teiModelBuilder.build();
 
-                if (teiModel != null)
-                    briteDatabase.insert(TrackedEntityInstanceModel.TABLE, teiModel.toContentValues());
+                if (teiModel != null) {
+                    d2.databaseAdapter().insert(TrackedEntityInstanceTableInfo.TABLE_INFO.name(), null, teiModel.toContentValues());
+                }
             } else {
                 view.showIdError();
                 return;
@@ -395,8 +377,8 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
                     try {
                         JSONObject attrV = attrArray.getJSONObject(j);
 
-                        TrackedEntityAttributeValueModel.Builder attrValueModelBuilder;
-                        attrValueModelBuilder = TrackedEntityAttributeValueModel.builder();
+                        TrackedEntityAttributeValue.Builder attrValueModelBuilder;
+                        attrValueModelBuilder = TrackedEntityAttributeValue.builder();
                         if (attrV.has("created"))
                             attrValueModelBuilder.created(DateUtils.databaseDateFormat().parse(attrV.getString("created")));
                         if (attrV.has("lastUpdated"))
@@ -408,10 +390,10 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
                         if (attrV.has("trackedEntityAttribute"))
                             attrValueModelBuilder.trackedEntityAttribute(attrV.getString("trackedEntityAttribute"));
 
-                        TrackedEntityAttributeValueModel attrValueModel = attrValueModelBuilder.build();
+                        TrackedEntityAttributeValue attrValueModel = attrValueModelBuilder.build();
 
                         if (attrValueModel != null)
-                            briteDatabase.insert(TrackedEntityAttributeValueModel.TABLE, attrValueModel.toContentValues());
+                            d2.databaseAdapter().insert(TrackedEntityAttributeValueTableInfo.TABLE_INFO.name(), null, attrValueModel.toContentValues());
 
                     } catch (JSONException | ParseException e) {
                         Timber.e(e);
@@ -453,37 +435,37 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
                 JSONArray enrollmentArray = enrollmentJson.get(i);
                 for (int j = 0; j < enrollmentArray.length(); j++) {
                     try {
-                        JSONObject enrollment = enrollmentArray.getJSONObject(j);
+                        JSONObject enrollmentJson = enrollmentArray.getJSONObject(j);
 
-                        EnrollmentModel.Builder enrollmentModelBuilder;
-                        enrollmentModelBuilder = EnrollmentModel.builder();
-                        if (enrollment.has("uid"))
-                            enrollmentModelBuilder.uid(enrollment.getString("uid"));
-                        if (enrollment.has("created"))
-                            enrollmentModelBuilder.created(DateUtils.databaseDateFormat().parse(enrollment.getString("created")));
-                        if (enrollment.has("lastUpdated"))
-                            enrollmentModelBuilder.lastUpdated(DateUtils.databaseDateFormat().parse(enrollment.getString("lastUpdated")));
-                        if (enrollment.has("state"))
-                            enrollmentModelBuilder.state(State.valueOf(enrollment.getString("state")));
-                        if (enrollment.has("program"))
-                            enrollmentModelBuilder.program(enrollment.getString("program"));
-                        if (enrollment.has("followUp"))
-                            enrollmentModelBuilder.followUp(enrollment.getBoolean("followUp"));
-                        if (enrollment.has("enrollmentStatus"))
-                            enrollmentModelBuilder.enrollmentStatus(EnrollmentStatus.valueOf(enrollment.getString("enrollmentStatus")));
-                        if (enrollment.has("enrollmentDate"))
-                            enrollmentModelBuilder.enrollmentDate(DateUtils.databaseDateFormat().parse(enrollment.getString("enrollmentDate")));
-                        if (enrollment.has("dateOfIncident"))
-                            enrollmentModelBuilder.incidentDate(DateUtils.databaseDateFormat().parse(enrollment.getString("incidentDate ")));
-                        if (enrollment.has("organisationUnit"))
-                            enrollmentModelBuilder.organisationUnit(enrollment.getString("organisationUnit"));
-                        if (enrollment.has("trackedEntityInstance"))
-                            enrollmentModelBuilder.trackedEntityInstance(enrollment.getString("trackedEntityInstance"));
+                        Enrollment.Builder enrollmentBuilder;
+                        enrollmentBuilder = Enrollment.builder();
+                        if (enrollmentJson.has("uid"))
+                            enrollmentBuilder.uid(enrollmentJson.getString("uid"));
+                        if (enrollmentJson.has("created"))
+                            enrollmentBuilder.created(DateUtils.databaseDateFormat().parse(enrollmentJson.getString("created")));
+                        if (enrollmentJson.has("lastUpdated"))
+                            enrollmentBuilder.lastUpdated(DateUtils.databaseDateFormat().parse(enrollmentJson.getString("lastUpdated")));
+                        if (enrollmentJson.has("state"))
+                            enrollmentBuilder.state(State.valueOf(enrollmentJson.getString("state")));
+                        if (enrollmentJson.has("program"))
+                            enrollmentBuilder.program(enrollmentJson.getString("program"));
+                        if (enrollmentJson.has("followUp"))
+                            enrollmentBuilder.followUp(enrollmentJson.getBoolean("followUp"));
+                        if (enrollmentJson.has("enrollmentStatus"))
+                            enrollmentBuilder.status(EnrollmentStatus.valueOf(enrollmentJson.getString("enrollmentStatus")));
+                        if (enrollmentJson.has("enrollmentDate"))
+                            enrollmentBuilder.enrollmentDate(DateUtils.databaseDateFormat().parse(enrollmentJson.getString("enrollmentDate")));
+                        if (enrollmentJson.has("dateOfIncident"))
+                            enrollmentBuilder.incidentDate(DateUtils.databaseDateFormat().parse(enrollmentJson.getString("incidentDate ")));
+                        if (enrollmentJson.has("organisationUnit"))
+                            enrollmentBuilder.organisationUnit(enrollmentJson.getString("organisationUnit"));
+                        if (enrollmentJson.has("trackedEntityInstance"))
+                            enrollmentBuilder.trackedEntityInstance(enrollmentJson.getString("trackedEntityInstance"));
 
-                        EnrollmentModel enrollmentModel = enrollmentModelBuilder.build();
+                        Enrollment enrollment = enrollmentBuilder.build();
 
-                        if (enrollmentModel != null)
-                            briteDatabase.insert(EnrollmentModel.TABLE, enrollmentModel.toContentValues());
+                        if (enrollment != null)
+                            d2.databaseAdapter().insert(EnrollmentTableInfo.TABLE_INFO.name(), null, enrollment.toContentValues());
 
                     } catch (JSONException | ParseException e) {
                         Timber.e(e);
@@ -496,49 +478,47 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
         if (eventsJson != null) {
             for (int i = 0; i < eventsJson.size(); i++) {
                 try {
-                    JSONObject event = eventsJson.get(i);
+                    JSONObject eventJson = eventsJson.get(i);
 
-                    EventModel.Builder eventModelBuilder;
-                    eventModelBuilder = EventModel.builder();
-                    if (event.has("uid"))
-                        eventModelBuilder.uid(event.getString("uid"));
-                    if (event.has("created"))
-                        eventModelBuilder.created(DateUtils.databaseDateFormat().parse(event.getString("created")));
-                    if (event.has("lastUpdated"))
-                        eventModelBuilder.lastUpdated(DateUtils.databaseDateFormat().parse(event.getString("lastUpdated")));
-                    if (event.has("state"))
-                        eventModelBuilder.state(State.valueOf(event.getString("state")));
-                    if (event.has("enrollment"))
-                        eventModelBuilder.enrollment(event.getString("enrollment"));
-                    if (event.has("program"))
-                        eventModelBuilder.program(event.getString("program"));
-                    if (event.has("programStage"))
-                        eventModelBuilder.programStage(event.getString("programStage"));
-                    if (event.has("organisationUnit"))
-                        eventModelBuilder.organisationUnit(event.getString("organisationUnit"));
-                    if (event.has("eventDate"))
-                        eventModelBuilder.eventDate(DateUtils.databaseDateFormat().parse(event.getString("eventDate")));
-                    if (event.has("status"))
-                        eventModelBuilder.status(EventStatus.valueOf(event.getString("status")));
-                    if (event.has("attributeCategoryOptions"))
-                        eventModelBuilder.attributeCategoryOptions(event.getString("attributeCategoryOptions"));
-                    if (event.has("attributeOptionCombo"))
-                        eventModelBuilder.attributeOptionCombo(event.getString("attributeOptionCombo"));
-                    if (event.has("trackedEntityInstance"))
-                        eventModelBuilder.trackedEntityInstance(event.getString("trackedEntityInstance"));
-                    if (event.has("latitude"))
-                        eventModelBuilder.latitude(event.getString("latitude"));
-                    if (event.has("longitude"))
-                        eventModelBuilder.longitude(event.getString("longitude"));
-                    if (event.has("completedDate"))
-                        eventModelBuilder.completedDate(DateUtils.databaseDateFormat().parse(event.getString("completedDate")));
-                    if (event.has("dueDate"))
-                        eventModelBuilder.dueDate(DateUtils.databaseDateFormat().parse(event.getString("dueDate")));
+                    Event.Builder eventBuilder;
+                    eventBuilder = Event.builder();
+                    if (eventJson.has("uid"))
+                        eventBuilder.uid(eventJson.getString("uid"));
+                    if (eventJson.has("created"))
+                        eventBuilder.created(DateUtils.databaseDateFormat().parse(eventJson.getString("created")));
+                    if (eventJson.has("lastUpdated"))
+                        eventBuilder.lastUpdated(DateUtils.databaseDateFormat().parse(eventJson.getString("lastUpdated")));
+                    if (eventJson.has("state"))
+                        eventBuilder.state(State.valueOf(eventJson.getString("state")));
+                    if (eventJson.has("enrollment"))
+                        eventBuilder.enrollment(eventJson.getString("enrollment"));
+                    if (eventJson.has("program"))
+                        eventBuilder.program(eventJson.getString("program"));
+                    if (eventJson.has("programStage"))
+                        eventBuilder.programStage(eventJson.getString("programStage"));
+                    if (eventJson.has("organisationUnit"))
+                        eventBuilder.organisationUnit(eventJson.getString("organisationUnit"));
+                    if (eventJson.has("eventDate"))
+                        eventBuilder.eventDate(DateUtils.databaseDateFormat().parse(eventJson.getString("eventDate")));
+                    if (eventJson.has("status"))
+                        eventBuilder.status(EventStatus.valueOf(eventJson.getString("status")));
+                    if (eventJson.has("attributeOptionCombo"))
+                        eventBuilder.attributeOptionCombo(eventJson.getString("attributeOptionCombo"));
+                    if (eventJson.has("latitude") && eventJson.has("longitude")) {
+                        Coordinates coordinates = Coordinates.create(
+                                Double.parseDouble(eventJson.getString("latitude")),
+                                Double.parseDouble(eventJson.getString("longitude")));
+//                        eventBuilder.coordinate(coordinates);
+                    }
+                    if (eventJson.has("completedDate"))
+                        eventBuilder.completedDate(DateUtils.databaseDateFormat().parse(eventJson.getString("completedDate")));
+                    if (eventJson.has("dueDate"))
+                        eventBuilder.dueDate(DateUtils.databaseDateFormat().parse(eventJson.getString("dueDate")));
 
-                    EventModel eventModel = eventModelBuilder.build();
+                    Event eventModel = eventBuilder.build();
 
                     if (eventModel != null)
-                        briteDatabase.insert(EventModel.TABLE, eventModel.toContentValues());
+                        d2.databaseAdapter().insert(EventTableInfo.TABLE_INFO.name(), null, eventModel.toContentValues());
 
                 } catch (JSONException | ParseException e) {
                     Timber.e(e);
@@ -550,8 +530,8 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
             try {
                 JSONObject attrV = teiDataJson.get(i);
 
-                TrackedEntityDataValueModel.Builder attrValueModelBuilder;
-                attrValueModelBuilder = TrackedEntityDataValueModel.builder();
+                TrackedEntityDataValue.Builder attrValueModelBuilder;
+                attrValueModelBuilder = TrackedEntityDataValue.builder();
 
                 if (attrV.has("event"))
                     attrValueModelBuilder.event(attrV.getString("event"));
@@ -566,10 +546,10 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
                 if (attrV.has("providedElsewhere"))
                     attrValueModelBuilder.providedElsewhere(Boolean.parseBoolean(attrV.getString("providedElsewhere")));
 
-                TrackedEntityDataValueModel attrValueModel = attrValueModelBuilder.build();
+                TrackedEntityDataValue attrValueModel = attrValueModelBuilder.build();
 
                 if (attrValueModel != null) {
-                    long result = briteDatabase.insert(TrackedEntityDataValueModel.TABLE, attrValueModel.toContentValues());
+                    long result = d2.databaseAdapter().insert(TrackedEntityDataValueTableInfo.TABLE_INFO.name(), null, attrValueModel.toContentValues());
                     Log.d("RESULT", "insert event " + result);
                 }
 
@@ -588,22 +568,24 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
         List<String> uidToDownload = new ArrayList<>();
         uidToDownload.add(teiUid);
         compositeDisposable.add(
-                Observable.defer(() -> Observable.fromCallable(d2.downloadTrackedEntityInstancesByUid(uidToDownload))).toFlowable(BackpressureStrategy.LATEST)
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
+                d2.trackedEntityModule().trackedEntityInstanceDownloader().byUid().in(uidToDownload).download()
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
                         .subscribe(
                                 data -> {
-                                    view.finishDownload();
-                                    if (!data.isEmpty()) {
-                                        this.teiUid = data.get(0).uid();
-                                        view.goToDashBoard(data.get(0).uid());
-                                    } else {
-                                        view.renderTeiInfo(teiUid);
-                                    }
+
                                 },
                                 error -> {
                                     view.finishDownload();
                                     view.renderTeiInfo(teiUid);
+                                },
+                                () -> {
+                                    view.finishDownload();
+                                    if (d2.trackedEntityModule().trackedEntityInstances().uid(teiUid).blockingExists()) {
+                                        view.goToDashBoard(teiUid);
+                                    } else {
+                                        view.renderTeiInfo(teiUid);
+                                    }
                                 }
                         )
         );
@@ -622,80 +604,70 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
 
         try {
             if (eventWORegistrationJson != null) {
-                EventModel.Builder eventModelBuilder = EventModel.builder();
+                Event.Builder eventBuilder = Event.builder();
                 if (eventWORegistrationJson.has("uid")) {
-                    eventModelBuilder.uid(eventWORegistrationJson.getString("uid"));
+                    eventBuilder.uid(eventWORegistrationJson.getString("uid"));
                 }
                 if (eventWORegistrationJson.has("enrollment")) {
-                    eventModelBuilder.enrollment(eventWORegistrationJson.getString("enrollment"));
+                    eventBuilder.enrollment(eventWORegistrationJson.getString("enrollment"));
                 }
                 if (eventWORegistrationJson.has("created")) {
-                    eventModelBuilder.created(DateUtils.databaseDateFormat().parse(eventWORegistrationJson.getString("created")));
+                    eventBuilder.created(DateUtils.databaseDateFormat().parse(eventWORegistrationJson.getString("created")));
                 }
                 if (eventWORegistrationJson.has("lastUpdated")) {
-                    eventModelBuilder.lastUpdated(DateUtils.databaseDateFormat().parse(eventWORegistrationJson.getString("lastUpdated")));
+                    eventBuilder.lastUpdated(DateUtils.databaseDateFormat().parse(eventWORegistrationJson.getString("lastUpdated")));
                 }
                 if (eventWORegistrationJson.has("createdAtClient")) {
-                    eventModelBuilder.createdAtClient(eventWORegistrationJson.getString("createdAtClient"));
+                    eventBuilder.createdAtClient(DateUtils.databaseDateFormat().parse(eventWORegistrationJson.getString("createdAtClient")));
                 }
                 if (eventWORegistrationJson.has("lastUpdatedAtClient")) {
-                    eventModelBuilder.lastUpdatedAtClient(eventWORegistrationJson.getString("lastUpdatedAtClient"));
+                    eventBuilder.lastUpdatedAtClient(DateUtils.databaseDateFormat().parse(eventWORegistrationJson.getString("lastUpdatedAtClient")));
                 }
                 if (eventWORegistrationJson.has("status")) {
-                    eventModelBuilder.status(EventStatus.valueOf(eventWORegistrationJson.getString("status")));
+                    eventBuilder.status(EventStatus.valueOf(eventWORegistrationJson.getString("status")));
                 }
-                if (eventWORegistrationJson.has("latitude")) {
-                    eventModelBuilder.latitude(eventWORegistrationJson.getString("latitude"));
-                }
-                if (eventWORegistrationJson.has("longitude")) {
-                    eventModelBuilder.longitude(eventWORegistrationJson.getString("longitude"));
+                if (eventWORegistrationJson.has("latitude") && eventWORegistrationJson.has("longitude")) { //TODO: FIX QRs -> SHOULD USE SMS COMPRESSION LIBRARY
+                    Coordinates coordinates = Coordinates.create(
+                            Double.parseDouble(eventWORegistrationJson.getString("latitude")),
+                            Double.parseDouble(eventWORegistrationJson.getString("longitude")));
+//                    eventBuilder.coordinate(coordinates);
                 }
                 if (eventWORegistrationJson.has("program")) {
-                    eventModelBuilder.program(eventWORegistrationJson.getString("program"));
+                    eventBuilder.program(eventWORegistrationJson.getString("program"));
                     programUid = eventWORegistrationJson.getString("program");
                 }
                 if (eventWORegistrationJson.has("programStage")) {
-                    eventModelBuilder.programStage(eventWORegistrationJson.getString("programStage"));
+                    eventBuilder.programStage(eventWORegistrationJson.getString("programStage"));
                 }
                 if (eventWORegistrationJson.has("programStage")) {
-                    eventModelBuilder.programStage(eventWORegistrationJson.getString("programStage"));
+                    eventBuilder.programStage(eventWORegistrationJson.getString("programStage"));
                 }
                 if (eventWORegistrationJson.has("organisationUnit")) {
-                    eventModelBuilder.organisationUnit(eventWORegistrationJson.getString("organisationUnit"));
+                    eventBuilder.organisationUnit(eventWORegistrationJson.getString("organisationUnit"));
                     orgUnit = eventWORegistrationJson.getString("organisationUnit");
                 }
                 if (eventWORegistrationJson.has("eventDate")) {
-                    eventModelBuilder.eventDate(DateUtils.databaseDateFormat().parse(eventWORegistrationJson.getString("eventDate")));
+                    eventBuilder.eventDate(DateUtils.databaseDateFormat().parse(eventWORegistrationJson.getString("eventDate")));
                 }
                 if (eventWORegistrationJson.has("completedDate")) {
-                    eventModelBuilder.completedDate(DateUtils.databaseDateFormat().parse(eventWORegistrationJson.getString("completedDate")));
+                    eventBuilder.completedDate(DateUtils.databaseDateFormat().parse(eventWORegistrationJson.getString("completedDate")));
                 }
                 if (eventWORegistrationJson.has("dueDate")) {
-                    eventModelBuilder.dueDate(DateUtils.databaseDateFormat().parse(eventWORegistrationJson.getString("dueDate")));
-                }
-                if (eventWORegistrationJson.has("attributeCategoryOptions")) {
-                    eventModelBuilder.attributeCategoryOptions(eventWORegistrationJson.getString("attributeCategoryOptions"));
+                    eventBuilder.dueDate(DateUtils.databaseDateFormat().parse(eventWORegistrationJson.getString("dueDate")));
                 }
                 if (eventWORegistrationJson.has("attributeOptionCombo")) {
-                    eventModelBuilder.attributeOptionCombo(eventWORegistrationJson.getString("attributeOptionCombo"));
-                }
-                if (eventWORegistrationJson.has("trackedEntityInstance")) {
-                    eventModelBuilder.trackedEntityInstance(eventWORegistrationJson.getString("trackedEntityInstance"));
+                    eventBuilder.attributeOptionCombo(eventWORegistrationJson.getString("attributeOptionCombo"));
                 }
 
-                eventModelBuilder.state(State.TO_UPDATE);
+                eventBuilder.state(State.TO_UPDATE);
 
-                EventModel eventModel = eventModelBuilder.build();
+                Event event = eventBuilder.build();
 
-                Cursor cursor = briteDatabase.query("SELECT * FROM " + EventModel.TABLE +
-                        " WHERE " + EventModel.Columns.UID + " = ?", eventModel.uid());
-
-                if (cursor != null && cursor.moveToFirst() && cursor.getCount() > 0) {
-                    // EVENT ALREADY EXISTS IN THE DATABASE, JUST INSERT ATTRIBUTES
-                } else {
-                    long result = briteDatabase.insert(EventModel.TABLE, eventModel.toContentValues());
+                if (!d2.eventModule().events().uid(event.uid()).blockingExists()) {
+                    long result = d2.databaseAdapter().insert(EventTableInfo.TABLE_INFO.name(), null, event.toContentValues());
                     Log.d("RESULT", "insert event " + result);
                 }
+
             } else {
                 view.showIdError();
                 return;
@@ -709,8 +681,8 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
             try {
                 JSONObject attrV = dataJson.get(i);
 
-                TrackedEntityDataValueModel.Builder attrValueModelBuilder;
-                attrValueModelBuilder = TrackedEntityDataValueModel.builder();
+                TrackedEntityDataValue.Builder attrValueModelBuilder;
+                attrValueModelBuilder = TrackedEntityDataValue.builder();
 
                 if (attrV.has("event"))
                     attrValueModelBuilder.event(attrV.getString("event"));
@@ -725,10 +697,10 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
                 if (attrV.has("providedElsewhere"))
                     attrValueModelBuilder.providedElsewhere(Boolean.parseBoolean(attrV.getString("providedElsewhere")));
 
-                TrackedEntityDataValueModel attrValueModel = attrValueModelBuilder.build();
+                TrackedEntityDataValue attrValueModel = attrValueModelBuilder.build();
 
                 if (attrValueModel != null) {
-                    long result = briteDatabase.insert(TrackedEntityDataValueModel.TABLE, attrValueModel.toContentValues());
+                    long result = d2.databaseAdapter().insert(TrackedEntityDataValueTableInfo.TABLE_INFO.name(), null, attrValueModel.toContentValues());
                     Log.d("RESULT", "insert event " + result);
                 }
 

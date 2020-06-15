@@ -1,7 +1,10 @@
 package org.dhis2.usescases.qrCodes;
 
 import org.dhis2.data.dagger.PerActivity;
+import org.dhis2.data.qr.QRCodeGenerator;
 import org.dhis2.data.qr.QRInterface;
+import org.dhis2.data.schedulers.SchedulerProvider;
+import org.hisp.dhis.android.core.D2;
 
 import dagger.Module;
 import dagger.Provides;
@@ -20,7 +23,13 @@ public class QrModule {
 
     @Provides
     @PerActivity
-    QrContracts.Presenter providePresenter(QRInterface qrInterface) {
-        return new QrPresenter(qrInterface);
+    QrContracts.Presenter providePresenter(QRInterface qrInterface, SchedulerProvider schedulerProvider) {
+        return new QrPresenter(qrInterface, schedulerProvider);
+    }
+
+    @Provides
+    @PerActivity
+    QRInterface providesQRInterface(D2 d2) {
+        return new QRCodeGenerator(d2);
     }
 }

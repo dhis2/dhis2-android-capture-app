@@ -1,0 +1,683 @@
+<resources>
+    <!--GENERAL-->
+    <string name="app_name">Dhis2</string>
+    <string name="logo_text">dhis</string>
+    <string name="logo_number">2</string>
+    <!-- Warnings and error messages -->
+    <string name="error">Feil</string>
+    <string name="error_wrong_server_url">Feil server URL</string>
+    <string name="error_wrong_credentials">Feil opplysninger</string>
+    <string name="error_unexpected_error">Uventet feil</string>
+    <string name="error_internal_server_error">Intern serverfeil</string>
+    <string name="yes">ja</string>
+    <string name="no">nei</string>
+    <string name="no_value">ingen verdi</string>
+    <string name="no_reserved_values">Det er ingen flere reserverte verdier. Kontakt din systemadministrator</string>
+    <string name="no_reserved_values_connection">Det er ingen flere reserverte verdier. Koble til nettverket for å fylle på dem</string>
+    <string name="errors">feil</string>
+    <!-- SyncService strings: -->
+    <string name="sync_now">Synkroniser nå</string>
+    <string name="sync_text">Synkroniserer med server</string>
+    <string name="sync_title">Synkroniserer nå</string>
+
+    <string name="sync_metadata">Metadata</string>
+    <string name="sync_events">Hendelser</string>
+    <string name="sync_tei">Sporede enheter</string>
+
+    <string name="sync_complete_title">Fullført</string>
+    <string name="sync_complete_text">Synkronisering fullført</string>
+
+    <string name="sync_error_title">Synkroniseringsfeil</string>
+    <string name="sync_error_text">En feil har oppstått under synkronisering. Vennligst prøv på nytt</string>
+    <string name="metadata_sync_error">FEIL: Noe gikk galt i synkroniseringsprosessen. Hvis du er tilkoblet, vennligst prøv på nytt. Hvis feilen vedvarer, kontakt din administrator.</string>
+    <string name="data_sync_warning">ADVARSEL: Mesteparten av dine data er synkronisert men noen felter presenterte konflikter. Synkroniser konfigurasjonen og prøv igjen. Sjekk deres synkroniseringstatus: programmer, TEI\'s og hendelser med konflinkter er merket som @.</string>
+    <string name="data_sync_warning_program">ADVARSEL: Mesteparten av dine data er synkroniserte men noen felter presenterte konflinkter. Synkroniser din konfigurasjon og prøv igjen. Hvis advarselen vedvarer, sjekk deres synkroniseringsstatus: programmer, TEI\'s og hendelser med konflikter er merket som @.</string>
+    <string name="data_sync_error">FEIL: Noe av dine data kunne ikke synkroniseres. Sjekk synkroniseringsstatusen deres: programmer med feil er merket som @, TEI\'s og hendelser som $\".</string>
+    <string name="data_sync_error_program">FEIL: Noe av dine data kunne ikke synkroniseres. Sjekk synkroniseringsstatusen deres: TEI\'s og hendelser med konflikter er merket som $\".</string>
+
+    <string name="search_result_text">%sresultater funnet</string>
+    <string name="add_new">Legg til ny</string>
+    <string name="add">Legg til</string>
+    <string name="schedule_new">Planlegg ny</string>
+    <string name="referral">Henvisning</string>
+
+    <!-- Login -->
+    <string name="url_hint">Server URL</string>
+    <string name="user_hint">Brukernavn</string>
+    <string name="password_hint">Passord</string>
+    <string name="log_in_button">Logg inn</string>
+    <string name="unlock_button">Lås opp sesjonen</string>
+    <string name="syncing_configuration">Synkroniserer konfigurasjonen din</string>
+    <string name="syncing_data_shortly">Dataene dine vil snart bli synkronisert</string>
+    <string name="syncing_data">Synkroniserer dataene dine</string>
+    <string name="configuration_ready">Din konfigurasjon er klar</string>
+    <string name="data_ready">Dine data er klare</string>
+    <string name="configuration_sync_failed">Synkronisering av konfigurasjonen mislyktes</string>
+    <string name="data_sync_failed">Synkronisering av data mislyktes</string>
+    <string name="account_recovery">Kontogjenoppretting</string>
+
+    <!--PERIOD-->
+    <string name="DAILY">Daglig</string>
+    <string name="WEEKLY">Ukentlig</string>
+    <string name="MONTHLY">Månedlig</string>
+    <string name="YEARLY">Årlig</string>
+    <string name="clear_filters">Tøm filtre</string>
+    <string name="action_accept">Aksepter</string>
+    <string name="action_share_zero_items">Del</string>
+    <string name="action_share_single_item">Del %delement</string>
+    <string name="action_share_multiple_item">Del %delementer</string>
+
+    <!-- Input hints -->
+    <string name="search">Søk</string>
+    <string name="enter_text">Legg inn tekst</string>
+    <string name="enter_long_text">Legg inn lang tekst</string>
+    <string name="enter_number">Legg inn nummer</string>
+    <string name="enter_integer">Legg inn tall</string>
+    <string name="enter_negative_integer">Legg inn et negativt tall</string>
+    <string name="enter_positive_integer_or_zero">Legg inn et positivt tall eller null</string>
+    <string name="enter_positive_integer">Legg inn positivt tall</string>
+    <string name="filter_options">Filteralternativ</string>
+    <string name="choose_date">Velg dato</string>
+    <string name="change_calendar">Endre kalender</string>
+
+    <!-- Status -->
+    <string name="program_completed">Programmet er fullført</string>
+    <string name="program_inactive">Programmet er inaktivt</string>
+
+    <string name="event_open">Åpne</string>
+    <string name="event_completed">Hendelse er fullført</string>
+    <string name="event_skipped">Hendelse er hoppet over</string>
+    <string name="event_schedule">Hendelsesplan</string>
+    <string name="event_expired">Hendelse er utgått</string>
+    <string name="event_editing_expired">Redigering utløpt</string>
+    <string name="event_accepted">Hendelse er akseptert</string>
+    <string name="event_approved">Hendelse er godkjent</string>
+    <string name="event_inactive">Hendelse er inaktiv</string>
+    <string name="read_only">Skrivebeskyttet</string>
+    <string name="complete">Fullfør</string>
+    <string name="finish_and_complete">Gjør ferdig og fullfør</string>
+    <string name="completed">Fullført</string>
+    <string name="cancelled">Kansellert</string>
+    <string name="re_open">Åpne igjen</string>
+    <string name="activate">Aktiver</string>
+
+    <!-- State -->
+    <string name="state_synced">Synk</string>
+    <string name="state_to_post">Å sende</string>
+    <string name="state_to_update">Å oppdatere</string>
+    <string name="state_to_delete">Å slette</string>
+    <string name="state_error">Feil</string>
+    <string name="action_sync">SYNK</string>
+    <string name="action_sync_sms">SYNK SMS</string>
+
+    <!--Completion-->
+    <string name="completion">Ferdigstilling</string>
+
+    <!--Event initial-->
+    <string name="create">Opprett</string>
+    <string name="update">Oppdater</string>
+    <string name="date">Dato</string>
+    <string name="org_unit">Org enhet</string>
+    <string name="no_org_units">Det er ingen åpne organisasjonsenheter for den valgte datoen. Vennligst velg en annen dato eller organisasjonsenhet.</string>
+    <string name="category_option">Kategorivalg</string>
+    <string name="latitude">Breddegrad</string>
+    <string name="longitude">Lengdegrad</string>
+    <string name="new_event">Ny hendelse</string>
+    <string name="failed_insert_event">Kunne ikke sette inn ny hendelse</string>
+    <string name="event_created">Hendelse opprettet</string>
+    <string name="event_updated">Hendelse oppdatert</string>
+    <string name="one_time">En gang</string>
+    <string name="permanent">Permanent</string>
+
+    <!--DataSet initial-->
+    <string name="report_period">Rapportperiode</string>
+    <string name="cat_option">Kat alternativ</string>
+    <string name="field_required">Hvis du setter en verdi, så trenger hele raden alle verdier for å fullføre datasettet.</string>
+    <string name="field_mandatory">Noen verdier som er påkrevd mangler. Du må sette obligatoriske verdier for å fullføre datasettet.</string>
+    <string name="datavalue_saved">Verdien er lagret!</string>
+    <string name="there_is_no_available_period">Det er ingen tilgjengelige perioder å velge.</string>
+    <!--Event Detail-->
+    <string name="event_date">Hendelsesdato</string>
+    <string name="due_date">Forfallsdato</string>
+    <string name="cat_combo">Kat kombo</string>
+    <string name="date_default">DD/MM/ÅÅÅÅ</string>
+    <string name="cancel">Avbryt</string>
+    <string name="delete">Slett</string>
+    <string name="delete_event">Slett hendelse</string>
+    <string name="confirm_delete_event">Er du sikker på at du vil slette denne hendelsen?</string>
+    <string name="event_was_deleted">Hendelsen ble slettet.</string>
+    <string name="total">Totalt</string>
+
+    <!--TEI Enrollment list-->
+    <string name="enrollment_list">Registreringsliste</string>
+    <string name="active_programs">Aktive programmer</string>
+    <string name="to_enroll_programs">Programmer å registrere</string>
+    <string name="enroll">Registrere</string>
+    <string name="last_visit">Siste besøk: </string>
+    <string name="apply">Bruk</string>
+
+    <!--TEI DASHBOARD-->
+    <string name="see_details">Se detaljer</string>
+    <string name="view_more">VIS MER</string>
+    <string name="edit">REDIGER</string>
+    <string name="enrolling_ou">Registrerer OU:</string>
+    <string name="follow_up">Oppfølging</string>
+    <string name="follow_up_enabled">Oppfølging er aktivert</string>
+    <string name="follow_up_disabled">Oppfølging er deaktivert</string>
+    <string name="deactivate">Deaktiver</string>
+    <string name="program_not_allow_events">Dette programmet tillater ikke flere hendelser</string>
+
+    <!--DONE TASKS-->
+    <string name="events">hendelser</string>
+    <string name="done_task">Hjem</string>
+    <string name="app_info">App Info</string>
+    <string name="log_out">Logg ut</string>
+    <string name="block_session">Blokker sesjon</string>
+
+    <!--MAP SELECTION-->
+    <string name="select_location">Velg lokasjon</string>
+
+    <!-- SYNC -->
+    <string name="a_minute">1 minutt</string>
+    <string name="fifteen_minute">15 minutt</string>
+    <string name="thirty_minutes">30 minutt</string>
+    <string name="a_hour">1 time</string>
+    <string name="every_6_hours">6t</string>
+    <string name="a_day">1 dag (Standard)</string>
+    <string name="every_12_hours">12t</string>
+    <string name="Automatic_Sync_Data">Synkroniser data automatisk hver: </string>
+    <string name="Manual">Manuelt</string>
+    <string name="Automatic_Sync_Metadata">Synkroniser konfigurasjon automatisk hver:</string>
+    <string name="a_week">1 uke</string>
+    <string name="sync_max_parameters">Gjeldende synkroniseringsparametre</string>
+    <string name="sync_default_parameters">Tilbakestill til standard</string>
+    <string name="wipe_data_meesage">Databasen vil bli slettet. Du vil bli spurt om å logge inn igjen.</string>
+    <string name="wipe_data_ok">Aksepter</string>
+    <string name="wipe_data_no">Avbryt</string>
+    <string name="SYNC_DATA">SYNK data nå</string>
+    <string name="SYNC_META">SYNK konfigurasjon nå</string>
+    <string name="SYNC_MANAGER">Innstillinger</string>
+    <string name="last_data_sync_date">Siste synk på: %s</string>
+    <string name="last_metadata_sync_date">Siste synk på: %s</string>
+    <string name="refill_reserved_values">Fyll på</string>
+    <string name="settings_sms_module_title">SMS modul:</string>
+    <string name="settings_sms_receiver_number">SMS inngangsport</string>
+    <string name="settings_sms_result_sender_number">SMS resultat sender</string>
+    <string name="settings_sms_result_timeout">SMS resultat tidsavbrudd</string>
+    <string name="settings_sms_result_timeout_hint">sekunder</string>
+    <string name="settings_sms_result_sender_hint">nummer</string>
+    <string name="settings_sms_receiver_number_hint">nummer</string>
+    <string name="settings_sms_module_switch">Aktiver innsending av SMS</string>
+    <string name="settings_sms_response_wait_switch">Vent på SMS resultatsvar</string>
+    <plurals name="settings_specific_programs">
+        <item quantity="one">Det er  %s program med spesifikke innstillinger</item>
+        <item quantity="other">Det er  %s programmer med spesifikke innstillinger</item>
+    </plurals>
+    <string name="settings_sync_period">Synkroniseringsperiode</string>
+    <string name="settings_limit_scope">Begrensede innstillinger</string>
+    <string name="settings_limit_globally">Globalt</string>
+    <string name="settings_limit_program">etter program</string>
+    <string name="settings_limit_ou">etter organisasjonsenhet</string>
+    <string name="settings_limit_ou_program">etter org. enhet og program</string>
+    <!-- SEARCH TRACK ENTITY -->
+
+    <!--region SETTINCS-->
+    <string name="settingsSyncData">Synk data</string>
+    <string name="settingsSyncMetadata">Synk konfigurasjon</string>
+    <string name="settingsSyncParameters">Synk parametre</string>
+    <string name="settingsReservedValues">Reserverte verdier</string>
+    <string name="settingsReservedValues_descr">Her kan du se antall verdier som er tilgjengelig i frakoblet modus og reservere nye.</string>
+    <string name="settingsErrorLog">Åpne synk feillogg</string>
+    <string name="settingsErrorLog_descr">Denne loggen inneholder alle feil som er forårsaket av synkronisering av data og metadata.</string>
+    <string name="settingsDeleteLocalData">Slett lokaldata</string>
+    <string name="settingsDeleteLocalData_descr">Alle Capture APP data er lagret i din enhet og vil bli slettet. Data som ikke er synkronisert til server vil bli borte.</string>
+    <string name="settingsReset">Resett app data &amp; konfigurasjon</string>
+    <string name="settingsReset_descr">Din konfigurasjon og App data lagret på enheten vil bli slettet. Du vil bli bedt om å logge inn på nytt, og data som ikke er synkronisert til serveren vil bli borte.</string>
+    <string name="settingsSms">SMS innstillinger</string>
+    <string name="settingsSms_descr">Sjekk og rediger parametre relatert til SMS inngangsport</string>
+    <!--endregion-->
+
+    <string name="enrollmment_date">Registreringsdato</string>
+
+    <!-- SEARCH OPTION SET -->
+    <string name="search_optionset">Søk</string>
+    <!--FORM FRAGMENT-->
+    <string name="report_date">Rapporteringsdato</string>
+    <string name="add_file">Legg til fil</string>
+    <string name="write_new_note">Skriv nytt notat</string>
+    <string name="clear">tøm</string>
+    <string name="add_note">Legg til notat</string>
+    <string name="revert">Reverser</string>
+    <string name="activated">Aktivert</string>
+    <string name="enroll_in">Registrer i %s</string>
+    <string name="missing_mandatory_fields_title">Obligatoriske felter mangler</string>
+    <string name="missing_mandatory_fields_text">Noen obligatoriske felt mangler. Hvis du vil gå tilbake nå, all lagret informasjon vil bli slettet.</string>
+    <string name="missing_mandatory_fields_text_not_delete">Noen obligatoriske felt mangler. Hvis du vil gå tilbake, vennligst fyll inn dem.</string>
+    <string name="missing_mandatory_fields_events">Noen obligatoriske felt mangler. Du kan gå tilbake nå, men denne hendelsen kan da ikke fullføres.</string>
+    <string name="title_delete_go_back">Dine data er ikke lagret</string>
+    <string name="delete_go_back">Hvis du går tilbake nå, vil all informasjon som har blitt lagt inn bli slettet.</string>
+    <string name="missing_mandatory_fields_events_2.0">Noen obligatoriske felt mangler:\n%s\nDu kan gå tilbake nå, men denne hendelsel vil ikke bli fullført.</string>
+    <string name="missing_mandatory_fields_go_back">Slett og gå tilbake</string>
+    <string name="error_fields">Noen felt har feil:\n%s\nVennligst, sjekk dem.</string>
+    <string name="missing_mandatory_fields_finish">Noen obligatoriske felter mangler. Du kan fullføre dataregistrering og gå ut, men hendelsen kan ikke fullføres.</string>
+    <string name="enrollment_coordinates">Innmeldingskoordinater</string>
+    <string name="tei_coordinates">Koordinater for</string>
+
+    <!--EVENT SUMMARY-->
+    <string name="section_list">Seksjonliste</string>
+    <string name="event_summary_header" formatted="false">%sspørsmål av %ser fullført</string>
+    <string name="event_summary_sections_header" formatted="false">%sav %sfullført</string>
+    <string name="complete_and_close">Fullfør og lukk</string>
+
+    <!--AGE CUSTOM VIEW-->
+    <string name="hint_day">Dager</string>
+    <string name="hint_month">Måneder</string>
+    <string name="hint_year">År</string>
+    <string name="week">Uker</string>
+    <string name="incident_date">Forekomstdato</string>
+    <string name="local_results">lokale resultater</string>
+    <string name="online_results">Tilkoblede resultater</string>
+    <string name="past_programs">Tidligere programmer</string>
+
+    <!--PERMISSIONS-->
+    <string name="permission_denied">Du har ikke tilstrekkelig tillatelse for å utføre denne handlingen</string>
+    <string name="add_relation_button">Legg til som...</string>
+
+    <string name="date_dialog_clear">Fjern</string>
+    <string name="period">Periode</string>
+    <string name="org_unit_filter">(%d) Org Enhet</string>
+    <string name="org_unit_select_level">Nivå %d</string>
+    <string name="tuto_main_1">Velkommen til dhis2</string>
+    <string name="tuto_main_2">Her kan du se dine aktiviteter</string>
+    <string name="tuto_main_3">Du kan bruke et filter...</string>
+    <string name="tuto_main_4">... ved å endre periode og velge datoer...</string>
+    <string name="tuto_main_5">...eller filtrere etter organisasjonsenhet</string>
+    <string name="tuto_main_6">Sjekk andre handlinger i hovedmenyen</string>
+
+    <!-- RELATIONSHIPS -->
+    <string name="default_relationship_label">Opprett en relasjon</string>
+    <string name="next">Neste</string>
+    <string name="search_min_num_attr">Du må legge inn minst %dav attributtene for å foreta et søk</string>
+    <string name="search_attr">Du må legge inn minst en av attributtene for å foreta et søk</string>
+    <string name="search_max_tei_reached">Det er mer enn%dresultater. Vennligst legg inn flere søkekriterier</string>
+    <string name="search_criteria_not_met">Ditt søkekriterie returnerte ingen resultater.\nRevurder dine kriterier eller registrer en ny%s</string>
+    <string name="search_init">Skriv inn søkekriterier</string>
+
+    <!-- QR -->
+    <string name="QR_SCANNER">Importer QR data</string>
+    <string name="SAVE">Lagre</string>
+    <string name="button_ok">OK</string>
+    <string name="qr_id">Identifikasjon</string>
+    <string name="qr_attributes">Egenskaper</string>
+    <string name="qr_enrollment">Registreringer</string>
+    <string name="qr_events">Hendelser</string>
+    <string name="qr_relationships">Relasjoner</string>
+    <string name="read_more_qr">Les neste QR for å få mer info</string>
+    <string name="save_qr">Stopp lesning og lagre data</string>
+    <string name="qr_no_data">ingen data</string>
+    <string name="qr_error_id">Ugyldig QR kode</string>
+    <string name="qr_error_attr">Denne attributten kan ikke legges til</string>
+    <string name="qr_error_enrollment">Denne registreringen kan ikke legges til</string>
+    <string name="qr_error_event">Denne hendelsen kan ikke legges til</string>
+
+    <string name="jira_report">Rapporter et Jira problem</string>
+    <string name="about">Om</string>
+    <string name="programs_to_enroll">Programmer å registrere</string>
+    <string name="select_all">velg alle</string>
+    <string name="clear_all">tøm valg</string>
+    <string name="empty_program_list">Det er ikke noe informasjon for de valgte filtre. Vennligst prøv å endre dem.</string>
+    <string name="share">Del</string>
+    <string name="share_qr">Del QR</string>
+    <string name="teiType_search_online">Søk etter type er ikke mulig for online søk.\nVennligst velg et program fra listen.</string>
+    <string name="max">Max</string>
+    <string name="current">Nåværende</string>
+    <string name="tei">TEI</string>
+    <string name="teis">TEIs</string>
+    <string name="limit_by_organisation_unit">Begrens etter organisasjonsenhet</string>
+    <string name="limit_by_program">Begrens etter program</string>
+    <string name="programs_list">Programliste</string>
+    <string name="wipe_data">Resett app data &amp; konfigurasjon</string>
+    <string name="add_relationship_error">Det er ikke mulig å legge til relasjon</string>
+    <string name="warning_error_on_complete_title">Sjekk dette!</string>
+    <string name="warning_on_complete_title">Advarsel</string>
+    <string name="error_on_complete_title">Feil</string>
+    <string name="save">Lagre</string>
+    <string name="reserved_value">Reserverte verdier</string>
+
+    <string name="downloaded_confirm">Vil du legge til mer data fra QR?</string>
+
+    <!--ABOUT-->
+    <string name="about_app">App versjon: %s</string>
+    <string name="about_sdk">SDK versjon: %s</string>
+    <string name="about_connected">Koblet til: %s</string>
+    <string name="about_user">Gjeldende bruker: %s</string>
+    <string name="about_more">Mer om denne appen: les<a href="https://drive.google.com/open?id=1YHRBk6LSp6uROfs19-wCfQGc-rgl2f5iDrhCDasTR8M">her </a>hva som er støttet og hva som ikke er støttet</string>
+    <string name="about_git">Denne og tidligere versjoner av denne applikasjonen, samt kildekoden er tilgjengelig på <a href="https://github.com/dhis2/dhis2-android-capture-app">GitHub</a>. DHIS2 Android Capture er lisensiert under betingelsene i GNU General Public License som utgitt av Free Software Foundation - se <a href="http://www.gnu.org/licenses/gpl-3.0.html">http://www.gnu.org/licenses/gpl-3.0.html</a>.</string>
+    <string name="about_dev">Utviklet og vedlikeholdt av <a href="https://www.dhis2.org/">DHIS2</a>prosjektet, del av Universitetet i Oslo, <a href="https://www.mn.uio.no/ifi/english/">avdeling for informatikk</a>.</string>
+    <string name="about_contact">For mer informasjon eller spørsmål om denne applikasjonen, vennligst skriv til<a href="mailto:android@dhis2.org">android@dhis2.org</a></string>
+
+    <string name="login_error_null_pass">Passord mangler. Vennligst fyll det feltet</string>
+    <string name="login_error_null_username">Brukernavn mangler. Vennligst fyll inn det feltet.</string>
+    <string name="login_error_dhis_version">Denne serveren kjører en dhis versjon som er forskjellig fra 2.29. Oppdater din serverversjon eller bruk testmiljøet for å fortsette.</string>
+    <string name="login_error_dhis_version_v2">Denne serveren kjører en dhis versjon forskjellig fra %s. Oppdater serverversjonen din eller bruk testmiljøet for å fortsette.</string>
+    <string name="login_error_unsuccessful_response">Noe gikk galt. Vennligst sjekk at server URL, brukernavn og passord er korrekt og prøv igjen.</string>
+    <string name="login_error_error_response">Serveren kunne ikke fullføre denne forespørselen</string>
+    <string name="login_error_default">Det har oppstått et problem ved pålogging til serveren.</string>
+    <string name="login_error">Påloggingsfeil</string>
+    <string name="missing_mandatory_fields">Obligatoriske felter mangler</string>
+    <string name="online_search_unexpected">Uventet feil ved søking online</string>
+    <string name="online_search_parsing_error">Feil under analyse av resultater</string>
+    <string name="online_search_error">Søk online returnerte en feil</string>
+    <string name="online_search_response_error">Noe gikk galt på serveren</string>
+    <string name="search_program_not_selected">Velg et program for å aktivere registrering</string>
+    <string name="search_access_error">Du har ikke tilstrekkelig tillatelse</string>
+    <string name="feature_unavaible">Denne funksjonaliteten er ikke klar ennå.</string>
+    <string name="relationship_label_error">Feil ved henting av relasjonsetikett</string>
+    <string name="all_tei_type">Alle %s</string>
+    <string name="invalid_phone_number">Dette er ikke et gyldig telefonnummer</string>
+    <string name="invalid_email">Dette er ikke en gyldig e-post</string>
+    <string name="invalid_negative_number">Bare negative siffer er tillatt</string>
+    <string name="invalid_possitive_zero">Bare positive siffer eller null er tillatt</string>
+    <string name="invalid_possitive">Bare positive siffer er tillatt</string>
+    <string name="invalid_interval">Bare verdier fra 0 til 1 er tillatt</string>
+    <string name="invalid_percentage">Bare verdier fra 0 til 100 er tillatt</string>
+    <string name="date_dialog_tigle">Velg datoer for å filtrere</string>
+    <string name="select_option">Velg et alternativ</string>
+    <string name="issue_reported">Problemer rapportert</string>
+    <string name="jira_credential_error">Sjekk at din jira bruker og passord er korrekt</string>
+    <string name="jira_issue_error">Feil ved rapportering av problemet</string>
+    <string name="jira_fields_error">Alle felt er obligatoriske</string>
+    <string name="dialog_generate_new_event">Generer en ny hendelse</string>
+    <string name="message_generate_new_event">Vil du opprette en ny hendelse?</string>
+    <string name="event_completed_title">Hendelser er fullført</string>
+    <string name="event_completed_message">Alle hendelser i dette programmet er fullført. Vil du lukke programmet også?</string>
+    <string name="complete_enrollment_message">Vil du fullføre registreringen også?</string>
+    <string name="check_event">Sjekk</string>
+
+    <string name="menu_home">Hjem</string>
+    <string name="appwidget_text">EKSEMPEL</string>
+    <string name="add_widget">Legg til moduler</string>
+    <string name="showHelp">Vis hjelp</string>
+    <string name="tuto_settings_1">Synkroniser dine data...</string>
+    <string name="tuto_settings_2">... din konfigurasjon...</string>
+    <string name="tuto_settings_3">...sett hvor mange oppføringer som skal lastes ned fra server...</string>
+    <string name="tuto_settings_reserved">Sjekk og administrer hvor mange reserverte verdier som står igjen</string>
+    <string name="tuto_settings_errors">Sjekk om tilkobling til serveren mislyktes</string>
+    <string name="tuto_settings_reset">Frigjør diskplass</string>
+    <string name="tuto_settings_4">...eller slett alt og start på nytt.</string>
+    <string name="tuto_search_1_v2">Finn dine forekomster både på din lokale enhet og på onlineserver.</string>
+    <string name="tuto_search_2">Du kan bytte til andre programmer</string>
+    <string name="tuto_search_3_v2">Søk eller legg til nye forekomster. Du må søke før du kan legge til en ny!</string>
+    <string name="tuto_search_4_v2">Klikk her for å tømme feltene og starte et nytt søk.</string>
+    <string name="tuto_dashboard_1">Dette er dashbord for forekomster</string>
+    <string name="tuto_dashboard_2">Se forekomstprofil informasjon...</string>
+    <string name="tuto_dashboard_3">....Del informasjon via QR eller SMS....</string>
+    <string name="tuto_dashboard_4">...Eller merk forekomsten for oppfølging</string>
+    <string name="tuto_dashboard_5">Klikk for å opprette eller planlegge en hendelse eller referer til en annen organisasjonsenhet.</string>
+    <string name="tuto_dashboard_6">Her vil du se alle hendelser. Klikk for å se en hendelsedetalj.</string>
+    <string name="tuto_dashboard_7">Naviger gjennom menyen for å legge til relasjoner, se indikatorer eller skrive notater.</string>
+    <string name="tuto_dashboard_8">Klikk for å se alle registreringer av din forekomst eller opprett en ny.</string>
+    <string name="tuto_tei_event_1">Klikk for å slette denne hendelsen. Denne handlingen kan ikke angres.</string>
+    <string name="tuto_tei_event_2">Fullfør hendelsen.</string>
+    <string name="tuto_program_event_1">Alle hendelser relatert til dette programmet vil bli opplistet her.</string>
+    <string name="tuto_program_event_2">Klikk for å legge til ny hendelse</string>
+    <string name="tuto_event_initial_new_1">Fyll inn all data for å opprette hendelsen</string>
+    <string name="tuto_event_initial_1">Klikk for å sjekke status for fullføring av hendelsen.</string>
+    <string name="tuto_event_summary">Klikk for å fullføre eller gjenåpne en hendelse</string>
+    <string name="tuto_main_7">Les og lagre informasjon fra andre enheter via QR</string>
+    <string name="tuto_main_8">Synkroniser dine data med serveren</string>
+    <string name="tuto_main_9">Blokk sesjon med en 4 sifret kode. Ikke glem koden din!</string>
+    <string name="tuto_main_10">Logg ut for å endre bruker på server. Du vil kunne logge inn igjen selv om det ikke er noen internettilkobling.</string>
+    <string name="text_plus_colon">%s:</string>
+    <string name="relationships">relasjoner</string>
+    <string name="empty_relationships">Det er ingen relasjoner, klikk \"+\" for å legge til en ny.</string>
+    <string name="empty_tei_add">Det er ingen hendelser registrert, klikk \"+\" for å legge til en ny.</string>
+    <string name="empty_tei_no_add">Det er ingen hendelser registrert.</string>
+    <string name="qr_data_values">Dataverdier</string>
+    <string name="info">Info</string>
+    <string name="qr_no_id_error">Kunne ikke lese denne ID-en</string>
+    <string name="delete_local_data">Slett lokaldata</string>
+    <string name="dashboard_overview">Oversikt</string>
+    <string name="dashboard_relationships">Relasjoner</string>
+    <string name="dashboard_indicators">Indikatorer</string>
+    <string name="empty_indicators">Det er ingen indikatorer for dette programmet.</string>
+    <string name="dashboard_notes">Notater</string>
+    <string name="unable_to_complete">Kunne ikke fullføre</string>
+    <string name="field_errors">Noen felt har feil. Vennligst sjekk dem for å kunne fullføre</string>
+    <string name="unselect_enrollment">Alle registreringer</string>
+    <string name="unselect_enrollment_description">Vis dashbord med alle aktive programmer</string>
+    <string name="CHECK_SYNC_ERRORS">Åpne synk feillogg</string>
+    <string name="error_dialog_title">Synk feillogg</string>
+    <string name="share_with">Del med...</string>
+    <string name="errors_during_sync">Din konfigurasjons synk har mislyktes. Det kan være feil på serveren din. Klikk her for mer informasjon.</string>
+    <string name="sectionSelectorPrev">FORRIGE</string>
+    <string name="sectionSelectorNext">NESTE</string>
+    <string name="event_overview">Detaljer</string>
+    <string name="event_event">Hendelse</string>
+    <string name="event_indicators">Indikatorer</string>
+    <string name="event_notes">Notater</string>
+    <string name="complete_add_new"><![CDATA[Complete & add new]]></string>
+    <string name="complete_later">Fullfør senere</string>
+    <string name="finish_add_new"><![CDATA[Finish & add new]]></string>
+    <string name="finish">Fullfør</string>
+    <string name="error_fields_title">Felt som inneholder feil</string>
+    <string name="error_fields_events">Noen felter inneholder feil. De har ikke blitt lagret. Vennligt, sjekk dem.</string>
+    <string name="event_reopened">Denne hendelsen kan nå bli endret</string>
+    <string name="unique_warning">Verdien skal være unik, et sammentreff ble funnet. Det har ikke blitt lagret. Vennligst sjekk det.</string>
+    <string name="unique_coincidence_found">Et sammentreff i et unikt felt ble funnet. Vennligst sjekk skjema for å lagre registrering.</string>
+    <string name="please_wait">Vennligst vent</string>
+    <string name="skip">Hopp over</string>
+    <string name="reschedule">Planlegg på nytt</string>
+    <string name="event_was_skipped">Denne hendelsen var merket som hoppet over.</string>
+    <string name="no_intructions">Det er ingen informasjon for denne skjermen</string>
+    <string name="event_overdue">Forfalt</string>
+    <string name="unsupported_program_rule">Det er ingen programregel som ikke er støttet. Vennligst sjekk dokumentasjonen</string>
+    <string name="delete_event_error">Denne hendelsen har ikke blitt opprettet enda</string>
+    <string name="empty_description">Ingen info for dette feltet</string>
+    <string name="biometrics_dialog_title">Tomme opplysninger</string>
+    <string name="biometrics_first_use_text">For å kunne logge inn ved bruk av fingerskanner må du først logge inn på standard måte</string>
+    <string name="biometrics_security_title">Biometrisk sikkerhet</string>
+    <string name="biometrics_security_text">Vil du bruke fingerskanner for å logge inn med denne brukeren?</string>
+    <string name="tab_tables">Tabeller</string>
+    <string name="table">Tabell</string>
+    <string name="login_https">https://</string>
+    <string name="delete_local_data_message">Ikke synkroniserte data vil bli bort. Vil du virkelig fortsette?</string>
+    <string name="local_data_accept">Aksepter</string>
+    <string name="delete_local_data_error">Data kunne ikke slettes. Vennligst prøv på nytt.</string>
+    <string name="delete_local_data_done">Lokal data ble slettet.</string>
+    <string name="org_unit_selection_warning">Minst en organisasjonsenhet må merkes</string>
+    <string name="send_user_name_title">Send data</string>
+    <string name="send_user_name_mesage">Hjelp DHIS2 å forbedre denne appen ved å dele feillogger assosiert med din bruker ID.</string>
+    <string name="check_mandatory_field">Sjekk felter</string>
+    <string name="error_no_network_during_sync">Du mistet internettilkoblingen mens du utførte din konfigurasjonssynk. Vennligst prøv igjen senere</string>
+    <string name="action_agree">Enig</string>
+    <string name="login_server_info_title">Server URL</string>
+    <string name="login_server_info_message">Angi DHIS 2 server URL for din organisasjons som er oppgitt av din systemadministrator.\n\nAlternativt, kan du skanne en QR kode som inneholder URL til din server</string>
+    <string name="forgot_your_code">Har du glemt koden?</string>
+    <string name="event_form_end_options_title">Hva vil du gjøre for denne hendelsen?</string>
+    <string name="sectionSelectorEnd">SLUTT</string>
+    <string name="resource_not_found">%sikke funnet</string>
+    <string name="relationship_not_found_message">Oppføringen du prøver å gå inn på er ikke tilgjengelig. Vil du søke etter den?</string>
+    <string name="sync_by_sms">Synkronisert ved SMS</string>
+    <string name="state_warning">Advarsel</string>
+    <string name="no_conflicts_message">Det er ingen konflikter for dette programmet</string>
+    <string name="network_unavailable_sms">Nettverkstilkobling er ikke tilgjengelig, men det ser ut som det er telefonservice - du kan bruke SMS.</string>
+    <string name="network_unavailable">Internettilkoblingen er ikke tilgjengelig</string>
+    <string name="action_close">Lukk</string>
+    <string name="tuto_main_11">Nå kan du sjekke synk informasjon ved å klikke her.</string>
+    <string name="no_conflicts_update_message">Denne dataen er lagret kun på din enhet, det er ikke synkronisert med serveren.</string>
+    <string name="no_conflicts_synced_message">Du er oppdatert! Alle dataene dine er sendt til serveren.</string>
+    <string name="relationship_error_recursive">Du kan ikke relatere en oppføring med seg selv</string>
+    <string name="unblock_session">Fjern blokkering på sesjonen</string>
+    <string name="data_set_closed">Lukk</string>
+    <string name="data_set_open">Åpne</string>
+    <string name="unsupported_value_type">Verditypen er ikke støttet</string>
+    <string name="change_calendar_view">Endre kalendervisning</string>
+    <string name="data_every_fifteen_minutes">15 minutter</string>
+    <string name="data_every_hour">Hver time</string>
+    <string name="data_every_day">Daglig</string>
+    <string name="data_every_week">Ukentlig</string>
+    <string name="period_week">Uke</string>
+    <string name="sync_setting">Synkroniseringsinnstillinger: %s</string>
+    <string name="relationship_without_enrollment">Oppføringen du prøver å gå inn på har ingen registrering. Du kan ikke gå til dashbord.</string>
+    <string name="formatting_error">Formateringsfeil</string>
+    <string name="dashboard_menu_delete_tei">Slett TEI</string>
+    <string name="dashboard_menu_delete_enrollment">Slett kun registrering</string>
+    <string name="delete_authority_error">Du har ikke autoritet til å slette denne oppføringen</string>
+    <string name="record_marked_for_deletion">Denne oppføringen er merket for sletting. Du har ikke tilgang til den.</string>
+    <string name="validation_url">Dette er ikke en gyldig URL</string>
+    <string name="uncomplete_authority_error">Du har ikke autoritet til å gjenåpne denne hendelsen</string>
+    <string name="adjusting_form">Justerer fra...</string>
+
+    <string name="sms_receiver_number">Mottakernummer</string>
+    <string name="sms_amount_question">Aksepterer du å sende %dmeldinger? </string>
+    <string name="sms_sending">Sending %1$d/%2$d</string>
+    <string name="sms_waiting_amount_confirm">Bekreftelse av ventet mengde - %d</string>
+    <string name="sms_all_sent">Alle sendt</string>
+    <string name="sms_submission_completed">Innlevering fullført</string>
+    <string name="sms_waiting_confirmation">Venter på bekreftelsesmelding</string>
+    <string name="sms_waiting_timeout">Har ikke mottatt leveringsbekreftelse</string>
+    <string name="sms_confirmed">Bekreftelse er mottatt</string>
+    <string name="sms_error">Feil ved sending</string>
+    <string name="sms_error_item_not_ready">Dataelement er ikke klar for å sendes</string>
+    <string name="sms_error_no_network">Ingen nettverk</string>
+    <string name="sms_error_no_check_network_permission">Ingen sjekk på nettverkstillatelse</string>
+    <string name="sms_error_no_receive_sms_permission">Ingen mottar sms tillatelse</string>
+    <string name="sms_error_no_send_sms_permission">Ingen sendtillatelse</string>
+    <string name="sms_error_no_gateway_set">Ingen inngangsport satt</string>
+    <string name="sms_error_no_user_login">Bruker er ikke innlogget</string>
+    <string name="sms_error_module_disabled">SMS modul er deaktivert</string>
+    <string name="sms_error_ongoing_sunmission">Enda en SMS-innsending pågår</string>
+    <string name="sms_metadata_empty">SMS-modul ikke startet, ikke funnet obligatoriske metadata</string>
+    <string name="sms_completed">Fullført</string>
+    <string name="sms_count_error">SMS-telling ikke akseptert</string>
+    <string name="sms_state_started">SMS innsending er startet</string>
+    <string name="sms_state_converted">Data lest og konvertert. Innsendings ID: %d</string>
+    <string name="sms_general_error">Feil ved sending av SMS innsending</string>
+    <string name="sms_title_enrollment">SMS TEI registrering og registrering</string>
+    <string name="sms_title_event">SMS hendelseinnsending</string>
+    <string name="sms_title_data_set">SMS datasett innsending</string>
+    <string name="sms_bar_state_starting">Starter</string>
+    <string name="sms_bar_state_sending">Pågående</string>
+    <string name="sms_bar_state_sent">Sendt</string>
+    <string name="sms_bar_state_failed">Mislyktes</string>
+
+    <string name="start_sync_granular">Starter synkronisering.</string>
+    <string name="syncing">Synkroniserer...</string>
+    <string name="end_sync_granular">Synkroniseringen er fullført.</string>
+    <string name="error_sync">En feil har oppstått under synkronisering.</string>
+    <string name="cancel_sync">Avbrutt synkronisering.</string>
+
+    <string name="copied_text">Kopiert</string>
+    <string name="image_selected">Bilde er valgt</string>
+    <string name="show_in_map">Vis i kart</string>
+    <string name="show_list">Vis liste</string>
+
+    <!--region TRACKER IMPORT CONFLICT MESSAGES-->
+    <string name="value_required_but_not_provided">%ser obligatorisk men har ikke blitt oppgitt.</string>
+    <string name="polygon_captured">Polygon oppfanget</string>
+    <string name="polygon">Polygon</string>
+    <string name="map_layers">Kartlag</string>
+    <!--endregion-->
+
+    <string name="wrong_pattern">Det er ikke et riktig format.</string>
+    <string name="fingerprint_title">Fingeravtrykk</string>
+    <string name="fingerprint_message">Vennligst, plasser fingeren din på fingeravtrykkleseren.</string>
+    <string name="security_title">Sikkerhet</string>
+    <string name="security_rooted_message">Av sikkerhetsgrunner, så er denne versjonen av appen ikke tillatt til å bli brukt i rotenheter. Vennligst bruk treningsversjon.</string>
+    <string name="fix_error">Det er noen feil. Vennligst fiks dem før du fortsetter.</string>
+
+    <string name="filters_active">Filtere som brukes</string>
+    <string name="filters_disabled">Ingen filter brukt</string>
+    <string name="filters_title_period">Periode</string>
+    <string name="filters_title_org_unit">Org. Enhet</string>
+    <string name="filters_title_status">Status</string>
+    <string name="filters_title_state">Synk</string>
+    <string name="filters_title_assigned">Tildelt til meg</string>
+    <string name="filter_period_today">I dag</string>
+    <string name="filter_period_yesterday">I går</string>
+    <string name="filter_period_tomorrow">I morgen</string>
+    <string name="filter_period_this_week">Denne uken</string>
+    <string name="filter_period_last_week">Forrige uke</string>
+    <string name="filter_perdior_next_week">Neste uke</string>
+    <string name="filter_period_this_month">Denne måneden</string>
+    <string name="filter_period_last_month">Forrige måned</string>
+    <string name="filter_period_next_month">Neste måned</string>
+    <string name="filter_period_form_to">Fra - Til</string>
+    <string name="filter_period_other">Annet</string>
+    <string name="filter_period_any">Når som helst</string>
+    <string name="data_values_error_sync_message">Synkronisering mislyktes. Sjekk dataverdiene for å prøve å fikse problemet og prøv på nytt. Hvis det fortsatt mislykkes, kontakt din systemadministrator.</string>
+    <string name="sms_synced_message">Denne data har blitt sent til serveren men det er ikke sikkert den har blitt lagret</string>
+    <string name="filter_event_status_open">Åpne</string>
+    <string name="filter_event_status_schedule">Planlegg</string>
+    <string name="filter_event_status_overdue">Forfalt</string>
+    <string name="filter_event_status_visited">Besøkte</string>
+    <string name="filter_event_status_completed">Fullført</string>
+    <string name="filter_event_status_skipped">Hoppet over</string>
+    <string name="event_tei_limits">Hendelser: %sMax: %s%sGjeldende:%sTEI: %sMax:%s%sGjeldende%s</string>
+    <string name="event_tei_limits_v2">Begrensede innstillinger : %s\nEvents: %s/%sTEI: %s/%s</string>
+    <string name="enrollment_data_hide">Skjul registreringsdata</string>
+    <string name="enrollment_data_show">Vis registreringsdata</string>
+    <string name="enrollment_data_section_label">Registreringsdata</string>
+    <string name="sms_enabled">SMS modul er aktivert.</string>
+    <string name="sms_disabled">SMS modul er deaktivert.</string>
+    <string name="sms_downloading_data">Laster ned data for SMS modul. Vennligst vent</string>
+    <string name="sms_empty_gateway">SMS inngangsport kan ikke være tom</string>
+    <string name="granular_sync_enrollments_empty">Det er ingen registreringer å laste opp</string>
+    <string name="granular_sync_unsupported_task">Denne konverteringsoppgaven er ikke støttet</string>
+    <string name="disable_pin_locked">Ikke vis igjen, lås skjerm</string>
+    <string name="set_pin">Sett pin</string>
+    <string name="conflict">Konflikt</string>
+    <string name="event_date_in_future_message">Denne hendelsen kan ikke ha en dato i fremtiden. Vennligst endre det.</string>
+    <string name="change_event_date">Endre dato</string>
+    <string name="go_back">Gå tilbake</string>
+    <string name="data_sets">Datasett</string>
+    <string name="no_notes">Ingen notater</string>
+    <string name="no_add_notes">Ingen flere notater kan legges til</string>
+    <string name="new_note">Nytt notat</string>
+    <string name="note_saved">Notat ble lagret</string>
+    <string name="discard_note">Forkast notat?</string>
+    <string name="interval_now">nå</string>
+    <string name="interval_minute_ago">%dmin. siden</string>
+    <string name="interval_hour_ago">%dtimer siden</string>
+    <string name="interval_yesterday">I går</string>
+    <string name="enrollment_single_section_label">Attributter - %s</string>
+    <string name="program_selector">Programregistreringer</string>
+    <string name="select_time">Velg klokkeslett</string>
+    <string name="enter_letter">Skriv inn brev</string>
+    <string name="enter_unit_interval">Angi nummer fra 0 til 1</string>
+    <string name="enter_percentage">Angi prosent</string>
+    <string name="enter_phone_number">Legg inn telefonnummer</string>
+    <string name="enter_email">Legg inn e-post</string>
+    <string name="choose_ou">Velg organisasjonsenhet</string>
+    <string name="enter_url">Legg inn URL</string>
+    <string name="enter_value">Legg inn verdi</string>
+    <string name="choose_image">Velg bilde</string>
+    <string name="scan_code">Skann kode</string>
+    <string name="choose_option">Velg alternativ</string>
+    <string name="reserved_values_hint">Reserverte verdier lastet ned per TEI attributt</string>
+    <string name="settings_reserved_values_message">Reserverte verdier lastet ned per TEI attributt</string>
+    <string name="reserved_values_left">%sreserverte verdier igjen</string>
+    <string name="manage_reserved_values_button">Administrer reserverte verdier</string>
+    <string name="events_to_download">Hendelser å laste ned</string>
+    <string name="teis_to_download">TEIs å laste ned</string>
+    <string name="program_settings">Programinnstillinger</string>
+    <string name="limit_scope_all_ou_trailing">for alle organisasjonsenheter</string>
+    <string name="limit_scope_global_trailing">globalt</string>
+    <string name="limit_scope_ou_trailing">per organisasjonsenhet</string>
+    <string name="limit_scope_program_trailing">per progam</string>
+    <string name="limit_scope_ou_program_trailing">per org. unit og program</string>
+    <string name="activity_program_settings">Program synk innstilling</string>
+    <string name="syncing_period_not_editable">Synk periode kan ikke endres</string>
+    <string name="sync_parameters_not_editable">Synkparametre kan ikke endres</string>
+    <string name="rv_no_editable">Antall reserverte verdier lastet ned kan ikke redigeres</string>
+    <string name="dialog_layer_satellite">Vis satelittvisning</string>
+    <string name="dialog_layer_tei_coordinates">Vis tei koordinater</string>
+    <string name="dialog_layer_enrollment_coordinates">Vis registreringskoordinater</string>
+    <string name="dialog_layer_heatmap">Vis varmekartlag</string>
+    <string name="downloading">Laster ned</string>
+    <string name="filter_sync_synced">Synkronisert</string>
+    <string name="filter_sync_not_synced">Ikke synkronisert</string>
+    <string name="filter_sync_error">Synkroniseringsfeil</string>
+    <string name="filter_sync_sms">SMS synkronisert</string>
+</resources>

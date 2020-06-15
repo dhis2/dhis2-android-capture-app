@@ -1,40 +1,47 @@
 package org.dhis2.usescases.programEventDetail;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
+import androidx.lifecycle.LiveData;
+import androidx.paging.PagedList;
 
-import org.dhis2.utils.Period;
+import com.mapbox.geojson.BoundingBox;
+import com.mapbox.geojson.FeatureCollection;
 
-import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
-import org.hisp.dhis.android.core.event.EventModel;
-import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueModel;
+import org.dhis2.data.tuples.Pair;
+import org.hisp.dhis.android.core.category.CategoryCombo;
+import org.hisp.dhis.android.core.category.CategoryOptionCombo;
+import org.hisp.dhis.android.core.common.FeatureType;
+import org.hisp.dhis.android.core.common.State;
+import org.hisp.dhis.android.core.event.EventStatus;
+import org.hisp.dhis.android.core.period.DatePeriod;
+import org.hisp.dhis.android.core.program.Program;
 
-import java.util.Date;
 import java.util.List;
 
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
-
-/**
- * Created by Cristian E. on 02/11/2017.
- *
- */
+import io.reactivex.Single;
 
 public interface ProgramEventDetailRepository {
 
-   /* @NonNull
-    Observable<List<EventModel>> filteredProgramEvents(String programUid, String fromDate, String toDate, CategoryOptionComboModel categoryOptionComboModel,String orgUnitQuery);*/
+    @NonNull
+    LiveData<PagedList<ProgramEventViewModel>> filteredProgramEvents(List<DatePeriod> dateFilter, List<String> orgUnitFilter, List<CategoryOptionCombo> catOptionComboUid, List<EventStatus> eventStatus, List<State> states, boolean assignedToUser);
 
     @NonNull
-    Flowable<List<EventModel>> filteredProgramEvents(String programUid, List<Date> dates, Period period, CategoryOptionComboModel categoryOptionComboModel, String orgUnitQuery, int page);
+    Flowable<kotlin.Pair<FeatureCollection, BoundingBox>> filteredEventsForMap(List<DatePeriod> dateFilter, List<String> orgUnitFilter, List<CategoryOptionCombo> catOptionComboUid, List<EventStatus> eventStatus, List<State> states, boolean assignedToUser);
 
     @NonNull
-    Observable<List<OrganisationUnitModel>> orgUnits();
+    Observable<Program> program();
 
-    @NonNull
-    Observable<List<CategoryOptionComboModel>> catCombo(String programUid);
+    boolean getAccessDataWrite();
 
-    Observable<List<String>> eventDataValuesNew(EventModel eventModel);
+    Single<Pair<CategoryCombo, List<CategoryOptionCombo>>> catOptionCombos();
 
-    Observable<Boolean> writePermission(String programId);
+    Single<Boolean> hasAccessToAllCatOptions();
+
+    Flowable<ProgramEventViewModel> getInfoForEvent(String eventUid);
+
+    Single<FeatureType> featureType();
+
+    boolean hasAssignment();
 }

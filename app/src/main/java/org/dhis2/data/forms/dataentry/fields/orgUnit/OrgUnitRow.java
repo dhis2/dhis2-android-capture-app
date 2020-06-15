@@ -1,23 +1,18 @@
 package org.dhis2.data.forms.dataentry.fields.orgUnit;
 
-import android.databinding.DataBindingUtil;
-import android.databinding.ViewDataBinding;
-import android.support.annotation.NonNull;
-import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
-import org.dhis2.BR;
+import androidx.annotation.NonNull;
+import androidx.databinding.DataBindingUtil;
+import androidx.fragment.app.FragmentManager;
+import androidx.lifecycle.MutableLiveData;
+
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.Row;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
-import org.dhis2.databinding.FormButtonBinding;
+import org.dhis2.databinding.FormOrgUnitBinding;
 
-import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
-
-import java.util.List;
-
-import io.reactivex.Observable;
 import io.reactivex.processors.FlowableProcessor;
 
 /**
@@ -30,55 +25,42 @@ public class OrgUnitRow implements Row<OrgUnitHolder, OrgUnitViewModel> {
     private final FlowableProcessor<RowAction> processor;
     private final LayoutInflater inflater;
     private final FragmentManager fm;
-    private final Observable<List<OrganisationUnitModel>> orgUnits;
     private final String renderType;
-    private FormButtonBinding binding;
+    private final MutableLiveData<String> currentSelection;
+    private boolean isSearchMode = false;
 
     public OrgUnitRow(FragmentManager fm, LayoutInflater layoutInflater, FlowableProcessor<RowAction> processor,
-                      boolean isBgTransparent, Observable<List<OrganisationUnitModel>> orgUnits) {
+                      boolean isBgTransparent) {
         this.inflater = layoutInflater;
         this.processor = processor;
         this.isBgTransparent = isBgTransparent;
         this.fm = fm;
-        this.orgUnits = orgUnits;
         this.renderType = null;
+        this.isSearchMode = true;
+        this.currentSelection = null;
     }
 
     public OrgUnitRow(FragmentManager fm, LayoutInflater layoutInflater, FlowableProcessor<RowAction> processor,
-                      boolean isBgTransparent, Observable<List<OrganisationUnitModel>> orgUnits, String renderType) {
+                      boolean isBgTransparent, String renderType, MutableLiveData<String> currentSelection) {
         this.inflater = layoutInflater;
         this.processor = processor;
         this.isBgTransparent = isBgTransparent;
         this.fm = fm;
-        this.orgUnits = orgUnits;
         this.renderType = renderType;
+        this.currentSelection = currentSelection;
     }
 
     @NonNull
     @Override
     public OrgUnitHolder onCreate(@NonNull ViewGroup parent) {
-        ViewDataBinding binding = DataBindingUtil.inflate(
-                inflater,
-                isBgTransparent ? R.layout.custom_text_view : R.layout.custom_text_view_accent,
-                parent,
-                false
-        );
-        binding.setVariable(BR.renderType, renderType);
-        binding.executePendingBindings();
-
-        binding.getRoot().findViewById(R.id.input_editText).setFocusable(false); //Makes editText
-        binding.getRoot().findViewById(R.id.input_editText).setClickable(true);//  but clickable
-
-        return new OrgUnitHolder(fm, binding, processor, orgUnits);
+        FormOrgUnitBinding binding = DataBindingUtil.inflate(inflater, R.layout.form_org_unit, parent, false);
+        binding.orgUnitView.setLayoutData(isBgTransparent, renderType);
+        binding.orgUnitView.setFragmentManager(fm);
+        return new OrgUnitHolder(binding, processor, isSearchMode, currentSelection);
     }
 
     @Override
     public void onBind(@NonNull OrgUnitHolder viewHolder, @NonNull OrgUnitViewModel viewModel) {
         viewHolder.update(viewModel);
-    }
-
-    @Override
-    public void deAttach(@NonNull OrgUnitHolder viewHolder) {
-        viewHolder.dispose();
     }
 }

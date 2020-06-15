@@ -1,7 +1,7 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventSummary;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 /**
  * Created by Cristian on 01/03/2018.

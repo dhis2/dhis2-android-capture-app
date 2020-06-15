@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <selector>
+            <item android:state_enabled="true"  android:state_selected="false" android:drawable="@color/table_view_default_unselected_background_color"/>
+            <item android:state_enabled="false" android:state_activated="false" android:drawable="@color/table_view_default_deactivated_background_color"/>
+            <item android:state_enabled="false" android:state_activated="true" android:drawable="@color/table_view_default_disabled_background_color"/>
+            <item android:state_enabled="true"  android:state_selected="true" android:drawable="@drawable/outline_cell_bg"/>
+        </selector>
+    </item>
+    <item>
+        <shape>
+            <corners android:radius="1dp"/>
+            <stroke android:color="@color/table_view_default_header_background_color"
+                android:width="0.5dp"/>
+        </shape>
+    </item>
+</layer-list>

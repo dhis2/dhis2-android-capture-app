@@ -5,8 +5,6 @@
 
         <import type="android.view.View" />
 
-        <import type="java.lang.String" />
-
         <variable
             name="presenter"
             type="org.dhis2.usescases.teiDashboard.teiProgramList.TeiProgramListContract.Presenter" />

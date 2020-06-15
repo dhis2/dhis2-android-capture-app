@@ -1,12 +1,10 @@
 package org.dhis2.usescases.teiDashboard.teiProgramList;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import org.dhis2.data.dagger.PerActivity;
-import org.dhis2.usescases.programDetail.ProgramRepository;
-import org.dhis2.usescases.programDetail.ProgramRepositoryImpl;
 import org.dhis2.utils.CodeGenerator;
-import com.squareup.sqlbrite2.BriteDatabase;
+import org.hisp.dhis.android.core.D2;
 
 import dagger.Module;
 import dagger.Provides;
@@ -51,13 +49,7 @@ public class TeiProgramListModule {
 
     @Provides
     @PerActivity
-    TeiProgramListRepository eventDetailRepository(@NonNull CodeGenerator codeGenerator, @NonNull BriteDatabase briteDatabase) {
-        return new TeiProgramListRepositoryImpl(codeGenerator, briteDatabase);
-    }
-
-    @Provides
-    @PerActivity
-    ProgramRepository homeRepository(@NonNull BriteDatabase briteDatabase) {
-        return new ProgramRepositoryImpl(briteDatabase);
+    TeiProgramListRepository eventDetailRepository(D2 d2) {
+        return new TeiProgramListRepositoryImpl(d2);
     }
 }

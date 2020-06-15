@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <import type="android.view.View" />
+
+        <variable
+            name="currentFilter"
+            type="androidx.databinding.ObservableField&lt;org.dhis2.utils.filters.Filters&gt;" />
+
+        <variable
+            name="filterCount"
+            type="androidx.databinding.ObservableField&lt;java.lang.Integer&gt;" />
+
+        <variable
+            name="filterType"
+            type="org.dhis2.utils.filters.Filters" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/root"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <include
+            android:id="@+id/filterLayout"
+            layout="@layout/item_header_filter"
+            app:filterCount="@{filterCount}"
+            app:layout_constraintTop_toBottomOf="parent" />
+
+        <include
+            android:id="@+id/filterState"
+            layout="@layout/filter_state"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:currentFilter="@{currentFilter}"
+            app:filterType="@{filterType}"
+            app:layout_constraintTop_toBottomOf="@id/filterLayout" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

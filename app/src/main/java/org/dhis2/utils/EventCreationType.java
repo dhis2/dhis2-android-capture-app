@@ -5,10 +5,8 @@ package org.dhis2.utils;
  */
 
 public enum EventCreationType {
-
     DEFAULT,
     REFERAL,
     ADDNEW,
     SCHEDULE
-
 }

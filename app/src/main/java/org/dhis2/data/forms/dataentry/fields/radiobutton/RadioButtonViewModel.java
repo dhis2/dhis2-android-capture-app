@@ -1,12 +1,14 @@
 package org.dhis2.data.forms.dataentry.fields.radiobutton;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.google.auto.value.AutoValue;
 
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
+import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.common.ValueType;
+import org.hisp.dhis.android.core.common.ValueTypeRenderingType;
 
 import java.util.Locale;
 
@@ -41,17 +43,21 @@ public abstract class RadioButtonViewModel extends FieldViewModel {
     @NonNull
     public abstract ValueType valueType();
 
+    @Nullable
+    public abstract ValueTypeRenderingType renderingType();
+
     @NonNull
     public static RadioButtonViewModel fromRawValue(@NonNull String id, @NonNull String label, @NonNull ValueType type,
-                                                    @NonNull Boolean mandatory, @Nullable String value, @Nullable String section, Boolean editable, @Nullable String description) {
+                                                    @NonNull Boolean mandatory, @Nullable String value, @Nullable String section,
+                                                    Boolean editable, @Nullable String description, ObjectStyle objectStyle, ValueTypeRenderingType renderingType) {
         if (value == null) {
-            return new AutoValue_RadioButtonViewModel(id, label, null, section, null, editable, null, null, null, description, mandatory, type);
+            return new AutoValue_RadioButtonViewModel(id, label, null, section, null, editable, null, null, null, description, objectStyle, null, mandatory, type, renderingType);
         } else if (value.toLowerCase(Locale.US).equals(Value.CHECKED.toString())) {
-            return new AutoValue_RadioButtonViewModel(id, label, Value.CHECKED.toString(), section, null, editable, null, null, null, description, mandatory, type);
+            return new AutoValue_RadioButtonViewModel(id, label, Value.CHECKED.toString(), section, null, editable, null, null, null, description, objectStyle, null, mandatory, type, renderingType);
         } else if (value.toLowerCase(Locale.US).equals(Value.UNCHECKED.toString())) {
-            return new AutoValue_RadioButtonViewModel(id, label, Value.UNCHECKED.toString(), section, null, editable, null, null, null, description, mandatory, type);
+            return new AutoValue_RadioButtonViewModel(id, label, Value.UNCHECKED.toString(), section, null, editable, null, null, null, description, objectStyle, null, mandatory, type, renderingType);
         } else if (value.toLowerCase(Locale.US).equals(Value.CHECKED_NO.toString())) {
-            return new AutoValue_RadioButtonViewModel(id, label, Value.CHECKED_NO.toString(), section, null, editable, null, null, null, description, mandatory, type);
+            return new AutoValue_RadioButtonViewModel(id, label, Value.CHECKED_NO.toString(), section, null, editable, null, null, null, description, objectStyle, null, mandatory, type, renderingType);
         } else {
             throw new IllegalArgumentException("Unsupported value: " + value);
         }
@@ -59,24 +65,30 @@ public abstract class RadioButtonViewModel extends FieldViewModel {
 
     @Override
     public FieldViewModel setMandatory() {
-        return new AutoValue_RadioButtonViewModel(uid(), label(), value(), programStageSection(), allowFutureDate(), editable(), optionSet(), warning(), error(), description(), true, valueType());
+        return new AutoValue_RadioButtonViewModel(uid(), label(), value(), programStageSection(), allowFutureDate(), editable(), optionSet(), warning(), error(), description(), objectStyle(), null, true, valueType(), renderingType());
     }
 
     @NonNull
     @Override
     public FieldViewModel withError(@NonNull String error) {
-        return new AutoValue_RadioButtonViewModel(uid(), label(), value(), programStageSection(), allowFutureDate(), editable(), optionSet(), warning(), error, description(), mandatory(), valueType());
+        return new AutoValue_RadioButtonViewModel(uid(), label(), value(), programStageSection(), allowFutureDate(), editable(), optionSet(), warning(), error, description(), objectStyle(), null, mandatory(), valueType(), renderingType());
     }
 
     @NonNull
     @Override
     public FieldViewModel withWarning(@NonNull String warning) {
-        return new AutoValue_RadioButtonViewModel(uid(), label(), value(), programStageSection(), allowFutureDate(), editable(), optionSet(), warning, error(), description(), mandatory(), valueType());
+        return new AutoValue_RadioButtonViewModel(uid(), label(), value(), programStageSection(), allowFutureDate(), editable(), optionSet(), warning, error(), description(), objectStyle(), null, mandatory(), valueType(), renderingType());
     }
 
     @Nonnull
     @Override
     public FieldViewModel withValue(String data) {
-        return new AutoValue_RadioButtonViewModel(uid(), label(), data, programStageSection(), allowFutureDate(), editable(), optionSet(), warning(), error(), description(), mandatory(), valueType());
+        return new AutoValue_RadioButtonViewModel(uid(), label(), data, programStageSection(), allowFutureDate(), editable(), optionSet(), warning(), error(), description(), objectStyle(), null, mandatory(), valueType(), renderingType());
+    }
+
+    @NonNull
+    @Override
+    public FieldViewModel withEditMode(boolean isEditable) {
+        return new AutoValue_RadioButtonViewModel(uid(), label(), value(), programStageSection(), allowFutureDate(), isEditable, optionSet(), warning(), error(), description(), objectStyle(), null, mandatory(), valueType(), renderingType());
     }
 }

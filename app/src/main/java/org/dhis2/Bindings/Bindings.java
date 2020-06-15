@@ -1,61 +1,49 @@
 package org.dhis2.Bindings;
 
-import android.annotation.SuppressLint;
-import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
-import android.databinding.BindingAdapter;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.AnimatedVectorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Build;
-import android.support.annotation.NonNull;
-import android.support.design.widget.TextInputLayout;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.view.ViewCompat;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.text.SpannableStringBuilder;
-import android.text.Spanned;
-import android.text.style.AbsoluteSizeSpan;
+import android.text.method.ScrollingMovementMethod;
 import android.util.TypedValue;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
-import android.widget.Spinner;
 import android.widget.TextView;
 
-import org.dhis2.R;
-import org.dhis2.data.metadata.MetadataRepository;
-import org.dhis2.data.tuples.Pair;
-import org.dhis2.utils.CatComboAdapter;
-import org.dhis2.utils.DateUtils;
-import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
-import org.hisp.dhis.android.core.common.State;
-import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
-import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
-import org.hisp.dhis.android.core.event.EventModel;
-import org.hisp.dhis.android.core.event.EventStatus;
-import org.hisp.dhis.android.core.option.OptionModel;
-import org.hisp.dhis.android.core.program.ProgramModel;
-import org.hisp.dhis.android.core.program.ProgramStageModel;
-import org.hisp.dhis.android.core.resource.ResourceModel;
+import androidx.appcompat.content.res.AppCompatResources;
+import androidx.core.content.ContextCompat;
+import androidx.core.graphics.drawable.DrawableCompat;
+import androidx.databinding.BindingAdapter;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
-import java.text.ParseException;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
+import org.dhis2.R;
+import org.dhis2.usescases.datasets.dataSetTable.dataSetSection.DataSetTableAdapter;
+import org.dhis2.usescases.programEventDetail.ProgramEventViewModel;
+import org.dhis2.utils.ColorUtils;
+import org.dhis2.utils.DateUtils;
+import org.hisp.dhis.android.core.common.ObjectStyle;
+import org.hisp.dhis.android.core.common.State;
+import org.hisp.dhis.android.core.enrollment.Enrollment;
+import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
+import org.hisp.dhis.android.core.event.Event;
+import org.hisp.dhis.android.core.event.EventStatus;
+import org.hisp.dhis.android.core.imports.ImportStatus;
+import org.hisp.dhis.android.core.period.PeriodType;
+import org.hisp.dhis.android.core.program.Program;
+import org.hisp.dhis.android.core.program.ProgramStage;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-
-import io.reactivex.Observable;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.schedulers.Schedulers;
-import timber.log.Timber;
 
 /**
  * QUADRAM. Created by ppajuelo on 28/09/2017.
@@ -63,35 +51,10 @@ import timber.log.Timber;
 
 public class Bindings {
 
-    private static MetadataRepository metadataRepository;
-
-    @BindingAdapter("date")
-    public static void setDate(TextView textView, String date) {
-        SimpleDateFormat formatIn = DateUtils.databaseDateFormat();
-        SimpleDateFormat formatOut = DateUtils.uiDateFormat();
-        try {
-            Date dateIn = formatIn.parse(date);
-            String dateOut = formatOut.format(dateIn);
-            textView.setText(dateOut);
-        } catch (ParseException e) {
-            Timber.e(e);
-        }
-
-    }
-
-    @BindingAdapter("currentFragment")
-    public static void setCurrentFragment(TextView textView, int currentFragmentId) {
-        TypedValue typedValue = new TypedValue();
-        TypedArray a = textView.getContext().obtainStyledAttributes(typedValue.data, new int[]{R.attr.colorPrimary});
-        int colorPrimary = a.getColor(0, 0);
-        a.recycle();
-        int colorAccent = ContextCompat.getColor(textView.getContext(), R.color.colorAccent);
-        if (currentFragmentId == textView.getId()) {
-            textView.setTextColor(colorPrimary);
-            textView.setBackgroundColor(colorAccent);
-        } else {
-            textView.setTextColor(colorAccent);
-            textView.setBackgroundColor(colorPrimary);
+    @BindingAdapter("scrollingTextView")
+    public static void setScrollingTextView(TextView textView, boolean canScroll) {
+        if (canScroll) {
+            textView.setMovementMethod(new ScrollingMovementMethod());
         }
     }
 
@@ -102,7 +65,6 @@ public class Bindings {
             String dateOut = formatOut.format(date);
             textView.setText(dateOut);
         }
-
     }
 
     @BindingAdapter("drawableEnd")
@@ -115,94 +77,13 @@ public class Bindings {
         }
     }
 
-    @SuppressLint({"CheckResult", "RxLeakedSubscription"})
-    @BindingAdapter("lastEventDate")
-    public static void setLastEventDate(TextView textView, Observable<List<EventModel>> listObservable) {
-        listObservable
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        data -> textView.setText(DateUtils.uiDateFormat().format(data.get(0).eventDate())),
-                        Timber::d);
-    }
-
-    @SuppressLint({"CheckResult", "RxLeakedSubscription"})
-    @BindingAdapter("numberOfRecords")
-    public static void setNumberOfRecords(TextView textView, Observable<Pair<Integer, String>> listObservable) {
-        CompositeDisposable disposable = new CompositeDisposable();
-        disposable.add(listObservable
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        data -> {
-                            textView.setText(recordsPlusType(data.val0(), data.val1()));
-                        },
-                        Timber::d,
-                        disposable::dispose));
-    }
-
-    private static String recordsPlusType(int numberOfRecords, String recordType) {
-        String finalText = String.format(Locale.getDefault(), "%d %s", numberOfRecords, recordType);
-        SpannableStringBuilder sp = new SpannableStringBuilder(finalText);
-        sp.setSpan(new AbsoluteSizeSpan(20), 0, String.valueOf(numberOfRecords).length(), Spanned.SPAN_INCLUSIVE_INCLUSIVE);
-
-        return sp.toString();
-    }
-
-    @SuppressLint({"CheckResult", "RxLeakedSubscription"})
-    @BindingAdapter("programSyncState")
-    public static void setProgramSyncState(ImageView imageView, ProgramModel program) {
-        if (metadataRepository != null)
-            metadataRepository
-                    .syncState(program)
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(
-                            resourceModelList -> {
-                                for (ResourceModel resourceModel : resourceModelList) {
-                                    if (resourceModel.resourceType().equals(ResourceModel.Type.PROGRAM.name())) {
-                                        if (resourceModel.lastSynced().before(program.lastUpdated()))
-                                            imageView.setImageResource(R.drawable.ic_sync_problem_grey);
-                                        else
-                                            imageView.setImageResource(R.drawable.ic_sync);
-                                    }
-                                }
-                            },
-                            Timber::d);
-    }
-
-    @SuppressLint({"CheckResult", "RxLeakedSubscription"})
-    @BindingAdapter("enrollmentLastEventDate")
-    public static void setEnrollmentLastEventDate(TextView textView, String enrollmentUid) {
-        if (metadataRepository != null)
-            metadataRepository.getEnrollmentLastEvent(enrollmentUid)
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(
-                            data -> textView.setText(DateUtils.getInstance().formatDate(data.eventDate())),
-                            Timber::d);
-    }
-
-    @SuppressLint({"CheckResult", "RxLeakedSubscription"})
-    @BindingAdapter("eventLabel")
-    public static void setEventLabel(TextView textView, String programUid) {
-        if (metadataRepository != null)
-            metadataRepository.getProgramWithId(programUid)
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(
-                            data -> textView.setText(data.displayIncidentDate() ? data.incidentDateLabel() : data.enrollmentDateLabel()),
-                            Timber::d);
-    }
-
-
     @BindingAdapter(value = {"initGrid", "spanCount"}, requireAll = false)
     public static void setLayoutManager(RecyclerView recyclerView, boolean horizontal, int spanCount) {
         RecyclerView.LayoutManager recyclerLayout;
         if (spanCount == -1)
             spanCount = 1;
 
-        recyclerLayout = new GridLayoutManager(recyclerView.getContext(), spanCount, LinearLayoutManager.VERTICAL, false);
+        recyclerLayout = new GridLayoutManager(recyclerView.getContext(), spanCount, RecyclerView.VERTICAL, false);
 
         recyclerView.setLayoutManager(recyclerLayout);
 
@@ -221,92 +102,13 @@ public class Bindings {
         }
     }
 
-    @SuppressLint("RxLeakedSubscription")
-    @BindingAdapter("lightColor")
-    public static void setLightColor(View view, ProgramModel programModel) {
-        if (metadataRepository != null)
-            metadataRepository.getObjectStyle(programModel.uid())
-                    .filter(objectStyleModel -> objectStyleModel != null)
-                    .map(objectStyleModel -> {
-                        String color = objectStyleModel.color();
-                        if (color != null && color.length() == 4) {//Color is formatted as #fff
-                            char r = color.charAt(1);
-                            char g = color.charAt(2);
-                            char b = color.charAt(3);
-                            color = "#" + r + r + g + g + b + b; //formatted to #ffff
-                        }
-
-                        int icon = -1;
-                        if (objectStyleModel.icon() != null) {
-                            Resources resources = view.getContext().getResources();
-                            String iconName = objectStyleModel.icon().startsWith("ic_") ? objectStyleModel.icon() : "ic_" + objectStyleModel.icon();
-                            icon = resources.getIdentifier(iconName, "drawable", view.getContext().getPackageName());
-                        }
-                        return Pair.create(Color.parseColor(color), icon);
-
-                    })
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(
-                            colorAndIcon -> {
-                                if (colorAndIcon.val0() != -1)
-                                    view.setBackgroundColor(colorAndIcon.val0());
-
-                                if (view instanceof ImageView) {
-                                    if (colorAndIcon.val1() != -1) {
-                                        ((ImageView) view).setImageResource(colorAndIcon.val1());
-                                    } else {
-                                        TypedValue typedValue = new TypedValue();
-                                        TypedArray a = view.getContext().obtainStyledAttributes(typedValue.data, new int[]{R.attr.colorPrimaryLight});
-                                        int lcolor = a.getColor(0, 0);
-                                        a.recycle();
-                                        view.setBackgroundColor(lcolor);
-                                    }
-                                    setFromResBgColor(view, colorAndIcon.val0());
-                                }
-
-                            },
-                            Timber::d);
-    }
-
     @BindingAdapter("progressColor")
     public static void setProgressColor(ProgressBar progressBar, int color) {
         TypedValue typedValue = new TypedValue();
         TypedArray a = progressBar.getContext().obtainStyledAttributes(typedValue.data, new int[]{R.attr.colorPrimary});
-        color = a.getColor(0, 0);
+        int color2 = a.getColor(0, 0);
         a.recycle();
-        progressBar.getIndeterminateDrawable().setColorFilter(color, PorterDuff.Mode.SRC_IN);
-    }
-
-    @SuppressLint({"CheckResult", "RxLeakedSubscription"})
-    @BindingAdapter("programStage")
-    public static void getStageName(TextView textView, String stageId) {
-        if (metadataRepository != null)
-            metadataRepository.programStage(stageId)
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(
-                            programStageModel -> textView.setText(programStageModel.displayName()),
-                            Timber::d
-                    );
-    }
-
-    @SuppressLint({"CheckResult", "RxLeakedSubscription"})
-    @BindingAdapter("programStageDescription")
-    public static void getStageDescription(TextView textView, String stageId) {
-        if (metadataRepository != null)
-            metadataRepository.programStage(stageId)
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(
-                            programStageModel -> textView.setText(programStageModel.description()),
-                            Timber::d
-                    );
-    }
-
-    @BindingAdapter("srcBackGround")
-    public static void setBackGroundCompat(View view, int drawableId) {
-        view.setBackground(ContextCompat.getDrawable(view.getContext(), drawableId));
+        progressBar.getIndeterminateDrawable().setColorFilter(color2, PorterDuff.Mode.SRC_IN);
     }
 
     @BindingAdapter("enrolmentIcon")
@@ -316,43 +118,21 @@ public class Bindings {
             status = EnrollmentStatus.ACTIVE;
         switch (status) {
             case ACTIVE:
-                lock = ContextCompat.getDrawable(view.getContext(), R.drawable.ic_lock_open_green);
+                lock = AppCompatResources.getDrawable(view.getContext(), R.drawable.ic_lock_open_green);
                 break;
             case COMPLETED:
-                lock = ContextCompat.getDrawable(view.getContext(), R.drawable.ic_lock_completed);
+                lock = AppCompatResources.getDrawable(view.getContext(), R.drawable.ic_lock_completed);
                 break;
             case CANCELLED:
-                lock = ContextCompat.getDrawable(view.getContext(), R.drawable.ic_lock_inactive);
+                lock = AppCompatResources.getDrawable(view.getContext(), R.drawable.ic_lock_inactive);
                 break;
             default:
-                lock = ContextCompat.getDrawable(view.getContext(), R.drawable.ic_lock_read_only);
+                lock = AppCompatResources.getDrawable(view.getContext(), R.drawable.ic_lock_read_only);
                 break;
         }
 
         view.setImageDrawable(lock);
 
-    }
-
-    @BindingAdapter("enrolmentAction")
-    public static void setEnrolmentAction(TextView textView, EnrollmentStatus status) {
-        String action;
-        if (status == null)
-            status = EnrollmentStatus.ACTIVE;
-        switch (status) {
-            case ACTIVE:
-                action = textView.getContext().getString(R.string.complete);
-                break;
-            case COMPLETED:
-                action = textView.getContext().getString(R.string.re_open);
-                break;
-            case CANCELLED:
-                action = textView.getContext().getString(R.string.activate);
-                break;
-            default:
-                action = "";
-                break;
-        }
-        textView.setText(action);
     }
 
     @BindingAdapter("enrolmentText")
@@ -378,329 +158,192 @@ public class Bindings {
         view.setText(text);
     }
 
-    @BindingAdapter(value = {"eventStatusIcon", "enrollmentStatusIcon", "eventProgramStage"}, requireAll = false)
-    public static void setEventIcon(ImageView view, EventModel event, EnrollmentModel enrollmentModel, ProgramStageModel eventProgramStage) {
-        EventStatus status = event.status();
-        EnrollmentStatus enrollmentStatus = enrollmentModel.enrollmentStatus();
-        if (status == null)
-            status = EventStatus.ACTIVE;
-        if (enrollmentStatus == null)
-            enrollmentStatus = EnrollmentStatus.ACTIVE;
+    @BindingAdapter(value = {"eventStatusIcon", "enrollmentStatusIcon", "eventProgramStage", "eventProgram"}, requireAll = false)
+    public static void setEventIcon(ImageView view, Event event, Enrollment enrollment, ProgramStage eventProgramStage, Program program) {
+        if (event != null) {
+            EventStatus status = event.status();
+            EnrollmentStatus enrollmentStatus = enrollment.status();
+            if (status == null)
+                status = EventStatus.ACTIVE;
+            if (enrollmentStatus == null)
+                enrollmentStatus = EnrollmentStatus.ACTIVE;
 
-        if (enrollmentStatus == EnrollmentStatus.ACTIVE) {
-            switch (status) {
-                case ACTIVE:
-                    if (metadataRepository != null)
-                        metadataRepository.getExpiryDateFromEvent(event.uid())
-                                .subscribeOn(Schedulers.io())
-                                .observeOn(AndroidSchedulers.mainThread())
-                                .subscribe(
-                                        program -> {
-                                            if (DateUtils.getInstance().hasExpired(event, program.expiryDays(), program.completeEventsExpiryDays(), eventProgramStage.periodType() != null ? eventProgramStage.periodType() : program.expiryPeriodType())) {
-                                                view.setImageDrawable(ContextCompat.getDrawable(view.getContext(), R.drawable.ic_eye_red));
-                                            } else {
-                                                view.setImageDrawable(ContextCompat.getDrawable(view.getContext(), R.drawable.ic_edit));
-                                            }
-                                        },
-                                        Timber::d
-                                );
-                    break;
-                case COMPLETED:
-                case SKIPPED:
-                    view.setImageDrawable(ContextCompat.getDrawable(view.getContext(), R.drawable.ic_visibility));
-                    break;
-                case SCHEDULE:
-                    view.setImageDrawable(ContextCompat.getDrawable(view.getContext(), R.drawable.ic_edit));
-                    break;
-                case VISITED:
-                    view.setImageDrawable(ContextCompat.getDrawable(view.getContext(), R.drawable.ic_edit));
-                    break;
-                default:
-                    view.setImageDrawable(ContextCompat.getDrawable(view.getContext(), R.drawable.ic_edit));
-                    break;
+            if (enrollmentStatus == EnrollmentStatus.ACTIVE) {
+                switch (status) {
+                    case ACTIVE:
+                        Date eventDate = event.eventDate();
+                        if (eventProgramStage.periodType() != null && eventProgramStage.periodType().name().contains(PeriodType.Weekly.name()))
+                            eventDate = DateUtils.getInstance().getNextPeriod(eventProgramStage.periodType(), eventDate, 0, true);
+                        if (DateUtils.getInstance().isEventExpired(eventDate, null, event.status(), program.completeEventsExpiryDays(), eventProgramStage.periodType() != null ? eventProgramStage.periodType() : program.expiryPeriodType(), program.expiryDays())) {
+                            view.setImageDrawable(AppCompatResources.getDrawable(view.getContext(), R.drawable.ic_eye_red));
+                        } else {
+                            view.setImageDrawable(AppCompatResources.getDrawable(view.getContext(), R.drawable.ic_edit));
+                        }
+                        break;
+                    case OVERDUE:
+                    case COMPLETED:
+                    case SKIPPED:
+                        view.setImageDrawable(AppCompatResources.getDrawable(view.getContext(), R.drawable.ic_visibility));
+                        break;
+                    case SCHEDULE:
+                        view.setImageDrawable(AppCompatResources.getDrawable(view.getContext(), R.drawable.ic_edit));
+                        break;
+                    case VISITED:
+                        view.setImageDrawable(AppCompatResources.getDrawable(view.getContext(), R.drawable.ic_edit));
+                        break;
+                    default:
+                        view.setImageDrawable(AppCompatResources.getDrawable(view.getContext(), R.drawable.ic_edit));
+                        break;
+                }
+            } else if (enrollmentStatus == EnrollmentStatus.COMPLETED) {
+                view.setImageDrawable(AppCompatResources.getDrawable(view.getContext(), R.drawable.ic_visibility));
+            } else { //EnrollmentStatus = CANCELLED
+                view.setImageDrawable(AppCompatResources.getDrawable(view.getContext(), R.drawable.ic_visibility));
             }
-        } else if (enrollmentStatus == EnrollmentStatus.COMPLETED) {
-            view.setImageDrawable(ContextCompat.getDrawable(view.getContext(), R.drawable.ic_visibility));
-        } else { //EnrollmentStatus = CANCELLED
-            view.setImageDrawable(ContextCompat.getDrawable(view.getContext(), R.drawable.ic_visibility));
         }
     }
 
-    @BindingAdapter(value = {"eventStatusText", "enrollmentStatus", "eventProgramStage"})
-//    @BindingAdapter("eventStatusText")
-    public static void setEventText(TextView view, EventModel event, EnrollmentModel enrollmentModel, ProgramStageModel eventProgramStage) {
-        EventStatus status = event.status();
-        EnrollmentStatus enrollmentStatus = enrollmentModel.enrollmentStatus();
-        if (status == null)
-            status = EventStatus.ACTIVE;
-        if (enrollmentStatus == null)
-            enrollmentStatus = EnrollmentStatus.ACTIVE;
+    @BindingAdapter(value = {"eventStatusText", "enrollmentStatus", "eventProgramStage", "eventProgram"})
+    public static void setEventText(TextView view, Event event, Enrollment enrollment, ProgramStage eventProgramStage, Program program) {
+        if (event != null) {
+            EventStatus status = event.status();
+            EnrollmentStatus enrollmentStatus = enrollment.status();
+            if (status == null)
+                status = EventStatus.ACTIVE;
+            if (enrollmentStatus == null)
+                enrollmentStatus = EnrollmentStatus.ACTIVE;
 
 
-        if (enrollmentStatus == EnrollmentStatus.ACTIVE) {
-            switch (status) {
-                case ACTIVE:
-                    if (metadataRepository != null)
-                        metadataRepository.getExpiryDateFromEvent(event.uid())
-                                .subscribeOn(Schedulers.io())
-                                .observeOn(AndroidSchedulers.mainThread())
-                                .subscribe(
-                                        program -> {
-                                            if (DateUtils.getInstance().hasExpired(event, program.expiryDays(), program.completeEventsExpiryDays(), eventProgramStage.periodType() != null ? eventProgramStage.periodType() : program.expiryPeriodType())) {
-                                                view.setText(view.getContext().getString(R.string.event_expired));
-                                            } else {
-                                                view.setText(view.getContext().getString(R.string.event_open));
-                                            }
-                                        },
-                                        Timber::d
-                                );
-                    break;
-                case COMPLETED:
-                    if (metadataRepository != null)
-                        metadataRepository.getExpiryDateFromEvent(event.uid())
-                                .subscribeOn(Schedulers.io())
-                                .observeOn(AndroidSchedulers.mainThread())
-                                .subscribe(
-                                        program -> {
-                                            if (DateUtils.getInstance().hasExpired(event, program.expiryDays(), program.completeEventsExpiryDays(), eventProgramStage.periodType() != null ? eventProgramStage.periodType() : program.expiryPeriodType())) {
-                                                view.setText(view.getContext().getString(R.string.event_expired));
-                                            } else {
-                                                view.setText(view.getContext().getString(R.string.event_completed));
-                                            }
-                                        },
-                                        Timber::d
-                                );
-                    break;
-                case SCHEDULE:
-                    if (metadataRepository != null)
-                        metadataRepository.getExpiryDateFromEvent(event.uid())
-                                .subscribeOn(Schedulers.io())
-                                .observeOn(AndroidSchedulers.mainThread())
-                                .subscribe(
-                                        program -> {
-                                            if (DateUtils.getInstance().hasExpired(event, program.expiryDays(), program.completeEventsExpiryDays(), eventProgramStage.periodType() != null ? eventProgramStage.periodType() : program.expiryPeriodType())) {
-                                                view.setText(view.getContext().getString(R.string.event_expired));
-                                            } else {
-                                                view.setText(view.getContext().getString(R.string.event_schedule));
-                                            }
-                                        },
-                                        Timber::d
-                                );
-                    break;
-                case VISITED:
-                    break;
-                case SKIPPED:
-                    view.setText(view.getContext().getString(R.string.event_skipped));
-                    break;
-                default:
-                    view.setText(view.getContext().getString(R.string.read_only));
-                    break;
+            if (enrollmentStatus == EnrollmentStatus.ACTIVE) {
+                switch (status) {
+                    case ACTIVE:
+                        Date eventDate = event.eventDate();
+                        if (eventProgramStage.periodType() != null && eventProgramStage.periodType().name().contains(PeriodType.Weekly.name()))
+                            eventDate = DateUtils.getInstance().getNextPeriod(eventProgramStage.periodType(), eventDate, 0, true);
+                        if (DateUtils.getInstance().isEventExpired(eventDate, null, event.status(), program.completeEventsExpiryDays(), eventProgramStage.periodType() != null ? eventProgramStage.periodType() : program.expiryPeriodType(), program.expiryDays())) {
+                            view.setText(view.getContext().getString(R.string.event_expired));
+                        } else {
+                            view.setText(view.getContext().getString(R.string.event_open));
+                        }
+                        break;
+                    case COMPLETED:
+                        if (DateUtils.getInstance().isEventExpired(null, event.completedDate(), program.completeEventsExpiryDays())) {
+                            view.setText(view.getContext().getString(R.string.event_expired));
+                        } else {
+                            view.setText(view.getContext().getString(R.string.event_completed));
+                        }
+                        break;
+                    case SCHEDULE:
+                        if (DateUtils.getInstance().isEventExpired(
+                                event.dueDate(),
+                                null,
+                                status,
+                                program.completeEventsExpiryDays(),
+                                eventProgramStage.periodType() != null ? eventProgramStage.periodType() : program.expiryPeriodType(),
+                                program.expiryDays())) {
+                            view.setText(view.getContext().getString(R.string.event_expired));
+                        } else {
+                            view.setText(view.getContext().getString(R.string.event_schedule));
+                        }
+                        break;
+                    case SKIPPED:
+                        view.setText(view.getContext().getString(R.string.event_skipped));
+                        break;
+                    case OVERDUE:
+                        view.setText(R.string.event_overdue);
+                        break;
+                    default:
+                        view.setText(view.getContext().getString(R.string.read_only));
+                        break;
+                }
+            } else if (enrollmentStatus == EnrollmentStatus.COMPLETED) {
+                view.setText(view.getContext().getString(R.string.program_completed));
+            } else { //EnrollmentStatus = CANCELLED
+                view.setText(view.getContext().getString(R.string.program_inactive));
             }
-        } else if (enrollmentStatus == EnrollmentStatus.COMPLETED) {
-            view.setText(view.getContext().getString(R.string.program_completed));
-        } else { //EnrollmentStatus = CANCELLED
-            view.setText(view.getContext().getString(R.string.program_inactive));
         }
-
-
     }
 
-    @BindingAdapter(value = {"eventColor", "eventProgramStage"})
-    public static void setEventColor(View view, EventModel event, ProgramStageModel programStage) {
-
-        if (metadataRepository != null)
-            metadataRepository.getExpiryDateFromEvent(event.uid())
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(
-                            program -> {
-                                int eventColor;
-                                if (DateUtils.getInstance().hasExpired(event, program.expiryDays(), program.completeEventsExpiryDays(), programStage.periodType() != null ? programStage.periodType() : program.expiryPeriodType())) {
-                                    eventColor = R.color.event_red;
-                                } else {
-                                    switch (event.status()) {
-                                        case ACTIVE:
-                                            eventColor = R.color.event_yellow;
-                                            break;
-                                        case COMPLETED:
-                                            eventColor = R.color.event_gray;
-                                            break;
-                                        case SCHEDULE:
-                                            eventColor = R.color.event_green;
-                                            break;
-                                        default:
-                                            eventColor = R.color.event_red;
-                                            break;
-                                    }
-                                }
-                                view.setBackgroundColor(ContextCompat.getColor(view.getContext(), eventColor));
-
-                            },
-                            Timber::d
-                    );
-
-    }
-
-
-    @BindingAdapter("scheduleColor")
-    public static void setScheduleColor(ImageView view, EventStatus status) {
-        int drawable;
-        if (status == null)
-            status = EventStatus.ACTIVE;
-        switch (status) {
-            case SCHEDULE:
-                drawable = R.drawable.schedule_circle_green;
-                break;
-            default:
-                drawable = R.drawable.schedule_circle_red;
-                break;
+    @BindingAdapter(value = {"eventColor", "eventProgramStage", "eventProgram"})
+    public static void setEventColor(View view, Event event, ProgramStage programStage, Program program) {
+        if (event != null) {
+            int bgColor;
+            if (DateUtils.getInstance().isEventExpired(null, event.completedDate(), program.completeEventsExpiryDays())) {
+                bgColor = R.drawable.item_event_dark_gray_ripple;
+            } else if (event.status() != null) {
+                switch (event.status()) {
+                    case ACTIVE:
+                        Date eventDate = event.eventDate();
+                        if (programStage.periodType() != null && programStage.periodType().name().contains(PeriodType.Weekly.name()))
+                            eventDate = DateUtils.getInstance().getNextPeriod(programStage.periodType(), eventDate, 0, true);
+                        if (DateUtils.getInstance().isEventExpired(eventDate, null, event.status(), program.completeEventsExpiryDays(), programStage.periodType() != null ? programStage.periodType() : program.expiryPeriodType(), program.expiryDays())) {
+                            bgColor = R.drawable.item_event_dark_gray_ripple;
+                        } else
+                            bgColor = R.drawable.item_event_yellow_ripple;
+                        break;
+                    case COMPLETED:
+                        if (DateUtils.getInstance().isEventExpired(null, event.completedDate(), program.completeEventsExpiryDays())) {
+                            bgColor = R.drawable.item_event_dark_gray_ripple;
+                        } else
+                            bgColor = R.drawable.item_event_gray_ripple;
+                        break;
+                    case SCHEDULE:
+                        if (DateUtils.getInstance().isEventExpired(
+                                event.dueDate(),
+                                null,
+                                event.status(),
+                                program.completeEventsExpiryDays(),
+                                programStage.periodType() != null ? programStage.periodType() : program.expiryPeriodType(),
+                                program.expiryDays())) {
+                            bgColor = R.drawable.item_event_dark_gray_ripple;
+                        } else
+                            bgColor = R.drawable.item_event_green_ripple;
+                        break;
+                    case VISITED:
+                    case SKIPPED:
+                    default:
+                        bgColor = R.drawable.item_event_red_ripple;
+                        break;
+                }
+            } else {
+                bgColor = R.drawable.item_event_red_ripple;
+            }
+            view.setBackground(AppCompatResources.getDrawable(view.getContext(), bgColor));
         }
-
-        view.setImageDrawable(ContextCompat.getDrawable(view.getContext(), drawable));
-    }
-
-    @SuppressLint({"CheckResult", "RxLeakedSubscription"})
-    @BindingAdapter("programName")
-    public static void setProgramName(TextView textView, String programUid) {
-        if (metadataRepository != null)
-            metadataRepository.getProgramWithId(programUid)
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(
-                            programModel -> textView.setText(programModel.displayName()),
-                            Timber::d
-                    );
-    }
-
-    @SuppressLint({"CheckResult", "RxLeakedSubscription"})
-    @BindingAdapter("organisationUnitName")
-    public static void setOrganisationUnitName(TextView textView, String organisationUnitUid) {
-        if (metadataRepository != null)
-            metadataRepository.getOrganisationUnit(organisationUnitUid)
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(
-                            organisationUnitModel -> textView.setText(organisationUnitModel.displayName()),
-                            Timber::d
-                    );
-    }
-
-    @SuppressLint({"CheckResult", "RxLeakedSubscription"})
-    @BindingAdapter("categoryOptionComboName")
-    public static void setCategoryOptionComboName(TextView textView, String categoryOptionComboId) {
-        if (metadataRepository != null)
-            metadataRepository.getCategoryOptionComboWithId(categoryOptionComboId)
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(
-                            categoryOptionComboModel -> metadataRepository.getCategoryComboWithId(categoryOptionComboModel.categoryCombo())
-                                    .subscribeOn(Schedulers.io())
-                                    .observeOn(AndroidSchedulers.mainThread())
-                                    .subscribe(
-                                            categoryOptionModel -> {
-                                                if (!categoryOptionModel.isDefault()) {
-                                                    textView.setVisibility(View.VISIBLE);
-                                                    textView.setText(categoryOptionComboModel.displayName());
-                                                } else {
-                                                    textView.setVisibility(View.GONE);
-                                                    textView.setText("");
-                                                }
-                                            },
-                                            Timber::d
-                                    ),
-                            Timber::d
-                    );
     }
 
     @BindingAdapter("eventWithoutRegistrationStatusText")
-    public static void setEventWithoutRegistrationStatusText(TextView textView, EventModel eventModel) {
-        switch (eventModel.status()) {
+    public static void setEventWithoutRegistrationStatusText(TextView textView, ProgramEventViewModel event) {
+        switch (event.eventStatus()) {
             case ACTIVE:
-                metadataRepository.getExpiryDateFromEvent(eventModel.uid())
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(
-                                program -> {
-                                    if (DateUtils.getInstance().hasExpired(eventModel, program.expiryDays(), program.completeEventsExpiryDays(), program.expiryPeriodType())) {
-                                        textView.setText(textView.getContext().getString(R.string.event_editing_expired));
-                                        textView.setTextColor(ContextCompat.getColor(textView.getContext(), R.color.red_060));
-                                    } else {
-                                        textView.setText(textView.getContext().getString(R.string.event_open));
-                                        textView.setTextColor(ContextCompat.getColor(textView.getContext(), R.color.yellow_fdd));
-                                    }
-                                },
-                                Timber::d
-                        );
+                if (event.isExpired()) {
+                    textView.setText(textView.getContext().getString(R.string.event_editing_expired));
+                } else {
+                    textView.setText(textView.getContext().getString(R.string.event_open));
+                }
                 break;
             case COMPLETED:
-                metadataRepository.getExpiryDateFromEvent(eventModel.uid())
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(
-                                program -> {
-                                    if (DateUtils.getInstance().hasExpired(eventModel, program.expiryDays(), program.completeEventsExpiryDays(), program.expiryPeriodType())) {
-                                        textView.setText(textView.getContext().getString(R.string.event_editing_expired));
-                                        textView.setTextColor(ContextCompat.getColor(textView.getContext(), R.color.red_060));
-                                    } else {
-                                        textView.setText(textView.getContext().getString(R.string.event_completed));
-                                        textView.setTextColor(ContextCompat.getColor(textView.getContext(), R.color.gray_b2b));
-                                    }
-                                },
-                                Timber::d
-                        );
+                if (event.isExpired()) {
+                    textView.setText(textView.getContext().getString(R.string.event_editing_expired));
+                } else {
+                    textView.setText(textView.getContext().getString(R.string.event_completed));
+                }
                 break;
             case SKIPPED:
                 textView.setText(textView.getContext().getString(R.string.event_editing_expired));
-                textView.setTextColor(ContextCompat.getColor(textView.getContext(), R.color.red_060));
                 break;
             default:
-                // TODO CRIS: HERE CHECK THE EVENT APPROVAL
                 textView.setText(textView.getContext().getString(R.string.read_only));
-                textView.setTextColor(ContextCompat.getColor(textView.getContext(), R.color.green_7ed));
                 break;
         }
     }
 
     @BindingAdapter("eventWithoutRegistrationStatusIcon")
-    public static void setEventWithoutRegistrationStatusIcon(ImageView imageView, EventModel eventModel) {
-        switch (eventModel.status()) {
-            case ACTIVE:
-                if (metadataRepository != null)
-                    metadataRepository.getExpiryDateFromEvent(eventModel.uid())
-                            .subscribeOn(Schedulers.io())
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe(
-                                    program -> {
-                                        if (DateUtils.getInstance().hasExpired(eventModel, program.expiryDays(), program.completeEventsExpiryDays(), program.expiryPeriodType())) {
-                                            imageView.setImageResource(R.drawable.ic_eye_red);
-                                        } else {
-                                            imageView.setImageResource(R.drawable.ic_edit_yellow);
-                                        }
-                                    },
-                                    Timber::d
-                            );
-                break;
-            case COMPLETED:
-                if (metadataRepository != null)
-                    metadataRepository.getExpiryDateFromEvent(eventModel.uid())
-                            .subscribeOn(Schedulers.io())
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe(
-                                    program -> {
-                                        if (DateUtils.getInstance().hasExpired(eventModel, program.expiryDays(), program.completeEventsExpiryDays(), program.expiryPeriodType())) {
-                                            imageView.setImageResource(R.drawable.ic_eye_red);
-                                        } else {
-                                            imageView.setImageResource(R.drawable.ic_eye_grey);
-                                        }
-                                    },
-                                    Timber::d
-                            );
-                break;
-            default:
-                // TODO CRIS: HERE CHECK THE EVENT APPROVAL
-                imageView.setImageResource(R.drawable.ic_eye_green);
-                break;
-        }
+    public static void setEventWithoutRegistrationStatusIcon(ImageView imageView, ProgramEventViewModel event) {
+        if (event.eventStatus() == EventStatus.ACTIVE && !event.isExpired())
+            imageView.setImageResource(R.drawable.ic_edit);
+        else
+            imageView.setImageResource(R.drawable.ic_visibility);
     }
 
     @BindingAdapter("stateText")
@@ -711,9 +354,6 @@ public class Bindings {
                 break;
             case TO_UPDATE:
                 textView.setText(textView.getContext().getString(R.string.state_to_update));
-                break;
-            case TO_DELETE:
-                textView.setText(textView.getContext().getString(R.string.state_to_delete));
                 break;
             case ERROR:
                 textView.setText(textView.getContext().getString(R.string.state_error));
@@ -731,12 +371,8 @@ public class Bindings {
         if (state != null) {
             switch (state) {
                 case TO_POST:
-                    imageView.setImageResource(R.drawable.ic_sync_problem_grey);
-                    break;
                 case TO_UPDATE:
-                    imageView.setImageResource(R.drawable.ic_sync_problem_grey);
-                    break;
-                case TO_DELETE:
+                case UPLOADING:
                     imageView.setImageResource(R.drawable.ic_sync_problem_grey);
                     break;
                 case ERROR:
@@ -745,107 +381,17 @@ public class Bindings {
                 case SYNCED:
                     imageView.setImageResource(R.drawable.ic_sync);
                     break;
+                case WARNING:
+                    imageView.setImageResource(R.drawable.ic_sync_warning);
+                    break;
+                case SENT_VIA_SMS:
+                case SYNCED_VIA_SMS:
+                    imageView.setImageResource(R.drawable.ic_sync_sms);
+                    break;
                 default:
                     break;
             }
         }
-    }
-
-    public static void setMetadataRepository(MetadataRepository metadata) {
-        metadataRepository = metadata;
-    }
-
-    @SuppressLint({"CheckResult", "RxLeakedSubscription"})
-    @BindingAdapter("dataElementHint")
-    public static void setDataElementName(TextInputLayout view, String dataElementUid) {
-        if (metadataRepository != null)
-            metadataRepository.getDataElement(dataElementUid)
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(
-                            dataModel -> view.setHint(dataModel.displayName()),
-                            Timber::d
-                    );
-    }
-
-    @SuppressLint({"CheckResult", "RxLeakedSubscription"})
-    @BindingAdapter("attrHint")
-    public static void setAttrName(TextInputLayout view, String teAttribute) {
-        if (metadataRepository != null)
-            metadataRepository.getTrackedEntityAttribute(teAttribute)
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(
-                            dataModel -> view.setHint(dataModel.displayName()),
-                            Timber::d
-                    );
-    }
-
-    @BindingAdapter("spinnerOptions")
-    public static void setSpinnerOptions(Spinner spinner, List<CategoryOptionComboModel> options) {
-        CatComboAdapter adapter = new CatComboAdapter(spinner.getContext(),
-                R.layout.spinner_layout,
-                R.id.spinner_text,
-                options,
-                "",
-                R.color.white_faf);
-        spinner.setAdapter(adapter);
-    }
-
-    @SuppressLint({"CheckResult", "RxLeakedSubscription"})
-    @BindingAdapter("eventCompletion")
-    public static void setEventCompletion(TextView textView, EventModel eventModel) {
-        if (metadataRepository != null)
-            metadataRepository.getProgramStageDataElementCount(eventModel.programStage())
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(
-                            programStageCount -> metadataRepository.getTrackEntityDataValueCount(eventModel.uid()).subscribeOn(Schedulers.io())
-                                    .observeOn(AndroidSchedulers.mainThread())
-                                    .subscribe(
-                                            trackEntityCount -> {
-                                                float perone = (float) trackEntityCount / (float) programStageCount;
-                                                int percent = (int) (perone * 100);
-                                                String completionText = textView.getContext().getString(R.string.completion) + " " + percent + "%";
-                                                textView.setText(completionText);
-                                            },
-                                            Timber::d
-                                    ),
-                            Timber::d
-                    );
-    }
-
-    /*@SuppressLint({"CheckResult", "RxLeakedSubscription"})
-    @BindingAdapter(value = {"optionSet", "label", "initialValue"}, requireAll = false)
-    public static void setOptionSet(Spinner spinner, String optionSet, String label, String initialValue) {
-        if (metadataRepository != null && optionSet != null) {
-            String optionSetLabel = label == null ? spinner.getContext().getString(R.string.select_option) : label;
-            metadataRepository.optionSet(optionSet)
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(
-                            optionModels -> {
-                                OptionAdapter adapter = new OptionAdapter(spinner.getContext(),
-                                        R.layout.spinner_layout,
-                                        R.id.spinner_text,
-                                        optionModels,
-                                        optionSetLabel);
-                                spinner.setAdapter(adapter);
-                                spinner.setPrompt(optionSetLabel);
-                                if (initialValue != null) {
-                                    for (int i = 0; i < optionModels.size(); i++)
-                                        if (optionModels.get(i).displayName().equals(initialValue))
-                                            spinner.setSelection(i + 1);
-                                }
-                            },
-                            Timber::d);
-        }
-    }*/
-
-
-    @SuppressLint({"CheckResult", "RxLeakedSubscription"})
-    public static List<OptionModel> setOptionSet(@NonNull String optionSet) {
-        return metadataRepository.optionSet(optionSet);
     }
 
     @BindingAdapter("fromResBgColor")
@@ -893,113 +439,43 @@ public class Bindings {
         }
     }
 
-    @BindingAdapter("fromHexBgColor")
-    public static void setFromHexBgColor(View view, String hexColor) {
+    public static void setObjectStyle(View view, View itemView, ObjectStyle objectStyle) {
+        Resources resources = view.getContext().getResources();
+        if (objectStyle != null && objectStyle.icon() != null) {
+            String iconName = objectStyle.icon().startsWith("ic_") ? objectStyle.icon() : "ic_" + objectStyle.icon();
+            int icon = resources.getIdentifier(iconName, "drawable", view.getContext().getPackageName());
+            if (view instanceof ImageView)
+                ((ImageView) view).setImageResource(icon);
+        }else if(objectStyle != null && objectStyle.icon() == null){
+            Drawable drawable = resources.getDrawable(R.drawable.ic_program_default);
+            if (view instanceof ImageView)
+                ((ImageView) view).setImageDrawable(drawable);
+        }
 
-        int color = Color.parseColor(hexColor);
-
-        String tintedColor;
-
-        ArrayList<Double> rgb = new ArrayList<>();
-        rgb.add(Color.red(color) / 255.0d);
-        rgb.add(Color.green(color) / 255.0d);
-        rgb.add(Color.blue(color) / 255.0d);
-
-        Double r = null;
-        Double g = null;
-        Double b = null;
-        for (Double c : rgb) {
-            if (c <= 0.03928d)
-                c = c / 12.92d;
+        if (objectStyle != null && objectStyle.color() != null) {
+            String color = objectStyle.color().startsWith("#") ? objectStyle.color() : "#" + objectStyle.color();
+            int colorRes;
+            if (color.length() == 4)
+                colorRes = ColorUtils.getPrimaryColor(view.getContext(), ColorUtils.ColorType.PRIMARY);
             else
-                c = Math.pow(((c + 0.055d) / 1.055d), 2.4d);
+                colorRes = Color.parseColor(color);
 
-            if (r == null)
-                r = c;
-            else if (g == null)
-                g = c;
-            else
-                b = c;
+            itemView.setBackgroundColor(colorRes);
+            setFromResBgColor(view, colorRes);
+        }else if(objectStyle!=null && objectStyle.color() ==null){
+            int colorRes = ColorUtils.getPrimaryColor(view.getContext(), ColorUtils.ColorType.PRIMARY);
+            itemView.setBackgroundColor(colorRes);
+            setFromResBgColor(view, colorRes);
         }
 
-        double L = 0.2126d * r + 0.7152d * g + 0.0722d * b;
-
-
-        if (L > 0.179d)
-            tintedColor = "#000000"; // bright colors - black font
-        else
-            tintedColor = "#FFFFFF"; // dark colors - white font
-
-        if (view instanceof TextView) {
-            ((TextView) view).setTextColor(Color.parseColor(tintedColor));
+        if (objectStyle == null) {
+            Drawable drawable = resources.getDrawable(R.drawable.ic_program_default);
+            if (view instanceof ImageView)
+                ((ImageView) view).setImageDrawable(drawable);
+            int colorRes = ColorUtils.getPrimaryColor(view.getContext(), ColorUtils.ColorType.PRIMARY);
+            itemView.setBackgroundColor(colorRes);
+            setFromResBgColor(view, colorRes);
         }
-        if (view instanceof ImageView) {
-            Drawable drawable = ((ImageView) view).getDrawable();
-            if (drawable != null)
-                drawable.setColorFilter(Color.parseColor(tintedColor), PorterDuff.Mode.SRC_IN);
-            ((ImageView) view).setImageDrawable(drawable);
-        }
-    }
-
-    @SuppressLint("RxLeakedSubscription")
-    @BindingAdapter({"objectStyle", "itemView"})
-    public static void setObjectStyle(View view, View itemView, String uid) {
-        if (metadataRepository != null)
-            metadataRepository.getObjectStyle(uid)
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(
-                            data -> {
-                                if (data.icon() != null) {
-                                    Resources resources = view.getContext().getResources();
-                                    String iconName = data.icon().startsWith("ic_") ? data.icon() : "ic_" + data.icon();
-                                    int icon = resources.getIdentifier(iconName, "drawable", view.getContext().getPackageName());
-                                    if (view instanceof ImageView)
-                                        ((ImageView) view).setImageResource(icon);
-                                }
-
-                                if (data.color() != null) {
-                                    String color = data.color().startsWith("#") ? data.color() : "#" + data.color();
-                                    int colorRes = Color.parseColor(color);
-                                    itemView.setBackgroundColor(colorRes);
-                                    setFromResBgColor(view, colorRes);
-                                }
-                            },
-                            Timber::d
-                    );
-
-
-    }
-
-    @SuppressLint("RxLeakedSubscription")
-    @BindingAdapter({"objectStyle", "itemView"})
-    public static void setObjectStyleAndTint(View view, View itemView, String uid) {
-        if (metadataRepository != null)
-            metadataRepository.getObjectStyle(uid)
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(
-                            data -> {
-                                if (data.icon() != null) {
-                                    Resources resources = view.getContext().getResources();
-                                    String iconName = data.icon().startsWith("ic_") ? data.icon() : "ic_" + data.icon();
-                                    int icon = resources.getIdentifier(iconName, "drawable", view.getContext().getPackageName());
-                                    if (view instanceof ImageView)
-                                        ((ImageView) view).setImageResource(icon);
-                                }
-
-                                if (data.color() != null) {
-                                    String color = data.color().startsWith("#") ? data.color() : "#" + data.color();
-                                    int colorRes = Color.parseColor(color);
-                                    ColorStateList colorStateList = ColorStateList.valueOf(colorRes);
-                                    ViewCompat.setBackgroundTintList(view, colorStateList);
-                                    setFromResBgColor(view, colorRes);
-                                }
-                            },
-                            Timber::d
-                    );
-
-
     }
 
     @BindingAdapter("imageBackground")
@@ -1016,6 +492,57 @@ public class Bindings {
         //((GradientDrawable) drawable.mutate()).setColor(colorPrimaryLight);
 
         imageView.setBackground(drawable);
+
+    }
+
+    @BindingAdapter("searchOrAdd")
+    public static void setFabIcoin(FloatingActionButton fab, boolean needSearch) {
+        Drawable drawable;
+        if (needSearch) {
+            drawable = AppCompatResources.getDrawable(fab.getContext(), R.drawable.ic_search);
+        } else {
+            drawable = AppCompatResources.getDrawable(fab.getContext(), R.drawable.ic_add_accent);
+        }
+        fab.setColorFilter(Color.WHITE);
+        fab.setImageDrawable(drawable);
+    }
+
+    @BindingAdapter("versionVisibility")
+    public static void setVisibility(LinearLayout linearLayout, boolean check) {
+        if (check && Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+            linearLayout.setVisibility(View.GONE);
+        }
+    }
+
+    @BindingAdapter("settingIcon")
+    public static void setSettingIcon(ImageView view, int drawableReference) {
+        Drawable drawable = AppCompatResources.getDrawable(view.getContext(), drawableReference);
+        view.setImageDrawable(drawable);
+    }
+
+    @BindingAdapter("tableScaleTextSize")
+    public static void setTabeScaleTextSize(TextView textView, DataSetTableAdapter.TableScale tableScale) {
+        switch (tableScale) {
+            case LARGE:
+                textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
+                break;
+            case SMALL:
+                textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
+                break;
+            default:
+                textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13);
+                break;
+        }
+    }
+
+    @BindingAdapter("iconTint")
+    public static void setIconTint(ImageView view, boolean followUp) {
+        Drawable wrappedDrawable = DrawableCompat.wrap(view.getDrawable());
+        Drawable mutableDrawable = wrappedDrawable.mutate();
+        if (followUp)
+            DrawableCompat.setTint(mutableDrawable, ContextCompat.getColor(view.getContext(), R.color.white));
+        else
+            DrawableCompat.setTint(mutableDrawable, ContextCompat.getColor(view.getContext(), R.color.text_black_333));
 
     }
 }

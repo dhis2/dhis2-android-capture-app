@@ -1,9 +1,11 @@
 package org.dhis2.usescases.about;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
-import org.dhis2.data.metadata.MetadataRepository;
+import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.data.user.UserRepository;
+import org.hisp.dhis.android.core.D2;
+import org.hisp.dhis.android.core.systeminfo.SystemInfo;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
@@ -15,33 +17,37 @@ import timber.log.Timber;
  */
 
 public class AboutPresenterImpl implements AboutContracts.AboutPresenter {
-    private final MetadataRepository metadata;
+    private final D2 d2;
     private final UserRepository userRepository;
-    private CompositeDisposable compositeDisposable;
+    public CompositeDisposable compositeDisposable;
+    private SchedulerProvider provider;
 
-    AboutPresenterImpl(@NonNull MetadataRepository metadataRepository, @NonNull UserRepository userRepository) {
-        this.metadata = metadataRepository;
+    AboutPresenterImpl(@NonNull D2 d2,
+                       SchedulerProvider provider,
+                       @NonNull UserRepository userRepository) {
+        this.d2 = d2;
+        this.provider = provider;
         this.userRepository = userRepository;
+        this.compositeDisposable = new CompositeDisposable();
     }
 
     @Override
     public void init(AboutContracts.AboutView view) {
 
-        compositeDisposable = new CompositeDisposable();
-
         compositeDisposable.add(userRepository.credentials()
                 .cacheWithInitialCapacity(1)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(provider.io())
+                .observeOn(provider.ui())
                 .subscribe(
                         view::renderUserCredentials,
                         Timber::e
                 ));
 
-        compositeDisposable.add(metadata.getServerUrl()
+        compositeDisposable.add(
+                d2.systemInfoModule().systemInfo().get().toObservable().map(SystemInfo::contextPath)
                 .cacheWithInitialCapacity(1)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(provider.io())
+                .observeOn(provider.ui())
                 .subscribe(
                         view::renderServerUrl,
                         Timber::e

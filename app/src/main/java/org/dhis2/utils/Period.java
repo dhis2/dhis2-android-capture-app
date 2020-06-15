@@ -21,5 +21,4 @@ public enum Period {
     public int getNameResouce(){
         return this.name;
     }
-
 }

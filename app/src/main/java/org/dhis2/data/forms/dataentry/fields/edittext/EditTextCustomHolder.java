@@ -1,244 +1,197 @@
 package org.dhis2.data.forms.dataentry.fields.edittext;
 
-import android.annotation.SuppressLint;
-import android.databinding.ObservableBoolean;
-import android.databinding.ViewDataBinding;
-import android.support.annotation.NonNull;
-import android.support.design.widget.TextInputLayout;
-import android.text.InputFilter;
-import android.text.InputType;
-import android.text.TextUtils;
-import android.text.method.DigitsKeyListener;
-import android.util.Patterns;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.EditText;
-import android.widget.ImageView;
 
-import org.dhis2.Bindings.Bindings;
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
+import android.widget.ArrayAdapter;
+import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.lifecycle.MutableLiveData;
+
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.FormViewHolder;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
-import org.dhis2.data.tuples.Pair;
+import org.dhis2.databinding.FormEditTextCustomBinding;
+import org.dhis2.utils.Constants;
 import org.dhis2.utils.Preconditions;
-import org.hisp.dhis.android.core.common.ValueType;
-import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
+import org.dhis2.utils.ValidationUtils;
+import org.dhis2.utils.customviews.TextInputAutoCompleteTextView;
+import org.hisp.dhis.android.core.common.ValueTypeDeviceRendering;
+import org.hisp.dhis.android.core.common.ValueTypeRenderingType;
 
-import io.reactivex.functions.Predicate;
+import java.lang.reflect.Type;
+import java.util.List;
+
 import io.reactivex.processors.FlowableProcessor;
+import timber.log.Timber;
 
+import static android.content.Context.MODE_PRIVATE;
 import static android.text.TextUtils.isEmpty;
 import static java.lang.String.valueOf;
 
 
-/**
- * QUADRAM. Created by frodriguez on 18/01/2018..
- */
+public class EditTextCustomHolder extends FormViewHolder {
 
-final class EditTextCustomHolder extends FormViewHolder {
+    private final FlowableProcessor<RowAction> processor;
+    private final boolean isSearchMode;
+    private List<String> autoCompleteValues;
+    private FormEditTextCustomBinding binding;
+    private EditTextViewModel editTextModel;
 
-    private final TextInputLayout inputLayout;
-    private EditText editText;
-    private ImageView icon;
-    /* @NonNull
-     private BehaviorProcessor<EditTextModel> model;*/
-    EditTextModel editTextModel;
-
-    @SuppressLint("RxLeakedSubscription")
-    EditTextCustomHolder(ViewGroup parent, ViewDataBinding binding, FlowableProcessor<RowAction> processor,
-                         boolean isBgTransparent, String renderType, ObservableBoolean isEditable) {
+    EditTextCustomHolder(FormEditTextCustomBinding binding, FlowableProcessor<RowAction> processor, boolean isSearchMode, MutableLiveData<String> currentSelection) {
         super(binding);
+        this.binding = binding;
+        this.processor = processor;
+        this.isSearchMode = isSearchMode;
+        this.currentUid = currentSelection;
 
-        editText = binding.getRoot().findViewById(R.id.input_editText);
-        icon = binding.getRoot().findViewById(R.id.renderImage);
-
-        inputLayout = binding.getRoot().findViewById(R.id.input_layout);
-        if (renderType != null && !renderType.equals(ProgramStageSectionRenderingType.LISTING.name()))
-            icon.setVisibility(View.VISIBLE);
-
-        // show and hide hint
-
-        editText.setOnFocusChangeListener((v, hasFocus) -> {
-            if (!hasFocus && editTextModel != null && editTextModel.editable()) {
-                if (!isEmpty(editText.getText()) && validate())
-                    processor.onNext(RowAction.create(editTextModel.uid(), editText.getText().toString()));
-                else
-                    processor.onNext(RowAction.create(editTextModel.uid(), null));
+        binding.customEdittext.setFocusChangedListener((v, hasFocus) -> {
+            if (!hasFocus) {
+                clearBackground(isSearchMode);
             }
+
+            if (isSearchMode || (!hasFocus && editTextModel != null && editTextModel.editable())) {
+                if (isSearchMode || valueHasChanged()) {
+                    sendAction();
+                }
+                closeKeyboard(binding.customEdittext.getEditText());
+            }
+            validateRegex();
+        });
+        binding.customEdittext.setOnEditorActionListener((v, actionId, event) -> {
+            binding.customEdittext.getEditText().clearFocus();
+            sendAction();
+            closeKeyboard(binding.customEdittext.getEditText());
+            return true;
         });
 
+        binding.customEdittext.setActivationListener(() -> {
+            setSelectedBackground(isSearchMode);
+            binding.customEdittext.getEditText().setFocusable(true);
+            binding.customEdittext.getEditText().setFocusableInTouchMode(true);
+            binding.customEdittext.getEditText().requestFocus();
+            openKeyboard(binding.customEdittext.getEditText());
+            if (isSearchMode) {
+                sendAction();
+            }
+        });
     }
 
-    private void setInputType(ValueType valueType) {
+    private void sendAction() {
+        if (!isEmpty(binding.customEdittext.getEditText().getText())) {
+            checkAutocompleteRendering();
+            editTextModel.withValue(binding.customEdittext.getEditText().getText().toString());
+            String value = ValidationUtils.validate(editTextModel.valueType(), binding.customEdittext.getEditText().getText().toString());
+            processor.onNext(RowAction.create(editTextModel.uid(), value, getAdapterPosition()));
 
-        editText.setFocusable(editTextModel.editable());
-        editText.setEnabled(editTextModel.editable());
+        } else {
+            processor.onNext(RowAction.create(editTextModel.uid(), null, getAdapterPosition()));
+        }
 
-        editText.setFilters(new InputFilter[]{});
+        clearBackground(isSearchMode);
+    }
 
-        if (editTextModel.editable())
-            switch (valueType) {
-                case PHONE_NUMBER:
-                    editText.setInputType(InputType.TYPE_CLASS_PHONE);
-                    break;
-                case EMAIL:
-                    editText.setInputType(InputType.TYPE_CLASS_TEXT |
-                            InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
-                    break;
-                case TEXT:
-                    editText.setInputType(InputType.TYPE_CLASS_TEXT);
-                    editText.setLines(1);
-                    editText.setEllipsize(TextUtils.TruncateAt.END);
-                    break;
-                case LETTER:
-                    editText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS);
-                    editText.setFilters(new InputFilter[]{
-                            new InputFilter.LengthFilter(1),
-                            (source, start, end, dest, dstart, dend) -> {
-                                if (source.equals(""))
-                                    return source;
-                                if (source.toString().matches("[a-zA-Z]"))
-                                    return source;
-                                return "";
-                            }});
-                    break;
-                case NUMBER:
-                    editText.setInputType(InputType.TYPE_CLASS_NUMBER |
-                            InputType.TYPE_NUMBER_FLAG_DECIMAL |
-                            InputType.TYPE_NUMBER_FLAG_SIGNED);
-                    break;
-                case INTEGER_NEGATIVE:
-                case INTEGER:
-                    editText.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_SIGNED);
-                    break;
-                case INTEGER_ZERO_OR_POSITIVE:
-                case INTEGER_POSITIVE:
-                    editText.setInputType(InputType.TYPE_CLASS_NUMBER);
-                    editText.setKeyListener(DigitsKeyListener.getInstance(false, false));
-                    break;
-                case UNIT_INTERVAL:
-                    editText.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
-                    break;
-                case PERCENTAGE:
-                    editText.setInputType(InputType.TYPE_CLASS_NUMBER);
-                    break;
-                case URL:
-                    editText.setInputType(InputType.TYPE_TEXT_VARIATION_WEB_EDIT_TEXT);
-                    break;
-                default:
-                    break;
-            }
-        else {
-            editText.setInputType(0);
+    public void update(@NonNull FieldViewModel model) {
+        this.editTextModel = (EditTextViewModel) model;
+        fieldUid = model.uid();
+
+        binding.customEdittext.setValueType(editTextModel.valueType());
+
+        binding.customEdittext.setObjectStyle(model.objectStyle());
+        if (model.objectStyle() != null) {
+            objectStyle = model.objectStyle();
+        }
+        label = new StringBuilder(model.label());
+        binding.customEdittext.setLabel(model.label(), model.mandatory());
+        binding.customEdittext.setHint(editTextModel.hint());
+        descriptionText = model.description();
+        binding.customEdittext.setDescription(descriptionText);
+
+        binding.customEdittext.setText(editTextModel.value());
+
+        binding.customEdittext.setWarning(model.warning(), model.error());
+
+        if (!isSearchMode && model.value() != null && !model.value().isEmpty()
+                && editTextModel.fieldMask() != null && !model.value().matches(editTextModel.fieldMask()))
+            binding.customEdittext.setWarning(binding.getRoot().getContext().getString(R.string.wrong_pattern), "");
+
+        binding.customEdittext.setEditable(model.editable());
+
+        setRenderingType(editTextModel.fieldRendering());
+
+        initFieldFocus();
+
+        setLongClick();
+    }
+
+    private void checkAutocompleteRendering() {
+        if (editTextModel.fieldRendering() != null &&
+                editTextModel.fieldRendering().type() == ValueTypeRenderingType.AUTOCOMPLETE &&
+                !autoCompleteValues.contains(binding.customEdittext.getEditText().getText().toString())) {
+            autoCompleteValues.add(binding.customEdittext.getEditText().getText().toString());
+            saveListToPreference(editTextModel.uid(), autoCompleteValues);
         }
     }
 
-    @NonNull
-    private Predicate<Pair<Boolean, Boolean>> valueHasChangedPredicate() {
-        return state -> valueHasChanged();
+    private void validateRegex() {
+        if (!isSearchMode)
+            if (editTextModel.fieldMask() != null && !binding.customEdittext.getEditText().getText().toString().isEmpty() &&
+                    !binding.customEdittext.getEditText().getText().toString().matches(editTextModel.fieldMask()))
+                binding.customEdittext.setWarning(binding.getRoot().getContext().getString(R.string.wrong_pattern), "");
+            else
+                binding.customEdittext.setWarning(editTextModel.warning(), editTextModel.error());
     }
 
     @NonNull
     private Boolean valueHasChanged() {
-        return !Preconditions.equals(isEmpty(editText.getText()) ? "" : editText.getText().toString(),
-                editTextModel.value() == null ? "" : valueOf(editTextModel.value()));
+        return !Preconditions.equals(isEmpty(binding.customEdittext.getEditText().getText()) ? "" : binding.customEdittext.getEditText().getText().toString(),
+                editTextModel.value() == null ? "" : valueOf(editTextModel.value())) || editTextModel.error() != null;
     }
 
-    public void update(@NonNull FieldViewModel model) {
-//        model.onNext((EditTextModel) editTextModel);
-        this.editTextModel = (EditTextModel) model;
-
-        Bindings.setObjectStyle(icon, itemView, editTextModel.uid());
-        editText.setEnabled(editTextModel.editable());
-        editText.setText(editTextModel.value() == null ?
-                null : valueOf(editTextModel.value()));
-
-        if (!isEmpty(editTextModel.warning())) {
-            inputLayout.setError(editTextModel.warning());
-        } else if (!isEmpty(editTextModel.error())) {
-            inputLayout.setError(editTextModel.error());
-        } else
-            inputLayout.setError(null);
-
-
-        editText.setSelection(editText.getText() == null ?
-                0 : editText.getText().length());
-        if (inputLayout.getHint() == null || !inputLayout.getHint().toString().equals(editTextModel.label())) {
-            label = new StringBuilder(editTextModel.label());
-            if (editTextModel.mandatory())
-                label.append("*");
-            inputLayout.setHint(label);
-
-            if (label.length() > 16 || model.description() != null)
-                description.setVisibility(View.VISIBLE);
-            else
-                description.setVisibility(View.GONE);
-
+    private void setRenderingType(ValueTypeDeviceRendering renderingType) {
+        if (renderingType != null && renderingType.type() == ValueTypeRenderingType.AUTOCOMPLETE) {
+            autoCompleteValues = getListFromPreference(editTextModel.uid());
+            ArrayAdapter<String> autoCompleteAdapter = new ArrayAdapter<>(binding.customEdittext.getContext(), android.R.layout.simple_dropdown_item_1line, autoCompleteValues);
+            binding.customEdittext.getEditText().setAdapter(autoCompleteAdapter);
         }
-
-        descriptionText = editTextModel.description();
-        setInputType(editTextModel.valueType());
     }
 
-    private boolean validate() {
-        switch (editTextModel.valueType()) {
-            case PHONE_NUMBER:
-                if (Patterns.PHONE.matcher(editText.getText().toString()).matches())
-                    return true;
-                else {
-                    inputLayout.setError(editText.getContext().getString(R.string.invalid_phone_number));
-                    return false;
+    private void saveListToPreference(String key, List<String> list) {
+        Gson gson = new Gson();
+        String json = gson.toJson(list);
+        binding.customEdittext.getContext().getSharedPreferences(Constants.SHARE_PREFS, MODE_PRIVATE).edit().putString(key, json).apply();
+    }
+
+    private List<String> getListFromPreference(String key) {
+        Gson gson = new Gson();
+        String json = binding.customEdittext.getContext().getSharedPreferences(Constants.SHARE_PREFS, MODE_PRIVATE).getString(key, "[]");
+        Type type = new TypeToken<List<String>>() {
+        }.getType();
+
+        return gson.fromJson(json, type);
+    }
+
+    private void setLongClick() {
+        binding.customEdittext.setOnLongActionListener(view -> {
+            ClipboardManager clipboard = (ClipboardManager) binding.getRoot().getContext().getSystemService(Context.CLIPBOARD_SERVICE);
+            try {
+                if (!((TextInputAutoCompleteTextView) view).getText().toString().equals("")) {
+                    ClipData clip = ClipData.newPlainText("copy", ((TextInputAutoCompleteTextView) view).getText());
+                    clipboard.setPrimaryClip(clip);
+                    Toast.makeText(binding.getRoot().getContext(),
+                            binding.getRoot().getContext().getString(R.string.copied_text), Toast.LENGTH_LONG).show();
                 }
-            case EMAIL:
-                if (Patterns.EMAIL_ADDRESS.matcher(editText.getText().toString()).matches())
-                    return true;
-                else {
-                    inputLayout.setError(editText.getContext().getString(R.string.invalid_email));
-                    return false;
-                }
-            case INTEGER_NEGATIVE:
-                if (Integer.valueOf(editText.getText().toString()) < 0)
-                    return true;
-                else {
-                    inputLayout.setError(editText.getContext().getString(R.string.invalid_negative_number));
-                    return false;
-                }
-            case INTEGER_ZERO_OR_POSITIVE:
-                if (Integer.valueOf(editText.getText().toString()) >= 0)
-                    return true;
-                else {
-                    inputLayout.setError(editText.getContext().getString(R.string.invalid_possitive_zero));
-                    return false;
-                }
-            case INTEGER_POSITIVE:
-                if (Integer.valueOf(editText.getText().toString()) > 0)
-                    return true;
-                else {
-                    inputLayout.setError(editText.getContext().getString(R.string.invalid_possitive));
-                    return false;
-                }
-            case UNIT_INTERVAL:
-                if (Float.valueOf(editText.getText().toString()) >= 0 && Float.valueOf(editText.getText().toString()) <= 1)
-                    return true;
-                else {
-                    inputLayout.setError(editText.getContext().getString(R.string.invalid_interval));
-                    return false;
-                }
-            case PERCENTAGE:
-                if (Float.valueOf(editText.getText().toString()) >= 0 && Float.valueOf(editText.getText().toString()) <= 100)
-                    return true;
-                else {
-                    inputLayout.setError(editText.getContext().getString(R.string.invalid_percentage));
-                    return false;
-                }
-            default:
                 return true;
-        }
-    }
-
-
-    public void dispose() {
-//        disposable.dispose();
+            } catch (Exception e) {
+                Timber.e(e);
+                return false;
+            }
+        });
     }
 }

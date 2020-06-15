@@ -2,7 +2,7 @@ apply plugin: 'com.android.library'
 
 android {
     compileSdkVersion 28
-//    buildToolsVersion global_buildToolsVersion
+    buildToolsVersion "28.0.3"
     defaultConfig {
         minSdkVersion 19
         targetSdkVersion 28
@@ -23,9 +23,14 @@ android {
     }
 }
 
+sonarqube {
+    skipProject = true
+}
+
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation "com.android.support:appcompat-v7:28.0.0"
+    implementation "androidx.appcompat:appcompat:1.1.0-alpha01"
+    implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
 }
 
 
