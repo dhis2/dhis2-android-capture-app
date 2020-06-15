@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="16dp">
+
+            <ImageView
+                android:id="@+id/dataSetIcon"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/rounded_square_4dp"
+                android:padding="4dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/ic_clinical_f_outline"
+                tools:backgroundTint="?colorPrimary"
+                tools:tint="@color/white" />
+
+            <TextView
+                android:id="@+id/dataSetStatus"
+                android:layout_width="40dp"
+                android:layout_height="12dp"
+                android:layout_marginTop="5dp"
+                android:background="@drawable/rounded_square_4dp"
+                android:padding="0dp"
+                android:textAlignment="center"
+                android:textColor="@color/text_black_DE3"
+                android:textSize="9sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/dataSetIcon"
+                tools:backgroundTint="@color/green_7ed"
+                tools:text="Open" />
+
+            <ImageView
+                android:id="@+id/sync_status"
+                style="@style/ActionIcon"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:src="@drawable/ic_sync" />
+
+
+            <TextView
+                android:id="@+id/dataSetName"
+                style="@style/TextPrimary"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:textColor="@color/text_black_DE3"
+                android:textSize="14sp"
+                app:layout_constraintStart_toEndOf="@id/dataSetIcon"
+                app:layout_constraintTop_toTopOf="@id/dataSetIcon"
+                tools:text="Child Health" />
+
+            <TextView
+                android:id="@+id/lastUpdatedDate"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:textColor="@color/text_black_8A3"
+                android:textSize="12sp"
+                app:layout_constraintStart_toStartOf="@id/dataSetName"
+                app:layout_constraintTop_toBottomOf="@id/dataSetName"
+                tools:text="Updated on 01/01/2020" />
+
+            <TextView
+                android:id="@+id/completedDate"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:textColor="@color/text_black_8A3"
+                android:textSize="12sp"
+                app:layout_constraintStart_toStartOf="@id/dataSetName"
+                app:layout_constraintTop_toBottomOf="@id/lastUpdatedDate"
+                tools:text="Completed on 01/01/2020" />
+
+            <TextView
+                android:id="@+id/period"
+                android:layout_width="match_parent"
+                android:layout_height="24dp"
+                android:layout_marginTop="8dp"
+                android:gravity="bottom|start"
+                android:text="@string/period"
+                android:textColor="@color/text_black_DE3"
+                android:textSize="10sp"
+                app:layout_constraintTop_toBottomOf="@id/dataSetStatus" />
+
+            <TextView
+                android:id="@+id/dataSetPeriod"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:gravity="bottom|start"
+                android:textColor="@color/text_black_8A3"
+                android:textSize="12sp"
+                app:layout_constraintTop_toBottomOf="@id/period"
+                tools:text="@string/period" />
+
+            <TextView
+                android:id="@+id/org_unit"
+                android:layout_width="match_parent"
+                android:layout_height="24dp"
+                android:layout_marginTop="8dp"
+                android:gravity="bottom|start"
+                android:text="@string/org_unit"
+                android:textColor="@color/text_black_DE3"
+                android:textSize="10sp"
+                app:layout_constraintTop_toBottomOf="@id/dataSetPeriod" />
+
+            <TextView
+                android:id="@+id/dataSetOrgUnit"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:gravity="bottom|start"
+                android:textColor="@color/text_black_8A3"
+                android:textSize="12sp"
+                app:layout_constraintTop_toBottomOf="@id/org_unit"
+                tools:text="@string/org_unit" />
+
+            <TextView
+                android:id="@+id/cat_combo"
+                android:layout_width="match_parent"
+                android:layout_height="24dp"
+                android:layout_marginTop="8dp"
+                android:gravity="bottom|start"
+                android:textColor="@color/text_black_DE3"
+                android:textSize="10sp"
+                app:layout_constraintTop_toBottomOf="@id/dataSetOrgUnit"
+                tools:text="@string/cat_combo" />
+
+            <TextView
+                android:id="@+id/dataSetCatCombo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:gravity="bottom|start"
+                android:textColor="@color/text_black_8A3"
+                android:textSize="12sp"
+                app:layout_constraintTop_toBottomOf="@id/cat_combo"
+                tools:text="@string/cat_combo" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
+</layout>
