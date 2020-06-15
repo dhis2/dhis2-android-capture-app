@@ -22,7 +22,9 @@ class MapTeisToFeatureCollection(
     private val mapRelationshipToRelationshipMapModel: MapRelationshipToRelationshipMapModel,
     private val mapRelationshipsToFeatureCollection: MapRelationshipsToFeatureCollection
 ) {
-    fun map(teiList: List<SearchTeiModel>): Pair<HashMap<String?, FeatureCollection>, BoundingBox>? {
+    fun map(
+        teiList: List<SearchTeiModel>
+    ): Pair<HashMap<String?, FeatureCollection>, BoundingBox>? {
         val featureMap: HashMap<String?, ArrayList<Feature>> = HashMap()
         val featureCollectionMap = HashMap<String?, FeatureCollection>()
         featureMap[TEI] = ArrayList()
@@ -50,11 +52,13 @@ class MapTeisToFeatureCollection(
                 }
             }
 
-            val relationshipModels =
-                mapRelationshipToRelationshipMapModel.mapList(searchTeiModel.relationships)
-            val relationshipsFeatureCollections =
-                mapRelationshipsToFeatureCollection.map(relationshipModels)
-            featureCollectionMap.putAll(relationshipsFeatureCollections.first)
+            if(searchTeiModel.relationships.isNotEmpty()) {
+                val relationshipModels =
+                    mapRelationshipToRelationshipMapModel.mapList(searchTeiModel.relationships)
+                val relationshipsFeatureCollections =
+                    mapRelationshipsToFeatureCollection.map(relationshipModels)
+                featureCollectionMap.putAll(relationshipsFeatureCollections.first)
+            }
         }
 
         featureCollectionMap[TEI] = FeatureCollection.fromFeatures(featureMap[TEI] as ArrayList)
