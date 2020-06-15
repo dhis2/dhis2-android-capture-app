@@ -52,7 +52,7 @@ class MapTeisToFeatureCollection(
                 }
             }
 
-            if(searchTeiModel.relationships.isNotEmpty()) {
+            if (searchTeiModel.relationships.isNotEmpty()) {
                 val relationshipModels =
                     mapRelationshipToRelationshipMapModel.mapList(searchTeiModel.relationships)
                 val relationshipsFeatureCollections =
