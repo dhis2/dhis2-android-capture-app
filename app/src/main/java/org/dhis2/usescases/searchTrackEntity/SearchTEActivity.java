@@ -1,5 +1,8 @@
 package org.dhis2.usescases.searchTrackEntity;
 
+import android.animation.ObjectAnimator;
+import android.animation.PropertyValuesHolder;
+import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
@@ -22,7 +25,9 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.view.animation.ScaleAnimation;
 import android.widget.AdapterView;
 import android.widget.PopupMenu;
 import android.widget.Spinner;
@@ -133,6 +138,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     private Snackbar downloadingSnackbar;
     private String currentStyle = Style.MAPBOX_STREETS;
     private MapLayerDialog mapLayerDialog;
+    private ObjectAnimator animation = null;
 
     //---------------------------------------------------------------------------------------------
 
@@ -596,15 +602,22 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     @Override
     public void setFabIcon(boolean needsSearch) {
         this.needsSearch.set(needsSearch);
-     //   animSearchFab(needsSearch);
+        animSearchFab(needsSearch);
     }
 
     private void animSearchFab(boolean hasQuery) {
         if (hasQuery) {
-            binding.enrollmentButton.startAnimation(
-                    AnimationUtils.loadAnimation(binding.enrollmentButton.getContext(), R.anim.bounce_animation));
+            PropertyValuesHolder scalex = PropertyValuesHolder.ofFloat(View.SCALE_X, 1.2f);
+            PropertyValuesHolder scaley = PropertyValuesHolder.ofFloat(View.SCALE_Y, 1.2f);
+            animation = ObjectAnimator.ofPropertyValuesHolder(binding.enrollmentButton, scalex, scaley);
+            animation.setRepeatCount(ValueAnimator.INFINITE);
+            animation.setRepeatMode(ValueAnimator.REVERSE);
+            animation.setDuration(500);
+            animation.start();
         } else {
-            binding.enrollmentButton.clearAnimation();
+            if (animation != null){
+                animation.cancel();
+            }
             hideKeyboard();
         }
     }
