@@ -7,7 +7,6 @@ fun MutableList<TrackedEntityInstance>.filterDeletedEnrollment(
     d2: D2,
     program: String?
 ): List<TrackedEntityInstance> {
-
     val iterator = this.iterator()
     if (program != null) {
         while (iterator.hasNext()) {
