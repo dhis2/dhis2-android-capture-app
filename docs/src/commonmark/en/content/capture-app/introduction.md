@@ -1,5 +1,7 @@
 # Introduction
 
+<!-- DHIS2-SECTION-ID:introduction -->
+
 This guide is designed to assist you in configuring DHIS 2 for use with the Android Capture App.
 
 It is not a tutorial or training manual; it is designed to complement the core DHIS 2 documentation and training materials with specific reference material for the Android application.

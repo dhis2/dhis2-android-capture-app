@@ -1,6 +1,10 @@
 # Scale Up
 
+<!--DHIS2-SECTION-ID:scale_up-->
+
 ## Acquisitions
+
+<!--DHIS2-SECTION-ID:scale_up_acquisitions-->
 
 Now that you have performed all your testing and your pilot project, you are ready to scale up your deployment, for which you will need to do acquisition of Hardware and necessary services. You will need to make decisions regarding:
 
@@ -10,7 +14,7 @@ Now that you have performed all your testing and your pilot project, you are rea
 
 **Purchasing of devices vs BYOD (bring your own device)**
 
-Initially you should buy different devices to allow users to evaluate them and provide you with feedback. Once the device that you will be using is decided upon, you should only buy 10 or less units, or whatever is needed for the testing and the pilot phases. Only when the pilot is coming to completion, you should buy equipment for the next 6 months roll-out. Some very large projects will take years for a national roll-out, and your hardware adquisicion plan should expand across years. Recommendations on the technical specs for devices are in the chapter [Mobile devices specifications](#mobile-device-specifications).
+Initially you should buy different devices to allow users to evaluate them and provide you with feedback. Once the device that you will be using is decided upon, you should only buy 10 or less units, or whatever is needed for the testing and the pilot phases. Only when the pilot is coming to completion, you should buy equipment for the next 6 months roll-out. Some very large projects will take years for a national roll-out, and your hardware adquisicion plan should expand across years. Recommendations on the technical specs for devices are in the chapter [Mobile devices specifications](#mobile_specs).
 
 You should consider the feasibility of using a BYOD policy - this format allows users to bring their own devices, as long as they satisfy a minimum technical standard, which you will define for your project. You will normally offer some sort of incentive, likely to be in the form of eCash or airtime. The advantages of this approach are obvious: it avoids the large initial cost for acquisition, as well as it reduces the administration costs and logistics considerations. On the other hand, you will have the challenge of a very heterogeneous hardware environment, meaning different devices and Android OS versions. This mainly affects the debugging process.
 
@@ -20,7 +24,7 @@ DHIS 2 Android app has a new release every couple of weeks. Each new release con
 
 Once you complete your testing and training materials, and start your rollout, you don’t want the application version to change for any of the users, unless you have re-tested the new version. Version changes could include a modified UI, erroneous behaviours, or an incompatibility with your DHIS 2 server version. You want to thoroughly test new versions before pushing them to your users, so you can ensure that the new version doesn’t cause any problems to your configuration, requires retraining, on requires changes to your configuration.
 
-In summary, for any installation that involves a significant number of devices you should avoid the use of Google Play, and instead use a Mobile Device Management (MDM) solution, which we discuss in [this chapter](#mobile-device-management). If you don’t have access to this option, you could consider using Google Play, but you should disable auto-update for the DHIS 2 android application. The procedure on how to do this changes by Android OS version - please google ‘how to disable android auto update by application in Andrid X.X’.
+In summary, for any installation that involves a significant number of devices you should avoid the use of Google Play, and instead use a Mobile Device Management (MDM) solution, which we discuss in [this chapter](#scale_up_mdmt). If you don’t have access to this option, you could consider using Google Play, but you should disable auto-update for the DHIS 2 android application. The procedure on how to do this changes by Android OS version - please google ‘how to disable android auto update by application in Andrid X.X’.
 
 **Telecommunication contracts**
 
@@ -28,7 +32,27 @@ If your installation plans to include the use of SMS for transmitting selected r
 
 The process of selecting and signing a contract with an SMS provider varies by country and it depends on the procurement procedures of your organization.
 
+### Planning large acquisitions
+
+<!--DHIS2-SECTION-ID:scale_up_acquisitions_planning-->
+
+Each project will need a mix of device types: phones, tablets, and Chromebooks.  Most mobile devices are likely to be allocated to a dedicated user. Things to consider will include the nature of the job. For example, community workers will use smartphones or tablets. But health workers that work on a facility may prefer a tablet with an external keyboard or a Chromebook. 
+
+The actual large-scale acquisition should be delayed as much as possible. Initially, the recommendation is to purchase as few devices as possible for testing the configuration and given some level of choice to future users. Once a decision to move into a pilot is agreed, the second purchase should ideally be limited to the devices needed for the pilot. If the roll-out plan spans over a year, the acquisition of the devices should also be split across time: better devices at the same price point are constantly being offered by manufacturers on cycles that vary between 12-18 months.
+
+Example of a total acquisition of 100 to 1000 devices.
+
+|Project Month|Phase|Acquisition|# of devices|
+|---|---|---|---|
+|Month 2|Design and initial configuration|Select 3 or 4 possible form factors. Buy from one or two manufacturer|2-8|
+|Month 4-6|Pilot|Buy only the devices required to complete the pilot|10-30|
+|Month 6-12|Roll out - phase 1|First mass-acquisition|50-500|
+|Month X|Roll out Phase X|-->|50-500|
+|Month 36-48|Upgrade replacement|Replace devices|X|
+
 ## Mobile Device Management
+
+<!--DHIS2-SECTION-ID:scale_up_mdm-->
 
 Mobile Device Management refers to software used for the administration of mobile devices. You will need an MDM software when you have to support hundreds of devices and it becomes necessary to control the apk file distribution across the devices, provide tech support and enforce institutional policies. Most options are offered as monthly-fee services. Some free apps offer kiosk mode, but charge a monthly fee for basic remote management.
 
@@ -77,9 +101,13 @@ In the next page you can find a list of available MDM software (please keep in m
 
 ## Training
 
+<!--DHIS2-SECTION-ID:scale_up_training-->
+
 An important step before roll up, is the training of the users and if necessary, the training of the teams providing support to the users. There are many training strategies that you can follow and it will depend on the size of the group that needs to be trained, their skill level, the time frame available, the budget, etc. It is important that you put time and energy into designing your training strategy and allocate enough time to accomplish your training goals. Having your users well trained and informed will reduce user’s anxiety and adoption problems and it will also increase the quality of the data collected.
 
 ### Technical Preparations for the Training
+
+<!--DHIS2-SECTION-ID:scale_up_training_preps-->
 
 When preparing for the training, ensure that all the practical technical requirements have been met. This includes having the tablets/mobile devices ready, with the new DHIS 2 Capture Android Application installed. Depending on the availability of internet connectivity at the area where you will be performing the training, you might have all the tablets pre-synched with the server, so that you have enough data and the right configuration for the training.. Before doing the training, the exercises should be tested to ensure everything is working. Troubleshoot issues detected during testing so they do not arise during training. You may want to do a second round of the test to spot any issues missed in the first round.
 
@@ -87,7 +115,9 @@ If the training is done with pre-synched data and configuration, at the end of t
 
 ### Training Budget
 
-Following, there are some guidelines on preparing the budget which are taken from the DHIS 2 Community Health Information System Guidelines [document](https://s3-eu-west-1.amazonaws.com/content.dhis2.org/Publications/CHISGuidelines_version_August29.pdf) published by the University of Oslo:
+<!--DHIS2-SECTION-ID:scale_up_training_budget-->
+
+Following, there are some guidelines on preparing the budget which are taken from the [DHIS 2 Community Health Information System Guidelines](https://s3-eu-west-1.amazonaws.com/content.dhis2.org/Publications/CHIS+Guidelines+En.pdf) published by the University of Oslo:
 
 - Follow organizational policies in using approved budget templates and rates (indirect, DSAs, etc.) for all expenses including:
   - Travel (e.g. fuel, car hire, lodging)
@@ -100,7 +130,9 @@ Following, there are some guidelines on preparing the budget which are taken fro
 
 ### Training Agenda
 
-The [DHIS 2 Community Health Information System Guidelines](https://s3-eu-west-1.amazonaws.com/content.dhis2.org/Publications/CHISGuidelines_version_August29.pdf) document written by the University of Oslo recommends that you consider:
+<!--DHIS2-SECTION-ID:scale_up_training_agenda-->
+
+The [DHIS 2 Community Health Information System Guidelines](https://s3-eu-west-1.amazonaws.com/content.dhis2.org/Publications/CHIS+Guidelines+En.pdf) document written by the University of Oslo recommends that you consider:
 
 1. The type of seating you require (round table, individual desks, etc.).
 2. Technological requirements (computers for all, Wi-Fi bandwidth, etc.),
@@ -110,6 +142,8 @@ The [DHIS 2 Community Health Information System Guidelines](https://s3-eu-west-1
 Be aware of the number of attendees you expect at each training, as providing sufficient materials and space will be necessary. Event space should be large enough for the group and also appropriate for the planned activities.
 
 ### Training Materials
+
+<!--DHIS2-SECTION-ID:scale_up_training_materials-->
 
 In the same document we find recommendation for the training materials as well, which we include here. The materials you will need for your trainings will depend on your activities. To ensure you are planning for everything, walk through your training agenda with a partner, and discuss what will be done for each part of the training, taking note of the materials needed.
 

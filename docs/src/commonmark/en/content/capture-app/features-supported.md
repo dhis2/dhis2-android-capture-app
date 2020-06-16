@@ -1,9 +1,14 @@
 # Programs
 
+<!-- DHIS2-SECTION-ID:programs -->
 
 ## Programs in Android
 
+<!-- DHIS2-SECTION-ID:programs_android -->
+
 ### Complete/Re-open event
+
+<!-- DHIS2-SECTION-ID:programs_android_complete -->
 
 User must enter the event and then click the complete icon in the bottom right corner.
 
@@ -28,15 +33,18 @@ Two options will be presented:
 
 ### Field completion percentage
 
+<!-- DHIS2-SECTION-ID:programs_android_percentage -->
+
 The percentage of data completed in each event is shown in the top right corner of an event when it is opened after first registration.
 
 ![](resources/images/image80.png){ width=25%}
 
 > **Note**
 >
->   The percentages will be adapted according to the effects of the program rules in the forms.
 
 ### Sections Navigation
+
+<!-- DHIS2-SECTION-ID:programs_android_sections -->
 
 The display for sections has been redesigned for a more simple user experience. In addition, the sections in enrollment form are now supported and are aligned with the design of the event sections.
 
@@ -45,11 +53,15 @@ The display for sections has been redesigned for a more simple user experience. 
 
 ### Error messages
 
+<!-- DHIS2-SECTION-ID:programs_android_error -->
+
 The app will now list the name of the mandatory fields missing when the user tries to complete an event or enrollment. The sections containing the missing fields will be highlighted to help the user find the missing fields.
 
 ![](resources/images/image117.png){ width=25%}
 
 ### Event Notes
+
+<!-- DHIS2-SECTION-ID:programs_android_notes -->
 
 It is possible to add notes to events in single event programs and program stage events. Notes are available in a new tab at the data entry form.
 
@@ -58,13 +70,19 @@ It is possible to add notes to events in single event programs and program stage
 
 ## Program with registration in Android
 
+<!-- DHIS2-SECTION-ID:programs_registration -->
+
 ### Complete/Deactivate Enrollment
+
+<!-- DHIS2-SECTION-ID:programs_registration_complete -->
 
 To complete or deactivate an enrollment, click on three dot menu in the right upper corner and select "Complete" or "Deactivate".
 
 ![](resources/images/image76.jpg){ width=25%}
 
 ### Reset Search Fields
+
+<!-- DHIS2-SECTION-ID:programs_registration_reset -->
 
 All tracker programs will take the user to the search screen. The search fields are used to look up for a specific entity, and the circled arrow at the top right corner to reset the search. All fields will be blank for the user to do a new search.
 
@@ -74,6 +92,8 @@ At first, the user is obligated to do a search. if there are no coincidences, th
 ![](resources/images/image79.PNG){ width=25%}
 
 ### Search screen for all Tracked Entity Type
+
+<!-- DHIS2-SECTION-ID:programs_registration_search -->
 
 User is able to search across all program of one tracked entity type (TET). In the Search screen there is a drop down which shows all the programs available for the active TET (active TET is defined by the selection of the program in the home screen). That drop down should also have an option with TET name. (for example: person)
 
@@ -92,6 +112,8 @@ The search will return the found TEI's in the local database and also those in t
 
 ### TEI Dashboard across programs
 
+<!-- DHIS2-SECTION-ID:programs_registration_tei_dashboard -->
+
 User can see the TEI dashboard without any program by selecting the TEI in the list if the search was without program.
 
 The dashboards will show the list of active enrollments.
@@ -100,6 +122,8 @@ The dashboards will show the list of active enrollments.
 ![](resources/images/image38.png){ width=25%}
 
 ### TEI enrollment history and new enrollment
+
+<!-- DHIS2-SECTION-ID:programs_registration_tei_enrollment -->
 
 User is able to see the complete historical record of the TEI. Clicking on the top right corner menu, select "Program Enrollments" and a list of Active enrollments will be displayed, followed by a list of past enrollments (completed or cancelled), followed by the programs in which the TEI could be enrolled.
 User can also return to the 'TEI Dashboard without any program' by selecting 'All enrollments'.
@@ -110,6 +134,8 @@ Users should be able to navigate to the different enrollments from the list.
 ![](resources/images/image7.png){ width=25%}
 
 ### Delete TEI's & Enrollments
+
+<!-- DHIS2-SECTION-ID:programs_registration_tei_delete -->
 
 To delete a TEI or an enrollment, select In the TEI dashboard, the three dots menu.
 
@@ -124,12 +150,16 @@ They will show in the TEI search list, but will not be accessible.
 
 ### Group view of Program stages in TEI Dashboard
 
+<!-- DHIS2-SECTION-ID:programs_registration_tei_group -->
+
 The TEI Dashboard offers now the possibility to change the list of events from the chronological view to a stage grouping view. The stage grouping view will group and collapse the events per program stage. Each program stage group can be expanded by the user and the events will be displayed chronologically.
 
 ![](resources/images/image108.png){ width=25%}
 ![](resources/images/image109.jpg){ width=25%}
 
 ## Supported features Overview
+
+<!-- DHIS2-SECTION-ID:programs_supported -->
 
 The following is a comprehensive list of all features available for Programs with and without registration in DHIS2, and notes on whether or not these have been implemented in the Android Capture app.
 
@@ -143,6 +173,8 @@ In the notes, ‘admin’ refers to someone who develops and configures a DHIS2 
 |![](resources/images/../../admin/icon-wip.png)|Work in progress. Feature not completely implemented yet or with unexpected behaviour already reported.|
 
 ### Program
+
+<!-- DHIS2-SECTION-ID:programs_supported_program -->
 
 |Feature|Description of feature|Program with registration|Program without registration|Notes on implementation|
 |-|---|:-:|:-:|---|
@@ -179,6 +211,8 @@ In the notes, ‘admin’ refers to someone who develops and configures a DHIS2 
 
 ### Program stage
 
+<!-- DHIS2-SECTION-ID:programs_supported_program_stage -->
+
 |Feature|Description of feature|Program with registration|Program without registration|Notes on implementation|
 |-|---|:-:|:-:|---|
 |Event form - default|The default data entry form simply lists all attributes belonging to a program registration|![](resources/images/../../admin/icon-complete.png)|![](resources/images/../../admin/icon-complete.png)||
@@ -208,6 +242,8 @@ In the notes, ‘admin’ refers to someone who develops and configures a DHIS2 
 
 ### Program with registration: Tracked entity dashboard
 
+<!-- DHIS2-SECTION-ID:programs_supported_program_registration -->
+
 |Feature|Description of feature|Status|Notes on implementation|
 |-|---|:-:|---|
 |Messaging|Enables users to send ad-hoc free-text messages to TEIs (e.g. patients) via SMS or email.|![](resources/images/../../admin/icon-incomplete.png)||
@@ -223,6 +259,8 @@ In the notes, ‘admin’ refers to someone who develops and configures a DHIS2 
 |TEI enrollment history and new enrollment|User is able to see the complete historical record of the TEI. By clicking on the top right corner icon they will see a list of Active enrolments, followed by a list of past enrolments (completed or cancelled), followed by the programs in which the TEI could be enrolled. Users should be able to navigate to the different enrolments from the list.|![](resources/images/../../admin/icon-complete.png)||
 
 ### Program without registration: Single event program
+
+<!-- DHIS2-SECTION-ID:programs_supported_program_no_registration -->
 
 |Feature|Description of feature|Status|Notes on implementation|
 |-|---|:-:|---|

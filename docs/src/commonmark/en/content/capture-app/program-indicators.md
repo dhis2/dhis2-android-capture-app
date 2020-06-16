@@ -1,5 +1,7 @@
 # Program Indicators
 
+<!-- DHIS2-SECTION-ID:programindicators -->
+
 The following is a comprehensive list of all Program indicator variables available in DHIS2, and notes on whether or not these have been implemented in the Android Capture app.
 
 Any issues around using a particular feature with Android are highlighted with an exclamation mark.
@@ -12,6 +14,9 @@ Any issues around using a particular feature with Android are highlighted with a
 |![](resources/images/../../admin/icon-wip.png)|Work in progress. Feature not completely implemented yet or with unexpected behaviour already reported.|
 
 ## Variables to use in a program indicator expression or filter
+
+<!-- DHIS2-SECTION-ID:programindicators_variables -->
+
 | Variable type| Description of variable type|Status|Notes on implementation|
 |-|---|:-:|---|
 |Event Date<br/>event_date|The date of when the event took place.|![](resources/images/../../admin/icon-complete.png)||
@@ -33,5 +38,4 @@ Any issues around using a particular feature with Android are highlighted with a
 |Reporting Period Start<br/>reporting_period_start|Can be used in filters or expressions for comparing any date to the first date in each reporting period.|![](resources/images/../../admin/icon-na.png)|Indicators in the Android App are calculated in the domain of one TEI enrollment.||
 |Reporting Period End<br/>reporting_period_end|Can be used in filters or expressions for comparing any date to the last inclusive date in each reporting period.|![](resources/images/../../admin/icon-na.png)|Indicators in the Android App are calculated in the domain of one TEI enrollment.||
 
-[Documentation Reference](https://www.google.com/url?q=https://docs.dhis2.org/master/en/user/html/configure_program_indicator.html%23program_indicator_functions_variables_operators&sa=D&ust=1557433016643000)
-\* DHIS 2 v2.32
+[Documentation Reference](https://docs.dhis2.org/master/en/user/html/configure_program_indicator.html%23program_indicator_functions_variables_operators&sa=D&ust=1557433016643000)

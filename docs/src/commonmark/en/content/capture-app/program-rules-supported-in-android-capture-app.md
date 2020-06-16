@@ -1,5 +1,7 @@
 # Program rules supported in Android Capture App
 
+<!-- DHIS2-SECTION-ID:programrules -->
+
 The following is a comprehensive list of all Program rule components (variable types and actions) available in DHIS 2, and notes on whether or not these have been implemented in the Android Capture app.
 
 Any issues around using a particular feature with Android are highlighted with an exclamation mark \!.
@@ -13,6 +15,9 @@ Any issues around using a particular feature with Android are highlighted with a
 
 
 ## Program rule Variable source types supported
+
+<!-- DHIS2-SECTION-ID:programrules_variables -->
+
 | Variable type| Description of variable type| Program with registration| Program without registration| Notes on implementation|
 |-|---|:-:|:-:|---|
 |Data element from the newest event for a program stage|This source type works the same way as "Data element from the newest event in the current program", except that it only evaluates values from a specific program stage.|![](resources/images/../../admin/icon-complete.png)|![](resources/images/../../admin/icon-na.png)||
@@ -26,6 +31,8 @@ Any issues around using a particular feature with Android are highlighted with a
 |Calculated value|Calculated value.|![](resources/images/../../admin/icon-complete.png)|![](resources/images/../../admin/icon-complete.png)||
 
 ## Program rule Actions supported (Data element in current event)
+
+<!-- DHIS2-SECTION-ID:programrules_actions -->
 
 | Action| Description of action| Program with registration| Program without registration| Notes on implementation|
 |-|---|:-:|:-:|---|
@@ -50,6 +57,8 @@ Any issues around using a particular feature with Android are highlighted with a
 
 ## Program rule Actions supported (Other variables)
 
+<!-- DHIS2-SECTION-ID:programrules_actions_other -->
+
 | Action| Description of Action| Data Element from the Newest Event in the Current Program (with registration)|Data Element from the Newest Event in the Current Program (without registration)| Data Element from Previous Event (with registration) |Data Element from Previous Event (without registration)| Data Element from the Newest Event for a Program Stage (with registration)|Tracked Entity Atribute (with registration) |Notes on implementation|
 |-|---|:-:|:-:|:-:|:-:|:-:|:-:|---|
 |Hide Field|Hides an individual data element if the rule is true.|![](resources/images/../../admin/icon-complete.png)|![](resources/images/../../admin/icon-complete.png)|![](resources/images/../../admin/icon-complete.png)|![](resources/images/../../admin/icon-complete.png)|![](resources/images/../../admin/icon-complete.png)|![](resources/images/../../admin/icon-complete.png)||
@@ -71,6 +80,8 @@ Any issues around using a particular feature with Android are highlighted with a
 |Schedule Message|Schedule Message will schedule notification at date provided by Expression in the data field.|![](resources/images/../../admin/icon-na.png)|![](resources/images/../../admin/icon-na.png)|![](resources/images/../../admin/icon-na.png)|![](resources/images/../../admin/icon-na.png)|![](resources/images/../../admin/icon-na.png)|![](resources/images/../../admin/icon-na.png)|This feature is executed on the server side.||
 
 ## Functions to use in program rule expressions
+
+<!-- DHIS2-SECTION-ID:programrules_functions -->
 
 | Function   | Description of function | Status        | Notes on implementation |
 | ---- | ----------------------------- | :----: | -- |
@@ -101,7 +112,7 @@ Any issues around using a particular feature with Android are highlighted with a
 | d2:hasUserRole\** |Returns true if the current user has this role otherwise false.| ![](resources/images/../../admin/icon-complete.png) | |
 | d2:zScoreWFA\*** |Function calculates z-score based on data provided by WHO weight-for-age indicator. Its value varies between -3.5 to 3.5 depending upon the value of weight.| ![](resources/images/../../admin/icon-complete.png) | |
 
-> Notes:
+> **Note**
 >
 > \* Available in DHIS 2 v2.30
 > 
@@ -110,6 +121,8 @@ Any issues around using a particular feature with Android are highlighted with a
 > \*** Available in DHIS 2 v2.32
 
 ## Standard variables to use in program rule expressions
+
+<!-- DHIS2-SECTION-ID:programrules_standard_variables -->
 
 Available in DHIS2 v2.30
 
@@ -129,15 +142,19 @@ Available in DHIS2 v2.30
 | V{program_stage_id}   | Contains the ID of the current program stage that triggered the rules. This can be used to run rules in specific program stages, or avoid execution in certain stages. When executing the rules in the context of a TEI registration form the variable will be empty.   | ![](resources/images/../../admin/icon-complete.png)      | |
 | V{program_stage_name} | Contains the name of the current program stage that triggered the rules. This can be used to run rules in specific program stages, or avoid execution in certain stages. When executing the rules in the context of a TEI registration form the variable will be empty. | ![](resources/images/../../admin/icon-complete.png)      | |
 
-> Notes:
+> **Notes**
 > 
 > \* Only applies to tracker
 
 ## Differences between the Program Rules in the web and the Android version
 
+<!-- DHIS2-SECTION-ID:programrules_differences -->
+
 As the web and the Android application are currently using a different *program rule engine* there might be programs rule that work in one system and not in the other. In general terms it can be said that the Android *program rule engine* is more strict and so, some Program Rules that work in the web version of DHIS2 will fail in Android. This subsection describes the main differences and how to adapt the rules in order to have them working in both systems.
 
 ### Evaluation of type Boolean
+
+<!-- DHIS2-SECTION-ID:programrules_differences_boolean -->
 
 DHIS2 web version considers the type boolean as 0 or 1 (which can be evaluated to true or false), however Android evaluates them only as true or false. While this makes possible the addition of booleans in web, it will fail in Android; in order to fix this an additional *program rule variable* is needed to transform the boolean into an number that can be operated. Check the table below for examples and possible solutions.
 
@@ -170,6 +187,8 @@ For the examples belows consider the following:
 
 ### Evaluation of numbers
 
+<!-- DHIS2-SECTION-ID:programrules_differences_numbers -->
+
 DHIS2 web version evaluate numbers in a more flexible way casting values from integer to floats if required for a division, however, Android take numbers as such (without a casting) which my end up giving unexpected results. Check the table below for examples and possible solutions.
 
 
@@ -177,5 +196,3 @@ DHIS2 web version evaluate numbers in a more flexible way casting values from in
 | ----------- | ----------- | :---: | :---: | ----- |
 | true | Assign value to DE: d2:daysBetween('2020-05-13', '2020-05-17') / 3 | ![](resources/images/../../admin/icon-complete.png) | ![](resources/images/../../admin/icon-negative.png) | The user would expect the division to be calculated as 4/3 with a result of 1.3333. However, Android does not cast 4 to a float (4.0 as the web version does) so the result in Android is a pure 1 as the result of the integer division 4/3 |
 | true | Assign value to DE: d2:daysBetween('2020-05-13', '2020-05-17') / 3.0 | ![](resources/images/../../admin/icon-complete.png) | ![](resources/images/../../admin/icon-complete.png) | Division results in 1.33333 in both web and Android | 
-
----
