@@ -2,6 +2,7 @@ package org.dhis2.usescases.teidashboard
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
+import org.dhis2.common.rules.DataBindingIdlingResourceRule
 import org.dhis2.usescases.BaseTest
 import org.dhis2.usescases.searchTrackEntity.SearchTEActivity
 import org.dhis2.usescases.searchte.searchTeiRobot
@@ -27,6 +28,10 @@ class TeiDashboardTest : BaseTest() {
     val rule = ActivityTestRule(TeiDashboardMobileActivity::class.java, false, false)
     @get:Rule
     val ruleSearch = ActivityTestRule(SearchTEActivity::class.java, false, false)
+
+    @Rule
+    @JvmField
+    val dataBindingIdlingResourceRule = DataBindingIdlingResourceRule(ruleSearch)
 
     @Test
     fun shouldSuccessfullyCreateANoteWhenClickCreateNote() {
@@ -390,7 +395,7 @@ class TeiDashboardTest : BaseTest() {
 
         searchTeiRobot {
             closeSearchForm()
-            Thread.sleep(5000)
+            Thread.sleep(4000)
             clickOnTEI(teiName, teiLastName)
         }
 
@@ -400,7 +405,7 @@ class TeiDashboardTest : BaseTest() {
         }
 
         searchTeiRobot {
-            Thread.sleep(5000)
+            Thread.sleep(4000)
             checkTEIsDelete(teiName, teiLastName)
         }
     }
@@ -416,7 +421,7 @@ class TeiDashboardTest : BaseTest() {
 
         searchTeiRobot {
             closeSearchForm()
-            Thread.sleep(5000)
+            Thread.sleep(4000)
             clickOnTEI(teiName, teiLastName)
         }
 
@@ -426,7 +431,7 @@ class TeiDashboardTest : BaseTest() {
         }
 
         searchTeiRobot {
-            Thread.sleep(5000)
+            Thread.sleep(4000)
             checkTEIsDelete(teiName, teiLastName)
         }
     }
