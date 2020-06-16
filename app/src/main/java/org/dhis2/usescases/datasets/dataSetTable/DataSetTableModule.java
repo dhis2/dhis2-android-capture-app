@@ -32,15 +32,15 @@ public class DataSetTableModule {
     @Provides
     @PerActivity
     DataSetTableContract.Presenter providesPresenter(
-            DataSetTableRepository DataSetTableRepository,
+            DataSetTableRepositoryImpl dataSetTableRepository,
             SchedulerProvider schedulerProvider,
             AnalyticsHelper analyticsHelper) {
-        return new DataSetTablePresenter(view, DataSetTableRepository, schedulerProvider, analyticsHelper);
+        return new DataSetTablePresenter(view, dataSetTableRepository, schedulerProvider, analyticsHelper);
     }
 
     @Provides
     @PerActivity
-    DataSetTableRepository DataSetTableRepository(D2 d2) {
+    DataSetTableRepositoryImpl DataSetTableRepository(D2 d2) {
         return new DataSetTableRepositoryImpl(d2, dataSetUid, periodId, orgUnitUid, catOptCombo);
     }
 
