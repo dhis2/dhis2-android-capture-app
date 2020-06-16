@@ -1,5 +1,6 @@
 package org.dhis2.uicomponents.map.layer.types
 
+import com.mapbox.geojson.Feature
 import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.Style
 import org.dhis2.uicomponents.map.layer.MapLayer
@@ -19,5 +20,13 @@ class SatelliteMapLayer(
         mapboxMap.setStyle(Style.MAPBOX_STREETS) {
             styleChangeCallback?.invoke()
         }
+    }
+
+    override fun setSelectedItem(feature: Feature?) {
+        /*Unused*/
+    }
+
+    override fun findFeatureWithUid(featureUidProperty: String): Feature? {
+        return null
     }
 }

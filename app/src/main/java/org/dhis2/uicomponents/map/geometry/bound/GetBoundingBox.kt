@@ -16,7 +16,7 @@ class GetBoundingBox {
             north = loc.latitude.coerceAtLeast(north)
             south = loc.latitude.coerceAtMost(south)
             west = loc.longitude.coerceAtMost(west)
-            east = loc.longitude.coerceAtMost(east)
+            east = loc.longitude.coerceAtLeast(east)
         }
 
         val padding = 0.01

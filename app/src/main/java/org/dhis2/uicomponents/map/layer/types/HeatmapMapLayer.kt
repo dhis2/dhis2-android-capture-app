@@ -1,5 +1,6 @@
 package org.dhis2.uicomponents.map.layer.types
 
+import com.mapbox.geojson.Feature
 import com.mapbox.mapboxsdk.maps.Style
 import com.mapbox.mapboxsdk.style.expressions.Expression
 import com.mapbox.mapboxsdk.style.layers.HeatmapLayer
@@ -51,5 +52,13 @@ class HeatmapMapLayer(val style: Style, val featureType: FeatureType) :
 
     override fun hideLayer() {
         layer.setProperties(PropertyFactory.visibility(Property.NONE))
+    }
+
+    override fun setSelectedItem(feature: Feature?) {
+        /*Unused*/
+    }
+
+    override fun findFeatureWithUid(featureUidProperty: String): Feature? {
+        return null
     }
 }

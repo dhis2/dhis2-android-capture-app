@@ -177,6 +177,10 @@ class SectionHolder(
     }
 
     fun setSectionNumber(sectionNumber: Int) {
-        formBinding.sectionNumber.text = sectionNumber.toString()
+        formBinding.sectionNumber.apply {
+            text = sectionNumber.toString()
+            background =
+                ContextCompat.getDrawable(itemView.context, R.drawable.ic_circle)
+        }
     }
 }

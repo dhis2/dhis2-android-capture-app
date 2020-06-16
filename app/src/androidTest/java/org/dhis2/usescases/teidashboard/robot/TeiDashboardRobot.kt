@@ -211,6 +211,23 @@ class TeiDashboardRobot : BaseRobot() {
         onView(withText("Program enrollments")).perform(click())
     }
 
+    fun clickOnAProgramForEnrollment(position: Int) {
+        onView(withId(R.id.recycler)).perform(
+            actionOnItemAtPosition<DashboardProgramViewHolder>(
+                position,
+                clickChildViewWithId(R.id.action_button)
+            )
+        )
+    }
+
+    fun clickOnAcceptEnrollmentDate() {
+        onView(withId(R.id.acceptButton)).perform(click())
+    }
+
+    fun clickOnSaveEnrollment() {
+        onView(withId(R.id.save)).perform(click())
+    }
+
     fun clickOnCreateNewEvent() {
         onView(withId(R.id.addnew)).perform(click())
     }
@@ -218,13 +235,23 @@ class TeiDashboardRobot : BaseRobot() {
     fun checkEventWasCreatedAndOpen(eventName: String, position: Int) {
         onView(withId(R.id.tei_recycler))
             .check(matches(allOf(isDisplayed(), isNotEmpty(),
-                atPosition(position, allOf(hasDescendant(withText(eventName)), hasDescendant(withText(R.string.event_open)))))))
+                atPosition(position, allOf(
+                    hasDescendant(withText(eventName)),
+                    hasDescendant(withText(R.string.event_open)))))))
     }
 
     fun checkEventWasCreatedAndClosed(eventName: String, position: Int) {
         onView(withId(R.id.tei_recycler))
             .check(matches(allOf(isDisplayed(), isNotEmpty(),
                 atPosition(position, allOf(hasDescendant(withText(eventName)), hasDescendant(withText(R.string.event_completed)))))))
+                atPosition(position, allOf(
+                                hasDescendant(withText(eventName)),
+                                hasDescendant(withText(R.string.event_completed)))))))
+    }
+
+    fun clickOnPersonAttributes(position: Int) {
+        onView(withId(R.id.fieldRecycler))
+            .perform(actionOnItemAtPosition<DashboardProgramViewHolder>(position, click()))
     }
 
     fun checkEventWasScheduled(eventName: String, position: Int) {

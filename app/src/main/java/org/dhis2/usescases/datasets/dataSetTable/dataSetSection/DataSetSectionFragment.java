@@ -112,6 +112,12 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        presenterFragment.checkComplete();
+    }
+
+    @Override
     public void onDestroyView() {
         super.onDestroyView();
         presenterFragment.onDettach();

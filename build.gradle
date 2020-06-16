@@ -59,7 +59,7 @@ allprojects {
         outputToConsole = true
         enableExperimentalRules = true
         filter {
-            exclude { element -> element.file.path.contains("androidTest/") }
+            exclude { element -> element.file.path.contains("androidTest") }
         }
     }
 }

@@ -217,8 +217,7 @@ class ValueStoreTest {
                 "fieldUid"
             ).blockingExists()
         ) doReturn false
-        val storeResult =
-            deValueStore.deleteOptionValueIfSelected("fieldUid", "optionUid")
+        val storeResult = deValueStore.deleteOptionValueIfSelected("fieldUid", "optionUid")
         assert(
             storeResult.valueStoreResult == ValueStoreImpl.ValueStoreResult.VALUE_HAS_NOT_CHANGED
         )

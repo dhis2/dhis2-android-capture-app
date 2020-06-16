@@ -1,7 +1,10 @@
 package org.dhis2.uicomponents.map.managers
 
 import com.mapbox.geojson.BoundingBox
+import com.mapbox.geojson.Feature
 import com.mapbox.geojson.FeatureCollection
+import com.mapbox.geojson.Point
+import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.geometry.LatLngBounds
 import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.maps.MapboxMap
@@ -31,7 +34,11 @@ abstract class MapManager {
             this.map = it
             map.setStyle(
                 Style.MAPBOX_STREETS
-            )
+            ) {
+                if (this::featureType.isInitialized) {
+                    loadDataForStyle()
+                }
+            }
             onMapClickListener?.let { mapClickListener ->
                 map.addOnMapClickListener(mapClickListener)
             }
@@ -63,14 +70,26 @@ abstract class MapManager {
     fun initCameraPosition(
         boundingBox: BoundingBox
     ) {
-        val bounds = LatLngBounds.from(
-            boundingBox.north(),
-            boundingBox.east(),
-            boundingBox.south(),
-            boundingBox.west()
+        val bounds = LatLngBounds.Builder()
+            .include(pointToLatLn(boundingBox.northeast()))
+            .include(pointToLatLn(boundingBox.southwest()))
+            .build()
+        map.initCameraToViewAllElements(
+            mapView.context, bounds
         )
-        map.initCameraToViewAllElements(mapView.context, bounds)
     }
+
+    fun pointToLatLn(point: Point): LatLng {
+        return LatLng(point.latitude(), point.longitude())
+    }
+
+    fun findFeatureFor(featureUidProperty: String): Feature? {
+        return mapLayerManager.getLayers().mapNotNull { mapLayer ->
+            mapLayer.findFeatureWithUid(featureUidProperty)
+        }.firstOrNull()
+    }
+
+    fun isMapReady() = ::map.isInitialized
 
     fun onStart() {
         mapView.onStart()

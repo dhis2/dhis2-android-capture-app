@@ -71,11 +71,11 @@ class MapLayerDialog(
         }
         binding.acceptButton.setOnClickListener {
             teiValue?.let {
-                teiMapManager.mapLayerManager.handleLayer(LayerType.TEI_LAYER, it)
+                teiMapManager.mapLayerManager.handleLayer(TeiMapManager.TEIS_SOURCE_ID, it)
                 teiValue = null
             }
             enrollmentValue?.let {
-                teiMapManager.mapLayerManager.handleLayer(LayerType.ENROLLMENT_LAYER, it)
+                teiMapManager.mapLayerManager.handleLayer(TeiMapManager.ENROLLMENT_SOURCE_ID, it)
                 enrollmentValue = null
             }
             heatmapValue?.let {
