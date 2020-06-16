@@ -269,6 +269,7 @@ class TeiDashboardTest : BaseTest() {
     }
 
     @Test
+    @Ignore
     fun shouldEnrollToOtherProgramWhenClickOnProgramEnrollments() {
         // launch tei child program
         // click on more options
@@ -389,7 +390,7 @@ class TeiDashboardTest : BaseTest() {
 
         searchTeiRobot {
             closeSearchForm()
-            Thread.sleep(10000)
+            Thread.sleep(5000)
             clickOnTEI(teiName, teiLastName)
         }
 
@@ -399,7 +400,33 @@ class TeiDashboardTest : BaseTest() {
         }
 
         searchTeiRobot {
-            Thread.sleep(10000)
+            Thread.sleep(5000)
+            checkTEIsDelete(teiName, teiLastName)
+        }
+    }
+
+    @Test
+    fun shouldDeleteEnrollmentSuccessfully() {
+
+        val teiName = "Anna"
+        val teiLastName = "Jones"
+
+        setupCredentials()
+        prepareChildProgrammeIntentAndLaunchActivity(ruleSearch)
+
+        searchTeiRobot {
+            closeSearchForm()
+            Thread.sleep(5000)
+            clickOnTEI(teiName, teiLastName)
+        }
+
+        teiDashboardRobot {
+            clickOnMenuMoreOptions()
+            clickOnMenuDeleteEnrollment()
+        }
+
+        searchTeiRobot {
+            Thread.sleep(5000)
             checkTEIsDelete(teiName, teiLastName)
         }
     }

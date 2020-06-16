@@ -113,12 +113,9 @@ class TeiDashboardRobot : BaseRobot() {
 
     fun checkEventWasCreated(eventName: String) {
         onView(withId(R.id.tei_recycler))
-            .check(matches(allOf(isDisplayed(), isNotEmpty(), atPosition(
-                        0, hasDescendant(
-                            hasSibling(
-                                allOf(
-                            withId(R.id.event_name),
-                            withText(eventName))))))))
+            .check(matches(allOf(isDisplayed(), isNotEmpty(),
+                atPosition(0, hasDescendant(
+                    hasSibling(allOf(withId(R.id.event_name), withText(eventName))))))))
     }
 
     fun clickOnMenuDeactivate() {
@@ -221,25 +218,23 @@ class TeiDashboardRobot : BaseRobot() {
     fun checkEventWasCreatedAndOpen(eventName: String, position: Int) {
         onView(withId(R.id.tei_recycler))
             .check(matches(allOf(isDisplayed(), isNotEmpty(),
-                        atPosition(position, allOf(
-                            hasDescendant(withText(eventName)),
-                            hasDescendant(withText(R.string.event_open)))))))
+                atPosition(position, allOf(hasDescendant(withText(eventName)), hasDescendant(withText(R.string.event_open)))))))
     }
 
     fun checkEventWasCreatedAndClosed(eventName: String, position: Int) {
         onView(withId(R.id.tei_recycler))
             .check(matches(allOf(isDisplayed(), isNotEmpty(),
-                        atPosition(position, allOf(
-                                hasDescendant(withText(eventName)),
-                                hasDescendant(withText(R.string.event_completed)))))))
+                atPosition(position, allOf(hasDescendant(withText(eventName)), hasDescendant(withText(R.string.event_completed)))))))
     }
 
     fun checkEventWasScheduled(eventName: String, position: Int) {
         onView(withId(R.id.tei_recycler))
             .check(matches(allOf(isDisplayed(), isNotEmpty(),
-                atPosition(position, allOf(
-                    hasDescendant(withText(eventName)),
-                    hasDescendant(withText(R.string.event_schedule)))))))
+                atPosition(position, allOf(hasDescendant(withText(eventName)), hasDescendant(withText(R.string.event_schedule)))))))
+    }
+
+    fun clickOnMenuDeleteEnrollment() {
+        onView(withText(R.string.dashboard_menu_delete_enrollment)).perform(click())
     }
 
 }

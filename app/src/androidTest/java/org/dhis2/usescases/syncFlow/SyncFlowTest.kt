@@ -24,9 +24,12 @@ class SyncFlowTest : BaseTest() {
     @Ignore
     fun shouldSuccessfullySyncAChangedEvent() {
         /*
-        * launch tei
+        * launch in search
+        * search tei
         * change event
-        * sync
+        * click on sync
+        * check dialog (person to update)
+        * click on sync
         * */
 
         //startTeiActivity()
