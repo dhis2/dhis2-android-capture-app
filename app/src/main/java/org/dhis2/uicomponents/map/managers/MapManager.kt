@@ -89,7 +89,7 @@ abstract class MapManager {
         }.firstOrNull()
     }
 
-    fun isMapReady() = ::map.isInitialized
+    fun isMapReady() = ::map.isInitialized && style?.isFullyLoaded ?: false
 
     fun onStart() {
         mapView.onStart()
