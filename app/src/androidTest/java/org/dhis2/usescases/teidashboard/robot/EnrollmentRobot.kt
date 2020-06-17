@@ -39,7 +39,7 @@ class EnrollmentRobot : BaseRobot() {
 
     fun clickOnPersonAttributes(position: Int) {
         onView(withId(R.id.fieldRecycler))
-            .perform(actionOnItemAtPosition<DashboardProgramViewHolder>(position, click()))
+            .perform(actionOnItemAtPosition<EditTextCustomHolder>(position, click()))
     }
 
     fun typeOnRequiredTextField(text: String, position: Int) {
