@@ -24,7 +24,6 @@ import org.dhis2.R;
 import org.dhis2.databinding.ItemSearchTrackedEntityBinding;
 import org.dhis2.usescases.searchTrackEntity.SearchTEContractsModule;
 import org.dhis2.utils.ColorUtils;
-import org.dhis2.utils.ObjectStyleUtils;
 import org.dhis2.utils.resources.ResourceManager;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
@@ -61,9 +60,6 @@ public class SearchTEViewHolder extends RecyclerView.ViewHolder {
         setTEIData(searchTeiModel.getAttributeValues());
         setEnrollmentStatusText(searchTeiModel.getSelectedEnrollment(), binding.getOverdue(), searchTeiModel.getOverdueDate());
 
-        binding.trackedEntityImage.setBackground(AppCompatResources.getDrawable(itemView.getContext(), R.drawable.photo_temp_gray));
-        binding.followUp.setBackground(AppCompatResources.getDrawable(itemView.getContext(), R.drawable.ic_circle_red));
-
         binding.syncState.setOnClickListener(view -> {
             if (searchTeiModel.getTei().deleted() ||
                     searchTeiModel.getSelectedEnrollment() != null && searchTeiModel.getSelectedEnrollment().deleted())
@@ -79,23 +75,13 @@ public class SearchTEViewHolder extends RecyclerView.ViewHolder {
 
         binding.executePendingBindings();
 
+        setTeiImage(searchTeiModel);
+
         itemView.setOnClickListener(view -> presenter.onTEIClick(
                 searchTeiModel.getTei().uid(),
                 searchTeiModel.getSelectedEnrollment() != null ? searchTeiModel.getSelectedEnrollment().uid() : null,
                 searchTeiModel.isOnline()));
 
-        File file = new File(searchTeiModel.getProfilePicturePath());
-        Drawable placeHolderId = ObjectStyleUtils.getIconResource(itemView.getContext(), searchTeiModel.getDefaultTypeIcon(), R.drawable.photo_temp_gray);
-        if (file.exists())
-            Glide.with(itemView.getContext())
-                    .load(file)
-                    .placeholder(placeHolderId)
-                    .error(placeHolderId)
-                    .transition(withCrossFade())
-                    .transform(new CircleCrop())
-                    .into(binding.trackedEntityImage);
-        else
-            binding.trackedEntityImage.setImageDrawable(placeHolderId);
 
     }
 
@@ -172,10 +158,10 @@ public class SearchTEViewHolder extends RecyclerView.ViewHolder {
             textToShow = DateExtensionsKt.toUiText(dueDate);
             color = Color.parseColor("#E91E63");
         } else if (selectedEnrollment.status() == EnrollmentStatus.CANCELLED) {
-            textToShow = "Cancelled";
+            textToShow = itemView.getContext().getString(R.string.cancelled);
             color = Color.parseColor("#E91E63");
         } else if (selectedEnrollment.status() == EnrollmentStatus.COMPLETED) {
-            textToShow = "Completed";
+            textToShow = itemView.getContext().getString(R.string.completed);
             color = Color.parseColor("#8A333333");
         }
         binding.enrollmentStatus.setVisibility(textToShow == null ? View.GONE : View.VISIBLE);
@@ -185,7 +171,35 @@ public class SearchTEViewHolder extends RecyclerView.ViewHolder {
         GradientDrawable bgDrawable = (GradientDrawable) AppCompatResources.getDrawable(itemView.getContext(), R.drawable.round_border_box_2);
         bgDrawable.setStroke(2, color);
         binding.enrollmentStatus.setBackground(bgDrawable);
-
     }
 
+    private void setTeiImage(SearchTeiModel searchTeiModel) {
+        Drawable imageBg = AppCompatResources.getDrawable(itemView.getContext(), R.drawable.photo_temp_gray);
+        imageBg.setColorFilter(new PorterDuffColorFilter(ColorUtils.getPrimaryColor(itemView.getContext(), ColorUtils.ColorType.PRIMARY), PorterDuff.Mode.SRC_IN));
+        binding.trackedEntityImage.setBackground(imageBg);
+
+        File file = new File(searchTeiModel.getProfilePicturePath());
+        int placeHolderId = new ResourceManager(itemView.getContext()).getObjectStyleDrawableResource(searchTeiModel.getDefaultTypeIcon(), -1);
+        if (file.exists()) {
+            binding.imageText.setVisibility(View.GONE);
+            Glide.with(itemView.getContext())
+                    .load(file)
+                    .placeholder(placeHolderId)
+                    .error(placeHolderId)
+                    .transition(withCrossFade())
+                    .transform(new CircleCrop())
+                    .into(binding.trackedEntityImage);
+        } else if (placeHolderId != -1) {
+            binding.imageText.setVisibility(View.GONE);
+            binding.trackedEntityImage.setImageResource(placeHolderId);
+        } else if (searchTeiModel.getAttributeValues() != null && searchTeiModel.getAttributeValues().values().size() > 0) {
+            binding.trackedEntityImage.setImageDrawable(null);
+            binding.imageText.setVisibility(View.VISIBLE);
+            String valueToShow = new ArrayList<>(searchTeiModel.getAttributeValues().values()).get(0).value();
+            binding.imageText.setText(valueToShow != null ? String.valueOf(valueToShow.charAt(0)) : null);
+            binding.imageText.setTextColor(ColorUtils.getContrastColor(ColorUtils.getPrimaryColor(itemView.getContext(), ColorUtils.ColorType.PRIMARY)));
+        } else {
+            binding.imageText.setVisibility(View.GONE);
+        }
+    }
 }

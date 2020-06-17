@@ -49,6 +49,20 @@
             tools:background="@drawable/photo_temp_gray"
             tools:ignore="ContentDescription" />
 
+        <TextView
+            android:id="@+id/imageText"
+            android:layout_width="40dp"
+            android:layout_height="20dp"
+            android:includeFontPadding="false"
+            android:textAlignment="center"
+            android:textSize="20sp"
+            app:layout_constraintBottom_toBottomOf="@id/tracked_entity_image"
+            app:layout_constraintEnd_toEndOf="@id/tracked_entity_image"
+            app:layout_constraintStart_toStartOf="@id/tracked_entity_image"
+            app:layout_constraintTop_toTopOf="@id/tracked_entity_image"
+            tools:text="A"
+            tools:textColor="@color/white" />
+
         <ImageView
             android:id="@+id/overdueIcon"
             android:layout_width="wrap_content"
@@ -70,9 +84,8 @@
             android:visibility='@{followUp ? View.VISIBLE : View.GONE}'
             app:layout_constraintStart_toStartOf="@id/tracked_entity_image"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_warning_white"
-            tools:ignore="ContentDescription"
-            tools:tint="@color/red_060" />
+            app:srcCompat="@drawable/ic_follow_up"
+            tools:ignore="ContentDescription" />
 
         <TextView
             android:id="@+id/enrollmentStatus"
