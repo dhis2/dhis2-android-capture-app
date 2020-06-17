@@ -15,6 +15,7 @@ class HeatmapMapLayer(val style: Style, val featureType: FeatureType) :
     MapLayer {
 
     private val layerId = "HEATMAP_LAYER"
+    override var visible = false
 
     init {
         style.addLayer(layer)
@@ -48,10 +49,12 @@ class HeatmapMapLayer(val style: Style, val featureType: FeatureType) :
 
     override fun showLayer() {
         layer.setProperties(PropertyFactory.visibility(Property.VISIBLE))
+        visible = true
     }
 
     override fun hideLayer() {
         layer.setProperties(PropertyFactory.visibility(Property.NONE))
+        visible = false
     }
 
     override fun setSelectedItem(feature: Feature?) {

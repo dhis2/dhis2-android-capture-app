@@ -244,7 +244,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             teiMapManager.init(binding.mapView);
             teiMapManager.setOnMapClickListener(this);
         }
-        mapLayerDialog = new MapLayerDialog(teiMapManager);
+        mapLayerDialog = new MapLayerDialog(teiMapManager.mapLayerManager);
     }
 
     @Override

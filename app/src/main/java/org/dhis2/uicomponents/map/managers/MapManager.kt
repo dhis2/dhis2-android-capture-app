@@ -43,9 +43,9 @@ abstract class MapManager {
                 map.addOnMapClickListener(mapClickListener)
             }
             markerViewManager = MarkerViewManager(mapView, map)
-            mapLayerManager = MapLayerManager().apply {
-                styleChangeCallback = { loadDataForStyle() }
-            }
+        }
+        mapLayerManager = MapLayerManager().apply {
+            styleChangeCallback = { loadDataForStyle() }
         }
     }
 
