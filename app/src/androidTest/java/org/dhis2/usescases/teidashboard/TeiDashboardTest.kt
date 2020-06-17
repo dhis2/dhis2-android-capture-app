@@ -29,10 +29,6 @@ class TeiDashboardTest : BaseTest() {
     @get:Rule
     val ruleSearch = ActivityTestRule(SearchTEActivity::class.java, false, false)
 
-    @Rule
-    @JvmField
-    val dataBindingIdlingResourceRule = DataBindingIdlingResourceRule(ruleSearch)
-
     @Test
     fun shouldSuccessfullyCreateANoteWhenClickCreateNote() {
         setupCredentials()
