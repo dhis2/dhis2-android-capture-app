@@ -10,7 +10,9 @@ There application can be downloaded and installed from two places:
 	- Production version: The same version than Google Play but including SMS capability (currently blocked by Google Play), it does not allow screen broadcasting or taking screenshots
 	- Training version: With screen broadcasting and possibility to take screenshots (the one named with the suffix \_training.apk)
 
-*NOTE: when installing the training APK, you might need to allow 3rd party installs*
+> **Note**
+>
+> When installing the training APK, you might need to allow 3rd party installs
 
 Please read the section on App distribution for understanding the implications of using the different distribution channels.
 
