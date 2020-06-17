@@ -33,7 +33,6 @@ public final class DataSetSectionAdapter extends FragmentStateAdapter {
     @Override
     public Fragment createFragment(int position) {
         Fragment fragment;
-        //TODO (ANDROAPP-2588): SUPPORT FOR NOTES FRAGMENT
         if (position == 0) {
             fragment = DataSetDetailFragment.create(dataSetUid, accessDataWrite);
         } else {
@@ -44,7 +43,6 @@ public final class DataSetSectionAdapter extends FragmentStateAdapter {
 
     @Override
     public int getItemCount() {
-        //TODO (ANDROAPP-2588): SUPPORT FOR NOTES FRAGMENT
         return sections.size() + 1;
     }
 

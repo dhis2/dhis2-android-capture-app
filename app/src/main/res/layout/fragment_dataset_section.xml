@@ -43,41 +43,11 @@
             android:background="@color/white"
             app:layout_constraintTop_toTopOf="parent" />
 
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/action_layout"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/sectionSelectorHeight"
-            android:background="@color/sectionSelectorBgColor"
-            android:paddingStart="8dp"
-            android:paddingEnd="8dp"
-            android:elevation="12dp"
-            app:layout_constraintBottom_toBottomOf="parent">
-
-            <TextView
-                android:id="@+id/actionButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="10dp"
-                android:layout_marginTop="10dp"
-                android:layout_marginBottom="10dp"
-                android:onClick="@{()->presenter.complete()}"
-                android:text="@string/complete"
-                android:textColor="@color/table_view_default_header_background_color"
-                android:textStyle="bold"
-                android:textSize="14sp"
-                android:textAllCaps="true"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
         <ProgressBar
             android:id="@+id/program_progress"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintBottom_toTopOf="@+id/action_layout"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/headerContainer"

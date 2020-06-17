@@ -66,7 +66,10 @@ class AlertBottomDialog : BottomSheetDialogFragment() {
             setOnClickListener {
                 when (positiveOnclick) {
                     null -> dismiss()
-                    else -> positiveOnclick!!.invoke()
+                    else -> {
+                        positiveOnclick!!.invoke()
+                        dismiss()
+                    }
                 }
             }
         }
@@ -79,7 +82,10 @@ class AlertBottomDialog : BottomSheetDialogFragment() {
             setOnClickListener {
                 when (negativeOnclick) {
                     null -> dismiss()
-                    else -> negativeOnclick!!.invoke()
+                    else -> {
+                        negativeOnclick!!.invoke()
+                        dismiss()
+                    }
                 }
             }
         }
