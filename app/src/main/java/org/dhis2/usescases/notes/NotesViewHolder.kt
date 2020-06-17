@@ -39,15 +39,6 @@ class NotesViewHolder(val binding: ItemNoteBinding) :
     fun bind(note: Note, listener: NoteItemClickListener) {
         note.storedDate()?.let {
             binding.date.setDateInterval(it)
-/*
-            val formattedDate = try {
-                val date = DateUtils.databaseDateFormat().parse(note.storedDate())
-                DateUtils.uiDateFormat().format(date)
-            } catch (e: ParseException) {
-                e.printStackTrace()
-                note.storedDate()
-            }
-            binding.date.text = formattedDate*/
         }
 
         binding.noteText.text = note.value()

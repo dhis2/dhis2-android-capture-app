@@ -3,26 +3,25 @@ package org.dhis2.Bindings
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance
 
-fun List<TrackedEntityInstance>.filterDeletedEnrollment(
+fun MutableList<TrackedEntityInstance>.filterDeletedEnrollment(
     d2: D2,
     program: String?
 ): List<TrackedEntityInstance> {
-    return program?.let {
-        this.filter {
-            if (d2.trackedEntityModule().trackedEntityInstances().uid(it.uid()).blockingExists()) {
-                val enrollmentsInProgram = d2.enrollmentModule().enrollments()
-                    .byTrackedEntityInstance().eq(it.uid())
+    val iterator = this.iterator()
+    if (program != null) {
+        while (iterator.hasNext()) {
+            val tei = iterator.next()
+            val hasEnrollmentInProgram =
+                !d2.enrollmentModule().enrollments()
+                    .byTrackedEntityInstance().eq(tei.uid())
                     .byProgram().eq(program)
-                    .blockingGet()
-
-                val enrollmentDeleted = enrollmentsInProgram.any { enrollment ->
-                    enrollment.deleted() != true
-                }
-
-                enrollmentsInProgram.size == 0 || enrollmentDeleted
-            } else {
-                true
+                    .byDeleted().isFalse
+                    .blockingIsEmpty()
+            if (!hasEnrollmentInProgram) {
+                iterator.remove()
             }
         }
-    } ?: this
+    }
+
+    return this
 }

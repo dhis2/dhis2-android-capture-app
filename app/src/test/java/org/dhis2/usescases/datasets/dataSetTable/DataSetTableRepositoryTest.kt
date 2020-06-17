@@ -3,6 +3,7 @@ package org.dhis2.usescases.datasets.dataSetTable
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
+import io.reactivex.Single
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.category.CategoryOption
 import org.hisp.dhis.android.core.category.CategoryOptionCombo
@@ -19,7 +20,7 @@ import org.mockito.Mockito.mock
 
 class DataSetTableRepositoryTest {
 
-    private lateinit var repository: DataSetTableRepository
+    private lateinit var repository: DataSetTableRepositoryImpl
 
     private val d2: D2 = mock(D2::class.java, RETURNS_DEEP_STUBS)
     private val dataSetUid = "dataSetUid"
@@ -41,7 +42,7 @@ class DataSetTableRepositoryTest {
             d2.dataSetModule().dataSets().byUid().eq(dataSetUid).one().blockingGet()
         ) doReturn dummyDataSet()
 
-        val testObserver = repository.dataSet.test()
+        val testObserver = repository.getDataSet().test()
 
         testObserver.assertNoErrors()
         testObserver.assertValueAt(0) {
@@ -56,10 +57,10 @@ class DataSetTableRepositoryTest {
         whenever(d2.dataSetModule().sections().byDataSetUid()) doReturn mock()
         whenever(d2.dataSetModule().sections().byDataSetUid().eq(dataSetUid)) doReturn mock()
         whenever(
-            d2.dataSetModule().sections().byDataSetUid().eq(dataSetUid).blockingGet()
-        ) doReturn sections
+            d2.dataSetModule().sections().byDataSetUid().eq(dataSetUid).get()
+        ) doReturn Single.just(sections)
 
-        val testObserver = repository.sections.test()
+        val testObserver = repository.getSections().test()
 
         testObserver.assertNoErrors()
         testObserver.assertValue {
@@ -75,10 +76,10 @@ class DataSetTableRepositoryTest {
         whenever(d2.dataSetModule().sections().byDataSetUid()) doReturn mock()
         whenever(d2.dataSetModule().sections().byDataSetUid().eq(dataSetUid)) doReturn mock()
         whenever(
-            d2.dataSetModule().sections().byDataSetUid().eq(dataSetUid).blockingGet()
-        ) doReturn sections
+            d2.dataSetModule().sections().byDataSetUid().eq(dataSetUid).get()
+        ) doReturn Single.just(sections)
 
-        val testObserver = repository.sections.test()
+        val testObserver = repository.getSections().test()
 
         testObserver.assertNoErrors()
         testObserver.assertValue {
@@ -270,6 +271,60 @@ class DataSetTableRepositoryTest {
         val returnedValue = repository.getCatOptComboFromOptionList(catOptionUids)
 
         assert(returnedValue == "uid_1")
+    }
+
+    @Test
+    fun `Should return true if dataset was successfully marked as completed`() {
+        whenever(d2.dataSetModule().dataSetCompleteRegistrations()) doReturn mock()
+        whenever(
+            d2.dataSetModule().dataSetCompleteRegistrations()
+                .value(periodId, orgUnitUid, dataSetUid, catOptCombo)
+        ) doReturn mock()
+        whenever(
+            d2.dataSetModule().dataSetCompleteRegistrations()
+                .value(periodId, orgUnitUid, dataSetUid, catOptCombo).exists()
+        ) doReturn Single.just(true)
+
+        val testObserver = repository.completeDataSetInstance().test()
+
+        testObserver.assertNoErrors()
+        testObserver.assertComplete()
+    }
+
+    @Test
+    fun `Should verify if dataset has validCompleteOnly as true`() {
+        val dataSet = dummyDataSet().toBuilder().validCompleteOnly(true).build()
+
+        whenever(d2.dataSetModule().dataSets().uid(dataSetUid)) doReturn mock()
+        whenever(d2.dataSetModule().dataSets().uid(dataSetUid).blockingGet()) doReturn dataSet
+
+        val hasMandatoryValidationRules = repository.runMandatoryValidationRules()
+
+        assert(hasMandatoryValidationRules)
+    }
+
+    @Test
+    fun `Should return false if dataset has validCompleteOnly as null`() {
+        val dataSet = dummyDataSet()
+
+        whenever(d2.dataSetModule().dataSets().uid(dataSetUid)) doReturn mock()
+        whenever(d2.dataSetModule().dataSets().uid(dataSetUid).blockingGet()) doReturn dataSet
+
+        val hasMandatoryValidationRules = repository.runMandatoryValidationRules()
+
+        assert(!hasMandatoryValidationRules)
+    }
+
+    @Test
+    fun `Should return false if dataset does not has validCompleteOnly as true`() {
+        val dataSet = dummyDataSet().toBuilder().validCompleteOnly(false).build()
+
+        whenever(d2.dataSetModule().dataSets().uid(dataSetUid)) doReturn mock()
+        whenever(d2.dataSetModule().dataSets().uid(dataSetUid).blockingGet()) doReturn dataSet
+
+        val hasMandatoryValidationRules = repository.runMandatoryValidationRules()
+
+        assert(!hasMandatoryValidationRules)
     }
 
     private fun dummyDataSet() = DataSet.builder().uid(dataSetUid).build()

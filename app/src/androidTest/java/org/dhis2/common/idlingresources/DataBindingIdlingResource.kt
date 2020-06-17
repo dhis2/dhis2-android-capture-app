@@ -1,6 +1,7 @@
 package org.dhis2.common.idlingresources
 
 import android.view.View
+import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.FragmentActivity
@@ -52,7 +53,7 @@ class DataBindingIdlingResource(
      * Find all binding classes in all currently available fragments.
      */
     private fun getBindings(): List<ViewDataBinding> {
-        return (activityTestRule.activity as? FragmentActivity)
+        val fragmentBindings =  (activityTestRule.activity as? FragmentActivity)
             ?.supportFragmentManager
             ?.fragments
             ?.mapNotNull {
@@ -62,5 +63,13 @@ class DataBindingIdlingResource(
                     )
                 }
             } ?: emptyList()
+
+        val activityBindings = activityTestRule.activity
+            .findViewById<ViewGroup>(android.R.id.content)
+            .getChildAt(0).let {
+                DataBindingUtil.getBinding<ViewDataBinding>(it)
+            }
+
+        return (fragmentBindings + activityBindings).filterNotNull()
     }
 }

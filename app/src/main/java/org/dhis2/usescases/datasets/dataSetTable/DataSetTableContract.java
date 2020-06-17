@@ -3,6 +3,7 @@ package org.dhis2.usescases.datasets.dataSetTable;
 import org.dhis2.usescases.general.AbstractActivityContracts;
 import org.hisp.dhis.android.core.dataset.DataSet;
 import org.hisp.dhis.android.core.period.Period;
+import org.hisp.dhis.android.core.validation.engine.ValidationResultViolation;
 
 import java.util.List;
 
@@ -23,6 +24,22 @@ public class DataSetTableContract {
         void renderDetails(DataSet dataSet, String catcomboName, Period period);
 
         Observable<Object> observeSaveButtonClicks();
+
+        void showInfoDialog(boolean isMandatoryFields);
+
+        void showValidationRuleDialog();
+
+        void showSuccessValidationDialog();
+
+        void showErrorsValidationDialog(List<ValidationResultViolation> violations);
+
+        void showCompleteToast();
+
+        void closeExpandBottom();
+
+        void cancelBottomSheet();
+
+        void completeBottomSheet();
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter {
@@ -40,6 +57,16 @@ public class DataSetTableContract {
         String getCatCombo();
 
         String getPeriodId();
+
+        void executeValidationRules();
+
+        void completeDataSet();
+
+        void closeExpandBottomSheet();
+
+        void onCancelBottomSheet();
+
+        void onCompleteBottomSheet();
     }
 
 }

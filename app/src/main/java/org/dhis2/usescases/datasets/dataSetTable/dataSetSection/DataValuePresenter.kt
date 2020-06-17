@@ -8,7 +8,6 @@ import io.reactivex.processors.FlowableProcessor
 import io.reactivex.processors.PublishProcessor
 import java.util.ArrayList
 import java.util.HashMap
-import org.dhis2.R
 import org.dhis2.data.forms.dataentry.StoreResult
 import org.dhis2.data.forms.dataentry.ValueStore
 import org.dhis2.data.forms.dataentry.ValueStoreImpl
@@ -25,8 +24,6 @@ import org.dhis2.usescases.datasets.dataSetTable.DataSetTableActivity
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableModel
 import org.dhis2.utils.DateUtils
 import org.dhis2.utils.analytics.AnalyticsHelper
-import org.dhis2.utils.analytics.CLICK
-import org.dhis2.utils.analytics.COMPLETE_REOPEN
 import org.hisp.dhis.android.core.category.Category
 import org.hisp.dhis.android.core.category.CategoryCombo
 import org.hisp.dhis.android.core.category.CategoryOption
@@ -123,7 +120,6 @@ class DataValuePresenter(
                         this.period = data.val3()
                         this.dataInputPeriodModel = data.val4()
                         this.isApproval = data.val5()
-                        view.setDataAccess(accessDataWrite)
                         view.setDataSet(dataSet)
                         view.setSection(section)
                         initTable()
@@ -140,18 +136,6 @@ class DataValuePresenter(
                     { view.updateTabLayout(it) },
                     { Timber.e(it) }
                 )
-        )
-
-        disposable.add(
-            processorCompleteness.startWith(Unit)
-                .switchMap {
-                    repository.isCompleted(orgUnitUid, periodId, attributeOptionCombo)
-                }
-                .subscribeOn(schedulerProvider.io())
-                .observeOn(schedulerProvider.ui())
-                .subscribe(
-                    view::setCompleteReopenText
-                ) { Timber.e(it) }
         )
     }
 
@@ -530,18 +514,14 @@ class DataValuePresenter(
         }
     }
 
-    fun complete() {
+    /*fun complete() {
         if ((!isApproval)) {
             analyticsHelper.setEvent(COMPLETE_REOPEN, CLICK, COMPLETE_REOPEN)
             if (view.isOpenOrReopen) {
-                if ((
-                    !dataSet!!.fieldCombinationRequired()!! ||
-                        checkAllFieldRequired(
-                        tableCells,
-                        dataTableModel?.dataValues()
-                    ) &&
-                        dataSet!!.fieldCombinationRequired()!!
-                    ) &&
+                if ((!dataSet!!.fieldCombinationRequired()!! || checkAllFieldRequired(
+                            tableCells,
+                            dataTableModel?.dataValues()
+                        ) && dataSet!!.fieldCombinationRequired()!!) &&
                     checkMandatoryField(tableCells, dataTableModel?.dataValues())
                 ) {
                     disposable.add(
@@ -550,7 +530,6 @@ class DataValuePresenter(
                             .observeOn(schedulerProvider.ui())
                             .subscribe(
                                 { completed ->
-                                    view.setCompleteReopenText(true)
                                     view.update(completed!!)
                                 },
                                 { Timber.e(it) }
@@ -568,14 +547,12 @@ class DataValuePresenter(
                     )
                 }
             } else {
-                view.isOpenOrReopen
                 disposable.add(
                     repository.reopenDataSet(orgUnitUid, periodId, attributeOptionCombo)
                         .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.ui())
                         .subscribe(
                             { reopen ->
-                                view.setCompleteReopenText(false)
                                 view.update(reopen!!)
                             },
                             { Timber.e(it) }
@@ -583,7 +560,7 @@ class DataValuePresenter(
                 )
             }
         }
-    }
+    }*/
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     fun checkAllFieldRequired(
