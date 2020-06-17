@@ -1,20 +1,36 @@
 package org.dhis2.uicomponents.map.layer
 
 import android.app.Dialog
+import android.content.res.ColorStateList
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.Window
+import android.widget.ImageView
+import android.widget.LinearLayout
+import androidx.core.widget.CompoundButtonCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.DialogFragment
+import com.google.android.material.checkbox.MaterialCheckBox
 import org.dhis2.R
 import org.dhis2.databinding.DialogMapLayerBinding
-import org.dhis2.uicomponents.map.managers.TeiMapManager
+import org.dhis2.uicomponents.map.layer.types.EnrollmentMapLayer
+import org.dhis2.uicomponents.map.layer.types.EventMapLayer
+import org.dhis2.uicomponents.map.layer.types.HeatmapMapLayer
+import org.dhis2.uicomponents.map.layer.types.RelationshipMapLayer
+import org.dhis2.uicomponents.map.layer.types.SatelliteMapLayer
+import org.dhis2.uicomponents.map.layer.types.TeiMapLayer
+import org.dhis2.utils.ColorUtils
 
 class MapLayerDialog(
-    private val teiMapManager: TeiMapManager
+    private val mapLayerManager: MapLayerManager
 ) : DialogFragment() {
+
+    companion object {
+        const val MARGIN = 12
+        const val IMAGE_SIZE = 40
+    }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val dialog = super.onCreateDialog(savedInstanceState)
@@ -24,10 +40,7 @@ class MapLayerDialog(
         return dialog
     }
 
-    private var teiValue: Boolean? = null
-    private var enrollmentValue: Boolean? = null
-    private var heatmapValue: Boolean? = null
-    private var satelliteValue: Boolean? = null
+    private val layerVisibility: HashMap<String, Boolean> = hashMapOf()
     lateinit var binding: DialogMapLayerBinding
 
     override fun onCreateView(
@@ -44,46 +57,83 @@ class MapLayerDialog(
     }
 
     private fun initProgramData() {
-        binding.teiIcon.setImageBitmap(
-            teiMapManager.style?.getImage(MapLayerManager.TEI_ICON_ID)
-        )
-        binding.enrollmentIcon.setImageBitmap(
-            teiMapManager.style?.getImage(MapLayerManager.ENROLLMENT_ICON_ID)
-        )
-        binding.teiCheck.isChecked = true
+        mapLayerManager.mapLayers.toSortedMap().forEach { (source, layer) ->
+            layerVisibility[source] ?: run { layerVisibility[source] = layer.visible }
+            when (layer) {
+                is TeiMapLayer -> addCheckBox(
+                    source,
+                    context!!.getString(R.string.dialog_layer_tei_coordinates),
+                    MapLayerManager.TEI_ICON_ID
+                )
+                is EnrollmentMapLayer -> addCheckBox(
+                    source,
+                    context!!.getString(R.string.dialog_layer_enrollment_coordinates),
+                    MapLayerManager.ENROLLMENT_ICON_ID
+                )
+                is HeatmapMapLayer -> addCheckBox(
+                    source,
+                    context!!.getString(R.string.dialog_layer_heatmap)
+                )
+                is SatelliteMapLayer -> addCheckBox(
+                    source,
+                    context!!.getString(R.string.dialog_layer_satellite)
+                )
+                is RelationshipMapLayer -> addCheckBox(source)
+                is EventMapLayer -> addCheckBox(source)
+            }
+        }
     }
 
     private fun initListeners() {
-        binding.styleCheck.setOnCheckedChangeListener { _, isChecked ->
-            if (satelliteValue != isChecked) {
-                teiMapManager.mapLayerManager.handleLayer(LayerType.SATELLITE_LAYER, isChecked)
-                satelliteValue = isChecked
-            }
-        }
-        binding.teiCheck.setOnCheckedChangeListener { _, isChecked ->
-            teiValue = isChecked
-        }
-        binding.enrollmentCheck.setOnCheckedChangeListener { _, isChecked ->
-            enrollmentValue = isChecked
-        }
-        binding.heatmapCheck.setOnCheckedChangeListener { _, isChecked ->
-            heatmapValue = isChecked
-        }
         binding.acceptButton.setOnClickListener {
-            teiValue?.let {
-                teiMapManager.mapLayerManager.handleLayer(TeiMapManager.TEIS_SOURCE_ID, it)
-                teiValue = null
-            }
-            enrollmentValue?.let {
-                teiMapManager.mapLayerManager.handleLayer(TeiMapManager.ENROLLMENT_SOURCE_ID, it)
-                teiMapManager.mapLayerManager.handleLayer(TeiMapManager.EVENT_SOURCE_ID, it)
-                enrollmentValue = null
-            }
-            heatmapValue?.let {
-                teiMapManager.mapLayerManager.handleLayer(LayerType.HEATMAP_LAYER, it)
-                heatmapValue = null
+            layerVisibility.filterKeys { it != LayerType.SATELLITE_LAYER.toString() }.forEach {
+                mapLayerManager.handleLayer(it.key, it.value)
             }
             dismiss()
         }
+    }
+
+    private fun addCheckBox(source: String, layerText: String? = null, image: String? = null) {
+        binding.layout.addView(
+            LinearLayout(context).apply {
+                orientation = LinearLayout.HORIZONTAL
+                addView(
+                    MaterialCheckBox(context).apply {
+                        layoutParams = LinearLayout.LayoutParams(
+                            LinearLayout.LayoutParams.WRAP_CONTENT,
+                            LinearLayout.LayoutParams.WRAP_CONTENT
+                        ).apply { setMargins(MARGIN, MARGIN, MARGIN, MARGIN) }
+                        text = layerText ?: source
+                        isChecked = layerVisibility[source] ?: false
+                        CompoundButtonCompat.setButtonTintList(
+                            this,
+                            ColorStateList.valueOf(
+                                ColorUtils.getPrimaryColor(
+                                    context,
+                                    ColorUtils.ColorType.PRIMARY
+                                )
+                            )
+                        )
+                        setOnCheckedChangeListener { _, isChecked ->
+                            if (source == LayerType.SATELLITE_LAYER.toString()) {
+                                mapLayerManager.handleLayer(source, isChecked)
+                            }
+                            layerVisibility[source] = isChecked
+                        }
+                    }
+                )
+                image?.let {
+                    addView(
+                        ImageView(context).apply {
+                            layoutParams = LinearLayout.LayoutParams(
+                                IMAGE_SIZE,
+                                IMAGE_SIZE
+                            ).apply { marginEnd = MARGIN }
+                            setImageBitmap(mapLayerManager.mapboxMap.style?.getImage(image))
+                        }
+                    )
+                }
+            }
+        )
     }
 }
