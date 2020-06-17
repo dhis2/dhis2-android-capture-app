@@ -29,7 +29,7 @@ class CarouselTeiHolder(
 
         setEnrollment(data.enrollments)
 
-        setTEIData(data.attributeValues)
+        setTEIData(data.attributeValues.values.toList())
 
         binding.trackedEntityImage.background =
             AppCompatResources.getDrawable(itemView.context, R.drawable.photo_temp_gray)

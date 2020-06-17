@@ -35,7 +35,7 @@ public class SearchRelationshipViewHolder extends RecyclerView.ViewHolder {
     public void bind(SearchTEContractsModule.Presenter presenter, SearchTeiModel teiModel) {
         binding.setPresenter(presenter);
 
-        setTEIData(teiModel.getAttributeValues());
+        setTEIData((List<TrackedEntityAttributeValue>) teiModel.getAttributeValues().values());
         binding.executePendingBindings();
         itemView.setOnClickListener(view -> presenter.addRelationship(teiModel.getTei().uid(), null, teiModel.isOnline()));
 

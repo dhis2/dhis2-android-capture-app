@@ -1,11 +1,14 @@
 package org.dhis2.usescases.searchTrackEntity.adapters;
 
-import android.content.Context;
-import android.content.res.Resources;
+import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.LayerDrawable;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import androidx.appcompat.content.res.AppCompatResources;
@@ -14,28 +17,29 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.CircleCrop;
-import com.google.android.material.chip.Chip;
 
+import org.dhis2.Bindings.DateExtensionsKt;
+import org.dhis2.Bindings.ExtensionsKt;
 import org.dhis2.R;
-import org.dhis2.data.tuples.Trio;
 import org.dhis2.databinding.ItemSearchTrackedEntityBinding;
 import org.dhis2.usescases.searchTrackEntity.SearchTEContractsModule;
 import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.ObjectStyleUtils;
+import org.dhis2.utils.resources.ResourceManager;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
+import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
+import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import timber.log.Timber;
 
-import static android.text.TextUtils.isEmpty;
 import static com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade;
-
-/**
- * QUADRAM. Created by frodriguez on 11/7/2017.
- */
 
 public class SearchTEViewHolder extends RecyclerView.ViewHolder {
 
@@ -48,15 +52,14 @@ public class SearchTEViewHolder extends RecyclerView.ViewHolder {
 
 
     public void bind(SearchTEContractsModule.Presenter presenter, SearchTeiModel searchTeiModel) {
-        binding.setPresenter(presenter);
         binding.setOverdue(searchTeiModel.isHasOverdue());
         binding.setIsOnline(searchTeiModel.isOnline());
         binding.setSyncState(searchTeiModel.getTei().state());
 
         setEnrollment(searchTeiModel.getEnrollments());
-        setEnrollmentInfo(searchTeiModel.getEnrollmentInfo());
-
+        setProgramInfo(searchTeiModel.getProgramInfo(), presenter.getProgram() != null ? presenter.getProgram().uid() : null);
         setTEIData(searchTeiModel.getAttributeValues());
+        setEnrollmentStatusText(searchTeiModel.getSelectedEnrollment(), binding.getOverdue(), searchTeiModel.getOverdueDate());
 
         binding.trackedEntityImage.setBackground(AppCompatResources.getDrawable(itemView.getContext(), R.drawable.photo_temp_gray));
         binding.followUp.setBackground(AppCompatResources.getDrawable(itemView.getContext(), R.drawable.ic_circle_red));
@@ -68,6 +71,11 @@ public class SearchTEViewHolder extends RecyclerView.ViewHolder {
             else
                 presenter.onSyncIconClick(searchTeiModel.getTei().uid());
         });
+        binding.lastUpdated.setText(
+                DateExtensionsKt.toDateSpan(
+                        searchTeiModel.getTei().lastUpdated(),
+                        itemView.getContext()
+                ));
 
         binding.executePendingBindings();
 
@@ -92,8 +100,9 @@ public class SearchTEViewHolder extends RecyclerView.ViewHolder {
     }
 
 
-    private void setTEIData(List<TrackedEntityAttributeValue> trackedEntityAttributeValues) {
-        binding.setAttribute(trackedEntityAttributeValues);
+    private void setTEIData(LinkedHashMap<String, TrackedEntityAttributeValue> trackedEntityAttributeValues) {
+        binding.setAttribute(new ArrayList<>(trackedEntityAttributeValues.values()));
+        binding.setAttributeNames(trackedEntityAttributeValues.keySet());
         binding.executePendingBindings();
     }
 
@@ -107,55 +116,76 @@ public class SearchTEViewHolder extends RecyclerView.ViewHolder {
         binding.setFollowUp(isFollowUp);
     }
 
-
-    private void setEnrollmentInfo(List<Trio<String, String, String>> enrollmentsInfo) {
-        binding.chipContainer.removeAllViews();
-
-        Context parentContext = binding.chipContainer.getContext();
-        for (Trio<String, String, String> enrollmentInfo : enrollmentsInfo) {
-            if (binding.getPresenter().getProgram() == null || !binding.getPresenter().getProgram().displayName().equals(enrollmentInfo.val0())) {
-
-                Chip chip = new Chip(parentContext);
-                chip.setText(enrollmentInfo.val0());
-
-                int color = ColorUtils.getColorFrom(enrollmentInfo.val1(), ColorUtils.getPrimaryColor(parentContext, ColorUtils.ColorType.PRIMARY_LIGHT));
-                int icon;
-                if (!isEmpty(enrollmentInfo.val2())) {
-                    Resources resources = parentContext.getResources();
-                    String iconName = enrollmentInfo.val2().startsWith("ic_") ? enrollmentInfo.val2() : "ic_" + enrollmentInfo.val2();
-                    icon = resources.getIdentifier(iconName, "drawable", parentContext.getPackageName());
-                } else {
-                    icon = R.drawable.ic_program_default;
-                }
-
-                Drawable iconImage;
-                try {
-                    iconImage = AppCompatResources.getDrawable(parentContext, icon);
-                    iconImage.mutate();
-                } catch (Exception e) {
-                    Timber.log(1, e);
-                    iconImage = AppCompatResources.getDrawable(parentContext, R.drawable.ic_program_default);
-                    iconImage.mutate();
-                }
-
-                Drawable bgDrawable = AppCompatResources.getDrawable(parentContext, R.drawable.ic_chip_circle_24);
-
-                Drawable wrappedIcon = DrawableCompat.wrap(iconImage);
-                Drawable wrappedBg = DrawableCompat.wrap(bgDrawable);
-
-                LayerDrawable finalDrawable = new LayerDrawable(new Drawable[]{wrappedBg, wrappedIcon});
-
-                finalDrawable.mutate();
-
-                finalDrawable.getDrawable(1).setColorFilter(new PorterDuffColorFilter(ColorUtils.getContrastColor(color), PorterDuff.Mode.SRC_IN));
-                finalDrawable.getDrawable(0).setColorFilter(new PorterDuffColorFilter(color, PorterDuff.Mode.SRC_IN));
-
-                chip.setChipIcon(finalDrawable);
-
-                binding.chipContainer.addView(chip);
-                binding.chipContainer.invalidate();
+    private void setProgramInfo(List<Program> programs, String currentProgram) {
+        binding.programList.removeAllViews();
+        for (Program program : programs) {
+            if (currentProgram == null || !currentProgram.equals(program.uid())) {
+                int color = ColorUtils.getColorFrom(
+                        program.style().color(),
+                        ColorUtils.getPrimaryColor(itemView.getContext(), ColorUtils.ColorType.PRIMARY)
+                );
+                int imageResource = new ResourceManager(itemView.getContext()).getObjectStyleDrawableResource(
+                        program.style().icon(),
+                        -1
+                );
+                ImageView imageView = new ImageView(itemView.getContext());
+                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ExtensionsKt.getDp(24), ExtensionsKt.getDp(24));
+                params.setMarginEnd(4);
+                imageView.setLayoutParams(params);
+                imageView.setImageDrawable(getProgramDrawable(color, imageResource));
+                imageView.setPadding(0, 0, 0, 0);
+                binding.programList.addView(imageView);
             }
         }
+    }
+
+    private Drawable getProgramDrawable(int color, int icon) {
+        Drawable iconImage;
+        try {
+            iconImage = AppCompatResources.getDrawable(itemView.getContext(), icon);
+            iconImage.mutate();
+        } catch (Exception e) {
+            Timber.log(1, e);
+            iconImage = AppCompatResources.getDrawable(itemView.getContext(), R.drawable.ic_program_default);
+            iconImage.mutate();
+        }
+
+        Drawable bgDrawable = AppCompatResources.getDrawable(itemView.getContext(), R.drawable.rounded_square_r2_24);
+
+        Drawable wrappedIcon = DrawableCompat.wrap(iconImage);
+        Drawable wrappedBg = DrawableCompat.wrap(bgDrawable);
+
+        LayerDrawable finalDrawable = new LayerDrawable(new Drawable[]{wrappedBg, wrappedIcon});
+
+        finalDrawable.mutate();
+
+        finalDrawable.getDrawable(1).setColorFilter(new PorterDuffColorFilter(ColorUtils.getContrastColor(color), PorterDuff.Mode.SRC_IN));
+        finalDrawable.getDrawable(0).setColorFilter(new PorterDuffColorFilter(color, PorterDuff.Mode.SRC_IN));
+
+        return finalDrawable;
+    }
+
+    private void setEnrollmentStatusText(Enrollment selectedEnrollment, boolean isOverdue, Date dueDate) {
+        String textToShow = null;
+        int color = -1;
+        if (isOverdue) {
+            textToShow = DateExtensionsKt.toUiText(dueDate);
+            color = Color.parseColor("#E91E63");
+        } else if (selectedEnrollment.status() == EnrollmentStatus.CANCELLED) {
+            textToShow = "Cancelled";
+            color = Color.parseColor("#E91E63");
+        } else if (selectedEnrollment.status() == EnrollmentStatus.COMPLETED) {
+            textToShow = "Completed";
+            color = Color.parseColor("#8A333333");
+        }
+        binding.enrollmentStatus.setVisibility(textToShow == null ? View.GONE : View.VISIBLE);
+
+        binding.enrollmentStatus.setText(textToShow);
+        binding.enrollmentStatus.setTextColor(color);
+        GradientDrawable bgDrawable = (GradientDrawable) AppCompatResources.getDrawable(itemView.getContext(), R.drawable.round_border_box_2);
+        bgDrawable.setStroke(2, color);
+        binding.enrollmentStatus.setBackground(bgDrawable);
+
     }
 
 }
