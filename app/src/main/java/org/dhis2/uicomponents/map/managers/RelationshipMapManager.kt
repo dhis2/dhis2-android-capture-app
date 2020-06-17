@@ -26,7 +26,11 @@ class RelationshipMapManager : MapManager() {
         this.featureType = featureType
         this.boundingBox = boundingBox
         if (isMapReady()) {
-            loadDataForStyle()
+            when {
+                mapLayerManager.mapLayers.isNotEmpty() -> updateStyleSources()
+                else -> loadDataForStyle()
+            }
+            initCameraPosition(boundingBox)
         }
     }
 
@@ -40,7 +44,11 @@ class RelationshipMapManager : MapManager() {
         )
         setSource()
         setLayer()
-        initCameraPosition(boundingBox)
+    }
+
+    private fun updateStyleSources() {
+        setSource()
+        mapLayerManager.updateLayers(LayerType.RELATIONSHIP_LAYER, featureCollections.keys.toList())
     }
 
     override fun setSource() {
