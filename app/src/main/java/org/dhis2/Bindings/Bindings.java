@@ -374,19 +374,24 @@ public class Bindings {
                 case TO_UPDATE:
                 case UPLOADING:
                     imageView.setImageResource(R.drawable.ic_sync_problem_grey);
+                    imageView.setVisibility(View.VISIBLE);
                     break;
                 case ERROR:
                     imageView.setImageResource(R.drawable.ic_sync_problem_red);
+                    imageView.setVisibility(View.VISIBLE);
                     break;
                 case SYNCED:
                     imageView.setImageResource(R.drawable.ic_sync);
+                    imageView.setVisibility(View.GONE);
                     break;
                 case WARNING:
                     imageView.setImageResource(R.drawable.ic_sync_warning);
+                    imageView.setVisibility(View.VISIBLE);
                     break;
                 case SENT_VIA_SMS:
                 case SYNCED_VIA_SMS:
                     imageView.setImageResource(R.drawable.ic_sync_sms);
+                    imageView.setVisibility(View.VISIBLE);
                     break;
                 default:
                     break;

@@ -57,7 +57,7 @@ class NotesPresenter(
     fun subscribeToNotes() {
         compositeDisposable.add(
             noteProcessor.startWith(true)
-                .flatMapSingle<List<Note>> {
+                .flatMapSingle {
                     when (noteType) {
                         NoteType.EVENT -> notesRepository.getEventNotes(uid)
                         NoteType.ENROLLMENT -> notesRepository.getEnrollmentNotes(uid)

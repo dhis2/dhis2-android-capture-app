@@ -36,6 +36,8 @@ class EnrollmentMapLayer(
 
     private var SELECTED_ENROLLMENT_SOURCE_ID = "SELECTED_ENROLLMENT_SOURCE_ID"
 
+    override var visible = false
+
     init {
         when (featureType) {
             FeatureType.POINT -> {
@@ -147,6 +149,7 @@ class EnrollmentMapLayer(
             }
             else -> Unit
         }
+        visible = visibility == Property.VISIBLE
     }
 
     override fun showLayer() {

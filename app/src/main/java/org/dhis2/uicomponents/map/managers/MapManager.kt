@@ -43,9 +43,9 @@ abstract class MapManager {
                 map.addOnMapClickListener(mapClickListener)
             }
             markerViewManager = MarkerViewManager(mapView, map)
-            mapLayerManager = MapLayerManager().apply {
-                styleChangeCallback = { loadDataForStyle() }
-            }
+        }
+        mapLayerManager = MapLayerManager().apply {
+            styleChangeCallback = { loadDataForStyle() }
         }
     }
 
@@ -89,7 +89,7 @@ abstract class MapManager {
         }.firstOrNull()
     }
 
-    fun isMapReady() = ::map.isInitialized
+    fun isMapReady() = ::map.isInitialized && style?.isFullyLoaded ?: false
 
     fun onStart() {
         mapView.onStart()

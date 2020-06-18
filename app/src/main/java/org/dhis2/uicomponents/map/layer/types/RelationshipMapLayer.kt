@@ -44,6 +44,7 @@ class RelationshipMapLayer(
     private val SELECTED_SOURCE: String = "SELECTED_SOURCE_$sourceId"
 
     private val BASE_RELATIONSHIP_LAYER_ID = "BASE_RELATIONSHIP_LAYER"
+    override var visible = false
 
     init {
         when (featureType) {
@@ -274,6 +275,7 @@ class RelationshipMapLayer(
             }
             else -> Unit
         }
+        visible = visibility == Property.VISIBLE
     }
 
     companion object {

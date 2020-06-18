@@ -1,22 +1,26 @@
 package org.dhis2.usescases.datasets.dataSetTable;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.utils.analytics.AnalyticsHelper;
-import org.hisp.dhis.android.core.common.Unit;
+import org.hisp.dhis.android.core.validation.engine.ValidationResult.ValidationResultStatus;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
+import io.reactivex.Single;
 import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.processors.FlowableProcessor;
 import timber.log.Timber;
 
 public class DataSetTablePresenter implements DataSetTableContract.Presenter {
 
-    private final DataSetTableRepository tableRepository;
+    private final DataSetTableRepositoryImpl tableRepository;
     private final SchedulerProvider schedulerProvider;
     private final AnalyticsHelper analyticsHelper;
     private DataSetTableContract.View view;
@@ -30,7 +34,7 @@ public class DataSetTablePresenter implements DataSetTableContract.Presenter {
 
     public DataSetTablePresenter(
             DataSetTableContract.View view,
-            DataSetTableRepository dataSetTableRepository,
+            DataSetTableRepositoryImpl dataSetTableRepository,
             SchedulerProvider schedulerProvider,
             AnalyticsHelper analyticsHelper) {
         this.view = view;
@@ -58,9 +62,9 @@ public class DataSetTablePresenter implements DataSetTableContract.Presenter {
 
         disposable.add(
                 Flowable.zip(
-                        tableRepository.getDataSet(),
+                        tableRepository.getDataSet().toFlowable(),
                         tableRepository.getCatComboName(catCombo),
-                        tableRepository.getPeriod(),
+                        tableRepository.getPeriod().toFlowable(),
                         Trio::create
                 )
                         .subscribeOn(schedulerProvider.io())
@@ -76,12 +80,41 @@ public class DataSetTablePresenter implements DataSetTableContract.Presenter {
                         .subscribeOn(schedulerProvider.ui())
                         .toFlowable(BackpressureStrategy.LATEST)
                         .debounce(500, TimeUnit.MILLISECONDS, schedulerProvider.io())
-                        .switchMap(o -> tableRepository.completeDataSetInstance())
+                        .flatMapSingle(o -> tableRepository.checkMandatoryFields())
+                        .observeOn(schedulerProvider.ui())
+                        .flatMapSingle(missingMandatoryFields -> {
+                            if (missingMandatoryFields.isEmpty()) {
+                                return tableRepository.checkFieldCombination();
+                            } else {
+                                view.showInfoDialog(true);
+                                return Single.just(Pair.create(false, new ArrayList<String>()));
+                            }
+                        })
+                        .flatMapSingle(pair -> {
+                            boolean mustCheckMissingFields = pair.val0();
+                            List<String> missingCompleteDataElements = pair.val1();
+
+                            if (mustCheckMissingFields) {
+                                if (missingCompleteDataElements.isEmpty()) {
+                                    return Single.just(true);
+                                } else
+                                    view.showInfoDialog(false);
+                                    return Single.just(false);
+                            } else {
+                                return Single.just(false);
+                            }
+                        })
                         .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.io())
                         .subscribe(
-                                completed -> {
-
+                                allOk -> {
+                                    if (allOk) {
+                                        if (tableRepository.runMandatoryValidationRules()) {
+                                            executeValidationRules();
+                                        } else {
+                                            checkIfValidationRulesExecutionIsOptional();
+                                        }
+                                    }
                                 },
                                 Timber::e
                         )
@@ -122,4 +155,61 @@ public class DataSetTablePresenter implements DataSetTableContract.Presenter {
     public String getCatCombo() {
         return catCombo;
     }
+
+    @VisibleForTesting
+    public void checkIfValidationRulesExecutionIsOptional() {
+        if (tableRepository.doesDatasetHasValidationRulesAssociated()) {
+            view.showValidationRuleDialog();
+        } else {
+            completeDataSet();
+        }
+    }
+
+    @Override
+    public void executeValidationRules() {
+        disposable.add(
+                tableRepository.executeValidationRules()
+                .subscribeOn(schedulerProvider.io())
+                .observeOn(schedulerProvider.ui())
+                .subscribe(
+                        result -> {
+                            if (result.status() == ValidationResultStatus.OK) {
+                                view.showSuccessValidationDialog();
+                            } else {
+                                view.showErrorsValidationDialog(result.violations());
+                            }
+                        },
+                        Timber::e
+                )
+        );
+    }
+
+    @Override
+    public void completeDataSet() {
+        disposable.add(
+                tableRepository.completeDataSetInstance()
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
+                        .subscribe(
+                                alreadyCompleted -> {
+                                    if (!alreadyCompleted) {
+                                        view.showCompleteToast();
+                                    }
+                                },
+                                Timber::e)
+        );
+    }
+
+    @Override
+    public void closeExpandBottomSheet() {
+        view.closeExpandBottom();
+    }
+
+    @Override
+    public void onCancelBottomSheet() {
+        view.cancelBottomSheet();
+    }
+
+    @Override
+    public void onCompleteBottomSheet() { view.completeBottomSheet(); }
 }

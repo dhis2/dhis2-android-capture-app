@@ -82,9 +82,9 @@ fun typeChildViewWithId(string: String, id: Int): ViewAction {
 
         override fun perform(uiController: UiController?, view: View?) {
             val v = view?.findViewById<View>(id) as EditText
-            // TypeTextAction(string)
-            v.performClick()
+            v.requestFocus()
             v.setText(string)
+            v.clearFocus()
             uiController?.loopMainThreadUntilIdle()
         }
     }

@@ -7,7 +7,7 @@ import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Flowable
 import io.reactivex.Single
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
-import org.dhis2.usescases.datasets.dataSetTable.DataSetTableRepository
+import org.dhis2.usescases.datasets.dataSetTable.DataSetTableRepositoryImpl
 import org.dhis2.usescases.datasets.dataSetTable.dataSetDetail.DataSetDetailPresenter
 import org.dhis2.usescases.datasets.dataSetTable.dataSetDetail.DataSetDetailView
 import org.hisp.dhis.android.core.common.ObjectStyle
@@ -21,7 +21,7 @@ import org.junit.Test
 class DataSetDetailPresenterTest {
 
     private val view: DataSetDetailView = mock()
-    private val repository: DataSetTableRepository = mock()
+    private val repository: DataSetTableRepositoryImpl = mock()
     private val scheduler = TrampolineSchedulerProvider()
     private lateinit var presenter: DataSetDetailPresenter
 
@@ -36,10 +36,10 @@ class DataSetDetailPresenterTest {
 
     @Test
     fun `Should init with call to setCatOptComboName`() {
-        whenever(repository.dataSetCatComboName) doReturn Single.just("catOptionName")
+        whenever(repository.getDataSetCatComboName()) doReturn Single.just("catOptionName")
         whenever(repository.dataSetInstance()) doReturn Flowable.just(defaultDataSetInstance)
-        whenever(repository.period) doReturn Flowable.just(defaultPeriod)
-        whenever(repository.dataSet) doReturn Flowable.just(defaultDataSet)
+        whenever(repository.getPeriod()) doReturn Single.just(defaultPeriod)
+        whenever(repository.getDataSet()) doReturn Single.just(defaultDataSet)
 
         presenter.init()
 
@@ -50,10 +50,10 @@ class DataSetDetailPresenterTest {
 
     @Test
     fun `Should init with call to hideCatOptCombo`() {
-        whenever(repository.dataSetCatComboName) doReturn Single.just("")
+        whenever(repository.getDataSetCatComboName()) doReturn Single.just("")
         whenever(repository.dataSetInstance()) doReturn Flowable.just(defaultDataSetInstance)
-        whenever(repository.period) doReturn Flowable.just(defaultPeriod)
-        whenever(repository.dataSet) doReturn Flowable.just(defaultDataSet)
+        whenever(repository.getPeriod()) doReturn Single.just(defaultPeriod)
+        whenever(repository.getDataSet()) doReturn Single.just(defaultDataSet)
 
         presenter.init()
 
