@@ -62,7 +62,8 @@ class SearchTEViewHolder(private val binding: ItemSearchTrackedEntityBinding) :
 
         binding.syncState.setOnClickListener {
             if (searchTeiModel.tei.deleted()!! ||
-                searchTeiModel.selectedEnrollment != null && searchTeiModel.selectedEnrollment.deleted()!!
+                searchTeiModel.selectedEnrollment != null &&
+                searchTeiModel.selectedEnrollment.deleted()!!
             ) Toast.makeText(
                 itemView.context,
                 itemView.context.getString(R.string.record_marked_for_deletion),
@@ -73,7 +74,11 @@ class SearchTEViewHolder(private val binding: ItemSearchTrackedEntityBinding) :
         itemView.setOnClickListener { view: View? ->
             presenter.onTEIClick(
                 searchTeiModel.tei.uid(),
-                if (searchTeiModel.selectedEnrollment != null) searchTeiModel.selectedEnrollment.uid() else null,
+                if (searchTeiModel.selectedEnrollment != null) {
+                    searchTeiModel.selectedEnrollment.uid()
+                } else {
+                    null
+                },
                 searchTeiModel.isOnline
             )
         }
