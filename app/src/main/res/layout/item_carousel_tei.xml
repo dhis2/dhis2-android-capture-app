@@ -16,7 +16,7 @@
             type="java.lang.Boolean" />
 
         <variable
-            name="syncState"
+            name="teiSyncState"
             type="org.hisp.dhis.android.core.common.State" />
 
         <variable
@@ -30,6 +30,10 @@
         <variable
             name="overdue"
             type="java.lang.Boolean" />
+
+        <variable
+            name="sortingValue"
+            type="String" />
     </data>
 
     <com.google.android.material.card.MaterialCardView
@@ -40,9 +44,12 @@
         app:cardCornerRadius="4dp">
 
         <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/rootView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:minHeight="96dp">
+            android:animateLayoutChanges="true"
+            android:minHeight="96dp"
+            android:paddingEnd="16dp">
 
             <ImageView
                 android:id="@+id/tracked_entity_image"
@@ -100,6 +107,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
                 android:background="@drawable/round_border_box_2"
+                android:paddingStart="1dp"
+                android:paddingEnd="1dp"
                 android:gravity="center"
                 android:minHeight="14dp"
                 android:textAlignment="center"
@@ -157,6 +166,19 @@
                 tools:text="Attribute 3:" />
 
             <TextView
+                android:id="@+id/sorting_field_name"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="5dp"
+                android:textColor="@color/text_black_DE3"
+                android:textSize="12sp"
+                android:visibility='@{sortingValue !=null ? View.VISIBLE : View.GONE}'
+                app:layout_constraintStart_toEndOf="@id/tracked_entity_image"
+                app:layout_constraintTop_toBottomOf="@id/attribute_c_name"
+                tools:text="Sorting field:" />
+
+            <TextView
                 android:id="@+id/entity_attribute_1"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -207,12 +229,27 @@
                 app:layout_constraintStart_toEndOf="@id/attribute_c_name"
                 app:layout_constraintTop_toBottomOf="@id/entity_attribute_2" />
 
+            <TextView
+                android:id="@+id/sorting_field_value"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
+                android:layout_marginEnd="5dp"
+                android:ellipsize="end"
+                android:singleLine="true"
+                android:textColor="#61333333"
+                android:textSize="12sp"
+                android:visibility='@{sortingValue != null ? View.VISIBLE : View.GONE}'
+                app:layout_constraintEnd_toStartOf="@id/infoLayout"
+                app:layout_constraintStart_toEndOf="@id/sorting_field_name"
+                app:layout_constraintTop_toBottomOf="@id/entity_attribute_3"
+                tools:text="SortingValue" />
+
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/infoLayout"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:layout_marginEnd="16dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
 
@@ -241,7 +278,7 @@
                     app:layout_constraintEnd_toStartOf="@+id/download"
                     app:layout_constraintHorizontal_bias="0.5"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:stateIcon="@{syncState}"
+                    app:stateIcon="@{teiSyncState}"
                     tools:src="@drawable/ic_sync_green" />
 
                 <ImageView
@@ -259,14 +296,27 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <LinearLayout
+                android:id="@+id/attributeList"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:orientation="vertical"
+                android:visibility="gone"
+                app:layout_constraintBottom_toTopOf="@id/showAttributesButton"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/tracked_entity_image"
+                app:layout_constraintTop_toBottomOf="@id/entity_attribute_1" />
+
+            <LinearLayout
                 android:id="@+id/programList"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="16dp"
+                android:layout_marginTop="5dp"
                 android:layout_marginBottom="16dp"
                 android:orientation="horizontal"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent">
+                app:layout_constraintEnd_toStartOf="@id/showAttributesButton">
 
                 <ImageView
                     android:layout_width="24dp"
@@ -276,6 +326,17 @@
                     android:padding="2dp"
                     app:srcCompat="@drawable/ic_child_health_positive" />
             </LinearLayout>
+
+            <ImageView
+                android:id="@+id/showAttributesButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:visibility="@{attributeNames.size()>3?View.VISIBLE:View.GONE}"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:srcCompat="@drawable/ic_arrow_down"
+                app:tint="#61333333" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </com.google.android.material.card.MaterialCardView>
 </layout>

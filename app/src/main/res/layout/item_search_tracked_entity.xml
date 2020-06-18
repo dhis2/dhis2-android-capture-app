@@ -16,7 +16,7 @@
             type="java.lang.Boolean" />
 
         <variable
-            name="syncState"
+            name="teiSyncState"
             type="org.hisp.dhis.android.core.common.State" />
 
         <variable
@@ -271,7 +271,7 @@
                 app:layout_constraintEnd_toStartOf="@+id/download"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintTop_toTopOf="parent"
-                app:stateIcon="@{syncState}"
+                app:stateIcon="@{teiSyncState}"
                 tools:src="@drawable/ic_sync_green" />
 
             <ImageView

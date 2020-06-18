@@ -1,18 +1,15 @@
 package org.dhis2.uicomponents.map.carousel
 
 import android.widget.Toast
-import androidx.appcompat.content.res.AppCompatResources
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.resource.bitmap.CircleCrop
-import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade
-import java.io.File
+import org.dhis2.Bindings.addEnrollmentIcons
+import org.dhis2.Bindings.hasFollowUp
+import org.dhis2.Bindings.setStatusText
+import org.dhis2.Bindings.setTeiImage
+import org.dhis2.Bindings.toDateSpan
 import org.dhis2.R
 import org.dhis2.databinding.ItemCarouselTeiBinding
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel
-import org.dhis2.utils.ObjectStyleUtils
-import org.hisp.dhis.android.core.enrollment.Enrollment
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue
 
 class CarouselTeiHolder(
     val binding: ItemCarouselTeiBinding,
@@ -23,18 +20,31 @@ class CarouselTeiHolder(
     CarouselBinder<SearchTeiModel> {
 
     override fun bind(data: SearchTeiModel) {
-        binding.overdue = data.isHasOverdue
-        binding.isOnline = data.isOnline
-        binding.setSyncState(data.tei.state())
+        binding.apply {
+            overdue = data.isHasOverdue
+            isOnline = data.isOnline
+            teiSyncState = data.tei.state()
+            attribute = data.attributeValues.values.toList()
+            attributeNames = data.attributeValues.keys
+            lastUpdated.text = data.tei.lastUpdated().toDateSpan(itemView.context)
+            executePendingBindings()
+        }
 
-        setEnrollment(data.enrollments)
-
-        setTEIData(data.attributeValues.values.toList())
-
-        binding.trackedEntityImage.background =
-            AppCompatResources.getDrawable(itemView.context, R.drawable.photo_temp_gray)
-        binding.followUp.background =
-            AppCompatResources.getDrawable(itemView.context, R.drawable.ic_circle_red)
+        data.apply {
+            binding.setFollowUp(enrollments.hasFollowUp())
+            programInfo.addEnrollmentIcons(
+                itemView.context,
+                binding.programList,
+                if (selectedEnrollment != null) selectedEnrollment.program() else null
+            )
+            selectedEnrollment.setStatusText(
+                itemView.context,
+                binding.enrollmentStatus,
+                isHasOverdue,
+                overdueDate
+            )
+            setTeiImage(itemView.context, binding.trackedEntityImage, binding.imageText)
+        }
 
         binding.syncState.setOnClickListener {
             if (data.tei.deleted() == true ||
@@ -59,36 +69,5 @@ class CarouselTeiHolder(
                 data.isOnline
             )
         }
-
-        val file = File(data.profilePicturePath)
-        val placeHolderId = ObjectStyleUtils.getIconResource(
-            itemView.context,
-            data.defaultTypeIcon,
-            R.drawable.photo_temp_gray
-        )
-        if (file.exists()) {
-            Glide.with(itemView.context)
-                .load(file)
-                .placeholder(placeHolderId)
-                .error(placeHolderId)
-                .transition(withCrossFade())
-                .transform(CircleCrop())
-                .into(binding.trackedEntityImage)
-        } else {
-            binding.trackedEntityImage.setImageDrawable(placeHolderId)
-        }
-    }
-
-    private fun setTEIData(trackedEntityAttributeValues: List<TrackedEntityAttributeValue>) {
-        binding.attribute = trackedEntityAttributeValues
-        binding.executePendingBindings()
-    }
-
-    private fun setEnrollment(enrollments: List<Enrollment>) {
-        var isFollowUp = false
-        for (enrollment in enrollments) {
-            if (enrollment.followUp() != null && enrollment.followUp()!!) isFollowUp = true
-        }
-        binding.setFollowUp(isFollowUp)
     }
 }
