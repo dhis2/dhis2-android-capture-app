@@ -20,6 +20,7 @@ import org.dhis2.data.forms.dataentry.ValueStoreImpl;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel;
+import org.dhis2.usescases.teiDashboard.dashboardfragments.relationships.RelationshipViewModel;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.ValueUtils;
@@ -43,6 +44,10 @@ import org.hisp.dhis.android.core.period.DatePeriod;
 import org.hisp.dhis.android.core.period.PeriodType;
 import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttribute;
+import org.hisp.dhis.android.core.relationship.Relationship;
+import org.hisp.dhis.android.core.relationship.RelationshipItem;
+import org.hisp.dhis.android.core.relationship.RelationshipItemTrackedEntityInstance;
+import org.hisp.dhis.android.core.relationship.RelationshipType;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance;
@@ -468,6 +473,87 @@ public class SearchRepositoryImpl implements SearchRepository {
             tei.setHasOverdue(true);
     }
 
+    private void setRelationshipsInfo(@NonNull SearchTeiModel searchTeiModel, Program selectedProgram) {
+        List<RelationshipViewModel> relationshipViewModels = new ArrayList<>();
+        List<Relationship> relationships = d2.relationshipModule().relationships().getByItem(
+                RelationshipItem.builder().trackedEntityInstance(
+                        RelationshipItemTrackedEntityInstance.builder()
+                                .trackedEntityInstance(searchTeiModel.getTei().uid())
+                                .build()
+                ).build()
+        );
+        for(Relationship relationship : relationships) {
+            RelationshipType relationshipType =
+                    d2.relationshipModule().relationshipTypes().uid(relationship.relationshipType()).blockingGet();
+
+            String relationshipTEIUid;
+            RelationshipViewModel.RelationshipDirection direction;
+            if (!searchTeiModel.getTei().uid().equals(relationship.from().trackedEntityInstance().trackedEntityInstance())) {
+                relationshipTEIUid = relationship.from().trackedEntityInstance().trackedEntityInstance();
+                direction = RelationshipViewModel.RelationshipDirection.FROM;
+            } else {
+                relationshipTEIUid = relationship.to().trackedEntityInstance().trackedEntityInstance();
+                direction = RelationshipViewModel.RelationshipDirection.TO;
+            }
+
+            String fromTeiUid = relationship.from().trackedEntityInstance().trackedEntityInstance();
+            String toTeiUid = relationship.to().trackedEntityInstance().trackedEntityInstance();
+
+            TrackedEntityInstance fromTei = d2.trackedEntityModule().trackedEntityInstances().withTrackedEntityAttributeValues().uid(fromTeiUid).blockingGet();
+            TrackedEntityInstance toTei = d2.trackedEntityModule().trackedEntityInstances().withTrackedEntityAttributeValues().uid(toTeiUid).blockingGet();
+
+            relationshipViewModels.add(RelationshipViewModel.create(
+                    relationship,
+                    relationshipType,
+                    direction,
+                    relationshipTEIUid,
+                    getTrackedEntityAttributesForRelationship(fromTei, selectedProgram),
+                    getTrackedEntityAttributesForRelationship(toTei, selectedProgram),
+                    fromTei.geometry(),
+                    toTei.geometry(),
+                    ExtensionsKt.profilePicturePath(fromTei, d2, selectedProgram.uid()),
+                    ExtensionsKt.profilePicturePath(toTei, d2, selectedProgram.uid()),
+                    -1,
+                    -1
+            ));
+        }
+
+        searchTeiModel.setRelationships(relationshipViewModels);
+    }
+
+    private List<TrackedEntityAttributeValue> getTrackedEntityAttributesForRelationship(TrackedEntityInstance tei, Program selectedProgram) {
+
+        List<TrackedEntityAttributeValue> values;
+        List<String> attributeUids = new ArrayList<>();
+        List<ProgramTrackedEntityAttribute> programTrackedEntityAttributes = d2.programModule().programTrackedEntityAttributes()
+                .byProgram().eq(selectedProgram.uid())
+                .byDisplayInList().isTrue()
+                .orderBySortOrder(RepositoryScope.OrderByDirection.ASC)
+                .blockingGet();
+        for(ProgramTrackedEntityAttribute programAttribute : programTrackedEntityAttributes){
+            attributeUids.add(programAttribute.trackedEntityAttribute().uid());
+        }
+        values = d2.trackedEntityModule().trackedEntityAttributeValues()
+                .byTrackedEntityInstance().eq(tei.uid())
+                .byTrackedEntityAttribute().in(attributeUids).blockingGet();
+
+        if (values.isEmpty()) {
+            attributeUids.clear();
+            List<TrackedEntityTypeAttribute> typeAttributes = d2.trackedEntityModule().trackedEntityTypeAttributes()
+                    .byTrackedEntityTypeUid().eq(tei.trackedEntityType())
+                    .byDisplayInList().isTrue()
+                    .blockingGet();
+
+            for (TrackedEntityTypeAttribute typeAttribute : typeAttributes) {
+                attributeUids.add(typeAttribute.trackedEntityAttribute().uid());
+            }
+            values = d2.trackedEntityModule().trackedEntityAttributeValues()
+                    .byTrackedEntityInstance().eq(tei.uid())
+                    .byTrackedEntityAttribute().in(attributeUids).blockingGet();
+        }
+
+        return values;
+    }
 
     @Override
     public String getProgramColor(@NonNull String programUid) {
@@ -580,6 +666,7 @@ public class SearchRepositoryImpl implements SearchRepository {
             setEnrollmentInfo(searchTei);
             setAttributesInfo(searchTei, selectedProgram);
             setOverdueEvents(searchTei, selectedProgram);
+            setRelationshipsInfo(searchTei, selectedProgram);
 
             searchTei.setProfilePicture(profilePicturePath(tei, selectedProgram));
             ObjectStyle os = null;

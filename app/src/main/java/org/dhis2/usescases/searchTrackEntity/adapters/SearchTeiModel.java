@@ -1,6 +1,7 @@
 package org.dhis2.usescases.searchTrackEntity.adapters;
 
 import org.dhis2.data.tuples.Trio;
+import org.dhis2.usescases.teiDashboard.dashboardfragments.relationships.RelationshipViewModel;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance;
@@ -23,6 +24,7 @@ public class SearchTeiModel {
 
     private Enrollment selectedEnrollment;
     private List<Enrollment> enrollments;
+    private List<RelationshipViewModel> relationships;
 
     public SearchTeiModel() {
         this.tei = null;
@@ -31,6 +33,7 @@ public class SearchTeiModel {
         this.enrollmentsInfo = new ArrayList<>();
         this.isOnline = true;
         this.enrollments = new ArrayList<>();
+        this.relationships = new ArrayList<>();
     }
 
 
@@ -116,5 +119,13 @@ public class SearchTeiModel {
 
     public List<Enrollment> getEnrollments() {
         return enrollments;
+    }
+
+    public List<RelationshipViewModel> getRelationships() {
+        return relationships;
+    }
+
+    public void setRelationships(List<RelationshipViewModel> relationships) {
+        this.relationships = relationships;
     }
 }
