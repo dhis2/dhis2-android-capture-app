@@ -10,16 +10,20 @@ class SatelliteMapLayer(
     private val styleChangeCallback: (() -> Unit)?
 ) : MapLayer {
 
+    override var visible = false
+
     override fun showLayer() {
         mapboxMap.setStyle(Style.SATELLITE_STREETS) {
             styleChangeCallback?.invoke()
         }
+        visible = true
     }
 
     override fun hideLayer() {
         mapboxMap.setStyle(Style.MAPBOX_STREETS) {
             styleChangeCallback?.invoke()
         }
+        visible = false
     }
 
     override fun setSelectedItem(feature: Feature?) {
