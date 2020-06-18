@@ -6,6 +6,7 @@ import android.graphics.PorterDuffColorFilter;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.LayerDrawable;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -20,7 +21,9 @@ import com.bumptech.glide.load.resource.bitmap.CircleCrop;
 
 import org.dhis2.Bindings.DateExtensionsKt;
 import org.dhis2.Bindings.ExtensionsKt;
+import org.dhis2.Bindings.ViewExtensionsKt;
 import org.dhis2.R;
+import org.dhis2.databinding.ItemFieldValueBinding;
 import org.dhis2.databinding.ItemSearchTrackedEntityBinding;
 import org.dhis2.usescases.searchTrackEntity.SearchTEContractsModule;
 import org.dhis2.utils.ColorUtils;
@@ -58,7 +61,9 @@ public class SearchTEViewHolder extends RecyclerView.ViewHolder {
         setEnrollment(searchTeiModel.getEnrollments());
         setProgramInfo(searchTeiModel.getProgramInfo(), presenter.getProgram() != null ? presenter.getProgram().uid() : null);
         setTEIData(searchTeiModel.getAttributeValues());
+        setAttributeList(searchTeiModel.getAttributeValues());
         setEnrollmentStatusText(searchTeiModel.getSelectedEnrollment(), binding.getOverdue(), searchTeiModel.getOverdueDate());
+        setTeiImage(searchTeiModel);
 
         binding.syncState.setOnClickListener(view -> {
             if (searchTeiModel.getTei().deleted() ||
@@ -75,7 +80,6 @@ public class SearchTEViewHolder extends RecyclerView.ViewHolder {
 
         binding.executePendingBindings();
 
-        setTeiImage(searchTeiModel);
 
         itemView.setOnClickListener(view -> presenter.onTEIClick(
                 searchTeiModel.getTei().uid(),
@@ -85,6 +89,53 @@ public class SearchTEViewHolder extends RecyclerView.ViewHolder {
 
     }
 
+    private void setAttributeList(LinkedHashMap<String, TrackedEntityAttributeValue> attributeValues) {
+        binding.attributeList.removeAllViews();
+        if (attributeValues.size() > 3) {
+            for (int pos = 1; pos < attributeValues.size(); pos++) {
+                String fieldName = attributeValues.keySet().toArray(new String[attributeValues.size()])[pos];
+                String fieldValue = attributeValues.get(fieldName).value();
+                ItemFieldValueBinding itemFieldValueBinding = ItemFieldValueBinding.inflate(LayoutInflater.from(binding.attributeList.getContext()));
+                itemFieldValueBinding.setName(fieldName);
+                itemFieldValueBinding.setValue(fieldValue);
+                itemFieldValueBinding.getRoot().setTag(getAdapterPosition() + "_" + fieldName);
+                binding.attributeList.addView(itemFieldValueBinding.getRoot());
+            }
+            binding.showAttributesButton.setOnClickListener(view -> {
+                binding.showAttributesButton.animate()
+                        .scaleY(binding.attributeList.getVisibility() == View.VISIBLE ? 1 : -1)
+                        .setDuration(200).start();
+                boolean shouldShowAttributeList = binding.attributeList.getVisibility() == View.GONE;
+                if (shouldShowAttributeList) {
+                    showAttributeList();
+                } else {
+                    hideAttributeList();
+                }
+            });
+        } else {
+            binding.showAttributesButton.setOnClickListener(null);
+        }
+    }
+
+    private void showAttributeList() {
+        binding.attributeBName.setVisibility(View.GONE);
+        binding.attributeCName.setVisibility(View.GONE);
+        binding.sortingFieldName.setVisibility(View.GONE);
+        binding.entityAttribute2.setVisibility(View.GONE);
+        binding.entityAttribute3.setVisibility(View.GONE);
+        binding.sortingFieldValue.setVisibility(View.GONE);
+        binding.attributeList.setVisibility(View.VISIBLE);
+    }
+
+    private void hideAttributeList() {
+        binding.attributeList.setVisibility(View.GONE);
+        binding.attributeBName.setVisibility(View.VISIBLE);
+        binding.attributeCName.setVisibility(View.VISIBLE);
+        binding.sortingFieldName.setVisibility(View.VISIBLE);
+        binding.entityAttribute2.setVisibility(View.VISIBLE);
+        binding.entityAttribute3.setVisibility(View.VISIBLE);
+        binding.sortingFieldValue.setVisibility(View.VISIBLE);
+    }
 
     private void setTEIData(LinkedHashMap<String, TrackedEntityAttributeValue> trackedEntityAttributeValues) {
         binding.setAttribute(new ArrayList<>(trackedEntityAttributeValues.values()));
