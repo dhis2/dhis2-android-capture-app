@@ -100,6 +100,8 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
             android:background="@drawable/round_border_box_2"
+            android:paddingStart="1dp"
+            android:paddingEnd="1dp"
             android:gravity="center"
             android:minHeight="14dp"
             android:textAlignment="center"

@@ -21,7 +21,6 @@ import com.bumptech.glide.load.resource.bitmap.CircleCrop;
 
 import org.dhis2.Bindings.DateExtensionsKt;
 import org.dhis2.Bindings.ExtensionsKt;
-import org.dhis2.Bindings.ViewExtensionsKt;
 import org.dhis2.R;
 import org.dhis2.databinding.ItemFieldValueBinding;
 import org.dhis2.databinding.ItemSearchTrackedEntityBinding;
@@ -206,7 +205,7 @@ public class SearchTEViewHolder extends RecyclerView.ViewHolder {
         String textToShow = null;
         int color = -1;
         if (isOverdue) {
-            textToShow = DateExtensionsKt.toUiText(dueDate);
+            textToShow = DateExtensionsKt.toUiText(dueDate,itemView.getContext());
             color = Color.parseColor("#E91E63");
         } else if (selectedEnrollment.status() == EnrollmentStatus.CANCELLED) {
             textToShow = itemView.getContext().getString(R.string.cancelled);

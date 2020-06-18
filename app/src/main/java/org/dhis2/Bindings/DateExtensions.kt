@@ -1,8 +1,6 @@
 package org.dhis2.Bindings
+
 import android.content.Context
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 import org.dhis2.R
 import org.dhis2.utils.DateUtils
 import org.joda.time.Days
@@ -11,6 +9,9 @@ import org.joda.time.Instant
 import org.joda.time.Interval
 import org.joda.time.LocalDate
 import org.joda.time.Minutes
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 fun Date?.toDateSpan(context: Context): String {
     return if (this == null) {
@@ -39,14 +40,24 @@ fun Date?.toDateSpan(context: Context): String {
     }
 }
 
-fun Date?.toUiText(): String {
+fun Date?.toUiText(context: Context): String {
     return if (this == null) {
         ""
     } else {
-        if (LocalDate(Instant(time)).year == LocalDate(Instant(Date())).year) {
-            SimpleDateFormat("dd MMM", Locale.getDefault()).format(this)
-        } else {
-            SimpleDateFormat("dd MMM yyyy", Locale.getDefault()).format(this)
+        val duration = Interval(time, Date().time).toDuration()
+        when {
+            duration.toStandardHours().isLessThan(Hours.hours(24)) -> {
+                context.getString(R.string.filter_period_today)
+            }
+            duration.toStandardDays().isLessThan(Days.days(2)) -> {
+                context.getString(R.string.filter_period_yesterday)
+            }
+            LocalDate(Instant(time)).year == LocalDate(Instant(Date())).year -> {
+                SimpleDateFormat("dd MMM", Locale.getDefault()).format(this)
+            }
+            else -> {
+                SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(this)
+            }
         }
     }
 }
