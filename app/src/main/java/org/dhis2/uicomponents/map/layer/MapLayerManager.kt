@@ -16,7 +16,7 @@ class MapLayerManager {
 
     private var currentLayerSelection: MapLayer? = null
     var mapLayers: HashMap<String, MapLayer> = hashMapOf()
-    private lateinit var mapboxMap: MapboxMap
+    lateinit var mapboxMap: MapboxMap
     private var mapStyle: MapStyle? = null
     private var featureType: FeatureType = FeatureType.POINT
     var styleChangeCallback: (() -> Unit)? = null
@@ -42,40 +42,38 @@ class MapLayerManager {
 
     fun addLayer(layerType: LayerType, sourceId: String? = null) = apply {
         val style = mapboxMap.style!!
-        mapLayers[sourceId ?: layerType.name] ?: run {
-            mapLayers[sourceId ?: layerType.name] = when (layerType) {
-                LayerType.TEI_LAYER -> TeiMapLayer(
-                    style,
-                    featureType,
-                    mapStyle?.teiColor!!,
-                    mapStyle?.programDarkColor!!
-                )
-                LayerType.ENROLLMENT_LAYER -> EnrollmentMapLayer(
-                    style,
-                    featureType,
-                    mapStyle?.enrollmentColor!!,
-                    mapStyle?.programDarkColor!!
-                )
-                LayerType.HEATMAP_LAYER -> HeatmapMapLayer(
-                    style,
-                    featureType
-                )
-                LayerType.SATELLITE_LAYER -> SatelliteMapLayer(
-                    mapboxMap,
-                    styleChangeCallback
-                )
-                LayerType.RELATIONSHIP_LAYER -> RelationshipMapLayer(
-                    style,
-                    featureType,
-                    sourceId!!,
-                    relationShipColors.firstOrNull()?.also { relationShipColors.removeAt(0) }
-                )
-                LayerType.EVENT_LAYER -> EventMapLayer(
-                    style,
-                    featureType,
-                    relationShipColors.first()
-                )
-            }
+        mapLayers[sourceId ?: layerType.name] = when (layerType) {
+            LayerType.TEI_LAYER -> TeiMapLayer(
+                style,
+                featureType,
+                mapStyle?.teiColor!!,
+                mapStyle?.programDarkColor!!
+            )
+            LayerType.ENROLLMENT_LAYER -> EnrollmentMapLayer(
+                style,
+                featureType,
+                mapStyle?.enrollmentColor!!,
+                mapStyle?.programDarkColor!!
+            )
+            LayerType.HEATMAP_LAYER -> HeatmapMapLayer(
+                style,
+                featureType
+            )
+            LayerType.SATELLITE_LAYER -> SatelliteMapLayer(
+                mapboxMap,
+                styleChangeCallback
+            )
+            LayerType.RELATIONSHIP_LAYER -> RelationshipMapLayer(
+                style,
+                featureType,
+                sourceId!!,
+                relationShipColors.firstOrNull()?.also { relationShipColors.removeAt(0) }
+            )
+            LayerType.EVENT_LAYER -> EventMapLayer(
+                style,
+                featureType,
+                relationShipColors.firstOrNull()
+            )
         }
     }
 
@@ -88,11 +86,6 @@ class MapLayerManager {
     }
 
     fun addLayers(layerType: LayerType, sourceIds: List<String>, visible: Boolean? = null) {
-        mapLayers.keys.forEach {
-            if (!sourceIds.contains(it)) {
-                mapLayers[it]?.hideLayer()
-            }
-        }
         sourceIds.forEach {
             when (visible) {
                 true -> addStartLayer(layerType, it)
@@ -128,7 +121,16 @@ class MapLayerManager {
         return mapLayers.values
     }
 
-    fun handleLayer(layerType: LayerType, check: Boolean) {
-        handleLayer(layerType.toString(), check)
+    fun updateLayers(layerType: LayerType, sourceIds: List<String>) {
+        mapLayers.keys.forEach {
+            if (!sourceIds.contains(it)) {
+                mapLayers[it]?.hideLayer()
+            }
+        }
+        sourceIds.forEach {
+            if (mapLayers[it] == null) {
+                addStartLayer(layerType, it)
+            }
+        }
     }
 }

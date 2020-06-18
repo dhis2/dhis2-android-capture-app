@@ -36,6 +36,8 @@ class TeiMapLayer(
     private var SELECTED_POINT_SOURCE_ID = "SELECTED_POINT_SOURCE"
     private var SELECTED_POLYGON_SOURCE_ID = "SELECTED_POLYGON_SOURCE_ID"
 
+    override var visible = false
+
     init {
         when (featureType) {
             FeatureType.POINT -> {
@@ -145,6 +147,7 @@ class TeiMapLayer(
             }
             else -> Unit
         }
+        visible = visibility == Property.VISIBLE
     }
 
     override fun showLayer() {
