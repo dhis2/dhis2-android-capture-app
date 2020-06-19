@@ -6,6 +6,7 @@ import org.dhis2.data.dagger.PerActivity;
 import org.dhis2.data.prefs.PreferenceProvider;
 import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.uicomponents.map.geometry.bound.BoundsGeometry;
+import org.dhis2.uicomponents.map.geometry.bound.GetBoundingBox;
 import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapTeiEventsToFeatureCollection;
 import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapTeisToFeatureCollection;
 import org.dhis2.uicomponents.map.geometry.point.MapPointToFeature;
@@ -64,8 +65,10 @@ public class SearchTEModule {
     @Provides
     @PerActivity
     MapTeiEventsToFeatureCollection provideMapTeiEventsToFeatureCollection(){
-        return new MapTeiEventsToFeatureCollection(new BoundsGeometry(),
-                new MapPointToFeature(), new MapPolygonToFeature());
+        return new MapTeiEventsToFeatureCollection(
+                new MapPointToFeature(),
+                new MapPolygonToFeature(),
+                new GetBoundingBox());
     }
 
     @Provides

@@ -93,10 +93,18 @@ fun Feature?.addRelationToInfo(
     return this
 }
 
-fun Feature?.addTeiEventInfo(eventUiComponentModel: EventUiComponentModel): Feature? {
-    this?.addStringProperty(
-        MapTeiEventsToFeatureCollection.EVENT_UID,
-        eventUiComponentModel.event.uid()
-    )
+fun Feature?.addTeiEventInfo(
+    eventUiComponentModel: EventUiComponentModel
+): Feature? {
+    if (this != null) {
+        addStringProperty(
+            MapTeiEventsToFeatureCollection.EVENT_UID,
+            eventUiComponentModel.event.uid()
+        )
+        addStringProperty(
+            MapTeiEventsToFeatureCollection.STAGE_UID,
+            eventUiComponentModel.stageUid
+        )
+    }
     return this
 }

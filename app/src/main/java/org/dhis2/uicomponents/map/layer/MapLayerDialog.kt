@@ -20,6 +20,7 @@ import org.dhis2.uicomponents.map.layer.types.EventMapLayer
 import org.dhis2.uicomponents.map.layer.types.HeatmapMapLayer
 import org.dhis2.uicomponents.map.layer.types.RelationshipMapLayer
 import org.dhis2.uicomponents.map.layer.types.SatelliteMapLayer
+import org.dhis2.uicomponents.map.layer.types.TeiEventMapLayer
 import org.dhis2.uicomponents.map.layer.types.TeiMapLayer
 import org.dhis2.utils.ColorUtils
 
@@ -69,6 +70,10 @@ class MapLayerDialog(
                     source,
                     context!!.getString(R.string.dialog_layer_enrollment_coordinates),
                     MapLayerManager.ENROLLMENT_ICON_ID
+                )
+                is TeiEventMapLayer -> addCheckBox(
+                    source,
+                    image = "${MapLayerManager.STAGE_ICON_ID}_$source"
                 )
                 is HeatmapMapLayer -> addCheckBox(
                     source,

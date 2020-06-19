@@ -27,7 +27,7 @@ class MapLayerManager {
     companion object {
         const val TEI_ICON_ID = "TEI_ICON_ID"
         const val ENROLLMENT_ICON_ID = "ENROLLMENT_ICON_ID"
-        const val EVENT_ICON_ID = "EVENT_ICON_ID"
+        const val STAGE_ICON_ID = "STAGE_ICON_ID"
     }
 
     fun initMap(mapboxMap: MapboxMap) = apply {
@@ -79,6 +79,7 @@ class MapLayerManager {
             LayerType.TEI_EVENT_LAYER -> TeiEventMapLayer(
                 style,
                 featureType,
+                sourceId!!,
                 mapStyle?.programDarkColor!!
             )
         }

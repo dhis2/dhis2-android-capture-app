@@ -12,10 +12,17 @@ class EventToEventUiComponent {
     }
 
     private fun map(eventViewModel: EventViewModel): EventUiComponentModel {
+        val stageUid = eventViewModel.stage!!.uid()
+        val stageDisplayName = eventViewModel.stage.displayName()!!
+        val eventUid = eventViewModel.event!!.uid()
+        val lastUpdated = eventViewModel.lastUpdate
+
         return EventUiComponentModel(
-            eventViewModel.stage!!,
-            eventViewModel.event!!,
-            eventViewModel.lastUpdate
+            stageUid,
+            stageDisplayName,
+            eventUid,
+            eventViewModel.event,
+            lastUpdated
         )
     }
 }

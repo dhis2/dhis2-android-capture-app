@@ -11,21 +11,25 @@ import com.mapbox.mapboxsdk.style.layers.SymbolLayer
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource
 import org.dhis2.uicomponents.map.layer.MapLayer
 import org.dhis2.uicomponents.map.layer.MapLayerManager
-import org.dhis2.uicomponents.map.managers.TeiMapManager.Companion.EVENT_SOURCE_ID
 import org.hisp.dhis.android.core.common.FeatureType
 
 class TeiEventMapLayer(
     val style: Style,
     val featureType: FeatureType,
+    val sourceId: String,
     val eventColor: Int?
 ) : MapLayer {
 
-    private val POINT_LAYER_ID = "POINT_LAYER"
-    private val POLYGON_LAYER_ID = "POLYGON_LAYER"
+    private val POINT_LAYER_ID = "POINT_LAYER_$sourceId"
+    private val POLYGON_LAYER_ID = "POLYGON_LAYER_$sourceId"
+
+    override var visible = false
 
     init {
         when (featureType) {
-            FeatureType.POINT -> style.addLayer(pointLayer)
+            FeatureType.POINT -> {
+                style.addLayer(pointLayer)
+            }
             FeatureType.POLYGON -> style.addLayer(polygonLayer)
             else -> Unit
         }
@@ -33,9 +37,9 @@ class TeiEventMapLayer(
 
     private val pointLayer: Layer
         get() = style.getLayer(POINT_LAYER_ID)
-            ?: SymbolLayer(POINT_LAYER_ID, EVENT_SOURCE_ID)
+            ?: SymbolLayer(POINT_LAYER_ID, sourceId)
                 .withProperties(
-                    PropertyFactory.iconImage(MapLayerManager.EVENT_ICON_ID),
+                    PropertyFactory.iconImage("${MapLayerManager.STAGE_ICON_ID}_$sourceId"),
                     PropertyFactory.iconAllowOverlap(true),
                     PropertyFactory.visibility(Property.NONE)
                 ).withFilter(
@@ -47,7 +51,7 @@ class TeiEventMapLayer(
 
     private val polygonLayer: Layer
         get() = style.getLayer(POLYGON_LAYER_ID)
-            ?: FillLayer(POLYGON_LAYER_ID, EVENT_SOURCE_ID)
+            ?: FillLayer(POLYGON_LAYER_ID, sourceId)
                 .withProperties(
                     PropertyFactory.fillColor(eventColor ?: -1),
                     PropertyFactory.visibility(Property.NONE)
@@ -66,6 +70,7 @@ class TeiEventMapLayer(
                 polygonLayer.setProperties(PropertyFactory.visibility(visibility))
             else -> Unit
         }
+        visible = visibility == Property.VISIBLE
     }
 
     override fun showLayer() {
@@ -80,7 +85,7 @@ class TeiEventMapLayer(
     }
 
     override fun findFeatureWithUid(featureUidProperty: String): Feature? {
-        return style.getSourceAs<GeoJsonSource>(EVENT_SOURCE_ID)
+        return style.getSourceAs<GeoJsonSource>(sourceId)
             ?.querySourceFeatures(Expression.eq(Expression.get("eventUid"), featureUidProperty))
             ?.firstOrNull()
     }
