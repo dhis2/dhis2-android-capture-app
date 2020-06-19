@@ -144,6 +144,8 @@ public class SearchTeiModel {
 
     public Date getOverdueDate() {
         return overdueDate;
+    }
+    
     public List<RelationshipViewModel> getRelationships() {
         return relationships;
     }
