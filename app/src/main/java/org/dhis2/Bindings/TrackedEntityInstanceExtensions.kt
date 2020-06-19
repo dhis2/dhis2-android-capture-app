@@ -37,7 +37,7 @@ fun MutableList<TrackedEntityInstance>.filterEvents(
     val iterator = this.iterator()
     if (program != null && eventPeriods.isNotEmpty()) {
         while (iterator.hasNext()) {
-            val tei = iterator.next();
+            val tei = iterator.next()
             val hasEventsInPeriod =
                 !d2.eventModule().events()
                     .byEnrollmentUid().`in`(
@@ -47,7 +47,7 @@ fun MutableList<TrackedEntityInstance>.filterEvents(
                             ).byProgram().eq(program).blockingGet()
                         )
                     )
-                    .byStatus().`in`(EventStatus.ACTIVE,EventStatus.COMPLETED)
+                    .byStatus().`in`(EventStatus.ACTIVE, EventStatus.COMPLETED)
                     .byEventDate().inDatePeriods(eventPeriods)
                     .blockingIsEmpty()
             val hasScheduleInPeriod =
@@ -59,10 +59,10 @@ fun MutableList<TrackedEntityInstance>.filterEvents(
                             ).byProgram().eq(program).blockingGet()
                         )
                     )
-                    .byStatus().`in`(EventStatus.OVERDUE,EventStatus.SCHEDULE,EventStatus.SKIPPED)
+                    .byStatus().`in`(EventStatus.OVERDUE, EventStatus.SCHEDULE, EventStatus.SKIPPED)
                     .byDueDate().inDatePeriods(eventPeriods)
                     .blockingIsEmpty()
-            if(!hasEventsInPeriod && !hasScheduleInPeriod){
+            if (!hasEventsInPeriod && !hasScheduleInPeriod) {
                 iterator.remove()
             }
         }
