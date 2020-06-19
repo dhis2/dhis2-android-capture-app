@@ -9,6 +9,8 @@ import org.dhis2.R
 import org.dhis2.common.BaseRobot
 import org.dhis2.common.viewactions.clickChildViewWithId
 import org.dhis2.common.viewactions.scrollToBottomRecyclerView
+import org.dhis2.common.viewactions.typeChildViewWithId
+import org.dhis2.data.forms.dataentry.fields.edittext.EditTextCustomHolder
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.DashboardProgramViewHolder
 
 fun eventRobot(eventRobot: EventRobot.() -> Unit) {
@@ -64,4 +66,14 @@ class EventRobot : BaseRobot() {
     fun clickOnUpdate() {
         onView(withId(R.id.action_button)).perform(click())
     }
+
+    fun typeOnRequiredEventForm(text: String, position: Int) {
+        onView(withId(R.id.formRecycler))
+            .perform(
+                actionOnItemAtPosition<EditTextCustomHolder>( //EditTextCustomHolder
+                    position, typeChildViewWithId(text, R.id.input_editText)
+                )
+            )
+    }
+
 }

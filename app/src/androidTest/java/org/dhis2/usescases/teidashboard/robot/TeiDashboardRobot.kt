@@ -113,12 +113,9 @@ class TeiDashboardRobot : BaseRobot() {
 
     fun checkEventWasCreated(eventName: String) {
         onView(withId(R.id.tei_recycler))
-            .check(matches(allOf(isDisplayed(), isNotEmpty(), atPosition(
-                0, hasDescendant(
-                    hasSibling(
-                        allOf(
-                            withId(R.id.event_name),
-                            withText(eventName))))))))
+            .check(matches(allOf(isDisplayed(), isNotEmpty(),
+                atPosition(0, hasDescendant(
+                    hasSibling(allOf(withId(R.id.event_name), withText(eventName))))))))
     }
 
     fun clickOnMenuDeactivate() {
@@ -154,30 +151,6 @@ class TeiDashboardRobot : BaseRobot() {
         onView(withText(R.string.dashboard_menu_delete_tei)).perform(click())
     }
 
-    fun checkTEIIsDelete() {
-        onView(withId(R.id.scrollView)).check(
-            matches(
-                allOf(
-                    isDisplayed(), isNotEmpty(),
-                    not(hasDescendant(withText("Olvia Watts")))
-                )
-            )
-        )
-    }
-
-    fun clickOnTEI() {
-        onView(withId(R.id.scrollView)).perform(
-            scrollTo<SearchTEViewHolder>(
-                hasDescendant(
-                    withText(
-                        "Olvia Watts"
-                    )
-                )
-            ),
-            click()
-        )
-    }
-
     fun checkUpperInfo(upperInformation: UpperEnrollmentUIModel) {
         onView(withId(R.id.incident_date))
             .check(matches(withText(upperInformation.incidentDate)))
@@ -194,7 +167,7 @@ class TeiDashboardRobot : BaseRobot() {
     fun checkFullDetails(enrollmentUIModel: EnrollmentUIModel) {
         onView(withId(R.id.fieldRecycler))
             .check(matches(allOf(isDisplayed(), isNotEmpty(),
-                atPosition(1, hasDescendant(withText(enrollmentUIModel.enrollmentDate))))))
+                    atPosition(1, hasDescendant(withText(enrollmentUIModel.enrollmentDate))))))
 
         onView(withId(R.id.fieldRecycler)).check(
             matches(allOf(
@@ -202,8 +175,8 @@ class TeiDashboardRobot : BaseRobot() {
                     atPosition(2, hasDescendant(withText(enrollmentUIModel.birthday))))))
 
         onView(withId(R.id.fieldRecycler)).check(
-            matches(allOf(
-                    isDisplayed(), isNotEmpty(),
+            matches(
+                allOf(isDisplayed(), isNotEmpty(),
                     atPosition(3, hasDescendant(withText(enrollmentUIModel.orgUnit))))))
 
         onView(withId(R.id.fieldRecycler)).check(matches(allOf(isDisplayed(), isNotEmpty(),
@@ -211,8 +184,8 @@ class TeiDashboardRobot : BaseRobot() {
                 withText(enrollmentUIModel.latitude)))))))
 
         onView(withId(R.id.fieldRecycler)).check(matches(allOf(isDisplayed(), isNotEmpty(),
-            atPosition(4, hasDescendant(allOf(
-                withId(R.id.longitude), withText(enrollmentUIModel.longitude)))))))
+                    atPosition(4, hasDescendant(allOf(
+                        withId(R.id.longitude), withText(enrollmentUIModel.longitude)))))))
 
         onView(withId(R.id.fieldRecycler))
             .perform(actionOnItemAtPosition<DashboardProgramViewHolder>(6, click()))
@@ -227,7 +200,7 @@ class TeiDashboardRobot : BaseRobot() {
 
         onView(withId(R.id.fieldRecycler)).check(
             matches(allOf(isDisplayed(), isNotEmpty(),
-                atPosition(4, hasDescendant(withText(enrollmentUIModel.sex))))))
+                    atPosition(4, hasDescendant(withText(enrollmentUIModel.sex))))))
     }
 
     fun clickOnScheduleNew() {
@@ -236,23 +209,6 @@ class TeiDashboardRobot : BaseRobot() {
 
     fun clickOnMenuProgramEnrollments() {
         onView(withText("Program enrollments")).perform(click())
-    }
-
-    fun clickOnAProgramForEnrollment(position: Int) {
-        onView(withId(R.id.recycler)).perform(
-            actionOnItemAtPosition<DashboardProgramViewHolder>(
-                position,
-                clickChildViewWithId(R.id.action_button)
-            )
-        )
-    }
-
-    fun clickOnAcceptEnrollmentDate() {
-        onView(withId(R.id.acceptButton)).perform(click())
-    }
-
-    fun clickOnSaveEnrollment() {
-        onView(withId(R.id.save)).perform(click())
     }
 
     fun clickOnCreateNewEvent() {
@@ -275,26 +231,8 @@ class TeiDashboardRobot : BaseRobot() {
                                 hasDescendant(withText(R.string.event_completed)))))))
     }
 
-    fun clickOnPersonAttributes(position: Int) {
-        onView(withId(R.id.fieldRecycler))
-            .perform(actionOnItemAtPosition<DashboardProgramViewHolder>(position, click()))
+    fun clickOnMenuDeleteEnrollment() {
+        onView(withText(R.string.dashboard_menu_delete_enrollment)).perform(click())
     }
 
-    fun scrollToBottomProgramForm() {
-        onView(withId(R.id.fieldRecycler)).perform(scrollToBottomRecyclerView())
-    }
-
-    fun scrollToBottomEventForm() {
-        onView(withId(R.id.formRecycler)).perform(scrollToBottomRecyclerView())
-    }
-
-    fun typeOnRequiredTextField(text: String, position: Int) {
-        onView(withId(R.id.fieldRecycler))
-            .perform(
-                actionOnItemAtPosition<DashboardProgramViewHolder>(
-                    position,
-                    typeChildViewWithId(text, R.id.input_editText)
-                )
-            )
-    }
 }
