@@ -1,6 +1,8 @@
 package org.dhis2.uicomponents.map.geometry
 
 import com.mapbox.geojson.Feature
+import com.mapbox.geojson.FeatureCollection
+import com.mapbox.geojson.LineString
 import com.mapbox.geojson.Point
 import com.mapbox.geojson.Polygon
 import com.nhaarman.mockitokotlin2.any
@@ -8,6 +10,8 @@ import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
 import org.dhis2.uicomponents.map.geometry.bound.BoundsGeometry
+import org.dhis2.uicomponents.map.geometry.bound.GetBoundingBox
+import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapRelationshipsToFeatureCollection
 import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapTeisToFeatureCollection
 import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapTeisToFeatureCollection.Companion.ENROLLMENT
 import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapTeisToFeatureCollection.Companion.ENROLLMENT_UID
@@ -16,6 +20,9 @@ import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapTeisToFea
 import org.dhis2.uicomponents.map.geometry.point.MapPointToFeature
 import org.dhis2.uicomponents.map.geometry.polygon.MapPolygonPointToFeature
 import org.dhis2.uicomponents.map.geometry.polygon.MapPolygonToFeature
+import org.dhis2.uicomponents.map.mapper.MapRelationshipToRelationshipMapModel
+import org.dhis2.uicomponents.map.mocks.RelationshipUiCompomentDummy
+import org.dhis2.uicomponents.map.mocks.RelationshipViewModelDummy
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel
 import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.MatcherAssert.assertThat
@@ -33,13 +40,18 @@ class MapTeisToFeatureCollectionTest {
     private val mapPointToFeature: MapPointToFeature = mock()
     private val mapPolygonToFeature: MapPolygonToFeature = mock()
     private val mapPolygonPointToFeature: MapPolygonPointToFeature = mock()
+    private val mapRelationshipToRelationshipMapModel: MapRelationshipToRelationshipMapModel =
+        mock()
+    private val mapRelationshipsToFeatureCollection: MapRelationshipsToFeatureCollection = mock()
+    private val boundingBox: GetBoundingBox = GetBoundingBox()
 
     @Before
     fun setup() {
         mapTeisToFeatureCollection =
             MapTeisToFeatureCollection(
                 bounds, mapPointToFeature,
-                mapPolygonToFeature, mapPolygonPointToFeature
+                mapPolygonToFeature, mapPolygonPointToFeature,
+                mapRelationshipToRelationshipMapModel, mapRelationshipsToFeatureCollection
             )
     }
 
@@ -64,6 +76,46 @@ class MapTeisToFeatureCollectionTest {
         assertThat(pointFeatureResult.latitude(), `is`(POINT_LATITUDE))
         assertThat(uid, `is`(TEI_UID))
         assertThat(image, `is`(TEI_UID_IMAGE))
+    }
+
+    @Test
+    fun `Should map tei models to relationship feature collection`() {
+        val teiList = createSearchTeiModelWithRelationships()
+        val feature = Feature.fromGeometry(
+            LineString.fromLngLats(
+                listOf(
+                    Point.fromLngLat(POINT_LONGITUDE, POINT_LATITUDE),
+                    Point.fromLngLat(POINT_LONGITUDE_ENROLLMENT, POINT_LATITUDE_ENROLLMENT)
+                )
+            )
+        )
+        val relationshipModels = listOf(RelationshipUiCompomentDummy.relationshipUiComponentModel())
+        whenever(
+            mapRelationshipToRelationshipMapModel.mapList(teiList[0].relationships)
+        )doReturn relationshipModels
+        whenever(mapRelationshipsToFeatureCollection.map(relationshipModels)) doReturn Pair(
+            mapOf(relationshipModels[0].displayName to FeatureCollection.fromFeature(feature)),
+            boundingBox.getEnclosingBoundingBox(listOf())
+        )
+
+        val result = mapTeisToFeatureCollection.map(teiList)
+        val featureCollectionResults =
+            result?.first?.get(RelationshipUiCompomentDummy.DISPLAY_NAME_FIRST)
+
+        val relationshipFeatureCollection =
+            featureCollectionResults?.features()?.get(0)?.geometry() as LineString
+        assertThat(
+            relationshipFeatureCollection.coordinates()[0].longitude(), `is`(POINT_LONGITUDE)
+        )
+        assertThat(relationshipFeatureCollection.coordinates()[0].latitude(), `is`(POINT_LATITUDE))
+        assertThat(
+            relationshipFeatureCollection.coordinates()[1].longitude(),
+            `is`(POINT_LONGITUDE_ENROLLMENT)
+        )
+        assertThat(
+            relationshipFeatureCollection.coordinates()[1].latitude(),
+            `is`(POINT_LATITUDE_ENROLLMENT)
+        )
     }
 
     @Test
@@ -201,6 +253,14 @@ class MapTeisToFeatureCollectionTest {
         val searchTeiModel = SearchTeiModel().apply {
             tei = createTeiModel(FeatureType.POINT)
             setCurrentEnrollment(createTeiEnrollment(FeatureType.POINT))
+        }
+        return listOf(searchTeiModel)
+    }
+
+    private fun createSearchTeiModelWithRelationships(): List<SearchTeiModel> {
+        val searchTeiModel = SearchTeiModel().apply {
+            tei = createTeiModel(FeatureType.POINT)
+            relationships = listOf(RelationshipViewModelDummy.getViewModelTypeFull())
         }
         return listOf(searchTeiModel)
     }

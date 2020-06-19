@@ -270,6 +270,7 @@ class RelationshipMapLayer(
                 selectedLineLayer.setProperties(PropertyFactory.visibility(visibility))
                 selectedPointLayer.setProperties(PropertyFactory.visibility(visibility))
                 pointLayer.setProperties(PropertyFactory.visibility(visibility))
+                baseRelationshipLayer.setProperties(PropertyFactory.visibility(visibility))
             }
             FeatureType.POLYGON -> {
             }

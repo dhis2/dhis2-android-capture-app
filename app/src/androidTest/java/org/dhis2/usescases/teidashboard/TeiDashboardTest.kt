@@ -1,25 +1,30 @@
 package org.dhis2.usescases.teidashboard
 
-import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.action.ViewActions.click
-import androidx.test.espresso.matcher.ViewMatchers.withId
+import androidx.test.espresso.Espresso
+import androidx.test.espresso.action.ViewActions
+import androidx.test.espresso.contrib.RecyclerViewActions
+import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
 import org.dhis2.R
+import org.dhis2.common.rules.DataBindingIdlingResourceRule
 import org.dhis2.usescases.BaseTest
 import org.dhis2.usescases.searchTrackEntity.SearchTEActivity
+import org.dhis2.usescases.searchte.searchTeiRobot
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity
+import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.DashboardProgramViewHolder
 import org.dhis2.usescases.teidashboard.entity.EnrollmentUIModel
 import org.dhis2.usescases.teidashboard.entity.UpperEnrollmentUIModel
+import org.dhis2.usescases.teidashboard.robot.enrollmentRobot
 import org.dhis2.usescases.teidashboard.robot.eventRobot
 import org.dhis2.usescases.teidashboard.robot.indicatorsRobot
 import org.dhis2.usescases.teidashboard.robot.noteRobot
 import org.dhis2.usescases.teidashboard.robot.relationshipRobot
 import org.dhis2.usescases.teidashboard.robot.teiDashboardRobot
-import org.hisp.dhis.android.core.mockwebserver.ResponseController.GET
 import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
+import org.junit.experimental.theories.Theories
 import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
@@ -273,37 +278,38 @@ class TeiDashboardTest : BaseTest() {
     @Test
     @Ignore
     fun shouldEnrollToOtherProgramWhenClickOnProgramEnrollments() {
-        // launch tei child program
-        // click on more options
-        // click on Program enrollments
-        // choose a Program to be enroll TB program
-        // choose date and accept
-        // open personal tab
-        // scroll to the end
-        // add text
-        // click on save in enrollment
-
-        val provider = 5
+        val womanProgram = 4
         prepareTeiToEnrollToOtherProgramAndLaunchActivity(rule)
 
         teiDashboardRobot {
             clickOnMenuMoreOptions()
             clickOnMenuProgramEnrollments()
-            clickOnAProgramForEnrollment(provider)
+        }
+
+        enrollmentRobot {
+            clickOnAProgramForEnrollment(womanProgram)
             clickOnAcceptEnrollmentDate()
             clickOnPersonAttributes(5)
-            typeOnRequiredTextField("test", 2) // not sure why is not typing to check
+            clickOnCalendarItem(5)
+            clickOnAcceptEnrollmentDate()
+            scrollToBottomProgramForm()
             clickOnSaveEnrollment()
-            Thread.sleep(8000)
-
-            // scrollToBottomProgramForm()
-            // clickOnSaveEnrollment()
-            // check event created 0 open
         }
 
         eventRobot {
+            //typeOnRequiredEventForm("test", 4)
+            scrollToBottomForm()
+            clickOnFormFabButton()
             clickOnFinish()
         }
+
+        teiDashboardRobot {
+            //check event was created
+            //checkEventWasCreatedAndOpen("ANC 1st visit", 3)
+            //checkEventWasScheduled("Baby Postnatal", 0)
+            //checkEventWasCreatedAndOpen("Birth", 1)
+        }
+
     }
 
     @Test
@@ -326,27 +332,53 @@ class TeiDashboardTest : BaseTest() {
     }
 
     @Test
-    @Ignore
     fun shouldDeleteTeiSuccessfully() {
-        // open more options
-        // click on delete tei
-        // check tei was deleted and not show on reclycler view
-        mockWebServerRobot.addResponse(GET, "/api/trackedEntityInstances?.*", API_TEI_1_RESPONSE_OK)
-        mockWebServerRobot.addResponse(GET, "/api/trackedEntityInstances?.*", API_TEI_2_RESPONSE_OK)
-        mockWebServerRobot.addResponse(GET, "/api/trackedEntityInstances?.*", API_TEI_3_RESPONSE_OK)
-        // https://play.dhis2.org/android-current/api/trackedEntityInstances/query?ou=DiszpKrYNg8&ouMode=DESCENDANTS&program=IpHINAT79UW&paging=true&page=1&pageSize=10
+        val teiName = "Anthony"
+        val teiLastName = "Banks"
+
         setupCredentials()
-        // prepareTeiToDeleteAndLaunchActivity()
         prepareChildProgrammeIntentAndLaunchActivity(ruleSearch)
 
+        searchTeiRobot {
+            closeSearchForm()
+            Thread.sleep(4000)
+            clickOnTEI(teiName, teiLastName)
+        }
+
         teiDashboardRobot {
-            /*clickOnMenu()
+            clickOnMenuMoreOptions()
             clickOnMenuDeleteTEI()
-            checkTEIIsDelete()*/
-            onView(withId(R.id.close_filter)).perform(click())
-            clickOnTEI()
-            // rule.getactivity == null assert
-            Thread.sleep(10000)
+        }
+
+        searchTeiRobot {
+            Thread.sleep(4000)
+            checkTEIsDelete(teiName, teiLastName)
+        }
+    }
+
+    @Test
+    fun shouldDeleteEnrollmentSuccessfully() {
+
+        val teiName = "Anna"
+        val teiLastName = "Jones"
+
+        setupCredentials()
+        prepareChildProgrammeIntentAndLaunchActivity(ruleSearch)
+
+        searchTeiRobot {
+            closeSearchForm()
+            Thread.sleep(4000)
+            clickOnTEI(teiName, teiLastName)
+        }
+
+        teiDashboardRobot {
+            clickOnMenuMoreOptions()
+            clickOnMenuDeleteEnrollment()
+        }
+
+        searchTeiRobot {
+            Thread.sleep(4000)
+            checkTEIsDelete(teiName, teiLastName)
         }
     }
 

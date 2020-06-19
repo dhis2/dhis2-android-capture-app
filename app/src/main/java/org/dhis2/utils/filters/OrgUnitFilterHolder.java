@@ -77,7 +77,9 @@ class OrgUnitFilterHolder extends FilterHolder {
             }
         });
 
-        localBinding.filterOrgUnit.ouTreeButton.setOnClickListener(view ->
-                FilterManager.getInstance().getOuTreeProcessor().onNext(true));
+        localBinding.filterOrgUnit.ouTreeButton.setOnClickListener(view -> {
+                localBinding.root.clearFocus();
+                FilterManager.getInstance().getOuTreeProcessor().onNext(true);
+        });
     }
 }

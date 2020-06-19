@@ -8,11 +8,14 @@ import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.uicomponents.map.geometry.bound.BoundsGeometry;
 import org.dhis2.uicomponents.map.geometry.bound.GetBoundingBox;
 import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapTeiEventsToFeatureCollection;
+import org.dhis2.uicomponents.map.geometry.line.MapLineRelationshipToFeature;
+import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapRelationshipsToFeatureCollection;
 import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapTeisToFeatureCollection;
 import org.dhis2.uicomponents.map.geometry.point.MapPointToFeature;
 import org.dhis2.uicomponents.map.geometry.polygon.MapPolygonPointToFeature;
 import org.dhis2.uicomponents.map.geometry.polygon.MapPolygonToFeature;
 import org.dhis2.uicomponents.map.mapper.EventToEventUiComponent;
+import org.dhis2.uicomponents.map.mapper.MapRelationshipToRelationshipMapModel;
 import org.dhis2.utils.analytics.AnalyticsHelper;
 import org.hisp.dhis.android.core.D2;
 
@@ -59,7 +62,14 @@ public class SearchTEModule {
     @PerActivity
     MapTeisToFeatureCollection provideMapTeisToFeatureCollection(){
         return new MapTeisToFeatureCollection(new BoundsGeometry(),
-                new MapPointToFeature(), new MapPolygonToFeature(), new MapPolygonPointToFeature());
+                new MapPointToFeature(), new MapPolygonToFeature(), new MapPolygonPointToFeature(),
+                new MapRelationshipToRelationshipMapModel(),
+                new MapRelationshipsToFeatureCollection(
+                        new MapLineRelationshipToFeature(),
+                        new MapPointToFeature(),
+                        new MapPolygonToFeature(),
+                        new GetBoundingBox()
+                ));
     }
 
     @Provides

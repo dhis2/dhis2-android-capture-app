@@ -10,6 +10,7 @@ import org.hisp.dhis.android.core.common.FeatureType
 
 class EventMapManager : MapManager() {
 
+    private lateinit var boundingBox: BoundingBox
     private lateinit var featureCollection: FeatureCollection
 
     companion object {
@@ -24,9 +25,11 @@ class EventMapManager : MapManager() {
     ) {
         this.featureType = featureType ?: FeatureType.POINT
         this.featureCollection = featureCollection
-        (style?.getSource(EVENTS) as GeoJsonSource?)?.setGeoJson(featureCollection)
-            ?: loadDataForStyle()
-        initCameraPosition(boundingBox)
+        this.boundingBox = boundingBox
+        if (isMapReady()) {
+            (style?.getSource(EVENTS) as GeoJsonSource?)?.setGeoJson(featureCollection)
+                ?: loadDataForStyle()
+        }
     }
 
     override fun loadDataForStyle() {
@@ -40,6 +43,7 @@ class EventMapManager : MapManager() {
         setSource()
         setLayer()
         setSymbolManager(featureCollection)
+        initCameraPosition(boundingBox)
     }
 
     override fun setSource() {
