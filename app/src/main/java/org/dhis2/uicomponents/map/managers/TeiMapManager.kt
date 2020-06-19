@@ -14,13 +14,12 @@ class TeiMapManager(
     private val mapStyle: MapStyle
 ) : MapManager() {
 
+    private lateinit var boundingBox: BoundingBox
     private lateinit var teiFeatureCollections: HashMap<String, FeatureCollection>
 
     companion object {
         const val TEIS_SOURCE_ID = "TEIS_SOURCE_ID"
         const val ENROLLMENT_SOURCE_ID = "ENROLLMENT_SOURCE_ID"
-        const val TEI = "TEI"
-        const val ENROLLMENT = "ENROLLMENT"
     }
 
     fun update(
@@ -30,15 +29,13 @@ class TeiMapManager(
     ) {
         this.featureType = featureType
         this.teiFeatureCollections = teiFeatureCollections
-        (style?.getSource(TEIS_SOURCE_ID) as GeoJsonSource?)
-            ?.setGeoJson(teiFeatureCollections[TEI])
-            .also {
-                (style?.getSource(ENROLLMENT_SOURCE_ID) as GeoJsonSource?)
-                    ?.setGeoJson(teiFeatureCollections[ENROLLMENT])
-            } ?: run {
-            loadDataForStyle()
+        this.boundingBox = boundingBox
+        if (isMapReady()) {
+            when {
+                mapLayerManager.mapLayers.isNotEmpty() -> updateStyleSources()
+                else -> loadDataForStyle()
+            }
         }
-        initCameraPosition(boundingBox)
     }
 
     override fun loadDataForStyle() {
@@ -66,12 +63,20 @@ class TeiMapManager(
         }
         setSource()
         setLayer()
-        teiFeatureCollections[TEI]?.let { setSymbolManager(it) }
+        teiFeatureCollections[TEIS_SOURCE_ID]?.let { setSymbolManager(it) }
     }
 
     override fun setSource() {
-        style?.addSource(GeoJsonSource(TEIS_SOURCE_ID, teiFeatureCollections[TEI]))
-        style?.addSource(GeoJsonSource(ENROLLMENT_SOURCE_ID, teiFeatureCollections[ENROLLMENT]))
+        teiFeatureCollections.keys.forEach {
+            style?.getSourceAs<GeoJsonSource>(it)?.setGeoJson(teiFeatureCollections[it])
+                ?: style?.addSource(GeoJsonSource(it, teiFeatureCollections[it]))
+        }
+        initCameraPosition(boundingBox)
+    }
+
+    private fun updateStyleSources() {
+        setSource()
+        mapLayerManager.updateLayers(LayerType.RELATIONSHIP_LAYER, teiFeatureCollections.keys.toList())
     }
 
     override fun setLayer() {
@@ -82,5 +87,6 @@ class TeiMapManager(
             .addLayer(LayerType.ENROLLMENT_LAYER, ENROLLMENT_SOURCE_ID)
             .addLayer(LayerType.HEATMAP_LAYER)
             .addLayer(LayerType.SATELLITE_LAYER)
+            .addLayers(LayerType.RELATIONSHIP_LAYER, teiFeatureCollections.keys.toList(), false)
     }
 }

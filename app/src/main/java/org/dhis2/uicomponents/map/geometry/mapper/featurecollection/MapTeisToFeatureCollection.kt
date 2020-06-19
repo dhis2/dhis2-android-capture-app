@@ -128,10 +128,10 @@ class MapTeisToFeatureCollection(
             searchTeiModel.selectedEnrollment.geometry() != null
 
     companion object {
-        const val TEI = "TEI"
+        const val TEI = "TEIS_SOURCE_ID"
         const val TEI_UID = "teiUid"
         const val TEI_IMAGE = "teiImage"
-        const val ENROLLMENT = "ENROLLMENT"
+        const val ENROLLMENT = "ENROLLMENT_SOURCE_ID"
         const val ENROLLMENT_UID = "enrollmentUid"
     }
 }
