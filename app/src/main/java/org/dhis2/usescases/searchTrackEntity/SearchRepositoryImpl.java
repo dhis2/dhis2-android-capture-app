@@ -666,7 +666,7 @@ public class SearchRepositoryImpl implements SearchRepository {
             setEnrollmentInfo(searchTei);
             setAttributesInfo(searchTei, selectedProgram);
             setOverdueEvents(searchTei, selectedProgram);
-            if(selectedProgram != null) {
+            if (selectedProgram != null) {
                 setRelationshipsInfo(searchTei, selectedProgram);
             }
 
