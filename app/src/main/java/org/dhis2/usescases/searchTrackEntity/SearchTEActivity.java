@@ -25,9 +25,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
-import android.view.animation.ScaleAnimation;
 import android.widget.AdapterView;
 import android.widget.PopupMenu;
 import android.widget.Spinner;
@@ -80,6 +77,7 @@ import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.HelpManager;
 import org.dhis2.utils.customviews.ScanTextView;
 import org.dhis2.utils.filters.FilterManager;
+import org.dhis2.utils.filters.Filters;
 import org.dhis2.utils.filters.FiltersAdapter;
 import org.hisp.dhis.android.core.arch.call.D2Progress;
 import org.hisp.dhis.android.core.common.FeatureType;
@@ -97,6 +95,7 @@ import javax.inject.Inject;
 
 import io.reactivex.Flowable;
 import io.reactivex.functions.Consumer;
+import kotlin.Pair;
 import timber.log.Timber;
 
 import static org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialPresenter.ACCESS_LOCATION_PERMISSION_REQUEST;
@@ -271,11 +270,12 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         }
         presenter.onDestroy();
         super.onDestroy();
+        FilterManager.getInstance().clearEnrollmentDate();
     }
 
     @Override
     public void onBackPressed() {
-        if(!ExtensionsKt.isKeyboardOpened(this)) {
+        if (!ExtensionsKt.isKeyboardOpened(this)) {
             super.onBackPressed();
         } else {
             hideKeyboard();
@@ -531,10 +531,13 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                     Program selectedProgram = (Program) adapterView.getItemAtPosition(pos - 1);
                     setProgramColor(presenter.getProgramColor(selectedProgram.uid()));
                     presenter.setProgram((Program) adapterView.getItemAtPosition(pos - 1));
+                    filtersAdapter.addEnrollmentDate(selectedProgram.enrollmentDateLabel());
                 } else if (programs.size() == 1 && pos != 0) {
                     presenter.setProgram(programs.get(0));
+                    filtersAdapter.addEnrollmentDate(programs.get(0).enrollmentDateLabel());
                 } else {
                     presenter.setProgram(null);
+                    filtersAdapter.removeEnrollmentDate();
                 }
             }
 
@@ -633,7 +636,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             animation.setDuration(500);
             animation.start();
         } else {
-            if (animation != null){
+            if (animation != null) {
                 animation.cancel();
             }
             hideKeyboard();
@@ -736,12 +739,22 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     }
 
     @Override
-    public void showPeriodRequest(FilterManager.PeriodRequest periodRequest) {
-        if (periodRequest == FilterManager.PeriodRequest.FROM_TO) {
-            DateUtils.getInstance().showFromToSelector(this, FilterManager.getInstance()::addPeriod);
+    public void showPeriodRequest(Pair<FilterManager.PeriodRequest, Filters> periodRequest) {
+        if (periodRequest.getFirst() == FilterManager.PeriodRequest.FROM_TO) {
+            DateUtils.getInstance().showFromToSelector(this, datePeriod -> {
+                if (periodRequest.getSecond() == Filters.PERIOD) {
+                    FilterManager.getInstance().addPeriod(datePeriod);
+                } else {
+                    FilterManager.getInstance().addEnrollmentPeriod(datePeriod);
+                }
+            });
         } else {
             DateUtils.getInstance().showPeriodDialog(this, datePeriods -> {
-                        FilterManager.getInstance().addPeriod(datePeriods);
+                        if (periodRequest.getSecond() == Filters.PERIOD) {
+                            FilterManager.getInstance().addPeriod(datePeriods);
+                        } else {
+                            FilterManager.getInstance().addEnrollmentPeriod(datePeriods);
+                        }
                     },
                     true);
         }
@@ -818,7 +831,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         List<Feature> features = teiMapManager.getMap()
                 .queryRenderedFeatures(rectF, featureType == FeatureType.POINT ? "TEI_POINT_LAYER_ID" : "TEI_POLYGON_LAYER_ID");
         if (!features.isEmpty()) {
-            teiMapManager.mapLayerManager.getLayer(TeiMapManager.TEIS_SOURCE_ID,false).setSelectedItem(features.get(0));
+            teiMapManager.mapLayerManager.getLayer(TeiMapManager.TEIS_SOURCE_ID, false).setSelectedItem(features.get(0));
             binding.mapCarousel.scrollToFeature(features.get(0));
             return true;
         }

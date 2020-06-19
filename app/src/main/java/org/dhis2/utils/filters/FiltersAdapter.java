@@ -23,6 +23,7 @@ import java.util.List;
 public class FiltersAdapter extends RecyclerView.Adapter<FilterHolder> {
 
     private final ProgramType programType;
+    private String enrollmentDateLabel;
 
     public enum ProgramType {ALL, EVENT, TRACKER, DATASET}
 
@@ -46,6 +47,8 @@ public class FiltersAdapter extends RecyclerView.Adapter<FilterHolder> {
         switch (Filters.values()[viewType]) {
             case PERIOD:
                 return new PeriodFilterHolder(ItemFilterPeriodBinding.inflate(inflater, parent, false), openedFilter);
+            case ENROLLMENT_DATE:
+                return new EnrollmentDateFilterHolder(ItemFilterPeriodBinding.inflate(inflater, parent, false), openedFilter);
             case ORG_UNIT:
                 return new OrgUnitFilterHolder(ItemFilterOrgUnitBinding.inflate(inflater, parent, false), openedFilter);
             case SYNC_STATE:
@@ -63,12 +66,16 @@ public class FiltersAdapter extends RecyclerView.Adapter<FilterHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull FilterHolder holder, int position) {
-        holder.bind();
+        if(holder instanceof EnrollmentDateFilterHolder){
+            ((EnrollmentDateFilterHolder)holder).updateLabel(enrollmentDateLabel).bind();
+        }else {
+            holder.bind();
+        }
     }
 
     @Override
     public int getItemCount() {
-        return filtersList.size(); //TODO: Should change depending on the screen
+        return filtersList.size();
     }
 
     @Override
@@ -98,11 +105,30 @@ public class FiltersAdapter extends RecyclerView.Adapter<FilterHolder> {
         }
     }
 
+    public void addEnrollmentDate(String enrollmentDateLabel) {
+        if (!filtersList.contains(Filters.ENROLLMENT_DATE)) {
+            this.enrollmentDateLabel = enrollmentDateLabel;
+            filtersList.add(0, Filters.ENROLLMENT_DATE);
+            notifyDataSetChanged();
+        }else if(enrollmentDateLabel!=null && !this.enrollmentDateLabel.equals(enrollmentDateLabel)){
+            this.enrollmentDateLabel = enrollmentDateLabel;
+            notifyDataSetChanged();
+        }
+    }
+
     public void removeAssignedToMe() {
         if (filtersList.contains(Filters.ASSIGNED_TO_ME)) {
             filtersList.remove(Filters.ASSIGNED_TO_ME);
         }
         FilterManager.getInstance().clearAssignToMe();
+        notifyDataSetChanged();
+    }
+
+    public void removeEnrollmentDate() {
+        if (filtersList.contains(Filters.ENROLLMENT_DATE)) {
+            filtersList.remove(Filters.ENROLLMENT_DATE);
+        }
+        FilterManager.getInstance().clearEnrollmentDate();
         notifyDataSetChanged();
     }
 

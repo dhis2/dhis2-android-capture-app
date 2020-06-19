@@ -15,6 +15,7 @@ import java.util.List;
 import io.reactivex.Flowable;
 import io.reactivex.processors.FlowableProcessor;
 import io.reactivex.processors.PublishProcessor;
+import kotlin.Pair;
 
 public class FilterManager {
 
@@ -29,11 +30,13 @@ public class FilterManager {
     }
 
     private int periodIdSelected;
+    private int enrollmentPeriodIdSelected;
     private int totalSearchTeiFilter = 0;
 
     private List<OrganisationUnit> ouFilters;
     private List<State> stateFilters;
     private List<DatePeriod> periodFilters;
+    private List<DatePeriod> enrollmentPeriodFilters;
     private List<CategoryOptionCombo> catOptComboFilters;
     private List<EventStatus> eventStatusFilters;
     private boolean assignedFilter;
@@ -41,13 +44,14 @@ public class FilterManager {
     private ObservableField<Integer> ouFiltersApplied;
     private ObservableField<Integer> stateFiltersApplied;
     private ObservableField<Integer> periodFiltersApplied;
+    private ObservableField<Integer> enrollmentPeriodFiltersApplied;
     private ObservableField<Integer> catOptCombFiltersApplied;
     private ObservableField<Integer> eventStatusFiltersApplied;
     private ObservableField<Integer> assignedToMeApplied;
 
     private FlowableProcessor<FilterManager> filterProcessor;
     private FlowableProcessor<Boolean> ouTreeProcessor;
-    private FlowableProcessor<PeriodRequest> periodRequestProcessor;
+    private FlowableProcessor<Pair<PeriodRequest, Filters>> periodRequestProcessor;
 
     private static FilterManager instance;
 
@@ -69,6 +73,7 @@ public class FilterManager {
         ouFilters = new ArrayList<>();
         stateFilters = new ArrayList<>();
         periodFilters = null;
+        enrollmentPeriodFilters = null;
         catOptComboFilters = new ArrayList<>();
         eventStatusFilters = new ArrayList<>();
         assignedFilter = false;
@@ -76,6 +81,7 @@ public class FilterManager {
         ouFiltersApplied = new ObservableField<>(0);
         stateFiltersApplied = new ObservableField<>(0);
         periodFiltersApplied = new ObservableField<>(0);
+        enrollmentPeriodFiltersApplied = new ObservableField<>(0);
         catOptCombFiltersApplied = new ObservableField<>(0);
         eventStatusFiltersApplied = new ObservableField<>(0);
         assignedToMeApplied = new ObservableField<>(0);
@@ -89,8 +95,16 @@ public class FilterManager {
         this.periodIdSelected = selected;
     }
 
+    public void setEnrollmentPeriodIdSelected(int selected) {
+        this.enrollmentPeriodIdSelected = selected;
+    }
+
     public int getPeriodIdSelected() {
         return this.periodIdSelected;
+    }
+
+    public int getEnrollmentPeriodIdSelected() {
+        return this.enrollmentPeriodIdSelected;
     }
 
 //    region STATE FILTERS
@@ -106,7 +120,7 @@ public class FilterManager {
                 stateFilters.contains(State.TO_UPDATE) &&
                 stateFilters.contains(State.UPLOADING)) {
             stateFiltersApplied.set(stateFilters.size() - 2);
-        }else {
+        } else {
             stateFiltersApplied.set(stateFilters.size());
         }
         filterProcessor.onNext(this);
@@ -133,6 +147,13 @@ public class FilterManager {
         this.periodFilters = datePeriod;
 
         periodFiltersApplied.set(datePeriod != null ? 1 : 0);
+        filterProcessor.onNext(this);
+    }
+
+    public void addEnrollmentPeriod(List<DatePeriod> datePeriod) {
+        this.enrollmentPeriodFilters = datePeriod;
+
+        enrollmentPeriodFiltersApplied.set(datePeriod != null ? 1 : 0);
         filterProcessor.onNext(this);
     }
 
@@ -166,6 +187,8 @@ public class FilterManager {
                 return stateFiltersApplied;
             case PERIOD:
                 return periodFiltersApplied;
+            case ENROLLMENT_DATE:
+                return enrollmentPeriodFiltersApplied;
             case CAT_OPT_COMB:
                 return catOptCombFiltersApplied;
             case EVENT_STATUS:
@@ -185,7 +208,7 @@ public class FilterManager {
         return filterProcessor;
     }
 
-    public FlowableProcessor<PeriodRequest> getPeriodRequest() {
+    public FlowableProcessor<Pair<PeriodRequest, Filters>> getPeriodRequest() {
         return periodRequestProcessor;
     }
 
@@ -197,15 +220,20 @@ public class FilterManager {
         int ouIsApplying = ouFilters.isEmpty() ? 0 : 1;
         int stateIsApplying = stateFilters.isEmpty() ? 0 : 1;
         int periodIsApplying = periodFilters == null ? 0 : 1;
+        int enrollmentPeriodIsApplying = enrollmentPeriodFilters == null ? 0 : 1;
         int eventStatusApplying = eventStatusFilters.isEmpty() ? 0 : 1;
         int catComboApplying = catOptComboFilters.isEmpty() ? 0 : 1;
         int assignedApplying = assignedFilter ? 1 : 0;
         return ouIsApplying + stateIsApplying + periodIsApplying +
-                eventStatusApplying + catComboApplying + assignedApplying;
+                eventStatusApplying + catComboApplying + assignedApplying + enrollmentPeriodIsApplying;
     }
 
     public List<DatePeriod> getPeriodFilters() {
         return periodFilters != null ? periodFilters : new ArrayList<>();
+    }
+
+    public List<DatePeriod> getEnrollmentPeriodFilters() {
+        return enrollmentPeriodFilters != null ? enrollmentPeriodFilters : new ArrayList<>();
     }
 
     public List<OrganisationUnit> getOrgUnitFilters() {
@@ -228,10 +256,9 @@ public class FilterManager {
         return eventStatusFilters;
     }
 
-    public void addPeriodRequest(PeriodRequest periodRequest) {
-        periodRequestProcessor.onNext(periodRequest);
+    public void addPeriodRequest(PeriodRequest periodRequest, Filters filter) {
+        periodRequestProcessor.onNext(new Pair<>(periodRequest, filter));
     }
-
 
     public void removeAll() {
         ouFilters = new ArrayList<>();
@@ -270,9 +297,17 @@ public class FilterManager {
         filterProcessor.onNext(this);
     }
 
-    public void clearAssignToMe(){
+    public void clearAssignToMe() {
         assignedFilter = false;
         assignedToMeApplied.set(0);
+        filterProcessor.onNext(this);
+    }
+
+    public void clearEnrollmentDate() {
+        if(enrollmentPeriodFilters!=null) {
+            enrollmentPeriodFilters.clear();
+        }
+        enrollmentPeriodFiltersApplied.set(catOptComboFilters.size());
         filterProcessor.onNext(this);
     }
 
@@ -282,6 +317,7 @@ public class FilterManager {
         stateFilters.clear();
         ouFilters.clear();
         periodFilters = null;
+        enrollmentPeriodFilters = null;
         periodIdSelected = 0;
         assignedFilter = false;
 
@@ -312,4 +348,5 @@ public class FilterManager {
         assignedToMeApplied.set(isChecked ? 1 : 0);
         filterProcessor.onNext(this);
     }
+
 }
