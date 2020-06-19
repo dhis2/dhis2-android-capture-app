@@ -24,7 +24,6 @@
             android:id="@+id/orgUnitSearchLayout"
             android:layout_width="match_parent"
             android:layout_height="48dp"
-            android:background="?colorPrimary"
             android:elevation="1dp"
             android:visibility="@{currentFilter == filterType ? View.VISIBLE : View.GONE}"
             app:layout_constraintTop_toTopOf="parent">
@@ -110,7 +109,7 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="?colorPrimaryDark"
+            android:background="#32000000"
             android:paddingStart="16dp"
             android:paddingEnd="16dp"
             android:visibility="@{currentFilter == filterType ? View.VISIBLE : View.GONE}"

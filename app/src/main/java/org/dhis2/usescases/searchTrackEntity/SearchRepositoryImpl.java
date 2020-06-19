@@ -189,12 +189,14 @@ public class SearchRepositoryImpl implements SearchRepository {
                     .mapByPage(list -> filterByStatus(list, eventStatuses))
                     .mapByPage(this::filterDeleted)
                     .mapByPage(list -> TrackedEntityInstanceExtensionsKt.filterDeletedEnrollment(list, d2, selectedProgram != null ? selectedProgram.uid() : null))
+                    .mapByPage(list -> TrackedEntityInstanceExtensionsKt.filterEnrollmentStatus(list, d2, selectedProgram != null ? selectedProgram.uid() : null, FilterManager.getInstance().getEnrollmentStatusFilters()))
                     .map(tei -> transform(tei, selectedProgram, false));
         } else {
             dataSource = trackedEntityInstanceQuery.offlineOnly().getDataSource()
                     .mapByPage(list -> filterByStatus(list, eventStatuses))
                     .mapByPage(this::filterDeleted)
                     .mapByPage(list -> TrackedEntityInstanceExtensionsKt.filterDeletedEnrollment(list, d2, selectedProgram != null ? selectedProgram.uid() : null))
+                    .mapByPage(list -> TrackedEntityInstanceExtensionsKt.filterEnrollmentStatus(list, d2, selectedProgram != null ? selectedProgram.uid() : null, FilterManager.getInstance().getEnrollmentStatusFilters()))
                     .map(tei -> transform(tei, selectedProgram, true));
         }
 
@@ -231,6 +233,7 @@ public class SearchRepositoryImpl implements SearchRepository {
                     .map(list -> filterByStatus(list, eventStatuses))
                     .map(this::filterDeleted)
                     .map(list -> TrackedEntityInstanceExtensionsKt.filterDeletedEnrollment(list, d2, selectedProgram != null ? selectedProgram.uid() : null))
+                    .map(list -> TrackedEntityInstanceExtensionsKt.filterEnrollmentStatus(list, d2, selectedProgram != null ? selectedProgram.uid() : null, FilterManager.getInstance().getEnrollmentStatusFilters()))
                     .flatMapIterable(list -> list)
                     .map(tei -> transform(tei, selectedProgram, false))
                     .toList().toFlowable();
@@ -239,6 +242,7 @@ public class SearchRepositoryImpl implements SearchRepository {
                     .map(list -> filterByStatus(list, eventStatuses))
                     .map(this::filterDeleted)
                     .map(list -> TrackedEntityInstanceExtensionsKt.filterDeletedEnrollment(list, d2, selectedProgram != null ? selectedProgram.uid() : null))
+                    .map(list -> TrackedEntityInstanceExtensionsKt.filterEnrollmentStatus(list, d2, selectedProgram != null ? selectedProgram.uid() : null, FilterManager.getInstance().getEnrollmentStatusFilters()))
                     .flatMapIterable(list -> list)
                     .map(tei -> transform(tei, selectedProgram, true))
                     .toList().toFlowable();
@@ -256,6 +260,10 @@ public class SearchRepositoryImpl implements SearchRepository {
             trackedEntityInstanceQuery = trackedEntityInstanceQuery.byProgram().eq(selectedProgram.uid());
         else
             trackedEntityInstanceQuery = trackedEntityInstanceQuery.byTrackedEntityType().eq(trackedEntityType);
+
+        if (!FilterManager.getInstance().getEnrollmentStatusFilters().isEmpty()) {
+            //TODO: THE SDK NEEDS TO PROVIDE A WAY TO SET ENROLLMENT STATUS SO WE CAN SEARCH BOTH LOCAL AND ONLINE
+        }
 
         OrganisationUnitMode ouMode;
         if (orgUnits.isEmpty()) {
@@ -482,7 +490,7 @@ public class SearchRepositoryImpl implements SearchRepository {
                                 .build()
                 ).build()
         );
-        for(Relationship relationship : relationships) {
+        for (Relationship relationship : relationships) {
             RelationshipType relationshipType =
                     d2.relationshipModule().relationshipTypes().uid(relationship.relationshipType()).blockingGet();
 
@@ -530,7 +538,7 @@ public class SearchRepositoryImpl implements SearchRepository {
                 .byDisplayInList().isTrue()
                 .orderBySortOrder(RepositoryScope.OrderByDirection.ASC)
                 .blockingGet();
-        for(ProgramTrackedEntityAttribute programAttribute : programTrackedEntityAttributes){
+        for (ProgramTrackedEntityAttribute programAttribute : programTrackedEntityAttributes) {
             attributeUids.add(programAttribute.trackedEntityAttribute().uid());
         }
         values = d2.trackedEntityModule().trackedEntityAttributeValues()
