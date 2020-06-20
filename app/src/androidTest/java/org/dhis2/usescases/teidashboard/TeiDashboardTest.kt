@@ -276,9 +276,10 @@ class TeiDashboardTest : BaseTest() {
     }
 
     @Test
-    @Ignore
     fun shouldEnrollToOtherProgramWhenClickOnProgramEnrollments() {
-        val womanProgram = 4
+        val womanProgram = "MNCH / PNC (Adult Woman)"
+        val personAttribute = "Attributes - Person"
+
         prepareTeiToEnrollToOtherProgramAndLaunchActivity(rule)
 
         teiDashboardRobot {
@@ -289,25 +290,18 @@ class TeiDashboardTest : BaseTest() {
         enrollmentRobot {
             clickOnAProgramForEnrollment(womanProgram)
             clickOnAcceptEnrollmentDate()
-            clickOnPersonAttributes(5)
-            clickOnCalendarItem(5)
+            clickOnPersonAttributes(personAttribute)
+            clickOnCalendarItem()
             clickOnAcceptEnrollmentDate()
             scrollToBottomProgramForm()
             clickOnSaveEnrollment()
         }
 
-        eventRobot {
-            //typeOnRequiredEventForm("test", 4)
-            scrollToBottomForm()
-            clickOnFormFabButton()
-            clickOnFinish()
-        }
-
         teiDashboardRobot {
-            //check event was created
-            //checkEventWasCreatedAndOpen("ANC 1st visit", 3)
-            //checkEventWasScheduled("Baby Postnatal", 0)
-            //checkEventWasCreatedAndOpen("Birth", 1)
+            checkEventWasScheduled("PNC Visit", 0)
+            checkEventWasScheduled("Delivery", 1)
+            checkEventWasScheduled("ANC Visit (2-4+)", 2)
+            checkEventWasCreatedAndOpen("ANC 1st visit", 3)
         }
 
     }
