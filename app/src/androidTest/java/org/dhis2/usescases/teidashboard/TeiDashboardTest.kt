@@ -307,9 +307,18 @@ class TeiDashboardTest : BaseTest() {
     }
 
     @Test
-    @Ignore
     fun shouldSuccessfullyCreateRelationshipWhenClickAdd() {
-        prepareTeiCompletedProgrammeAndLaunchActivity(rule)
+        val teiName = "Tim"
+        val teiLastName = "Johnson"
+
+        setupCredentials()
+        prepareChildProgrammeIntentAndLaunchActivity(ruleSearch)
+
+        searchTeiRobot {
+            closeSearchForm()
+            Thread.sleep(4000)
+            clickOnTEI(teiName, teiLastName)
+        }
 
         teiDashboardRobot {
             clickOnRelationshipTab()
@@ -318,10 +327,17 @@ class TeiDashboardTest : BaseTest() {
         relationshipRobot {
             clickOnFabAdd()
             clickOnRelationshipType()
-            // click on a TEI
-            // check relationship was created
-            Thread.sleep(5000)
-            //    clickOnMotherRelationship()
+            Thread.sleep(4000)
+        }
+
+        searchTeiRobot {
+            closeSearchForm()
+            Thread.sleep(4000)
+            clickOnTEI("Filona", "Ryder")
+        }
+
+        relationshipRobot {
+            checkRelationshipWasCreated(0, "Ryder Filona")
         }
     }
 
