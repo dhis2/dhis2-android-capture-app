@@ -42,15 +42,11 @@ class TeiMapManager(
                     ?.setGeoJson(teiFeatureCollections[ENROLLMENT])
             }
             .also {
-                this.eventsFeatureCollection.apply {
-                    keys.forEach { key ->
-                        (style?.getSource(key) as GeoJsonSource?)
-                            ?.setGeoJson(this[key])
-                    }
+                this.eventsFeatureCollection.keys.forEach { key ->
+                    (style?.getSource(key) as GeoJsonSource?)
+                        ?.setGeoJson(this.eventsFeatureCollection[key])
                 }
-            } ?: run {
-            loadDataForStyle()
-        }
+            } ?: run { loadDataForStyle() }
         initCameraPosition(boundingBox)
     }
 
