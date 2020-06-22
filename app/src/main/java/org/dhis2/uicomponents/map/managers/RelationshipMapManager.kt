@@ -33,7 +33,6 @@ class RelationshipMapManager : MapManager() {
                 mapLayerManager.mapLayers.isNotEmpty() -> updateStyleSources()
                 else -> loadDataForStyle()
             }
-            initCameraPosition(boundingBox)
         }
     }
 
@@ -82,6 +81,7 @@ class RelationshipMapManager : MapManager() {
             style?.getSourceAs<GeoJsonSource>(it)?.setGeoJson(featureCollections[it])
                 ?: style?.addSource(GeoJsonSource(it, featureCollections[it]))
         }
+        initCameraPosition(boundingBox)
     }
 
     override fun setLayer() {
