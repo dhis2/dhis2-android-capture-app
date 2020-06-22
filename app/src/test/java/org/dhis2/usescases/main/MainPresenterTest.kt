@@ -64,7 +64,7 @@ class MainPresenterTest {
             BehaviorProcessor.create()
         whenever(filterManager.asFlowable()) doReturn Flowable.just(filterManager)
         whenever(filterManager.periodRequest) doReturn periodRequest
-        periodRequest.onNext(Pair(FilterManager.PeriodRequest.FROM_TO,null))
+        periodRequest.onNext(Pair(FilterManager.PeriodRequest.FROM_TO, null))
 
         presenter.initFilters()
 
