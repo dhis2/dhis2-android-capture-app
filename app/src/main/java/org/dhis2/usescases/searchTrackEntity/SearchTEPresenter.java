@@ -262,20 +262,11 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                                         .map(teis -> new kotlin.Pair<>(teis, searchRepository.getEventsForMap(teis)))
                                         .map(teis -> {
                                                     List<EventUiComponentModel> eventsUi = eventToEventUiComponent.mapList(teis.component2());
-                                                    return new kotlin.Pair<>(teis.component1(), eventsUi);
+                                                    kotlin.Pair<HashMap<String, FeatureCollection>, BoundingBox> teisFeatCollection = mapTeisToFeatureCollection.map(teis.component1());
+                                                    EventsByProgramStage events = mapTeiEventsToFeatureCollection.map(eventsUi).component1();
+                                                    return new kotlin.Triple<>(teis.component1(), teisFeatCollection, events);
                                                 }
                                             )
-                                        .map(teisAndEvents -> new Triple<>(teisAndEvents.component1(),
-                                                mapTeisToFeatureCollection.map(teisAndEvents.component1()),
-                                                mapTeiEventsToFeatureCollection.map(teisAndEvents.component2()))
-                                        )
-                                .map(triple -> {
-                                    HashMap<String, FeatureCollection> teis = triple.component2().component1();
-                                    EventsByProgramStage events = triple.component3().component1();
-                                    kotlin.Triple<HashMap<String, FeatureCollection>, BoundingBox, EventsByProgramStage> feat = new kotlin.Triple<>(teis, triple.component2().component2(), events);
-                                    return new kotlin.Pair<>(triple.component1(), feat);
-                                })
-
                         )
                         .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.ui())
@@ -284,7 +275,8 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                                         teiAndMap.component1(),
                                         teiAndMap.component2().component1(),
                                         teiAndMap.component2().component2(),
-                                        teiAndMap.component2().component3()),
+                                        teiAndMap.component3()
+                                ),
                                 Timber::e,
                                 () -> Timber.d("COMPLETED")
                         ));
