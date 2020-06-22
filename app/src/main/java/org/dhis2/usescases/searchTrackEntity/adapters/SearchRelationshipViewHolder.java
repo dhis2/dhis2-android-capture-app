@@ -15,6 +15,7 @@ import org.dhis2.utils.ObjectStyleUtils;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade;
@@ -35,7 +36,7 @@ public class SearchRelationshipViewHolder extends RecyclerView.ViewHolder {
     public void bind(SearchTEContractsModule.Presenter presenter, SearchTeiModel teiModel) {
         binding.setPresenter(presenter);
 
-        setTEIData(teiModel.getAttributeValues());
+        setTEIData(new ArrayList<>(teiModel.getAttributeValues().values()));
         binding.executePendingBindings();
         itemView.setOnClickListener(view -> presenter.addRelationship(teiModel.getTei().uid(), null, teiModel.isOnline()));
 
