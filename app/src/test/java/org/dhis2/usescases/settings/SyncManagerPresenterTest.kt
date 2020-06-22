@@ -14,6 +14,7 @@ import org.dhis2.data.service.workManager.WorkManagerController
 import org.dhis2.data.service.workManager.WorkerItem
 import org.dhis2.data.service.workManager.WorkerType
 import org.dhis2.usescases.settings.models.DataSettingsViewModel
+import org.dhis2.usescases.settings.models.ErrorModelMapper
 import org.dhis2.usescases.settings.models.MetadataSettingsViewModel
 import org.dhis2.usescases.settings.models.ReservedValueSettingsViewModel
 import org.dhis2.usescases.settings.models.SMSSettingsViewModel
@@ -36,6 +37,7 @@ class SyncManagerPresenterTest {
     private val settingsRepository: SettingsRepository = mock()
     private val view: SyncManagerContracts.View = mock()
     private val analyticsHelper: AnalyticsHelper = mock()
+    private val errorMapper: ErrorModelMapper = mock()
 
     @Before
     fun setUp() {
@@ -47,7 +49,8 @@ class SyncManagerPresenterTest {
             workManagerController,
             settingsRepository,
             view,
-            analyticsHelper
+            analyticsHelper,
+            errorMapper
         )
     }
 
