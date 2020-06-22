@@ -636,8 +636,6 @@ public class SearchRepositoryImpl implements SearchRepository {
         return eventViewModels;
     }
 
-    // Private Region Start//
-
     private List<TrackedEntityInstance> filterDeleted(List<TrackedEntityInstance> teis) {
         Iterator<TrackedEntityInstance> iterator = teis.iterator();
         while (iterator.hasNext()) {
@@ -751,5 +749,4 @@ public class SearchRepositoryImpl implements SearchRepository {
                 d2.trackedEntityModule().trackedEntityAttributes().uid(attrUid).blockingGet().valueType() == ValueType.IMAGE;
     }
 
-    // Private Region End//
 }
