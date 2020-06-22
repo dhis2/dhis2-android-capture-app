@@ -28,7 +28,7 @@ class RelationshipRobot : BaseRobot() {
         onView(
             allOf(
                 withId(R.id.rfab__content_label_list_root_view),
-                hasDescendant(withText("Mother-Child_a-to-b_(Person-Person)"))
+                hasDescendant(withText(relationshipType))
             )
         ).perform(click())
     }
@@ -40,11 +40,15 @@ class RelationshipRobot : BaseRobot() {
                     isDisplayed(), isNotEmpty(),
                     atPosition(
                         position, allOf(
-                            hasDescendant(withText("Mother-Child_a-to-b_(Person-Person)")),
+                            hasDescendant(withText(relationshipType)),
                             hasDescendant(withText(tei))
                         )
                     )
                 )
             ))
+    }
+
+    companion object {
+        const val relationshipType = "Mother-Child_a-to-b_(Person-Person)"
     }
 }
