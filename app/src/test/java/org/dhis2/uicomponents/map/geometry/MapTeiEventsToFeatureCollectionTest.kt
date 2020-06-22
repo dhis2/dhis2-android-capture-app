@@ -10,13 +10,11 @@ import org.dhis2.uicomponents.map.geometry.bound.GetBoundingBox
 import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapTeiEventsToFeatureCollection
 import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapTeiEventsToFeatureCollection.Companion.EVENT_UID
 import org.dhis2.uicomponents.map.geometry.point.MapPointToFeature
-import org.dhis2.uicomponents.map.geometry.polygon.MapPolygonPointToFeature
 import org.dhis2.uicomponents.map.geometry.polygon.MapPolygonToFeature
+import org.dhis2.uicomponents.map.mocks.GeometryDummy.getGeometryAsPoint
 import org.dhis2.uicomponents.map.model.EventUiComponentModel
 import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.MatcherAssert.assertThat
-import org.hisp.dhis.android.core.common.FeatureType
-import org.hisp.dhis.android.core.common.Geometry
 import org.hisp.dhis.android.core.event.Event
 import org.junit.Before
 import org.junit.Test
@@ -27,7 +25,6 @@ class MapTeiEventsToFeatureCollectionTest {
     private val bounds: GetBoundingBox = mock()
     private val mapPointToFeature: MapPointToFeature = mock()
     private val mapPolygonToFeature: MapPolygonToFeature = mock()
-    private val mapPolygonPointToFeature: MapPolygonPointToFeature = mock()
 
     @Before
     fun setUp() {
@@ -65,10 +62,7 @@ class MapTeiEventsToFeatureCollectionTest {
             "stageDisplayName",
             "eventUid",
             Event.builder().uid(EVENTUID).geometry(
-                Geometry.builder()
-                    .type(FeatureType.POINT)
-                    .coordinates("[$POINT_LONGITUDE,$POINT_LATITUDE]")
-                    .build()
+                getGeometryAsPoint("[$POINT_LONGITUDE, $POINT_LATITUDE]")
             ).build(),
             Date()
         )
