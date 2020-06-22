@@ -2,9 +2,8 @@ package org.dhis2.uicomponents.map.geometry.mapper.featurecollection
 
 import com.mapbox.geojson.BoundingBox
 import com.mapbox.geojson.FeatureCollection
-import com.mapbox.geojson.Point
 import org.dhis2.uicomponents.map.geometry.bound.GetBoundingBox
-import org.dhis2.uicomponents.map.geometry.getPointLatLng
+import org.dhis2.uicomponents.map.geometry.getLatLngPointList
 import org.dhis2.uicomponents.map.geometry.mapper.EventsByProgramStage
 import org.dhis2.uicomponents.map.geometry.mapper.addTeiEventInfo
 import org.dhis2.uicomponents.map.geometry.point.MapPointToFeature
@@ -42,9 +41,7 @@ class MapTeiEventsToFeatureCollection(
 
         val featureCollection = EventsByProgramStage(EVENT, featureCollectionMap)
 
-        val latLngList = eventsByProgramStage.values.flatten()
-            .filter { it?.geometry() is Point }
-            .map { it.getPointLatLng() }
+        val latLngList = eventsByProgramStage.values.flatten().getLatLngPointList()
 
         return Pair(
             featureCollection,
