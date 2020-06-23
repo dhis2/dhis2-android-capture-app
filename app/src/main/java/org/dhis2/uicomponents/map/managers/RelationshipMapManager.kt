@@ -4,6 +4,7 @@ import androidx.appcompat.content.res.AppCompatResources
 import com.mapbox.geojson.BoundingBox
 import com.mapbox.geojson.FeatureCollection
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource
+import com.mapbox.mapboxsdk.utils.BitmapUtils
 import org.dhis2.R
 import org.dhis2.uicomponents.map.layer.LayerType
 import org.hisp.dhis.android.core.common.FeatureType
@@ -12,6 +13,8 @@ class RelationshipMapManager : MapManager() {
 
     companion object {
         const val RELATIONSHIP_ICON = "RELATIONSHIP_ICON"
+        const val RELATIONSHIP_ARROW = "RELATIONSHIP_ARROW"
+        const val RELATIONSHIP_ARROW_BIDIRECTIONAL = "RELATIONSHIP_ARROW_BIDIRECTIONAL"
     }
 
     private lateinit var boundingBox: BoundingBox
@@ -30,17 +33,39 @@ class RelationshipMapManager : MapManager() {
                 mapLayerManager.mapLayers.isNotEmpty() -> updateStyleSources()
                 else -> loadDataForStyle()
             }
-            initCameraPosition(boundingBox)
         }
     }
 
     override fun loadDataForStyle() {
         style?.addImage(
+            RELATIONSHIP_ARROW,
+            BitmapUtils.getBitmapFromDrawable(
+                AppCompatResources.getDrawable(
+                    mapView.context,
+                    R.drawable.ic_arrowhead
+                )
+            )!!,
+            true
+        )
+        style?.addImage(
             RELATIONSHIP_ICON,
-            AppCompatResources.getDrawable(
-                mapView.context,
-                R.drawable.map_marker
-            )!!
+            BitmapUtils.getBitmapFromDrawable(
+                AppCompatResources.getDrawable(
+                    mapView.context,
+                    R.drawable.map_marker
+                )
+            )!!,
+            true
+        )
+        style?.addImage(
+            RELATIONSHIP_ARROW_BIDIRECTIONAL,
+            BitmapUtils.getBitmapFromDrawable(
+                AppCompatResources.getDrawable(
+                    mapView.context,
+                    R.drawable.ic_arrowhead_bidirectional
+                )
+            )!!,
+            true
         )
         setSource()
         setLayer()
@@ -56,6 +81,7 @@ class RelationshipMapManager : MapManager() {
             style?.getSourceAs<GeoJsonSource>(it)?.setGeoJson(featureCollections[it])
                 ?: style?.addSource(GeoJsonSource(it, featureCollections[it]))
         }
+        initCameraPosition(boundingBox)
     }
 
     override fun setLayer() {

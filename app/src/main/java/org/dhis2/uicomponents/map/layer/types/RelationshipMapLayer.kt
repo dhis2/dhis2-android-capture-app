@@ -31,6 +31,13 @@ class RelationshipMapLayer(
 
     private val LINE_LAYER_ID: String = "RELATIONSHIP_LINE_LAYER_ID_$sourceId"
     private val SELECTED_LINE_LAYER_ID: String = "SELECTED_RELATIONSHIP_LINE_LAYER_ID_$sourceId"
+    private val LINE_ARROW_LAYER_ID: String = "RELATIONSHIP_LINE_ARROW_LAYER_ID_$sourceId"
+    private val SELECTED_LINE_ARROW_LAYER_ID: String =
+        "SELECTED_RELATIONSHIP_LINE_ARROW_LAYER_ID_$sourceId"
+    private val LINE_ARROW_BIDIRECTIONAL_LAYER_ID: String =
+        "RELATIONSHIP_LINE_ARROW_BIDIRECTIONAL_LAYER_ID_$sourceId"
+    private val SELECTED_LINE_ARROW_BIDIRECTIONAL_LAYER_ID: String =
+        "SELECTED_RELATIONSHIP_LINE_ARROW_BIDIRECTIONAL_LAYER_ID_$sourceId"
 
     private val POINT_LAYER_ID: String = "RELATIONSHIP_POINT_LAYER_ID_$sourceId"
     private val SELECTED_POINT_LAYER_ID: String = "SELECTED_RELATIONSHIP_POINT_LAYER_ID_$sourceId"
@@ -61,6 +68,8 @@ class RelationshipMapLayer(
                 style.addLayerAbove(selectedPointLayer, BASE_RELATIONSHIP_LAYER_ID)
                 style.addLayerAbove(linesLayer, BASE_RELATIONSHIP_LAYER_ID)
                 style.addLayerAbove(selectedLineLayer, BASE_RELATIONSHIP_LAYER_ID)
+                style.addLayerAbove(arrowLayer, BASE_RELATIONSHIP_LAYER_ID)
+                style.addLayerAbove(arrowBidirectionalLayer, BASE_RELATIONSHIP_LAYER_ID)
             }
             FeatureType.POLYGON -> {
                 style.addLayer(linesLayer)
@@ -98,13 +107,70 @@ class RelationshipMapLayer(
                     lineCap(LINE_CAP_SQUARE)
                 )
 
+    private val arrowLayer: Layer
+        get() = style.getLayer(LINE_ARROW_LAYER_ID)
+            ?: SymbolLayer(LINE_ARROW_LAYER_ID, sourceId)
+                .withProperties(
+                    PropertyFactory.iconImage(RelationshipMapManager.RELATIONSHIP_ARROW),
+                    PropertyFactory.iconAllowOverlap(true),
+                    PropertyFactory.symbolPlacement(Property.SYMBOL_PLACEMENT_LINE_CENTER),
+                    PropertyFactory.iconColor(lineColor ?: LINE_COLOR)
+                ).withFilter(
+                    Expression.eq(
+                        Expression.literal("\$type"),
+                        Expression.literal("LineString")
+                    )
+                ).withFilter(
+                    Expression.eq(
+                        Expression.get(MapRelationshipsToFeatureCollection.BIDIRECTIONAL),
+                        false
+                    )
+                )
+    private val arrowBidirectionalLayer: Layer
+        get() = style.getLayer(LINE_ARROW_BIDIRECTIONAL_LAYER_ID)
+            ?: SymbolLayer(LINE_ARROW_BIDIRECTIONAL_LAYER_ID, sourceId)
+                .withProperties(
+                    PropertyFactory.iconImage(
+                        RelationshipMapManager.RELATIONSHIP_ARROW_BIDIRECTIONAL
+                    ),
+                    PropertyFactory.iconAllowOverlap(true),
+                    PropertyFactory.symbolPlacement(Property.SYMBOL_PLACEMENT_LINE_CENTER),
+                    PropertyFactory.iconColor(lineColor ?: LINE_COLOR)
+                ).withFilter(
+                    Expression.eq(
+                        Expression.literal("\$type"),
+                        Expression.literal("LineString")
+                    )
+                ).withFilter(
+                    Expression.eq(
+                        Expression.get(MapRelationshipsToFeatureCollection.BIDIRECTIONAL),
+                        true
+                    )
+                )
+    private val selectedArrowLayer: Layer
+        get() = style.getLayer(SELECTED_LINE_ARROW_LAYER_ID)
+            ?: SymbolLayer(SELECTED_LINE_ARROW_LAYER_ID, sourceId)
+                .withProperties(
+                    PropertyFactory.iconImage(RelationshipMapManager.RELATIONSHIP_ICON),
+                    PropertyFactory.iconAllowOverlap(true),
+                    PropertyFactory.visibility(Property.NONE),
+                    PropertyFactory.symbolPlacement(Property.SYMBOL_PLACEMENT_LINE_CENTER),
+                    PropertyFactory.iconColor(lineColor ?: LINE_COLOR)
+                ).withFilter(
+                    Expression.eq(
+                        Expression.literal("\$type"),
+                        Expression.literal("LineString")
+                    )
+                )
+
     private val pointLayer: Layer
         get() = style.getLayer(POINT_LAYER_ID)
             ?: SymbolLayer(POINT_LAYER_ID, sourceId)
                 .withProperties(
                     PropertyFactory.iconImage(RelationshipMapManager.RELATIONSHIP_ICON),
                     PropertyFactory.iconAllowOverlap(true),
-                    PropertyFactory.visibility(Property.NONE)
+                    PropertyFactory.visibility(Property.NONE),
+                    PropertyFactory.iconColor(lineColor ?: LINE_COLOR)
                 ).withFilter(
                     Expression.eq(
                         Expression.literal("\$type"),
@@ -118,7 +184,8 @@ class RelationshipMapLayer(
                 .withProperties(
                     PropertyFactory.iconImage(RelationshipMapManager.RELATIONSHIP_ICON),
                     PropertyFactory.iconAllowOverlap(true),
-                    PropertyFactory.visibility(Property.NONE)
+                    PropertyFactory.visibility(Property.NONE),
+                    PropertyFactory.iconColor(lineColor ?: LINE_COLOR)
                 ).withFilter(
                     Expression.eq(
                         Expression.literal("\$type"),
@@ -255,21 +322,25 @@ class RelationshipMapLayer(
                     featureUidProperty
                 )
             )
-            ?.firstOrNull()?.let {
-            setSelectedItem(it)
-            it
-        }
+            ?.firstOrNull()
+            ?.let {
+                setSelectedItem(it)
+                it
+            }
     }
 
     private fun setVisibility(visibility: String) {
         when (featureType) {
             FeatureType.POINT -> {
                 linesLayer.setProperties(PropertyFactory.visibility(visibility))
+                arrowLayer.setProperties(PropertyFactory.visibility(visibility))
+                arrowBidirectionalLayer.setProperties(PropertyFactory.visibility(visibility))
                 pointLayer.setProperties(PropertyFactory.visibility(visibility))
                 polygonLayer.setProperties(PropertyFactory.visibility(visibility))
                 selectedLineLayer.setProperties(PropertyFactory.visibility(visibility))
                 selectedPointLayer.setProperties(PropertyFactory.visibility(visibility))
-                pointLayer.setProperties(PropertyFactory.visibility(visibility))
+                selectedPolygonLayer.setProperties(PropertyFactory.visibility(visibility))
+                baseRelationshipLayer.setProperties(PropertyFactory.visibility(visibility))
             }
             FeatureType.POLYGON -> {
             }

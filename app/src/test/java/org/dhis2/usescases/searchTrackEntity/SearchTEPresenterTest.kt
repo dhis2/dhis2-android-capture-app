@@ -9,7 +9,9 @@ import io.reactivex.schedulers.TestScheduler
 import junit.framework.TestCase.assertTrue
 import org.dhis2.data.prefs.PreferenceProvider
 import org.dhis2.data.schedulers.TestSchedulerProvider
+import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapTeiEventsToFeatureCollection
 import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapTeisToFeatureCollection
+import org.dhis2.uicomponents.map.mapper.EventToEventUiComponent
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.dhis2.utils.filters.FilterManager
 import org.hisp.dhis.android.core.D2
@@ -28,6 +30,8 @@ class SearchTEPresenterTest {
     private val schedulers: TestSchedulerProvider = TestSchedulerProvider(TestScheduler())
     private val analyticsHelper: AnalyticsHelper = mock()
     private val mapTeisToFeatureCollection: MapTeisToFeatureCollection = mock()
+    private val mapTeiEventsToFeatureCollection: MapTeiEventsToFeatureCollection = mock()
+    private val eventToEventUiComponent: EventToEventUiComponent = mock()
     private val initialProgram = "programUid"
     private val preferenceProvider: PreferenceProvider = mock()
 
@@ -47,6 +51,8 @@ class SearchTEPresenterTest {
             analyticsHelper,
             initialProgram,
             mapTeisToFeatureCollection,
+            mapTeiEventsToFeatureCollection,
+            eventToEventUiComponent,
             preferenceProvider
         )
     }

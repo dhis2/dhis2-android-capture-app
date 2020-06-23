@@ -16,7 +16,7 @@
             type="java.lang.Boolean" />
 
         <variable
-            name="syncState"
+            name="teiSyncState"
             type="org.hisp.dhis.android.core.common.State" />
 
         <variable
@@ -24,8 +24,16 @@
             type="java.util.List&lt;org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue&gt;" />
 
         <variable
+            name="attributeNames"
+            type="java.util.Set&lt;String&gt;" />
+
+        <variable
             name="overdue"
             type="java.lang.Boolean" />
+
+        <variable
+            name="sortingValue"
+            type="String" />
     </data>
 
     <com.google.android.material.card.MaterialCardView
@@ -36,141 +44,299 @@
         app:cardCornerRadius="4dp">
 
         <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/rootView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:minHeight="96dp">
+            android:animateLayoutChanges="true"
+            android:minHeight="96dp"
+            android:paddingEnd="16dp">
 
             <ImageView
                 android:id="@+id/tracked_entity_image"
-                android:layout_width="56dp"
-                android:layout_height="56dp"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
                 android:layout_marginStart="16dp"
-                android:layout_marginTop="8dp"
+                android:layout_marginTop="16dp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/ic_tei_default"
                 tools:background="@drawable/photo_temp_gray"
                 tools:ignore="ContentDescription" />
 
-            <ImageView
-                android:id="@+id/follow_up"
-                android:layout_width="34dp"
-                android:layout_height="34dp"
-                android:layout_gravity="center_vertical"
-                android:padding="5dp"
-                android:visibility='@{followUp ? View.VISIBLE : View.GONE}'
+            <TextView
+                android:id="@+id/imageText"
+                android:layout_width="40dp"
+                android:layout_height="20dp"
+                android:includeFontPadding="false"
+                android:textAlignment="center"
+                android:textSize="20sp"
                 app:layout_constraintBottom_toBottomOf="@id/tracked_entity_image"
                 app:layout_constraintEnd_toEndOf="@id/tracked_entity_image"
-                app:srcCompat="@drawable/ic_warning_white"
-                tools:ignore="ContentDescription"
-                tools:tint="@color/red_060" />
-
-            <ImageView
-                android:id="@+id/syncState"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="16dp"
-                android:visibility="@{isOnline?View.GONE:View.VISIBLE}"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/download"
-                app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toEndOf="@+id/overdueIcon"
-                app:layout_constraintTop_toTopOf="parent"
-                app:stateIcon="@{syncState}"
-                tools:src="@drawable/ic_sync_green" />
-
-            <ImageView
-                android:id="@+id/download"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="16dp"
-                android:tint="@color/colorGreyDefault"
-                android:visibility="@{isOnline?View.VISIBLE:View.GONE}"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toEndOf="@+id/syncState"
-                app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/ic_download" />
+                app:layout_constraintStart_toStartOf="@id/tracked_entity_image"
+                app:layout_constraintTop_toTopOf="@id/tracked_entity_image"
+                tools:text="A"
+                tools:textColor="@color/white" />
 
             <ImageView
                 android:id="@+id/overdueIcon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="16dp"
-                android:layout_toStartOf="@id/syncState"
-                android:tint="@color/colorGreyDefault"
+                android:layout_marginStart="27dp"
+                android:layout_marginTop="14dp"
                 android:visibility="@{overdue? View.VISIBLE: View.GONE}"
-                app:layout_constraintEnd_toStartOf="@+id/syncState"
-                app:layout_constraintStart_toEndOf="@+id/entity_attribute_1"
+                app:layout_constraintStart_toStartOf="@id/tracked_entity_image"
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/ic_overdue" />
+
+            <ImageView
+                android:id="@+id/follow_up"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="27dp"
+                android:layout_marginTop="34dp"
+                android:visibility='@{followUp ? View.VISIBLE : View.GONE}'
+                app:layout_constraintStart_toStartOf="@id/tracked_entity_image"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/ic_follow_up"
+                tools:ignore="ContentDescription" />
+
+            <TextView
+                android:id="@+id/enrollmentStatus"
+                android:layout_width="52dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:background="@drawable/round_border_box_2"
+                android:paddingStart="1dp"
+                android:paddingEnd="1dp"
+                android:gravity="center"
+                android:minHeight="14dp"
+                android:textAlignment="center"
+                android:textColor="#8A333333"
+                android:textSize="9sp"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="@id/tracked_entity_image"
+                app:layout_constraintStart_toStartOf="@id/tracked_entity_image"
+                app:layout_constraintTop_toBottomOf="@id/tracked_entity_image"
+                tools:text="Completed"
+                tools:visibility="visible" />
+
+            <TextView
+                android:id="@+id/attribute_a_name"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="5dp"
+                android:fontFamily="@font/rubik_regular"
+                android:text="@{attributeNames.size()>0?attributeNames.toArray()[0]:null}"
+                android:textColor="@color/text_black_DE3"
+                android:textSize="14sp"
+                android:visibility='@{attribute.size()>0?View.VISIBLE:View.GONE}'
+                app:layout_constraintStart_toEndOf="@id/tracked_entity_image"
+                app:layout_constraintTop_toTopOf="@id/tracked_entity_image"
+                tools:text="Attribute 1:" />
+
+            <TextView
+                android:id="@+id/attribute_b_name"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="5dp"
+                android:fontFamily="@font/rubik_regular"
+                android:text="@{attributeNames.size()>1?attributeNames.toArray()[1]:null}"
+                android:textColor="@color/text_black_DE3"
+                android:textSize="12sp"
+                android:visibility='@{attribute.size() > 1 ? View.VISIBLE : View.GONE}'
+                app:layout_constraintStart_toEndOf="@id/tracked_entity_image"
+                app:layout_constraintTop_toBottomOf="@id/attribute_a_name"
+                tools:text="Attribute 2:" />
+
+            <TextView
+                android:id="@+id/attribute_c_name"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="5dp"
+                android:text="@{attributeNames.size()>2?attributeNames.toArray()[2]:null}"
+                android:textColor="@color/text_black_DE3"
+                android:textSize="12sp"
+                android:visibility='@{attribute.size() > 2 ? View.VISIBLE : View.GONE}'
+                app:layout_constraintStart_toEndOf="@id/tracked_entity_image"
+                app:layout_constraintTop_toBottomOf="@id/attribute_b_name"
+                tools:text="Attribute 3:" />
+
+            <TextView
+                android:id="@+id/sorting_field_name"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="5dp"
+                android:textColor="@color/text_black_DE3"
+                android:textSize="12sp"
+                android:visibility='@{sortingValue !=null ? View.VISIBLE : View.GONE}'
+                app:layout_constraintStart_toEndOf="@id/tracked_entity_image"
+                app:layout_constraintTop_toBottomOf="@id/attribute_c_name"
+                tools:text="Sorting field:" />
 
             <TextView
                 android:id="@+id/entity_attribute_1"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="8dp"
+                android:layout_marginStart="5dp"
                 android:layout_marginEnd="5dp"
-                android:fontFamily="@font/rubik_medium"
+                android:ellipsize="end"
+                android:fontFamily="@font/rubik_regular"
+                android:singleLine="true"
                 android:text='@{attribute.size()>0 ? attribute.get(0).value() : "" , default="attribute 1"}'
-                android:textColor="@color/text_black_4d4d4d"
+                android:textColor="#61333333"
                 android:textSize="14sp"
-                android:visibility='@{attribute.size()>0?View.VISIBLE:View.INVISIBLE}'
-                app:layout_constraintEnd_toStartOf="@id/overdueIcon"
-                app:layout_constraintStart_toEndOf="@id/tracked_entity_image"
-                app:layout_constraintTop_toTopOf="parent" />
+                android:visibility='@{attribute.size()>0?View.VISIBLE:View.GONE}'
+                app:layout_constraintEnd_toStartOf="@id/infoLayout"
+                app:layout_constraintStart_toEndOf="@id/attribute_a_name"
+                app:layout_constraintTop_toTopOf="@id/attribute_a_name"
+                tools:text="dfsgsdfgsdfgsdfgsdfgsdfgsdfg" />
 
             <TextView
                 android:id="@+id/entity_attribute_2"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
+                android:layout_marginStart="5dp"
                 android:layout_marginEnd="5dp"
-                android:fontFamily="@font/rubik_medium"
+                android:ellipsize="end"
+                android:fontFamily="@font/rubik_regular"
+                android:singleLine="true"
                 android:text='@{attribute.size() > 1 ? attribute.get(1).value() : "" , default="attribute 2"}'
-                android:textColor="@color/text_black_4d4d4d"
-                android:textSize="14sp"
-                android:visibility='@{attribute.size() > 1 ? View.VISIBLE : View.INVISIBLE}'
-                app:layout_constraintEnd_toStartOf="@id/overdueIcon"
-                app:layout_constraintStart_toEndOf="@id/tracked_entity_image"
+                android:textColor="#61333333"
+                android:textSize="12sp"
+                android:visibility='@{attribute.size() > 1 ? View.VISIBLE : View.GONE}'
+                app:layout_constraintEnd_toStartOf="@id/infoLayout"
+                app:layout_constraintStart_toEndOf="@id/attribute_b_name"
                 app:layout_constraintTop_toBottomOf="@id/entity_attribute_1" />
 
             <TextView
                 android:id="@+id/entity_attribute_3"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
+                android:layout_marginStart="5dp"
                 android:layout_marginEnd="5dp"
+                android:ellipsize="end"
+                android:singleLine="true"
                 android:text='@{attribute.size() > 2 ? attribute.get(2).value() : "", default="attribute 3"}'
-                android:textColor="@color/text_black_4d4d4d"
+                android:textColor="#61333333"
                 android:textSize="12sp"
-                android:visibility='@{attribute.size() > 2 ? View.VISIBLE : View.INVISIBLE}'
-                app:layout_constraintEnd_toStartOf="@id/overdueIcon"
-                app:layout_constraintStart_toEndOf="@id/tracked_entity_image"
+                android:visibility='@{attribute.size() > 2 ? View.VISIBLE : View.GONE}'
+                app:layout_constraintEnd_toStartOf="@id/infoLayout"
+                app:layout_constraintStart_toEndOf="@id/attribute_c_name"
                 app:layout_constraintTop_toBottomOf="@id/entity_attribute_2" />
 
-            <com.google.android.material.chip.ChipGroup
-                android:id="@+id/chipContainer"
-                android:layout_width="match_parent"
+            <TextView
+                android:id="@+id/sorting_field_value"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/tracked_entity_image"
+                android:layout_marginStart="5dp"
+                android:layout_marginEnd="5dp"
+                android:ellipsize="end"
+                android:singleLine="true"
+                android:textColor="#61333333"
+                android:textSize="12sp"
+                android:visibility='@{sortingValue != null ? View.VISIBLE : View.GONE}'
+                app:layout_constraintEnd_toStartOf="@id/infoLayout"
+                app:layout_constraintStart_toEndOf="@id/sorting_field_name"
+                app:layout_constraintTop_toBottomOf="@id/entity_attribute_3"
+                tools:text="SortingValue" />
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/infoLayout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <TextView
+                    android:id="@+id/lastUpdated"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:layout_marginEnd="4dp"
+                    android:textColor="@color/text_black_8A3"
+                    android:textSize="12sp"
+                    app:layout_constraintEnd_toStartOf="@+id/syncState"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:text="2 min ago" />
+
+
+                <ImageView
+                    android:id="@+id/syncState"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginStart="4dp"
+                    android:visibility="@{isOnline?View.GONE:View.VISIBLE}"
+                    app:layout_constraintEnd_toStartOf="@+id/download"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:stateIcon="@{teiSyncState}"
+                    tools:src="@drawable/ic_sync_green" />
+
+                <ImageView
+                    android:id="@+id/download"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginStart="4dp"
+                    android:tint="@color/colorGreyDefault"
+                    android:visibility="@{isOnline?View.VISIBLE:View.GONE}"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toEndOf="@+id/syncState"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:srcCompat="@drawable/ic_download" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <LinearLayout
+                android:id="@+id/attributeList"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:orientation="vertical"
+                android:visibility="gone"
+                app:layout_constraintBottom_toTopOf="@id/showAttributesButton"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/tracked_entity_image"
+                app:layout_constraintTop_toBottomOf="@id/entity_attribute_1" />
+
+            <LinearLayout
+                android:id="@+id/programList"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
-                android:layout_marginEnd="16dp"
-                android:layout_marginBottom="8dp"
-                app:chipSpacingHorizontal="5dp"
-                app:chipSpacingVertical="1dp"
+                android:layout_marginBottom="16dp"
+                android:orientation="horizontal"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/showAttributesButton">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:background="@drawable/rounded_square"
+                    android:backgroundTint="?colorPrimaryLight"
+                    android:padding="2dp"
+                    app:srcCompat="@drawable/ic_child_health_positive" />
+            </LinearLayout>
+
+            <ImageView
+                android:id="@+id/showAttributesButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:visibility="@{attributeNames.size()>3?View.VISIBLE:View.GONE}"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/tracked_entity_image" />
-
+                app:srcCompat="@drawable/ic_arrow_down"
+                app:tint="#61333333" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </com.google.android.material.card.MaterialCardView>
 </layout>

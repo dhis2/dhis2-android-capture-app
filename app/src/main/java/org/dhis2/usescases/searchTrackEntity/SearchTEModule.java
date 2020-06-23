@@ -7,12 +7,14 @@ import org.dhis2.data.prefs.PreferenceProvider;
 import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.uicomponents.map.geometry.bound.BoundsGeometry;
 import org.dhis2.uicomponents.map.geometry.bound.GetBoundingBox;
+import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapTeiEventsToFeatureCollection;
 import org.dhis2.uicomponents.map.geometry.line.MapLineRelationshipToFeature;
 import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapRelationshipsToFeatureCollection;
 import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapTeisToFeatureCollection;
 import org.dhis2.uicomponents.map.geometry.point.MapPointToFeature;
 import org.dhis2.uicomponents.map.geometry.polygon.MapPolygonPointToFeature;
 import org.dhis2.uicomponents.map.geometry.polygon.MapPolygonToFeature;
+import org.dhis2.uicomponents.map.mapper.EventToEventUiComponent;
 import org.dhis2.uicomponents.map.mapper.MapRelationshipToRelationshipMapModel;
 import org.dhis2.utils.analytics.AnalyticsHelper;
 import org.hisp.dhis.android.core.D2;
@@ -49,10 +51,11 @@ public class SearchTEModule {
                                                        SchedulerProvider schedulerProvider,
                                                        AnalyticsHelper analyticsHelper,
                                                        MapTeisToFeatureCollection mapTeisToFeatureCollection,
+                                                       MapTeiEventsToFeatureCollection mapTeiEventsToFeatureCollection,
                                                        PreferenceProvider preferenceProvider) {
         return new SearchTEPresenter(view, d2, searchRepository, schedulerProvider,
-                analyticsHelper, initialProgram, mapTeisToFeatureCollection,
-                preferenceProvider);
+                analyticsHelper, initialProgram, mapTeisToFeatureCollection, mapTeiEventsToFeatureCollection,
+                new EventToEventUiComponent(), preferenceProvider);
     }
 
     @Provides
@@ -67,6 +70,15 @@ public class SearchTEModule {
                         new MapPolygonToFeature(),
                         new GetBoundingBox()
                 ));
+    }
+
+    @Provides
+    @PerActivity
+    MapTeiEventsToFeatureCollection provideMapTeiEventsToFeatureCollection(){
+        return new MapTeiEventsToFeatureCollection(
+                new MapPointToFeature(),
+                new MapPolygonToFeature(),
+                new GetBoundingBox());
     }
 
     @Provides
