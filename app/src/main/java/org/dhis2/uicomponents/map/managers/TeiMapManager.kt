@@ -33,19 +33,7 @@ class TeiMapManager(
         this.featureType = featureType
         this.teiFeatureCollections = teiFeatureCollections
         this.eventsFeatureCollection = eventsFeatureCollection.featureCollectionMap
-        (style?.getSource(TEIS_SOURCE_ID) as GeoJsonSource?)
-            ?.setGeoJson(teiFeatureCollections[TEI])
-            .also {
-                (style?.getSource(ENROLLMENT_SOURCE_ID) as GeoJsonSource?)
-                    ?.setGeoJson(teiFeatureCollections[ENROLLMENT])
-            }
-            .also {
-                this.eventsFeatureCollection.keys.forEach { key ->
-                    (style?.getSource(key) as GeoJsonSource?)
-                        ?.setGeoJson(this.eventsFeatureCollection[key])
-                }
-            } ?: run { loadDataForStyle() }
-        initCameraPosition(boundingBox)
+        this.teiFeatureCollections.putAll(this.eventsFeatureCollection)
         this.boundingBox = boundingBox
         if (isMapReady()) {
             when {
@@ -115,13 +103,6 @@ class TeiMapManager(
             LayerType.RELATIONSHIP_LAYER,
             teiFeatureCollections.keys.toList()
         )
-        style?.addSource(GeoJsonSource(TEIS_SOURCE_ID, teiFeatureCollections[TEI]))
-        style?.addSource(GeoJsonSource(ENROLLMENT_SOURCE_ID, teiFeatureCollections[ENROLLMENT]))
-        eventsFeatureCollection.apply {
-            keys.forEach { key ->
-                style?.addSource(GeoJsonSource(key, this[key]))
-            }
-        }
     }
 
     override fun setLayer() {
