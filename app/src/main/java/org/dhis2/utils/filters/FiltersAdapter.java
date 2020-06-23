@@ -10,7 +10,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.databinding.ItemFilterAssignedBinding;
 import org.dhis2.databinding.ItemFilterCatOptCombBinding;
-import org.dhis2.databinding.ItemFilterEnrollmentStatusBinding;
 import org.dhis2.databinding.ItemFilterOrgUnitBinding;
 import org.dhis2.databinding.ItemFilterPeriodBinding;
 import org.dhis2.databinding.ItemFilterStateBinding;
@@ -57,8 +56,6 @@ public class FiltersAdapter extends RecyclerView.Adapter<FilterHolder> {
                 return new StatusEventFilterHolder(ItemFilterStatusBinding.inflate(inflater, parent, false), openedFilter, programType);
             case ASSIGNED_TO_ME:
                 return new AssignToMeFilterHolder(ItemFilterAssignedBinding.inflate(inflater, parent, false), openedFilter);
-            case ENROLLMENT_STATUS:
-                return new StatusEnrollmentFilterHolder(ItemFilterEnrollmentStatusBinding.inflate(inflater, parent, false), openedFilter);
             default:
                 throw new IllegalArgumentException("Unsupported filter value");
         }
@@ -71,7 +68,7 @@ public class FiltersAdapter extends RecyclerView.Adapter<FilterHolder> {
 
     @Override
     public int getItemCount() {
-        return filtersList.size();
+        return filtersList.size(); //TODO: Should change depending on the screen
     }
 
     @Override
@@ -90,13 +87,6 @@ public class FiltersAdapter extends RecyclerView.Adapter<FilterHolder> {
     public void addEventStatus() {
         if (!filtersList.contains(Filters.EVENT_STATUS)) {
             filtersList.add(Filters.EVENT_STATUS);
-            notifyDataSetChanged();
-        }
-    }
-
-    public void addEnrollmentStatus() {
-        if (!filtersList.contains(Filters.ENROLLMENT_STATUS)) {
-            filtersList.add(Filters.ENROLLMENT_STATUS);
             notifyDataSetChanged();
         }
     }
