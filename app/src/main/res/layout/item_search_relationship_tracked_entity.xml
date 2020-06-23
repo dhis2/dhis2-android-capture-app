@@ -29,14 +29,14 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/white"
-        android:minHeight="96dp">
+        android:minHeight="92dp">
 
         <ImageView
             android:id="@+id/tracked_entity_image"
-            android:layout_width="56dp"
-            android:layout_height="56dp"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
             android:layout_marginStart="16dp"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="16dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/ic_tei_default"
@@ -44,114 +44,88 @@
             tools:ignore="ContentDescription" />
 
         <TextView
-            android:id="@+id/entity_attribute_1"
+            android:id="@+id/attribute_a_name"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="5dp"
-            android:fontFamily="@font/rubik_medium"
-            android:text='@{attribute.size()>0 ? attribute.get(0).value() : "" , default="attribute 1"}'
-            android:textColor="@color/text_black_4d4d4d"
+            android:fontFamily="@font/rubik_regular"
+            android:textColor="@color/text_black_DE3"
             android:textSize="14sp"
+            tools:text="Attribute 1:"
             android:visibility='@{attribute.size()>0?View.VISIBLE:View.GONE}'
             app:layout_constraintStart_toEndOf="@id/tracked_entity_image"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/attribute_b_name"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="5dp"
+            android:fontFamily="@font/rubik_regular"
+            android:textColor="@color/text_black_DE3"
+            android:textSize="12sp"
+            tools:text="Attribute 2:"
+            android:visibility='@{attribute.size() > 1 ? View.VISIBLE : View.GONE}'
+            app:layout_constraintStart_toEndOf="@id/tracked_entity_image"
+            app:layout_constraintTop_toBottomOf="@id/entity_attribute_1" />
+
+        <TextView
+            android:id="@+id/attribute_c_name"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="5dp"
+            android:textColor="@color/text_black_DE3"
+            android:textSize="12sp"
+            tools:text="Attribute 3:"
+            android:visibility='@{attribute.size() > 2 ? View.VISIBLE : View.GONE}'
+            app:layout_constraintStart_toEndOf="@id/tracked_entity_image"
+            app:layout_constraintTop_toBottomOf="@id/entity_attribute_2" />
+
+        <TextView
+            android:id="@+id/entity_attribute_1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="5dp"
+            android:fontFamily="@font/rubik_regular"
+            android:text='@{attribute.size()>0 ? attribute.get(0).value() : "" , default="attribute 1"}'
+            android:textColor="#61333333"
+            android:textSize="14sp"
+            android:visibility='@{attribute.size()>0?View.VISIBLE:View.GONE}'
+            app:layout_constraintStart_toEndOf="@id/attribute_a_name"
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/entity_attribute_2"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
+            android:layout_marginStart="5dp"
             android:layout_marginEnd="5dp"
-            android:fontFamily="@font/rubik_medium"
+            android:fontFamily="@font/rubik_regular"
             android:text='@{attribute.size() > 1 ? attribute.get(1).value() : "" , default="attribute 2"}'
-            android:textColor="@color/text_black_4d4d4d"
-            android:textSize="14sp"
+            android:textColor="#61333333"
+            android:textSize="12sp"
             android:visibility='@{attribute.size() > 1 ? View.VISIBLE : View.GONE}'
-            app:layout_constraintStart_toEndOf="@id/tracked_entity_image"
+            app:layout_constraintStart_toEndOf="@id/attribute_b_name"
             app:layout_constraintTop_toBottomOf="@id/entity_attribute_1" />
 
         <TextView
             android:id="@+id/entity_attribute_3"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
+            android:layout_marginStart="5dp"
             android:layout_marginEnd="5dp"
             android:text='@{attribute.size() > 2 ? attribute.get(2).value() : "", default="attribute 3"}'
-            android:textColor="@color/text_black_4d4d4d"
+            android:textColor="#61333333"
             android:textSize="12sp"
             android:visibility='@{attribute.size() > 2 ? View.VISIBLE : View.GONE}'
-            app:layout_constraintStart_toEndOf="@id/tracked_entity_image"
+            app:layout_constraintStart_toEndOf="@id/attribute_c_name"
             app:layout_constraintTop_toBottomOf="@id/entity_attribute_2" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-
-  <!--  <RelativeLayout
-        android:id="@+id/tracked_entity_card"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@android:color/white">
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="8dp">
-
-            <ImageView
-                android:id="@+id/tracked_entity_image"
-                android:layout_width="70dp"
-                android:layout_height="70dp"
-                android:layout_marginStart="5dp"
-                android:background="@drawable/photo_temp_gray"
-                android:tint="@color/white"
-                app:srcCompat="@drawable/ic_tei_default"
-                tools:ignore="ContentDescription" />
-
-            <ImageView
-                android:id="@+id/follow_up"
-                android:layout_width="34dp"
-                android:layout_height="34dp"
-                android:layout_alignEnd="@id/tracked_entity_image"
-                android:layout_alignBottom="@id/tracked_entity_image"
-                android:layout_gravity="center_vertical"
-                android:padding="8dp"
-                android:visibility='@{followUp ? View.VISIBLE : View.GONE}'
-                app:srcCompat="@drawable/ic_warning_white"
-                tools:ignore="ContentDescription" />
-
-
-            <LinearLayout
-                android:id="@+id/attributes_layout"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_toEndOf="@id/tracked_entity_image"
-                android:orientation="vertical">
-
-                <TextView
-                    android:id="@+id/entity_attribute_1"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="15dp"
-                    android:text='@{attribute.size()>0 ? attribute.get(0).value() : "" , default="attribute 1"}'
-                    android:textColor="@color/text_black_333"
-                    android:textSize="18sp"
-                    android:textStyle="bold"
-                    android:visibility='@{attribute.size()>0?View.VISIBLE:View.GONE}' />
-
-                <TextView
-                    android:id="@+id/entity_attribute_2"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="15dp"
-                    android:text='@{attribute.size() > 1 ? attribute.get(1).value() : "" , default="attribute 2"}'
-                    android:textColor="@color/text_black_333"
-                    android:textSize="18sp"
-                    android:textStyle="bold"
-                    android:visibility='@{attribute.size() > 1 ? View.VISIBLE : View.GONE}' />
-
-            </LinearLayout>
-        </RelativeLayout>
-
-    </RelativeLayout>-->
 </layout>
