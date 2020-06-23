@@ -63,6 +63,7 @@ import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.databinding.ActivitySearchBinding;
 import org.dhis2.uicomponents.map.carousel.CarouselAdapter;
+import org.dhis2.uicomponents.map.geometry.mapper.EventsByProgramStage;
 import org.dhis2.uicomponents.map.layer.MapLayerDialog;
 import org.dhis2.uicomponents.map.managers.TeiMapManager;
 import org.dhis2.uicomponents.map.model.MapStyle;
@@ -247,6 +248,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                             presenter.getSymbolIcon(),
                             presenter.getEnrollmentColor(),
                             presenter.getEnrollmentSymbolIcon(),
+                            presenter.getProgramStageStyle(),
                             ColorUtils.getPrimaryColor(this, ColorUtils.ColorType.PRIMARY_DARK)
                     ));
             teiMapManager.init(binding.mapView);
@@ -772,11 +774,12 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
     /*region MAP*/
     @Override
-    public void setMap(List<SearchTeiModel> teis, HashMap<String, FeatureCollection> teiFeatureCollections, BoundingBox boundingBox) {
+    public void setMap(List<SearchTeiModel> teis, HashMap<String, FeatureCollection> teiFeatureCollections, BoundingBox boundingBox, EventsByProgramStage events) {
         binding.progressLayout.setVisibility(View.GONE);
 
         teiMapManager.update(
                 teiFeatureCollections,
+                events,
                 boundingBox,
                 featureType
         );

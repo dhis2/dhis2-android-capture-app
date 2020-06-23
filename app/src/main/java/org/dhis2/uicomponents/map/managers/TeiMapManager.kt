@@ -5,6 +5,7 @@ import com.mapbox.geojson.FeatureCollection
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource
 import java.util.HashMap
 import org.dhis2.uicomponents.map.TeiMarkers
+import org.dhis2.uicomponents.map.geometry.mapper.EventsByProgramStage
 import org.dhis2.uicomponents.map.layer.LayerType
 import org.dhis2.uicomponents.map.layer.MapLayerManager
 import org.dhis2.uicomponents.map.model.MapStyle
@@ -15,29 +16,37 @@ class TeiMapManager(
 ) : MapManager() {
 
     private lateinit var teiFeatureCollections: HashMap<String, FeatureCollection>
+    private lateinit var eventsFeatureCollection: Map<String, FeatureCollection>
 
     companion object {
         const val TEIS_SOURCE_ID = "TEIS_SOURCE_ID"
         const val ENROLLMENT_SOURCE_ID = "ENROLLMENT_SOURCE_ID"
         const val TEI = "TEI"
         const val ENROLLMENT = "ENROLLMENT"
+        const val EVENT = "EVENT"
     }
 
     fun update(
         teiFeatureCollections: HashMap<String, FeatureCollection>,
+        eventsFeatureCollection: EventsByProgramStage,
         boundingBox: BoundingBox,
         featureType: FeatureType
     ) {
         this.featureType = featureType
         this.teiFeatureCollections = teiFeatureCollections
+        this.eventsFeatureCollection = eventsFeatureCollection.featureCollectionMap
         (style?.getSource(TEIS_SOURCE_ID) as GeoJsonSource?)
             ?.setGeoJson(teiFeatureCollections[TEI])
             .also {
                 (style?.getSource(ENROLLMENT_SOURCE_ID) as GeoJsonSource?)
                     ?.setGeoJson(teiFeatureCollections[ENROLLMENT])
-            } ?: run {
-            loadDataForStyle()
-        }
+            }
+            .also {
+                this.eventsFeatureCollection.keys.forEach { key ->
+                    (style?.getSource(key) as GeoJsonSource?)
+                        ?.setGeoJson(this.eventsFeatureCollection[key])
+                }
+            } ?: run { loadDataForStyle() }
         initCameraPosition(boundingBox)
     }
 
@@ -63,6 +72,16 @@ class TeiMapManager(
                     )
                 )
             }
+            mapStyle.stagesStyle.keys.forEach { key ->
+                addImage(
+                    "${MapLayerManager.STAGE_ICON_ID}_$key",
+                    TeiMarkers.getMarker(
+                        mapView.context,
+                        mapStyle.stagesStyle[key]!!.stageIcon,
+                        mapStyle.stagesStyle[key]!!.stageColor
+                    )
+                )
+            }
         }
         setSource()
         setLayer()
@@ -72,6 +91,11 @@ class TeiMapManager(
     override fun setSource() {
         style?.addSource(GeoJsonSource(TEIS_SOURCE_ID, teiFeatureCollections[TEI]))
         style?.addSource(GeoJsonSource(ENROLLMENT_SOURCE_ID, teiFeatureCollections[ENROLLMENT]))
+        eventsFeatureCollection.apply {
+            keys.forEach { key ->
+                style?.addSource(GeoJsonSource(key, this[key]))
+            }
+        }
     }
 
     override fun setLayer() {
@@ -82,5 +106,10 @@ class TeiMapManager(
             .addLayer(LayerType.ENROLLMENT_LAYER, ENROLLMENT_SOURCE_ID)
             .addLayer(LayerType.HEATMAP_LAYER)
             .addLayer(LayerType.SATELLITE_LAYER)
+            .addLayers(
+                LayerType.TEI_EVENT_LAYER,
+                eventsFeatureCollection.keys.toList(),
+                false
+            )
     }
 }

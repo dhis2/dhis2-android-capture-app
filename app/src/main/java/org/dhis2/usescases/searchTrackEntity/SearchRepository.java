@@ -6,8 +6,8 @@ import androidx.lifecycle.LiveData;
 
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel;
+import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewModel;
 import org.hisp.dhis.android.core.common.State;
-import org.hisp.dhis.android.core.common.ValueTypeRenderingType;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.Program;
@@ -22,6 +22,7 @@ import javax.annotation.Nonnull;
 
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
+import io.reactivex.Single;
 
 /**
  * QUADRAM. Created by ppajuelo on 02/11/2017.
@@ -64,4 +65,6 @@ public interface SearchRepository {
     Observable<List<TrackedEntityAttribute>> trackedEntityTypeAttributes();
 
     Observable<TrackedEntityType> getTrackedEntityType(String trackedEntityUid);
+
+    List<EventViewModel> getEventsForMap(List<SearchTeiModel> teis);
 }
