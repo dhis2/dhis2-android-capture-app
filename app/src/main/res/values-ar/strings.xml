@@ -85,7 +85,7 @@
     <string name="program_completed">تم اكمال البرنامج</string>
     <string name="program_inactive">البرنامج غير نشط</string>
 
-    <string name="event_open">فتح</string>
+    <string name="event_open">مفتوح</string>
     <string name="event_completed">تم اكمال الحدث</string>
     <string name="event_skipped">تم تجاوز الحدث</string>
     <string name="event_schedule">جدولة الحدث</string>
@@ -497,7 +497,7 @@
     <string name="login_server_info_title">رابط الخادم</string>
     <string name="login_server_info_message">أدخل عنوان URL لخادم DHIS 2 لمؤسستك على النحو الذي حصلت عليه من مسؤول النظام.\n\n أو بدلاً من ذلك ، يمكنك مسح رمز الـ QR الذي يحتوي على عنوان الـ URL لخادمك</string>
     <string name="forgot_your_code">نسيت الرمز الخاص بك؟</string>
-    <string name="event_form_end_options_title">ماذا تريد أن تفعل لهذا الحدث؟</string>
+    <string name="event_form_end_options_title">ما الذي تريد فعله لهذا الحدث؟</string>
     <string name="sectionSelectorEnd">إنهاء</string>
     <string name="resource_not_found">لم يتم العثور على %s</string>
     <string name="relationship_not_found_message">السجل الذي تحاول الوصول إليه غير متوفر. هل تود البحث عنه؟</string>
