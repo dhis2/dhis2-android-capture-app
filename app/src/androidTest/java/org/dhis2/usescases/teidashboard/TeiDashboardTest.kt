@@ -331,7 +331,6 @@ class TeiDashboardTest : BaseTest() {
         }
     }
 
-    @Ignore("Check test. Sometimes it fails")
     @Test
     fun shouldDeleteTeiSuccessfully() {
         val teiName = "Anthony"
@@ -357,7 +356,6 @@ class TeiDashboardTest : BaseTest() {
         }
     }
 
-    @Ignore("Check test. Sometimes it fails")
     @Test
     fun shouldDeleteEnrollmentSuccessfully() {
 
