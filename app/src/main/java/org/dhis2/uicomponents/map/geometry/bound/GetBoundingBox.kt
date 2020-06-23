@@ -7,8 +7,11 @@ import com.mapbox.mapboxsdk.geometry.LatLng
 class GetBoundingBox {
 
     fun getEnclosingBoundingBox(coordinates: List<LatLng>): BoundingBox {
-        var west = GeometryConstants.MAX_LONGITUDE
-        var east = GeometryConstants.MIN_LONGITUDE
+        if (coordinates.isEmpty()) {
+            return BoundingBox.fromLngLats(0.0, 0.0, 0.0, 0.0)
+        }
+        var west = GeometryConstants.MAX_WRAP_LONGITUDE
+        var east = GeometryConstants.MIN_WRAP_LONGITUDE
         var north = GeometryConstants.MIN_LATITUDE
         var south = GeometryConstants.MAX_LATITUDE
 
