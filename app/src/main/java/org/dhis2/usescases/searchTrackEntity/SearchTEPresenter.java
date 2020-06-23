@@ -14,6 +14,9 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.paging.PagedList;
 
+import com.mapbox.geojson.BoundingBox;
+import com.mapbox.geojson.FeatureCollection;
+
 import org.dhis2.R;
 import org.dhis2.data.prefs.Preference;
 import org.dhis2.data.prefs.PreferenceProvider;
@@ -21,7 +24,12 @@ import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.databinding.WidgetDatepickerBinding;
+import org.dhis2.uicomponents.map.geometry.mapper.EventsByProgramStage;
+import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapTeiEventsToFeatureCollection;
 import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapTeisToFeatureCollection;
+import org.dhis2.uicomponents.map.mapper.EventToEventUiComponent;
+import org.dhis2.uicomponents.map.model.EventUiComponentModel;
+import org.dhis2.uicomponents.map.model.StageStyle;
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel;
 import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.Constants;
@@ -39,6 +47,7 @@ import org.hisp.dhis.android.core.common.ValueTypeDeviceRendering;
 import org.hisp.dhis.android.core.maintenance.D2Error;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.Program;
+import org.hisp.dhis.android.core.program.ProgramStage;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityType;
 
 import java.util.ArrayList;
@@ -58,6 +67,7 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.processors.FlowableProcessor;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.subjects.BehaviorSubject;
+import kotlin.Triple;
 import timber.log.Timber;
 
 import static android.app.Activity.RESULT_OK;
@@ -93,6 +103,8 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
     private boolean showList = true;
     private MapTeisToFeatureCollection mapTeisToFeatureCollection;
+    private MapTeiEventsToFeatureCollection mapTeiEventsToFeatureCollection;
+    private EventToEventUiComponent eventToEventUiComponent;
 
     public SearchTEPresenter(SearchTEContractsModule.View view,
                              D2 d2,
@@ -101,6 +113,8 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                              AnalyticsHelper analyticsHelper,
                              @Nullable String initialProgram,
                              MapTeisToFeatureCollection mapTeisToFeatureCollection,
+                             MapTeiEventsToFeatureCollection mapTeiEventsToFeatureCollection,
+                             EventToEventUiComponent eventToEventUiComponent,
                              PreferenceProvider preferenceProvider) {
         this.view = view;
         this.preferences = preferenceProvider;
@@ -109,6 +123,8 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         this.schedulerProvider = schedulerProvider;
         this.analyticsHelper = analyticsHelper;
         this.mapTeisToFeatureCollection = mapTeisToFeatureCollection;
+        this.mapTeiEventsToFeatureCollection = mapTeiEventsToFeatureCollection;
+        this.eventToEventUiComponent = eventToEventUiComponent;
         compositeDisposable = new CompositeDisposable();
         queryData = new HashMap<>();
         queryProcessor = PublishProcessor.create();
@@ -243,12 +259,24 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                                                         query,
                                                         FilterManager.getInstance().getAssignedFilter(),
                                                         NetworkUtils.isOnline(view.getContext())))
-                                        .map(teis -> new kotlin.Pair<>(teis, mapTeisToFeatureCollection.map(teis)))
+                                        .map(teis -> new kotlin.Pair<>(teis, searchRepository.getEventsForMap(teis)))
+                                        .map(teis -> {
+                                                    List<EventUiComponentModel> eventsUi = eventToEventUiComponent.mapList(teis.component2());
+                                                    kotlin.Pair<HashMap<String, FeatureCollection>, BoundingBox> teisFeatCollection = mapTeisToFeatureCollection.map(teis.component1());
+                                                    EventsByProgramStage events = mapTeiEventsToFeatureCollection.map(eventsUi).component1();
+                                                    return new kotlin.Triple<>(teis.component1(), teisFeatCollection, events);
+                                                }
+                                            )
                         )
                         .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.ui())
                         .subscribe(
-                                teiAndMap -> view.setMap(teiAndMap.component1(), teiAndMap.component2().component1(), teiAndMap.component2().component2()),
+                                teiAndMap -> view.setMap(
+                                        teiAndMap.component1(),
+                                        teiAndMap.component2().component1(),
+                                        teiAndMap.component2().component2(),
+                                        teiAndMap.component3()
+                                ),
                                 Timber::e,
                                 () -> Timber.d("COMPLETED")
                         ));
@@ -819,6 +847,28 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
             return ColorUtils.parseColor(selectedProgram.style().color());
         else
             return -1;
+    }
+
+    @Override
+    public HashMap<String, StageStyle> getProgramStageStyle() {
+        List<ProgramStage> programStages = d2.programModule().programStages().byProgramUid().eq(selectedProgram.uid()).byFeatureType().neq(FeatureType.NONE).blockingGet();
+        HashMap<String, StageStyle> stagesStyleMap = new HashMap<>();
+        for (ProgramStage stage : programStages) {
+            int color;
+            Drawable icon;
+            if (stage.style() != null && stage.style().color() != null) {
+                color = ColorUtils.parseColor(stage.style().color());
+            } else {
+                color = -1;
+            }
+            if (stage.style() != null && stage.style().icon() != null) {
+                icon = ObjectStyleUtils.getIconResource(view.getContext(), stage.style().icon(), R.drawable.ic_clinical_f_outline);
+            } else {
+                icon = AppCompatResources.getDrawable(view.getContext(), R.drawable.ic_clinical_f_outline);;
+            }
+            stagesStyleMap.put(stage.displayName(), new StageStyle(color, icon));
+        }
+        return stagesStyleMap;
     }
 
     @Override
