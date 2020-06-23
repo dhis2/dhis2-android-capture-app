@@ -23,6 +23,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/root"
         android:layout_width="match_parent"
+        tools:background="?colorPrimary"
         android:layout_height="wrap_content">
 
         <include

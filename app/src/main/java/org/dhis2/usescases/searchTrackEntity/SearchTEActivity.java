@@ -275,6 +275,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         super.onDestroy();
 
         FilterManager.getInstance().clearEnrollmentStatus();
+        FilterManager.getInstance().clearEventStatus();
     }
 
     @Override
