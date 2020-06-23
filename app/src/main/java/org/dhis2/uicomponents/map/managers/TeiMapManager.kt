@@ -49,6 +49,14 @@ class TeiMapManager(
                         mapStyle.teiColor
                     )
                 )
+                addImage(
+                    RelationshipMapManager.RELATIONSHIP_ICON,
+                    TeiMarkers.getMarker(
+                        mapView.context,
+                        it,
+                        mapStyle.teiColor
+                    )
+                )
             }
             mapStyle.enrollmentSymbolIcon?.let {
                 addImage(
@@ -76,7 +84,10 @@ class TeiMapManager(
 
     private fun updateStyleSources() {
         setSource()
-        mapLayerManager.updateLayers(LayerType.RELATIONSHIP_LAYER, teiFeatureCollections.keys.toList())
+        mapLayerManager.updateLayers(
+            LayerType.RELATIONSHIP_LAYER,
+            teiFeatureCollections.keys.toList()
+        )
     }
 
     override fun setLayer() {
@@ -87,6 +98,12 @@ class TeiMapManager(
             .addLayer(LayerType.ENROLLMENT_LAYER, ENROLLMENT_SOURCE_ID)
             .addLayer(LayerType.HEATMAP_LAYER)
             .addLayer(LayerType.SATELLITE_LAYER)
-            .addLayers(LayerType.RELATIONSHIP_LAYER, teiFeatureCollections.keys.toList(), false)
+            .addLayers(
+                LayerType.RELATIONSHIP_LAYER,
+                teiFeatureCollections.keys.filter {
+                    it != TEIS_SOURCE_ID && it != ENROLLMENT_SOURCE_ID
+                },
+                false
+            )
     }
 }

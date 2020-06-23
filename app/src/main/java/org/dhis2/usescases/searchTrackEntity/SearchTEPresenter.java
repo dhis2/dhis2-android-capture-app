@@ -65,6 +65,7 @@ import static org.dhis2.usescases.teiDashboard.dashboardfragments.relationships.
 import static org.dhis2.utils.analytics.AnalyticsConstants.ADD_RELATIONSHIP;
 import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
 import static org.dhis2.utils.analytics.AnalyticsConstants.CREATE_ENROLL;
+import static org.dhis2.utils.analytics.AnalyticsConstants.DELETE_RELATIONSHIP;
 import static org.dhis2.utils.analytics.AnalyticsConstants.SEARCH_TEI;
 
 public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
@@ -837,6 +838,18 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     @Override
     public void restoreQueryData(HashMap<String, String> queryData) {
         this.queryData = queryData;
+    }
+
+    @Override
+    public void deleteRelationship(String relationshipUid) {
+        try {
+            d2.relationshipModule().relationships().withItems().uid(relationshipUid).blockingDelete();
+        } catch (D2Error error) {
+            Timber.d(error);
+        } finally {
+            analyticsHelper.setEvent(DELETE_RELATIONSHIP, CLICK, DELETE_RELATIONSHIP);
+            mapProcessor.onNext(new Unit());
+        }
     }
 
     @RestrictTo(RestrictTo.Scope.TESTS)

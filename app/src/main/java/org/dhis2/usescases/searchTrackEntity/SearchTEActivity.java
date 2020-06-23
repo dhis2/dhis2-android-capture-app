@@ -64,7 +64,9 @@ import org.dhis2.databinding.ActivitySearchBinding;
 import org.dhis2.uicomponents.map.carousel.CarouselAdapter;
 import org.dhis2.uicomponents.map.layer.MapLayerDialog;
 import org.dhis2.uicomponents.map.managers.TeiMapManager;
+import org.dhis2.uicomponents.map.mapper.MapRelationshipToRelationshipMapModel;
 import org.dhis2.uicomponents.map.model.MapStyle;
+import org.dhis2.uicomponents.map.model.RelationshipUiComponentModel;
 import org.dhis2.usescases.coodinates.CoordinatesView;
 import org.dhis2.usescases.enrollment.EnrollmentActivity;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
@@ -92,6 +94,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 
 import javax.inject.Inject;
 
@@ -142,6 +145,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     private String currentStyle = Style.MAPBOX_STREETS;
     private MapLayerDialog mapLayerDialog;
     private ObjectAnimator animation = null;
+    private Set<String> sources;
 
     //---------------------------------------------------------------------------------------------
 
@@ -752,7 +756,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         if (downloadingSnackbar != null && downloadingSnackbar.isShown()) {
             downloadingSnackbar.dismiss();
         }
-        startActivity(TeiDashboardMobileActivity.intent(this, teiUid, programUid, enrollmentUid));
+        startActivity(TeiDashboardMobileActivity.intent(this, teiUid, enrollmentUid != null ? programUid : null, enrollmentUid));
     }
 
     @Override
@@ -776,7 +780,8 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                 featureType
         );
 
-        CarouselAdapter<SearchTeiModel> carouselAdapter = new CarouselAdapter.Builder<SearchTeiModel>()
+        sources = teiFeatureCollections.keySet();
+        CarouselAdapter carouselAdapter = new CarouselAdapter.Builder()
                 .addOnTeiClickListener(
                         (teiUid, enrollmentUid, isDeleted) -> {
                             presenter.onTEIClick(teiUid, enrollmentUid, isDeleted);
@@ -787,6 +792,14 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                             presenter.onSyncIconClick(teiUid);
                             return true;
                         })
+                .addOnDeleteRelationshipListener(relationshipUid -> {
+                    presenter.deleteRelationship(relationshipUid);
+                    return true;
+                })
+                .addOnRelationshipClickListener(teiUid -> {
+                    presenter.onTEIClick(teiUid, null, false);
+                    return true;
+                })
                 .build();
 
         binding.mapCarousel.setAdapter(carouselAdapter);
@@ -821,6 +834,20 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             teiMapManager.mapLayerManager.getLayer(TeiMapManager.TEIS_SOURCE_ID,false).setSelectedItem(features.get(0));
             binding.mapCarousel.scrollToFeature(features.get(0));
             return true;
+        } else {
+            for (String sourceId : sources) {
+                String lineLayerId = "RELATIONSHIP_LINE_LAYER_ID_" + sourceId;
+                String pointLayerId = "RELATIONSHIP_LINE_LAYER_ID_" + sourceId;
+
+                features = teiMapManager.getMap()
+                        .queryRenderedFeatures(rectF, lineLayerId, pointLayerId);
+                if (!features.isEmpty()) {
+                    teiMapManager.mapLayerManager.selectFeature(null);
+                    teiMapManager.mapLayerManager.getLayer(sourceId,true).setSelectedItem(features.get(0));
+                    binding.mapCarousel.scrollToFeature(features.get(0));
+                    return true;
+                }
+            }
         }
 
         return false;

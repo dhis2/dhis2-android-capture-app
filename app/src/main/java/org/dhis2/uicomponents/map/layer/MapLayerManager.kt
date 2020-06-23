@@ -85,12 +85,10 @@ class MapLayerManager {
         handleLayer(sourceId ?: layerType.toString(), true)
     }
 
-    fun addLayers(layerType: LayerType, sourceIds: List<String>, visible: Boolean? = null) {
-        sourceIds.filter { !mapLayers.containsKey(it) }.forEach {
-            when (visible) {
-                true -> addStartLayer(layerType, it)
-                else -> addLayer(layerType, it)
-            }
+    fun addLayers(layerType: LayerType, sourceIds: List<String>, visible: Boolean) {
+        sourceIds.forEach {
+            addLayer(layerType, it)
+            handleLayer(it, visible)
         }
     }
 

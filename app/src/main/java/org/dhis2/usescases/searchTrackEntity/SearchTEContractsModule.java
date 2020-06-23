@@ -164,5 +164,7 @@ public class SearchTEContractsModule {
         void checkFilters(boolean listResultIsOk);
 
         void restoreQueryData(HashMap<String, String> queryData);
+
+        void deleteRelationship(String relationshipUid);
     }
 }
