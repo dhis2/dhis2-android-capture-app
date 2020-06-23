@@ -7,5 +7,11 @@ data class MapStyle(
     var teiSymbolIcon: Drawable?,
     var enrollmentColor: Int,
     var enrollmentSymbolIcon: Drawable?,
+    var stagesStyle: HashMap<String, StageStyle>,
     var programDarkColor: Int
+)
+
+data class StageStyle(
+    val stageColor: Int,
+    val stageIcon: Drawable
 )

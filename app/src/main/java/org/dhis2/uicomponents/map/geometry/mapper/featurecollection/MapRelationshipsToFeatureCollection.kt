@@ -1,12 +1,9 @@
 package org.dhis2.uicomponents.map.geometry.mapper.featurecollection
 
 import com.mapbox.geojson.BoundingBox
-import com.mapbox.geojson.Feature
 import com.mapbox.geojson.FeatureCollection
-import com.mapbox.geojson.Point
-import com.mapbox.mapboxsdk.geometry.LatLng
 import org.dhis2.uicomponents.map.geometry.bound.GetBoundingBox
-import org.dhis2.uicomponents.map.geometry.getPointLatLng
+import org.dhis2.uicomponents.map.geometry.getLatLngPointList
 import org.dhis2.uicomponents.map.geometry.line.MapLineRelationshipToFeature
 import org.dhis2.uicomponents.map.geometry.mapper.addRelationFromInfo
 import org.dhis2.uicomponents.map.geometry.mapper.addRelationToInfo
@@ -56,8 +53,7 @@ class MapRelationshipsToFeatureCollection(
                 listOf(lineFeatures, pointFromFeatures, pointToFeatures).flatten()
             }
 
-        val featuresList = relationshipByName.values.flatten()
-        val latLongList = getLngLatAsCoordinateList(featuresList)
+        val latLongList = relationshipByName.values.flatten().getLatLngPointList()
 
         return Pair<Map<String?, FeatureCollection>, BoundingBox>(
             relationshipByName.mapValues {
@@ -67,10 +63,6 @@ class MapRelationshipsToFeatureCollection(
             },
             bounds.getEnclosingBoundingBox(latLongList)
         )
-    }
-
-    private fun getLngLatAsCoordinateList(features: List<Feature?>): List<LatLng> {
-        return features.filter { it?.geometry() is Point }.map { it.getPointLatLng() }
     }
 
     companion object {

@@ -4,18 +4,22 @@ import org.dhis2.data.tuples.Trio;
 import org.dhis2.uicomponents.map.model.CarouselItemModel;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.relationships.RelationshipViewModel;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
+import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 public class SearchTeiModel implements CarouselItemModel {
 
-    private List<TrackedEntityAttributeValue> attributeValues;
+    private LinkedHashMap<String, TrackedEntityAttributeValue> attributeValues;
 
     private List<Trio<String, String, String>> enrollmentsInfo;
+    private List<Program> programInfo;
     private boolean hasOverdue;
     private boolean isOnline;
 
@@ -25,13 +29,15 @@ public class SearchTeiModel implements CarouselItemModel {
 
     private Enrollment selectedEnrollment;
     private List<Enrollment> enrollments;
+    private Date overdueDate;
     private List<RelationshipViewModel> relationships;
 
     public SearchTeiModel() {
         this.tei = null;
         this.selectedEnrollment = null;
-        this.attributeValues = new ArrayList<>();
+        this.attributeValues = new LinkedHashMap<>();
         this.enrollmentsInfo = new ArrayList<>();
+        this.programInfo = new ArrayList<>();
         this.isOnline = true;
         this.enrollments = new ArrayList<>();
         this.relationships = new ArrayList<>();
@@ -40,6 +46,12 @@ public class SearchTeiModel implements CarouselItemModel {
 
     public void addEnrollmentInfo(Trio<String, String, String> enrollmentInfo) {
         enrollmentsInfo.add(enrollmentInfo);
+    }
+
+    public void addProgramInfo(Program program) {
+        if (!programInfo.contains(program)) {
+            programInfo.add(program);
+        }
     }
 
     public boolean isHasOverdue() {
@@ -59,12 +71,12 @@ public class SearchTeiModel implements CarouselItemModel {
         this.attributeValues.clear();
     }
 
-    public List<TrackedEntityAttributeValue> getAttributeValues() {
+    public LinkedHashMap<String, TrackedEntityAttributeValue> getAttributeValues() {
         return attributeValues;
     }
 
-    public void addAttributeValue(TrackedEntityAttributeValue attributeValues) {
-        this.attributeValues.add(attributeValues);
+    public void addAttributeValue(String attributeName, TrackedEntityAttributeValue attributeValues) {
+        this.attributeValues.put(attributeName, attributeValues);
     }
 
     public void resetEnrollments() {
@@ -77,7 +89,7 @@ public class SearchTeiModel implements CarouselItemModel {
         return enrollmentsInfo;
     }
 
-    public void setAttributeValues(List<TrackedEntityAttributeValue> attributeValues) {
+    public void setAttributeValues(LinkedHashMap<String, TrackedEntityAttributeValue> attributeValues) {
         this.attributeValues = attributeValues;
     }
 
@@ -122,6 +134,19 @@ public class SearchTeiModel implements CarouselItemModel {
         return enrollments;
     }
 
+    public List<Program> getProgramInfo() {
+        Collections.sort(programInfo, (program1, program2) -> program1.displayName().compareToIgnoreCase(program2.displayName()));
+        return programInfo;
+    }
+
+    public void setOverdueDate(Date dateToShow) {
+        this.overdueDate = dateToShow;
+    }
+
+    public Date getOverdueDate() {
+        return overdueDate;
+    }
+    
     public List<RelationshipViewModel> getRelationships() {
         return relationships;
     }
