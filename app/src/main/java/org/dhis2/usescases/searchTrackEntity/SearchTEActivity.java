@@ -29,6 +29,7 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.ScaleAnimation;
 import android.widget.AdapterView;
+import android.widget.Filter;
 import android.widget.PopupMenu;
 import android.widget.Spinner;
 import android.widget.Toast;
@@ -207,6 +208,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         });
 
         filtersAdapter = new FiltersAdapter(FiltersAdapter.ProgramType.TRACKER);
+        filtersAdapter.addEnrollmentStatus();
         filtersAdapter.addEventStatus();
         try {
             binding.filterLayout.setAdapter(filtersAdapter);
@@ -277,6 +279,9 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         }
         presenter.onDestroy();
         super.onDestroy();
+
+        FilterManager.getInstance().clearEnrollmentStatus();
+        FilterManager.getInstance().clearEventStatus();
     }
 
     @Override

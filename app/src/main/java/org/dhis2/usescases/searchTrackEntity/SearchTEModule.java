@@ -17,6 +17,7 @@ import org.dhis2.uicomponents.map.geometry.polygon.MapPolygonToFeature;
 import org.dhis2.uicomponents.map.mapper.EventToEventUiComponent;
 import org.dhis2.uicomponents.map.mapper.MapRelationshipToRelationshipMapModel;
 import org.dhis2.utils.analytics.AnalyticsHelper;
+import org.dhis2.utils.resources.ResourceManager;
 import org.hisp.dhis.android.core.D2;
 
 import dagger.Module;
@@ -83,7 +84,7 @@ public class SearchTEModule {
 
     @Provides
     @PerActivity
-    SearchRepository searchRepository(@NonNull D2 d2) {
-        return new SearchRepositoryImpl(teiType, d2);
+    SearchRepository searchRepository(@NonNull D2 d2, ResourceManager resources) {
+        return new SearchRepositoryImpl(teiType, d2, resources);
     }
 }

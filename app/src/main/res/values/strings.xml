@@ -700,4 +700,6 @@
     <string name="name">Name</string>
     <string name="formula">Formula</string>
     <string name="complete_anyway">Complete anyway</string>
+    <string name="filters_title_event_status">Event status</string>
+    <string name="filters_title_enrollment_status">Enrollment status</string>
 </resources>

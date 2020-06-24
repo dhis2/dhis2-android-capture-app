@@ -19,8 +19,7 @@
         android:elevation="1dp"
         android:paddingStart="16dp"
         android:paddingEnd="16dp"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:background="?colorPrimary">
+        app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
             android:id="@+id/filterIcon"
