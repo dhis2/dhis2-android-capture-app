@@ -75,8 +75,8 @@ public class FilterManager {
     public void reset() {
         ouFilters = new ArrayList<>();
         stateFilters = new ArrayList<>();
-        periodFilters = null;
-        enrollmentPeriodFilters = null;
+        periodFilters = new ArrayList<>();
+        enrollmentPeriodFilters = new ArrayList<>();
         catOptComboFilters = new ArrayList<>();
         eventStatusFilters = new ArrayList<>();
         enrollmentStatusFilters = new ArrayList<>();
