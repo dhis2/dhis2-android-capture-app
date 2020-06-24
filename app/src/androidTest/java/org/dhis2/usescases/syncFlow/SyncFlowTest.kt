@@ -4,6 +4,8 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
 import org.dhis2.usescases.BaseTest
 import org.dhis2.usescases.eventsWithoutRegistration.eventSummary.EventSummaryActivity
+import org.dhis2.usescases.searchTrackEntity.SearchTEActivity
+import org.dhis2.usescases.searchte.searchTeiRobot
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity
 import org.dhis2.usescases.teidashboard.TeiDashboardTest
 import org.dhis2.usescases.teidashboard.robot.teiDashboardRobot
@@ -19,10 +21,12 @@ class SyncFlowTest : BaseTest() {
     val ruleTei = ActivityTestRule(TeiDashboardMobileActivity::class.java, false, false)
     @get:Rule
     val ruleDataSet = ActivityTestRule(EventSummaryActivity::class.java, false, false)
+    @get:Rule
+    val ruleSearch = ActivityTestRule(SearchTEActivity::class.java, false, false)
 
     @Test
-    @Ignore
-    fun shouldSuccessfullySyncAChangedEvent() {
+   // @Ignore
+    fun shouldSuccessfullySyncAChangedTEI() {
         /*
         * launch in search
         * search tei
@@ -32,16 +36,37 @@ class SyncFlowTest : BaseTest() {
         * click on sync
         * */
 
-        //startTeiActivity()
+        val teiName = "Lynn"
+        val teiLastName = "Dunn"
+
+        setupCredentials()
+        prepareTBProgrammeIntentAndLaunchActivity(ruleSearch)
+
+        searchTeiRobot {
+            closeSearchForm()
+            Thread.sleep(4000)
+            clickOnTEI(teiName, teiLastName)
+        }
 
         teiDashboardRobot {
             clickOnFab()
-            clickOnReferral()
+            clickOnScheduleNew()
             clickOnFirstReferralEvent()
-            clickOnReferralOption()
             clickOnReferralNextButton()
             checkEventCreatedToastIsShown()
             checkEventWasCreated(TeiDashboardTest.LAB_MONITORING)
+            //click back
+        }
+
+        searchTeiRobot {
+            /*closeSearchForm()
+            Thread.sleep(40000)*/
+        }
+
+        syncFlowRobot {
+            Thread.sleep(4000)
+            /*clickOnSyncTei(teiName, teiLastName) //?
+            clickOnSyncButton()*/
         }
 
     }

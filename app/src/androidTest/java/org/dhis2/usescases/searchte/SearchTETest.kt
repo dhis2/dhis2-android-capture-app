@@ -34,5 +34,9 @@ class SearchTETest : BaseTest() {
 
         const val CHILD_TE_TYPE_VALUE = "nEenWmSyUEp"
         const val CHILD_TE_TYPE = "TRACKED_ENTITY_UID"
+
+        const val TB_PROGRAM_UID_VALUE = "ur1Edk5Oe2n"
+
+        //const val TB_TE_TYPE_VALUE = "nEenWmSyUEp"
     }
 }
