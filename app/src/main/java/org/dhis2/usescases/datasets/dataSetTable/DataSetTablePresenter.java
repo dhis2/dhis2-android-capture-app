@@ -109,7 +109,7 @@ public class DataSetTablePresenter implements DataSetTableContract.Presenter {
                         .subscribe(
                                 allOk -> {
                                     if (allOk) {
-                                        if (tableRepository.runMandatoryValidationRules()) {
+                                        if (isValidationMandatoryToComplete()) {
                                             executeValidationRules();
                                         } else {
                                             checkIfValidationRulesExecutionIsOptional();
@@ -212,4 +212,9 @@ public class DataSetTablePresenter implements DataSetTableContract.Presenter {
 
     @Override
     public void onCompleteBottomSheet() { view.completeBottomSheet(); }
+
+    @Override
+    public boolean isValidationMandatoryToComplete() {
+        return tableRepository.runMandatoryValidationRules();
+    }
 }

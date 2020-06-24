@@ -67,6 +67,8 @@ public class DataSetTableContract {
         void onCancelBottomSheet();
 
         void onCompleteBottomSheet();
+
+        boolean isValidationMandatoryToComplete();
     }
 
 }
