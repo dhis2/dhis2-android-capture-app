@@ -36,7 +36,6 @@ import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.common.ValueTypeDeviceRendering;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.android.core.enrollment.EnrollmentCreateProjection;
-import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.event.EventCollectionRepository;
 import org.hisp.dhis.android.core.event.EventStatus;
@@ -325,7 +324,12 @@ public class SearchRepositoryImpl implements SearchRepository {
 
     @NonNull
     @Override
-    public Observable<Pair<String, String>> saveToEnroll(@NonNull String teiType, @NonNull String orgUnit, @NonNull String programUid, @Nullable String teiUid, HashMap<String, String> queryData, Date enrollmentDate) {
+    public Observable<Pair<String, String>> saveToEnroll(@NonNull String teiType,
+                                                         @NonNull String orgUnit,
+                                                         @NonNull String programUid,
+                                                         @Nullable String teiUid,
+                                                         HashMap<String, String> queryData, Date enrollmentDate,
+                                                         @Nullable String fromRelationshipUid) {
 
         Single<String> enrollmentInitial;
         if (teiUid == null)
@@ -345,6 +349,9 @@ public class SearchRepositoryImpl implements SearchRepository {
                                 orgUnit, teiType);
                         return Single.error(new SQLiteConstraintException(message));
                     } else {
+                        if (fromRelationshipUid != null) {
+                            d2.trackedEntityModule().trackedEntityInstanceService().blockingInheritAttributes(fromRelationshipUid, teiUid, programUid);
+                        }
                         ValueStore valueStore = new ValueStoreImpl(d2, uid, DataEntryStore.EntryMode.ATTR);
 
                         if (queryData.containsKey(Constants.ENROLLMENT_DATE_UID))

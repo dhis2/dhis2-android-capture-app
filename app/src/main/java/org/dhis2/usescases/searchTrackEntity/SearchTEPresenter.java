@@ -67,7 +67,6 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.processors.FlowableProcessor;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.subjects.BehaviorSubject;
-import kotlin.Triple;
 import timber.log.Timber;
 
 import static android.app.Activity.RESULT_OK;
@@ -266,7 +265,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                                                     EventsByProgramStage events = mapTeiEventsToFeatureCollection.map(eventsUi).component1();
                                                     return new kotlin.Triple<>(teis.component1(), teisFeatCollection, events);
                                                 }
-                                            )
+                                        )
                         )
                         .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.ui())
@@ -666,7 +665,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
     private void enrollInOrgUnit(String orgUnitUid, String programUid, String uid, Date enrollmentDate) {
         compositeDisposable.add(
-                searchRepository.saveToEnroll(trackedEntity.uid(), orgUnitUid, programUid, uid, queryData, enrollmentDate)
+                searchRepository.saveToEnroll(trackedEntity.uid(), orgUnitUid, programUid, uid, queryData, enrollmentDate, view.fromRelationshipTEI())
                         .subscribeOn(schedulerProvider.computation())
                         .observeOn(schedulerProvider.ui())
                         .subscribe(enrollmentAndTEI -> {
@@ -864,7 +863,8 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
             if (stage.style() != null && stage.style().icon() != null) {
                 icon = ObjectStyleUtils.getIconResource(view.getContext(), stage.style().icon(), R.drawable.ic_clinical_f_outline);
             } else {
-                icon = AppCompatResources.getDrawable(view.getContext(), R.drawable.ic_clinical_f_outline);;
+                icon = AppCompatResources.getDrawable(view.getContext(), R.drawable.ic_clinical_f_outline);
+                ;
             }
             stagesStyleMap.put(stage.displayName(), new StageStyle(color, icon));
         }
