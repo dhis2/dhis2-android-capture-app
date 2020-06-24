@@ -51,6 +51,8 @@ import org.jetbrains.annotations.NotNull;
 import org.matomo.sdk.Matomo;
 import org.matomo.sdk.Tracker;
 import org.matomo.sdk.TrackerBuilder;
+import org.matomo.sdk.extra.DownloadTracker;
+import org.matomo.sdk.extra.TrackHelper;
 
 import java.io.IOException;
 import java.net.SocketException;
@@ -126,11 +128,20 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
         }
         setUpServerComponent();
         setUpRxPlugin();
+
+        TrackHelper.track().download().identifier(new DownloadTracker.Extra.ApkChecksum(this)).with(getTracker());
     }
 
     public synchronized Tracker getTracker() {
+        String urlEndpoint;
+        if (BuildConfig.DEBUG){
+            urlEndpoint = "https://mipruebacustom.matomo.cloud/matomo.php";
+        } else {
+            urlEndpoint = "https://mipruebacustom.matomo.cloud/matomo.php";
+        }
+
         if (matomoTracker == null){
-            matomoTracker = TrackerBuilder.createDefault("https://mipruebacustom.matomo.cloud/", 1).build(Matomo.getInstance(this));
+            matomoTracker = TrackerBuilder.createDefault(urlEndpoint, 1).build(Matomo.getInstance(this));
         }
         return matomoTracker;
     }
