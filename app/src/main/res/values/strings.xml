@@ -701,4 +701,6 @@
     <string name="formula">Formula</string>
     <string name="complete_anyway">Complete anyway</string>
     <string name="fk_message">Missing %s %s from %s %s</string>
+    <string name="filters_title_event_status">Event status</string>
+    <string name="filters_title_enrollment_status">Enrollment status</string>
 </resources>

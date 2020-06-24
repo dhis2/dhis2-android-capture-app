@@ -8,3 +8,6 @@ fun Feature?.getPointLatLng(): LatLng {
     val point = this?.geometry() as Point
     return LatLng(point.latitude(), point.longitude())
 }
+
+fun List<Feature?>.getLatLngPointList() =
+    this.filter { it?.geometry() is Point }.map { it.getPointLatLng() }

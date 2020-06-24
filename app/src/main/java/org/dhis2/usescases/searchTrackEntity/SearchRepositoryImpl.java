@@ -20,6 +20,8 @@ import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.relationships.RelationshipViewModel;
+import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewModel;
+import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewModelType;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.ValueUtils;
@@ -34,6 +36,7 @@ import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.common.ValueTypeDeviceRendering;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.android.core.enrollment.EnrollmentCreateProjection;
+import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.event.EventCollectionRepository;
 import org.hisp.dhis.android.core.event.EventStatus;
@@ -42,6 +45,7 @@ import org.hisp.dhis.android.core.organisationunit.OrganisationUnitMode;
 import org.hisp.dhis.android.core.period.DatePeriod;
 import org.hisp.dhis.android.core.period.PeriodType;
 import org.hisp.dhis.android.core.program.Program;
+import org.hisp.dhis.android.core.program.ProgramStage;
 import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttribute;
 import org.hisp.dhis.android.core.relationship.Relationship;
 import org.hisp.dhis.android.core.relationship.RelationshipItem;
@@ -188,12 +192,14 @@ public class SearchRepositoryImpl implements SearchRepository {
                     .mapByPage(list -> filterByStatus(list, eventStatuses))
                     .mapByPage(this::filterDeleted)
                     .mapByPage(list -> TrackedEntityInstanceExtensionsKt.filterDeletedEnrollment(list, d2, selectedProgram != null ? selectedProgram.uid() : null))
+                    .mapByPage(list -> TrackedEntityInstanceExtensionsKt.filterEnrollmentStatus(list, d2, selectedProgram != null ? selectedProgram.uid() : null, FilterManager.getInstance().getEnrollmentStatusFilters()))
                     .map(tei -> transform(tei, selectedProgram, false));
         } else {
             dataSource = trackedEntityInstanceQuery.offlineOnly().getDataSource()
                     .mapByPage(list -> filterByStatus(list, eventStatuses))
                     .mapByPage(this::filterDeleted)
                     .mapByPage(list -> TrackedEntityInstanceExtensionsKt.filterDeletedEnrollment(list, d2, selectedProgram != null ? selectedProgram.uid() : null))
+                    .mapByPage(list -> TrackedEntityInstanceExtensionsKt.filterEnrollmentStatus(list, d2, selectedProgram != null ? selectedProgram.uid() : null, FilterManager.getInstance().getEnrollmentStatusFilters()))
                     .map(tei -> transform(tei, selectedProgram, true));
         }
 
@@ -230,6 +236,7 @@ public class SearchRepositoryImpl implements SearchRepository {
                     .map(list -> filterByStatus(list, eventStatuses))
                     .map(this::filterDeleted)
                     .map(list -> TrackedEntityInstanceExtensionsKt.filterDeletedEnrollment(list, d2, selectedProgram != null ? selectedProgram.uid() : null))
+                    .map(list -> TrackedEntityInstanceExtensionsKt.filterEnrollmentStatus(list, d2, selectedProgram != null ? selectedProgram.uid() : null, FilterManager.getInstance().getEnrollmentStatusFilters()))
                     .flatMapIterable(list -> list)
                     .map(tei -> transform(tei, selectedProgram, false))
                     .toList().toFlowable();
@@ -238,6 +245,7 @@ public class SearchRepositoryImpl implements SearchRepository {
                     .map(list -> filterByStatus(list, eventStatuses))
                     .map(this::filterDeleted)
                     .map(list -> TrackedEntityInstanceExtensionsKt.filterDeletedEnrollment(list, d2, selectedProgram != null ? selectedProgram.uid() : null))
+                    .map(list -> TrackedEntityInstanceExtensionsKt.filterEnrollmentStatus(list, d2, selectedProgram != null ? selectedProgram.uid() : null, FilterManager.getInstance().getEnrollmentStatusFilters()))
                     .flatMapIterable(list -> list)
                     .map(tei -> transform(tei, selectedProgram, true))
                     .toList().toFlowable();
@@ -255,6 +263,10 @@ public class SearchRepositoryImpl implements SearchRepository {
             trackedEntityInstanceQuery = trackedEntityInstanceQuery.byProgram().eq(selectedProgram.uid());
         else
             trackedEntityInstanceQuery = trackedEntityInstanceQuery.byTrackedEntityType().eq(trackedEntityType);
+
+        if (!FilterManager.getInstance().getEnrollmentStatusFilters().isEmpty()) {
+            //TODO: THE SDK NEEDS TO PROVIDE A WAY TO SET ENROLLMENT STATUS SO WE CAN SEARCH BOTH LOCAL AND ONLINE
+        }
 
         OrganisationUnitMode ouMode;
         if (orgUnits.isEmpty()) {
@@ -432,13 +444,11 @@ public class SearchRepositoryImpl implements SearchRepository {
 
     private void setAttributeValue(SearchTeiModel searchTei, String attributeUid) {
         TrackedEntityAttribute attribute = d2.trackedEntityModule().trackedEntityAttributes().uid(attributeUid).blockingGet();
-        if (attribute.valueType() != ValueType.IMAGE &&
-                d2.trackedEntityModule().trackedEntityAttributeValues().value(attribute.uid(), searchTei.getTei().uid()).blockingExists()) {
+        if (attribute.valueType() != ValueType.IMAGE) {
             TrackedEntityAttributeValue attributeValue = d2.trackedEntityModule().trackedEntityAttributeValues().value(attribute.uid(), searchTei.getTei().uid()).blockingGet();
             searchTei.addAttributeValue(
                     attribute.displayFormName(),
-                    ValueUtils.transform(
-                            d2, attributeValue, attribute.valueType(), attribute.optionSet() != null ? attribute.optionSet().uid() : null)
+                    attributeValue != null ? ValueUtils.transform(d2, attributeValue, attribute.valueType(), attribute.optionSet() != null ? attribute.optionSet().uid() : null) : null
             );
         }
     }
@@ -475,9 +485,9 @@ public class SearchRepositoryImpl implements SearchRepository {
                 } else {
                     dateToShow = scheduleDate;
                 }
-            }else if(scheduleDate != null){
+            } else if (scheduleDate != null) {
                 dateToShow = scheduleDate;
-            }else if(overdueDate != null){
+            } else if (overdueDate != null) {
                 dateToShow = overdueDate;
             }
             tei.setOverdueDate(dateToShow);
@@ -493,7 +503,7 @@ public class SearchRepositoryImpl implements SearchRepository {
                                 .build()
                 ).build()
         );
-        for(Relationship relationship : relationships) {
+        for (Relationship relationship : relationships) {
             RelationshipType relationshipType =
                     d2.relationshipModule().relationshipTypes().uid(relationship.relationshipType()).blockingGet();
 
@@ -541,7 +551,7 @@ public class SearchRepositoryImpl implements SearchRepository {
                 .byDisplayInList().isTrue()
                 .orderBySortOrder(RepositoryScope.OrderByDirection.ASC)
                 .blockingGet();
-        for(ProgramTrackedEntityAttribute programAttribute : programTrackedEntityAttributes){
+        for (ProgramTrackedEntityAttribute programAttribute : programTrackedEntityAttributes) {
             attributeUids.add(programAttribute.trackedEntityAttribute().uid());
         }
         values = d2.trackedEntityModule().trackedEntityAttributeValues()
@@ -606,6 +616,30 @@ public class SearchRepositoryImpl implements SearchRepository {
             }
         }
         return teis;
+    }
+
+    @Override
+    public List<EventViewModel> getEventsForMap(List<SearchTeiModel> teis) {
+        List<EventViewModel> eventViewModels = new ArrayList<>();
+        List<String> teiUidList = new ArrayList<>();
+        for (SearchTeiModel tei : teis) {
+            teiUidList.add(tei.getTei().uid());
+        }
+
+        List<Event> events = d2.eventModule().events()
+                .byTrackedEntityInstanceUids(teiUidList)
+                .byDeleted().isFalse()
+                .blockingGet();
+
+        for (Event event : events) {
+            ProgramStage stage = d2.programModule().programStages()
+                    .uid(event.programStage())
+                    .blockingGet();
+
+            eventViewModels.add(new EventViewModel(EventViewModelType.EVENT, stage, event, 0, null, true, true));
+        }
+
+        return eventViewModels;
     }
 
     private List<TrackedEntityInstance> filterDeleted(List<TrackedEntityInstance> teis) {
@@ -721,5 +755,4 @@ public class SearchRepositoryImpl implements SearchRepository {
                 d2.trackedEntityModule().trackedEntityAttributes().uid(attrUid).blockingGet().valueType() == ValueType.IMAGE;
     }
 
-    // Private Region End//
 }
