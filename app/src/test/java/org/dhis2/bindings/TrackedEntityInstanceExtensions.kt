@@ -6,14 +6,14 @@ import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
 import junit.framework.Assert.assertTrue
 import org.dhis2.Bindings.filterDeletedEnrollment
+import org.dhis2.Bindings.filterEnrollmentStatus
 import org.dhis2.Bindings.filterEvents
 import org.dhis2.Bindings.toDate
-import org.dhis2.Bindings.filterEnrollmentStatus
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.enrollment.Enrollment
+import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
 import org.hisp.dhis.android.core.event.EventStatus
 import org.hisp.dhis.android.core.period.DatePeriod
-import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance
 import org.junit.Test
 import org.mockito.Mockito

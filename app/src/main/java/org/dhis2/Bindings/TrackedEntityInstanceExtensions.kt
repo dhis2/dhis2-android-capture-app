@@ -2,9 +2,9 @@ package org.dhis2.Bindings
 
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper
+import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
 import org.hisp.dhis.android.core.event.EventStatus
 import org.hisp.dhis.android.core.period.DatePeriod
-import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance
 
 fun MutableList<TrackedEntityInstance>.filterDeletedEnrollment(
