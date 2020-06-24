@@ -12,6 +12,7 @@ import org.dhis2.databinding.ItemFilterAssignedBinding;
 import org.dhis2.databinding.ItemFilterCatOptCombBinding;
 import org.dhis2.databinding.ItemFilterOrgUnitBinding;
 import org.dhis2.databinding.ItemFilterPeriodBinding;
+import org.dhis2.databinding.ItemFilterSortingBinding;
 import org.dhis2.databinding.ItemFilterStateBinding;
 import org.dhis2.databinding.ItemFilterStatusBinding;
 import org.hisp.dhis.android.core.category.CategoryCombo;
@@ -24,7 +25,7 @@ public class FiltersAdapter extends RecyclerView.Adapter<FilterHolder> {
 
     private final ProgramType programType;
 
-    public enum ProgramType {ALL, EVENT, TRACKER, DATASET}
+    public enum ProgramType {ALL, EVENT, TRACKER, DATASET, DASHBOARD}
 
     private List<Filters> filtersList;
     private ObservableField<Filters> openedFilter;
@@ -33,6 +34,7 @@ public class FiltersAdapter extends RecyclerView.Adapter<FilterHolder> {
     public FiltersAdapter(ProgramType programType) {
         this.filtersList = new ArrayList<>();
         this.programType = programType;
+        filtersList.add(Filters.SORTING);
         filtersList.add(Filters.PERIOD);
         filtersList.add(Filters.ORG_UNIT);
         filtersList.add(Filters.SYNC_STATE);
@@ -44,6 +46,8 @@ public class FiltersAdapter extends RecyclerView.Adapter<FilterHolder> {
     public FilterHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         switch (Filters.values()[viewType]) {
+            case SORTING:
+                return new SortingFilterHolder(ItemFilterSortingBinding.inflate(inflater, parent, false), programType, openedFilter);
             case PERIOD:
                 return new PeriodFilterHolder(ItemFilterPeriodBinding.inflate(inflater, parent, false), openedFilter);
             case ORG_UNIT:
@@ -68,7 +72,7 @@ public class FiltersAdapter extends RecyclerView.Adapter<FilterHolder> {
 
     @Override
     public int getItemCount() {
-        return filtersList.size(); //TODO: Should change depending on the screen
+        return filtersList.size();
     }
 
     @Override

@@ -47,6 +47,7 @@ public class FilterManager {
 
     private FlowableProcessor<FilterManager> filterProcessor;
     private FlowableProcessor<Boolean> ouTreeProcessor;
+    private FlowableProcessor<Boolean> sortingTreeProcessor;
     private FlowableProcessor<PeriodRequest> periodRequestProcessor;
 
     private static FilterManager instance;
@@ -82,6 +83,7 @@ public class FilterManager {
 
         filterProcessor = PublishProcessor.create();
         ouTreeProcessor = PublishProcessor.create();
+        sortingTreeProcessor = PublishProcessor.create();
         periodRequestProcessor = PublishProcessor.create();
     }
 
@@ -147,6 +149,10 @@ public class FilterManager {
         filterProcessor.onNext(this);
     }
 
+    public void addSortingItem(){
+
+    }
+
     public void addCatOptCombo(CategoryOptionCombo catOptCombo) {
         if (catOptComboFilters.contains(catOptCombo))
             catOptComboFilters.remove(catOptCombo);
@@ -181,6 +187,10 @@ public class FilterManager {
         return ouTreeProcessor;
     }
 
+    public FlowableProcessor<Boolean> getSortingTreeProcessor(){
+        return sortingTreeProcessor;
+    }
+
     public Flowable<FilterManager> asFlowable() {
         return filterProcessor;
     }
@@ -191,6 +201,10 @@ public class FilterManager {
 
     public Flowable<Boolean> ouTreeFlowable() {
         return ouTreeProcessor;
+    }
+
+    public Flowable<Boolean> sortingFlowable(){
+        return sortingTreeProcessor;
     }
 
     public int getTotalFilters() {
