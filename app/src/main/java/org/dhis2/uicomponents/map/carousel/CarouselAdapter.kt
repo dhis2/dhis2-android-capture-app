@@ -48,7 +48,14 @@ class CarouselAdapter private constructor(
                     onDeleteRelationshipListener,
                     onRelationshipClickListener
                 )
-            else -> throw IllegalArgumentException("View type not supported")
+            CarouselItems.EVENT ->
+                CarouselEventHolder(
+                    ItemCarouselTeiBinding.inflate(
+                        LayoutInflater.from(parent.context),
+                        parent,
+                        false
+                    )
+                )
         }
     }
 
