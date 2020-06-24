@@ -11,14 +11,14 @@ import org.dhis2.uicomponents.map.camera.centerCameraOnFeature
 import org.dhis2.uicomponents.map.carousel.CarouselAdapter
 import org.dhis2.uicomponents.map.managers.MapManager
 
-class CarouselView<T> @JvmOverloads constructor(
+class CarouselView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
 ) : RecyclerView(context, attrs, defStyleAttr) {
 
     private var selectedFeature: Feature? = null
-    private lateinit var carouselAdapter: CarouselAdapter<T>
+    private lateinit var carouselAdapter: CarouselAdapter
 
     init {
         layoutManager = LinearLayoutManager(context, HORIZONTAL, false)
@@ -26,7 +26,7 @@ class CarouselView<T> @JvmOverloads constructor(
         LinearSnapHelper().attachToRecyclerView(this)
     }
 
-    fun setAdapter(adapter: CarouselAdapter<T>) {
+    fun setAdapter(adapter: CarouselAdapter) {
         super.setAdapter(adapter)
         this.carouselAdapter = adapter
     }

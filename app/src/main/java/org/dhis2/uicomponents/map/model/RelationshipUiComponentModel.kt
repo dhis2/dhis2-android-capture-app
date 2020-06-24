@@ -11,7 +11,7 @@ data class RelationshipUiComponentModel(
     val from: TeiMap,
     val to: TeiMap,
     val canBeDeleted: Boolean? = true
-)
+) : CarouselItemModel
 
 data class TeiMap(
     val teiUid: String?,

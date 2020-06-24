@@ -61,7 +61,7 @@ class MapLayerManagerTest {
         mapLayerManager
             .initMap(mapboxMap)
             .withFeatureType(FeatureType.POINT)
-            .addLayers(LayerType.RELATIONSHIP_LAYER, listOf(sourceId, otherSourceId))
+            .addLayers(LayerType.RELATIONSHIP_LAYER, listOf(sourceId, otherSourceId), false)
 
         assert(mapLayerManager.mapLayers.isNotEmpty())
         assert(mapLayerManager.mapLayers[sourceId] is RelationshipMapLayer)
