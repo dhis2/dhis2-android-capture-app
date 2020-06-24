@@ -236,15 +236,15 @@ public class FilterManager {
     public int getTotalFilters() {
         int ouIsApplying = ouFilters.isEmpty() ? 0 : 1;
         int stateIsApplying = stateFilters.isEmpty() ? 0 : 1;
-        int periodIsApplying = periodFilters == null ? 0 : 1;
-        int enrollmentPeriodIsApplying = enrollmentPeriodFilters == null ? 0 : 1;
+        int periodIsApplying = periodFilters == null || periodFilters.isEmpty() ? 0 : 1;
+        int enrollmentPeriodIsApplying = enrollmentPeriodFilters == null || enrollmentPeriodFilters.isEmpty() ? 0 : 1;
         int eventStatusApplying = eventStatusFilters.isEmpty() ? 0 : 1;
         int enrollmentStatusApplying = enrollmentStatusFilters.isEmpty() ? 0 : 1;
         int catComboApplying = catOptComboFilters.isEmpty() ? 0 : 1;
         int assignedApplying = assignedFilter ? 1 : 0;
         return ouIsApplying + stateIsApplying + periodIsApplying +
                 eventStatusApplying + catComboApplying +
-                assignedApplying + enrollmentPeriodIsApplying+ enrollmentStatusApplying;
+                assignedApplying + enrollmentPeriodIsApplying + enrollmentStatusApplying;
     }
 
     public List<DatePeriod> getPeriodFilters() {
@@ -320,7 +320,7 @@ public class FilterManager {
         filterProcessor.onNext(this);
     }
 
-    public void clearEnrollmentStatus(){
+    public void clearEnrollmentStatus() {
         enrollmentStatusFilters.clear();
         enrollmentStatusFiltersApplied.set(enrollmentStatusFilters.size());
         filterProcessor.onNext(this);
@@ -333,10 +333,11 @@ public class FilterManager {
     }
 
     public void clearEnrollmentDate() {
-        if(enrollmentPeriodFilters!=null) {
+        if (enrollmentPeriodFilters != null) {
             enrollmentPeriodFilters.clear();
         }
-        enrollmentPeriodFiltersApplied.set(catOptComboFilters.size());
+        enrollmentPeriodIdSelected = 0;
+        enrollmentPeriodFiltersApplied.set(enrollmentPeriodFilters == null ? 0 : enrollmentPeriodFilters.size());
         filterProcessor.onNext(this);
     }
 
@@ -346,8 +347,9 @@ public class FilterManager {
         catOptComboFilters.clear();
         stateFilters.clear();
         ouFilters.clear();
-        periodFilters = null;
-        enrollmentPeriodFilters = null;
+        periodFilters = new ArrayList<>();
+        enrollmentPeriodFilters = new ArrayList<>();
+        enrollmentPeriodIdSelected = 0;
         periodIdSelected = 0;
         assignedFilter = false;
 

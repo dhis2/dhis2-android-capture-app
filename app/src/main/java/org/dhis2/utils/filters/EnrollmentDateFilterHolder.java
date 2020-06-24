@@ -6,6 +6,8 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.databinding.ObservableField;
 
+import com.google.common.collect.Lists;
+
 import org.dhis2.R;
 import org.dhis2.databinding.FilterPeriodBinding;
 import org.dhis2.databinding.ItemFilterPeriodBinding;
@@ -13,9 +15,11 @@ import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.Period;
 import org.hisp.dhis.android.core.period.DatePeriod;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 
 class EnrollmentDateFilterHolder extends FilterHolder implements CompoundButton.OnCheckedChangeListener {
 
@@ -156,9 +160,11 @@ class EnrollmentDateFilterHolder extends FilterHolder implements CompoundButton.
                         break;
 
                 }
-                if (dates != null)
-                    FilterManager.getInstance().addEnrollmentPeriod(Collections.singletonList(DatePeriod.builder().startDate(dates[0]).endDate(dates[1]).build()));
-                else
+                if (dates != null) {
+                    List<DatePeriod> periodList = new ArrayList<>();
+                    periodList.add(DatePeriod.builder().startDate(dates[0]).endDate(dates[1]).build());
+                    FilterManager.getInstance().addEnrollmentPeriod(periodList);
+                } else
                     FilterManager.getInstance().addEnrollmentPeriod(null);
             }
 
