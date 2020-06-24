@@ -48,6 +48,9 @@ import org.dhis2.utils.timber.ReleaseTree;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.D2Manager;
 import org.jetbrains.annotations.NotNull;
+import org.matomo.sdk.Matomo;
+import org.matomo.sdk.Tracker;
+import org.matomo.sdk.TrackerBuilder;
 
 import java.io.IOException;
 import java.net.SocketException;
@@ -98,6 +101,7 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
 
     private boolean fromBackGround = false;
     private boolean recreated;
+    private Tracker matomoTracker;
 
     @Override
     public void onCreate() {
@@ -122,6 +126,13 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
         }
         setUpServerComponent();
         setUpRxPlugin();
+    }
+
+    public synchronized Tracker getTracker() {
+        if (matomoTracker == null){
+            matomoTracker = TrackerBuilder.createDefault("https://mipruebacustom.matomo.cloud/", 1).build(Matomo.getInstance(this));
+        }
+        return matomoTracker;
     }
 
     private void populateDBIfNeeded() {

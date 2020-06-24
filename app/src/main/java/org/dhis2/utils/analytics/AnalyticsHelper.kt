@@ -6,11 +6,13 @@ import com.google.firebase.analytics.FirebaseAnalytics
 import javax.inject.Inject
 import org.dhis2.data.prefs.PreferenceProvider
 import org.dhis2.utils.Constants
+import org.dhis2.utils.analytics.matomo.MatomoAnalyticsController
 import org.hisp.dhis.android.core.D2Manager
 
 class AnalyticsHelper @Inject constructor(
     val analytics: FirebaseAnalytics,
-    private val preferencesProvider: PreferenceProvider
+    private val preferencesProvider: PreferenceProvider,
+    val matomoAnalyticsController: MatomoAnalyticsController
 ) {
 
     @SuppressLint("CheckResult")

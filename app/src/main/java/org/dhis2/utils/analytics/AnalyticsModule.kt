@@ -6,6 +6,7 @@ import dagger.Module
 import dagger.Provides
 import javax.inject.Singleton
 import org.dhis2.data.prefs.PreferenceProvider
+import org.dhis2.utils.analytics.matomo.MatomoAnalyticsController
 
 @Module
 @Singleton
@@ -15,11 +16,13 @@ class AnalyticsModule internal constructor() {
     @Singleton
     fun providesAnalyticsHelper(
         context: Context,
-        preferencesProvider: PreferenceProvider
+        preferencesProvider: PreferenceProvider,
+        matomoAnalyticsController: MatomoAnalyticsController
     ): AnalyticsHelper {
         return AnalyticsHelper(
             FirebaseAnalytics.getInstance(context),
-            preferencesProvider
+            preferencesProvider,
+            matomoAnalyticsController
         )
     }
 
@@ -27,4 +30,5 @@ class AnalyticsModule internal constructor() {
     fun providesAnalyticsInterceptor(analyticHelper: AnalyticsHelper): AnalyticsInterceptor {
         return AnalyticsInterceptor(analyticHelper)
     }
+
 }
