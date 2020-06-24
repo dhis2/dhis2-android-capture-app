@@ -199,7 +199,7 @@ fun LinkedHashMap<String, TrackedEntityAttributeValue>.setAttributeList(
         for (pos in 1 until size) {
             val fieldName =
                 keys.toTypedArray()[pos]
-            val fieldValue = this[fieldName]!!.value()
+            val fieldValue = this[fieldName]?.value()
             val itemFieldValueBinding =
                 ItemFieldValueBinding.inflate(LayoutInflater.from(parentLayout.context))
             itemFieldValueBinding.name = fieldName

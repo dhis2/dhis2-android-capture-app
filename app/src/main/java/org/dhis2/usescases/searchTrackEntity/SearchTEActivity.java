@@ -26,6 +26,7 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.AdapterView;
+import android.widget.Filter;
 import android.widget.PopupMenu;
 import android.widget.Spinner;
 import android.widget.Toast;
@@ -202,6 +203,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         });
 
         filtersAdapter = new FiltersAdapter(FiltersAdapter.ProgramType.TRACKER);
+        filtersAdapter.addEnrollmentStatus();
         filtersAdapter.addEventStatus();
         try {
             binding.filterLayout.setAdapter(filtersAdapter);
@@ -271,8 +273,12 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             teiMapManager.onDestroy();
         }
         presenter.onDestroy();
-        super.onDestroy();
+
+        FilterManager.getInstance().clearEnrollmentStatus();
+        FilterManager.getInstance().clearEventStatus();
         FilterManager.getInstance().clearEnrollmentDate();
+
+        super.onDestroy();
     }
 
     @Override
