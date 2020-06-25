@@ -12,7 +12,7 @@ import org.hisp.dhis.android.core.D2Manager
 class AnalyticsHelper @Inject constructor(
     val analytics: FirebaseAnalytics,
     private val preferencesProvider: PreferenceProvider,
-    val matomoAnalyticsController: MatomoAnalyticsController
+    private val matomoAnalyticsController: MatomoAnalyticsController
 ) {
 
     @SuppressLint("CheckResult")
@@ -21,7 +21,18 @@ class AnalyticsHelper @Inject constructor(
             put(param, value)
         }
 
+        trackMatomoEvent(param, value, event)
         setEvent(event, params)
+    }
+
+    fun trackMatomoEvent(category: String, action: String, label: String) {
+        val d2 = D2Manager.getD2()
+
+        if (d2 != null && d2.userModule().blockingIsLogged()) {
+            val userUid = d2.userModule().user().blockingGet()?.uid()
+            matomoAnalyticsController.setUserId(userUid)
+        }
+        matomoAnalyticsController.trackEvent(category, action, label)
     }
 
     fun setEvent(event: String, params: Map<String, String>) {

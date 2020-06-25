@@ -22,6 +22,8 @@ interface MatomoAnalyticsController {
         secondValue: String
     )
     fun trackEvent(category: String, action: String, label: String)
+    fun trackEventWithDimension(category: String, action: String, label: String,  index: Int,
+                                dimensionValue: String)
     fun trackException(exception: Throwable, description: String)
-    fun setUserId(identification: String)
+    fun setUserId(identification: String?)
 }

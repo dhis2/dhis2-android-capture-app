@@ -6,7 +6,7 @@ import org.matomo.sdk.extra.TrackHelper
 class MatomoAnalyticsControllerImpl(val matomoTracker: Tracker?) :
     MatomoAnalyticsController {
 
-    override fun setUserId(identification: String) {
+    override fun setUserId(identification: String?) {
         matomoTracker?.let {
             it.userId = identification
         }
@@ -15,6 +15,18 @@ class MatomoAnalyticsControllerImpl(val matomoTracker: Tracker?) :
     override fun trackEvent(category: String, action: String, label: String) {
         matomoTracker?.let {
             TrackHelper.track().event(category, action).name(label).with(it)
+        }
+    }
+
+    override fun trackEventWithDimension(
+        category: String,
+        action: String,
+        label: String,
+        index: Int,
+        dimensionValue: String
+    ) {
+        matomoTracker?.let {
+            TrackHelper.track().dimension(index, dimensionValue).event(category, action).name(label).with(it)
         }
     }
 
