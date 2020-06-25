@@ -25,7 +25,6 @@ class SyncFlowTest : BaseTest() {
     val ruleSearch = ActivityTestRule(SearchTEActivity::class.java, false, false)
 
     @Test
-   // @Ignore
     fun shouldSuccessfullySyncAChangedTEI() {
         /*
         * launch in search
@@ -55,18 +54,13 @@ class SyncFlowTest : BaseTest() {
             clickOnReferralNextButton()
             checkEventCreatedToastIsShown()
             checkEventWasCreated(TeiDashboardTest.LAB_MONITORING)
-            //click back
-        }
-
-        searchTeiRobot {
-            /*closeSearchForm()
-            Thread.sleep(40000)*/
+            pressBack()
         }
 
         syncFlowRobot {
             Thread.sleep(4000)
-            /*clickOnSyncTei(teiName, teiLastName) //?
-            clickOnSyncButton()*/
+            clickOnSyncTei(teiName, teiLastName) //?
+            clickOnSyncButton()
         }
 
     }
