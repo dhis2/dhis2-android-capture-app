@@ -24,7 +24,6 @@ import org.dhis2.uicomponents.map.layer.types.TeiEventMapLayer
 import org.dhis2.uicomponents.map.layer.types.TeiMapLayer
 import org.dhis2.utils.ColorUtils
 
-
 class MapLayerDialog(
     private val mapLayerManager: MapLayerManager
 ) : BottomSheetDialogFragment() {
@@ -78,7 +77,9 @@ class MapLayerDialog(
 
         dialog.setOnShowListener {
             val bottomSheet =
-                (it as BottomSheetDialog).findViewById<View>(com.google.android.material.R.id.design_bottom_sheet) as FrameLayout?
+                (it as BottomSheetDialog).findViewById<View>(
+                    com.google.android.material.R.id.design_bottom_sheet
+                ) as FrameLayout?
             val behavior = BottomSheetBehavior.from(bottomSheet!!)
             behavior.state = BottomSheetBehavior.STATE_EXPANDED
 
