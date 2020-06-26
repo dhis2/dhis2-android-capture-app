@@ -1,7 +1,7 @@
 package org.dhis2.uicomponents.map.model
 
-import org.hisp.dhis.android.core.enrollment.Enrollment
 import java.util.Date
+import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.program.ProgramStage
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue

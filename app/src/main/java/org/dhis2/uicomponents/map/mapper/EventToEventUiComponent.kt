@@ -1,7 +1,6 @@
 package org.dhis2.uicomponents.map.mapper
 
 import org.dhis2.uicomponents.map.model.EventUiComponentModel
-import org.dhis2.uicomponents.map.model.StageStyle
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewModel
 

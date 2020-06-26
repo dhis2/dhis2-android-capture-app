@@ -201,7 +201,5 @@ class CarouselAdapter private constructor(
             onEventClickListener,
             items
         )
-
-
     }
 }
