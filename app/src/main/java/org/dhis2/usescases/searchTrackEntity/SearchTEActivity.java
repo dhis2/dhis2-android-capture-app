@@ -25,11 +25,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
-import android.view.animation.ScaleAnimation;
 import android.widget.AdapterView;
-import android.widget.Filter;
 import android.widget.PopupMenu;
 import android.widget.Spinner;
 import android.widget.Toast;
@@ -66,9 +62,8 @@ import org.dhis2.uicomponents.map.carousel.CarouselAdapter;
 import org.dhis2.uicomponents.map.geometry.mapper.EventsByProgramStage;
 import org.dhis2.uicomponents.map.layer.MapLayerDialog;
 import org.dhis2.uicomponents.map.managers.TeiMapManager;
-import org.dhis2.uicomponents.map.mapper.MapRelationshipToRelationshipMapModel;
+import org.dhis2.uicomponents.map.model.EventUiComponentModel;
 import org.dhis2.uicomponents.map.model.MapStyle;
-import org.dhis2.uicomponents.map.model.RelationshipUiComponentModel;
 import org.dhis2.usescases.coodinates.CoordinatesView;
 import org.dhis2.usescases.enrollment.EnrollmentActivity;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
@@ -144,10 +139,10 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     private TeiMapManager teiMapManager;
     private boolean initSearchNeeded = true;
     private Snackbar downloadingSnackbar;
-    private String currentStyle = Style.MAPBOX_STREETS;
     private MapLayerDialog mapLayerDialog;
     private ObjectAnimator animation = null;
     private Set<String> sources;
+    private Set<String> eventSources;
 
     //---------------------------------------------------------------------------------------------
 
@@ -778,7 +773,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
     /*region MAP*/
     @Override
-    public void setMap(List<SearchTeiModel> teis, HashMap<String, FeatureCollection> teiFeatureCollections, BoundingBox boundingBox, EventsByProgramStage events) {
+    public void setMap(List<SearchTeiModel> teis, HashMap<String, FeatureCollection> teiFeatureCollections, BoundingBox boundingBox, EventsByProgramStage events, List<EventUiComponentModel> eventUiComponentModels) {
         binding.progressLayout.setVisibility(View.GONE);
 
         teiMapManager.update(
@@ -789,6 +784,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         );
 
         sources = teiFeatureCollections.keySet();
+        eventSources = events.component2().keySet();
         CarouselAdapter carouselAdapter = new CarouselAdapter.Builder()
                 .addOnTeiClickListener(
                         (teiUid, enrollmentUid, isDeleted) -> {
@@ -808,6 +804,11 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                     presenter.onTEIClick(teiUid, null, false);
                     return true;
                 })
+                .addOnEventClickListener( (teiUid, enrollmentUid) -> {
+                    presenter.onTEIClick(teiUid, enrollmentUid, false);
+                    return true;
+                })
+                .addProgram(presenter.getProgram())
                 .build();
 
         binding.mapCarousel.setAdapter(carouselAdapter);
@@ -818,6 +819,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                 }
         );
         carouselAdapter.addItems(teis);
+        carouselAdapter.addItems(eventUiComponentModels);
     }
 
 
@@ -854,6 +856,17 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                     teiMapManager.mapLayerManager.getLayer(sourceId,true).setSelectedItem(features.get(0));
                     binding.mapCarousel.scrollToFeature(features.get(0));
                     return true;
+                } else {
+                    for (String eventSource : eventSources) {
+                        features = teiMapManager.getMap()
+                                .queryRenderedFeatures(rectF, featureType == FeatureType.POINT ? "POINT_LAYER_" + eventSource : "POLYGON_LAYER_" + eventSource);
+                        if (!features.isEmpty()) {
+                            teiMapManager.mapLayerManager.selectFeature(null);
+                            teiMapManager.mapLayerManager.getLayer(eventSource,true).setSelectedItem(features.get(0));
+                            binding.mapCarousel.scrollToFeature(features.get(0));
+                            return true;
+                        }
+                    }
                 }
             }
         }

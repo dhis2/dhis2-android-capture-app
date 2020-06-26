@@ -13,6 +13,7 @@ import com.mapbox.geojson.FeatureCollection;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.uicomponents.map.geometry.mapper.EventsByProgramStage;
+import org.dhis2.uicomponents.map.model.EventUiComponentModel;
 import org.dhis2.uicomponents.map.model.StageStyle;
 import org.dhis2.usescases.general.AbstractActivityContracts;
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel;
@@ -25,14 +26,12 @@ import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityType;
 
-import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.functions.Consumer;
-import kotlin.Pair;
 
 /**
  * QUADRAM. Created by ppajuelo on 02/11/2017.
@@ -88,7 +87,7 @@ public class SearchTEContractsModule {
 
         Consumer<FeatureType> featureType();
 
-        void setMap(List<SearchTeiModel> teis, HashMap<String, FeatureCollection> teiFeatureCollections, BoundingBox boundingBox, EventsByProgramStage events);
+        void setMap(List<SearchTeiModel> teis, HashMap<String, FeatureCollection> teiFeatureCollections, BoundingBox boundingBox, EventsByProgramStage events, List<EventUiComponentModel> eventUiComponentModels);
 
         Consumer<D2Progress> downloadProgress();
 

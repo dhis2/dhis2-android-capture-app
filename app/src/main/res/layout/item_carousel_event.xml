@@ -3,6 +3,20 @@
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <data>
+        <variable
+            name="event"
+            type="org.hisp.dhis.android.core.event.Event" />
+        <variable
+            name="program"
+            type="org.hisp.dhis.android.core.program.Program" />
+        <variable
+            name="enrollment"
+            type="org.hisp.dhis.android.core.enrollment.Enrollment" />
+        <variable
+            name="programStage"
+            type="org.hisp.dhis.android.core.program.ProgramStage" />
+    </data>
     <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
         android:layout_height="81dp"
@@ -19,12 +33,13 @@
                 android:id="@+id/programStageImage"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
+                android:background="@drawable/square_rounded_corners_2"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 tools:src="@tools:sample/avatars" />
 
             <ImageView
-                android:id="@+id/fromTeiImage"
+                android:id="@+id/teiImage"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:translationX="4dp"
@@ -41,7 +56,7 @@
                 android:layout_marginEnd="16dp"
                 android:textColor="@color/text_black_DE3"
                 android:textSize="14sp"
-                app:layout_constraintEnd_toStartOf="@id/clearButton"
+                app:layout_constraintEnd_toStartOf="@id/status_icon"
                 app:layout_constraintStart_toEndOf="@id/programStageImage"
                 app:layout_constraintTop_toTopOf="@id/programStageImage"
                 tools:text="@tools:sample/full_names" />
@@ -51,11 +66,12 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
-                android:layout_marginTop="5dp"
+                android:layout_marginTop="4dp"
                 android:layout_marginEnd="16dp"
                 android:textColor="@color/text_black_8A3"
                 android:textSize="12sp"
-                app:layout_constraintEnd_toStartOf="@id/clearButton"
+                android:text="@{programStage.displayName()}"
+                app:layout_constraintEnd_toStartOf="@id/status_icon"
                 app:layout_constraintStart_toEndOf="@id/programStageImage"
                 app:layout_constraintTop_toBottomOf="@id/teiAttribute"
                 tools:text="@tools:sample/full_names" />
@@ -66,24 +82,26 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="4dp"
-                android:layout_marginEnd="16dp"
                 android:textColor="@color/text_black_8A3"
                 android:textSize="12sp"
-                app:layout_constraintEnd_toStartOf="@id/clearButton"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/programStageImage"
                 app:layout_constraintTop_toBottomOf="@id/programStageName"
                 tools:text="03/01/2019 at Ngelehun CHC" />
 
             <ImageView
-                android:id="@+id/clearButton"
+                android:id="@+id/status_icon"
                 style="@style/ActionIconNoPadding"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
-                android:layout_margin="16dp"
+                app:eventProgram="@{program}"
+                app:eventProgramStage="@{programStage}"
+                app:enrollmentStatusIcon="@{enrollment}"
+                app:eventStatusIcon="@{event}"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/ic_delete_forever"
-                app:tint="@color/text_black_8A3" />
+                tools:src="@drawable/ic_edit" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </com.google.android.material.card.MaterialCardView>
 </layout>
