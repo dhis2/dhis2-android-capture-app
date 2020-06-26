@@ -61,7 +61,6 @@ class TeiMapLayer(
             ?: SymbolLayer(POINT_LAYER_ID, TEIS_SOURCE_ID)
                 .withProperties(
                     PropertyFactory.iconImage(MapLayerManager.TEI_ICON_ID),
-                    PropertyFactory.iconOffset(arrayOf(0f, -25f)),
                     PropertyFactory.iconAllowOverlap(true),
                     PropertyFactory.textAllowOverlap(true)
                 ).withFilter(
@@ -76,7 +75,6 @@ class TeiMapLayer(
             ?: SymbolLayer(SELECTED_POINT_LAYER_ID, SELECTED_POINT_SOURCE_ID)
                 .withProperties(
                     PropertyFactory.iconImage(MapLayerManager.TEI_ICON_ID),
-                    PropertyFactory.iconOffset(arrayOf(0f, -25f)),
                     PropertyFactory.iconAllowOverlap(true),
                     PropertyFactory.textAllowOverlap(true)
                 ).withFilter(

@@ -93,12 +93,10 @@ class MapLayerManager {
         handleLayer(sourceId ?: layerType.toString(), true)
     }
 
-    fun addLayers(layerType: LayerType, sourceIds: List<String>, visible: Boolean? = null) {
+    fun addLayers(layerType: LayerType, sourceIds: List<String>, visible: Boolean) = apply {
         sourceIds.forEach {
-            when (visible) {
-                true -> addStartLayer(layerType, it)
-                else -> addLayer(layerType, it)
-            }
+            addLayer(layerType, it)
+            handleLayer(it, visible)
         }
     }
 

@@ -282,8 +282,8 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
         );
         this.sources = map.getFirst().keySet();
 
-        CarouselAdapter<RelationshipUiComponentModel> carouselAdapter =
-                new CarouselAdapter.Builder<RelationshipUiComponentModel>()
+        CarouselAdapter carouselAdapter =
+                new CarouselAdapter.Builder()
                         .addCurrentTei(currentTei)
                         .addOnDeleteRelationshipListener(relationshipUid -> {
                             presenter.deleteRelationship(relationshipUid);

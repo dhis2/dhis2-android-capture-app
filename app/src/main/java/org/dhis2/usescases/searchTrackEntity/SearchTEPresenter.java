@@ -74,6 +74,7 @@ import static org.dhis2.usescases.teiDashboard.dashboardfragments.relationships.
 import static org.dhis2.utils.analytics.AnalyticsConstants.ADD_RELATIONSHIP;
 import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
 import static org.dhis2.utils.analytics.AnalyticsConstants.CREATE_ENROLL;
+import static org.dhis2.utils.analytics.AnalyticsConstants.DELETE_RELATIONSHIP;
 import static org.dhis2.utils.analytics.AnalyticsConstants.SEARCH_TEI;
 
 public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
@@ -303,7 +304,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                         .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.ui())
                         .subscribe(
-                                periodRequest -> view.showPeriodRequest(periodRequest),
+                                view::showPeriodRequest,
                                 Timber::e
                         ));
 
@@ -850,23 +851,24 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
     @Override
     public HashMap<String, StageStyle> getProgramStageStyle() {
-        List<ProgramStage> programStages = d2.programModule().programStages().byProgramUid().eq(selectedProgram.uid()).byFeatureType().neq(FeatureType.NONE).blockingGet();
         HashMap<String, StageStyle> stagesStyleMap = new HashMap<>();
-        for (ProgramStage stage : programStages) {
-            int color;
-            Drawable icon;
-            if (stage.style() != null && stage.style().color() != null) {
-                color = ColorUtils.parseColor(stage.style().color());
-            } else {
-                color = -1;
+        if (selectedProgram != null) {
+            List<ProgramStage> programStages = d2.programModule().programStages().byProgramUid().eq(selectedProgram.uid()).byFeatureType().neq(FeatureType.NONE).blockingGet();
+            for (ProgramStage stage : programStages) {
+                int color;
+                Drawable icon;
+                if (stage.style() != null && stage.style().color() != null) {
+                    color = ColorUtils.parseColor(stage.style().color());
+                } else {
+                    color = -1;
+                }
+                if (stage.style() != null && stage.style().icon() != null) {
+                    icon = ObjectStyleUtils.getIconResource(view.getContext(), stage.style().icon(), R.drawable.ic_clinical_f_outline);
+                } else {
+                    icon = AppCompatResources.getDrawable(view.getContext(), R.drawable.ic_clinical_f_outline);
+                }
+                stagesStyleMap.put(stage.displayName(), new StageStyle(color, icon));
             }
-            if (stage.style() != null && stage.style().icon() != null) {
-                icon = ObjectStyleUtils.getIconResource(view.getContext(), stage.style().icon(), R.drawable.ic_clinical_f_outline);
-            } else {
-                icon = AppCompatResources.getDrawable(view.getContext(), R.drawable.ic_clinical_f_outline);
-                ;
-            }
-            stagesStyleMap.put(stage.displayName(), new StageStyle(color, icon));
         }
         return stagesStyleMap;
     }
@@ -887,6 +889,18 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     @Override
     public void restoreQueryData(HashMap<String, String> queryData) {
         this.queryData = queryData;
+    }
+
+    @Override
+    public void deleteRelationship(String relationshipUid) {
+        try {
+            d2.relationshipModule().relationships().withItems().uid(relationshipUid).blockingDelete();
+        } catch (D2Error error) {
+            Timber.d(error);
+        } finally {
+            analyticsHelper.setEvent(DELETE_RELATIONSHIP, CLICK, DELETE_RELATIONSHIP);
+            mapProcessor.onNext(new Unit());
+        }
     }
 
     @RestrictTo(RestrictTo.Scope.TESTS)

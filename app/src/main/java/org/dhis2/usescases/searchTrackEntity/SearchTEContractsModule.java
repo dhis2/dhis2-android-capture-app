@@ -7,6 +7,7 @@ import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
 import androidx.paging.PagedList;
 
+import com.evrencoskun.tableview.filter.Filter;
 import com.mapbox.geojson.BoundingBox;
 import com.mapbox.geojson.FeatureCollection;
 
@@ -17,6 +18,7 @@ import org.dhis2.uicomponents.map.model.StageStyle;
 import org.dhis2.usescases.general.AbstractActivityContracts;
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel;
 import org.dhis2.utils.filters.FilterManager;
+import org.dhis2.utils.filters.Filters;
 import org.hisp.dhis.android.core.arch.call.D2Progress;
 import org.hisp.dhis.android.core.common.FeatureType;
 import org.hisp.dhis.android.core.common.ValueTypeDeviceRendering;
@@ -80,7 +82,7 @@ public class SearchTEContractsModule {
 
         void openOrgUnitTreeSelector();
 
-        void showPeriodRequest(FilterManager.PeriodRequest periodRequest);
+        void showPeriodRequest(Pair<FilterManager.PeriodRequest, Filters>periodRequest);
 
         void clearFilters();
 
@@ -168,5 +170,7 @@ public class SearchTEContractsModule {
         void checkFilters(boolean listResultIsOk);
 
         void restoreQueryData(HashMap<String, String> queryData);
+
+        void deleteRelationship(String relationshipUid);
     }
 }

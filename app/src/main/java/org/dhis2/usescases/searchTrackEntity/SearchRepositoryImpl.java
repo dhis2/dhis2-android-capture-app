@@ -12,6 +12,7 @@ import androidx.paging.PagedList;
 import org.dhis2.Bindings.ExtensionsKt;
 import org.dhis2.Bindings.TrackedEntityInstanceExtensionsKt;
 import org.dhis2.Bindings.ValueExtensionsKt;
+import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.DataEntryStore;
 import org.dhis2.data.forms.dataentry.StoreResult;
 import org.dhis2.data.forms.dataentry.ValueStore;
@@ -26,6 +27,7 @@ import org.dhis2.utils.Constants;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.ValueUtils;
 import org.dhis2.utils.filters.FilterManager;
+import org.dhis2.utils.resources.ResourceManager;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper;
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope;
@@ -111,12 +113,14 @@ public class SearchRepositoryImpl implements SearchRepository {
     );
 
     private final String teiType;
+    private final ResourceManager resources;
     private final D2 d2;
 
 
-    SearchRepositoryImpl(String teiType, D2 d2) {
+    SearchRepositoryImpl(String teiType, D2 d2, ResourceManager resources) {
         this.teiType = teiType;
         this.d2 = d2;
+        this.resources = resources;
     }
 
 
@@ -192,6 +196,7 @@ public class SearchRepositoryImpl implements SearchRepository {
                     .mapByPage(this::filterDeleted)
                     .mapByPage(list -> TrackedEntityInstanceExtensionsKt.filterDeletedEnrollment(list, d2, selectedProgram != null ? selectedProgram.uid() : null))
                     .mapByPage(list -> TrackedEntityInstanceExtensionsKt.filterEnrollmentStatus(list, d2, selectedProgram != null ? selectedProgram.uid() : null, FilterManager.getInstance().getEnrollmentStatusFilters()))
+                    .mapByPage(list -> TrackedEntityInstanceExtensionsKt.filterEvents(list,d2, FilterManager.getInstance().getPeriodFilters(), selectedProgram != null ? selectedProgram.uid() : null))
                     .map(tei -> transform(tei, selectedProgram, false));
         } else {
             dataSource = trackedEntityInstanceQuery.offlineOnly().getDataSource()
@@ -199,6 +204,7 @@ public class SearchRepositoryImpl implements SearchRepository {
                     .mapByPage(this::filterDeleted)
                     .mapByPage(list -> TrackedEntityInstanceExtensionsKt.filterDeletedEnrollment(list, d2, selectedProgram != null ? selectedProgram.uid() : null))
                     .mapByPage(list -> TrackedEntityInstanceExtensionsKt.filterEnrollmentStatus(list, d2, selectedProgram != null ? selectedProgram.uid() : null, FilterManager.getInstance().getEnrollmentStatusFilters()))
+                    .mapByPage(list -> TrackedEntityInstanceExtensionsKt.filterEvents(list,d2, FilterManager.getInstance().getPeriodFilters(), selectedProgram != null ? selectedProgram.uid() : null))
                     .map(tei -> transform(tei, selectedProgram, true));
         }
 
@@ -236,6 +242,7 @@ public class SearchRepositoryImpl implements SearchRepository {
                     .map(this::filterDeleted)
                     .map(list -> TrackedEntityInstanceExtensionsKt.filterDeletedEnrollment(list, d2, selectedProgram != null ? selectedProgram.uid() : null))
                     .map(list -> TrackedEntityInstanceExtensionsKt.filterEnrollmentStatus(list, d2, selectedProgram != null ? selectedProgram.uid() : null, FilterManager.getInstance().getEnrollmentStatusFilters()))
+                    .map(list -> TrackedEntityInstanceExtensionsKt.filterEvents(list,d2, FilterManager.getInstance().getPeriodFilters(), selectedProgram != null ? selectedProgram.uid() : null))
                     .flatMapIterable(list -> list)
                     .map(tei -> transform(tei, selectedProgram, false))
                     .toList().toFlowable();
@@ -244,6 +251,7 @@ public class SearchRepositoryImpl implements SearchRepository {
                     .map(list -> filterByStatus(list, eventStatuses))
                     .map(this::filterDeleted)
                     .map(list -> TrackedEntityInstanceExtensionsKt.filterDeletedEnrollment(list, d2, selectedProgram != null ? selectedProgram.uid() : null))
+                    .map(list -> TrackedEntityInstanceExtensionsKt.filterEvents(list,d2, FilterManager.getInstance().getPeriodFilters(), selectedProgram != null ? selectedProgram.uid() : null))
                     .map(list -> TrackedEntityInstanceExtensionsKt.filterEnrollmentStatus(list, d2, selectedProgram != null ? selectedProgram.uid() : null, FilterManager.getInstance().getEnrollmentStatusFilters()))
                     .flatMapIterable(list -> list)
                     .map(tei -> transform(tei, selectedProgram, true))
@@ -285,7 +293,7 @@ public class SearchRepositoryImpl implements SearchRepository {
             trackedEntityInstanceQuery = trackedEntityInstanceQuery
                     .byStates().in(states);
 
-        List<DatePeriod> periods = FilterManager.getInstance().getPeriodFilters();
+        List<DatePeriod> periods = FilterManager.getInstance().getEnrollmentPeriodFilters();
 
         if (!periods.isEmpty()) {
             queryData.remove(Constants.ENROLLMENT_DATE_UID);
@@ -541,12 +549,17 @@ public class SearchRepositoryImpl implements SearchRepository {
                     toTei.geometry(),
                     ExtensionsKt.profilePicturePath(fromTei, d2, selectedProgram.uid()),
                     ExtensionsKt.profilePicturePath(toTei, d2, selectedProgram.uid()),
-                    -1,
-                    -1
+                    getTeiDefaultRes(fromTei),
+                    getTeiDefaultRes(toTei)
             ));
         }
 
         searchTeiModel.setRelationships(relationshipViewModels);
+    }
+
+    private int getTeiDefaultRes(TrackedEntityInstance tei) {
+        TrackedEntityType teiType = d2.trackedEntityModule().trackedEntityTypes().uid(tei.trackedEntityType()).blockingGet();
+        return resources.getObjectStyleDrawableResource(teiType.style().icon(), R.drawable.photo_temp_gray);
     }
 
     private List<TrackedEntityAttributeValue> getTrackedEntityAttributesForRelationship(TrackedEntityInstance tei, Program selectedProgram) {
