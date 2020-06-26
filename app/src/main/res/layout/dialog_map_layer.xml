@@ -12,7 +12,7 @@
         android:layout_height="match_parent"
         android:layout_marginTop="90dp"
         android:layout_marginBottom="90dp"
-        android:background="@drawable/bottomsheet_bg"
+        android:background="?colorAccent"
         android:orientation="vertical"
         tools:ignore="UselessParent">
 
@@ -22,47 +22,46 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
             android:gravity="center_vertical"
-            android:paddingStart="24dp"
-            android:paddingEnd="24dp"
+            android:paddingStart="15dp"
+            android:paddingEnd="15dp"
             android:text="@string/map_layers"
-            android:textColor="@color/black_de0"
-            android:textSize="16sp"
+            android:textColor="@color/text_black_333"
+            android:textSize="20sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <ScrollView
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="17dp"
-            android:layout_marginBottom="22dp"
             app:layout_constrainedHeight="true"
+            app:layout_constraintHeight_max="400dp"
+            app:layout_constraintHeight_min="200dp"
             app:layout_constraintBottom_toTopOf="@+id/acceptButton"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/title"
-            app:layout_constraintVertical_bias="0.654">
+            app:layout_constraintTop_toBottomOf="@id/title">
 
             <LinearLayout
                 android:id="@+id/layout"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:minHeight="200dp"
-                android:orientation="vertical"
-                android:paddingStart="24dp"
-                android:paddingEnd="24dp" />
+                android:orientation="vertical" />
 
         </ScrollView>
 
-        <com.google.android.material.button.MaterialButton
+        <Button
             android:id="@+id/acceptButton"
-            style="@style/Widget.MaterialComponents.Button.TextButton"
+            style="?borderlessButtonStyle"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="16dp"
-            android:text="@string/action_apply"
-            android:textSize="14sp"
+            android:layout_height="40dp"
+            android:layout_gravity="end"
+            android:layout_margin="5dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="4dp"
+            android:background="@android:color/transparent"
+            android:text="@string/action_accept"
+            android:textColor="@color/colorGreyDefault"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 

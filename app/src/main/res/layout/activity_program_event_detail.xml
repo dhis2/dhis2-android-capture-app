@@ -235,19 +235,6 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/filterOpen" />
 
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/mapLayerButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:padding="5dp"
-                    android:text="@string/map_layers"
-                    android:textAllCaps="true"
-                    android:textColor="?colorAccent"
-                    android:visibility="gone"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="@id/mapView" />
-
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <com.google.android.material.floatingactionbutton.FloatingActionButton
