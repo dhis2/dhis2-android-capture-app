@@ -702,4 +702,5 @@
     <string name="complete_anyway">Complete anyway</string>
     <string name="filters_title_event_status">Event status</string>
     <string name="filters_title_enrollment_status">Enrollment status</string>
+    <string name="enrollment_date">Enrollment date</string>
 </resources>

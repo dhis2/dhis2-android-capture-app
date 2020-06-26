@@ -43,6 +43,7 @@ import org.dhis2.data.schedulers.TestSchedulerProvider
 import org.dhis2.data.tuples.Pair
 import org.dhis2.utils.filters.FilterManager
 import org.dhis2.utils.filters.FilterManager.PeriodRequest
+import org.dhis2.utils.filters.Filters
 import org.hisp.dhis.android.core.category.CategoryCombo
 import org.hisp.dhis.android.core.category.CategoryOptionCombo
 import org.hisp.dhis.android.core.common.State
@@ -66,7 +67,8 @@ class DataSetDetailPresenterTest {
     @Test
     fun `Should get the list of dataSet`() {
         val filterProcessor: FlowableProcessor<FilterManager> = PublishProcessor.create()
-        val periodRequest: FlowableProcessor<PeriodRequest> = BehaviorProcessor.create()
+        val periodRequest: FlowableProcessor<kotlin.Pair<PeriodRequest, Filters?>> =
+            BehaviorProcessor.create()
         val filterManagerFlowable = Flowable.just(filterManager).startWith(filterProcessor)
         val dataSets = listOf(dummyDataSet(), dummyDataSet(), dummyDataSet())
         val catOptionComboPair = Pair.create(dummyCategoryCombo(), dummyListCatOptionCombo())
@@ -80,7 +82,7 @@ class DataSetDetailPresenterTest {
         whenever(repository.catOptionCombos()) doReturn Single.just(catOptionComboPair)
         whenever(repository.canWriteAny()) doReturn Flowable.just(true)
         filterProcessor.onNext(filterManager)
-        periodRequest.onNext(PeriodRequest.FROM_TO)
+        periodRequest.onNext(Pair(PeriodRequest.FROM_TO, null))
 
         presenter.init()
         scheduler.io().triggerActions()
@@ -88,7 +90,7 @@ class DataSetDetailPresenterTest {
         verify(view).openOrgUnitTreeSelector()
         verify(view).setData(dataSets)
         verify(view).updateFilters(any())
-        verify(view).showPeriodRequest(periodRequest.blockingFirst())
+        verify(view).showPeriodRequest(periodRequest.blockingFirst().first)
         verify(view).setCatOptionComboFilter(catOptionComboPair)
         verify(view).setWritePermission(true)
     }
