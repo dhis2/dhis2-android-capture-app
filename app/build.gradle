@@ -54,6 +54,7 @@ android {
 
         buildConfigField "String", "SDK_VERSION", "\"" + libraries.dhis2sdk + "\""
         buildConfigField "String", "MAPBOX_ACCESS_TOKEN", "\"pk.eyJ1Ijoib3Jpa2dnIiwiYSI6ImNqdWpqb24zYTFsOXo0M2xwcXRseGx3aXkifQ.6N9aqvpqdrrSBwO9GyfjUw\""
+        buildConfigField "String", "ACRA_URL", "\"http://192.168.0.10:8080/report\""
 
         javaCompileOptions {
             annotationProcessorOptions {
@@ -95,12 +96,18 @@ android {
             signingConfig = signingConfigs.debug
 
             resValue "string", "content_provider", "com.dhis2.debug.provider"
+            buildConfigField "String", "ACRA_USER", "\"vdMEmIrI9uJhidAt\""
+            buildConfigField "String", "ACRA_PASSWORD", "\"SRFVoyVMVMtTI5PY\""
+            buildConfigField "String", "MATOMO_URL", "\"https://mipruebacustom.matomo.cloud/matomo.php\""
         }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             ext.enableCrashlytics = true
 
+            buildConfigField "String", "ACRA_USER", "\"vdMEmIrI9uJhidAt\""
+            buildConfigField "String", "ACRA_PASSWORD", "\"SRFVoyVMVMtTI5PY\""
+            buildConfigField "String", "MATOMO_URL", "\"https://mipruebacustom.matomo.cloud/matomo.php\""
             resValue "string", "content_provider", "com.dhis2.provider"
         }
     }
@@ -184,7 +191,6 @@ dependencies {
     implementation project(':viewpagerdotsindicator')
     implementation project(':tableview')
 
-    //region AndroidX
     implementation 'androidx.appcompat:appcompat:1.1.0'
     implementation 'androidx.annotation:annotation:1.1.0'
     implementation 'androidx.cardview:cardview:1.0.0'
@@ -193,12 +199,9 @@ dependencies {
     implementation "androidx.multidex:multidex:${libraries.multidex}"
     implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
     implementation "androidx.lifecycle:lifecycle-extensions:${libraries.lifecycle}"
-    //JOB SCHEDULER
     implementation "androidx.work:work-runtime:2.2.0"
     implementation "androidx.work:work-rxjava2:2.2.0"
-    //endregion
 
-    //region DHIS2 LIBRARIES
 
     releaseImplementation("org.hisp.dhis:android-core:${libraries.dhis2sdk}") {
         exclude group: "org.hisp.dhis", module: "core-rules"
@@ -207,8 +210,6 @@ dependencies {
   /*  releaseImplementation("org.hisp.dhis.rules:rule-engine:${libraries.ruleEngine}") {
         exclude group: "junit", module: "junit"
     }*/
-    //endregion
-
     //region UI LIBRARIES
     //AndroidTreeView
     implementation "com.github.bmelnychuk:atv:${libraries.atv}"
@@ -230,12 +231,10 @@ dependencies {
     //rxbinding
     implementation "com.jakewharton.rxbinding2:rxbinding:${libraries.rxbindings}"
     implementation "com.jakewharton.rxbinding2:rxbinding-appcompat-v7:${libraries.rxbindings}"
-    //endregion
 
     //region DAGGER
     implementation "com.google.dagger:dagger:${libraries.dagger}"
     kapt "com.google.dagger:dagger-compiler:${libraries.dagger}"
-    //endregion
 
     //region GOOGLE AUTO VALUE
     // Google's auto-value. Annotations are used only during compilation time, as well as
@@ -246,7 +245,6 @@ dependencies {
     // Extension which generates mappers for work with cursors
     kapt "com.gabrielittner.auto.value:auto-value-cursor:${libraries.autovaluecursor}"
     kapt "com.ryanharter.auto.value:auto-value-parcel:${libraries.autovalueparcel}"
-    //endregion
 
     //region PLAY SERVICES
     //LOCATION
@@ -274,6 +272,7 @@ dependencies {
     }
 
     implementation 'org.matomo.sdk:tracker:4.1.2'
+    implementation "ch.acra:acra-http:5.6.1"
 
     //FIREBASE
     implementation 'com.google.firebase:firebase-core:17.2.0'
@@ -309,7 +308,7 @@ dependencies {
     //Paperwork
     implementation "hu.supercluster:paperwork:${libraries.paperwork}"
     implementation 'com.google.guava:guava:27.0.1-android'
-    implementation 'cat.ereza:customactivityoncrash:2.2.0'
+ //   implementation 'cat.ereza:customactivityoncrash:2.2.0'
     implementation "com.google.android.gms:play-services-analytics:${libraries.analytics}"
     //implementation 'com.github.pwittchen:rxbiometric:0.1.0'
     implementation 'co.infinum:goldfinger-rx:2.0.1'

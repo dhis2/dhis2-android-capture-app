@@ -20,6 +20,14 @@ import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.security.ProviderInstaller;
 
+import org.acra.ACRA;
+import org.acra.ReportField;
+import org.acra.annotation.AcraCore;
+import org.acra.annotation.AcraHttpSender;
+import org.acra.config.CoreConfigurationBuilder;
+import org.acra.config.HttpSenderConfigurationBuilder;
+import org.acra.data.StringFormat;
+import org.acra.sender.HttpSender;
 import org.dhis2.data.dagger.PerActivity;
 import org.dhis2.data.dagger.PerServer;
 import org.dhis2.data.dagger.PerUser;
@@ -67,9 +75,13 @@ import io.reactivex.exceptions.UndeliverableException;
 import io.reactivex.plugins.RxJavaPlugins;
 import timber.log.Timber;
 
-/**
- * QUADRAM. Created by ppajuelo on 27/09/2017.
- */
+import static org.acra.ReportField.BUILD_CONFIG;
+import static org.acra.ReportField.DEVICE_FEATURES;
+import static org.acra.ReportField.DISPLAY;
+import static org.acra.ReportField.ENVIRONMENT;
+import static org.acra.ReportField.FILE_PATH;
+import static org.acra.ReportField.INITIAL_CONFIGURATION;
+import static org.acra.ReportField.LOGCAT;
 
 public class App extends MultiDexApplication implements Components, LifecycleObserver {
     static {
@@ -132,16 +144,10 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
         TrackHelper.track().download().identifier(new DownloadTracker.Extra.ApkChecksum(this)).with(getTracker());
     }
 
-    public synchronized Tracker getTracker() {
-        String urlEndpoint;
-        if (BuildConfig.DEBUG){
-            urlEndpoint = "https://mipruebacustom.matomo.cloud/matomo.php";
-        } else {
-            urlEndpoint = "https://mipruebacustom.matomo.cloud/matomo.php";
-        }
 
+    public synchronized Tracker getTracker() {
         if (matomoTracker == null){
-            matomoTracker = TrackerBuilder.createDefault(urlEndpoint, 1).build(Matomo.getInstance(this));
+            matomoTracker = TrackerBuilder.createDefault(BuildConfig.MATOMO_URL, 1).build(Matomo.getInstance(this));
         }
         return matomoTracker;
     }
@@ -165,6 +171,30 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
     protected void attachBaseContext(Context base) {
         super.attachBaseContext(base);
         MultiDex.install(this);
+        initAcra();
+    }
+
+    private void initAcra() {
+        CoreConfigurationBuilder builder = new CoreConfigurationBuilder(this)
+                .setBuildConfigClass(BuildConfig.class)
+                .setReportField(DEVICE_FEATURES, false)
+                .setReportField(ENVIRONMENT, false)
+                .setReportField(INITIAL_CONFIGURATION, false)
+                .setReportField(LOGCAT, false)
+                .setReportField(DISPLAY, false)
+                .setReportField(BUILD_CONFIG, false)
+                .setReportField(FILE_PATH, false)
+                .setReportFormat(StringFormat.JSON);
+
+        builder.getPluginConfigurationBuilder(HttpSenderConfigurationBuilder.class)
+                .setUri(BuildConfig.ACRA_URL)
+                .setHttpMethod(HttpSender.Method.POST)
+                .setConnectionTimeout(20000)
+                .setBasicAuthLogin(BuildConfig.ACRA_USER)
+                .setBasicAuthPassword(BuildConfig.ACRA_PASSWORD)
+                .setEnabled(true);
+
+        ACRA.init(this, builder);
     }
 
     private void setUpAppComponent() {
