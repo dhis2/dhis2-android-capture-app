@@ -308,7 +308,7 @@ dependencies {
     //Paperwork
     implementation "hu.supercluster:paperwork:${libraries.paperwork}"
     implementation 'com.google.guava:guava:27.0.1-android'
- //   implementation 'cat.ereza:customactivityoncrash:2.2.0'
+    implementation 'cat.ereza:customactivityoncrash:2.2.0'
     implementation "com.google.android.gms:play-services-analytics:${libraries.analytics}"
     //implementation 'com.github.pwittchen:rxbiometric:0.1.0'
     implementation 'co.infinum:goldfinger-rx:2.0.1'
