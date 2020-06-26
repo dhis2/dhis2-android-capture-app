@@ -37,6 +37,7 @@ import org.dhis2.R;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.databinding.ActivityProgramEventDetailBinding;
 import org.dhis2.databinding.InfoWindowEventBinding;
+import org.dhis2.uicomponents.map.layer.MapLayerDialog;
 import org.dhis2.uicomponents.map.managers.EventMapManager;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity;
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity;
@@ -64,18 +65,11 @@ import javax.inject.Inject;
 import io.reactivex.functions.Consumer;
 import timber.log.Timber;
 
-import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.fillColor;
-import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconAllowOverlap;
-import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconOffset;
 import static org.dhis2.R.layout.activity_program_event_detail;
 import static org.dhis2.utils.Constants.ORG_UNIT;
 import static org.dhis2.utils.Constants.PROGRAM_UID;
 import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
 import static org.dhis2.utils.analytics.AnalyticsConstants.SHOW_HELP;
-
-/**
- * QUADRAM. Created by Cristian on 13/02/2018.
- */
 
 public class ProgramEventDetailActivity extends ActivityGlobalAbstract implements ProgramEventDetailContract.View,
         MapboxMap.OnMapClickListener {
@@ -94,6 +88,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
     private EventMapManager eventMapManager;
 
     public static final String EXTRA_PROGRAM_UID = "PROGRAM_UID";
+    private MapLayerDialog layerDialog;
 
     public static Bundle getBundle(String programUid) {
         Bundle bundle = new Bundle();
@@ -133,6 +128,11 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
         } catch (Exception e) {
             Timber.e(e);
         }
+
+        binding.mapLayerButton.setOnClickListener(view -> {
+            layerDialog = new MapLayerDialog(eventMapManager.mapLayerManager);
+            layerDialog.show(getSupportFragmentManager(), MapLayerDialog.class.getName());
+        });
 
         eventMapManager = new EventMapManager();
         eventMapManager.setOnMapClickListener(this);
@@ -459,6 +459,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
     private void showMap(boolean showMap) {
         binding.recycler.setVisibility(showMap ? View.GONE : View.VISIBLE);
         binding.mapView.setVisibility(showMap ? View.VISIBLE : View.GONE);
+        binding.mapLayerButton.setVisibility(showMap ? View.VISIBLE : View.GONE);
 
         if (showMap)
             presenter.getMapData();
