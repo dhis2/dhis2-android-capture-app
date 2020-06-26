@@ -8,11 +8,13 @@ interface MatomoAnalyticsController {
         index: Int,
         dimensionValue: String
     )
+
     fun trackScreenViewWithDimensionsAsSeparateEvents(
         screen: String,
         title: String,
         dimensions: Map<Int, String>
     )
+
     fun trackScreenViewWithTwoDimensionsAsSameEvent(
         screen: String,
         title: String,
@@ -21,9 +23,16 @@ interface MatomoAnalyticsController {
         secondIndex: Int,
         secondValue: String
     )
+
     fun trackEvent(category: String, action: String, label: String)
-    fun trackEventWithDimension(category: String, action: String, label: String,  index: Int,
-                                dimensionValue: String)
+    fun trackEventWithDimension(
+        category: String,
+        action: String,
+        label: String,
+        index: Int,
+        dimensionValue: String
+    )
+
     fun trackException(exception: Throwable, description: String)
     fun setUserId(identification: String?)
 }

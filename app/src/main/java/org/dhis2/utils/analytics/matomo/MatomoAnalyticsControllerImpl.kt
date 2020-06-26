@@ -26,7 +26,8 @@ class MatomoAnalyticsControllerImpl(val matomoTracker: Tracker?) :
         dimensionValue: String
     ) {
         matomoTracker?.let {
-            TrackHelper.track().dimension(index, dimensionValue).event(category, action).name(label).with(it)
+            TrackHelper.track().dimension(index, dimensionValue)
+                .event(category, action).name(label).with(it)
         }
     }
 
@@ -40,10 +41,11 @@ class MatomoAnalyticsControllerImpl(val matomoTracker: Tracker?) :
         screen: String,
         title: String,
         index: Int,
-        dimensionValue:String
+        dimensionValue: String
     ) {
         matomoTracker?.let {
-            TrackHelper.track().screen(screen).title(title).dimension(index, dimensionValue).with(it)
+            TrackHelper.track().screen(screen).title(title)
+                .dimension(index, dimensionValue).with(it)
         }
     }
 
@@ -54,7 +56,8 @@ class MatomoAnalyticsControllerImpl(val matomoTracker: Tracker?) :
     ) {
         matomoTracker?.let {
             dimensions.forEach { (key, value) ->
-                TrackHelper.track().screen(screen).title(title).dimension(key, value).with(it) }
+                TrackHelper.track().screen(screen).title(title).dimension(key, value).with(it)
+            }
         }
     }
 

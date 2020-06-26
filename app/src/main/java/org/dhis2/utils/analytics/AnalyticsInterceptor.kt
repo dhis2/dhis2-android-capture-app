@@ -41,7 +41,11 @@ class AnalyticsInterceptor(private val analyticHelper: AnalyticsHelper) : Interc
                     put(API_CALL_ENDPOINT, request.url().toString())
                 }
             )
-            analyticHelper.trackMatomoEvent(API_CALL, request.url().toString(), response.code().toString())
+            analyticHelper.trackMatomoEvent(
+                API_CALL,
+                request.url().toString(),
+                response.code().toString()
+            )
         }
         return response
     }

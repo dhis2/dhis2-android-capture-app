@@ -30,5 +30,4 @@ class AnalyticsModule internal constructor() {
     fun providesAnalyticsInterceptor(analyticHelper: AnalyticsHelper): AnalyticsInterceptor {
         return AnalyticsInterceptor(analyticHelper)
     }
-
 }

@@ -3,8 +3,8 @@ package org.dhis2.utils.analytics.matomo
 import android.content.Context
 import dagger.Module
 import dagger.Provides
-import org.dhis2.App
 import javax.inject.Singleton
+import org.dhis2.App
 
 @Module
 class MatomoAnalyticsModule {

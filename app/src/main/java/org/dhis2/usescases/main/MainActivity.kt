@@ -18,7 +18,6 @@ import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ObservableInt
 import com.android.dbexporterlibrary.ExporterListener
-import org.dhis2.App
 import javax.inject.Inject
 import org.dhis2.Bindings.app
 import org.dhis2.BuildConfig
@@ -45,7 +44,6 @@ import org.dhis2.utils.filters.FilterManager
 import org.dhis2.utils.filters.FiltersAdapter
 import org.dhis2.utils.session.PIN_DIALOG_TAG
 import org.dhis2.utils.session.PinDialog
-import org.matomo.sdk.extra.TrackHelper
 
 private const val FRAGMENT = "Fragment"
 private const val PERMISSION_REQUEST = 1987
