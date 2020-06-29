@@ -121,9 +121,10 @@ class CategoryDialog(
         }
     }
 
-    override fun searchSource(): Observable<CharSequence> {
+    override fun searchSource(): Observable<String> {
         return RxTextView.textChanges(binding.txtSearch)
             .startWith("")
+            .map { it.toString() }
     }
 
     companion object {

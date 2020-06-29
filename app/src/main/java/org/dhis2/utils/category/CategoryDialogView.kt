@@ -8,7 +8,7 @@ interface CategoryDialogView {
 
     fun setTitle(dialogTitle: String)
 
-    fun searchSource(): Observable<CharSequence>
+    fun searchSource(): Observable<String>
 
     fun setLiveData(data: LiveData<PagedList<CategoryDialogItem>>)
 

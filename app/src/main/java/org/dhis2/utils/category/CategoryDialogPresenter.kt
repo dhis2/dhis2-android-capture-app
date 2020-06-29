@@ -51,21 +51,7 @@ class CategoryDialogPresenter(
                 .debounce(500, TimeUnit.MILLISECONDS, schedulerProvider.io())
                 .map { it.toString() }
                 .map { textToSearch ->
-                    var catOptComboRepository = d2.categoryModule().categoryOptionCombos()
-                        .byCategoryComboUid().eq(uid)
-
-                    if (textToSearch.isNotEmpty()) {
-                        catOptComboRepository =
-                            catOptComboRepository.byDisplayName().like("%$textToSearch%")
-                    }
-
-                    val dataSource =
-                        catOptComboRepository
-                            .orderByDisplayName(RepositoryScope.OrderByDirection.ASC)
-                            .dataSource
-                            .map { catOption -> catOptCombMapper.map(catOption) }
-
-                    createDataSource(dataSource)
+                    mapCatOptComboToLivePageList(textToSearch)
                 }
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
@@ -102,35 +88,8 @@ class CategoryDialogPresenter(
         disposable.add(
             view.searchSource()
                 .debounce(500, TimeUnit.MILLISECONDS, schedulerProvider.io())
-                .map { it.toString() }
                 .map { textToSearch ->
-                    var catOptionRepository = d2.categoryModule().categoryOptions()
-                        .byCategoryUid(uid)
-
-                    if (textToSearch.isNotEmpty()) {
-                        catOptionRepository =
-                            catOptionRepository.byDisplayName().like("%$textToSearch%")
-                    }
-
-                    if (withAccessControl) {
-                        catOptionRepository =
-                            catOptionRepository.byAccessDataWrite().isTrue
-                    }
-
-                    val dataSource =
-                        catOptionRepository.orderByDisplayName(RepositoryScope.OrderByDirection.ASC)
-                            .dataSource
-                            .mapByPage { options -> filterByDate(options) }
-                            .map { catOption -> catOptMapper.map(catOption) }
-
-                    LivePagedListBuilder(
-                        object : DataSource.Factory<CategoryOption, CategoryDialogItem>() {
-                            override fun create(): DataSource<CategoryOption, CategoryDialogItem> {
-                                return dataSource
-                            }
-                        },
-                        20
-                    ).build()
+                    mapCategoryOptionToLivePageList(textToSearch)
                 }
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
@@ -139,6 +98,58 @@ class CategoryDialogPresenter(
                     { Timber.e(it) }
                 )
         )
+    }
+
+    private fun mapCategoryOptionToLivePageList(
+        textToSearch: String
+    ): LiveData<PagedList<CategoryDialogItem>> {
+        var catOptionRepository = d2.categoryModule().categoryOptions()
+            .byCategoryUid(uid)
+
+        if (textToSearch.isNotEmpty()) {
+            catOptionRepository =
+                catOptionRepository.byDisplayName().like("%$textToSearch%")
+        }
+
+        if (withAccessControl) {
+            catOptionRepository =
+                catOptionRepository.byAccessDataWrite().isTrue
+        }
+
+        val dataSource =
+            catOptionRepository.orderByDisplayName(RepositoryScope.OrderByDirection.ASC)
+                .dataSource
+                .mapByPage { options -> filterByDate(options) }
+                .map { catOption -> catOptMapper.map(catOption) }
+
+        return LivePagedListBuilder(
+            object : DataSource.Factory<CategoryOption, CategoryDialogItem>() {
+                override fun create(): DataSource<CategoryOption, CategoryDialogItem> {
+                    return dataSource
+                }
+            },
+            20
+        ).build()
+    }
+
+    private fun mapCatOptComboToLivePageList(
+        textToSearch: String
+    ): LiveData<PagedList<CategoryDialogItem>> {
+        var catOptComboRepository = d2.categoryModule().categoryOptionCombos()
+            .byCategoryComboUid().eq(uid)
+
+        if (textToSearch.isNotEmpty()) {
+            catOptComboRepository =
+                catOptComboRepository.byDisplayName().like("%$textToSearch%")
+        }
+
+        val dataSource =
+            catOptComboRepository
+                .orderByDisplayName(RepositoryScope.OrderByDirection.ASC)
+                .dataSource
+                .map { catOption -> catOptCombMapper.map(catOption) }
+
+        return createDataSource(dataSource)
     }
 
     private fun filterByDate(options: MutableList<CategoryOption>): MutableList<CategoryOption>? {
