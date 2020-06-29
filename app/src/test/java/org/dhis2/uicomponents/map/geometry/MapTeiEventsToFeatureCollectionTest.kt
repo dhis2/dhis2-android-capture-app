@@ -18,7 +18,6 @@ import org.hamcrest.MatcherAssert.assertThat
 import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.program.ProgramStage
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue
 import org.junit.Before
 import org.junit.Test
 
