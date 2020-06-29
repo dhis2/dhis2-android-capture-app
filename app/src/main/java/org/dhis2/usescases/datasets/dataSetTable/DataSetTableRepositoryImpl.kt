@@ -99,7 +99,7 @@ class DataSetTableRepositoryImpl(
                 if (sections.isEmpty()) {
                     arrayListOf("NO_SECTION")
                 } else {
-                    sections.map { it.displayName() }
+                    sections.map { it.displayName()!! }
                 }
             }.toFlowable()
     }
