@@ -38,6 +38,7 @@ import org.dhis2.data.service.workManager.WorkManagerController;
 import org.dhis2.databinding.FragmentSettingsBinding;
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
 import org.dhis2.usescases.settings.models.DataSettingsViewModel;
+import org.dhis2.usescases.settings.models.ErrorViewModel;
 import org.dhis2.usescases.settings.models.MetadataSettingsViewModel;
 import org.dhis2.usescases.settings.models.ReservedValueSettingsViewModel;
 import org.dhis2.usescases.settings.models.SMSSettingsViewModel;
@@ -254,7 +255,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
     }
 
     @Override
-    public void showSyncErrors(List<D2Error> data) {
+    public void showSyncErrors(List<ErrorViewModel> data) {
         new ErrorDialog().setData(data).show(getChildFragmentManager().beginTransaction(), ErrorDialog.TAG);
     }
 
