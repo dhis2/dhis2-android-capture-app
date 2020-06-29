@@ -19,15 +19,10 @@ internal class SortingFilterHolder(
 ) : FilterHolder(binding, openedFilter) {
     private var currentOrgUnit: OrganisationUnit? = null
     private val filters: List<Sorting> = when (programType) {
-        FiltersAdapter.ProgramType.DATASET -> dataSetSortings()
         FiltersAdapter.ProgramType.EVENT -> eventsSortings()
         FiltersAdapter.ProgramType.TRACKER -> trackerSearchSortings()
         FiltersAdapter.ProgramType.DASHBOARD -> trackerDashboardSortings()
         else -> emptyList()
-    }
-
-    init {
-        filterType = Filters.SORTING
     }
 
     public override fun bind() {
@@ -50,33 +45,38 @@ internal class SortingFilterHolder(
             binding as ItemFilterSortingBinding
         val sortingFilterAdapter = SortingFilterAdapter()
         localBinding.filterSorting.sortingRecycler.adapter = sortingFilterAdapter
-        localBinding.filterSorting.sortingSearchEditText.addTextChangedListener(object :
-            TextWatcher {
-            override fun beforeTextChanged(
-                charSequence: CharSequence,
-                i: Int,
-                i1: Int,
-                i2: Int
-            ) {
-            }
+        localBinding.filterSorting
+            .sortingSearchEditText
+            .addTextChangedListener(object : TextWatcher {
+                override fun beforeTextChanged(
+                    charSequence: CharSequence,
+                    i: Int,
+                    i1: Int,
+                    i2: Int
+                ) {}
 
-            override fun onTextChanged(
-                charSequence: CharSequence,
-                i: Int,
-                i1: Int,
-                i2: Int
-            ) {
-                if (charSequence.length > 3) {
-                    currentOrgUnit = d2.organisationUnitModule().organisationUnits()
-                        .byDisplayName().like("%$charSequence%").one().blockingGet()
-                    if (currentOrgUnit != null) localBinding.filterSorting.sortingtHint.text =
-                        currentOrgUnit!!.displayName() else localBinding.filterSorting.sortingtHint.text =
-                        null
-                } else localBinding.filterSorting.sortingtHint.text = null
-            }
+                override fun onTextChanged(
+                    charSequence: CharSequence,
+                    i: Int,
+                    i1: Int,
+                    i2: Int
+                ) {
+                    if (charSequence.length > 3) {
+                        currentOrgUnit = d2.organisationUnitModule().organisationUnits()
+                            .byDisplayName().like("%$charSequence%").one().blockingGet()
+                        if (currentOrgUnit != null) {
+                            localBinding.filterSorting.sortingtHint.text =
+                                currentOrgUnit!!.displayName()
+                        } else {
+                            localBinding.filterSorting.sortingtHint.text = null
+                        }
+                    } else {
+                        localBinding.filterSorting.sortingtHint.text = null
+                    }
+                }
 
-            override fun afterTextChanged(editable: Editable) {}
-        })
+                override fun afterTextChanged(editable: Editable) {}
+            })
 
         localBinding.filterSorting.addButton.setOnClickListener { view: View? ->
             if (currentOrgUnit != null) {

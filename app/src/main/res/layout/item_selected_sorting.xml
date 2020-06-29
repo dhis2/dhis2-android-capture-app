@@ -20,7 +20,7 @@
             android:layout_marginStart="32dp"
             android:layout_weight="1"
             android:gravity="center_vertical"
-            android:text="@{item.displayName()}"
+            android:text=""
             android:textColor="@color/white"
             tools:text="Org Unit Name" />
 

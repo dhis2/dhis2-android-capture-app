@@ -6,12 +6,13 @@ import androidx.databinding.ObservableField;
 
 import org.dhis2.R;
 import org.dhis2.databinding.ItemFilterStateBinding;
+import org.dhis2.utils.filters.sorting.SortingItem;
 import org.hisp.dhis.android.core.common.State;
 
 class SyncStateFilterHolder extends FilterHolder {
 
-    SyncStateFilterHolder(@NonNull ItemFilterStateBinding binding, ObservableField<Filters> openedFilter) {
-        super(binding, openedFilter);
+    SyncStateFilterHolder(@NonNull ItemFilterStateBinding binding, ObservableField<Filters> openedFilter, ObservableField<SortingItem> sortingItem) {
+        super(binding, openedFilter, sortingItem);
         filterType = Filters.SYNC_STATE;
     }
 

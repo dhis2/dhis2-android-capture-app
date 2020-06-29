@@ -14,6 +14,7 @@ internal class AssignToMeFilterHolder(
     init {
         filterType = Filters.ASSIGNED_TO_ME
         filterArrow.visibility = View.GONE
+        sortingIcon.visibility = View.GONE
     }
 
     public override fun bind() {

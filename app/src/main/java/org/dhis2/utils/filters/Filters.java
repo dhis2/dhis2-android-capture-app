@@ -1,7 +1,6 @@
 package org.dhis2.utils.filters;
 
 public enum Filters {
-    SORTING,
     PERIOD,
     ORG_UNIT,
     SYNC_STATE,

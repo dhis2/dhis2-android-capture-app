@@ -12,9 +12,9 @@ import org.dhis2.databinding.ItemFilterAssignedBinding;
 import org.dhis2.databinding.ItemFilterCatOptCombBinding;
 import org.dhis2.databinding.ItemFilterOrgUnitBinding;
 import org.dhis2.databinding.ItemFilterPeriodBinding;
-import org.dhis2.databinding.ItemFilterSortingBinding;
 import org.dhis2.databinding.ItemFilterStateBinding;
 import org.dhis2.databinding.ItemFilterStatusBinding;
+import org.dhis2.utils.filters.sorting.SortingItem;
 import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryOptionCombo;
 
@@ -29,16 +29,17 @@ public class FiltersAdapter extends RecyclerView.Adapter<FilterHolder> {
 
     private List<Filters> filtersList;
     private ObservableField<Filters> openedFilter;
+    private ObservableField<SortingItem> sortingItem;
     private Pair<CategoryCombo, List<CategoryOptionCombo>> catCombData;
 
     public FiltersAdapter(ProgramType programType) {
         this.filtersList = new ArrayList<>();
         this.programType = programType;
-        filtersList.add(Filters.SORTING);
         filtersList.add(Filters.PERIOD);
         filtersList.add(Filters.ORG_UNIT);
         filtersList.add(Filters.SYNC_STATE);
         openedFilter = new ObservableField<>();
+        sortingItem = new ObservableField<>();
     }
 
     @NonNull
@@ -46,14 +47,12 @@ public class FiltersAdapter extends RecyclerView.Adapter<FilterHolder> {
     public FilterHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         switch (Filters.values()[viewType]) {
-            case SORTING:
-                return new SortingFilterHolder(ItemFilterSortingBinding.inflate(inflater, parent, false), programType, openedFilter);
             case PERIOD:
-                return new PeriodFilterHolder(ItemFilterPeriodBinding.inflate(inflater, parent, false), openedFilter);
+                return new PeriodFilterHolder(ItemFilterPeriodBinding.inflate(inflater, parent, false), openedFilter, sortingItem);
             case ORG_UNIT:
-                return new OrgUnitFilterHolder(ItemFilterOrgUnitBinding.inflate(inflater, parent, false), openedFilter);
+                return new OrgUnitFilterHolder(ItemFilterOrgUnitBinding.inflate(inflater, parent, false), openedFilter, sortingItem);
             case SYNC_STATE:
-                return new SyncStateFilterHolder(ItemFilterStateBinding.inflate(inflater, parent, false), openedFilter);
+                return new SyncStateFilterHolder(ItemFilterStateBinding.inflate(inflater, parent, false), openedFilter, sortingItem);
             case CAT_OPT_COMB:
                 return new CatOptCombFilterHolder(ItemFilterCatOptCombBinding.inflate(inflater, parent, false), openedFilter, catCombData);
             case EVENT_STATUS:

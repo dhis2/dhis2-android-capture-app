@@ -1,8 +1,13 @@
 package org.dhis2.utils.filters.sorting
 
+import org.dhis2.utils.filters.Filters
+
 data class SortingItem(
-    val displayName: String,
-    val sortingType: SortingType,
-    val selectedForList: Boolean,
-    val selectedForSorting: Boolean
-)
+    var filterSelectedForSorting: Filters,
+    var sortingStatus: SortingStatus = SortingStatus.ASC
+) {
+    companion object {
+        @JvmStatic
+        fun create(filter: Filters) = SortingItem(filter)
+    }
+}

@@ -10,6 +10,10 @@
         <variable
             name="filterCount"
             type="androidx.databinding.ObservableField&lt;java.lang.Integer&gt;" />
+
+        <variable
+            name="currentSortItem"
+            type="androidx.databinding.ObservableField&lt;org.dhis2.utils.filters.sorting.SortingItem&gt;" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -17,85 +21,107 @@
         android:layout_width="match_parent"
         android:layout_height="48dp"
         android:elevation="1dp"
-        android:paddingStart="16dp"
-        android:paddingEnd="16dp"
         app:layout_constraintTop_toTopOf="parent"
         tools:background="?colorPrimary">
 
-        <ImageView
-            android:id="@+id/filterIcon"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:tint="@color/white"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:src="@drawable/ic_calendar_positive" />
-
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/filterCounter"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:layout_marginStart="8dp"
-            android:padding="2dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent">
+            android:id="@+id/filterTextLayout"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/sortingIcon"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageView
+                android:id="@+id/filterIcon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:tint="@color/white"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:src="@drawable/ic_calendar_positive" />
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/filterCounter"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginStart="8dp"
+                android:padding="2dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/ic_oval_shape_white"
+                    android:gravity="center"
+                    android:includeFontPadding="false"
+                    android:text='@{""+filterCount}'
+                    android:textColor="?colorPrimary"
+                    android:textSize="10sp"
+                    android:visibility="@{filterCount>0?View.VISIBLE:View.GONE}"
+                    tools:text="1" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
 
             <TextView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@drawable/ic_oval_shape_white"
-                android:gravity="center"
-                android:includeFontPadding="false"
-                android:text='@{""+filterCount}'
-                android:textColor="?colorPrimary"
+                android:id="@+id/filterTitle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:ellipsize="end"
+                android:fontFamily="@font/rubik_bold"
+                android:maxLines="1"
+                android:textAllCaps="true"
+                android:textColor="@color/white"
+                android:textSize="12sp"
+                app:layout_constraintBottom_toTopOf="@id/filterValues"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/filterIcon"
+                tools:text="FILTER TYPE" />
+
+            <TextView
+                android:id="@+id/filterValues"
+                android:layout_width="0dp"
+                android:layout_height="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:ellipsize="end"
+                android:fontFamily="@font/rubik_light"
+                android:maxLines="1"
+                android:text="@{filterCount>0?@string/filters_active:@string/filters_disabled}"
+                android:textColor="@color/white"
                 android:textSize="10sp"
-                android:visibility="@{filterCount>0?View.VISIBLE:View.GONE}"
-                tools:text="1" />
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/filterIcon"
+                tools:text="Applied filter" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-
-        <TextView
-            android:id="@+id/filterTitle"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"
-            android:ellipsize="end"
-            android:fontFamily="@font/rubik_bold"
-            android:maxLines="1"
-            android:textAllCaps="true"
-            android:textColor="@color/white"
-            android:textSize="12sp"
-            app:layout_constraintBottom_toTopOf="@id/filterValues"
+        <ImageView
+            android:id="@+id/sortingIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginEnd="8dp"
+            app:srcCompat="@drawable/ic_sort_deactivated"
+            app:sortItem="@{currentSortItem}"
+            app:layout_constraintStart_toEndOf="@id/filterTextLayout"
             app:layout_constraintEnd_toStartOf="@id/filterArrow"
-            app:layout_constraintStart_toEndOf="@id/filterIcon"
-            tools:text="FILTER TYPE" />
-
-        <TextView
-            android:id="@+id/filterValues"
-            android:layout_width="0dp"
-            android:layout_height="16dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"
-            android:ellipsize="end"
-            android:fontFamily="@font/rubik_light"
-            android:maxLines="1"
-            android:text="@{filterCount>0?@string/filters_active:@string/filters_disabled}"
-            android:textColor="@color/white"
-            android:textSize="10sp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/filterArrow"
-            app:layout_constraintStart_toEndOf="@id/filterIcon"
-            tools:text="Applied filter" />
+            />
 
         <ImageView
             android:id="@+id/filterArrow"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:tint="@color/white"
+            android:layout_marginEnd="16dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/sortingIcon"
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/ic_arrow_down" />
 
