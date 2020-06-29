@@ -18,6 +18,7 @@ import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.dhis2.data.service.workManager.WorkManagerController
 import org.dhis2.usescases.login.LoginActivity
 import org.dhis2.utils.filters.FilterManager
+import org.dhis2.utils.filters.Filters
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.category.CategoryCombo
 import org.hisp.dhis.android.core.category.CategoryOptionCombo
@@ -59,16 +60,16 @@ class MainPresenterTest {
 
     @Test
     fun `Should setup filters when activity is resumed`() {
-        val periodRequest: FlowableProcessor<FilterManager.PeriodRequest> =
+        val periodRequest: FlowableProcessor<Pair<FilterManager.PeriodRequest, Filters?>> =
             BehaviorProcessor.create()
         whenever(filterManager.asFlowable()) doReturn Flowable.just(filterManager)
         whenever(filterManager.periodRequest) doReturn periodRequest
-        periodRequest.onNext(FilterManager.PeriodRequest.FROM_TO)
+        periodRequest.onNext(Pair(FilterManager.PeriodRequest.FROM_TO, null))
 
         presenter.initFilters()
 
         verify(view).updateFilters(any())
-        verify(view).showPeriodRequest(periodRequest.blockingFirst())
+        verify(view).showPeriodRequest(periodRequest.blockingFirst().first)
     }
 
     @Test

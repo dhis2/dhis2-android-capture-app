@@ -4,6 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+        <import type="android.view.View"/>
+
         <variable
             name="errorCount"
             type="java.lang.Integer" />
@@ -142,6 +144,7 @@
                 android:textColor="?colorPrimary"
                 android:textSize="14sp"
                 android:text="@string/complete_anyway"
+                android:visibility="@{ presenter.isValidationMandatoryToComplete() ? View.GONE : View.VISIBLE }"
                 android:onClick="@{ () -> presenter.onCompleteBottomSheet() }"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@id/endGuideline" />

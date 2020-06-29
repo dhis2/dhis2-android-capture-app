@@ -25,10 +25,8 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
-import android.view.animation.ScaleAnimation;
 import android.widget.AdapterView;
+import android.widget.Filter;
 import android.widget.PopupMenu;
 import android.widget.Spinner;
 import android.widget.Toast;
@@ -65,7 +63,9 @@ import org.dhis2.uicomponents.map.carousel.CarouselAdapter;
 import org.dhis2.uicomponents.map.geometry.mapper.EventsByProgramStage;
 import org.dhis2.uicomponents.map.layer.MapLayerDialog;
 import org.dhis2.uicomponents.map.managers.TeiMapManager;
+import org.dhis2.uicomponents.map.mapper.MapRelationshipToRelationshipMapModel;
 import org.dhis2.uicomponents.map.model.MapStyle;
+import org.dhis2.uicomponents.map.model.RelationshipUiComponentModel;
 import org.dhis2.usescases.coodinates.CoordinatesView;
 import org.dhis2.usescases.enrollment.EnrollmentActivity;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
@@ -81,6 +81,7 @@ import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.HelpManager;
 import org.dhis2.utils.customviews.ScanTextView;
 import org.dhis2.utils.filters.FilterManager;
+import org.dhis2.utils.filters.Filters;
 import org.dhis2.utils.filters.FiltersAdapter;
 import org.hisp.dhis.android.core.arch.call.D2Progress;
 import org.hisp.dhis.android.core.common.FeatureType;
@@ -93,11 +94,13 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 
 import javax.inject.Inject;
 
 import io.reactivex.Flowable;
 import io.reactivex.functions.Consumer;
+import kotlin.Pair;
 import timber.log.Timber;
 
 import static org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialPresenter.ACCESS_LOCATION_PERMISSION_REQUEST;
@@ -143,6 +146,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     private String currentStyle = Style.MAPBOX_STREETS;
     private MapLayerDialog mapLayerDialog;
     private ObjectAnimator animation = null;
+    private Set<String> sources;
 
     //---------------------------------------------------------------------------------------------
 
@@ -203,6 +207,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         });
 
         filtersAdapter = new FiltersAdapter(FiltersAdapter.ProgramType.TRACKER);
+        filtersAdapter.addEnrollmentStatus();
         filtersAdapter.addEventStatus();
         try {
             binding.filterLayout.setAdapter(filtersAdapter);
@@ -272,12 +277,17 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             teiMapManager.onDestroy();
         }
         presenter.onDestroy();
+
+        FilterManager.getInstance().clearEnrollmentStatus();
+        FilterManager.getInstance().clearEventStatus();
+        FilterManager.getInstance().clearEnrollmentDate();
+
         super.onDestroy();
     }
 
     @Override
     public void onBackPressed() {
-        if(!ExtensionsKt.isKeyboardOpened(this)) {
+        if (!ExtensionsKt.isKeyboardOpened(this)) {
             super.onBackPressed();
         } else {
             hideKeyboard();
@@ -533,10 +543,13 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                     Program selectedProgram = (Program) adapterView.getItemAtPosition(pos - 1);
                     setProgramColor(presenter.getProgramColor(selectedProgram.uid()));
                     presenter.setProgram((Program) adapterView.getItemAtPosition(pos - 1));
+                    filtersAdapter.addEnrollmentDate(selectedProgram.enrollmentDateLabel());
                 } else if (programs.size() == 1 && pos != 0) {
                     presenter.setProgram(programs.get(0));
+                    filtersAdapter.addEnrollmentDate(programs.get(0).enrollmentDateLabel());
                 } else {
                     presenter.setProgram(null);
+                    filtersAdapter.removeEnrollmentDate();
                 }
             }
 
@@ -635,7 +648,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             animation.setDuration(500);
             animation.start();
         } else {
-            if (animation != null){
+            if (animation != null) {
                 animation.cancel();
             }
             hideKeyboard();
@@ -738,12 +751,22 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     }
 
     @Override
-    public void showPeriodRequest(FilterManager.PeriodRequest periodRequest) {
-        if (periodRequest == FilterManager.PeriodRequest.FROM_TO) {
-            DateUtils.getInstance().showFromToSelector(this, FilterManager.getInstance()::addPeriod);
+    public void showPeriodRequest(Pair<FilterManager.PeriodRequest, Filters> periodRequest) {
+        if (periodRequest.getFirst() == FilterManager.PeriodRequest.FROM_TO) {
+            DateUtils.getInstance().showFromToSelector(this, datePeriod -> {
+                if (periodRequest.getSecond() == Filters.PERIOD) {
+                    FilterManager.getInstance().addPeriod(datePeriod);
+                } else {
+                    FilterManager.getInstance().addEnrollmentPeriod(datePeriod);
+                }
+            });
         } else {
             DateUtils.getInstance().showPeriodDialog(this, datePeriods -> {
-                        FilterManager.getInstance().addPeriod(datePeriods);
+                        if (periodRequest.getSecond() == Filters.PERIOD) {
+                            FilterManager.getInstance().addPeriod(datePeriods);
+                        } else {
+                            FilterManager.getInstance().addEnrollmentPeriod(datePeriods);
+                        }
                     },
                     true);
         }
@@ -754,7 +777,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         if (downloadingSnackbar != null && downloadingSnackbar.isShown()) {
             downloadingSnackbar.dismiss();
         }
-        startActivity(TeiDashboardMobileActivity.intent(this, teiUid, programUid, enrollmentUid));
+        startActivity(TeiDashboardMobileActivity.intent(this, teiUid, enrollmentUid != null ? programUid : null, enrollmentUid));
     }
 
     @Override
@@ -779,7 +802,8 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                 featureType
         );
 
-        CarouselAdapter<SearchTeiModel> carouselAdapter = new CarouselAdapter.Builder<SearchTeiModel>()
+        sources = teiFeatureCollections.keySet();
+        CarouselAdapter carouselAdapter = new CarouselAdapter.Builder()
                 .addOnTeiClickListener(
                         (teiUid, enrollmentUid, isDeleted) -> {
                             presenter.onTEIClick(teiUid, enrollmentUid, isDeleted);
@@ -790,6 +814,14 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                             presenter.onSyncIconClick(teiUid);
                             return true;
                         })
+                .addOnDeleteRelationshipListener(relationshipUid -> {
+                    presenter.deleteRelationship(relationshipUid);
+                    return true;
+                })
+                .addOnRelationshipClickListener(teiUid -> {
+                    presenter.onTEIClick(teiUid, null, false);
+                    return true;
+                })
                 .build();
 
         binding.mapCarousel.setAdapter(carouselAdapter);
@@ -821,9 +853,23 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         List<Feature> features = teiMapManager.getMap()
                 .queryRenderedFeatures(rectF, featureType == FeatureType.POINT ? "TEI_POINT_LAYER_ID" : "TEI_POLYGON_LAYER_ID");
         if (!features.isEmpty()) {
-            teiMapManager.mapLayerManager.getLayer(TeiMapManager.TEIS_SOURCE_ID,false).setSelectedItem(features.get(0));
+            teiMapManager.mapLayerManager.getLayer(TeiMapManager.TEIS_SOURCE_ID, false).setSelectedItem(features.get(0));
             binding.mapCarousel.scrollToFeature(features.get(0));
             return true;
+        } else {
+            for (String sourceId : sources) {
+                String lineLayerId = "RELATIONSHIP_LINE_LAYER_ID_" + sourceId;
+                String pointLayerId = "RELATIONSHIP_LINE_LAYER_ID_" + sourceId;
+
+                features = teiMapManager.getMap()
+                        .queryRenderedFeatures(rectF, lineLayerId, pointLayerId);
+                if (!features.isEmpty()) {
+                    teiMapManager.mapLayerManager.selectFeature(null);
+                    teiMapManager.mapLayerManager.getLayer(sourceId,true).setSelectedItem(features.get(0));
+                    binding.mapCarousel.scrollToFeature(features.get(0));
+                    return true;
+                }
+            }
         }
 
         return false;

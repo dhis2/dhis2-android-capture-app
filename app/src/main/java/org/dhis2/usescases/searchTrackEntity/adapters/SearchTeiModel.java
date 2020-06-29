@@ -1,6 +1,7 @@
 package org.dhis2.usescases.searchTrackEntity.adapters;
 
 import org.dhis2.data.tuples.Trio;
+import org.dhis2.uicomponents.map.model.CarouselItemModel;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.relationships.RelationshipViewModel;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.android.core.program.Program;
@@ -13,7 +14,7 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 
-public class SearchTeiModel {
+public class SearchTeiModel implements CarouselItemModel {
 
     private LinkedHashMap<String, TrackedEntityAttributeValue> attributeValues;
 
