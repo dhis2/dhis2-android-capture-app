@@ -34,6 +34,7 @@ import java.util.List;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.functions.Consumer;
+import kotlin.Pair;
 
 /**
  * QUADRAM. Created by ppajuelo on 02/11/2017.
@@ -81,7 +82,7 @@ public class SearchTEContractsModule {
 
         void openOrgUnitTreeSelector();
 
-        void showPeriodRequest(Pair<FilterManager.PeriodRequest, Filters>periodRequest);
+        void showPeriodRequest(Pair<FilterManager.PeriodRequest, Filters> periodRequest);
 
         void clearFilters();
 
