@@ -6,6 +6,8 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.databinding.ObservableField;
 
+import com.google.common.collect.Lists;
+
 import org.dhis2.R;
 import org.dhis2.databinding.FilterPeriodBinding;
 import org.dhis2.databinding.ItemFilterPeriodBinding;
@@ -13,29 +15,31 @@ import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.Period;
 import org.hisp.dhis.android.core.period.DatePeriod;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 
-class PeriodFilterHolder extends FilterHolder implements CompoundButton.OnCheckedChangeListener {
+class EnrollmentDateFilterHolder extends FilterHolder implements CompoundButton.OnCheckedChangeListener {
 
     private ItemFilterPeriodBinding localBinding;
 
-    PeriodFilterHolder(@NonNull ItemFilterPeriodBinding binding, ObservableField<Filters> openedFilter) {
+    EnrollmentDateFilterHolder(@NonNull ItemFilterPeriodBinding binding, ObservableField<Filters> openedFilter) {
         super(binding, openedFilter);
         localBinding = binding;
-        filterType = Filters.PERIOD;
+        filterType = Filters.ENROLLMENT_DATE;
+        filterTitle.setText(R.string.enrollment_date);
     }
 
     @Override
     public void bind() {
         super.bind();
         filterIcon.setImageDrawable(AppCompatResources.getDrawable(itemView.getContext(), R.drawable.ic_calendar_positive));
-        filterTitle.setText(R.string.filters_title_period);
 
         setListeners(localBinding.periodLayout);
 
-        switch (FilterManager.getInstance().getPeriodIdSelected()) {
+        switch (FilterManager.getInstance().getEnrollmentPeriodIdSelected()) {
             case R.id.today:
                 localBinding.periodLayout.today.setChecked(true);
                 break;
@@ -90,9 +94,9 @@ class PeriodFilterHolder extends FilterHolder implements CompoundButton.OnChecke
             if (periodLayout.fromTo.isChecked()) {
                 int id = R.id.fromTo;
                 updateSelection(id);
-                FilterManager.getInstance().addPeriodRequest(FilterManager.PeriodRequest.FROM_TO, Filters.PERIOD);
-                if (id != FilterManager.getInstance().getPeriodIdSelected()) {
-                    FilterManager.getInstance().setPeriodIdSelected(id);
+                FilterManager.getInstance().addPeriodRequest(FilterManager.PeriodRequest.FROM_TO, Filters.ENROLLMENT_DATE);
+                if (id != FilterManager.getInstance().getEnrollmentPeriodIdSelected()) {
+                    FilterManager.getInstance().setEnrollmentPeriodIdSelected(id);
                 }
             }
         });
@@ -100,9 +104,9 @@ class PeriodFilterHolder extends FilterHolder implements CompoundButton.OnChecke
             if (periodLayout.other.isChecked()) {
                 int id = R.id.other;
                 updateSelection(id);
-                FilterManager.getInstance().addPeriodRequest(FilterManager.PeriodRequest.OTHER, Filters.PERIOD);
-                if (id != FilterManager.getInstance().getPeriodIdSelected()) {
-                    FilterManager.getInstance().setPeriodIdSelected(id);
+                FilterManager.getInstance().addPeriodRequest(FilterManager.PeriodRequest.OTHER, Filters.ENROLLMENT_DATE);
+                if (id != FilterManager.getInstance().getEnrollmentPeriodIdSelected()) {
+                    FilterManager.getInstance().setEnrollmentPeriodIdSelected(id);
                 }
             }
         });
@@ -156,14 +160,16 @@ class PeriodFilterHolder extends FilterHolder implements CompoundButton.OnChecke
                         break;
 
                 }
-                if (dates != null)
-                    FilterManager.getInstance().addPeriod(Collections.singletonList(DatePeriod.builder().startDate(dates[0]).endDate(dates[1]).build()));
-                else
-                    FilterManager.getInstance().addPeriod(null);
+                if (dates != null) {
+                    List<DatePeriod> periodList = new ArrayList<>();
+                    periodList.add(DatePeriod.builder().startDate(dates[0]).endDate(dates[1]).build());
+                    FilterManager.getInstance().addEnrollmentPeriod(periodList);
+                } else
+                    FilterManager.getInstance().addEnrollmentPeriod(null);
             }
 
-            if (id != FilterManager.getInstance().getPeriodIdSelected()) {
-                FilterManager.getInstance().setPeriodIdSelected(id);
+            if (id != FilterManager.getInstance().getEnrollmentPeriodIdSelected()) {
+                FilterManager.getInstance().setEnrollmentPeriodIdSelected(id);
             }
         }
     }
@@ -182,5 +188,10 @@ class PeriodFilterHolder extends FilterHolder implements CompoundButton.OnChecke
         localBinding.periodLayout.fromTo.setChecked(id == R.id.fromTo);
         localBinding.periodLayout.other.setChecked(id == R.id.other);
         localBinding.periodLayout.anytime.setChecked(id == R.id.anytime);
+    }
+
+    public FilterHolder updateLabel(String enrollmentDateLabel) {
+        filterTitle.setText(enrollmentDateLabel);
+        return this;
     }
 }

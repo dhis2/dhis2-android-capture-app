@@ -6,16 +6,18 @@ import androidx.recyclerview.widget.RecyclerView
 import com.mapbox.geojson.Feature
 import org.dhis2.databinding.ItemCarouselRelationshipBinding
 import org.dhis2.databinding.ItemCarouselTeiBinding
+import org.dhis2.uicomponents.map.mapper.MapRelationshipToRelationshipMapModel
+import org.dhis2.uicomponents.map.model.CarouselItemModel
 import org.dhis2.uicomponents.map.model.RelationshipUiComponentModel
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel
 
-class CarouselAdapter<T> private constructor(
+class CarouselAdapter private constructor(
     private val currentTei: String,
     private val onDeleteRelationshipListener: (relationshipUid: String) -> Boolean,
     private val onSyncClickListener: (String) -> Boolean,
     private val onTeiClickListener: (String, String?, Boolean) -> Boolean,
     private val onRelationshipClickListener: (relationshipTeiUid: String) -> Boolean,
-    val items: MutableList<T>
+    val items: MutableList<CarouselItemModel>
 ) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
@@ -68,8 +70,11 @@ class CarouselAdapter<T> private constructor(
         }
     }
 
-    fun addItems(data: List<T>) {
+    fun addItems(data: List<CarouselItemModel>) {
         items.addAll(data)
+        data.filterIsInstance<SearchTeiModel>().forEach {
+            items.addAll(MapRelationshipToRelationshipMapModel().mapList(it.relationships))
+        }
         notifyDataSetChanged()
     }
 
@@ -79,7 +84,7 @@ class CarouselAdapter<T> private constructor(
                 is SearchTeiModel ->
                     it.tei.uid() == feature.getStringProperty("teiUid")
                 is RelationshipUiComponentModel ->
-                    it.relationshipUid == feature.getStringProperty("relationshipTypeUid")
+                    it.relationshipUid == feature.getStringProperty("relationshipUid")
                 else -> false
             }
         }
@@ -103,14 +108,14 @@ class CarouselAdapter<T> private constructor(
         return T::class.java
     }
 
-    data class Builder<T>(
+    data class Builder(
         var currentTei: String = "",
         var onDeleteRelationshipListener: (relationshipUid: String) -> Boolean = { false },
         var onSyncClickListener: (String) -> Boolean = { true },
         var onTeiClickListener: (String, String?, Boolean) -> Boolean =
             { _: String, _: String?, _: Boolean -> true },
         var onRelationshipClickListener: (relationshipTeiUid: String) -> Boolean = { false },
-        var items: MutableList<T> = arrayListOf()
+        var items: MutableList<CarouselItemModel> = arrayListOf()
     ) {
         fun addCurrentTei(currentTei: String) = apply {
             this.currentTei = currentTei
@@ -142,11 +147,11 @@ class CarouselAdapter<T> private constructor(
             this.onSyncClickListener = onSyncClick
         }
 
-        fun addItems(items: MutableList<T>) = apply {
+        fun addItems(items: MutableList<CarouselItemModel>) = apply {
             this.items = items
         }
 
-        fun build() = CarouselAdapter<T>(
+        fun build() = CarouselAdapter(
             currentTei,
             onDeleteRelationshipListener,
             onSyncClickListener,

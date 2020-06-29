@@ -2,11 +2,15 @@ package org.dhis2.usescases.teidashboard.robot
 
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
+import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.hasDescendant
+import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import org.dhis2.R
 import org.dhis2.common.BaseRobot
+import org.dhis2.common.matchers.RecyclerviewMatchers.Companion.atPosition
+import org.dhis2.common.matchers.RecyclerviewMatchers.Companion.isNotEmpty
 import org.hamcrest.CoreMatchers.allOf
 
 fun relationshipRobot(relationshipRobot: RelationshipRobot.() -> Unit) {
@@ -21,20 +25,30 @@ class RelationshipRobot : BaseRobot() {
     }
 
     fun clickOnRelationshipType() {
-        // onView(withText("Mother-Child_a-to-b_(Person-Person)")).perform(click())
-        // onView(allOf(withParent(withId(R.id.rfab)), findChildFabButton(1)))
-        // onView(withTagValue(is((Object) tagValue)));
         onView(
             allOf(
                 withId(R.id.rfab__content_label_list_root_view),
-                hasDescendant(withText("Mother-Child_a-to-b_(Person-Person)"))
+                hasDescendant(withText(relationshipType))
             )
         ).perform(click())
     }
 
-    fun clickOnTEI() {
+    fun checkRelationshipWasCreated(position: Int, tei: String) {
+        onView(withId(R.id.relationship_recycler))
+            .check(matches(
+                allOf(
+                    isDisplayed(), isNotEmpty(),
+                    atPosition(
+                        position, allOf(
+                            hasDescendant(withText(relationshipType)),
+                            hasDescendant(withText(tei))
+                        )
+                    )
+                )
+            ))
     }
 
-    fun checkRelationshipWasCreated() {
+    companion object {
+        const val relationshipType = "Mother-Child_a-to-b_(Person-Person)"
     }
 }

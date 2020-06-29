@@ -84,7 +84,7 @@ class MainPresenter(
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
-                    { periodRequest -> view.showPeriodRequest(periodRequest) },
+                    { periodRequest -> view.showPeriodRequest(periodRequest.first) },
                     { Timber.e(it) }
                 )
         )
