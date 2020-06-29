@@ -200,7 +200,9 @@ public class FilterManager {
         else
             catOptComboFilters.add(catOptCombo);
 
-        catComboAdapter.notifyDataSetChanged();
+        if (catComboAdapter != null) {
+            catComboAdapter.notifyDataSetChanged();
+        }
         catOptCombFiltersApplied.set(catOptComboFilters.size());
         filterProcessor.onNext(this);
     }
@@ -299,7 +301,7 @@ public class FilterManager {
         periodRequestProcessor.onNext(new Pair<>(periodRequest, filter));
     }
 
-    public void addCatOptComboRequest(String catOptComboUid){
+    public void addCatOptComboRequest(String catOptComboUid) {
         catOptComboRequestProcessor.onNext(catOptComboUid);
     }
 
