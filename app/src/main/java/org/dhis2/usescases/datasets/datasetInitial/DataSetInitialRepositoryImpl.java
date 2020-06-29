@@ -110,4 +110,9 @@ public class DataSetInitialRepositoryImpl implements DataSetInitialRepository {
             return d2.periodModule().periodHelper().getPeriod(periodType, date).periodId();
         });
     }
+
+    @Override
+    public CategoryOption getCategoryOption(String selectedOption) {
+        return d2.categoryModule().categoryOptions().uid(selectedOption).blockingGet();
+    }
 }

@@ -39,7 +39,7 @@ import org.dhis2.utils.DialogClickListener;
 import org.dhis2.utils.EventCreationType;
 import org.dhis2.utils.ObjectStyleUtils;
 import org.dhis2.utils.OrientationUtilsKt;
-import org.dhis2.utils.customviews.CategoryComboDialog;
+import org.dhis2.utils.category.CategoryDialog;
 import org.dhis2.utils.customviews.CustomDialog;
 import org.dhis2.utils.filters.FilterManager;
 import org.dhis2.utils.filters.FiltersAdapter;
@@ -155,9 +155,9 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
             presenter.onGroupingChanged(group);
         });
         activity.observeFilters().observe(this, showFilters -> showHideFilters(showFilters));
-        activity.updatedEnrollment().observe(this, enrollmentUid -> updateEnrollment(enrollmentUid) );
+        activity.updatedEnrollment().observe(this, enrollmentUid -> updateEnrollment(enrollmentUid));
         filtersAdapter = new FiltersAdapter(FiltersAdapter.ProgramType.TRACKER);
-        if(presenter.hasAssignment()){
+        if (presenter.hasAssignment()) {
             filtersAdapter.addAssignedToMe();
         }
         filtersAdapter.addEventStatus();
@@ -425,19 +425,18 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
 
     @Override
     public void showCatComboDialog(String eventId, CategoryCombo categoryCombo, List<CategoryOptionCombo> categoryOptionCombos) {
-        CategoryComboDialog dialog = new CategoryComboDialog(
-                getAbstracContext(),
-                categoryCombo,
-                123,
-                selectedOption ->
-                        presenter.changeCatOption(
-                                eventId,
-                                selectedOption),
-                categoryCombo.displayName());
-
-        dialog.setCancelable(false);
-        dialog.setCanceledOnTouchOutside(false);
-        dialog.show();
+        CategoryDialog categoryDialog = new CategoryDialog(
+                CategoryDialog.Type.CATEGORY_OPTION_COMBO,
+                categoryCombo.uid(),
+                false,
+                null,
+                selectedCatOptComboUid -> {
+                    presenter.changeCatOption(eventId, selectedCatOptComboUid);
+                    return null;
+                }
+        );
+        categoryDialog.setCancelable(false);
+        categoryDialog.show(getChildFragmentManager(), CategoryDialog.Companion.getTAG());
     }
 
     @Override

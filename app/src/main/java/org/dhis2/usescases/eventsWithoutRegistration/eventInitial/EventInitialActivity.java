@@ -40,6 +40,7 @@ import org.dhis2.utils.EventCreationType;
 import org.dhis2.utils.EventMode;
 import org.dhis2.utils.HelpManager;
 import org.dhis2.utils.analytics.AnalyticsConstants;
+import org.dhis2.utils.category.CategoryDialog;
 import org.dhis2.utils.customviews.CategoryOptionPopUp;
 import org.dhis2.utils.customviews.CustomDialog;
 import org.dhis2.utils.customviews.OrgUnitDialog;
@@ -191,7 +192,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         presenter.init(programUid, eventUid, selectedOrgUnit, programStageUid);
     }
 
-    private void initActionButton(){
+    private void initActionButton() {
 
         disposable.add(RxView.clicks(binding.actionButton)
                 .debounce(500, TimeUnit.MILLISECONDS, AndroidSchedulers.mainThread())
@@ -426,7 +427,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
     }
 
-    private void setUpActivityTitle(){
+    private void setUpActivityTitle() {
         String activityTitle;
         if (eventCreationType == EventCreationType.REFERAL) {
             activityTitle = program.displayName() + " - " + getString(R.string.referral);
@@ -541,7 +542,26 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                     CategorySelectorBinding catSelectorBinding = CategorySelectorBinding.inflate(LayoutInflater.from(this));
                     catSelectorBinding.catCombLayout.setHint(category.displayName());
                     catSelectorBinding.catCombo.setOnClickListener(
-                            view ->
+                            view -> {
+                                if (presenter.catOptionSize(category.uid()) > 0) {
+                                    new CategoryDialog(
+                                            CategoryDialog.Type.CATEGORY_OPTIONS,
+                                            category.uid(),
+                                            true,
+                                            selectedDate,
+                                            selectedOption -> {
+                                                CategoryOption categoryOption = presenter.getCatOption(selectedOption);
+                                                selectedCatOption.put(category.uid(), categoryOption);
+                                                if (selectedCatOption.size() == catCombo.categories().size()) {
+                                                    catOptionComboUid = presenter.getCatOptionCombo(categoryOptionCombos, new ArrayList<>(selectedCatOption.values()));
+                                                    checkActionButtonVisibility();
+                                                }
+                                                return null;
+                                            }
+                                    ).show(getSupportFragmentManager(),
+                                            CategoryDialog.Companion.getTAG());
+
+                                } else {
                                     CategoryOptionPopUp.getInstance()
                                             .setCategory(category)
                                             .setDate(selectedDate)
@@ -556,7 +576,10 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                                                     checkActionButtonVisibility();
                                                 }
                                             })
-                                            .show(this, catSelectorBinding.getRoot())
+                                            .show(this, catSelectorBinding.getRoot());
+                                }
+                            }
+
                     );
 
                     if (stringCategoryOptionMap != null && stringCategoryOptionMap.get(category.uid()) != null)
