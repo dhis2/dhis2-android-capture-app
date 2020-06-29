@@ -24,7 +24,6 @@ class CarouselEventHolder(
     CarouselBinder<EventUiComponentModel> {
 
     override fun bind(data: EventUiComponentModel) {
-
         val attribute: String
         data.teiAttribute.filter { it.value != null }.apply {
             attribute =

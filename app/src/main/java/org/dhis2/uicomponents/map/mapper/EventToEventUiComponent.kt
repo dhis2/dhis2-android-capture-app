@@ -6,7 +6,10 @@ import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.Eve
 
 class EventToEventUiComponent {
 
-    fun mapList(events: List<EventViewModel>, teis: List<SearchTeiModel>): List<EventUiComponentModel> {
+    fun mapList(
+        events: List<EventViewModel>,
+        teis: List<SearchTeiModel>
+    ): List<EventUiComponentModel> {
         return events
             .filter { it.event?.geometry() != null }
             .map { event ->
