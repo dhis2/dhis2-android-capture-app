@@ -276,9 +276,14 @@ class TeiDashboardTest : BaseTest() {
     }
 
     @Test
-    @Ignore
     fun shouldEnrollToOtherProgramWhenClickOnProgramEnrollments() {
-        val womanProgram = 4
+        val womanProgram = "MNCH / PNC (Adult Woman)"
+        val personAttribute = "Attributes - Person"
+        val visitPNCEvent = "PNC Visit"
+        val deliveryEvent = "Delivery"
+        val visitANCEvent = "ANC Visit (2-4+)"
+        val firstANCVisitEvent = "ANC 1st visit"
+
         prepareTeiToEnrollToOtherProgramAndLaunchActivity(rule)
 
         teiDashboardRobot {
@@ -289,33 +294,38 @@ class TeiDashboardTest : BaseTest() {
         enrollmentRobot {
             clickOnAProgramForEnrollment(womanProgram)
             clickOnAcceptEnrollmentDate()
-            clickOnPersonAttributes(5)
-            clickOnCalendarItem(5)
+            clickOnPersonAttributes(personAttribute)
+            clickOnCalendarItem()
             clickOnAcceptEnrollmentDate()
             scrollToBottomProgramForm()
             clickOnSaveEnrollment()
         }
 
-        eventRobot {
-            //typeOnRequiredEventForm("test", 4)
-            scrollToBottomForm()
-            clickOnFormFabButton()
-            clickOnFinish()
-        }
-
         teiDashboardRobot {
-            //check event was created
-            //checkEventWasCreatedAndOpen("ANC 1st visit", 3)
-            //checkEventWasScheduled("Baby Postnatal", 0)
-            //checkEventWasCreatedAndOpen("Birth", 1)
+            checkEventWasScheduled(visitPNCEvent, 0)
+            checkEventWasScheduled(deliveryEvent, 1)
+            checkEventWasScheduled(visitANCEvent, 2)
+            checkEventWasCreatedAndOpen(firstANCVisitEvent, 3)
         }
-
     }
 
     @Test
     @Ignore
     fun shouldSuccessfullyCreateRelationshipWhenClickAdd() {
-        prepareTeiCompletedProgrammeAndLaunchActivity(rule)
+        val teiName = "Tim"
+        val teiLastName = "Johnson"
+        val relationshipName = "Filona"
+        val relationshipLastName = "Ryder"
+        val completeName = "Ryder Filona"
+
+        setupCredentials()
+        prepareChildProgrammeIntentAndLaunchActivity(ruleSearch)
+
+        searchTeiRobot {
+            closeSearchForm()
+            Thread.sleep(4000)
+            clickOnTEI(teiName, teiLastName)
+        }
 
         teiDashboardRobot {
             clickOnRelationshipTab()
@@ -324,10 +334,16 @@ class TeiDashboardTest : BaseTest() {
         relationshipRobot {
             clickOnFabAdd()
             clickOnRelationshipType()
-            // click on a TEI
-            // check relationship was created
-            Thread.sleep(5000)
-            //    clickOnMotherRelationship()
+        }
+
+        searchTeiRobot {
+            closeSearchForm()
+            Thread.sleep(4000)
+            clickOnTEI(relationshipName, relationshipLastName)
+        }
+
+        relationshipRobot {
+            checkRelationshipWasCreated(0, completeName)
         }
     }
 

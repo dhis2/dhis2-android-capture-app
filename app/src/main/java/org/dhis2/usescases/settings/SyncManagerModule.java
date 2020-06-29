@@ -1,10 +1,12 @@
 package org.dhis2.usescases.settings;
 
+import org.dhis2.R;
 import org.dhis2.data.dagger.PerFragment;
 import org.dhis2.data.prefs.PreferenceProvider;
 import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.data.service.workManager.WorkManagerController;
 import org.dhis2.utils.analytics.AnalyticsHelper;
+import org.dhis2.usescases.settings.models.ErrorModelMapper;
 import org.hisp.dhis.android.core.D2;
 
 import dagger.Module;
@@ -36,7 +38,8 @@ public final class SyncManagerModule {
                 workManagerController,
                 settingsRepository,
                 view,
-                analyticsHelper);
+                analyticsHelper,
+                new ErrorModelMapper(view.getContext().getString(R.string.fk_message)));
     }
 
     @Provides
