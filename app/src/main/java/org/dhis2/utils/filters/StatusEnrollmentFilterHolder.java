@@ -11,9 +11,10 @@ import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 
 public class StatusEnrollmentFilterHolder extends FilterHolder {
 
-    StatusEnrollmentFilterHolder(@NonNull ItemFilterEnrollmentStatusBinding binding, ObservableField<Filters> openedFilter, ObservableField<SortingItem> sortingItem) {
+    StatusEnrollmentFilterHolder(@NonNull ItemFilterEnrollmentStatusBinding binding, ObservableField<Filters> openedFilter, ObservableField<SortingItem> sortingItem, FiltersAdapter.ProgramType programType) {
         super(binding, openedFilter, sortingItem);
         filterType = Filters.ENROLLMENT_STATUS;
+        this.programType = programType;
     }
 
     @Override

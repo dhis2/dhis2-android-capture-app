@@ -8,11 +8,13 @@ import org.dhis2.databinding.ItemFilterAssignedBinding
 
 internal class AssignToMeFilterHolder(
     private val mBinding: ItemFilterAssignedBinding,
-    openedFilter: ObservableField<Filters>
+    openedFilter: ObservableField<Filters>,
+    programType: FiltersAdapter.ProgramType
 ) : FilterHolder(mBinding, openedFilter) {
 
     init {
         filterType = Filters.ASSIGNED_TO_ME
+        this.programType = programType
         filterArrow.visibility = View.GONE
         sortingIcon.visibility = View.GONE
     }

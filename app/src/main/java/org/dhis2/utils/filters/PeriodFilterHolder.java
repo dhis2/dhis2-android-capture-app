@@ -22,10 +22,11 @@ class PeriodFilterHolder extends FilterHolder implements CompoundButton.OnChecke
 
     private ItemFilterPeriodBinding localBinding;
 
-    PeriodFilterHolder(@NonNull ItemFilterPeriodBinding binding, ObservableField<Filters> openedFilter, ObservableField<SortingItem> sortingItem) {
+    PeriodFilterHolder(@NonNull ItemFilterPeriodBinding binding, ObservableField<Filters> openedFilter, ObservableField<SortingItem> sortingItem, FiltersAdapter.ProgramType programType) {
         super(binding, openedFilter, sortingItem);
         localBinding = binding;
         filterType = Filters.PERIOD;
+        this.programType = programType;
     }
 
     @Override

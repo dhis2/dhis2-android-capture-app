@@ -11,9 +11,10 @@ import org.hisp.dhis.android.core.common.State;
 
 class SyncStateFilterHolder extends FilterHolder {
 
-    SyncStateFilterHolder(@NonNull ItemFilterStateBinding binding, ObservableField<Filters> openedFilter, ObservableField<SortingItem> sortingItem) {
+    SyncStateFilterHolder(@NonNull ItemFilterStateBinding binding, ObservableField<Filters> openedFilter, ObservableField<SortingItem> sortingItem, FiltersAdapter.ProgramType programType) {
         super(binding, openedFilter, sortingItem);
         filterType = Filters.SYNC_STATE;
+        this.programType = programType;
     }
 
     @Override

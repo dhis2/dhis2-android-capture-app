@@ -50,21 +50,21 @@ public class FiltersAdapter extends RecyclerView.Adapter<FilterHolder> {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         switch (Filters.values()[viewType]) {
             case PERIOD:
-                return new PeriodFilterHolder(ItemFilterPeriodBinding.inflate(inflater, parent, false), openedFilter, sortingItem);
+                return new PeriodFilterHolder(ItemFilterPeriodBinding.inflate(inflater, parent, false), openedFilter, sortingItem, programType);
             case ENROLLMENT_DATE:
-                return new EnrollmentDateFilterHolder(ItemFilterPeriodBinding.inflate(inflater, parent, false), openedFilter, sortingItem);
+                return new EnrollmentDateFilterHolder(ItemFilterPeriodBinding.inflate(inflater, parent, false), openedFilter, sortingItem, programType);
             case ORG_UNIT:
-                return new OrgUnitFilterHolder(ItemFilterOrgUnitBinding.inflate(inflater, parent, false), openedFilter, sortingItem);
+                return new OrgUnitFilterHolder(ItemFilterOrgUnitBinding.inflate(inflater, parent, false), openedFilter, sortingItem, programType);
             case SYNC_STATE:
-                return new SyncStateFilterHolder(ItemFilterStateBinding.inflate(inflater, parent, false), openedFilter, sortingItem);
+                return new SyncStateFilterHolder(ItemFilterStateBinding.inflate(inflater, parent, false), openedFilter, sortingItem, programType);
             case CAT_OPT_COMB:
-                return new CatOptCombFilterHolder(ItemFilterCatOptCombBinding.inflate(inflater, parent, false), openedFilter, catCombData);
+                return new CatOptCombFilterHolder(ItemFilterCatOptCombBinding.inflate(inflater, parent, false), openedFilter, catCombData, programType);
             case EVENT_STATUS:
                 return new StatusEventFilterHolder(ItemFilterStatusBinding.inflate(inflater, parent, false), openedFilter, programType);
             case ASSIGNED_TO_ME:
-                return new AssignToMeFilterHolder(ItemFilterAssignedBinding.inflate(inflater, parent, false), openedFilter);
+                return new AssignToMeFilterHolder(ItemFilterAssignedBinding.inflate(inflater, parent, false), openedFilter, programType);
             case ENROLLMENT_STATUS:
-                return new StatusEnrollmentFilterHolder(ItemFilterEnrollmentStatusBinding.inflate(inflater, parent, false), openedFilter, sortingItem);
+                return new StatusEnrollmentFilterHolder(ItemFilterEnrollmentStatusBinding.inflate(inflater, parent, false), openedFilter, sortingItem, programType);
             default:
                 throw new IllegalArgumentException("Unsupported filter value");
         }

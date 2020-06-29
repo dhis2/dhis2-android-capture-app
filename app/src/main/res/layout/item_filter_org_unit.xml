@@ -33,7 +33,6 @@
             android:id="@+id/filterLayout"
             layout="@layout/item_header_filter"
             app:filterCount="@{filterCount}"
-            app:filterType="@{filterType}"
             app:currentSortItem="@{currentSortItem}"
             app:layout_constraintTop_toBottomOf="parent" />
 

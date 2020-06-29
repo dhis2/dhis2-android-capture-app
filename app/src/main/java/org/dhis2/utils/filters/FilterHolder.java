@@ -14,8 +14,12 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import org.dhis2.BR;
 import org.dhis2.R;
+import org.dhis2.utils.filters.sorting.Sorting;
 import org.dhis2.utils.filters.sorting.SortingItem;
 import org.dhis2.utils.filters.sorting.SortingStatus;
+import org.dhis2.utils.filters.FiltersAdapter.ProgramType;
+
+import java.util.List;
 
 abstract class FilterHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
     protected final View filterArrow;
@@ -27,6 +31,7 @@ abstract class FilterHolder extends RecyclerView.ViewHolder implements View.OnCl
     protected Filters filterType;
     private ObservableField<Filters> openFilter;
     private ObservableField<SortingItem> sortingItem;
+    protected ProgramType programType;
     protected ViewDataBinding binding;
 
     FilterHolder(@NonNull ViewDataBinding binding, ObservableField<Filters> openedFilter, ObservableField<SortingItem> sortingItem){
@@ -62,6 +67,8 @@ abstract class FilterHolder extends RecyclerView.ViewHolder implements View.OnCl
         binding.setVariable(BR.currentSortItem, sortingItem);
         binding.executePendingBindings();
 
+        setSortingIcons();
+
         clickableLayout.setOnClickListener(this);
         filterArrow.setOnClickListener(this);
         sortingIcon.setOnClickListener(this);
@@ -94,6 +101,15 @@ abstract class FilterHolder extends RecyclerView.ViewHolder implements View.OnCl
                 }
             }
         });
+    }
+
+    private void setSortingIcons() {
+        List<Filters> sortingOptions = Sorting.getSortingOptions(programType);
+        for (Filters filter : sortingOptions) {
+            if (filter == filterType) {
+                sortingIcon.setVisibility(View.VISIBLE);
+            }
+        }
     }
 
     @Override

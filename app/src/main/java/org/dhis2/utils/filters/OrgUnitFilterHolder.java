@@ -19,9 +19,10 @@ class OrgUnitFilterHolder extends FilterHolder {
 
     private OrganisationUnit currentOrgUnit;
 
-    OrgUnitFilterHolder(@NonNull ItemFilterOrgUnitBinding binding, ObservableField<Filters> openedFilter, ObservableField<SortingItem> sortingItem) {
+    OrgUnitFilterHolder(@NonNull ItemFilterOrgUnitBinding binding, ObservableField<Filters> openedFilter, ObservableField<SortingItem> sortingItem, FiltersAdapter.ProgramType programType) {
         super(binding, openedFilter, sortingItem);
         filterType = Filters.ORG_UNIT;
+        this.programType = programType;
     }
 
     @Override

@@ -21,10 +21,11 @@ class CatOptCombFilterHolder extends FilterHolder {
 
     private final Pair<CategoryCombo, List<CategoryOptionCombo>> catComboData;
 
-    CatOptCombFilterHolder(@NonNull ItemFilterCatOptCombBinding binding, ObservableField<Filters> openedFilter, Pair<CategoryCombo, List<CategoryOptionCombo>> catCombData) {
+    CatOptCombFilterHolder(@NonNull ItemFilterCatOptCombBinding binding, ObservableField<Filters> openedFilter, Pair<CategoryCombo, List<CategoryOptionCombo>> catCombData, FiltersAdapter.ProgramType programType) {
         super(binding, openedFilter);
         filterType = Filters.CAT_OPT_COMB;
         this.catComboData = catCombData;
+        this.programType = programType;
     }
 
     @Override
