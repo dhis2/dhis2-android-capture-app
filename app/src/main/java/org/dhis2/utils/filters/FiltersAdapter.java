@@ -52,7 +52,7 @@ public class FiltersAdapter extends RecyclerView.Adapter<FilterHolder> {
             case PERIOD:
                 return new PeriodFilterHolder(ItemFilterPeriodBinding.inflate(inflater, parent, false), openedFilter, sortingItem);
             case ENROLLMENT_DATE:
-                return new EnrollmentDateFilterHolder(ItemFilterPeriodBinding.inflate(inflater, parent, false), openedFilter);
+                return new EnrollmentDateFilterHolder(ItemFilterPeriodBinding.inflate(inflater, parent, false), openedFilter, sortingItem);
             case ORG_UNIT:
                 return new OrgUnitFilterHolder(ItemFilterOrgUnitBinding.inflate(inflater, parent, false), openedFilter, sortingItem);
             case SYNC_STATE:
@@ -64,7 +64,7 @@ public class FiltersAdapter extends RecyclerView.Adapter<FilterHolder> {
             case ASSIGNED_TO_ME:
                 return new AssignToMeFilterHolder(ItemFilterAssignedBinding.inflate(inflater, parent, false), openedFilter);
             case ENROLLMENT_STATUS:
-                return new StatusEnrollmentFilterHolder(ItemFilterEnrollmentStatusBinding.inflate(inflater, parent, false), openedFilter);
+                return new StatusEnrollmentFilterHolder(ItemFilterEnrollmentStatusBinding.inflate(inflater, parent, false), openedFilter, sortingItem);
             default:
                 throw new IllegalArgumentException("Unsupported filter value");
         }
@@ -72,9 +72,9 @@ public class FiltersAdapter extends RecyclerView.Adapter<FilterHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull FilterHolder holder, int position) {
-        if(holder instanceof EnrollmentDateFilterHolder){
+        if (holder instanceof EnrollmentDateFilterHolder){
             ((EnrollmentDateFilterHolder)holder).updateLabel(enrollmentDateLabel).bind();
-        }else {
+        } else {
             holder.bind();
         }
     }

@@ -6,12 +6,13 @@ import androidx.databinding.ObservableField;
 
 import org.dhis2.R;
 import org.dhis2.databinding.ItemFilterEnrollmentStatusBinding;
+import org.dhis2.utils.filters.sorting.SortingItem;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 
 public class StatusEnrollmentFilterHolder extends FilterHolder {
 
-    StatusEnrollmentFilterHolder(@NonNull ItemFilterEnrollmentStatusBinding binding, ObservableField<Filters> openedFilter) {
-        super(binding, openedFilter);
+    StatusEnrollmentFilterHolder(@NonNull ItemFilterEnrollmentStatusBinding binding, ObservableField<Filters> openedFilter, ObservableField<SortingItem> sortingItem) {
+        super(binding, openedFilter, sortingItem);
         filterType = Filters.ENROLLMENT_STATUS;
     }
 
