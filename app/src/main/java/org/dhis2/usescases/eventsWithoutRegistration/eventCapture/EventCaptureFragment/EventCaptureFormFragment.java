@@ -120,10 +120,22 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
         }
 
         LinearLayoutManager myLayoutManager = (LinearLayoutManager) binding.formRecycler.getLayoutManager();
-        dataEntryAdapter.swap(updates, () -> {
-            if (myLayoutManager != null)
-                myLayoutManager.scrollToPositionWithOffset(dataEntryAdapter.getOpenSectionPos(), 0);
-        });
+        if (myLayoutManager == null) return;
+
+        int myFirstPositionIndex = myLayoutManager.findFirstVisibleItemPosition();
+        View myFirstPositionView = myLayoutManager.findViewByPosition(myFirstPositionIndex);
+        int offset = 0;
+        if (myFirstPositionView != null) {
+            offset = myFirstPositionView.getTop();
+        }
+
+        if (dataEntryAdapter == null) {
+            createDataEntry();
+        }
+
+        dataEntryAdapter.swap(updates, () -> { });
+
+        myLayoutManager.scrollToPositionWithOffset(myFirstPositionIndex, offset);
     }
 
     @Override
