@@ -682,6 +682,7 @@
     <string name="sync_parameters_not_editable">Sync parameters are not editable</string>
     <string name="rv_no_editable">Number of reserved values downloaded is not editable</string>
     <string name="dialog_layer_satellite">Show satellite view</string>
+    <string name="dialog_layer_event">Show events</string>
     <string name="dialog_layer_tei_coordinates">Show tei coordinates</string>
     <string name="dialog_layer_enrollment_coordinates">Show enrollment coordinates</string>
     <string name="dialog_layer_heatmap">Show heatmap layer</string>
@@ -704,4 +705,5 @@
     <string name="filters_title_event_status">Event status</string>
     <string name="filters_title_enrollment_status">Enrollment status</string>
     <string name="enrollment_date">Enrollment date</string>
+    <string name="action_apply">Apply</string>
 </resources>

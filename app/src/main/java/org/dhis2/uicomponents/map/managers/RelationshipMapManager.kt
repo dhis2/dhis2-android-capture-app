@@ -88,5 +88,6 @@ class RelationshipMapManager : MapManager() {
         mapLayerManager.initMap(map)
             .withFeatureType(featureType)
             .addLayers(LayerType.RELATIONSHIP_LAYER, featureCollections.keys.toList(), true)
+            .addLayer(LayerType.SATELLITE_LAYER)
     }
 }
