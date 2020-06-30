@@ -8,6 +8,7 @@ import com.mapbox.geojson.BoundingBox;
 import com.mapbox.geojson.FeatureCollection;
 
 import org.dhis2.data.tuples.Pair;
+import org.dhis2.utils.filters.sorting.SortingItem;
 import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryOptionCombo;
 import org.hisp.dhis.android.core.common.FeatureType;
@@ -25,10 +26,24 @@ import io.reactivex.Single;
 public interface ProgramEventDetailRepository {
 
     @NonNull
-    LiveData<PagedList<ProgramEventViewModel>> filteredProgramEvents(List<DatePeriod> dateFilter, List<String> orgUnitFilter, List<CategoryOptionCombo> catOptionComboUid, List<EventStatus> eventStatus, List<State> states, boolean assignedToUser);
+    LiveData<PagedList<ProgramEventViewModel>> filteredProgramEvents(
+            List<DatePeriod> dateFilter,
+            List<String> orgUnitFilter,
+            List<CategoryOptionCombo> catOptionComboUid,
+            List<EventStatus> eventStatus,
+            List<State> states,
+            SortingItem sortingItem,
+            boolean assignedToUser);
 
     @NonNull
-    Flowable<kotlin.Pair<FeatureCollection, BoundingBox>> filteredEventsForMap(List<DatePeriod> dateFilter, List<String> orgUnitFilter, List<CategoryOptionCombo> catOptionComboUid, List<EventStatus> eventStatus, List<State> states, boolean assignedToUser);
+    Flowable<kotlin.Pair<FeatureCollection, BoundingBox>> filteredEventsForMap(
+            List<DatePeriod> dateFilter,
+            List<String> orgUnitFilter,
+            List<CategoryOptionCombo> catOptionComboUid,
+            List<EventStatus> eventStatus,
+            List<State> states,
+            SortingItem sortingItem,
+            boolean assignedToUser);
 
     @NonNull
     Observable<Program> program();
