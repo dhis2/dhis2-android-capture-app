@@ -128,6 +128,7 @@ abstract class FilterHolder extends RecyclerView.ViewHolder implements View.OnCl
                 sortItem.setSortingStatus(SortingStatus.ASC);
             }
             sortingItem.set(sortItem);
+            FilterManager.getInstance().setSortingItem(sortingItem.get());
         } else {
             openFilter.set(openFilter.get() != filterType ? filterType : null);
         }

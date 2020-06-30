@@ -7,6 +7,7 @@ import androidx.lifecycle.LiveData;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewModel;
+import org.dhis2.utils.filters.sorting.SortingItem;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
@@ -37,13 +38,14 @@ public interface SearchRepository {
 
     @NonNull
     LiveData searchTrackedEntities(@Nullable Program selectedProgram,
-                                                              @NonNull String trackedEntityType,
-                                                              @NonNull List<String> orgUnits,
-                                                              @Nonnull List<State> states,
-                                                              @NonNull List<EventStatus> statuses,
-                                                              @Nullable HashMap<String, String> queryData,
-                                                              boolean assignedToMe,
-                                                              boolean isOnline);
+                                   @NonNull String trackedEntityType,
+                                   @NonNull List<String> orgUnits,
+                                   @Nonnull List<State> states,
+                                   @NonNull List<EventStatus> statuses,
+                                   @Nullable HashMap<String, String> queryData,
+                                   @Nullable SortingItem sortingItem,
+                                   boolean assignedToMe,
+                                   boolean isOnline);
 
     @NonNull
     Flowable<List<SearchTeiModel>> searchTeiForMap(@Nullable Program selectedProgram,
@@ -52,6 +54,7 @@ public interface SearchRepository {
                                                    @Nonnull List<State> states,
                                                    @NonNull List<EventStatus> statuses,
                                                    @Nullable HashMap<String, String> queryData,
+                                                   @Nullable SortingItem sortingItem,
                                                    boolean assignedToMe,
                                                    boolean isOnline);
 

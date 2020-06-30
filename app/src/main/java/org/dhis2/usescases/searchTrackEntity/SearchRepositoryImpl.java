@@ -27,6 +27,8 @@ import org.dhis2.utils.Constants;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.ValueUtils;
 import org.dhis2.utils.filters.FilterManager;
+import org.dhis2.utils.filters.sorting.SortingItem;
+import org.dhis2.utils.filters.sorting.SortingStatus;
 import org.dhis2.utils.resources.ResourceManager;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper;
@@ -178,6 +180,7 @@ public class SearchRepositoryImpl implements SearchRepository {
                                                                      @Nonnull List<State> states,
                                                                      @NonNull List<EventStatus> eventStatuses,
                                                                      @Nullable HashMap<String, String> queryData,
+                                                                     @Nullable SortingItem sortingItem,
                                                                      boolean assignedToMe,
                                                                      boolean isOnline) {
 
@@ -187,7 +190,8 @@ public class SearchRepositoryImpl implements SearchRepository {
                         orgUnits,
                         states,
                         queryData,
-                        assignedToMe);
+                        assignedToMe,
+                        sortingItem);
 
         DataSource<TrackedEntityInstance, SearchTeiModel> dataSource;
 
@@ -226,6 +230,7 @@ public class SearchRepositoryImpl implements SearchRepository {
                                                           @Nonnull List<State> states,
                                                           @NonNull List<EventStatus> eventStatuses,
                                                           @Nullable HashMap<String, String> queryData,
+                                                          @Nullable SortingItem sortingItem,
                                                           boolean assignedToMe,
                                                           boolean isOnline) {
 
@@ -235,7 +240,8 @@ public class SearchRepositoryImpl implements SearchRepository {
                         orgUnits,
                         states,
                         queryData,
-                        assignedToMe);
+                        assignedToMe,
+                        sortingItem);
 
         if (isOnline && states.isEmpty())
             return trackedEntityInstanceQuery.offlineFirst().get().toFlowable()
@@ -264,7 +270,8 @@ public class SearchRepositoryImpl implements SearchRepository {
                                                                                  @NonNull List<String> orgUnits,
                                                                                  @Nonnull List<State> states,
                                                                                  @Nullable HashMap<String, String> queryData,
-                                                                                 boolean assignedToMe) {
+                                                                                 boolean assignedToMe,
+                                                                                 @Nullable SortingItem sortingItem) {
 
         TrackedEntityInstanceQueryCollectionRepository trackedEntityInstanceQuery = d2.trackedEntityModule().trackedEntityInstanceQuery();
         if (selectedProgram != null)
@@ -325,6 +332,37 @@ public class SearchRepositoryImpl implements SearchRepository {
 
         if (assignedToMe) {
             trackedEntityInstanceQuery = trackedEntityInstanceQuery.byAssignedUserMode().eq(AssignedUserMode.CURRENT);
+        }
+
+        if (sortingItem != null) {
+            switch (sortingItem.component1()) {
+                case ORG_UNIT:
+                    if (sortingItem.getSortingStatus() == SortingStatus.ASC)
+                        trackedEntityInstanceQuery = trackedEntityInstanceQuery.orderByOrganisationUnitName().eq(RepositoryScope.OrderByDirection.ASC);
+                    if (sortingItem.getSortingStatus() == SortingStatus.DESC)
+                        trackedEntityInstanceQuery = trackedEntityInstanceQuery.orderByOrganisationUnitName().eq(RepositoryScope.OrderByDirection.DESC);
+                    break;
+                case ENROLLMENT_DATE:
+                    if (sortingItem.getSortingStatus() == SortingStatus.ASC)
+                        trackedEntityInstanceQuery = trackedEntityInstanceQuery.orderByEnrollmentDate().eq(RepositoryScope.OrderByDirection.ASC);
+                    if (sortingItem.getSortingStatus() == SortingStatus.DESC)
+                        trackedEntityInstanceQuery = trackedEntityInstanceQuery.orderByEnrollmentDate().eq(RepositoryScope.OrderByDirection.DESC);
+                    break;
+                case PERIOD:
+                    if (sortingItem.getSortingStatus() == SortingStatus.ASC)
+                        trackedEntityInstanceQuery = trackedEntityInstanceQuery.orderByEventDate().eq(RepositoryScope.OrderByDirection.ASC);
+                    if (sortingItem.getSortingStatus() == SortingStatus.DESC)
+                        trackedEntityInstanceQuery = trackedEntityInstanceQuery.orderByEventDate().eq(RepositoryScope.OrderByDirection.DESC);
+                    break;
+                case ENROLLMENT_STATUS:
+                    if (sortingItem.getSortingStatus() == SortingStatus.ASC)
+                        trackedEntityInstanceQuery = trackedEntityInstanceQuery.orderByEnrollmentStatus().eq(RepositoryScope.OrderByDirection.ASC);
+                    if (sortingItem.getSortingStatus() == SortingStatus.DESC)
+                        trackedEntityInstanceQuery = trackedEntityInstanceQuery.orderByEnrollmentStatus().eq(RepositoryScope.OrderByDirection.DESC);
+                    break;
+                default:
+                    break;
+            }
         }
 
         return trackedEntityInstanceQuery;

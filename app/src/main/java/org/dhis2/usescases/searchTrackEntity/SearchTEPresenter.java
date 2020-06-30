@@ -227,6 +227,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                                 FilterManager.getInstance().getStateFilters(),
                                 FilterManager.getInstance().getEventStatusFilters(),
                                 queryData,
+                                FilterManager.getInstance().getSortingItem(),
                                 FilterManager.getInstance().getAssignedFilter(),
                                 NetworkUtils.isOnline(view.getContext()))))
                         .doOnError(this::handleError)
@@ -258,6 +259,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                                                         FilterManager.getInstance().getStateFilters(),
                                                         FilterManager.getInstance().getEventStatusFilters(),
                                                         query,
+                                                        FilterManager.getInstance().getSortingItem(),
                                                         FilterManager.getInstance().getAssignedFilter(),
                                                         NetworkUtils.isOnline(view.getContext())))
                                         .map(teis -> new kotlin.Pair<>(teis, searchRepository.getEventsForMap(teis)))
