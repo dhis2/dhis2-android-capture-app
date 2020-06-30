@@ -19,6 +19,9 @@ import junit.framework.Assert.assertTrue
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.dhis2.data.tuples.Pair
 import org.dhis2.utils.filters.FilterManager
+import org.dhis2.utils.filters.Filters
+import org.dhis2.utils.filters.sorting.SortingItem
+import org.dhis2.utils.filters.sorting.SortingStatus
 import org.hisp.dhis.android.core.category.CategoryCombo
 import org.hisp.dhis.android.core.category.CategoryOptionCombo
 import org.hisp.dhis.android.core.common.FeatureType
@@ -66,13 +69,14 @@ class ProgramEventDetailPresenterTest {
             FeatureCollection.fromFeature(Feature.fromGeometry(null)),
             BoundingBox.fromLngLats(0.0, 0.0, 0.0, 0.0)
         )
+        filterManager.sortingItem = SortingItem(Filters.ORG_UNIT, SortingStatus.NONE)
         whenever(repository.featureType()) doReturn Single.just(FeatureType.POINT)
         whenever(repository.accessDataWrite) doReturn true
         whenever(repository.hasAccessToAllCatOptions()) doReturn Single.just(true)
         whenever(repository.program()) doReturn Observable.just(program)
         whenever(repository.catOptionCombos()) doReturn Single.just(catOptionComboPair)
         whenever(
-            repository.filteredProgramEvents(any(), any(), any(), any(), any(), any())
+            repository.filteredProgramEvents(any(), any(), any(), any(), any(), any(), any())
         ) doReturn events
         whenever(
             repository.filteredEventsForMap(any(), any(), any(), any(), any(), any())
