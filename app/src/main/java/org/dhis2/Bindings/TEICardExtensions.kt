@@ -178,7 +178,6 @@ fun SearchTeiModel.setTeiImage(
         } else {
             teiTextImageView.text = valueToShow[0].value().toString()
         }
-
         teiTextImageView.setTextColor(
             ColorUtils.getContrastColor(
                 ColorUtils.getPrimaryColor(
