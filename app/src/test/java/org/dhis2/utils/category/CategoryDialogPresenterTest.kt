@@ -10,6 +10,7 @@ import org.dhis2.data.schedulers.SchedulerProvider
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.category.Category
+import org.hisp.dhis.android.core.category.CategoryCombo
 import org.hisp.dhis.android.core.category.CategoryOptionCombo
 import org.junit.Test
 import org.mockito.Mockito
@@ -64,9 +65,9 @@ class CategoryDialogPresenterTest {
         )
 
         whenever(
-            d2.categoryModule().categoryOptionCombos().uid("uid").get()
+            d2.categoryModule().categoryCombos().uid("uid").get()
         ) doReturn Single.just(
-            CategoryOptionCombo.builder()
+            CategoryCombo.builder()
                 .uid("uid")
                 .displayName("name")
                 .build()
