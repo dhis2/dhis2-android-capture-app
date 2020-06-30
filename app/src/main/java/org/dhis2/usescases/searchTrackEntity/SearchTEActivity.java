@@ -26,7 +26,6 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.AdapterView;
-import android.widget.Filter;
 import android.widget.PopupMenu;
 import android.widget.Spinner;
 import android.widget.Toast;
@@ -63,9 +62,7 @@ import org.dhis2.uicomponents.map.carousel.CarouselAdapter;
 import org.dhis2.uicomponents.map.geometry.mapper.EventsByProgramStage;
 import org.dhis2.uicomponents.map.layer.MapLayerDialog;
 import org.dhis2.uicomponents.map.managers.TeiMapManager;
-import org.dhis2.uicomponents.map.mapper.MapRelationshipToRelationshipMapModel;
 import org.dhis2.uicomponents.map.model.MapStyle;
-import org.dhis2.uicomponents.map.model.RelationshipUiComponentModel;
 import org.dhis2.usescases.coodinates.CoordinatesView;
 import org.dhis2.usescases.enrollment.EnrollmentActivity;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
@@ -144,7 +141,6 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     private boolean initSearchNeeded = true;
     private Snackbar downloadingSnackbar;
     private String currentStyle = Style.MAPBOX_STREETS;
-    private MapLayerDialog mapLayerDialog;
     private ObjectAnimator animation = null;
     private Set<String> sources;
 
@@ -216,9 +212,10 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             Timber.e(e);
         }
 
-        binding.mapLayerButton.setOnClickListener(view ->
-                mapLayerDialog.show(getSupportFragmentManager(), MapLayerDialog.class.getName())
-        );
+        binding.mapLayerButton.setOnClickListener(view -> {
+            new MapLayerDialog(teiMapManager.mapLayerManager)
+                    .show(getSupportFragmentManager(), MapLayerDialog.class.getName());
+        });
 
         binding.executePendingBindings();
         showHideFilter();
@@ -257,7 +254,6 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             teiMapManager.init(binding.mapView);
             teiMapManager.setOnMapClickListener(this);
         }
-        mapLayerDialog = new MapLayerDialog(teiMapManager.mapLayerManager);
     }
 
     @Override
@@ -865,7 +861,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                         .queryRenderedFeatures(rectF, lineLayerId, pointLayerId);
                 if (!features.isEmpty()) {
                     teiMapManager.mapLayerManager.selectFeature(null);
-                    teiMapManager.mapLayerManager.getLayer(sourceId,true).setSelectedItem(features.get(0));
+                    teiMapManager.mapLayerManager.getLayer(sourceId, true).setSelectedItem(features.get(0));
                     binding.mapCarousel.scrollToFeature(features.get(0));
                     return true;
                 }

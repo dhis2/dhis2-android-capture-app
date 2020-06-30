@@ -9,9 +9,7 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="90dp"
-        android:layout_marginBottom="90dp"
+        android:layout_height="wrap_content"
         android:background="@drawable/bottomsheet_bg"
         android:orientation="vertical"
         tools:ignore="UselessParent">
@@ -48,7 +46,6 @@
                 android:id="@+id/layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:minHeight="200dp"
                 android:orientation="vertical"
                 android:paddingStart="24dp"
                 android:paddingEnd="24dp" />

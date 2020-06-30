@@ -65,7 +65,8 @@ class MapLayerManager {
             )
             LayerType.SATELLITE_LAYER -> SatelliteMapLayer(
                 mapboxMap,
-                styleChangeCallback
+                styleChangeCallback,
+                style.uri.contains("satellite")
             )
             LayerType.RELATIONSHIP_LAYER -> RelationshipMapLayer(
                 style,
