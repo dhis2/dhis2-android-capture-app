@@ -112,7 +112,8 @@ class MapTeisToFeatureCollection(
         featureMap: HashMap<String?, ArrayList<Feature>>
     ) {
         val polygon = mapPolygonToFeature.map(geometry, bounds)?.first
-        polygon?.addTeiEnrollmentInfo(searchTeiModel)?.also { featureMap[ENROLLMENT]!!.add(polygon) }
+        polygon?.addTeiEnrollmentInfo(searchTeiModel)
+            ?.also { featureMap[ENROLLMENT]!!.add(polygon) }
 
         val polygonPoint = mapPolygonPointToFeature.map(geometry)
         polygonPoint?.let {
