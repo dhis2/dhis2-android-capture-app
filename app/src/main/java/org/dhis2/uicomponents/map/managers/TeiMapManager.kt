@@ -77,16 +77,6 @@ class TeiMapManager(
                     )
                 )
             }
-            mapStyle.stagesStyle.keys.forEach { key ->
-                addImage(
-                    "${MapLayerManager.STAGE_ICON_ID}_$key",
-                    TeiMarkers.getMarker(
-                        mapView.context,
-                        mapStyle.stagesStyle[key]!!.stageIcon,
-                        mapStyle.stagesStyle[key]!!.stageColor
-                    )
-                )
-            }
         }
         setSource()
         setLayer()
@@ -118,17 +108,17 @@ class TeiMapManager(
             .addLayer(LayerType.ENROLLMENT_LAYER, ENROLLMENT_SOURCE_ID)
             .addLayer(LayerType.HEATMAP_LAYER)
             .addLayer(LayerType.SATELLITE_LAYER)
-            .addLayers(
+            /*.addLayers(
                 LayerType.RELATIONSHIP_LAYER,
                 teiFeatureCollections.keys.filter {
                     it != TEIS_SOURCE_ID && it != ENROLLMENT_SOURCE_ID
                 },
                 false
-            )
-            .addLayers(
+            )*/
+            /*.addLayers(
                 LayerType.TEI_EVENT_LAYER,
                 eventsFeatureCollection.keys.toList(),
                 false
-            )
+            )*/
     }
 }

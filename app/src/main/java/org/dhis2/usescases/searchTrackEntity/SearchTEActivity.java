@@ -144,7 +144,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     private TeiMapManager teiMapManager;
     private boolean initSearchNeeded = true;
     private Snackbar downloadingSnackbar;
-    private MapLayerDialog mapLayerDialog;
+    private String currentStyle = Style.MAPBOX_STREETS;
     private ObjectAnimator animation = null;
     private Set<String> sources;
     private Set<String> eventSources;
@@ -217,9 +217,10 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             Timber.e(e);
         }
 
-        binding.mapLayerButton.setOnClickListener(view ->
-                mapLayerDialog.show(getSupportFragmentManager(), MapLayerDialog.class.getName())
-        );
+        binding.mapLayerButton.setOnClickListener(view -> {
+            new MapLayerDialog(teiMapManager.mapLayerManager)
+                    .show(getSupportFragmentManager(), MapLayerDialog.class.getName());
+        });
 
         binding.executePendingBindings();
         showHideFilter();
@@ -258,7 +259,6 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             teiMapManager.init(binding.mapView);
             teiMapManager.setOnMapClickListener(this);
         }
-        mapLayerDialog = new MapLayerDialog(teiMapManager.mapLayerManager);
     }
 
     @Override
@@ -880,7 +880,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                         .queryRenderedFeatures(rectF, lineLayerId, pointLayerId);
                 if (!features.isEmpty()) {
                     teiMapManager.mapLayerManager.selectFeature(null);
-                    teiMapManager.mapLayerManager.getLayer(sourceId,true).setSelectedItem(features.get(0));
+                    teiMapManager.mapLayerManager.getLayer(sourceId, true).setSelectedItem(features.get(0));
                     binding.mapCarousel.scrollToFeature(features.get(0));
                     return true;
                 } else {

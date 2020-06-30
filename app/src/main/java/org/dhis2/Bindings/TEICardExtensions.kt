@@ -172,8 +172,7 @@ fun SearchTeiModel.setTeiImage(
     ) {
         teiImageView.setImageDrawable(null)
         teiTextImageView.visibility = View.VISIBLE
-        val valueToShow =
-            ArrayList(attributeValues.values)[0].value()
+        val valueToShow = ArrayList(attributeValues.values)[0].value()
         teiTextImageView.text = valueToShow?.get(0)?.toString()
         teiTextImageView.setTextColor(
             ColorUtils.getContrastColor(

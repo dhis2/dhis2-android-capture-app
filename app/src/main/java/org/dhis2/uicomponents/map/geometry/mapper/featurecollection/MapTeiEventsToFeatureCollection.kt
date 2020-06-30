@@ -23,7 +23,7 @@ class MapTeiEventsToFeatureCollection(
         val eventsByProgramStage = events
             .groupBy { it.programStage?.displayName()!! }
             .mapValues { eventModel ->
-                eventModel.value.map {
+                eventModel.value.mapNotNull {
                     val feature = it.event.geometry()?.let { event ->
                         if (event.type() == FeatureType.POINT) {
                             mapPointToFeature.map(event)
