@@ -123,7 +123,6 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
                                                 filterManager.getCatOptComboFilters(),
                                                 filterManager.getEventStatusFilters(),
                                                 filterManager.getStateFilters(),
-                                                filterManager.getSortingItem(),
                                                 filterManager.getAssignedFilter()
                                         )))
                         .subscribeOn(schedulerProvider.io())

@@ -93,7 +93,6 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
             List<CategoryOptionCombo> catOptCombList,
             List<EventStatus> eventStatus,
             List<State> states,
-            SortingItem sortingItem,
             boolean assignedToUser
     ) {
         EventCollectionRepository eventRepo = d2.eventModule().events().byProgramUid().eq(programUid).byDeleted().isFalse();
@@ -109,8 +108,6 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
             eventRepo = eventRepo.byState().in(states);
         if (assignedToUser)
             eventRepo = eventRepo.byAssignedUser().eq(getCurrentUser());
-
-        eventRepo = eventRepoSorting(sortingItem, eventRepo);
 
         return eventRepo.byDeleted().isFalse().withTrackedEntityDataValues().get()
                 .map(listEvents-> mapEventToFeatureCollection.map(listEvents))

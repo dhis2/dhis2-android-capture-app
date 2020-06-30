@@ -42,7 +42,6 @@ public interface ProgramEventDetailRepository {
             List<CategoryOptionCombo> catOptionComboUid,
             List<EventStatus> eventStatus,
             List<State> states,
-            SortingItem sortingItem,
             boolean assignedToUser);
 
     @NonNull
