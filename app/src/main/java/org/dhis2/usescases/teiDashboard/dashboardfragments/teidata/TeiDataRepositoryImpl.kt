@@ -2,10 +2,12 @@ package org.dhis2.usescases.teiDashboard.dashboardfragments.teidata
 
 import io.reactivex.Single
 import org.dhis2.Bindings.applyFilters
-import org.dhis2.Bindings.primaryDate
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewModel
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewModelType
 import org.dhis2.utils.DateUtils
+import org.dhis2.utils.filters.Filters
+import org.dhis2.utils.filters.sorting.SortingItem
+import org.dhis2.utils.filters.sorting.SortingStatus
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
 import org.hisp.dhis.android.core.category.CategoryOptionCombo
@@ -35,7 +37,8 @@ class TeiDataRepositoryImpl(
         stateFilters: MutableList<State>,
         assignedToMe: Boolean,
         eventStatusFilters: MutableList<EventStatus>,
-        catOptComboFilters: MutableList<CategoryOptionCombo>
+        catOptComboFilters: MutableList<CategoryOptionCombo>,
+        sortingItem: SortingItem?
     ): Single<List<EventViewModel>> {
         var eventRepo = d2.eventModule().events().byEnrollmentUid().eq(enrollmentUid)
 
@@ -53,9 +56,9 @@ class TeiDataRepositoryImpl(
         )
 
         return if (groupedByStage) {
-            getGroupedEvents(eventRepo, selectedStage)
+            getGroupedEvents(eventRepo, selectedStage, sortingItem)
         } else {
-            getTimelineEvents(eventRepo)
+            getTimelineEvents(eventRepo, sortingItem)
         }
     }
 
@@ -86,9 +89,11 @@ class TeiDataRepositoryImpl(
 
     private fun getGroupedEvents(
         eventRepository: EventCollectionRepository,
-        selectedStage: String?
+        selectedStage: String?,
+        sortingItem: SortingItem?
     ): Single<List<EventViewModel>> {
         val eventViewModels = mutableListOf<EventViewModel>()
+        var eventRepo: EventCollectionRepository
 
         return d2.programModule().programStages()
             .byProgramUid().eq(programUid)
@@ -96,15 +101,11 @@ class TeiDataRepositoryImpl(
             .get()
             .map { programStages ->
                 programStages.forEach { programStage ->
-                    val eventList = eventRepository
-                        .byDeleted().isFalse
+                    eventRepo = eventRepository.byDeleted().isFalse
                         .byProgramStageUid().eq(programStage.uid())
-                        .blockingGet()
-                    eventList.sortWith(
-                        Comparator { event1, event2 ->
-                            event2.primaryDate().compareTo(event1.primaryDate())
-                        }
-                    )
+
+                    eventRepo = eventRepoSorting(sortingItem, eventRepo)
+                    val eventList = eventRepo.blockingGet()
 
                     eventViewModels.add(
                         EventViewModel(
@@ -138,18 +139,23 @@ class TeiDataRepositoryImpl(
     }
 
     private fun getTimelineEvents(
-        eventRepository: EventCollectionRepository
+        eventRepository: EventCollectionRepository,
+        sortingItem: SortingItem?
     ): Single<List<EventViewModel>> {
         val eventViewModels = mutableListOf<EventViewModel>()
-        return eventRepository
+        var eventRepo = eventRepository
+
+        eventRepo = eventRepoSorting(sortingItem, eventRepo)
+
+        return eventRepo
             .byDeleted().isFalse
             .get()
             .map { eventList ->
-                eventList.sortWith(
+                /*eventList.sortWith(
                     Comparator { event1, event2 ->
                         event2.primaryDate().compareTo(event1.primaryDate())
                     }
-                )
+                )*/
                 checkEventStatus(eventList).forEach { event ->
                     val stageUid = d2.programModule().programStages()
                         .uid(event.programStage())
@@ -168,6 +174,37 @@ class TeiDataRepositoryImpl(
                 }
                 eventViewModels
             }
+    }
+
+    private fun eventRepoSorting(
+        sortingItem: SortingItem?,
+        eventRepo: EventCollectionRepository
+    ): EventCollectionRepository {
+        return if (sortingItem != null) {
+            when (sortingItem.filterSelectedForSorting) {
+                Filters.ORG_UNIT ->
+                    // TODO: SDK must add method to order events by orgUnit Name
+                    eventRepo.orderByEventDate(RepositoryScope.OrderByDirection.DESC)
+                Filters.PERIOD -> {
+                    if (sortingItem.sortingStatus === SortingStatus.ASC) {
+                        eventRepo
+                            .orderByEventDate(RepositoryScope.OrderByDirection.ASC)
+                            .orderByDueDate(RepositoryScope.OrderByDirection.ASC)
+                    } else {
+                        eventRepo
+                            .orderByEventDate(RepositoryScope.OrderByDirection.DESC)
+                            .orderByDueDate(RepositoryScope.OrderByDirection.DESC)
+                    }
+                }
+                else -> {
+                    eventRepo
+                }
+            }
+        } else {
+            eventRepo
+                .orderByEventDate(RepositoryScope.OrderByDirection.DESC)
+                .orderByDueDate(RepositoryScope.OrderByDirection.DESC)
+        }
     }
 
     private fun checkEventStatus(events: List<Event>): List<Event> {
