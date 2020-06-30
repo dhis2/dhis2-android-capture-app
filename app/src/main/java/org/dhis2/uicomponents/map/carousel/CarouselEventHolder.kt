@@ -30,7 +30,11 @@ class CarouselEventHolder(
                 "${keys.first()}: ${(get(keys.first()) as TrackedEntityAttributeValue).value()}"
         }
         val eventInfo =
+            "${
             DateUtils.getInstance().formatDate(data.event.eventDate() ?: data.event.dueDate())
+            } at ${
+            data.orgUnitName
+            }"
 
         binding.apply {
             event = data.event

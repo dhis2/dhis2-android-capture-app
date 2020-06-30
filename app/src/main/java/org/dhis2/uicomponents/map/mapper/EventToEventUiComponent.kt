@@ -36,7 +36,8 @@ class EventToEventUiComponent {
             lastUpdated,
             tei.attributeValues,
             tei.profilePicturePath,
-            tei.defaultTypeIcon
+            tei.defaultTypeIcon,
+            eventViewModel.orgUnitName
         )
     }
 }

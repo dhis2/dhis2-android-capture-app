@@ -14,5 +14,6 @@ data class EventUiComponentModel(
     val lastUpdated: Date?,
     val teiAttribute: LinkedHashMap<String, TrackedEntityAttributeValue?>,
     val teiImage: String,
-    val teiDefaultIcon: String
+    val teiDefaultIcon: String,
+    val orgUnitName: String
 ) : CarouselItemModel

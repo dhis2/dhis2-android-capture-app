@@ -22,6 +22,7 @@
         android:layout_height="81dp"
         android:layout_marginStart="4.3dp"
         app:cardBackgroundColor="@color/white"
+        app:cardElevation="4dp"
         app:cardCornerRadius="6dp">
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -39,11 +40,22 @@
                 tools:src="@tools:sample/avatars" />
 
             <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:translationX="4dp"
+                android:translationY="4dp"
+                android:src="@drawable/ic_oval_shape_white"
+                app:layout_constraintBottom_toBottomOf="@id/programStageImage"
+                app:layout_constraintEnd_toEndOf="@id/programStageImage"
+                tools:src="@tools:sample/avatars" />
+
+            <ImageView
                 android:id="@+id/teiImage"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:translationX="4dp"
                 android:translationY="4dp"
+                android:padding="1dp"
                 app:layout_constraintBottom_toBottomOf="@id/programStageImage"
                 app:layout_constraintEnd_toEndOf="@id/programStageImage"
                 tools:src="@tools:sample/avatars" />

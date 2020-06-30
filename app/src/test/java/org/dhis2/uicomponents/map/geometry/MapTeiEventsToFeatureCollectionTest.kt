@@ -69,7 +69,8 @@ class MapTeiEventsToFeatureCollectionTest {
             Date(),
             linkedMapOf(),
             "image",
-            "default"
+            "default",
+            "orgUnit"
         )
         return listOf(event)
     }
