@@ -34,7 +34,7 @@ class CarouselEventHolder(
 
         binding.apply {
             event = data.event
-            program = program
+            program = this@CarouselEventHolder.program
             enrollment = data.enrollment
             programStage = data.programStage
             teiAttribute.text = attribute
