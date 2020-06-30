@@ -10,7 +10,10 @@ import org.dhis2.databinding.ItemCarouselTeiBinding
 import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapRelationshipsToFeatureCollection
 import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapTeiEventsToFeatureCollection
 import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapTeisToFeatureCollection
-import org.dhis2.uicomponents.map.mapper.MapRelationshipToRelationshipMapModel
+import org.dhis2.uicomponents.map.layer.MapLayer
+import org.dhis2.uicomponents.map.layer.types.RelationshipMapLayer
+import org.dhis2.uicomponents.map.layer.types.TeiEventMapLayer
+import org.dhis2.uicomponents.map.layer.types.TeiMapLayer
 import org.dhis2.uicomponents.map.model.CarouselItemModel
 import org.dhis2.uicomponents.map.model.EventUiComponentModel
 import org.dhis2.uicomponents.map.model.RelationshipUiComponentModel
@@ -25,10 +28,11 @@ class CarouselAdapter private constructor(
     private val onTeiClickListener: (String, String?, Boolean) -> Boolean,
     private val onRelationshipClickListener: (relationshipTeiUid: String) -> Boolean,
     private val onEventClickListener: (teiUid: String?, enrollmentUid: String?) -> Boolean,
-    val items: MutableList<CarouselItemModel>
+    private val allItems: MutableList<CarouselItemModel>
 ) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
+    val items: MutableList<CarouselItemModel> = arrayListOf()
     enum class CarouselItems {
         TEI, RELATIONSHIP, EVENT
     }
@@ -89,11 +93,42 @@ class CarouselAdapter private constructor(
         }
     }
 
+    fun update(sourceId: String, mapLayer: MapLayer?, visible: Boolean) {
+        when (mapLayer) {
+            is TeiMapLayer ->
+                updateItems(allItems.filterIsInstance<SearchTeiModel>(), visible)
+            is RelationshipMapLayer ->
+                updateItems(
+                    allItems.filterIsInstance<RelationshipUiComponentModel>()
+                        .filter { it.displayName == sourceId },
+                    visible
+                )
+            is TeiEventMapLayer ->
+                updateItems(
+                    allItems.filterIsInstance<EventUiComponentModel>()
+                        .filter { it.programStage?.displayName() == sourceId },
+                    visible
+                )
+            else -> Unit
+        }
+    }
+
+    private fun updateItems(data: List<CarouselItemModel>, visible: Boolean) {
+        when (visible) {
+            true ->
+                data.filter { !items.contains(it) }.takeIf { it.isNotEmpty() }
+                    ?.let { addItems(it) }
+            false -> removeItems(data)
+        }
+    }
+
     fun addItems(data: List<CarouselItemModel>) {
         items.addAll(data)
-        data.filterIsInstance<SearchTeiModel>().forEach {
-            items.addAll(MapRelationshipToRelationshipMapModel().mapList(it.relationships))
-        }
+        notifyDataSetChanged()
+    }
+
+    fun removeItems(data: List<CarouselItemModel>) {
+        items.removeAll(data)
         notifyDataSetChanged()
     }
 
@@ -126,6 +161,7 @@ class CarouselAdapter private constructor(
             when (it) {
                 is SearchTeiModel -> it.tei.uid()
                 is RelationshipUiComponentModel -> it.relationshipUid
+                is EventUiComponentModel -> it.eventUid
                 else -> ""
             }
         }

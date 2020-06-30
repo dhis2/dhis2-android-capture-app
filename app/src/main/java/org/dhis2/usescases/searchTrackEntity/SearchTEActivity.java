@@ -62,6 +62,8 @@ import org.dhis2.uicomponents.map.carousel.CarouselAdapter;
 import org.dhis2.uicomponents.map.geometry.mapper.EventsByProgramStage;
 import org.dhis2.uicomponents.map.layer.MapLayerDialog;
 import org.dhis2.uicomponents.map.managers.TeiMapManager;
+import org.dhis2.uicomponents.map.mapper.MapRelationshipToRelationshipMapModel;
+import org.dhis2.uicomponents.map.model.CarouselItemModel;
 import org.dhis2.uicomponents.map.model.EventUiComponentModel;
 import org.dhis2.uicomponents.map.model.MapStyle;
 import org.dhis2.usescases.coodinates.CoordinatesView;
@@ -90,6 +92,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
@@ -793,15 +796,14 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     public void setMap(List<SearchTeiModel> teis, HashMap<String, FeatureCollection> teiFeatureCollections, BoundingBox boundingBox, EventsByProgramStage events, List<EventUiComponentModel> eventUiComponentModels) {
         binding.progressLayout.setVisibility(View.GONE);
 
-        teiMapManager.update(
-                teiFeatureCollections,
-                events,
-                boundingBox,
-                featureType
-        );
-
         sources = teiFeatureCollections.keySet();
         eventSources = events.component2().keySet();
+        List<CarouselItemModel> allItems = new ArrayList<>();
+        allItems.addAll(teis);
+        allItems.addAll(eventUiComponentModels);
+        for (SearchTeiModel searchTeiModel : teis) {
+            allItems.addAll(new MapRelationshipToRelationshipMapModel().mapList(searchTeiModel.getRelationships()));
+        }
         CarouselAdapter carouselAdapter = new CarouselAdapter.Builder()
                 .addOnTeiClickListener(
                         (teiUid, enrollmentUid, isDeleted) -> {
@@ -826,7 +828,17 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                     return true;
                 })
                 .addProgram(presenter.getProgram())
+                .addItems(allItems)
                 .build();
+
+
+        teiMapManager.update(
+                teiFeatureCollections,
+                events,
+                boundingBox,
+                featureType,
+                carouselAdapter
+        );
 
         binding.mapCarousel.setAdapter(carouselAdapter);
         binding.mapCarousel.attachToMapManager(teiMapManager, () ->
@@ -835,8 +847,6 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                     return true;
                 }
         );
-        carouselAdapter.addItems(teis);
-        carouselAdapter.addItems(eventUiComponentModels);
     }
 
 
