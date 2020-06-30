@@ -88,7 +88,6 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
     private EventMapManager eventMapManager;
 
     public static final String EXTRA_PROGRAM_UID = "PROGRAM_UID";
-    private MapLayerDialog layerDialog;
 
     public static Bundle getBundle(String programUid) {
         Bundle bundle = new Bundle();
@@ -129,10 +128,10 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
             Timber.e(e);
         }
 
-        binding.mapLayerButton.setOnClickListener(view -> {
-            layerDialog = new MapLayerDialog(eventMapManager.mapLayerManager);
-            layerDialog.show(getSupportFragmentManager(), MapLayerDialog.class.getName());
-        });
+        binding.mapLayerButton.setOnClickListener(view ->
+                new MapLayerDialog(eventMapManager.mapLayerManager)
+                        .show(getSupportFragmentManager(), MapLayerDialog.class.getName())
+        );
 
         eventMapManager = new EventMapManager();
         eventMapManager.setOnMapClickListener(this);
