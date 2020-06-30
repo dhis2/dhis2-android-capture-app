@@ -72,25 +72,8 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
             eventRepo = eventRepo.byState().in(states);
         if (assignedToUser)
             eventRepo = eventRepo.byAssignedUser().eq(getCurrentUser());
-        if(sortingItem != null) {
-            switch (sortingItem.getFilterSelectedForSorting()) {
-                case ORG_UNIT:
-                    // TODO: SDK must add method to order events by orgUnit Name
-                    eventRepo = eventRepo.orderByEventDate(RepositoryScope.OrderByDirection.DESC);
-                    break;
-                case PERIOD:
-                    if (sortingItem.getSortingStatus() == SortingStatus.ASC) {
-                        eventRepo = eventRepo.orderByEventDate(RepositoryScope.OrderByDirection.ASC);
-                    } else {
-                        eventRepo = eventRepo.orderByEventDate(RepositoryScope.OrderByDirection.DESC);
-                    }
-                    break;
-                default:
-                    break;
-            }
-        } else {
-            eventRepo = eventRepo.orderByEventDate(RepositoryScope.OrderByDirection.DESC);
-        }
+
+        eventRepo = eventRepoSorting(sortingItem, eventRepo);
 
         DataSource dataSource = eventRepo.withTrackedEntityDataValues().getDataSource().map(event -> mapper.eventToProgramEvent(event));
 
@@ -126,7 +109,16 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
             eventRepo = eventRepo.byState().in(states);
         if (assignedToUser)
             eventRepo = eventRepo.byAssignedUser().eq(getCurrentUser());
-        if(sortingItem != null) {
+
+        eventRepo = eventRepoSorting(sortingItem, eventRepo);
+
+        return eventRepo.byDeleted().isFalse().withTrackedEntityDataValues().get()
+                .map(listEvents-> mapEventToFeatureCollection.map(listEvents))
+                .toFlowable();
+    }
+
+    private EventCollectionRepository eventRepoSorting(SortingItem sortingItem, EventCollectionRepository eventRepo) {
+        if (sortingItem != null) {
             switch (sortingItem.getFilterSelectedForSorting()) {
                 case ORG_UNIT:
                     // TODO: SDK must add method to order events by orgUnit Name
@@ -145,10 +137,7 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
         } else {
             eventRepo = eventRepo.orderByEventDate(RepositoryScope.OrderByDirection.DESC);
         }
-
-        return eventRepo.byDeleted().isFalse().withTrackedEntityDataValues().get()
-                .map(listEvents-> mapEventToFeatureCollection.map(listEvents))
-                .toFlowable();
+        return eventRepo;
     }
 
     @Override
