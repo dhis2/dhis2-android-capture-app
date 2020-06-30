@@ -121,11 +121,8 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
 
         LinearLayoutManager myLayoutManager = (LinearLayoutManager) binding.formRecycler.getLayoutManager();
         dataEntryAdapter.swap(updates, () -> {
-            if (myLayoutManager != null) {
-                if(!dataEntryAdapter.isSectionAlreadyOpen()) {
-                    myLayoutManager.scrollToPositionWithOffset(dataEntryAdapter.getOpenSectionPos(), 0);
-                }
-            }
+            if (myLayoutManager != null)
+                myLayoutManager.scrollToPositionWithOffset(dataEntryAdapter.getOpenSectionPos(), 0);
         });
     }
 
