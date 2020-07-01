@@ -108,17 +108,17 @@ class TeiMapManager(
             .addLayer(LayerType.ENROLLMENT_LAYER, ENROLLMENT_SOURCE_ID)
             .addLayer(LayerType.HEATMAP_LAYER)
             .addLayer(LayerType.SATELLITE_LAYER)
-            /*.addLayers(
+            .addLayers(
                 LayerType.RELATIONSHIP_LAYER,
                 teiFeatureCollections.keys.filter {
                     it != TEIS_SOURCE_ID && it != ENROLLMENT_SOURCE_ID
                 },
                 false
-            )*/
-            /*.addLayers(
+            )
+            .addLayers(
                 LayerType.TEI_EVENT_LAYER,
                 eventsFeatureCollection.keys.toList(),
                 false
-            )*/
+            )
     }
 }
