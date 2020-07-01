@@ -77,6 +77,16 @@ class TeiMapManager(
                     )
                 )
             }
+            mapStyle.stagesStyle.keys.forEach { key ->
+                addImage(
+                    "${MapLayerManager.STAGE_ICON_ID}_$key",
+                    TeiMarkers.getMarker(
+                        mapView.context,
+                        mapStyle.stagesStyle[key]!!.stageIcon,
+                        mapStyle.stagesStyle[key]!!.stageColor
+                    )
+                )
+            }
         }
         setSource()
         setLayer()
