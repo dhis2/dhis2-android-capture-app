@@ -68,8 +68,6 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.processors.FlowableProcessor;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.subjects.BehaviorSubject;
-import kotlin.Triple;
-import kotlin.jvm.functions.Function4;
 import timber.log.Timber;
 
 import static android.app.Activity.RESULT_OK;
