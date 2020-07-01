@@ -34,8 +34,6 @@ class SyncFlowTest : BaseTest() {
         val teiLastName =  "Kelley"//"Dunn"
         val tbVisit = 0
 
-        //instead of creating a new event just edit (skip) one
-
         mockWebServerRobot.addResponse(GET, API_SYSTEM_INFO_PATH, LoginTest.API_SYSTEM_INFO_RESPONSE_OK)
         mockWebServerRobot.addResponse(POST, SYNC_TEI_PATH, API_SYNC_TEI_OK)
 
@@ -49,12 +47,6 @@ class SyncFlowTest : BaseTest() {
         }
 
         teiDashboardRobot {
-            /*clickOnFab()
-            clickOnScheduleNew()
-            clickOnFirstReferralEvent()
-            clickOnReferralNextButton()
-            checkEventCreatedToastIsShown()
-            checkEventWasCreated(TeiDashboardTest.LAB_MONITORING)*/
             clickOnEventWithPosition(tbVisit)
         }
 
@@ -81,7 +73,6 @@ class SyncFlowTest : BaseTest() {
         val teiName = "Lars"
         val teiLastName = "Overland"
         val labMonitoring = 1
-        //instead of creating a new event I will just edit one
 
         mockWebServerRobot.addResponse(POST, SYNC_TEI_PATH, API_SYNC_TEI_ERROR)
 
@@ -125,7 +116,7 @@ class SyncFlowTest : BaseTest() {
 
 
     companion object {
-        const val SYNC_TEI_PATH = "/api/trackedEntityInstances?strategy=SYNC"
+        const val SYNC_TEI_PATH = "/api/trackedEntityInstances?*"
         const val API_SYNC_TEI_OK = "mocks/syncFlow/teiSync.json"
         const val API_SYNC_TEI_ERROR = "mocks/syncFlow/teiSyncError.json"
     }
