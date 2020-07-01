@@ -687,7 +687,12 @@ public class SearchRepositoryImpl implements SearchRepository {
                     .uid(event.programStage())
                     .blockingGet();
 
-            eventViewModels.add(new EventViewModel(EventViewModelType.EVENT, stage, event, 0, null, true, true));
+            OrganisationUnit organisationUnit = d2.organisationUnitModule()
+                    .organisationUnits()
+                    .uid(event.organisationUnit())
+                    .blockingGet();
+
+            eventViewModels.add(new EventViewModel(EventViewModelType.EVENT, stage, event, 0, null, true, true, organisationUnit.displayName()));
         }
 
         return eventViewModels;

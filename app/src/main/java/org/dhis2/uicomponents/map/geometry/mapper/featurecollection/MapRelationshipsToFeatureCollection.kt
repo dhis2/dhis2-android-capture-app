@@ -26,11 +26,11 @@ class MapRelationshipsToFeatureCollection(
         val relationshipByName = relationships
             .groupBy { it.displayName }
             .mapValues { relationModels ->
-                val lineFeatures = relationModels.value.map {
+                val lineFeatures = relationModels.value.mapNotNull {
                     val feature = mapLineToFeature.map(it)
                     feature?.addRelationshipInfo(it)
                 }
-                val pointFromFeatures = relationModels.value.map { relationModel ->
+                val pointFromFeatures = relationModels.value.mapNotNull { relationModel ->
                     relationModel.from.geometry?.let {
                         val feature = if (it.type() == FeatureType.POINT) {
                             mapPointToFeature.map(it)
@@ -40,7 +40,7 @@ class MapRelationshipsToFeatureCollection(
                         feature?.addRelationFromInfo(relationModel)
                     }
                 }
-                val pointToFeatures = relationModels.value.map { relationModel ->
+                val pointToFeatures = relationModels.value.mapNotNull { relationModel ->
                     relationModel.to.geometry?.let {
                         val feature = if (it.type() == FeatureType.POINT) {
                             mapPointToFeature.map(it)

@@ -31,6 +31,7 @@ import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.databinding.FragmentRelationshipsBinding;
 import org.dhis2.uicomponents.map.carousel.CarouselAdapter;
+import org.dhis2.uicomponents.map.layer.MapLayerDialog;
 import org.dhis2.uicomponents.map.managers.RelationshipMapManager;
 import org.dhis2.uicomponents.map.model.RelationshipUiComponentModel;
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
@@ -98,8 +99,14 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
         activity.relationshipMap().observe(this, showMap -> {
             binding.relationshipRecycler.setVisibility(showMap ? View.GONE : View.VISIBLE);
             binding.mapView.setVisibility(showMap ? View.VISIBLE : View.GONE);
+            binding.mapLayerButton.setVisibility(showMap ? View.VISIBLE : View.GONE);
             binding.mapCarousel.setVisibility(showMap ? View.VISIBLE : View.GONE);
             binding.rfabLayout.setVisibility(showMap ? View.GONE : View.VISIBLE);
+        });
+
+        binding.mapLayerButton.setOnClickListener(view -> {
+            MapLayerDialog layerDialog = new MapLayerDialog(relationshipMapManager.mapLayerManager);
+            layerDialog.show(getChildFragmentManager(), MapLayerDialog.class.getName());
         });
 
         return binding.getRoot();

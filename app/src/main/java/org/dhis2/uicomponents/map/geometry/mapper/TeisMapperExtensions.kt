@@ -103,7 +103,7 @@ fun Feature?.addTeiEventInfo(
         )
         addStringProperty(
             MapTeiEventsToFeatureCollection.STAGE_UID,
-            eventUiComponentModel.stageUid
+            eventUiComponentModel.programStage?.uid()
         )
     }
     return this
