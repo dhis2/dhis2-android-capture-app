@@ -5,10 +5,12 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.graphics.Color;
+import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.lifecycle.MutableLiveData;
 
 import com.google.gson.Gson;
@@ -102,8 +104,8 @@ public class EditTextCustomHolder extends FormViewHolder {
         this.editTextModel = (EditTextViewModel) model;
         fieldUid = model.uid();
 
-        if (editTextModel.colorByLegend() != null && editTextModel.colorByLegend() != ""){
-            binding.customEdittext.setBackgroundColor(Color.parseColor(editTextModel.colorByLegend()));
+        if (!isSearchMode) {
+            assignBackgroundColorByLegend();
         }
 
         binding.customEdittext.setValueType(editTextModel.valueType());
@@ -133,6 +135,15 @@ public class EditTextCustomHolder extends FormViewHolder {
         initFieldFocus();
 
         setLongClick();
+    }
+
+    private void assignBackgroundColorByLegend() {
+        if (editTextModel.colorByLegend() != null && editTextModel.colorByLegend() != ""){
+            binding.customEdittext.setBackgroundColor(Color.parseColor(editTextModel.colorByLegend()));
+        } else {
+            int color = ContextCompat.getColor(binding.customEdittext.getContext(), R.color.form_field_background);
+            binding.customEdittext.setBackgroundColor(color);
+        }
     }
 
     private void checkAutocompleteRendering() {

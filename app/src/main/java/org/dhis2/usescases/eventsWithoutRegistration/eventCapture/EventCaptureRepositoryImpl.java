@@ -341,9 +341,11 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                                 .withValue(value)
                                 .withEditMode(editable || isEventEditable);
 
-                        String colorByLegend = getColorByLegend(value, uid);
-                        fieldViewModel = ((EditTextViewModel)fieldViewModel)
-                                .withColorByLegend(colorByLegend);
+                        if (fieldViewModel instanceof EditTextViewModel) {
+                            String colorByLegend = getColorByLegend(value, uid);
+                            fieldViewModel = ((EditTextViewModel)fieldViewModel)
+                                    .withColorByLegend(colorByLegend);
+                        }
 
                         return fieldViewModel;
                     }).toList().toFlowable()
@@ -437,21 +439,29 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
 
     private String getColorByLegend(String value, String dataElementUid) {
         String color = "";
-        final DataElement dataElement = d2.dataElementModule().dataElements()
-                .byUid().eq(dataElementUid)
-                .withLegendSets()
-                .one().blockingGet();
+        try{
 
-        if (dataElement != null && dataElement.valueType().isNumeric() &&
-                dataElement.legendSets() != null && !dataElement.legendSets().isEmpty()){
+            final DataElement dataElement = d2.dataElementModule().dataElements()
+                    .byUid().eq(dataElementUid)
+                    .withLegendSets()
+                    .one().blockingGet();
+
+            if (dataElement != null && dataElement.valueType().isNumeric() &&
+                    dataElement.legendSets() != null && !dataElement.legendSets().isEmpty()){
                 LegendSet legendSet = dataElement.legendSets().get(0);
                 List<Legend> legends = d2.legendSetModule().legends().byStartValue().smallerThan(
                         Double.valueOf(value)).byEndValue().biggerThan(Double.valueOf(value))
                         .byLegendSet().eq(legendSet.uid()).blockingGet();
-                color = legends.get(0).color();
-        }
 
-        return color;
+                if (legends.size() > 0) {
+                    color = legends.get(0).color();
+                }
+            }
+
+            return color;
+        } catch (Exception e){
+            return color;
+        }
     }
 
     @NonNull
