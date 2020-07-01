@@ -35,6 +35,8 @@ import java.util.Locale;
 
 import javax.inject.Inject;
 
+import kotlin.Unit;
+
 public class DataSetInitialActivity extends ActivityGlobalAbstract implements DataSetInitialContract.View {
 
     private ActivityDatasetInitialBinding binding;
@@ -46,6 +48,7 @@ public class DataSetInitialActivity extends ActivityGlobalAbstract implements Da
     private OrganisationUnit selectedOrgUnit;
     private Date selectedPeriod;
     private String dataSetUid;
+    private final int DEFAULT_COUNT_LIMIT = 15;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -166,7 +169,7 @@ public class DataSetInitialActivity extends ActivityGlobalAbstract implements Da
             if (selectedCatOptions == null)
                 selectedCatOptions = new HashMap<>();
             selectedCatOptions.put(catOptionUid, data.get(0));
-        } else if (data.size() <= 15) {
+        } else if (data.size() <= DEFAULT_COUNT_LIMIT) {
 
             CategoryOptionPopUp.getInstance()
                     .setCategoryName(((TextInputEditText) selectedView).getHint().toString())
@@ -192,7 +195,7 @@ public class DataSetInitialActivity extends ActivityGlobalAbstract implements Da
                         selectedCatOptions.put(catOptionUid, categoryOption);
                         ((TextInputEditText) selectedView).setText(categoryOption != null ? categoryOption.displayName() : null);
                         checkActionVisivbility();
-                        return null;
+                        return Unit.INSTANCE;
                     }
             ).show(getSupportFragmentManager(),
                     CategoryDialog.Companion.getTAG());
