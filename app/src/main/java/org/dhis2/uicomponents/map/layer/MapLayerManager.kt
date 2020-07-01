@@ -23,6 +23,8 @@ class MapLayerManager {
     var styleChangeCallback: (() -> Unit)? = null
     private val relationShipColors =
         mutableListOf(Color.CYAN, Color.GREEN, Color.MAGENTA, Color.YELLOW, Color.BLUE, Color.RED)
+    private val relationshipUsedColors =
+        mutableMapOf<String, Int>()
 
     companion object {
         const val TEI_ICON_ID = "TEI_ICON_ID"
@@ -63,13 +65,21 @@ class MapLayerManager {
             )
             LayerType.SATELLITE_LAYER -> SatelliteMapLayer(
                 mapboxMap,
-                styleChangeCallback
+                styleChangeCallback,
+                style.uri.contains("satellite")
             )
             LayerType.RELATIONSHIP_LAYER -> RelationshipMapLayer(
                 style,
                 featureType,
                 sourceId!!,
-                relationShipColors.firstOrNull()?.also { relationShipColors.removeAt(0) }
+                if (relationshipUsedColors.containsKey(sourceId)) {
+                    relationshipUsedColors[sourceId]
+                } else {
+                    relationShipColors.firstOrNull()?.also {
+                        relationshipUsedColors[sourceId] = relationShipColors[0]
+                        relationShipColors.removeAt(0)
+                    }
+                }
             )
             LayerType.EVENT_LAYER -> EventMapLayer(
                 style,

@@ -425,6 +425,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements TEIDataCo
 
     @Override
     public void showCatComboDialog(String eventId, CategoryCombo categoryCombo, List<CategoryOptionCombo> categoryOptionCombos) {
+        if (categoryCombo.code().equals("default")) return;
         CategoryComboDialog dialog = new CategoryComboDialog(
                 getAbstracContext(),
                 categoryCombo,

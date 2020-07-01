@@ -4,7 +4,6 @@ import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition
-import androidx.test.espresso.contrib.RecyclerViewActions.scrollTo
 import androidx.test.espresso.matcher.ViewMatchers.hasDescendant
 import androidx.test.espresso.matcher.ViewMatchers.hasSibling
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
@@ -17,11 +16,7 @@ import org.dhis2.common.matchers.RecyclerviewMatchers.Companion.atPosition
 import org.dhis2.common.matchers.RecyclerviewMatchers.Companion.isNotEmpty
 import org.dhis2.common.matchers.clickOnTab
 import org.dhis2.common.matchers.isToast
-import org.dhis2.common.viewactions.clickChildViewWithId
-import org.dhis2.common.viewactions.scrollToBottomRecyclerView
-import org.dhis2.common.viewactions.typeChildViewWithId
 import org.dhis2.usescases.programStageSelection.ProgramStageSelectionViewHolder
-import org.dhis2.usescases.searchTrackEntity.adapters.SearchTEViewHolder
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.DashboardProgramViewHolder
 import org.dhis2.usescases.teidashboard.entity.EnrollmentUIModel
 import org.dhis2.usescases.teidashboard.entity.UpperEnrollmentUIModel
@@ -233,6 +228,14 @@ class TeiDashboardRobot : BaseRobot() {
 
     fun clickOnMenuDeleteEnrollment() {
         onView(withText(R.string.dashboard_menu_delete_enrollment)).perform(click())
+    }
+
+    fun checkEventWasScheduled(eventName: String, position: Int) {
+        onView(withId(R.id.tei_recycler))
+            .check(matches(allOf(isDisplayed(), isNotEmpty(),
+                atPosition(position, allOf(
+                    hasDescendant(withText(eventName)),
+                    hasDescendant(withText(R.string.event_schedule)))))))
     }
 
 }
