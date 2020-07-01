@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <data>
+        <variable
+            name="event"
+            type="org.hisp.dhis.android.core.event.Event" />
+        <variable
+            name="program"
+            type="org.hisp.dhis.android.core.program.Program" />
+        <variable
+            name="enrollment"
+            type="org.hisp.dhis.android.core.enrollment.Enrollment" />
+        <variable
+            name="programStage"
+            type="org.hisp.dhis.android.core.program.ProgramStage" />
+    </data>
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="81dp"
+        android:layout_marginStart="4.3dp"
+        app:cardBackgroundColor="@color/white"
+        app:cardElevation="4dp"
+        app:cardCornerRadius="6dp">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="16dp">
+
+            <ImageView
+                android:id="@+id/programStageImage"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/square_rounded_corners_2"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:src="@tools:sample/avatars" />
+
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:translationX="4dp"
+                android:translationY="4dp"
+                android:src="@drawable/ic_oval_shape_white"
+                app:layout_constraintBottom_toBottomOf="@id/programStageImage"
+                app:layout_constraintEnd_toEndOf="@id/programStageImage"
+                tools:src="@tools:sample/avatars" />
+
+            <ImageView
+                android:id="@+id/teiImage"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:translationX="4dp"
+                android:translationY="4dp"
+                android:padding="1dp"
+                app:layout_constraintBottom_toBottomOf="@id/programStageImage"
+                app:layout_constraintEnd_toEndOf="@id/programStageImage"
+                tools:src="@tools:sample/avatars" />
+
+            <TextView
+                android:id="@+id/teiAttribute"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:textColor="@color/text_black_DE3"
+                android:textSize="14sp"
+                app:layout_constraintEnd_toStartOf="@id/status_icon"
+                app:layout_constraintStart_toEndOf="@id/programStageImage"
+                app:layout_constraintTop_toTopOf="@id/programStageImage"
+                tools:text="@tools:sample/full_names" />
+
+            <TextView
+                android:id="@+id/programStageName"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="4dp"
+                android:layout_marginEnd="16dp"
+                android:textColor="@color/text_black_8A3"
+                android:textSize="12sp"
+                android:text="@{programStage.displayName()}"
+                app:layout_constraintEnd_toStartOf="@id/status_icon"
+                app:layout_constraintStart_toEndOf="@id/programStageImage"
+                app:layout_constraintTop_toBottomOf="@id/teiAttribute"
+                tools:text="@tools:sample/full_names" />
+
+            <TextView
+                android:id="@+id/eventInfo"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="4dp"
+                android:textColor="@color/text_black_8A3"
+                android:textSize="12sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/programStageImage"
+                app:layout_constraintTop_toBottomOf="@id/programStageName"
+                tools:text="03/01/2019 at Ngelehun CHC" />
+
+            <ImageView
+                android:id="@+id/status_icon"
+                style="@style/ActionIconNoPadding"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                app:eventProgram="@{program}"
+                app:eventProgramStage="@{programStage}"
+                app:enrollmentStatusIcon="@{enrollment}"
+                app:eventStatusIcon="@{event}"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:src="@drawable/ic_edit" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </com.google.android.material.card.MaterialCardView>
+</layout>

@@ -3,6 +3,7 @@ package org.dhis2.uicomponents.map.layer
 import android.graphics.Color
 import com.mapbox.geojson.Feature
 import com.mapbox.mapboxsdk.maps.MapboxMap
+import org.dhis2.uicomponents.map.carousel.CarouselAdapter
 import org.dhis2.uicomponents.map.layer.types.EnrollmentMapLayer
 import org.dhis2.uicomponents.map.layer.types.EventMapLayer
 import org.dhis2.uicomponents.map.layer.types.HeatmapMapLayer
@@ -23,6 +24,9 @@ class MapLayerManager {
     var styleChangeCallback: (() -> Unit)? = null
     private val relationShipColors =
         mutableListOf(Color.CYAN, Color.GREEN, Color.MAGENTA, Color.YELLOW, Color.BLUE, Color.RED)
+    private var carouselAdapter: CarouselAdapter? = null
+    private val relationshipUsedColors =
+        mutableMapOf<String, Int>()
 
     companion object {
         const val TEI_ICON_ID = "TEI_ICON_ID"
@@ -40,6 +44,10 @@ class MapLayerManager {
 
     fun withMapStyle(mapStyle: MapStyle) = apply {
         this.mapStyle = mapStyle
+    }
+
+    fun withCarousel(carouselAdapter: CarouselAdapter) = apply {
+        this.carouselAdapter = carouselAdapter
     }
 
     fun addLayer(layerType: LayerType, sourceId: String? = null) = apply {
@@ -63,13 +71,21 @@ class MapLayerManager {
             )
             LayerType.SATELLITE_LAYER -> SatelliteMapLayer(
                 mapboxMap,
-                styleChangeCallback
+                styleChangeCallback,
+                style.uri.contains("satellite")
             )
             LayerType.RELATIONSHIP_LAYER -> RelationshipMapLayer(
                 style,
                 featureType,
                 sourceId!!,
-                relationShipColors.firstOrNull()?.also { relationShipColors.removeAt(0) }
+                if (relationshipUsedColors.containsKey(sourceId)) {
+                    relationshipUsedColors[sourceId]
+                } else {
+                    relationShipColors.firstOrNull()?.also {
+                        relationshipUsedColors[sourceId] = relationShipColors[0]
+                        relationShipColors.removeAt(0)
+                    }
+                }
             )
             LayerType.EVENT_LAYER -> EventMapLayer(
                 style,
@@ -105,6 +121,7 @@ class MapLayerManager {
             check -> mapLayers[sourceId]?.showLayer()
             else -> mapLayers[sourceId]?.hideLayer()
         }
+        carouselAdapter?.update(sourceId, mapLayers[sourceId], check)
     }
 
     fun getLayer(sourceId: String, shouldSaveLayer: Boolean? = false): MapLayer? {
