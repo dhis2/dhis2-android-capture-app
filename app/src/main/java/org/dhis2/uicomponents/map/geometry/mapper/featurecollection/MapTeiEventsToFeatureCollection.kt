@@ -21,7 +21,7 @@ class MapTeiEventsToFeatureCollection(
         events: List<EventUiComponentModel>
     ): Pair<EventsByProgramStage, BoundingBox> {
         val eventsByProgramStage = events
-            .groupBy { it.stageDisplayName }
+            .groupBy { it.programStage?.displayName()!! }
             .mapValues { eventModel ->
                 eventModel.value.mapNotNull {
                     val feature = it.event.geometry()?.let { event ->

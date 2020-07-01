@@ -15,7 +15,9 @@ import org.dhis2.uicomponents.map.mocks.GeometryDummy.getGeometryAsPoint
 import org.dhis2.uicomponents.map.model.EventUiComponentModel
 import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.MatcherAssert.assertThat
+import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.event.Event
+import org.hisp.dhis.android.core.program.ProgramStage
 import org.junit.Before
 import org.junit.Test
 
@@ -58,13 +60,17 @@ class MapTeiEventsToFeatureCollectionTest {
 
     private fun createEventsList(): List<EventUiComponentModel> {
         val event = EventUiComponentModel(
-            "stageUid",
-            "stageDisplayName",
             "eventUid",
             Event.builder().uid(EVENTUID).geometry(
                 getGeometryAsPoint("[$POINT_LONGITUDE, $POINT_LATITUDE]")
             ).build(),
-            Date()
+            Enrollment.builder().uid("enrollmentUid").build(),
+            ProgramStage.builder().uid("stageUid").displayName("stage").build(),
+            Date(),
+            linkedMapOf(),
+            "image",
+            "default",
+            "orgUnit"
         )
         return listOf(event)
     }
