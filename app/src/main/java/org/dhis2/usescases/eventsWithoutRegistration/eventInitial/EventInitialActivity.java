@@ -543,7 +543,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                     catSelectorBinding.catCombLayout.setHint(category.displayName());
                     catSelectorBinding.catCombo.setOnClickListener(
                             view -> {
-                                if (presenter.catOptionSize(category.uid()) > 0) {
+                                if (presenter.catOptionSize(category.uid()) > CategoryDialog.DEFAULT_COUNT_LIMIT) {
                                     new CategoryDialog(
                                             CategoryDialog.Type.CATEGORY_OPTIONS,
                                             category.uid(),
