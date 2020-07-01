@@ -4,6 +4,7 @@ package org.dhis2.data.forms.dataentry.fields.edittext;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.graphics.Color;
 import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
@@ -100,6 +101,10 @@ public class EditTextCustomHolder extends FormViewHolder {
     public void update(@NonNull FieldViewModel model) {
         this.editTextModel = (EditTextViewModel) model;
         fieldUid = model.uid();
+
+        if (editTextModel.colorByLegend() != null && editTextModel.colorByLegend() != ""){
+            binding.customEdittext.setBackgroundColor(Color.parseColor(editTextModel.colorByLegend()));
+        }
 
         binding.customEdittext.setValueType(editTextModel.valueType());
 

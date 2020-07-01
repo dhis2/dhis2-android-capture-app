@@ -128,7 +128,7 @@ public class FormAdapter extends RecyclerView.Adapter {
             case EDITTEXT:
                 viewModel = EditTextViewModel.create(attr.uid(), label, false,
                         queryData.get(attr.uid()), label, 1, attr.valueType(), null, true,
-                        attr.displayDescription(), null, ObjectStyle.builder().build(), attr.fieldMask());
+                        attr.displayDescription(), null, ObjectStyle.builder().build(), attr.fieldMask(), null);
                 break;
             case BUTTON:
                 viewModel = FileViewModel.create(attr.uid(), label, false, queryData.get(attr.uid()), null, attr.displayDescription(), ObjectStyle.builder().build());
@@ -166,7 +166,7 @@ public class FormAdapter extends RecyclerView.Adapter {
             default:
                 Crashlytics.log("Unsupported viewType " +
                         "source type: " + holder.getItemViewType());
-                viewModel = EditTextViewModel.create(attr.uid(), "UNSUPORTED", false, null, "UNSUPPORTED", 1, attr.valueType(), null, false, attr.displayDescription(), null, ObjectStyle.builder().build(), attr.fieldMask());
+                viewModel = EditTextViewModel.create(attr.uid(), "UNSUPORTED", false, null, "UNSUPPORTED", 1, attr.valueType(), null, false, attr.displayDescription(), null, ObjectStyle.builder().build(), attr.fieldMask(), null);
                 break;
         }
         rows.get(holder.getItemViewType()).onBind(holder, viewModel);

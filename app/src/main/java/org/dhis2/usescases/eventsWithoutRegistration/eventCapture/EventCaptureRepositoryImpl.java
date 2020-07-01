@@ -12,6 +12,7 @@ import org.dhis2.data.forms.FormSectionViewModel;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactoryImpl;
+import org.dhis2.data.forms.dataentry.fields.edittext.EditTextViewModel;
 import org.dhis2.data.forms.dataentry.fields.image.ImageHolder;
 import org.dhis2.data.forms.dataentry.fields.image.ImageViewModel;
 import org.dhis2.data.forms.dataentry.fields.option_set.OptionSetViewModel;
@@ -33,6 +34,8 @@ import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.event.EventStatus;
+import org.hisp.dhis.android.core.legendset.Legend;
+import org.hisp.dhis.android.core.legendset.LegendSet;
 import org.hisp.dhis.android.core.maintenance.D2Error;
 import org.hisp.dhis.android.core.option.Option;
 import org.hisp.dhis.android.core.option.OptionGroup;
@@ -297,7 +300,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                             fieldViewModel.uid() + "." + option.uid(),
                             option.displayName() + ImageViewModel.NAME_CODE_DELIMITATOR + option.code(), ValueType.TEXT, false,
                             fieldViewModel.optionSet(), fieldViewModel.value(), fieldViewModel.programStageSection(),
-                            fieldViewModel.allowFutureDate(), fieldViewModel.editable() == null ? false : fieldViewModel.editable(), renderingType, fieldViewModel.description(), fieldRendering, options.size(), objectStyle, fieldViewModel.fieldMask()));
+                            fieldViewModel.allowFutureDate(), fieldViewModel.editable() == null ? false : fieldViewModel.editable(), renderingType, fieldViewModel.description(), fieldRendering, options.size(), objectStyle, fieldViewModel.fieldMask() ,null));
 
                 }
             } else if (fieldViewModel instanceof OptionSetViewModel) {
@@ -332,8 +335,15 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                                 value = friendlyValue;
                             }
                         }
+
                         boolean editable = fieldViewModel.editable() != null ? fieldViewModel.editable() : true;
-                        fieldViewModel = fieldViewModel.withValue(value).withEditMode(editable || isEventEditable);
+                        fieldViewModel = fieldViewModel
+                                .withValue(value)
+                                .withEditMode(editable || isEventEditable);
+
+                        String colorByLegend = getColorByLegend(value, uid);
+                        fieldViewModel = ((EditTextViewModel)fieldViewModel)
+                                .withColorByLegend(colorByLegend);
 
                         return fieldViewModel;
                     }).toList().toFlowable()
@@ -408,6 +418,8 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                             dataValue = friendlyValue;
                         }
 
+                        String colorByLegend = getColorByLegend(dataValue, uid);
+
                         ProgramStageSectionRenderingType renderingType = programStageSection != null && programStageSection.renderType() != null &&
                                 programStageSection.renderType().mobile() != null ?
                                 programStageSection.renderType().mobile().type() : null;
@@ -415,12 +427,31 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                                 valueType, mandatory, optionSet, dataValue,
                                 programStageSection != null ? programStageSection.uid() : null, allowFurureDates,
                                 isEventEditable,
-                                renderingType, description, fieldRendering, optionCount, objectStyle, de.fieldMask());
+                                renderingType, description, fieldRendering, optionCount, objectStyle, de.fieldMask(), colorByLegend);
                     })
                     .toList().toFlowable()
                     .map(data -> sectionFields = data)
                     .map(this::checkRenderType);
         }
+    }
+
+    private String getColorByLegend(String value, String dataElementUid) {
+        String color = "";
+        final DataElement dataElement = d2.dataElementModule().dataElements()
+                .byUid().eq(dataElementUid)
+                .withLegendSets()
+                .one().blockingGet();
+
+        if (dataElement != null && dataElement.valueType().isNumeric() &&
+                dataElement.legendSets() != null && !dataElement.legendSets().isEmpty()){
+                LegendSet legendSet = dataElement.legendSets().get(0);
+                List<Legend> legends = d2.legendSetModule().legends().byStartValue().smallerThan(
+                        Double.valueOf(value)).byEndValue().biggerThan(Double.valueOf(value))
+                        .byLegendSet().eq(legendSet.uid()).blockingGet();
+                color = legends.get(0).color();
+        }
+
+        return color;
     }
 
     @NonNull
