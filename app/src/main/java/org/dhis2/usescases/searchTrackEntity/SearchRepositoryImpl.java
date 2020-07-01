@@ -358,7 +358,7 @@ public class SearchRepositoryImpl implements SearchRepository {
                         return Single.error(new SQLiteConstraintException(message));
                     } else {
                         if (fromRelationshipUid != null) {
-                            d2.trackedEntityModule().trackedEntityInstanceService().blockingInheritAttributes(fromRelationshipUid, teiUid, programUid);
+                            d2.trackedEntityModule().trackedEntityInstanceService().blockingInheritAttributes(fromRelationshipUid, uid, programUid);
                         }
                         ValueStore valueStore = new ValueStoreImpl(d2, uid, DataEntryStore.EntryMode.ATTR);
 
