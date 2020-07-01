@@ -114,7 +114,8 @@ class TeiDataRepositoryImpl(
                             eventList.size,
                             if (eventList.isEmpty()) null else eventList[0].lastUpdated(),
                             programStage.uid() == selectedStage,
-                            checkAddEvent()
+                            checkAddEvent(),
+                            orgUnitName = ""
                         )
                     )
                     if (selectedStage != null && selectedStage == programStage.uid()) {
@@ -127,7 +128,8 @@ class TeiDataRepositoryImpl(
                                     0,
                                     null,
                                     isSelected = true,
-                                    canAddNewEvent = true
+                                    canAddNewEvent = true,
+                                    orgUnitName = ""
                                 )
                             )
                         }
@@ -162,7 +164,8 @@ class TeiDataRepositoryImpl(
                             0,
                             null,
                             isSelected = true,
-                            canAddNewEvent = true
+                            canAddNewEvent = true,
+                            orgUnitName = ""
                         )
                     )
                 }
