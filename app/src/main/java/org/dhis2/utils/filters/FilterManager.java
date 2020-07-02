@@ -2,6 +2,7 @@ package org.dhis2.utils.filters;
 
 import androidx.databinding.ObservableField;
 
+import org.dhis2.utils.filters.sorting.SortingItem;
 import org.dhis2.utils.filters.cat_opt_comb.CatOptCombFilterAdapter;
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper;
 import org.hisp.dhis.android.core.category.CategoryOptionCombo;
@@ -49,6 +50,7 @@ public class FilterManager {
     private List<EventStatus> eventStatusFilters;
     private List<EnrollmentStatus> enrollmentStatusFilters;
     private boolean assignedFilter;
+    private SortingItem sortingItem;
 
     private ObservableField<Integer> ouFiltersApplied;
     private ObservableField<Integer> stateFiltersApplied;
@@ -402,5 +404,14 @@ public class FilterManager {
         this.assignedFilter = isChecked;
         assignedToMeApplied.set(isChecked ? 1 : 0);
         filterProcessor.onNext(this);
+    }
+
+    public void setSortingItem(SortingItem sortingItem) {
+        this.sortingItem = sortingItem;
+        filterProcessor.onNext(this);
+    }
+
+    public SortingItem getSortingItem() {
+        return sortingItem;
     }
 }

@@ -22,6 +22,7 @@ import com.google.android.material.badge.BadgeDrawable;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.tabs.TabLayout;
+import com.google.android.material.tabs.TabLayoutMediator;
 
 import org.dhis2.Bindings.ExtensionsKt;
 import org.dhis2.R;
@@ -90,14 +91,20 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
         binding.setPresenter(presenter);
         eventMode = (EventMode) getIntent().getSerializableExtra(Constants.EVENT_MODE);
 
-        binding.eventTabLayout.setupWithViewPager(binding.eventViewPager);
         binding.eventTabLayout.setTabMode(TabLayout.MODE_FIXED);
         binding.eventViewPager.setAdapter(new EventCapturePagerAdapter(
-                getSupportFragmentManager(),
-                getContext(),
+                this,
                 getIntent().getStringExtra(PROGRAM_UID),
                 getIntent().getStringExtra(Constants.EVENT_UID)
         ));
+        new TabLayoutMediator(binding.eventTabLayout, binding.eventViewPager,
+                (tab, position) -> {
+                    if (position == 1) {
+                        tab.setText(R.string.event_notes);
+                    } else {
+                        tab.setText(R.string.event_overview);
+                    }
+                }).attach();
         presenter.initNoteCounter();
         presenter.init();
     }
