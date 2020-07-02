@@ -38,20 +38,26 @@ public class DateTimeHolder extends FormViewHolder implements OnDateSelected {
 
         if (binding instanceof FormTimeTextBinding) {
             ((FormTimeTextBinding) binding).timeView.setDateListener(this);
-            ((FormTimeTextBinding) binding).timeView.setActivationListener(() ->
-                    setSelectedBackground(isSearchMode));
+            ((FormTimeTextBinding) binding).timeView.setActivationListener(() -> {
+                    setSelectedBackground(isSearchMode);
+                    closeKeyboard(binding.getRoot());
+            });
         }
 
         if (binding instanceof FormDateTextBinding) {
             ((FormDateTextBinding) binding).dateView.setDateListener(this);
-            ((FormDateTextBinding) binding).dateView.setActivationListener(() ->
-                    setSelectedBackground(isSearchMode));
+            ((FormDateTextBinding) binding).dateView.setActivationListener(() -> {
+                setSelectedBackground(isSearchMode);
+                closeKeyboard(binding.getRoot());
+            });
         }
 
         if (binding instanceof FormDateTimeTextBinding) {
             ((FormDateTimeTextBinding) binding).dateTimeView.setDateListener(this);
-            ((FormDateTimeTextBinding) binding).dateTimeView.setActivationListener(() ->
-                    setSelectedBackground(isSearchMode));
+            ((FormDateTimeTextBinding) binding).dateTimeView.setActivationListener(() -> {
+                setSelectedBackground(isSearchMode);
+                closeKeyboard(binding.getRoot());
+            });
         }
     }
 

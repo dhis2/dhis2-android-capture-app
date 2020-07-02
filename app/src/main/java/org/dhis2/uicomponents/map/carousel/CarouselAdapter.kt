@@ -33,6 +33,7 @@ class CarouselAdapter private constructor(
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     val items: MutableList<CarouselItemModel> = arrayListOf()
+
     enum class CarouselItems {
         TEI, RELATIONSHIP, EVENT
     }
@@ -123,6 +124,12 @@ class CarouselAdapter private constructor(
     }
 
     fun addItems(data: List<CarouselItemModel>) {
+        items.addAll(data)
+        notifyDataSetChanged()
+    }
+
+    fun updateAllData(data: List<CarouselItemModel>) {
+        items.clear()
         items.addAll(data)
         notifyDataSetChanged()
     }

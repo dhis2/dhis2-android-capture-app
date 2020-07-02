@@ -73,7 +73,7 @@ public class DataSetDetailRepositoryImpl implements DataSetDetailRepository {
 
                     State state = dataSetReport.state();
 
-                    if(state == State.SYNCED && dscr!=null){
+                    if (state == State.SYNCED && dscr != null) {
                         state = dscr.state();
                     }
 
@@ -135,5 +135,10 @@ public class DataSetDetailRepositoryImpl implements DataSetDetailRepository {
                         return Flowable.just(false);
                 });
 
+    }
+
+    @Override
+    public CategoryOptionCombo getCatOptCombo(String selectedCatOptionCombo) {
+        return d2.categoryModule().categoryOptionCombos().uid(selectedCatOptionCombo).blockingGet();
     }
 }

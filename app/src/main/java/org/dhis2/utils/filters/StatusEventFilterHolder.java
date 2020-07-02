@@ -12,8 +12,6 @@ import org.hisp.dhis.android.core.event.EventStatus;
 
 public class StatusEventFilterHolder extends FilterHolder {
 
-    private final FiltersAdapter.ProgramType programType;
-
     StatusEventFilterHolder(@NonNull ItemFilterStatusBinding binding, ObservableField<Filters> openedFilter, FiltersAdapter.ProgramType programType) {
         super(binding, openedFilter);
         filterType = Filters.EVENT_STATUS;

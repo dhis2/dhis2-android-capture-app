@@ -804,43 +804,47 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         for (SearchTeiModel searchTeiModel : teis) {
             allItems.addAll(new MapRelationshipToRelationshipMapModel().mapList(searchTeiModel.getRelationships()));
         }
-        CarouselAdapter carouselAdapter = new CarouselAdapter.Builder()
-                .addOnTeiClickListener(
-                        (teiUid, enrollmentUid, isDeleted) -> {
-                            presenter.onTEIClick(teiUid, enrollmentUid, isDeleted);
-                            return true;
-                        })
-                .addOnSyncClickListener(
-                        teiUid -> {
-                            presenter.onSyncIconClick(teiUid);
-                            return true;
-                        })
-                .addOnDeleteRelationshipListener(relationshipUid -> {
-                    presenter.deleteRelationship(relationshipUid);
-                    return true;
-                })
-                .addOnRelationshipClickListener(teiUid -> {
-                    presenter.onTEIClick(teiUid, null, false);
-                    return true;
-                })
-                .addOnEventClickListener( (teiUid, enrollmentUid) -> {
-                    presenter.onTEIClick(teiUid, enrollmentUid, false);
-                    return true;
-                })
-                .addProgram(presenter.getProgram())
-                .addItems(allItems)
-                .build();
 
+        if(binding.mapCarousel.getAdapter() == null) {
+            CarouselAdapter carouselAdapter = new CarouselAdapter.Builder()
+                    .addOnTeiClickListener(
+                            (teiUid, enrollmentUid, isDeleted) -> {
+                                presenter.onTEIClick(teiUid, enrollmentUid, isDeleted);
+                                return true;
+                            })
+                    .addOnSyncClickListener(
+                            teiUid -> {
+                                presenter.onSyncIconClick(teiUid);
+                                return true;
+                            })
+                    .addOnDeleteRelationshipListener(relationshipUid -> {
+                        presenter.deleteRelationship(relationshipUid);
+                        return true;
+                    })
+                    .addOnRelationshipClickListener(teiUid -> {
+                        presenter.onTEIClick(teiUid, null, false);
+                        return true;
+                    })
+                    .addOnEventClickListener((teiUid, enrollmentUid) -> {
+                        presenter.onTEIClick(teiUid, enrollmentUid, false);
+                        return true;
+                    })
+                    .addProgram(presenter.getProgram())
+                    .addItems(allItems)
+                    .build();
+            binding.mapCarousel.setAdapter(carouselAdapter);
+        }else{
+            ((CarouselAdapter)binding.mapCarousel.getAdapter()).updateAllData(allItems);
+        }
 
         teiMapManager.update(
                 teiFeatureCollections,
                 events,
                 boundingBox,
                 featureType,
-                carouselAdapter
+                (CarouselAdapter) binding.mapCarousel.getAdapter()
         );
 
-        binding.mapCarousel.setAdapter(carouselAdapter);
         binding.mapCarousel.attachToMapManager(teiMapManager, () ->
                 {
                     Toast.makeText(this, "Item does not have coordinates", Toast.LENGTH_SHORT).show();
@@ -889,7 +893,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                                 .queryRenderedFeatures(rectF, featureType == FeatureType.POINT ? "POINT_LAYER_" + eventSource : "POLYGON_LAYER_" + eventSource);
                         if (!features.isEmpty()) {
                             teiMapManager.mapLayerManager.selectFeature(null);
-                            teiMapManager.mapLayerManager.getLayer(eventSource,true).setSelectedItem(features.get(0));
+                            teiMapManager.mapLayerManager.getLayer(eventSource, true).setSelectedItem(features.get(0));
                             binding.mapCarousel.scrollToFeature(features.get(0));
                             return true;
                         }
