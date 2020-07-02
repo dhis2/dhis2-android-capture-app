@@ -14,17 +14,21 @@ class SatelliteMapLayer(
     override var visible = selected
 
     override fun showLayer() {
-        mapboxMap.setStyle(Style.SATELLITE_STREETS) {
-            styleChangeCallback?.invoke()
+        if(!visible) {
+            mapboxMap.setStyle(Style.SATELLITE_STREETS) {
+                styleChangeCallback?.invoke()
+            }
+            visible = true
         }
-        visible = true
     }
 
     override fun hideLayer() {
-        mapboxMap.setStyle(Style.MAPBOX_STREETS) {
-            styleChangeCallback?.invoke()
+        if(visible) {
+            mapboxMap.setStyle(Style.MAPBOX_STREETS) {
+                styleChangeCallback?.invoke()
+            }
+            visible = false
         }
-        visible = false
     }
 
     override fun setSelectedItem(feature: Feature?) {

@@ -65,11 +65,10 @@ import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.flowables.ConnectableFlowable;
 import io.reactivex.processors.FlowableProcessor;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.subjects.BehaviorSubject;
-import kotlin.Triple;
-import kotlin.jvm.functions.Function4;
 import timber.log.Timber;
 
 import static android.app.Activity.RESULT_OK;
@@ -103,6 +102,8 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     private FlowableProcessor<Unit> mapProcessor;
     private FlowableProcessor<Unit> enrollmentMapProcessor;
     private Dialog dialogDisplayed;
+    private FlowableProcessor<Unit> mapDataProcessor;
+    private FlowableProcessor<Unit> listDataProcessor;
 
     private boolean showList = true;
     private MapTeisToFeatureCollection mapTeisToFeatureCollection;
@@ -133,6 +134,8 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         queryProcessor = PublishProcessor.create();
         mapProcessor = PublishProcessor.create();
         enrollmentMapProcessor = PublishProcessor.create();
+        mapDataProcessor = PublishProcessor.create();
+        listDataProcessor = PublishProcessor.create();
         selectedProgram = initialProgram != null ? d2.programModule().programs().uid(initialProgram).blockingGet() : null;
         currentProgram = BehaviorSubject.createDefault(initialProgram != null ? initialProgram : "");
     }
@@ -210,18 +213,35 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                         Timber::d)
         );
 
+        ConnectableFlowable<Pair<HashMap<String, String>, FilterManager>> updaterFlowable = currentProgram.distinctUntilChanged().toFlowable(BackpressureStrategy.LATEST)
+                .switchMap(program ->
+                        Flowable.combineLatest(
+                                queryProcessor.startWith(queryData),
+                                FilterManager.getInstance().asFlowable().startWith(FilterManager.getInstance()),
+                                Pair::create
+                        ))
+                .onBackpressureLatest()
+                .publish();
 
         compositeDisposable.add(
-                currentProgram.distinctUntilChanged().toFlowable(BackpressureStrategy.LATEST)
-                        .switchMap(program ->
-                                Flowable.combineLatest(
-                                        queryProcessor.startWith(queryData),
-                                        FilterManager.getInstance().asFlowable().startWith(FilterManager.getInstance()),
-                                        Pair::create
-                                ))
-                        .onBackpressureLatest()
+                updaterFlowable
                         .observeOn(schedulerProvider.io())
-                        .filter(data -> !view.isMapVisible())
+                        .map(data -> view.isMapVisible())
+                        .subscribeOn(schedulerProvider.io())
+                        .subscribe(
+                                isMapVisible -> {
+                                    if (isMapVisible) {
+                                        mapDataProcessor.onNext(new Unit());
+                                    } else {
+                                        listDataProcessor.onNext(new Unit());
+                                    }
+                                },
+                                Timber::e
+                        )
+        );
+
+        compositeDisposable.add(
+                listDataProcessor
                         .switchMap(map -> Flowable.just(searchRepository.searchTrackedEntities(
                                 selectedProgram,
                                 trackedEntityType,
@@ -238,38 +258,24 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         );
 
         compositeDisposable.add(
-                mapProcessor.switchMap(data ->
-                        currentProgram.distinctUntilChanged().toFlowable(BackpressureStrategy.LATEST)
-                                .switchMap(program ->
-                                        Flowable.combineLatest(
-                                                queryProcessor.startWith(queryData),
-                                                FilterManager.getInstance().asFlowable().startWith(FilterManager.getInstance()),
-                                                Pair::create
-                                        )))
-                        .onBackpressureLatest()
-                        .observeOn(schedulerProvider.io())
-                        .filter(data -> view.isMapVisible())
+                mapDataProcessor
                         .switchMap(unit ->
-                                queryProcessor.startWith(queryData)
-                                        .observeOn(schedulerProvider.io())
-                                        .switchMap(query ->
-                                                searchRepository.searchTeiForMap(
-                                                        selectedProgram,
-                                                        trackedEntityType,
-                                                        FilterManager.getInstance().getOrgUnitUidsFilters(),
-                                                        FilterManager.getInstance().getStateFilters(),
-                                                        FilterManager.getInstance().getEventStatusFilters(),
-                                                        query,
-                                                        FilterManager.getInstance().getAssignedFilter(),
-                                                        NetworkUtils.isOnline(view.getContext())))
-                                        .map(teis -> new kotlin.Pair<>(teis, searchRepository.getEventsForMap(teis)))
-                                        .map(teis -> {
-                                                    List<EventUiComponentModel> eventsUi = eventToEventUiComponent.mapList(teis.component2(), teis.component1());
-                                                    kotlin.Pair<HashMap<String, FeatureCollection>, BoundingBox> teisFeatCollection = mapTeisToFeatureCollection.map(teis.component1());
-                                                    EventsByProgramStage events = mapTeiEventsToFeatureCollection.map(eventsUi).component1();
-                                                    return Quartet.create(teis.component1(), teisFeatCollection, events, eventsUi);
-                                                }
-                                            )
+                                searchRepository.searchTeiForMap(
+                                        selectedProgram,
+                                        trackedEntityType,
+                                        FilterManager.getInstance().getOrgUnitUidsFilters(),
+                                        FilterManager.getInstance().getStateFilters(),
+                                        FilterManager.getInstance().getEventStatusFilters(),
+                                        queryData,
+                                        FilterManager.getInstance().getAssignedFilter(),
+                                        NetworkUtils.isOnline(view.getContext())))
+                        .map(teis -> new kotlin.Pair<>(teis, searchRepository.getEventsForMap(teis)))
+                        .map(teis -> {
+                                    List<EventUiComponentModel> eventsUi = eventToEventUiComponent.mapList(teis.component2(), teis.component1());
+                                    kotlin.Pair<HashMap<String, FeatureCollection>, BoundingBox> teisFeatCollection = mapTeisToFeatureCollection.map(teis.component1());
+                                    EventsByProgramStage events = mapTeiEventsToFeatureCollection.map(eventsUi).component1();
+                                    return Quartet.create(teis.component1(), teisFeatCollection, events, eventsUi);
+                                }
                         )
                         .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.ui())
@@ -281,7 +287,10 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                                         teiAndMap.val2(),
                                         teiAndMap.val3()
                                 ),
-                                Timber::e,
+                                t -> {
+                                    Timber.e(t)
+                                    ;
+                                },
                                 () -> Timber.d("COMPLETED")
                         ));
 
@@ -322,6 +331,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                         )
         );
 
+        updaterFlowable.connect();
 
     }
 
@@ -496,7 +506,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
     private boolean compliesWithMinAttributesToSearch() {
         if (selectedProgram != null) {
-            if (selectedProgram.displayFrontPageList() && queryData.size() < selectedProgram.minAttributesRequiredToSearch()) {
+            if (selectedProgram.displayFrontPageList() && !queryData.isEmpty() && queryData.size() < selectedProgram.minAttributesRequiredToSearch()) {
                 return false;
             } else if (!selectedProgram.displayFrontPageList() && queryData.size() < selectedProgram.minAttributesRequiredToSearch()) {
                 return false;
@@ -805,6 +815,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     @Override
     public void getMapData() {
         mapProcessor.onNext(new Unit());
+        FilterManager.getInstance().publishData();
     }
 
     @Override

@@ -127,6 +127,12 @@ class CarouselAdapter private constructor(
         notifyDataSetChanged()
     }
 
+    fun updateAllData(data:List<CarouselItemModel>){
+        items.clear()
+        items.addAll(data)
+        notifyDataSetChanged()
+    }
+
     fun removeItems(data: List<CarouselItemModel>) {
         items.removeAll(data)
         notifyDataSetChanged()
