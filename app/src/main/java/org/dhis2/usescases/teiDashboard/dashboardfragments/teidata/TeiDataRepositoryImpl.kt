@@ -186,9 +186,9 @@ class TeiDataRepositoryImpl(
         return if (sortingItem != null) {
             when (sortingItem.filterSelectedForSorting) {
                 Filters.ORG_UNIT ->
-                    if(sortingItem.sortingStatus == SortingStatus.ASC){
+                    if (sortingItem.sortingStatus == SortingStatus.ASC) {
                         eventRepo.orderByOrganisationUnitName(RepositoryScope.OrderByDirection.ASC)
-                    }else{
+                    } else {
                         eventRepo.orderByOrganisationUnitName(RepositoryScope.OrderByDirection.DESC)
                     }
                 Filters.PERIOD -> {
