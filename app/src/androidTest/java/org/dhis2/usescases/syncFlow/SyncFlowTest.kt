@@ -7,6 +7,7 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventSummary.EventSummaryAc
 import org.dhis2.usescases.login.LoginTest
 import org.dhis2.usescases.searchTrackEntity.SearchTEActivity
 import org.dhis2.usescases.searchte.searchTeiRobot
+import org.dhis2.usescases.settingsprogram.SettingsProgramActivity
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity
 import org.dhis2.usescases.teidashboard.TeiDashboardTest
 import org.dhis2.usescases.teidashboard.robot.eventRobot
@@ -27,6 +28,13 @@ class SyncFlowTest : BaseTest() {
     val ruleDataSet = ActivityTestRule(EventSummaryActivity::class.java, false, false)
     @get:Rule
     val ruleSearch = ActivityTestRule(SearchTEActivity::class.java, false, false)
+    @get:Rule
+    val ruleEventWithoutRegistration = ActivityTestRule(SettingsProgramActivity::class.java, false, false)
+
+    override fun setUp() {
+        super.setUp()
+        setupMockServer()
+    }
 
     @Test
     fun shouldSuccessfullySyncAChangedTEI() {
@@ -114,6 +122,23 @@ class SyncFlowTest : BaseTest() {
         }
     }
 
+    @Test
+    fun shouldSuccessfullySyncSavedEvent() {
+
+        /*id: "VBqh0ynB2wv"
+        name: "Malaria case registration"
+        programType: "WITHOUT_REGISTRATION"*/
+
+        /**
+         * prepare and launch activity in Malaria
+         * select event
+         * update date (change date)
+         * click on finish
+         * */
+
+
+        setupCredentials()
+    }
 
     companion object {
         const val SYNC_TEI_PATH = "/api/trackedEntityInstances?*"
