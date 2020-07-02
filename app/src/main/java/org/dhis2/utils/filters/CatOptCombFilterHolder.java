@@ -21,7 +21,9 @@ class CatOptCombFilterHolder extends FilterHolder {
 
     private final Pair<CategoryCombo, List<CategoryOptionCombo>> catComboData;
 
-    CatOptCombFilterHolder(@NonNull ItemFilterCatOptCombBinding binding, ObservableField<Filters> openedFilter, Pair<CategoryCombo, List<CategoryOptionCombo>> catCombData) {
+    CatOptCombFilterHolder(@NonNull ItemFilterCatOptCombBinding binding,
+                           ObservableField<Filters> openedFilter,
+                           Pair<CategoryCombo, List<CategoryOptionCombo>> catCombData) {
         super(binding, openedFilter);
         filterType = Filters.CAT_OPT_COMB;
         this.catComboData = catCombData;
@@ -35,10 +37,22 @@ class CatOptCombFilterHolder extends FilterHolder {
 
         ItemFilterCatOptCombBinding localBinding = (ItemFilterCatOptCombBinding) binding;
 
-
         CatOptCombFilterAdapter adapter = new CatOptCombFilterAdapter();
         localBinding.filterCatOptComb.catCombOptRecycler.setAdapter(adapter);
+        FilterManager.getInstance().setCatComboAdapter(adapter);
 
+        if (catComboData.val1().size() < 15) {
+            localBinding.filterCatOptComb.catOptCombText.setVisibility(View.GONE);
+            localBinding.filterCatOptComb.catOptCombSpinner.setVisibility(View.VISIBLE);
+            openPopUp(adapter, localBinding);
+        } else {
+            localBinding.filterCatOptComb.catOptCombText.setVisibility(View.VISIBLE);
+            localBinding.filterCatOptComb.catOptCombSpinner.setVisibility(View.GONE);
+            localBinding.filterCatOptComb.catOptCombText.setOnClickListener(v -> openDialog(adapter));
+        }
+    }
+
+    void openPopUp(CatOptCombFilterAdapter adapter, ItemFilterCatOptCombBinding localBinding) {
         CatComboAdapter spinnerAdapter = new CatComboAdapter(itemView.getContext(),
                 R.layout.spinner_layout,
                 R.id.spinner_text,
@@ -52,7 +66,6 @@ class CatOptCombFilterHolder extends FilterHolder {
             public void onItemSelected(AdapterView<?> adapterView, View view, int position, long l) {
                 if (position != 0) {
                     FilterManager.getInstance().addCatOptCombo(catComboData.val1().get(position - 1));
-                    adapter.notifyDataSetChanged();
                 }
             }
 
@@ -61,5 +74,10 @@ class CatOptCombFilterHolder extends FilterHolder {
 
             }
         });
+    }
+
+    void openDialog(CatOptCombFilterAdapter adapter) {
+        FilterManager.getInstance().setCatComboAdapter(adapter);
+        FilterManager.getInstance().addCatOptComboRequest(catComboData.val0().uid());
     }
 }

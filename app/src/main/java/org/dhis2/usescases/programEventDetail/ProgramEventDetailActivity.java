@@ -48,6 +48,7 @@ import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.EventMode;
 import org.dhis2.utils.HelpManager;
 import org.dhis2.utils.analytics.AnalyticsConstants;
+import org.dhis2.utils.category.CategoryDialog;
 import org.dhis2.utils.filters.FilterManager;
 import org.dhis2.utils.filters.FiltersAdapter;
 import org.dhis2.utils.granularsync.SyncStatusDialog;
@@ -63,6 +64,8 @@ import java.util.List;
 import javax.inject.Inject;
 
 import io.reactivex.functions.Consumer;
+import kotlin.Unit;
+import kotlin.jvm.functions.Function1;
 import timber.log.Timber;
 
 import static org.dhis2.R.layout.activity_program_event_detail;
@@ -477,5 +480,22 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
         }
 
         return false;
+    }
+
+    @Override
+    public void showCatOptComboDialog(String catComboUid) {
+        new CategoryDialog(
+                CategoryDialog.Type.CATEGORY_OPTION_COMBO,
+                catComboUid,
+                false,
+                null,
+                selectedCatOptionCombo -> {
+                    presenter.filterCatOptCombo(selectedCatOptionCombo);
+                    return null;
+                }
+        ).show(
+                getSupportFragmentManager(),
+                CategoryDialog.Companion.getTAG()
+        );
     }
 }

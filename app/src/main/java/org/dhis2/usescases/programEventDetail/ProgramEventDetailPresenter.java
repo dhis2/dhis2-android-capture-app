@@ -1,5 +1,7 @@
 package org.dhis2.usescases.programEventDetail;
+
 import androidx.annotation.NonNull;
+
 import com.mapbox.mapboxsdk.geometry.LatLng;
 
 import org.dhis2.data.schedulers.SchedulerProvider;
@@ -45,6 +47,14 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
 
     @Override
     public void init() {
+        compositeDisposable.add(FilterManager.getInstance().getCatComboRequest()
+                .subscribeOn(schedulerProvider.io())
+                .observeOn(schedulerProvider.ui())
+                .subscribe(
+                        catComboUid -> view.showCatOptComboDialog(catComboUid),
+                        Timber::e
+                )
+        );
         compositeDisposable.add(eventRepository.featureType()
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
@@ -237,5 +247,12 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
     @Override
     public boolean hasAssignment() {
         return eventRepository.hasAssignment();
+    }
+
+    @Override
+    public void filterCatOptCombo(String selectedCatOptionCombo) {
+        FilterManager.getInstance().addCatOptCombo(
+                eventRepository.getCatOptCombo(selectedCatOptionCombo)
+        );
     }
 }

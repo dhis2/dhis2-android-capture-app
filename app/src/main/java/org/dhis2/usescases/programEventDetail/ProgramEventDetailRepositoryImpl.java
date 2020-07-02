@@ -96,7 +96,7 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
             eventRepo = eventRepo.byAssignedUser().eq(getCurrentUser());
 
         return eventRepo.byDeleted().isFalse().orderByEventDate(RepositoryScope.OrderByDirection.DESC).withTrackedEntityDataValues().get()
-                .map(listEvents-> mapEventToFeatureCollection.map(listEvents))
+                .map(listEvents -> mapEventToFeatureCollection.map(listEvents))
                 .toFlowable();
     }
 
@@ -123,6 +123,11 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
     public boolean hasAssignment() {
         return !d2.programModule().programStages().byProgramUid().eq(programUid)
                 .byEnableUserAssignment().isTrue().blockingIsEmpty();
+    }
+
+    @Override
+    public CategoryOptionCombo getCatOptCombo(String selectedCatOptionCombo) {
+        return d2.categoryModule().categoryOptionCombos().uid(selectedCatOptionCombo).blockingGet();
     }
 
     private String getCurrentUser() {

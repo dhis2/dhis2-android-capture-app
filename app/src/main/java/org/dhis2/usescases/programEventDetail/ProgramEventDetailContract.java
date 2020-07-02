@@ -13,7 +13,6 @@ import org.dhis2.utils.filters.FilterManager;
 import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryOptionCombo;
 import org.hisp.dhis.android.core.common.FeatureType;
-import org.hisp.dhis.android.core.period.DatePeriod;
 import org.hisp.dhis.android.core.program.Program;
 
 import java.util.List;
@@ -63,6 +62,8 @@ public class ProgramEventDetailContract {
         void navigateToEvent(String eventId, String orgUnit);
 
         void showSyncDialog(String uid);
+
+        void showCatOptComboDialog(String catComboUid);
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter {
@@ -85,5 +86,7 @@ public class ProgramEventDetailContract {
         void clearFilterClick();
 
         boolean hasAssignment();
+
+        void filterCatOptCombo(String selectedCatOptionCombo);
     }
 }
