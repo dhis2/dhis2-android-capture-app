@@ -3,6 +3,7 @@ package org.dhis2.uicomponents.map.geometry.polygon
 import com.mapbox.geojson.Feature
 import com.mapbox.geojson.Point
 import com.mapbox.geojson.Polygon
+import org.dhis2.uicomponents.map.geometry.areLngLatCorrect
 import org.dhis2.uicomponents.map.geometry.bound.BoundsGeometry
 import org.hisp.dhis.android.core.arch.helpers.GeometryHelper
 import org.hisp.dhis.android.core.common.Geometry
@@ -17,6 +18,7 @@ class MapPolygonToFeature {
             it.forEach { coordinates ->
                 val lat = coordinates[1]
                 val lon = coordinates[0]
+                if (!areLngLatCorrect(lon, lat)) return@map null
                 bounds.update(lat, lon)
                 pointList.add(Point.fromLngLat(lon, lat))
             }
@@ -38,6 +40,7 @@ class MapPolygonToFeature {
             it.forEach { coordinates ->
                 val lat = coordinates[1]
                 val lon = coordinates[0]
+                if (!areLngLatCorrect(lon, lat)) return@map null
                 pointList.add(Point.fromLngLat(lon, lat))
             }
         }

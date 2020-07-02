@@ -37,6 +37,7 @@ import org.dhis2.R;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.databinding.ActivityProgramEventDetailBinding;
 import org.dhis2.databinding.InfoWindowEventBinding;
+import org.dhis2.uicomponents.map.layer.MapLayerDialog;
 import org.dhis2.uicomponents.map.managers.EventMapManager;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity;
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity;
@@ -47,6 +48,7 @@ import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.EventMode;
 import org.dhis2.utils.HelpManager;
 import org.dhis2.utils.analytics.AnalyticsConstants;
+import org.dhis2.utils.category.CategoryDialog;
 import org.dhis2.utils.filters.FilterManager;
 import org.dhis2.utils.filters.FiltersAdapter;
 import org.dhis2.utils.granularsync.SyncStatusDialog;
@@ -62,20 +64,15 @@ import java.util.List;
 import javax.inject.Inject;
 
 import io.reactivex.functions.Consumer;
+import kotlin.Unit;
+import kotlin.jvm.functions.Function1;
 import timber.log.Timber;
 
-import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.fillColor;
-import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconAllowOverlap;
-import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconOffset;
 import static org.dhis2.R.layout.activity_program_event_detail;
 import static org.dhis2.utils.Constants.ORG_UNIT;
 import static org.dhis2.utils.Constants.PROGRAM_UID;
 import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
 import static org.dhis2.utils.analytics.AnalyticsConstants.SHOW_HELP;
-
-/**
- * QUADRAM. Created by Cristian on 13/02/2018.
- */
 
 public class ProgramEventDetailActivity extends ActivityGlobalAbstract implements ProgramEventDetailContract.View,
         MapboxMap.OnMapClickListener {
@@ -133,6 +130,11 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
         } catch (Exception e) {
             Timber.e(e);
         }
+
+        binding.mapLayerButton.setOnClickListener(view ->
+                new MapLayerDialog(eventMapManager.mapLayerManager)
+                        .show(getSupportFragmentManager(), MapLayerDialog.class.getName())
+        );
 
         eventMapManager = new EventMapManager();
         eventMapManager.setOnMapClickListener(this);
@@ -459,6 +461,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
     private void showMap(boolean showMap) {
         binding.recycler.setVisibility(showMap ? View.GONE : View.VISIBLE);
         binding.mapView.setVisibility(showMap ? View.VISIBLE : View.GONE);
+        binding.mapLayerButton.setVisibility(showMap ? View.VISIBLE : View.GONE);
 
         if (showMap)
             presenter.getMapData();
@@ -477,5 +480,22 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
         }
 
         return false;
+    }
+
+    @Override
+    public void showCatOptComboDialog(String catComboUid) {
+        new CategoryDialog(
+                CategoryDialog.Type.CATEGORY_OPTION_COMBO,
+                catComboUid,
+                false,
+                null,
+                selectedCatOptionCombo -> {
+                    presenter.filterCatOptCombo(selectedCatOptionCombo);
+                    return null;
+                }
+        ).show(
+                getSupportFragmentManager(),
+                CategoryDialog.Companion.getTAG()
+        );
     }
 }

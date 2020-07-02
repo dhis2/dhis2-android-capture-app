@@ -392,4 +392,17 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
                 .byCategoryOptions(categoryOptionsUid)
                 .one().blockingGet().uid();
     }
+
+    @Override
+    public CategoryOption getCatOption(String selectedOption) {
+        return d2.categoryModule().categoryOptions().uid(selectedOption).blockingGet();
+    }
+
+    @Override
+    public int getCatOptionSize(String uid) {
+        return d2.categoryModule().categoryOptions()
+                .byCategoryUid(uid)
+                .byAccessDataWrite().isTrue()
+                .blockingCount();
+    }
 }

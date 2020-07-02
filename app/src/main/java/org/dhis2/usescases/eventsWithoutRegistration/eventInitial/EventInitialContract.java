@@ -128,6 +128,10 @@ public class EventInitialContract {
         void getEventOrgUnit(String ouUid);
 
         void initOrgunit(Date selectedDate);
+
+        CategoryOption getCatOption(String selectedOption);
+
+        int catOptionSize(String uid);
     }
 
 }

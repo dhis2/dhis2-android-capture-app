@@ -164,6 +164,11 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
                 .byEnableUserAssignment().isTrue().blockingIsEmpty();
     }
 
+    @Override
+    public CategoryOptionCombo getCatOptCombo(String selectedCatOptionCombo) {
+        return d2.categoryModule().categoryOptionCombos().uid(selectedCatOptionCombo).blockingGet();
+    }
+
     private String getCurrentUser() {
         return d2.userModule().user().blockingGet().uid();
     }

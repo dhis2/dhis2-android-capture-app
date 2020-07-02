@@ -56,6 +56,8 @@ public class DataSetInitialContract {
         void onCatOptionClick(String catOptionUid);
 
         void onActionButtonClick(PeriodType periodType);
+
+        CategoryOption getCatOption(String selectedOption);
     }
 
 

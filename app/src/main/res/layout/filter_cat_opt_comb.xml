@@ -18,7 +18,8 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        tools:background="?colorPrimary">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/orgUnitSearchLayout"
@@ -39,10 +40,21 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
 
+                <TextView
+                    android:id="@+id/catOptCombText"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:visibility="gone"
+                    android:text="@string/select_option"
+                    android:gravity="center_vertical"
+                    android:paddingStart="16dp"
+                    tools:visibility="visible" />
+
                 <androidx.appcompat.widget.AppCompatSpinner
                     android:id="@+id/catOptCombSpinner"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"/>
+                    android:layout_height="match_parent"
+                    tools:visibility="gone" />
             </RelativeLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>

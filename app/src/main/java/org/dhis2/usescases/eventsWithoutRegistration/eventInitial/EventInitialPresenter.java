@@ -440,4 +440,14 @@ public class EventInitialPresenter
                 )
         );
     }
+
+    @Override
+    public CategoryOption getCatOption(String selectedOption) {
+        return eventInitialRepository.getCatOption(selectedOption);
+    }
+
+    @Override
+    public int catOptionSize(String uid) {
+        return eventInitialRepository.getCatOptionSize(uid);
+    }
 }
