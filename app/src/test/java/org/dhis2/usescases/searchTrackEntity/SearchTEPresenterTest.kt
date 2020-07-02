@@ -71,7 +71,7 @@ class SearchTEPresenterTest {
 
         verify(view).clearData()
         verify(view).updateFiltersSearch(0)
-        verify(view).setFabIcon(true)
+        verify(view).setFabIcon(false)
     }
 
     @Test
