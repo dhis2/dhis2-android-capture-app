@@ -58,4 +58,6 @@ public interface ProgramEventDetailRepository {
     Single<FeatureType> featureType();
 
     boolean hasAssignment();
+
+    CategoryOptionCombo getCatOptCombo(String selectedCatOptionCombo);
 }

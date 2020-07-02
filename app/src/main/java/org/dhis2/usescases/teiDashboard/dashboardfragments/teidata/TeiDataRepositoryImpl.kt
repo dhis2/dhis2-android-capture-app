@@ -186,17 +186,18 @@ class TeiDataRepositoryImpl(
         return if (sortingItem != null) {
             when (sortingItem.filterSelectedForSorting) {
                 Filters.ORG_UNIT ->
-                    // TODO: SDK must add method to order events by orgUnit Name
-                    eventRepo.orderByEventDate(RepositoryScope.OrderByDirection.DESC)
+                    if (sortingItem.sortingStatus == SortingStatus.ASC) {
+                        eventRepo.orderByOrganisationUnitName(RepositoryScope.OrderByDirection.ASC)
+                    } else {
+                        eventRepo.orderByOrganisationUnitName(RepositoryScope.OrderByDirection.DESC)
+                    }
                 Filters.PERIOD -> {
                     if (sortingItem.sortingStatus === SortingStatus.ASC) {
                         eventRepo
-                            .orderByEventDate(RepositoryScope.OrderByDirection.ASC)
-                            .orderByDueDate(RepositoryScope.OrderByDirection.ASC)
+                            .orderByTimeline(RepositoryScope.OrderByDirection.ASC)
                     } else {
                         eventRepo
-                            .orderByEventDate(RepositoryScope.OrderByDirection.DESC)
-                            .orderByDueDate(RepositoryScope.OrderByDirection.DESC)
+                            .orderByTimeline(RepositoryScope.OrderByDirection.DESC)
                     }
                 }
                 else -> {
@@ -205,8 +206,7 @@ class TeiDataRepositoryImpl(
             }
         } else {
             eventRepo
-                .orderByEventDate(RepositoryScope.OrderByDirection.DESC)
-                .orderByDueDate(RepositoryScope.OrderByDirection.DESC)
+                .orderByTimeline(RepositoryScope.OrderByDirection.DESC)
         }
     }
 

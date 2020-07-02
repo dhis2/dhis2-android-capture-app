@@ -76,4 +76,8 @@ public interface EventInitialRepository {
     Observable<ObjectStyle> getObjectStyle(String uid);
 
     String getCategoryOptionCombo(String categoryComboUid, List<String> categoryOptionsUid);
+
+    CategoryOption getCatOption(String selectedOption);
+
+    int getCatOptionSize(String uid);
 }

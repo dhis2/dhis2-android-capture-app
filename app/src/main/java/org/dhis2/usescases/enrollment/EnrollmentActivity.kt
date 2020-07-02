@@ -418,11 +418,16 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
         val myLayoutManager: LinearLayoutManager =
             binding.fieldRecycler.layoutManager as LinearLayoutManager
 
-        adapter.swap(fields) {
-            if (!adapter.isSectionAlreadyOpen) {
-                myLayoutManager.scrollToPositionWithOffset(adapter.openSectionPos, 0)
-            }
+        val myFirstPositionIndex = myLayoutManager.findFirstVisibleItemPosition()
+        val myFirstPositionView = myLayoutManager.findViewByPosition(myFirstPositionIndex)
+
+        var offset = 0
+        myFirstPositionView?.let {
+            offset = it.top
         }
+
+        adapter.swap(fields) { }
+        myLayoutManager.scrollToPositionWithOffset(myFirstPositionIndex, offset)
     }
 
     /*endregion*/

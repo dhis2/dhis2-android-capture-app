@@ -2,6 +2,7 @@ package org.dhis2.usescases.datasets.datasetInitial;
 
 import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.data.tuples.Pair;
+import org.hisp.dhis.android.core.category.CategoryOption;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.period.PeriodType;
 
@@ -115,6 +116,10 @@ public class DataSetInitialPresenter implements DataSetInitialContract.Presenter
 
     }
 
+    @Override
+    public CategoryOption getCatOption(String selectedOption) {
+        return dataSetInitialRepository.getCategoryOption(selectedOption);
+    }
 
     @Override
     public void onDettach() {
