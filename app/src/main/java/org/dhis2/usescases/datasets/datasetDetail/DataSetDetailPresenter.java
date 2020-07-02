@@ -77,6 +77,15 @@ public class DataSetDetailPresenter {
                                 canWrite -> view.setWritePermission(canWrite),
                                 Timber::e
                         ));
+
+        disposable.add(FilterManager.getInstance().getCatComboRequest()
+                .subscribeOn(schedulerProvider.io())
+                .observeOn(schedulerProvider.ui())
+                .subscribe(
+                        catComboUid -> view.showCatOptComboDialog(catComboUid),
+                        Timber::e
+                )
+        );
     }
 
     public void addDataSet() {
@@ -129,5 +138,11 @@ public class DataSetDetailPresenter {
     public void clearFilterClick() {
         filterManager.clearAllFilters();
         view.clearFilters();
+    }
+
+    public void filterCatOptCombo(String selectedCatOptionCombo) {
+        FilterManager.getInstance().addCatOptCombo(
+                dataSetDetailRepository.getCatOptCombo(selectedCatOptionCombo)
+        );
     }
 }
