@@ -48,7 +48,6 @@ public class DataSetInitialActivity extends ActivityGlobalAbstract implements Da
     private OrganisationUnit selectedOrgUnit;
     private Date selectedPeriod;
     private String dataSetUid;
-    private final int DEFAULT_COUNT_LIMIT = 15;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -169,7 +168,7 @@ public class DataSetInitialActivity extends ActivityGlobalAbstract implements Da
             if (selectedCatOptions == null)
                 selectedCatOptions = new HashMap<>();
             selectedCatOptions.put(catOptionUid, data.get(0));
-        } else if (data.size() <= DEFAULT_COUNT_LIMIT) {
+        } else if (data.size() <= CategoryDialog.DEFAULT_COUNT_LIMIT) {
 
             CategoryOptionPopUp.getInstance()
                     .setCategoryName(((TextInputEditText) selectedView).getHint().toString())
