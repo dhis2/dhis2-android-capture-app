@@ -110,7 +110,7 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
             eventRepo = eventRepo.byAssignedUser().eq(getCurrentUser());
 
         return eventRepo.byDeleted().isFalse().withTrackedEntityDataValues().get()
-                .map(listEvents-> mapEventToFeatureCollection.map(listEvents))
+                .map(listEvents -> mapEventToFeatureCollection.map(listEvents))
                 .toFlowable();
     }
 
@@ -118,8 +118,10 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
         if (sortingItem != null) {
             switch (sortingItem.getFilterSelectedForSorting()) {
                 case ORG_UNIT:
-                    // TODO: SDK must add method to order events by orgUnit Name
-                    eventRepo = eventRepo.orderByEventDate(RepositoryScope.OrderByDirection.DESC);
+                    eventRepo = eventRepo.orderByOrganisationUnitName(
+                            sortingItem.getSortingStatus() == SortingStatus.ASC ?
+                                    RepositoryScope.OrderByDirection.ASC :
+                                    RepositoryScope.OrderByDirection.DESC);
                     break;
                 case PERIOD:
                     if (sortingItem.getSortingStatus() == SortingStatus.ASC) {
