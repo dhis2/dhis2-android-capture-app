@@ -22,7 +22,6 @@ import javax.annotation.Nonnull;
 
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
-import io.reactivex.Single;
 
 /**
  * QUADRAM. Created by ppajuelo on 02/11/2017.
@@ -37,13 +36,13 @@ public interface SearchRepository {
 
     @NonNull
     LiveData searchTrackedEntities(@Nullable Program selectedProgram,
-                                                              @NonNull String trackedEntityType,
-                                                              @NonNull List<String> orgUnits,
-                                                              @Nonnull List<State> states,
-                                                              @NonNull List<EventStatus> statuses,
-                                                              @Nullable HashMap<String, String> queryData,
-                                                              boolean assignedToMe,
-                                                              boolean isOnline);
+                                   @NonNull String trackedEntityType,
+                                   @NonNull List<String> orgUnits,
+                                   @Nonnull List<State> states,
+                                   @NonNull List<EventStatus> statuses,
+                                   @Nullable HashMap<String, String> queryData,
+                                   boolean assignedToMe,
+                                   boolean isOnline);
 
     @NonNull
     Flowable<List<SearchTeiModel>> searchTeiForMap(@Nullable Program selectedProgram,
@@ -56,7 +55,7 @@ public interface SearchRepository {
                                                    boolean isOnline);
 
     @NonNull
-    Observable<Pair<String, String>> saveToEnroll(@NonNull String teiType, @NonNull String orgUnitUID, @NonNull String programUid, @Nullable String teiUid, HashMap<String, String> queryDatam, Date enrollmentDate);
+    Observable<Pair<String, String>> saveToEnroll(@NonNull String teiType, @NonNull String orgUnitUID, @NonNull String programUid, @Nullable String teiUid, HashMap<String, String> queryDatam, Date enrollmentDate, @Nullable String fromRelationshipUid);
 
     Observable<List<OrganisationUnit>> getOrgUnits(@Nullable String selectedProgramUid);
 
