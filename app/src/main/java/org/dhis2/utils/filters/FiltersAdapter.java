@@ -15,6 +15,7 @@ import org.dhis2.databinding.ItemFilterOrgUnitBinding;
 import org.dhis2.databinding.ItemFilterPeriodBinding;
 import org.dhis2.databinding.ItemFilterStateBinding;
 import org.dhis2.databinding.ItemFilterStatusBinding;
+import org.dhis2.utils.filters.sorting.SortingItem;
 import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryOptionCombo;
 
@@ -26,10 +27,11 @@ public class FiltersAdapter extends RecyclerView.Adapter<FilterHolder> {
     private final ProgramType programType;
     private String enrollmentDateLabel;
 
-    public enum ProgramType {ALL, EVENT, TRACKER, DATASET}
+    public enum ProgramType {ALL, EVENT, TRACKER, DATASET, DASHBOARD}
 
     private List<Filters> filtersList;
     private ObservableField<Filters> openedFilter;
+    private ObservableField<SortingItem> sortingItem;
     private Pair<CategoryCombo, List<CategoryOptionCombo>> catCombData;
 
     public FiltersAdapter(ProgramType programType) {
@@ -39,6 +41,7 @@ public class FiltersAdapter extends RecyclerView.Adapter<FilterHolder> {
         filtersList.add(Filters.ORG_UNIT);
         filtersList.add(Filters.SYNC_STATE);
         openedFilter = new ObservableField<>();
+        sortingItem = new ObservableField<>();
     }
 
     @NonNull
@@ -47,21 +50,21 @@ public class FiltersAdapter extends RecyclerView.Adapter<FilterHolder> {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         switch (Filters.values()[viewType]) {
             case PERIOD:
-                return new PeriodFilterHolder(ItemFilterPeriodBinding.inflate(inflater, parent, false), openedFilter);
+                return new PeriodFilterHolder(ItemFilterPeriodBinding.inflate(inflater, parent, false), openedFilter, sortingItem, programType);
             case ENROLLMENT_DATE:
-                return new EnrollmentDateFilterHolder(ItemFilterPeriodBinding.inflate(inflater, parent, false), openedFilter);
+                return new EnrollmentDateFilterHolder(ItemFilterPeriodBinding.inflate(inflater, parent, false), openedFilter, sortingItem, programType);
             case ORG_UNIT:
-                return new OrgUnitFilterHolder(ItemFilterOrgUnitBinding.inflate(inflater, parent, false), openedFilter);
+                return new OrgUnitFilterHolder(ItemFilterOrgUnitBinding.inflate(inflater, parent, false), openedFilter, sortingItem, programType);
             case SYNC_STATE:
-                return new SyncStateFilterHolder(ItemFilterStateBinding.inflate(inflater, parent, false), openedFilter);
+                return new SyncStateFilterHolder(ItemFilterStateBinding.inflate(inflater, parent, false), openedFilter, sortingItem, programType);
             case CAT_OPT_COMB:
-                return new CatOptCombFilterHolder(ItemFilterCatOptCombBinding.inflate(inflater, parent, false), openedFilter, catCombData);
+                return new CatOptCombFilterHolder(ItemFilterCatOptCombBinding.inflate(inflater, parent, false), openedFilter, catCombData, programType);
             case EVENT_STATUS:
                 return new StatusEventFilterHolder(ItemFilterStatusBinding.inflate(inflater, parent, false), openedFilter, programType);
             case ASSIGNED_TO_ME:
-                return new AssignToMeFilterHolder(ItemFilterAssignedBinding.inflate(inflater, parent, false), openedFilter);
+                return new AssignToMeFilterHolder(ItemFilterAssignedBinding.inflate(inflater, parent, false), openedFilter, programType);
             case ENROLLMENT_STATUS:
-                return new StatusEnrollmentFilterHolder(ItemFilterEnrollmentStatusBinding.inflate(inflater, parent, false), openedFilter);
+                return new StatusEnrollmentFilterHolder(ItemFilterEnrollmentStatusBinding.inflate(inflater, parent, false), openedFilter, sortingItem, programType);
             default:
                 throw new IllegalArgumentException("Unsupported filter value");
         }
@@ -69,9 +72,9 @@ public class FiltersAdapter extends RecyclerView.Adapter<FilterHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull FilterHolder holder, int position) {
-        if(holder instanceof EnrollmentDateFilterHolder){
+        if (holder instanceof EnrollmentDateFilterHolder){
             ((EnrollmentDateFilterHolder)holder).updateLabel(enrollmentDateLabel).bind();
-        }else {
+        } else {
             holder.bind();
         }
     }

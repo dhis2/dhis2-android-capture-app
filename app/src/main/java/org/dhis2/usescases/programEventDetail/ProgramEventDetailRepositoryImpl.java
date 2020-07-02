@@ -11,6 +11,8 @@ import com.mapbox.geojson.FeatureCollection;
 
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.uicomponents.map.geometry.mapper.featurecollection.MapEventToFeatureCollection;
+import org.dhis2.utils.filters.sorting.SortingItem;
+import org.dhis2.utils.filters.sorting.SortingStatus;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper;
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope;
@@ -48,8 +50,15 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
 
     @NonNull
     @Override
-    public LiveData<PagedList<ProgramEventViewModel>> filteredProgramEvents(List<DatePeriod> dateFilter, List<String> orgUnitFilter, List<CategoryOptionCombo> catOptCombList,
-                                                                            List<EventStatus> eventStatus, List<State> states, boolean assignedToUser) {
+    public LiveData<PagedList<ProgramEventViewModel>> filteredProgramEvents(
+            List<DatePeriod> dateFilter,
+            List<String> orgUnitFilter,
+            List<CategoryOptionCombo> catOptCombList,
+            List<EventStatus> eventStatus,
+            List<State> states,
+            SortingItem sortingItem,
+            boolean assignedToUser) {
+
         EventCollectionRepository eventRepo = d2.eventModule().events().byProgramUid().eq(programUid).byDeleted().isFalse();
         if (!dateFilter.isEmpty())
             eventRepo = eventRepo.byEventDate().inDatePeriods(dateFilter);
@@ -64,7 +73,9 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
         if (assignedToUser)
             eventRepo = eventRepo.byAssignedUser().eq(getCurrentUser());
 
-        DataSource dataSource = eventRepo.orderByEventDate(RepositoryScope.OrderByDirection.DESC).withTrackedEntityDataValues().getDataSource().map(event -> mapper.eventToProgramEvent(event));
+        eventRepo = eventRepoSorting(sortingItem, eventRepo);
+
+        DataSource dataSource = eventRepo.withTrackedEntityDataValues().getDataSource().map(event -> mapper.eventToProgramEvent(event));
 
         return new LivePagedListBuilder(new DataSource.Factory() {
             @Override
@@ -77,9 +88,12 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
     @NonNull
     @Override
     public Flowable<kotlin.Pair<FeatureCollection, BoundingBox>> filteredEventsForMap(
-            List<DatePeriod> dateFilter, List<String> orgUnitFilter,
-            List<CategoryOptionCombo> catOptCombList, List<EventStatus> eventStatus,
-            List<State> states, boolean assignedToUser
+            List<DatePeriod> dateFilter,
+            List<String> orgUnitFilter,
+            List<CategoryOptionCombo> catOptCombList,
+            List<EventStatus> eventStatus,
+            List<State> states,
+            boolean assignedToUser
     ) {
         EventCollectionRepository eventRepo = d2.eventModule().events().byProgramUid().eq(programUid).byDeleted().isFalse();
         if (!dateFilter.isEmpty())
@@ -95,9 +109,34 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
         if (assignedToUser)
             eventRepo = eventRepo.byAssignedUser().eq(getCurrentUser());
 
-        return eventRepo.byDeleted().isFalse().orderByEventDate(RepositoryScope.OrderByDirection.DESC).withTrackedEntityDataValues().get()
+        return eventRepo.byDeleted().isFalse().withTrackedEntityDataValues().get()
                 .map(listEvents -> mapEventToFeatureCollection.map(listEvents))
                 .toFlowable();
+    }
+
+    private EventCollectionRepository eventRepoSorting(SortingItem sortingItem, EventCollectionRepository eventRepo) {
+        if (sortingItem != null) {
+            switch (sortingItem.getFilterSelectedForSorting()) {
+                case ORG_UNIT:
+                    eventRepo = eventRepo.orderByOrganisationUnitName(
+                            sortingItem.getSortingStatus() == SortingStatus.ASC ?
+                                    RepositoryScope.OrderByDirection.ASC :
+                                    RepositoryScope.OrderByDirection.DESC);
+                    break;
+                case PERIOD:
+                    if (sortingItem.getSortingStatus() == SortingStatus.ASC) {
+                        eventRepo = eventRepo.orderByEventDate(RepositoryScope.OrderByDirection.ASC);
+                    } else {
+                        eventRepo = eventRepo.orderByEventDate(RepositoryScope.OrderByDirection.DESC);
+                    }
+                    break;
+                default:
+                    break;
+            }
+        } else {
+            eventRepo = eventRepo.orderByEventDate(RepositoryScope.OrderByDirection.DESC);
+        }
+        return eventRepo;
     }
 
     @Override

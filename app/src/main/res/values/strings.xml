@@ -596,6 +596,7 @@
     <string name="filters_disabled">No filters applied</string>
     <string name="filters_title_period">Period</string>
     <string name="filters_title_org_unit">Org. Unit</string>
+    <string name="filters_title_sorting">Sorting</string>
     <string name="filters_title_status">Status</string>
     <string name="filters_title_state">Sync</string>
     <string name="filters_title_assigned">Assigned to me</string>
