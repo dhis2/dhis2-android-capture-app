@@ -14,7 +14,7 @@ class SatelliteMapLayer(
     override var visible = selected
 
     override fun showLayer() {
-        if(!visible) {
+        if (!visible) {
             mapboxMap.setStyle(Style.SATELLITE_STREETS) {
                 styleChangeCallback?.invoke()
             }
@@ -23,7 +23,7 @@ class SatelliteMapLayer(
     }
 
     override fun hideLayer() {
-        if(visible) {
+        if (visible) {
             mapboxMap.setStyle(Style.MAPBOX_STREETS) {
                 styleChangeCallback?.invoke()
             }
