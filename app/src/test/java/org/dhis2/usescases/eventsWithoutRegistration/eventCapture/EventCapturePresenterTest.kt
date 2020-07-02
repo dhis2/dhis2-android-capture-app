@@ -90,7 +90,8 @@ class EventCapturePresenterTest {
                 false,
                 null,
                 1,
-                ObjectStyle.builder().build()
+                ObjectStyle.builder().build(),
+                null
             )
         )
 
@@ -111,7 +112,8 @@ class EventCapturePresenterTest {
                 false,
                 null,
                 1,
-                ObjectStyle.builder().build()
+                ObjectStyle.builder().build(),
+                null
             )
         )
 

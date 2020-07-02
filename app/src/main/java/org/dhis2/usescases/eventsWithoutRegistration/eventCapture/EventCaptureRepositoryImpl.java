@@ -325,8 +325,10 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                         TrackedEntityDataValueObjectRepository valueRepository = d2.trackedEntityModule().trackedEntityDataValues().value(eventUid, uid);
 
                         String value = null;
+                        String rawValue = null;
                         if (valueRepository.blockingExists()) {
                             value = valueRepository.blockingGet().value();
+                            rawValue = value;
                             String friendlyValue = ValueExtensionsKt.userFriendlyValue(ValueExtensionsKt.blockingGetValueCheck(valueRepository, d2, uid), d2);
 
                             if (fieldViewModel instanceof OrgUnitViewModel && !isEmpty(value)) {
@@ -342,8 +344,12 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                                 .withEditMode(editable || isEventEditable);
 
                         if (fieldViewModel instanceof EditTextViewModel) {
-                            String colorByLegend = getColorByLegend(value, uid);
+                            String colorByLegend = getColorByLegend(rawValue, uid);
                             fieldViewModel = ((EditTextViewModel)fieldViewModel)
+                                    .withColorByLegend(colorByLegend);
+                        } else if (fieldViewModel instanceof SpinnerViewModel){
+                            String colorByLegend = getColorByLegend(rawValue, uid);
+                            fieldViewModel = ((SpinnerViewModel)fieldViewModel)
                                     .withColorByLegend(colorByLegend);
                         }
 
@@ -393,6 +399,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                         boolean mandatory = programStageDataElement.compulsory() != null ? programStageDataElement.compulsory() : false;
                         String optionSet = de.optionSetUid();
                         String dataValue = valueRepository.blockingExists() ? valueRepository.blockingGet().value() : null;
+                        String rawValue = dataValue;
                         String friendlyValue = dataValue != null ? ValueExtensionsKt.userFriendlyValue(ValueExtensionsKt.blockingGetValueCheck(valueRepository, d2, uid), d2) : null;
 
                         boolean allowFurureDates = programStageDataElement.allowFutureDate() != null ? programStageDataElement.allowFutureDate() : false;
@@ -420,7 +427,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                             dataValue = friendlyValue;
                         }
 
-                        String colorByLegend = getColorByLegend(dataValue, uid);
+                        String colorByLegend = getColorByLegend(rawValue, uid);
 
                         ProgramStageSectionRenderingType renderingType = programStageSection != null && programStageSection.renderType() != null &&
                                 programStageSection.renderType().mobile() != null ?
