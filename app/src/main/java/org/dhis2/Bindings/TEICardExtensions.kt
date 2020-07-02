@@ -164,9 +164,6 @@ fun SearchTeiModel.setTeiImage(
             .transition(DrawableTransitionOptions.withCrossFade())
             .transform(CircleCrop())
             .into(teiImageView)
-    } else if (placeHolderId != -1) {
-        teiTextImageView.visibility = View.GONE
-        teiImageView.setImageResource(placeHolderId)
     } else if (attributeValues != null &&
         attributeValues.values.isNotEmpty()
     ) {
@@ -176,7 +173,7 @@ fun SearchTeiModel.setTeiImage(
         if (valueToShow[0] == null) {
             teiTextImageView.text = "-"
         } else {
-            teiTextImageView.text = valueToShow[0].value().toString()
+            teiTextImageView.text = valueToShow[0].value()?.first().toString()
         }
         teiTextImageView.setTextColor(
             ColorUtils.getContrastColor(
@@ -186,6 +183,9 @@ fun SearchTeiModel.setTeiImage(
                 )
             )
         )
+    } else if (placeHolderId != -1) {
+        teiTextImageView.visibility = View.GONE
+        teiImageView.setImageResource(placeHolderId)
     } else {
         teiTextImageView.visibility = View.GONE
     }

@@ -2,13 +2,11 @@ package org.dhis2.uicomponents.map.carousel
 
 import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.resource.bitmap.CircleCrop
-import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
-import java.io.File
+import org.dhis2.Bindings.setTeiImage
 import org.dhis2.R
 import org.dhis2.databinding.ItemCarouselEventBinding
 import org.dhis2.uicomponents.map.model.EventUiComponentModel
+import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel
 import org.dhis2.utils.ColorUtils
 import org.dhis2.utils.DateUtils
 import org.dhis2.utils.resources.ResourceManager
@@ -54,22 +52,12 @@ class CarouselEventHolder(
             data.programStage?.style()?.icon(),
             binding.programStageImage
         )
-        setImage(data.teiImage, data.teiDefaultIcon, binding.teiImage)
-    }
-
-    private fun setImage(image: String, default: String, target: ImageView) {
-        Glide.with(itemView.context).load(File(image))
-            .placeholder(
-                ResourceManager(target.context)
-                    .getObjectStyleDrawableResource(default, R.drawable.photo_temp_gray)
-            )
-            .error(
-                ResourceManager(target.context)
-                    .getObjectStyleDrawableResource(default, R.drawable.photo_temp_gray)
-            )
-            .transition(DrawableTransitionOptions.withCrossFade())
-            .transform(CircleCrop())
-            .into(target)
+        SearchTeiModel().apply {
+            setProfilePicture(data.teiImage)
+            defaultTypeIcon = data.teiDefaultIcon
+            attributeValues = data.teiAttribute
+            setTeiImage(itemView.context, binding.teiImage, binding.imageText)
+        }
     }
 
     private fun setStageStyle(color: String?, icon: String?, target: ImageView) {
