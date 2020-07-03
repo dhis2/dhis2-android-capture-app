@@ -38,7 +38,7 @@ class EventWithoutRegistrationRobot : BaseRobot() {
 
     fun clickOnEventAtPosition(position: Int) {
         onView(withId(R.id.recycler))
-            .perform(actionOnItemAtPosition<ProgramEventDetailViewHolder>(position, clickChildViewWithId(R.id.status_icon)))
+            .perform(actionOnItemAtPosition<ProgramEventDetailViewHolder>(position, click()))
     }
 
     fun clickOnSaveFab() {

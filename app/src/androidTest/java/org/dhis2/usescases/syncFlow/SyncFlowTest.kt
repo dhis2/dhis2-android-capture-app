@@ -120,11 +120,7 @@ class SyncFlowTest : BaseTest() {
 
     @Test
     fun shouldSuccessfullySyncSavedEvent() {
-
-        /*id: "VBqh0ynB2wv"
-        name: "Malaria case registration"
-        programType: "WITHOUT_REGISTRATION"
-
+        /*
         name: Antenatal care visit
         id: lxAQ7Zs9VYR
         programType: WITHOUT_REGISTRATION
@@ -133,10 +129,10 @@ class SyncFlowTest : BaseTest() {
         /**
          * prepare and launch activity in Malaria
          * select event
-         * update date (change date)
          * click on finish
          * */
 
+        mockWebServerRobot.addResponse(POST, SYNC_EVENT_PATH, API_SYNC_EVENT_OK)
 
         setupCredentials()
         prepareMalariaEventIntentAndLaunchActivity(ruleEventWithoutRegistration)
@@ -148,18 +144,50 @@ class SyncFlowTest : BaseTest() {
 
         eventRobot {
             clickOnFormFabButton()
-            clickOnFinish()
+            clickOnFinishAndComplete()
         }
 
         syncFlowRobot {
-            // click on syn event
-            // click on sync btn
+            clickOnEventToSync(0)
+            clickOnSyncButton()
+            Thread.sleep(4000)
+            checkSyncWasSuccessfully() //sync failed
         }
     }
+
+    @Test
+    fun shouldShowErrorWhenSyncEventFails() {
+        mockWebServerRobot.addResponse(POST, SYNC_EVENT_PATH, API_SYNC_EVENT_OK)
+
+        setupCredentials()
+        prepareMalariaEventIntentAndLaunchActivity(ruleEventWithoutRegistration)
+
+        eventWithoutRegistrationRobot {
+            Thread.sleep(4000)
+            clickOnEventAtPosition(1)
+        }
+
+        eventRobot {
+            clickOnFormFabButton()
+            clickOnFinishAndComplete()
+        }
+
+        syncFlowRobot {
+            clickOnEventToSync(1)
+            clickOnSyncButton()
+            Thread.sleep(4000)
+            checkSyncFailed()
+        }
+
+    }
+
 
     companion object {
         const val SYNC_TEI_PATH = "/api/trackedEntityInstances?*"
         const val API_SYNC_TEI_OK = "mocks/syncFlow/teiSync.json"
         const val API_SYNC_TEI_ERROR = "mocks/syncFlow/teiSyncError.json"
+
+        const val SYNC_EVENT_PATH = "/api/events?strategy=SYNC"
+        const val API_SYNC_EVENT_OK = "mocks/syncFlow/teiSync.json"
     }
 }
