@@ -1,4 +1,4 @@
-package org.dhis2.usescases.teiDashboard.dashboardfragments.tei_data;
+package org.dhis2.usescases.teiDashboard.dashboardfragments.teidata;
 
 import androidx.recyclerview.widget.RecyclerView;
 

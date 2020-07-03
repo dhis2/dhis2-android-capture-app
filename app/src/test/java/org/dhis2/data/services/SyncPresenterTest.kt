@@ -28,7 +28,6 @@ class SyncPresenterTest {
     private val workManagerController: WorkManagerController = mock()
     private val analyticsHelper: AnalyticsHelper = mock()
 
-
     @Before
     fun setUp() {
         presenter = SyncPresenterImpl(d2, preferences, workManagerController, analyticsHelper)
@@ -47,7 +46,6 @@ class SyncPresenterTest {
         val (eventLimit, limitByOU, limitByProgram) = presenter.getDownloadLimits()
 
         assertTrue(eventLimit == 200 && !limitByOU && !limitByProgram)
-
     }
 
     @Test
@@ -63,7 +61,6 @@ class SyncPresenterTest {
         val (eventLimit, limitByOU, limitByProgram) = presenter.getDownloadLimits()
 
         assertTrue(eventLimit == 200 && limitByOU && limitByProgram)
-
     }
 
     @Test
@@ -79,7 +76,6 @@ class SyncPresenterTest {
         val (eventLimit, limitByOU, limitByProgram) = presenter.getDownloadLimits()
 
         assertTrue(eventLimit == 200 && !limitByOU && limitByProgram)
-
     }
 
     @Test
@@ -95,7 +91,6 @@ class SyncPresenterTest {
         val (eventLimit, limitByOU, limitByProgram) = presenter.getDownloadLimits()
 
         assertTrue(eventLimit == 200 && limitByOU && !limitByProgram)
-
     }
 
     @Test

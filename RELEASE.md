@@ -1,4 +1,4 @@
-Android Capture App for DHIS 2 (v2.1.1) - Patch version
+Android Capture App for DHIS 2 (v2.1.2) - Patch version
 
 <table>
 <tbody>
@@ -9,31 +9,24 @@ This is a patch version of the <strong>DHIS2 Android App</strong>. It builds upo
 
 
 ## Bugs fixed
-**[ANDROAPP-2665](https://jira.dhis2.org/browse/ANDROAPP-2665): RTL support for tabs labels**
-**[ANDROAPP-2666](https://jira.dhis2.org/browse/ANDROAPP-2666): RTL support for TEI dashboard**
-**[ANDROAPP-2668](https://jira.dhis2.org/browse/ANDROAPP-2668): RTL support for data sets**
-**[ANDROAPP-2872](https://jira.dhis2.org/browse/ANDROAPP-2872): In landscape mode the tabs for tracker programs are not displayed with icons**
-**[ANDROAPP-2878](https://jira.dhis2.org/browse/ANDROAPP-2878): Switching to portrait mode (and vice versa) clears the search form**
-**[ANDROAPP-2908](https://jira.dhis2.org/browse/ANDROAPP-2908): QR camera can read both QRs and Barcodes despite rendering type**
-**[ANDROAPP-2954](https://jira.dhis2.org/browse/ANDROAPP-2954): Sync screen showing when performing an offline login**
-**[ANDROAPP-2963](https://jira.dhis2.org/browse/ANDROAPP-2963): Incident date time should be set to 0:00:00**
-**[ANDROAPP-2980](https://jira.dhis2.org/browse/ANDROAPP-2980): Design - Change save icon to the diskette**
-**[ANDROAPP-2981](https://jira.dhis2.org/browse/ANDROAPP-2981): Design - Add section number**
-**[ANDROAPP-2982](https://jira.dhis2.org/browse/ANDROAPP-2982): Crash - Enrollment activity crashes upon selecting an image**
-**[ANDROAPP-2983](https://jira.dhis2.org/browse/ANDROAPP-2983): Crash - event detail repository crashes**
-**[ANDROAPP-2984](https://jira.dhis2.org/browse/ANDROAPP-2984): Crash - login activity crash when fingerprint is used**
-**[ANDROAPP-2985](https://jira.dhis2.org/browse/ANDROAPP-2985): Crash - Handle authenticated user error**
-**[ANDROAPP-3020](https://jira.dhis2.org/browse/ANDROAPP-3020): Icon look different in Home screen and Event creation screen**
-**[ANDROAPP-3021](https://jira.dhis2.org/browse/ANDROAPP-3021): Percentage spinner never shows 100%**
-**[ANDROAPP-3022](https://jira.dhis2.org/browse/ANDROAPP-3022): Hide keyboard opens dialogue to go back and close data entry screen**
-**[ANDROAPP-3023](https://jira.dhis2.org/browse/ANDROAPP-3023): Filters: when selection "Not synced" the bubble shows 2 filters applied**
-**[ANDROAPP-3024](https://jira.dhis2.org/browse/ANDROAPP-3024): Filters: When filters returns 0 results the top icon disappears**
-**[ANDROAPP-3032](https://jira.dhis2.org/browse/ANDROAPP-3032): Keyboard does not show on search form for some devices**
+**[ANDROAPP-3093](https://jira.dhis2.org/browse/ANDROAPP-3093): Events: Show section label for events with just one section**
+**[ANDROAPP-3038](https://jira.dhis2.org/browse/ANDROAPP-3038): DataSets: Values not rendering for selected field**
+**[ANDROAPP-3041](https://jira.dhis2.org/browse/ANDROAPP-3041): Search: User is sent to home when keyboard is closed**
+**[ANDROAPP-2812](https://jira.dhis2.org/browse/ANDROAPP-2812): Tracker: Attributes sorted randomly in section**
+**[ANDROAPP-3036](https://jira.dhis2.org/browse/ANDROAPP-3036): Sync settings: Sync parameters not working properly**
+**[ANDROAPP-3037](https://jira.dhis2.org/browse/ANDROAPP-3037): DataSets: Inconsistent behaviour with complete/reopen action**
+**[ANDROAPP-3073](https://jira.dhis2.org/browse/ANDROAPP-3073): OptionSets: Sorting when using non default rendering type**
+**[ANDROAPP-3076](https://jira.dhis2.org/browse/ANDROAPP-3076): ValueTypes: Images are compressed**
+**[ANDROAPP-3109](https://jira.dhis2.org/browse/ANDROAPP-3109): Crash - Events: Form crashed in android 4.4**
+**[ANDROAPP-3077](https://jira.dhis2.org/browse/ANDROAPP-3077): DataSets: Show full labels for table columns**
+**[ANDROAPP-3108](https://jira.dhis2.org/browse/ANDROAPP-3108): Sync: Removed seconds from time format**
+**[ANDROAPP-3107](https://jira.dhis2.org/browse/ANDROAPP-3107): Tracker: Do not change TEI position in list when sync status changes**
+**[ANDROAPP-3104](https://jira.dhis2.org/browse/ANDROAPP-3104): Events: Place event opened section on top of the list**
 
 ## Other additions
-In addition, the <strong>Android SDK</strong> has been updated to v1.1.1 and a new language has been added: <strong>Norwegian</strong>
+In addition, the <strong>Android SDK</strong> has been updated to v1.1.2 and languages translations have been updated.
 
-You can find in Jira details on the [bugs fixed](https://jira.dhis2.org/issues/?filter=11860) in this version.
+You can find in Jira details on the [bugs fixed](https://jira.dhis2.org/issues/?filter=11869) in this version.
 
 Remember to check the [documentation](https://www.dhis2.org/android-documentation) for detailed information of the features included in the App and how to configure DHIS2 to use it.
 

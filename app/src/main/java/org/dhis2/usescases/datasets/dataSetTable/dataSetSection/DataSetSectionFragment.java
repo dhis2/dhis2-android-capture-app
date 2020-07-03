@@ -112,6 +112,12 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        presenterFragment.checkComplete();
+    }
+
+    @Override
     public void onDestroyView() {
         super.onDestroyView();
         presenterFragment.onDettach();
@@ -363,6 +369,7 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
             binding.actionButton.setText(activity.getString(R.string.complete));
         else
             binding.actionButton.setText(activity.getString(R.string.re_open));
+        activity.isDataSetOpen(isCompleted);
     }
 
     @Override

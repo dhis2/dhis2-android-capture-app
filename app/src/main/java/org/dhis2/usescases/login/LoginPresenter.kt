@@ -300,10 +300,10 @@ class LoginPresenter(
             fingerPrintController.authenticate(view.getPromptParams())
                 .map { result ->
                     if (preferenceProvider.contains(
-                            SECURE_SERVER_URL,
-                            SECURE_USER_NAME,
-                            SECURE_PASS
-                        )
+                        SECURE_SERVER_URL,
+                        SECURE_USER_NAME,
+                        SECURE_PASS
+                    )
                     ) {
                         Result.success(result)
                     } else {
@@ -372,7 +372,7 @@ class LoginPresenter(
         return Pair(urls, users)
     }
 
-    //TODO Remove this when we remove the userManager from the presenter
+    // TODO Remove this when we remove the userManager from the presenter
     @RestrictTo(Scope.TESTS)
     fun setUserManager(userManager: UserManager) {
         this.userManager = userManager
