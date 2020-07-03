@@ -12,6 +12,7 @@ import androidx.test.espresso.matcher.ViewMatchers.withText
 import org.dhis2.R
 import org.dhis2.common.BaseRobot
 import org.dhis2.common.viewactions.clickChildViewWithId
+import org.dhis2.usescases.datasets.datasetDetail.DataSetDetailViewHolder
 import org.dhis2.usescases.programEventDetail.ProgramEventDetailViewHolder
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTEViewHolder
 import org.hamcrest.Matchers.allOf
@@ -49,5 +50,10 @@ class SyncFlowRobot : BaseRobot() {
             .perform(
                 actionOnItemAtPosition<ProgramEventDetailViewHolder>(position, clickChildViewWithId(R.id.sync_icon))
             )
+    }
+
+    fun clickOnDataSetToSync(position: Int) {
+        onView(withId(R.id.recycler))
+            .perform(actionOnItemAtPosition<DataSetDetailViewHolder>(position, clickChildViewWithId(R.id.sync_icon)))
     }
 }
