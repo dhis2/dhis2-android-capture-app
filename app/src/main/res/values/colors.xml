@@ -397,6 +397,7 @@
     <color name="secondaryColor">#F0858585</color>
     <color name="circleColor">#4D000000</color>
     <color name="filter_alpha">#32000000</color>
+    <color name="divider_bg">#eeeeee</color>
     <!--endregion-->
 
 </resources>

@@ -20,6 +20,7 @@ class SearchTEViewHolder(private val binding: ItemSearchTrackedEntityBinding) :
         presenter: SearchTEContractsModule.Presenter,
         searchTeiModel: SearchTeiModel
     ) {
+        hideAttributeList()
         binding.apply {
             overdue = searchTeiModel.isHasOverdue
             isOnline = searchTeiModel.isOnline
@@ -71,7 +72,7 @@ class SearchTEViewHolder(private val binding: ItemSearchTrackedEntityBinding) :
             ).show() else presenter.onSyncIconClick(searchTeiModel.tei.uid())
         }
         binding.executePendingBindings()
-        itemView.setOnClickListener { view: View? ->
+        itemView.setOnClickListener {
             presenter.onTEIClick(
                 searchTeiModel.tei.uid(),
                 if (searchTeiModel.selectedEnrollment != null) {

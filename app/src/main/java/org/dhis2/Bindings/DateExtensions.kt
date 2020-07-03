@@ -1,17 +1,16 @@
 package org.dhis2.Bindings
 
 import android.content.Context
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 import org.dhis2.R
-import org.dhis2.utils.DateUtils
 import org.joda.time.Days
 import org.joda.time.Hours
 import org.joda.time.Instant
 import org.joda.time.Interval
 import org.joda.time.LocalDate
 import org.joda.time.Minutes
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 fun Date?.toDateSpan(context: Context): String {
     return if (this == null) {
@@ -34,7 +33,7 @@ fun Date?.toDateSpan(context: Context): String {
                 context.getString(R.string.interval_yesterday)
             }
             else -> {
-                DateUtils.uiDateFormat().format(this)
+                SimpleDateFormat("d/M/yyyy", Locale.getDefault()).format(this)
             }
         }
     }
@@ -56,7 +55,7 @@ fun Date?.toUiText(context: Context): String {
                 SimpleDateFormat("dd MMM", Locale.getDefault()).format(this)
             }
             else -> {
-                SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(this)
+                SimpleDateFormat("d/M/yyyy", Locale.getDefault()).format(this)
             }
         }
     }

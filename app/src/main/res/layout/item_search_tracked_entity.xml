@@ -41,8 +41,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:animateLayoutChanges="true"
-        android:minHeight="96dp"
-        android:paddingEnd="16dp">
+        android:minHeight="92dp">
 
         <ImageView
             android:id="@+id/tracked_entity_image"
@@ -100,10 +99,12 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
             android:background="@drawable/round_border_box_2"
-            android:paddingStart="1dp"
-            android:paddingEnd="1dp"
+            android:ellipsize="end"
             android:gravity="center"
             android:minHeight="14dp"
+            android:paddingStart="1dp"
+            android:paddingEnd="1dp"
+            android:singleLine="true"
             android:textAlignment="center"
             android:textColor="#8A333333"
             android:textSize="9sp"
@@ -134,6 +135,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
+            android:layout_marginTop="4dp"
             android:layout_marginEnd="5dp"
             android:fontFamily="@font/rubik_regular"
             android:text="@{attributeNames.size()>1?attributeNames.toArray()[1]:null}"
@@ -149,6 +151,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
+            android:layout_marginTop="6dp"
             android:layout_marginEnd="5dp"
             android:text="@{attributeNames.size()>2?attributeNames.toArray()[2]:null}"
             android:textColor="@color/text_black_DE3"
@@ -194,6 +197,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="5dp"
+            android:layout_marginTop="4dp"
             android:layout_marginEnd="5dp"
             android:ellipsize="end"
             android:fontFamily="@font/rubik_regular"
@@ -211,6 +215,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="5dp"
+            android:layout_marginTop="6dp"
             android:layout_marginEnd="5dp"
             android:ellipsize="end"
             android:singleLine="true"
@@ -242,7 +247,7 @@
             android:id="@+id/infoLayout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
@@ -250,7 +255,7 @@
                 android:id="@+id/lastUpdated"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
+                android:layout_marginTop="18dp"
                 android:layout_marginEnd="4dp"
                 android:textColor="@color/text_black_8A3"
                 android:textSize="12sp"
@@ -263,10 +268,12 @@
 
             <ImageView
                 android:id="@+id/syncState"
+                style="@style/ActionIconSmallPadding"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
                 android:layout_marginStart="4dp"
+                android:layout_marginTop="10dp"
                 android:visibility="@{isOnline?View.GONE:View.VISIBLE}"
                 app:layout_constraintEnd_toStartOf="@+id/download"
                 app:layout_constraintHorizontal_bias="0.5"
@@ -276,10 +283,12 @@
 
             <ImageView
                 android:id="@+id/download"
+                style="@style/ActionIconSmallPadding"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
                 android:layout_marginStart="4dp"
+                android:layout_marginTop="10dp"
                 android:tint="@color/colorGreyDefault"
                 android:visibility="@{isOnline?View.VISIBLE:View.GONE}"
                 app:layout_constraintHorizontal_bias="0.5"
@@ -322,13 +331,24 @@
 
         <ImageView
             android:id="@+id/showAttributesButton"
+            style="@style/ActionIconSmallPadding"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="10dp"
             android:visibility="@{attributeNames.size()>3?View.VISIBLE:View.GONE}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:srcCompat="@drawable/ic_arrow_down"
             app:tint="#61333333" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_marginStart="16dp"
+            android:background="@color/divider_bg"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/imageText" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
