@@ -1,6 +1,9 @@
 package org.dhis2.Bindings
 
 import android.content.Context
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 import org.dhis2.R
 import org.joda.time.Days
 import org.joda.time.Hours
@@ -8,9 +11,6 @@ import org.joda.time.Instant
 import org.joda.time.Interval
 import org.joda.time.LocalDate
 import org.joda.time.Minutes
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 
 fun Date?.toDateSpan(context: Context): String {
     return if (this == null) {

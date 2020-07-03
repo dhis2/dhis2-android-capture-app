@@ -19,11 +19,11 @@ class SearchTEViewHolder(private val binding: ItemSearchTrackedEntityBinding) :
     fun bind(
         presenter: SearchTEContractsModule.Presenter,
         searchTeiModel: SearchTeiModel,
-        attributeVisibilityCallback:()->Unit
+        attributeVisibilityCallback: () -> Unit
     ) {
-        if(searchTeiModel.isAttributeListOpen){
+        if (searchTeiModel.isAttributeListOpen) {
             showAttributeList()
-        }else {
+        } else {
             hideAttributeList()
         }
         binding.apply {
