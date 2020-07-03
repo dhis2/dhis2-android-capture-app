@@ -114,33 +114,44 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
         super.onDestroy();
     }
 
+
+    @Override
+    public void goBack() {
+        hideKeyboard();
+        attemptFinish();
+    }
+
     @Override
     public void onBackPressed() {
-        if(!ExtensionsKt.isKeyboardOpened(this)) {
-            if (eventMode == EventMode.NEW) {
-                new CustomDialog(
-                        this,
-                        getString(R.string.title_delete_go_back),
-                        getString(R.string.delete_go_back),
-                        getString(R.string.cancel),
-                        getString(R.string.missing_mandatory_fields_go_back),
-                        RQ_GO_BACK,
-                        new DialogClickListener() {
-                            @Override
-                            public void onPositive() {
-                            }
-
-                            @Override
-                            public void onNegative() {
-                                presenter.deleteEvent();
-                            }
-                        }
-                ).show();
-            } else {
-                finishDataEntry();
-            }
+        if (!ExtensionsKt.isKeyboardOpened(this)) {
+            attemptFinish();
         } else {
             hideKeyboard();
+        }
+    }
+
+    private void attemptFinish() {
+        if (eventMode == EventMode.NEW) {
+            new CustomDialog(
+                    this,
+                    getString(R.string.title_delete_go_back),
+                    getString(R.string.delete_go_back),
+                    getString(R.string.cancel),
+                    getString(R.string.missing_mandatory_fields_go_back),
+                    RQ_GO_BACK,
+                    new DialogClickListener() {
+                        @Override
+                        public void onPositive() {
+                        }
+
+                        @Override
+                        public void onNegative() {
+                            presenter.deleteEvent();
+                        }
+                    }
+            ).show();
+        } else {
+            finishDataEntry();
         }
     }
 
@@ -444,11 +455,6 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
                     }
                 }
         ).show();
-    }
-
-    @Override
-    public void goBack() {
-        onBackPressed();
     }
 
     @Override

@@ -1,10 +1,10 @@
-package org.dhis2.usescases.teiDashboard.dashboardfragments.tei_data.tei_events;
+package org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents;
 
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.dhis2.BR;
 import org.dhis2.databinding.ItemEventBinding;
-import org.dhis2.usescases.teiDashboard.dashboardfragments.tei_data.TEIDataContracts;
+import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TEIDataContracts;
 import org.dhis2.utils.DateUtils;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.android.core.event.Event;

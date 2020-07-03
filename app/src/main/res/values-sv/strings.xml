@@ -84,7 +84,6 @@
     <string name="re_open">Öppna igen</string>
     <!-- State -->
     <string name="state_synced">Synkronisera</string>
-    <string name="state_to_post">Att lämna</string>
     <string name="state_to_update">Att uppdatera</string>
     <string name="state_to_delete">Att radera</string>
     <string name="state_error">Fel</string>

@@ -20,17 +20,21 @@
             android:id="@+id/title"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:ellipsize="end"
-            android:maxLines="1"
+            android:ellipsize="marquee"
+            android:gravity="center"
+            android:marqueeRepeatLimit="marquee_forever"
+            android:scrollHorizontally="true"
+            android:singleLine="true"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
             android:textColor="@color/table_view_default_text_color"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            android:gravity="center"
-            app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            tools:textColor="@color/red_060"
-            app:tableScaleTextSize="@{tableScale}"
-            tools:text="DATA ELEMENT TEXT" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:textSize="12sp"
+            tools:text="DATA ELEMENT TEXT"
+            tools:textColor="@color/red_060" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

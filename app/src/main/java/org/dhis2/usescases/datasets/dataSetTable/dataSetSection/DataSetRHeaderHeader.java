@@ -22,5 +22,6 @@ public class DataSetRHeaderHeader extends AbstractViewHolder {
     public void bind(String rowHeaderTitle, ObservableField<DataSetTableAdapter.TableScale> tableScale) {
         binding.setTableScale(tableScale);
         binding.title.setText(rowHeaderTitle);
+        binding.title.setSelected(true);
     }
 }
