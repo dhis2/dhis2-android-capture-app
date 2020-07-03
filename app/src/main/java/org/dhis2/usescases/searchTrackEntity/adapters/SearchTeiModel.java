@@ -31,6 +31,7 @@ public class SearchTeiModel implements CarouselItemModel {
     private List<Enrollment> enrollments;
     private Date overdueDate;
     private List<RelationshipViewModel> relationships;
+    private boolean openedAttributeList = false;
 
     public SearchTeiModel() {
         this.tei = null;
@@ -153,5 +154,13 @@ public class SearchTeiModel implements CarouselItemModel {
 
     public void setRelationships(List<RelationshipViewModel> relationships) {
         this.relationships = relationships;
+    }
+
+    public void toggleAttributeList(){
+        this.openedAttributeList = !this.openedAttributeList;
+    }
+
+    public boolean isAttributeListOpen() {
+        return this.openedAttributeList;
     }
 }

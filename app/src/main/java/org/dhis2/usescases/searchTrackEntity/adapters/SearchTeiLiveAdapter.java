@@ -12,9 +12,9 @@ import org.dhis2.R;
 import org.dhis2.databinding.ItemSearchTrackedEntityBinding;
 import org.dhis2.usescases.searchTrackEntity.SearchTEContractsModule;
 
-/**
- * Created by frodriguez on 4/12/2019.
- */
+import kotlin.Unit;
+import kotlin.jvm.functions.Function0;
+
 public class SearchTeiLiveAdapter extends PagedListAdapter<SearchTeiModel, SearchTEViewHolder> {
 
     private static final DiffUtil.ItemCallback<SearchTeiModel> DIFF_CALLBACK = new DiffUtil.ItemCallback<SearchTeiModel>() {
@@ -29,13 +29,15 @@ public class SearchTeiLiveAdapter extends PagedListAdapter<SearchTeiModel, Searc
                 return oldItem.getTei().uid().equals(newItem.getTei().uid()) &&
                         (oldItem.getTei().state() == null && newItem.getTei().state() == null) &&
                         oldItem.getAttributeValues().equals(newItem.getAttributeValues()) &&
-                        oldItem.getProfilePicturePath().equals(newItem.getProfilePicturePath());
+                        oldItem.getProfilePicturePath().equals(newItem.getProfilePicturePath()) &&
+                        oldItem.isAttributeListOpen() != newItem.isAttributeListOpen();
             else {
                 return oldItem.getTei().uid().equals(newItem.getTei().uid()) &&
                         oldItem.getTei().state().equals(newItem.getTei().state()) &&
                         oldItem.getAttributeValues().equals(newItem.getAttributeValues()) &&
                         oldItem.getEnrollments().equals(newItem.getEnrollments()) &&
-                        oldItem.getProfilePicturePath().equals(newItem.getProfilePicturePath());
+                        oldItem.getProfilePicturePath().equals(newItem.getProfilePicturePath()) &&
+                        oldItem.isAttributeListOpen() != newItem.isAttributeListOpen();
             }
         }
     };
@@ -56,6 +58,9 @@ public class SearchTeiLiveAdapter extends PagedListAdapter<SearchTeiModel, Searc
 
     @Override
     public void onBindViewHolder(@NonNull SearchTEViewHolder holder, int position) {
-        holder.bind(presenter, getItem(position));
+        holder.bind(presenter, getItem(position), () -> {
+            notifyItemChanged(position);
+            return Unit.INSTANCE;
+        });
     }
 }

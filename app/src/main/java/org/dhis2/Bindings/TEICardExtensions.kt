@@ -18,9 +18,6 @@ import androidx.core.graphics.drawable.DrawableCompat
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CircleCrop
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
-import java.io.File
-import java.util.ArrayList
-import java.util.Date
 import org.dhis2.R
 import org.dhis2.databinding.ItemFieldValueBinding
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel
@@ -31,6 +28,9 @@ import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue
 import timber.log.Timber
+import java.io.File
+import java.util.ArrayList
+import java.util.Date
 
 fun List<Enrollment>.hasFollowUp(): Boolean {
     return firstOrNull { enrollment ->
@@ -195,7 +195,8 @@ fun LinkedHashMap<String, TrackedEntityAttributeValue>.setAttributeList(
     parentLayout: LinearLayout,
     showAttributesButton: ImageView,
     adapterPosition: Int,
-    showList: (Boolean) -> Unit
+    listIsOpen: Boolean,
+    showList: () -> Unit
 ) {
     parentLayout.removeAllViews()
     if (size > 3) {
@@ -210,13 +211,9 @@ fun LinkedHashMap<String, TrackedEntityAttributeValue>.setAttributeList(
             itemFieldValueBinding.root.tag = adapterPosition.toString() + "_" + fieldName
             parentLayout.addView(itemFieldValueBinding.root)
         }
+        showAttributesButton.scaleY = if(listIsOpen) 1F else -1F
         showAttributesButton.setOnClickListener {
-            showAttributesButton.animate()
-                .scaleY(if (parentLayout.visibility == View.VISIBLE) 1F else -1F)
-                .setDuration(200).start()
-            val shouldShowAttributeList =
-                parentLayout.visibility == View.GONE
-            showList(shouldShowAttributeList)
+            showList()
         }
     } else {
         showAttributesButton.setOnClickListener(null)

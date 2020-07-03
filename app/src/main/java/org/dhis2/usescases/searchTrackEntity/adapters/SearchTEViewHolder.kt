@@ -18,15 +18,21 @@ class SearchTEViewHolder(private val binding: ItemSearchTrackedEntityBinding) :
 
     fun bind(
         presenter: SearchTEContractsModule.Presenter,
-        searchTeiModel: SearchTeiModel
+        searchTeiModel: SearchTeiModel,
+        attributeVisibilityCallback:()->Unit
     ) {
-        hideAttributeList()
+        if(searchTeiModel.isAttributeListOpen){
+            showAttributeList()
+        }else {
+            hideAttributeList()
+        }
         binding.apply {
             overdue = searchTeiModel.isHasOverdue
             isOnline = searchTeiModel.isOnline
             teiSyncState = searchTeiModel.tei.state()
             attribute = searchTeiModel.attributeValues.values.toList()
             attributeNames = searchTeiModel.attributeValues.keys
+            attributeListOpened = searchTeiModel.isAttributeListOpen
             lastUpdated.text = searchTeiModel.tei.lastUpdated().toDateSpan(itemView.context)
         }
 
@@ -51,13 +57,11 @@ class SearchTEViewHolder(private val binding: ItemSearchTrackedEntityBinding) :
             attributeValues.setAttributeList(
                 binding.attributeList,
                 binding.showAttributesButton,
-                adapterPosition
-            ) { showAttributes ->
-                if (showAttributes) {
-                    showAttributeList()
-                } else {
-                    hideAttributeList()
-                }
+                adapterPosition,
+                searchTeiModel.isAttributeListOpen
+            ) {
+                searchTeiModel.toggleAttributeList()
+                attributeVisibilityCallback()
             }
         }
 
