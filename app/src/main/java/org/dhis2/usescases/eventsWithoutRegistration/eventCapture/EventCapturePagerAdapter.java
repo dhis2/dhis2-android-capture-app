@@ -1,53 +1,37 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventCapture;
 
-import android.content.Context;
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
+import androidx.viewpager2.adapter.FragmentStateAdapter;
 
-import org.dhis2.R;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureFragment.EventCaptureFormFragment;
 import org.dhis2.usescases.notes.NotesFragment;
 
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentStatePagerAdapter;
+public class EventCapturePagerAdapter extends FragmentStateAdapter {
 
-/**
- * QUADRAM. Created by ppajuelo on 19/11/2018.
- */
-public class EventCapturePagerAdapter extends FragmentStatePagerAdapter {
-
-    private final Context context;
     private final String programUid;
     private final String eventUid;
 
-    public EventCapturePagerAdapter(FragmentManager fm, Context context,String programUid, String eventUid) {
-        super(fm, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
-        this.context = context;
+    public EventCapturePagerAdapter(FragmentActivity fragmentActivity,
+                                    String programUid,
+                                    String eventUid) {
+        super(fragmentActivity);
         this.programUid = programUid;
         this.eventUid = eventUid;
     }
 
+    @NonNull
     @Override
-    public Fragment getItem(int position) {
-        switch (position) {
-            default:
-                return EventCaptureFormFragment.newInstance(eventUid);
-            case 1:
-                return NotesFragment.newEventInstance(programUid, eventUid);
+    public Fragment createFragment(int position) {
+        if (position == 1) {
+            return NotesFragment.newEventInstance(programUid, eventUid);
         }
+        return EventCaptureFormFragment.newInstance(eventUid);
     }
 
     @Override
-    public int getCount() {
-        return 2; //TODO: ADD OVERVIEW, INDICATORS
-    }
-
-    @Override
-    public CharSequence getPageTitle(int position) {
-        switch (position) {
-            default:
-                return context.getString(R.string.event_overview);
-            case 1:
-                return context.getString(R.string.event_notes);
-        }
+    public int getItemCount() {
+        return 2;
     }
 }

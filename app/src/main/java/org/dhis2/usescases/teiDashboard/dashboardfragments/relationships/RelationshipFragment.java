@@ -106,7 +106,7 @@ public class RelationshipFragment extends FragmentGlobalAbstract implements Rela
 
         binding.mapLayerButton.setOnClickListener(view -> {
             MapLayerDialog layerDialog = new MapLayerDialog(relationshipMapManager.mapLayerManager);
-            layerDialog.show(getFragmentManager(), MapLayerDialog.class.getName());
+            layerDialog.show(getChildFragmentManager(), MapLayerDialog.class.getName());
         });
 
         return binding.getRoot();

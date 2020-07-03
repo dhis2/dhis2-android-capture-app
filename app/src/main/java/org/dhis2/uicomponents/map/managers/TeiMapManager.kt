@@ -5,6 +5,7 @@ import com.mapbox.geojson.FeatureCollection
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource
 import java.util.HashMap
 import org.dhis2.uicomponents.map.TeiMarkers
+import org.dhis2.uicomponents.map.carousel.CarouselAdapter
 import org.dhis2.uicomponents.map.geometry.mapper.EventsByProgramStage
 import org.dhis2.uicomponents.map.layer.LayerType
 import org.dhis2.uicomponents.map.layer.MapLayerManager
@@ -15,6 +16,7 @@ class TeiMapManager(
     private val mapStyle: MapStyle
 ) : MapManager() {
 
+    private lateinit var carouselAdapter: CarouselAdapter
     private lateinit var boundingBox: BoundingBox
     private lateinit var teiFeatureCollections: HashMap<String, FeatureCollection>
     private lateinit var eventsFeatureCollection: Map<String, FeatureCollection>
@@ -28,13 +30,15 @@ class TeiMapManager(
         teiFeatureCollections: HashMap<String, FeatureCollection>,
         eventsFeatureCollection: EventsByProgramStage,
         boundingBox: BoundingBox,
-        featureType: FeatureType
+        featureType: FeatureType,
+        carouselAdapter: CarouselAdapter
     ) {
         this.featureType = featureType
         this.teiFeatureCollections = teiFeatureCollections
         this.eventsFeatureCollection = eventsFeatureCollection.featureCollectionMap
         this.teiFeatureCollections.putAll(this.eventsFeatureCollection)
         this.boundingBox = boundingBox
+        this.carouselAdapter = carouselAdapter
         if (isMapReady()) {
             when {
                 mapLayerManager.mapLayers.isNotEmpty() -> updateStyleSources()
@@ -109,6 +113,7 @@ class TeiMapManager(
         mapLayerManager.initMap(map)
             .withFeatureType(featureType)
             .withMapStyle(mapStyle)
+            .withCarousel(carouselAdapter)
             .addStartLayer(LayerType.TEI_LAYER, TEIS_SOURCE_ID)
             .addLayer(LayerType.ENROLLMENT_LAYER, ENROLLMENT_SOURCE_ID)
             .addLayer(LayerType.HEATMAP_LAYER)

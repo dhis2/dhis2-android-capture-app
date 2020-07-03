@@ -26,7 +26,6 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.AdapterView;
-import android.widget.Filter;
 import android.widget.PopupMenu;
 import android.widget.Spinner;
 import android.widget.Toast;
@@ -64,8 +63,9 @@ import org.dhis2.uicomponents.map.geometry.mapper.EventsByProgramStage;
 import org.dhis2.uicomponents.map.layer.MapLayerDialog;
 import org.dhis2.uicomponents.map.managers.TeiMapManager;
 import org.dhis2.uicomponents.map.mapper.MapRelationshipToRelationshipMapModel;
+import org.dhis2.uicomponents.map.model.CarouselItemModel;
+import org.dhis2.uicomponents.map.model.EventUiComponentModel;
 import org.dhis2.uicomponents.map.model.MapStyle;
-import org.dhis2.uicomponents.map.model.RelationshipUiComponentModel;
 import org.dhis2.usescases.coodinates.CoordinatesView;
 import org.dhis2.usescases.enrollment.EnrollmentActivity;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
@@ -92,6 +92,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
@@ -144,9 +145,9 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     private boolean initSearchNeeded = true;
     private Snackbar downloadingSnackbar;
     private String currentStyle = Style.MAPBOX_STREETS;
-    private MapLayerDialog mapLayerDialog;
     private ObjectAnimator animation = null;
     private Set<String> sources;
+    private Set<String> eventSources;
 
     //---------------------------------------------------------------------------------------------
 
@@ -214,9 +215,10 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             Timber.e(e);
         }
 
-        binding.mapLayerButton.setOnClickListener(view ->
-                mapLayerDialog.show(getSupportFragmentManager(), MapLayerDialog.class.getName())
-        );
+        binding.mapLayerButton.setOnClickListener(view -> {
+            new MapLayerDialog(teiMapManager.mapLayerManager)
+                    .show(getSupportFragmentManager(), MapLayerDialog.class.getName());
+        });
 
         binding.executePendingBindings();
         showHideFilter();
@@ -255,7 +257,6 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             teiMapManager.init(binding.mapView);
             teiMapManager.setOnMapClickListener(this);
         }
-        mapLayerDialog = new MapLayerDialog(teiMapManager.mapLayerManager);
     }
 
     @Override
@@ -790,46 +791,64 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
     /*region MAP*/
     @Override
-    public void setMap(List<SearchTeiModel> teis, HashMap<String, FeatureCollection> teiFeatureCollections, BoundingBox boundingBox, EventsByProgramStage events) {
+    public void setMap(List<SearchTeiModel> teis, HashMap<String, FeatureCollection> teiFeatureCollections, BoundingBox boundingBox, EventsByProgramStage events, List<EventUiComponentModel> eventUiComponentModels) {
         binding.progressLayout.setVisibility(View.GONE);
+
+        sources = teiFeatureCollections.keySet();
+        eventSources = events.component2().keySet();
+        List<CarouselItemModel> allItems = new ArrayList<>();
+        allItems.addAll(teis);
+        allItems.addAll(eventUiComponentModels);
+        for (SearchTeiModel searchTeiModel : teis) {
+            allItems.addAll(new MapRelationshipToRelationshipMapModel().mapList(searchTeiModel.getRelationships()));
+        }
+
+        if(binding.mapCarousel.getAdapter() == null) {
+            CarouselAdapter carouselAdapter = new CarouselAdapter.Builder()
+                    .addOnTeiClickListener(
+                            (teiUid, enrollmentUid, isDeleted) -> {
+                                presenter.onTEIClick(teiUid, enrollmentUid, isDeleted);
+                                return true;
+                            })
+                    .addOnSyncClickListener(
+                            teiUid -> {
+                                presenter.onSyncIconClick(teiUid);
+                                return true;
+                            })
+                    .addOnDeleteRelationshipListener(relationshipUid -> {
+                        presenter.deleteRelationship(relationshipUid);
+                        return true;
+                    })
+                    .addOnRelationshipClickListener(teiUid -> {
+                        presenter.onTEIClick(teiUid, null, false);
+                        return true;
+                    })
+                    .addOnEventClickListener((teiUid, enrollmentUid) -> {
+                        presenter.onTEIClick(teiUid, enrollmentUid, false);
+                        return true;
+                    })
+                    .addProgram(presenter.getProgram())
+                    .addItems(allItems)
+                    .build();
+            binding.mapCarousel.setAdapter(carouselAdapter);
+        }else{
+            ((CarouselAdapter)binding.mapCarousel.getAdapter()).updateAllData(allItems);
+        }
 
         teiMapManager.update(
                 teiFeatureCollections,
                 events,
                 boundingBox,
-                featureType
+                featureType,
+                (CarouselAdapter) binding.mapCarousel.getAdapter()
         );
 
-        sources = teiFeatureCollections.keySet();
-        CarouselAdapter carouselAdapter = new CarouselAdapter.Builder()
-                .addOnTeiClickListener(
-                        (teiUid, enrollmentUid, isDeleted) -> {
-                            presenter.onTEIClick(teiUid, enrollmentUid, isDeleted);
-                            return true;
-                        })
-                .addOnSyncClickListener(
-                        teiUid -> {
-                            presenter.onSyncIconClick(teiUid);
-                            return true;
-                        })
-                .addOnDeleteRelationshipListener(relationshipUid -> {
-                    presenter.deleteRelationship(relationshipUid);
-                    return true;
-                })
-                .addOnRelationshipClickListener(teiUid -> {
-                    presenter.onTEIClick(teiUid, null, false);
-                    return true;
-                })
-                .build();
-
-        binding.mapCarousel.setAdapter(carouselAdapter);
         binding.mapCarousel.attachToMapManager(teiMapManager, () ->
                 {
                     Toast.makeText(this, "Item does not have coordinates", Toast.LENGTH_SHORT).show();
                     return true;
                 }
         );
-        carouselAdapter.addItems(teis);
     }
 
 
@@ -863,9 +882,20 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                         .queryRenderedFeatures(rectF, lineLayerId, pointLayerId);
                 if (!features.isEmpty()) {
                     teiMapManager.mapLayerManager.selectFeature(null);
-                    teiMapManager.mapLayerManager.getLayer(sourceId,true).setSelectedItem(features.get(0));
+                    teiMapManager.mapLayerManager.getLayer(sourceId, true).setSelectedItem(features.get(0));
                     binding.mapCarousel.scrollToFeature(features.get(0));
                     return true;
+                } else {
+                    for (String eventSource : eventSources) {
+                        features = teiMapManager.getMap()
+                                .queryRenderedFeatures(rectF, featureType == FeatureType.POINT ? "POINT_LAYER_" + eventSource : "POLYGON_LAYER_" + eventSource);
+                        if (!features.isEmpty()) {
+                            teiMapManager.mapLayerManager.selectFeature(null);
+                            teiMapManager.mapLayerManager.getLayer(eventSource, true).setSelectedItem(features.get(0));
+                            binding.mapCarousel.scrollToFeature(features.get(0));
+                            return true;
+                        }
+                    }
                 }
             }
         }

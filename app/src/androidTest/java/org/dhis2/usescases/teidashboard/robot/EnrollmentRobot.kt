@@ -2,8 +2,11 @@ package org.dhis2.usescases.teidashboard.robot
 
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
+import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItem
 import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition
+import androidx.test.espresso.matcher.ViewMatchers.hasDescendant
 import androidx.test.espresso.matcher.ViewMatchers.withId
+import androidx.test.espresso.matcher.ViewMatchers.withText
 import org.dhis2.R
 import org.dhis2.common.BaseRobot
 import org.dhis2.common.viewactions.clickChildViewWithId
@@ -20,13 +23,10 @@ fun enrollmentRobot(enrollmentRobot: EnrollmentRobot.() -> Unit) {
 
 class EnrollmentRobot : BaseRobot() {
 
-    fun clickOnAProgramForEnrollment(position: Int) {
-        onView(withId(R.id.recycler)).perform(
-            actionOnItemAtPosition<DashboardProgramViewHolder>(
-                position,
-                clickChildViewWithId(R.id.action_button)
-            )
-        )
+    fun clickOnAProgramForEnrollment(program: String) {
+        onView(withId(R.id.recycler))
+            .perform(actionOnItem<DashboardProgramViewHolder>(
+                hasDescendant(withText(program)), clickChildViewWithId(R.id.action_button)))
     }
 
     fun clickOnAcceptEnrollmentDate() {
@@ -37,9 +37,10 @@ class EnrollmentRobot : BaseRobot() {
         onView(withId(R.id.save)).perform(click())
     }
 
-    fun clickOnPersonAttributes(position: Int) {
+    fun clickOnPersonAttributes(attribute: String) {
         onView(withId(R.id.fieldRecycler))
-            .perform(actionOnItemAtPosition<EditTextCustomHolder>(position, click()))
+            .perform(actionOnItem<EditTextCustomHolder>(
+                hasDescendant(withText(attribute)), click()))
     }
 
     fun typeOnRequiredTextField(text: String, position: Int) {
@@ -54,13 +55,10 @@ class EnrollmentRobot : BaseRobot() {
         onView(withId(R.id.fieldRecycler)).perform(scrollToBottomRecyclerView())
     }
 
-    fun clickOnCalendarItem(position: Int) {
-        onView(withId(R.id.fieldRecycler)).perform(
-            actionOnItemAtPosition<DashboardProgramViewHolder>(
-                position,
-                clickChildViewWithId(R.id.inputEditText)
-            )
-        )
+    fun clickOnCalendarItem() {
+        onView(withId(R.id.fieldRecycler))
+            .perform(actionOnItem<DashboardProgramViewHolder>(
+                hasDescendant(withText("Date of birth*")), clickChildViewWithId(R.id.inputEditText)))
     }
 
 }

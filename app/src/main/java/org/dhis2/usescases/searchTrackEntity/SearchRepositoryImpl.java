@@ -27,6 +27,8 @@ import org.dhis2.utils.Constants;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.ValueUtils;
 import org.dhis2.utils.filters.FilterManager;
+import org.dhis2.utils.filters.sorting.SortingItem;
+import org.dhis2.utils.filters.sorting.SortingStatus;
 import org.dhis2.utils.resources.ResourceManager;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper;
@@ -38,7 +40,6 @@ import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.common.ValueTypeDeviceRendering;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.android.core.enrollment.EnrollmentCreateProjection;
-import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.event.EventCollectionRepository;
 import org.hisp.dhis.android.core.event.EventStatus;
@@ -178,6 +179,7 @@ public class SearchRepositoryImpl implements SearchRepository {
                                                                      @Nonnull List<State> states,
                                                                      @NonNull List<EventStatus> eventStatuses,
                                                                      @Nullable HashMap<String, String> queryData,
+                                                                     @Nullable SortingItem sortingItem,
                                                                      boolean assignedToMe,
                                                                      boolean isOnline) {
 
@@ -187,7 +189,8 @@ public class SearchRepositoryImpl implements SearchRepository {
                         orgUnits,
                         states,
                         queryData,
-                        assignedToMe);
+                        assignedToMe,
+                        sortingItem);
 
         DataSource<TrackedEntityInstance, SearchTeiModel> dataSource;
 
@@ -226,6 +229,7 @@ public class SearchRepositoryImpl implements SearchRepository {
                                                           @Nonnull List<State> states,
                                                           @NonNull List<EventStatus> eventStatuses,
                                                           @Nullable HashMap<String, String> queryData,
+                                                          @Nullable SortingItem sortingItem,
                                                           boolean assignedToMe,
                                                           boolean isOnline) {
 
@@ -235,7 +239,8 @@ public class SearchRepositoryImpl implements SearchRepository {
                         orgUnits,
                         states,
                         queryData,
-                        assignedToMe);
+                        assignedToMe,
+                        sortingItem);
 
         if (isOnline && states.isEmpty())
             return trackedEntityInstanceQuery.offlineFirst().get().toFlowable()
@@ -264,7 +269,8 @@ public class SearchRepositoryImpl implements SearchRepository {
                                                                                  @NonNull List<String> orgUnits,
                                                                                  @Nonnull List<State> states,
                                                                                  @Nullable HashMap<String, String> queryData,
-                                                                                 boolean assignedToMe) {
+                                                                                 boolean assignedToMe,
+                                                                                 @Nullable SortingItem sortingItem) {
 
         TrackedEntityInstanceQueryCollectionRepository trackedEntityInstanceQuery = d2.trackedEntityModule().trackedEntityInstanceQuery();
         if (selectedProgram != null)
@@ -327,13 +333,49 @@ public class SearchRepositoryImpl implements SearchRepository {
             trackedEntityInstanceQuery = trackedEntityInstanceQuery.byAssignedUserMode().eq(AssignedUserMode.CURRENT);
         }
 
+        if (sortingItem != null) {
+            switch (sortingItem.component1()) {
+                case ORG_UNIT:
+                    if (sortingItem.getSortingStatus() == SortingStatus.ASC)
+                        trackedEntityInstanceQuery = trackedEntityInstanceQuery.orderByOrganisationUnitName().eq(RepositoryScope.OrderByDirection.ASC);
+                    if (sortingItem.getSortingStatus() == SortingStatus.DESC)
+                        trackedEntityInstanceQuery = trackedEntityInstanceQuery.orderByOrganisationUnitName().eq(RepositoryScope.OrderByDirection.DESC);
+                    break;
+                case ENROLLMENT_DATE:
+                    if (sortingItem.getSortingStatus() == SortingStatus.ASC)
+                        trackedEntityInstanceQuery = trackedEntityInstanceQuery.orderByEnrollmentDate().eq(RepositoryScope.OrderByDirection.ASC);
+                    if (sortingItem.getSortingStatus() == SortingStatus.DESC)
+                        trackedEntityInstanceQuery = trackedEntityInstanceQuery.orderByEnrollmentDate().eq(RepositoryScope.OrderByDirection.DESC);
+                    break;
+                case PERIOD:
+                    if (sortingItem.getSortingStatus() == SortingStatus.ASC)
+                        trackedEntityInstanceQuery = trackedEntityInstanceQuery.orderByEventDate().eq(RepositoryScope.OrderByDirection.ASC);
+                    if (sortingItem.getSortingStatus() == SortingStatus.DESC)
+                        trackedEntityInstanceQuery = trackedEntityInstanceQuery.orderByEventDate().eq(RepositoryScope.OrderByDirection.DESC);
+                    break;
+                case ENROLLMENT_STATUS:
+                    if (sortingItem.getSortingStatus() == SortingStatus.ASC)
+                        trackedEntityInstanceQuery = trackedEntityInstanceQuery.orderByEnrollmentStatus().eq(RepositoryScope.OrderByDirection.ASC);
+                    if (sortingItem.getSortingStatus() == SortingStatus.DESC)
+                        trackedEntityInstanceQuery = trackedEntityInstanceQuery.orderByEnrollmentStatus().eq(RepositoryScope.OrderByDirection.DESC);
+                    break;
+                default:
+                    break;
+            }
+        }
+
         return trackedEntityInstanceQuery;
 
     }
 
     @NonNull
     @Override
-    public Observable<Pair<String, String>> saveToEnroll(@NonNull String teiType, @NonNull String orgUnit, @NonNull String programUid, @Nullable String teiUid, HashMap<String, String> queryData, Date enrollmentDate) {
+    public Observable<Pair<String, String>> saveToEnroll(@NonNull String teiType,
+                                                         @NonNull String orgUnit,
+                                                         @NonNull String programUid,
+                                                         @Nullable String teiUid,
+                                                         HashMap<String, String> queryData, Date enrollmentDate,
+                                                         @Nullable String fromRelationshipUid) {
 
         Single<String> enrollmentInitial;
         if (teiUid == null)
@@ -353,6 +395,9 @@ public class SearchRepositoryImpl implements SearchRepository {
                                 orgUnit, teiType);
                         return Single.error(new SQLiteConstraintException(message));
                     } else {
+                        if (fromRelationshipUid != null) {
+                            d2.trackedEntityModule().trackedEntityInstanceService().blockingInheritAttributes(fromRelationshipUid, uid, programUid);
+                        }
                         ValueStore valueStore = new ValueStoreImpl(d2, uid, DataEntryStore.EntryMode.ATTR);
 
                         if (queryData.containsKey(Constants.ENROLLMENT_DATE_UID))
@@ -649,7 +694,12 @@ public class SearchRepositoryImpl implements SearchRepository {
                     .uid(event.programStage())
                     .blockingGet();
 
-            eventViewModels.add(new EventViewModel(EventViewModelType.EVENT, stage, event, 0, null, true, true));
+            OrganisationUnit organisationUnit = d2.organisationUnitModule()
+                    .organisationUnits()
+                    .uid(event.organisationUnit())
+                    .blockingGet();
+
+            eventViewModels.add(new EventViewModel(EventViewModelType.EVENT, stage, event, 0, null, true, true, organisationUnit.displayName()));
         }
 
         return eventViewModels;

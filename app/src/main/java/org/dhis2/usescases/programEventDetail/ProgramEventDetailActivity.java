@@ -48,6 +48,7 @@ import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.EventMode;
 import org.dhis2.utils.HelpManager;
 import org.dhis2.utils.analytics.AnalyticsConstants;
+import org.dhis2.utils.category.CategoryDialog;
 import org.dhis2.utils.filters.FilterManager;
 import org.dhis2.utils.filters.FiltersAdapter;
 import org.dhis2.utils.granularsync.SyncStatusDialog;
@@ -63,6 +64,8 @@ import java.util.List;
 import javax.inject.Inject;
 
 import io.reactivex.functions.Consumer;
+import kotlin.Unit;
+import kotlin.jvm.functions.Function1;
 import timber.log.Timber;
 
 import static org.dhis2.R.layout.activity_program_event_detail;
@@ -88,7 +91,6 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
     private EventMapManager eventMapManager;
 
     public static final String EXTRA_PROGRAM_UID = "PROGRAM_UID";
-    private MapLayerDialog layerDialog;
 
     public static Bundle getBundle(String programUid) {
         Bundle bundle = new Bundle();
@@ -129,10 +131,10 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
             Timber.e(e);
         }
 
-        binding.mapLayerButton.setOnClickListener(view -> {
-            layerDialog = new MapLayerDialog(eventMapManager.mapLayerManager);
-            layerDialog.show(getSupportFragmentManager(), MapLayerDialog.class.getName());
-        });
+        binding.mapLayerButton.setOnClickListener(view ->
+                new MapLayerDialog(eventMapManager.mapLayerManager)
+                        .show(getSupportFragmentManager(), MapLayerDialog.class.getName())
+        );
 
         eventMapManager = new EventMapManager();
         eventMapManager.setOnMapClickListener(this);
@@ -478,5 +480,22 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
         }
 
         return false;
+    }
+
+    @Override
+    public void showCatOptComboDialog(String catComboUid) {
+        new CategoryDialog(
+                CategoryDialog.Type.CATEGORY_OPTION_COMBO,
+                catComboUid,
+                false,
+                null,
+                selectedCatOptionCombo -> {
+                    presenter.filterCatOptCombo(selectedCatOptionCombo);
+                    return null;
+                }
+        ).show(
+                getSupportFragmentManager(),
+                CategoryDialog.Companion.getTAG()
+        );
     }
 }
