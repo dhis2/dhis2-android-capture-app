@@ -5,9 +5,10 @@ import androidx.test.rule.ActivityTestRule
 import org.dhis2.usescases.BaseTest
 import org.dhis2.usescases.eventsWithoutRegistration.eventSummary.EventSummaryActivity
 import org.dhis2.usescases.login.LoginTest
+import org.dhis2.usescases.programEventDetail.ProgramEventDetailActivity
 import org.dhis2.usescases.searchTrackEntity.SearchTEActivity
 import org.dhis2.usescases.searchte.searchTeiRobot
-import org.dhis2.usescases.settingsprogram.SettingsProgramActivity
+import org.dhis2.usescases.syncFlow.robot.eventWithoutRegistrationRobot
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity
 import org.dhis2.usescases.teidashboard.TeiDashboardTest
 import org.dhis2.usescases.teidashboard.robot.eventRobot
@@ -29,7 +30,7 @@ class SyncFlowTest : BaseTest() {
     @get:Rule
     val ruleSearch = ActivityTestRule(SearchTEActivity::class.java, false, false)
     @get:Rule
-    val ruleEventWithoutRegistration = ActivityTestRule(SettingsProgramActivity::class.java, false, false)
+    val ruleEventWithoutRegistration = ActivityTestRule(ProgramEventDetailActivity::class.java, false, false)
 
     override fun setUp() {
         super.setUp()
@@ -67,9 +68,6 @@ class SyncFlowTest : BaseTest() {
             Thread.sleep(8000)
             clickOnSyncTei(teiName, teiLastName)
             clickOnSyncButton()
-        }
-
-        syncFlowRobot {
             Thread.sleep(4000)
             checkSyncWasSuccessfully() //sync failed
         }
@@ -114,12 +112,10 @@ class SyncFlowTest : BaseTest() {
             Thread.sleep(4000)
             clickOnSyncTei(teiName, teiLastName)
             clickOnSyncButton()
-        }
-
-        syncFlowRobot {
             Thread.sleep(4000)
             checkSyncFailed()
         }
+
     }
 
     @Test
@@ -127,7 +123,12 @@ class SyncFlowTest : BaseTest() {
 
         /*id: "VBqh0ynB2wv"
         name: "Malaria case registration"
-        programType: "WITHOUT_REGISTRATION"*/
+        programType: "WITHOUT_REGISTRATION"
+
+        name: Antenatal care visit
+        id: lxAQ7Zs9VYR
+        programType: WITHOUT_REGISTRATION
+        */
 
         /**
          * prepare and launch activity in Malaria
@@ -138,6 +139,22 @@ class SyncFlowTest : BaseTest() {
 
 
         setupCredentials()
+        prepareMalariaEventIntentAndLaunchActivity(ruleEventWithoutRegistration)
+
+        eventWithoutRegistrationRobot {
+            Thread.sleep(4000)
+            clickOnEventAtPosition(0)
+        }
+
+        eventRobot {
+            clickOnFormFabButton()
+            clickOnFinish()
+        }
+
+        syncFlowRobot {
+            // click on syn event
+            // click on sync btn
+        }
     }
 
     companion object {
