@@ -6,6 +6,8 @@ import androidx.work.ExistingWorkPolicy
 import androidx.work.ListenableWorker
 import io.reactivex.Completable
 import io.reactivex.Observable
+import java.util.Calendar
+import kotlin.math.ceil
 import org.dhis2.Bindings.toSeconds
 import org.dhis2.data.prefs.Preference.Companion.DATA
 import org.dhis2.data.prefs.Preference.Companion.EVENT_MAX
@@ -34,8 +36,6 @@ import org.hisp.dhis.android.core.settings.LimitScope
 import org.hisp.dhis.android.core.settings.ProgramSettings
 import org.hisp.dhis.android.core.systeminfo.DHISVersion
 import timber.log.Timber
-import java.util.*
-import kotlin.math.ceil
 
 class SyncPresenterImpl(
     private val d2: D2,
@@ -45,8 +45,7 @@ class SyncPresenterImpl(
 ) : SyncPresenter {
 
     override fun syncAndDownloadEvents() {
-
-        val (eventLimit,limitByOU,limitByProgram) = getDownloadLimits()
+        val (eventLimit, limitByOU, limitByProgram) = getDownloadLimits()
 
         Completable.fromObservable(d2.eventModule().events().upload())
             .andThen(
@@ -68,8 +67,8 @@ class SyncPresenterImpl(
         val globalProgramSettings = programSettings?.globalSettings()
 
         val eventLimit = globalProgramSettings?.eventsDownload() ?: preferences.getInt(
-                EVENT_MAX,
-                EVENT_MAX_DEFAULT
+            EVENT_MAX,
+            EVENT_MAX_DEFAULT
         )
 
         val limitByOU = globalProgramSettings?.settingDownload()?.let {

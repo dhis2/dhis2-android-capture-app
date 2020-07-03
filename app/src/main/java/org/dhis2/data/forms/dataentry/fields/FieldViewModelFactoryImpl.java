@@ -8,7 +8,7 @@ import org.dhis2.data.forms.dataentry.fields.coordinate.CoordinateViewModel;
 import org.dhis2.data.forms.dataentry.fields.datetime.DateTimeViewModel;
 import org.dhis2.data.forms.dataentry.fields.edittext.EditTextViewModel;
 import org.dhis2.data.forms.dataentry.fields.image.ImageViewModel;
-import org.dhis2.data.forms.dataentry.fields.option_set.OptionSetViewModel;
+import org.dhis2.data.forms.dataentry.fields.optionset.OptionSetViewModel;
 import org.dhis2.data.forms.dataentry.fields.orgUnit.OrgUnitViewModel;
 import org.dhis2.data.forms.dataentry.fields.picture.PictureViewModel;
 import org.dhis2.data.forms.dataentry.fields.radiobutton.RadioButtonViewModel;

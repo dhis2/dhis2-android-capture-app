@@ -62,7 +62,6 @@ class SectionHolder(
                                 ResourcesCompat.getColor(root.resources, R.color.placeholder, null)
                         }
                     )
-
                 }
                 else -> sectionFieldsInfo.apply {
                     text = String.format(
@@ -166,10 +165,10 @@ class SectionHolder(
     }
 
     fun handleHeaderClick(x: Float) {
-        val hasDescription = formBinding.descriptionIcon.visibility == View.VISIBLE;
+        val hasDescription = formBinding.descriptionIcon.visibility == View.VISIBLE
         val descriptionClicked =
             formBinding.descriptionIcon.x <= x &&
-                    formBinding.descriptionIcon.x + formBinding.descriptionIcon.width >= x;
+                formBinding.descriptionIcon.x + formBinding.descriptionIcon.width >= x
         if (hasDescription && descriptionClicked) {
             showDescription()
         } else {
@@ -177,7 +176,11 @@ class SectionHolder(
         }
     }
 
-    fun setSectionNumber(sectionNumber:Int){
-        formBinding.sectionNumber.text = sectionNumber.toString()
+    fun setSectionNumber(sectionNumber: Int) {
+        formBinding.sectionNumber.apply {
+            text = sectionNumber.toString()
+            background =
+                ContextCompat.getDrawable(itemView.context, R.drawable.ic_circle)
+        }
     }
 }

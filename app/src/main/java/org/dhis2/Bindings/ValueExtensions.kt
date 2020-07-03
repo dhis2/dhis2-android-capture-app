@@ -16,7 +16,7 @@ fun TrackedEntityAttributeValue.userFriendlyValue(d2: D2): String? {
         .uid(trackedEntityAttribute())
         .blockingGet()
 
-    if(attribute == null){
+    if (attribute == null) {
         return value()
     }
 

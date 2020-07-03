@@ -18,6 +18,7 @@ import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ObservableInt
 import com.android.dbexporterlibrary.ExporterListener
+import javax.inject.Inject
 import org.dhis2.Bindings.app
 import org.dhis2.BuildConfig
 import org.dhis2.R
@@ -43,7 +44,6 @@ import org.dhis2.utils.filters.FilterManager
 import org.dhis2.utils.filters.FiltersAdapter
 import org.dhis2.utils.session.PIN_DIALOG_TAG
 import org.dhis2.utils.session.PinDialog
-import javax.inject.Inject
 
 private const val FRAGMENT = "Fragment"
 private const val PERMISSION_REQUEST = 1987
@@ -120,9 +120,9 @@ class MainActivity : ActivityGlobalAbstract(), MainView, ExporterListener {
         presenter.initFilters()
 
         if (ContextCompat.checkSelfPermission(
-                this,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE
-            ) != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(
+            this,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
+        ) != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(
                 this,
                 Manifest.permission.CAMERA
             ) != PackageManager.PERMISSION_GRANTED

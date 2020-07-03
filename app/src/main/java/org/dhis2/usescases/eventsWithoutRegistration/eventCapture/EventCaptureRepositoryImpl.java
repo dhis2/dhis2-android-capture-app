@@ -1,12 +1,9 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventCapture;
 
-import android.content.Context;
-
 import androidx.annotation.NonNull;
 
 import org.dhis2.Bindings.RuleExtensionsKt;
 import org.dhis2.Bindings.ValueExtensionsKt;
-import org.dhis2.R;
 import org.dhis2.data.forms.FormRepository;
 import org.dhis2.data.forms.FormSectionViewModel;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
@@ -15,16 +12,14 @@ import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactoryImpl;
 import org.dhis2.data.forms.dataentry.fields.edittext.EditTextViewModel;
 import org.dhis2.data.forms.dataentry.fields.image.ImageHolder;
 import org.dhis2.data.forms.dataentry.fields.image.ImageViewModel;
-import org.dhis2.data.forms.dataentry.fields.option_set.OptionSetViewModel;
+import org.dhis2.data.forms.dataentry.fields.optionset.OptionSetViewModel;
 import org.dhis2.data.forms.dataentry.fields.orgUnit.OrgUnitViewModel;
-import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.Result;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper;
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope;
 import org.hisp.dhis.android.core.category.CategoryOption;
-import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
 import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.common.ObjectWithUid;
 import org.hisp.dhis.android.core.common.ValueType;
@@ -41,10 +36,6 @@ import org.hisp.dhis.android.core.option.Option;
 import org.hisp.dhis.android.core.option.OptionGroup;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.Program;
-import org.hisp.dhis.android.core.program.ProgramRule;
-import org.hisp.dhis.android.core.program.ProgramRuleAction;
-import org.hisp.dhis.android.core.program.ProgramRuleActionType;
-import org.hisp.dhis.android.core.program.ProgramRuleVariable;
 import org.hisp.dhis.android.core.program.ProgramStage;
 import org.hisp.dhis.android.core.program.ProgramStageDataElement;
 import org.hisp.dhis.android.core.program.ProgramStageSection;
@@ -52,7 +43,6 @@ import org.hisp.dhis.android.core.program.ProgramStageSectionDeviceRendering;
 import org.hisp.dhis.android.core.program.ProgramStageSectionRendering;
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueObjectRepository;
-import org.hisp.dhis.rules.models.Rule;
 import org.hisp.dhis.rules.models.RuleDataValue;
 import org.hisp.dhis.rules.models.RuleEffect;
 import org.hisp.dhis.rules.models.RuleEvent;
@@ -61,9 +51,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
@@ -305,6 +293,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                 }
             } else if (fieldViewModel instanceof OptionSetViewModel) {
                 List<Option> options = d2.optionModule().options().byOptionSetUid().eq(fieldViewModel.optionSet() == null ? "" : fieldViewModel.optionSet())
+                        .orderBySortOrder(RepositoryScope.OrderByDirection.ASC)
                         .blockingGet();
                 renderList.add(((OptionSetViewModel) fieldViewModel).withOptions(options));
             } else
