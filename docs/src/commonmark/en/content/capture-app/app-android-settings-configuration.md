@@ -27,9 +27,9 @@ Includes configurations such as how often the synchronizations will be made for 
 >
 > This is a critical action and will not affect the DHIS2 database.
 >
-> Decrypt device database will reduce the level of protection of the data.
+> *Decrypt* device database will reduce the level of protection of the data.
 > 
-> Encrypt device database could have an impact on the database volume and performance.
+> *Encrypt* device database could have an impact on the database volume and performance.
 
  
 **Disable all settings:** This is an option when you don’t want the configurations you generate on the web app to be applied to the Android Capture app. By clicking this button you will disable all General, Program, and data set settings and remove namespace and key names from Datastore.
@@ -107,7 +107,9 @@ This section checks the amount of data a user would sync to their device. You ca
 
 ![](resources/images/user-sync-test.png)
 
-> **Note:** The values that are highlighted in red, are because the value is considered greater than the maximum recommended value.
+> **Note:** 
+>
+> The values that are highlighted in red, are because the value is considered greater than the maximum recommended value.
 
 
 ## Installation
@@ -125,6 +127,14 @@ You can easily install the Android Settings App by logging into the DHIS2 and go
 After you install and launch the Android Settings App when you launch it for the first time, you will be required to create a namespace and key names on the DataStore, and save all settings default values in those key names; to do that you need to click on *Set defaults and save* button.
 
 ![](resources/images/first-time-setup.png)
+
+
+> **Warning** 
+>
+> In case your user doesn't have ALL authorities or permissions you won't be able to *create* a namespace, but you will have Read Only access once it's created.
+
+
+![](resources/images/first-setup-no-authorities.png)
 
 
 ## Enter and save configuration parameters
