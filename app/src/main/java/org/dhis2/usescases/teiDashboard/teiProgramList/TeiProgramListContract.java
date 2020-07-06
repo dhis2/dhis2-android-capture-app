@@ -22,7 +22,7 @@ public class TeiProgramListContract {
 
         void goToEnrollmentScreen(String enrollmentUid, String programUid);
 
-        void changeCurrentProgram(String program);
+        void changeCurrentProgram(String program, String uid);
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter {

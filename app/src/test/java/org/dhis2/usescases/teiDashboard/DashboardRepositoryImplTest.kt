@@ -27,9 +27,10 @@ class DashboardRepositoryImplTest {
     private lateinit var repository: DashboardRepositoryImpl
     private val d2: D2 = Mockito.mock(D2::class.java, Mockito.RETURNS_DEEP_STUBS)
     private val resources: ResourceManager = mock()
+
     @Before
     fun setUp() {
-        repository = DashboardRepositoryImpl(d2, "teiUid", "programUid", resources)
+        repository = DashboardRepositoryImpl(d2, "teiUid", "programUid", "enrollmentUid", resources)
     }
 
     @Test
@@ -38,13 +39,13 @@ class DashboardRepositoryImplTest {
         whenever(d2.eventModule().events()) doReturn mock()
         whenever(d2.eventModule().events().uid("event_uid")) doReturn mock()
         whenever(d2.eventModule().events().uid("event_uid").get()) doReturn
-            Single.just(getMockSingleEvent())
+                Single.just(getMockSingleEvent())
 
         whenever(d2.programModule()) doReturn mock()
         whenever(d2.programModule().programStages()) doReturn mock()
         whenever(d2.programModule().programStages().uid("program_stage")) doReturn mock()
         whenever(d2.programModule().programStages().uid("program_stage").get()) doReturn
-            Single.just(getMockStage())
+                Single.just(getMockStage())
 
         val testObserver = repository.displayGenerateEvent("event_uid").test()
 
@@ -117,9 +118,9 @@ class DashboardRepositoryImplTest {
         testObserver.assertValueCount(1)
         testObserver.assertValue { events ->
             events[0].uid() == "event_uid_4" &&
-                events[1].uid() == "event_uid_2" &&
-                events[2].uid() == "event_uid_3" &&
-                events[3].uid() == "event_uid_1"
+                    events[1].uid() == "event_uid_2" &&
+                    events[2].uid() == "event_uid_3" &&
+                    events[3].uid() == "event_uid_1"
         }
     }
 
@@ -205,7 +206,7 @@ class DashboardRepositoryImplTest {
 
         testObserver.assertNoErrors()
         testObserver.assertValueAt(0) {
-            !it
+            it == StatusChangeResultCode.FAILED
         }
     }
 
@@ -235,7 +236,7 @@ class DashboardRepositoryImplTest {
 
         testObserver.assertNoErrors()
         testObserver.assertValueAt(0) {
-            it
+            it == StatusChangeResultCode.CHANGED
         }
     }
 
@@ -259,7 +260,7 @@ class DashboardRepositoryImplTest {
 
         testObserver.assertNoErrors()
         testObserver.assertValueAt(0) {
-            !it
+            it == StatusChangeResultCode.WRITE_PERMISSION_FAIL
         }
     }
 

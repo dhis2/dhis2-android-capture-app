@@ -123,7 +123,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
             enrollmentUid = getIntent().getStringExtra(ENROLLMENT_UID);
         }
 
-        ((App) getApplicationContext()).createDashboardComponent(new TeiDashboardModule(this, teiUid, programUid)).inject(this);
+        ((App) getApplicationContext()).createDashboardComponent(new TeiDashboardModule(this, teiUid, programUid, enrollmentUid)).inject(this);
         setTheme(presenter.getProgramTheme(R.style.AppTheme));
         super.onCreate(savedInstanceState);
         groupByStage = new MutableLiveData<>(presenter.getProgramGrouping());
@@ -303,10 +303,10 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
         }
     }
 
-    private void enablePagerScrolling(boolean enable){
-        if(OrientationUtilsKt.isPortrait()){
+    private void enablePagerScrolling(boolean enable) {
+        if (OrientationUtilsKt.isPortrait()) {
             binding.teiPager.setUserInputEnabled(enable);
-        }else{
+        } else {
             binding.teiTablePager.setUserInputEnabled(enable);
         }
     }
@@ -481,7 +481,8 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
             }
 
             if (data.hasExtra("CHANGE_PROGRAM")) {
-                startActivity(intent(this, teiUid, data.getStringExtra("CHANGE_PROGRAM"), null));
+                startActivity(intent(this, teiUid, data.getStringExtra("CHANGE_PROGRAM"),
+                        data.getStringExtra("CHANGE_PROGRAM_ENROLLMENT")));
                 finish();
             }
 
@@ -707,5 +708,21 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
 
     public LiveData<String> updatedEnrollment() {
         return currentEnrollment;
+    }
+
+    @Override
+    public void displayStatusError(StatusChangeResultCode statusCode) {
+        switch (statusCode) {
+            case FAILED:
+                displayMessage(getString(R.string.something_wrong));
+                break;
+            case ACTIVE_EXIST:
+                displayMessage(getString(R.string.status_change_error_active_exist));
+                break;
+            case WRITE_PERMISSION_FAIL:
+                displayMessage(getString(R.string.permission_denied));
+                break;
+        }
+
     }
 }

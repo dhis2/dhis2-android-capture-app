@@ -1,18 +1,11 @@
 package org.dhis2.usescases.teidashboard
 
-import androidx.test.espresso.Espresso
-import androidx.test.espresso.action.ViewActions
-import androidx.test.espresso.contrib.RecyclerViewActions
-import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
-import org.dhis2.R
-import org.dhis2.common.rules.DataBindingIdlingResourceRule
 import org.dhis2.usescases.BaseTest
 import org.dhis2.usescases.searchTrackEntity.SearchTEActivity
 import org.dhis2.usescases.searchte.searchTeiRobot
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity
-import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.DashboardProgramViewHolder
 import org.dhis2.usescases.teidashboard.entity.EnrollmentUIModel
 import org.dhis2.usescases.teidashboard.entity.UpperEnrollmentUIModel
 import org.dhis2.usescases.teidashboard.robot.enrollmentRobot
@@ -24,7 +17,6 @@ import org.dhis2.usescases.teidashboard.robot.teiDashboardRobot
 import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
-import org.junit.experimental.theories.Theories
 import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
@@ -32,6 +24,7 @@ class TeiDashboardTest : BaseTest() {
 
     @get:Rule
     val rule = ActivityTestRule(TeiDashboardMobileActivity::class.java, false, false)
+
     @get:Rule
     val ruleSearch = ActivityTestRule(SearchTEActivity::class.java, false, false)
 
