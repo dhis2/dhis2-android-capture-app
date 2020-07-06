@@ -52,7 +52,7 @@ class EventRobot : BaseRobot() {
     }
 
     fun clickOnChangeDate() {
-        onView(withText("CHANGE DATE")).perform(click())
+        onView(withText(R.string.change_event_date)).perform(click())
     }
 
     fun clickOnEditDate() {

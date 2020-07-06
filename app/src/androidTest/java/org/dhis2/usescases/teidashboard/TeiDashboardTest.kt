@@ -2,6 +2,7 @@ package org.dhis2.usescases.teidashboard
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
+import org.dhis2.R
 import org.dhis2.usescases.BaseTest
 import org.dhis2.usescases.searchTrackEntity.SearchTEActivity
 import org.dhis2.usescases.searchte.searchTeiRobot
@@ -271,7 +272,7 @@ class TeiDashboardTest : BaseTest() {
     @Test
     fun shouldEnrollToOtherProgramWhenClickOnProgramEnrollments() {
         val womanProgram = "MNCH / PNC (Adult Woman)"
-        val personAttribute = "Attributes - Person"
+        val personAttribute = context.getString(R.string.enrollment_single_section_label).replace("%s","")
         val visitPNCEvent = "PNC Visit"
         val deliveryEvent = "Delivery"
         val visitANCEvent = "ANC Visit (2-4+)"
@@ -286,9 +287,11 @@ class TeiDashboardTest : BaseTest() {
 
         enrollmentRobot {
             clickOnAProgramForEnrollment(womanProgram)
+            waitToDebounce(1000)
             clickOnAcceptEnrollmentDate()
             clickOnPersonAttributes(personAttribute)
             clickOnCalendarItem()
+            waitToDebounce(1000)
             clickOnAcceptEnrollmentDate()
             scrollToBottomProgramForm()
             clickOnSaveEnrollment()
