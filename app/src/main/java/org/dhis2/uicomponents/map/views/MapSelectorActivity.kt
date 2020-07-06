@@ -30,6 +30,7 @@ import com.mapbox.mapboxsdk.style.layers.PropertyFactory
 import com.mapbox.mapboxsdk.style.layers.PropertyFactory.fillColor
 import com.mapbox.mapboxsdk.style.layers.SymbolLayer
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource
+import org.dhis2.Bindings.truncate
 import org.dhis2.R
 import org.dhis2.databinding.ActivityMapSelectorBinding
 import org.dhis2.uicomponents.map.camera.moveCameraToPosition
@@ -118,7 +119,7 @@ class MapSelectorActivity :
         binding.recycler.layoutManager = LinearLayoutManager(this)
         binding.recycler.adapter = PointAdapter(viewModel)
         map.addOnMapClickListener {
-            val point = Point.fromLngLat(it.longitude, it.latitude)
+            val point = Point.fromLngLat(it.longitude.truncate(), it.latitude.truncate())
             setPointToViewModel(point, viewModel)
             true
         }
