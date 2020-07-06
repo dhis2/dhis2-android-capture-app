@@ -48,6 +48,7 @@ public class DataSetInitialActivity extends ActivityGlobalAbstract implements Da
     private OrganisationUnit selectedOrgUnit;
     private Date selectedPeriod;
     private String dataSetUid;
+    private OrgUnitDialog orgUnitDialog;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -57,6 +58,7 @@ public class DataSetInitialActivity extends ActivityGlobalAbstract implements Da
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_dataset_initial);
         binding.setPresenter(presenter);
+        orgUnitDialog = OrgUnitDialog.getInstace();
     }
 
     @Override
@@ -114,27 +116,28 @@ public class DataSetInitialActivity extends ActivityGlobalAbstract implements Da
      */
     @Override
     public void showOrgUnitDialog(List<OrganisationUnit> data) {
-        OrgUnitDialog orgUnitDialog = OrgUnitDialog.getInstace();
-        orgUnitDialog
-                .setMultiSelection(false)
-                .setOrgUnits(data)
-                .setProgram(dataSetUid)
-                .setTitle(getString(R.string.org_unit))
-                .setPossitiveListener(v -> {
-                    if (orgUnitDialog.getSelectedOrgUnit() != null && !orgUnitDialog.getSelectedOrgUnit().isEmpty()) {
-                        selectedOrgUnit = orgUnitDialog.getSelectedOrgUnitModel();
-                        if (selectedOrgUnit == null)
-                            orgUnitDialog.dismiss();
-                        binding.dataSetOrgUnitEditText.setText(selectedOrgUnit.displayName());
-                        binding.dataSetPeriodEditText.setText(null);
-                        selectedPeriod = null;
-                        clearCatOptionCombo();
-                    }
-                    checkActionVisivbility();
-                    orgUnitDialog.dismiss();
-                })
-                .setNegativeListener(v -> orgUnitDialog.dismiss())
-                .show(getSupportFragmentManager(), OrgUnitDialog.class.getSimpleName());
+        if (!orgUnitDialog.isVisible()) {
+            orgUnitDialog
+                    .setMultiSelection(false)
+                    .setOrgUnits(data)
+                    .setProgram(dataSetUid)
+                    .setTitle(getString(R.string.org_unit))
+                    .setPossitiveListener(v -> {
+                        if (orgUnitDialog.getSelectedOrgUnit() != null && !orgUnitDialog.getSelectedOrgUnit().isEmpty()) {
+                            selectedOrgUnit = orgUnitDialog.getSelectedOrgUnitModel();
+                            if (selectedOrgUnit == null)
+                                orgUnitDialog.dismiss();
+                            binding.dataSetOrgUnitEditText.setText(selectedOrgUnit.displayName());
+                            binding.dataSetPeriodEditText.setText(null);
+                            selectedPeriod = null;
+                            clearCatOptionCombo();
+                        }
+                        checkActionVisivbility();
+                        orgUnitDialog.dismiss();
+                    })
+                    .setNegativeListener(v -> orgUnitDialog.dismiss())
+                    .show(getSupportFragmentManager(), OrgUnitDialog.class.getSimpleName());
+        }
     }
 
     @Override
