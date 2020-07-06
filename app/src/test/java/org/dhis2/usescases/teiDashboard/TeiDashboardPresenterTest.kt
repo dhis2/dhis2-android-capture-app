@@ -425,7 +425,7 @@ class TeiDashboardPresenterTest {
     }
 
     @Test
-    fun `Should show permission error when updating the status of the enrollment returns an error`() {
+    fun `Should show permission error when updating the status of the enrollment`() {
         whenever(
             repository.updateEnrollmentStatus("uid", EnrollmentStatus.COMPLETED)
         ) doReturn Observable.just(StatusChangeResultCode.WRITE_PERMISSION_FAIL)
@@ -437,7 +437,7 @@ class TeiDashboardPresenterTest {
     }
 
     @Test
-    fun `Should show active enrollment error when updating the status of the enrollment returns an error`() {
+    fun `Should show active enrollment error when updating the status of the enrollment`() {
         whenever(
             repository.updateEnrollmentStatus("uid", EnrollmentStatus.COMPLETED)
         ) doReturn Observable.just(StatusChangeResultCode.ACTIVE_EXIST)
