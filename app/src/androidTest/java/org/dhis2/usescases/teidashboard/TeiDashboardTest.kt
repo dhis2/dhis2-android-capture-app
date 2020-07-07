@@ -287,11 +287,9 @@ class TeiDashboardTest : BaseTest() {
 
         enrollmentRobot {
             clickOnAProgramForEnrollment(womanProgram)
-            waitToDebounce(1000)
             clickOnAcceptEnrollmentDate()
             clickOnPersonAttributes(personAttribute)
             clickOnCalendarItem()
-            waitToDebounce(1000)
             clickOnAcceptEnrollmentDate()
             scrollToBottomProgramForm()
             clickOnSaveEnrollment()
