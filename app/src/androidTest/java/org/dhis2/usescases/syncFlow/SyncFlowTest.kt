@@ -122,11 +122,6 @@ class SyncFlowTest : BaseTest() {
 
     @Test
     fun shouldSuccessfullySyncSavedEvent() {
-        /*
-        name: Antenatal care visit
-        id: lxAQ7Zs9VYR
-        programType: WITHOUT_REGISTRATION
-        */
 
         mockWebServerRobot.addResponse(POST, SYNC_EVENT_PATH, API_SYNC_EVENT_OK)
 
@@ -134,7 +129,6 @@ class SyncFlowTest : BaseTest() {
         prepareMalariaEventIntentAndLaunchActivity(ruleEventWithoutRegistration)
 
         eventWithoutRegistrationRobot {
-            Thread.sleep(4000)
             clickOnEventAtPosition(0)
         }
 
@@ -146,7 +140,6 @@ class SyncFlowTest : BaseTest() {
         syncFlowRobot {
             clickOnEventToSync(0)
             clickOnSyncButton()
-            Thread.sleep(4000)
             checkSyncWasSuccessfully() //sync failed
         }
     }
@@ -159,7 +152,6 @@ class SyncFlowTest : BaseTest() {
         prepareMalariaEventIntentAndLaunchActivity(ruleEventWithoutRegistration)
 
         eventWithoutRegistrationRobot {
-            Thread.sleep(4000)
             clickOnEventAtPosition(1)
         }
 
@@ -171,7 +163,6 @@ class SyncFlowTest : BaseTest() {
         syncFlowRobot {
             clickOnEventToSync(1)
             clickOnSyncButton()
-            Thread.sleep(4000)
             checkSyncFailed()
         }
 
@@ -184,17 +175,14 @@ class SyncFlowTest : BaseTest() {
         prepareFacilityDataSetIntentAndLaunchActivity(ruleDataSet)
 
         dataSetRobot {
-            Thread.sleep(4000)
             clickOnDataSetAtPosition(0)
             clickOnSave()
             pressBack()
         }
 
         syncFlowRobot {
-            Thread.sleep(4000)
             clickOnDataSetToSync(0)
             clickOnSyncButton()
-            Thread.sleep(4000)
             checkSyncWasSuccessfully() //sync failed
         }
     }
@@ -206,17 +194,14 @@ class SyncFlowTest : BaseTest() {
         prepareFacilityDataSetIntentAndLaunchActivity(ruleDataSet)
 
         dataSetRobot {
-            Thread.sleep(4000)
             clickOnDataSetAtPosition(1)
             clickOnSave()
             pressBack()
         }
 
         syncFlowRobot {
-            Thread.sleep(4000)
             clickOnDataSetToSync(1)
             clickOnSyncButton()
-            Thread.sleep(4000)
             checkSyncFailed()
         }
     }
