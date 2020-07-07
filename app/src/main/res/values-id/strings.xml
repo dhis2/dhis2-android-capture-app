@@ -1,8 +1,6 @@
 <resources>
     <!--GENERAL-->
     <string name="app_name">DHIS2</string>
-    <string name="logo_text">dhis</string>
-    <string name="logo_number">2</string>
     <!-- Warnings and error messages -->
     <string name="error">Error</string>
     <string name="error_wrong_server_url">URL Server salah</string>
@@ -14,13 +12,11 @@
     <string name="no_value">tidak ada nilai</string>
     <string name="no_reserved_values">Tidak ada nilai lainnya. Hubungi admin sistem Anda.</string>
     <string name="no_reserved_values_connection">Tidak ada nilai lainnya. Sambungkan ke Internet untuk mengisi.</string>
-
     <!-- SyncService strings: -->
     <string name="sync_now">Sinkronkan sekarang</string>
     <string name="sync_text">Mensinkronkan dengan server</string>
     <string name="sync_title">Sedang mensinkronkan</string>
 
-    <string name="sync_metadata">Metadata</string>
     <string name="sync_events">Event</string>
     <string name="sync_complete_title">Selesai</string>
     <string name="sync_complete_text">Sync lengkap</string>
@@ -33,7 +29,6 @@
     <string name="add_new">Tambahkan baru</string>
     <string name="add">Tambah</string>
     <string name="user_hint">User name</string>
-    <string name="password_hint">Password</string>
     <!--PERIOD-->
     <string name="DAILY">Harian</string>
     <string name="WEEKLY">Mingguan</string>
@@ -50,16 +45,12 @@
     <string name="create">Buat</string>
     <string name="update">perbarui</string>
     <string name="date">Tanggal</string>
-    <string name="latitude">Latitude</string>
-    <string name="longitude">Longitude</string>
     <string name="new_event">Event baru</string>
     <!--Event Detail-->
     <string name="event_date">Tanggal Event</string>
     <string name="due_date">Tanggal jatuh tempo</string>
     <string name="cancel">batal</string>
     <string name="delete">hapus</string>
-    <string name="total">Total</string>
-
     <string name="active_programs">Aktifkan program</string>
     <string name="enroll">Daftar</string>
     <string name="deactivate">Deaktivasi</string>
@@ -113,8 +104,16 @@
     <string name="data_set_open">Buka</string>
     <string name="data_every_day">Harian</string>
     <string name="data_every_week">Mingguan</string>
+    <string name="period_week">Minggu</string>
     <string name="sms_completed">Selesai</string>
     <string name="sms_bar_state_sending">Dalam proses</string>
     <string name="polygon">Poligon</string>
-    <!--endregion-->
-</resources>
+    <string name="filters_title_period">Periode</string>
+    <string name="filters_title_status">Status</string>
+    <string name="filter_period_today">Hari ini</string>
+    <string name="filter_period_yesterday">Kemarin</string>
+    <string name="filter_period_this_week">Minggu ini</string>
+    <string name="filter_period_last_week">Minggu lalu</string>
+    <string name="filter_period_this_month">Bulan ini</string>
+    <string name="filter_period_last_month">Bulan lalu</string>
+    </resources>

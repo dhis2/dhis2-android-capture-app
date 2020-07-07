@@ -122,8 +122,8 @@ class SettingsRepositoryTest {
             .assertNoErrors()
             .assertValue {
                 it.numberOfTeiToDownload == SETTINGS_TEI_DOWNLOAD &&
-                        it.numberOfEventsToDownload == SETTINGS_EVENT_DOWNLOAD &&
-                        it.limitScope == SETTINGS_LIMIT_SCOPE
+                    it.numberOfEventsToDownload == SETTINGS_EVENT_DOWNLOAD &&
+                    it.limitScope == SETTINGS_LIMIT_SCOPE
             }
     }
 
@@ -136,8 +136,8 @@ class SettingsRepositoryTest {
             .assertNoErrors()
             .assertValue {
                 it.numberOfTeiToDownload == SETTINGS_PREF_TEI_DOWNLOAD &&
-                        it.numberOfEventsToDownload == SETTINGS_PREF_EVENT_DOWNLOAD &&
-                        it.limitScope != SETTINGS_LIMIT_SCOPE
+                    it.numberOfEventsToDownload == SETTINGS_PREF_EVENT_DOWNLOAD &&
+                    it.limitScope != SETTINGS_LIMIT_SCOPE
             }
     }
 
@@ -186,16 +186,20 @@ class SettingsRepositoryTest {
     }
 
     private fun configureGeneralSettings(hasGeneralSettings: Boolean) {
-        whenever(d2.settingModule().generalSetting().blockingExists()) doReturn hasGeneralSettings
+        whenever(d2.settingModule().generalSetting().blockingExists()) doReturn
+            hasGeneralSettings
         if (hasGeneralSettings) {
-            whenever(d2.settingModule().generalSetting().blockingGet()) doReturn mockedGeneralSettings()
+            whenever(d2.settingModule().generalSetting().blockingGet()) doReturn
+                mockedGeneralSettings()
         }
     }
 
     private fun configureProgramSettings(hasProgramSettings: Boolean) {
-        whenever(d2.settingModule().programSetting().blockingExists()) doReturn hasProgramSettings
+        whenever(d2.settingModule().programSetting().blockingExists()) doReturn
+            hasProgramSettings
         if (hasProgramSettings) {
-            whenever(d2.settingModule().programSetting().blockingGet()) doReturn mockedProgramSettings()
+            whenever(d2.settingModule().programSetting().blockingGet()) doReturn
+                mockedProgramSettings()
         }
     }
 
@@ -251,46 +255,114 @@ class SettingsRepositoryTest {
         whenever(d2.eventModule().events().byState()) doReturn mock()
         whenever(d2.eventModule().events().byState().`in`(State.ERROR)) doReturn mock()
         whenever(d2.eventModule().events().byState().`in`(State.WARNING)) doReturn mock()
-        whenever(d2.eventModule().events().byState().`in`(State.ERROR).blockingGet()) doReturn emptyList()
-        whenever(d2.eventModule().events().byState().`in`(State.WARNING).blockingGet()) doReturn emptyList()
+        whenever(d2.eventModule().events().byState().`in`(State.ERROR).blockingGet()) doReturn
+            emptyList()
+        whenever(d2.eventModule().events().byState().`in`(State.WARNING).blockingGet()) doReturn
+            emptyList()
 
-        whenever(d2.trackedEntityModule().trackedEntityInstances().byState()) doReturn mock()
-        whenever(d2.trackedEntityModule().trackedEntityInstances().byState().`in`(State.ERROR)) doReturn mock()
-        whenever(d2.trackedEntityModule().trackedEntityInstances().byState().`in`(State.WARNING)) doReturn mock()
-        whenever(d2.trackedEntityModule().trackedEntityInstances().byState().`in`(State.ERROR).blockingGet()) doReturn emptyList()
-        whenever(d2.trackedEntityModule().trackedEntityInstances().byState().`in`(State.WARNING).blockingGet()) doReturn emptyList()
+        whenever(
+            d2.trackedEntityModule().trackedEntityInstances()
+                .byState()
+        ) doReturn mock()
+        whenever(
+            d2.trackedEntityModule().trackedEntityInstances()
+                .byState().`in`(State.ERROR)
+        ) doReturn mock()
+        whenever(
+            d2.trackedEntityModule().trackedEntityInstances()
+                .byState().`in`(State.WARNING)
+        ) doReturn mock()
+        whenever(
+            d2.trackedEntityModule().trackedEntityInstances()
+                .byState().`in`(State.ERROR).blockingGet()
+        ) doReturn emptyList()
+        whenever(
+            d2.trackedEntityModule().trackedEntityInstances()
+                .byState().`in`(State.WARNING).blockingGet()
+        ) doReturn emptyList()
 
-        whenever(d2.dataValueModule().dataValues().byState()) doReturn mock()
-        whenever(d2.dataValueModule().dataValues().byState().`in`(State.ERROR)) doReturn mock()
-        whenever(d2.dataValueModule().dataValues().byState().`in`(State.WARNING)) doReturn mock()
-        whenever(d2.dataValueModule().dataValues().byState().`in`(State.ERROR).blockingGet()) doReturn emptyList()
-        whenever(d2.dataValueModule().dataValues().byState().`in`(State.WARNING).blockingGet()) doReturn emptyList()
+        whenever(
+            d2.dataValueModule().dataValues()
+                .byState()
+        ) doReturn mock()
+        whenever(
+            d2.dataValueModule().dataValues()
+                .byState().`in`(State.ERROR)
+        ) doReturn mock()
+        whenever(
+            d2.dataValueModule().dataValues()
+                .byState().`in`(State.WARNING)
+        ) doReturn mock()
+        whenever(
+            d2.dataValueModule().dataValues()
+                .byState().`in`(State.ERROR).blockingGet()
+        ) doReturn emptyList()
+        whenever(
+            d2.dataValueModule().dataValues()
+                .byState().`in`(State.WARNING).blockingGet()
+        ) doReturn emptyList()
     }
 
     private fun configureDataCount() {
-        whenever(d2.trackedEntityModule().trackedEntityInstances().byState()) doReturn mock()
-        whenever(d2.trackedEntityModule().trackedEntityInstances().byState().neq(State.RELATIONSHIP)) doReturn mock()
-        whenever(d2.trackedEntityModule().trackedEntityInstances().byState().neq(State.RELATIONSHIP).byDeleted()) doReturn mock()
-        whenever(d2.trackedEntityModule().trackedEntityInstances().byState().neq(State.RELATIONSHIP).byDeleted().isFalse) doReturn mock()
-        whenever(d2.trackedEntityModule().trackedEntityInstances().byState().neq(State.RELATIONSHIP).byDeleted().isFalse.blockingCount()) doReturn 0
+        whenever(
+            d2.trackedEntityModule().trackedEntityInstances()
+                .byState()
+        ) doReturn mock()
+        whenever(
+            d2.trackedEntityModule().trackedEntityInstances()
+                .byState().neq(State.RELATIONSHIP)
+        ) doReturn mock()
+        whenever(
+            d2.trackedEntityModule().trackedEntityInstances()
+                .byState().neq(State.RELATIONSHIP).byDeleted()
+        ) doReturn mock()
+        whenever(
+            d2.trackedEntityModule().trackedEntityInstances()
+                .byState().neq(State.RELATIONSHIP).byDeleted().isFalse
+        ) doReturn mock()
+        whenever(
+            d2.trackedEntityModule().trackedEntityInstances()
+                .byState().neq(State.RELATIONSHIP).byDeleted().isFalse.blockingCount()
+        ) doReturn 0
 
-        whenever(d2.eventModule().events().byEnrollmentUid()) doReturn mock()
-        whenever(d2.eventModule().events().byEnrollmentUid().isNull) doReturn mock()
-        whenever(d2.eventModule().events().byEnrollmentUid().isNull.byDeleted()) doReturn mock()
-        whenever(d2.eventModule().events().byEnrollmentUid().isNull.byDeleted().isFalse) doReturn mock()
-        whenever(d2.eventModule().events().byEnrollmentUid().isNull.byDeleted().isFalse.blockingCount()) doReturn 0
+        whenever(
+            d2.eventModule().events()
+                .byEnrollmentUid()
+        ) doReturn mock()
+        whenever(
+            d2.eventModule().events()
+                .byEnrollmentUid().isNull
+        ) doReturn mock()
+        whenever(
+            d2.eventModule().events()
+                .byEnrollmentUid().isNull.byDeleted()
+        ) doReturn mock()
+        whenever(
+            d2.eventModule().events()
+                .byEnrollmentUid().isNull.byDeleted().isFalse
+        ) doReturn mock()
+        whenever(
+            d2.eventModule().events()
+                .byEnrollmentUid().isNull.byDeleted().isFalse.blockingCount()
+        ) doReturn 0
     }
 
     private fun configureSMSConfig() {
-        whenever(localDbRepository.isModuleEnabled) doReturn Single.just(true)
-        whenever(localDbRepository.gatewayNumber) doReturn Single.just("gatewaynumber")
-        whenever(localDbRepository.waitingForResultEnabled) doReturn Single.just(true)
-        whenever(localDbRepository.confirmationSenderNumber) doReturn Single.just("confirmationNumber")
-        whenever(localDbRepository.waitingResultTimeout) doReturn Single.just(120)
-        whenever(d2.smsModule().configCase()) doReturn ConfigCase(
-            webApiRepository,
-            localDbRepository
-        )
+        whenever(localDbRepository.isModuleEnabled) doReturn
+            Single.just(true)
+        whenever(localDbRepository.gatewayNumber) doReturn
+            Single.just("gatewaynumber")
+        whenever(localDbRepository.waitingForResultEnabled) doReturn
+            Single.just(true)
+        whenever(localDbRepository.confirmationSenderNumber) doReturn
+            Single.just("confirmationNumber")
+        whenever(localDbRepository.waitingResultTimeout) doReturn
+            Single.just(120)
+        whenever(d2.smsModule().configCase()) doReturn
+            ConfigCase(
+                webApiRepository,
+                localDbRepository
+            )
     }
 
     private fun mockedGeneralSettings(): GeneralSettings {

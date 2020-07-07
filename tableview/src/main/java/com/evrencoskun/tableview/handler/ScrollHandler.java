@@ -17,14 +17,18 @@
 
 package com.evrencoskun.tableview.handler;
 
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.View;
 
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.evrencoskun.tableview.ITableView;
+import com.evrencoskun.tableview.adapter.recyclerview.CellRecyclerView;
 import com.evrencoskun.tableview.layoutmanager.CellLayoutManager;
 import com.evrencoskun.tableview.layoutmanager.ColumnHeaderLayoutManager;
 import com.evrencoskun.tableview.layoutmanager.ColumnLayoutManager;
+
+import java.util.List;
 
 /**
  * Created by evrencoskun on 13.01.2018.
@@ -35,12 +39,18 @@ public class ScrollHandler {
     private CellLayoutManager mCellLayoutManager;
     private LinearLayoutManager mRowHeaderLayoutManager;
     private ColumnHeaderLayoutManager mColumnHeaderLayoutManager;
+    private final List<CellRecyclerView> mBackupHeaders;
+    private List<CellRecyclerView> mColumnHeaderRecyclerViews;
+    private RecyclerView mLastTouchedRecyclerView;
 
     public ScrollHandler(ITableView tableView) {
         this.mTableView = tableView;
         this.mCellLayoutManager = tableView.getCellLayoutManager();
         this.mRowHeaderLayoutManager = tableView.getRowHeaderLayoutManager();
-        this.mColumnHeaderLayoutManager = tableView.getColumnHeaderLayoutManager(mTableView.getHeaderCount()-1);
+        this.mColumnHeaderLayoutManager = tableView.getColumnHeaderLayoutManager(mTableView.getHeaderCount() - 1);
+
+        this.mColumnHeaderRecyclerViews = tableView.getColumnHeaderRecyclerView();
+        this.mBackupHeaders = tableView.getBackupHeaders();
     }
 
     public void scrollToColumnPosition(int columnPosition) {
@@ -93,14 +103,37 @@ public class ScrollHandler {
 
                 columnLayoutManager.scrollToPositionWithOffset(columnPosition, offset);
             }
-
         }
     }
 
+    public void scrollToNextField() {
+        final CellRecyclerView child = (CellRecyclerView) mCellLayoutManager.getChildAt(mTableView.getSelectedRow());
+        child.post(new Runnable() {
+            @Override
+            public void run() {
+                child.scrollBy(300, 0);
+            }
+        });
+    }
+
     private void scrollColumnHeader(int columnPosition, int offset) {
-        for(int i = 0; i<mTableView.getHeaderCount(); i++){
-            mTableView.getColumnHeaderLayoutManager(i).scrollToPositionWithOffset(columnPosition,
-                    offset);
+
+        int totalCorrection = mTableView.getAdapter().hasTotal() ? 1 : 0;
+
+        for (int i = 0; i < mTableView.getHeaderCount(); i++) {
+
+            int step = (mTableView.getBackupHeaders().get(mTableView.getHeaderCount() - 1).getAdapter().getItemCount() - totalCorrection) /
+                    ((mTableView.getBackupHeaders().get(i).getAdapter().getItemCount() - totalCorrection));
+
+            int correctedColumn = columnPosition / step;
+
+            int correctedOffset = (300+offset) * (columnPosition % step) - offset;
+
+            mTableView.getColumnHeaderLayoutManager(i)
+                    .scrollToPositionWithOffset(correctedColumn, -correctedOffset);
+
+            ((ColumnHeaderLayoutManager) mTableView.getBackupHeaders().get(i).getLayoutManager())
+                    .scrollToPositionWithOffset(correctedColumn, -correctedOffset);
         }
     }
 
@@ -111,7 +144,7 @@ public class ScrollHandler {
     public int getColumnPositionOffset() {
         View child = mColumnHeaderLayoutManager.findViewByPosition(mColumnHeaderLayoutManager
                 .findFirstVisibleItemPosition());
-        if(child != null) {
+        if (child != null) {
             return child.getLeft();
         }
         return 0;
@@ -124,7 +157,7 @@ public class ScrollHandler {
     public int getRowPositionOffset() {
         View child = mRowHeaderLayoutManager.findViewByPosition(mRowHeaderLayoutManager
                 .findFirstVisibleItemPosition());
-        if(child != null) {
+        if (child != null) {
             return child.getLeft();
         }
         return 0;

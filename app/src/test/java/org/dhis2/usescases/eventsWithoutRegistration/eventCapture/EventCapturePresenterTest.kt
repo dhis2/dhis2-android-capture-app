@@ -39,7 +39,9 @@ class EventCapturePresenterTest {
 
     @Test
     fun `Should delete option value if selected in group to hide`() {
-        whenever(eventRepository.getOptionsFromGroups(arrayListOf("optionGroupToHide"))) doReturn arrayListOf(
+        whenever(
+            eventRepository.getOptionsFromGroups(arrayListOf("optionGroupToHide"))
+        ) doReturn arrayListOf(
             "option1",
             "option2"
         )

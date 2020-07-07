@@ -7,8 +7,8 @@ import org.dhis2.usescases.notes.NotesComponent;
 import org.dhis2.usescases.notes.NotesModule;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.relationships.RelationshipComponent;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.relationships.RelationshipModule;
-import org.dhis2.usescases.teiDashboard.dashboardfragments.tei_data.TEIDataComponent;
-import org.dhis2.usescases.teiDashboard.dashboardfragments.tei_data.TEIDataModule;
+import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TEIDataComponent;
+import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TEIDataModule;
 
 import androidx.annotation.NonNull;
 import dagger.Subcomponent;
