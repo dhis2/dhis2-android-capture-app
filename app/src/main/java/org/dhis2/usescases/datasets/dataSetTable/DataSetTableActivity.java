@@ -124,6 +124,7 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
 
     private void setViewPager() {
         viewPagerAdapter = new DataSetSectionAdapter(this, accessDataWrite, getIntent().getStringExtra(Constants.DATA_SET_UID));
+        binding.viewPager.setUserInputEnabled(false);
         binding.viewPager.setAdapter(viewPagerAdapter);
         new TabLayoutMediator(binding.tabLayout, binding.viewPager, (tab, position) -> {
             if (position == 0) {
