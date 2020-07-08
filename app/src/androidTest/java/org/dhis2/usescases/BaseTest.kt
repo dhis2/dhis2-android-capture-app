@@ -2,8 +2,10 @@ package org.dhis2.usescases
 
 import android.content.Context
 import android.os.Build
+import androidx.test.espresso.IdlingRegistry
 import androidx.test.espresso.intent.Intents
 import androidx.test.platform.app.InstrumentationRegistry
+import com.jakewharton.espresso.OkHttp3IdlingResource
 import org.dhis2.common.di.TestingInjector
 import org.dhis2.common.keystore.KeyStoreRobot
 import org.dhis2.common.keystore.KeyStoreRobot.Companion.KEYSTORE_PASSWORD
@@ -13,6 +15,8 @@ import org.dhis2.common.keystore.KeyStoreRobot.Companion.USERNAME
 import org.dhis2.common.mockwebserver.MockWebServerRobot
 import org.dhis2.common.preferences.PreferencesRobot
 import org.dhis2.common.rules.DisableAnimations
+import org.dhis2.utils.idlingresource.CountingIdlingResourceSingleton
+import org.hisp.dhis.android.core.D2Manager
 import org.junit.After
 import org.junit.Before
 import org.junit.ClassRule
@@ -33,6 +37,7 @@ open class BaseTest {
     open fun setUp() {
         injectDependencies()
         allowPermissions()
+        registerCountingIdlingResource()
     }
 
     private fun allowPermissions() {
@@ -53,6 +58,14 @@ open class BaseTest {
         }
     }
 
+    private fun registerCountingIdlingResource() {
+        IdlingRegistry.getInstance().register(CountingIdlingResourceSingleton.countingIdlingResource)
+    }
+
+    private fun unregisterCountingIdlingResource(){
+        IdlingRegistry.getInstance().unregister(CountingIdlingResourceSingleton.countingIdlingResource)
+    }
+
     fun setupMockServer() {
         mockWebServerRobot.start()
     }
@@ -64,6 +77,7 @@ open class BaseTest {
         cleanPreferences()
         cleanKeystore()
         stopMockServer()
+        unregisterCountingIdlingResource()
     }
 
     fun enableIntents() {

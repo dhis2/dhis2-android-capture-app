@@ -1,18 +1,12 @@
 package org.dhis2.usescases.teidashboard
 
-import androidx.test.espresso.Espresso
-import androidx.test.espresso.action.ViewActions
-import androidx.test.espresso.contrib.RecyclerViewActions
-import androidx.test.espresso.matcher.ViewMatchers
+import androidx.test.espresso.IdlingRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
-import org.dhis2.R
-import org.dhis2.common.rules.DataBindingIdlingResourceRule
 import org.dhis2.usescases.BaseTest
 import org.dhis2.usescases.searchTrackEntity.SearchTEActivity
 import org.dhis2.usescases.searchte.searchTeiRobot
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity
-import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.DashboardProgramViewHolder
 import org.dhis2.usescases.teidashboard.entity.EnrollmentUIModel
 import org.dhis2.usescases.teidashboard.entity.UpperEnrollmentUIModel
 import org.dhis2.usescases.teidashboard.robot.enrollmentRobot
@@ -21,10 +15,11 @@ import org.dhis2.usescases.teidashboard.robot.indicatorsRobot
 import org.dhis2.usescases.teidashboard.robot.noteRobot
 import org.dhis2.usescases.teidashboard.robot.relationshipRobot
 import org.dhis2.usescases.teidashboard.robot.teiDashboardRobot
-import org.junit.Ignore
+import org.dhis2.utils.idlingresource.CountingIdlingResourceSingleton
+import org.junit.After
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import org.junit.experimental.theories.Theories
 import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
@@ -310,7 +305,6 @@ class TeiDashboardTest : BaseTest() {
     }
 
     @Test
-    @Ignore
     fun shouldSuccessfullyCreateRelationshipWhenClickAdd() {
         val teiName = "Tim"
         val teiLastName = "Johnson"
@@ -323,7 +317,6 @@ class TeiDashboardTest : BaseTest() {
 
         searchTeiRobot {
             closeSearchForm()
-            Thread.sleep(4000)
             clickOnTEI(teiName, teiLastName)
         }
 
@@ -338,7 +331,6 @@ class TeiDashboardTest : BaseTest() {
 
         searchTeiRobot {
             closeSearchForm()
-            Thread.sleep(4000)
             clickOnTEI(relationshipName, relationshipLastName)
         }
 
@@ -347,7 +339,6 @@ class TeiDashboardTest : BaseTest() {
         }
     }
 
-    @Ignore("Check test. Sometimes it fails")
     @Test
     fun shouldDeleteTeiSuccessfully() {
         val teiName = "Anthony"
@@ -358,7 +349,6 @@ class TeiDashboardTest : BaseTest() {
 
         searchTeiRobot {
             closeSearchForm()
-            Thread.sleep(4000)
             clickOnTEI(teiName, teiLastName)
         }
 
@@ -368,12 +358,10 @@ class TeiDashboardTest : BaseTest() {
         }
 
         searchTeiRobot {
-            Thread.sleep(4000)
             checkTEIsDelete(teiName, teiLastName)
         }
     }
 
-    @Ignore("Check test. Sometimes it fails")
     @Test
     fun shouldDeleteEnrollmentSuccessfully() {
 
@@ -385,7 +373,6 @@ class TeiDashboardTest : BaseTest() {
 
         searchTeiRobot {
             closeSearchForm()
-            Thread.sleep(4000)
             clickOnTEI(teiName, teiLastName)
         }
 
@@ -395,7 +382,6 @@ class TeiDashboardTest : BaseTest() {
         }
 
         searchTeiRobot {
-            Thread.sleep(4000)
             checkTEIsDelete(teiName, teiLastName)
         }
     }

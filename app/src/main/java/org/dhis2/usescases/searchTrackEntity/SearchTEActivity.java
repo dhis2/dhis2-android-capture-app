@@ -77,6 +77,7 @@ import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel;
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity;
 import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.Constants;
+import org.dhis2.utils.idlingresource.CountingIdlingResourceSingleton;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.HelpManager;
 import org.dhis2.utils.customviews.ScanTextView;
@@ -474,12 +475,14 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                     binding.scrollView.setVisibility(View.VISIBLE);
                     liveAdapter.submitList(data.val0());
                     binding.progressLayout.setVisibility(View.GONE);
+                    CountingIdlingResourceSingleton.INSTANCE.decrement();
                 } else {
                     showMap(false);
                     binding.progressLayout.setVisibility(View.GONE);
                     binding.messageContainer.setVisibility(View.VISIBLE);
                     binding.message.setText(data.val1());
                     binding.scrollView.setVisibility(View.GONE);
+                    CountingIdlingResourceSingleton.INSTANCE.decrement();
                 }
             });
         } else {
@@ -490,11 +493,13 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                     binding.scrollView.setVisibility(View.VISIBLE);
                     relationshipLiveAdapter.submitList(data.val0());
                     binding.progressLayout.setVisibility(View.GONE);
+                    CountingIdlingResourceSingleton.INSTANCE.decrement();
                 } else {
                     binding.progressLayout.setVisibility(View.GONE);
                     binding.messageContainer.setVisibility(View.VISIBLE);
                     binding.message.setText(data.val1());
                     binding.scrollView.setVisibility(View.GONE);
+                    CountingIdlingResourceSingleton.INSTANCE.decrement();
                 }
                 if (!presenter.getQueryData().isEmpty() && data.val2())
                     setFabIcon(false);
