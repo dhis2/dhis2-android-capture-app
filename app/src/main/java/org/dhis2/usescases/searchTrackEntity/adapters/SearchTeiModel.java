@@ -17,6 +17,7 @@ import java.util.List;
 public class SearchTeiModel implements CarouselItemModel {
 
     private LinkedHashMap<String, TrackedEntityAttributeValue> attributeValues;
+    private LinkedHashMap<String, TrackedEntityAttributeValue> textAttributeValues;
 
     private List<Trio<String, String, String>> enrollmentsInfo;
     private List<Program> programInfo;
@@ -32,16 +33,21 @@ public class SearchTeiModel implements CarouselItemModel {
     private Date overdueDate;
     private List<RelationshipViewModel> relationships;
     private boolean openedAttributeList = false;
+    private String sortingKey;
+    private String sortingValue;
 
     public SearchTeiModel() {
         this.tei = null;
         this.selectedEnrollment = null;
         this.attributeValues = new LinkedHashMap<>();
+        this.textAttributeValues = new LinkedHashMap<>();
         this.enrollmentsInfo = new ArrayList<>();
         this.programInfo = new ArrayList<>();
         this.isOnline = true;
         this.enrollments = new ArrayList<>();
         this.relationships = new ArrayList<>();
+        this.sortingKey = null;
+        this.sortingValue = null;
     }
 
 
@@ -76,8 +82,17 @@ public class SearchTeiModel implements CarouselItemModel {
         return attributeValues;
     }
 
+    public LinkedHashMap<String, TrackedEntityAttributeValue> getTextAttributeValues() {
+        return textAttributeValues;
+    }
+
     public void addAttributeValue(String attributeName, TrackedEntityAttributeValue attributeValues) {
         this.attributeValues.put(attributeName, attributeValues);
+    }
+
+
+    public void addTextAttribute(String attributeName, TrackedEntityAttributeValue attributeValue) {
+        this.textAttributeValues.put(attributeName, attributeValue);
     }
 
     public void resetEnrollments() {
@@ -147,7 +162,7 @@ public class SearchTeiModel implements CarouselItemModel {
     public Date getOverdueDate() {
         return overdueDate;
     }
-    
+
     public List<RelationshipViewModel> getRelationships() {
         return relationships;
     }
@@ -156,11 +171,26 @@ public class SearchTeiModel implements CarouselItemModel {
         this.relationships = relationships;
     }
 
-    public void toggleAttributeList(){
+    public void toggleAttributeList() {
         this.openedAttributeList = !this.openedAttributeList;
     }
 
     public boolean isAttributeListOpen() {
         return this.openedAttributeList;
+    }
+
+    public void setSortingValue(kotlin.Pair<String, String> sortingKeyValue) {
+        if (sortingKeyValue != null) {
+            this.sortingKey = sortingKeyValue.getFirst();
+            this.sortingValue = sortingKeyValue.getSecond();
+        }
+    }
+
+    public String getSortingKey() {
+        return sortingKey;
+    }
+
+    public String getSortingValue() {
+        return sortingValue;
     }
 }

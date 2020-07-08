@@ -34,6 +34,7 @@ class SearchTEViewHolder(private val binding: ItemSearchTrackedEntityBinding) :
             attributeNames = searchTeiModel.attributeValues.keys
             attributeListOpened = searchTeiModel.isAttributeListOpen
             lastUpdated.text = searchTeiModel.tei.lastUpdated().toDateSpan(itemView.context)
+            sortingValue = searchTeiModel.sortingValue
         }
 
         searchTeiModel.apply {
@@ -60,11 +61,14 @@ class SearchTEViewHolder(private val binding: ItemSearchTrackedEntityBinding) :
                 binding.attributeList,
                 binding.showAttributesButton,
                 adapterPosition,
-                searchTeiModel.isAttributeListOpen
+                searchTeiModel.isAttributeListOpen,
+                searchTeiModel.sortingKey,
+                searchTeiModel.sortingValue
             ) {
-                searchTeiModel.toggleAttributeList()
                 attributeVisibilityCallback()
             }
+            binding.sortingFieldName.text = searchTeiModel.sortingKey
+            binding.sortingFieldValue.text = searchTeiModel.sortingValue
         }
 
         binding.syncState.setOnClickListener {

@@ -12,8 +12,9 @@ import org.dhis2.R;
 import org.dhis2.databinding.ItemSearchTrackedEntityBinding;
 import org.dhis2.usescases.searchTrackEntity.SearchTEContractsModule;
 
+import java.util.Objects;
+
 import kotlin.Unit;
-import kotlin.jvm.functions.Function0;
 
 public class SearchTeiLiveAdapter extends PagedListAdapter<SearchTeiModel, SearchTEViewHolder> {
 
@@ -25,19 +26,23 @@ public class SearchTeiLiveAdapter extends PagedListAdapter<SearchTeiModel, Searc
 
         @Override
         public boolean areContentsTheSame(@NonNull SearchTeiModel oldItem, @NonNull SearchTeiModel newItem) {
-            if (oldItem.isOnline() && oldItem.getTei().state() == null)
+            if (oldItem.isOnline() && oldItem.getTei().state() == null) {
                 return oldItem.getTei().uid().equals(newItem.getTei().uid()) &&
                         (oldItem.getTei().state() == null && newItem.getTei().state() == null) &&
                         oldItem.getAttributeValues().equals(newItem.getAttributeValues()) &&
                         oldItem.getProfilePicturePath().equals(newItem.getProfilePicturePath()) &&
-                        oldItem.isAttributeListOpen() != newItem.isAttributeListOpen();
-            else {
+                        oldItem.isAttributeListOpen() == newItem.isAttributeListOpen() &&
+                        Objects.equals(oldItem.getSortingKey(), newItem.getSortingKey()) &&
+                        Objects.equals(oldItem.getSortingValue(), newItem.getSortingValue());
+            } else {
                 return oldItem.getTei().uid().equals(newItem.getTei().uid()) &&
-                        oldItem.getTei().state().equals(newItem.getTei().state()) &&
+                        Objects.equals(oldItem.getTei().state(), newItem.getTei().state()) &&
                         oldItem.getAttributeValues().equals(newItem.getAttributeValues()) &&
                         oldItem.getEnrollments().equals(newItem.getEnrollments()) &&
                         oldItem.getProfilePicturePath().equals(newItem.getProfilePicturePath()) &&
-                        oldItem.isAttributeListOpen() != newItem.isAttributeListOpen();
+                        oldItem.isAttributeListOpen() == newItem.isAttributeListOpen() &&
+                        Objects.equals(oldItem.getSortingKey(), newItem.getSortingKey()) &&
+                        Objects.equals(oldItem.getSortingValue(), newItem.getSortingValue());
             }
         }
     };
@@ -59,6 +64,7 @@ public class SearchTeiLiveAdapter extends PagedListAdapter<SearchTeiModel, Searc
     @Override
     public void onBindViewHolder(@NonNull SearchTEViewHolder holder, int position) {
         holder.bind(presenter, getItem(position), () -> {
+            getItem(position).toggleAttributeList();
             notifyItemChanged(position);
             return Unit.INSTANCE;
         });

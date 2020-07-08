@@ -62,8 +62,8 @@
         <TextView
             android:id="@+id/imageText"
             android:layout_width="40dp"
-            android:layout_height="20dp"
-            android:includeFontPadding="false"
+            android:layout_height="wrap_content"
+            android:includeFontPadding="true"
             android:textAlignment="center"
             android:textSize="20sp"
             app:layout_constraintBottom_toBottomOf="@id/tracked_entity_image"
@@ -170,10 +170,12 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
+            android:layout_marginTop="6dp"
             android:layout_marginEnd="5dp"
-            android:textColor="@color/text_black_DE3"
+            android:textColor="@color/sorting_attribute_key_color"
             android:textSize="12sp"
-            android:visibility='@{sortingValue !=null ? View.VISIBLE : View.GONE}'
+            android:paddingBottom="24dp"
+            android:visibility='@{sortingValue !=null &amp;&amp; !attributeListOpened ? View.VISIBLE : View.GONE}'
             app:layout_constraintStart_toEndOf="@id/tracked_entity_image"
             app:layout_constraintTop_toBottomOf="@id/attribute_c_name"
             tools:text="Sorting field:" />
@@ -237,9 +239,11 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="5dp"
             android:layout_marginEnd="5dp"
+            android:layout_marginTop="6dp"
             android:ellipsize="end"
+            android:paddingBottom="24dp"
             android:singleLine="true"
-            android:textColor="#61333333"
+            android:textColor="@color/sorting_attribute_value_color"
             android:textSize="12sp"
             android:visibility='@{sortingValue != null &amp;&amp; !attributeListOpened ? View.VISIBLE : View.GONE}'
             app:layout_constraintEnd_toStartOf="@id/infoLayout"

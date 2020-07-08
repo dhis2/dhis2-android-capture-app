@@ -14,6 +14,7 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.content.res.AppCompatResources
+import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.drawable.DrawableCompat
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CircleCrop
@@ -164,14 +165,14 @@ fun SearchTeiModel.setTeiImage(
             .transition(DrawableTransitionOptions.withCrossFade())
             .transform(CircleCrop())
             .into(teiImageView)
-    } else if (attributeValues != null &&
-        attributeValues.values.isNotEmpty()
+    } else if (textAttributeValues != null &&
+        textAttributeValues.values.isNotEmpty()
     ) {
         teiImageView.setImageDrawable(null)
         teiTextImageView.visibility = View.VISIBLE
-        val valueToShow = ArrayList(attributeValues.values)
+        val valueToShow = ArrayList(textAttributeValues.values)
         if (valueToShow[0] == null) {
-            teiTextImageView.text = "-"
+            teiTextImageView.text = "?"
         } else {
             teiTextImageView.text = valueToShow[0].value()?.first().toString()
         }
@@ -187,7 +188,16 @@ fun SearchTeiModel.setTeiImage(
         teiTextImageView.visibility = View.GONE
         teiImageView.setImageResource(placeHolderId)
     } else {
-        teiTextImageView.visibility = View.GONE
+        teiTextImageView.visibility = View.VISIBLE
+        teiTextImageView.text = "?"
+        teiTextImageView.setTextColor(
+            ColorUtils.getContrastColor(
+                ColorUtils.getPrimaryColor(
+                    context,
+                    ColorUtils.ColorType.PRIMARY
+                )
+            )
+        )
     }
 }
 
@@ -196,6 +206,8 @@ fun LinkedHashMap<String, TrackedEntityAttributeValue>.setAttributeList(
     showAttributesButton: ImageView,
     adapterPosition: Int,
     listIsOpen: Boolean,
+    sortingKey: String?,
+    sortingValue: String?,
     showList: () -> Unit
 ) {
     parentLayout.removeAllViews()
@@ -211,7 +223,29 @@ fun LinkedHashMap<String, TrackedEntityAttributeValue>.setAttributeList(
             itemFieldValueBinding.root.tag = adapterPosition.toString() + "_" + fieldName
             parentLayout.addView(itemFieldValueBinding.root)
         }
-        showAttributesButton.scaleY = if (listIsOpen) 1F else -1F
+        if (sortingKey != null) {
+            val itemFieldValueBinding =
+                ItemFieldValueBinding.inflate(LayoutInflater.from(parentLayout.context))
+            itemFieldValueBinding.name = sortingKey
+            itemFieldValueBinding.fieldName.setTextColor(
+                ResourcesCompat.getColor(
+                    itemFieldValueBinding.fieldName.context.resources,
+                    R.color.sorting_attribute_key_color,
+                    null
+                )
+            )
+            itemFieldValueBinding.value = sortingValue
+            itemFieldValueBinding.fieldValue.setTextColor(
+                ResourcesCompat.getColor(
+                    itemFieldValueBinding.fieldValue.context.resources,
+                    R.color.sorting_attribute_value_color,
+                    null
+                )
+            )
+            itemFieldValueBinding.root.tag = adapterPosition.toString() + "_" + sortingValue
+            parentLayout.addView(itemFieldValueBinding.root)
+        }
+        showAttributesButton.scaleY = if (listIsOpen) -1F else 1F
         showAttributesButton.setOnClickListener {
             showList()
         }

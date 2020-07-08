@@ -27,6 +27,7 @@ class CarouselTeiHolder(
             attribute = data.attributeValues.values.toList()
             attributeNames = data.attributeValues.keys
             lastUpdated.text = data.tei.lastUpdated().toDateSpan(itemView.context)
+            sortingValue = data.sortingValue
             executePendingBindings()
         }
 
@@ -44,6 +45,8 @@ class CarouselTeiHolder(
                 overdueDate
             )
             setTeiImage(itemView.context, binding.trackedEntityImage, binding.imageText)
+            binding.sortingFieldName.text = data.sortingKey
+            binding.sortingFieldValue.text = data.sortingValue
         }
 
         binding.syncState.setOnClickListener {
