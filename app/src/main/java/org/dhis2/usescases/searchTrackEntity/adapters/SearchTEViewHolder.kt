@@ -43,12 +43,14 @@ class SearchTEViewHolder(private val binding: ItemSearchTrackedEntityBinding) :
                 binding.programList,
                 if (selectedEnrollment != null) selectedEnrollment.program() else null
             )
-            selectedEnrollment.setStatusText(
-                itemView.context,
-                binding.enrollmentStatus,
-                isHasOverdue,
-                overdueDate
-            )
+            if (selectedEnrollment != null) {
+                selectedEnrollment.setStatusText(
+                    itemView.context,
+                    binding.enrollmentStatus,
+                    isHasOverdue,
+                    overdueDate
+                )
+            }
             setTeiImage(
                 itemView.context,
                 binding.trackedEntityImage,

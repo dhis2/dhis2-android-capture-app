@@ -100,25 +100,35 @@
             app:srcCompat="@drawable/ic_close"
             app:tint="?colorPrimary" />
 
-        <LinearLayout
-            android:id="@+id/checkLayout"
+        <HorizontalScrollView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:weightSum="6"
             app:layout_constraintEnd_toStartOf="@id/delete"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/warningError" />
+            app:layout_constraintTop_toBottomOf="@id/warningError">
+            <LinearLayout
+                android:id="@+id/checkLayout"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:weightSum="6"
+                 />
+        </HorizontalScrollView>
 
-        <RadioGroup
-            android:id="@+id/radioLayout"
+        <HorizontalScrollView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:weightSum="6"
-            app:layout_constraintEnd_toStartOf="@id/delete"
+            app:layout_constraintEnd_toStartOf="@+id/delete"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/label" />
+            app:layout_constraintTop_toBottomOf="@id/label">
+
+            <RadioGroup
+                android:id="@+id/radioLayout"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:weightSum="6" />
+        </HorizontalScrollView>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
