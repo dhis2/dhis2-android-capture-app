@@ -65,9 +65,10 @@ class ProgramEventDetailPresenterTest {
                 it.value?.add(programEventViewModel)
             }
 
-        val mapEvents = Pair<FeatureCollection, BoundingBox>(
+        val mapEvents = Triple<FeatureCollection, BoundingBox, List<ProgramEventViewModel>>(
             FeatureCollection.fromFeature(Feature.fromGeometry(null)),
-            BoundingBox.fromLngLats(0.0, 0.0, 0.0, 0.0)
+            BoundingBox.fromLngLats(0.0, 0.0, 0.0, 0.0),
+            listOf()
         )
         filterManager.sortingItem = SortingItem(Filters.ORG_UNIT, SortingStatus.NONE)
         whenever(repository.featureType()) doReturn Single.just(FeatureType.POINT)
@@ -82,7 +83,7 @@ class ProgramEventDetailPresenterTest {
             repository.filteredEventsForMap(any(), any(), any(), any(), any(), any())
         ) doReturn Flowable.just(mapEvents)
         presenter.init()
-        verify(view).setFeatureType()
+        verify(view).setFeatureType(FeatureType.POINT)
         verify(view).setWritePermission(true)
         verify(view).setOptionComboAccess(true)
         verify(view).setProgram(program)
