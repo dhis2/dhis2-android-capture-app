@@ -249,6 +249,13 @@ class TeiDashboardRobot : BaseRobot() {
                 .check(matches(allOf(isDisplayed(), isNotEmpty(),
                         atPosition(position, hasDescendant(withText(R.string.event_open))))))
     }
+
+    fun checkEventIsCompleted(position: Int) {
+        onView(withId(R.id.tei_recycler))
+            .check(matches(allOf(isDisplayed(), isNotEmpty(),
+                atPosition(position, hasDescendant(withText(R.string.event_completed))))))
+    }
+
     fun checkEventIsInactivate(position: Int) {
         onView(withId(R.id.tei_recycler))
                 .check(matches(allOf(isDisplayed(), isNotEmpty(), atPosition(position, hasDescendant(withText(R.string.program_inactive))))))
@@ -269,6 +276,15 @@ class TeiDashboardRobot : BaseRobot() {
             event++
         }
     }
+
+    fun checkAllEventsCompleted(totalEvents: Int) {
+        var event = 0
+        while (event < totalEvents) {
+            checkEventIsCompleted(event)
+            event++
+        }
+    }
+
     fun checkAllEventsAreClosed(totalEvents: Int) {
         var event = 0
         while (event < totalEvents) {

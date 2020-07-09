@@ -80,7 +80,7 @@ class TeiDashboardTest : BaseTest() {
     }
 
     @Test
-    fun shouldReactivateTEIWhenClickReOpen() {
+    fun shouldReactivateTEIWhenClickReOpenWithProgramCompletedEvents() {
         prepareTeiCompletedProgrammeAndLaunchActivity(rule)
 
         teiDashboardRobot {
@@ -88,7 +88,7 @@ class TeiDashboardTest : BaseTest() {
             clickOnMenuReOpen()
             checkUnlockIconIsDisplay()
             checkCanAddEvent()
-            checkAllEventsAreOpened(1)
+            checkAllEventsCompleted(1)
         }
     }
 
@@ -105,7 +105,7 @@ class TeiDashboardTest : BaseTest() {
         }
     }
 
-    @Test
+   @Test
     fun shouldCompleteTEIWhenClickOpen() {
         prepareTeiOpenedForCompleteProgrammeAndLaunchActivity(rule)
 
@@ -118,7 +118,7 @@ class TeiDashboardTest : BaseTest() {
         }
     }
 
-    @Test
+   @Test
     fun shouldShowQRWhenClickOnShare() {
         prepareTeiCompletedProgrammeAndLaunchActivity(rule)
 
