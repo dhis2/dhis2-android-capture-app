@@ -1,9 +1,7 @@
 package org.dhis2.uicomponents.map.carousel
 
 import android.text.Spannable
-import android.text.SpannableString
 import android.text.SpannableStringBuilder
-import android.text.SpannedString
 import android.text.style.ForegroundColorSpan
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
@@ -26,16 +24,21 @@ class CarouselProgramEventHolder(
 
         val attributesString = SpannableStringBuilder("")
         data.eventDisplayData().forEach {
-            attributesString.append(SpannableStringBuilder("${it.val0()} ${it.val1()}  ").apply {
-                setSpan(
-                    ForegroundColorSpan(
-                        ContextCompat.getColor(itemView.context, R.color.text_black_8A3)
-                    ),
-                    0, it.val0().length,
-                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
-                )
-            })
+            attributesString.append(
+                SpannableStringBuilder("${it.val0()} ${it.val1()}  ").apply {
+                    setSpan(
+                        ForegroundColorSpan(
+                            ContextCompat.getColor(itemView.context, R.color.text_black_8A3)
+                        ),
+                        0, it.val0().length,
+                        Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+                    )
+                }
+            )
         }
-        binding.dataValue.text = attributesString
+        binding.dataValue.text = when {
+            attributesString.isNotEmpty() -> attributesString
+            else -> itemView.context.getString(R.string.no_data)
+        }
     }
 }
